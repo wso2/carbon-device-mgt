@@ -264,12 +264,12 @@ function loadUsers(searchParam) {
         };
 
         return JSON.stringify( json );
-    };
+    }
 
     var fnCreatedRow = function( nRow, aData, iDataIndex ) {
         $(nRow).attr('data-type', 'selectable');
         $(nRow).attr('data-username', aData["filter"]);
-    };
+    }
 
     var columns = [
         {
@@ -302,19 +302,19 @@ function loadUsers(searchParam) {
             class: "text-right content-fill text-left-on-grid-view no-wrap",
             data: null,
             render: function ( data, type, row, meta ) {
-                return '<a href="/emm/users/edit-user?username=' + data.username + '" data-username="' + data.username +
+                return '<a href="/emm/user/edit?username=' + data.filter + '" data-username="' + data.filter +
                     '" data-click-event="edit-form" class="btn padding-reduce-on-grid-view edit-user-link"> ' +
                     '<span class="fw-stack"> <i class="fw fw-ring fw-stack-2x"></i> <i class="fw fw-edit fw-stack-1x"></i>' +
                     ' </span> <span class="hidden-xs hidden-on-grid-view">Edit</span> </a>' +
 
-                    '<a href="#" data-username="' + data.username + '" data-userid=' + data.username +
-                    ' data-click-event="remove-form" onclick="javascript:removeUser(\'' + data.username + '\', \'' +
-                    data.username + '\')" class="btn padding-reduce-on-grid-view remove-user-link">' +
+                    '<a href="#" data-username="' + data.filter + '" data-userid=' + data.filter +
+                    ' data-click-event="remove-form" onclick="javascript:removeUser(\'' + data.filter + '\', \'' +
+                    data.filter + '\')" class="btn padding-reduce-on-grid-view remove-user-link">' +
                     '<span class="fw-stack"> <i class="fw fw-ring fw-stack-2x"></i> <i class="fw fw-delete fw-stack-1x">' +
                     '</i> </span> <span class="hidden-xs hidden-on-grid-view">Remove</span> </a>' +
 
-                    '<a href="#" data-username="' + data.username + '" data-userid="' + data.username +
-                    '" data-click-event="edit-form" onclick="javascript:resetPassword(\'' + data.username +
+                    '<a href="#" data-username="' + data.filter + '" data-userid="' + data.filter +
+                    '" data-click-event="edit-form" onclick="javascript:resetPassword(\'' + data.filter +
                     '\')" class="btn padding-reduce-on-grid-view remove-user-link"> <span class="fw-stack"> <i class="fw fw-ring fw-stack-2x">' +
                     '</i> <i class="fw fw-key fw-stack-1x"></i> <span class="fw-stack fw-move-right fw-move-bottom"> <i class="fw fw-circle fw-stack-2x fw-stroke fw-inverse"><' +
                     '/i> <i class="fw fw-circle fw-stack-2x"></i> <i class="fw fw-refresh fw-stack-1x fw-inverse">' +

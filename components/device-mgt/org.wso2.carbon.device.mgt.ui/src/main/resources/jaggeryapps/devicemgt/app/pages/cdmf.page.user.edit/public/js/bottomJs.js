@@ -32,6 +32,8 @@ function inputIsValid(regExp, inputString) {
 var validateInline = {};
 var clearInline = {};
 
+var deviceMgtBasePath = "/api/device-mgt/v1.0";
+
 var enableInlineError = function (inputField, errorMsg, errorSign) {
     var fieldIdentifier = "#" + inputField;
     var errorMsgIdentifier = "#" + inputField + " ." + errorMsg;
@@ -181,6 +183,7 @@ $(document).ready(function () {
         var firstnameInput = $("input#firstname");
         var lastnameInput = $("input#lastname");
         var charLimit = parseInt($("input#username").attr("limit"));
+        var domain = $("#userStore").val();
         var username = usernameInput.val().trim();
         var firstname = firstnameInput.val();
         var lastname = lastnameInput.val();
@@ -215,7 +218,7 @@ $(document).ready(function () {
         } else {
             var addUserFormData = {};
 
-            addUserFormData.username = username;
+            addUserFormData.username = domain + "/" + username;
             addUserFormData.firstname = firstname;
             addUserFormData.lastname = lastname;
             addUserFormData.emailAddress = emailAddress;
@@ -225,14 +228,13 @@ $(document).ready(function () {
             }
             addUserFormData.roles = roles;
 
-            var addUserAPI = "/devicemgt_admin/users?username=" + username;
+            var addUserAPI = deviceMgtBasePath + "/users/" + username;
 
             invokerUtil.put(
                 addUserAPI,
                 addUserFormData,
-                function (data) {
-                    data = JSON.parse(data);
-                    if (data["statusCode"] == 201) {
+                function (data, textStatus, jqXHR) {
+                    if (jqXHR.status == 201) {
                         // Clearing user input fields.
                         $("input#username").val("");
                         $("input#firstname").val("");
@@ -243,13 +245,14 @@ $(document).ready(function () {
                         $("#user-create-form").addClass("hidden");
                         $("#user-created-msg").removeClass("hidden");
                     }
-                }, function (data) {
-                        if (data["statusCode"] == 409) {
+                }, function (jqXHR) {
+                    var payload = JSON.parse(jqXHR.responseText);
+                    if (jqXHR.status == 409) {
                         $(errorMsg).text("User : " + username + " doesn't exists. You cannot proceed.");
-                        } else if (data["statusCode"] == 500) {
-                        $(errorMsg).text("An unexpected error occurred @ backend server. Please try again later.");
+                    } else if (jqXHR.status == 500) {
+                        $(errorMsg).text("An unexpected error occurred at backend server. Please try again later.");
                     } else {
-                        $(errorMsg).text(data.errorMessage);
+                        $(errorMsg).text(payload.message);
                     }
                     $(errorMsgWrapper).removeClass("hidden");
                 }

@@ -86,7 +86,7 @@ validateInline["user-name"] = function () {
 validateInline["first-name"] = function () {
     var firstnameInput = $("input#firstname");
     if (firstnameInput.val()) {
-       disableInlineError("firstNameField", "fnError");
+        disableInlineError("firstNameField", "fnError");
     } else {
         enableInlineError("firstNameField", "fnError");
     }

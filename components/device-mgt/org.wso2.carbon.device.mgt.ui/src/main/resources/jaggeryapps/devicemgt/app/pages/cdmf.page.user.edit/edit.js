@@ -16,14 +16,16 @@
  * under the License.
  */
 
-function onRequest(context) {
+function onRequest() {
+    var devicemgtProps = require("/app/modules/conf-reader/main.js")["conf"];
     var userModule = require("/app/modules/business-controllers/user.js")["userModule"];
+
     var userName = request.getParameter("username");
     var user = userModule.getUser(userName)["content"];
-    var devicemgtProps = require("/app/modules/conf-reader/main.js")["conf"];
+    
     if (user) {
         var title;
-        if (user.firstname || user.lastname) {
+        if (user.firstname && user.lastname) {
             title = user.firstname + " " + user.lastname;
         } else {
             title = user.username;
@@ -34,6 +36,8 @@ function onRequest(context) {
         if (userName.indexOf("/") > -1) {
             userStore = userName.substr(0, userName.indexOf('/'));
         }
+        page["userStore"] = userStore;
+
         var response = userModule.getUser(userName);
 
         if (response["status"] == "success") {
@@ -41,28 +45,27 @@ function onRequest(context) {
         }
 
         response = userModule.getRolesByUsername(userName);
+        var rolesByUsername;
         if (response["status"] == "success") {
-            page["usersRoles"] = response["content"];
-        }
-        response = userModule.getRolesByUserStore(userStore);
-        if (response["status"] == "success") {
-            var roleVals = response["content"];
-            var filteredRoles = [];
-            var prefix  = "Application";
-            for (i = 0; i < roleVals.length; i++) {
-                if(roleVals[i].indexOf(prefix) < 0){
-                    filteredRoles.push(roleVals[i]);
-                }
-            }
-            page["userRoles"] = filteredRoles;
+            rolesByUsername = response["content"];
         }
 
+        response = userModule.getRolesByUserStore(userStore);
+        var rolesByUserStore;
+        if (response["status"] == "success") {
+            rolesByUserStore = response["content"];
+        }
+
+        page["rolesByUsername"] = rolesByUsername;
+        page["rolesByUserStore"] = rolesByUserStore;
     }
-    page["usernameJSRegEx"] = devicemgtProps.userValidationConfig.usernameJSRegEx;
-    page["usernameRegExViolationErrorMsg"] = devicemgtProps.userValidationConfig.usernameRegExViolationErrorMsg;
-    page["firstnameJSRegEx"] = devicemgtProps.userValidationConfig.firstnameJSRegEx;
-    page["firstnameRegExViolationErrorMsg"] = devicemgtProps.userValidationConfig.firstnameRegExViolationErrorMsg;
-    page["lastnameJSRegEx"] = devicemgtProps.userValidationConfig.lastnameJSRegEx;
-    page["lastnameRegExViolationErrorMsg"] = devicemgtProps.userValidationConfig.lastnameRegExViolationErrorMsg;
+
+    page["usernameJSRegEx"] = devicemgtProps["userValidationConfig"]["usernameJSRegEx"];
+    page["usernameRegExViolationErrorMsg"] = devicemgtProps["userValidationConfig"]["usernameRegExViolationErrorMsg"];
+    page["firstnameJSRegEx"] = devicemgtProps["userValidationConfig"]["firstnameJSRegEx"];
+    page["firstnameRegExViolationErrorMsg"] = devicemgtProps["userValidationConfig"]["firstnameRegExViolationErrorMsg"];
+    page["lastnameJSRegEx"] = devicemgtProps["userValidationConfig"]["lastnameJSRegEx"];
+    page["lastnameRegExViolationErrorMsg"] = devicemgtProps["userValidationConfig"]["lastnameRegExViolationErrorMsg"];
+
     return page;
 }

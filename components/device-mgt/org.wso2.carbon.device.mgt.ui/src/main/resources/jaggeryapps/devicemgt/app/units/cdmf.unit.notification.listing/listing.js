@@ -16,15 +16,16 @@
  * under the License.
  */
 
-function onRequest(context){
+function onRequest(context) {
     var userModule = require("/app/modules/business-controllers/user.js")["userModule"];
     var constants = require("/app/modules/constants.js");
+    var viewModel = {};
     var permissions = [];
-    if(userModule.isAuthorized("/permission/admin/device-mgt/emm-admin/notifications/list")){
+    if (userModule.isAuthorized("/permission/admin/device-mgt/emm-admin/notifications/list")) {
         permissions.push("LIST_NOTIFICATIONS");
     }
     var currentUser = session.get(constants.USER_SESSION_KEY);
-    context.permissions = stringify(permissions);
-    context.currentUser = currentUser;
-    return context;
+    viewModel.permissions = stringify(permissions);
+    viewModel.currentUser = currentUser;
+    return viewModel;
 }

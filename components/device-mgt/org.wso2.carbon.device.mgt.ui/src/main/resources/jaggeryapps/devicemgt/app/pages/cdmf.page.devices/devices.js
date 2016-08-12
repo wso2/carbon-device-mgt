@@ -18,8 +18,8 @@
 
 function onRequest(context) {
     var constants = require("/app/modules/constants.js");
-    var userModule = require("/app/modules/user.js").userModule;
-    var deviceModule = require("/app/modules/device.js").deviceModule;
+    var userModule = require("/app/modules/business-controllers/user.js")["userModule"];
+    var deviceModule = require("/app/modules/business-controllers/device.js")["deviceModule"];
 
     var groupName = request.getParameter("groupName");
     var groupOwner = request.getParameter("groupOwner");
@@ -42,7 +42,7 @@ function onRequest(context) {
         page.currentUser = currentUser;
         var deviceCount = 0;
         if (groupName && groupOwner) {
-            var groupModule = require("/app/modules/group.js").groupModule;
+            var groupModule = require("/app/modules/business-controllers/group.js")["groupModule"];
             deviceCount = groupModule.getGroupDeviceCount(groupName, groupOwner);
         } else {
             deviceCount = deviceModule.getDevicesCount();

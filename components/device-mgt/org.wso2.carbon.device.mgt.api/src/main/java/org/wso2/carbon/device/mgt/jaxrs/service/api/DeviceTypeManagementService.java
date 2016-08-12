@@ -20,7 +20,7 @@ package org.wso2.carbon.device.mgt.jaxrs.service.api;
 
 import io.swagger.annotations.*;
 import org.wso2.carbon.apimgt.annotations.api.API;
-import org.wso2.carbon.apimgt.annotations.api.Permission;
+import org.wso2.carbon.apimgt.annotations.api.Scope;
 import org.wso2.carbon.device.mgt.jaxrs.beans.DeviceTypeList;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
 
@@ -28,7 +28,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-@API(name = "Device Type Management", version = "1.0.0", context = "/admin/device-types", tags = {"devicemgt_admin"})
+@API(name = "Device Type Management", version = "1.0.0", context = "/api/device-mgt/v1.0/admin/device-types", tags = {"devicemgt_admin"})
 
 @Path("/device-types")
 @Api(value = "Device Type Management", description = "This API corresponds to all tasks related to device " +
@@ -78,10 +78,7 @@ public interface DeviceTypeManagementService {
                             response = ErrorResponse.class)
             }
     )
-    @Permission(
-            scope = "read:device-types",
-            permissions = {"/permission/admin/device-mgt/admin/device-types/view"}
-    )
+    @Scope(key = "device-type:admin:view", name = "View device types", description = "")
     Response getDeviceTypes(
             @ApiParam(
                     name = "If-Modified-Since",

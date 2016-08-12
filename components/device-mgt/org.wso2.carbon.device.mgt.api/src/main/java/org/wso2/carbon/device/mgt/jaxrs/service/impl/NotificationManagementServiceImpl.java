@@ -31,6 +31,8 @@ import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.RequestValidationUtil;
 import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.UnexpectedServerErrorException;
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Size;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -46,10 +48,11 @@ public class NotificationManagementServiceImpl implements NotificationManagement
     @GET
     @Override
     public Response getNotifications(
-            @QueryParam("status") String status,
+            @QueryParam("status") @Size(max = 45) String status,
             @HeaderParam("If-Modified-Since") String ifModifiedSince,
             @QueryParam("offset") int offset, @QueryParam("limit") int limit) {
 
+        RequestValidationUtil.validatePaginationParameters(offset, limit);
         PaginationRequest request = new PaginationRequest(offset, limit);
         PaginationResult result;
 
@@ -78,7 +81,7 @@ public class NotificationManagementServiceImpl implements NotificationManagement
     @PUT
     @Path("/{id}/mark-checked")
     public Response updateNotificationStatus(
-            @PathParam("id") int id) {
+            @PathParam("id") @Max(45)int id) {
         String msg;
         Notification.Status status = Notification.Status.CHECKED;
         Notification notification;

@@ -22,8 +22,8 @@ var log = new Log("api/data-tables-invoker-api.jag");
 var uri = request.getRequestURI();
 var uriMatcher = new URIMatcher(String(uri));
 
-var devicemgtProps = require("/app/conf/reader/main.js")["conf"];
-var serviceInvokers = require("/app/modules/backend-service-invoker.js")["invokers"];
+var devicemgtProps = require("/app/modules/conf-reader/main.js")["conf"];
+var serviceInvokers = require("/app/modules/oauth/token-protected-service-invokers.js")["invokers"];
 
 function appendQueryParam (url, queryParam , value) {
     if (url.indexOf("?") > 0) {
@@ -39,18 +39,26 @@ if (uriMatcher.match("/{context}/api/data-tables/invoker")) {
 
     for (var key in allParams) {
         if (allParams.hasOwnProperty(key)) {
-            if (key == "limit" || key == "offset" || key == "filter") {
+            if(key == "limit" || key == "offset"){
                 targetURL = appendQueryParam(targetURL, key, allParams[key]);
+            }
+            if(key == "filter"){
+                if(allParams[key]){
+                    var searchPayload = JSON.parse(allParams[key]);
+                    for (var key in searchPayload) {
+                        targetURL = appendQueryParam(targetURL, key, searchPayload[key]);
+                    }
+                }
             }
         }
     }
 
     serviceInvokers.XMLHttp.get(
-        targetURL,
-        // response callback
-        function (backendResponse) {
-            response["status"] = backendResponse["status"];
-            response["content"] =  backendResponse["responseText"];
-        }
+            targetURL,
+            // response callback
+            function (backendResponse) {
+                response["status"] = backendResponse["status"];
+                response["content"] =  backendResponse["responseText"];
+            }
     );
 }

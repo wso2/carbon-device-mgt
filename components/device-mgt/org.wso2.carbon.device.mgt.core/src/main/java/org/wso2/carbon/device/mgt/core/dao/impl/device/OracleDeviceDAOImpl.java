@@ -93,7 +93,7 @@ public class OracleDeviceDAOImpl extends AbstractDeviceDAOImpl {
                 isStatusProvided = true;
             }
 
-            sql = sql + " ) rs ) WHERE offset >= ? AND ROWNUM <= ?";
+            sql = sql + " ) rs ) WHERE OFFSET >= ? AND ROWNUM <= ?";
 
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, tenantId);

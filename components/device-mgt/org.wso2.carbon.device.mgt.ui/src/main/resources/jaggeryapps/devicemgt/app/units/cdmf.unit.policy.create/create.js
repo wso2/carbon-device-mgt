@@ -21,14 +21,16 @@ function onRequest(context) {
     var DTYPE_CONF_DEVICE_TYPE_LABEL_KEY = "label";
 
     var utility = require("/app/modules/utility.js").utility;
-    var deviceModule = require("/app/modules/device.js").deviceModule;
+    var userModule = require("/app/modules/business-controllers/user.js")["userModule"];
 
     var types = {};
     types["types"] = [];
     var typesListResponse = deviceModule.getDeviceTypes();
     if (typesListResponse["status"] == "success") {
         for (var type in typesListResponse["content"]) {
-            var deviceType = typesListResponse["content"][type]["name"];
+            var content = {};
+            var deviceType = typesListResponse["content"]["deviceTypes"][type];
+            content["name"] = deviceType;
             var configs = utility.getDeviceTypeConfig(deviceType);
             var deviceTypeLabel = deviceType;
             if (configs && configs[DTYPE_CONF_DEVICE_TYPE_KEY][DTYPE_CONF_DEVICE_TYPE_LABEL_KEY]) {
@@ -36,9 +38,9 @@ function onRequest(context) {
             }
             var policyWizard = new File("/app/units/" + utility.getTenantedDeviceUnitName(deviceType, "policy-wizard"));
             if(policyWizard.isExists()){
-                typesListResponse["content"][type]["icon"] = utility.getDeviceThumb(deviceType);
-                typesListResponse["content"][type]["label"] = deviceTypeLabel;
-                types["types"].push(typesListResponse["content"][type]);
+                content["icon"] = utility.getDeviceThumb(deviceType);
+                content["label"] = deviceTypeLabel;
+                types["types"].push(content);
             }
         }
     }

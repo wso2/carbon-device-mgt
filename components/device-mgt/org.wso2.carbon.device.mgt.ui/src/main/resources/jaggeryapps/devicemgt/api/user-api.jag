@@ -23,12 +23,12 @@ var uriMatcher = new URIMatcher(String(uri));
 var log = new Log("api/user-api.jag");
 
 var constants = require("/app/modules/constants.js");
-var devicemgtProps = require("/app/conf/reader/main.js")["conf"];
-var userModule = require("/app/modules/user.js").userModule;
-var deviceModule = require("/app/modules/device.js").deviceModule;
+var devicemgtProps = require("/app/modules/conf-reader/main.js")["conf"];
+var userModule = require("/app/modules/business-controllers/user.js")["userModule"];
+var deviceModule = require("/app/modules/business-controllers/device.js")["deviceModule"];
 var utility = require("/app/modules/utility.js").utility;
-var apiWrapperUtil = require("/app/modules/api-wrapper-util.js")["handlers"];
-var util = require("/app/modules/util.js").util;
+var apiWrapperUtil = require("/app/modules/oauth/token-handlers.js")["handlers"];
+var util = require("/app/modules/oauth/token-handler-utils.js")["utils"];
 
 var responseProcessor = require('utils').response;
 
@@ -46,10 +46,7 @@ if (uriMatcher.match("/{context}/api/user/authenticate")) {
                 if (log.isDebugEnabled()) {
                     log.debug("User Logged In : " + user);
                 }
-                apiWrapperUtil.setupAccessTokenPair("password", {
-                    "username": username,
-                    "password": password
-                });
+                apiWrapperUtil.setupTokenPairByPasswordGrantType(username, password);
             }, function () {
                 response = responseProcessor.buildSuccessResponse(response, 200, {'sessionId': session.getId()});
             });
@@ -68,7 +65,8 @@ if (uriMatcher.match("/{context}/api/user/authenticate")) {
             if (log.isDebugEnabled()) {
                 log.debug("User Logged In : " + user);
             }
-            apiWrapperUtil.setupAccessTokenPair("password", {"username": username, "password": password});
+
+            apiWrapperUtil.setupTokenPairByPasswordGrantType(username, password);
             var permissions = userModule.getUIPermissions();
             if (permissions.VIEW_DASHBOARD) {
                 response.sendRedirect(constants.WEB_APP_CONTEXT);

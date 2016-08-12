@@ -17,12 +17,11 @@
   ~ under the License.
   -->
 
-<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:jaxrs="http://cxf.apache.org/jaxrs"
-       xmlns="http://www.springframework.org/schema/beans"
-       xsi:schemaLocation="
-         http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
-         http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd">
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:jaxrs="http://cxf.apache.org/jaxrs" xmlns:cxf="http://cxf.apache.org/core"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+         http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd http://cxf.apache.org/core http://cxf.apache.org/schemas/core.xsd">
 
     <jaxrs:server id="services" address="/">
         <jaxrs:serviceBeans>
@@ -51,6 +50,8 @@
 
     <bean id="swaggerWriter" class="io.swagger.jaxrs.listing.SwaggerSerializers" />
     <bean id="swaggerResource" class="io.swagger.jaxrs.listing.ApiListingResource" />
+    <bean id="ValidationInterceptor" class="org.wso2.carbon.device.mgt.jaxrs.exception.ValidationInterceptor"/>
+    <bean id="GlobalExceptionMapper" class="org.wso2.carbon.device.mgt.jaxrs.exception.GlobalThrowableMapper"/>
 
     <bean id="swaggerConfig" class="io.swagger.jaxrs.config.BeanConfig">
         <property name="resourcePackage" value="org.wso2.carbon.device.mgt.jaxrs"/>
@@ -80,6 +81,12 @@
     <bean id="dashboardServiceBean" class="org.wso2.carbon.device.mgt.jaxrs.service.impl.DashboardImpl"/>
     <bean id="deviceTypeManagementAdminService" class="org.wso2.carbon.device.mgt.jaxrs.service.impl.DeviceTypeManagementServiceImpl"/>
     <bean id="jsonProvider" class="org.wso2.carbon.device.mgt.jaxrs.common.GsonMessageBodyHandler"/>
+
     <!--<bean id="errorHandler" class="org.wso2.carbon.device.mgt.jaxrs.common.ErrorHandler"/>-->
+    <cxf:bus>
+        <cxf:inInterceptors>
+            <ref bean="ValidationInterceptor"/>
+        </cxf:inInterceptors>
+    </cxf:bus>
 
 </beans>

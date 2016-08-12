@@ -27,7 +27,7 @@ var uriMatcher = new URIMatcher(String(uri));
 var log = new Log("api/policy-api.jag");
 
 var constants = require("/modules/constants.js");
-var policyModule = require("/modules/policy.js").policyModule;
+var policyModule = require("/app/modules/business-controllers/group.js")["groupModule"];
 
 var result;
 if (uriMatcher.match("/{context}/api/policies/update")) {

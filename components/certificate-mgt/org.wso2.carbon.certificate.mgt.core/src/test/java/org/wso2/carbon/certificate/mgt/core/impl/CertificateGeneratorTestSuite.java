@@ -6,7 +6,7 @@ import org.apache.commons.logging.LogFactory;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.wso2.carbon.certificate.mgt.core.exception.KeystoreException;
-import org.wso2.carbon.certificate.mgt.core.util.ConfigurationUtil;
+import org.wso2.carbon.certificate.mgt.core.util.CertificateManagementConstants;
 
 import java.io.File;
 import java.io.IOException;
@@ -34,8 +34,8 @@ public class CertificateGeneratorTestSuite {
             List<X509Certificate> rootCertificates = certificateGenerator.getRootCertificates(ca, ra);
             Assert.assertNotNull(rootCertificates, "Root certificates retrieved");
 
-            Assert.assertEquals(rootCertificates.get(0).getType(), ConfigurationUtil.X_509);
-            Assert.assertEquals(rootCertificates.get(1).getType(), ConfigurationUtil.X_509);
+            Assert.assertEquals(rootCertificates.get(0).getType(), CertificateManagementConstants.X_509);
+            Assert.assertEquals(rootCertificates.get(1).getType(), CertificateManagementConstants.X_509);
         } catch (IOException e) {
             Assert.fail("Error reading byte streams for CA and RA ", e);
         } catch (KeystoreException e) {

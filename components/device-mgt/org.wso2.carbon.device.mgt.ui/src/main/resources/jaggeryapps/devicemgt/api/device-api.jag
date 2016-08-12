@@ -22,11 +22,11 @@ var uriMatcher = new URIMatcher(String(uri));
 
 var log = new Log("api/device-api.jag");
 var constants = require("/app/modules/constants.js");
-var deviceModule = require("/app/modules/device.js").deviceModule;
+var deviceModule = require("/app/modules/business-controllers/device.js")["deviceModule"];
 var utility = require("/app/modules/utility.js").utility;
-var devicemgtProps = require("/app/conf/reader/main.js")["conf"];
-var userModule = require("/app/modules/user.js").userModule;
-var serviceInvokers = require("/app/modules/backend-service-invoker.js")["invokers"];
+var devicemgtProps = require("/app/modules/conf-reader/main.js")["conf"];
+var userModule = require("/app/modules/business-controllers/user.js")["userModule"];
+var serviceInvokers = require("/app/modules/oauth/token-protected-service-invokers.js")["invokers"];
 
 var user = session.get(constants.USER_SESSION_KEY);
 var result;

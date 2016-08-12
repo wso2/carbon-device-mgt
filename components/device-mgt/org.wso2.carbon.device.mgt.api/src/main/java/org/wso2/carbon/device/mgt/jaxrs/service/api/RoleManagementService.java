@@ -20,18 +20,17 @@ package org.wso2.carbon.device.mgt.jaxrs.service.api;
 
 import io.swagger.annotations.*;
 import org.wso2.carbon.apimgt.annotations.api.API;
-import org.wso2.carbon.apimgt.annotations.api.Permission;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
 import org.wso2.carbon.device.mgt.jaxrs.beans.RoleInfo;
 import org.wso2.carbon.device.mgt.jaxrs.beans.RoleList;
-import org.wso2.carbon.user.mgt.common.UIPermissionNode;
+import org.wso2.carbon.device.mgt.jaxrs.beans.Scope;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
 
-@API(name = "Role", version = "1.0.0", context = "/devicemgt_admin/roles", tags = {"devicemgt_admin"})
+@API(name = "Role Management", version = "1.0.0", context = "/api/device-mgt/v1.0/roles", tags = {"devicemgt_admin"})
 
 @Path("/roles")
 @Api(value = "Role Management", description = "Role management related operations can be found here.")
@@ -77,11 +76,7 @@ public interface RoleManagementService {
                             message = "Internal Server Error. \n Server error occurred while fetching requested list of roles.",
                             response = ErrorResponse.class)
             })
-    @Permission(scope = "roles-view", permissions = {
-            "/permission/admin/device-mgt/admin/roles/list",
-            "/permission/admin/device-mgt/admin/users/view",
-            "/permission/admin/device-mgt/admin/policies/add",
-            "/permission/admin/device-mgt/admin/policies/update"})
+    @org.wso2.carbon.apimgt.annotations.api.Scope(key = "role:view", name = "View roles", description = "")
     Response getRoles(
             @ApiParam(
                     name = "filter",
@@ -110,16 +105,16 @@ public interface RoleManagementService {
             @QueryParam("limit") int limit);
 
     @GET
-    @Path("/{roleName}/permissions")
+    @Path("/scopes")
     @ApiOperation(
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
-            value = "Getting permission details of a role.",
+            value = "Getting authorization scopes.",
             notes = "In an organization an individual is associated a with set of responsibilities based on their " +
-                    "role. In  EMM you are able to configure permissions based on the responsibilities carried " +
-                    "out by a role. Therefore if you wish to retrieve the permission details of a role, you can do " +
+                    "role. In  EMM you are able to configure scopes based on the responsibilities carried " +
+                    "out by a role. Therefore if you wish to retrieve the scopes details of roles, you can do " +
                     "so using this REST API.",
-            response = UIPermissionNode.class,
+            response = List.class,
             responseContainer = "List",
             tags = "Role Management"
     )
@@ -127,8 +122,8 @@ public interface RoleManagementService {
             value = {
                     @ApiResponse(
                             code = 200,
-                            message = "OK. \n Successfully fetched the permission list of the given role.",
-                            response = UIPermissionNode.class,
+                            message = "OK. \n Successfully fetched the scopes list.",
+                            response = List.class,
                             responseContainer = "List",
                             responseHeaders = {
                                     @ResponseHeader(
@@ -163,18 +158,62 @@ public interface RoleManagementService {
                             message = "Internal Server ErrorResponse. \n Server error occurred while fetching the permission list of the requested role.",
                             response = ErrorResponse.class)
             })
-    @Permission(scope = "roles-view", permissions = {"/permission/admin/device-mgt/admin/roles/list"})
-    Response getPermissionsOfRole(
-            @ApiParam(
-                    name = "roleName",
-                    value = "Name of the role.",
-                    required = true)
-            @PathParam("roleName") String roleName,
+    @org.wso2.carbon.apimgt.annotations.api.Scope(key = "role:view", name = "View roles", description = "")
+    Response getScopes(
             @ApiParam(
                     name = "If-Modified-Since",
                     value = "Validates if the requested variant has not been modified since the time specified",
                     required = false)
             @HeaderParam("If-Modified-Since") String ifModifiedSince);
+
+    @PUT
+    @Path("/scopes")
+    @ApiOperation(
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "PUT",
+            value = "Updating authorization scopes.",
+            notes = "This REST API can be used to update the associated roles of the scopes",
+            tags = "Role Management"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    code = 200,
+                    message = "OK. \n Scopes has been updated successfully",
+                    responseHeaders = {
+                            @ResponseHeader(
+                                    name = "Content-Type",
+                                    description = "Content type of the body"),
+                            @ResponseHeader(
+                                    name = "ETag",
+                                    description = "Entity Tag of the response resource.\n" +
+                                            "Used by caches, or in conditional requests."),
+                            @ResponseHeader(
+                                    name = "Last-Modified",
+                                    description = "Date and time the resource has been modified the last time.\n" +
+                                            "Used by caches, or in conditional requests.")}),
+            @ApiResponse(
+                    code = 400,
+                    message = "Bad Request. \n Invalid request or validation error.",
+                    response = ErrorResponse.class),
+            @ApiResponse(
+                    code = 404,
+                    message = "Not Found. \n Scopes to be updated does not exist.",
+                    response = ErrorResponse.class),
+            @ApiResponse(
+                    code = 415,
+                    message = "Unsupported media type. \n The entity of the request was in a not supported format.",
+                    response = ErrorResponse.class),
+            @ApiResponse(
+                    code = 500,
+                    message = "Internal Server Error. \n Server error occurred while updating the scopes.",
+                    response = ErrorResponse.class)
+    })
+    @org.wso2.carbon.apimgt.annotations.api.Scope(key = "role:manage", name = "Add roles", description = "")
+    Response updateScopes(
+            @ApiParam(
+                    name = "Scopes",
+                    value = "List of scopes to be updated",
+                    required = true) List<Scope> scopes);
 
     @GET
     @Path("/{roleName}")
@@ -226,7 +265,7 @@ public interface RoleManagementService {
                                     "requested role.",
                             response = ErrorResponse.class)
     })
-    @Permission(scope = "roles-view", permissions = {"/permission/admin/device-mgt/admin/roles/list"})
+    @org.wso2.carbon.apimgt.annotations.api.Scope(key = "role:view", name = "View roles", description = "")
     Response getRole(
             @ApiParam(
                     name = "roleName",
@@ -286,7 +325,7 @@ public interface RoleManagementService {
                     message = "Internal Server Error. \n Server error occurred while adding a new role.",
                     response = ErrorResponse.class)
     })
-    @Permission(scope = "roles-modify", permissions = {"/permission/admin/device-mgt/admin/roles/add"})
+    @org.wso2.carbon.apimgt.annotations.api.Scope(key = "role:manage", name = "Add roles", description = "")
     Response addRole(
             @ApiParam(
                     name = "role",
@@ -336,7 +375,7 @@ public interface RoleManagementService {
                     message = "Internal Server Error. \n Server error occurred while updating the role.",
                     response = ErrorResponse.class)
     })
-    @Permission(scope = "roles-modify", permissions = {"/permission/admin/device-mgt/admin/roles/update"})
+    @org.wso2.carbon.apimgt.annotations.api.Scope(key = "role:manage", name = "Add roles", description = "")
     Response updateRole(
             @ApiParam(
                     name = "roleName",
@@ -373,13 +412,17 @@ public interface RoleManagementService {
                     message = "Internal Server Error. \n Server error occurred while removing the role.",
                     response = ErrorResponse.class)
     })
-    @Permission(scope = "roles-modify", permissions = {"/permission/admin/device-mgt/admin/roles/remove"})
+    @org.wso2.carbon.apimgt.annotations.api.Scope(key = "role:manage", name = "Add roles", description = "")
     Response deleteRole(
             @ApiParam(
                     name = "roleName",
                     value = "Name of the role to de deleted.",
                     required = true)
-            @PathParam("roleName") String roleName);
+            @PathParam("roleName") String roleName,
+            @ApiParam(
+                    name = "role",
+                    value = "Details about the role to be added.",
+                    required = true) RoleInfo role);
 
     @PUT
     @Path("/{roleName}/users")
@@ -431,7 +474,7 @@ public interface RoleManagementService {
                                     "Server error occurred while updating the user list of the role.",
                             response = ErrorResponse.class)
     })
-    @Permission(scope = "roles-modify", permissions = {"/permission/admin/device-mgt/admin/roles/update"})
+    @org.wso2.carbon.apimgt.annotations.api.Scope(key = "role:manage", name = "Add roles", description = "")
     Response updateUsersOfRole(
             @ApiParam(
                     name = "roleName",

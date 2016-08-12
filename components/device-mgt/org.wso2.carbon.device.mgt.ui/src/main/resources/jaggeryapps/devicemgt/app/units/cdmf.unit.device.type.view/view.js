@@ -27,10 +27,10 @@ function onRequest (context) {
     }
 
     //For QR Code
-    var userModule = require("/app/modules/user.js").userModule;
+    var userModule = require("/app/modules/business-controllers/user.js")["userModule"];
     var constants = require("/app/modules/constants.js");
     var permissions = userModule.getUIPermissions();
-    var deviceMgtProps = require("/app/conf/reader/main.js")["conf"];
+    var deviceMgtProps = require("/app/modules/conf-reader/main.js")["conf"];
     context.permissions = permissions;
     context["enrollmentURL"] = deviceMgtProps.enrollmentURL;
 

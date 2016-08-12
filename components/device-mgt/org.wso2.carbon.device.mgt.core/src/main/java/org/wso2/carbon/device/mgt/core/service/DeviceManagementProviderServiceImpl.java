@@ -508,6 +508,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         int count = 0;
         int tenantId = this.getTenantId();
         String deviceType = request.getDeviceType();
+        request = DeviceManagerUtil.validateDeviceListPageSize(request);
         try {
             DeviceManagementDAOFactory.openConnection();
             allDevices = deviceDAO.getDevices(request, tenantId);
@@ -569,6 +570,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         List<Device> allDevices = new ArrayList<>();
         int count = 0;
         int tenantId = this.getTenantId();
+        request = DeviceManagerUtil.validateDeviceListPageSize(request);
         try {
             DeviceManagementDAOFactory.openConnection();
             allDevices = deviceDAO.getDevices(request, tenantId);
@@ -1031,6 +1033,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     @Override
     public PaginationResult getOperations(DeviceIdentifier deviceId, PaginationRequest request)
             throws OperationManagementException {
+        request = DeviceManagerUtil.validateOperationListPageSize(request);
         return pluginRepository.getOperationManager(deviceId.getType(), this.getTenantId())
                 .getOperations(deviceId, request);
     }
@@ -1091,6 +1094,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
     @Override
     public List<Activity> getActivitiesUpdatedAfter(long timestamp, int limit, int offset) throws OperationManagementException {
+        limit = DeviceManagerUtil.validateActivityListPageSize(limit);
         return DeviceManagementDataHolder.getInstance().getOperationManager().getActivitiesUpdatedAfter(timestamp, limit, offset);
     }
 
@@ -1176,6 +1180,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         String username = request.getOwner();
         List<Device> devices = new ArrayList<>();
         List<Device> userDevices = new ArrayList<>();
+        request = DeviceManagerUtil.validateDeviceListPageSize(request);
         try {
             DeviceManagementDAOFactory.openConnection();
             userDevices = deviceDAO.getDevicesOfUser(request, tenantId);
@@ -1253,6 +1258,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         int deviceCount = 0;
         int tenantId = this.getTenantId();
         String ownerShip = request.getOwnership();
+        request = DeviceManagerUtil.validateDeviceListPageSize(request);
         try {
             DeviceManagementDAOFactory.openConnection();
             allDevices = deviceDAO.getDevicesByOwnership(request, tenantId);
@@ -1412,6 +1418,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     public List<Device> getDevicesByNameAndType(String deviceName, String type, int offset, int limit) throws DeviceManagementException {
         List<Device> devices = new ArrayList<>();
         List<Device> allDevices;
+        limit = DeviceManagerUtil.validateDeviceListPageSize(limit);
         try {
             DeviceManagementDAOFactory.openConnection();
             allDevices = deviceDAO.getDevicesByNameAndType(deviceName, type, this.getTenantId(), offset, limit);
@@ -1474,6 +1481,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         List<Device> devices = new ArrayList<>();
         List<Device> allDevices = new ArrayList<>();
         String deviceName = request.getDeviceName();
+        request = DeviceManagerUtil.validateDeviceListPageSize(request);
         try {
             DeviceManagementDAOFactory.openConnection();
             allDevices = deviceDAO.getDevicesByName(request, tenantId);
@@ -1636,6 +1644,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         List<Device> allDevices = new ArrayList<>();
         int tenantId = this.getTenantId();
         String status = request.getStatus();
+        request = DeviceManagerUtil.validateDeviceListPageSize(request);
         try {
             DeviceManagementDAOFactory.openConnection();
             allDevices = deviceDAO.getDevicesByStatus(request, tenantId);

@@ -18,7 +18,6 @@
 
 package org.wso2.carbon.apimgt.webapp.publisher;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.apimgt.api.APIManagementException;
@@ -30,16 +29,20 @@ import org.wso2.carbon.apimgt.webapp.publisher.config.APIResourceConfiguration;
 import org.wso2.carbon.apimgt.webapp.publisher.config.WebappPublisherConfig;
 import org.wso2.carbon.base.MultitenantConstants;
 import org.wso2.carbon.core.util.Utils;
+import org.wso2.carbon.device.mgt.common.scope.mgt.ScopeManagementException;
+import org.wso2.carbon.device.mgt.common.scope.mgt.ScopeManagementService;
+import org.wso2.carbon.user.api.UserRealm;
+import org.wso2.carbon.user.api.UserStoreException;
 
 import javax.servlet.ServletContext;
 import java.util.*;
 
 public class APIPublisherUtil {
 
-    private static final Log log = LogFactory.getLog(APIPublisherUtil.class);
-    private static final String DEFAULT_API_VERSION = "1.0.0";
     public static final String API_VERSION_PARAM = "{version}";
     public static final String API_PUBLISH_ENVIRONMENT = "Production and Sandbox";
+    private static final Log log = LogFactory.getLog(APIPublisherUtil.class);
+    private static final String DEFAULT_API_VERSION = "1.0.0";
     private static final String API_CONFIG_DEFAULT_VERSION = "1.0.0";
     private static final String PARAM_MANAGED_API_ENDPOINT = "managed-api-endpoint";
     private static final String PARAM_MANAGED_API_OWNER = "managed-api-owner";
@@ -121,16 +124,18 @@ public class APIPublisherUtil {
                 if (scope != null) {
                     if (apiScopes.get(scope.getKey()) == null) {
                         apiScopes.put(scope.getKey(), scope);
-                    } else {
-                        existingScope = apiScopes.get(scope.getKey());
-                        existingPermissions = existingScope.getRoles();
-                        existingPermissions = getDistinctPermissions(existingPermissions + "," + scope.getRoles());
-                        existingScope.setRoles(existingPermissions);
-                        apiScopes.put(scope.getKey(), existingScope);
                     }
                 }
             }
             Set<Scope> scopes = new HashSet<>(apiScopes.values());
+            // adding existing persisted roles to the scopes
+            try {
+                setExistingRoles(scopes);
+            } catch (ScopeManagementException | UserStoreException e) {
+                throw new APIManagementException("Error occurred while retrieving roles for the existing scopes");
+            }
+
+            // set current scopes to API
             api.setScopes(scopes);
 
             // this has to be done because of the use of pass by reference
@@ -242,7 +247,7 @@ public class APIPublisherUtil {
                 MultitenantConstants.SUPER_TENANT_DOMAIN_NAME;
         apiConfig.setTenantDomain(tenantDomain);
         String contextTemplate = context + "/" + APIConstants.VERSION_PLACEHOLDER;
-        if (!tenantDomain.equals(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME)) {
+        if (!MultitenantConstants.SUPER_TENANT_DOMAIN_NAME.equals(tenantDomain)) {
             contextTemplate = context + "/t/" + tenantDomain + "/" + APIConstants.VERSION_PLACEHOLDER;
         }
         apiConfig.setContextTemplate(contextTemplate);
@@ -307,9 +312,34 @@ public class APIPublisherUtil {
         return apiConfig;
     }
 
-    private static String getDistinctPermissions(String permissions) {
-        String[] unique = new HashSet<String>(Arrays.asList(permissions.split(","))).toArray(new String[0]);
-        return StringUtils.join(unique, ",");
+    /**
+     * This method is used to set the existing roles of the given scope.
+     *
+     * @param scopes List of scopes.
+     * @throws ScopeManagementException
+     */
+    private static void setExistingRoles(Set<Scope> scopes) throws ScopeManagementException, UserStoreException {
+        String scopeKey;
+        String roles;
+        ScopeManagementService scopeManagementService = WebappPublisherUtil.getScopeManagementService();
+        UserRealm userRealm = WebappPublisherUtil.getUserRealm();
+
+        if (scopeManagementService == null) {
+            throw new ScopeManagementException("Error occurred while initializing scope management service");
+        } else if (userRealm == null) {
+            throw new UserStoreException("Error occurred while initializing realm service");
+        } else {
+            String adminRole = userRealm.getRealmConfiguration().getAdminRoleName();
+            for (Scope scope : scopes) {
+                scopeKey = scope.getKey();
+                roles = scopeManagementService.getRolesOfScope(scopeKey);
+                if (roles == null) {
+                    roles = adminRole;
+                }
+                scope.setRoles(roles);
+
+            }
+        }
     }
 
 }

@@ -25,29 +25,27 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
 /**
- * This class represents the information related to permission configuration.
+ * This class represents the information related to permissions.
  */
-@XmlRootElement (name = "PermissionConfiguration")
 public class PermissionConfiguration {
 
-    private List<Permission> permissions;
-    private String apiVersion;
+    private String scopeName;
+    private String[] permissions;
 
-    public String getApiVersion() {
-        return apiVersion;
+    public String getScopeName() {
+        return scopeName;
     }
 
-    @XmlElement (name = "APIVersion", required = true)
-    public void setApiVersion(String apiVersion) {
-        this.apiVersion = apiVersion;
+    public void setScopeName(String scope) {
+        this.scopeName = scope;
     }
 
-    public List<Permission> getPermissions() {
+    public String[] getPermissions() {
         return permissions;
     }
 
-    @XmlElement (name = "Permission", required = true)
-    public void setPermissions(List<Permission> permissions) {
+    public void setPermissions(String[] permissions) {
         this.permissions = permissions;
     }
+
 }

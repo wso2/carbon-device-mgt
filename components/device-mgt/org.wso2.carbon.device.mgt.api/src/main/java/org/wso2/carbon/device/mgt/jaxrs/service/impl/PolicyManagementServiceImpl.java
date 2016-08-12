@@ -41,6 +41,7 @@ import org.wso2.carbon.policy.mgt.common.PolicyAdministratorPoint;
 import org.wso2.carbon.policy.mgt.common.PolicyManagementException;
 import org.wso2.carbon.policy.mgt.core.PolicyManagerService;
 
+import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -59,7 +60,7 @@ public class PolicyManagementServiceImpl implements PolicyManagementService {
 
     @POST
     @Override
-    public Response addPolicy(PolicyWrapper policyWrapper) {
+    public Response addPolicy(@Valid PolicyWrapper policyWrapper) {
         RequestValidationUtil.validatePolicyDetails(policyWrapper);
         PolicyManagerService policyManagementService = DeviceMgtAPIUtils.getPolicyManagementService();
 
@@ -111,7 +112,7 @@ public class PolicyManagementServiceImpl implements PolicyManagementService {
         }
     }
 
-    private Policy getPolicyFromWrapper(PolicyWrapper policyWrapper) throws DeviceManagementException {
+    private Policy getPolicyFromWrapper(@Valid PolicyWrapper policyWrapper) throws DeviceManagementException {
         Policy policy = new Policy();
         policy.setPolicyName(policyWrapper.getPolicyName());
         policy.setDescription(policyWrapper.getDescription());
@@ -140,6 +141,7 @@ public class PolicyManagementServiceImpl implements PolicyManagementService {
             @HeaderParam("If-Modified-Since") String ifModifiedSince,
             @QueryParam("offset") int offset,
             @QueryParam("limit") int limit) {
+        RequestValidationUtil.validatePaginationParameters(offset, limit);
         PolicyManagerService policyManagementService = DeviceMgtAPIUtils.getPolicyManagementService();
         List<Policy> policies;
         List<Policy> filteredPolicies;
@@ -186,7 +188,7 @@ public class PolicyManagementServiceImpl implements PolicyManagementService {
     @PUT
     @Path("/{id}")
     @Override
-    public Response updatePolicy(@PathParam("id") int id, PolicyWrapper policyWrapper) {
+    public Response updatePolicy(@PathParam("id") int id, @Valid PolicyWrapper policyWrapper) {
         RequestValidationUtil.validatePolicyDetails(policyWrapper);
         PolicyManagerService policyManagementService = DeviceMgtAPIUtils.getPolicyManagementService();
         try {

@@ -24,14 +24,14 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * Class for holding management repository data
+ * Class for holding management repository data.
  */
 @XmlRootElement(name = "ManagementRepository")
 public class CertificateManagementRepository {
 
     private DataSourceConfig dataSourceConfig;
 
-    @XmlElement(name = "DataSourceConfiguration", nillable = false)
+    @XmlElement(name = "DataSourceConfiguration", required = true)
     public DataSourceConfig getDataSourceConfig() {
         return dataSourceConfig;
     }

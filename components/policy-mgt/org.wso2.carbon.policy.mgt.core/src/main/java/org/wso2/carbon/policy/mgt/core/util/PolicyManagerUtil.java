@@ -203,7 +203,7 @@ public class PolicyManagerUtil {
 
             if (configuration != null && !configuration.isEmpty()) {
                 for (ConfigurationEntry cEntry : configuration) {
-                    if (cEntry.getName().equalsIgnoreCase(MONITORING_FREQUENCY)) {
+                    if (MONITORING_FREQUENCY.equalsIgnoreCase(cEntry.getName())) {
                         if (cEntry.getValue() == null) {
                             throw new PolicyManagementException("Invalid value, i.e. '" + cEntry.getValue() +
                                     "', is configured as the monitoring frequency");

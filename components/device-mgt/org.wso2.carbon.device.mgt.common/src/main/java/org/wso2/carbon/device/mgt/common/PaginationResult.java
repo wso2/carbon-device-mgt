@@ -41,7 +41,7 @@ public class PaginationResult implements Serializable {
     @ApiModelProperty(name = "draw", value = "The draw counter that this object is a response to, from the draw parameter sent as part of the data request", required = true)
     private int draw;
 
-    @ApiModelProperty(name = "data", value = "The details of the SSL certificate", required = true)
+    @ApiModelProperty(name = "data", value = "This holds the database records that matches given criteria", required = true)
     private List<?> data;
 
     public int getRecordsTotal() {

@@ -27,8 +27,8 @@
     </ManagementRepository>
     <PushNotificationProviders>
         <Provider>org.wso2.carbon.device.mgt.extensions.push.notification.provider.gcm.GCMBasedPushNotificationProvider</Provider>
-        <Provider>org.wso2.carbon.device.mgt.extensions.push.notification.provider.mqtt.MQTTBasedPushNotificationProvider</Provider>
-        <Provider>org.wso2.carbon.device.mgt.extensions.push.notification.provider.xmpp.XMPPBasedPushNotificationProvider</Provider>
+        <!--<Provider>org.wso2.carbon.device.mgt.extensions.push.notification.provider.mqtt.MQTTBasedPushNotificationProvider</Provider>-->
+        <!--<Provider>org.wso2.carbon.device.mgt.extensions.push.notification.provider.xmpp.XMPPBasedPushNotificationProvider</Provider>-->
     </PushNotificationProviders>
     <IdentityConfiguration>
         <ServerUrl>https://localhost:9443</ServerUrl>
@@ -37,14 +37,14 @@
     </IdentityConfiguration>
     <PolicyConfiguration>
         <MonitoringClass>org.wso2.carbon.policy.mgt</MonitoringClass>
-        <MonitoringEnable>false</MonitoringEnable>
+        <MonitoringEnable>true</MonitoringEnable>
         <MonitoringFrequency>60000</MonitoringFrequency>
         <MaxRetries>5</MaxRetries>
         <MinRetriesToMarkUnreachable>8</MinRetriesToMarkUnreachable>
         <MinRetriesToMarkInactive>20</MinRetriesToMarkInactive>
     </PolicyConfiguration>
     <TaskConfiguration>
-        <Enable>false</Enable>
+        <Enable>true</Enable>
         <Frequency>600000</Frequency>
         <TaskClass>org.wso2.carbon.device.mgt.core.task.impl.DeviceDetailsRetrieverTask</TaskClass>
         <Operations>
@@ -62,5 +62,12 @@
             </Operation>
         </Operations>
     </TaskConfiguration>
+    <!-- Default Page size configuration for paginated DM APIs-->
+    <PaginationConfiguration>
+        <DeviceListPageSize>20</DeviceListPageSize>
+        <NotificationListPageSize>20</NotificationListPageSize>
+        <ActivityListPageSize>20</ActivityListPageSize>
+        <OperationListPageSize>20</OperationListPageSize>
+    </PaginationConfiguration>
 </DeviceMgtConfiguration>
 

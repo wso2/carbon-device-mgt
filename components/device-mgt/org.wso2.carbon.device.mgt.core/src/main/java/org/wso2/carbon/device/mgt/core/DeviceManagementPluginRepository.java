@@ -52,7 +52,7 @@ public class DeviceManagementPluginRepository implements DeviceManagerStartupLis
     }
 
     public void addDeviceManagementProvider(DeviceManagementService provider) throws DeviceManagementException {
-        String deviceType = provider.getType();
+        String deviceType = provider.getType().toLowerCase();
 
         ProvisioningConfig provisioningConfig = provider.getProvisioningConfig();
         String tenantDomain = provisioningConfig.getProviderTenantDomain();
@@ -87,7 +87,7 @@ public class DeviceManagementPluginRepository implements DeviceManagerStartupLis
     }
 
     public void removeDeviceManagementProvider(DeviceManagementService provider) throws DeviceManagementException {
-        String deviceTypeName = provider.getType();
+        String deviceTypeName = provider.getType().toLowerCase();
         DeviceTypeIdentifier deviceTypeIdentifier;
         ProvisioningConfig provisioningConfig = provider.getProvisioningConfig();
         if (provisioningConfig.isSharedWithAllTenants()) {
@@ -103,10 +103,10 @@ public class DeviceManagementPluginRepository implements DeviceManagerStartupLis
 
     public DeviceManagementService getDeviceManagementService(String type, int tenantId) {
         //Priority need to be given to the tenant before public.
-        DeviceTypeIdentifier deviceTypeIdentifier = new DeviceTypeIdentifier(type, tenantId);
+        DeviceTypeIdentifier deviceTypeIdentifier = new DeviceTypeIdentifier(type.toLowerCase(), tenantId);
         DeviceManagementService provider = providers.get(deviceTypeIdentifier);
         if (provider == null) {
-            deviceTypeIdentifier = new DeviceTypeIdentifier(type);
+            deviceTypeIdentifier = new DeviceTypeIdentifier(type.toLowerCase());
             provider = providers.get(deviceTypeIdentifier);
         }
         return provider;
@@ -153,10 +153,10 @@ public class DeviceManagementPluginRepository implements DeviceManagerStartupLis
 
     public OperationManager getOperationManager(String deviceType, int tenantId) {
         //Priority need to be given to the tenant before public.
-        DeviceTypeIdentifier deviceTypeIdentifier = new DeviceTypeIdentifier(deviceType, tenantId);
+        DeviceTypeIdentifier deviceTypeIdentifier = new DeviceTypeIdentifier(deviceType.toLowerCase(), tenantId);
         OperationManager operationManager = operationManagerRepository.getOperationManager(deviceTypeIdentifier);
         if (operationManager == null) {
-            deviceTypeIdentifier = new DeviceTypeIdentifier(deviceType);
+            deviceTypeIdentifier = new DeviceTypeIdentifier(deviceType.toLowerCase());
             operationManager = operationManagerRepository.getOperationManager(deviceTypeIdentifier);
         }
         return operationManager;
@@ -164,14 +164,15 @@ public class DeviceManagementPluginRepository implements DeviceManagerStartupLis
 
     @Override
     public void notifyObserver() {
+        String deviceTypeName;
         synchronized (providers) {
             for (DeviceManagementService provider : providers.values()) {
                 try {
                     provider.init();
-
+                    deviceTypeName = provider.getType().toLowerCase();
                     ProvisioningConfig provisioningConfig = provider.getProvisioningConfig();
                     int tenantId = DeviceManagerUtil.getTenantId(provisioningConfig.getProviderTenantDomain());
-                    DeviceManagerUtil.registerDeviceType(provider.getType(), tenantId, provisioningConfig.isSharedWithAllTenants());
+                    DeviceManagerUtil.registerDeviceType(deviceTypeName, tenantId, provisioningConfig.isSharedWithAllTenants());
                     registerPushNotificationStrategy(provider);
                     //TODO:
                     //This is a temporory fix.

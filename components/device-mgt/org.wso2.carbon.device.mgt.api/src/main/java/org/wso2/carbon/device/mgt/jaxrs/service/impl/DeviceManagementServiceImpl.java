@@ -44,6 +44,7 @@ import org.wso2.carbon.policy.mgt.common.monitor.ComplianceData;
 import org.wso2.carbon.policy.mgt.common.monitor.PolicyComplianceException;
 import org.wso2.carbon.policy.mgt.core.PolicyManagerService;
 
+import javax.validation.constraints.Size;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -62,25 +63,25 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
     @GET
     @Override
     public Response getDevices(
-            @QueryParam("name") String name,
-            @QueryParam("type") String type,
-            @QueryParam("user") String user,
-            @QueryParam("roleName") String roleName,
-            @QueryParam("ownership") String ownership,
-            @QueryParam("status") String status,
+            @QueryParam("name") @Size(max = 45) String name,
+            @QueryParam("type") @Size(max = 45) String type,
+            @QueryParam("user") @Size(max = 45) String user,
+            @QueryParam("roleName") @Size(max = 45) String roleName,
+            @QueryParam("ownership") @Size(max = 45) String ownership,
+            @QueryParam("status") @Size(max = 45) String status,
             @QueryParam("since") String since,
             @HeaderParam("If-Modified-Since") String ifModifiedSince,
             @QueryParam("offset") int offset,
             @QueryParam("limit") int limit) {
         try {
 //            RequestValidationUtil.validateSelectionCriteria(type, user, roleName, ownership, status);
-
+            RequestValidationUtil.validatePaginationParameters(offset, limit);
             DeviceManagementProviderService dms = DeviceMgtAPIUtils.getDeviceManagementService();
             PaginationRequest request = new PaginationRequest(offset, limit);
             PaginationResult result;
             DeviceList devices = new DeviceList();
 
-            if(name != null && !name.isEmpty()){
+            if (name != null && !name.isEmpty()) {
                 request.setDeviceName(name);
             }
             if (type != null && !type.isEmpty()) {
@@ -154,6 +155,7 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
     public Response getDeviceByUser(@QueryParam("offset") int offset,
                                     @QueryParam("limit") int limit) {
 
+        RequestValidationUtil.validatePaginationParameters(offset, limit);
         PaginationRequest request = new PaginationRequest(offset, limit);
         PaginationResult result;
         DeviceList devices = new DeviceList();
@@ -179,8 +181,8 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
     @Path("/{type}/{id}")
     @Override
     public Response getDevice(
-            @PathParam("type") String type,
-            @PathParam("id") String id,
+            @PathParam("type") @Size(max = 45) String type,
+            @PathParam("id") @Size(max = 45) String id,
             @HeaderParam("If-Modified-Since") String ifModifiedSince) {
         Device device;
         try {
@@ -206,8 +208,8 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
     @Path("/{type}/{id}/features")
     @Override
     public Response getFeaturesOfDevice(
-            @PathParam("type") String type,
-            @PathParam("id") String id,
+            @PathParam("type") @Size(max = 45) String type,
+            @PathParam("id") @Size(max = 45) String id,
             @HeaderParam("If-Modified-Since") String ifModifiedSince) {
         List<Feature> features;
         DeviceManagementProviderService dms;
@@ -257,8 +259,8 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
     @Path("/{type}/{id}/applications")
     @Override
     public Response getInstalledApplications(
-            @PathParam("type") String type,
-            @PathParam("id") String id,
+            @PathParam("type") @Size(max = 45) String type,
+            @PathParam("id") @Size(max = 45) String id,
             @HeaderParam("If-Modified-Since") String ifModifiedSince,
             @QueryParam("offset") int offset,
             @QueryParam("limit") int limit) {
@@ -286,12 +288,13 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
     @Path("/{type}/{id}/operations")
     @Override
     public Response getDeviceOperations(
-            @PathParam("type") String type,
-            @PathParam("id") String id,
+            @PathParam("type") @Size(max = 45) String type,
+            @PathParam("id") @Size(max = 45) String id,
             @HeaderParam("If-Modified-Since") String ifModifiedSince,
             @QueryParam("offset") int offset,
             @QueryParam("limit") int limit) {
         OperationList operationsList = new OperationList();
+        RequestValidationUtil.validatePaginationParameters(offset, limit);
         PaginationRequest request = new PaginationRequest(offset, limit);
         PaginationResult result;
         DeviceManagementProviderService dms;
@@ -316,8 +319,8 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
     @GET
     @Path("/{type}/{id}/effective-policy")
     @Override
-    public Response getEffectivePolicyOfDevice(@PathParam("type") String type,
-                                               @PathParam("id") String id,
+    public Response getEffectivePolicyOfDevice(@PathParam("type") @Size(max = 45) String type,
+                                               @PathParam("id") @Size(max = 45) String id,
                                                @HeaderParam("If-Modified-Since") String ifModifiedSince) {
         try {
             RequestValidationUtil.validateDeviceIdentifier(type, id);
@@ -337,8 +340,8 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
 
     @GET
     @Path("{type}/{id}/compliance-data")
-    public Response getComplianceDataOfDevice(@PathParam("type") String type,
-                                              @PathParam("id") String id) {
+    public Response getComplianceDataOfDevice(@PathParam("type") @Size(max = 45) String type,
+                                              @PathParam("id") @Size(max = 45) String id) {
 
         RequestValidationUtil.validateDeviceIdentifier(type, id);
         PolicyManagerService policyManagementService = DeviceMgtAPIUtils.getPolicyManagementService();

@@ -91,8 +91,8 @@ function loadNotifications(){
         var successCallback = function (data) {
             var viewModel = {};
             data = JSON.parse(data);
-            viewModel.notifications = data;
-            if(data.length > 0){
+            viewModel.notifications = data.notifications;
+            if(data.count > 0){
                 var content = template(viewModel);
                 $("#ast-container").html(content);
                 $('#unread-notifications').datatables_extended();

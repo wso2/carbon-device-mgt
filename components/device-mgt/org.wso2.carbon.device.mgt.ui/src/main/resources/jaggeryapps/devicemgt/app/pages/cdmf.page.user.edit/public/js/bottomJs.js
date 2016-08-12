@@ -182,7 +182,7 @@ $(document).ready(function () {
         var usernameInput = $("input#username");
         var firstnameInput = $("input#firstname");
         var lastnameInput = $("input#lastname");
-        var charLimit = parseInt($("input#username").attr("limit"));
+        // var charLimit = parseInt($("input#username").attr("limit"));
         var domain = $("#userStore").val();
         var username = usernameInput.val().trim();
         var firstname = firstnameInput.val();

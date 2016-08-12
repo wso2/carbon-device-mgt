@@ -86,7 +86,7 @@ validateInline["user-name"] = function () {
 validateInline["first-name"] = function () {
     var firstnameInput = $("input#firstname");
     if (firstnameInput.val()) {
-        disableInlineError("firstNameField", "fnError");
+       disableInlineError("firstNameField", "fnError");
     } else {
         enableInlineError("firstNameField", "fnError");
     }
@@ -159,6 +159,18 @@ clearInline["emailAddress"] = function () {
 function emailIsValid(email) {
     var regExp = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
     return regExp.test(email);
+}
+
+/*
+ * QR-code generation function.
+ */
+function generateQRCode(qrCodeClass) {
+    var enrollmentURL = $("#qr-code-modal").data("enrollment-url");
+    $(qrCodeClass).qrcode({
+        text: enrollmentURL,
+        width: 200,
+        height: 200
+    });
 }
 
 $("#userStore").change(

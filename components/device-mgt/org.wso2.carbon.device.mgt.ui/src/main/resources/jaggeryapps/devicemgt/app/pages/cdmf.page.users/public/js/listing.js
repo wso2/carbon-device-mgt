@@ -16,6 +16,18 @@
  * under the License.
  */
 
+/**
+ * Checks if provided input is valid against RegEx input.
+ *
+ * @param regExp Regular expression
+ * @param inputString Input string to check
+ * @returns {boolean} Returns true if input matches RegEx
+ */
+function inputIsValid(regExp, inputString) {
+    regExp = new RegExp(regExp);
+    return regExp.test(inputString);
+}
+
 $(function () {
     var sortableElem = '.wr-sortable';
     $(sortableElem).sortable({

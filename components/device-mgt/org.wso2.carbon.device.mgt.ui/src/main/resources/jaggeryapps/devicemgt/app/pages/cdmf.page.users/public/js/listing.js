@@ -116,9 +116,8 @@ $("a.invite-user-link").click(function () {
  * when a user clicks on "Remove" link
  * on User Listing page in WSO2 MDM Console.
  */
-function removeUser(uname, uid) {
+function removeUser(uname) {
     var username = uname;
-    var userid = uid;
     var removeUserAPI = apiBasePath + "/users/" + username;
     $(modalPopupContent).html($('#remove-user-modal-content').html());
     showPopup();
@@ -127,7 +126,7 @@ function removeUser(uname, uid) {
         invokerUtil.delete(
             removeUserAPI,
             function () {
-                $("#" + userid).remove();
+                $("#role-" + username).remove();
                 // get new user-list-count
                 var newUserListCount = $(".user-list > span").length;
                 // update user-listing-status-msg with new user-count
@@ -308,8 +307,8 @@ function loadUsers(searchParam) {
                     ' </span> <span class="hidden-xs hidden-on-grid-view">Edit</span> </a>' +
 
                     '<a href="#" data-username="' + data.filter + '" data-userid=' + data.filter +
-                    ' data-click-event="remove-form" onclick="javascript:removeUser(\'' + data.filter + '\', \'' +
-                    data.filter + '\')" class="btn padding-reduce-on-grid-view remove-user-link">' +
+                    ' data-click-event="remove-form" onclick="javascript:removeUser(\'' + data.filter + '\')" ' +
+                    'class="btn padding-reduce-on-grid-view remove-user-link">' +
                     '<span class="fw-stack"> <i class="fw fw-ring fw-stack-2x"></i> <i class="fw fw-delete fw-stack-1x">' +
                     '</i> </span> <span class="hidden-xs hidden-on-grid-view">Remove</span> </a>' +
 

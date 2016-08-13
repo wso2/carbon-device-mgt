@@ -280,7 +280,7 @@ var userModule = function () {
         }
         try {
             utility.startTenantFlow(carbonUser);
-            var url = devicemgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"] + "/admin/device-types";
+            var url = devicemgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"] + "/device-types";
             var response = privateMethods.callBackend(url, constants["HTTP_GET"]);
             if (response.status == "success") {
                 response.content = parse(response.content);

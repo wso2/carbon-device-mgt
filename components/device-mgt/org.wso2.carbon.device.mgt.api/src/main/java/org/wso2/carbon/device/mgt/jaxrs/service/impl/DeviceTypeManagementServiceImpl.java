@@ -16,14 +16,14 @@
  *   under the License.
  *
  */
-package org.wso2.carbon.device.mgt.jaxrs.service.impl.admin;
+package org.wso2.carbon.device.mgt.jaxrs.service.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.jaxrs.beans.DeviceTypeList;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
-import org.wso2.carbon.device.mgt.jaxrs.service.api.admin.DeviceTypeManagementService;
+import org.wso2.carbon.device.mgt.jaxrs.service.api.DeviceTypeManagementService;
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
 
 import javax.ws.rs.GET;
@@ -32,7 +32,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 import java.util.List;
 
-@Path("/admin/device-types")
+@Path("/device-types")
 public class DeviceTypeManagementServiceImpl implements DeviceTypeManagementService {
 
     private static Log log = LogFactory.getLog(DeviceTypeManagementServiceImpl.class);

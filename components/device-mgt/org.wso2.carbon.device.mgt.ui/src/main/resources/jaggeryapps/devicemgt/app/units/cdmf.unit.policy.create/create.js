@@ -25,7 +25,7 @@ function onRequest(context) {
 
     var types = {};
     types["types"] = [];
-    var typesListResponse = userModule.getPlatforms();
+    var typesListResponse = deviceModule.getDeviceTypes();
     if (typesListResponse["status"] == "success") {
         for (var type in typesListResponse["content"]) {
             var content = {};

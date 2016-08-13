@@ -268,6 +268,7 @@ var userModule = function () {
 
     /**
      * Get Platforms.
+     * @deprecated moved this device module under getDeviceTypes.
      */
         //TODO Move this piece of logic out of user.js to somewhere else appropriate.
     publicMethods.getPlatforms = function () {
@@ -279,7 +280,7 @@ var userModule = function () {
         }
         try {
             utility.startTenantFlow(carbonUser);
-            var url = devicemgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"] + "/admin/device-types";
+            var url = devicemgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"] + "/device-types";
             var response = privateMethods.callBackend(url, constants["HTTP_GET"]);
             if (response.status == "success") {
                 response.content = parse(response.content);

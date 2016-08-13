@@ -309,8 +309,12 @@ public class RequestValidationUtil {
     public static void validateRoleDetails(RoleInfo roleInfo) {
         if (roleInfo == null) {
             throw new InputValidationException(
-                    new ErrorResponse.ErrorResponseBuilder().setCode(400l).setMessage("Request body is incorrect or" +
-                            " empty").build());
+                    new ErrorResponse.ErrorResponseBuilder().setCode(400l).setMessage("Request body is "
+                            + "empty").build());
+        } else if (roleInfo.getRoleName() == null) {
+            throw new InputValidationException(
+                    new ErrorResponse.ErrorResponseBuilder().setCode(400l).setMessage("Request body is "
+                            + "incorrect").build());
         }
     }
 

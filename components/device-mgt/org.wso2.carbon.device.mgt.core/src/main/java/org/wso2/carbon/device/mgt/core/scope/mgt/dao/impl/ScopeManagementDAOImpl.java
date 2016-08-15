@@ -64,23 +64,14 @@ public class ScopeManagementDAOImpl implements ScopeManagementDAO {
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet rs = null;
-        List<Scope> scopes = new ArrayList<>();
-        Scope scope;
+        List<Scope> scopes;
 
         try {
             conn = this.getConnection();
             String sql = "SELECT * FROM IDN_OAUTH2_SCOPE";
             stmt = conn.prepareStatement(sql);
             rs = stmt.executeQuery();
-
-            while (rs.next()) {
-                scope = new Scope();
-                scope.setKey(rs.getString("SCOPE_KEY"));
-                scope.setName(rs.getString("NAME"));
-                scope.setDescription(rs.getString("DESCRIPTION"));
-                scope.setRoles(rs.getString("ROLES"));
-                scopes.add(scope);
-            }
+            scopes = this.getScopesFromResultSet(rs);
             return scopes;
         } catch (SQLException e) {
             throw new ScopeManagementDAOException("Error occurred while fetching the details of the scopes.", e);
@@ -114,8 +105,44 @@ public class ScopeManagementDAOImpl implements ScopeManagementDAO {
         }
     }
 
+    @Override
+    public List<Scope> getScopesHavingRole(String roleName) throws ScopeManagementDAOException {
+        Connection conn;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        List<Scope> scopes;
+
+        try {
+            conn = this.getConnection();
+            String sql = "SELECT * FROM IDN_OAUTH2_SCOPE WHERE ROLES LIKE ?";
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, "%" + roleName + "%");
+            rs = stmt.executeQuery();
+            scopes = this.getScopesFromResultSet(rs);
+            return scopes;
+        } catch (SQLException e) {
+            throw new ScopeManagementDAOException("Error occurred while fetching the details of the scopes.", e);
+        } finally {
+            ScopeManagementDAOUtil.cleanupResources(stmt, rs);
+        }
+    }
+
     private Connection getConnection() throws SQLException {
         return ScopeManagementDAOFactory.getConnection();
+    }
+
+    private List<Scope> getScopesFromResultSet(ResultSet rs) throws SQLException {
+        List<Scope> scopes = new ArrayList<>();
+        Scope scope;
+        while (rs.next()) {
+            scope = new Scope();
+            scope.setKey(rs.getString("SCOPE_KEY"));
+            scope.setName(rs.getString("NAME"));
+            scope.setDescription(rs.getString("DESCRIPTION"));
+            scope.setRoles(rs.getString("ROLES"));
+            scopes.add(scope);
+        }
+        return scopes;
     }
 
 }

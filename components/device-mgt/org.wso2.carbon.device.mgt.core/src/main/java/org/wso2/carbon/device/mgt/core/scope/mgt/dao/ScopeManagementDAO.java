@@ -51,4 +51,14 @@ public interface ScopeManagementDAO {
      */
     String getRolesOfScope(String scopeKey) throws ScopeManagementDAOException;
 
+    /**
+     * This method is to retrieve all the scopes of the given role name.
+     * Thus it returns the scopes even if the part of the given name is matched.
+     *
+     * @param roleName Role name
+     * @return List of scopes
+     * @throws ScopeManagementDAOException
+     */
+    List<Scope> getScopesHavingRole(String roleName) throws ScopeManagementDAOException;
+
 }

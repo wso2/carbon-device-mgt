@@ -18,6 +18,7 @@
 
 package org.wso2.carbon.device.mgt.core.scope.mgt;
 
+import org.apache.commons.lang.StringUtils;
 import org.wso2.carbon.apimgt.api.model.Scope;
 import org.wso2.carbon.device.mgt.common.TransactionManagementException;
 import org.wso2.carbon.device.mgt.common.scope.mgt.ScopeManagementException;
@@ -44,7 +45,34 @@ public class ScopeManagementServiceImpl implements ScopeManagementService {
 
     @Override
     public void updateScopes(List<Scope> scopes) throws ScopeManagementException {
-        try{
+        try {
+            ScopeManagementDAOFactory.beginTransaction();
+            scopeManagementDAO.updateScopes(scopes);
+            ScopeManagementDAOFactory.commitTransaction();
+        } catch (TransactionManagementException e) {
+            ScopeManagementDAOFactory.rollbackTransaction();
+            throw new ScopeManagementException("Transactional error occurred while adding the scopes.", e);
+        } catch (ScopeManagementDAOException e) {
+            ScopeManagementDAOFactory.rollbackTransaction();
+            throw new ScopeManagementException("Error occurred while adding the scopes to database.", e);
+        } finally {
+            ScopeManagementDAOFactory.closeConnection();
+        }
+    }
+
+    @Override
+    public void updateScopes(List<String> scopeKeys, String roleName) throws ScopeManagementException {
+        List<Scope> scopes = new ArrayList<>();
+        try {
+            List<Scope> allScopes = this.getAllScopes();
+            for (Scope scope : allScopes) {
+                for (String key : scopeKeys) {
+                    if (scope.getKey().equals(key)) {
+                        scope.setRoles(scope.getRoles() + "," + roleName);
+                        scopes.add(scope);
+                    }
+                }
+            }
             ScopeManagementDAOFactory.beginTransaction();
             scopeManagementDAO.updateScopes(scopes);
             ScopeManagementDAOFactory.commitTransaction();
@@ -62,7 +90,7 @@ public class ScopeManagementServiceImpl implements ScopeManagementService {
     @Override
     public List<Scope> getAllScopes() throws ScopeManagementException {
         List<Scope> scopes = new ArrayList<>();
-        try{
+        try {
             ScopeManagementDAOFactory.openConnection();
             scopes = scopeManagementDAO.getAllScopes();
         } catch (SQLException e) {
@@ -92,6 +120,54 @@ public class ScopeManagementServiceImpl implements ScopeManagementService {
             ScopeManagementDAOFactory.closeConnection();
         }
         return roles;
+    }
+
+    @Override
+    public List<Scope> getScopesOfRole(String roleName) throws ScopeManagementException {
+        if (roleName == null || roleName.isEmpty()) {
+            throw new ScopeManagementException("Role name is null or empty");
+        }
+        List<Scope> filteredScopes = new ArrayList<>();
+        try {
+            ScopeManagementDAOFactory.openConnection();
+            List<Scope> allScopes = scopeManagementDAO.getScopesHavingRole(roleName);
+
+            String roles[];
+            for (Scope scope : allScopes) {
+                roles = scope.getRoles().split(",");
+                for (String role : roles) {
+                    if (roleName.equals(role.trim())) {
+                        filteredScopes.add(scope);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            throw new ScopeManagementException("SQL error occurred while retrieving scopes of role from database.", e);
+        } catch (ScopeManagementDAOException e) {
+            throw new ScopeManagementException("Error occurred while retrieving scopes of role from database.", e);
+        } finally {
+            ScopeManagementDAOFactory.closeConnection();
+        }
+        return filteredScopes;
+    }
+
+    @Override
+    public void removeScopes(String roleName) throws ScopeManagementException {
+
+        List<Scope> scopes = this.getScopesOfRole(roleName);
+        String roles[];
+        ArrayList<String> filteredRoles = new ArrayList<>();
+        for (Scope scope : scopes) {
+            roles = scope.getRoles().split(",");
+            for (String role : roles) {
+                if (!roleName.equals(role.trim())) {
+                    filteredRoles.add(role);
+                }
+            }
+            scope.setRoles(StringUtils.join(filteredRoles, ","));
+            filteredRoles.clear();
+        }
+        this.updateScopes(scopes);
     }
 
 }

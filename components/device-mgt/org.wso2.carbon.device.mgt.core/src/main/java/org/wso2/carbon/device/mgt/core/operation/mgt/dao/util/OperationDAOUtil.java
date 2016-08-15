@@ -18,11 +18,20 @@
 */
 package org.wso2.carbon.device.mgt.core.operation.mgt.dao.util;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.device.mgt.common.operation.mgt.OperationResponse;
 import org.wso2.carbon.device.mgt.core.DeviceManagementConstants;
 import org.wso2.carbon.device.mgt.core.dto.operation.mgt.*;
 
-public class OperationDAOUtil {
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
+public class OperationDAOUtil {
+    private static final Log log = LogFactory.getLog(OperationDAOUtil.class);
     public static Operation convertOperation(org.wso2.carbon.device.mgt.common.operation.mgt.Operation operation) {
 
         Operation dtoOperation = null;
@@ -99,5 +108,53 @@ public class OperationDAOUtil {
 
 
         return operation;
+    }
+
+    public static OperationResponse getOperationResponse(ResultSet rs) throws
+            ClassNotFoundException, IOException, SQLException {
+        OperationResponse response = new OperationResponse();
+        if (rs.getTimestamp("RECEIVED_TIMESTAMP") != (null)) {
+            response.setReceivedTimeStamp(rs.getTimestamp("RECEIVED_TIMESTAMP").toString());
+        }
+        ByteArrayInputStream bais = null;
+        ObjectInputStream ois = null;
+        byte[] contentBytes;
+        try {
+            if (rs.getBytes("OPERATION_RESPONSE") != null) {
+                contentBytes = (byte[]) rs.getBytes("OPERATION_RESPONSE");
+                bais = new ByteArrayInputStream(contentBytes);
+                ois = new ObjectInputStream(bais);
+                response.setResponse(ois.readObject().toString());
+            }
+        } finally {
+            if (bais != null) {
+                try {
+                    bais.close();
+                } catch (IOException e) {
+                    log.warn("Error occurred while closing ByteArrayOutputStream", e);
+                }
+            }
+            if (ois != null) {
+                try {
+                    ois.close();
+                } catch (IOException e) {
+                    log.warn("Error occurred while closing ObjectOutputStream", e);
+                }
+            }
+        }
+        return response;
+    }
+
+    public static Operation.Type getType(String type) {
+        return Operation.Type.valueOf(type);
+    }
+
+    public static void setActivityId(Operation operation, int operationId) {
+        operation.setActivityId(DeviceManagementConstants.OperationAttributes.ACTIVITY + operationId);
+    }
+
+
+    public static String getActivityId(int operationId) {
+        return DeviceManagementConstants.OperationAttributes.ACTIVITY + operationId;
     }
 }

@@ -60,6 +60,8 @@ public interface OperationDAO {
     void updateEnrollmentOperationsStatus(int enrolmentId, String operationCode, Operation.Status existingStatus,
                                           Operation.Status newStatus) throws OperationManagementDAOException;
 
+    boolean updateTaskOperation(int enrolmentId, String operationCode) throws OperationManagementDAOException;
+
     void addOperationResponse(int enrolmentId, int operationId, Object operationResponse)
             throws OperationManagementDAOException;
 

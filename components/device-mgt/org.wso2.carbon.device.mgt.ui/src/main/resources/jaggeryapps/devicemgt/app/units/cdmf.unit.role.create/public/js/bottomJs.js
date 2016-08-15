@@ -31,6 +31,8 @@ function inputIsValid(regExp, inputString) {
 var validateInline = {};
 var clearInline = {};
 
+var apiBasePath = "/api/device-mgt/v1.0";
+
 var enableInlineError = function (inputField, errorMsg, errorSign) {
     var fieldIdentifier = "#" + inputField;
     var errorMsgIdentifier = "#" + inputField + " ." + errorMsg;
@@ -113,12 +115,12 @@ function formatRepoSelection (user) {
 }
 
 $(document).ready(function () {
-
+    var appContext = $("#app-context").data("app-context");
     $("#users").select2({
         multiple:true,
         tags: false,
         ajax: {
-            url: window.location.origin + "/devicemgt/api/invoker/execute/",
+            url: appContext + "/api/invoker/execute/",
             method: "POST",
             dataType: 'json',
             delay: 250,
@@ -128,15 +130,17 @@ $(document).ready(function () {
             data: function (params) {
                 var postData = {};
                 postData.actionMethod = "GET";
-                postData.actionUrl = "/devicemgt_admin/users/view-users?username=" + params.term;
+                postData.actionUrl = apiBasePath + "/users/search/usernames?filter=" + params.term;
                 postData.actionPayload = null;
                 return JSON.stringify(postData);
             },
             processResults: function (data, page) {
                 var newData = [];
-                $.each(data.responseContent, function (index, value) {
-                    value.id = value.username;
-                    newData.push(value);
+                $.each(data, function (index, value) {
+                    var user = {};
+                    user.username = value.username;
+                    user.id = value.username;
+                    newData.push(user);
                 });
                 return {
                     results: newData
@@ -153,7 +157,7 @@ $(document).ready(function () {
     /**
      * Following click function would execute
      * when a user clicks on "Add Role" button
-     * on Add Role page in WSO2 Devicemgt Console.
+     * on Add Role page in WSO2 MDM Console.
      */
     $("button#add-role-btn").click(function() {
         var rolenameInput = $("input#rolename");
@@ -188,7 +192,7 @@ $(document).ready(function () {
             }
             addRoleFormData.users = users;
 
-            var addRoleAPI = "/devicemgt_admin/roles";
+            var addRoleAPI = apiBasePath + "/roles";
 
             invokerUtil.post(
                 addRoleAPI,
@@ -205,10 +209,10 @@ $(document).ready(function () {
                         //// Refreshing with success message
                         //$("#role-create-form").addClass("hidden");
                         //$("#role-created-msg").removeClass("hidden");
-                        window.location.href = '/devicemgt/role/edit-permission/' + roleName + '?wizard=true';
+                        window.location.href = appContext + '/role/edit-permission/' + roleName;
                     }
                 }, function (data) {
-                    if (JSON.parse(data.responseText).errorMessage.indexOf("RoleExisting") > -1) {
+                    if (JSON.parse(data).errorMessage.indexOf("RoleExisting") > -1) {
                         $(errorMsg).text("Role name : " + roleName + " already exists. Pick another role name.");
                     } else {
                         $(errorMsg).text(JSON.parse(data.responseText).errorMessage);

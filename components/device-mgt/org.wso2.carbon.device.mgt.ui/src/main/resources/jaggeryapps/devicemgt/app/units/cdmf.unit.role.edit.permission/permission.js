@@ -26,7 +26,7 @@ function onRequest(context) {
     var userModule = require("/app/modules/business-controllers/user.js")["userModule"];
     var uri = request.getRequestURI();
     var uriMatcher = new URIMatcher(String(uri));
-    var isMatched = uriMatcher.match("/{context}/roles/edit-role-permission/{rolename}");
+    var isMatched = uriMatcher.match("/{context}/role/edit-permission/{rolename}");
 
     if (isMatched) {
         var matchedElements = uriMatcher.elements();

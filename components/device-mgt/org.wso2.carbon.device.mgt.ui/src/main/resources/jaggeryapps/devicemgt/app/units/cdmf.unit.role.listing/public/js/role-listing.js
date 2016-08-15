@@ -16,7 +16,7 @@
  * under the License.
  */
 var loadRoleBasedActionURL = function (action, rolename) {
-    var href = $("#ast-container").data("app-context") + "roles/" + action + "?rolename=" + rolename;
+    var href = $("#ast-container").data("app-context") + "role/" + action + "/" + rolename;
     $(location).attr('href', href);
 };
 
@@ -113,13 +113,13 @@ function loadRoles(searchQuery) {
             class: "text-right content-fill text-left-on-grid-view no-wrap",
             data: null,
             render: function ( data, type, row, meta ) {
-                return '<a onclick="javascript:loadRoleBasedActionURL(\'edit-role\', \'' + data.name + '\')" data-role="' + data.name +
+                return '<a onclick="javascript:loadRoleBasedActionURL(\'edit\', \'' + data.name + '\')" data-role="' + data.name +
                     '" data-click-event="edit-form" class="btn padding-reduce-on-grid-view edit-role-link"><span class="fw-stack fw-lg">' +
                     '<i class="fw fw-ring fw-stack-2x"></i><i class="fw fw-user fw-stack-1x"></i>' +
                     '<span class="fw-stack fw-move-right fw-move-bottom"><i class="fw fw-circle fw-stack-2x fw-stroke fw-inverse"></i>' +
                     '<i class="fw fw-circle fw-stack-2x"></i><i class="fw fw-edit fw-stack-1x fw-inverse"></i></span></span>' +
                     '<span class="hidden-xs hidden-on-grid-view">Edit</span></a>' +
-                    '<a onclick="javascript:loadRoleBasedActionURL(\'edit-role-permission\', \'' + data.name +
+                    '<a onclick="javascript:loadRoleBasedActionURL(\'edit-permission\', \'' + data.name +
                     '\')" data-role="' + data.name + '" data-click-event="edit-form" class="btn padding-reduce-on-grid-view edit-permission-link">' +
                     '<span class="fw-stack fw-lg"><i class="fw fw-ring fw-stack-2x"></i><i class="fw fw-security-policy fw-stack-1x"></i>' +
                     '<span class="fw-stack fw-move-right fw-move-bottom"><i class="fw fw-circle fw-stack-2x fw-stroke fw-inverse"></i>' +

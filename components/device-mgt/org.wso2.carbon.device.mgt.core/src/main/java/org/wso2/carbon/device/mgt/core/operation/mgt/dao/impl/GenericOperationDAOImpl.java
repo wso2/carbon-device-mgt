@@ -155,6 +155,44 @@ public class GenericOperationDAOImpl implements OperationDAO {
     }
 
     @Override
+    public boolean updateTaskOperation(int enrolmentId, String operationCode)
+            throws OperationManagementDAOException {
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        boolean result = false;
+        try {
+            Connection connection = OperationManagementDAOFactory.getConnection();
+            String query = "SELECT EOM.ID FROM DM_ENROLMENT_OP_MAPPING AS EOM INNER JOIN DM_OPERATION DM " +
+                           "ON DM.ID = EOM.OPERATION_ID WHERE EOM.ENROLMENT_ID = ? AND DM.OPERATION_CODE = ? AND " +
+                           "EOM.STATUS = ?;";
+            stmt = connection.prepareStatement(query);
+            stmt.setInt(1, enrolmentId);
+            stmt.setString(2, operationCode);
+            stmt.setString(3, Operation.Status.PENDING.toString());
+            // This will return only one result always.
+            rs = stmt.executeQuery();
+            int id = 0;
+            if (rs.next()) {
+                id = rs.getInt("ID");
+            }
+            if (id != 0) {
+                stmt = connection.prepareStatement("UPDATE DM_ENROLMENT_OP_MAPPING SET UPDATED_TIMESTAMP = ?  " +
+                                                   "WHERE ID = ?");
+                stmt.setLong(1, System.currentTimeMillis() / 1000);
+                stmt.setInt(2, id);
+                stmt.executeUpdate();
+                result = true;
+            }
+        } catch (SQLException e) {
+            throw new OperationManagementDAOException("Error occurred while update device mapping operation status " +
+                                                      "metadata", e);
+        } finally {
+            OperationManagementDAOUtil.cleanupResources(stmt);
+        }
+        return result;
+    }
+
+    @Override
     public void addOperationResponse(int enrolmentId, int operationId, Object operationResponse)
             throws OperationManagementDAOException {
         PreparedStatement stmt = null;

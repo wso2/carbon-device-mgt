@@ -65,7 +65,6 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
             @QueryParam("name") String name,
             @QueryParam("type") String type,
             @QueryParam("user") String user,
-            @QueryParam("roleName") String roleName,
             @QueryParam("ownership") String ownership,
             @QueryParam("status") String status,
             @QueryParam("since") String since,

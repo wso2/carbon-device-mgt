@@ -374,7 +374,7 @@ public interface DeviceManagementService {
             int limit,
             @ApiParam(
                     name = "searchContext",
-                    value = "List of search conditions.",
+                    value = "List of device properties  as search conditions.",
                     required = true)
             SearchContext searchContext);
 

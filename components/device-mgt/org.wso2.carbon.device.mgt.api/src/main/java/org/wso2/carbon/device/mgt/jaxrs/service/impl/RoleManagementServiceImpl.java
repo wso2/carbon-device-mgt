@@ -112,27 +112,6 @@ public class RoleManagementServiceImpl implements RoleManagementService {
         }
     }
 
-    @PUT
-    @Path("/scopes")
-    @Override
-    public Response updateScopes(List<Scope> scopes) {
-        RequestValidationUtil.validateScopes(scopes);
-        try {
-            ScopeManagementService scopeManagementService = DeviceMgtAPIUtils.getScopeManagementService();
-            if (scopeManagementService == null) {
-                log.error("Scope management service initialization is failed, hence scopes will not be retrieved");
-            } else {
-                scopeManagementService.updateScopes(DeviceMgtUtil.convertScopestoAPIScopes(scopes));
-            }
-            return Response.status(Response.Status.OK).entity("Scopes has been successfully updated").build();
-        } catch (ScopeManagementException e) {
-            String msg = "Error occurred while updating the scopes";
-            log.error(msg, e);
-            return Response.serverError().entity(
-                    new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
-        }
-    }
-
     @GET
     @Path("/{roleName}")
     @Override
@@ -143,6 +122,7 @@ public class RoleManagementServiceImpl implements RoleManagementService {
         }
         RequestValidationUtil.validateRoleName(roleName);
         RoleInfo roleInfo = new RoleInfo();
+        List<String> scopes = new ArrayList<>();
         try {
             final UserStoreManager userStoreManager = DeviceMgtAPIUtils.getUserStoreManager();
             if (!userStoreManager.isExistingRole(roleName)) {
@@ -150,12 +130,23 @@ public class RoleManagementServiceImpl implements RoleManagementService {
                         new ErrorResponse.ErrorResponseBuilder().setMessage("No role exists with the name '" +
                                 roleName + "'").build()).build();
             }
+            ScopeManagementService scopeManagementService = DeviceMgtAPIUtils.getScopeManagementService();
+            if (scopeManagementService == null) {
+                log.error("Scope management service initialization is failed, hence scopes will not be retrieved");
+            } else {
+                scopes = DeviceMgtUtil.convertAPIScopesToScopeKeys(scopeManagementService.getScopesOfRole(roleName));
+            }
             roleInfo.setRoleName(roleName);
             roleInfo.setUsers(userStoreManager.getUserListOfRole(roleName));
-
+            roleInfo.setScopes(scopes);
             return Response.status(Response.Status.OK).entity(roleInfo).build();
         } catch (UserStoreException e) {
             String msg = "Error occurred while retrieving the user role '" + roleName + "'";
+            log.error(msg, e);
+            return Response.serverError().entity(
+                    new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
+        } catch (ScopeManagementException e) {
+            String msg = "Error occurred while retrieving the scopes";
             log.error(msg, e);
             return Response.serverError().entity(
                     new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
@@ -234,7 +225,7 @@ public class RoleManagementServiceImpl implements RoleManagementService {
                 if (scopeManagementService == null) {
                     log.error("Scope management service initialization is failed, hence scopes will not be updated");
                 } else {
-                    scopeManagementService.updateScopes(DeviceMgtUtil.convertScopestoAPIScopes(roleInfo.getScopes()));
+                    scopeManagementService.updateScopes(roleInfo.getScopes(), roleName);
                 }
             }
             //TODO: Need to send the updated role information in the entity back to the client
@@ -256,9 +247,8 @@ public class RoleManagementServiceImpl implements RoleManagementService {
     @DELETE
     @Path("/{roleName}")
     @Override
-    public Response deleteRole(@PathParam("roleName") String roleName, RoleInfo roleInfo) {
+    public Response deleteRole(@PathParam("roleName") String roleName) {
         RequestValidationUtil.validateRoleName(roleName);
-        RequestValidationUtil.validateScopes(roleInfo.getScopes());
 
         try {
             final UserRealm userRealm = DeviceMgtAPIUtils.getUserRealm();
@@ -277,22 +267,23 @@ public class RoleManagementServiceImpl implements RoleManagementService {
             // Delete all authorizations for the current role before deleting
             authorizationManager.clearRoleAuthorization(roleName);
 
-            //updating scopes
+            //removing scopes
             ScopeManagementService scopeManagementService = DeviceMgtAPIUtils.getScopeManagementService();
             if (scopeManagementService == null) {
                 log.error("Scope management service initialization is failed, hence scopes will not be updated");
             } else {
-                scopeManagementService.updateScopes(DeviceMgtUtil.convertScopestoAPIScopes(roleInfo.getScopes()));
+                scopeManagementService.removeScopes(roleName);
             }
 
-            return Response.status(Response.Status.OK).build();
+            return Response.status(Response.Status.OK).entity("Role '" + roleName + "' has " +
+                    "successfully been deleted").build();
         } catch (UserStoreException e) {
             String msg = "Error occurred while deleting the role '" + roleName + "'";
             log.error(msg, e);
             return Response.serverError().entity(
                     new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
         } catch (ScopeManagementException e) {
-            String msg = "Error occurred while updating scopes of role '" + roleName + "'";
+            String msg = "Error occurred while deleting scopes of role '" + roleName + "'";
             log.error(msg, e);
             return Response.serverError().entity(
                     new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();

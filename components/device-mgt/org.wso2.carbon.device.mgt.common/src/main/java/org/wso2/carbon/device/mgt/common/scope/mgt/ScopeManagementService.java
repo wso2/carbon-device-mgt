@@ -35,6 +35,15 @@ public interface ScopeManagementService {
     void updateScopes(List<Scope> scopes) throws ScopeManagementException;
 
     /**
+     * This method is used to update the given list of scopes keys with the role name.
+     *
+     * @param scopeKeys List of scopes to be updated.
+     * @param roleName Role name
+     * @throws ScopeManagementException
+     */
+    void updateScopes(List<String> scopeKeys, String roleName) throws ScopeManagementException;
+
+    /**
      * This method is used to retrieve all the scopes.
      *
      * @return List of scopes.
@@ -49,5 +58,21 @@ public interface ScopeManagementService {
      * @throws ScopeManagementException
      */
     String getRolesOfScope(String scopeKey) throws ScopeManagementException;
+
+    /**
+     * This method is to retrieve the scopes of the given role
+     * @param roleName key of the scope
+     * @return List of scopes
+     * @throws ScopeManagementException
+     */
+    List<Scope> getScopesOfRole(String roleName) throws ScopeManagementException;
+
+    /**
+     * This method is used to remove the scopes of a given user role.
+     *
+     * @param roleName Role name
+     * @throws ScopeManagementException
+     */
+    void removeScopes(String roleName) throws ScopeManagementException;
 
 }

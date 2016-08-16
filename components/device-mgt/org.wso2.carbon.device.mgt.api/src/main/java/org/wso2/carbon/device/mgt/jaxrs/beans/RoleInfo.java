@@ -30,8 +30,8 @@ public class RoleInfo {
     @ApiModelProperty(name = "roleName", value = "The name of the role.", required = true)
     private String roleName;
     @ApiModelProperty(name = "scopes", value = "Lists out all the scopes associated with roles.",
-            required = true, dataType = "List[org.wso2.carbon.device.mgt.jaxrs.beans.Scope]")
-    private List<Scope> scopes;
+            required = true, dataType = "List[java.lang.String]")
+    private List<String> scopes;
     @ApiModelProperty(name = "users", value = "The list of users assigned to the selected role.",
             required = true, dataType = "List[java.lang.String]")
     private String[] users;
@@ -44,11 +44,11 @@ public class RoleInfo {
         this.roleName = roleName;
     }
 
-    public List<Scope> getScopes() {
+    public List<String> getScopes() {
         return scopes;
     }
 
-    public void setScopes(List<Scope> scopes) {
+    public void setScopes(List<String> scopes) {
         this.scopes = scopes;
     }
 

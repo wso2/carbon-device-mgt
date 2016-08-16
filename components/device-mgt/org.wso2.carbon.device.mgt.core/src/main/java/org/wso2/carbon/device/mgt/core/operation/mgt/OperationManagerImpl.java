@@ -32,6 +32,8 @@ import org.wso2.carbon.device.mgt.common.push.notification.NotificationContext;
 import org.wso2.carbon.device.mgt.common.push.notification.NotificationStrategy;
 import org.wso2.carbon.device.mgt.common.push.notification.PushNotificationExecutionFailedException;
 import org.wso2.carbon.device.mgt.core.DeviceManagementConstants;
+import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
+import org.wso2.carbon.device.mgt.core.config.task.TaskConfiguration;
 import org.wso2.carbon.device.mgt.core.dao.DeviceDAO;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
@@ -106,16 +108,34 @@ public class OperationManagerImpl implements OperationManager {
             org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation operationDto =
                     OperationDAOUtil.convertOperation(operation);
             int operationId = this.lookupOperationDAO(operation).addOperation(operationDto);
+            boolean isScheduledOperation = this.isTaskScheduledOperation(operation);
+            boolean isNotRepeated = false;
+            boolean hasExistingTaskOperation;
+            int enrolmentId;
+            if (operationDto.getControl() ==
+                org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Control.NO_REPEAT) {
+                isNotRepeated = true;
+            }
+
             //TODO have to create a sql to load device details from deviceDAO using single query.
+            String operationCode = operationDto.getCode();
             for (DeviceIdentifier deviceId : deviceIds) {
                 Device device = getDevice(deviceId);
-                if (operationDto.getControl() ==
-                        org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Control.NO_REPEAT) {
-                    operationDAO.updateEnrollmentOperationsStatus(device.getEnrolmentInfo().getId(), operationDto.getCode(),
-                            org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Status.PENDING,
-                            org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Status.REPEATED);
+                enrolmentId = device.getEnrolmentInfo().getId();
+                //Do not repeat the task operations
+                if (isScheduledOperation) {
+                    hasExistingTaskOperation = operationDAO.updateTaskOperation(enrolmentId, operationCode);
+                    if (!hasExistingTaskOperation) {
+                        operationMappingDAO.addOperationMapping(operationId, enrolmentId);
+                    }
+                } else if (isNotRepeated) {
+                    operationDAO.updateEnrollmentOperationsStatus(enrolmentId, operationCode,
+                                      org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Status.PENDING,
+                                           org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Status.REPEATED);
+                    operationMappingDAO.addOperationMapping(operationId, enrolmentId);
+                } else {
+                    operationMappingDAO.addOperationMapping(operationId, enrolmentId);
                 }
-                operationMappingDAO.addOperationMapping(operationId, device.getEnrolmentInfo().getId());
                 if (notificationStrategy != null) {
                     try {
                         notificationStrategy.execute(new NotificationContext(deviceId, operation));
@@ -129,7 +149,7 @@ public class OperationManagerImpl implements OperationManager {
             OperationManagementDAOFactory.commitTransaction();
             Activity activity = new Activity();
             activity.setActivityId(DeviceManagementConstants.OperationAttributes.ACTIVITY + operationId);
-            activity.setCode(operationDto.getCode());
+            activity.setCode(operationCode);
             activity.setCreatedTimeStamp(new Date().toString());
             activity.setType(Activity.Type.valueOf(operationDto.getType().toString()));
             return activity;
@@ -786,6 +806,17 @@ public class OperationManagerImpl implements OperationManager {
             DeviceManagementDAOFactory.closeConnection();
         }
         return enrolmentId;
+    }
+
+    private boolean isTaskScheduledOperation(Operation operation) {
+        TaskConfiguration taskConfiguration =  DeviceConfigurationManager.getInstance().getDeviceManagementConfig().
+                                                                                                 getTaskConfiguration();
+        for (TaskConfiguration.Operation op:taskConfiguration.getOperations()) {
+            if (operation.getCode().equals(op.getOperationName())) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }

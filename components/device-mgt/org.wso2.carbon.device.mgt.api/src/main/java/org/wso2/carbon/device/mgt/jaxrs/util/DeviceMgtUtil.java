@@ -65,15 +65,13 @@ public class DeviceMgtUtil {
 
     }
 
-    public static List<Scope> convertScopestoAPIScopes(List<org.wso2.carbon.device.mgt.jaxrs.beans.Scope> scopes) {
+    public static List<Scope> convertScopesListToAPIScopes(List<String> scopes, String roleName) {
         List<Scope> convertedScopes = new ArrayList<>();
         Scope convertedScope;
-        for (org.wso2.carbon.device.mgt.jaxrs.beans.Scope scope : scopes) {
+        for (String scope : scopes) {
             convertedScope = new Scope();
-            convertedScope.setKey(scope.getKey());
-            convertedScope.setName(scope.getName());
-            convertedScope.setDescription(scope.getDescription());
-            convertedScope.setRoles(scope.getRoles());
+            convertedScope.setKey(scope);
+            convertedScope.setRoles(roleName);
             convertedScopes.add(convertedScope);
         }
         return convertedScopes;
@@ -87,12 +85,18 @@ public class DeviceMgtUtil {
             convertedScope.setKey(scope.getKey());
             convertedScope.setName(scope.getName());
             convertedScope.setDescription(scope.getDescription());
-            convertedScope.setRoles(scope.getRoles());
             convertedScopes.add(convertedScope);
         }
         return convertedScopes;
     }
 
+    public static List<String> convertAPIScopesToScopeKeys(List<Scope> scopes) {
+        List<String> convertedScopes = new ArrayList<>();
+        for (Scope scope : scopes) {
+            convertedScopes.add(scope.getKey());
+        }
+        return convertedScopes;
+    }
     /**
      * Returns a new BadRequestException
      *

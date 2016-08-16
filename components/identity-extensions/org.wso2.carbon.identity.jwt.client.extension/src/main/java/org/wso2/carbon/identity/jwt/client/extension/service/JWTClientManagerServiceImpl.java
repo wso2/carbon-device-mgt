@@ -81,7 +81,7 @@ public class JWTClientManagerServiceImpl implements JWTClientManagerService {
                 addJWTClient(tenantDomain, jwtClient);
             } catch (JWTClientAlreadyExistsException e) {
                 log.warn("Attempting to register a jwt client for the tenant " + tenantDomain +
-                        " when one already exists. Returning existing jwt client");
+                        " when one already exists. Returning existing jwt client", e);
                 return getJWTClient(tenantDomain);
             } catch (JWTClientConfigurationException e) {
                 throw new JWTClientException("Failed to parse jwt configuration for tenant " + tenantDomain, e);
@@ -110,7 +110,7 @@ public class JWTClientManagerServiceImpl implements JWTClientManagerService {
                 addJWTClient(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME, defaultJWTClient);
             } catch (JWTClientAlreadyExistsException e) {
                 log.warn("Attempting to register a jwt client for the super tenant" +
-                        " when one already exists. Returning existing jwt client");
+                        " when one already exists. Returning existing jwt client", e);
             }
         }
     }

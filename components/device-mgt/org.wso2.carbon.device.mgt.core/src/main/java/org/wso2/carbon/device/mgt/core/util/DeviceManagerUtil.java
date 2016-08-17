@@ -34,6 +34,8 @@ import org.wso2.carbon.device.mgt.core.dao.DeviceTypeDAO;
 import org.wso2.carbon.device.mgt.core.dao.util.DeviceManagementDAOUtil;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
+import org.wso2.carbon.device.mgt.core.operation.mgt.OperationMgtConstants;
+import org.wso2.carbon.device.mgt.core.operation.mgt.util.DeviceIDHolder;
 import org.wso2.carbon.user.api.TenantManager;
 import org.wso2.carbon.user.api.UserStoreException;
 import org.wso2.carbon.utils.CarbonUtils;
@@ -316,5 +318,54 @@ public final class DeviceManagerUtil {
             }
         }
         return limit;
+    }
+
+    public static DeviceIDHolder validateDeviceIdentifiers(List<DeviceIdentifier> deviceIDs) {
+
+        List<String> errorDeviceIdList = new ArrayList<String>();
+        List<DeviceIdentifier> validDeviceIDList = new ArrayList<DeviceIdentifier>();
+
+        int deviceIDCounter = 0;
+        for (DeviceIdentifier deviceIdentifier : deviceIDs) {
+
+            deviceIDCounter++;
+            String deviceID = deviceIdentifier.getId();
+
+            if (deviceID == null || deviceID.isEmpty()) {
+                errorDeviceIdList.add(String.format(OperationMgtConstants.DeviceConstants.DEVICE_ID_NOT_FOUND,
+                        deviceIDCounter));
+                continue;
+            }
+
+            try {
+
+                if (isValidDeviceIdentifier(deviceIdentifier)) {
+                    validDeviceIDList.add(deviceIdentifier);
+                } else {
+                    errorDeviceIdList.add(String.format(OperationMgtConstants.DeviceConstants.
+                            DEVICE_ID_NOT_FOUND, deviceID));
+                }
+            } catch (DeviceManagementException e) {
+                errorDeviceIdList.add(String.format(OperationMgtConstants.DeviceConstants.DEVICE_ID_SERVICE_NOT_FOUND,
+                        deviceIDCounter));
+            }
+        }
+
+        DeviceIDHolder deviceIDHolder = new DeviceIDHolder();
+        deviceIDHolder.setValidDeviceIDList(validDeviceIDList);
+        deviceIDHolder.setErrorDeviceIdList(errorDeviceIdList);
+
+        return deviceIDHolder;
+    }
+
+    public static boolean isValidDeviceIdentifier(DeviceIdentifier deviceIdentifier) throws DeviceManagementException {
+        Device device = DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().getDevice(deviceIdentifier);
+        if (device == null || device.getDeviceIdentifier() == null ||
+                device.getDeviceIdentifier().isEmpty() || device.getEnrolmentInfo() == null) {
+            return false;
+        } else if (EnrolmentInfo.Status.REMOVED.equals(device.getEnrolmentInfo().getStatus())) {
+            return false;
+        }
+        return true;
     }
 }

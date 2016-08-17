@@ -23,6 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
+import org.wso2.carbon.device.mgt.common.InvalidDeviceException;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
 import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
@@ -108,6 +109,8 @@ public class DeviceTaskManagerImpl implements DeviceTaskManager {
                     log.debug("No devices are available to perform the operations.");
                 }
             }
+        } catch (InvalidDeviceException e) {
+            throw new DeviceMgtTaskException("Invalid DeviceIdentifiers found.", e);
         } catch (DeviceManagementException e) {
             throw new DeviceMgtTaskException("Error occurred while retrieving the device list.", e);
         } catch (OperationManagementException e) {

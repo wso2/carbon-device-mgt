@@ -264,10 +264,14 @@ public class UserManagementServiceImpl implements UserManagementService {
         if (log.isDebugEnabled()) {
             log.debug("Getting the list of users with all user-related information");
         }
-        List<BasicUserInfo> userList, offsetList;
+
         RequestValidationUtil.validatePaginationParameters(offset, limit);
+
+        List<BasicUserInfo> userList, offsetList;
         String appliedFilter = ((filter == null) || filter.isEmpty() ? "*" : filter);
-        int appliedLimit = (limit <= 0) ? -1 : (limit + offset);
+        // to get whole set of users, appliedLimit is set to -1
+        // by default, this whole set is limited to 100 - MaxUserNameListLength of user-mgt.xml
+        int appliedLimit = -1;
 
         try {
             UserStoreManager userStoreManager = DeviceMgtAPIUtils.getUserStoreManager();
@@ -285,14 +289,23 @@ public class UserManagementServiceImpl implements UserManagementService {
                 userList.add(user);
             }
 
-            if (offset <= userList.size()) {
-                offsetList = userList.subList(offset, userList.size());
+            int toIndex = offset + limit;
+            int listSize = userList.size();
+            int lastIndex = listSize - 1;
+
+            if (offset <= lastIndex) {
+                if (toIndex <= listSize) {
+                    offsetList = userList.subList(offset, toIndex);
+                } else {
+                    offsetList = userList.subList(offset, listSize);
+                }
             } else {
                 offsetList = new ArrayList<>();
             }
+
             BasicUserInfoList result = new BasicUserInfoList();
             result.setList(offsetList);
-            result.setCount(offsetList.size());
+            result.setCount(users.length);
 
             return Response.status(Response.Status.OK).entity(result).build();
         } catch (UserStoreException e) {

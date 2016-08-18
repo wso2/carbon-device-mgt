@@ -1021,7 +1021,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
     @Override
     public Activity addOperation(String type, Operation operation,
-                                 List<DeviceIdentifier> devices) throws OperationManagementException {
+                                 List<DeviceIdentifier> devices) throws OperationManagementException, InvalidDeviceException {
         return pluginRepository.getOperationManager(type, this.getTenantId()).addOperation(operation, devices);
     }
 

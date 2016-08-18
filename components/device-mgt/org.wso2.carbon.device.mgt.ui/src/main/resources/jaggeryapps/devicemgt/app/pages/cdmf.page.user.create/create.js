@@ -31,6 +31,9 @@ function onRequest() {
     if (response["status"] == "success") {
         page["roles"] = response["content"];
     }
+
+    var userStores = userModule.getSecondaryUserStores();
+    page["userStores"] = userStores;
     page["charLimit"] = devicemgtProps["usernameLength"];
     page["usernameJSRegEx"] = devicemgtProps["userValidationConfig"]["usernameJSRegEx"];
     page["usernameHelpMsg"] = devicemgtProps["userValidationConfig"]["usernameHelpMsg"];

@@ -35,18 +35,20 @@ function appendQueryParam (url, queryParam , value) {
 if (uriMatcher.match("/{context}/api/data-tables/invoker")) {
     var url = request.getParameter("url");
     var targetURL = devicemgtProps["httpsURL"] + request.getParameter("url");
+    //noinspection JSUnresolvedFunction getAllParameters
     var allParams = request.getAllParameters();
 
-    for (var key in allParams) {
-        if (allParams.hasOwnProperty(key)) {
-            if(key == "limit" || key == "offset"){
-                targetURL = appendQueryParam(targetURL, key, allParams[key]);
-            }
-            if(key == "filter"){
-                if(allParams[key]){
-                    var searchPayload = JSON.parse(allParams[key]);
-                    for (var key in searchPayload) {
-                        targetURL = appendQueryParam(targetURL, key, searchPayload[key]);
+    for (var allParamsKey in allParams) {
+        if (allParams.hasOwnProperty(allParamsKey)) {
+            if (allParamsKey == "limit" || allParamsKey == "offset") {
+                targetURL = appendQueryParam(targetURL, allParamsKey, allParams[allParamsKey]);
+            } else if (allParamsKey == "filter") {
+                if (allParams[allParamsKey]) {
+                    var searchPayload = JSON.parse(allParams[allParamsKey]);
+                    for (var searchPayloadKey in searchPayload) {
+                        if (searchPayload.hasOwnProperty(searchPayloadKey)) {
+                            targetURL = appendQueryParam(targetURL, searchPayloadKey, searchPayload[searchPayloadKey]);
+                        }
                     }
                 }
             }

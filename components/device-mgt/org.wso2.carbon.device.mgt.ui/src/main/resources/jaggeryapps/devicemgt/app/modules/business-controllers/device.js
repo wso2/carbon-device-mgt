@@ -22,7 +22,7 @@ deviceModule = function () {
 
     var utility = require('/app/modules/utility.js').utility;
     var constants = require('/app/modules/constants.js');
-    var mdmProps = require("/app/modules/conf-reader/main.js")["conf"];
+    var devicemgtProps = require("/app/modules/conf-reader/main.js")["conf"];
     var serviceInvokers = require("/app/modules/oauth/token-protected-service-invokers.js")["invokers"];
 
 //    var ArrayList = Packages.java.util.ArrayList;
@@ -244,7 +244,7 @@ deviceModule = function () {
         try {
             utility.startTenantFlow(carbonUser);
             //var url = mdmProps["httpsURL"] + "/mdm-admin/devices/view?type=" + deviceType + "&id=" + deviceId;
-            var url = mdmProps["httpsURL"] + "/api/device-mgt/v1.0/devices/" + deviceType + "/" + deviceId;
+            var url = devicemgtProps["httpsURL"] + "/api/device-mgt/v1.0/devices/" + deviceType + "/" + deviceId;
             return serviceInvokers.XMLHttp.get(
                 url,
                 function (backendResponse) {
@@ -294,10 +294,11 @@ deviceModule = function () {
             var uiPermissions = userModule.getUIPermissions();
             var url;
             if (uiPermissions.LIST_DEVICES) {
-                url = devicemgtProps["httpsURL"] + constants.ADMIN_SERVICE_CONTEXT + "/devices/count";
+                url = devicemgtProps["httpsURL"] +
+                    devicemgtProps["backendRestEndpoints"]["deviceMgt"] + "/devices/count";
             } else if (uiPermissions.LIST_OWN_DEVICES) {
-                url = devicemgtProps["httpsURL"] + constants.ADMIN_SERVICE_CONTEXT + "/devices/user/" + carbonUser.username
-                    + "/count";
+                url = devicemgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"] +
+                    "/devices/user/" + carbonUser.username + "/count";
             } else {
                 log.error("Access denied for user: " + carbonUser.username);
                 return -1;
@@ -351,7 +352,8 @@ deviceModule = function () {
     // };
 
     publicMethods.getDevices = function (userName) {
-        var url = devicemgtProps["httpsURL"] + constants.ADMIN_SERVICE_CONTEXT + "/devices/user/" + userName;
+        var url = devicemgtProps["httpsURL"] +
+            devicemgtProps["backendRestEndpoints"]["deviceMgt"] + "/devices/user/" + userName;
         return serviceInvokers.XMLHttp.get(
             url, function (responsePayload) {
                 for (var i = 0; i < responsePayload.length; i++) {

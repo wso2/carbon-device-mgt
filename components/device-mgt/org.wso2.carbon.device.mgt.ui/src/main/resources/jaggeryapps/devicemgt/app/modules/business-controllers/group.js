@@ -26,7 +26,8 @@ var groupModule = {};
     var utility = require("/app/modules/utility.js").utility;
     var serviceInvokers = require("/app/modules/oauth/token-protected-service-invokers.js")["invokers"];
 
-    var groupServiceEndpoint = devicemgtProps["httpsURL"] + constants.ADMIN_SERVICE_CONTEXT + "/groups";
+    var groupServiceEndpoint = devicemgtProps["httpsURL"] +
+        devicemgtProps["backendRestEndpoints"]["deviceMgt"] + "/groups";
 
     var user = session.get(constants.USER_SESSION_KEY);
 

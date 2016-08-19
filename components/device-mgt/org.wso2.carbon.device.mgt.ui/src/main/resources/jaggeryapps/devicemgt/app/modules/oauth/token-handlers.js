@@ -53,7 +53,7 @@ var handlers = function () {
                     stringOfScopes += entry + " ";
                 });
                 tokenData = tokenUtil.
-                    getTokenPairByPasswordGrantType(username,
+                    getTokenPairAndScopesByPasswordGrantType(username,
                         encodeURIComponent(password), encodedClientAppCredentials, stringOfScopes);
                 if (!tokenData) {
                     throw new Error("{/app/modules/oauth/token-handlers.js} Could not set up " +
@@ -90,7 +90,7 @@ var handlers = function () {
                 var tokenData;
                 // accessTokenPair will include current access token as well as current refresh token
                 tokenData = tokenUtil.
-                    getTokenPairBySAMLGrantType(samlToken, encodedClientAppCredentials, "PRODUCTION");
+                    getTokenPairAndScopesBySAMLGrantType(samlToken, encodedClientAppCredentials, "PRODUCTION");
                 if (!tokenData) {
                     throw new Error("{/app/modules/oauth/token-handlers.js} Could not set up token " +
                         "pair by password grant type. Error in token " +

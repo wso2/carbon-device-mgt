@@ -63,11 +63,11 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
     @GET
     @Override
     public Response getDevices(
-            @QueryParam("name") @Size(max = 45) String name,
-            @QueryParam("type") @Size(max = 45) String type,
-            @QueryParam("user") @Size(max = 45) String user,
-            @QueryParam("ownership") @Size(max = 45) String ownership,
-            @QueryParam("status") @Size(max = 45) String status,
+            @QueryParam("name") String name,
+            @QueryParam("type") String type,
+            @QueryParam("user") String user,
+            @QueryParam("ownership") String ownership,
+            @QueryParam("status") String status,
             @QueryParam("since") String since,
             @HeaderParam("If-Modified-Since") String ifModifiedSince,
             @QueryParam("offset") int offset,

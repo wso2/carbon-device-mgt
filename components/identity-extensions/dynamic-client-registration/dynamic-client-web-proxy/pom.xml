@@ -21,14 +21,14 @@
     <parent>
         <artifactId>dynamic-client-registration</artifactId>
         <groupId>org.wso2.carbon.devicemgt</groupId>
-        <version>1.1.2-SNAPSHOT</version>
+        <version>1.1.3-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.wso2.mdm</groupId>
     <artifactId>dynamic-client-web-proxy</artifactId>
-    <version>1.1.2-SNAPSHOT</version>
+    <version>1.1.3-SNAPSHOT</version>
     <name>WSO2 Carbon - Proxy endpoint of Dynamic Client Registration Web Service</name>
     <description>WSO2 Carbon - Dynamic Client Registration Web Proxy</description>
     <packaging>war</packaging>

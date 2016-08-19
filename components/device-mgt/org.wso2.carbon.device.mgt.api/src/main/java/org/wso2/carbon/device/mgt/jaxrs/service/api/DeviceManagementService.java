@@ -112,8 +112,7 @@ public interface DeviceManagementService {
                     value = "Username of owner of the devices.",
                     required = false)
             @QueryParam("user")
-            @Size(max = 45)
-            String user,
+                    String user,
             @ApiParam(
                     name = "ownership",
                     allowableValues = "BYOD, COPE",
@@ -374,7 +373,7 @@ public interface DeviceManagementService {
             int limit,
             @ApiParam(
                     name = "searchContext",
-                    value = "List of search conditions.",
+                    value = "List of device properties  as search conditions.",
                     required = true)
             SearchContext searchContext);
 

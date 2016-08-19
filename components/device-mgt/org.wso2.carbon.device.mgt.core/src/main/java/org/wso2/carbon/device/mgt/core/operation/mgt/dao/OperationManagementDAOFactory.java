@@ -29,6 +29,7 @@ import org.wso2.carbon.device.mgt.core.config.datasource.JNDILookupDefinition;
 import org.wso2.carbon.device.mgt.core.dao.util.DeviceManagementDAOUtil;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.impl.*;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.impl.operation.H2OperationDAOImpl;
+import org.wso2.carbon.device.mgt.core.operation.mgt.dao.impl.operation.MySQLOperationDAOImpl;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.impl.operation.OracleOperationDAOImpl;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.impl.operation.PostgreSQLOperationDAOImpl;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.impl.operation.SQLServerOperationDAOImpl;
@@ -78,7 +79,7 @@ public class OperationManagementDAOFactory {
                 case DeviceManagementConstants.DataBaseTypes.DB_TYPE_H2:
                     return new H2OperationDAOImpl();
                 case DeviceManagementConstants.DataBaseTypes.DB_TYPE_MYSQL:
-                    return new GenericOperationDAOImpl();
+                    return new MySQLOperationDAOImpl();
                 default:
                     throw new UnsupportedDatabaseEngineException("Unsupported database engine : " + databaseEngine);
             }

@@ -25,6 +25,7 @@ import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
+import org.wso2.carbon.device.mgt.common.InvalidDeviceException;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
 import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
@@ -354,6 +355,8 @@ public class MonitoringManagerImpl implements MonitoringManager {
         if (!deviceIdsToAddOperation.isEmpty()) {
             try {
                 this.addMonitoringOperationsToDatabase(new ArrayList<>(deviceIdsToAddOperation.values()));
+            } catch (InvalidDeviceException e) {
+                throw new PolicyComplianceException("Invalid Device Identifiers found.", e);
             } catch (OperationManagementException e) {
                 throw new PolicyComplianceException("Error occurred while adding monitoring operation to devices", e);
             }
@@ -387,7 +390,7 @@ public class MonitoringManagerImpl implements MonitoringManager {
     }
 
     private void addMonitoringOperationsToDatabase(List<Device> devices)
-            throws PolicyComplianceException, OperationManagementException {
+            throws PolicyComplianceException, OperationManagementException, InvalidDeviceException {
 
         List<DeviceIdentifier> deviceIdentifiers = this.getDeviceIdentifiersFromDevices(devices);
         CommandOperation monitoringOperation = new CommandOperation();

@@ -106,6 +106,8 @@ public class ApplicationManagerProviderServiceImpl implements ApplicationManagem
             throw new ApplicationManagementException("Error in add operation at app installation", e);
         } catch (DeviceManagementException e) {
             throw new ApplicationManagementException("Error in notify operation at app installation", e);
+        } catch (InvalidDeviceException e) {
+            throw new ApplicationManagementException("Invalid DeviceIdentifiers found.", e);
         }
     }
 
@@ -140,6 +142,8 @@ public class ApplicationManagerProviderServiceImpl implements ApplicationManagem
 
             return DeviceManagementDataHolder.getInstance().getDeviceManagementProvider()
                     .addOperation(type, operation, deviceIdentifierList);
+        } catch (InvalidDeviceException e) {
+            throw new ApplicationManagementException("Invalid DeviceIdentifiers found.", e);
         } catch (DeviceManagementException e) {
             throw new ApplicationManagementException("Error in get devices for user: " + userName +
                     " in app installation", e);
@@ -179,6 +183,8 @@ public class ApplicationManagerProviderServiceImpl implements ApplicationManagem
             }
             return DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().addOperation(type, operation,
                     deviceIdentifierList);
+        } catch (InvalidDeviceException e) {
+            throw new ApplicationManagementException("Invalid DeviceIdentifiers found.", e);
         } catch (DeviceManagementException e) {
             throw new ApplicationManagementException("Error in get devices for user role " + userRole +
                     " in app installation", e);

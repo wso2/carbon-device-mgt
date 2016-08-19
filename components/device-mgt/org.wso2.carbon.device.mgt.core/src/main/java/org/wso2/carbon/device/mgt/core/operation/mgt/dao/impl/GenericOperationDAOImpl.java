@@ -398,7 +398,6 @@ public class GenericOperationDAOImpl implements OperationDAO {
 //                    "LEFT JOIN DM_DEVICE_OPERATION_RESPONSE AS dor ON dor.ENROLMENT_ID=de.id \n" +
 //                    "AND dor.OPERATION_ID=eom.OPERATION_ID\n" +
 //                    "WHERE eom.UPDATED_TIMESTAMP > ? AND de.TENANT_ID = ? ORDER BY eom.OPERATION_ID";
-
 //            if(limit > 0) {
 //                sql = sql + " LIMIT ?";
 //            }
@@ -456,7 +455,7 @@ public class GenericOperationDAOImpl implements OperationDAO {
 
                     DeviceIdentifier deviceIdentifier = new DeviceIdentifier();
                     deviceIdentifier.setId(rs.getString("DEVICE_IDENTIFICATION"));
-                    deviceIdentifier.setType(rs.getString("DEVICE_TYPE_NAME"));
+                    deviceIdentifier.setType(rs.getString("DEVICE_TYPE"));
                     activityStatus.setDeviceIdentifier(deviceIdentifier);
 
                     activityStatus.setStatus(ActivityStatus.Status.valueOf(rs.getString("STATUS")));
@@ -507,7 +506,7 @@ public class GenericOperationDAOImpl implements OperationDAO {
                     enrolmentId = rs.getInt("ENROLMENT_ID");
                 }
 
-                if (rs.getInt("OP_RES_ID") != 0 && responseId != rs.getInt("OP_RES_ID")){
+                if (rs.getInt("OP_RES_ID") != 0 && responseId != rs.getInt("OP_RES_ID")) {
                     if (rs.getTimestamp("RECEIVED_TIMESTAMP") != (null)) {
                         activityStatus.getResponses().add(OperationDAOUtil.getOperationResponse(rs));
                         responseId = rs.getInt("OP_RES_ID");
@@ -540,7 +539,7 @@ public class GenericOperationDAOImpl implements OperationDAO {
             stmt.setLong(1, timestamp);
             stmt.setInt(2, PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId());
             rs = stmt.executeQuery();
-            if(rs.next()){
+            if (rs.next()) {
                 return rs.getInt("COUNT");
             }
         } catch (SQLException e) {
@@ -1067,8 +1066,4 @@ public class GenericOperationDAOImpl implements OperationDAO {
         }
         return operations;
     }
-
-
-
-
 }

@@ -21,10 +21,7 @@ package org.wso2.carbon.policy.mgt.core.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.device.mgt.common.Device;
-import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
-import org.wso2.carbon.device.mgt.common.DeviceManagementException;
-import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
+import org.wso2.carbon.device.mgt.common.*;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
 import org.wso2.carbon.device.mgt.core.operation.mgt.PolicyOperation;
@@ -170,7 +167,8 @@ public class ComplianceDecisionPointImpl implements ComplianceDecisionPoint {
                         addOperation(type, policyOperation, deviceIdentifiers);
 
             }
-
+        } catch (InvalidDeviceException e) {
+            throw new PolicyComplianceException("Invalid Device identifiers found.", e);
         } catch (OperationManagementException e) {
             throw new PolicyComplianceException("Error occurred while re-enforcing the policy to device " + deviceIdentifier.getId() + " - " +
                     deviceIdentifier.getType(), e);

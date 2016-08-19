@@ -84,7 +84,7 @@ var utils = function () {
         if (!username || !jwtToken) {
             log.error("{/app/modules/oauth/token-handler-utils.js} Error in retrieving tenant " +
                 "based client app credentials. No username or jwt token is found " +
-                "as input - getTenantBasedClientAppCredentials(x, y)");
+                    "as input - getTenantBasedClientAppCredentials(x, y)");
             return null;
         } else {
             //noinspection JSUnresolvedFunction, JSUnresolvedVariable
@@ -92,7 +92,7 @@ var utils = function () {
             if (!tenantDomain) {
                 log.error("{/app/modules/oauth/token-handler-utils.js} Error in retrieving tenant " +
                     "based client application credentials. Unable to obtain a valid tenant domain for provided " +
-                    "username - getTenantBasedClientAppCredentials(x, y)");
+                        "username - getTenantBasedClientAppCredentials(x, y)");
                 return null;
             } else {
                 var cachedTenantBasedClientAppCredentials = privateMethods.
@@ -104,7 +104,7 @@ var utils = function () {
                     var applicationName = "webapp_" + tenantDomain;
                     var requestURL = deviceMgtProps["oauthProvider"]["appRegistration"]
                         ["apiManagerClientAppRegistrationServiceURL"] +
-                        "?tenantDomain=" + tenantDomain + "&applicationName=" + applicationName;
+                            "?tenantDomain=" + tenantDomain + "&applicationName=" + applicationName;
 
                     var xhr = new XMLHttpRequest();
                     xhr.open("POST", requestURL, false);
@@ -123,7 +123,7 @@ var utils = function () {
                     } else {
                         log.error("{/app/modules/oauth/token-handler-utils.js} Error in retrieving tenant " +
                             "based client application credentials from API " +
-                            "Manager - getTenantBasedClientAppCredentials(x, y)");
+                                "Manager - getTenantBasedClientAppCredentials(x, y)");
                         return null;
                     }
                 }
@@ -152,11 +152,11 @@ var utils = function () {
         }
     };
 
-    publicMethods["getTokenPairByPasswordGrantType"] = function (username, password, encodedClientAppCredentials, scopes) {
+    publicMethods["getTokenPairAndScopesByPasswordGrantType"] = function (username, password, encodedClientAppCredentials, scopes) {
         if (!username || !password || !encodedClientAppCredentials || !scopes) {
             log.error("{/app/modules/oauth/token-handler-utils.js} Error in retrieving access token by password " +
                 "grant type. No username, password, encoded client app credentials or scopes are " +
-                    "found - getTokenPairByPasswordGrantType(a, b, c, d)");
+                    "found - getTokenPairAndScopesByPasswordGrantType(a, b, c, d)");
             return null;
         } else {
             // calling oauth provider token service endpoint
@@ -179,17 +179,17 @@ var utils = function () {
                 return tokenData;
             } else {
                 log.error("{/app/modules/oauth/token-handler-utils.js} Error in retrieving access token " +
-                    "by password grant type - getTokenPairByPasswordGrantType(a, b, c, d)");
+                    "by password grant type - getTokenPairAndScopesByPasswordGrantType(a, b, c, d)");
                 return null;
             }
         }
     };
 
-    publicMethods["getTokenPairBySAMLGrantType"] = function (assertion, encodedClientAppCredentials, scopes) {
+    publicMethods["getTokenPairAndScopesBySAMLGrantType"] = function (assertion, encodedClientAppCredentials, scopes) {
         if (!assertion || !encodedClientAppCredentials || !scopes) {
             log.error("{/app/modules/oauth/token-handler-utils.js} Error in retrieving access token by saml " +
                 "grant type. No assertion, encoded client app credentials or scopes are " +
-                    "found - getTokenPairBySAMLGrantType(x, y, z)");
+                    "found - getTokenPairAndScopesBySAMLGrantType(x, y, z)");
             return null;
         } else {
             var assertionXML = publicMethods.decode(assertion);
@@ -205,7 +205,7 @@ var utils = function () {
             var extractedAssertion;
             if (assertionStartIndex == -1 || assertionEndIndex == -1) {
                 log.error("{/app/modules/oauth/token-handler-utils.js} Error in retrieving access " +
-                    "token by saml grant type. Issue in assertion format - getTokenPairBySAMLGrantType(x, y, z)");
+                    "token by saml grant type. Issue in assertion format - getTokenPairAndScopesBySAMLGrantType(x, y, z)");
                 return null;
             } else {
                 extractedAssertion = assertionXML.
@@ -232,7 +232,7 @@ var utils = function () {
                     return tokenData;
                 } else {
                     log.error("{/app/modules/oauth/token-handler-utils.js} Error in retrieving access token " +
-                        "by password grant type - getTokenPairBySAMLGrantType(x, y, z)");
+                        "by password grant type - getTokenPairAndScopesBySAMLGrantType(x, y, z)");
                     return null;
                 }
             }

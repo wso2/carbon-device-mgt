@@ -32,8 +32,8 @@ if (uriMatcher.match("/{context}/api/operation/paginate")) {
     var length = request.getParameter("length");
     var search = request.getParameter("search[value]");
 
-    var restAPIEndpoint = devicemgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"] + "/devices/" +
-        deviceType + "/" + deviceId + "/operations?offset=" + index + "&limit=" + length;
+    var restAPIEndpoint = devicemgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"] +
+        "/devices/" + deviceType + "/" + deviceId + "/operations?offset=" + index + "&limit=" + length;
 
     serviceInvokers.XMLHttp.get(
         restAPIEndpoint,
@@ -46,7 +46,7 @@ if (uriMatcher.match("/{context}/api/operation/paginate")) {
                 paginatedResult["recordsFiltered"] = responsePayload["count"];
                 paginatedResult["data"] = responsePayload["operations"];
 
-                response["status"] = 200;
+                response["status"] = restAPIResponse["status"];
                 response["content"] = paginatedResult;
             } else {
                 response["status"] = restAPIResponse["status"];

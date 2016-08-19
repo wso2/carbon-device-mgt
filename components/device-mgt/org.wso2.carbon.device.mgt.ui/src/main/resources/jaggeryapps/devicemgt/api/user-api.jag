@@ -26,11 +26,11 @@ var constants = require("/app/modules/constants.js");
 var devicemgtProps = require("/app/modules/conf-reader/main.js")["conf"];
 var userModule = require("/app/modules/business-controllers/user.js")["userModule"];
 var deviceModule = require("/app/modules/business-controllers/device.js")["deviceModule"];
-var utility = require("/app/modules/utility.js").utility;
+var utility = require("/app/modules/utility.js")["utility"];
 var apiWrapperUtil = require("/app/modules/oauth/token-handlers.js")["handlers"];
 var util = require("/app/modules/oauth/token-handler-utils.js")["utils"];
 
-var responseProcessor = require('utils').response;
+var responseProcessor = require("utils").response;
 
 var result;
 
@@ -69,9 +69,9 @@ if (uriMatcher.match("/{context}/api/user/authenticate")) {
             apiWrapperUtil.setupTokenPairByPasswordGrantType(username, password);
             var permissions = userModule.getUIPermissions();
             if (permissions.VIEW_DASHBOARD) {
-                response.sendRedirect(constants.WEB_APP_CONTEXT);
+                response.sendRedirect(devicemgtProps["appContext"]);
             } else {
-                response.sendRedirect(constants.WEB_APP_CONTEXT + "/devices");
+                response.sendRedirect(devicemgtProps["appContext"] + "devices");
             }
         }, function () {
             response.sendRedirect(devicemgtProps.appContext + "login?#auth-failed");

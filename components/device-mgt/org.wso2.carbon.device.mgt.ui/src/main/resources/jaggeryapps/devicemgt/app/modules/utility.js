@@ -60,21 +60,6 @@ utility = function () {
         return getOsgiService("org.wso2.carbon.policy.mgt.core.PolicyManagerService");
     };
 
-    publicMethods.getIoTServerConfig = function (configName) {
-        var path = "/config/iot-config.json";
-        var file = new File(path);
-        try {
-            file.open("r");
-            var content = file.readAll();
-        } catch (err) {
-            log.error("Error while reading IoT server config file `" + path + "`: " + err);
-        } finally {
-            file.close();
-        }
-        var json = parse(content);
-        return json[configName];
-    };
-
     publicMethods.getDeviceTypeConfig = function (deviceType) {
         var unitName = publicMethods.getTenantedDeviceUnitName(deviceType, "type-view");
         

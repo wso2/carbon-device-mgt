@@ -97,7 +97,7 @@ public class GenericDeviceDAOImpl extends AbstractDeviceDAOImpl {
                 isStatusProvided = true;
             }
 
-            sql = sql + " LIMIT ?,?";
+            sql = sql + " order by e.DATE_OF_LAST_UPDATE asc LIMIT ?,?";
 
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, tenantId);

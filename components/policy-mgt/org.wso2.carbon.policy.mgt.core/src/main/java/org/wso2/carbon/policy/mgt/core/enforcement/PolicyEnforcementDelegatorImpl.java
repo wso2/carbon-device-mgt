@@ -22,6 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
+import org.wso2.carbon.device.mgt.common.InvalidDeviceException;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManager;
 import org.wso2.carbon.device.mgt.core.operation.mgt.OperationManagerImpl;
@@ -100,6 +101,10 @@ public class PolicyEnforcementDelegatorImpl implements PolicyEnforcementDelegato
             //ToDo Need to fix this to fetch OSGi service
             OperationManager operationManager = new OperationManagerImpl();
             operationManager.addOperation(PolicyManagerUtil.transformPolicy(policy), deviceIdentifiers);
+        } catch (InvalidDeviceException e) {
+            String msg = "Invalid DeviceIdentifiers found.";
+            log.error(msg, e);
+            throw new PolicyDelegationException(msg, e);
         } catch (OperationManagementException e) {
             String msg = "Error occurred while adding the operation to device.";
             log.error(msg, e);

@@ -45,6 +45,7 @@ policyModule = function () {
                 policyObjectToView["priorityId"] = policyObjectFromRestEndpoint["priorityId"];
                 policyObjectToView["name"] = policyObjectFromRestEndpoint["policyName"];
                 policyObjectToView["platform"] = policyObjectFromRestEndpoint["profile"]["deviceType"];
+                policyObjectToView["icon"] = utility.getDeviceThumb(policyObjectToView["platform"]);
                 policyObjectToView["ownershipType"] = policyObjectFromRestEndpoint["ownershipType"];
 
                 var assignedRoleCount = policyObjectFromRestEndpoint["roles"].length;
@@ -73,14 +74,14 @@ policyModule = function () {
                     policyObjectToView["status"] = "Active/Updated";
                     isUpdated = true;
                 } else if (policyObjectFromRestEndpoint["active"] == true &&
-                           policyObjectFromRestEndpoint["updated"] == false) {
+                    policyObjectFromRestEndpoint["updated"] == false) {
                     policyObjectToView["status"] = "Active";
                 } else if (policyObjectFromRestEndpoint["active"] == false &&
-                           policyObjectFromRestEndpoint["updated"] == true) {
+                    policyObjectFromRestEndpoint["updated"] == true) {
                     policyObjectToView["status"] = "Inactive/Updated";
                     isUpdated = true;
                 } else if (policyObjectFromRestEndpoint["active"] == false &&
-                           policyObjectFromRestEndpoint["updated"] == false) {
+                    policyObjectFromRestEndpoint["updated"] == false) {
                     policyObjectToView["status"] = "Inactive";
                 }
                 // push view-objects to list
@@ -125,7 +126,7 @@ policyModule = function () {
         }
         try {
             var url = devicemgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"] +
-                      "/policies?offset=0&limit=100";
+                "/policies?offset=0&limit=100";
             return serviceInvokers.XMLHttp.get(url, privateMethods.handleGetAllPoliciesResponse);
         } catch (e) {
             throw e;

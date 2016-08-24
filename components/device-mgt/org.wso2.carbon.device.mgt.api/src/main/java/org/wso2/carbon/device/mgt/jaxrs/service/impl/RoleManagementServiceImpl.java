@@ -20,21 +20,23 @@ package org.wso2.carbon.device.mgt.jaxrs.service.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.CarbonConstants;
-import org.wso2.carbon.base.MultitenantConstants;
+import org.wso2.carbon.device.mgt.common.scope.mgt.ScopeManagementException;
+import org.wso2.carbon.device.mgt.common.scope.mgt.ScopeManagementService;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
 import org.wso2.carbon.device.mgt.jaxrs.beans.RoleInfo;
 import org.wso2.carbon.device.mgt.jaxrs.beans.RoleList;
+import org.wso2.carbon.device.mgt.jaxrs.beans.Scope;
 import org.wso2.carbon.device.mgt.jaxrs.service.api.RoleManagementService;
 import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.FilteringUtil;
 import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.RequestValidationUtil;
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
+import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtUtil;
 import org.wso2.carbon.device.mgt.jaxrs.util.SetReferenceTransformer;
-import org.wso2.carbon.user.api.*;
+import org.wso2.carbon.user.api.AuthorizationManager;
+import org.wso2.carbon.user.api.UserRealm;
+import org.wso2.carbon.user.api.UserStoreException;
+import org.wso2.carbon.user.api.UserStoreManager;
 import org.wso2.carbon.user.core.common.AbstractUserStoreManager;
-import org.wso2.carbon.user.mgt.UserRealmProxy;
-import org.wso2.carbon.user.mgt.common.UIPermissionNode;
-import org.wso2.carbon.user.mgt.common.UserAdminException;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -88,64 +90,26 @@ public class RoleManagementServiceImpl implements RoleManagementService {
     }
 
     @GET
-    @Path("/{roleName}/permissions")
+    @Path("/scopes")
     @Override
-    public Response getPermissionsOfRole(
-            @PathParam("roleName") String roleName,
+    public Response getScopes(
             @HeaderParam("If-Modified-Since") String ifModifiedSince) {
-        RequestValidationUtil.validateRoleName(roleName);
+
+        List<Scope> scopes = new ArrayList<>();
         try {
-            final UserRealm userRealm = DeviceMgtAPIUtils.getUserRealm();
-            if (!userRealm.getUserStoreManager().isExistingRole(roleName)) {
-                return Response.status(Response.Status.NOT_FOUND).entity(new ErrorResponse.ErrorResponseBuilder().setMessage(
-                        "No role exists with the name '" + roleName + "'").build()).build();
+            ScopeManagementService scopeManagementService = DeviceMgtAPIUtils.getScopeManagementService();
+            if (scopeManagementService == null) {
+                log.error("Scope management service initialization is failed, hence scopes will not be retrieved");
+            } else {
+                scopes = DeviceMgtUtil.convertAPIScopestoScopes(scopeManagementService.getAllScopes());
             }
-
-            final UIPermissionNode rolePermissions = this.getUIPermissionNode(roleName, userRealm);
-            if (rolePermissions == null) {
-                if (log.isDebugEnabled()) {
-                    log.debug("No permissions found for the role '" + roleName + "'");
-                }
-            }
-            return Response.status(Response.Status.OK).entity(rolePermissions).build();
-        } catch (UserAdminException e) {
-            String msg = "Error occurred while retrieving the permissions of role '" + roleName + "'";
-            log.error(msg, e);
-            return Response.serverError().entity(
-                    new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
-        } catch (UserStoreException e) {
-            String msg = "Error occurred while retrieving the underlying user realm attached to the " +
-                    "current logged in user";
+            return Response.status(Response.Status.OK).entity(scopes).build();
+        } catch (ScopeManagementException e) {
+            String msg = "Error occurred while retrieving the scopes";
             log.error(msg, e);
             return Response.serverError().entity(
                     new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
         }
-    }
-
-    private UIPermissionNode getUIPermissionNode(String roleName, UserRealm userRealm)
-            throws UserAdminException {
-        org.wso2.carbon.user.core.UserRealm userRealmCore = null;
-        if (userRealm instanceof org.wso2.carbon.user.core.UserRealm) {
-            userRealmCore = (org.wso2.carbon.user.core.UserRealm) userRealm;
-        }
-        final UserRealmProxy userRealmProxy = new UserRealmProxy(userRealmCore);
-        final UIPermissionNode rolePermissions =
-                userRealmProxy.getRolePermissions(roleName, MultitenantConstants.SUPER_TENANT_ID);
-        UIPermissionNode[] deviceMgtPermissions = new UIPermissionNode[2];
-
-        for (UIPermissionNode permissionNode : rolePermissions.getNodeList()) {
-            if ("/permission/admin".equals(permissionNode.getResourcePath())) {
-                for (UIPermissionNode node : permissionNode.getNodeList()) {
-                    if ("/permission/admin/device-mgt".equals(node.getResourcePath())) {
-                        deviceMgtPermissions[0] = node;
-                    } else if ("/permission/admin/login".equals(node.getResourcePath())) {
-                        deviceMgtPermissions[1] = node;
-                    }
-                }
-            }
-        }
-        rolePermissions.setNodeList(deviceMgtPermissions);
-        return rolePermissions;
     }
 
     @GET
@@ -158,41 +122,35 @@ public class RoleManagementServiceImpl implements RoleManagementService {
         }
         RequestValidationUtil.validateRoleName(roleName);
         RoleInfo roleInfo = new RoleInfo();
+        List<String> scopes = new ArrayList<>();
         try {
             final UserStoreManager userStoreManager = DeviceMgtAPIUtils.getUserStoreManager();
-            final UserRealm userRealm = DeviceMgtAPIUtils.getUserRealm();
             if (!userStoreManager.isExistingRole(roleName)) {
                 return Response.status(Response.Status.NOT_FOUND).entity(
                         new ErrorResponse.ErrorResponseBuilder().setMessage("No role exists with the name '" +
                                 roleName + "'").build()).build();
             }
+            ScopeManagementService scopeManagementService = DeviceMgtAPIUtils.getScopeManagementService();
+            if (scopeManagementService == null) {
+                log.error("Scope management service initialization is failed, hence scopes will not be retrieved");
+            } else {
+                scopes = DeviceMgtUtil.convertAPIScopesToScopeKeys(scopeManagementService.getScopesOfRole(roleName));
+            }
             roleInfo.setRoleName(roleName);
             roleInfo.setUsers(userStoreManager.getUserListOfRole(roleName));
-            // Get the permission nodes and hand picking only device management and login perms
-            final UIPermissionNode rolePermissions = this.getUIPermissionNode(roleName, userRealm);
-            List<String> permList = new ArrayList<>();
-            this.iteratePermissions(rolePermissions, permList);
-            roleInfo.setPermissionList(rolePermissions);
-            String[] permListAr = new String[permList.size()];
-            roleInfo.setPermissions(permList.toArray(permListAr));
-
+            roleInfo.setScopes(scopes);
             return Response.status(Response.Status.OK).entity(roleInfo).build();
-        } catch (UserStoreException | UserAdminException e) {
+        } catch (UserStoreException e) {
             String msg = "Error occurred while retrieving the user role '" + roleName + "'";
             log.error(msg, e);
             return Response.serverError().entity(
                     new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
+        } catch (ScopeManagementException e) {
+            String msg = "Error occurred while retrieving the scopes";
+            log.error(msg, e);
+            return Response.serverError().entity(
+                    new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
         }
-    }
-
-    private List<String> iteratePermissions(UIPermissionNode uiPermissionNode, List<String> list) {
-        for (UIPermissionNode permissionNode : uiPermissionNode.getNodeList()) {
-            list.add(permissionNode.getResourcePath());
-            if (permissionNode.getNodeList() != null && permissionNode.getNodeList().length > 0) {
-                iteratePermissions(permissionNode, list);
-            }
-        }
-        return list;
     }
 
     @POST
@@ -200,20 +158,13 @@ public class RoleManagementServiceImpl implements RoleManagementService {
     public Response addRole(RoleInfo roleInfo) {
         RequestValidationUtil.validateRoleDetails(roleInfo);
         RequestValidationUtil.validateRoleName(roleInfo.getRoleName());
+
         try {
             UserStoreManager userStoreManager = DeviceMgtAPIUtils.getUserStoreManager();
             if (log.isDebugEnabled()) {
                 log.debug("Persisting the role in the underlying user store");
             }
-            Permission[] permissions = null;
-            if (roleInfo.getPermissions() != null && roleInfo.getPermissions().length > 0) {
-                permissions = new Permission[roleInfo.getPermissions().length];
-                for (int i = 0; i < permissions.length; i++) {
-                    String permission = roleInfo.getPermissions()[i];
-                    permissions[i] = new Permission(permission, CarbonConstants.UI_PERMISSION_ACTION);
-                }
-            }
-            userStoreManager.addRole(roleInfo.getRoleName(), roleInfo.getUsers(), permissions);
+            userStoreManager.addRole(roleInfo.getRoleName(), roleInfo.getUsers(), null);
 
             //TODO fix what's returned in the entity
             return Response.created(new URI(API_BASE_PATH + "/" + roleInfo.getRoleName())).entity(
@@ -269,14 +220,12 @@ public class RoleManagementServiceImpl implements RoleManagementService {
                 userStoreManager.updateUserListOfRole(newRoleName, usersToDelete, usersToAdd);
             }
 
-            if (roleInfo.getPermissions() != null) {
-                // Delete all authorizations for the current role before authorizing the permission tree
-                authorizationManager.clearRoleAuthorization(roleName);
-                if (roleInfo.getPermissions().length > 0) {
-                    for (int i = 0; i < roleInfo.getPermissions().length; i++) {
-                        String permission = roleInfo.getPermissions()[i];
-                        authorizationManager.authorizeRole(roleName, permission, CarbonConstants.UI_PERMISSION_ACTION);
-                    }
+            if (roleInfo.getScopes() != null) {
+                ScopeManagementService scopeManagementService = DeviceMgtAPIUtils.getScopeManagementService();
+                if (scopeManagementService == null) {
+                    log.error("Scope management service initialization is failed, hence scopes will not be updated");
+                } else {
+                    scopeManagementService.updateScopes(roleInfo.getScopes(), roleName);
                 }
             }
             //TODO: Need to send the updated role information in the entity back to the client
@@ -284,6 +233,11 @@ public class RoleManagementServiceImpl implements RoleManagementService {
                     "successfully been updated").build();
         } catch (UserStoreException e) {
             String msg = "Error occurred while updating role '" + roleName + "'";
+            log.error(msg, e);
+            return Response.serverError().entity(
+                    new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
+        } catch (ScopeManagementException e) {
+            String msg = "Error occurred while updating scopes of role '" + roleName + "'";
             log.error(msg, e);
             return Response.serverError().entity(
                     new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
@@ -295,6 +249,7 @@ public class RoleManagementServiceImpl implements RoleManagementService {
     @Override
     public Response deleteRole(@PathParam("roleName") String roleName) {
         RequestValidationUtil.validateRoleName(roleName);
+
         try {
             final UserRealm userRealm = DeviceMgtAPIUtils.getUserRealm();
             final UserStoreManager userStoreManager = userRealm.getUserStoreManager();
@@ -312,9 +267,23 @@ public class RoleManagementServiceImpl implements RoleManagementService {
             // Delete all authorizations for the current role before deleting
             authorizationManager.clearRoleAuthorization(roleName);
 
-            return Response.status(Response.Status.OK).build();
+            //removing scopes
+            ScopeManagementService scopeManagementService = DeviceMgtAPIUtils.getScopeManagementService();
+            if (scopeManagementService == null) {
+                log.error("Scope management service initialization is failed, hence scopes will not be updated");
+            } else {
+                scopeManagementService.removeScopes(roleName);
+            }
+
+            return Response.status(Response.Status.OK).entity("Role '" + roleName + "' has " +
+                    "successfully been deleted").build();
         } catch (UserStoreException e) {
             String msg = "Error occurred while deleting the role '" + roleName + "'";
+            log.error(msg, e);
+            return Response.serverError().entity(
+                    new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
+        } catch (ScopeManagementException e) {
+            String msg = "Error occurred while deleting scopes of role '" + roleName + "'";
             log.error(msg, e);
             return Response.serverError().entity(
                     new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();

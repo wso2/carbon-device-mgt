@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -47,7 +47,7 @@ var sortableListFunction = (function () {
         }
 
         /**
-         * on input text field focus autocomplete bind function
+         * on input text field focus auto-complete bind function
          */
         $(sortableElem).on('focus', '.wr-sort-index input.index', function () {
             currentElemId = $(this).val();

@@ -18,6 +18,7 @@
  */
 package org.wso2.carbon.device.mgt.jaxrs.service.impl.util;
 
+import org.wso2.carbon.device.mgt.jaxrs.beans.Scope;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.PlatformConfiguration;
 import org.wso2.carbon.device.mgt.common.notification.mgt.Notification;
@@ -308,8 +309,20 @@ public class RequestValidationUtil {
     public static void validateRoleDetails(RoleInfo roleInfo) {
         if (roleInfo == null) {
             throw new InputValidationException(
-                    new ErrorResponse.ErrorResponseBuilder().setCode(400l).setMessage("Request body is incorrect or" +
-                            " empty").build());
+                    new ErrorResponse.ErrorResponseBuilder().setCode(400l).setMessage("Request body is "
+                            + "empty").build());
+        } else if (roleInfo.getRoleName() == null) {
+            throw new InputValidationException(
+                    new ErrorResponse.ErrorResponseBuilder().setCode(400l).setMessage("Request body is "
+                            + "incorrect").build());
+        }
+    }
+
+    public static void validateScopes(List<Scope> scopes) {
+        if (scopes == null || scopes.isEmpty()) {
+            throw new InputValidationException(
+                    new ErrorResponse.ErrorResponseBuilder().setCode(400l).setMessage("Scope details of the request body" +
+                            " is incorrect or empty").build());
         }
     }
 

@@ -42,7 +42,7 @@ var userModule = function () {
     privateMethods.getCarbonUser = function () {
         var carbon = require("carbon");
         var carbonUser = session.get(constants["USER_SESSION_KEY"]);
-        var utility = require("/modules/utility.js")["utility"];
+        var utility = require("/app/modules/utility.js")["utility"];
         if (!carbonUser) {
             log.error("User object was not found in the session");
             throw constants["ERRORS"]["USER_NOT_FOUND"];
@@ -174,7 +174,11 @@ var userModule = function () {
             utility.startTenantFlow(carbonUser);
             var url = devicemgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"] + "/users/" +
                 encodeURIComponent(username) + "/roles";
-            return privateMethods.callBackend(url, constants["HTTP_GET"]);
+            var response = privateMethods.callBackend(url, constants["HTTP_GET"]);
+            if (response.status == "success") {
+                response.content = parse(response.content).roles;
+            }
+            return response;
         } catch (e) {
             throw e;
         } finally {
@@ -239,8 +243,7 @@ var userModule = function () {
      * Get User Roles from user store (Internal roles not included).
      * @returns {object} a response object with status and content on success.
      */
-    publicMethods.getRolesByUserStore = function () {
-        var ROLE_LIMIT = devicemgtProps["pageSize"];
+    publicMethods.getRolesByUserStore = function (userStore) {
         var carbonUser = session.get(constants["USER_SESSION_KEY"]);
         var utility = require("/app/modules/utility.js")["utility"];
         if (!carbonUser) {
@@ -249,7 +252,8 @@ var userModule = function () {
         }
         try {
             utility.startTenantFlow(carbonUser);
-            var url = devicemgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"] + "/roles?limit=" + ROLE_LIMIT;
+            var url = devicemgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"] +
+                "/roles?user-store=" + userStore + "&limit=100";
             var response = privateMethods.callBackend(url, constants["HTTP_GET"]);
             if (response.status == "success") {
                 response.content = parse(response.content).roles;
@@ -264,8 +268,9 @@ var userModule = function () {
 
     /**
      * Get Platforms.
+     * @deprecated moved this device module under getDeviceTypes.
      */
-    //TODO Move this piece of logic out of user.js to somewhere else appropriate.
+        //TODO Move this piece of logic out of user.js to somewhere else appropriate.
     publicMethods.getPlatforms = function () {
         var carbonUser = session.get(constants["USER_SESSION_KEY"]);
         var utility = require("/app/modules/utility.js")["utility"];
@@ -275,7 +280,7 @@ var userModule = function () {
         }
         try {
             utility.startTenantFlow(carbonUser);
-            var url = devicemgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"] + "/admin/device-types";
+            var url = devicemgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"] + "/device-types";
             var response = privateMethods.callBackend(url, constants["HTTP_GET"]);
             if (response.status == "success") {
                 response.content = parse(response.content);

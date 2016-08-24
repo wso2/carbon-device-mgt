@@ -1,21 +1,3 @@
-/*
- * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
- *
- * WSO2 Inc. licenses this file to you under the Apache License,
- * Version 2.0 (the "License"); you may not use this file except
- * in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied. See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
-
 /**
  * Checks if provided input is valid against RegEx input.
  *
@@ -30,6 +12,8 @@ function inputIsValid(regExp, inputString) {
 
 var validateInline = {};
 var clearInline = {};
+
+var apiBasePath = "/api/device-mgt/v1.0";
 
 var enableInlineError = function (inputField, errorMsg, errorSign) {
     var fieldIdentifier = "#" + inputField;
@@ -113,12 +97,12 @@ function formatRepoSelection (user) {
 }
 
 $(document).ready(function () {
-
+    var appContext = $("#app-context").data("app-context");
     $("#users").select2({
         multiple:true,
         tags: false,
         ajax: {
-            url: window.location.origin + "/devicemgt/api/invoker/execute/",
+            url: appContext + "/api/invoker/execute/",
             method: "POST",
             dataType: 'json',
             delay: 250,
@@ -128,7 +112,7 @@ $(document).ready(function () {
             data: function (params) {
                 var postData = {};
                 postData.actionMethod = "GET";
-                postData.actionUrl = "/devicemgt_admin/users/view-users?username=" + params.term;
+                postData.actionUrl = apiBasePath + "/users/search/usernames?filter=" + params.term;
                 postData.actionPayload = null;
                 return JSON.stringify(postData);
             },
@@ -155,7 +139,7 @@ $(document).ready(function () {
     /**
      * Following click function would execute
      * when a user clicks on "Add Role" button
-     * on Add Role page in WSO2 Devicemgt Console.
+     * on Add Role page in WSO2 MDM Console.
      */
     $("button#add-role-btn").click(function() {
         var rolenameInput = $("input#rolename");
@@ -183,12 +167,12 @@ $(document).ready(function () {
                 addRoleFormData.roleName = domain + "/" + roleName;
             }
 
-            var addRoleAPI = "/devicemgt_admin/roles?rolename=" + encodeURIComponent(currentRoleName);
+            var addRoleAPI = apiBasePath + "/roles/" + currentRoleName;
             invokerUtil.put(
                 addRoleAPI,
                 addRoleFormData,
-                function (jqXHR) {
-                    if (JSON.parse(jqXHR).status == 200 || jqXHR.status == 200) {
+                function (data, textStatus, jqXHR) {
+                    if (jqXHR.status == 200) {
                         // Clearing user input fields.
                         $("input#rolename").val("");
                         $("#domain").val("");
@@ -197,7 +181,8 @@ $(document).ready(function () {
                         $("#role-created-msg").removeClass("hidden");
                     }
                 }, function (data) {
-                    $(errorMsg).text(JSON.parse(data.responseText).errorMessage);
+                    var payload = JSON.parse(data.responseText);
+                    $(errorMsg).text(payload.message);
                     $(errorMsgWrapper).removeClass("hidden");
                 }
             );

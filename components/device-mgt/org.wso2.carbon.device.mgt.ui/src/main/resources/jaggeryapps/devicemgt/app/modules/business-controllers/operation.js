@@ -38,7 +38,7 @@ var operationModule = function () {
     }
 
     privateMethods.getOperationsFromFeatures = function (deviceType, operationType) {
-        var url = devicemgtProps["httpsURL"] + constants.ADMIN_SERVICE_CONTEXT + "/features/" + deviceType;
+        var url = devicemgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"] + "/features/" + deviceType;
         var featuresList = serviceInvokers.XMLHttp.get(url, function (responsePayload) {
                 var features = responsePayload;
                 var featureList = [];

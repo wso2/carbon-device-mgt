@@ -18,6 +18,7 @@
 
 package org.wso2.carbon.device.mgt.jaxrs.util;
 
+import org.wso2.carbon.apimgt.api.model.Scope;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorListItem;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ProfileFeature;
@@ -64,6 +65,38 @@ public class DeviceMgtUtil {
 
     }
 
+    public static List<Scope> convertScopesListToAPIScopes(List<String> scopes, String roleName) {
+        List<Scope> convertedScopes = new ArrayList<>();
+        Scope convertedScope;
+        for (String scope : scopes) {
+            convertedScope = new Scope();
+            convertedScope.setKey(scope);
+            convertedScope.setRoles(roleName);
+            convertedScopes.add(convertedScope);
+        }
+        return convertedScopes;
+    }
+
+    public static List<org.wso2.carbon.device.mgt.jaxrs.beans.Scope> convertAPIScopestoScopes(List<Scope> scopes) {
+        List<org.wso2.carbon.device.mgt.jaxrs.beans.Scope> convertedScopes = new ArrayList<>();
+        org.wso2.carbon.device.mgt.jaxrs.beans.Scope convertedScope;
+        for (Scope scope : scopes) {
+            convertedScope = new org.wso2.carbon.device.mgt.jaxrs.beans.Scope();
+            convertedScope.setKey(scope.getKey());
+            convertedScope.setName(scope.getName());
+            convertedScope.setDescription(scope.getDescription());
+            convertedScopes.add(convertedScope);
+        }
+        return convertedScopes;
+    }
+
+    public static List<String> convertAPIScopesToScopeKeys(List<Scope> scopes) {
+        List<String> convertedScopes = new ArrayList<>();
+        for (Scope scope : scopes) {
+            convertedScopes.add(scope.getKey());
+        }
+        return convertedScopes;
+    }
     /**
      * Returns a new BadRequestException
      *

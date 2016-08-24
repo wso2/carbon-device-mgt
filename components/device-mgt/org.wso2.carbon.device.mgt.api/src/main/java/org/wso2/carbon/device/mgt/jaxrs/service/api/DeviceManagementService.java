@@ -20,7 +20,7 @@ package org.wso2.carbon.device.mgt.jaxrs.service.api;
 
 import io.swagger.annotations.*;
 import org.wso2.carbon.apimgt.annotations.api.API;
-import org.wso2.carbon.apimgt.annotations.api.Permission;
+import org.wso2.carbon.apimgt.annotations.api.Scope;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.Feature;
 import org.wso2.carbon.device.mgt.common.app.mgt.Application;
@@ -39,7 +39,7 @@ import javax.ws.rs.core.Response;
 /**
  * Device related REST-API. This can be used to manipulated device related details.
  */
-@API(name = "Device", version = "1.0.0", context = "/api/device-mgt/admin/devices", tags = {"devicemgt_admin"})
+@API(name = "Device Management", version = "1.0.0", context = "/api/device-mgt/v1.0/devices", tags = {"devicemgt_admin"})
 
 @Path("/devices")
 @Api(value = "Device Management", description = "This API carries all device management related operations " +
@@ -92,10 +92,7 @@ public interface DeviceManagementService {
                     message = "Internal Server Error. \n Server error occurred while fetching the device list.",
                     response = ErrorResponse.class)
     })
-    @Permission(
-            scope = "device-list",
-            permissions = {"/permission/admin/device-mgt/admin/devices/list"}
-    )
+    @Scope(key = "device:view", name = "View Devices", description = "")
     Response getDevices(
             @ApiParam(
                     name = "name",
@@ -115,15 +112,7 @@ public interface DeviceManagementService {
                     value = "Username of owner of the devices.",
                     required = false)
             @QueryParam("user")
-            @Size(max = 45)
-            String user,
-            @ApiParam(
-                    name = "roleName",
-                    value = "Role name of the devices to be fetched.",
-                    required = false)
-            @QueryParam("roleName")
-            @Size(max = 45)
-            String roleName,
+                    String user,
             @ApiParam(
                     name = "ownership",
                     allowableValues = "BYOD, COPE",
@@ -210,13 +199,7 @@ public interface DeviceManagementService {
                                     "Server error occurred while retrieving information requested device.",
                             response = ErrorResponse.class)
             })
-    @Permission(
-            scope = "device-view",
-            permissions = {
-                    "/permission/admin/device-mgt/admin/devices/view",
-                    "/permission/admin/device-mgt/user/devices/view"
-            }
-    )
+    @Scope(key = "device:view", name = "View Devices", description = "")
     Response getDevice(
             @ApiParam(
                     name = "type",
@@ -298,12 +281,7 @@ public interface DeviceManagementService {
                                     "Server error occurred while retrieving feature list of the device.",
                             response = ErrorResponse.class)
             })
-    @Permission(
-            scope = "device-search",
-            permissions = {"/permission/admin/device-mgt/admin/devices/view",
-                    "/permission/admin/device-mgt/user/devices/view"
-            }
-    )
+    @Scope(key = "device:view", name = "View Devices", description = "")
     Response getFeaturesOfDevice(
             @ApiParam(
                     name = "type",
@@ -379,10 +357,7 @@ public interface DeviceManagementService {
                                     "Server error occurred while enrolling the device.",
                             response = ErrorResponse.class)
             })
-    @Permission(
-            scope = "device-search",
-            permissions = {"/permission/admin/device-mgt/admin/devices/list"}
-    )
+    @Scope(key = "device:view", name = "View Devices", description = "")
     Response searchDevices(
             @ApiParam(
                     name = "offset",
@@ -398,7 +373,7 @@ public interface DeviceManagementService {
             int limit,
             @ApiParam(
                     name = "searchContext",
-                    value = "List of search conditions.",
+                    value = "List of device properties  as search conditions.",
                     required = true)
             SearchContext searchContext);
 
@@ -461,13 +436,8 @@ public interface DeviceManagementService {
                                     "Server error occurred while retrieving installed application list of the device.",
                             response = ErrorResponse.class)
             })
-    @Permission(
-            scope = "operation-view",
-            permissions = {
-                    "/permission/admin/device-mgt/admin/devices/view",
-                    "/permission/admin/device-mgt/user/devices/view"
-            }
-    )
+    @Scope(key = "device:view", name = "View Devices", description = "")
+
     Response getInstalledApplications(
             @ApiParam(
                     name = "type",
@@ -563,13 +533,7 @@ public interface DeviceManagementService {
                                     "Server error occurred while retrieving operation list scheduled for the device.",
                             response = ErrorResponse.class)
             })
-    @Permission(
-            scope = "operation-view",
-            permissions = {
-                    "/permission/admin/device-mgt/admin/devices/view",
-                    "/permission/admin/device-mgt/user/devices/view"
-            }
-    )
+    @Scope(key = "device:view", name = "View Devices", description = "")
     Response getDeviceOperations(
             @ApiParam(
                     name = "type",
@@ -667,6 +631,7 @@ public interface DeviceManagementService {
                             response = ErrorResponse.class)
             }
     )
+    @Scope(key = "device:view", name = "View Devices", description = "")
     Response getEffectivePolicyOfDevice(
             @ApiParam(
                     name = "type",
@@ -718,6 +683,7 @@ public interface DeviceManagementService {
                             response = ErrorResponse.class)
             }
     )
+    @Scope(key = "device:view", name = "View Devices", description = "")
     Response getComplianceDataOfDevice(
             @ApiParam(
                     name = "type",

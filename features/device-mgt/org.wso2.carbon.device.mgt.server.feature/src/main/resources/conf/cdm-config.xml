@@ -62,6 +62,7 @@
             </Operation>
         </Operations>
     </TaskConfiguration>
+    <!-- Default Page size configuration for paginated DM APIs-->
     <PaginationConfiguration>
         <DeviceListPageSize>20</DeviceListPageSize>
         <NotificationListPageSize>20</NotificationListPageSize>

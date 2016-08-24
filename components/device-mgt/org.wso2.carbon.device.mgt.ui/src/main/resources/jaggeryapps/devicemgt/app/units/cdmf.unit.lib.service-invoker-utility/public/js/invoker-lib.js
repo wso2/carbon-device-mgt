@@ -27,8 +27,10 @@ var invokerUtil = function () {
         restAPIRequestDetails["requestURL"] = requestURL;
         restAPIRequestDetails["requestPayload"] = JSON.stringify(requestPayload);
 
+        var appContext = $("#app-context").data("app-context");
+
         var request = {
-            url: context + "/api/invoker/execute/",
+            url: appContext + "/api/invoker/execute/",
             type: "POST",
             contentType: "application/json",
             data: JSON.stringify(restAPIRequestDetails),

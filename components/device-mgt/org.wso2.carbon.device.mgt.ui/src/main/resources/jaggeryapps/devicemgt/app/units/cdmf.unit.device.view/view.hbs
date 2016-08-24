@@ -15,6 +15,7 @@
   specific language governing permissions and limitations
   under the License.
 }}
+
 {{#zone "contentTitle"}}
     <div class="row wr-device-board">
         <div class="col-lg-12 wr-secondary-bar">
@@ -32,6 +33,7 @@
     </div>
 {{/zone}}
 
+{{#zone "content"}}
 <div class="row no-gutter add-padding-5x add-margin-top-5x"
      style="border: 1px solid #e4e4e4;">
     <div class="media">
@@ -193,7 +195,7 @@
         </div>
     {{/defineZone}}
 </div>
-
+{{/zone}}
 {{#zone "bottomJs"}}
     {{js "js/device-view.js"}}
     <script id="policy-view" src="{{@unit.publicUri}}/templates/policy-compliance.hbs"

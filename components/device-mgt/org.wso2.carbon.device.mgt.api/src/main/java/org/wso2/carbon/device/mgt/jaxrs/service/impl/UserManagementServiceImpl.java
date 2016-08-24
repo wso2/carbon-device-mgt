@@ -134,14 +134,14 @@ public class UserManagementServiceImpl implements UserManagementService {
     public Response updateUser(@PathParam("username") String username, UserInfo userInfo) {
         try {
             UserStoreManager userStoreManager = DeviceMgtAPIUtils.getUserStoreManager();
-            if (!userStoreManager.isExistingUser(userInfo.getUsername())) {
+            if (!userStoreManager.isExistingUser(username)) {
                 if (log.isDebugEnabled()) {
-                    log.debug("User by username: " + userInfo.getUsername() +
-                            " doesn't exists. Therefore, request made to update user was refused.");
+                    log.debug("User by username: " + username +
+                              " doesn't exists. Therefore, request made to update user was refused.");
                 }
                 return Response.status(Response.Status.NOT_FOUND).entity(
                         new ErrorResponse.ErrorResponseBuilder().setMessage("User by username: " +
-                                userInfo.getUsername() + " doesn't  exist.").build()).build();
+                                                                            username + " doesn't  exist.").build()).build();
             }
 
             Map<String, String> defaultUserClaims =
@@ -149,11 +149,11 @@ public class UserManagementServiceImpl implements UserManagementService {
                             userInfo.getEmailAddress());
             if (StringUtils.isNotEmpty(userInfo.getPassword())) {
                 // Decoding Base64 encoded password
-                userStoreManager.updateCredentialByAdmin(userInfo.getUsername(),
-                        userInfo.getPassword());
-                log.debug("User credential of username: " + userInfo.getUsername() + " has been changed");
+                userStoreManager.updateCredentialByAdmin(username,
+                                                         userInfo.getPassword());
+                log.debug("User credential of username: " + username + " has been changed");
             }
-            List<String> currentRoles = this.getFilteredRoles(userStoreManager, userInfo.getUsername());
+            List<String> currentRoles = this.getFilteredRoles(userStoreManager, username);
             List<String> newRoles = Arrays.asList(userInfo.getRoles());
 
             List<String> rolesToAdd = new ArrayList<>(newRoles);
@@ -167,19 +167,19 @@ public class UserManagementServiceImpl implements UserManagementService {
                 }
             }
             rolesToDelete.remove(ROLE_EVERYONE);
-            userStoreManager.updateRoleListOfUser(userInfo.getUsername(),
-                    rolesToDelete.toArray(new String[rolesToDelete.size()]),
-                    rolesToAdd.toArray(new String[rolesToAdd.size()]));
-            userStoreManager.setUserClaimValues(userInfo.getUsername(), defaultUserClaims, null);
+            userStoreManager.updateRoleListOfUser(username,
+                                                  rolesToDelete.toArray(new String[rolesToDelete.size()]),
+                                                  rolesToAdd.toArray(new String[rolesToAdd.size()]));
+            userStoreManager.setUserClaimValues(username, defaultUserClaims, null);
             // Outputting debug message upon successful addition of user
             if (log.isDebugEnabled()) {
-                log.debug("User by username: " + userInfo.getUsername() + " was successfully updated.");
+                log.debug("User by username: " + username + " was successfully updated.");
             }
 
             BasicUserInfo updatedUserInfo = this.getBasicUserInfo(username);
             return Response.ok().entity(updatedUserInfo).build();
         } catch (UserStoreException e) {
-            String msg = "Error occurred while trying to update user '" + userInfo.getUsername() + "'";
+            String msg = "Error occurred while trying to update user '" + username + "'";
             log.error(msg, e);
             return Response.serverError().entity(
                     new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
@@ -264,16 +264,20 @@ public class UserManagementServiceImpl implements UserManagementService {
         if (log.isDebugEnabled()) {
             log.debug("Getting the list of users with all user-related information");
         }
-        List<BasicUserInfo> userList, offsetList;
+
         RequestValidationUtil.validatePaginationParameters(offset, limit);
-        String appliedFilter = ((filter == null) || filter.isEmpty() ? "*" : filter);
-        int appliedLimit = (limit <= 0) ? -1 : (limit + offset);
+
+        List<BasicUserInfo> userList, offsetList;
+        String appliedFilter = ((filter == null) || filter.isEmpty() ? "*" : filter + "*");
+        // to get whole set of users, appliedLimit is set to -1
+        // by default, this whole set is limited to 100 - MaxUserNameListLength of user-mgt.xml
+        int appliedLimit = -1;
 
         try {
             UserStoreManager userStoreManager = DeviceMgtAPIUtils.getUserStoreManager();
 
             //As the listUsers function accepts limit only to accommodate offset we are passing offset + limit
-            String[] users = userStoreManager.listUsers(appliedFilter + "*", appliedLimit);
+            String[] users = userStoreManager.listUsers(appliedFilter, appliedLimit);
             userList = new ArrayList<>(users.length);
             BasicUserInfo user;
             for (String username : users) {
@@ -285,14 +289,23 @@ public class UserManagementServiceImpl implements UserManagementService {
                 userList.add(user);
             }
 
-            if (offset <= userList.size()) {
-                offsetList = userList.subList(offset, userList.size());
+            int toIndex = offset + limit;
+            int listSize = userList.size();
+            int lastIndex = listSize - 1;
+
+            if (offset <= lastIndex) {
+                if (toIndex <= listSize) {
+                    offsetList = userList.subList(offset, toIndex);
+                } else {
+                    offsetList = userList.subList(offset, listSize);
+                }
             } else {
                 offsetList = new ArrayList<>();
             }
+
             BasicUserInfoList result = new BasicUserInfoList();
             result.setList(offsetList);
-            result.setCount(offsetList.size());
+            result.setCount(users.length);
 
             return Response.status(Response.Status.OK).entity(result).build();
         } catch (UserStoreException e) {

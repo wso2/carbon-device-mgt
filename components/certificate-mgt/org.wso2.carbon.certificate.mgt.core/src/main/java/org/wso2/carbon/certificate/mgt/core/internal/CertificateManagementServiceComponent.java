@@ -26,8 +26,11 @@ import org.wso2.carbon.certificate.mgt.core.config.CertificateConfigurationManag
 import org.wso2.carbon.certificate.mgt.core.config.CertificateManagementConfig;
 import org.wso2.carbon.certificate.mgt.core.config.datasource.DataSourceConfig;
 import org.wso2.carbon.certificate.mgt.core.dao.CertificateManagementDAOFactory;
+import org.wso2.carbon.certificate.mgt.core.exception.CertificateManagementException;
 import org.wso2.carbon.certificate.mgt.core.service.CertificateManagementService;
 import org.wso2.carbon.certificate.mgt.core.service.CertificateManagementServiceImpl;
+import org.wso2.carbon.certificate.mgt.core.util.CertificateManagementConstants;
+import org.wso2.carbon.certificate.mgt.core.util.CertificateMgtSchemaInitializer;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 
 /**
@@ -50,14 +53,24 @@ public class CertificateManagementServiceComponent {
                 log.debug("Initializing certificate management core bundle");
             }
             CertificateConfigurationManager.getInstance().initConfig();
-            CertificateManagementConfig config = CertificateConfigurationManager.getInstance().getPolicyManagementConfig();
+            CertificateManagementConfig config = CertificateConfigurationManager.getInstance().getCertificateManagementConfig();
             DataSourceConfig dsConfig = config.getCertificateManagementRepository().getDataSourceConfig();
             CertificateManagementDAOFactory.init(dsConfig);
 
             BundleContext bundleContext = componentContext.getBundleContext();
+
+            /* If -Dsetup option enabled then create Certificate management database schema */
+            String setupOption =
+                    System.getProperty(CertificateManagementConstants.SETUP_PROPERTY);
+            if (setupOption != null) {
+                if (log.isDebugEnabled()) {
+                    log.debug("-Dsetup is enabled. Certificate management repository schema initialization is about to " +
+                              "begin");
+                }
+                this.setupDeviceManagementSchema(dsConfig);
+            }
             bundleContext.registerService(CertificateManagementService.class.getName(),
                     CertificateManagementServiceImpl.getInstance(), null);
-
 
             if (log.isDebugEnabled()) {
                 log.debug("Certificate management core bundle has been successfully initialized");
@@ -85,5 +98,20 @@ public class CertificateManagementServiceComponent {
         }
         CertificateManagementDataHolder.getInstance().setDeviceManagementService(null);
     }
+
+    private void setupDeviceManagementSchema(DataSourceConfig config) throws CertificateManagementException {
+        CertificateMgtSchemaInitializer initializer = new CertificateMgtSchemaInitializer(config);
+        log.info("Initializing Certificate management repository database schema");
+        try {
+            initializer.createRegistryDatabase();
+        } catch (Exception e) {
+            throw new CertificateManagementException(
+                    "Error occurred while initializing Certificate Management database schema", e);
+        }
+        if (log.isDebugEnabled()) {
+            log.debug("Certificate management metadata repository schema has been successfully initialized");
+        }
+    }
+
 
 }

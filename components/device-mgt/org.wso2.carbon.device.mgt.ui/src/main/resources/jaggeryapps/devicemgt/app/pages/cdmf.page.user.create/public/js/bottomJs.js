@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -72,8 +72,8 @@ var disableInlineError = function (inputField, errorMsg, errorSign) {
  * Validate if provided username is valid against RegEx configures.
  */
 validateInline["user-name"] = function () {
-    var usernameinput = $("input#username");
-    if (inputIsValid(usernameinput.data("regex"), usernameinput.val())) {
+    var usernameInput = $("input#username");
+    if (inputIsValid(usernameInput.data("regex"), usernameInput.val())) {
         disableInlineError("usernameInputField", "usernameEmpty", "usernameError");
     } else {
         enableInlineError("usernameInputField", "usernameEmpty", "usernameError");
@@ -84,9 +84,9 @@ validateInline["user-name"] = function () {
  * Validate if provided first name is valid against RegEx configures.
  */
 validateInline["first-name"] = function () {
-    var firstnameinput = $("input#firstname");
-    if (firstnameinput.val()) {
-        disableInlineError("firstNameField", "fnError");
+    var firstnameInput = $("input#firstname");
+    if (firstnameInput.val()) {
+       disableInlineError("firstNameField", "fnError");
     } else {
         enableInlineError("firstNameField", "fnError");
     }
@@ -96,8 +96,8 @@ validateInline["first-name"] = function () {
  * Validate if provided last name is valid against RegEx configures.
  */
 validateInline["last-name"] = function () {
-    var lastnameinput = $("input#lastname");
-    if (lastnameinput.val()) {
+    var lastnameInput = $("input#lastname");
+    if (lastnameInput.val()) {
         disableInlineError("lastNameField", "lnError");
     } else {
         enableInlineError("lastNameField", "lnError");
@@ -161,13 +161,25 @@ function emailIsValid(email) {
     return regExp.test(email);
 }
 
+/*
+ * QR-code generation function.
+ */
+function generateQRCode(qrCodeClass) {
+    var enrollmentURL = $("#qr-code-modal").data("enrollment-url");
+    $(qrCodeClass).qrcode({
+        text: enrollmentURL,
+        width: 200,
+        height: 200
+    });
+}
+
 $("#userStore").change(
     function () {
         var str = "";
         $("select option:selected").each(function () {
-            str += $(this).text() + " ";
+            str += $(this).text() + "";
         });
-        var getRolesAPI = deviceMgtAPIsBasePath + "/roles/"+ str;
+        var getRolesAPI = deviceMgtAPIsBasePath + "/roles?user-store=" + str + "&limit=100";
 
         invokerUtil.get(
             getRolesAPI,
@@ -188,8 +200,7 @@ $("#userStore").change(
 
             }
         );
-    }
-).change();
+    }).change();
 
 $(document).ready(function () {
     $("#emailValidationText").hide();
@@ -207,7 +218,7 @@ $(document).ready(function () {
         var usernameInput = $("input#username");
         var firstnameInput = $("input#firstname");
         var lastnameInput = $("input#lastname");
-        //var charLimit = parseInt($("input#username").attr("limit"));
+        var charLimit = parseInt($("input#username").attr("limit"));
         var domain = $("#userStore").val();
         var username = usernameInput.val().trim();
         var firstname = firstnameInput.val();

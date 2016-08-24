@@ -32,10 +32,11 @@ public interface OperationManager {
      *
      * @param operation Operation to be added
      * @param devices   List of DeviceIdentifiers to execute the operation
-     * @throws OperationManagementException If some unusual behaviour is observed while adding the
-     *                                      operation
+     * @throws OperationManagementException If some unusual behaviour is observed while adding the operation
+     *         InvalidDeviceException       If addOperation request contains Invalid DeviceIdentifiers.
      */
-    Activity addOperation(Operation operation, List<DeviceIdentifier> devices) throws OperationManagementException;
+    Activity addOperation(Operation operation, List<DeviceIdentifier> devices) throws OperationManagementException,
+            InvalidDeviceException;
 
     /**
      * Method to retrieve the list of all operations to a device.
@@ -49,8 +50,8 @@ public interface OperationManager {
     /**
      * Method to retrieve all the operations applied to a device with pagination support.
      *
-     * @param deviceId       DeviceIdentifier of the device
-     * @param request        PaginationRequest object holding the data for pagination
+     * @param deviceId DeviceIdentifier of the device
+     * @param request  PaginationRequest object holding the data for pagination
      * @return PaginationResult - Result including the required parameters necessary to do pagination.
      * @throws OperationManagementException If some unusual behaviour is observed while fetching the
      *                                      operation list.

@@ -20,7 +20,7 @@ package org.wso2.carbon.device.mgt.jaxrs.service.api;
 
 import io.swagger.annotations.*;
 import org.wso2.carbon.apimgt.annotations.api.API;
-import org.wso2.carbon.apimgt.annotations.api.Permission;
+import org.wso2.carbon.apimgt.annotations.api.Scope;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.PlatformConfiguration;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
 
@@ -31,7 +31,7 @@ import javax.ws.rs.core.Response;
 /**
  * General Tenant Configuration REST-API.
  */
-@API(name = "Configuration", version = "1.0.0", context = "/devicemgt_admin/configuration", tags = {"devicemgt_admin"})
+@API(name = "Configuration Management", version = "1.0.0", context = "/api/device-mgt/v1.0/configuration", tags = {"devicemgt_admin"})
 
 @Path("/configuration")
 @Api(value = "Configuration Management", description = "General Tenant Configuration management capabilities are exposed " +
@@ -80,12 +80,8 @@ public interface ConfigurationManagementService {
                     message = "Internal Server Error. \n Server error occurred while fetching the general " +
                             "platform configuration.",
                     response = ErrorResponse.class)
-            }
-    )
-    @Permission(
-            scope = "configuration-view",
-            permissions = {"/permission/admin/device-mgt/admin/platform-configs/view"}
-    )
+    })
+    @Scope(key = "configuration:view", name = "View Configurations", description = "")
     Response getConfiguration(
             @ApiParam(
                     name = "If-Modified-Since",
@@ -130,12 +126,8 @@ public interface ConfigurationManagementService {
                     message = "Internal Server Error. \n " +
                             "Server error occurred while modifying general platform configuration.",
                     response = ErrorResponse.class)
-            }
-    )
-    @Permission(
-            scope = "configuration-modify",
-            permissions = {"/permission/admin/device-mgt/admin/platform-configs/modify"}
-    )
+    })
+    @Scope(key = "configuration:modify", name = "Modify Configurations", description = "")
     Response updateConfiguration(
             @ApiParam(
                     name = "configuration",

@@ -20,6 +20,7 @@ package org.wso2.carbon.device.mgt.jaxrs.service.api.admin;
 
 import io.swagger.annotations.*;
 import org.wso2.carbon.apimgt.annotations.api.API;
+import org.wso2.carbon.apimgt.annotations.api.Scope;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Activity;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ApplicationWrapper;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
@@ -31,7 +32,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-@API(name = "Application", version = "1.0.0", context = "/devicemgt_admin/applications", tags = {"devicemgt_admin"})
+@API(name = "Application Management Admin", version = "1.0.0", context = "/api/device-mgt/v1.0/admin/applications", tags = {"devicemgt_admin"})
 
 @Path("/admin/applications")
 @Api(value = "Application Management Administrative Service", description = "This an  API intended to be used by " +
@@ -73,6 +74,7 @@ public interface ApplicationManagementAdminService {
                             "a given set of devices.",
                     response = ErrorResponse.class)
     })
+    @Scope(key = "application:manage", name = "Install/Uninstall applications", description = "")
     Response installApplication(
             @ApiParam(
                     name = "applicationWrapper",
@@ -111,6 +113,7 @@ public interface ApplicationManagementAdminService {
                             "a given set of devices.",
                     response = ErrorResponse.class)
     })
+    @Scope(key = "application:manage", name = "Install/Uninstall applications", description = "")
     Response uninstallApplication(
             @ApiParam(
                     name = "applicationWrapper",

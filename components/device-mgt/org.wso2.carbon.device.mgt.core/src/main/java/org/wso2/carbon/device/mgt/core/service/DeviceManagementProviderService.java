@@ -222,7 +222,7 @@ public interface DeviceManagementProviderService {
                                   List<DeviceIdentifier> deviceIds) throws DeviceManagementException;
 
     Activity addOperation(String type, Operation operation,
-                          List<DeviceIdentifier> devices) throws OperationManagementException;
+                          List<DeviceIdentifier> devices) throws OperationManagementException, InvalidDeviceException;
 
     List<? extends Operation> getOperations(DeviceIdentifier deviceId) throws OperationManagementException;
 

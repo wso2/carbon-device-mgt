@@ -19,7 +19,8 @@
 package org.wso2.carbon.device.mgt.jaxrs.service.api;
 
 import io.swagger.annotations.*;
-import org.wso2.carbon.apimgt.annotations.api.Permission;
+import org.wso2.carbon.apimgt.annotations.api.API;
+import org.wso2.carbon.apimgt.annotations.api.Scope;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
 import org.wso2.carbon.device.mgt.jaxrs.beans.PolicyWrapper;
 import org.wso2.carbon.device.mgt.jaxrs.beans.PriorityUpdatedPolicyWrapper;
@@ -35,6 +36,9 @@ import java.util.List;
  * Policy related REST-API. This can be used to manipulated policies and associate them with devices, users, roles,
  * groups.
  */
+@API(name = "Device Policy Management", version = "1.0.0", context = "/api/device-mgt/v1.0/policies",
+        tags = {"devicemgt_admin"})
+
 @Api(value = "Device Policy Management", description = "This API carries all the necessary functionalities " +
         "around device policy management")
 @Path("/policies")
@@ -95,12 +99,8 @@ public interface PolicyManagementService {
                             message = "Internal Server Error. \n " +
                                     "Server error occurred while adding a new policy.",
                             response = ErrorResponse.class)
-            }
-    )
-    @Permission(
-            scope = "policy-modify",
-            permissions = {"/permission/admin/device-mgt/admin/policies/add"}
-    )
+            })
+    @Scope(key = "policy:manage", name = "Add policies", description = "")
     Response addPolicy(
             @ApiParam(
                     name = "policy",
@@ -153,12 +153,8 @@ public interface PolicyManagementService {
                             message = ("Internal Server Error. \n Server error occurred while fetching " +
                                     "policies."),
                             response = ErrorResponse.class)
-            }
-    )
-    @Permission(
-            scope = "policy-view",
-            permissions = {"/permission/admin/device-mgt/admin/policies/list"}
-    )
+            })
+    @Scope(key = "policy:view", name = "Views policies", description = "")
     Response getPolicies(
             @ApiParam(
                     name = "If-Modified-Since",
@@ -224,10 +220,7 @@ public interface PolicyManagementService {
                                     "policy.",
                             response = ErrorResponse.class)
             })
-    @Permission(
-            scope = "policy-view",
-            permissions = {"/permission/admin/device-mgt/admin/policies/list"}
-    )
+    @Scope(key = "policy:view", name = "View policies", description = "")
     Response getPolicy(
             @ApiParam(
                     name = "id",
@@ -290,12 +283,8 @@ public interface PolicyManagementService {
                             message = "Internal Server Error. \n " +
                                     "Server error occurred while updating the policy.",
                             response = ErrorResponse.class)
-            }
-    )
-    @Permission(
-            scope = "policy-modify",
-            permissions = {"/permission/admin/device-mgt/admin/policies/update"}
-    )
+            })
+    @Scope(key = "policy:manage", name = "Add policies", description = "")
     Response updatePolicy(
             @ApiParam(
                     name = "id",
@@ -340,12 +329,8 @@ public interface PolicyManagementService {
                             message = "Internal Server Error. \n " +
                                     "Server error occurred while bulk removing policies.",
                             response = ErrorResponse.class)
-            }
-    )
-    @Permission(
-            scope = "policy-modify",
-            permissions = {"/permission/admin/device-mgt/admin/policies/remove"}
-    )
+            })
+    @Scope(key = "policy:manage", name = "Add policies", description = "")
     Response removePolicies(
             @ApiParam(
                     name = "policyIds",
@@ -380,13 +365,8 @@ public interface PolicyManagementService {
                             code = 500,
                             message = "ErrorResponse in activating policies.",
                             response = ErrorResponse.class)
-            }
-    )
-    @Permission(
-            scope = "policy-modify", permissions = {
-            "/permission/admin/device-mgt/admin/policies/update",
-            "/permission/admin/device-mgt/admin/policies/add"}
-    )
+            })
+    @Scope(key = "policy:manage", name = "Add policies", description = "")
     Response activatePolicies(
             @ApiParam(
                     name = "policyIds",
@@ -394,7 +374,7 @@ public interface PolicyManagementService {
                     required = true)
                     List<Integer> policyIds);
 
-    @POST
+    @PUT
     @Path("/deactivate-policy")
     @ApiOperation(
             consumes = MediaType.APPLICATION_JSON,
@@ -421,14 +401,8 @@ public interface PolicyManagementService {
                     code = 500,
                     message = "ErrorResponse in deactivating policies.",
                     response = ErrorResponse.class)
-            }
-    )
-    @Permission(
-            scope = "policy-modify",
-            permissions = {
-            "/permission/admin/device-mgt/admin/policies/update",
-            "/permission/admin/device-mgt/admin/policies/add"}
-    )
+    })
+    @Scope(key = "policy:manage", name = "Add policies", description = "")
     Response deactivatePolicies(
             @ApiParam(
                     name = "policyIds",
@@ -460,12 +434,8 @@ public interface PolicyManagementService {
                     code = 500,
                     message = "ErrorResponse in deactivating policies.",
                     response = ErrorResponse.class)
-            }
-    )
-    @Permission(
-            scope = "policy-modify",
-            permissions = {"/permission/admin/device-mgt/admin/policies/update"}
-    )
+    })
+    @Scope(key = "policy:manage", name = "Add policies", description = "")
     Response applyChanges();
 
 
@@ -493,11 +463,8 @@ public interface PolicyManagementService {
                     code = 500,
                     message = "Exception in updating policy priorities.",
                     response = ErrorResponse.class)
-            }
-    )
-    @Permission(
-            scope = "",
-            permissions = {})
+    })
+    @Scope(key = "policy:manage", name = "Add policies", description = "")
     Response updatePolicyPriorities(
             @ApiParam(
                     name = "priorityUpdatedPolicies",

@@ -416,11 +416,13 @@ public abstract class AbstractDeviceDAOImpl implements DeviceDAO {
         boolean isOwnershipProvided = false;
         String status = request.getStatus();
         boolean isStatusProvided = false;
+        Date since = request.getSince();
+        boolean isSinceProvided = false;
         try {
             conn = this.getConnection();
             String sql = "SELECT COUNT(d1.ID) AS DEVICE_COUNT FROM DM_ENROLMENT e, (SELECT d.ID, d.NAME, d.DEVICE_IDENTIFICATION, " +
-                         "t.NAME AS DEVICE_TYPE FROM DM_DEVICE d, DM_DEVICE_TYPE t WHERE DEVICE_TYPE_ID = t.ID " +
-                         "AND d.TENANT_ID = ?";
+                         "t.NAME AS DEVICE_TYPE FROM DM_DEVICE d, DM_DEVICE_TYPE t, DM_DEVICE_DETAIL dt WHERE DEVICE_TYPE_ID = t.ID " +
+                         "AND d.TENANT_ID = ? AND dt.DEVICE_ID = d.ID";
 
             if (deviceType != null && !deviceType.isEmpty()) {
                 sql = sql + " AND t.NAME = ?";
@@ -430,6 +432,12 @@ public abstract class AbstractDeviceDAOImpl implements DeviceDAO {
             if (deviceName != null && !deviceName.isEmpty()) {
                 sql = sql + " AND d.NAME LIKE ?";
                 isDeviceNameProvided = true;
+            }
+
+            //Add query for last updated timestamp
+            if (since != null) {
+                sql = sql + " AND dt.UPDATE_TIMESTAMP > ?";
+                isSinceProvided = true;
             }
 
             sql = sql + ") d1 WHERE d1.ID = e.DEVICE_ID AND TENANT_ID = ?";
@@ -457,6 +465,9 @@ public abstract class AbstractDeviceDAOImpl implements DeviceDAO {
             }
             if (isDeviceNameProvided) {
                 stmt.setString(paramIdx++, request.getDeviceName() + "%");
+            }
+            if (isSinceProvided) {
+                stmt.setLong(paramIdx++, since.getTime());
             }
             stmt.setInt(paramIdx++, tenantId);
             if (isOwnershipProvided) {

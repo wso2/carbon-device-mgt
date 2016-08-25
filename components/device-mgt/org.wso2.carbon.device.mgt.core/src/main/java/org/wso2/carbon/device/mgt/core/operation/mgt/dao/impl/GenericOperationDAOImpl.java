@@ -420,7 +420,8 @@ public class GenericOperationDAOImpl implements OperationDAO {
                     "ON feom.OPERATION_ID = o.ID LEFT OUTER JOIN (SELECT ID, ENROLMENT_ID, OPERATION_ID, " +
                     "OPERATION_RESPONSE, MAX(RECEIVED_TIMESTAMP) LATEST_RECEIVED_TIMESTAMP " +
                     "FROM DM_DEVICE_OPERATION_RESPONSE GROUP BY ENROLMENT_ID , OPERATION_ID) orsp " +
-                    "ON o.ID = orsp.OPERATION_ID AND feom.ENROLMENT_ID = orsp.ENROLMENT_ID GROUP BY feom.ENROLMENT_ID";
+                    "ON o.ID = orsp.OPERATION_ID AND feom.ENROLMENT_ID = orsp.ENROLMENT_ID GROUP BY feom.ENROLMENT_ID, " +
+                    "feom.OPERATION_ID";
 
             stmt = conn.prepareStatement(sql);
 

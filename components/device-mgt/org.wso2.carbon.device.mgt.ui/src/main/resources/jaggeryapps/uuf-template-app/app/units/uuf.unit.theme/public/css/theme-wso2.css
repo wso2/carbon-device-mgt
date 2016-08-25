@@ -3153,7 +3153,7 @@ header {
   position: relative;
 }
 header.header-default {
-  background: #191919;
+  background: #11375b;
   color: #fff;
 }
 header a,
@@ -7409,7 +7409,7 @@ body.inverse .fade-edge:after {
 }
 
 .navbar {
-  background: #004675;
+  background: #526A84;
   border: none;
   margin-bottom: 0;
   -webkit-border-radius: 0;
@@ -7454,15 +7454,15 @@ body.inverse .fade-edge:after {
   padding: 0 8px;
   line-height: 40px;
   font-size: 18px;
-  background: #007D85;
+  background: #F47415;
   color: #ffffff;
 }
 .navbar-menu-toggle:hover, .navbar-menu-toggle:focus, .navbar-menu-toggle:active {
   color: #ffffff;
-  background: #004d52;
+  background: #D56613;
 }
 .navbar-menu-toggle[aria-expanded=true] {
-  background: #00575c;
+  background: #D56613;
 }
 .navbar-menu-toggle .icon {
   line-height: 40px;
@@ -7483,7 +7483,7 @@ body.inverse .fade-edge:after {
   padding: 0 15px;
   line-height: 40px;
   text-transform: uppercase;
-  background: #00375c;
+  background: #010F1F;
 }
 
 .navbar > .container .navbar-brand a,

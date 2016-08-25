@@ -268,7 +268,7 @@ public class UserManagementServiceImpl implements UserManagementService {
         RequestValidationUtil.validatePaginationParameters(offset, limit);
 
         List<BasicUserInfo> userList, offsetList;
-        String appliedFilter = ((filter == null) || filter.isEmpty() ? "*" : filter);
+        String appliedFilter = ((filter == null) || filter.isEmpty() ? "*" : filter + "*");
         // to get whole set of users, appliedLimit is set to -1
         // by default, this whole set is limited to 100 - MaxUserNameListLength of user-mgt.xml
         int appliedLimit = -1;
@@ -277,7 +277,7 @@ public class UserManagementServiceImpl implements UserManagementService {
             UserStoreManager userStoreManager = DeviceMgtAPIUtils.getUserStoreManager();
 
             //As the listUsers function accepts limit only to accommodate offset we are passing offset + limit
-            String[] users = userStoreManager.listUsers(appliedFilter + "*", appliedLimit);
+            String[] users = userStoreManager.listUsers(appliedFilter, appliedLimit);
             userList = new ArrayList<>(users.length);
             BasicUserInfo user;
             for (String username : users) {

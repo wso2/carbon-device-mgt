@@ -3164,7 +3164,7 @@ header a:focus {
   text-decoration: none;
 }
 header .brand {
-  padding: 12px 0;
+  padding: 10px 0;
 }
 header .brand img.logo {
   height: 24px;
@@ -7547,9 +7547,6 @@ body.inverse .fade-edge:after {
   text-align: center;
   margin: 10px 5px;
 }
-.navbar-collapse.tiles ul.nav > li {
-    margin: 0;
-}
 
 .navbar-collapse.tiles ul.nav li a {
   text-decoration: none;
@@ -9972,5 +9969,3 @@ a.list-group-item:hover {
 body.login-bg {
   background-color: #efefef;
 }
-
-/*# sourceMappingURL=apim-publisher.css.map */

@@ -859,7 +859,7 @@ header .dropdown[aria-expanded=true], header .dropdown:hover {
   line-height: 50px;
   text-transform: uppercase;
   background: #010F1F;
-  height: 50px;
+  height: 40px;
   font-size: 14px;
 }
 
@@ -3606,7 +3606,6 @@ a.cu-btn, a.cu-btn-inner {
 	font-weight:400;
 	display: inline-block;
 	text-transform: uppercase;
-    height: 53px;
     padding: 13px 10px;
 }
 

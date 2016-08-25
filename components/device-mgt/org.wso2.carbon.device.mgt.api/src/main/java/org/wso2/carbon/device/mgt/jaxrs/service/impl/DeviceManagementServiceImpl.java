@@ -18,6 +18,7 @@
  */
 package org.wso2.carbon.device.mgt.jaxrs.service.impl;
 
+import com.google.gson.JsonArray;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.CarbonContext;
@@ -126,8 +127,7 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
                 request.setSince(sinceDate);
                 result = dms.getAllDevices(request);
                 if (result == null || result.getData() == null || result.getData().size() <= 0) {
-                    return Response.status(Response.Status.OK).entity("No device is modified " +
-                            "after the timestamp provided in 'since' filter").build();
+                    return Response.status(Response.Status.OK).entity(new JsonArray()).build();
                 }
             } else {
                 result = dms.getAllDevices(request);

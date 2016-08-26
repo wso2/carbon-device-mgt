@@ -708,7 +708,11 @@
                 <artifactId>h2-database-engine</artifactId>
                 <version>${orbit.version.h2.engine}</version>
             </dependency>
-
+            <dependency>
+                <groupId>org.wso2.orbit.org.owasp.encoder</groupId>
+                <artifactId>encoder</artifactId>
+                <version>${owasp.encoder.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.apache.axis2.transport</groupId>
                 <artifactId>axis2-transport-mail</artifactId>
@@ -737,6 +741,11 @@
                 <groupId>org.wso2.orbit.com.nimbusds</groupId>
                 <artifactId>nimbus-jose-jwt</artifactId>
                 <version>${nimbus.orbit.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.orbit.org.apache.pdfbox</groupId>
+                <artifactId>pdfbox</artifactId>
+                <version>${orbit.version.pdfbox}</version>
             </dependency>
 
             <!-- End of Orbit dependencies -->
@@ -917,14 +926,14 @@
                 <artifactId>org.wso2.carbon.apimgt.core</artifactId>
                 <version>${carbon.api.mgt.version}</version>
                 <exclusions>
-                    <exclusion>
-                        <groupId>org.wso2.carbon</groupId>
-                        <artifactId>org.wso2.carbon.core</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.wso2.carbon.apimgt</groupId>
-                        <artifactId>org.wso2.carbon.apimgt.keymgt.stub</artifactId>
-                    </exclusion>
+                    <!--<exclusion>-->
+                        <!--<groupId>org.wso2.carbon</groupId>-->
+                        <!--<artifactId>org.wso2.carbon.core</artifactId>-->
+                    <!--</exclusion>-->
+                    <!--<exclusion>-->
+                        <!--<groupId>org.wso2.carbon.apimgt</groupId>-->
+                        <!--<artifactId>org.wso2.carbon.apimgt.keymgt.stub</artifactId>-->
+                    <!--</exclusion>-->
                     <exclusion>
                         <groupId>org.wso2.carbon.apimgt</groupId>
                         <artifactId>org.wso2.carbon.apimgt.usage.publisher</artifactId>
@@ -945,10 +954,10 @@
                         <groupId>org.wso2.carbon.apimgt</groupId>
                         <artifactId>org.wso2.carbon.ganalytics.publisher</artifactId>
                     </exclusion>
-                    <exclusion>
-                        <groupId>org.wso2.carbon.apimgt</groupId>
-                        <artifactId>org.wso2.carbon.throttle.core</artifactId>
-                    </exclusion>
+                    <!--<exclusion>-->
+                        <!--<groupId>org.wso2.carbon.apimgt</groupId>-->
+                        <!--<artifactId>org.wso2.carbon.throttle.core</artifactId>-->
+                    <!--</exclusion>-->
                 </exclusions>
             </dependency>
             <!-- End of API Management dependencies -->
@@ -1503,16 +1512,20 @@
                 <version>${jackson-annotations.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.wso2.orbit.org.owasp.encoder</groupId>
-                <artifactId>encoder</artifactId>
-                <version>${owasp.encoder.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>org.hibernate</groupId>
                 <artifactId>hibernate-validator</artifactId>
                 <version>${hibernate-validator.version}</version>
             </dependency>
-
+            <dependency>
+                <groupId>org.wso2.carbon.apimgt</groupId>
+                <artifactId>org.wso2.carbon.apimgt.keymgt.client</artifactId>
+                <version>${carbon.api.mgt.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.throttle.core</artifactId>
+                <version>${carbon.throttle.module.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -1801,7 +1814,7 @@
         <version.commons.lang>2.6.0.wso2v1</version.commons.lang>
 
         <!-- Carbon API Management -->
-        <carbon.api.mgt.version>5.0.4</carbon.api.mgt.version>
+        <carbon.api.mgt.version>5.0.5</carbon.api.mgt.version>
         <carbon.api.mgt.version.range>(5.0.0,6.0.0]</carbon.api.mgt.version.range>
 
         <!-- Carbon Analytics Commons -->
@@ -1884,6 +1897,10 @@
         <owasp.encoder.version>1.2.0.wso2v1</owasp.encoder.version>
 
         <hibernate-validator.version>5.0.2.Final</hibernate-validator.version>
+
+        <!-- apache pdfbox version -->
+        <orbit.version.pdfbox>1.8.10.wso2v2</orbit.version.pdfbox>
+        <carbon.throttle.module.version>4.2.1</carbon.throttle.module.version>
     </properties>
 
 </project>

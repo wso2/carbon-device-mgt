@@ -109,7 +109,7 @@ public class OAuthExtUtils {
         try {
 
             Map<String, String> appScopes;
-            ApiMgtDAO apiMgtDAO = new ApiMgtDAO();
+            ApiMgtDAO apiMgtDAO = ApiMgtDAO.getInstance();
 
             //Get all the scopes and permissions against the scopes defined for the APIs subscribed to the application.
             appScopes = apiMgtDAO.getScopeRolesOfApplication(consumerKey);

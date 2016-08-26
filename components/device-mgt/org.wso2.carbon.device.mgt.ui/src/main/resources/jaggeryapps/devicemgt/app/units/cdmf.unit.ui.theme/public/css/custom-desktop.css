@@ -5046,6 +5046,7 @@ a.wr-side-panel-toggle-btn.selected {
     height: 100%;
     background: #ffffff;
     border: 1px solid #e8e8e8;
+    margin-bottom:40px;
 }
 
 .wr-advance-operations .row:first-child {

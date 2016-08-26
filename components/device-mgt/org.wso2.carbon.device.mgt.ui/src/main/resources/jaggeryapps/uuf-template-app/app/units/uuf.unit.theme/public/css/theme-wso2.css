@@ -511,10 +511,6 @@ a {
   color: #004675;
   text-decoration: none;
 }
-a:hover, a:focus {
-  color: #001829;
-  text-decoration: underline;
-}
 a:focus {
   outline: thin dotted;
   outline: 5px auto -webkit-focus-ring-color;
@@ -7820,10 +7816,6 @@ ul.sidebar-messages > li {
   padding: 40px;
 }
 
-.body-wrapper a:hover {
-  text-decoration: underline;
-}
-
 .body-wrapper a.btn:hover {
   text-decoration: none;
 }
@@ -9300,11 +9292,6 @@ a.list-group-item:hover {
 
 .btn .disabled, a.btn .disabled {
   background-color: #0E75DC;
-  color: #fff;
-}
-
-.btn:hover, a.btn:hover {
-  background-color: #005ABA;
   color: #fff;
 }
 

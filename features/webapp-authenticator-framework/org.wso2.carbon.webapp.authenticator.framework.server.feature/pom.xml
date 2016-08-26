@@ -40,6 +40,14 @@
             <groupId>org.wso2.carbon.devicemgt</groupId>
             <artifactId>org.wso2.carbon.device.mgt.core</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.apimgt</groupId>
+            <artifactId>org.wso2.carbon.apimgt.core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.throttle.core</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -93,6 +101,10 @@
                                 <bundleDef>org.wso2.carbon.devicemgt:org.wso2.carbon.webapp.authenticator.framework:${carbon.device.mgt.version}
                                 </bundleDef>
                             </bundles>
+                            <importBundles>
+                                <importBundleDef>org.wso2.carbon.apimgt:org.wso2.carbon.apimgt.core:${carbon.api.mgt.version}</importBundleDef>
+                                <importBundleDef>org.wso2.carbon:org.wso2.carbon.throttle.core:${carbon.throttle.module.version}</importBundleDef>
+                            </importBundles>
                             <importFeatures>
                                 <importFeatureDef>org.wso2.carbon.core.server:${carbon.kernel.version}</importFeatureDef>
                                 <importFeatureDef>org.wso2.carbon.apimgt.core:${carbon.api.mgt.version}</importFeatureDef>

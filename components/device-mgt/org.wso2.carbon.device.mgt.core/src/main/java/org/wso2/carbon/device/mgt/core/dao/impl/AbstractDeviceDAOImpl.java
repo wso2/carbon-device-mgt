@@ -416,12 +416,23 @@ public abstract class AbstractDeviceDAOImpl implements DeviceDAO {
         boolean isOwnershipProvided = false;
         String status = request.getStatus();
         boolean isStatusProvided = false;
+        Date since = request.getSince();
+        boolean isSinceProvided = false;
         try {
             conn = this.getConnection();
             String sql = "SELECT COUNT(d1.ID) AS DEVICE_COUNT FROM DM_ENROLMENT e, (SELECT d.ID, d.NAME, d.DEVICE_IDENTIFICATION, " +
-                         "t.NAME AS DEVICE_TYPE FROM DM_DEVICE d, DM_DEVICE_TYPE t WHERE DEVICE_TYPE_ID = t.ID " +
-                         "AND d.TENANT_ID = ?";
+                         "t.NAME AS DEVICE_TYPE FROM DM_DEVICE d, DM_DEVICE_TYPE t";
 
+            //Add query for last updated timestamp
+            if (since != null) {
+                sql = sql + " , DM_DEVICE_DETAIL dt";
+                isSinceProvided = true;
+            }
+            sql = sql + " WHERE DEVICE_TYPE_ID = t.ID AND d.TENANT_ID = ?";
+            //Add query for last updated timestamp
+            if (isSinceProvided) {
+                sql = sql + " AND dt.DEVICE_ID = d.ID AND dt.UPDATE_TIMESTAMP > ?";
+            }
             if (deviceType != null && !deviceType.isEmpty()) {
                 sql = sql + " AND t.NAME = ?";
                 isDeviceTypeProvided = true;
@@ -452,12 +463,16 @@ public abstract class AbstractDeviceDAOImpl implements DeviceDAO {
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, tenantId);
             int paramIdx = 2;
+            if (isSinceProvided) {
+                stmt.setLong(paramIdx++, since.getTime());
+            }
             if (isDeviceTypeProvided) {
                 stmt.setString(paramIdx++, request.getDeviceType());
             }
             if (isDeviceNameProvided) {
                 stmt.setString(paramIdx++, request.getDeviceName() + "%");
             }
+
             stmt.setInt(paramIdx++, tenantId);
             if (isOwnershipProvided) {
                 stmt.setString(paramIdx++, request.getOwnership());

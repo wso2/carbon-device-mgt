@@ -7509,19 +7509,19 @@ body.inverse .fade-edge:after {
   color: #ffffff;
 }
 .navbar-default .navbar-nav > li a:hover {
-  background: #0065a8;
+  background: #798EA5;
 }
 
 .navbar-default .navbar-nav > .active > a, .navbar-default .navbar-nav > .active > a:hover, .navbar-default .navbar-nav > .active > a:focus, .navbar-default .navbar-nav > .active > a:active {
-  background: #0065a8;
+  background: #798EA5;
   color: #ffffff;
 }
 .navbar-default .navbar-nav > .active > a:hover {
-  background: #0065a8;
+  background: #424958;
 }
 
 .navbar-collapse.dropdown {
-  background: #222;
+  background: #132D45;
   margin-right: -10px;
   margin-left: -10px;
   padding-bottom: 0;
@@ -7550,25 +7550,25 @@ body.inverse .fade-edge:after {
 
 .navbar-collapse.tiles ul.nav li a {
   text-decoration: none;
-  width: 120px;
+  width: 150px;
   height: 120px;
   padding: 15px;
-  background: #444;
+  background: #11375B;
   display: block;
   overflow: hidden;
   line-height: 1.4em;
 }
 
 .navbar-collapse.tiles ul.nav li li a {
-  background: #777777;
+  background: #526A84;
 }
 
 .navbar-collapse.tiles ul.nav li a:hover {
-  background: #555;
+  background: #133e67;
 }
 
 .navbar-collapse.tiles ul.nav li li a:hover {
-  background: #888888;
+  background: #5d7896;
 }
 
 .navbar-collapse.tiles ul.nav li a i {
@@ -7578,7 +7578,7 @@ body.inverse .fade-edge:after {
 }
 
 .navbar-collapse.tiles ul.nav li ul {
-  padding-left: 140px;
+  padding-left: 160px;
   margin-top: -130px;
   display: none;
 }
@@ -7586,7 +7586,7 @@ body.inverse .fade-edge:after {
 .navbar-collapse.tiles ul.nav li.has-sub > a:after {
   width: 7px;
   height: 120px;
-  background: #757575;
+  background: #526a84;
   display: inline-block;
   content: " ";
   top: 0;

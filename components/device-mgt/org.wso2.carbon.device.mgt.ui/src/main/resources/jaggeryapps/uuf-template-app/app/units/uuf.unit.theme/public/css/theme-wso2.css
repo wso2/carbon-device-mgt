@@ -9956,3 +9956,16 @@ a.list-group-item:hover {
 body.login-bg {
   background-color: #efefef;
 }
+#right-sidebar h4 a{
+    color:#526a84;
+}
+#right-sidebar h4 a:hover,#right-sidebar h4 a:active{
+    color:#798ea5;
+}
+.modalpopup-content .panel{
+    background-color: transparent;
+}
+.col-centered {
+    float: none;
+    margin: 0 auto;
+}

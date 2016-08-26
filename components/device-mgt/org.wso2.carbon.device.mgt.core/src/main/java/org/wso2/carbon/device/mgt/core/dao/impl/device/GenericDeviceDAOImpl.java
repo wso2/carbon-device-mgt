@@ -31,6 +31,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
+ *
  * This class holds the generic implementation of DeviceDAO which can be used to support ANSI db syntax.
  */
 public class GenericDeviceDAOImpl extends AbstractDeviceDAOImpl {

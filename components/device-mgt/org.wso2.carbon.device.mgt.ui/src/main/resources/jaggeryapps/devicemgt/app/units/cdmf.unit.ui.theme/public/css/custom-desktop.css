@@ -734,10 +734,6 @@ header .brand h1 {
   text-transform: uppercase;
 }
 
-header .auth {
-  margin: 0 -15px;
-}
-
 header .dropdown {
   display: inline-block;
   color: #ffffff;
@@ -859,7 +855,7 @@ header .dropdown[aria-expanded=true], header .dropdown:hover {
   line-height: 50px;
   text-transform: uppercase;
   background: #010F1F;
-  height: 50px;
+  height: 40px;
   font-size: 14px;
 }
 
@@ -3606,7 +3602,6 @@ a.cu-btn, a.cu-btn-inner {
 	font-weight:400;
 	display: inline-block;
 	text-transform: uppercase;
-    height: 53px;
     padding: 13px 10px;
 }
 
@@ -5051,6 +5046,7 @@ a.wr-side-panel-toggle-btn.selected {
     height: 100%;
     background: #ffffff;
     border: 1px solid #e8e8e8;
+    margin-bottom:40px;
 }
 
 .wr-advance-operations .row:first-child {

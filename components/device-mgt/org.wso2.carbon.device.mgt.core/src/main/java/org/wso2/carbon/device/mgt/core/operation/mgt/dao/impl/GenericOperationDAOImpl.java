@@ -417,7 +417,7 @@ public class GenericOperationDAOImpl implements OperationDAO {
                     "LEFT JOIN DM_DEVICE as de ON en.DEVICE_ID = de.ID \n" +
                     "LEFT JOIN DM_DEVICE_TYPE as dt ON dt.ID = de.DEVICE_TYPE_ID \n" +
                     "LEFT JOIN DM_DEVICE_OPERATION_RESPONSE as ops ON \n" +
-                    "opm.ENROLMENT_ID = opm.ENROLMENT_ID AND opm.OPERATION_ID = ops.OPERATION_ID \n" +
+                    "opm.ENROLMENT_ID = ops.ENROLMENT_ID AND opm.OPERATION_ID = ops.OPERATION_ID \n" +
                     "WHERE opm.UPDATED_TIMESTAMP > ? \n" +
                     "AND de.TENANT_ID = ? \n";
 

@@ -409,14 +409,15 @@ public class GenericOperationDAOImpl implements OperationDAO {
 
             String sql = "SELECT opm.ENROLMENT_ID, opm.CREATED_TIMESTAMP, opm.UPDATED_TIMESTAMP, opm.OPERATION_ID,\n" +
                     "op.OPERATION_CODE, op.TYPE as OPERATION_TYPE, opm.STATUS, en.DEVICE_ID,\n" +
-                    "op.RECEIVED_TIMESTAMP, ops.ID as OP_RES_ID, ops.OPERATION_RESPONSE,\n" +
+                    "ops.RECEIVED_TIMESTAMP, ops.ID as OP_RES_ID, ops.OPERATION_RESPONSE,\n" +
                     "de.DEVICE_IDENTIFICATION, dt.NAME as DEVICE_TYPE\n" +
                     "FROM DM_ENROLMENT_OP_MAPPING AS opm\n" +
-                    "LEFT JOIN DM_OPERATION AS op ON opm.OPERATION_ID = op.ID\n" +
-                    "LEFT JOIN DM_ENROLMENT as en ON opm.ENROLMENT_ID = en.ID\n" +
-                    "LEFT JOIN DM_DEVICE as de ON en.DEVICE_ID = de.ID\n" +
-                    "LEFT JOIN DM_DEVICE_TYPE as dt ON dt.ID = de.DEVICE_TYPE_ID\n" +
-                    "LEFT JOIN DM_DEVICE_OPERATION_RESPONSE as ops ON ops.ID = opm.OPERATION_ID\n" +
+                    "LEFT JOIN DM_OPERATION AS op ON opm.OPERATION_ID = op.ID \n" +
+                    "LEFT JOIN DM_ENROLMENT as en ON opm.ENROLMENT_ID = en.ID \n" +
+                    "LEFT JOIN DM_DEVICE as de ON en.DEVICE_ID = de.ID \n" +
+                    "LEFT JOIN DM_DEVICE_TYPE as dt ON dt.ID = de.DEVICE_TYPE_ID \n" +
+                    "LEFT JOIN DM_DEVICE_OPERATION_RESPONSE as ops ON \n" +
+                    "opm.ENROLMENT_ID = opm.ENROLMENT_ID AND opm.OPERATION_ID = ops.OPERATION_ID \n" +
                     "WHERE opm.UPDATED_TIMESTAMP > ? \n" +
                     "AND de.TENANT_ID = ? \n";
 

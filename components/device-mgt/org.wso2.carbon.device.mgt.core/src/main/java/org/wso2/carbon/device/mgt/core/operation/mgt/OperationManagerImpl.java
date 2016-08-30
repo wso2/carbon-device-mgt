@@ -102,7 +102,7 @@ public class OperationManagerImpl implements OperationManager {
             DeviceIDHolder deviceIDHolder = DeviceManagerUtil.validateDeviceIdentifiers(deviceIds);
             List<DeviceIdentifier> validDeviceIds = deviceIDHolder.getValidDeviceIDList();
             if (validDeviceIds.size() > 0) {
-                List<DeviceIdentifier> authorizedDeviceList = this.getAuthorizedDevices(operation, deviceIds);
+                List<DeviceIdentifier> authorizedDeviceList = this.getAuthorizedDevices(operation, validDeviceIds);
                 if (authorizedDeviceList.size() <= 0) {
                     log.info("User : " + getUser() + " is not authorized to perform operations on given device-list.");
                     return null;
@@ -123,7 +123,7 @@ public class OperationManagerImpl implements OperationManager {
 
                 //TODO have to create a sql to load device details from deviceDAO using single query.
                 String operationCode = operationDto.getCode();
-                for (DeviceIdentifier deviceId : deviceIds) {
+                for (DeviceIdentifier deviceId : authorizedDeviceList) {
                     Device device = getDevice(deviceId);
                     enrolmentId = device.getEnrolmentInfo().getId();
                     //Do not repeat the task operations

@@ -186,14 +186,6 @@ public class OperationManagerImpl implements OperationManager {
                                                    String deviceType) {
         List<ActivityStatus> activityStatuses = new ArrayList<>();
         ActivityStatus activityStatus;
-        //Add the valid DeviceIds
-        for (DeviceIdentifier id : deviceIdValidationResult.getValidDeviceIDList()) {
-            activityStatus = new ActivityStatus();
-            activityStatus.setDeviceIdentifier(id);
-            activityStatus.setStatus(ActivityStatus.Status.PENDING);
-            activityStatuses.add(activityStatus);
-        }
-
         //Add the invalid DeviceIds
         for (String id : deviceIdValidationResult.getErrorDeviceIdList()) {
             activityStatus = new ActivityStatus();
@@ -207,6 +199,14 @@ public class OperationManagerImpl implements OperationManager {
             activityStatus = new ActivityStatus();
             activityStatus.setDeviceIdentifier(new DeviceIdentifier(id, deviceType));
             activityStatus.setStatus(ActivityStatus.Status.UNAUTHORIZED);
+            activityStatuses.add(activityStatus);
+        }
+
+        //Add the authorized DeviceIds
+        for (DeviceIdentifier id : deviceAuthResult.getValidDeviceIDList()) {
+            activityStatus = new ActivityStatus();
+            activityStatus.setDeviceIdentifier(id);
+            activityStatus.setStatus(ActivityStatus.Status.PENDING);
             activityStatuses.add(activityStatus);
         }
         return activityStatuses;

@@ -342,12 +342,10 @@ public final class DeviceManagerUtil {
                 if (isValidDeviceIdentifier(deviceIdentifier)) {
                     validDeviceIDList.add(deviceIdentifier);
                 } else {
-                    errorDeviceIdList.add(String.format(OperationMgtConstants.DeviceConstants.
-                            DEVICE_ID_NOT_FOUND, deviceID));
+                    errorDeviceIdList.add(deviceID);
                 }
             } catch (DeviceManagementException e) {
-                errorDeviceIdList.add(String.format(OperationMgtConstants.DeviceConstants.DEVICE_ID_SERVICE_NOT_FOUND,
-                        deviceIDCounter));
+                errorDeviceIdList.add(deviceID);
             }
         }
 

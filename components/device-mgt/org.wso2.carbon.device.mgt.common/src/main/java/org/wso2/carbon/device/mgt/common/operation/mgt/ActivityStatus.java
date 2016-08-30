@@ -30,7 +30,7 @@ import java.util.List;
 public class ActivityStatus {
 
     public enum Status {
-        IN_PROGRESS, PENDING, COMPLETED, ERROR, REPEATED
+        IN_PROGRESS, PENDING, COMPLETED, ERROR, REPEATED, INVALID, UNAUTHORIZED
     }
 
     @ApiModelProperty(

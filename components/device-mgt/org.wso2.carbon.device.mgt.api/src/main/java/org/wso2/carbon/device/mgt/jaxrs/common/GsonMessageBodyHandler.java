@@ -40,6 +40,7 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 @Consumes(APPLICATION_JSON)
 public class GsonMessageBodyHandler implements MessageBodyWriter<Object>, MessageBodyReader<Object> {
 
+    public static final String DATE_FORMAT = "EEE, d MMM yyyy HH:mm:ss Z";
     private Gson gson;
     private static final String UTF_8 = "UTF-8";
 
@@ -50,7 +51,7 @@ public class GsonMessageBodyHandler implements MessageBodyWriter<Object>, Messag
     private Gson getGson() {
         if (gson == null) {
             final GsonBuilder gsonBuilder = new GsonBuilder();
-            gson = gsonBuilder.setDateFormat("EEE, d MMM yyyy HH:mm:ss Z").create();
+            gson = gsonBuilder.setDateFormat(DATE_FORMAT).create();
         }
         return gson;
     }

@@ -51,6 +51,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -128,7 +129,9 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
                 request.setSince(sinceDate);
                 result = dms.getAllDevices(request);
                 if (result == null || result.getData() == null || result.getData().size() <= 0) {
-                    return Response.status(Response.Status.OK).entity(new JsonArray()).build();
+                    devices.setList(new ArrayList<Device>());
+                    devices.setCount(0);
+                    return Response.status(Response.Status.OK).entity(devices).build();
                 }
             } else {
                 result = dms.getAllDevices(request);

@@ -120,7 +120,7 @@ public class ActivityProviderServiceImpl implements ActivityInfoProviderService 
             int count = dmService.getActivityCountUpdatedAfter(timestamp);
             activityList.setCount(count);
             if (activities == null || activities.size() == 0) {
-                if (isIfModifiedSinceSet || isSinceSet) {
+                if (isIfModifiedSinceSet) {
                     return Response.notModified().build();
                 }
             }

@@ -228,11 +228,11 @@ function resetPassword(uname) {
  * when a user type on the search field on User Listing page in
  * WSO2 MDM Console then click on the search button.
  */
-$("#search-btn").click(function () {
-    var searchQuery = $("#search-by-username").val();
-    $("#ast-container").empty();
-    loadUsers(searchQuery);
-});
+//$("#search-btn").click(function () {
+//    var searchQuery = $("#search-by-username").val();
+//    $("#ast-container").empty();
+//    loadUsers(searchQuery);
+//});
 
 /**
  * Following function would execute
@@ -248,93 +248,112 @@ function InitiateViewOption() {
     }
 }
 
-function loadUsers(searchParam) {
+function loadUsers() {
+    var loadingContentView = "#loading-content";
+    $(loadingContentView).show();
 
-
-    $("#loading-content").show();
-
-
-    var dataFilter = function(data){
+    var dataFilter = function (data) {
         data = JSON.parse(data);
 
         var objects = [];
 
-        $(data.users).each(function( index ) {
+        $(data.users).each( function (index) {
             objects.push({
                 filter: data.users[index].username,
-                firstname: data.users[index].firstname ? data.users[index].firstname: '' ,
+                firstname: data.users[index].firstname ? data.users[index].firstname : '' ,
                 lastname: data.users[index].lastname ? data.users[index].lastname : '',
-                emailAddress : data.users[index].emailAddress ? data.users[index].emailAddress: '',
-                DT_RowId : "role-" + data.users[index].username})
+                emailAddress : data.users[index].emailAddress ? data.users[index].emailAddress : '',
+                DT_RowId : "user-" + data.users[index].username})
         });
 
-        json = {
+        var json = {
             "recordsTotal": data.count,
             "recordsFiltered": data.count,
             "data": objects
         };
 
-        return JSON.stringify( json );
-    }
+        return JSON.stringify(json);
+    };
 
-    var fnCreatedRow = function( nRow, aData, iDataIndex ) {
+    //noinspection JSUnusedLocalSymbols
+    var fnCreatedRow = function (nRow, aData, iDataIndex) {
         $(nRow).attr('data-type', 'selectable');
         $(nRow).attr('data-username', aData["filter"]);
-    }
+    };
 
+    //noinspection JSUnusedLocalSymbols
     var columns = [
         {
             class: "remove-padding icon-only content-fill",
             data: null,
-            defaultContent: '<div class="thumbnail icon"> <i class="square-element text fw fw-user" style="font-size: 30px;"></i> </div>'
+            defaultContent: '<div class="thumbnail icon">' +
+                '<i class="square-element text fw fw-user" style="font-size: 30px;"></i>' +
+                '</div>'
         },
         {
             class: "fade-edge",
             data: null,
-            render: function ( data, type, row, meta ) {
+            render: function (data, type, row, meta) {
                 return '<h4>' + data.firstname + ' ' + data.lastname + '</h4>';
             }
         },
         {
             class: "fade-edge remove-padding-top",
             data: 'filter',
-            render: function ( filter, type, row, meta ) {
+            render: function (filter, type, row, meta) {
                 return '<i class="fw-user"></i> ' + filter;
             }
         },
         {
             class: "fade-edge remove-padding-top",
             data: null,
-            render: function ( data, type, row, meta ) {
+            render: function (data, type, row, meta) {
                 return '<a href="mailto:' + data.emailAddress + ' " class="wr-list-email"> <i class="fw-mail"></i> ' + data.emailAddress + ' </a>';
             }
         },
         {
             class: "text-right content-fill text-left-on-grid-view no-wrap",
             data: null,
-            render: function ( data, type, row, meta ) {
-                return '<a href="/emm/user/edit?username=' + data.filter + '" data-username="' + data.filter +
-                    '" data-click-event="edit-form" class="btn padding-reduce-on-grid-view edit-user-link"> ' +
-                    '<span class="fw-stack"> <i class="fw fw-ring fw-stack-2x"></i> <i class="fw fw-edit fw-stack-1x"></i>' +
-                    ' </span> <span class="hidden-xs hidden-on-grid-view">Edit</span> </a>' +
-
-                    '<a href="#" data-username="' + data.filter + '" data-userid=' + data.filter +
-                    ' data-click-event="remove-form" onclick="javascript:removeUser(\'' + data.filter + '\')" ' +
+            render: function (data, type, row, meta) {
+                return '<a href="/emm/user/edit?username=' + data.filter + '" data-username="' + data.filter + '" ' +
+                    'data-click-event="edit-form" ' +
+                    'class="btn padding-reduce-on-grid-view edit-user-link"> ' +
+                    '<span class="fw-stack"> ' +
+                    '<i class="fw fw-ring fw-stack-2x"></i>' +
+                    '<i class="fw fw-edit fw-stack-1x"></i>' +
+                    '</span>' +
+                    '<span class="hidden-xs hidden-on-grid-view">' +
+                    '&nbsp;&nbsp;Edit' +
+                    '</span>' +
+                    '</a>' +
+                    '<a href="#" data-username="' + data.filter + '" data-userid="' + data.filter + '" ' +
+                    'data-click-event="edit-form" ' +
+                    'onclick="javascript:resetPassword(\'' + data.filter + '\')" ' +
                     'class="btn padding-reduce-on-grid-view remove-user-link">' +
-                    '<span class="fw-stack"> <i class="fw fw-ring fw-stack-2x"></i> <i class="fw fw-delete fw-stack-1x">' +
-                    '</i> </span> <span class="hidden-xs hidden-on-grid-view">Remove</span> </a>' +
-
-                    '<a href="#" data-username="' + data.filter + '" data-userid="' + data.filter +
-                    '" data-click-event="edit-form" onclick="javascript:resetPassword(\'' + data.filter +
-                    '\')" class="btn padding-reduce-on-grid-view remove-user-link"> <span class="fw-stack"> <i class="fw fw-ring fw-stack-2x">' +
-                    '</i> <i class="fw fw-key fw-stack-1x"></i> <span class="fw-stack fw-move-right fw-move-bottom"> <i class="fw fw-circle fw-stack-2x fw-stroke fw-inverse"><' +
-                    '/i> <i class="fw fw-circle fw-stack-2x"></i> <i class="fw fw-refresh fw-stack-1x fw-inverse">' +
-                    '</i> </span> </span> <span class="hidden-xs hidden-on-grid-view">Reset</span> </a>'
+                    '<span class="fw-stack">' +
+                    '<i class="fw fw-ring fw-stack-2x"></i>' +
+                    '<i class="fw fw-key fw-stack-1x"></i>' +
+                    '</span>' +
+                    '<span class="hidden-xs hidden-on-grid-view">' +
+                    '&nbsp;&nbsp;Reset Password' +
+                    '</span>' +
+                    '</a>' +
+                    '<a href="#" data-username="' + data.filter + '" data-userid="' + data.filter + '" ' +
+                    'data-click-event="remove-form" ' +
+                    'onclick="javascript:removeUser(\'' + data.filter + '\')" ' +
+                    'class="btn padding-reduce-on-grid-view remove-user-link">' +
+                    '<span class="fw-stack">' +
+                    '<i class="fw fw-ring fw-stack-2x"></i>' +
+                    '<i class="fw fw-delete fw-stack-1x"></i>' +
+                    '</span>' +
+                    '<span class="hidden-xs hidden-on-grid-view">' +
+                    '&nbsp;&nbsp;Remove' +
+                    '</span>' +
+                    '</a>';
             }
         }
 
     ];
-
 
     var options = {
         "placeholder": "Search By Username",
@@ -345,7 +364,6 @@ function loadUsers(searchParam) {
     $('#user-grid').datatables_extended_serverside_paging(null, '/api/device-mgt/v1.0/users', dataFilter, columns, fnCreatedRow, null, options);
 
     $("#loading-content").hide();
-
 
 
     // $("#loading-content").show();
@@ -410,7 +428,6 @@ function loadUsers(searchParam) {
 
 $(document).ready(function () {
     loadUsers();
-
     $(".viewEnabledIcon").click(function () {
         InitiateViewOption();
     });

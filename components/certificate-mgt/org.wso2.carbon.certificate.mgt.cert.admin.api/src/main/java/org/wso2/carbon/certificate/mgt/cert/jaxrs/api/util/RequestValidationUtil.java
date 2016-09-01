@@ -20,6 +20,10 @@ package org.wso2.carbon.certificate.mgt.cert.jaxrs.api.util;
 
 import org.wso2.carbon.certificate.mgt.cert.jaxrs.api.beans.ErrorResponse;
 import org.wso2.carbon.certificate.mgt.cert.jaxrs.api.InputValidationException;
+import org.wso2.carbon.certificate.mgt.core.exception.CertificateManagementException;
+import org.wso2.carbon.device.mgt.common.PaginationRequest;
+import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
+import org.wso2.carbon.device.mgt.core.config.DeviceManagementConfig;
 
 public class RequestValidationUtil {
 
@@ -44,5 +48,20 @@ public class RequestValidationUtil {
         }
     }
 
+    public static PaginationRequest validateCertificateListPageSize(PaginationRequest paginationRequest) throws
+                                                                                                    CertificateManagementException {
+        if (paginationRequest.getRowCount() == 0) {
+            DeviceManagementConfig deviceManagementConfig = DeviceConfigurationManager.getInstance().
+                    getDeviceManagementConfig();
+            if (deviceManagementConfig != null) {
+                paginationRequest.setRowCount(deviceManagementConfig.getPaginationConfiguration().
+                        getDeviceListPageSize());
+            } else {
+                throw new CertificateManagementException("Device-Mgt configuration has not initialized. Please check the " +
+                                                    "cdm-config.xml file.");
+            }
+        }
+        return paginationRequest;
+    }
 
 }

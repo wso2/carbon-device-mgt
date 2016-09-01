@@ -32,7 +32,7 @@ $(function () {
     var sortableElem = '.wr-sortable';
     $(sortableElem).sortable({
         beforeStop: function () {
-            var sortedIDs = $(this).sortable('toArray');
+            $(this).sortable('toArray');
         }
     });
     $(sortableElem).disableSelection();
@@ -43,7 +43,6 @@ var modalPopup = ".wr-modalpopup";
 var modalPopupContainer = modalPopup + " .modalpopup-container";
 var modalPopupContent = modalPopup + " .modalpopup-content";
 var body = "body";
-var isInit = true;
 $(".icon .text").res_text(0.2);
 
 /*
@@ -137,17 +136,15 @@ function removeUser(uname) {
     $("a#remove-user-yes-link").click(function () {
         invokerUtil.delete(
             removeUserAPI,
-            function () {
-                $("#role-" + username).remove();
-                // get new user-list-count
-                var newUserListCount = $(".user-list > span").length;
-                // update user-listing-status-msg with new user-count
-                $("#user-listing-status-msg").text("Total number of Users found : " + newUserListCount);
-                // update modal-content with success message
-                $(modalPopupContent).html($('#remove-user-success-content').html());
-                $("a#remove-user-success-link").click(function () {
-                    hidePopup();
-                });
+            function (data, textStatus, jqXHR) {
+                if (jqXHR.status == 200) {
+                    $("#user-" + username).remove();
+                    // update modal-content with success message
+                    $(modalPopupContent).html($('#remove-user-success-content').html());
+                    $("a#remove-user-success-link").click(function () {
+                        hidePopup();
+                    });
+                }
             },
             function () {
                 $(modalPopupContent).html($('#remove-user-error-content').html());
@@ -202,14 +199,17 @@ function resetPassword(uname) {
             invokerUtil.post(
                 resetPasswordServiceURL,
                 resetPasswordFormData,
-                function (data, textStatus, jqXHR) {   // The success callback
+                // The success callback
+                function (data, textStatus, jqXHR) {
                     if (jqXHR.status == 200) {
                         $(modalPopupContent).html($('#reset-password-success-content').html());
                         $("a#reset-password-success-link").click(function () {
                             hidePopup();
                         });
                     }
-                }, function (jqXHR) {    // The error callback
+                },
+                // The error callback
+                function (jqXHR) {
                     var payload = JSON.parse(jqXHR.responseText);
                     $(errorMsg).text(payload.message);
                     $(errorMsgWrapper).removeClass("hidden");
@@ -222,17 +222,6 @@ function resetPassword(uname) {
         hidePopup();
     });
 }
-
-/**
- * Following on click function would execute
- * when a user type on the search field on User Listing page in
- * WSO2 MDM Console then click on the search button.
- */
-//$("#search-btn").click(function () {
-//    var searchQuery = $("#search-by-username").val();
-//    $("#ast-container").empty();
-//    loadUsers(searchQuery);
-//});
 
 /**
  * Following function would execute
@@ -260,9 +249,9 @@ function loadUsers() {
         $(data.users).each( function (index) {
             objects.push({
                 filter: data.users[index].username,
-                firstname: data.users[index].firstname ? data.users[index].firstname : '' ,
-                lastname: data.users[index].lastname ? data.users[index].lastname : '',
-                emailAddress : data.users[index].emailAddress ? data.users[index].emailAddress : '',
+                firstname: data.users[index].firstname ? data.users[index].firstname : "" ,
+                lastname: data.users[index].lastname ? data.users[index].lastname : "",
+                emailAddress : data.users[index].emailAddress ? data.users[index].emailAddress : "",
                 DT_RowId : "user-" + data.users[index].username})
         });
 
@@ -294,28 +283,36 @@ function loadUsers() {
             class: "fade-edge",
             data: null,
             render: function (data, type, row, meta) {
-                return '<h4>' + data.firstname + ' ' + data.lastname + '</h4>';
+                if (!data.firstname && !data.lastname) {
+                    return "";
+                } else if (data.firstname && data.lastname) {
+                    return "<h4>&nbsp;&nbsp;" + data.firstname + " " + data.lastname + "</h4>";
+                }
             }
         },
         {
             class: "fade-edge remove-padding-top",
             data: 'filter',
             render: function (filter, type, row, meta) {
-                return '<i class="fw-user"></i> ' + filter;
+                return '&nbsp;&nbsp;<i class="fw-user"></i>&nbsp;&nbsp;' + filter;
             }
         },
         {
             class: "fade-edge remove-padding-top",
             data: null,
             render: function (data, type, row, meta) {
-                return '<a href="mailto:' + data.emailAddress + ' " class="wr-list-email"> <i class="fw-mail"></i> ' + data.emailAddress + ' </a>';
+                if (!data.emailAddress) {
+                    return "";
+                } else {
+                    return "&nbsp;&nbsp;<a href='mailto:" + data.emailAddress + "' ><i class='fw-mail'></i>&nbsp;&nbsp;" + data.emailAddress + "</a>";
+                }
             }
         },
         {
             class: "text-right content-fill text-left-on-grid-view no-wrap",
             data: null,
             render: function (data, type, row, meta) {
-                return '<a href="/emm/user/edit?username=' + data.filter + '" data-username="' + data.filter + '" ' +
+                return '&nbsp;<a href="/emm/user/edit?username=' + data.filter + '" data-username="' + data.filter + '" ' +
                     'data-click-event="edit-form" ' +
                     'class="btn padding-reduce-on-grid-view edit-user-link"> ' +
                     '<span class="fw-stack"> ' +
@@ -360,70 +357,8 @@ function loadUsers() {
         "searchKey" : "filter"
     };
 
-
     $('#user-grid').datatables_extended_serverside_paging(null, '/api/device-mgt/v1.0/users', dataFilter, columns, fnCreatedRow, null, options);
-
-    $("#loading-content").hide();
-
-
-    // $("#loading-content").show();
-    // var userListing = $("#user-listing");
-    // var userListingSrc = userListing.attr("src");
-    // $.template("user-listing", userListingSrc, function (template) {
-    //     var serviceURL = apiBasePath + "/users";
-    //     if (searchParam) {
-    //         serviceURL = serviceURL + "?filter=" + searchParam;
-    //     }
-    //     var successCallback = function (data) {
-    //         if (!data) {
-    //             $('#ast-container').addClass('hidden');
-    //             $('#user-listing-status-msg').text('No users are available to be displayed.');
-    //             return;
-    //         }
-    //         var canRemove = $("#can-remove").val();
-    //         var canEdit = $("#can-edit").val();
-    //         var canResetPassword = $("#can-reset-password").val();
-    //         data = JSON.parse(data);
-    //         var viewModel = {};
-    //         viewModel.users = data.users;
-    //         for (var i = 0; i < viewModel.users.length; i++) {
-    //             viewModel.users[i].userid = viewModel.users[i].username.replace(/[^\w\s]/gi, '');
-    //             if (canRemove) {
-    //                 viewModel.users[i].canRemove = true;
-    //             }
-    //             if (canEdit) {
-    //                 viewModel.users[i].canEdit = true;
-    //             }
-    //             if (canResetPassword) {
-    //                 viewModel.users[i].canResetPassword = true;
-    //             }
-    //             viewModel.users[i].adminUser = $("#user-table").data("user");
-    //         }
-    //         if (data.count > 0) {
-    //             $('#ast-container').removeClass('hidden');
-    //             $('#user-listing-status-msg').text("");
-    //             var content = template(viewModel);
-    //             $("#ast-container").html(content);
-    //         } else {
-    //             $('#ast-container').addClass('hidden');
-    //             $('#user-listing-status-msg').text('No users are available to be displayed.');
-    //         }
-    //         $("#loading-content").hide();
-    //         if (isInit) {
-    //             $('#user-grid').datatables_extended();
-    //             isInit = false;
-    //         }
-    //         $(".icon .text").res_text(0.2);
-    //     };
-    //     invokerUtil.get(serviceURL,
-    //                     successCallback,
-    //                     function (message) {
-    //                         $('#ast-container').addClass('hidden');
-    //                         $('#user-listing-status-msg').
-    //                             text('Invalid search query. Try again with a valid search query');
-    //                     }
-    //     );
-    // });
+    $(loadingContentView).hide();
 }
 
 $(document).ready(function () {

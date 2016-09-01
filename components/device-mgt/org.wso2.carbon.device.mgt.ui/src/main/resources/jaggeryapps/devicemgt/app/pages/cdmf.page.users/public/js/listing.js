@@ -39,9 +39,9 @@ $(function () {
 });
 
 var apiBasePath = "/api/device-mgt/v1.0";
-var modalPopup = ".wr-modalpopup";
-var modalPopupContainer = modalPopup + " .modalpopup-container";
-var modalPopupContent = modalPopup + " .modalpopup-content";
+var modalPopup = ".modal";
+var modalPopupContainer = modalPopup + " .modal-content";
+var modalPopupContent = modalPopup + " .modal-body";
 var body = "body";
 var isInit = true;
 $(".icon .text").res_text(0.2);
@@ -58,7 +58,7 @@ function setPopupMaxHeight() {
  * show popup function.
  */
 function showPopup() {
-    $(modalPopup).show();
+    $(modalPopup).modal('show');
     setPopupMaxHeight();
 }
 

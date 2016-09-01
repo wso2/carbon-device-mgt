@@ -28,8 +28,8 @@
  * Tree view function
  * @return {Null}
  */
-var modalPopup = ".wr-modalpopup";
-var modalPopupContent = modalPopup + " .modalpopup-content";
+var modalPopup = ".modal";
+var modalPopupContent = modalPopup + " .modal-body";
 
 var apiBasePath = "/api/device-mgt/v1.0";
 
@@ -45,7 +45,7 @@ function hidePopup() {
  * show popup function.
  */
 function showPopup() {
-    $(modalPopup).show();
+    $(modalPopup).modal('show');
     setPopupMaxHeight();
 }
 $.fn.tree_view = function(){

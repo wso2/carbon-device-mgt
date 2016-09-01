@@ -171,7 +171,7 @@ function showPopup() {
  */
 function hidePopup() {
     $(modalPopupContent).html('');
-    $(modalPopup).hide();
+    $(modalPopup).modal('hide');
 }
 
 /**

@@ -38,7 +38,7 @@ var apiBasePath = "/api/device-mgt/v1.0";
  */
 function hidePopup() {
     $(modalPopupContent).html('');
-    $(modalPopup).hide();
+    $(modalPopup).modal('hide');
 }
 
 /*

@@ -54,7 +54,7 @@
         function hidePopup() {
             $(modalPopupContent).html("");
             $(modalPopupContent).removeClass("operation-data");
-            $(modalPopup).hide();
+            $(modalPopup).modal('hide');
         }
 
         function generateQRCode(qrCodeClass){

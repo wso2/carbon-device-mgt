@@ -69,24 +69,12 @@ function hidePopup() {
     $(modalPopup).hide();
 }
 
-/*
- * Function to get selected usernames.
- */
-function getSelectedUsernames() {
-    var usernameList = [];
-    var userList = $("#user-grid").find('tr.DTTT_selected');
-    userList.each(function () {
-        usernameList.push($(this).data('username'));
-    });
-    return usernameList;
-}
-
 /**
  * Following click function would execute
  * when a user clicks on "Invite" link
  * on User Management page in WSO2 MDM Console.
  */
-$("a.invite-user-link").click(function () {
+$("a#invite-user-link").click(function () {
     var usernameList = getSelectedUsernames();
     var inviteUserAPI = apiBasePath + "/users/send-invitation";
 
@@ -122,13 +110,84 @@ $("a.invite-user-link").click(function () {
     });
 });
 
+/*
+ * Function to get selected usernames.
+ */
+function getSelectedUsernames() {
+    var usernameList = [];
+    var userList = $("#user-grid").find("tr.DTTT_selected");
+    userList.each(function () {
+        usernameList.push($(this).data('username'));
+    });
+    return usernameList;
+}
+
+/**
+ * Following click function would execute
+ * when a user clicks on "Reset Password" link
+ * on User Listing page in WSO2 MDM Console.
+ */
+function resetPassword(username) {
+    $(modalPopupContent).html($('#reset-password-window').html());
+    showPopup();
+
+    $("a#reset-password-yes-link").click(function () {
+        var newPassword = $("#new-password").val();
+        var confirmedPassword = $("#confirmed-password").val();
+
+        var errorMsgWrapper = "#notification-error-msg";
+        var errorMsg = "#notification-error-msg span";
+        if (!newPassword) {
+            $(errorMsg).text("New password is a required field. It cannot be empty.");
+            $(errorMsgWrapper).removeClass("hidden");
+        } else if (!confirmedPassword) {
+            $(errorMsg).text("Retyping the new password is required.");
+            $(errorMsgWrapper).removeClass("hidden");
+        } else if (confirmedPassword != newPassword) {
+            $(errorMsg).text("New password doesn't match the confirmation.");
+            $(errorMsgWrapper).removeClass("hidden");
+        } else if (!inputIsValid(/^[\S]{5,30}$/, confirmedPassword)) {
+            $(errorMsg).text("Password should be minimum 5 characters long, should not include any whitespaces.");
+            $(errorMsgWrapper).removeClass("hidden");
+        } else {
+            var resetPasswordFormData = {};
+            resetPasswordFormData.newPassword = unescape(confirmedPassword);
+
+            var resetPasswordServiceURL = apiBasePath + "/admin/users/"+ username +"/credentials";
+
+            invokerUtil.post(
+                resetPasswordServiceURL,
+                resetPasswordFormData,
+                // The success callback
+                function (data, textStatus, jqXHR) {
+                    if (jqXHR.status == 200) {
+                        $(modalPopupContent).html($('#reset-password-success-content').html());
+                        $("a#reset-password-success-link").click(function () {
+                            hidePopup();
+                        });
+                    }
+                },
+                // The error callback
+                function (jqXHR) {
+                    var payload = JSON.parse(jqXHR.responseText);
+                    $(errorMsg).text(payload.message);
+                    $(errorMsgWrapper).removeClass("hidden");
+                }
+            );
+        }
+    });
+
+    $("a#reset-password-cancel-link").click(function () {
+        hidePopup();
+    });
+}
+
 /**
  * Following click function would execute
  * when a user clicks on "Remove" link
  * on User Listing page in WSO2 MDM Console.
  */
-function removeUser(uname) {
-    var username = uname;
+function removeUser(username) {
     var removeUserAPI = apiBasePath + "/users/" + username;
     $(modalPopupContent).html($('#remove-user-modal-content').html());
     showPopup();
@@ -156,69 +215,6 @@ function removeUser(uname) {
     });
 
     $("a#remove-user-cancel-link").click(function () {
-        hidePopup();
-    });
-}
-
-/**
- * Following click function would execute
- * when a user clicks on "Reset Password" link
- * on User Listing page in WSO2 MDM Console.
- */
-function resetPassword(uname) {
-
-    $(modalPopupContent).html($('#reset-password-window').html());
-    showPopup();
-
-    $("a#reset-password-yes-link").click(function () {
-        var newPassword = $("#new-password").val();
-        var confirmedPassword = $("#confirmed-password").val();
-        var user = uname;
-
-        var errorMsgWrapper = "#notification-error-msg";
-        var errorMsg = "#notification-error-msg span";
-        if (!newPassword) {
-            $(errorMsg).text("New password is a required field. It cannot be empty.");
-            $(errorMsgWrapper).removeClass("hidden");
-        } else if (!confirmedPassword) {
-            $(errorMsg).text("Retyping the new password is required.");
-            $(errorMsgWrapper).removeClass("hidden");
-        } else if (confirmedPassword != newPassword) {
-            $(errorMsg).text("New password doesn't match the confirmation.");
-            $(errorMsgWrapper).removeClass("hidden");
-        } else if (!inputIsValid(/^[\S]{5,30}$/, confirmedPassword)) {
-            $(errorMsg).text("Password should be minimum 5 characters long, should not include any whitespaces.");
-            $(errorMsgWrapper).removeClass("hidden");
-        } else {
-            var resetPasswordFormData = {};
-            //resetPasswordFormData.username = user;
-            resetPasswordFormData.newPassword = unescape(confirmedPassword);
-
-            var resetPasswordServiceURL = apiBasePath + "/admin/users/"+ user +"/credentials";
-
-            invokerUtil.post(
-                resetPasswordServiceURL,
-                resetPasswordFormData,
-                // The success callback
-                function (data, textStatus, jqXHR) {
-                    if (jqXHR.status == 200) {
-                        $(modalPopupContent).html($('#reset-password-success-content').html());
-                        $("a#reset-password-success-link").click(function () {
-                            hidePopup();
-                        });
-                    }
-                },
-                // The error callback
-                function (jqXHR) {
-                    var payload = JSON.parse(jqXHR.responseText);
-                    $(errorMsg).text(payload.message);
-                    $(errorMsgWrapper).removeClass("hidden");
-                }
-            );
-        }
-    });
-
-    $("a#reset-password-cancel-link").click(function () {
         hidePopup();
     });
 }

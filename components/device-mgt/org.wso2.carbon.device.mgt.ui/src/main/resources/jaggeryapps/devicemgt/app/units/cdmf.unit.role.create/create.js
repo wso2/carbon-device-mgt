@@ -18,21 +18,18 @@
 
 /**
  * Returns the dynamic state to be populated by add-user page.
- * 
+ *
  * @param context Object that gets updated with the dynamic state of this page to be presented
  * @returns {*} A context object that returns the dynamic state of this page to be presented
  */
 function onRequest(context) {
     var userModule = require("/app/modules/business-controllers/user.js")["userModule"];
     var deviceMgtProps = require("/app/modules/conf-reader/main.js")["conf"];
-    var response = userModule.getRoles();
-    if (response["status"] == "success") {
-        context["roles"] = response["content"];
-    }
-    var userStores = userModule.getSecondaryUserStores();
-    context["userStores"] = userStores;
-    context["roleNameJSRegEx"] = deviceMgtProps.roleValidationConfig.rolenameJSRegEx;
-    context["roleNameHelpText"] = deviceMgtProps.roleValidationConfig.rolenameHelpMsg;
-    context["roleNameRegExViolationErrorMsg"] = deviceMgtProps.roleValidationConfig.rolenameRegExViolationErrorMsg;
+
+    context["userStores"] = userModule.getSecondaryUserStores();
+    context["roleNameJSRegEx"] = deviceMgtProps["roleValidationConfig"]["roleNameJSRegEx"];
+    context["roleNameHelpText"] = deviceMgtProps["roleValidationConfig"]["roleNameHelpMsg"];
+    context["roleNameRegExViolationErrorMsg"] = deviceMgtProps["roleValidationConfig"]["roleNameRegExViolationErrorMsg"];
+
     return context;
 }

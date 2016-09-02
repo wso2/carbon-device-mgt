@@ -18,8 +18,8 @@
 
 function onRequest(context) {
     var userModule = require("/app/modules/business-controllers/user.js")["userModule"];
-    var response = userModule.getUsers();
-    var users = {};
+    var deviceMgtProps = require("/app/modules/conf-reader/main.js")["conf"];
+
     context["permissions"] = userModule.getUIPermissions();
     if (userModule.isAuthorized("/permission/admin/device-mgt/roles/delete")) {
         context["removePermitted"] = true;
@@ -30,8 +30,9 @@ function onRequest(context) {
     if (userModule.isAuthorized("/permission/admin/device-mgt/roles/remove")) {
         context["removePermitted"] = true;
     }
-    var deviceMgtProps = require("/app/modules/conf-reader/main.js")["conf"];
-    context["appContext"] = deviceMgtProps.appContext;
-    context["adminRole"] = deviceMgtProps.adminRole;
+
+    context["appContext"] = deviceMgtProps["appContext"];
+    context["adminRole"] = deviceMgtProps["adminRole"];
+
     return context;
 }

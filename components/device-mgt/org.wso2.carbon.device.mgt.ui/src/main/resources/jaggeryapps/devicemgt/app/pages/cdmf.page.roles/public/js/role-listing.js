@@ -110,8 +110,8 @@ function loadRoles() {
             class: "remove-padding icon-only content-fill",
             data: null,
             defaultContent: "<div class='thumbnail icon'>" +
-                                "<i class='square-element text fw fw-bookmark' style='font-size: 30px;'></i>" +
-                            "</div>"
+                "<i class='square-element text fw fw-bookmark' style='font-size: 30px;'></i>" +
+                "</div>"
         },
         {
             class: "fade-edge",

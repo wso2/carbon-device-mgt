@@ -308,7 +308,9 @@ var userModule = function () {
             var url = devicemgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"] +
                 "/roles/" + encodeURIComponent(roleName);
             var response = privateMethods.callBackend(url, constants["HTTP_GET"]);
-            response.content = parse(response.content);
+            if (response.status == "success") {
+                response.content = parse(response.content);
+            }
             return response;
         } catch (e) {
             throw e;

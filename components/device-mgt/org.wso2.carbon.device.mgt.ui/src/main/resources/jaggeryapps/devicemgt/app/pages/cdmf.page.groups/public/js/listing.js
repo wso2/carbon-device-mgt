@@ -253,7 +253,7 @@ $(document).ready(function () {
 
 var modalPopup = ".modal";
 var modalPopupContainer = modalPopup + " .modal-content";
-var modalPopupContent = modalPopup + " .modal-body";
+var modalPopupContent = modalPopup + " .modal-content";
 var body = "body";
 
 /*
@@ -268,8 +268,8 @@ function setPopupMaxHeight() {
  * show popup function.
  */
 function showPopup() {
-    $(modalPopup).show();
-    setPopupMaxHeight();
+    $(modalPopup).modal('show');
+    //setPopupMaxHeight();
 }
 
 /*
@@ -278,6 +278,8 @@ function showPopup() {
 function hidePopup() {
     $(modalPopupContent).html('');
     $(modalPopup).modal('hide');
+    $('body').removeClass('modal-open').css('padding-right','0px');
+    $('.modal-backdrop').remove();
 }
 
 /**

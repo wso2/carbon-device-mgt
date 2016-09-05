@@ -73,19 +73,19 @@ var disableInlineError = function (inputField, errorMsg, errorSign) {
  *clear inline validation messages.
  */
 clearInline["role-name"] = function () {
-    disableInlineError("roleNameField", "rolenameEmpty", "rolenameError");
+    disableInlineError("roleNameField", "roleNameEmpty", "roleNameError");
 };
 
 
 /**
- * Validate if provided rolename is valid against RegEx configures.
+ * Validate if provided role-name is valid against RegEx configures.
  */
 validateInline["role-name"] = function () {
-    var rolenameinput = $("input#rolename");
-    if (inputIsValid( rolenameinput.data("regex"), rolenameinput.val())) {
-        disableInlineError("roleNameField", "rolenameEmpty", "rolenameError");
+    var roleNameInput = $("input#roleName");
+    if (inputIsValid( roleNameInput.data("regex"), roleNameInput.val())) {
+        disableInlineError("roleNameField", "roleNameEmpty", "roleNameError");
     } else {
-        enableInlineError("roleNameField", "rolenameEmpty", "rolenameError");
+        enableInlineError("roleNameField", "roleNameEmpty", "roleNameError");
     }
 };
 
@@ -97,16 +97,16 @@ function formatRepo (user) {
         return;
     }
     var markup = '<div class="clearfix">' +
-        '<div clas="col-sm-8">' +
+        '<div class="col-sm-8">' +
         '<div class="clearfix">' +
-        '<div class="col-sm-3">' + user.username + '</div>';
-    if (user.firstname) {
-        markup +=  '<div class="col-sm-3"><i class="fa fa-code-fork"></i> ' + user.firstname + '</div>';
+        '<div class="col-sm-3">User : ' + user.username + '</div>';
+    if (user.name) {
+        markup +=  '<div class="col-sm-3"> ' + user.name + '</div>';
     }
     if (user.emailAddress) {
-        markup += '<div class="col-sm-2"><i class="fa fa-star"></i> ' + user.emailAddress + '</div></div>';
+        markup += '<div class="col-sm-3"> ' + user.emailAddress + '</div>';
     }
-    markup += '</div></div>';
+    markup += '</div></div></div>';
     return markup;
 }
 
@@ -129,17 +129,19 @@ $(document).ready(function () {
             },
             data: function (params) {
                 var postData = {};
-                postData.actionMethod = "GET";
-                postData.actionUrl = apiBasePath + "/users/search/usernames?filter=" + params.term;
-                postData.actionPayload = null;
+                postData.requestMethod = "GET";
+                postData.requestURL = "/api/device-mgt/v1.0/users/search/usernames?filter=" + params.term;
+                postData.requestPayload = null;
                 return JSON.stringify(postData);
             },
-            processResults: function (data, page) {
+            processResults: function (data) {
                 var newData = [];
                 $.each(data, function (index, value) {
                     var user = {};
-                    user.username = value.username;
                     user.id = value.username;
+                    user.username = value.username;
+                    user.name = value.firstname + " " + value.lastname;
+                    user.emailAddress = value.emailAddress;
                     newData.push(user);
                 });
                 return {
@@ -159,10 +161,10 @@ $(document).ready(function () {
      * when a user clicks on "Add Role" button
      * on Add Role page in WSO2 MDM Console.
      */
-    $("button#add-role-btn").click(function() {
-        var rolenameInput = $("input#rolename");
-        var roleName = rolenameInput.val();
+    $("button#add-role-btn").click(function () {
         var domain = $("#domain").val();
+        var roleNameInput = $("input#roleName");
+        var roleName = roleNameInput.val();
         var users = $("#users").val();
 
         var errorMsgWrapper = "#role-create-error-msg";
@@ -170,8 +172,8 @@ $(document).ready(function () {
         if (!roleName) {
             $(errorMsg).text("Role name is a required field. It cannot be empty.");
             $(errorMsgWrapper).removeClass("hidden");
-        } else if (!inputIsValid(rolenameInput.data("regex"), roleName)) {
-            $(errorMsg).text(rolenameInput.data("errormsg"));
+        } else if (!inputIsValid(roleNameInput.data("regex"), roleName)) {
+            $(errorMsg).text(roleNameInput.data("error-msg"));
             $(errorMsgWrapper).removeClass("hidden");
         } else if (!domain) {
             $(errorMsg).text("Domain is a required field. It cannot be empty.");
@@ -181,13 +183,11 @@ $(document).ready(function () {
             $(errorMsgWrapper).removeClass("hidden");
         } else {
             var addRoleFormData = {};
-
             addRoleFormData.roleName = roleName;
-
             if (domain != "PRIMARY"){
                 addRoleFormData.roleName = domain + "/" + roleName;
             }
-            if (users == null){
+            if (users == null) {
                 users = [];
             }
             addRoleFormData.users = users;
@@ -197,37 +197,31 @@ $(document).ready(function () {
             invokerUtil.post(
                 addRoleAPI,
                 addRoleFormData,
-                function (data) {
-                    data = JSON.parse(data);
-                    if (data.errorMessage) {
-                        $(errorMsg).text("Selected user store prompted an error : " + data.errorMessage);
-                        $(errorMsgWrapper).removeClass("hidden");
-                    } else {
+                function (data, textStatus, jqXHR) {
+                    if (jqXHR.status == 201) {
                         // Clearing user input fields.
-                        //$("input#rolename").val("");
-                        //$("#domain").val("");
-                        //// Refreshing with success message
-                        //$("#role-create-form").addClass("hidden");
-                        //$("#role-created-msg").removeClass("hidden");
-                        window.location.href = appContext + '/role/edit-permission/' + roleName;
+                        $("input#roleName").val("");
+                        $("#domain").val("PRIMARY");
+                        $("#users").val("");
+                        window.location.href = appContext + "/role/edit-permission/" + roleName;
                     }
-                }, function (data) {
-                    if (JSON.parse(data).errorMessage.indexOf("RoleExisting") > -1) {
-                        $(errorMsg).text("Role name : " + roleName + " already exists. Pick another role name.");
-                    } else {
-                        $(errorMsg).text(JSON.parse(data.responseText).errorMessage);
+                },
+                function (jqXHR) {
+                    if (jqXHR.status == 500) {
+                        $(errorMsg).text("Either role already exists or unexpected error.");
+                        $(errorMsgWrapper).removeClass("hidden");
                     }
-                    $(errorMsgWrapper).removeClass("hidden");
                 }
             );
         }
     });
 
-    $("#rolename").focus(function() {
+    var roleNameInputElement = "#roleName";
+    $(roleNameInputElement).focus(function() {
         clearInline["role-name"]();
     });
 
-    $("#rolename").blur(function() {
+    $(roleNameInputElement).blur(function() {
         validateInline["role-name"]();
     });
 });

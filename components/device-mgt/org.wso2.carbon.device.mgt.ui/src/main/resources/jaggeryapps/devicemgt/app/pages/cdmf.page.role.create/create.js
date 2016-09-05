@@ -16,22 +16,20 @@
  * under the License.
  */
 
+/**
+ * Returns the dynamic state to be populated by add-user page.
+ * 
+ * @param context Object that gets updated with the dynamic state of this page to be presented
+ * @returns {*} A context object that returns the dynamic state of this page to be presented
+ */
 function onRequest(context) {
     var userModule = require("/app/modules/business-controllers/user.js")["userModule"];
-    var response = userModule.getUsers();
-    var users = {};
-    context["permissions"] = userModule.getUIPermissions();
-    if (userModule.isAuthorized("/permission/admin/device-mgt/roles/delete")) {
-        context["removePermitted"] = true;
-    }
-    if (userModule.isAuthorized("/permission/admin/device-mgt/roles/update")) {
-        context["editPermitted"] = true;
-    }
-    if (userModule.isAuthorized("/permission/admin/device-mgt/roles/remove")) {
-        context["removePermitted"] = true;
-    }
     var deviceMgtProps = require("/app/modules/conf-reader/main.js")["conf"];
-    context["appContext"] = deviceMgtProps.appContext;
-    context["adminRole"] = deviceMgtProps.adminRole;
+
+    context["userStores"] = userModule.getSecondaryUserStores();
+    context["roleNameJSRegEx"] = deviceMgtProps["roleValidationConfig"]["roleNameJSRegEx"];
+    context["roleNameHelpText"] = deviceMgtProps["roleValidationConfig"]["roleNameHelpMsg"];
+    context["roleNameRegExViolationErrorMsg"] = deviceMgtProps["roleValidationConfig"]["roleNameRegExViolationErrorMsg"];
+
     return context;
 }

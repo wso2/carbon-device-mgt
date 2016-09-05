@@ -32,7 +32,7 @@ $(function () {
     var sortableElem = '.wr-sortable';
     $(sortableElem).sortable({
         beforeStop: function () {
-            var sortedIDs = $(this).sortable('toArray');
+            $(this).sortable('toArray');
         }
     });
     $(sortableElem).disableSelection();
@@ -43,7 +43,6 @@ var modalPopup = ".wr-modalpopup";
 var modalPopupContainer = modalPopup + " .modalpopup-container";
 var modalPopupContent = modalPopup + " .modalpopup-content";
 var body = "body";
-var isInit = true;
 $(".icon .text").res_text(0.2);
 
 /*
@@ -70,24 +69,12 @@ function hidePopup() {
     $(modalPopup).hide();
 }
 
-/*
- * Function to get selected usernames.
- */
-function getSelectedUsernames() {
-    var usernameList = [];
-    var userList = $("#user-grid").find('tr.DTTT_selected');
-    userList.each(function () {
-        usernameList.push($(this).data('username'));
-    });
-    return usernameList;
-}
-
 /**
  * Following click function would execute
  * when a user clicks on "Invite" link
  * on User Management page in WSO2 MDM Console.
  */
-$("a.invite-user-link").click(function () {
+$("a#invite-user-link").click(function () {
     var usernameList = getSelectedUsernames();
     var inviteUserAPI = apiBasePath + "/users/send-invitation";
 
@@ -123,44 +110,16 @@ $("a.invite-user-link").click(function () {
     });
 });
 
-/**
- * Following click function would execute
- * when a user clicks on "Remove" link
- * on User Listing page in WSO2 MDM Console.
+/*
+ * Function to get selected usernames.
  */
-function removeUser(uname) {
-    var username = uname;
-    var removeUserAPI = apiBasePath + "/users/" + username;
-    $(modalPopupContent).html($('#remove-user-modal-content').html());
-    showPopup();
-
-    $("a#remove-user-yes-link").click(function () {
-        invokerUtil.delete(
-            removeUserAPI,
-            function () {
-                $("#role-" + username).remove();
-                // get new user-list-count
-                var newUserListCount = $(".user-list > span").length;
-                // update user-listing-status-msg with new user-count
-                $("#user-listing-status-msg").text("Total number of Users found : " + newUserListCount);
-                // update modal-content with success message
-                $(modalPopupContent).html($('#remove-user-success-content').html());
-                $("a#remove-user-success-link").click(function () {
-                    hidePopup();
-                });
-            },
-            function () {
-                $(modalPopupContent).html($('#remove-user-error-content').html());
-                $("a#remove-user-error-link").click(function () {
-                    hidePopup();
-                });
-            }
-        );
+function getSelectedUsernames() {
+    var usernameList = [];
+    var userList = $("#user-grid").find("tr.DTTT_selected");
+    userList.each(function () {
+        usernameList.push($(this).data('username'));
     });
-
-    $("a#remove-user-cancel-link").click(function () {
-        hidePopup();
-    });
+    return usernameList;
 }
 
 /**
@@ -168,15 +127,13 @@ function removeUser(uname) {
  * when a user clicks on "Reset Password" link
  * on User Listing page in WSO2 MDM Console.
  */
-function resetPassword(uname) {
-
+function resetPassword(username) {
     $(modalPopupContent).html($('#reset-password-window').html());
     showPopup();
 
     $("a#reset-password-yes-link").click(function () {
         var newPassword = $("#new-password").val();
         var confirmedPassword = $("#confirmed-password").val();
-        var user = uname;
 
         var errorMsgWrapper = "#notification-error-msg";
         var errorMsg = "#notification-error-msg span";
@@ -194,22 +151,24 @@ function resetPassword(uname) {
             $(errorMsgWrapper).removeClass("hidden");
         } else {
             var resetPasswordFormData = {};
-            //resetPasswordFormData.username = user;
             resetPasswordFormData.newPassword = unescape(confirmedPassword);
 
-            var resetPasswordServiceURL = apiBasePath + "/admin/users/"+ user +"/credentials";
+            var resetPasswordServiceURL = apiBasePath + "/admin/users/"+ username +"/credentials";
 
             invokerUtil.post(
                 resetPasswordServiceURL,
                 resetPasswordFormData,
-                function (data, textStatus, jqXHR) {   // The success callback
+                // The success callback
+                function (data, textStatus, jqXHR) {
                     if (jqXHR.status == 200) {
                         $(modalPopupContent).html($('#reset-password-success-content').html());
                         $("a#reset-password-success-link").click(function () {
                             hidePopup();
                         });
                     }
-                }, function (jqXHR) {    // The error callback
+                },
+                // The error callback
+                function (jqXHR) {
                     var payload = JSON.parse(jqXHR.responseText);
                     $(errorMsg).text(payload.message);
                     $(errorMsgWrapper).removeClass("hidden");
@@ -224,15 +183,41 @@ function resetPassword(uname) {
 }
 
 /**
- * Following on click function would execute
- * when a user type on the search field on User Listing page in
- * WSO2 MDM Console then click on the search button.
+ * Following click function would execute
+ * when a user clicks on "Remove" link
+ * on User Listing page in WSO2 MDM Console.
  */
-$("#search-btn").click(function () {
-    var searchQuery = $("#search-by-username").val();
-    $("#ast-container").empty();
-    loadUsers(searchQuery);
-});
+function removeUser(username) {
+    var removeUserAPI = apiBasePath + "/users/" + username;
+    $(modalPopupContent).html($('#remove-user-modal-content').html());
+    showPopup();
+
+    $("a#remove-user-yes-link").click(function () {
+        invokerUtil.delete(
+            removeUserAPI,
+            function (data, textStatus, jqXHR) {
+                if (jqXHR.status == 200) {
+                    $("#user-" + username).remove();
+                    // update modal-content with success message
+                    $(modalPopupContent).html($('#remove-user-success-content').html());
+                    $("a#remove-user-success-link").click(function () {
+                        hidePopup();
+                    });
+                }
+            },
+            function () {
+                $(modalPopupContent).html($('#remove-user-error-content').html());
+                $("a#remove-user-error-link").click(function () {
+                    hidePopup();
+                });
+            }
+        );
+    });
+
+    $("a#remove-user-cancel-link").click(function () {
+        hidePopup();
+    });
+}
 
 /**
  * Following function would execute
@@ -248,169 +233,132 @@ function InitiateViewOption() {
     }
 }
 
-function loadUsers(searchParam) {
+function loadUsers() {
+    var loadingContentView = "#loading-content";
+    $(loadingContentView).show();
 
-
-    $("#loading-content").show();
-
-
-    var dataFilter = function(data){
+    var dataFilter = function (data) {
         data = JSON.parse(data);
 
         var objects = [];
 
-        $(data.users).each(function( index ) {
+        $(data.users).each( function (index) {
             objects.push({
                 filter: data.users[index].username,
-                firstname: data.users[index].firstname ? data.users[index].firstname: '' ,
-                lastname: data.users[index].lastname ? data.users[index].lastname : '',
-                emailAddress : data.users[index].emailAddress ? data.users[index].emailAddress: '',
-                DT_RowId : "role-" + data.users[index].username})
+                firstname: data.users[index].firstname ? data.users[index].firstname : "" ,
+                lastname: data.users[index].lastname ? data.users[index].lastname : "",
+                emailAddress : data.users[index].emailAddress ? data.users[index].emailAddress : "",
+                DT_RowId : "user-" + data.users[index].username})
         });
 
-        json = {
+        var json = {
             "recordsTotal": data.count,
             "recordsFiltered": data.count,
             "data": objects
         };
 
-        return JSON.stringify( json );
-    }
+        return JSON.stringify(json);
+    };
 
-    var fnCreatedRow = function( nRow, aData, iDataIndex ) {
+    //noinspection JSUnusedLocalSymbols
+    var fnCreatedRow = function (nRow, aData, iDataIndex) {
         $(nRow).attr('data-type', 'selectable');
         $(nRow).attr('data-username', aData["filter"]);
-    }
+    };
 
+    //noinspection JSUnusedLocalSymbols
     var columns = [
         {
             class: "remove-padding icon-only content-fill",
             data: null,
-            defaultContent: '<div class="thumbnail icon"> <i class="square-element text fw fw-user" style="font-size: 30px;"></i> </div>'
+            defaultContent: '<div class="thumbnail icon">' +
+                '<i class="square-element text fw fw-user" style="font-size: 30px;"></i>' +
+                '</div>'
         },
         {
             class: "fade-edge",
             data: null,
-            render: function ( data, type, row, meta ) {
-                return '<h4>' + data.firstname + ' ' + data.lastname + '</h4>';
+            render: function (data, type, row, meta) {
+                if (!data.firstname && !data.lastname) {
+                    return "";
+                } else if (data.firstname && data.lastname) {
+                    return "<h4>&nbsp;&nbsp;" + data.firstname + " " + data.lastname + "</h4>";
+                }
             }
         },
         {
             class: "fade-edge remove-padding-top",
             data: 'filter',
-            render: function ( filter, type, row, meta ) {
-                return '<i class="fw-user"></i> ' + filter;
+            render: function (filter, type, row, meta) {
+                return '&nbsp;&nbsp;<i class="fw-user"></i>&nbsp;&nbsp;' + filter;
             }
         },
         {
             class: "fade-edge remove-padding-top",
             data: null,
-            render: function ( data, type, row, meta ) {
-                return '<a href="mailto:' + data.emailAddress + ' " class="wr-list-email"> <i class="fw-mail"></i> ' + data.emailAddress + ' </a>';
+            render: function (data, type, row, meta) {
+                if (!data.emailAddress) {
+                    return "";
+                } else {
+                    return "&nbsp;&nbsp;<a href='mailto:" + data.emailAddress + "' ><i class='fw-mail'></i>&nbsp;&nbsp;" + data.emailAddress + "</a>";
+                }
             }
         },
         {
             class: "text-right content-fill text-left-on-grid-view no-wrap",
             data: null,
-            render: function ( data, type, row, meta ) {
-                return '<a href="/emm/user/edit?username=' + data.filter + '" data-username="' + data.filter +
-                    '" data-click-event="edit-form" class="btn padding-reduce-on-grid-view edit-user-link"> ' +
-                    '<span class="fw-stack"> <i class="fw fw-ring fw-stack-2x"></i> <i class="fw fw-edit fw-stack-1x"></i>' +
-                    ' </span> <span class="hidden-xs hidden-on-grid-view">Edit</span> </a>' +
-
-                    '<a href="#" data-username="' + data.filter + '" data-userid=' + data.filter +
-                    ' data-click-event="remove-form" onclick="javascript:removeUser(\'' + data.filter + '\')" ' +
+            render: function (data, type, row, meta) {
+                return '&nbsp;<a href="/emm/user/edit?username=' + data.filter + '" data-username="' + data.filter + '" ' +
+                    'data-click-event="edit-form" ' +
+                    'class="btn padding-reduce-on-grid-view edit-user-link"> ' +
+                    '<span class="fw-stack"> ' +
+                    '<i class="fw fw-ring fw-stack-2x"></i>' +
+                    '<i class="fw fw-edit fw-stack-1x"></i>' +
+                    '</span>' +
+                    '<span class="hidden-xs hidden-on-grid-view">' +
+                    '&nbsp;&nbsp;Edit' +
+                    '</span>' +
+                    '</a>' +
+                    '<a href="#" data-username="' + data.filter + '" data-userid="' + data.filter + '" ' +
+                    'data-click-event="edit-form" ' +
+                    'onclick="javascript:resetPassword(\'' + data.filter + '\')" ' +
                     'class="btn padding-reduce-on-grid-view remove-user-link">' +
-                    '<span class="fw-stack"> <i class="fw fw-ring fw-stack-2x"></i> <i class="fw fw-delete fw-stack-1x">' +
-                    '</i> </span> <span class="hidden-xs hidden-on-grid-view">Remove</span> </a>' +
-
-                    '<a href="#" data-username="' + data.filter + '" data-userid="' + data.filter +
-                    '" data-click-event="edit-form" onclick="javascript:resetPassword(\'' + data.filter +
-                    '\')" class="btn padding-reduce-on-grid-view remove-user-link"> <span class="fw-stack"> <i class="fw fw-ring fw-stack-2x">' +
-                    '</i> <i class="fw fw-key fw-stack-1x"></i> <span class="fw-stack fw-move-right fw-move-bottom"> <i class="fw fw-circle fw-stack-2x fw-stroke fw-inverse"><' +
-                    '/i> <i class="fw fw-circle fw-stack-2x"></i> <i class="fw fw-refresh fw-stack-1x fw-inverse">' +
-                    '</i> </span> </span> <span class="hidden-xs hidden-on-grid-view">Reset</span> </a>'
+                    '<span class="fw-stack">' +
+                    '<i class="fw fw-ring fw-stack-2x"></i>' +
+                    '<i class="fw fw-key fw-stack-1x"></i>' +
+                    '</span>' +
+                    '<span class="hidden-xs hidden-on-grid-view">' +
+                    '&nbsp;&nbsp;Reset Password' +
+                    '</span>' +
+                    '</a>' +
+                    '<a href="#" data-username="' + data.filter + '" data-userid="' + data.filter + '" ' +
+                    'data-click-event="remove-form" ' +
+                    'onclick="javascript:removeUser(\'' + data.filter + '\')" ' +
+                    'class="btn padding-reduce-on-grid-view remove-user-link">' +
+                    '<span class="fw-stack">' +
+                    '<i class="fw fw-ring fw-stack-2x"></i>' +
+                    '<i class="fw fw-delete fw-stack-1x"></i>' +
+                    '</span>' +
+                    '<span class="hidden-xs hidden-on-grid-view">' +
+                    '&nbsp;&nbsp;Remove' +
+                    '</span>' +
+                    '</a>';
             }
         }
 
     ];
-
 
     var options = {
         "placeholder": "Search By Username",
         "searchKey" : "filter"
     };
 
-
     $('#user-grid').datatables_extended_serverside_paging(null, '/api/device-mgt/v1.0/users', dataFilter, columns, fnCreatedRow, null, options);
-
-    $("#loading-content").hide();
-
-
-
-    // $("#loading-content").show();
-    // var userListing = $("#user-listing");
-    // var userListingSrc = userListing.attr("src");
-    // $.template("user-listing", userListingSrc, function (template) {
-    //     var serviceURL = apiBasePath + "/users";
-    //     if (searchParam) {
-    //         serviceURL = serviceURL + "?filter=" + searchParam;
-    //     }
-    //     var successCallback = function (data) {
-    //         if (!data) {
-    //             $('#ast-container').addClass('hidden');
-    //             $('#user-listing-status-msg').text('No users are available to be displayed.');
-    //             return;
-    //         }
-    //         var canRemove = $("#can-remove").val();
-    //         var canEdit = $("#can-edit").val();
-    //         var canResetPassword = $("#can-reset-password").val();
-    //         data = JSON.parse(data);
-    //         var viewModel = {};
-    //         viewModel.users = data.users;
-    //         for (var i = 0; i < viewModel.users.length; i++) {
-    //             viewModel.users[i].userid = viewModel.users[i].username.replace(/[^\w\s]/gi, '');
-    //             if (canRemove) {
-    //                 viewModel.users[i].canRemove = true;
-    //             }
-    //             if (canEdit) {
-    //                 viewModel.users[i].canEdit = true;
-    //             }
-    //             if (canResetPassword) {
-    //                 viewModel.users[i].canResetPassword = true;
-    //             }
-    //             viewModel.users[i].adminUser = $("#user-table").data("user");
-    //         }
-    //         if (data.count > 0) {
-    //             $('#ast-container').removeClass('hidden');
-    //             $('#user-listing-status-msg').text("");
-    //             var content = template(viewModel);
-    //             $("#ast-container").html(content);
-    //         } else {
-    //             $('#ast-container').addClass('hidden');
-    //             $('#user-listing-status-msg').text('No users are available to be displayed.');
-    //         }
-    //         $("#loading-content").hide();
-    //         if (isInit) {
-    //             $('#user-grid').datatables_extended();
-    //             isInit = false;
-    //         }
-    //         $(".icon .text").res_text(0.2);
-    //     };
-    //     invokerUtil.get(serviceURL,
-    //                     successCallback,
-    //                     function (message) {
-    //                         $('#ast-container').addClass('hidden');
-    //                         $('#user-listing-status-msg').
-    //                             text('Invalid search query. Try again with a valid search query');
-    //                     }
-    //     );
-    // });
+    $(loadingContentView).hide();
 }
 
 $(document).ready(function () {
     loadUsers();
-
     $(".viewEnabledIcon").click(function () {
         InitiateViewOption();
     });

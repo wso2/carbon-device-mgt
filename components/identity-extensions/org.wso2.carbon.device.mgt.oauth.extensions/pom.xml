@@ -125,7 +125,7 @@
                             org.wso2.carbon.device.mgt.core.*,
                             javax.xml.bind,
                             javax.xml.bind.annotation,
-                            javax.xml.parsers,
+                            javax.xml.parsers;version="${javax.xml.parsers.import.pkg.version}",
                             org.w3c.dom,
                             org.wso2.carbon.apimgt.keymgt,
                             org.wso2.carbon.apimgt.keymgt.handlers,
@@ -133,7 +133,7 @@
                             org.apache.commons.codec.binary,
                             org.wso2.carbon.identity.application.authentication.framework.model,
                             org.apache.oltu.oauth2.common,
-                            org.wso2.carbon.base
+                            org.wso2.carbon.base,
                         </Import-Package>
                     </instructions>
                 </configuration>

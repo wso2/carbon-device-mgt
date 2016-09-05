@@ -68,6 +68,10 @@
             <groupId>commons-codec.wso2</groupId>
             <artifactId>commons-codec</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.registry</groupId>
+            <artifactId>org.wso2.carbon.registry.indexing</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -146,6 +150,9 @@
                             <importFeatures>
                                 <importFeatureDef>org.wso2.carbon.core.server:${carbon.kernel.version}</importFeatureDef>
                             </importFeatures>
+                            <importBundles>
+                                <importBundleDef>org.wso2.carbon.registry:org.wso2.carbon.registry.indexing:${carbon.registry.version}</importBundleDef>
+                            </importBundles>
                         </configuration>
                     </execution>
                 </executions>

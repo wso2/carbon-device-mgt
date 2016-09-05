@@ -58,6 +58,7 @@
                             org.apache.commons.logging,
                             javax.naming,
                             javax.xml.*,
+                            javax.xml.parsers;version="${javax.xml.parsers.import.pkg.version}",
                             javax.servlet.*,
                             org.xml.sax,
                             javax.sql.*,

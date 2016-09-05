@@ -49,10 +49,14 @@
             <artifactId>org.wso2.carbon.device.mgt.api.feature</artifactId>
             <type>zip</type>
         </dependency>
-        <!--<dependency>-->
-            <!--<groupId>org.wso2.carbon.commons</groupId>-->
-            <!--<artifactId>org.wso2.carbon.email.verification</artifactId>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>org.wso2.orbit.org.apache.pdfbox</groupId>
+            <artifactId>pdfbox</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.registry</groupId>
+            <artifactId>org.wso2.carbon.registry.indexing</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -125,9 +129,15 @@
                                 </bundleDef>
                                 <!-- Below should be bundled with the email verification -->
                             </bundles>
+                            <importBundles>
+                                <importBundleDef>org.wso2.carbon.apimgt:org.wso2.carbon.apimgt.keymgt:${carbon.api.mgt.version}</importBundleDef>
+                                <importBundleDef>org.wso2.orbit.org.apache.pdfbox:pdfbox:${orbit.version.pdfbox}</importBundleDef>
+                                <importBundleDef>org.wso2.carbon.registry:org.wso2.carbon.registry.indexing:${carbon.registry.version}</importBundleDef>
+                            </importBundles>
                             <importFeatures>
                                 <importFeatureDef>org.wso2.carbon.core.server:${carbon.kernel.version}</importFeatureDef>
                                 <importFeatureDef>org.wso2.carbon.apimgt.core:${carbon.api.mgt.version}</importFeatureDef>
+                                <!--<importFeatureDef>org.wso2.carbon.apimgt.keymgt.client:${carbon.api.mgt.version}</importFeatureDef>-->
                                 <importFeatureDef>org.wso2.carbon.device.mgt.extensions:${carbon.device.mgt.version}</importFeatureDef>
                                 <importFeatureDef>org.wso2.carbon.email.sender:${carbon.device.mgt.version}</importFeatureDef>
                             </importFeatures>

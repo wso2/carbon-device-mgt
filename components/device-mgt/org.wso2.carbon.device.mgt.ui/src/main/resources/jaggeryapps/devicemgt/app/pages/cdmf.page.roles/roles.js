@@ -16,23 +16,23 @@
  * under the License.
  */
 
-/**
- * Returns the dynamic state to be populated by add-user page.
- * 
- * @param context Object that gets updated with the dynamic state of this page to be presented
- * @returns {*} A context object that returns the dynamic state of this page to be presented
- */
 function onRequest(context) {
     var userModule = require("/app/modules/business-controllers/user.js")["userModule"];
     var deviceMgtProps = require("/app/modules/conf-reader/main.js")["conf"];
-    var response = userModule.getRoles();
-    if (response["status"] == "success") {
-        context["roles"] = response["content"];
+
+    context["permissions"] = userModule.getUIPermissions();
+    if (userModule.isAuthorized("/permission/admin/device-mgt/roles/delete")) {
+        context["removePermitted"] = true;
     }
-    var userStores = userModule.getSecondaryUserStores();
-    context["userStores"] = userStores;
-    context["roleNameJSRegEx"] = deviceMgtProps.roleValidationConfig.rolenameJSRegEx;
-    context["roleNameHelpText"] = deviceMgtProps.roleValidationConfig.rolenameHelpMsg;
-    context["roleNameRegExViolationErrorMsg"] = deviceMgtProps.roleValidationConfig.rolenameRegExViolationErrorMsg;
+    if (userModule.isAuthorized("/permission/admin/device-mgt/roles/update")) {
+        context["editPermitted"] = true;
+    }
+    if (userModule.isAuthorized("/permission/admin/device-mgt/roles/remove")) {
+        context["removePermitted"] = true;
+    }
+
+    context["appContext"] = deviceMgtProps["appContext"];
+    context["adminRole"] = deviceMgtProps["adminRole"];
+
     return context;
 }

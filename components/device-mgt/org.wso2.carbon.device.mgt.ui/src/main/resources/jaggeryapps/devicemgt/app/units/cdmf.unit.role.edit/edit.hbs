@@ -31,11 +31,8 @@
                         </div>
                         <label class="wr-input-label">Domain</label>
                         <div class="wr-input-control">
-                            <select id="domain" class="form-control select">
-                                <option>PRIMARY</option>
-                                {{#each userStores}}
-                                    <option>{{this}}</option>
-                                {{/each}}
+                            <select id="domain" class="form-control select" disabled>
+                                <option>{{userStore}}</option>
                             </select>
                         </div>
                         <label class="wr-input-label">
@@ -52,8 +49,8 @@
                                    value="{{role.roleName}}" />
                             <span class=" rolenameError hidden glyphicon glyphicon-remove form-control-feedback"></span>
                             <label class="error rolenameEmpty hidden" for="summary">Role name is required & Should be in
-                                                                                    minimum 3 characters long and do not
-                                                                                    include any whitespaces. </label>
+                                minimum 3 characters long and do not
+                                include any whitespaces. </label>
                         </div>
                     </div>
                 </div>

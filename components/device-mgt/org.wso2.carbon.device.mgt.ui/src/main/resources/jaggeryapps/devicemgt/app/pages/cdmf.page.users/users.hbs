@@ -15,8 +15,8 @@
   specific language governing permissions and limitations
   under the License.
 }}
-{{unit "cdmf.unit.ui.title" pageTitle="User Management"}}
 
+{{unit "cdmf.unit.ui.title" pageTitle="User Management"}}
 {{unit "cdmf.unit.data-tables-extended"}}
 
 {{#zone "breadcrumbs"}}
@@ -26,6 +26,7 @@
         </a>
     </li>
     <li>
+        <!--suppress HtmlUnknownTarget -->
         <a href="{{@app.context}}/users">
             USERS
         </a>
@@ -34,6 +35,7 @@
 
 {{#zone "navbarActions"}}
     <li>
+        <!--suppress HtmlUnknownTarget -->
         <a href="{{@app.context}}/user/add">
             <span class="icon fw-stack">
                 <i class="fw fw-add fw-stack-1x"></i>
@@ -64,84 +66,25 @@
             <input type="hidden" id="can-reset-password" value="true"/>
         {{/if}}
         <i class="fw fw-settings fw-spin fw-2x"></i>
-
         Loading users . . .
         <br>
     </div>
 
-    <div id="user-listing-status" class="raw hidden">
-        <ul style="list-style-type: none;">
-            <li class="message message-info">
-                <h4>
-                    <i class="icon fw fw-info"></i>
-                    <a id="user-listing-status-msg"></a>
-                </h4>
-            </li>
-        </ul>
-    </div>
-
     <div id="user-table" data-user={{adminUser}}>
-        <!--<table class="table table-striped table-hover list-table display responsive nowrap data-table grid-view"-->
-        <!--id="user-grid">-->
-        <!--<thead>-->
-        <!--<tr class="sort-row">-->
-        <!--<th class="no-sort"></th>-->
-        <!--<th class="no-sort"></th>-->
-        <!--<th>By Username</th>-->
-        <!--<th class="no-sort"></th>-->
-        <!--<th class="no-sort"></th>-->
-        <!--</tr>-->
-        <!--<tr class="filter-row filter-box">-->
-        <!--<th colspan="4">-->
-        <!--<label class="wr-input-label" for="search-by-username">-->
-        <!--By Username-->
-        <!--</label>-->
-        <!--<input id="search-by-username" type="text" class="form-control"-->
-        <!--placeholder="Search By Username">-->
-        <!--</th>-->
-        <!--<th style="vertical-align:bottom;">-->
-        <!--<button id="search-btn" class="wr-btn">-->
-        <!--Search-->
-        <!--</button>-->
-        <!--</th>-->
-        <!--</tr>-->
-        <!--<tr class="bulk-action-row" id="invite-user-button">-->
-        <!--<th colspan="5">-->
-        <!--<ul class="tiles">-->
-        <!--<li class="square">-->
-        <!--<a href="#" data-click-event="remove-form" class="btn square-element invite-user-link"-->
-        <!--data-toggle="modal" data-target="#modalDemo">-->
-        <!--<span class="icon fw-stack">-->
-        <!--<i class="fw fw-ring fw-stack-2x"></i>-->
-        <!--<i class="fw fw-invitation fw-stack-1x"></i>-->
-        <!--</span>-->
-        <!--Invite Selected-->
-        <!--</a>-->
-        <!--</li>-->
-        <!--</ul>-->
-        <!--</th>-->
-        <!--</tr>-->
-        <!--</thead>-->
-        <!--<tbody id="ast-container">-->
-
-        <!--<br class="c-both"/>-->
-        <!--</tbody>-->
-        <!--</table>-->
         <table class="table table-striped table-hover list-table display responsive nowrap data-table grid-view" id="user-grid">
             <thead>
             <tr class="sort-row">
                 <th>By Username</th>
             </tr>
             <tr class="bulk-action-row">
-                <th colspan="5">
+                <th colspan="3">
                     <ul class="tiles">
                         <li class="square">
-                            <a href="#" data-click-event="remove-form" class="btn square-element invite-user-link"
+                            <a id="invite-user-link" href="#" data-click-event="remove-form" class="btn square-element"
                                data-toggle="modal" data-target="#modalDemo">
-                                    <span class="icon fw-stack">
-                                        <i class="fw fw-ring fw-stack-2x"></i>
-                                        <i class="fw fw-invitation fw-stack-1x"></i>
-                                    </span>
+                                        <span class="icon fw-stack">
+                                            <i class="fw fw-invitation fw-stack-2x"></i>
+                                        </span>
                                 Invite Selected
                             </a>
                         </li>
@@ -149,13 +92,10 @@
                 </th>
             </tr>
             </thead>
-            <tbody id="ast-container">
-
-            <br class="c-both" />
-            </tbody>
+            <tbody id="ast-container"></tbody>
         </table>
     </div>
-    <br class="c-both"/>
+
     <div id="content-filter-types" style="display: none">
         <div class="sort-title">Sort By</div>
         <div class="sort-options">
@@ -220,7 +160,6 @@
             <div class="row">
                 <div class="col-lg-5 col-md-6 col-centered">
                     <h3>Do you really want to remove this user ?</h3>
-
                     <div class="buttons">
                         <a href="#" id="remove-user-yes-link" class="btn-operations">
                             Remove
@@ -269,13 +208,13 @@
         <div class="content">
             <div class="row">
                 <div class="col-lg-5 col-md-6 col-centered">
-                    <h3>
-                    <span class="fw-stack">
-                        <i class="fw fw-ring fw-stack-2x"></i>
-                        <i class="fw fw-error fw-stack-1x"></i>
-                    </span>
+                    <h2>
+                        <span class="fw-stack">
+                            <i class="fw fw-ring fw-stack-2x"></i>
+                            <i class="fw fw-error fw-stack-1x"></i>
+                        </span>
                         Operation cannot be performed !
-                    </h3>
+                    </h2>
                     <h4>
                         Please select a user or a list of users to send invitation emails.
                     </h4>
@@ -310,29 +249,28 @@
         <div class="content">
             <div class="row">
                 <div class="col-lg-5 col-md-6 col-centered">
-                    <h3>
+                    <h2>
                         <span class="fw-stack">
                             <i class="fw fw-ring fw-stack-2x"></i>
                             <i class="fw fw-key fw-stack-1x"></i>
                         </span>
                         Reset Password
-                        <br>
-                    </h3>
+                    </h2>
+                    <br>
                     <div id="notification-error-msg" class="alert alert-danger hidden" role="alert">
                         <i class="icon fw fw-error"></i><span></span>
                     </div>
                     <h4>
                         Enter new password
                         <br><br>
-                        <div>
-                            <input type="password" class="form-control modal-input operationDataKeys" id="new-password" data-key="message"/>
-                        </div>
+                        <!--suppress HtmlUnknownTag -->
+                        <!--suppress HtmlFormInputWithoutLabel -->
+                        <input type="password" class="form-control modal-input operationDataKeys" id="new-password" data-key="message"/>
                         <br>
                         Retype new password
                         <br><br>
-                        <div>
-                            <input type="password" class="form-control modal-input operationDataKeys" id="confirmed-password" data-key="message"/>
-                        </div>
+                        <!--suppress HtmlFormInputWithoutLabel -->
+                        <input type="password" class="form-control modal-input operationDataKeys" id="confirmed-password" data-key="message"/>
                         <br>
                     </h4>
                     <div class="buttons">
@@ -369,6 +307,7 @@
     <!--Later add the navigation menu from here-->
 {{/zone}}
 {{#zone "bottomJs"}}
+    <!--suppress HtmlUnknownTarget -->
     <script id="user-listing" data-current-user="{{currentUser.username}}"
             src="{{@page.publicUri}}/templates/listing.hbs" type="text/x-handlebars-template"></script>
     {{js "js/listing.js"}}

@@ -415,31 +415,24 @@ public class OperationManagerImpl implements OperationManager {
 
         try {
             OperationManagementDAOFactory.openConnection();
-            org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation dtoOperation = operationDAO.
-                                                                                                           getNextOperation(
-                                                                                                                   enrolmentId);
+            org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation dtoOperation = operationDAO.getNextOperation(
+                                                                                                           enrolmentId);
             if (dtoOperation != null) {
-                if (org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Type.COMMAND.
-                                                                                                    equals(dtoOperation
-                                                                                                                   .getType())) {
+                if (org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Type.COMMAND.equals(dtoOperation.getType()
+                )) {
                     org.wso2.carbon.device.mgt.core.dto.operation.mgt.CommandOperation commandOperation;
                     commandOperation =
                             (org.wso2.carbon.device.mgt.core.dto.operation.mgt.CommandOperation) commandOperationDAO.
-                                                                                                                            getOperation(
-                                                                                                                                    dtoOperation
-                                                                                                                                            .getId());
+                                                                                     getOperation(dtoOperation.getId());
                     dtoOperation.setEnabled(commandOperation.isEnabled());
-                } else if (org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Type.CONFIG.
-                                                                                                          equals(dtoOperation
-                                                                                                                         .getType())) {
+                } else if (org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Type.CONFIG.equals(dtoOperation.
+                                                                                                           getType())) {
                     dtoOperation = configOperationDAO.getOperation(dtoOperation.getId());
-                } else if (org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Type.PROFILE.
-                                                                                                           equals(dtoOperation
-                                                                                                                          .getType())) {
+                } else if (org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Type.PROFILE.equals(dtoOperation.
+                                                                                                           getType())) {
                     dtoOperation = profileOperationDAO.getOperation(dtoOperation.getId());
-                } else if (org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Type.POLICY.
-                                                                                                          equals(dtoOperation
-                                                                                                                         .getType())) {
+                } else if (org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Type.POLICY.equals(dtoOperation.
+                                                                                                           getType())) {
                     dtoOperation = policyOperationDAO.getOperation(dtoOperation.getId());
                 }
                 operation = OperationDAOUtil.convertOperation(dtoOperation);

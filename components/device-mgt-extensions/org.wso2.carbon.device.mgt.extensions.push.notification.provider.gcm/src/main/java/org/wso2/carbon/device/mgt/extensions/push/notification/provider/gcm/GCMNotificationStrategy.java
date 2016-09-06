@@ -78,7 +78,7 @@ public class GCMNotificationStrategy implements NotificationStrategy {
 
         HttpURLConnection conn = null;
         try {
-            conn = (HttpURLConnection) (new URL(config.getProperty(GCM_ENDPOINT)).openConnection());
+            conn = (HttpURLConnection) new URL(GCM_ENDPOINT).openConnection();
             conn.setDoOutput(true);
             conn.setUseCaches(false);
             conn.setFixedLengthStreamingMode(bytes.length);

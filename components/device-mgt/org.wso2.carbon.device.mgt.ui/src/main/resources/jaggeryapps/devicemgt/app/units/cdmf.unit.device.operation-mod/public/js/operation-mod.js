@@ -115,8 +115,8 @@ var operationModule = function () {
         var featureMap = {
             "DEVICE_LOCK": "lock",
             "VPN": "vpn",
-            "PER_APP_VPN": "perappvpn",
-            "APP_TO_PER_APP_VPN_MAPPING": "apptoperappvpnmapping",
+            "PER_APP_VPN": "per-app-vpn",
+            "APP_TO_PER_APP_VPN_MAPPING": "app-to-per-app-vpn-mapping",
             "RING": "ring",
             "LOCATION": "location",
             "NOTIFICATION": "notification",
@@ -124,12 +124,12 @@ var operationModule = function () {
             "RESTRICTION": "restriction",
             "CELLULAR": "cellular",
             "WIFI": "wifi",
-            "INSTALL_STORE_APPLICATION": "storeapplication",
-            "INSTALL_ENTERPRISE_APPLICATION": "enterpriseapplication",
-            "REMOVE_APPLICATION": "removeapplication",
-            "ENTERPRISE_WIPE": "enterprisewipe"
+            "INSTALL_STORE_APPLICATION": "store-application",
+            "INSTALL_ENTERPRISE_APPLICATION": "enterprise-application",
+            "REMOVE_APPLICATION": "remove-application",
+            "ENTERPRISE_WIPE": "enterprise-wipe"
         };
-        return "/ios/operation/" + featureMap[operationCode];
+        return "/api/device-mgt/ios/v1.0/admin/devices/" + featureMap[operationCode];
     };
 
     /**

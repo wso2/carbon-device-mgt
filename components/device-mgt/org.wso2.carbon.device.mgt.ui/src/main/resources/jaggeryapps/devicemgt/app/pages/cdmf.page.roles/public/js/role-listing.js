@@ -32,10 +32,11 @@ $(function () {
 });
 
 var apiBasePath = "/api/device-mgt/v1.0";
-var modalPopup = ".wr-modalpopup";
-var modalPopupContainer = modalPopup + " .modalpopup-container";
-var modalPopupContent = modalPopup + " .modalpopup-content";
+var modalPopup = ".modal";
+var modalPopupContainer = modalPopup + " .modal-content";
+var modalPopupContent = modalPopup + " .modal-content";
 var body = "body";
+var isInit = true;
 $(".icon .text").res_text(0.2);
 
 
@@ -51,8 +52,8 @@ function setPopupMaxHeight() {
  * show popup function.
  */
 function showPopup() {
-    $(modalPopup).show();
-    setPopupMaxHeight();
+    $(modalPopup).modal('show');
+    //setPopupMaxHeight();
 }
 
 /*
@@ -60,8 +61,11 @@ function showPopup() {
  */
 function hidePopup() {
     $(modalPopupContent).html('');
-    $(modalPopup).hide();
+    $(modalPopup).modal('hide');
+    $('body').removeClass('modal-open').css('padding-right','0px');
+    $('.modal-backdrop').remove();
 }
+
 
 /**
  * Following function would execute
@@ -176,42 +180,7 @@ function loadRoles() {
 
 }
 
-<<<<<<< HEAD:components/device-mgt/org.wso2.carbon.device.mgt.ui/src/main/resources/jaggeryapps/devicemgt/app/units/cdmf.unit.role.listing/public/js/role-listing.js
-var modalPopup = ".modal";
-var modalPopupContainer = modalPopup + " .modal-content";
-var modalPopupContent = modalPopup + " .modal-content";
-var body = "body";
-var isInit = true;
 
-
-/*
- * set popup maximum height function.
- */
-function setPopupMaxHeight() {
-    $(modalPopupContent).css('max-height', ($(body).height() - ($(body).height() / 100 * 30)));
-    $(modalPopupContainer).css('margin-top', (-($(modalPopupContainer).height() / 2)));
-}
-
-/*
- * show popup function.
- */
-function showPopup() {
-    $(modalPopup).modal('show');
-    //setPopupMaxHeight();
-}
-
-/*
- * hide popup function.
- */
-function hidePopup() {
-    $(modalPopupContent).html('');
-    $(modalPopup).modal('hide');
-    $('body').removeClass('modal-open').css('padding-right','0px');
-    $('.modal-backdrop').remove();
-}
-
-=======
->>>>>>> bdb5b970fdf87856317a8e719487643d0cb823f5:components/device-mgt/org.wso2.carbon.device.mgt.ui/src/main/resources/jaggeryapps/devicemgt/app/pages/cdmf.page.roles/public/js/role-listing.js
 /**
  * Following click function would execute
  * when a user clicks on "Remove" link

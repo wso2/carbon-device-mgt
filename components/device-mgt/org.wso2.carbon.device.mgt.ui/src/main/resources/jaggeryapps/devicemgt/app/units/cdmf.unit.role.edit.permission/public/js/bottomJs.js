@@ -29,7 +29,7 @@
  * @return {Null}
  */
 var modalPopup = ".modal";
-var modalPopupContent = modalPopup + " .modal-body";
+var modalPopupContent = modalPopup + " .modal-content";
 
 var apiBasePath = "/api/device-mgt/v1.0";
 
@@ -39,6 +39,8 @@ var apiBasePath = "/api/device-mgt/v1.0";
 function hidePopup() {
     $(modalPopupContent).html('');
     $(modalPopup).modal('hide');
+    $('body').removeClass('modal-open').css('padding-right','0px');
+    $('.modal-backdrop').remove();
 }
 
 /*
@@ -46,7 +48,7 @@ function hidePopup() {
  */
 function showPopup() {
     $(modalPopup).modal('show');
-    setPopupMaxHeight();
+    //setPopupMaxHeight();
 }
 $.fn.tree_view = function(){
     var tree = $(this);

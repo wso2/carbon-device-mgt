@@ -20,7 +20,7 @@
     <script type="text/javascript">
         var modalPopup = '.modal',
                 modalPopupContainer = modalPopup + ' .modal-content',
-                modalPopupContent = modalPopup + ' .modal-body';
+                modalPopupContent = modalPopup + ' .modal-content';
         function openCollapsedNav(){
             $(".wr-hidden-nav-toggle-btn").addClass("active");
             $("#hiddenNav").slideToggle("slideDown", function () {
@@ -55,6 +55,8 @@
             $(modalPopupContent).html("");
             $(modalPopupContent).removeClass("operation-data");
             $(modalPopup).modal('hide');
+            $('body').removeClass('modal-open').css('padding-right','0px');
+            $('.modal-backdrop').remove();
         }
 
         function generateQRCode(qrCodeClass){
@@ -68,8 +70,8 @@
     </script>
     <script type="text/javascript">
         function toggleEnrollment(){
-            $(".modal-body").html($("#qr-code-modal").html());
-            generateQRCode(".modal-body .qr-code");
+            $(".modal-content").html($("#qr-code-modal").html());
+            generateQRCode(".modal-content .qr-code");
             showQRCodePopup();
         }
     </script>

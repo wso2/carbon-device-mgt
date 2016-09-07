@@ -100,6 +100,7 @@ public class CertificateManagementAdminServiceImpl implements CertificateManagem
         CertificateManagementService certificateService = DeviceMgtAPIUtils.getCertificateManagementService();
         PaginationRequest paginationRequest = new PaginationRequest(offset, limit);
         try {
+            paginationRequest = RequestValidationUtil.validateCertificateListPageSize(paginationRequest);
             PaginationResult result = certificateService.getAllCertificates(paginationRequest);
             CertificateList certificates = new CertificateList();
             certificates.setCount(result.getRecordsTotal());

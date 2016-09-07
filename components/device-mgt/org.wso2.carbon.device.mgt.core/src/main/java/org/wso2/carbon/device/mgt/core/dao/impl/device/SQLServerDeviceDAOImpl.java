@@ -30,6 +30,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -54,13 +55,28 @@ public class SQLServerDeviceDAOImpl extends AbstractDeviceDAOImpl {
         boolean isOwnershipProvided = false;
         String status = request.getStatus();
         boolean isStatusProvided = false;
+        Date since = request.getSince();
+        boolean isSinceProvided = false;
         try {
             conn = this.getConnection();
             String sql = "SELECT d1.ID AS DEVICE_ID, d1.DESCRIPTION, d1.NAME AS DEVICE_NAME, d1.DEVICE_TYPE, " +
                          "d1.DEVICE_IDENTIFICATION, e.OWNER, e.OWNERSHIP, e.STATUS, e.DATE_OF_LAST_UPDATE, " +
                          "e.DATE_OF_ENROLMENT, e.ID AS ENROLMENT_ID FROM DM_ENROLMENT e, (SELECT d.ID, d.DESCRIPTION, " +
-                         "d.NAME, d.DEVICE_IDENTIFICATION, t.NAME AS DEVICE_TYPE FROM DM_DEVICE d, DM_DEVICE_TYPE t " +
-                         "WHERE DEVICE_TYPE_ID = t.ID AND d.TENANT_ID = ?";
+                         "d.NAME, d.DEVICE_IDENTIFICATION, t.NAME AS DEVICE_TYPE " +
+                         "FROM DM_DEVICE d, DM_DEVICE_TYPE t ";
+
+            //Add the query to filter active devices on timestamp
+            if (since != null) {
+                sql = sql + ", DM_DEVICE_DETAIL dt";
+                isSinceProvided = true;
+            }
+
+            sql = sql + " WHERE DEVICE_TYPE_ID = t.ID AND d.TENANT_ID = ?";
+
+            //Add query for last updated timestamp
+            if (isSinceProvided) {
+                sql = sql + " AND dt.DEVICE_ID = d.ID AND dt.UPDATE_TIMESTAMP > ?";
+            }
 
             //Add the query for device-type
             if (deviceType != null && !deviceType.isEmpty()) {
@@ -96,6 +112,9 @@ public class SQLServerDeviceDAOImpl extends AbstractDeviceDAOImpl {
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, tenantId);
             int paramIdx = 2;
+            if (isSinceProvided) {
+                stmt.setLong(paramIdx++, since.getTime());
+            }
             if (isDeviceTypeProvided) {
                 stmt.setString(paramIdx++, request.getDeviceType());
             }

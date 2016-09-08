@@ -72,13 +72,13 @@ $.fn.datatables_extended_serverside_paging = function (settings , url, dataFilte
             responsive: false,
             autoWidth: false,
             dom:'<"dataTablesTop"' +
-            'f' +
-            '<"dataTables_toolbar">' +
-            '>' +
-            'rt' +
-            '<"dataTablesBottom"' +
-            'lip' +
-            '>',
+                'f' +
+                '<"dataTables_toolbar">' +
+                '>' +
+                'rt' +
+                '<"dataTablesBottom"' +
+                'lip' +
+                '>',
             language: {
                 searchPlaceholder: options.placeholder,
                 search: ''
@@ -103,17 +103,18 @@ $.fn.datatables_extended_serverside_paging = function (settings , url, dataFilte
                                 );
 
                                 column
-                                //.search(val ? '^' + val + '$' : '', true, false)
+                                    //.search(val ? '^' + val + '$' : '', true, false)
                                     .search(val ? val : '', true, false)
                                     .draw();
 
                                 if (filterColumn.eq(column.index()).hasClass('data-platform')) {
-                                    if (val == null || val == undefined || val == "") {
-                                        $("#operation-bar").hide();
-                                        $("#operation-guide").show();
+                                    if (!val) {
+                                        $("#operation-bar").addClass("hidden");
+                                        $("#operation-guide").removeClass("hidden");
                                     } else {
-                                        $("#operation-guide").hide();
-                                        $("#operation-bar").show();
+                                        $("#operation-guide").addClass("hidden");
+                                        $("#operation-bar").removeClass("hidden");
+                                        //noinspection JSUnresolvedFunction
                                         loadOperationBar(val);
                                     }
                                 }
@@ -141,13 +142,9 @@ $.fn.datatables_extended_serverside_paging = function (settings , url, dataFilte
                         var title = filterColumn.eq(column.index()).attr('data-for');
                         $(filterColumn.eq(column.index()).empty()).html('<input type="text" class="form-control" placeholder="Search ' + title + '" />');
 
+                        //noinspection SpellCheckingInspection
                         filterColumn.eq(column.index()).find('input').on('keyup change', function () {
                             column.search($(this).val()).draw();
-                            if ($('.dataTables_empty').length > 0) {
-                                $('.bulk-action-row').addClass("hidden");
-                            } else {
-                                $('.bulk-action-row').removeClass("hidden");
-                            }
                         });
                     }
 
@@ -173,13 +170,13 @@ $.fn.datatables_extended_serverside_paging = function (settings , url, dataFilte
                  *  append advance operations to list table toolbar
                  */
                 $('.dataTable.list-table').closest('.dataTables_wrapper').find('.dataTablesTop .dataTables_toolbar').html('' +
-                    '<ul class="nav nav-pills navbar-right remove-margin" role="tablist">' +
-                    '<li><button data-click-event="toggle-selectable" class="btn btn-default btn-primary select-enable-btn">Select</li>' +
-                    '<li><button data-click-event="toggle-selected" id="dt-select-all" class="btn btn-default btn-primary disabled">Select All</li>' +
-                    '<li><button data-click-event="toggle-list-view" data-view="grid" class="btn btn-default"><i class="fw fw-grid"></i></button></li>' +
-                    '<li><button data-click-event="toggle-list-view" data-view="list" class="btn btn-default"><i class="fw fw-list"></i></button></li>' +
-                    '<li><button class="btn btn-default" data-toggle="dropdown"><i class="fw fw-sort"></i></button>' + dropdownmenu[0].outerHTML + '</li>' +
-                    '</ul>'
+                        '<ul class="nav nav-pills navbar-right remove-margin" role="tablist">' +
+                        '<li><button data-click-event="toggle-selectable" class="btn btn-default btn-primary select-enable-btn">Select</li>' +
+                        '<li><button data-click-event="toggle-selected" id="dt-select-all" class="btn btn-default btn-primary disabled">Select All</li>' +
+                        '<li><button data-click-event="toggle-list-view" data-view="grid" class="btn btn-default"><i class="fw fw-grid"></i></button></li>' +
+                        '<li><button data-click-event="toggle-list-view" data-view="list" class="btn btn-default"><i class="fw fw-list"></i></button></li>' +
+                        '<li><button class="btn btn-default" data-toggle="dropdown"><i class="fw fw-sort"></i></button>' + dropdownmenu[0].outerHTML + '</li>' +
+                        '</ul>'
                 );
 
                 /**
@@ -285,5 +282,4 @@ $.fn.datatables_extended_serverside_paging = function (settings , url, dataFilte
             }
         },settings)
     );
-
 };

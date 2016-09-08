@@ -32,7 +32,7 @@ public interface PermissionManagerService {
      * @throws PermissionManagementException If some unusual behaviour is observed while adding the
      * permission.
      */
-    void addPermission(Permission permission) throws PermissionManagementException;
+    boolean addPermission(Permission permission) throws PermissionManagementException;
 
     /**
      *

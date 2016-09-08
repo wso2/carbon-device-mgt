@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import org.wso2.carbon.apimgt.annotations.api.Permission;
 import org.wso2.carbon.apimgt.annotations.api.Scope;
 import org.wso2.carbon.certificate.mgt.jaxrs.beans.ErrorResponse;
 
@@ -47,6 +48,7 @@ public interface CertificateMgtService {
                             response = ErrorResponse.class)
             })
     @Scope(key = "certificate:sign-csr", name = "Sign CSR", description = "")
+    @Permission(name = "Sign CSR", permission = "/device-mgt/certificates/manage")
     Response getSignedCertFromCSR(
             @ApiParam(
                     name = "If-Modified-Since",

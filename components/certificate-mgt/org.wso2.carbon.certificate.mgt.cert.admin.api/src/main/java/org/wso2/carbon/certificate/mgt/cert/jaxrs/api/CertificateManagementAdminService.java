@@ -2,6 +2,7 @@ package org.wso2.carbon.certificate.mgt.cert.jaxrs.api;
 
 import io.swagger.annotations.*;
 import org.wso2.carbon.apimgt.annotations.api.API;
+import org.wso2.carbon.apimgt.annotations.api.Permission;
 import org.wso2.carbon.apimgt.annotations.api.Scope;
 import org.wso2.carbon.certificate.mgt.cert.jaxrs.api.beans.CertificateList;
 import org.wso2.carbon.certificate.mgt.cert.jaxrs.api.beans.EnrollmentCertificate;
@@ -77,7 +78,7 @@ public interface CertificateManagementAdminService {
                             message = "Internal Server Error. \n Server error occurred while adding certificates.",
                             response = ErrorResponse.class)
             })
-    @Scope(key = "certificate:manage", name = "Add certificates", description = "")
+    @Permission(name = "Manage certificates", permission = "/device-mgt/certificates/manage")
     Response addCertificate(
             @ApiParam(
                     name = "enrollmentCertificates",
@@ -135,7 +136,7 @@ public interface CertificateManagementAdminService {
                             "Server error occurred while retrieving information requested certificate.",
                     response = ErrorResponse.class)
     })
-    @Scope(key = "certificate:view", name = "View certificates", description = "")
+    @Permission(name = "View certificates", permission = "/device-mgt/certificates/view")
     Response getCertificate(
             @ApiParam(name = "serialNumber",
                     value = "Provide the serial number of the certificate that you wish to get the details of",
@@ -207,7 +208,7 @@ public interface CertificateManagementAdminService {
                             "Server error occurred while retrieving all certificates enrolled in the system.",
                     response = ErrorResponse.class)
     })
-    @Scope(key = "certificate:view", name = "View certificates", description = "")
+    @Permission(name = "View certificates", permission = "/device-mgt/certificates/view")
     Response getAllCertificates(
             @ApiParam(
                     name = "offset",
@@ -250,7 +251,7 @@ public interface CertificateManagementAdminService {
                     message = "Internal Server Error. \n " +
                             "Server error occurred while removing the certificate.",
                     response = ErrorResponse.class)})
-    @Scope(key = "certificate:manage", name = "Add certificates", description = "")
+    @Permission(name = "Manage certificates", permission = "/device-mgt/certificates/manage")
     Response removeCertificate(
             @ApiParam(
                     name = "serialNumber",

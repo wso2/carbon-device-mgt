@@ -53,9 +53,11 @@ public class PermissionManagerServiceImpl implements PermissionManagerService {
     }
 
     @Override
-    public void addPermission(Permission permission) throws PermissionManagementException {
+    public boolean addPermission(Permission permission) throws PermissionManagementException {
         // adding a permission to the tree
+        permission.setPath(PermissionUtils.getAbsolutePermissionPath(permission.getPath()));
         permissionTree.addPermission(permission);
+        return PermissionUtils.putPermission(permission);
     }
 
     @Override

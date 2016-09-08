@@ -121,17 +121,7 @@ public class OAuthAuthenticator implements WebappAuthenticator {
             } else {
                 String bearerToken = getBearerToken(request);
 
-                int urlParamIndex = requestUri.indexOf('?');
-                if(urlParamIndex > 0) {
-                    requestUri = requestUri.substring(0, urlParamIndex);
-                }
-                String resource = Utils.getResourceUri(requestUri, requestMethod);
-
-                if (resource == null || resource.isEmpty()) {
-                    authenticationInfo.setStatus(Status.FAILURE);
-                    authenticationInfo.setMessage("Authorization failed. Requested API resource does not exist");
-                    return authenticationInfo;
-                }
+                String resource = requestUri + ":" + requestMethod;
 
                 OAuthValidationResponse oAuthValidationResponse =
                         this.tokenValidator.validateToken(bearerToken, resource);
@@ -153,8 +143,6 @@ public class OAuthAuthenticator implements WebappAuthenticator {
             log.error("Failed to authenticate the incoming request", e);
         } catch (OAuthTokenValidationException e) {
             log.error("Failed to authenticate the incoming request due to oauth token validation error.", e);
-        } catch (PermissionManagementException e) {
-            log.error("Failed to authenticate the incoming request due to error in permission initialization", e);
         }
         return authenticationInfo;
     }

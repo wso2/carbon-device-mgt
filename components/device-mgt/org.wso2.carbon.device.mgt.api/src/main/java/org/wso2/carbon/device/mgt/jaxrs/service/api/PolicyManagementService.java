@@ -374,7 +374,7 @@ public interface PolicyManagementService {
                     required = true)
                     List<Integer> policyIds);
 
-    @PUT
+    @POST
     @Path("/deactivate-policy")
     @ApiOperation(
             consumes = MediaType.APPLICATION_JSON,

@@ -21,7 +21,7 @@ function onRequest(context) {
     var constants = require("/app/modules/constants.js");
     var viewModel = {};
     var permissions = [];
-    if (userModule.isAuthorized("/permission/admin/device-mgt/emm-admin/notifications/list")) {
+    if (userModule.isAuthorized("/permission/admin/device-mgt/notifications/view")) {
         permissions.push("LIST_NOTIFICATIONS");
     }
     var currentUser = session.get(constants.USER_SESSION_KEY);

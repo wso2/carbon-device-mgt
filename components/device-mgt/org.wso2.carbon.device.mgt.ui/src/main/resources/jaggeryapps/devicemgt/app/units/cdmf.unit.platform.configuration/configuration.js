@@ -20,6 +20,10 @@ function onRequest(context) {
     var utility = require("/app/modules/utility.js").utility;
     var deviceModule = require("/app/modules/business-controllers/device.js")["deviceModule"];
     //get all device types
+    var isAuthorized = false;
+    if (userModule.isAuthorized("/permission/admin/device-mgt/notifications/view")) {
+        isAuthorized = true;
+    }
     var deviceTypesArray = [];
     var typesListResponse = deviceModule.getDeviceTypes();
     if (typesListResponse["status"] == "success") {
@@ -43,5 +47,8 @@ function onRequest(context) {
             }
         }
     }
-    return {"deviceTypes" : deviceTypesArray};
+    return {
+        "deviceTypes": deviceTypesArray,
+        "isAuthorized": isAuthorized
+    };
 }

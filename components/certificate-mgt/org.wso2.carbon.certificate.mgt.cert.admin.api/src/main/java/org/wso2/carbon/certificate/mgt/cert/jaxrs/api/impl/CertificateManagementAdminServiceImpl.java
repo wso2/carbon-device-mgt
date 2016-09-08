@@ -103,7 +103,7 @@ public class CertificateManagementAdminServiceImpl implements CertificateManagem
             paginationRequest = RequestValidationUtil.validateCertificateListPageSize(paginationRequest);
             PaginationResult result = certificateService.getAllCertificates(paginationRequest);
             CertificateList certificates = new CertificateList();
-            certificates.setCount(result.getRecordsTotal());
+            certificates.setCount(certificateService.getCertificates().size());
             certificates.setList((List<CertificateResponse>) result.getData());
             return Response.status(Response.Status.OK).entity(certificates).build();
         } catch (CertificateManagementException e) {

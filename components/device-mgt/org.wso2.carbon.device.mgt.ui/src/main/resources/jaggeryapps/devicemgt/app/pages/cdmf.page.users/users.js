@@ -32,24 +32,15 @@ function onRequest(context) {
     var deviceMgtProps = require("/app/modules/conf-reader/main.js")["conf"];
 
     page["adminUser"] = deviceMgtProps["adminUser"];
-    page["permissions"] = userModule.getUIPermissions();
 
-    if (userModule.isAuthorized("/permission/admin/device-mgt/users/remove")) {
-        page["removePermitted"] = true;
+    if (userModule.isAuthorized("/permission/admin/device-mgt/users/manage")) {
+        page.canManage = true;
     }
 
-    if (userModule.isAuthorized("/permission/admin/device-mgt/users/update")) {
-        page["editPermitted"] = true;
-    }
     if (userModule.isAuthorized("/permission/admin/device-mgt/users/view")) {
-        page["viewPermitted"] = true;
+        page.canView = true;
     }
-    if (userModule.isAuthorized("/permission/admin/device-mgt/users/invite")) {
-        page["invitePermitted"] = true;
-    }
-    if (userModule.isAuthorized("/permission/admin/device-mgt/users/reset-password")) {
-        page["resetPasswordPermitted"] = true;
-    }
+
 
     return page;
 }

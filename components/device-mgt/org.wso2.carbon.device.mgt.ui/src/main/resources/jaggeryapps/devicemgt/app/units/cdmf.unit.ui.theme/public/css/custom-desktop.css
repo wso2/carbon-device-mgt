@@ -3193,7 +3193,7 @@ a.ast-type-item:hover {
 	clear:both;
 	/*margin-left:17px;*/
     margin-bottom:15px;
-	border-bottom:1px solid #f0f0f0;
+	/*border-bottom:1px solid #f0f0f0;*/
 }
 
 .wr-operations a {

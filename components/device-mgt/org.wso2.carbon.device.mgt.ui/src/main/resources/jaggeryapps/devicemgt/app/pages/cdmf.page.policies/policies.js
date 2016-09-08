@@ -57,14 +57,7 @@ function onRequest(context) {
     }
 
     if (userModule.isAuthorized("/permission/admin/device-mgt/policies/delete")) {
-        page["removePermitted"] = true;
+        page.managePermitted = true;
     }
-    if (userModule.isAuthorized("/permission/admin/device-mgt/policies/remove")) {
-        page["removePermitted"] = true;
-    }
-    if (userModule.isAuthorized("/permission/admin/device-mgt/policies/update")) {
-        page["editPermitted"] = true;
-    }
-    page.permissions = userModule.getUIPermissions();
     return page;
 }

@@ -28,8 +28,8 @@
  * Tree view function
  * @return {Null}
  */
-var modalPopup = ".wr-modalpopup";
-var modalPopupContent = modalPopup + " .modalpopup-content";
+var modalPopup = ".modal";
+var modalPopupContent = modalPopup + " .modal-content";
 
 var apiBasePath = "/api/device-mgt/v1.0";
 
@@ -38,15 +38,17 @@ var apiBasePath = "/api/device-mgt/v1.0";
  */
 function hidePopup() {
     $(modalPopupContent).html('');
-    $(modalPopup).hide();
+    $(modalPopup).modal('hide');
+    $('body').removeClass('modal-open').css('padding-right','0px');
+    $('.modal-backdrop').remove();
 }
 
 /*
  * show popup function.
  */
 function showPopup() {
-    $(modalPopup).show();
-    setPopupMaxHeight();
+    $(modalPopup).modal('show');
+    //setPopupMaxHeight();
 }
 $.fn.tree_view = function(){
     var tree = $(this);

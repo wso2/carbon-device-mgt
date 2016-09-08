@@ -30,21 +30,22 @@ under the License. --}}
     </head>
     <body>
         <!--modal-->
-        <div class="wr-modalpopup">
-            <div class="modalpopup-container">
-                <div class="modalpopup-close-btn" onclick="hidePopup();">
-                    <span class="fw-stack">
-                        <i class="fw fw-ring fw-stack-2x"></i>
-                        <i class="fw fw-left-arrow fw-stack-1x"></i>
-                    </span>
-                    GO BACK
-                </div>
-                <div class="modalpopup-content">
-                    <!-- dynamic content -->
+        <div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalDemo">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content clearfix">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fw fw-cancel"></i></button>
+                    </div>
+                    <div class="modal-body add-margin-top-2x add-margin-bottom-2x">
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
                 </div>
             </div>
-            <div class="modalpopup-bg"></div>
         </div>
+
         <!--modal-->
 
         {{defineZone "header"}}

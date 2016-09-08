@@ -254,7 +254,7 @@ public class PolicyManagementServiceImpl implements PolicyManagementService {
         }
     }
 
-    @PUT
+    @POST
     @Path("/activate-policy")
     @Override
     public Response activatePolicies(List<Integer> policyIds) {
@@ -286,7 +286,7 @@ public class PolicyManagementServiceImpl implements PolicyManagementService {
         }
     }
 
-    @PUT
+    @POST
     @Path("/deactivate-policy")
     @Override
     public Response deactivatePolicies(List<Integer> policyIds) {

@@ -181,7 +181,7 @@ public interface DeviceManagementProviderService {
      * @return true if the user owns the device else will return false.
      * @throws DeviceManagementException If some unusual behaviour is observed while fetching the device.
      */
-    public boolean isEnrolled(DeviceIdentifier deviceId, String user) throws DeviceManagementException;
+    boolean isEnrolled(DeviceIdentifier deviceId, String user) throws DeviceManagementException;
 
     License getLicense(String deviceType, String languageCode) throws DeviceManagementException;
 

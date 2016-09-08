@@ -25,47 +25,48 @@
 
     <div id="change-password-window" class="hide">
         <input type="hidden" id="user" value="{{username}}">
-        <div class="content">
-            <div class="row">
-                <div class="col-lg-5 col-md-6 col-centered">
-                    <h4>
-                        <span class="fw-stack">
-                            <i class="fw fw-ring fw-stack-2x"></i>
-                            <i class="fw fw-key fw-stack-1x"></i>
-                        </span>
-                        Change Password
-                        <br><br>
-                    </h4>
-                    <div id="notification-error-msg" class="alert alert-danger hidden" role="alert">
-                        <i class="icon fw fw-error"></i><span></span>
-                    </div>
-                    <h3>
-                        Enter old password *
-                        <br><br>
-                        <div>
-                            <input type="password" class="form-control modal-input operationDataKeys" id="old-password" data-key="message"/>
-                        </div>
-                        <br>
-                        Enter new password *
-                        <br><br>
-                        <div>
-                            <input type="password" class="form-control modal-input operationDataKeys" id="new-password" data-key="message"/>
-                        </div>
-                        <br>
-                        Retype new password *
-                        <br><br>
-                        <div>
-                            <input type="password" class="form-control modal-input operationDataKeys" id="confirmed-password" data-key="message"/>
-                        </div>
-                        <br>
-                    </h3>
-                    <div class="buttons">
-                        <a href="#" id="change-password-yes-link" class="btn-operations">Update</a>
-                        <a href="#" id="change-password-cancel-link" class="btn-operations">Cancel</a>
-                    </div>
+        <div class="modal-header">
+            <h3 class="pull-left modal-title">
+                <span class="fw-stack">
+                    <i class="fw fw-ring fw-stack-2x"></i>
+                    <i class="fw fw-key fw-stack-1x"></i>
+                </span>
+                Change Password
+            </h3>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fw fw-cancel"></i></button>
+        </div>
+        <div class="modal-body add-margin-top-2x add-margin-bottom-2x">
+            <div id="notification-error-msg" class="alert alert-danger hidden" role="alert">
+                <i class="icon fw fw-error"></i><span></span>
+            </div>
+            <h3>
+                Enter old password *
+                <br><br>
+                <div>
+                    <input type="password" class="form-control modal-input operationDataKeys" id="old-password" data-key="message"/>
                 </div>
+                <br>
+                Enter new password *
+                <br><br>
+                <div>
+                    <input type="password" class="form-control modal-input operationDataKeys" id="new-password" data-key="message"/>
+                </div>
+                <br>
+                Retype new password *
+                <br><br>
+                <div>
+                    <input type="password" class="form-control modal-input operationDataKeys" id="confirmed-password" data-key="message"/>
+                </div>
+                <br>
+            </h3>
+        </div>
+        <div class="modal-footer">
+            <div class="buttons">
+                <a href="#" id="change-password-yes-link" class="btn-operations">Update</a>
+                <a href="#" id="change-password-cancel-link" class="btn-operations">Cancel</a>
             </div>
         </div>
+
     </div>
 
     <div id="change-password-success-content" class="hide">

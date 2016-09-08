@@ -45,7 +45,12 @@ policyModule = function () {
                 policyObjectToView["priorityId"] = policyObjectFromRestEndpoint["priorityId"];
                 policyObjectToView["name"] = policyObjectFromRestEndpoint["policyName"];
                 policyObjectToView["platform"] = policyObjectFromRestEndpoint["profile"]["deviceType"];
-                policyObjectToView["icon"] = utility.getDeviceThumb(policyObjectToView["platform"]);
+                if (policyObjectToView["platform"] == "ios") {
+                    policyObjectToView["deviceTypeIcon"] = "apple";
+                } else {
+                    policyObjectToView["deviceTypeIcon"] = policyObjectToView["platform"];
+                }
+                //policyObjectToView["icon"] = utility.getDeviceThumb(policyObjectToView["platform"]);
                 policyObjectToView["ownershipType"] = policyObjectFromRestEndpoint["ownershipType"];
 
                 var assignedRoleCount = policyObjectFromRestEndpoint["roles"].length;

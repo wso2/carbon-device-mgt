@@ -3525,13 +3525,6 @@ tbody.collapse.in {
   }
 }
 
-.tab-content > .tab-pane {
-  display: none;
-}
-.tab-content > .active {
-  display: block;
-}
-
 .nav-tabs .dropdown-menu {
   margin-top: -1px;
   border-top-right-radius: 0;
@@ -8295,15 +8288,7 @@ a.list-group-item:hover {
   left: 0;
 }
 
-@media (min-width: 768px) {
-  .tab-content > .tab-pane {
-    display: none !important;
-  }
 
-  .tab-content > .active {
-    display: block !important;
-  }
-}
 /* ========================================================================
  * Misc customizations
  * ======================================================================== */

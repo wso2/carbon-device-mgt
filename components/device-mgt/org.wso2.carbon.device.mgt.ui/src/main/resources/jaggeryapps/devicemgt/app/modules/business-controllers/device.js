@@ -40,7 +40,7 @@ deviceModule = function () {
 
 //    var deviceCloudService = devicemgtProps["httpsURL"] + "/common/device_manager";
 
-/**
+    /**
      * Only GET method is implemented for now since there are no other type of methods used this method.
      * @param url - URL to call the backend without the host
      * @param method - HTTP Method (GET, POST)
@@ -272,6 +272,9 @@ deviceModule = function () {
                         }
                         deviceObject[constants["DEVICE_PROPERTIES"]] = properties;
                         response["content"] = deviceObject;
+                        return response;
+                    } else if (backendResponse.status == 401) {
+                        response["status"] = "unauthorized";
                         return response;
                     } else {
                         response["status"] = "error";

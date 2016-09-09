@@ -40,7 +40,7 @@
 {{/zone}}
 
 {{#zone "navbarActions"}}
-    {{#if permissions.ADD_ADMIN_POLICY}}
+    {{#if managePermitted}}
         <li>
             <a href="{{@app.context}}/policy/add" class="cu-btn">
             <span class="icon fw-stack">
@@ -50,8 +50,6 @@
                 Add Policy
             </a>
         </li>
-    {{/if}}
-    {{#if permissions.CHANGE_POLICY_PRIORITY}}
         {{#equal noPolicy false}}
             <li>
                 <a href="{{@app.context}}/policy/priority" class="cu-btn">
@@ -81,7 +79,7 @@
             <div class="ctrl-info-panel col-centered text-center wr-login">
                 <h2>You don't have any policy at the moment.</h2>
                 <br/>
-                {{#if permissions.ADD_ADMIN_POLICY}}
+                {{#if managePermitted}}
                     <p class="text-center">
                         <a href="{{@app.context}}/policy/add" class="wr-btn">
                                         <span class="fw-stack">
@@ -142,7 +140,7 @@
             <tr class="bulk-action-row">
                 <th colspan="9">
                     <ul class="tiles">
-                        {{#if removePermitted}}
+                        {{#if managePermitted}}
                             <li class="square">
                                 <a href="#" data-click-event="remove-form"
                                    class="btn square-element policy-remove-link"

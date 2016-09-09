@@ -20,6 +20,7 @@ package org.wso2.carbon.device.mgt.jaxrs.service.api;
 
 import io.swagger.annotations.*;
 import org.wso2.carbon.apimgt.annotations.api.API;
+import org.wso2.carbon.apimgt.annotations.api.Permission;
 import org.wso2.carbon.apimgt.annotations.api.Scope;
 import org.wso2.carbon.device.mgt.jaxrs.beans.*;
 
@@ -83,7 +84,7 @@ public interface UserManagementService {
                             message = "Internal Server Error. \n Server error occurred while adding a new user.",
                             response = ErrorResponse.class)
             })
-    @Scope(key = "user:manage", name = "Add users", description = "")
+    @Permission(name = "Manage Users", permission = "/device-mgt/users/manage")
     Response addUser(
             @ApiParam(
                     name = "user",
@@ -135,7 +136,7 @@ public interface UserManagementService {
                             " fetching the requested user.",
                     response = ErrorResponse.class)
     })
-    @Scope(key = "user:view", name = "View users", description = "")
+    @Permission(name = "View Users", permission = "/device-mgt/users/view")
     Response getUser(
             @ApiParam(
                     name = "username",
@@ -192,7 +193,7 @@ public interface UserManagementService {
                             "Server error occurred while updating the user.",
                     response = ErrorResponse.class)
     })
-    @Scope(key = "user:manage", name = "Add users", description = "")
+    @Permission(name = "Manage Users", permission = "/device-mgt/users/manage")
     Response updateUser(
             @ApiParam(
                     name = "username",
@@ -227,7 +228,7 @@ public interface UserManagementService {
                     response = ErrorResponse.class
             )
     })
-    @Scope(key = "user:manage", name = "Add users", description = "")
+    @Permission(name = "Manage Users", permission = "/device-mgt/users/manage")
     Response removeUser(
             @ApiParam(name = "username", value = "Username of the user to be deleted.", required = true)
             @PathParam("username") String username);
@@ -276,7 +277,7 @@ public interface UserManagementService {
                             " assigned to the user.",
                     response = ErrorResponse.class)
     })
-    @Scope(key = "user:view", name = "View users", description = "")
+    @Permission(name = "View Users", permission = "/device-mgt/users/view")
     Response getRolesOfUser(
             @ApiParam(name = "username", value = "Username of the user.", required = true)
             @PathParam("username") String username);
@@ -319,7 +320,7 @@ public interface UserManagementService {
                     message = "Internal Server Error. \n Server error occurred while fetching the user list.",
                     response = ErrorResponse.class)
     })
-    @Scope(key = "user:view", name = "View users", description = "")
+    @Permission(name = "View Users", permission = "/device-mgt/users/view")
     Response getUsers(
             @ApiParam(
                     name = "filter",
@@ -386,7 +387,7 @@ public interface UserManagementService {
                             "list that matches the given filter.",
                     response = ErrorResponse.class)
     })
-    @Scope(key = "user:view", name = "View users", description = "")
+    @Permission(name = "View Users", permission = "/device-mgt/users/view")
     Response getUserNames(
             @ApiParam(
                     name = "filter",
@@ -440,7 +441,7 @@ public interface UserManagementService {
                             "Server error occurred while updating credentials of the user.",
                     response = ErrorResponse.class)
     })
-    @Scope(key = "user:view", name = "View users", description = "")
+    @Permission(name = "View Users", permission = "/device-mgt/users/view")
     Response resetPassword(
             @ApiParam(
                     name = "username",
@@ -483,7 +484,7 @@ public interface UserManagementService {
                             "Server error occurred while updating credentials of the user.",
                     response = ErrorResponse.class)
     })
-    @Scope(key = "user:manage", name = "Add users", description = "")
+    @Permission(name = "Manage Users", permission = "/device-mgt/users/manage")
     Response inviteExistingUsersToEnrollDevice(
             @ApiParam(
                     name = "users",

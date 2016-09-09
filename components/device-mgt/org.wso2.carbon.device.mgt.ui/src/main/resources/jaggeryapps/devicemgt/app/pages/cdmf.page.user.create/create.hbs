@@ -36,6 +36,7 @@
 {{/zone}}
 
 {{#zone "content"}}
+    {{#if canManage}}
     <!-- content/body -->
     <div class="row">
         <div class="col-md-12">
@@ -140,6 +141,14 @@
             <!-- /content -->
         </div>
     </div>
+    {{else}}
+        <h1 class="page-sub-title">
+            Permission Denied
+        </h1>
+        <br>
+        You not authorized to enter User Management Section.
+        <br>
+    {{/if}}
 {{/zone}}
 
 {{#zone "bottomJs"}}

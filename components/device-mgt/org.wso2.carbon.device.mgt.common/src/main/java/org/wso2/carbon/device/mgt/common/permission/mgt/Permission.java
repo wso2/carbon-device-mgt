@@ -26,18 +26,10 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 public class Permission {
 
+    private String name; // permission name
+    private String path; // permission string
     private String url; // url of the resource
-    private String urlTemplate; // resource template
     private String method; // http method
-    private String context;
-
-    public String getContext() {
-        return context;
-    }
-
-    public void setContext(String context) {
-        this.context = context;
-    }
 
     public String getUrl() {
         return url;
@@ -55,11 +47,19 @@ public class Permission {
         this.method = method;
     }
 
-    public String getUrlTemplate() {
-        return urlTemplate;
+    public String getName() {
+        return name;
     }
 
-    public void setUrlTemplate(String urlTemplate) {
-        this.urlTemplate = urlTemplate;
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
     }
 }

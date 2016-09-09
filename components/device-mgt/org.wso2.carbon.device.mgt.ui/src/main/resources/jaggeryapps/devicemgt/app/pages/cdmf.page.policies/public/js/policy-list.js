@@ -82,7 +82,6 @@ function setPopupMaxHeight() {
  */
 function showPopup() {
     $(modalPopup).modal('show');
-    //setPopupMaxHeight();
 }
 
 /*

@@ -3252,8 +3252,12 @@ a.ast-type-item:hover {
    opacity: 0.5;
 }
 
-.wr-btn:hover {
+.wr-btn:hover,a.wr-btn:hover  {
+    color:#b3e7ff;
 	background-color: #16436D;
+}
+.wr-btn:active,a.wr-btn:active,.wr-btn:focus,a.wr-btn:focus {
+    color:#b3e7ff;
 }
 
 .wr-btn-grp {

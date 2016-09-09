@@ -288,12 +288,12 @@ public interface UserManagementService {
             httpMethod = "GET",
             value = "Get user list",
             notes = "If you wish to get the details of all the users registered with EMM, you can do so "
-                    + "using the REST API",
+                    + "using this REST API",
             tags = "User Management")
     @ApiResponses(value = {
             @ApiResponse(
                     code = 200,
-                    message = "OK. \n Successfully fetched the requested role.",
+                    message = "OK. \n Successfully fetched the requested users.",
                     response = BasicUserInfoList.class,
                     responseHeaders = {
                             @ResponseHeader(
@@ -342,6 +342,36 @@ public interface UserManagementService {
                     value = "Maximum size of resource array to return.",
                     required = false)
             @QueryParam("limit") int limit);
+
+    @GET
+    @Path("/count")
+    @ApiOperation(
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "GET",
+            value = "Get user count",
+            notes = "If you wish to get the user count registered with EMM, you can do so using this REST API",
+            tags = "User Management")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    code = 200,
+                    message = "OK. \n Successfully fetched the user count.",
+                    response = BasicUserInfoList.class,
+                    responseHeaders = {
+                            @ResponseHeader(
+                                    name = "Content-Type",
+                                    description = "The content type of the body")
+                    }),
+            @ApiResponse(
+                    code = 406,
+                    message = "Not Acceptable.\n The requested media type is not supported",
+                    response = ErrorResponse.class),
+            @ApiResponse(
+                    code = 500,
+                    message = "Internal Server Error. \n Server error occurred while fetching the user list.",
+                    response = ErrorResponse.class)
+    })
+    @Permission(name = "View Users", permission = "/device-mgt/users/view")
+    Response getUserCount();
 
     @GET
     @Path("/search/usernames")

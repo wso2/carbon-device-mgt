@@ -26,7 +26,8 @@ function onRequest(context) {
     // var log = new Log("units/user-create/create.js");
     var userModule = require("/app/modules/business-controllers/user.js")["userModule"];
     var mdmProps = require("/app/modules/conf-reader/main.js")["conf"];
-
+    var viewModel = {};
+    viewModel.isAuthorized = userModule.isAuthorized("/permission/admin/device-mgt/certificates/manage");
     var response = userModule.getRolesByUserStore();
     if (response["status"] == "success") {
         viewModel["roles"] = response["content"];

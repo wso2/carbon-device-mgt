@@ -26,6 +26,8 @@ function onRequest(context) {
     var types = {};
 
     types.isAuthorized = userModule.isAuthorized("/permission/admin/device-mgt/policies/manage");
+    types.isAuthorizedViewUsers = userModule.isAuthorized("/permission/admin/device-mgt/roles/view");
+    types.isAuthorizedViewRoles = userModule.isAuthorized("/permission/admin/device-mgt/users/view");
     types["types"] = [];
     var typesListResponse = deviceModule.getDeviceTypes();
     if (typesListResponse["status"] == "success") {

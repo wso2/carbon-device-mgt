@@ -23,7 +23,7 @@ import javax.xml.bind.annotation.XmlType;
  *           &lt;simpleType>
  *             &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
  *               &lt;enumeration value="/permission/device-mgt/user/groups/device_operation"/>
- *               &lt;enumeration value="/permission/device-mgt/admin/groups"/>
+ *               &lt;enumeration value="/permission/device-mgt/groups"/>
  *               &lt;enumeration value="/permission/device-mgt/user/groups"/>
  *               &lt;enumeration value="/permission/device-mgt/user/groups/device_monitor"/>
  *             &lt;/restriction>

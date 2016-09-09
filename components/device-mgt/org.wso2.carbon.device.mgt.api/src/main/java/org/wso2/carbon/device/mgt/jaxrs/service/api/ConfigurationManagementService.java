@@ -82,7 +82,7 @@ public interface ConfigurationManagementService {
                             "platform configuration.",
                     response = ErrorResponse.class)
     })
-    @Permission(name = "View Configurations", permission = "/device-mgt/configuration/view")
+    @Permission(name = "View Configurations", permission = "/device-mgt/configurations/view")
     Response getConfiguration(
             @ApiParam(
                     name = "If-Modified-Since",
@@ -128,7 +128,7 @@ public interface ConfigurationManagementService {
                             "Server error occurred while modifying general platform configuration.",
                     response = ErrorResponse.class)
     })
-    @Permission(name = "Manage configurations", permission = "/device-mgt/configuration/manage")
+    @Permission(name = "Manage configurations", permission = "/device-mgt/configurations/manage")
     Response updateConfiguration(
             @ApiParam(
                     name = "configuration",

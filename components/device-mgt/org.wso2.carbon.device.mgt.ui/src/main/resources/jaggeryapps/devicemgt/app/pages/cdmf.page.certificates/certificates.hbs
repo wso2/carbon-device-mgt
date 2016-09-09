@@ -24,14 +24,24 @@
         </a>
     </li>
     <li>
-        <a href="{{@app.context}}/certificates/add">
+        <a href="{{@app.context}}/certificates">
+           Certificate
+        </a>
+    </li>
+{{/zone}}
+
+{{#zone "navbarActions"}}
+    {{#if removePermitted}}
+        <li>
+            <a href="{{@app.context}}/certificates/add">
             <span class="fw-stack">
                <i class="fw fw-ring fw-stack-2x"></i>
                <i class="fw fw-document fw-stack-1x"></i>
             </span>
-            Add Certificate
-        </a>
-    </li>
+                Add Certificate
+            </a>
+        </li>
+    {{/if}}
 {{/zone}}
 
 {{#zone "content"}}

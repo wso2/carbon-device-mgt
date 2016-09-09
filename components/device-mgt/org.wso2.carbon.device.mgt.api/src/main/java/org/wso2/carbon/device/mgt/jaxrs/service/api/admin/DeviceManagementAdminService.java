@@ -86,7 +86,7 @@ public interface DeviceManagementAdminService {
                     message = "Internal Server Error. \n Server error occurred while fetching the device list.",
                     response = ErrorResponse.class)
     })
-    @Permission(name = "View Devices", permission = "/device-mgt/admin/devices/view")
+    @Permission(name = "View Devices", permission = "/device-mgt/devices/owning/view")
     Response getDevicesByName(
             @ApiParam(
                     name = "name",

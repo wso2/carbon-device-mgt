@@ -24,13 +24,13 @@ function onRequest(context) {
 
     var rolesResult = userModule.getRoles();
     if (rolesResult.status == "success") {
-        context.roles = rolesResult.content;
+        viewModel.roles = rolesResult.content;
     }
 
     var usersResult = userModule.getUsers();
     if (usersResult.status == "success") {
-        context.users = usersResult.content;
+        viewModel.users = usersResult.content;
     }
-
-    return context;
+    viewModel.isAuthorized = userModule.isAuthorized("/permission/admin/device-mgt/policies/manage");
+    return viewModel;
 }

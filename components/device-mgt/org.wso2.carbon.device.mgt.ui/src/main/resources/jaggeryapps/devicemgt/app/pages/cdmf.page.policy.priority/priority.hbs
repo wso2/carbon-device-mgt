@@ -38,5 +38,14 @@
 {{/zone}}
 
 {{#zone "content"}}
-    {{unit "cdmf.unit.policy.priority"}}
+    {{#if isAuthorized}}
+        {{unit "cdmf.unit.policy.priority"}}
+    {{else}}
+        <h1 class="page-sub-title">
+            Permission Denied
+        </h1>
+        <br>
+        You not authorized to enter Policy Management Section.
+        <br>
+    {{/if}}
 {{/zone}}

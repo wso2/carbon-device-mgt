@@ -21,5 +21,6 @@ function onRequest(context) {
 
 //    var userModule = require("/app/modules/business-controllers/user.js")["userModule"];
 //    context.roles = userModule.getRoles();
+    context.isAuthorized = userModule.isAuthorized("/permission/admin/device-mgt/policies/view");
     return context;
 }

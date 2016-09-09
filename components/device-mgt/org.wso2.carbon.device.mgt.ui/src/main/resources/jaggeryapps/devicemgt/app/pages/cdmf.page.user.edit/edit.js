@@ -60,6 +60,10 @@ function onRequest() {
         page["rolesByUserStore"] = rolesByUserStore;
     }
 
+    if (userModule.isAuthorized("/permission/admin/device-mgt/users/manage")) {
+        page.canManage = true;
+    }
+
     page["usernameJSRegEx"] = devicemgtProps["userValidationConfig"]["usernameJSRegEx"];
     page["usernameRegExViolationErrorMsg"] = devicemgtProps["userValidationConfig"]["usernameRegExViolationErrorMsg"];
     page["firstnameJSRegEx"] = devicemgtProps["userValidationConfig"]["firstnameJSRegEx"];

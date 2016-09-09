@@ -86,15 +86,4 @@ public class Utils {
         }
     }
 
-    public static String getResourceUri(String url, String httpMethod) throws PermissionManagementException {
-        properties = new Properties();
-        properties.put(URL_PROPERTY, url);
-        properties.put(HTTP_METHOD_PROPERTY, httpMethod);
-        permission = permissionManagerService.getPermission(properties);
-        if (permission != null) {
-            return permission.getContext() + "/1.0.0/1.0.0" + permission.getUrlTemplate() + ":" + permission.getMethod();
-        }
-        return null;
-    }
-
 }

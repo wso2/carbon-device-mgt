@@ -40,5 +40,10 @@ function onRequest(context) {
         var deviceModule = require("/app/modules/business-controllers/device.js")["deviceModule"];
         devices = deviceModule.getDevices(userName);
     }
-    return {"user": user, "userRoles": userRoles, "devices": devices};
+
+    var canView = false;
+    if (userModule.isAuthorized("/permission/admin/device-mgt/users/view")) {
+        canView = true;
+    }
+    return {"user": user, "userRoles": userRoles, "devices": devices, "canView": canView};
 }

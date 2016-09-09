@@ -36,6 +36,7 @@
 {{/zone}}
 
 {{#zone "content"}}
+    {{#if canView}}}
     {{#zone "contentTitle"}}
         <div class="row wr-device-board">
             <div class="col-lg-12 wr-secondary-bar">
@@ -166,4 +167,12 @@
             {{/defineZone}}
         </div>
     </div>
+        {{else}}
+        <h1 class="page-sub-title">
+            Permission Denied
+        </h1>
+        <br>
+        You not authorized to enter User Management Section.
+        <br>
+    {{/if}}
 {{/zone}}

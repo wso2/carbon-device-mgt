@@ -4431,7 +4431,7 @@ a.thumbnail.active {
 .thumbnail.icon {
   border: none;
   margin: 0;
-  background: #004675;
+  background: #11375b;
   color: #fff;
   text-align: center;
   overflow: hidden;
@@ -5397,6 +5397,9 @@ button.close {
   -webkit-border-radius: 0;
   -moz-border-radius: 0;
   border-radius: 0;
+}
+.panel-body .message {
+    margin:0px;
 }
 .message h4 {
   margin-top: 0;
@@ -7438,17 +7441,13 @@ ul.sidebar-messages > li {
  * ======================================================================== */
 .body-wrapper {
   padding: 40px;
+  margin-bottom:40px;
 }
 
 .body-wrapper a.btn:hover,.body-wrapper a:hover {
   text-decoration: none;
 }
 
-@media (max-width: 767px) {
-  .body-wrapper {
-    padding: 40px 0px;
-  }
-}
 .page-header {
   margin: 0 0 20px;
 }
@@ -7791,9 +7790,16 @@ ul.sidebar-messages > li {
   background: transparent;
   font-size: 24px;
   font-weight: 300;
-  border-bottom: 1px solid #e4e4e4;
-  padding-bottom: 10px;
-  margin-bottom: 20px;
+}
+
+.panel-default > .panel-heading a[data-toggle="collapse"]{
+    display:block;
+    padding:10px;
+}
+.media.tab-responsive .panel-group .panel-heading + .panel-collapse > .panel-body,
+.media.tab-responsive .panel-group .panel-heading + .panel-collapse > .list-group{
+    border:none;
+    border-top:1px solid #ddd;
 }
 
 /* ========================================================================
@@ -8321,7 +8327,6 @@ a.list-group-item:hover {
   border-style: solid;
   border-color: #ddd;
   padding: 20px;
-  min-height: 300px;
 }
 
 

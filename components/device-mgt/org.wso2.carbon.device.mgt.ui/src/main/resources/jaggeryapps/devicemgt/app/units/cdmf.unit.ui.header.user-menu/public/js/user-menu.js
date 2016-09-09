@@ -13,7 +13,7 @@ function inputIsValid(regExp, inputString) {
 $(document).ready(function () {
     var modalPopup = ".modal";
     // var modalPopupContainer = modalPopup + " .modal-content";
-    var modalPopupContent = modalPopup + " .modal-body";
+    var modalPopupContent = modalPopup + " .modal-content";
 
     $("#change-password").click(function () {
 

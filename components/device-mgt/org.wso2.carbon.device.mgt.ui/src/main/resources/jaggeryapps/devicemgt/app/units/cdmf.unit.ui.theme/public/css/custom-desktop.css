@@ -3042,14 +3042,7 @@ a.list-group-item:hover {
   left: 0;
 }
 
-@media (min-width: 768px) {
-  .tab-content > .tab-pane {
-    display: none !important;
-  }
-  .tab-content > .active {
-    display: block !important;
-  }
-}
+
 .wr-content {
     padding-top: 10px;
 }
@@ -4309,6 +4302,13 @@ a.wr-side-panel-toggle-btn.selected {
 .wr-stats-board-tile {
     background: #393939;
     color: #fff;
+    padding: 15px;
+    height: 110px;
+    margin-bottom: 10px;
+}
+.device-detail-body .wr-stats-board-tile {
+    background: #e2e2e2;
+    color: #333;
     padding: 15px;
     height: 110px;
     margin-bottom: 10px;
@@ -6905,15 +6905,19 @@ ul.tiles .icon {
 
 .media .panel-group.tab-content{
      position: relative;
-     background: #f4f4f4;
-     border: 1px solid #ddd;
+     border: none;
+     margin-bottom:0px;
  }
  .media .panel-group .panel-heading{
-    padding:10px;
+    padding:0px;
     margin-bottom:0px;
  }
+ .media .panel-group .panel-heading.display-none-xs{
+     padding:10px;
+     margin-bottom:0px;
+  }
  .media .panel.active .panel-heading.visible-xs{
-    background:#2c313b;
+    background:#11375b;
     color:#fff;
  }
   .media .panel-heading{
@@ -6930,11 +6934,13 @@ ul.tiles .icon {
      height: 0px;
      border-top: 10px solid transparent;
      border-bottom: 10px solid transparent;
-     border-right: 10px solid #f4f4f4;
+     border-right: 10px solid #ddd;
  }
 
  .media .panel-group.tab-content .panel{
-     background:none;
+     background: #f4f4f4;
+     border:1px solid #ddd;
+     margin-bottom:10px;
  }
  .media .list-group-item a, .media .list-group-item a{
      background:#f4f4f4;
@@ -6947,7 +6953,7 @@ ul.tiles .icon {
      margin-top:0px;
  }
  .media .panel-group .panel-body{
-     margin-bottom:40px;
+     /*margin-bottom:40px;*/
  }
  .media .panel-group .panel-body .thumbnail.icon{
      margin-bottom:10px;

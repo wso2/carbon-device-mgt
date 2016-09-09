@@ -30,6 +30,8 @@
  */
 var modalPopup = ".modal";
 var modalPopupContent = modalPopup + " .modal-content";
+var errorMsgWrapper = "#permission-add-error-msg";
+var errorMsg = "#permission-add-error-msg span";
 
 var apiBasePath = "/api/device-mgt/v1.0";
 
@@ -148,7 +150,8 @@ $(document).ready(function () {
         var perms = [];
         $("#permissionList li input:checked").each(function(){
             perms.push($(this).data("resourcepath"));
-        })
+        });
+        updateRolePermissionData.roleName = roleName;
         updateRolePermissionData.permissions = perms;
         invokerUtil.put(
             updateRolePermissionAPI,

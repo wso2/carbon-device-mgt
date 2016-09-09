@@ -56,7 +56,7 @@ function onRequest(context) {
         page["noPolicy"] = true;
     }
 
-    if (userModule.isAuthorized("/permission/admin/device-mgt/policies/delete")) {
+    if (userModule.isAuthorized("/permission/admin/device-mgt/policies/manage")) {
         page.managePermitted = true;
     }
     return page;

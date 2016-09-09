@@ -16,70 +16,79 @@
   under the License.
 }}
 {{#zone "content"}}
-    <div class="row">
-        <div class="col-md-12">
-            <div class="container col-centered wr-content policy-platform">
-                <div class="wr-form">
-                    <h1 id="policy-platform-page-wizard-title" class="page-sub-title">ADD POLICY</h1>
-                    <hr>
-                    <div id="policy-platform-wizard-steps" class="row wr-wizard">
-                        <div class="col-md-3 col-xs-3">
-                            <div class="itm-wiz itm-wiz-current" data-step="policy-platform">
-                                <div class="wiz-no">1</div>
-                                <div class="wiz-lbl hidden-xs"><span>Select a platform</span></div>
+    {{#if isAuthorized}}
+        <div class="row">
+            <div class="col-md-12">
+                <div class="container col-centered wr-content policy-platform">
+                    <div class="wr-form">
+                        <h1 id="policy-platform-page-wizard-title" class="page-sub-title">ADD POLICY</h1>
+                        <hr>
+                        <div id="policy-platform-wizard-steps" class="row wr-wizard">
+                            <div class="col-md-3 col-xs-3">
+                                <div class="itm-wiz itm-wiz-current" data-step="policy-platform">
+                                    <div class="wiz-no">1</div>
+                                    <div class="wiz-lbl hidden-xs"><span>Select a platform</span></div>
+                                </div>
+                                <br class="c-both"/>
                             </div>
-                            <br class="c-both" />
-                        </div>
-                        <div class="col-md-3 col-xs-3">
-                            <div class="itm-wiz" data-step="policy-profile">
-                                <div class="wiz-no">2</div>
-                                <div class="wiz-lbl hidden-xs"><span>Configure profile</span></div>
+                            <div class="col-md-3 col-xs-3">
+                                <div class="itm-wiz" data-step="policy-profile">
+                                    <div class="wiz-no">2</div>
+                                    <div class="wiz-lbl hidden-xs"><span>Configure profile</span></div>
+                                </div>
+                                <br class="c-both"/>
                             </div>
-                            <br class="c-both" />
-                        </div>
-                        <div class="col-md-3 col-xs-3">
-                            <div class="itm-wiz" data-step="policy-criteria">
-                                <div class="wiz-no">3</div>
-                                <div class="wiz-lbl hidden-xs"><span>Assign</span></div>
+                            <div class="col-md-3 col-xs-3">
+                                <div class="itm-wiz" data-step="policy-criteria">
+                                    <div class="wiz-no">3</div>
+                                    <div class="wiz-lbl hidden-xs"><span>Assign</span></div>
+                                </div>
+                                <br class="c-both"/>
                             </div>
-                            <br class="c-both" />
-                        </div>
-                        <div class="col-md-3 col-xs-3">
-                            <div class="itm-wiz" data-step="policy-naming">
-                                <div class="wiz-no">4</div>
-                                <div class="wiz-lbl hidden-xs"><span>Publish to devices</span></div>
+                            <div class="col-md-3 col-xs-3">
+                                <div class="itm-wiz" data-step="policy-naming">
+                                    <div class="wiz-no">4</div>
+                                    <div class="wiz-lbl hidden-xs"><span>Publish to devices</span></div>
+                                </div>
+                                <br class="c-both"/>
                             </div>
-                            <br class="c-both" />
                         </div>
-                    </div>
-                    <hr>
-                    <div class="row">
-                        <div class="col-lg-12">
-                            <h4>Step 1: Select a platform</h4>
-                            <br>
+                        <hr>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <h4>Step 1: Select a platform</h4>
+                                <br>
 
-                            <div class="row wr-tile-buttons-list">
-                                <div class="wr-input-control">
-                                    <ul class="tile-buttons row">
-                                        {{#each types}}
-                                            <li class="col-lg-4"
-                                                style="margin-top: 5px;margin-bottom: 5px;">
-                                                <a href="{{@app.context}}/policy/add/{{name}}"
-                                                   class="wizard-stepper">
-                                                    <img src="{{icon}}" width="50px"
-                                                         height="50px"><br><br>
-                                                    <b>{{label}}</b>
-                                                </a>
-                                            </li>
-                                        {{/each}}
-                                    </ul>
+                                <div class="row wr-tile-buttons-list">
+                                    <div class="wr-input-control">
+                                        <ul class="tile-buttons row">
+                                            {{#each types}}
+                                                <li class="col-lg-4"
+                                                    style="margin-top: 5px;margin-bottom: 5px;">
+                                                    <a href="{{@app.context}}/policy/add/{{name}}"
+                                                       class="wizard-stepper">
+                                                        <img src="{{icon}}" width="50px"
+                                                             height="50px"><br><br>
+                                                        <b>{{label}}</b>
+                                                    </a>
+                                                </li>
+                                            {{/each}}
+                                        </ul>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
+                <!-- content -->
             </div>
-            <!-- content -->
         </div>
-    </div>
+    {{else}}
+        <h1 class="page-sub-title">
+            Permission Denied
+        </h1>
+        <br>
+        You not authorized to enter Policy Management Section.
+        <br>
+    {{/if}}
 {{/zone}}

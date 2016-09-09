@@ -69,7 +69,7 @@ public interface UserManagementAdminService {
                             "Server error occurred while updating credentials of the user.",
                     response = ErrorResponse.class)
     })
-    @Permission(name = "View Users", permission = "/device-mgt/admin/users/view")
+    @Permission(name = "View Users", permission = "/device-mgt/users/manage")
     Response resetUserPassword(
             @ApiParam(
                     name = "username",

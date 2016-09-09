@@ -79,7 +79,7 @@ public interface DeviceTypeManagementService {
                             response = ErrorResponse.class)
             }
     )
-    @Permission(name = "View Device Types", permission = "/device-mgt/devices/view")
+    @Permission(name = "View Device Types", permission = "/device-mgt/devices/owning/view")
     Response getDeviceTypes(
             @ApiParam(
                     name = "If-Modified-Since",

@@ -35,6 +35,9 @@ function onRequest() {
     if (userModule.isAuthorized("/permission/admin/device-mgt/users/manage")) {
         page.canManage = true;
     }
+    if (userModule.isAuthorized("/permission/admin/device-mgt/roles/view")) {
+        page.canViewRoles = true;
+    }
     var userStores = userModule.getSecondaryUserStores();
     page["userStores"] = userStores;
     page["charLimit"] = devicemgtProps["usernameLength"];

@@ -98,7 +98,7 @@ if (uriMatcher.match("/{context}/api/user/authenticate")) {
     /*
      @Deprecated
      */
-    if (userModule.isAuthorized("/permission/admin/device-mgt/admin/user/invite")) {
+    if (userModule.isAuthorized("/permission/admin/device-mgt/user/invite")) {
         elements = uriMatcher.elements();
         username = elements.username;
         userModule.inviteUser(username);
@@ -109,7 +109,7 @@ if (uriMatcher.match("/{context}/api/user/authenticate")) {
     /*
      @Deprecated
      */
-    if (userModule.isAuthorized("/permission/admin/device-mgt/admin/user/add")) {
+    if (userModule.isAuthorized("/permission/admin/device-mgt/user/add")) {
         addUserFormData = request.getContent();
         username = addUserFormData.username;
         firstname = addUserFormData.firstname;
@@ -160,7 +160,7 @@ if (uriMatcher.match("/{context}/api/user/authenticate")) {
     /*
      @Deprecated
      */
-    if (userModule.isAuthorized("/permission/admin/device-mgt/admin/user/remove")) {
+    if (userModule.isAuthorized("/permission/admin/device-mgt/user/remove")) {
         elements = uriMatcher.elements();
         username = elements.username;
         try {

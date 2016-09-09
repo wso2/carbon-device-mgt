@@ -20,16 +20,24 @@
  * Returns the dynamic state to be populated by add-user page.
  * 
  * @param context Object that gets updated with the dynamic state of this page to be presented
- * @returns {*} A context object that returns the dynamic state of this page to be presented
+ * @returns {*} A displayData object that returns the dynamic state of this page to be presented
  */
 function onRequest(context) {
     var userModule = require("/app/modules/business-controllers/user.js")["userModule"];
     var deviceMgtProps = require("/app/modules/conf-reader/main.js")["conf"];
+    var displayData = {};
 
-    context["userStores"] = userModule.getSecondaryUserStores();
-    context["roleNameJSRegEx"] = deviceMgtProps["roleValidationConfig"]["roleNameJSRegEx"];
-    context["roleNameHelpText"] = deviceMgtProps["roleValidationConfig"]["roleNameHelpMsg"];
-    context["roleNameRegExViolationErrorMsg"] = deviceMgtProps["roleValidationConfig"]["roleNameRegExViolationErrorMsg"];
+    displayData["userStores"] = userModule.getSecondaryUserStores();
+    displayData["roleNameJSRegEx"] = deviceMgtProps["roleValidationConfig"]["roleNameJSRegEx"];
+    displayData["roleNameHelpText"] = deviceMgtProps["roleValidationConfig"]["roleNameHelpMsg"];
+    displayData["roleNameRegExViolationErrorMsg"] = deviceMgtProps["roleValidationConfig"]["roleNameRegExViolationErrorMsg"];
 
-    return context;
+    if (userModule.isAuthorized("/permission/admin/device-mgt/roles/manage")) {
+        displayData.canManage = true;
+    }
+    if (userModule.isAuthorized("/permission/admin/device-mgt/users/view")) {
+        displayData.canViewUsers = true;
+    }
+
+    return displayData;
 }

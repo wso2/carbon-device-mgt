@@ -38,6 +38,7 @@
 {{/zone}}
 
 {{#zone "content"}}
+    {{#if canManage}}
     <!-- content/body -->
     <div class="row">
         <div class="col-md-12">
@@ -96,6 +97,7 @@
                                     Role name is required, should be in minimum 3 characters long and not include any whitespaces.
                                 </label>
                             </div>
+                            {{#if canViewUsers}}
                             <label class="wr-input-label">
                                 User list
                             </label>
@@ -104,6 +106,7 @@
                                 <!--suppress HtmlFormInputWithoutLabel -->
                                 <select id="users" class="form-control select2" multiple="multiple"></select>
                             </div>
+                            {{/if}}
                         </div>
                     </div>
                     <br>
@@ -134,6 +137,14 @@
         </div>
     </div>
     <!-- /content/body -->
+    {{else}}
+        <h1 class="page-sub-title">
+            Permission Denied
+        </h1>
+        <br>
+        You not authorized to enter Role Management Section.
+        <br>
+    {{/if}}
 {{/zone}}
 {{#zone "bottomJs"}}
     {{js "js/bottomJs.js"}}

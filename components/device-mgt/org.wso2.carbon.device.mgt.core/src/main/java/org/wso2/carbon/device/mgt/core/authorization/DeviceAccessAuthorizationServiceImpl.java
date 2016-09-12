@@ -47,7 +47,7 @@ import java.util.Map;
  */
 public class DeviceAccessAuthorizationServiceImpl implements DeviceAccessAuthorizationService {
 
-    private final static String CDM_ADMIN_PERMISSION = "/device-mgt/admin";
+    private final static String CDM_ADMIN_PERMISSION = "/device-mgt/devices/any/permitted-actions-upon-owning-device";
     private final static String CDM_ADMIN = "Device Management Administrator";
     private static Log log = LogFactory.getLog(DeviceAccessAuthorizationServiceImpl.class);
 
@@ -246,7 +246,7 @@ public class DeviceAccessAuthorizationServiceImpl implements DeviceAccessAuthori
     private boolean addAdminPermissionToRegistry() throws PermissionManagementException {
         Permission permission = new Permission();
         permission.setName(CDM_ADMIN);
-        permission.setPath(CDM_ADMIN_PERMISSION);
+        permission.setPath(PermissionUtils.getAbsolutePermissionPath(CDM_ADMIN_PERMISSION));
         return PermissionUtils.putPermission(permission);
     }
 

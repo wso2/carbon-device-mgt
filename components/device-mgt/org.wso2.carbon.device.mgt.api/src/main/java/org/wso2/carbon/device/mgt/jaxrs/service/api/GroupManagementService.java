@@ -82,7 +82,7 @@ public interface GroupManagementService {
 //
 //    @GET
 //    @Path("/{groupName}/devices")
-//    @Permission(scope = "group-view", permissions = {"/permission/admin/device-mgt/admin/groups/roles"})
+//    @Permission(scope = "group-view", permissions = {"/permission/admin/device-mgt/groups/roles"})
 //    Response getDevicesOfGroup(@PathParam("groupName") String groupName, @QueryParam("offset") int offset,
 //                        @QueryParam("limit") int limit);
 //

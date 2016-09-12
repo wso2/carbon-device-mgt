@@ -327,7 +327,9 @@ public class UserManagementServiceImpl implements UserManagementService {
         try {
             UserStoreManager userStoreManager = DeviceMgtAPIUtils.getUserStoreManager();
             int userCount = userStoreManager.listUsers("*", -1).length;
-            return Response.status(Response.Status.OK).entity(userCount).build();
+            BasicUserInfoList result = new BasicUserInfoList();
+            result.setCount(userCount);
+            return Response.status(Response.Status.OK).entity(result).build();
         } catch (UserStoreException e) {
             String msg = "Error occurred while retrieving the user count.";
             log.error(msg, e);

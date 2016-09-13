@@ -488,6 +488,9 @@ form .form-group label{
     display: inline-block;
 }
 
+.panel-default.active .visible-xs .panel-title a {
+    color:#fff;
+}
 .panel-body {
     background: transparent;
     padding: 0;

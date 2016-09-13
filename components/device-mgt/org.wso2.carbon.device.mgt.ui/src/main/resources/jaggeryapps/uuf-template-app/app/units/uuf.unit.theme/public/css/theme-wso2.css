@@ -777,7 +777,7 @@ a.text-success:focus {
 }
 
 .text-info {
-  color: #009DA7;
+  color: #526A84;
 }
 
 a.text-info:hover,
@@ -826,7 +826,7 @@ a.bg-success:focus {
 }
 
 .bg-info {
-  background-color: #009DA7;
+  background-color: #526A84;
 }
 
 a.bg-info:hover,
@@ -2088,7 +2088,7 @@ table th[class*="col-"] {
 .table > tfoot > tr > th.info,
 .table > tfoot > tr.info > td,
 .table > tfoot > tr.info > th {
-  background-color: #009DA7;
+  background-color: #526A84;
 }
 
 .table-hover > tbody > tr > td.info:hover,
@@ -4283,7 +4283,7 @@ a.label:hover, a.label:focus {
 }
 
 .label-info {
-  background-color: #009DA7;
+  background-color: #526A84;
 }
 .label-info[href]:hover, .label-info[href]:focus {
   background-color: #006d74;
@@ -4519,8 +4519,8 @@ a.thumbnail.active {
 }
 
 .alert-info {
-  background-color: #009DA7;
-  border-color: #009DA7;
+  background-color: #526A84;
+  border-color: #526A84;
   color: #fff;
 }
 .alert-info hr {
@@ -4655,7 +4655,7 @@ a.thumbnail.active {
 }
 
 .progress-bar-info {
-  background-color: #009DA7;
+  background-color: #526A84;
 }
 .progress-striped .progress-bar-info {
   background-image: -webkit-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
@@ -4843,13 +4843,13 @@ button.list-group-item-success.active:focus {
 }
 
 .list-group-item-info {
-  color: #009DA7;
-  background-color: #009DA7;
+  color: #526A84;
+  background-color: #526A84;
 }
 
 a.list-group-item-info,
 button.list-group-item-info {
-  color: #009DA7;
+  color: #526A84;
 }
 a.list-group-item-info .list-group-item-heading,
 button.list-group-item-info .list-group-item-heading {
@@ -4858,7 +4858,7 @@ button.list-group-item-info .list-group-item-heading {
 a.list-group-item-info:hover, a.list-group-item-info:focus,
 button.list-group-item-info:hover,
 button.list-group-item-info:focus {
-  color: #009DA7;
+  color: #526A84;
   background-color: #00858e;
 }
 a.list-group-item-info.active, a.list-group-item-info.active:hover, a.list-group-item-info.active:focus,
@@ -4866,8 +4866,8 @@ button.list-group-item-info.active,
 button.list-group-item-info.active:hover,
 button.list-group-item-info.active:focus {
   color: #fff;
-  background-color: #009DA7;
-  border-color: #009DA7;
+  background-color: #526A84;
+  border-color: #526A84;
 }
 
 .list-group-item-warning {
@@ -5246,22 +5246,22 @@ button.list-group-item-danger.active:focus {
 }
 
 .panel-info {
-  border-color: #009DA7;
+  border-color: #526A84;
 }
 .panel-info > .panel-heading {
-  color: #009DA7;
-  background-color: #009DA7;
-  border-color: #009DA7;
+  color: #526A84;
+  background-color: #526A84;
+  border-color: #526A84;
 }
 .panel-info > .panel-heading + .panel-collapse > .panel-body {
-  border-top-color: #009DA7;
+  border-top-color: #526A84;
 }
 .panel-info > .panel-heading .badge {
-  color: #009DA7;
-  background-color: #009DA7;
+  color: #526A84;
+  background-color: #526A84;
 }
 .panel-info > .panel-footer + .panel-collapse > .panel-body {
-  border-bottom-color: #009DA7;
+  border-bottom-color: #526A84;
 }
 
 .panel-warning {
@@ -5416,10 +5416,10 @@ button.close {
   color: #5cb85c;
 }
 .message-info {
-  border-left-color: #009DA7;
+  border-left-color: #526A84;
 }
 .message-info h4 {
-  color: #009DA7;
+  color: #526A84;
 }
 .message-warning {
   border-left-color: #f0ad4e;
@@ -6871,7 +6871,7 @@ button.close {
 }
 
 .icon-info {
-  color: #009DA7;
+  color: #526A84;
 }
 
 .icon-warning {

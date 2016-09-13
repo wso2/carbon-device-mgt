@@ -36,7 +36,9 @@ function onRequest() {
     page.permissions = permissions;
     page.enrollmentURL = devicemgtProps.enrollmentURL;
     page.device_count = deviceModule.getDevicesCount();
-    page.group_count = groupModule.getGroupCount();
+    //TODO: Enable Group Management Service API on CDMF
+    //page.group_count = groupModule.getGroupCount();
+    page.group_count = -1;
     page.user_count = userModule.getUsers()["content"].length;
     page.policy_count = policyModule.getAllPolicies()["content"].length;
     page.role_count = userModule.getRoles()["content"].length;

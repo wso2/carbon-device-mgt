@@ -45,9 +45,9 @@ var invokers = function () {
      * If the token pair is not set in the session, this will return null.
      */
     privateMethods.getAccessToken = function () {
-        var tokenPair = parse(session.get(constants["TOKEN_PAIR"]));
+        var tokenPair = session.get(constants["TOKEN_PAIR"]);
         if (tokenPair) {
-            return tokenPair["accessToken"];
+            return parse(tokenPair)["accessToken"];
         } else {
             return null;
         }

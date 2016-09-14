@@ -57,6 +57,7 @@
                             org.apache.commons.logging,
                             javax.security.auth.x500,
                             javax.xml.*,
+			    javax.xml.parsers;version="${javax.xml.parsers.import.pkg.version}";resolution:=optional,
                             org.apache.commons.codec.binary,
                             org.bouncycastle.asn1,
                             org.bouncycastle.asn1.x500,
@@ -135,16 +136,12 @@
             <artifactId>org.wso2.carbon.logging</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.bouncycastle.wso2</groupId>
+            <groupId>org.wso2.orbit.org.bouncycastle</groupId>
             <artifactId>bcprov-jdk15on</artifactId>
         </dependency>
         <dependency>
             <groupId>org.bouncycastle.wso2</groupId>
             <artifactId>bcpkix-jdk15on</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.bouncycastle.wso2</groupId>
-            <artifactId>bcmail-jdk15on</artifactId>
         </dependency>
         <dependency>
             <groupId>com.google.code.jscep.wso2</groupId>

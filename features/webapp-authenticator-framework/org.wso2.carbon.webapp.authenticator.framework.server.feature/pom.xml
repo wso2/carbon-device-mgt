@@ -44,14 +44,14 @@
             <groupId>org.wso2.carbon.apimgt</groupId>
             <artifactId>org.wso2.carbon.apimgt.core</artifactId>
             </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon</groupId>
-            <artifactId>org.wso2.carbon.throttle.core</artifactId>
-        </dependency>
-        <dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.wso2.carbon</groupId>-->
+            <!--<artifactId>org.wso2.carbon.throttle.core</artifactId>-->
+        <!--</dependency>-->
+        <!--dependency>
             <groupId>org.apache.ws.commons.axiom.wso2</groupId>
             <artifactId>axiom</artifactId>
-        </dependency>
+        </dependency-->
     </dependencies>
 
     <build>
@@ -111,8 +111,8 @@
                             </importFeatures>
                             <importBundles>
                                 <importBundleDef>org.wso2.carbon.apimgt:org.wso2.carbon.apimgt.core:${carbon.api.mgt.version}</importBundleDef>
-                                <importBundleDef>org.wso2.carbon:org.wso2.carbon.throttle.core:${carbon.throttle.module.version}</importBundleDef>
-                                <importBundleDef>org.apache.ws.commons.axiom.wso2:axiom:${axiom.wso2.version}</importBundleDef>
+                                <!--<importBundleDef>org.wso2.carbon:org.wso2.carbon.throttle.core:${carbon.throttle.module.version}</importBundleDef>-->
+                                <!--importBundleDef>org.apache.ws.commons.axiom.wso2:axiom:${axiom.wso2.version}</importBundleDef-->
                             </importBundles>
                         </configuration>
                     </execution>

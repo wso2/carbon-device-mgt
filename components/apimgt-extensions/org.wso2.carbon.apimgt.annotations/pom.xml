@@ -78,6 +78,7 @@
                             org.apache.commons.logging,
                             javax.servlet,
                             javax.xml.*,
+			    javax.xml.parsers;version="${javax.xml.parsers.import.pkg.version}";resolution:=optional,
                             org.apache.commons.lang,
                         </Import-Package>
                         <Embed-Dependency>

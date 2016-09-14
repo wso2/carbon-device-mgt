@@ -126,6 +126,7 @@
                             org.wso2.carbon.registry.indexing.*; version="${carbon.registry.imp.pkg.version.range}",
                             org.json;version="${commons-json.version}",
                             javax.xml.*,
+			    javax.xml.parsers;version="${javax.xml.parsers.import.pkg.version}";resolution:=optional,
                             org.w3c.dom,
                             org.wso2.carbon.base
                         </Import-Package>

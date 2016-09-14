@@ -61,6 +61,7 @@
                             javax.cache,
                             javax.naming,
                             javax.xml.*,
+			    javax.xml.parsers;version="${javax.xml.parsers.import.pkg.version}";resolution:=optional,
                             org.w3c.dom,
                             org.wso2.carbon.policy.mgt.common.*,
                             org.wso2.carbon.user.core.*,

@@ -125,7 +125,7 @@
                             org.wso2.carbon.device.mgt.core.*,
                             javax.xml.bind,
                             javax.xml.bind.annotation,
-                            javax.xml.parsers;version="${javax.xml.parsers.import.pkg.version}",
+                            javax.xml.parsers;version="${javax.xml.parsers.import.pkg.version}";resolution:=optional,
                             org.w3c.dom,
                             org.wso2.carbon.apimgt.keymgt,
                             org.wso2.carbon.apimgt.keymgt.handlers,

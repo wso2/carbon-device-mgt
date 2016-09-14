@@ -55,16 +55,16 @@
             <artifactId>org.wso2.carbon.utils</artifactId>
             <scope>provided</scope>
         </dependency>
-        <dependency>
-            <groupId>org.apache.ws.commons.axiom</groupId>
+        <!--dependency>
+            <groupId>org.apache.ws.commons.axiom.wso2</groupId>
             <artifactId>axiom-api</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.ws.commons.axiom</groupId>
+            <groupId>org.apache.ws.commons.axiom.wso2</groupId>
             <artifactId>axiom-impl</artifactId>
             <scope>provided</scope>
-        </dependency>
+        </dependency-->
         <dependency>
             <groupId>org.apache.ws.commons.axiom.wso2</groupId>
             <artifactId>axiom</artifactId>

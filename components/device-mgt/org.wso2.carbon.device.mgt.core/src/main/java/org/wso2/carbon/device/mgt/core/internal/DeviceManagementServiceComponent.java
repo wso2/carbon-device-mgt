@@ -263,6 +263,10 @@ public class DeviceManagementServiceComponent {
         } catch (ApplicationManagementException e) {
             log.error("Application management service not registered.", e);
         }
+
+        /* Registering PermissionManager Service */
+        PermissionManagerService permissionManagerService = PermissionManagerServiceImpl.getInstance();
+        bundleContext.registerService(PermissionManagerService.class.getName(), permissionManagerService, null);
     }
 
     private void setupDeviceManagementSchema(DataSourceConfig config) throws DeviceManagementException {

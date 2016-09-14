@@ -79,14 +79,14 @@ policyModule = function () {
                     policyObjectToView["status"] = "Active/Updated";
                     isUpdated = true;
                 } else if (policyObjectFromRestEndpoint["active"] == true &&
-                    policyObjectFromRestEndpoint["updated"] == false) {
+                           policyObjectFromRestEndpoint["updated"] == false) {
                     policyObjectToView["status"] = "Active";
                 } else if (policyObjectFromRestEndpoint["active"] == false &&
-                    policyObjectFromRestEndpoint["updated"] == true) {
+                           policyObjectFromRestEndpoint["updated"] == true) {
                     policyObjectToView["status"] = "Inactive/Updated";
                     isUpdated = true;
                 } else if (policyObjectFromRestEndpoint["active"] == false &&
-                    policyObjectFromRestEndpoint["updated"] == false) {
+                           policyObjectFromRestEndpoint["updated"] == false) {
                     policyObjectToView["status"] = "Inactive";
                 }
                 // push view-objects to list
@@ -131,8 +131,34 @@ policyModule = function () {
         }
         try {
             var url = devicemgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"] +
-                "/policies?offset=0&limit=100";
+                      "/policies?offset=0&limit=100";
             return serviceInvokers.XMLHttp.get(url, privateMethods.handleGetAllPoliciesResponse);
+        } catch (e) {
+            throw e;
+        }
+    };
+
+    /*
+     Get policies count from backend services.
+     */
+    publicMethods.getPoliciesCount = function () {
+        var carbonUser = session.get(constants["USER_SESSION_KEY"]);
+        if (!carbonUser) {
+            log.error("User object was not found in the session");
+            throw constants["ERRORS"]["USER_NOT_FOUND"];
+        }
+        try {
+            var url = devicemgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"] +
+                      "/policies?offset=0&limit=1";
+            return serviceInvokers.XMLHttp.get(
+                url, function (responsePayload) {
+                    return parse(responsePayload["responseText"])["count"];
+                },
+                function (responsePayload) {
+                    log.error(responsePayload["responseText"]);
+                    return -1;
+                }
+            );
         } catch (e) {
             throw e;
         }

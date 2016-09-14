@@ -298,20 +298,20 @@ deviceModule = function () {
             var url;
             if (uiPermissions.LIST_DEVICES) {
                 url = devicemgtProps["httpsURL"] +
-                    devicemgtProps["backendRestEndpoints"]["deviceMgt"] + "/devices/count";
+                      devicemgtProps["backendRestEndpoints"]["deviceMgt"] + "/devices?offset=0&limit=1";
             } else if (uiPermissions.LIST_OWN_DEVICES) {
                 url = devicemgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"] +
-                    "/devices/user/" + carbonUser.username + "/count";
+                      "/devices?offset=0&limit=1&user=" + carbonUser.username;
             } else {
                 log.error("Access denied for user: " + carbonUser.username);
                 return -1;
             }
             return serviceInvokers.XMLHttp.get(
                 url, function (responsePayload) {
-                    return responsePayload;
+                    return parse(responsePayload["responseText"])["count"];
                 },
                 function (responsePayload) {
-                    log.error(responsePayload);
+                    log.error(responsePayload["responseText"]);
                     return -1;
                 }
             );

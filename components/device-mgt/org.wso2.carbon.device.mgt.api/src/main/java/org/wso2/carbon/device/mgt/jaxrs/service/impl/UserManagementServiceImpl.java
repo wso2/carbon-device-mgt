@@ -317,6 +317,28 @@ public class UserManagementServiceImpl implements UserManagementService {
     }
 
     @GET
+    @Path("/count")
+    @Override
+    public Response getUserCount() {
+        if (log.isDebugEnabled()) {
+            log.debug("Getting the user count");
+        }
+
+        try {
+            UserStoreManager userStoreManager = DeviceMgtAPIUtils.getUserStoreManager();
+            int userCount = userStoreManager.listUsers("*", -1).length;
+            BasicUserInfoList result = new BasicUserInfoList();
+            result.setCount(userCount);
+            return Response.status(Response.Status.OK).entity(result).build();
+        } catch (UserStoreException e) {
+            String msg = "Error occurred while retrieving the user count.";
+            log.error(msg, e);
+            return Response.serverError().entity(
+                    new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
+        }
+    }
+
+    @GET
     @Path("/search/usernames")
     @Override
     public Response getUserNames(@QueryParam("filter") String filter, @HeaderParam("If-Modified-Since") String timestamp,

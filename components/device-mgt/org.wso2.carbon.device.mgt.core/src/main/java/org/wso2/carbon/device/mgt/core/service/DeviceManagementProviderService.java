@@ -23,8 +23,10 @@ import org.wso2.carbon.device.mgt.common.license.mgt.License;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Activity;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
+import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 
 import java.util.HashMap;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -181,7 +183,7 @@ public interface DeviceManagementProviderService {
      * @return true if the user owns the device else will return false.
      * @throws DeviceManagementException If some unusual behaviour is observed while fetching the device.
      */
-    public boolean isEnrolled(DeviceIdentifier deviceId, String user) throws DeviceManagementException;
+    boolean isEnrolled(DeviceIdentifier deviceId, String user) throws DeviceManagementException;
 
     License getLicense(String deviceType, String languageCode) throws DeviceManagementException;
 
@@ -204,6 +206,8 @@ public interface DeviceManagementProviderService {
     boolean setActive(DeviceIdentifier deviceId, boolean status) throws DeviceManagementException;
 
     Device getDevice(DeviceIdentifier deviceId) throws DeviceManagementException;
+
+    Device getDevice(DeviceIdentifier deviceId, Date since) throws DeviceManagementException;
 
     HashMap<Integer, Device> getTenantedDevice(DeviceIdentifier deviceIdentifier) throws DeviceManagementException;
 

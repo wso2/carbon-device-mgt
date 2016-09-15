@@ -21,8 +21,8 @@ package org.wso2.carbon.device.mgt.core.config.permission;
 import org.apache.catalina.core.StandardContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scannotation.AnnotationDB;
 import org.wso2.carbon.apimgt.annotations.api.API;
+import org.wso2.carbon.device.mgt.common.permission.mgt.Permission;
 
 import javax.servlet.ServletContext;
 import javax.ws.rs.*;
@@ -91,21 +91,20 @@ public class AnnotationProcessor {
      * @param entityClasses
      * @return
      */
-    public List<org.wso2.carbon.device.mgt.common.permission.mgt.Permission>
-        extractPermissions(Set<String> entityClasses) {
+    public List<Permission>
+    extractPermissions(Set<String> entityClasses) {
 
-        List<org.wso2.carbon.device.mgt.common.permission.mgt.Permission> permissions = new ArrayList<>();
+        List<Permission> permissions = new ArrayList<>();
 
         if (entityClasses != null && !entityClasses.isEmpty()) {
 
             for (final String className : entityClasses) {
 
-                List<org.wso2.carbon.device.mgt.common.permission.mgt.Permission> resourcePermissions =
+                List<Permission> resourcePermissions =
                         AccessController.doPrivileged(new PrivilegedAction<List<org.wso2.carbon.device.mgt.common.permission.mgt.Permission>>() {
                             public List<org.wso2.carbon.device.mgt.common.permission.mgt.Permission> run() {
                                 Class<?> clazz;
-                                List<org.wso2.carbon.device.mgt.common.permission.mgt.Permission> apiPermissions =
-                                        new ArrayList<>();
+                                List<Permission> apiPermissions = new ArrayList<>();
                                 try {
                                     clazz = classLoader.loadClass(className);
 
@@ -114,7 +113,7 @@ public class AnnotationProcessor {
                                                     .class.getName());
 
                                     Annotation apiAnno = clazz.getAnnotation(apiClazz);
-                                    List<org.wso2.carbon.device.mgt.common.permission.mgt.Permission> resourceList;
+                                    List<Permission> resourceList;
 
                                     if (apiAnno != null) {
 
@@ -170,15 +169,13 @@ public class AnnotationProcessor {
      * @return
      * @throws Throwable
      */
-    private List<org.wso2.carbon.device.mgt.common.permission.mgt.Permission>
-        getApiResources(String resourceRootContext, Method[] annotatedMethods) throws Throwable {
+    private List<Permission> getApiResources(String resourceRootContext, Method[] annotatedMethods) throws Throwable {
 
-        List<org.wso2.carbon.device.mgt.common.permission.mgt.Permission> permissions = new ArrayList<>();
+        List<Permission> permissions = new ArrayList<>();
+        Permission permission;
         String subCtx;
         for (Method method : annotatedMethods) {
             Annotation[] annotations = method.getDeclaredAnnotations();
-            org.wso2.carbon.device.mgt.common.permission.mgt.Permission permission =
-                    new org.wso2.carbon.device.mgt.common.permission.mgt.Permission();
 
             if (isHttpMethodAvailable(annotations)) {
                 Annotation methodContextAnno = method.getAnnotation(pathClazz);
@@ -187,9 +184,7 @@ public class AnnotationProcessor {
                 } else {
                     subCtx = WILD_CARD;
                 }
-                permission.setContext(makeContextURLReady(resourceRootContext));
-                permission.setUrlTemplate(makeContextURLReady(subCtx));
-
+                permission = new Permission();
                 // this check is added to avoid url resolving conflict which happens due
                 // to adding of '*' notation for dynamic path variables.
                 if (WILD_CARD.equals(subCtx)) {
@@ -203,10 +198,14 @@ public class AnnotationProcessor {
                     httpMethod = getHTTPMethodAnnotation(annotations[i]);
                     if (httpMethod != null) {
                         permission.setMethod(httpMethod);
-                        break;
+                    }
+                    if (annotations[i].annotationType().getName().
+                            equals(org.wso2.carbon.apimgt.annotations.api.Permission.class.getName())) {
+                        this.setPermission(method, permission);
                     }
                 }
                 permissions.add(permission);
+
             }
         }
         return permissions;
@@ -214,6 +213,7 @@ public class AnnotationProcessor {
 
     /**
      * Read Method annotations indicating HTTP Methods
+     *
      * @param annotation
      */
     private String getHTTPMethodAnnotation(Annotation annotation) {
@@ -255,7 +255,7 @@ public class AnnotationProcessor {
      * @return
      */
     private String makeContextURLReady(String context) {
-        if (context != null && ! context.isEmpty()) {
+        if (context != null && !context.isEmpty()) {
             if (context.startsWith("/")) {
                 return context;
             } else {
@@ -294,19 +294,15 @@ public class AnnotationProcessor {
      * @param servletContext
      * @return null if cannot determin /WEB-INF/classes
      */
-    public static URL findWebInfClassesPath(ServletContext servletContext)
-    {
+    public static URL findWebInfClassesPath(ServletContext servletContext) {
         String path = servletContext.getRealPath("/WEB-INF/classes");
         if (path == null) return null;
         File fp = new File(path);
         if (fp.exists() == false) return null;
-        try
-        {
+        try {
             URI uri = fp.toURI();
             return uri.toURL();
-        }
-        catch (MalformedURLException e)
-        {
+        } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
     }
@@ -327,6 +323,26 @@ public class AnnotationProcessor {
             }
         }
         return replacedPath.toString();
+    }
+
+    private void setPermission(Method currentMethod, Permission permission) throws Throwable {
+        Class<org.wso2.carbon.apimgt.annotations.api.Permission> permissionClass =
+                (Class<org.wso2.carbon.apimgt.annotations.api.Permission>) classLoader.
+                        loadClass(org.wso2.carbon.apimgt.annotations.api.Permission.class.getName());
+        Annotation permissionAnnotation = currentMethod.getAnnotation(permissionClass);
+        if (permissionClass != null) {
+            Method[] permissionClassMethods = permissionClass.getMethods();
+            for (Method method : permissionClassMethods) {
+                switch (method.getName()) {
+                    case "name":
+                        permission.setName(invokeMethod(method, permissionAnnotation, STRING));
+                        break;
+                    case "permission":
+                        permission.setPath(invokeMethod(method, permissionAnnotation, STRING));
+                        break;
+                }
+            }
+        }
     }
 
 }

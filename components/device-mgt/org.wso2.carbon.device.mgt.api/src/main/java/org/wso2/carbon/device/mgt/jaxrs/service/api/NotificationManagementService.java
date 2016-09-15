@@ -20,6 +20,7 @@ package org.wso2.carbon.device.mgt.jaxrs.service.api;
 
 import io.swagger.annotations.*;
 import org.wso2.carbon.apimgt.annotations.api.API;
+import org.wso2.carbon.apimgt.annotations.api.Permission;
 import org.wso2.carbon.apimgt.annotations.api.Scope;
 import org.wso2.carbon.device.mgt.common.notification.mgt.Notification;
 import org.wso2.carbon.device.mgt.jaxrs.NotificationList;
@@ -90,7 +91,7 @@ public interface NotificationManagementService {
                                     "\n Server error occurred while fetching the notification list.",
                             response = ErrorResponse.class)
             })
-    @Scope(key = "notification:view", name = "View and manage notifications", description = "")
+    @Permission(name = "View notifications", permission = "/device-mgt/notifications/view")
     Response getNotifications(
             @ApiParam(
                     name = "status",
@@ -142,7 +143,7 @@ public interface NotificationManagementService {
                             message = "Error occurred while updating notification status.")
             }
     )
-    @Scope(key = "notification:view", name = "View and manage notifications", description = "")
+    @Permission(name = "View notifications", permission = "/device-mgt/notifications/view")
     Response updateNotificationStatus(
             @ApiParam(
                     name = "id",

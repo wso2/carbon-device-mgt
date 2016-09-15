@@ -40,7 +40,7 @@ deviceModule = function () {
 
 //    var deviceCloudService = devicemgtProps["httpsURL"] + "/common/device_manager";
 
-/**
+    /**
      * Only GET method is implemented for now since there are no other type of methods used this method.
      * @param url - URL to call the backend without the host
      * @param method - HTTP Method (GET, POST)
@@ -273,6 +273,9 @@ deviceModule = function () {
                         deviceObject[constants["DEVICE_PROPERTIES"]] = properties;
                         response["content"] = deviceObject;
                         return response;
+                    } else if (backendResponse.status == 401) {
+                        response["status"] = "unauthorized";
+                        return response;
                     } else {
                         response["status"] = "error";
                         return response;
@@ -295,20 +298,20 @@ deviceModule = function () {
             var url;
             if (uiPermissions.LIST_DEVICES) {
                 url = devicemgtProps["httpsURL"] +
-                    devicemgtProps["backendRestEndpoints"]["deviceMgt"] + "/devices/count";
+                      devicemgtProps["backendRestEndpoints"]["deviceMgt"] + "/devices?offset=0&limit=1";
             } else if (uiPermissions.LIST_OWN_DEVICES) {
                 url = devicemgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"] +
-                    "/devices/user/" + carbonUser.username + "/count";
+                      "/devices?offset=0&limit=1&user=" + carbonUser.username;
             } else {
                 log.error("Access denied for user: " + carbonUser.username);
                 return -1;
             }
             return serviceInvokers.XMLHttp.get(
                 url, function (responsePayload) {
-                    return responsePayload;
+                    return parse(responsePayload["responseText"])["count"];
                 },
                 function (responsePayload) {
-                    log.error(responsePayload);
+                    log.error(responsePayload["responseText"]);
                     return -1;
                 }
             );

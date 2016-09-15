@@ -44,33 +44,33 @@ public class APIPublisherStartupHandler implements ServerStartupObserver {
 
     @Override
     public void completedServerStartup() {
-        APIPublisherDataHolder.getInstance().setServerStarted(true);
-        currentAPIsStack = APIPublisherDataHolder.getInstance().getUnpublishedApis();
-        Thread t = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                if (log.isDebugEnabled()) {
-                    log.debug("Server has just started, hence started publishing unpublished APIs");
-                    log.debug("Total number of unpublished APIs: "
-                            + APIPublisherDataHolder.getInstance().getUnpublishedApis().size());
-                }
-                publisher = APIPublisherDataHolder.getInstance().getApiPublisherService();
-                while (!failedAPIsStack.isEmpty() || !currentAPIsStack.isEmpty()) {
-                    try {
-                        retryTime = retryTime * CONNECTION_RETRY_FACTOR;
-                        Thread.sleep(retryTime);
-                    } catch (InterruptedException te) {
-                        log.error("Error occurred while sleeping", te);
-                    }
-                    if (!APIPublisherDataHolder.getInstance().getUnpublishedApis().isEmpty()) {
-                        publishAPIs(currentAPIsStack, failedAPIsStack);
-                    } else {
-                        publishAPIs(failedAPIsStack, currentAPIsStack);
-                    }
-                }
-            }
-        });
-        t.start();
+//        APIPublisherDataHolder.getInstance().setServerStarted(true);
+//        currentAPIsStack = APIPublisherDataHolder.getInstance().getUnpublishedApis();
+//        Thread t = new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                if (log.isDebugEnabled()) {
+//                    log.debug("Server has just started, hence started publishing unpublished APIs");
+//                    log.debug("Total number of unpublished APIs: "
+//                            + APIPublisherDataHolder.getInstance().getUnpublishedApis().size());
+//                }
+//                publisher = APIPublisherDataHolder.getInstance().getApiPublisherService();
+//                while (!failedAPIsStack.isEmpty() || !currentAPIsStack.isEmpty()) {
+//                    try {
+//                        retryTime = retryTime * CONNECTION_RETRY_FACTOR;
+//                        Thread.sleep(retryTime);
+//                    } catch (InterruptedException te) {
+//                        log.error("Error occurred while sleeping", te);
+//                    }
+//                    if (!APIPublisherDataHolder.getInstance().getUnpublishedApis().isEmpty()) {
+//                        publishAPIs(currentAPIsStack, failedAPIsStack);
+//                    } else {
+//                        publishAPIs(failedAPIsStack, currentAPIsStack);
+//                    }
+//                }
+//            }
+//        });
+//        t.start();
     }
 
     private void publishAPIs(Stack<API> apis, Stack<API> failedStack) {

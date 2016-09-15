@@ -40,7 +40,7 @@
 {{/zone}}
 
 {{#zone "navbarActions"}}
-    {{#if permissions.ADD_ADMIN_POLICY}}
+    {{#if managePermitted}}
         <li>
             <a href="{{@app.context}}/policy/add" class="cu-btn">
             <span class="icon fw-stack">
@@ -50,8 +50,6 @@
                 Add Policy
             </a>
         </li>
-    {{/if}}
-    {{#if permissions.CHANGE_POLICY_PRIORITY}}
         {{#equal noPolicy false}}
             <li>
                 <a href="{{@app.context}}/policy/priority" class="cu-btn">
@@ -81,7 +79,7 @@
             <div class="ctrl-info-panel col-centered text-center wr-login">
                 <h2>You don't have any policy at the moment.</h2>
                 <br/>
-                {{#if permissions.ADD_ADMIN_POLICY}}
+                {{#if managePermitted}}
                     <p class="text-center">
                         <a href="{{@app.context}}/policy/add" class="wr-btn">
                                         <span class="fw-stack">
@@ -142,7 +140,7 @@
             <tr class="bulk-action-row">
                 <th colspan="9">
                     <ul class="tiles">
-                        {{#if removePermitted}}
+                        {{#if managePermitted}}
                             <li class="square">
                                 <a href="#" data-click-event="remove-form"
                                    class="btn square-element policy-remove-link"
@@ -258,378 +256,379 @@
     </div>
 
     <div id="remove-policy-modal-content" class="hide">
-        <div class="content">
-            <div class="row">
-                <div class="col-lg-5 col-md-6 col-centered">
-                    <h3>Do you really want to remove the selected policy(s)?</h3>
+        <div class="modal-header">
+            <h3 class="pull-left modal-title">Do you really want to remove the selected policy(s)?</h3>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fw fw-cancel"></i></button>
+        </div>
+        <div class="modal-body add-margin-top-2x add-margin-bottom-2x">
+        </div>
+        <div class="modal-footer">
+            <div class="buttons">
+                <a href="#" id="remove-policy-yes-link" class="btn-operations">
+                    Remove
+                </a>
 
-                    <div class="buttons">
-                        <a href="#" id="remove-policy-yes-link" class="btn-operations">
-                            Remove
-                        </a>
-
-                        <a href="#" id="remove-policy-cancel-link" class="btn-operations">
-                            Cancel
-                        </a>
-                    </div>
-                </div>
+                <a href="#" id="remove-policy-cancel-link" class="btn-operations btn-default">
+                    Cancel
+                </a>
             </div>
         </div>
     </div>
 
     <div id="remove-policy-success-content" class="hide">
-        <div class="content">
-            <div class="row">
-                <div class="col-lg-5 col-md-6 col-centered">
-                    <h3>Done. Selected policy was successfully removed.</h3>
-
-                    <div class="buttons">
-                        <a href="#" id="remove-policy-success-link" class="btn-operations">
-                            Ok
-                        </a>
-                    </div>
-                </div>
+        <div class="modal-header">
+            <h3 class="pull-left modal-title">Done. Selected policy was successfully removed.</h3>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fw fw-cancel"></i></button>
+        </div>
+        <div class="modal-body add-margin-top-2x add-margin-bottom-2x">
+        </div>
+        <div class="modal-footer">
+            <div class="buttons">
+                <a href="#" id="remove-policy-success-link" class="btn-operations">
+                    Ok
+                </a>
             </div>
         </div>
     </div>
 
     <div id="remove-policy-error-content" class="hide">
-        <div class="content">
-            <div class="row">
-                <div class="col-lg-5 col-md-6 col-centered">
-                    <h3>An unexpected error occurred. Please try again later.</h3>
-
-                    <div class="buttons">
-                        <a href="#" id="remove-policy-error-link" class="btn-operations">
-                            Ok
-                        </a>
-                    </div>
-                </div>
+        <div class="modal-header">
+            <h3 class="pull-left modal-title">An unexpected error occurred. Please try again later.</h3>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fw fw-cancel"></i></button>
+        </div>
+        <div class="modal-body add-margin-top-2x add-margin-bottom-2x">
+        </div>
+        <div class="modal-footer">
+            <div class="buttons">
+                <a href="#" id="remove-policy-error-link" class="btn-operations">
+                    Ok
+                </a>
             </div>
         </div>
     </div>
 
     <div id="remove-policy-error-devices" class="hide">
-        <div class="content">
-            <div class="row">
-                <div class="col-lg-5 col-md-6 col-centered">
-                    <h3>You cannot remove policies that are already applied to devices. Please deselect
-                        them and try
-                        again.</h3>
-
-                    <div class="buttons">
-                        <a href="#" id="remove-policy-error-devices" class="btn-operations">
-                            Ok
-                        </a>
-                    </div>
-                </div>
+        <div class="modal-header">
+            <h3 class="pull-left modal-title">Cannot Remove Policies.</h3>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fw fw-cancel"></i></button>
+        </div>
+        <div class="modal-body add-margin-top-2x add-margin-bottom-2x">
+            <h4>You cannot remove policies that are already applied to devices. Please deselect
+                them and try
+                again.</h4>
+        </div>
+        <div class="modal-footer">
+            <div class="buttons">
+                <a href="#" id="remove-policy-error-devices" class="btn-operations">
+                    Ok
+                </a>
             </div>
         </div>
     </div>
 
     <div id="publish-policy-modal-content" class="hide">
-        <div class="content">
-            <div class="row">
-                <div class="col-lg-5 col-md-6 col-centered">
-                    <h3>Do you really want to publish the selected policy(s)?</h3>
+        <div class="modal-header">
+            <h3 class="pull-left modal-title">Do you really want to publish the selected policy(s)?</h3>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fw fw-cancel"></i></button>
+        </div>
+        <div class="modal-body add-margin-top-2x add-margin-bottom-2x">
 
-                    <div class="buttons">
-                        <a href="#" id="publish-policy-yes-link" class="btn-operations">Yes</a>
-                        <a href="#" id="publish-policy-cancel-link" class="btn-operations">No</a>
-                    </div>
-                </div>
+        </div>
+        <div class="modal-footer">
+            <div class="buttons">
+                <a href="#" id="publish-policy-yes-link" class="btn-operations">Yes</a>
+                <a href="#" id="publish-policy-cancel-link" class="btn-operations btn-default">No</a>
             </div>
         </div>
     </div>
 
     <div id="publish-policy-success-content" class="hide">
-        <div class="content">
-            <div class="row">
-                <div class="col-lg-5 col-md-6 col-centered">
-                    <h3>Done. Selected policy was successfully published.</h3>
+        <div class="modal-header">
+            <h3 class="pull-left modal-title">Done. Selected policy was successfully published.</h3>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fw fw-cancel"></i></button>
+        </div>
+        <div class="modal-body add-margin-top-2x add-margin-bottom-2x">
 
-                    <div class="buttons">
-                        <a href="#" id="publish-policy-success-link" class="btn-operations">
-                            Ok
-                        </a>
-                    </div>
-                </div>
+        </div>
+        <div class="modal-footer">
+            <div class="buttons">
+                <a href="#" id="publish-policy-success-link" class="btn-operations">
+                    Ok
+                </a>
             </div>
         </div>
     </div>
 
     <div id="publish-policy-error-content" class="hide">
-        <div class="content">
-            <div class="row">
-                <div class="col-lg-5 col-md-6 col-centered">
-                    <h3>An unexpected error occurred. Please try again later.</h3>
+        <div class="modal-header">
+            <h3 class="pull-left modal-title">An unexpected error occurred. Please try again later.</h3>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fw fw-cancel"></i></button>
+        </div>
+        <div class="modal-body add-margin-top-2x add-margin-bottom-2x">
 
-                    <div class="buttons">
-                        <a href="#" id="publish-policy-error-link" class="btn-operations">
-                            Ok
-                        </a>
-                    </div>
-                </div>
+        </div>
+        <div class="modal-footer">
+            <div class="buttons">
+                <a href="#" id="publish-policy-error-link" class="btn-operations">
+                    Ok
+                </a>
             </div>
         </div>
     </div>
 
     <div id="unpublish-policy-modal-content" class="hide">
-        <div class="content">
-            <div class="row">
-                <div class="col-lg-5 col-md-6 col-centered">
-                    <h3>Do you really want to unpublish the selected policy(s)?</h3>
+        <div class="modal-header">
+            <h3 class="pull-left modal-title">Do you really want to unpublish the selected policy(s)?</h3>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fw fw-cancel"></i></button>
+        </div>
+        <div class="modal-body add-margin-top-2x add-margin-bottom-2x">
 
-                    <div class="buttons">
-                        <a href="#" id="unpublish-policy-yes-link" class="btn-operations">
-                            Yes
-                        </a>
+        </div>
+        <div class="modal-footer">
+            <div class="buttons">
+                <a href="#" id="unpublish-policy-yes-link" class="btn-operations">
+                    Yes
+                </a>
 
-                        <a href="#" id="unpublish-policy-cancel-link" class="btn-operations">
-                            No
-                        </a>
-                    </div>
-                </div>
+                <a href="#" id="unpublish-policy-cancel-link" class="btn-operations btn-default">
+                    No
+                </a>
             </div>
         </div>
     </div>
 
     <div id="unpublish-policy-success-content" class="hide">
-        <div class="content">
-            <div class="row">
-                <div class="col-lg-5 col-md-6 col-centered">
-                    <h3>Done. Selected policy was successfully unpublished.</h3>
+        <div class="modal-header">
+            <h3 class="pull-left modal-title">Done. Selected policy was successfully unpublished.</h3>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fw fw-cancel"></i></button>
+        </div>
+        <div class="modal-body add-margin-top-2x add-margin-bottom-2x">
 
-                    <div class="buttons">
-                        <a href="#" id="unpublish-policy-success-link" class="btn-operations">
-                            Ok
-                        </a>
-                    </div>
-                </div>
+        </div>
+        <div class="modal-footer">
+            <div class="buttons">
+                <a href="#" id="unpublish-policy-success-link" class="btn-operations">
+                    Ok
+                </a>
             </div>
         </div>
     </div>
 
     <div id="unpublish-policy-error-content" class="hide">
-        <div class="content">
-            <div class="row">
-                <div class="col-lg-5 col-md-6 col-centered">
-                    <h3>An unexpected error occurred. Please try again later.</h3>
+        <div class="modal-header">
+            <h3 class="pull-left modal-title">An unexpected error occurred. Please try again later.</h3>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fw fw-cancel"></i></button>
+        </div>
+        <div class="modal-body add-margin-top-2x add-margin-bottom-2x">
 
-                    <div class="buttons">
-                        <a href="#" id="unpublish-policy-error-link" class="btn-operations">
-                            Ok
-                        </a>
-                    </div>
-                </div>
+        </div>
+        <div class="modal-footer">
+            <div class="buttons">
+                <a href="#" id="unpublish-policy-error-link" class="btn-operations">
+                    Ok
+                </a>
             </div>
         </div>
     </div>
 
     <div id="save-policy-priorities-success-content" class="hide">
-        <div class="content">
-            <div class="row">
-                <div class="col-lg-5 col-md-6 col-centered">
-                    <h3>Done. New Policy priorities were successfully updated.</h3>
+        <div class="modal-header">
+            <h3 class="pull-left modal-title">Done. New Policy priorities were successfully updated.</h3>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fw fw-cancel"></i></button>
+        </div>
+        <div class="modal-body add-margin-top-2x add-margin-bottom-2x">
 
-                    <div class="buttons">
-                        <a href="#" id="save-policy-priorities-success-link" class="btn-operations">
-                            Ok
-                        </a>
-                    </div>
-                </div>
+        </div>
+        <div class="modal-footer">
+            <div class="buttons">
+                <a href="#" id="save-policy-priorities-success-link" class="btn-operations">
+                    Ok
+                </a>
             </div>
         </div>
     </div>
 
     <div id="save-policy-priorities-error-content" class="hide">
-        <div class="content">
-            <div class="row">
-                <div class="col-lg-5 col-md-6 col-centered">
-                    <h3>An unexpected error occurred. Please try again later.</h3>
-                    <h4 class="message-from-server"></h4>
+        <div class="modal-header">
+            <h3 class="pull-left modal-title">An unexpected error occurred. Please try again later.</h3>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fw fw-cancel"></i></button>
+        </div>
+        <div class="modal-body add-margin-top-2x add-margin-bottom-2x">
 
-                    <div class="buttons">
-                        <a href="#" id="save-policy-priorities-error-link" class="btn-operations">
-                            Ok
-                        </a>
-                    </div>
-                </div>
+        </div>
+        <div class="modal-footer">
+            <div class="buttons">
+                <a href="#" id="save-policy-priorities-error-link" class="btn-operations">
+                    Ok
+                </a>
             </div>
         </div>
     </div>
 
     <div id="change-policy-modal-content" class="hide">
-        <div class="content">
-            <div class="row">
-                <div class="col-lg-5 col-md-6 col-centered">
-                    <h3>Do you really want to apply changes to all policies?</h3>
+        <div class="modal-header">
+            <h3 class="pull-left modal-title">Do you really want to apply changes to all policies?</h3>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fw fw-cancel"></i></button>
+        </div>
+        <div class="modal-body add-margin-top-2x add-margin-bottom-2x">
 
-                    <div class="buttons">
-                        <a href="#" id="change-policy-yes-link" class="btn-operations">
-                            Yes
-                        </a>
+        </div>
+        <div class="modal-footer">
+            <div class="buttons">
+                <a href="#" id="change-policy-yes-link" class="btn-operations">
+                    Yes
+                </a>
 
-                        <a href="#" id="change-policy-cancel-link" class="btn-operations">
-                            No
-                        </a>
-                    </div>
-                </div>
+                <a href="#" id="change-policy-cancel-link" class="btn-operations btn-default">
+                    No
+                </a>
             </div>
         </div>
     </div>
 
     <div id="change-policy-success-content" class="hide">
-        <div class="content">
-            <div class="row">
-                <div class="col-lg-5 col-md-6 col-centered">
-                    <h3>Done. Changes applied successfully.</h3>
+        <div class="modal-header">
+            <h3 class="pull-left modal-title">Done. Changes applied successfully.</h3>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fw fw-cancel"></i></button>
+        </div>
+        <div class="modal-body add-margin-top-2x add-margin-bottom-2x">
 
-                    <div class="buttons">
-                        <a href="#" id="change-policy-success-link" class="btn-operations">
-                            Ok
-                        </a>
-                    </div>
-                </div>
+        </div>
+        <div class="modal-footer">
+            <div class="buttons">
+                <a href="#" id="change-policy-success-link" class="btn-operations">
+                    Ok
+                </a>
             </div>
         </div>
     </div>
 
     <div id="change-policy-error-content" class="hide">
-        <div class="content">
-            <div class="row">
-                <div class="col-lg-5 col-md-6 col-centered">
-                    <h3>An unexpected error occurred. Please try again later.</h3>
+        <div class="modal-header">
+            <h3 class="pull-left modal-title">An unexpected error occurred. Please try again later.</h3>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fw fw-cancel"></i></button>
+        </div>
+        <div class="modal-body add-margin-top-2x add-margin-bottom-2x">
 
-                    <div class="buttons">
-                        <a href="#" id="change-policy-error-link" class="btn-operations">
-                            Ok
-                        </a>
-                    </div>
-                </div>
+        </div>
+        <div class="modal-footer">
+            <div class="buttons">
+                <a href="#" id="change-policy-error-link" class="btn-operations">
+                    Ok
+                </a>
             </div>
         </div>
     </div>
 
     <div id="errorPolicyUnPublish" class="hide">
-        <div class="content">
-            <div class="row">
-                <div class="col-lg-5 col-md-6 col-centered">
-                    <h3>
-                    <span class="fw-stack">
+        <div class="modal-header">
+            <h3 class="pull-left modal-title">
+                <span class="fw-stack">
                         <i class="fw fw-ring fw-stack-2x"></i>
                         <i class="fw fw-error fw-stack-1x"></i>
                     </span>
-                        Operation cannot be performed !
-                    </h3>
-                    <h4>
-                        Please select a policy or a list of policies to unpublish.
-                    </h4>
-
-                    <div class="buttons">
-                        <a href="javascript:hidePopup()" class="btn-operations">
-                            Ok
-                        </a>
-                    </div>
-                </div>
+                Operation cannot be performed !
+            </h3>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fw fw-cancel"></i></button>
+        </div>
+        <div class="modal-body add-margin-top-2x add-margin-bottom-2x">
+            <h4>Please select a policy or a list of policies to unpublish.</h4>
+        </div>
+        <div class="modal-footer">
+            <div class="buttons">
+                <a href="javascript:hidePopup()" class="btn-operations">
+                    Ok
+                </a>
             </div>
         </div>
     </div>
     <div id="errorPolicyUnPublishSelection" class="hide">
-        <div class="content">
-            <div class="row">
-                <div class="col-lg-5 col-md-6 col-centered">
-                    <h3>
-                    <span class="fw-stack">
+        <div class="modal-header">
+            <h3 class="pull-left modal-title">
+                <span class="fw-stack">
                         <i class="fw fw-ring fw-stack-2x"></i>
                         <i class="fw fw-error fw-stack-1x"></i>
                     </span>
-                        Operation cannot be performed !
-                    </h3>
-                    <h4>
-                        You cannot select already inactive policies. Please deselect inactive policies
-                        and try again.
-                    </h4>
-
-                    <div class="buttons">
-                        <a href="javascript:hidePopup()" class="btn-operations">
-                            Ok
-                        </a>
-                    </div>
-                </div>
+                Operation cannot be performed !
+            </h3>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fw fw-cancel"></i></button>
+        </div>
+        <div class="modal-body add-margin-top-2x add-margin-bottom-2x">
+            <h4>You cannot select already inactive policies. Please deselect inactive policies
+                and try again.</h4>
+        </div>
+        <div class="modal-footer">
+            <div class="buttons">
+                <a href="javascript:hidePopup()" class="btn-operations">
+                    Ok
+                </a>
             </div>
         </div>
     </div>
     <div id="errorPolicyPublishSelection" class="hide">
-        <div class="content">
-            <div class="row">
-                <div class="col-lg-5 col-md-6 col-centered">
-                    <h3>
-                    <span class="fw-stack">
+        <div class="modal-header">
+            <h3 class="pull-left modal-title">
+                <span class="fw-stack">
                         <i class="fw fw-ring fw-stack-2x"></i>
                         <i class="fw fw-error fw-stack-1x"></i>
                     </span>
-                        Operation cannot be performed !
-                    </h3>
-                    <h4>
-                        You cannot select already active policies. Please deselect active policies and
-                        try again.
-                    </h4>
-
-                    <div class="buttons">
-                        <a href="javascript:hidePopup()" class="btn-operations">
-                            Ok
-                        </a>
-                    </div>
-                </div>
+                Operation cannot be performed !
+            </h3>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fw fw-cancel"></i></button>
+        </div>
+        <div class="modal-body add-margin-top-2x add-margin-bottom-2x">
+            <h4>You cannot select already active policies. Please deselect active policies and
+                try again.</h4>
+        </div>
+        <div class="modal-footer">
+            <div class="buttons">
+                <a href="javascript:hidePopup()" class="btn-operations">
+                    Ok
+                </a>
             </div>
         </div>
     </div>
     <div id="errorPolicyPublish" class="hide">
-        <div class="content">
-            <div class="row">
-                <div class="col-lg-5 col-md-6 col-centered">
-                    <h3>
-                    <span class="fw-stack">
+        <div class="modal-header">
+            <h3 class="pull-left modal-title">
+                <span class="fw-stack">
                         <i class="fw fw-ring fw-stack-2x"></i>
                         <i class="fw fw-error fw-stack-1x"></i>
                     </span>
-                        Operation cannot be performed !
-                    </h3>
-                    <h4>
-                        Please select a policy or a list of policies to publish.
-                    </h4>
-
-                    <div class="buttons">
-                        <a href="javascript:hidePopup()" class="btn-operations">
-                            Ok
-                        </a>
-                    </div>
-                </div>
+                Operation cannot be performed !
+            </h3>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fw fw-cancel"></i></button>
+        </div>
+        <div class="modal-body add-margin-top-2x add-margin-bottom-2x">
+            <h4>Please select a policy or a list of policies to publish.</h4>
+        </div>
+        <div class="modal-footer">
+            <div class="buttons">
+                <a href="javascript:hidePopup()" class="btn-operations">
+                    Ok
+                </a>
             </div>
         </div>
     </div>
     <div id="errorPolicy" class="hide">
-        <div class="content">
-            <div class="row">
-                <div class="col-lg-5 col-md-6 col-centered">
-                    <h3>
-                    <span class="fw-stack">
+        <div class="modal-header">
+            <h3 class="pull-left modal-title">
+                <span class="fw-stack">
                         <i class="fw fw-ring fw-stack-2x"></i>
                         <i class="fw fw-error fw-stack-1x"></i>
                     </span>
-                        Operation cannot be performed !
-                    </h3>
-                    <h4>
-                        Please select a policy or a list of policies to remove.
-                    </h4>
-
-                    <div class="buttons">
-                        <a href="javascript:hidePopup()" class="btn-operations">
-                            Ok
-                        </a>
-                    </div>
-                </div>
+                Operation cannot be performed !
+            </h3>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fw fw-cancel"></i></button>
+        </div>
+        <div class="modal-body add-margin-top-2x add-margin-bottom-2x">
+            <h4>Please select a policy or a list of policies to remove.</h4>
+        </div>
+        <div class="modal-footer">
+            <div class="buttons">
+                <a href="javascript:hidePopup()" class="btn-operations">
+                    Ok
+                </a>
             </div>
         </div>
     </div>

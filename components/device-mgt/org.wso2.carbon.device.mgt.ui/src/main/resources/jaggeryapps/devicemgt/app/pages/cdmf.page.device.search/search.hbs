@@ -15,6 +15,27 @@
  specific language governing permissions and limitations
  under the License.
 -->
+{{#zone "breadcrumbs"}}
+    <li>
+        <a href="{{@app.context}}/">
+            <i class="icon fw fw-home"></i>
+        </a>
+    </li>
+    <li>
+        <!--suppress HtmlUnknownTarget -->
+        <a href="{{@app.context}}/devices">
+            Devices
+        </a>
+    </li>
+    <li>
+        <!--suppress HtmlUnknownTarget -->
+        <a href="{{@app.context}}/devices/search">
+            Search
+        </a>
+    </li>
+{{/zone}}
+
+
 {{#zone "content"}}
     <!-- content/body -->
     <div class="row">
@@ -32,15 +53,15 @@
                     <hr/>
                     <div id="device-listing-status" class="raw hidden">
                         <div class="col-lg-12 col-md-12">
-                        <ul style="list-style-type: none;">
-                            <li class="message message-info">
-                                <h4>
-                                    <i class="icon fw fw-info"></i>
-                                    <a id="device-listing-status-msg"></a>
-                                </h4>
-                            </li>
-                        </ul>
-                    </div>
+                            <ul style="list-style-type: none;">
+                                <li class="message message-info">
+                                    <h4>
+                                        <i class="icon fw fw-info"></i>
+                                        <a id="device-listing-status-msg"></a>
+                                    </h4>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
                     <div class="row">
                         <div class="col-lg-12 col-md-12">

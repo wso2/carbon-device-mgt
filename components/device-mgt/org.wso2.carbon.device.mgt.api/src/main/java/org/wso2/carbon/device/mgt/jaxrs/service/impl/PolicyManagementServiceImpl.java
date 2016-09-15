@@ -221,12 +221,20 @@ public class PolicyManagementServiceImpl implements PolicyManagementService {
         RequestValidationUtil.validatePolicyIds(policyIds);
         PolicyManagerService policyManagementService = DeviceMgtAPIUtils.getPolicyManagementService();
         boolean policyDeleted = true;
+        String invalidPolicyIds = "";
         try {
             PolicyAdministratorPoint pap = policyManagementService.getPAP();
             for (int i : policyIds) {
                 Policy policy = pap.getPolicy(i);
-                if (policy == null || !pap.deletePolicy(policy)) {
+                if (policy == null) {
+                    invalidPolicyIds += i + ",";
                     policyDeleted = false;
+                }
+            }
+            if(policyDeleted) {
+                for(int i : policyIds) {
+                    Policy policy = pap.getPolicy(i);
+                    pap.deletePolicy(policy);
                 }
             }
         } catch (PolicyManagementException e) {
@@ -239,12 +247,14 @@ public class PolicyManagementServiceImpl implements PolicyManagementService {
             return Response.status(Response.Status.OK).entity("Policies have been successfully deleted").build();
         } else {
             //TODO:Check of this logic is correct
-            return Response.status(Response.Status.NOT_FOUND).entity(
-                    new ErrorResponse.ErrorResponseBuilder().setMessage("Policy doesn't exist").build()).build();
+            String ModifiedInvalidPolicyIds = invalidPolicyIds.substring(0, invalidPolicyIds.length()-1);
+            return Response.status(Response.Status.BAD_REQUEST).entity(
+                    new ErrorResponse.ErrorResponseBuilder().setMessage("Policies with the policy ID " +
+                                                                        ModifiedInvalidPolicyIds + " doesn't exist").build()).build();
         }
     }
 
-    @PUT
+    @POST
     @Path("/activate-policy")
     @Override
     public Response activatePolicies(List<Integer> policyIds) {
@@ -276,7 +286,7 @@ public class PolicyManagementServiceImpl implements PolicyManagementService {
         }
     }
 
-    @PUT
+    @POST
     @Path("/deactivate-policy")
     @Override
     public Response deactivatePolicies(List<Integer> policyIds) {

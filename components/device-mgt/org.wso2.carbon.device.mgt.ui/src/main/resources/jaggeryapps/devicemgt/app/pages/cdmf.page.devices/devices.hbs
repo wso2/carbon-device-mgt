@@ -199,7 +199,7 @@
                                         &nbsp;&nbsp;&nbsp;&nbsp;Assign&nbsp;&nbsp;&nbsp;&nbsp;
                                     </a>
                                     &nbsp;&nbsp;
-                                    <a href="#" id="group-device-cancel-link" class="btn-operations">
+                                    <a href="#" id="group-device-cancel-link" class="btn-operations btn-default">
                                         &nbsp;&nbsp;&nbsp;&nbsp;Cancel&nbsp;&nbsp;&nbsp;&nbsp;
                                     </a>
                                 </div>
@@ -229,60 +229,82 @@
                 </div>
 
                 <div id="remove-device-modal-content" class="hide">
-                    <div class="content">
-                        <div class="row">
-                            <div class="col-lg-5 col-md-6 col-centered">
-                                <h3>Do you really want to remove this device from your Devices List?</h3>
+                    <div class="modal-header">
+                        <h3 class="pull-left modal-title">
+                            Do you really want to remove this device from your Devices List?
+                        </h3>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fw fw-cancel"></i></button>
+                    </div>
+                    <div class="modal-body add-margin-top-2x add-margin-bottom-2x">
 
-                                <div class="buttons">
-                                    <a href="#" id="remove-device-yes-link" class="btn-operations">
-                                        &nbsp;&nbsp;&nbsp;&nbsp;Yes&nbsp;&nbsp;&nbsp;&nbsp;
-                                    </a>
-                                    &nbsp;&nbsp;
-                                    <a href="#" id="remove-device-cancel-link" class="btn-operations">
-                                        &nbsp;&nbsp;&nbsp;&nbsp;Cancel&nbsp;&nbsp;&nbsp;&nbsp;
-                                    </a>
-                                </div>
-                            </div>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="buttons">
+                            <a href="#" id="remove-device-yes-link" class="btn-operations">
+                                &nbsp;&nbsp;&nbsp;&nbsp;Yes&nbsp;&nbsp;&nbsp;&nbsp;
+                            </a>
+                            &nbsp;&nbsp;
+                            <a href="#" id="remove-device-cancel-link" class="btn-operations">
+                                &nbsp;&nbsp;&nbsp;&nbsp;Cancel&nbsp;&nbsp;&nbsp;&nbsp;
+                            </a>
                         </div>
                     </div>
                 </div>
 
                 <div id="remove-device-200-content" class="hide">
-                    <div class="content">
-                        <div class="row">
-                            <div class="col-lg-5 col-md-6 col-centered">
-                                <h3>Device was successfully removed.</h3>
-                            </div>
+                    <div class="modal-header">
+                        <h3 class="pull-left modal-title">
+                            Device was successfully removed.
+                        </h3>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fw fw-cancel"></i></button>
+                    </div>
+                    <div class="modal-body add-margin-top-2x add-margin-bottom-2x">
+
+                    </div>
+                    <div class="modal-footer">
+                        <div class="buttons">
+                            <a href="javascript:hidePopup()" class="btn-operations">Ok</a>
                         </div>
                     </div>
                 </div>
 
                 <div id="edit-device-modal-content" class="hide">
-                    <div class="content">
-                        <div class="row">
-                            <div class="col-lg-5 col-md-6 col-centered">
-                                <h3>Please enter new name for the device?</h3>
-                                <br/>
-
-                                <div>
-                                    <input id="edit-device-name" style="color:#3f3f3f;padding:5px" type="text"
-                                           value=""
-                                           placeholder="Type here" size="60">
-                                </div>
-                                <div class="buttons">
-                                    <a href="#" id="edit-device-yes-link" class="btn-operations">
-                                        &nbsp;&nbsp;&nbsp;&nbsp;Rename&nbsp;&nbsp;&nbsp;&nbsp;
-                                    </a>
-                                    &nbsp;&nbsp;
-                                    <a href="#" id="edit-device-cancel-link" class="btn-operations">
-                                        &nbsp;&nbsp;&nbsp;&nbsp;Cancel&nbsp;&nbsp;&nbsp;&nbsp;
-                                    </a>
-                                </div>
-                            </div>
+                    <div class="modal-header">
+                        <h3 class="pull-left modal-title">
+                            Please enter new name for the device?
+                        </h3>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fw fw-cancel"></i></button>
+                    </div>
+                    <div class="modal-body add-margin-top-2x add-margin-bottom-2x">
+                        <input id="edit-device-name" style="color:#3f3f3f;padding:5px" type="text"
+                               value=""
+                               placeholder="Type here" size="60">
+                    </div>
+                    <div class="modal-footer">
+                        <div class="buttons">
+                            <a href="#" id="edit-device-yes-link" class="btn-operations">
+                                &nbsp;&nbsp;&nbsp;&nbsp;Rename&nbsp;&nbsp;&nbsp;&nbsp;
+                            </a>
+                            &nbsp;&nbsp;
+                            <a href="#" id="edit-device-cancel-link" class="btn-operations">
+                                &nbsp;&nbsp;&nbsp;&nbsp;Cancel&nbsp;&nbsp;&nbsp;&nbsp;
+                            </a>
                         </div>
                     </div>
                 </div>
+
+                <div id="edit-device-200-content" class="hide">
+                    <div class="modal-header">
+                        <h3 class="pull-left modal-title">
+                            Device was successfully updated.
+                        </h3>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fw fw-cancel"></i></button>
+                    </div>
+                    <div class="modal-body add-margin-top-2x add-margin-bottom-2x">
+
+                    </div>
+                    <div class="modal-footer">
+                        <div class="buttons">
 
                 <div id="edit-device-200-content" class="hide">
                     <div class="content">

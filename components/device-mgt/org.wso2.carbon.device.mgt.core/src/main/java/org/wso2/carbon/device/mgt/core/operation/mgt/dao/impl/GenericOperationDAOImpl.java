@@ -406,30 +406,36 @@ public class GenericOperationDAOImpl implements OperationDAO {
 //                sql = sql + " OFFSET ?";
 //            }
 
-            String sql = "SELECT feom.ENROLMENT_ID, feom.OPERATION_ID, feom.CREATED_TIMESTAMP, o.TYPE AS OPERATION_TYPE, " +
-                    "o.OPERATION_CODE, orsp.OPERATION_RESPONSE, orsp.LATEST_RECEIVED_TIMESTAMP AS RECEIVED_TIMESTAMP, " +
-                    "orsp.ID AS OP_RES_ID, feom.STATUS, feom.UPDATED_TIMESTAMP, feom.DEVICE_IDENTIFICATION, " +
-                    "feom.DEVICE_TYPE FROM (SELECT eom.ENROLMENT_ID, eom.OPERATION_ID, eom.STATUS, eom.CREATED_TIMESTAMP, " +
-                    "eom.UPDATED_TIMESTAMP, fe.DEVICE_IDENTIFICATION, fe.DEVICE_TYPE FROM " +
-                    "(SELECT ENROLMENT_ID, OPERATION_ID, STATUS, CREATED_TIMESTAMP, UPDATED_TIMESTAMP " +
-                    "FROM DM_ENROLMENT_OP_MAPPING WHERE UPDATED_TIMESTAMP > ? ORDER BY OPERATION_ID LIMIT ? OFFSET ?) eom " +
-                    "LEFT OUTER JOIN (SELECT e.ID AS ENROLMENT_ID, d.ID AS DEVICE_ID, d.DEVICE_IDENTIFICATION, " +
-                    "t.NAME AS DEVICE_TYPE FROM DM_ENROLMENT e LEFT OUTER JOIN DM_DEVICE d ON e.DEVICE_ID = d.ID " +
-                    "LEFT OUTER JOIN DM_DEVICE_TYPE t ON d.DEVICE_TYPE_ID = t.ID WHERE d.TENANT_ID = ? AND " +
-                    "e.TENANT_ID = ?) fe ON fe.ENROLMENT_ID = eom.ENROLMENT_ID) feom LEFT OUTER JOIN DM_OPERATION o " +
-                    "ON feom.OPERATION_ID = o.ID LEFT OUTER JOIN (SELECT ID, ENROLMENT_ID, OPERATION_ID, " +
-                    "OPERATION_RESPONSE, MAX(RECEIVED_TIMESTAMP) LATEST_RECEIVED_TIMESTAMP " +
-                    "FROM DM_DEVICE_OPERATION_RESPONSE GROUP BY ENROLMENT_ID , OPERATION_ID) orsp " +
-                    "ON o.ID = orsp.OPERATION_ID AND feom.ENROLMENT_ID = orsp.ENROLMENT_ID GROUP BY feom.ENROLMENT_ID";
+
+            String sql = "SELECT opm.ENROLMENT_ID, opm.CREATED_TIMESTAMP, opm.UPDATED_TIMESTAMP, opm.OPERATION_ID,\n" +
+                    "op.OPERATION_CODE, op.TYPE as OPERATION_TYPE, opm.STATUS, en.DEVICE_ID,\n" +
+                    "ops.RECEIVED_TIMESTAMP, ops.ID as OP_RES_ID, ops.OPERATION_RESPONSE,\n" +
+                    "de.DEVICE_IDENTIFICATION, dt.NAME as DEVICE_TYPE\n" +
+                    "FROM DM_ENROLMENT_OP_MAPPING AS opm\n" +
+                    "LEFT JOIN DM_OPERATION AS op ON opm.OPERATION_ID = op.ID \n" +
+                    "LEFT JOIN DM_ENROLMENT as en ON opm.ENROLMENT_ID = en.ID \n" +
+                    "LEFT JOIN DM_DEVICE as de ON en.DEVICE_ID = de.ID \n" +
+                    "LEFT JOIN DM_DEVICE_TYPE as dt ON dt.ID = de.DEVICE_TYPE_ID \n" +
+                    "LEFT JOIN DM_DEVICE_OPERATION_RESPONSE as ops ON \n" +
+                    "opm.ENROLMENT_ID = ops.ENROLMENT_ID AND opm.OPERATION_ID = ops.OPERATION_ID \n" +
+                    "WHERE opm.UPDATED_TIMESTAMP > ? \n" +
+                    "AND de.TENANT_ID = ? \n";
+
+            if(timestamp == 0){
+                sql += "ORDER BY opm.OPERATION_ID LIMIT ? OFFSET ?;";
+            }else{
+                sql += "ORDER BY opm.UPDATED_TIMESTAMP asc LIMIT ? OFFSET ?";
+            }
+
+
 
             stmt = conn.prepareStatement(sql);
 
             stmt.setLong(1, timestamp);
-            stmt.setInt(2, limit);
-            stmt.setInt(3, offset);
             int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
-            stmt.setInt(4, tenantId);
-            stmt.setInt(5, tenantId);
+            stmt.setInt(2, tenantId);
+            stmt.setInt(3, limit);
+            stmt.setInt(4, offset);
 
             rs = stmt.executeQuery();
 

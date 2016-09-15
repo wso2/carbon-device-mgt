@@ -96,7 +96,7 @@ public class OAuthExtensionServiceComponent {
             List<String> whiteList;
 
             // Read scope whitelist from Configuration.
-            whiteList = configuration.getProperty(APIConstants.API_KEY_MANGER_SCOPE_WHITELIST);
+            whiteList = configuration.getProperty(APIConstants.WHITELISTED_SCOPES);
 
             // If whitelist is null, default scopes will be put.
             if (whiteList == null) {

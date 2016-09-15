@@ -57,6 +57,7 @@
                             org.osgi.service.component,
                             org.apache.commons.logging,
                             javax.xml.*,
+			    javax.xml.parsers;version="${javax.xml.parsers.import.pkg.version}";resolution:=optional,
                             org.wso2.carbon.context,
                             org.wso2.carbon.utils.*,
                             org.wso2.carbon.registry.api,

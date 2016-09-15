@@ -5195,6 +5195,7 @@ button.list-group-item-danger.active:focus {
   color: #333333;
   background-color: #f5f5f5;
   border-color: #ddd;
+  border:none;
 }
 .panel-default > .panel-heading + .panel-collapse > .panel-body {
   border-top-color: #ddd;
@@ -8084,7 +8085,7 @@ a.list-group-item:hover {
  * ======================================================================== */
 .switch {
   display: inline-block;
-  width: 40px;
+  width: 90px;
   cursor: pointer;
   position: relative;
   margin-top: -4px;

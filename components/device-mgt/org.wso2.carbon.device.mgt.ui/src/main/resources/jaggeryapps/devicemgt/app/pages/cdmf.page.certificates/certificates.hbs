@@ -15,7 +15,6 @@
   specific language governing permissions and limitations
   under the License.
 }}
-
 {{unit "cdmf.unit.ui.title" pageTitle="Add Certificate"}}
 
 {{#zone "breadcrumbs"}}
@@ -25,9 +24,8 @@
         </a>
     </li>
     <li>
-        <!--suppress HtmlUnknownTarget -->
         <a href="{{@app.context}}/certificates">
-            Certificates
+           Certificate
         </a>
     </li>
 {{/zone}}
@@ -35,7 +33,6 @@
 {{#zone "navbarActions"}}
     {{#if removePermitted}}
         <li>
-            <!--suppress HtmlUnknownTarget -->
             <a href="{{@app.context}}/certificates/add">
             <span class="fw-stack">
                <i class="fw fw-ring fw-stack-2x"></i>
@@ -100,7 +97,10 @@
             </tr>
 
             </thead>
-            <tbody id="ast-container"></tbody>
+            <tbody id="ast-container">
+
+            <br class="c-both"/>
+            </tbody>
         </table>
     </div>
     <br class="c-both"/>
@@ -121,7 +121,7 @@
                         <a href="#" id="remove-certificate-yes-link" class="btn-operations">
                             Remove
                         </a>
-                        <a href="#" id="remove-certificate-cancel-link" class="btn-operations">
+                        <a href="#" id="remove-certificate-cancel-link" class="btn-operations btn-default">
                             Cancel
                         </a>
                     </div>
@@ -180,9 +180,9 @@
 {{/zone}}
 
 {{#zone "bottomJs"}}
-    <!--suppress HtmlUnknownTarget -->
     <script id="certificate-listing" data-current-user="{{@user.username}}"
             src="{{@page.publicUri}}/templates/certificate-listing.hbs"
             type="text/x-handlebars-template"></script>
+
     {{js "/js/certificate-listing.js"}}
 {{/zone}}

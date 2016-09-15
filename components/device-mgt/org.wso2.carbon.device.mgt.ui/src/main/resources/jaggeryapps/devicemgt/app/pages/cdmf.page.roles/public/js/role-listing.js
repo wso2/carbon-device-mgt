@@ -114,7 +114,7 @@ function loadRoles() {
             class: "remove-padding icon-only content-fill",
             data: null,
             defaultContent: "<div class='thumbnail icon'>" +
-                "<i class='square-element text fw fw-bookmark' style='font-size: 30px;'></i>" +
+                "<i class='square-element text fw fw-bookmark' style='font-size: 74px;'></i>" +
                 "</div>"
         },
         {

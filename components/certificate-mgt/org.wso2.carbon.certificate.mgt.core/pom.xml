@@ -57,7 +57,7 @@
                             org.apache.commons.logging,
                             javax.security.auth.x500,
                             javax.xml.*,
-			    javax.xml.parsers;version="${javax.xml.parsers.import.pkg.version}";resolution:=optional,
+                            javax.xml.parsers;version="${javax.xml.parsers.import.pkg.version}";resolution:=optional,
                             org.apache.commons.codec.binary,
                             org.bouncycastle.asn1,
                             org.bouncycastle.asn1.x500,
@@ -175,11 +175,16 @@
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.user.core</artifactId>
-            <version>4.4.3</version>
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon.registry</groupId>
             <artifactId>org.wso2.carbon.registry.indexing</artifactId>
+        </dependency>
+        <!-- Add this for test coverage-->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>1.6.1</version>
         </dependency>
     </dependencies>
 </project>

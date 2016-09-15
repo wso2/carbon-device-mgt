@@ -143,6 +143,7 @@
                             org.apache.commons.logging,
                             javax.servlet,
                             javax.xml.*,
+                            javax.xml.parsers;version="${javax.xml.parsers.import.pkg.version}";resolution:=optional,
                             com.google.gson.*,
                             org.apache.catalina,
                             org.apache.catalina.core,

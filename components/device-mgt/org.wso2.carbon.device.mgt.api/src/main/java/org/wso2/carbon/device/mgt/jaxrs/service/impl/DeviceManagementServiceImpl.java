@@ -189,9 +189,25 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
         Device device;
         try {
             RequestValidationUtil.validateDeviceIdentifier(type, id);
-
             DeviceManagementProviderService dms = DeviceMgtAPIUtils.getDeviceManagementService();
-            device = dms.getDevice(new DeviceIdentifier(id, type));
+            if (ifModifiedSince != null && !ifModifiedSince.isEmpty()) {
+                Date sinceDate;
+                SimpleDateFormat format = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z");
+                try {
+                    sinceDate = format.parse(ifModifiedSince);
+                } catch (ParseException e) {
+                    return Response.status(Response.Status.BAD_REQUEST).entity(
+                            new ErrorResponse.ErrorResponseBuilder().setMessage("Invalid date " +
+                                                                                "string is provided in 'If-Modified-Since' header").build()).build();
+                }
+                device = dms.getDevice(new DeviceIdentifier(id, type), sinceDate);
+                if (device == null) {
+                    return Response.status(Response.Status.NOT_MODIFIED).entity("No device is modified " +
+                                                                                "after the timestamp provided in 'If-Modified-Since' header").build();
+                }
+            } else {
+                device = dms.getDevice(new DeviceIdentifier(id, type));
+            }
         } catch (DeviceManagementException e) {
             String msg = "Error occurred while fetching the device information.";
             log.error(msg, e);

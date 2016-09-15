@@ -808,6 +808,54 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     }
 
     @Override
+    public Device getDevice(DeviceIdentifier deviceId, Date since) throws DeviceManagementException {
+        Device device;
+        try {
+            DeviceManagementDAOFactory.openConnection();
+            device = deviceDAO.getDevice(deviceId, since, this.getTenantId());
+            if (device == null) {
+                if (log.isDebugEnabled()) {
+                    log.debug("No device is found upon the type '" + deviceId.getType() + "' and id '" +
+                              deviceId.getId() + "'");
+                }
+                return null;
+            }
+            DeviceLocation location = deviceInfoDAO.getDeviceLocation(device.getId());
+            if (device.getDeviceInfo() != null) {
+                device.getDeviceInfo().setLocation(location);
+            }
+
+            List<Application> applications = applicationDAO.getInstalledApplications(device.getId());
+            device.setApplications(applications);
+        } catch (DeviceManagementDAOException e) {
+            throw new DeviceManagementException("Error occurred while obtaining the device for id " +
+                                                "'" + deviceId.getId() + "'", e);
+        } catch (SQLException e) {
+            throw new DeviceManagementException("Error occurred while opening a connection to the data source", e);
+        } catch (DeviceDetailsMgtDAOException e) {
+            throw new DeviceManagementException("Error occurred while fetching advanced device information", e);
+        } finally {
+            DeviceManagementDAOFactory.closeConnection();
+        }
+        // The changes made here to prevent unit tests getting failed. They failed because when running the unit
+        // tests there is no osgi services. So getDeviceManager() returns a null.
+        DeviceManager deviceManager = this.getDeviceManager(deviceId.getType());
+        if (deviceManager == null) {
+            if (log.isDebugEnabled()) {
+                log.debug("Device Manager associated with the device type '" + deviceId.getType() + "' is null. " +
+                          "Therefore, not attempting method 'getDevice'");
+            }
+            return device;
+        }
+        Device pluginSpecificInfo = deviceManager.getDevice(deviceId);
+        if (pluginSpecificInfo != null) {
+            device.setFeatures(pluginSpecificInfo.getFeatures());
+            device.setProperties(pluginSpecificInfo.getProperties());
+        }
+        return device;
+    }
+
+    @Override
     public Device getDevice(DeviceIdentifier deviceId, EnrolmentInfo.Status status) throws DeviceManagementException {
         Device device;
         try {

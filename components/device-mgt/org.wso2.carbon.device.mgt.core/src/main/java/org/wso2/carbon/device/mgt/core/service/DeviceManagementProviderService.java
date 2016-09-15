@@ -25,6 +25,7 @@ import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -204,6 +205,8 @@ public interface DeviceManagementProviderService {
     boolean setActive(DeviceIdentifier deviceId, boolean status) throws DeviceManagementException;
 
     Device getDevice(DeviceIdentifier deviceId) throws DeviceManagementException;
+
+    Device getDevice(DeviceIdentifier deviceId, Date since) throws DeviceManagementException;
 
     Device getDevice(DeviceIdentifier deviceId, EnrolmentInfo.Status status) throws DeviceManagementException;
 

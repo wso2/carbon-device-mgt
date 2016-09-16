@@ -156,7 +156,7 @@ public abstract class AbstractNotificationDAOImpl implements NotificationDAO {
             conn = NotificationManagementDAOFactory.getConnection();
             String sql =
                     "SELECT n1.NOTIFICATION_ID, n1.DEVICE_ID, n1.OPERATION_ID, n1.STATUS, n1.DESCRIPTION," +
-                            " d.DEVICE_IDENTIFICATION, t.NAME AS DEVICE_TYPE FROM DM_DEVICE d, DM_DEVICE_TYPE t, (SELECT " +
+                            " d.DEVICE_IDENTIFICATION, d.NAME as DEVICE_NAME, t.NAME AS DEVICE_TYPE FROM DM_DEVICE d, DM_DEVICE_TYPE t, (SELECT " +
                             "NOTIFICATION_ID, DEVICE_ID, OPERATION_ID, STATUS, DESCRIPTION FROM DM_NOTIFICATION WHERE " +
                             "TENANT_ID = ?) n1 WHERE n1.DEVICE_ID = d.ID AND d.DEVICE_TYPE_ID=t.ID AND TENANT_ID = ?";
             stmt = conn.prepareStatement(sql);
@@ -226,7 +226,7 @@ public abstract class AbstractNotificationDAOImpl implements NotificationDAO {
         try {
             conn = NotificationManagementDAOFactory.getConnection();
             String sql = "SELECT n1.NOTIFICATION_ID, n1.DEVICE_ID, n1.OPERATION_ID, n1.STATUS," +
-                    " n1.DESCRIPTION, d.DEVICE_IDENTIFICATION, t.NAME AS DEVICE_TYPE FROM " +
+                    " n1.DESCRIPTION, d.DEVICE_IDENTIFICATION, d.NAME as DEVICE_NAME, t.NAME AS DEVICE_TYPE FROM " +
                     "DM_DEVICE d, DM_DEVICE_TYPE t, (SELECT NOTIFICATION_ID, DEVICE_ID, " +
                     "OPERATION_ID, STATUS, DESCRIPTION FROM DM_NOTIFICATION WHERE " +
                     "TENANT_ID = ? AND STATUS = ?) n1 WHERE n1.DEVICE_ID = d.ID AND d.DEVICE_TYPE_ID=t.ID " +

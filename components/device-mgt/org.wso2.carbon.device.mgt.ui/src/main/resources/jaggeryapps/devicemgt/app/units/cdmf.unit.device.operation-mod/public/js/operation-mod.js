@@ -895,7 +895,7 @@ var operationModule = function () {
                         "ALLOW_PARENT_PROFILE_APP_LINKING" : operationData["disallowParentProfileAppLinking"],
                         "ENSURE_VERIFY_APPS" : operationData["ensureVerifyApps"],
                         "AUTO_TIME" : operationData["enableAutoTime"],
-                        "SET_SCREEN_CAPTURE_DISABLED" : operationData["diableScreenCapture"],
+                        "SET_SCREEN_CAPTURE_DISABLED" : operationData["disableScreenCapture"],
                         "SET_STATUS_BAR_DISABLED" : operationData["disableStatusBar"]
                     }
                 };
@@ -1736,7 +1736,7 @@ var operationModule = function () {
                     restrictions["enableAutoTime"] = restriction["enabled"];
                     continue;
                 } else if (featureCode == androidOperationConstants["SET_SCREEN_CAPTURE_DISABLED"]){
-                    restrictions["diableScreenCapture"] = restriction["enabled"];
+                    restrictions["disableScreenCapture"] = restriction["enabled"];
                     continue;
                 } else if (featureCode == androidOperationConstants["SET_STATUS_BAR_DISABLED"]){
                     restrictions["disableStatusBar"] = restriction["enabled"];

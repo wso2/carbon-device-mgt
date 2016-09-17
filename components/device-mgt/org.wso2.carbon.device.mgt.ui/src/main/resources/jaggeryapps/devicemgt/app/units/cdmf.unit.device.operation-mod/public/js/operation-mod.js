@@ -80,7 +80,9 @@ var operationModule = function () {
         "AUTO_TIME" : "AUTO_TIME",
         "SET_SCREEN_CAPTURE_DISABLED" : "SET_SCREEN_CAPTURE_DISABLED",
         "SET_STATUS_BAR_DISABLED" : "SET_STATUS_BAR_DISABLED",
-        "APPLICATION_OPERATION_CODE":"APP-RESTRICTION"
+        "APPLICATION_OPERATION_CODE":"APP-RESTRICTION",
+        "SYSTEM_UPDATE_POLICY_CODE": "SYSTEM_UPDATE_POLICY",
+        "KIOSK_APPS_CODE": "KIOSK_APPS"
     };
 
     // Constants to define Windows Operation Constants
@@ -1012,6 +1014,32 @@ var operationModule = function () {
                     }
                 };
                 break;
+            case androidOperationConstants["SYSTEM_UPDATE_POLICY_CODE"]:
+                operationType = operationTypeConstants["PROFILE"];
+                if (operationData["cosuSystemUpdatePolicyType"] != "window") {
+                    payload = {
+                        "operation": {
+                            "type": operationData["cosuSystemUpdatePolicyType"]
+                        }
+                    };
+                } else {
+                    payload = {
+                        "operation": {
+                            "type": operationData["cosuSystemUpdatePolicyType"],
+                            "startTime": operationData["cosuSystemUpdatePolicyWindowStartTime"],
+                            "endTime": operationData["cosuSystemUpdatePolicyWindowEndTime"]
+                        }
+                    };
+                }
+                break;
+            case androidOperationConstants["KIOSK_APPS_CODE"]:
+                operationType = operationTypeConstants["PROFILE"];
+                payload = {
+                    "operation": {
+                        "whitelistedApplications": operationData["cosuWhitelistedApplications"]
+                    }
+                };
+                break;
             default:
                 // If the operation is neither of above, it is a command operation
                 operationType = operationTypeConstants["COMMAND"];
@@ -1272,12 +1300,18 @@ var operationModule = function () {
                 var key = operationDataObj.data("key");
                 var value;
                 if (operationDataObj.is(":text") || operationDataObj.is("textarea") ||
-                    operationDataObj.is(":password") || operationDataObj.is(":hidden")) {
+                    operationDataObj.is(":password") || operationDataObj.is("input[type=hidden]")) {
                     value = operationDataObj.val();
+                    operationData[key] = value;
                 } else if (operationDataObj.is(":checkbox")) {
                     value = operationDataObj.is(":checked");
+                    operationData[key] = value;
+                } else if (operationDataObj.is(":radio") && operationDataObj.is(":checked")) {
+                    value = operationDataObj.val();
+                    operationData[key] = value;
                 } else if (operationDataObj.is("select")) {
                     value = operationDataObj.find("option:selected").attr("value");
+                    operationData[key] = value;
                 } else if (operationDataObj.hasClass("grouped-array-input")) {
                     value = [];
                     var childInput;
@@ -1286,7 +1320,7 @@ var operationModule = function () {
                         $(".child-input", this).each(function () {
                             childInput = $(this);
                             if (childInput.is(":text") || childInput.is("textarea") || childInput.is(":password")
-                                || childInput.is(":hidden")) {
+                                || childInput.is("input[type=hidden]")) {
                                 childInputValue = childInput.val();
                             } else if (childInput.is(":checkbox")) {
                                 childInputValue = childInput.is(":checked");
@@ -1313,7 +1347,7 @@ var operationModule = function () {
                         $(".child-input", this).each(function () {
                             childInput = $(this);
                             if (childInput.is(":text") || childInput.is("textarea") || childInput.is(":password")
-                                || childInput.is(":hidden")) {
+                                || childInput.is("input[type=hidden]")) {
                                 childInputValue = childInput.val();
                             } else if (childInput.is(":checkbox")) {
                                 childInputValue = childInput.is(":checked");
@@ -1345,7 +1379,7 @@ var operationModule = function () {
                             childInput = $(this);
                             childInputKey = childInput.data("child-key");
                             if (childInput.is(":text") || childInput.is("textarea") || childInput.is(":password")
-                                || childInput.is(":hidden")) {
+                                || childInput.is("input[type=hidden]")) {
                                 childInputValue = childInput.val();
                             } else if (childInput.is(":checkbox")) {
                                 childInputValue = childInput.is(":checked");
@@ -1369,8 +1403,8 @@ var operationModule = function () {
                             }
                         });
                     }
+                    operationData[key] = value;
                 }
-                operationData[key] = value;
             }
         );
 
@@ -1421,10 +1455,15 @@ var operationModule = function () {
                 // populating input value according to the type of input
                 if (operationDataObj.is(":text") ||
                     operationDataObj.is("textarea") ||
-                    operationDataObj.is(":password")) {
+                    operationDataObj.is(":password") ||
+                    operationDataObj.is("input[type=hidden]")) {
                     operationDataObj.val(value);
                 } else if (operationDataObj.is(":checkbox")) {
                     operationDataObj.prop("checked", value);
+                } else if (operationDataObj.is(":radio")) {
+                    if (operationDataObj.val() == uiPayload[key]) {
+                        operationDataObj.attr("checked", true);
+                    }
                 } else if (operationDataObj.is("select")) {
                     operationDataObj.val(value);
                     /* trigger a change of value, so that if slidable panes exist,
@@ -1447,9 +1486,9 @@ var operationModule = function () {
                                 var childInputValue = value[childInputIndex];
                                 // populating extracted value in the UI according to the input type
                                 if (childInput.is(":text") ||
-                                    childInput.is(":hidden") ||
                                     childInput.is("textarea") ||
                                     childInput.is(":password") ||
+                                    childInput.is("input[type=hidden]") ||
                                     childInput.is("select")) {
                                     childInput.val(childInputValue);
                                 } else if (childInput.is(":checkbox")) {
@@ -1495,9 +1534,9 @@ var operationModule = function () {
                                     }
                                     // populating extracted value in the UI according to the input type
                                     if (childInput.is(":text") ||
-                                        childInput.is(":hidden") ||
                                         childInput.is("textarea") ||
                                         childInput.is(":password") ||
+                                        childInput.is("input[type=hidden]") ||
                                         childInput.is("select")) {
                                         childInput.val(childInputValue);
                                     } else if (childInput.is(":checkbox")) {
@@ -1524,9 +1563,9 @@ var operationModule = function () {
                                 var childInputValue = multiColumnKeyValuePair[childInputKey];
                                 // populating extracted value in the UI according to the input type
                                 if (childInput.is(":text") ||
-                                    childInput.is(":hidden") ||
                                     childInput.is("textarea") ||
                                     childInput.is(":password") ||
+                                    childInput.is("input[type=hidden]") ||
                                     childInput.is("select")) {
                                     childInput.val(childInputValue);
                                 } else if (childInput.is(":checkbox")) {

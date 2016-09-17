@@ -21,7 +21,6 @@ package org.wso2.carbon.device.mgt.jaxrs.service.api;
 import io.swagger.annotations.*;
 import org.wso2.carbon.apimgt.annotations.api.API;
 import org.wso2.carbon.apimgt.annotations.api.Permission;
-import org.wso2.carbon.apimgt.annotations.api.Scope;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.Feature;
 import org.wso2.carbon.device.mgt.common.app.mgt.Application;
@@ -93,7 +92,7 @@ public interface DeviceManagementService {
                     message = "Internal Server Error. \n Server error occurred while fetching the device list.",
                     response = ErrorResponse.class)
     })
-    @Permission(name = "View Devices", permission = "/device-mgt/devices/owning/view")
+    @Permission(name = "View Devices", permission = "/device-mgt/devices/owning-device/view")
     Response getDevices(
             @ApiParam(
                     name = "name",
@@ -200,7 +199,7 @@ public interface DeviceManagementService {
                                     "Server error occurred while retrieving information requested device.",
                             response = ErrorResponse.class)
             })
-    @Permission(name = "View Devices", permission = "/device-mgt/devices/owning/view")
+    @Permission(name = "View Devices", permission = "/device-mgt/devices/owning-device/view")
     Response getDevice(
             @ApiParam(
                     name = "type",
@@ -282,7 +281,7 @@ public interface DeviceManagementService {
                                     "Server error occurred while retrieving feature list of the device.",
                             response = ErrorResponse.class)
             })
-    @Permission(name = "View Devices", permission = "/device-mgt/devices/owning/view")
+    @Permission(name = "View Devices", permission = "/device-mgt/devices/owning-device/view")
     Response getFeaturesOfDevice(
             @ApiParam(
                     name = "type",
@@ -358,7 +357,7 @@ public interface DeviceManagementService {
                                     "Server error occurred while enrolling the device.",
                             response = ErrorResponse.class)
             })
-    @Permission(name = "View Devices", permission = "/device-mgt/devices/owning/view")
+    @Permission(name = "View Devices", permission = "/device-mgt/devices/owning-device/view")
     Response searchDevices(
             @ApiParam(
                     name = "offset",
@@ -437,7 +436,7 @@ public interface DeviceManagementService {
                                     "Server error occurred while retrieving installed application list of the device.",
                             response = ErrorResponse.class)
             })
-    @Permission(name = "View Devices", permission = "/device-mgt/devices/owning/view")
+    @Permission(name = "View Devices", permission = "/device-mgt/devices/owning-device/view")
     Response getInstalledApplications(
             @ApiParam(
                     name = "type",
@@ -533,7 +532,7 @@ public interface DeviceManagementService {
                                     "Server error occurred while retrieving operation list scheduled for the device.",
                             response = ErrorResponse.class)
             })
-    @Permission(name = "View Devices", permission = "/device-mgt/devices/owning/view")
+    @Permission(name = "View Devices", permission = "/device-mgt/devices/owning-device/view")
     Response getDeviceOperations(
             @ApiParam(
                     name = "type",
@@ -631,7 +630,7 @@ public interface DeviceManagementService {
                             response = ErrorResponse.class)
             }
     )
-    @Permission(name = "View Devices", permission = "/device-mgt/devices/owning/view")
+    @Permission(name = "View Devices", permission = "/device-mgt/devices/owning-device/view")
     Response getEffectivePolicyOfDevice(
             @ApiParam(
                     name = "type",
@@ -683,7 +682,7 @@ public interface DeviceManagementService {
                             response = ErrorResponse.class)
             }
     )
-    @Permission(name = "View Devices", permission = "/device-mgt/devices/owning/view")
+    @Permission(name = "View Devices", permission = "/device-mgt/devices/owning-device/view")
     Response getComplianceDataOfDevice(
             @ApiParam(
                     name = "type",

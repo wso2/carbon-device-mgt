@@ -47,7 +47,7 @@ import java.util.Map;
  */
 public class DeviceAccessAuthorizationServiceImpl implements DeviceAccessAuthorizationService {
 
-    private final static String CDM_ADMIN_PERMISSION = "/device-mgt/devices/any/permitted-actions-upon-owning-device";
+    private final static String CDM_ADMIN_PERMISSION = "/device-mgt/devices/any-device/permitted-actions-under-owning-device";
     private final static String CDM_ADMIN = "Device Management Administrator";
     private static Log log = LogFactory.getLog(DeviceAccessAuthorizationServiceImpl.class);
 

@@ -15,12 +15,13 @@
   specific language governing permissions and limitations
   under the License.
 }}
-{{unit "cdmf.unit.ui.title" pageTitle="Dashboard"}}
+{{unit "cdmf.unit.ui.title" pageTitle="Navigating Dashboard"}}
 
 {{#zone "breadcrumbs"}}
+    
     <li>
         <a href="{{@app.context}}/">
-            Dashboard
+            Navigating Dashboard
         </a>
     </li>
 {{/zone}}
@@ -176,10 +177,8 @@
         {{else}}
             Permission denied
         {{/if}}
-
     </div>
     <div id="qr-code-modal" data-enrollment-url="{{enrollmentURL}}" class="hidden">
-
         <div class="content">
             <div class="row">
                 <div class="col-lg-5 col-md-6 col-centered">
@@ -189,7 +188,6 @@
                     <h4>
                         Please scan the QR code using your mobile device to retrieve enrollment URL.
                     </h4>
-
                     <div class="panel panel-default">
                         <div class="panel-body col-centered ">
                             <div class="qr-code"></div>

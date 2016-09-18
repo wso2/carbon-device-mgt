@@ -15,12 +15,12 @@
   specific language governing permissions and limitations
   under the License.
 }}
-{{unit "cdmf.unit.ui.title" pageTitle="Navigating Dashboard"}}
+{{unit "cdmf.unit.ui.title" pageTitle="Resource Dashboard"}}
 
 {{#zone "breadcrumbs"}}
     <li>
         <a href="{{@app.context}}/">
-            Navigating Dashboard
+            Resource Dashboard
         </a>
     </li>
 {{/zone}}
@@ -37,6 +37,7 @@
                             <div class="tile-stats">
                                 <span id="device-count">{{device_count}}</span>
                         <span class="tile-stats-free">
+                            <!--suppress HtmlUnknownTarget -->
                             <a href="{{@app.context}}/devices">
                                 <span class="fw-stack">
                                     <i class="fw fw-ring fw-stack-2x"></i>
@@ -44,6 +45,7 @@
                                 </span>
                                 View
                             </a>
+                            <!--suppress HtmlUnknownTarget -->
                             <a href="{{@app.context}}/device/enroll">
                                 <span class="fw-stack">
                                     <i class="fw fw-ring fw-stack-2x"></i>
@@ -66,6 +68,7 @@
                             <div class="tile-stats">
                                 <span id="group-count">{{group_count}}</span>
                         <span class="tile-stats-free">
+                            <!--suppress HtmlUnknownTarget -->
                             <a href="{{@app.context}}/groups">
                                 <span class="fw-stack">
                                     <i class="fw fw-ring fw-stack-2x"></i>
@@ -73,6 +76,7 @@
                                 </span>
                                 View
                             </a>
+                            <!--suppress HtmlUnknownTarget -->
                             <a href="{{@app.context}}/group/add">
                                 <span class="fw-stack">
                                     <i class="fw fw-ring fw-stack-2x"></i>
@@ -95,6 +99,7 @@
                             <div class="tile-stats">
                                 <span id="user-count">{{user_count}}</span>
                         <span class="tile-stats-free">
+                            <!--suppress HtmlUnknownTarget -->
                             <a href="{{@app.context}}/users">
                                 <span class="fw-stack">
                                     <i class="fw fw-ring fw-stack-2x"></i>
@@ -102,6 +107,7 @@
                                 </span>
                                 View
                             </a>
+                            <!--suppress HtmlUnknownTarget -->
                             <a href="{{@app.context}}/user/add">
                                 <span class="fw-stack">
                                     <i class="fw fw-ring fw-stack-2x"></i>
@@ -124,6 +130,7 @@
                             <div class="tile-stats">
                                 <span id="policy-count">{{policy_count}}</span>
                         <span class="tile-stats-free">
+                            <!--suppress HtmlUnknownTarget -->
                             <a href="{{@app.context}}/policies">
                                 <span class="fw-stack">
                                     <i class="fw fw-ring fw-stack-2x"></i>
@@ -131,6 +138,7 @@
                                 </span>
                                 View
                             </a>
+                            <!--suppress HtmlUnknownTarget -->
                             <a href="{{@app.context}}/policy/add">
                                 <span class="fw-stack">
                                     <i class="fw fw-ring fw-stack-2x"></i>
@@ -153,6 +161,7 @@
                             <div class="tile-stats">
                                 <span id="role-count">{{role_count}}</span>
                             <span class="tile-stats-free">
+                                <!--suppress HtmlUnknownTarget -->
                                 <a id="device-count-view-btn" href="{{@app.context}}/roles">
                                     <span class="fw-stack">
                                         <i class="fw fw-ring fw-stack-2x"></i>
@@ -160,6 +169,7 @@
                                     </span>
                                     View
                                 </a>
+                                <!--suppress HtmlUnknownTarget -->
                                 <a href="{{@app.context}}/roles/add-role">
                                     <span class="fw-stack">
                                         <i class="fw fw-ring fw-stack-2x"></i>

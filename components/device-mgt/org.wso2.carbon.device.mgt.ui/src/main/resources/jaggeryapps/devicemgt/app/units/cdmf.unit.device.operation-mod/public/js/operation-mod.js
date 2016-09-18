@@ -1186,29 +1186,13 @@ var operationModule = function () {
 
     publicMethods.getWindowsServiceEndpoint = function (operationCode) {
         var featureMap = {
-            "CAMERA": "camera",
-            "DEVICE_LOCK": "lock",
-            "DEVICE_LOCATION": "location",
-            "CLEAR_PASSWORD": "clear-password",
-            "APPLICATION_LIST": "get-application-list",
-            "DEVICE_RING": "ring-device",
-            "DEVICE_REBOOT": "reboot-device",
-            "UPGRADE_FIRMWARE": "upgrade-firmware",
-            "DEVICE_MUTE": "mute",
-            "LOCK_RESET": "lock-reset",
-            "NOTIFICATION": "notification",
-            "ENCRYPT_STORAGE": "encrypt",
-            "CHANGE_LOCK_CODE": "change-lock-code",
-            "WEBCLIP": "webclip",
-            "INSTALL_APPLICATION": "install-application",
-            "UNINSTALL_APPLICATION": "uninstall-application",
-            "BLACKLIST_APPLICATIONS": "blacklist-applications",
-            "PASSCODE_POLICY": "password-policy",
-            "ENTERPRISE_WIPE": "enterprise-wipe",
-            "WIPE_DATA": "wipe-data",
-            "DISENROLL": "disenroll"
+            "DEVICE_LOCK": "lock-devices",
+            "DEVICE_RING": "ring-devices",
+            "LOCK_RESET": "lock-reset-devices",
+            "WIPE_DATA": "wipe-devices"
         };
-        return "/mdm-windows-agent/services/windows/operation/" + featureMap[operationCode];
+        //return "/mdm-windows-agent/services/windows/operation/" + featureMap[operationCode];
+        return "/api/device-mgt/windows/v1.0/admin/devices/" + featureMap[operationCode];
     };
     /**
      * Get the icon for the featureCode
@@ -1241,15 +1225,9 @@ var operationModule = function () {
     publicMethods.getWindowsIconForFeature = function (operationCode) {
         var featureMap = {
             "DEVICE_LOCK": "fw-lock",
-            "DEVICE_LOCATION": "fw-map-location",
-            "DISENROLL": "fw-delete",
-            "WIPE_DATA": "fw-clear",
             "DEVICE_RING": "fw-dial-up",
-            "DEVICE_REBOOT": "fw-refresh",
-            "UPGRADE_FIRMWARE": "fw-up-arrow",
-            "DEVICE_MUTE": "fw-incoming-call",
-            "NOTIFICATION": "fw-message",
-            "LOCK_RESET": "fw-key"
+            "LOCK_RESET": "fw-key",
+            "WIPE_DATA": "fw-clear"
         };
         return featureMap[operationCode];
     };

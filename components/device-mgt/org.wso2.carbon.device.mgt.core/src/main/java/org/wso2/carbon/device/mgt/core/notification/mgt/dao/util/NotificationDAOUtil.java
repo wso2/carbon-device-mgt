@@ -132,6 +132,7 @@ public class NotificationDAOUtil {
 		notification.setDescription(rs.getString("DESCRIPTION"));
 		notification.setStatus(rs.getString("STATUS"));
 		notification.setDeviceIdentifier(rs.getString("DEVICE_IDENTIFICATION"));
+		notification.setDeviceName(rs.getString("DEVICE_NAME"));
 		notification.setDeviceType(rs.getString("DEVICE_TYPE"));
 		return notification;
 	}

@@ -62,6 +62,11 @@ public class Notification {
             required = false)
     private String deviceIdentifier;
 
+    @JsonProperty(value = "deviceName", required = false)
+    @ApiModelProperty(name = "deviceName", value = "Defines the device Name related to the notification.",
+                      required = false)
+    private String deviceName;
+
     @JsonProperty(value = "devieType", required = false)
     @ApiModelProperty(name = "devieType", value = "Defines the device type related to the notification.",
             required = false)
@@ -107,7 +112,15 @@ public class Notification {
         this.deviceIdentifier = deviceIdentifier;
     }
 
-    public String getDevcieType() {
+    public String getDeviceName() {
+        return deviceName;
+    }
+
+    public void setDeviceName(String deviceName) {
+        this.deviceName = deviceName;
+    }
+
+    public String getDeviceType() {
         return deviceType;
     }
 
@@ -123,6 +136,7 @@ public class Notification {
                 ", description='" + description + '\'' +
                 ", operationId='" + operationId + '\'' +
                 ", deviceIdentifier='" + deviceIdentifier + '\'' +
+                ", deviceName='" + deviceName + '\'' +
                 ", deviceType='" + deviceType + '\'' +
                 '}';
     }

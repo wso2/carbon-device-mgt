@@ -80,7 +80,9 @@ var operationModule = function () {
         "AUTO_TIME" : "AUTO_TIME",
         "SET_SCREEN_CAPTURE_DISABLED" : "SET_SCREEN_CAPTURE_DISABLED",
         "SET_STATUS_BAR_DISABLED" : "SET_STATUS_BAR_DISABLED",
-        "APPLICATION_OPERATION_CODE":"APP-RESTRICTION"
+        "APPLICATION_OPERATION_CODE":"APP-RESTRICTION",
+        "SYSTEM_UPDATE_POLICY_CODE": "SYSTEM_UPDATE_POLICY",
+        "KIOSK_APPS_CODE": "KIOSK_APPS"
     };
 
     // Constants to define Windows Operation Constants
@@ -893,7 +895,7 @@ var operationModule = function () {
                         "ALLOW_PARENT_PROFILE_APP_LINKING" : operationData["disallowParentProfileAppLinking"],
                         "ENSURE_VERIFY_APPS" : operationData["ensureVerifyApps"],
                         "AUTO_TIME" : operationData["enableAutoTime"],
-                        "SET_SCREEN_CAPTURE_DISABLED" : operationData["diableScreenCapture"],
+                        "SET_SCREEN_CAPTURE_DISABLED" : operationData["disableScreenCapture"],
                         "SET_STATUS_BAR_DISABLED" : operationData["disableStatusBar"]
                     }
                 };
@@ -1009,6 +1011,32 @@ var operationModule = function () {
                     "operation": {
                         "restriction-type": operationData["restrictionType"],
                         "restricted-applications": operationData["restrictedApplications"]
+                    }
+                };
+                break;
+            case androidOperationConstants["SYSTEM_UPDATE_POLICY_CODE"]:
+                operationType = operationTypeConstants["PROFILE"];
+                if (operationData["cosuSystemUpdatePolicyType"] != "window") {
+                    payload = {
+                        "operation": {
+                            "type": operationData["cosuSystemUpdatePolicyType"]
+                        }
+                    };
+                } else {
+                    payload = {
+                        "operation": {
+                            "type": operationData["cosuSystemUpdatePolicyType"],
+                            "startTime": operationData["cosuSystemUpdatePolicyWindowStartTime"],
+                            "endTime": operationData["cosuSystemUpdatePolicyWindowEndTime"]
+                        }
+                    };
+                }
+                break;
+            case androidOperationConstants["KIOSK_APPS_CODE"]:
+                operationType = operationTypeConstants["PROFILE"];
+                payload = {
+                    "operation": {
+                        "whitelistedApplications": operationData["cosuWhitelistedApplications"]
                     }
                 };
                 break;
@@ -1158,29 +1186,13 @@ var operationModule = function () {
 
     publicMethods.getWindowsServiceEndpoint = function (operationCode) {
         var featureMap = {
-            "CAMERA": "camera",
-            "DEVICE_LOCK": "lock",
-            "DEVICE_LOCATION": "location",
-            "CLEAR_PASSWORD": "clear-password",
-            "APPLICATION_LIST": "get-application-list",
-            "DEVICE_RING": "ring-device",
-            "DEVICE_REBOOT": "reboot-device",
-            "UPGRADE_FIRMWARE": "upgrade-firmware",
-            "DEVICE_MUTE": "mute",
-            "LOCK_RESET": "lock-reset",
-            "NOTIFICATION": "notification",
-            "ENCRYPT_STORAGE": "encrypt",
-            "CHANGE_LOCK_CODE": "change-lock-code",
-            "WEBCLIP": "webclip",
-            "INSTALL_APPLICATION": "install-application",
-            "UNINSTALL_APPLICATION": "uninstall-application",
-            "BLACKLIST_APPLICATIONS": "blacklist-applications",
-            "PASSCODE_POLICY": "password-policy",
-            "ENTERPRISE_WIPE": "enterprise-wipe",
-            "WIPE_DATA": "wipe-data",
-            "DISENROLL": "disenroll"
+            "DEVICE_LOCK": "lock-devices",
+            "DEVICE_RING": "ring-devices",
+            "LOCK_RESET": "lock-reset-devices",
+            "WIPE_DATA": "wipe-devices"
         };
-        return "/mdm-windows-agent/services/windows/operation/" + featureMap[operationCode];
+        //return "/mdm-windows-agent/services/windows/operation/" + featureMap[operationCode];
+        return "/api/device-mgt/windows/v1.0/admin/devices/" + featureMap[operationCode];
     };
     /**
      * Get the icon for the featureCode
@@ -1213,15 +1225,9 @@ var operationModule = function () {
     publicMethods.getWindowsIconForFeature = function (operationCode) {
         var featureMap = {
             "DEVICE_LOCK": "fw-lock",
-            "DEVICE_LOCATION": "fw-map-location",
-            "DISENROLL": "fw-delete",
-            "WIPE_DATA": "fw-clear",
             "DEVICE_RING": "fw-dial-up",
-            "DEVICE_REBOOT": "fw-refresh",
-            "UPGRADE_FIRMWARE": "fw-up-arrow",
-            "DEVICE_MUTE": "fw-incoming-call",
-            "NOTIFICATION": "fw-message",
-            "LOCK_RESET": "fw-key"
+            "LOCK_RESET": "fw-key",
+            "WIPE_DATA": "fw-clear"
         };
         return featureMap[operationCode];
     };
@@ -1272,12 +1278,18 @@ var operationModule = function () {
                 var key = operationDataObj.data("key");
                 var value;
                 if (operationDataObj.is(":text") || operationDataObj.is("textarea") ||
-                    operationDataObj.is(":password") || operationDataObj.is(":hidden")) {
+                    operationDataObj.is(":password") || operationDataObj.is("input[type=hidden]")) {
                     value = operationDataObj.val();
+                    operationData[key] = value;
                 } else if (operationDataObj.is(":checkbox")) {
                     value = operationDataObj.is(":checked");
+                    operationData[key] = value;
+                } else if (operationDataObj.is(":radio") && operationDataObj.is(":checked")) {
+                    value = operationDataObj.val();
+                    operationData[key] = value;
                 } else if (operationDataObj.is("select")) {
                     value = operationDataObj.find("option:selected").attr("value");
+                    operationData[key] = value;
                 } else if (operationDataObj.hasClass("grouped-array-input")) {
                     value = [];
                     var childInput;
@@ -1286,7 +1298,7 @@ var operationModule = function () {
                         $(".child-input", this).each(function () {
                             childInput = $(this);
                             if (childInput.is(":text") || childInput.is("textarea") || childInput.is(":password")
-                                || childInput.is(":hidden")) {
+                                || childInput.is("input[type=hidden]")) {
                                 childInputValue = childInput.val();
                             } else if (childInput.is(":checkbox")) {
                                 childInputValue = childInput.is(":checked");
@@ -1313,7 +1325,7 @@ var operationModule = function () {
                         $(".child-input", this).each(function () {
                             childInput = $(this);
                             if (childInput.is(":text") || childInput.is("textarea") || childInput.is(":password")
-                                || childInput.is(":hidden")) {
+                                || childInput.is("input[type=hidden]")) {
                                 childInputValue = childInput.val();
                             } else if (childInput.is(":checkbox")) {
                                 childInputValue = childInput.is(":checked");
@@ -1345,7 +1357,7 @@ var operationModule = function () {
                             childInput = $(this);
                             childInputKey = childInput.data("child-key");
                             if (childInput.is(":text") || childInput.is("textarea") || childInput.is(":password")
-                                || childInput.is(":hidden")) {
+                                || childInput.is("input[type=hidden]")) {
                                 childInputValue = childInput.val();
                             } else if (childInput.is(":checkbox")) {
                                 childInputValue = childInput.is(":checked");
@@ -1369,8 +1381,8 @@ var operationModule = function () {
                             }
                         });
                     }
+                    operationData[key] = value;
                 }
-                operationData[key] = value;
             }
         );
 
@@ -1421,10 +1433,15 @@ var operationModule = function () {
                 // populating input value according to the type of input
                 if (operationDataObj.is(":text") ||
                     operationDataObj.is("textarea") ||
-                    operationDataObj.is(":password")) {
+                    operationDataObj.is(":password") ||
+                    operationDataObj.is("input[type=hidden]")) {
                     operationDataObj.val(value);
                 } else if (operationDataObj.is(":checkbox")) {
                     operationDataObj.prop("checked", value);
+                } else if (operationDataObj.is(":radio")) {
+                    if (operationDataObj.val() == uiPayload[key]) {
+                        operationDataObj.attr("checked", true);
+                    }
                 } else if (operationDataObj.is("select")) {
                     operationDataObj.val(value);
                     /* trigger a change of value, so that if slidable panes exist,
@@ -1447,9 +1464,9 @@ var operationModule = function () {
                                 var childInputValue = value[childInputIndex];
                                 // populating extracted value in the UI according to the input type
                                 if (childInput.is(":text") ||
-                                    childInput.is(":hidden") ||
                                     childInput.is("textarea") ||
                                     childInput.is(":password") ||
+                                    childInput.is("input[type=hidden]") ||
                                     childInput.is("select")) {
                                     childInput.val(childInputValue);
                                 } else if (childInput.is(":checkbox")) {
@@ -1495,9 +1512,9 @@ var operationModule = function () {
                                     }
                                     // populating extracted value in the UI according to the input type
                                     if (childInput.is(":text") ||
-                                        childInput.is(":hidden") ||
                                         childInput.is("textarea") ||
                                         childInput.is(":password") ||
+                                        childInput.is("input[type=hidden]") ||
                                         childInput.is("select")) {
                                         childInput.val(childInputValue);
                                     } else if (childInput.is(":checkbox")) {
@@ -1524,9 +1541,9 @@ var operationModule = function () {
                                 var childInputValue = multiColumnKeyValuePair[childInputKey];
                                 // populating extracted value in the UI according to the input type
                                 if (childInput.is(":text") ||
-                                    childInput.is(":hidden") ||
                                     childInput.is("textarea") ||
                                     childInput.is(":password") ||
+                                    childInput.is("input[type=hidden]") ||
                                     childInput.is("select")) {
                                     childInput.val(childInputValue);
                                 } else if (childInput.is(":checkbox")) {
@@ -1697,7 +1714,7 @@ var operationModule = function () {
                     restrictions["enableAutoTime"] = restriction["enabled"];
                     continue;
                 } else if (featureCode == androidOperationConstants["SET_SCREEN_CAPTURE_DISABLED"]){
-                    restrictions["diableScreenCapture"] = restriction["enabled"];
+                    restrictions["disableScreenCapture"] = restriction["enabled"];
                     continue;
                 } else if (featureCode == androidOperationConstants["SET_STATUS_BAR_DISABLED"]){
                     restrictions["disableStatusBar"] = restriction["enabled"];

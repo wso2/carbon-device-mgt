@@ -21,7 +21,6 @@ package org.wso2.carbon.device.mgt.jaxrs.service.api;
 import io.swagger.annotations.*;
 import org.wso2.carbon.apimgt.annotations.api.API;
 import org.wso2.carbon.apimgt.annotations.api.Permission;
-import org.wso2.carbon.apimgt.annotations.api.Scope;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.PlatformConfiguration;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
 
@@ -82,7 +81,7 @@ public interface ConfigurationManagementService {
                             "platform configuration.",
                     response = ErrorResponse.class)
     })
-    @Permission(name = "View Configurations", permission = "/device-mgt/configurations/view")
+    @Permission(name = "View Configurations", permission = "/device-mgt/platform-configurations/view")
     Response getConfiguration(
             @ApiParam(
                     name = "If-Modified-Since",
@@ -128,7 +127,7 @@ public interface ConfigurationManagementService {
                             "Server error occurred while modifying general platform configuration.",
                     response = ErrorResponse.class)
     })
-    @Permission(name = "Manage configurations", permission = "/device-mgt/configurations/manage")
+    @Permission(name = "Manage configurations", permission = "/device-mgt/platform-configurations/manage")
     Response updateConfiguration(
             @ApiParam(
                     name = "configuration",

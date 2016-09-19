@@ -15,6 +15,7 @@
   specific language governing permissions and limitations
   under the License.
 }}
+
 {{unit "cdmf.unit.ui.title" pageTitle="Add Certificate"}}
 
 {{#zone "breadcrumbs"}}
@@ -24,14 +25,26 @@
         </a>
     </li>
     <li>
-        <a href="{{@app.context}}/certificates/add">
+        <!--suppress HtmlUnknownTarget -->
+        <a href="{{@app.context}}/certificates">
+            Certificates
+        </a>
+    </li>
+{{/zone}}
+
+{{#zone "navbarActions"}}
+    {{#if removePermitted}}
+        <li>
+            <!--suppress HtmlUnknownTarget -->
+            <a href="{{@app.context}}/certificates/add">
             <span class="fw-stack">
                <i class="fw fw-ring fw-stack-2x"></i>
                <i class="fw fw-document fw-stack-1x"></i>
             </span>
-            Add Certificate
-        </a>
-    </li>
+                Add Certificate
+            </a>
+        </li>
+    {{/if}}
 {{/zone}}
 
 {{#zone "content"}}
@@ -87,10 +100,7 @@
             </tr>
 
             </thead>
-            <tbody id="ast-container">
-
-            <br class="c-both"/>
-            </tbody>
+            <tbody id="ast-container"></tbody>
         </table>
     </div>
     <br class="c-both"/>
@@ -121,57 +131,58 @@
     </div>
 
     <div id="remove-certificate-success-content" class="hide">
-        <div class="content">
-            <div class="row">
-                <div class="col-lg-5 col-md-6 col-centered">
-                    <h3>Done. Certificate was successfully removed.</h3>
-                    <div class="buttons">
-                        <a href="#" id="remove-certificate-success-link" class="btn-operations">
-                            Ok
-                        </a>
-                    </div>
-                </div>
+        <div class="modal-header">
+            <h3 class="pull-left modal-title">Done. Certificate was successfully removed.</h3>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fw fw-cancel"></i></button>
+        </div>
+        <div class="modal-body add-margin-top-2x add-margin-bottom-2x">
+
+        </div>
+        <div class="modal-footer">
+            <div class="buttons">
             </div>
         </div>
     </div>
 
     <div id="remove-certificate-error-content" class="hide">
-        <div class="content">
-            <div class="row">
-                <div class="col-lg-5 col-md-6 col-centered">
-                    <h3>An unexpected error occurred. Please try again later.</h3>
+        <div class="modal-header">
+            <h3 class="pull-left modal-title">An unexpected error occurred. Please try again later.</h3>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fw fw-cancel"></i></button>
+        </div>
+        <div class="modal-body add-margin-top-2x add-margin-bottom-2x">
 
-                    <div class="buttons">
-                        <a href="#" id="remove-certificate-error-link" class="btn-operations">
-                            Ok
-                        </a>
-                    </div>
-                </div>
+        </div>
+        <div class="modal-footer">
+            <div class="buttons">
             </div>
         </div>
     </div>
 
     <div id="errorCertificateView" class="hide">
-        <div class="content">
-            <div class="row">
-                <div class="col-lg-5 col-md-6 col-centered">
-                    <h3>
+        <div class="modal-header">
+            <h3 class="pull-left modal-title">
                 <span class="fw-stack">
                     <i class="fw fw-ring fw-stack-2x"></i>
                     <i class="fw fw-error fw-stack-1x"></i>
                 </span>
-                        Unauthorized action!
-                    </h3>
-                </div>
+                Unauthorized action!
+            </h3>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fw fw-cancel"></i></button>
+        </div>
+        <div class="modal-body add-margin-top-2x add-margin-bottom-2x">
+
+        </div>
+        <div class="modal-footer">
+            <div class="buttons">
             </div>
         </div>
     </div>
 {{/zone}}
 
 {{#zone "bottomJs"}}
+    <!--suppress HtmlUnknownTarget -->
     <script id="certificate-listing" data-current-user="{{@user.username}}"
             src="{{@page.publicUri}}/templates/certificate-listing.hbs"
             type="text/x-handlebars-template"></script>
-
     {{js "/js/certificate-listing.js"}}
 {{/zone}}

@@ -1,5 +1,5 @@
 {
     "version": "1.0.0",
-    "uri": "/roles/add-role",
+    "uri": "/role/add",
     "layout": "cdmf.layout.default"
 }

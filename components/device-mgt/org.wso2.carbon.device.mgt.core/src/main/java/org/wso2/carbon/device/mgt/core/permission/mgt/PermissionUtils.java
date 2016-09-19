@@ -66,24 +66,23 @@ public class PermissionUtils {
         return contextPath + url;
     }
 
-    //	public static Permission getPermission(String path) throws PermissionManagementException {
-//		try {
-//			Resource resource = PermissionUtils.getGovernanceRegistry().get(path);
-//			Permission permission = new Permission();
-//			permission.setName(resource.getProperty(PERMISSION_PROPERTY_NAME));
-//			permission.setPath(resource.getPath());
-//			return permission;
-//		} catch (RegistryException e) {
-//			throw new PermissionManagementException("Error in retrieving registry resource : " +
-//			                                         e.getMessage(), e);
-//		}
-//	}
-//
-    public static boolean putPermission(String permissionPath)
-            throws PermissionManagementException {
+    public static Permission getPermission(String path) throws PermissionManagementException {
+        try {
+            Resource resource = PermissionUtils.getGovernanceRegistry().get(path);
+            Permission permission = new Permission();
+            permission.setName(resource.getProperty(PERMISSION_PROPERTY_NAME));
+            permission.setPath(resource.getPath());
+            return permission;
+        } catch (RegistryException e) {
+            throw new PermissionManagementException("Error in retrieving registry resource : " +
+                    e.getMessage(), e);
+        }
+    }
+
+    public static boolean putPermission(Permission permission) throws PermissionManagementException {
         boolean status;
         try {
-            StringTokenizer tokenizer = new StringTokenizer(permissionPath, "/");
+            StringTokenizer tokenizer = new StringTokenizer(permission.getPath(), "/");
             String lastToken = "", currentToken, tempPath;
             while (tokenizer.hasMoreTokens()) {
                 currentToken = tokenizer.nextToken();
@@ -95,7 +94,8 @@ public class PermissionUtils {
             }
             status = true;
         } catch (RegistryException e) {
-            throw new PermissionManagementException("Error occurred while persisting permission", e);
+            throw new PermissionManagementException("Error occurred while persisting permission : " +
+                    permission.getName(), e);
         }
         return status;
     }
@@ -116,17 +116,17 @@ public class PermissionUtils {
         return PermissionUtils.getGovernanceRegistry().resourceExists(path);
     }
 
-	public static Document convertToDocument(File file) throws PermissionManagementException {
-		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-		factory.setNamespaceAware(true);
-		try {
-			DocumentBuilder docBuilder = factory.newDocumentBuilder();
-			factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
-			return docBuilder.parse(file);
-		} catch (Exception e) {
-			throw new PermissionManagementException("Error occurred while parsing file, while converting " +
-			                                    "to a org.w3c.dom.Document", e);
-		}
-	}
+    public static Document convertToDocument(File file) throws PermissionManagementException {
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        factory.setNamespaceAware(true);
+        try {
+            DocumentBuilder docBuilder = factory.newDocumentBuilder();
+            factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+            return docBuilder.parse(file);
+        } catch (Exception e) {
+            throw new PermissionManagementException("Error occurred while parsing file, while converting " +
+                    "to a org.w3c.dom.Document", e);
+        }
+    }
 
 }

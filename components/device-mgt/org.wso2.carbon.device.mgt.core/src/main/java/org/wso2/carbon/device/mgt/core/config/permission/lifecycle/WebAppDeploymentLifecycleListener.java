@@ -28,17 +28,10 @@ import org.wso2.carbon.device.mgt.common.permission.mgt.Permission;
 import org.wso2.carbon.device.mgt.common.permission.mgt.PermissionManagementException;
 import org.wso2.carbon.device.mgt.common.permission.mgt.PermissionManagerService;
 import org.wso2.carbon.device.mgt.core.config.permission.AnnotationProcessor;
-import org.wso2.carbon.device.mgt.core.config.permission.PermissionConfiguration;
 import org.wso2.carbon.device.mgt.core.permission.mgt.PermissionManagerServiceImpl;
-import org.wso2.carbon.device.mgt.core.permission.mgt.PermissionUtils;
 
 import javax.servlet.ServletContext;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 import java.util.Set;
 

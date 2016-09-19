@@ -20,10 +20,12 @@ package org.wso2.carbon.device.mgt.jaxrs.service.api;
 
 import io.swagger.annotations.*;
 import org.wso2.carbon.apimgt.annotations.api.API;
+import org.wso2.carbon.apimgt.annotations.api.Permission;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
 import org.wso2.carbon.device.mgt.jaxrs.beans.RoleInfo;
 import org.wso2.carbon.device.mgt.jaxrs.beans.RoleList;
 import org.wso2.carbon.device.mgt.jaxrs.beans.Scope;
+import org.wso2.carbon.user.mgt.common.UIPermissionNode;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -76,7 +78,7 @@ public interface RoleManagementService {
                             message = "Internal Server Error. \n Server error occurred while fetching requested list of roles.",
                             response = ErrorResponse.class)
             })
-    @org.wso2.carbon.apimgt.annotations.api.Scope(key = "role:view", name = "View roles", description = "")
+    @Permission(name = "View Roles", permission = "/device-mgt/roles/view")
     Response getRoles(
             @ApiParam(
                     name = "filter",
@@ -105,16 +107,16 @@ public interface RoleManagementService {
             @QueryParam("limit") int limit);
 
     @GET
-    @Path("/scopes")
+    @Path("/{roleName}/permissions")
     @ApiOperation(
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
-            value = "Getting authorization scopes.",
+            value = "Getting permission details of a role.",
             notes = "In an organization an individual is associated a with set of responsibilities based on their " +
-                    "role. In  EMM you are able to configure scopes based on the responsibilities carried " +
-                    "out by a role. Therefore if you wish to retrieve the scopes details of roles, you can do " +
+                    "role. In  EMM you are able to configure permissions based on the responsibilities carried " +
+                    "out by a role. Therefore if you wish to retrieve the permission details of a role, you can do " +
                     "so using this REST API.",
-            response = List.class,
+            response = UIPermissionNode.class,
             responseContainer = "List",
             tags = "Role Management"
     )
@@ -122,8 +124,8 @@ public interface RoleManagementService {
             value = {
                     @ApiResponse(
                             code = 200,
-                            message = "OK. \n Successfully fetched the scopes list.",
-                            response = List.class,
+                            message = "OK. \n Successfully fetched the permission list of the given role.",
+                            response = UIPermissionNode.class,
                             responseContainer = "List",
                             responseHeaders = {
                                     @ResponseHeader(
@@ -158,8 +160,13 @@ public interface RoleManagementService {
                             message = "Internal Server ErrorResponse. \n Server error occurred while fetching the permission list of the requested role.",
                             response = ErrorResponse.class)
             })
-    @org.wso2.carbon.apimgt.annotations.api.Scope(key = "role:view", name = "View roles", description = "")
-    Response getScopes(
+    @Permission(name = "View Roles", permission = "/device-mgt/roles/view")
+    Response getPermissionsOfRole(
+            @ApiParam(
+                    name = "roleName",
+                    value = "Name of the role.",
+                    required = true)
+            @PathParam("roleName") String roleName,
             @ApiParam(
                     name = "If-Modified-Since",
                     value = "Validates if the requested variant has not been modified since the time specified",
@@ -216,7 +223,7 @@ public interface RoleManagementService {
                                     "requested role.",
                             response = ErrorResponse.class)
     })
-    @org.wso2.carbon.apimgt.annotations.api.Scope(key = "role:view", name = "View roles", description = "")
+    @Permission(name = "View Roles", permission = "/device-mgt/roles/view")
     Response getRole(
             @ApiParam(
                     name = "roleName",
@@ -276,7 +283,7 @@ public interface RoleManagementService {
                     message = "Internal Server Error. \n Server error occurred while adding a new role.",
                     response = ErrorResponse.class)
     })
-    @org.wso2.carbon.apimgt.annotations.api.Scope(key = "role:manage", name = "Add roles", description = "")
+    @Permission(name = "Manage Roles", permission = "/device-mgt/roles/manage")
     Response addRole(
             @ApiParam(
                     name = "role",
@@ -326,7 +333,7 @@ public interface RoleManagementService {
                     message = "Internal Server Error. \n Server error occurred while updating the role.",
                     response = ErrorResponse.class)
     })
-    @org.wso2.carbon.apimgt.annotations.api.Scope(key = "role:manage", name = "Add roles", description = "")
+    @Permission(name = "Manage Roles", permission = "/device-mgt/roles/manage")
     Response updateRole(
             @ApiParam(
                     name = "roleName",
@@ -363,7 +370,7 @@ public interface RoleManagementService {
                     message = "Internal Server Error. \n Server error occurred while removing the role.",
                     response = ErrorResponse.class)
     })
-    @org.wso2.carbon.apimgt.annotations.api.Scope(key = "role:manage", name = "Add roles", description = "")
+    @Permission(name = "Manage Roles", permission = "/device-mgt/roles/manage")
     Response deleteRole(
             @ApiParam(
                     name = "roleName",
@@ -421,7 +428,7 @@ public interface RoleManagementService {
                                     "Server error occurred while updating the user list of the role.",
                             response = ErrorResponse.class)
     })
-    @org.wso2.carbon.apimgt.annotations.api.Scope(key = "role:manage", name = "Add roles", description = "")
+    @Permission(name = "Manage Roles", permission = "/device-mgt/roles/manage")
     Response updateUsersOfRole(
             @ApiParam(
                     name = "roleName",

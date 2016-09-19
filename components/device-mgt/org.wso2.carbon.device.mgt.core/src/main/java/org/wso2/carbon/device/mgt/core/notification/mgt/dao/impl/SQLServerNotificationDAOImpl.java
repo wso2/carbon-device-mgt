@@ -51,7 +51,7 @@ public class SQLServerNotificationDAOImpl extends AbstractNotificationDAOImpl {
                     "NOTIFICATION_ID, DEVICE_ID, OPERATION_ID, STATUS, DESCRIPTION FROM DM_NOTIFICATION WHERE " +
                     "TENANT_ID = ?) n1 WHERE n1.DEVICE_ID = d.ID AND d.DEVICE_TYPE_ID=t.ID AND TENANT_ID = ?";
 
-            sql = sql + " OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+            sql = sql + " ORDER BY n1.NOTIFICATION_ID OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
 
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, tenantId);
@@ -92,7 +92,7 @@ public class SQLServerNotificationDAOImpl extends AbstractNotificationDAOImpl {
                          "TENANT_ID = ? AND STATUS = ?) n1 WHERE n1.DEVICE_ID = d.ID AND d.DEVICE_TYPE_ID=t.ID " +
                          "AND TENANT_ID = ?";
 
-            sql = sql + " OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+            sql = sql + " ORDER BY n1.NOTIFICATION_ID OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
 
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, tenantId);

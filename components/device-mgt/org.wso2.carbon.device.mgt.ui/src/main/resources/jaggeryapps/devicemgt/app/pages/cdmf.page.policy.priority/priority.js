@@ -26,4 +26,7 @@ function onRequest(context){
             return options.fn(this);
         }
     });
+    var viewModel = {};
+    viewModel.isAuthorized = userModule.isAuthorized("/permission/admin/device-mgt/policies/manage");
+    return viewModel;
 }

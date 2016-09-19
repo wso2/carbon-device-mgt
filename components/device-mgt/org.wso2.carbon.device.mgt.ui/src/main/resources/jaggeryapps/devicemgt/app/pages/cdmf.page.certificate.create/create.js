@@ -19,27 +19,28 @@
 /**
  * Returns the dynamic state to be populated by add-user page.
  *
- * @param context Object that gets updated with the dynamic state of this page to be presented
- * @returns {*} A context object that returns the dynamic state of this page to be presented
+ * @param viewModel Object that gets updated with the dynamic state of this page to be presented
+ * @returns {*} A viewModel object that returns the dynamic state of this page to be presented
  */
 function onRequest(context) {
     // var log = new Log("units/user-create/create.js");
     var userModule = require("/app/modules/business-controllers/user.js")["userModule"];
     var mdmProps = require("/app/modules/conf-reader/main.js")["conf"];
-
+    var viewModel = {};
+    viewModel.isAuthorized = userModule.isAuthorized("/permission/admin/device-mgt/certificates/manage");
     var response = userModule.getRolesByUserStore();
     if (response["status"] == "success") {
-        context["roles"] = response["content"];
+        viewModel["roles"] = response["content"];
     }
 
-    context["charLimit"] = mdmProps["usernameLength"];
-    context["usernameJSRegEx"] = mdmProps["userValidationConfig"]["usernameJSRegEx"];
-    context["usernameHelpText"] = mdmProps["userValidationConfig"]["usernameHelpMsg"];
-    context["usernameRegExViolationErrorMsg"] = mdmProps["userValidationConfig"]["usernameRegExViolationErrorMsg"];
-    context["firstnameJSRegEx"] = mdmProps["userValidationConfig"]["firstnameJSRegEx"];
-    context["firstnameRegExViolationErrorMsg"] = mdmProps["userValidationConfig"]["firstnameRegExViolationErrorMsg"];
-    context["lastnameJSRegEx"] = mdmProps["userValidationConfig"]["lastnameJSRegEx"];
-    context["lastnameRegExViolationErrorMsg"] = mdmProps["userValidationConfig"]["lastnameRegExViolationErrorMsg"];
+    viewModel["charLimit"] = mdmProps["usernameLength"];
+    viewModel["usernameJSRegEx"] = mdmProps["userValidationConfig"]["usernameJSRegEx"];
+    viewModel["usernameHelpText"] = mdmProps["userValidationConfig"]["usernameHelpMsg"];
+    viewModel["usernameRegExViolationErrorMsg"] = mdmProps["userValidationConfig"]["usernameRegExViolationErrorMsg"];
+    viewModel["firstnameJSRegEx"] = mdmProps["userValidationConfig"]["firstnameJSRegEx"];
+    viewModel["firstnameRegExViolationErrorMsg"] = mdmProps["userValidationConfig"]["firstnameRegExViolationErrorMsg"];
+    viewModel["lastnameJSRegEx"] = mdmProps["userValidationConfig"]["lastnameJSRegEx"];
+    viewModel["lastnameRegExViolationErrorMsg"] = mdmProps["userValidationConfig"]["lastnameRegExViolationErrorMsg"];
 
-    return context;
+    return viewModel;
 }

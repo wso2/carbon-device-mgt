@@ -21,7 +21,6 @@ package org.wso2.carbon.device.mgt.common.notification.mgt;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 
 /**
  * DTO of Notification object which is used to communicate Operation notifications to MDM core.
@@ -58,6 +57,16 @@ public class Notification {
             "CHECKED: The message is in the read state.", required = true)
     private Status status;
 
+    @JsonProperty(value = "deviceIdentifier", required = false)
+    @ApiModelProperty(name = "deviceIdentifier", value = "Defines the device ID related to the notification.",
+            required = false)
+    private String deviceIdentifier;
+
+    @JsonProperty(value = "devieType", required = false)
+    @ApiModelProperty(name = "devieType", value = "Defines the device type related to the notification.",
+            required = false)
+    private String deviceType;
+
     public Status getStatus() {
         return status;
     }
@@ -90,6 +99,22 @@ public class Notification {
         this.operationId = operationId;
     }
 
+    public String getDeviceIdentifier() {
+        return deviceIdentifier;
+    }
+
+    public void setDeviceIdentifier(String deviceIdentifier) {
+        this.deviceIdentifier = deviceIdentifier;
+    }
+
+    public String getDevcieType() {
+        return deviceType;
+    }
+
+    public void setDeviceType(String devieType) {
+        this.deviceType = devieType;
+    }
+
     @Override
     public String toString() {
         return "notification {" +
@@ -97,6 +122,8 @@ public class Notification {
                 ", status=" + status +
                 ", description='" + description + '\'' +
                 ", operationId='" + operationId + '\'' +
+                ", deviceIdentifier='" + deviceIdentifier + '\'' +
+                ", deviceType='" + deviceType + '\'' +
                 '}';
     }
 

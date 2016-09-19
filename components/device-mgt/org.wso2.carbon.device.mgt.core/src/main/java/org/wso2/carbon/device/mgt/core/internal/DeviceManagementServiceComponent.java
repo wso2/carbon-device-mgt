@@ -31,7 +31,6 @@ import org.wso2.carbon.device.mgt.common.notification.mgt.NotificationManagement
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManager;
 import org.wso2.carbon.device.mgt.common.permission.mgt.PermissionManagerService;
-import org.wso2.carbon.device.mgt.common.scope.mgt.ScopeManagementService;
 import org.wso2.carbon.device.mgt.common.spi.DeviceManagementService;
 import org.wso2.carbon.device.mgt.core.DeviceManagementConstants;
 import org.wso2.carbon.device.mgt.core.DeviceManagementPluginRepository;
@@ -52,7 +51,6 @@ import org.wso2.carbon.device.mgt.core.operation.mgt.OperationManagerImpl;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.permission.mgt.PermissionManagerServiceImpl;
 import org.wso2.carbon.device.mgt.core.push.notification.mgt.PushNotificationProviderRepository;
-import org.wso2.carbon.device.mgt.core.scope.mgt.ScopeManagementServiceImpl;
 import org.wso2.carbon.device.mgt.core.scope.mgt.dao.ScopeManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderServiceImpl;
@@ -242,10 +240,6 @@ public class DeviceManagementServiceComponent {
         NotificationManagementService notificationManagementService
                 = new NotificationManagementServiceImpl();
         bundleContext.registerService(NotificationManagementService.class.getName(), notificationManagementService, null);
-
-        /* Registering Scope Management Service */
-        ScopeManagementService scopeManagementService = new ScopeManagementServiceImpl();
-        bundleContext.registerService(ScopeManagementService.class.getName(), scopeManagementService, null);
 
         /* Registering DeviceAccessAuthorization Service */
         DeviceAccessAuthorizationService deviceAccessAuthorizationService = new DeviceAccessAuthorizationServiceImpl();

@@ -22,14 +22,14 @@
     <parent>
         <groupId>org.wso2.carbon.devicemgt</groupId>
         <artifactId>webapp-authenticator-framework-feature</artifactId>
-        <version>1.1.3-SNAPSHOT</version>
+        <version>1.2.1-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>org.wso2.carbon.webapp.authenticator.framework.server.feature</artifactId>
     <packaging>pom</packaging>
-    <version>1.1.3-SNAPSHOT</version>
+    <version>1.2.1-SNAPSHOT</version>
     <name>WSO2 Carbon - Webapp Authenticator Framework Server Feature</name>
     <url>http://wso2.org</url>
     <description>This feature contains the core bundles required for Back-end Device Management functionality
@@ -44,14 +44,6 @@
             <groupId>org.wso2.carbon.apimgt</groupId>
             <artifactId>org.wso2.carbon.apimgt.core</artifactId>
             </dependency>
-        <!--<dependency>-->
-            <!--<groupId>org.wso2.carbon</groupId>-->
-            <!--<artifactId>org.wso2.carbon.throttle.core</artifactId>-->
-        <!--</dependency>-->
-        <!--dependency>
-            <groupId>org.apache.ws.commons.axiom.wso2</groupId>
-            <artifactId>axiom</artifactId>
-        </dependency-->
     </dependencies>
 
     <build>
@@ -111,8 +103,6 @@
                             </importFeatures>
                             <importBundles>
                                 <importBundleDef>org.wso2.carbon.apimgt:org.wso2.carbon.apimgt.core:${carbon.api.mgt.version}</importBundleDef>
-                                <!--<importBundleDef>org.wso2.carbon:org.wso2.carbon.throttle.core:${carbon.throttle.module.version}</importBundleDef>-->
-                                <!--importBundleDef>org.apache.ws.commons.axiom.wso2:axiom:${axiom.wso2.version}</importBundleDef-->
                             </importBundles>
                         </configuration>
                     </execution>

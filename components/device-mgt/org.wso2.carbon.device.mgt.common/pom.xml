@@ -49,7 +49,7 @@
                         </Export-Package>
                         <Import-Package>
                             javax.xml.bind.annotation,
-                            com.fasterxml.jackson.annotation,
+                            com.fasterxml.jackson.annotation;version="${jackson-annotations.version}",
                             org.wso2.carbon.apimgt.api.model.*;version="${carbon.api.mgt.version.range}",
                             io.swagger.annotations.*;resolution:=optional
                         </Import-Package>

@@ -57,7 +57,7 @@
                 <br><br>
                 <div>
                     <input id="new-password" type="password" class="form-control modal-input"
-                        placeholder="[ Password should be in minimum 5 characters long and should not include any whitespaces ]"/>
+                           placeholder="[ Password should be in minimum 5 characters long and should not include any whitespaces ]"/>
                 </div>
                 <br><br>
                 Reconfirm your new password *
@@ -77,14 +77,25 @@
     </div>
 
     <div id="change-password-success-content" class="hide">
-        <div class="content">
-            <div class="row">
-                <div class="col-lg-5 col-md-6 col-centered">
-                    <h3>Password change is successful.</h3>
-                    <div class="buttons">
-                        <a href="#" id="change-password-success-link" class="btn-operations">Ok</a>
-                    </div>
-                </div>
+        <div class="modal-header">
+            <h4 class="pull-left modal-title">
+                <span class="fw-stack fw-move-right fw-move-bottom">
+                    <i class="fw fw-circle fw-stack-2x fw-stroke text-success"></i>
+                    <i class="fw fw-check fw-stack-1x fw-inverse"></i>
+                </span>
+                &nbsp;&nbsp;Password has been successfully updated
+            </h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fw fw-cancel"></i></button>
+        </div>
+        <hr>
+        <div class="modal-body add-margin-top-2x add-margin-bottom-2x">
+            <h5 class="text-center">
+                You can now try to login using your new password.
+            </h5>
+        </div>
+        <div class="modal-footer">
+            <div class="buttons">
+                <a href="#" id="change-password-success-link" class="btn-operations">Ok</a>
             </div>
         </div>
     </div>

@@ -1,3 +1,21 @@
+/*
+ * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *
+ * WSO2 Inc. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
 /**
  * Checks if provided input is valid against RegEx input.
  *
@@ -21,34 +39,33 @@ $(document).ready(function () {
         showPopup();
 
         $("a#change-password-yes-link").click(function () {
-            var oldPassword = $("#old-password").val();
+            var currentPassword = $("#current-password").val();
             var newPassword = $("#new-password").val();
-            var confirmedPassword = $("#confirmed-password").val();
+            var retypedNewPassword = $("#retyped-new-password").val();
             var user = $("#user").val();
 
-            var errorMsgWrapper = "#notification-error-msg";
-            var errorMsg = "#notification-error-msg span";
-            if (!oldPassword) {
-                $(errorMsg).text("Old password is a required field. It cannot be empty.");
+            var errorMsgWrapper = "#change-password-error-msg";
+            var errorMsg = "#change-password-error-msg span";
+            if (!currentPassword) {
+                $(errorMsg).text("Typing your current password is required. It cannot be empty.");
                 $(errorMsgWrapper).removeClass("hidden");
             } else if (!newPassword) {
-                $(errorMsg).text("New password is a required field. It cannot be empty.");
+                $(errorMsg).text("Typing your new password is required. It cannot be empty.");
                 $(errorMsgWrapper).removeClass("hidden");
-            } else if (!confirmedPassword) {
-                $(errorMsg).text("Retyping the new password is required.");
+            } else if (!retypedNewPassword) {
+                $(errorMsg).text("Confirming your new password is required. It cannot be empty.");
                 $(errorMsgWrapper).removeClass("hidden");
-            } else if (confirmedPassword != newPassword) {
-                $(errorMsg).text("New password doesn't match the confirmation.");
+            } else if (retypedNewPassword != newPassword) {
+                $(errorMsg).text("Password confirmation failed. Please check.");
                 $(errorMsgWrapper).removeClass("hidden");
-            } else if (!inputIsValid(/^[\S]{5,30}$/, confirmedPassword)) {
-                $(errorMsg).text("Password should be minimum 5 characters long, should not include any whitespaces.");
+            } else if (!inputIsValid(/^[\S]{5,30}$/, newPassword)) {
+                $(errorMsg).text("Password should be minimum 5 characters long and " +
+                    "should not include any whitespaces. Please check.");
                 $(errorMsgWrapper).removeClass("hidden");
             } else {
                 var changePasswordFormData = {};
-                //changePasswordFormData.username = user;
-                changePasswordFormData.newPassword = unescape((confirmedPassword));
-                changePasswordFormData.oldPassword = unescape((oldPassword));
-
+                changePasswordFormData.currentPassword = unescape((currentPassword));
+                changePasswordFormData.newPassword = unescape((newPassword));
 
                 var changePasswordAPI = "/api/device-mgt/v1.0/users/" + user + "/credentials";
 
@@ -64,7 +81,7 @@ $(document).ready(function () {
                         }
                     }, function (jqXHR) {
                         if (jqXHR.status == 400) {
-                            $(errorMsg).text("Old password does not match with the provided value.");
+                            $(errorMsg).text("Your current password does not match with the provided value.");
                             $(errorMsgWrapper).removeClass("hidden");
                         } else {
                             $(errorMsg).text("An unexpected error occurred. Please try again later.");

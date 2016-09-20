@@ -43,28 +43,29 @@
         </div>
         <hr>
         <div class="modal-body add-margin-top-2x add-margin-bottom-2x">
-            <div id="notification-error-msg" class="alert alert-danger hidden" role="alert">
+            <div id="change-password-error-msg" class="alert alert-danger hidden" role="alert">
                 <i class="icon fw fw-error"></i><span></span>
             </div>
             <h5>
                 Type your current password *
                 <br><br>
                 <div>
-                    <input type="password" class="form-control modal-input operationDataKeys" id="old-password" data-key="message"/>
+                    <input id="current-password" type="password" class="form-control modal-input"/>
                 </div>
-                <br>
+                <br><br>
                 Type a new password *
                 <br><br>
                 <div>
-                    <input type="password" class="form-control modal-input operationDataKeys" id="new-password" data-key="message"/>
+                    <input id="new-password" type="password" class="form-control modal-input"
+                        placeholder="[ Password should be in minimum 5 characters long. Should not include any whitespaces ]"/>
                 </div>
-                <br>
-                Retype your new password *
+                <br><br>
+                Reconfirm your new password *
                 <br><br>
                 <div>
-                    <input type="password" class="form-control modal-input operationDataKeys" id="confirmed-password" data-key="message"/>
+                    <input id="retyped-new-password" type="password" class="form-control modal-input"/>
                 </div>
-                <br>
+                <br><br>
             </h5>
         </div>
         <div class="modal-footer">

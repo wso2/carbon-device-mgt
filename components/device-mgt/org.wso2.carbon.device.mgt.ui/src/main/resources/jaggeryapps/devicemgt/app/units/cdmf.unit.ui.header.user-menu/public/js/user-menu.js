@@ -64,8 +64,8 @@ $(document).ready(function () {
                 $(errorMsgWrapper).removeClass("hidden");
             } else {
                 var changePasswordFormData = {};
-                changePasswordFormData.currentPassword = unescape((currentPassword));
-                changePasswordFormData.newPassword = unescape((newPassword));
+                changePasswordFormData["oldPassword"] = unescape((currentPassword));
+                changePasswordFormData["newPassword"] = unescape((newPassword));
 
                 var changePasswordAPI = "/api/device-mgt/v1.0/users/" + user + "/credentials";
 

@@ -1520,6 +1520,11 @@
                 <artifactId>javax.servlet.jsp-api</artifactId>
                 <version>${servelet.jsp.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-simple</artifactId>
+                <version>${slf4j.simple.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -1898,6 +1903,9 @@
         <orbit.version.pdfbox>1.8.10.wso2v2</orbit.version.pdfbox>
         <carbon.throttle.module.version>4.2.1</carbon.throttle.module.version>
         <javax.xml.soap.imp.pkg.version>[1.0.0, 1.1.0)</javax.xml.soap.imp.pkg.version>
+
+        <!-- apache pdfbox version -->
+        <slf4j.simple.version>1.6.1</slf4j.simple.version>
     </properties>
 
 </project>

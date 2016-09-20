@@ -234,13 +234,8 @@ $(document).ready(function () {
                 addUserAPI,
                 addUserFormData,
                 function (data, textStatus, jqXHR) {
-                    if (jqXHR.status == 201) {
+                    if (jqXHR.status == 200) {
                         // Clearing user input fields.
-                        $("input#username").val("");
-                        $("input#firstname").val("");
-                        $("input#lastname").val("");
-                        $("input#email").val("");
-                        $("select#roles").select2("val", "");
                         // Refreshing with success message
                         $("#user-create-form").addClass("hidden");
                         $("#user-created-msg").removeClass("hidden");

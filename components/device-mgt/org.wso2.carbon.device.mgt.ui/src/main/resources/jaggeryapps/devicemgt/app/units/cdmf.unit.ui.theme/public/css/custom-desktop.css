@@ -3369,7 +3369,7 @@ span.ico-sort-desc {
 }
 
 .wr-input-label {
-    font-weight:100;
+    font-weight:300;
     font-size:14px;
     color:#555;
 }
@@ -4060,7 +4060,7 @@ a.wr-side-panel-toggle-btn.selected {
 .wr-input-control.switch .text {
     display: none;
     margin-left: 5px;
-    font-weight: 100;
+    font-weight: 400;
 }
 
 .wr-input-control.switch input[type="checkbox"]:checked + .helper + .text {
@@ -4606,28 +4606,26 @@ a.wr-side-panel-toggle-btn.selected {
 }
 
 .wr-hidden-operations-content .panel-body {
-    margin: 5px;
-    /*border: 1px solid #e8e8e8;*/
-    padding: 5px 20px 30px;
+    padding: 0px 20px 20px;
     background: #ffffff;
 }
-
+.wr-hidden-operations-content .panel-body hr{
+    margin:0px;
+    margin-bottom:20px;
+}
 .wr-advance-operations.wizard-content .panel-title .fw-stack {
     width: 5px;
 }
 
 .wr-hidden-operations-content .sub-title {
-    font-size: 16px;
+    font-size: 18px;
 }
 
 .wr-hidden-operations-content .panel-title {
-    margin-left: 5px;
-    margin-top: 5px;
-    margin-right: 5px;
-    /*border: 1px solid #e8e8e8;*/
     padding: 20px;
     background: #ffffff;
     color: #555;
+    font-weight:400;
 }
 
 .panel-title hr{
@@ -4635,10 +4633,13 @@ a.wr-side-panel-toggle-btn.selected {
 }
 
 .wr-hidden-operations-content .panel-title-description {
-    padding-right: 20px;
+    font-size: 16px;
+    padding:0px 20px;
     background: #ffffff;
     color: #555;
     line-height: 140%;
+    font-weight:300;
+    text-align:justify;
 }
 
 .wr-hidden-operations-content .panel-title a {

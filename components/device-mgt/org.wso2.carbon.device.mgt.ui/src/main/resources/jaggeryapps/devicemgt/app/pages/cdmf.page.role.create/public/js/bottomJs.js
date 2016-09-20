@@ -99,12 +99,9 @@ function formatRepo (user) {
     var markup = '<div class="clearfix">' +
         '<div class="col-sm-8">' +
         '<div class="clearfix">' +
-        '<div class="col-sm-3">User : ' + user.username + '</div>';
-    if (user.name) {
-        markup +=  '<div class="col-sm-3"> ' + user.name + '</div>';
-    }
-    if (user.emailAddress) {
-        markup += '<div class="col-sm-3"> ' + user.emailAddress + '</div>';
+        '<div class="col-sm-4">' + user.username + '</div>';
+    if (user.name || user.name != undefined) {
+        markup +=  '<div class="col-sm-8"> ( ' + user.name + ' )</div>';
     }
     markup += '</div></div></div>';
     return markup;
@@ -140,8 +137,9 @@ $(document).ready(function () {
                     var user = {};
                     user.id = value.username;
                     user.username = value.username;
-                    user.name = value.firstname + " " + value.lastname;
-                    user.emailAddress = value.emailAddress;
+                    if(value.firstname && value.lastname) {
+                        user.name = value.firstname + " " + value.lastname;
+                    }
                     newData.push(user);
                 });
                 return {

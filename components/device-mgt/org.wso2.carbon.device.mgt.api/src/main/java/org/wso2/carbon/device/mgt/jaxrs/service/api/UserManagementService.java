@@ -21,7 +21,6 @@ package org.wso2.carbon.device.mgt.jaxrs.service.api;
 import io.swagger.annotations.*;
 import org.wso2.carbon.apimgt.annotations.api.API;
 import org.wso2.carbon.apimgt.annotations.api.Permission;
-import org.wso2.carbon.apimgt.annotations.api.Scope;
 import org.wso2.carbon.device.mgt.jaxrs.beans.*;
 
 import javax.ws.rs.*;
@@ -471,7 +470,7 @@ public interface UserManagementService {
                             "Server error occurred while updating credentials of the user.",
                     response = ErrorResponse.class)
     })
-    @Permission(name = "View Users", permission = "/device-mgt/users/view")
+    @Permission(name = "Reset user password", permission = "/login")
     Response resetPassword(
             @ApiParam(
                     name = "username",

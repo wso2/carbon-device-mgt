@@ -33,8 +33,23 @@ import java.util.List;
  */
 public interface DeviceManagementProviderService {
 
+    /**
+     * Method to retrieve all the devices of a given device type.
+     *
+     * @param deviceType Device-type of the required devices
+     * @return List of devices of given device-type.
+     * @throws DeviceManagementException If some unusual behaviour is observed while fetching the
+     *                                   devices.
+     */
     List<Device> getAllDevices(String deviceType) throws DeviceManagementException;
 
+    /**
+     * Method to retrieve all the devices registered in the system.
+     *
+     * @return List of registered devices.
+     * @throws DeviceManagementException If some unusual behaviour is observed while fetching the
+     *                                   devices.
+     */
     List<Device> getAllDevices() throws DeviceManagementException;
 
     /**

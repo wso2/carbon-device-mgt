@@ -45,7 +45,7 @@
             <artifactId>bcprov-jdk15on</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.bouncycastle.wso2</groupId>
+            <groupId>org.wso2.orbit.org.bouncycastle</groupId>
             <artifactId>bcpkix-jdk15on</artifactId>
         </dependency>
         <dependency>
@@ -122,7 +122,7 @@
                                     org.wso2.carbon.devicemgt:org.wso2.carbon.certificate.mgt.core:${carbon.device.mgt.version}
                                 </bundleDef>
                                 <bundleDef>
-                                    org.bouncycastle.wso2:bcpkix-jdk15on:${bcpkix.wso2.version}
+                                    org.wso2.orbit.org.bouncycastle:bcpkix-jdk15on:${bcpkix.wso2.version}
                                 </bundleDef>
                                 <bundleDef>
                                     com.google.code.jscep.wso2:jscep:${jscep.version}

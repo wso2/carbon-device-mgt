@@ -1284,7 +1284,7 @@
                 <version>${bcprov.wso2.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.bouncycastle.wso2</groupId>
+                <groupId>org.wso2.orbit.org.bouncycastle</groupId>
                 <artifactId>bcpkix-jdk15on</artifactId>
                 <version>${bcpkix.wso2.version}</version>
             </dependency>
@@ -1816,7 +1816,7 @@
         <version.commons.lang>2.6.0.wso2v1</version.commons.lang>
 
         <!-- Carbon API Management -->
-        <carbon.api.mgt.version>6.0.4</carbon.api.mgt.version>
+        <carbon.api.mgt.version>6.0.5-SNAPSHOT</carbon.api.mgt.version>
         <carbon.api.mgt.version.range>(5.0.0,7.0.0]</carbon.api.mgt.version.range>
 
         <!-- Carbon Analytics Commons -->

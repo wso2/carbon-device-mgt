@@ -21,7 +21,6 @@ package org.wso2.carbon.device.mgt.extensions.push.notification.provider.mqtt;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
-import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.push.notification.NotificationContext;
 import org.wso2.carbon.device.mgt.common.push.notification.NotificationStrategy;
 import org.wso2.carbon.device.mgt.common.push.notification.PushNotificationConfig;
@@ -82,9 +81,8 @@ public class MQTTNotificationStrategy implements NotificationStrategy {
         if (properties != null && properties.get(MQTT_ADAPTER_TOPIC) != null) {
             dynamicProperties.put("topic", (String) properties.get(MQTT_ADAPTER_TOPIC));
         } else {
-            Operation operation = ctx.getOperation();
             String topic = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantDomain(true) + "/"
-                    + ctx.getDeviceId().getType() + "/" + ctx.getDeviceId().getId() + "/" + operation.getType();
+                    + ctx.getDeviceId().getType() + "/" + ctx.getDeviceId().getId() + "/" + ctx.getOperation().getType();
             dynamicProperties.put("topic", topic);
         }
 

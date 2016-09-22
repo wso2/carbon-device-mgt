@@ -1,5 +1,5 @@
 {
-    "appContext": "/emm/",
+    "appContext": "/devicemgt/",
     "webAgentContext" : "/emm-web-agent/",
     "apiContext": "api",
     "httpsURL" : "%https.ip%",

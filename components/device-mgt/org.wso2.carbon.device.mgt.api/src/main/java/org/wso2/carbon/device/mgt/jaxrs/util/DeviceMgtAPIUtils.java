@@ -24,6 +24,7 @@ import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.analytics.dashboard.GadgetDataService;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
+import org.wso2.carbon.device.mgt.common.authorization.DeviceAccessAuthorizationService;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.ConfigurationEntry;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.PlatformConfiguration;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.PlatformConfigurationManagementService;
@@ -102,6 +103,18 @@ public class DeviceMgtAPIUtils {
             throw new IllegalStateException(msg);
         }
         return deviceManagementProviderService;
+    }
+
+    public static DeviceAccessAuthorizationService getDeviceAccessAuthorizationService() {
+        PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        DeviceAccessAuthorizationService deviceAccessAuthorizationService =
+                (DeviceAccessAuthorizationService) ctx.getOSGiService(DeviceAccessAuthorizationService.class, null);
+        if (deviceAccessAuthorizationService == null) {
+            String msg = "DeviceAccessAuthorization service has not initialized.";
+            log.error(msg);
+            throw new IllegalStateException(msg);
+        }
+        return deviceAccessAuthorizationService;
     }
 
     public static GroupManagementProviderService getGroupManagementProviderService() {

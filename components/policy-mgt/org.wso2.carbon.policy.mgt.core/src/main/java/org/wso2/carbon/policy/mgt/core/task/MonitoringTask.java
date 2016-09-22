@@ -117,8 +117,10 @@ public class MonitoringTask implements Task {
                                 log.debug(device.getDeviceIdentifier());
                             }
                         }
-                        monitoringManager.addMonitoringOperation(notifiableDevices);
-                        monitoringService.notifyDevices(notifiableDevices);
+                        if (!notifiableDevices.isEmpty()) {
+                            monitoringManager.addMonitoringOperation(notifiableDevices);
+                            monitoringService.notifyDevices(notifiableDevices);
+                        }
                     }
                 }
                 if (log.isDebugEnabled()) {

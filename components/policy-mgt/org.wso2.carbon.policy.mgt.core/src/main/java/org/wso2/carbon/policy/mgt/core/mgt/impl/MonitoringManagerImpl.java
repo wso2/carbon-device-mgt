@@ -399,7 +399,7 @@ public class MonitoringManagerImpl implements MonitoringManager {
         monitoringOperation.setCode(OPERATION_MONITOR);
 //	    CommandOperation infoOperation = new CommandOperation();
 //	    infoOperation.setEnabled(true);
-//	    infoOperation.setType(Operation.Type.COMMAND);
+//	    infoOperation.setType(Operation.Type.COMMAND);\\
 //	    infoOperation.setCode(OPERATION_INFO);
 //	    CommandOperation appListOperation = new CommandOperation();
 //	    appListOperation.setEnabled(true);
@@ -411,7 +411,7 @@ public class MonitoringManagerImpl implements MonitoringManager {
         if (deviceIdentifiers.size() > 0) {
             type = deviceIdentifiers.get(0).getType();
         }
-        DeviceManagementProviderService service = new DeviceManagementProviderServiceImpl();
+        DeviceManagementProviderService service = PolicyManagementDataHolder.getInstance().getDeviceManagementService();
         service.addOperation(type, monitoringOperation, deviceIdentifiers);
 //	    service.addOperation(infoOperation, deviceIdentifiers);
 //	    service.addOperation(appListOperation, deviceIdentifiers);

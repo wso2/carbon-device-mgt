@@ -107,6 +107,18 @@ public class DeviceAccessAuthorizationServiceImpl implements DeviceAccessAuthori
     }
 
     @Override
+    public boolean isDeviceAdminUser() throws DeviceAccessAuthorizationException {
+        String username = this.getUserName();
+        int tenantId = this.getTenantId();
+        try {
+            return isAdminUser(username, tenantId);
+        } catch (UserStoreException e) {
+            throw new DeviceAccessAuthorizationException("Unable to check the admin permissions of user : " +
+                                                         username + " in tenant : " + tenantId, e);
+        }
+    }
+
+    @Override
     public DeviceAuthorizationResult isUserAuthorized(List<DeviceIdentifier> deviceIdentifiers, String username,
                                                       String[] groupPermissions)
             throws DeviceAccessAuthorizationException {

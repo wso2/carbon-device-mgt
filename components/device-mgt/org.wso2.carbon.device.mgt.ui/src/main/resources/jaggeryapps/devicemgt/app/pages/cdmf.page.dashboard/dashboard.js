@@ -32,16 +32,16 @@ function onRequest() {
         return;
     }
 
-    var page = {};
-    page.permissions = permissions;
-    page.enrollmentURL = devicemgtProps.enrollmentURL;
-    page.device_count = deviceModule.getDevicesCount();
+    var viewModel = {};
+    viewModel.permissions = permissions;
+    viewModel.enrollmentURL = devicemgtProps.enrollmentURL;
+    viewModel.deviceCount = deviceModule.getDevicesCount();
     //TODO: Enable Group Management Service API on CDMF
     //page.group_count = groupModule.getGroupCount();
-    page.group_count = -1;
-    page.user_count = userModule.getUsersCount();
-    page.policy_count = policyModule.getPoliciesCount();
-    page.role_count = userModule.getRolesCount();
+    viewModel.groupCount = -1;
+    viewModel.userCount = userModule.getUsersCount();
+    viewModel.policyCount = policyModule.getPoliciesCount();
+    viewModel.roleCount = userModule.getRolesCount();
 
-    return page;
+    return viewModel;
 }

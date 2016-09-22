@@ -26,6 +26,7 @@ import org.wso2.carbon.device.mgt.common.ProvisioningConfig;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManager;
 import org.wso2.carbon.device.mgt.common.push.notification.NotificationStrategy;
 import org.wso2.carbon.device.mgt.common.push.notification.PushNotificationConfig;
+import org.wso2.carbon.device.mgt.common.push.notification.PushNotificationProvider;
 import org.wso2.carbon.device.mgt.common.spi.DeviceManagementService;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementServiceComponent;
@@ -74,7 +75,7 @@ public class DeviceManagementPluginRepository implements DeviceManagerStartupLis
                 }
             } catch (DeviceManagementException e) {
                 throw new DeviceManagementException("Error occurred while adding device management provider '" +
-                        deviceType + "'", e);
+                                                            deviceType + "'", e);
             }
             if (isSharedWithAllTenants) {
                 DeviceTypeIdentifier deviceTypeIdentifier = new DeviceTypeIdentifier(deviceType);
@@ -137,10 +138,16 @@ public class DeviceManagementPluginRepository implements DeviceManagerStartupLis
                 int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
                 deviceTypeIdentifier = new DeviceTypeIdentifier(deviceManagementService.getType(), tenantId);
             }
+
             if (pushNoteConfig != null) {
-                NotificationStrategy notificationStrategy =
-                        DeviceManagementDataHolder.getInstance().getPushNotificationProviderRepository().getProvider(
-                                pushNoteConfig.getType()).getNotificationStrategy(pushNoteConfig);
+                PushNotificationProvider provider = DeviceManagementDataHolder.getInstance()
+                        .getPushNotificationProviderRepository().getProvider(pushNoteConfig.getType());
+                if (provider == null) {
+                    throw new DeviceManagementException(
+                            "No registered push notification provider found for the type: '" +
+                                    pushNoteConfig.getType() + "'.");
+                }
+                NotificationStrategy notificationStrategy = provider.getNotificationStrategy(pushNoteConfig);
                 operationManagerRepository.addOperationManager(deviceTypeIdentifier, new OperationManagerImpl(
                         notificationStrategy));
             } else {
@@ -172,7 +179,8 @@ public class DeviceManagementPluginRepository implements DeviceManagerStartupLis
                     deviceTypeName = provider.getType().toLowerCase();
                     ProvisioningConfig provisioningConfig = provider.getProvisioningConfig();
                     int tenantId = DeviceManagerUtil.getTenantId(provisioningConfig.getProviderTenantDomain());
-                    DeviceManagerUtil.registerDeviceType(deviceTypeName, tenantId, provisioningConfig.isSharedWithAllTenants());
+                    DeviceManagerUtil.registerDeviceType(deviceTypeName, tenantId,
+                                                         provisioningConfig.isSharedWithAllTenants());
                     registerPushNotificationStrategy(provider);
                     //TODO:
                     //This is a temporory fix.
@@ -180,12 +188,13 @@ public class DeviceManagementPluginRepository implements DeviceManagerStartupLis
                     //until fix that, use following variable to enable and disable of checking user authorization.
 
                     DeviceManagementDataHolder.getInstance().setRequireDeviceAuthorization(provider.getType(),
-                            provider.getDeviceManager().requireDeviceAuthorization());
+                                                                                           provider.getDeviceManager()
+                                                                                                   .requireDeviceAuthorization());
                 } catch (Throwable e) {
                     /* Throwable is caught intentionally as failure of one plugin - due to invalid start up parameters,
                         etc - should not block the initialization of other device management providers */
                     log.error("Error occurred while initializing device management provider '" +
-                            provider.getType() + "'", e);
+                                      provider.getType() + "'", e);
                 }
             }
             this.isInited = true;

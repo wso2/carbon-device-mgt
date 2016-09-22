@@ -21,7 +21,6 @@ package org.wso2.carbon.policy.mgt.core.mgt.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
@@ -30,12 +29,8 @@ import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
 import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
 import org.wso2.carbon.device.mgt.core.config.policy.PolicyConfiguration;
-import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
-import org.wso2.carbon.device.mgt.core.dao.DeviceTypeDAO;
-import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 import org.wso2.carbon.device.mgt.core.operation.mgt.CommandOperation;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
-import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderServiceImpl;
 import org.wso2.carbon.policy.mgt.common.Policy;
 import org.wso2.carbon.policy.mgt.common.PolicyManagementException;
 import org.wso2.carbon.policy.mgt.common.ProfileFeature;
@@ -56,8 +51,6 @@ import java.util.Map;
 public class MonitoringManagerImpl implements MonitoringManager {
 
     private PolicyDAO policyDAO;
-    //    private DeviceDAO deviceDAO;
-    private DeviceTypeDAO deviceTypeDAO;
     private MonitoringDAO monitoringDAO;
     private ComplianceDecisionPoint complianceDecisionPoint;
     private PolicyConfiguration policyConfiguration;
@@ -69,8 +62,6 @@ public class MonitoringManagerImpl implements MonitoringManager {
 
     public MonitoringManagerImpl() {
         this.policyDAO = PolicyManagementDAOFactory.getPolicyDAO();
-//        this.deviceDAO = DeviceManagementDAOFactory.getDeviceDAO();
-        this.deviceTypeDAO = DeviceManagementDAOFactory.getDeviceTypeDAO();
         this.monitoringDAO = PolicyManagementDAOFactory.getMonitoringDAO();
         this.complianceDecisionPoint = new ComplianceDecisionPointImpl();
         this.policyConfiguration =
@@ -84,8 +75,8 @@ public class MonitoringManagerImpl implements MonitoringManager {
 
         List<ComplianceFeature> complianceFeatures = new ArrayList<>();
         try {
-            DeviceManagementProviderService service = new DeviceManagementProviderServiceImpl();
-            PolicyManager manager = new PolicyManagerImpl();
+            DeviceManagementProviderService service = PolicyManagementDataHolder.getInstance().getDeviceManagementService();
+            PolicyManager manager = PolicyManagementDataHolder.getInstance().getPolicyManager();
             Device device = service.getDevice(deviceIdentifier);
             Policy policy = manager.getAppliedPolicyToDevice(deviceIdentifier);
             if (policy != null) {
@@ -179,7 +170,7 @@ public class MonitoringManagerImpl implements MonitoringManager {
     @Override
     public boolean isCompliance(DeviceIdentifier deviceIdentifier) throws PolicyComplianceException {
         try {
-            DeviceManagementProviderService service = new DeviceManagementProviderServiceImpl();
+            DeviceManagementProviderService service = PolicyManagementDataHolder.getInstance().getDeviceManagementService();
             Device device = service.getDevice(deviceIdentifier);
             PolicyManagementDAOFactory.openConnection();
             ComplianceData complianceData = monitoringDAO.getCompliance(device.getId(), device.getEnrolmentInfo()
@@ -209,7 +200,7 @@ public class MonitoringManagerImpl implements MonitoringManager {
         ComplianceData complianceData;
         try {
             PolicyManagementDAOFactory.openConnection();
-            DeviceManagementProviderService service = new DeviceManagementProviderServiceImpl();
+            DeviceManagementProviderService service = PolicyManagementDataHolder.getInstance().getDeviceManagementService();
             Device device = service.getDevice(deviceIdentifier);
             complianceData = monitoringDAO.getCompliance(device.getId(), device.getEnrolmentInfo().getId());
             List<ComplianceFeature> complianceFeatures =
@@ -374,17 +365,13 @@ public class MonitoringManagerImpl implements MonitoringManager {
     }
 
     @Override
-    public List<DeviceType> getDeviceTypes() throws PolicyComplianceException {
+    public List<String> getDeviceTypes() throws PolicyComplianceException {
 
-        List<DeviceType> deviceTypes = new ArrayList<>();
+        List<String> deviceTypes = new ArrayList<>();
         try {
-            DeviceManagementDAOFactory.openConnection();
-            int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
-            deviceTypes = deviceTypeDAO.getDeviceTypes(tenantId);
-        } catch (Exception e) {
-            log.error("Error occurred while getting the device types.", e);
-        } finally {
-            DeviceManagementDAOFactory.closeConnection();
+            deviceTypes = PolicyManagementDataHolder.getInstance().getDeviceManagementService().getAvailableDeviceTypes();
+        } catch (DeviceManagementException e) {
+            throw new PolicyComplianceException("Error occurred while getting the device types.", e);
         }
         return deviceTypes;
     }

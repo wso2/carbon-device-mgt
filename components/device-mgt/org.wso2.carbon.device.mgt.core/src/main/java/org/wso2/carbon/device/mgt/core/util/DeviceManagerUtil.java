@@ -184,6 +184,27 @@ public final class DeviceManagerUtil {
         return deviceIdentifiers;
     }
 
+    public static List<DeviceIdentifier> getValidDeviceIdentifiers(List<Device> devices) {
+        List<DeviceIdentifier> deviceIdentifiers = new ArrayList<>();
+        for (Device device : devices) {
+            if (device.getEnrolmentInfo() != null) {
+                switch (device.getEnrolmentInfo().getStatus()) {
+                    case BLOCKED:
+                    case REMOVED:
+                    case SUSPENDED:
+                        break;
+                    default:
+                        DeviceIdentifier identifier = new DeviceIdentifier();
+                        identifier.setId(device.getDeviceIdentifier());
+                        identifier.setType(device.getType());
+                        deviceIdentifiers.add(identifier);
+                }
+            }
+        }
+        return deviceIdentifiers;
+    }
+
+
     public static String getServerBaseHttpsUrl() {
         String hostName = "localhost";
         try {

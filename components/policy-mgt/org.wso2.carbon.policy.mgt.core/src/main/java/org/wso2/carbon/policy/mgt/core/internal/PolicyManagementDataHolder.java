@@ -23,6 +23,8 @@ import org.wso2.carbon.ntask.core.service.TaskService;
 import org.wso2.carbon.policy.mgt.common.PolicyEvaluationPoint;
 import org.wso2.carbon.policy.mgt.common.PolicyInformationPoint;
 import org.wso2.carbon.policy.mgt.common.spi.PolicyMonitoringService;
+import org.wso2.carbon.policy.mgt.core.mgt.MonitoringManager;
+import org.wso2.carbon.policy.mgt.core.mgt.PolicyManager;
 import org.wso2.carbon.user.core.service.RealmService;
 import org.wso2.carbon.user.core.tenant.TenantManager;
 
@@ -36,6 +38,8 @@ public class PolicyManagementDataHolder {
     private PolicyEvaluationPoint policyEvaluationPoint;
     private PolicyInformationPoint policyInformationPoint;
     private DeviceManagementProviderService deviceManagementService;
+    private MonitoringManager monitoringManager;
+    private PolicyManager policyManager;
     private Map<String, PolicyMonitoringService> policyMonitoringServiceMap = new HashMap<>();
     private TaskService taskService;
 
@@ -45,6 +49,22 @@ public class PolicyManagementDataHolder {
 
     public static PolicyManagementDataHolder getInstance() {
         return thisInstance;
+    }
+
+    public PolicyManager getPolicyManager() {
+        return policyManager;
+    }
+
+    public void setPolicyManager(PolicyManager policyManager) {
+        this.policyManager = policyManager;
+    }
+
+    public MonitoringManager getMonitoringManager() {
+        return monitoringManager;
+    }
+
+    public void setMonitoringManager(MonitoringManager monitoringManager) {
+        this.monitoringManager = monitoringManager;
     }
 
     public RealmService getRealmService() {

@@ -76,7 +76,7 @@ public class MonitoringManagerImpl implements MonitoringManager {
         List<ComplianceFeature> complianceFeatures = new ArrayList<>();
         try {
             DeviceManagementProviderService service = PolicyManagementDataHolder.getInstance().getDeviceManagementService();
-            PolicyManager manager = new PolicyManagerImpl();
+            PolicyManager manager = PolicyManagementDataHolder.getInstance().getPolicyManager();
             Device device = service.getDevice(deviceIdentifier);
             Policy policy = manager.getAppliedPolicyToDevice(deviceIdentifier);
             if (policy != null) {

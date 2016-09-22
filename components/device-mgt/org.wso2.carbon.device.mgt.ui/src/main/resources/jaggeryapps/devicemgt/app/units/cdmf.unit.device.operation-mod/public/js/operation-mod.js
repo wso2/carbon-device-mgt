@@ -107,7 +107,6 @@ var operationModule = function () {
         "NOTIFICATION_OPERATION_CODE": "NOTIFICATION",
         "CALENDAR_SUBSCRIPTION_OPERATION_CODE": "CALENDAR_SUBSCRIPTION",
         "APN_OPERATION_CODE": "APN",
-        "DOMAIN_CODE": "DOMAIN",
         "CELLULAR_OPERATION_CODE": "CELLULAR",
         "PER_APP_VPN_OPERATION_CODE": "PER_APP_VPN",
         "APP_TO_PER_APP_VPN_MAPPING_OPERATION_CODE": "APP_TO_PER_APP_VPN_MAPPING"
@@ -116,20 +115,10 @@ var operationModule = function () {
     publicMethods.getIOSServiceEndpoint = function (operationCode) {
         var featureMap = {
             "DEVICE_LOCK": "lock",
-            "VPN": "vpn",
-            "PER_APP_VPN": "per-app-vpn",
-            "APP_TO_PER_APP_VPN_MAPPING": "app-to-per-app-vpn-mapping",
-            "RING": "ring",
             "LOCATION": "location",
+            "ENTERPRISE_WIPE": "enterprise-wipe",
             "NOTIFICATION": "notification",
-            "AIR_PLAY": "airplay",
-            "RESTRICTION": "restriction",
-            "CELLULAR": "cellular",
-            "WIFI": "wifi",
-            "INSTALL_STORE_APPLICATION": "store-application",
-            "INSTALL_ENTERPRISE_APPLICATION": "enterprise-application",
-            "REMOVE_APPLICATION": "remove-application",
-            "ENTERPRISE_WIPE": "enterprise-wipe"
+            "RING": "ring"
         };
         return "/api/device-mgt/ios/v1.0/admin/devices/" + featureMap[operationCode];
     };
@@ -851,6 +840,24 @@ var operationModule = function () {
                     "restrictedApplications": operationPayload["restricted-applications"]
                 };
                 break;
+            case androidOperationConstants["SYSTEM_UPDATE_POLICY_CODE"]:
+                if (operationPayload["type"] != "window") {
+                    payload = {
+                        "cosuSystemUpdatePolicyType": operationPayload["type"]
+                    };
+                } else {
+                    payload = {
+                        "cosuSystemUpdatePolicyType": operationPayload["type"],
+                        "cosuSystemUpdatePolicyWindowStartTime": operationPayload["startTime"],
+                        "cosuSystemUpdatePolicyWindowEndTime": operationPayload["endTime"]
+                    };
+                }
+                break;
+            case androidOperationConstants["KIOSK_APPS_CODE"]:
+                payload = {
+                    "cosuWhitelistedApplications": operationPayload["whitelistedApplications"]
+                };
+                break;
         }
         return payload;
     };
@@ -1187,12 +1194,13 @@ var operationModule = function () {
     publicMethods.getWindowsServiceEndpoint = function (operationCode) {
         var featureMap = {
             "DEVICE_LOCK": "lock-devices",
+            "DISENROLL": "disenroll",
             "DEVICE_RING": "ring-devices",
             "LOCK_RESET": "lock-reset-devices",
             "WIPE_DATA": "wipe-devices"
         };
         //return "/mdm-windows-agent/services/windows/operation/" + featureMap[operationCode];
-        return "/api/device-mgt/windows/v1.0/admin/devices/" + featureMap[operationCode];
+        return "/api/device-mgt/windows/v1.0/services/windows/admin/devices/" + featureMap[operationCode];
     };
     /**
      * Get the icon for the featureCode
@@ -1203,16 +1211,16 @@ var operationModule = function () {
         var featureMap = {
             "DEVICE_LOCK": "fw-lock",
             "DEVICE_LOCATION": "fw-map-location",
-            "CLEAR_PASSWORD": "fw-key",
-            "ENTERPRISE_WIPE": "fw-clear",
-            "WIPE_DATA": "fw-database",
+            "CLEAR_PASSWORD": "fw-clear",
+            "ENTERPRISE_WIPE": "fw-block",
+            "WIPE_DATA": "fw-delete",
             "DEVICE_RING": "fw-dial-up",
             "DEVICE_REBOOT": "fw-refresh",
-            "UPGRADE_FIRMWARE": "fw-up-arrow",
+            "UPGRADE_FIRMWARE": "fw-hardware",
             "DEVICE_MUTE": "fw-mute",
             "NOTIFICATION": "fw-message",
             "CHANGE_LOCK_CODE": "fw-security",
-            "DEVICE_UNLOCK": "fw-lock"
+            "DEVICE_UNLOCK": "fw-key"
         };
         return featureMap[operationCode];
     };
@@ -1226,8 +1234,9 @@ var operationModule = function () {
         var featureMap = {
             "DEVICE_LOCK": "fw-lock",
             "DEVICE_RING": "fw-dial-up",
+            "DISENROLL": "fw-export",
             "LOCK_RESET": "fw-key",
-            "WIPE_DATA": "fw-clear"
+            "WIPE_DATA": "fw-delete"
         };
         return featureMap[operationCode];
     };
@@ -1241,7 +1250,7 @@ var operationModule = function () {
         var featureMap = {
             "DEVICE_LOCK": "fw-lock",
             "LOCATION": "fw-map-location",
-            "ENTERPRISE_WIPE": "fw-clear",
+            "ENTERPRISE_WIPE": "fw-block",
             "NOTIFICATION": "fw-message",
             "RING": "fw-dial-up"
         };
@@ -1576,7 +1585,7 @@ var operationModule = function () {
             var operationCode = operationCodes[i];
             var payload = publicMethods.generatePayload(platformType, operationCode, null);
 
-            if(platformType == platformTypeConstants["ANDROID"] &&
+            if (platformType == platformTypeConstants["ANDROID"] &&
                 operationCodes[i] == androidOperationConstants["CAMERA_OPERATION_CODE"]){
                 var operations = payload["operation"];
                 for (var key in operations){

@@ -275,6 +275,8 @@ var invokers = function () {
                 throw new IllegalArgumentException("Invalid HTTP request method: " + method);
         }
 
+        //noinspection JSUnresolvedVariable
+        var Header = Packages.org.apache.commons.httpclient.Header;
         for(var i in headers){
             var header = new Header();
             header.setName(headers[i].name);
@@ -282,8 +284,6 @@ var invokers = function () {
             httpMethodObject.addRequestHeader(header);
         }
 
-        //noinspection JSUnresolvedVariable
-        var Header = Packages.org.apache.commons.httpclient.Header;
         var header = new Header();
         header.setName(constants["CONTENT_TYPE_IDENTIFIER"]);
         header.setValue(constants["APPLICATION_JSON"]);
@@ -320,12 +320,14 @@ var invokers = function () {
             client.executeMethod(httpMethodObject);
             //noinspection JSUnresolvedFunction
             var status = httpMethodObject.getStatusCode();
-            new Log().error(status);
             if (status == 200) {
-                //noinspection JSUnresolvedFunction
-                return successCallback(httpMethodObject.getResponseBody());
+                var responseContentDispositionHeader = httpMethodObject.getResponseHeader(constants["CONTENT_DISPOSITION_IDENTIFIER"]);
+                if (responseContentDispositionHeader) {
+                    return successCallback(httpMethodObject.getResponseBodyAsStream(), httpMethodObject.getResponseHeaders());
+                } else {
+                    return successCallback(httpMethodObject.getResponseBody());
+                }
             } else {
-                //noinspection JSUnresolvedFunction
                 return errorCallback(httpMethodObject.getResponseBody());
             }
         } catch (e) {

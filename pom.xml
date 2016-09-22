@@ -1289,7 +1289,7 @@
                 <version>${bcpkix.wso2.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.google.code.jscep.wso2</groupId>
+                <groupId>org.wso2.orbit.com.google.code.jscep</groupId>
                 <artifactId>jscep</artifactId>
                 <version>${jscep.version}</version>
             </dependency>
@@ -1839,7 +1839,7 @@
         <bcprov.wso2.version.range>[1.52.0,1.60.0)</bcprov.wso2.version.range>
 
         <!-- JSCEP -->
-        <jscep.version>2.0.2.wso2v2</jscep.version>
+        <jscep.version>2.3.0.wso2v1</jscep.version>
 
         <!-- Nimbus Jose-->
         <nimbus.orbit.version>2.26.1.wso2v3</nimbus.orbit.version>

@@ -144,7 +144,7 @@
             <artifactId>bcpkix-jdk15on</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.google.code.jscep.wso2</groupId>
+            <groupId>org.wso2.orbit.com.google.code.jscep</groupId>
             <artifactId>jscep</artifactId>
         </dependency>
         <dependency>

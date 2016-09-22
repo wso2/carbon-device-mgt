@@ -66,11 +66,15 @@ var invokers = function () {
      * @param endpoint Backend REST API url.
      * @param responseCallback a function to be called with response retrieved.
      * @param count a counter which hold the number of recursive execution
+     * @param headers a list of name value pairs for additional http headers
      */
-    privateMethods["execute"] = function (httpMethod, requestPayload, endpoint, responseCallback, count) {
+    privateMethods["execute"] = function (httpMethod, requestPayload, endpoint, responseCallback, count, headers) {
         var xmlHttpRequest = new XMLHttpRequest();
 
         xmlHttpRequest.open(httpMethod, endpoint);
+        for(var i in headers){
+            xmlHttpRequest.setRequestHeader(headers[i].name, headers[i].value);
+        }
         xmlHttpRequest.setRequestHeader(constants["CONTENT_TYPE_IDENTIFIER"], constants["APPLICATION_JSON"]);
         xmlHttpRequest.setRequestHeader(constants["ACCEPT_IDENTIFIER"], constants["APPLICATION_JSON"]);
 
@@ -82,7 +86,7 @@ var invokers = function () {
                 });
             } else {
                 xmlHttpRequest.setRequestHeader(constants["AUTHORIZATION_HEADER"],
-                    constants["BEARER_PREFIX"] + accessToken);
+                                                constants["BEARER_PREFIX"] + accessToken);
             }
         }
 
@@ -98,9 +102,9 @@ var invokers = function () {
         log.debug("Response payload if any : " + xmlHttpRequest.responseText);
 
         if (xmlHttpRequest.status == 401 && (xmlHttpRequest.responseText == TOKEN_EXPIRED ||
-            xmlHttpRequest.responseText == TOKEN_INVALID ) && count < 5) {
+                                             xmlHttpRequest.responseText == TOKEN_INVALID ) && count < 5) {
             tokenUtil.refreshTokenPair();
-            return privateMethods.execute(httpMethod, requestPayload, endpoint, responseCallback, ++count);
+            return privateMethods.execute(httpMethod, requestPayload, endpoint, responseCallback, ++count, headers);
         } else {
             return responseCallback(xmlHttpRequest);
         }
@@ -113,8 +117,8 @@ var invokers = function () {
      * @param endpoint Backend REST API url.
      * @param responseCallback a function to be called with response retrieved.
      */
-    privateMethods["initiateXMLHTTPRequest"] = function (httpMethod, requestPayload, endpoint, responseCallback) {
-        return privateMethods.execute(httpMethod, requestPayload, endpoint, responseCallback, 0);
+    privateMethods["initiateXMLHTTPRequest"] = function (httpMethod, requestPayload, endpoint, responseCallback, headers) {
+        return privateMethods.execute(httpMethod, requestPayload, endpoint, responseCallback, 0, headers);
     };
 
     /**
@@ -122,9 +126,9 @@ var invokers = function () {
      * @param endpoint Backend REST API url.
      * @param responseCallback a function to be called with response retrieved.
      */
-    publicXMLHTTPInvokers["get"] = function (endpoint, responseCallback) {
+    publicXMLHTTPInvokers["get"] = function (endpoint, responseCallback, headers) {
         var requestPayload = null;
-        return privateMethods.initiateXMLHTTPRequest(constants["HTTP_GET"], requestPayload, endpoint, responseCallback);
+        return privateMethods.initiateXMLHTTPRequest(constants["HTTP_GET"], requestPayload, endpoint, responseCallback, headers);
     };
 
     /**
@@ -133,8 +137,8 @@ var invokers = function () {
      * @param requestPayload payload/data if exists which is needed to be send.
      * @param responseCallback a function to be called with response retrieved.
      */
-    publicXMLHTTPInvokers["post"] = function (endpoint, requestPayload, responseCallback) {
-        return privateMethods.initiateXMLHTTPRequest(constants["HTTP_POST"], requestPayload, endpoint, responseCallback);
+    publicXMLHTTPInvokers["post"] = function (endpoint, requestPayload, responseCallback, headers) {
+        return privateMethods.initiateXMLHTTPRequest(constants["HTTP_POST"], requestPayload, endpoint, responseCallback, headers);
     };
 
     /**
@@ -143,8 +147,8 @@ var invokers = function () {
      * @param requestPayload payload/data if exists which is needed to be send.
      * @param responseCallback a function to be called with response retrieved.
      */
-    publicXMLHTTPInvokers["put"] = function (endpoint, requestPayload, responseCallback) {
-        return privateMethods.initiateXMLHTTPRequest(constants["HTTP_PUT"], requestPayload, endpoint, responseCallback);
+    publicXMLHTTPInvokers["put"] = function (endpoint, requestPayload, responseCallback, headers) {
+        return privateMethods.initiateXMLHTTPRequest(constants["HTTP_PUT"], requestPayload, endpoint, responseCallback, headers);
     };
 
     /**
@@ -152,9 +156,9 @@ var invokers = function () {
      * @param endpoint Backend REST API url.
      * @param responseCallback a function to be called with response retrieved.
      */
-    publicXMLHTTPInvokers["delete"] = function (endpoint, responseCallback) {
+    publicXMLHTTPInvokers["delete"] = function (endpoint, responseCallback, headers) {
         var requestPayload = null;
-        return privateMethods.initiateXMLHTTPRequest(constants["HTTP_DELETE"], requestPayload, endpoint, responseCallback);
+        return privateMethods.initiateXMLHTTPRequest(constants["HTTP_DELETE"], requestPayload, endpoint, responseCallback, headers);
     };
 
     /**
@@ -239,8 +243,9 @@ var invokers = function () {
      * @param payload payload/data which need to be send.
      * @param successCallback a function to be called if the respond if successful.
      * @param errorCallback a function to be called if en error is reserved.
+     * @param headers a list of name value pairs for additional http headers.
      */
-    privateMethods["initiateHTTPClientRequest"] = function (method, url, successCallback, errorCallback, payload) {
+    privateMethods["initiateHTTPClientRequest"] = function (method, url, successCallback, errorCallback, payload, headers) {
         //noinspection JSUnresolvedVariable
         var HttpClient = Packages.org.apache.commons.httpclient.HttpClient;
         var httpMethodObject;
@@ -269,8 +274,16 @@ var invokers = function () {
                 //noinspection JSUnresolvedFunction
                 throw new IllegalArgumentException("Invalid HTTP request method: " + method);
         }
+
         //noinspection JSUnresolvedVariable
         var Header = Packages.org.apache.commons.httpclient.Header;
+        for(var i in headers){
+            var header = new Header();
+            header.setName(headers[i].name);
+            header.setValue(headers[i].value);
+            httpMethodObject.addRequestHeader(header);
+        }
+
         var header = new Header();
         header.setName(constants["CONTENT_TYPE_IDENTIFIER"]);
         header.setValue(constants["APPLICATION_JSON"]);
@@ -295,9 +308,12 @@ var invokers = function () {
             }
         }
         //noinspection JSUnresolvedFunction
-        var stringRequestEntity = new StringRequestEntity(stringify(payload));
-        //noinspection JSUnresolvedFunction
-        httpMethodObject.setRequestEntity(stringRequestEntity);
+        if (payload != null) {
+            var StringRequestEntity = Packages.org.apache.commons.httpclient.methods.StringRequestEntity;
+            var stringRequestEntity = new StringRequestEntity(stringify(payload));
+            //noinspection JSUnresolvedFunction
+            httpMethodObject.setRequestEntity(stringRequestEntity);
+        }
         var client = new HttpClient();
         try {
             //noinspection JSUnresolvedFunction
@@ -305,17 +321,22 @@ var invokers = function () {
             //noinspection JSUnresolvedFunction
             var status = httpMethodObject.getStatusCode();
             if (status == 200) {
-                //noinspection JSUnresolvedFunction
-                return successCallback(httpMethodObject.getResponseBody());
+                var responseContentDispositionHeader = httpMethodObject.getResponseHeader(constants["CONTENT_DISPOSITION_IDENTIFIER"]);
+                if (responseContentDispositionHeader) {
+                    return successCallback(httpMethodObject.getResponseBodyAsStream(), httpMethodObject.getResponseHeaders());
+                } else {
+                    return successCallback(httpMethodObject.getResponseBody());
+                }
             } else {
-                //noinspection JSUnresolvedFunction
                 return errorCallback(httpMethodObject.getResponseBody());
             }
         } catch (e) {
             return errorCallback(response);
         } finally {
             //noinspection JSUnresolvedFunction
-            method.releaseConnection();
+            if (method != constants["HTTP_GET"]) {
+                method.releaseConnection();
+            }
         }
     };
 
@@ -324,11 +345,12 @@ var invokers = function () {
      * @param url target url.
      * @param successCallback a function to be called if the respond if successful.
      * @param errorCallback a function to be called if en error is reserved.
+     * @param headers a list of name value pairs for additional http headers.
      */
-    publicHTTPClientInvokers["get"] = function (url, successCallback, errorCallback) {
+    publicHTTPClientInvokers["get"] = function (url, successCallback, errorCallback, headers) {
         var requestPayload = null;
         return privateMethods.
-            initiateHTTPClientRequest(constants["HTTP_GET"], url, successCallback, errorCallback, requestPayload);
+        initiateHTTPClientRequest(constants["HTTP_GET"], url, successCallback, errorCallback, requestPayload, headers);
     };
 
     /**
@@ -337,10 +359,11 @@ var invokers = function () {
      * @param payload payload/data which need to be send.
      * @param successCallback a function to be called if the respond if successful.
      * @param errorCallback a function to be called if en error is reserved.
+     * @param headers a list of name value pairs for additional http headers.
      */
-    publicHTTPClientInvokers["post"] = function (url, payload, successCallback, errorCallback) {
+    publicHTTPClientInvokers["post"] = function (url, payload, successCallback, errorCallback, headers) {
         return privateMethods.
-            initiateHTTPClientRequest(constants["HTTP_POST"], url, successCallback, errorCallback, payload);
+        initiateHTTPClientRequest(constants["HTTP_POST"], url, successCallback, errorCallback, payload, headers);
     };
 
     /**
@@ -349,10 +372,11 @@ var invokers = function () {
      * @param payload payload/data which need to be send.
      * @param successCallback a function to be called if the respond if successful.
      * @param errorCallback a function to be called if en error is reserved.
+     * @param headers a list of name value pairs for additional http headers.
      */
-    publicHTTPClientInvokers["put"] = function (url, payload, successCallback, errorCallback) {
+    publicHTTPClientInvokers["put"] = function (url, payload, successCallback, errorCallback, headers) {
         return privateMethods.
-            initiateHTTPClientRequest(constants["HTTP_PUT"], url, successCallback, errorCallback, payload);
+        initiateHTTPClientRequest(constants["HTTP_PUT"], url, successCallback, errorCallback, payload, headers);
     };
 
     /**
@@ -360,11 +384,12 @@ var invokers = function () {
      * @param url target url.
      * @param successCallback a function to be called if the respond if successful.
      * @param errorCallback a function to be called if en error is reserved.
+     * @param headers a list of name value pairs for additional http headers.
      */
-    publicHTTPClientInvokers["delete"] = function (url, successCallback, errorCallback) {
+    publicHTTPClientInvokers["delete"] = function (url, successCallback, errorCallback, headers) {
         var requestPayload = null;
         return privateMethods.
-            initiateHTTPClientRequest(constants["HTTP_DELETE"], url, successCallback, errorCallback, requestPayload);
+        initiateHTTPClientRequest(constants["HTTP_DELETE"], url, successCallback, errorCallback, requestPayload, headers);
     };
 
     var publicMethods = {};

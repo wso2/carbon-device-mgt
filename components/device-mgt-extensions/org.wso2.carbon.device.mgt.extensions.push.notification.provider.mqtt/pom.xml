@@ -139,6 +139,7 @@
                             org.wso2.carbon.context,
                             org.wso2.carbon.device.mgt.common.operation.mgt,
                             org.wso2.carbon.device.mgt.common.push.notification,
+                            org.wso2.carbon.device.mgt.common,
                             org.wso2.carbon.device.mgt.core.service,
                             org.wso2.carbon.event.output.adapter.core,
                             org.wso2.carbon.event.output.adapter.core.exception,

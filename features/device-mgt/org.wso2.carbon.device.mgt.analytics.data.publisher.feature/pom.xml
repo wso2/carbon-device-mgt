@@ -39,6 +39,14 @@
             <groupId>org.wso2.carbon.devicemgt</groupId>
             <artifactId>org.wso2.carbon.device.mgt.analytics.data.publisher</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.registry</groupId>
+            <artifactId>org.wso2.carbon.registry.indexing</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.registry</groupId>
+            <artifactId>org.wso2.carbon.registry.common</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -96,6 +104,10 @@
                             <importFeatures>
                                 <importFeatureDef>org.wso2.carbon.core.server:${carbon.kernel.version}</importFeatureDef>
                             </importFeatures>
+                            <importBundles>
+                                <importBundleDef>org.wso2.carbon.registry:org.wso2.carbon.registry.indexing:${carbon.registry.version}</importBundleDef>
+                                <importBundleDef>org.wso2.carbon.registry:org.wso2.carbon.registry.common:${carbon.registry.version}</importBundleDef>
+                            </importBundles>
                         </configuration>
                     </execution>
                 </executions>

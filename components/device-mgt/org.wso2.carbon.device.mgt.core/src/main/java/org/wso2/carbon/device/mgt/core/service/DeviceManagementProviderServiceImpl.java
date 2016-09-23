@@ -714,6 +714,80 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     }
 
     @Override
+    public List<Device> getAllDevicesWithoutInfo(String deviceType) throws DeviceManagementException {
+        List<Device> devices = new ArrayList<>();
+        List<Device> allDevices;
+        try {
+            DeviceManagementDAOFactory.openConnection();
+            allDevices = deviceDAO.getDevices(deviceType, this.getTenantId());
+            if (allDevices == null) {
+                if (log.isDebugEnabled()) {
+                    log.debug("No device is found upon the type '" + deviceType + "'");
+                }
+                return null;
+            }
+        } catch (DeviceManagementDAOException e) {
+            throw new DeviceManagementException("Error occurred while retrieving all devices of type '" +
+                                                deviceType + "' that are being managed within the scope of current tenant", e);
+        } catch (SQLException e) {
+            throw new DeviceManagementException("Error occurred while opening a connection to the data source", e);
+        } finally {
+            DeviceManagementDAOFactory.closeConnection();
+        }
+
+        for (Device device : allDevices) {
+            DeviceInfo info = null;
+            try {
+                DeviceManagementDAOFactory.openConnection();
+                info = deviceInfoDAO.getDeviceInformation(device.getId());
+                DeviceLocation location = deviceInfoDAO.getDeviceLocation(device.getId());
+                if (info != null) {
+                    info.setLocation(location);
+                }
+            } catch (DeviceDetailsMgtDAOException e) {
+                log.error("Error occurred while retrieving advance info of '" + device.getType() +
+                          "' that carries the id '" + device.getDeviceIdentifier() + "'");
+            } catch (SQLException e) {
+                log.error("Error occurred while opening a connection to the data source", e);
+            } finally {
+                DeviceManagementDAOFactory.closeConnection();
+            }
+            device.setDeviceInfo(info);
+
+            try {
+                DeviceManagementDAOFactory.openConnection();
+                List<Application> applications = applicationDAO.getInstalledApplications(device.getId());
+                device.setApplications(applications);
+            } catch (DeviceManagementDAOException e) {
+                log.error("Error occurred while retrieving the application list of '" + device.getType() + "', " +
+                          "which carries the id '" + device.getId() + "'", e);
+            } catch (SQLException e) {
+                log.error("Error occurred while opening a connection to the data source", e);
+            } finally {
+                DeviceManagementDAOFactory.closeConnection();
+            }
+
+            DeviceManager deviceManager = this.getDeviceManager(deviceType);
+            if (deviceManager == null) {
+                if (log.isDebugEnabled()) {
+                    log.debug("Device Manager associated with the device type '" + deviceType + "' is null. " +
+                              "Therefore, not attempting method 'isEnrolled'");
+                }
+                devices.add(device);
+                continue;
+            }
+            Device dmsDevice =
+                    deviceManager.getDevice(new DeviceIdentifier(device.getDeviceIdentifier(), device.getType()));
+            if (dmsDevice != null) {
+                device.setFeatures(dmsDevice.getFeatures());
+                device.setProperties(dmsDevice.getProperties());
+            }
+            devices.add(device);
+        }
+        return devices;
+    }
+
+    @Override
     public void sendEnrolmentInvitation(EmailMetaInfo metaInfo) throws DeviceManagementException {
         Map<String, TypedValue<Class<?>, Object>> params = new HashMap<>();
         params.put(org.wso2.carbon.device.mgt.core.DeviceManagementConstants.EmailAttributes.FIRST_NAME,

@@ -97,8 +97,7 @@ public class MonitoringTask implements Task {
                         }
                         for (Device device : devices) {
                             EnrolmentInfo.Status status = device.getEnrolmentInfo().getStatus();
-                            if (status.equals(EnrolmentInfo.Status.INACTIVE) ||
-                                    status.equals(EnrolmentInfo.Status.BLOCKED) ||
+                            if (status.equals(EnrolmentInfo.Status.BLOCKED) ||
                                     status.equals(EnrolmentInfo.Status.REMOVED) ||
                                     status.equals(EnrolmentInfo.Status.UNCLAIMED) ||
                                     status.equals(EnrolmentInfo.Status.DISENROLLMENT_REQUESTED) ||

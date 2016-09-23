@@ -34,6 +34,7 @@ var DEVICE_OS_BUILD_DATE = "osBuildDate";
 var DEVICE_PROPERTIES = "properties";
 var DEVICE_ENROLLMENT_INFO = "enrolmentInfo";
 var DEVICE_STATUS = "status";
+var DEVICE_INFO = "deviceInfo";
 
 var FEATURE_NAME = "featureName";
 var FEATURE_DESCRIPTION = "featureDescription";

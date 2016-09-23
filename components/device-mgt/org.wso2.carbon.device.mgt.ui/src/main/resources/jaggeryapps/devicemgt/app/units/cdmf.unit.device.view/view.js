@@ -27,7 +27,7 @@ function onRequest(context) {
 
         if (device) {
             var viewModel = {};
-            var deviceInfo = device.properties.DEVICE_INFO;
+            var deviceInfo = (device.properties) ? device.properties.DEVICE_INFO : null;
             if (deviceInfo != undefined && String(deviceInfo.toString()).length > 0) {
                 deviceInfo = parse(stringify(deviceInfo));
                 if (device.type == "ios") {

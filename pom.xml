@@ -1711,7 +1711,7 @@
              by default) and nothing else. We had troubles with other repositories in
              the past. Therefore configuring additional repositories here should be
              considered very carefully. -->
-        <repository>
+      <repository>
             <id>wso2-nexus</id>
             <name>WSO2 internal Repository</name>
             <url>http://maven.wso2.org/nexus/content/groups/wso2-public/</url>
@@ -1816,7 +1816,7 @@
         <version.commons.lang>2.6.0.wso2v1</version.commons.lang>
 
         <!-- Carbon API Management -->
-        <carbon.api.mgt.version>6.0.5-SNAPSHOT</carbon.api.mgt.version>
+        <carbon.api.mgt.version>6.0.5</carbon.api.mgt.version>
         <carbon.api.mgt.version.range>(5.0.0,7.0.0]</carbon.api.mgt.version.range>
 
         <!-- Carbon Analytics Commons -->
@@ -1835,11 +1835,11 @@
 
         <!-- BouncyCastle -->
         <bcprov.wso2.version>1.52.0.wso2v1</bcprov.wso2.version>
-        <bcpkix.wso2.version>1.52.0.wso2v1</bcpkix.wso2.version>
+        <bcpkix.wso2.version>1.52.0.wso2v2</bcpkix.wso2.version>
         <bcprov.wso2.version.range>[1.52.0,1.60.0)</bcprov.wso2.version.range>
 
         <!-- JSCEP -->
-        <jscep.version>2.3.0.wso2v1</jscep.version>
+        <jscep.version>2.3.0.wso2v2</jscep.version>
 
         <!-- Nimbus Jose-->
         <nimbus.orbit.version>2.26.1.wso2v3</nimbus.orbit.version>

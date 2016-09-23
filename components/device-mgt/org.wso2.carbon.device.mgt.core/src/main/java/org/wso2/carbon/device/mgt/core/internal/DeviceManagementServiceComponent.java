@@ -241,11 +241,6 @@ public class DeviceManagementServiceComponent {
                 = new NotificationManagementServiceImpl();
         bundleContext.registerService(NotificationManagementService.class.getName(), notificationManagementService, null);
 
-        /* Registering PermissionManager Service */
-        PermissionManagerService permissionManagerService
-                = PermissionManagerServiceImpl.getInstance();
-        bundleContext.registerService(PermissionManagerService.class.getName(), permissionManagerService, null);
-
         /* Registering DeviceAccessAuthorization Service */
         DeviceAccessAuthorizationService deviceAccessAuthorizationService = new DeviceAccessAuthorizationServiceImpl();
         DeviceManagementDataHolder.getInstance().setDeviceAccessAuthorizationService(deviceAccessAuthorizationService);
@@ -262,6 +257,10 @@ public class DeviceManagementServiceComponent {
         } catch (ApplicationManagementException e) {
             log.error("Application management service not registered.", e);
         }
+
+        /* Registering PermissionManager Service */
+        PermissionManagerService permissionManagerService = PermissionManagerServiceImpl.getInstance();
+        bundleContext.registerService(PermissionManagerService.class.getName(), permissionManagerService, null);
     }
 
     private void setupDeviceManagementSchema(DataSourceConfig config) throws DeviceManagementException {

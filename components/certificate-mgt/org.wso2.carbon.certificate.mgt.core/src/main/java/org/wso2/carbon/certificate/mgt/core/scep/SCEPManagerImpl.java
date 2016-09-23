@@ -19,12 +19,12 @@ package org.wso2.carbon.certificate.mgt.core.scep;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.certificate.mgt.core.internal.CertificateManagementDataHolder;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
-import org.wso2.carbon.device.mgt.core.dao.DeviceDAO;
-import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
-import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
+import org.wso2.carbon.device.mgt.common.DeviceManagementException;
+import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.user.api.UserStoreException;
 import org.wso2.carbon.user.core.service.RealmService;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
@@ -33,19 +33,18 @@ import java.sql.SQLException;
 import java.util.HashMap;
 
 public class SCEPManagerImpl implements SCEPManager {
-    private DeviceDAO deviceDAO;
     private static final Log log = LogFactory.getLog(SCEPManagerImpl.class);
+    DeviceManagementProviderService dms;
 
     public SCEPManagerImpl() {
-        deviceDAO = DeviceManagementDAOFactory.getDeviceDAO();
+        this.dms = CertificateManagementDataHolder.getInstance().getDeviceManagementService();
     }
 
     @Override
     public TenantedDeviceWrapper getValidatedDevice(DeviceIdentifier deviceIdentifier) throws SCEPException {
         TenantedDeviceWrapper tenantedDeviceWrapper = new TenantedDeviceWrapper();
         try {
-            DeviceManagementDAOFactory.openConnection();
-            HashMap<Integer, Device> deviceHashMap = deviceDAO.getDevice(deviceIdentifier);
+            HashMap<Integer, Device> deviceHashMap = dms.getTenantedDevice(deviceIdentifier);
             Object[] keySet = deviceHashMap.keySet().toArray();
 
             if (keySet == null || keySet.length == 0) {
@@ -71,15 +70,12 @@ public class SCEPManagerImpl implements SCEPManager {
 
             String tenantDomain = realmService.getTenantManager().getDomain(tenantId);
             tenantedDeviceWrapper.setTenantDomain(tenantDomain);
-        } catch (SQLException e) {
-            throw new SCEPException("Error occurred while getting the datasource connection.", e);
-        } catch (DeviceManagementDAOException e) {
-            throw new SCEPException("Error occurred while reading the device dao.", e);
         } catch (UserStoreException e) {
             throw new SCEPException("Error occurred while getting the tenant domain.", e);
+        } catch (DeviceManagementException e) {
+            throw new SCEPException("Error occurred while getting device '" + deviceIdentifier + "'.", e);
         } finally {
             PrivilegedCarbonContext.endTenantFlow();
-            DeviceManagementDAOFactory.closeConnection();
         }
         return tenantedDeviceWrapper;
     }

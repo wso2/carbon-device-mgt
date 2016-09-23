@@ -49,8 +49,8 @@
             <artifactId>org.wso2.carbon.identity.authenticator.backend.oauth</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon.apimgt</groupId>
-            <artifactId>org.wso2.carbon.apimgt.keymgt.client</artifactId>
+            <groupId>org.wso2.carbon.registry</groupId>
+            <artifactId>org.wso2.carbon.registry.indexing</artifactId>
         </dependency>
     </dependencies>
 
@@ -84,13 +84,13 @@
                                     org.wso2.carbon.devicemgt:org.wso2.carbon.identity.authenticator.backend.oauth:${carbon.device.mgt.version}
                                 </bundleDef>
                             </bundles>
-                            <importBundles>
-                                <importBundleDef>org.wso2.carbon.apimgt:org.wso2.carbon.apimgt.keymgt.client:${carbon.api.mgt.version}</importBundleDef>
-                            </importBundles>
                             <importFeatures>
                                 <importFeatureDef>org.wso2.carbon.core.server:${carbon.kernel.version}
                                 </importFeatureDef>
                             </importFeatures>
+                            <importBundles>
+                                <importBundleDef>org.wso2.carbon.registry:org.wso2.carbon.registry.indexing:${carbon.registry.version}</importBundleDef>
+                            </importBundles>
                         </configuration>
                     </execution>
                 </executions>

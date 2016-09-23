@@ -97,7 +97,10 @@ deviceModule = function () {
                             properties[constants["DEVICE_VENDOR"]] = constants["VENDOR_APPLE"];
                         }
                         deviceObject[constants["DEVICE_PROPERTIES"]] = properties;
-                        deviceObject[constants["DEVICE_INFO"]] = device["deviceInfo"];
+                        if (device["deviceInfo"]) {
+                            deviceObject[constants["DEVICE_INFO"]] = device["deviceInfo"];
+                        }
+
                         response["content"] = deviceObject;
                         return response;
                     } else if (backendResponse.status == 401) {

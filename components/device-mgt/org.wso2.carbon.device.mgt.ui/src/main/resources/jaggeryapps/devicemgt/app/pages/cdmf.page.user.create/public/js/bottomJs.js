@@ -86,7 +86,7 @@ validateInline["user-name"] = function () {
 validateInline["first-name"] = function () {
     var firstnameInput = $("input#firstname");
     if (firstnameInput.val()) {
-       disableInlineError("firstNameField", "fnError");
+        disableInlineError("firstNameField", "fnError");
     } else {
         enableInlineError("firstNameField", "fnError");
     }
@@ -179,27 +179,30 @@ $("#userStore").change(
         $("select option:selected").each(function () {
             str += $(this).text() + "";
         });
-        var getRolesAPI = deviceMgtAPIsBasePath + "/roles?user-store=" + str + "&limit=100";
+        if ($("#roles").length > 0) {
+            var getRolesAPI = deviceMgtAPIsBasePath + "/roles?user-store=" + str + "&limit=100";
 
-        invokerUtil.get(
-            getRolesAPI,
-            function (data) {
-                data = JSON.parse(data);
-                if (data.errorMessage) {
-                    $(errorMsg).text("Selected user store prompted an error : " + data.errorMessage);
-                    $(errorMsgWrapper).removeClass("hidden");
-                } else if (data["statusCode"] == 200) {
-                    $("#roles").empty();
-                    for (var i = 0; i < data.responseContent.length; i++) {
-                        var newOption = $('<option value="' + data.responseContent[i] + '">' + data.responseContent[i] + '</option>');
-                        $('#roles').append(newOption);
+            invokerUtil.get(
+                getRolesAPI,
+                function (data) {
+                    data = JSON.parse(data);
+                    if (data.errorMessage) {
+                        $(errorMsg).text("Selected user store prompted an error : " + data.errorMessage);
+                        $(errorMsgWrapper).removeClass("hidden");
+                    } else if (data["statusCode"] == 200) {
+                        $("#roles").empty();
+                        for (var i = 0; i < data.responseContent.length; i++) {
+                            var newOption = $('<option value="' + data.responseContent[i] + '">' + data.responseContent[i] + '</option>');
+                            $('#roles').append(newOption);
+                        }
                     }
-                }
-            },
-            function (jqXHR) {
+                },
+                function (jqXHR) {
 
-            }
-        );
+                }
+            );
+
+        }
     }).change();
 
 $(document).ready(function () {
@@ -224,7 +227,10 @@ $(document).ready(function () {
         var firstname = firstnameInput.val();
         var lastname = lastnameInput.val();
         var emailAddress = $("input#emailAddress").val();
-        var roles = $("select#roles").val();
+        var roles ;
+        if ($("#roles").length > 0) {
+            roles = $("select#roles").val();
+        }
         var errorMsgWrapper = "#user-create-error-msg";
         var errorMsg = "#user-create-error-msg span";
         if (!username) {
@@ -272,7 +278,9 @@ $(document).ready(function () {
                         $("input#firstname").val("");
                         $("input#lastname").val("");
                         $("input#email").val("");
-                        $("select#roles").select2("val", "");
+                        if ($("#roles").length > 0) {
+                            $("select#roles").select2("val", "");
+                        }
                         // Refreshing with success message
                         $("#user-create-form").addClass("hidden");
                         $("#user-created-msg").removeClass("hidden");

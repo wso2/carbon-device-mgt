@@ -26,9 +26,6 @@ import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroup;
 import org.wso2.carbon.device.mgt.common.group.mgt.GroupManagementException;
-import org.wso2.carbon.device.mgt.core.dao.DeviceDAO;
-import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
-import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderServiceImpl;
 import org.wso2.carbon.device.mgt.core.service.GroupManagementProviderService;
@@ -50,14 +47,12 @@ public class PolicyManagerImpl implements PolicyManager {
     private ProfileDAO profileDAO;
     private FeatureDAO featureDAO;
     private ProfileManager profileManager;
-    private DeviceDAO deviceDAO;
     private static Log log = LogFactory.getLog(PolicyManagerImpl.class);
 
     public PolicyManagerImpl() {
         this.policyDAO = PolicyManagementDAOFactory.getPolicyDAO();
         this.profileDAO = PolicyManagementDAOFactory.getProfileDAO();
         this.featureDAO = PolicyManagementDAOFactory.getFeatureDAO();
-        this.deviceDAO = DeviceManagementDAOFactory.getDeviceDAO();
         this.profileManager = new ProfileManagerImpl();
     }
 

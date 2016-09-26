@@ -75,7 +75,7 @@ var disableInlineError = function (inputField, errorMsg, errorSign) {
  */
 validateInline["user-name"] = function () {
     var usernameinput = $("input#username");
-    if (inputIsValid( usernameinput.data("regex"), usernameinput.val())) {
+    if (inputIsValid(usernameinput.data("regex"), usernameinput.val())) {
         disableInlineError("usernameInputField", "usernameEmpty", "usernameError");
     } else {
         enableInlineError("usernameInputField", "usernameEmpty", "usernameError");
@@ -113,12 +113,12 @@ validateInline["last-name"] = function () {
 validateInline["emailAddress"] = function () {
     var email = $("#emailAddress").val();
     if (!email) {
-        enableInlineError("emailField", "email-required" , "emailError");
+        enableInlineError("emailField", "email-required", "emailError");
     } else if (emailIsValid(email)) {
-        disableInlineError("emailField", "email-required" , "emailError");
-        disableInlineError("emailField", "email-invalid" , "emailError");
+        disableInlineError("emailField", "email-required", "emailError");
+        disableInlineError("emailField", "email-invalid", "emailError");
     } else {
-        enableInlineError("emailField", "email-invalid" , "emailError");
+        enableInlineError("emailField", "email-invalid", "emailError");
     }
 };
 
@@ -148,8 +148,8 @@ clearInline["last-name"] = function () {
  * clear Validation messages when gain focus to the field.
  */
 clearInline["emailAddress"] = function () {
-    disableInlineError("emailField", "email-required" , "emailError");
-    disableInlineError("emailField", "email-invalid" , "emailError");
+    disableInlineError("emailField", "email-required", "emailError");
+    disableInlineError("emailField", "email-invalid", "emailError");
 };
 
 /**
@@ -168,11 +168,16 @@ $(document).ready(function () {
     $("select.select2[multiple=multiple]").select2({
         tags: false
     });
-    var roleList = $("#roles").attr("selectedVals").trim().replace(/ /g, "");
-    roleList = roleList.replace(/(\r\n|\n|\r)/gm, "");
-    var roleArr = roleList.split(",");
-    $("#roles").val(roleArr).trigger("change");
+    var roleList, roleArr;
+    if ($("#roles").length > 0) {
+        roleList = $("#roles").attr("selectedVals").trim().replace(/ /g, "");
+        roleList = roleList.replace(/(\r\n|\n|\r)/gm, "");
+        roleArr = roleList.split(",");
+    }
 
+    if ($("#roles").length > 0) {
+        $("#roles").val(roleArr).trigger("change");
+    }
     /**
      * Following click function would execute
      * when a user clicks on "Add User" button
@@ -188,7 +193,10 @@ $(document).ready(function () {
         var firstname = firstnameInput.val();
         var lastname = lastnameInput.val();
         var emailAddress = $("input#emailAddress").val();
-        var roles = $("select#roles").val();
+        var roles;
+        if ($("#roles").length > 0) {
+            var roles = $("select#roles").val();
+        }
         var errorMsgWrapper = "#user-create-error-msg";
         var errorMsg = "#user-create-error-msg span";
         if (!username) {
@@ -255,27 +263,27 @@ $(document).ready(function () {
         }
     });
 
-    $("#emailAddress").focus(function() {
+    $("#emailAddress").focus(function () {
         clearInline["emailAddress"]();
     });
 
-    $("#emailAddress").blur(function() {
+    $("#emailAddress").blur(function () {
         validateInline["emailAddress"]();
     });
 
-    $("#lastname").focus(function() {
+    $("#lastname").focus(function () {
         clearInline["last-name"]();
     });
 
-    $("#lastname").blur(function() {
+    $("#lastname").blur(function () {
         validateInline["last-name"]();
     });
 
-    $("#firstname").focus(function() {
+    $("#firstname").focus(function () {
         clearInline["first-name"]();
     });
 
-    $("#firstname").blur(function() {
+    $("#firstname").blur(function () {
         validateInline["first-name"]();
     });
 });

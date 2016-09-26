@@ -758,6 +758,30 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     }
 
     @Override
+    public HashMap<Integer, Device> getTenantedDevice(DeviceIdentifier deviceIdentifier) throws DeviceManagementException {
+        HashMap<Integer, Device> deviceHashMap;
+        try {
+            DeviceManagementDAOFactory.openConnection();
+            deviceHashMap = deviceDAO.getDevice(deviceIdentifier);
+            if (deviceHashMap == null) {
+                if (log.isDebugEnabled()) {
+                    log.debug("No device is found upon the type '" + deviceIdentifier.getType() + "' and id '" +
+                            deviceIdentifier.getId() + "'");
+                }
+                return null;
+            }
+        } catch (DeviceManagementDAOException e) {
+            throw new DeviceManagementException("Error occurred while obtaining the device for id " +
+                    "'" + deviceIdentifier.getId() + "'", e);
+        } catch (SQLException e) {
+            throw new DeviceManagementException("Error occurred while opening a connection to the data source", e);
+        } finally {
+            DeviceManagementDAOFactory.closeConnection();
+        }
+        return deviceHashMap;
+    }
+
+    @Override
     public Device getDevice(DeviceIdentifier deviceId) throws DeviceManagementException {
         Device device;
         try {

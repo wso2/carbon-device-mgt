@@ -67,6 +67,22 @@ public class ComplianceDecisionPointImpl implements ComplianceDecisionPoint {
     }
 
     @Override
+    public void setDevicesAsInactive(List<DeviceIdentifier> deviceIdentifiers) throws PolicyComplianceException {
+        try {
+            DeviceManagementProviderService service = this.getDeviceManagementProviderService();
+            for (DeviceIdentifier deviceIdentifier : deviceIdentifiers) {
+                Device device = service.getDevice(deviceIdentifier);
+                service.setStatus(deviceIdentifier, device.getEnrolmentInfo().getOwner(),
+                                  EnrolmentInfo.Status.INACTIVE);
+            }
+        } catch (DeviceManagementException e) {
+            String msg = "Error occurred while setting the device as inactive";
+            log.error(msg, e);
+            throw new PolicyComplianceException(msg, e);
+        }
+    }
+
+    @Override
     public void setDevicesAsUnreachableWith(List<Device> devices) throws PolicyComplianceException {
         try {
             DeviceManagementProviderService service = this.getDeviceManagementProviderService();

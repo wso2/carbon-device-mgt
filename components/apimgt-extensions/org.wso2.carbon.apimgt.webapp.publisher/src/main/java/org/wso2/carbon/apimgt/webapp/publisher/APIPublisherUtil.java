@@ -47,6 +47,7 @@ public class APIPublisherUtil {
     private static final String PARAM_MANAGED_API_ENDPOINT = "managed-api-endpoint";
     private static final String PARAM_MANAGED_API_OWNER = "managed-api-owner";
     private static final String PARAM_MANAGED_API_TRANSPORTS = "managed-api-transports";
+    private static final String PARAM_MANAGED_API_POLICY = "managed-api-policy";
     private static final String PARAM_MANAGED_API_IS_SECURED = "managed-api-isSecured";
     private static final String PARAM_SHARED_WITH_ALL_TENANTS = "isSharedWithAllTenants";
     private static final String PARAM_PROVIDER_TENANT_DOMAIN = "providerTenantDomain";
@@ -80,6 +81,7 @@ public class APIPublisherUtil {
         api.setEndpointSecured(true);
         api.setStatus(APIStatus.CREATED);
         api.setTransports(config.getTransports());
+        api.setApiLevelPolicy(config.getPolicy());
         api.setContextTemplate(config.getContextTemplate());
         Set<String> environments = new HashSet<>();
         environments.add(API_PUBLISH_ENVIRONMENT);
@@ -308,6 +310,16 @@ public class APIPublisherUtil {
             uriTemplates.add(template);
         }
         apiConfig.setUriTemplates(uriTemplates);
+
+        String policy = servletContext.getInitParameter(PARAM_MANAGED_API_POLICY);
+        if (policy == null || policy.isEmpty()) {
+            if (log.isDebugEnabled()) {
+                log.debug("'managed-api-policy' attribute is not configured. Therefore using the default, " +
+                        "which is 'null'");
+            }
+            policy = null;
+        }
+        apiConfig.setPolicy(policy);
 
         return apiConfig;
     }

@@ -22,7 +22,7 @@
     <parent>
         <groupId>org.wso2.carbon.devicemgt</groupId>
         <artifactId>email-sender</artifactId>
-        <version>1.2.1-SNAPSHOT</version>
+        <version>1.2.2-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -57,16 +57,17 @@
                             org.osgi.service.component,
                             org.apache.commons.logging,
                             javax.xml.*,
+			                javax.xml.parsers;version="${javax.xml.parsers.import.pkg.version}";resolution:=optional,
                             org.wso2.carbon.context,
                             org.wso2.carbon.utils.*,
                             org.wso2.carbon.registry.api,
                             org.w3c.dom,
-                            org.apache.velocity,
-                            org.apache.velocity.app,
-                            org.apache.velocity.context,
-                            org.apache.velocity.exception,
-                            org.apache.velocity.runtime.resource,
-                            org.apache.velocity.runtime.resource.loader,
+                            org.apache.velocity;version="${velocity.version}",
+                            org.apache.velocity.app;version="${velocity.version}",
+                            org.apache.velocity.context;version="${velocity.version}",
+                            org.apache.velocity.exception;version="${velocity.version}",
+                            org.apache.velocity.runtime.resource;version="${velocity.version}",
+                            org.apache.velocity.runtime.resource.loader;version="${velocity.version}",
                             org.apache.commons.io,
                             org.apache.axis2.transport.mail,
                             org.wso2.carbon.registry.core.service,
@@ -129,7 +130,7 @@
             <artifactId>axis2</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.apache.velocity</groupId>
+            <groupId>org.wso2.orbit.org.apache.velocity</groupId>
             <artifactId>velocity</artifactId>
         </dependency>
         <dependency>

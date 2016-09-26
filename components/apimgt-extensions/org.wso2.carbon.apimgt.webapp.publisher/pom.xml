@@ -22,13 +22,13 @@
     <parent>
         <artifactId>apimgt-extensions</artifactId>
         <groupId>org.wso2.carbon.devicemgt</groupId>
-        <version>1.2.1-SNAPSHOT</version>
+        <version>1.2.2-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>org.wso2.carbon.apimgt.webapp.publisher</artifactId>
-    <version>1.2.1-SNAPSHOT</version>
+    <version>1.2.2-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <name>WSO2 Carbon - API Management Webapp Publisher</name>
     <description>WSO2 Carbon - API Management Webapp Publisher</description>
@@ -143,6 +143,7 @@
                             org.apache.commons.logging,
                             javax.servlet,
                             javax.xml.*,
+                            javax.xml.parsers;version="${javax.xml.parsers.import.pkg.version}";resolution:=optional,
                             com.google.gson.*,
                             org.apache.catalina,
                             org.apache.catalina.core,

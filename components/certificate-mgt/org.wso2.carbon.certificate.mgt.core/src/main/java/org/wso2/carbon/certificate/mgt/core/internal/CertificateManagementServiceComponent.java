@@ -27,6 +27,8 @@ import org.wso2.carbon.certificate.mgt.core.config.CertificateManagementConfig;
 import org.wso2.carbon.certificate.mgt.core.config.datasource.DataSourceConfig;
 import org.wso2.carbon.certificate.mgt.core.dao.CertificateManagementDAOFactory;
 import org.wso2.carbon.certificate.mgt.core.exception.CertificateManagementException;
+import org.wso2.carbon.certificate.mgt.core.scep.SCEPManager;
+import org.wso2.carbon.certificate.mgt.core.scep.SCEPManagerImpl;
 import org.wso2.carbon.certificate.mgt.core.service.CertificateManagementService;
 import org.wso2.carbon.certificate.mgt.core.service.CertificateManagementServiceImpl;
 import org.wso2.carbon.certificate.mgt.core.util.CertificateManagementConstants;
@@ -71,6 +73,9 @@ public class CertificateManagementServiceComponent {
             }
             bundleContext.registerService(CertificateManagementService.class.getName(),
                     CertificateManagementServiceImpl.getInstance(), null);
+
+            bundleContext.registerService(SCEPManager.class.getName(),
+                    new SCEPManagerImpl(), null);
 
             if (log.isDebugEnabled()) {
                 log.debug("Certificate management core bundle has been successfully initialized");

@@ -16,12 +16,10 @@
  * under the License.
  */
 
-
 package org.wso2.carbon.policy.mgt.core.mgt.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
@@ -30,12 +28,8 @@ import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
 import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
 import org.wso2.carbon.device.mgt.core.config.policy.PolicyConfiguration;
-import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
-import org.wso2.carbon.device.mgt.core.dao.DeviceTypeDAO;
-import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 import org.wso2.carbon.device.mgt.core.operation.mgt.CommandOperation;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
-import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderServiceImpl;
 import org.wso2.carbon.policy.mgt.common.Policy;
 import org.wso2.carbon.policy.mgt.common.PolicyManagementException;
 import org.wso2.carbon.policy.mgt.common.ProfileFeature;
@@ -56,8 +50,6 @@ import java.util.Map;
 public class MonitoringManagerImpl implements MonitoringManager {
 
     private PolicyDAO policyDAO;
-    //    private DeviceDAO deviceDAO;
-    private DeviceTypeDAO deviceTypeDAO;
     private MonitoringDAO monitoringDAO;
     private ComplianceDecisionPoint complianceDecisionPoint;
     private PolicyConfiguration policyConfiguration;
@@ -69,8 +61,6 @@ public class MonitoringManagerImpl implements MonitoringManager {
 
     public MonitoringManagerImpl() {
         this.policyDAO = PolicyManagementDAOFactory.getPolicyDAO();
-//        this.deviceDAO = DeviceManagementDAOFactory.getDeviceDAO();
-        this.deviceTypeDAO = DeviceManagementDAOFactory.getDeviceTypeDAO();
         this.monitoringDAO = PolicyManagementDAOFactory.getMonitoringDAO();
         this.complianceDecisionPoint = new ComplianceDecisionPointImpl();
         this.policyConfiguration =
@@ -84,8 +74,9 @@ public class MonitoringManagerImpl implements MonitoringManager {
 
         List<ComplianceFeature> complianceFeatures = new ArrayList<>();
         try {
-            DeviceManagementProviderService service = new DeviceManagementProviderServiceImpl();
-            PolicyManager manager = new PolicyManagerImpl();
+            DeviceManagementProviderService service =
+                    PolicyManagementDataHolder.getInstance().getDeviceManagementService();
+            PolicyManager manager = PolicyManagementDataHolder.getInstance().getPolicyManager();
             Device device = service.getDevice(deviceIdentifier);
             Policy policy = manager.getAppliedPolicyToDevice(deviceIdentifier);
             if (policy != null) {
@@ -99,7 +90,7 @@ public class MonitoringManagerImpl implements MonitoringManager {
                     PolicyManagementDAOFactory.openConnection();
                     ComplianceData cmd = monitoringDAO.getCompliance(device.getId(), device.getEnrolmentInfo().getId());
                     complianceData = monitoringService.checkPolicyCompliance(deviceIdentifier,
-                            policy, deviceResponse);
+                                                                             policy, deviceResponse);
 
                     complianceData.setId(cmd.getId());
                     complianceData.setPolicy(policy);
@@ -109,8 +100,9 @@ public class MonitoringManagerImpl implements MonitoringManager {
                 } catch (SQLException e) {
                     throw new PolicyComplianceException("Error occurred while opening a data source connection", e);
                 } catch (MonitoringDAOException e) {
-                    throw new PolicyComplianceException("Unable to add the none compliance features to database for device " +
-                                                        deviceIdentifier.getId() + " - " + deviceIdentifier.getType(), e);
+                    throw new PolicyComplianceException(
+                            "Unable to add the none compliance features to database for device " +
+                            deviceIdentifier.getId() + " - " + deviceIdentifier.getType(), e);
                 } finally {
                     PolicyManagementDAOFactory.closeConnection();
                 }
@@ -121,19 +113,20 @@ public class MonitoringManagerImpl implements MonitoringManager {
                     try {
                         PolicyManagementDAOFactory.beginTransaction();
                         monitoringDAO.setDeviceAsNoneCompliance(device.getId(), device.getEnrolmentInfo().getId(),
-                                policy.getId());
+                                                                policy.getId());
                         if (log.isDebugEnabled()) {
                             log.debug("Compliance status primary key " + complianceData.getId());
                         }
                         monitoringDAO.deleteNoneComplianceData(complianceData.getId());
                         monitoringDAO.addNonComplianceFeatures(complianceData.getId(), device.getId(),
-                                complianceFeatures);
+                                                               complianceFeatures);
 
                         PolicyManagementDAOFactory.commitTransaction();
                     } catch (MonitoringDAOException e) {
                         PolicyManagementDAOFactory.rollbackTransaction();
-                        throw new PolicyComplianceException("Unable to add the none compliance features to database for device " +
-                                                            deviceIdentifier.getId() + " - " + deviceIdentifier.getType(), e);
+                        throw new PolicyComplianceException(
+                                "Unable to add the none compliance features to database for device " +
+                                deviceIdentifier.getId() + " - " + deviceIdentifier.getType(), e);
                     } finally {
                         PolicyManagementDAOFactory.closeConnection();
                     }
@@ -155,8 +148,9 @@ public class MonitoringManagerImpl implements MonitoringManager {
                         PolicyManagementDAOFactory.commitTransaction();
                     } catch (MonitoringDAOException e) {
                         PolicyManagementDAOFactory.rollbackTransaction();
-                        throw new PolicyComplianceException("Unable to remove the none compliance features from database for device " +
-                                                            deviceIdentifier.getId() + " - " + deviceIdentifier.getType(), e);
+                        throw new PolicyComplianceException(
+                                "Unable to remove the none compliance features from database for device " +
+                                deviceIdentifier.getId() + " - " + deviceIdentifier.getType(), e);
                     } finally {
                         PolicyManagementDAOFactory.closeConnection();
                     }
@@ -168,10 +162,10 @@ public class MonitoringManagerImpl implements MonitoringManager {
             }
         } catch (DeviceManagementException e) {
             throw new PolicyComplianceException("Unable tor retrieve device data from DB for " +
-                    deviceIdentifier.getId() + " - " + deviceIdentifier.getType(), e);
+                                                deviceIdentifier.getId() + " - " + deviceIdentifier.getType(), e);
         } catch (PolicyManagerDAOException | PolicyManagementException e) {
             throw new PolicyComplianceException("Unable tor retrieve policy data from DB for device " +
-                    deviceIdentifier.getId() + " - " + deviceIdentifier.getType(), e);
+                                                deviceIdentifier.getId() + " - " + deviceIdentifier.getType(), e);
         }
         return complianceFeatures;
     }
@@ -179,21 +173,22 @@ public class MonitoringManagerImpl implements MonitoringManager {
     @Override
     public boolean isCompliance(DeviceIdentifier deviceIdentifier) throws PolicyComplianceException {
         try {
-            DeviceManagementProviderService service = new DeviceManagementProviderServiceImpl();
+            DeviceManagementProviderService service =
+                    PolicyManagementDataHolder.getInstance().getDeviceManagementService();
             Device device = service.getDevice(deviceIdentifier);
             PolicyManagementDAOFactory.openConnection();
             ComplianceData complianceData = monitoringDAO.getCompliance(device.getId(), device.getEnrolmentInfo()
-                    .getId());
+                                                                                              .getId());
             if (complianceData == null || !complianceData.isStatus()) {
                 return false;
             }
         } catch (DeviceManagementException e) {
             throw new PolicyComplianceException("Unable to retrieve device data for " + deviceIdentifier.getId() +
-                    " - " + deviceIdentifier.getType(), e);
+                                                " - " + deviceIdentifier.getType(), e);
 
         } catch (MonitoringDAOException e) {
             throw new PolicyComplianceException("Unable to retrieve compliance status for " + deviceIdentifier.getId() +
-                    " - " + deviceIdentifier.getType(), e);
+                                                " - " + deviceIdentifier.getType(), e);
         } catch (SQLException e) {
             throw new PolicyComplianceException("Error occurred while opening a connection to the data source", e);
         } finally {
@@ -204,12 +199,12 @@ public class MonitoringManagerImpl implements MonitoringManager {
 
     @Override
     public ComplianceData getDevicePolicyCompliance(DeviceIdentifier deviceIdentifier) throws
-            PolicyComplianceException {
-
+                                                                                       PolicyComplianceException {
         ComplianceData complianceData;
         try {
             PolicyManagementDAOFactory.openConnection();
-            DeviceManagementProviderService service = new DeviceManagementProviderServiceImpl();
+            DeviceManagementProviderService service =
+                    PolicyManagementDataHolder.getInstance().getDeviceManagementService();
             Device device = service.getDevice(deviceIdentifier);
             complianceData = monitoringDAO.getCompliance(device.getId(), device.getEnrolmentInfo().getId());
             List<ComplianceFeature> complianceFeatures =
@@ -218,11 +213,11 @@ public class MonitoringManagerImpl implements MonitoringManager {
 
         } catch (DeviceManagementException e) {
             throw new PolicyComplianceException("Unable to retrieve device data for " + deviceIdentifier.getId() +
-                    " - " + deviceIdentifier.getType(), e);
+                                                " - " + deviceIdentifier.getType(), e);
 
         } catch (MonitoringDAOException e) {
             throw new PolicyComplianceException("Unable to retrieve compliance data for " + deviceIdentifier.getId() +
-                    " - " + deviceIdentifier.getType(), e);
+                                                " - " + deviceIdentifier.getType(), e);
         } catch (SQLException e) {
             throw new PolicyComplianceException("Error occurred while opening a connection to the data source", e);
         } finally {
@@ -241,6 +236,7 @@ public class MonitoringManagerImpl implements MonitoringManager {
 
         try {
             PolicyManagementDAOFactory.openConnection();
+            //TODO: Return a map from getCompliance to reduce O(n^2) -> O(n)
             List<ComplianceData> cd = monitoringDAO.getCompliance();
 
             for (Device device : devices) {
@@ -275,7 +271,7 @@ public class MonitoringManagerImpl implements MonitoringManager {
         Map<Integer, Device> deviceIdsToAddOperation = new HashMap<>();
         Map<Integer, Device> deviceIdsWithExistingOperation = new HashMap<>();
         Map<Integer, Device> inactiveDeviceIds = new HashMap<>();
-        Map<Integer, Device> deviceToMarkUnreachable = new HashMap<>();
+        Map<Integer, Device> devicesToMarkUnreachable = new HashMap<>();
         //Map<Integer, Integer> firstTimeDeviceIdsWithPolicyIds = new HashMap<>();
 
         List<PolicyDeviceWrapper> firstTimeDevices = new ArrayList<>();
@@ -290,18 +286,18 @@ public class MonitoringManagerImpl implements MonitoringManager {
 
                     if (complianceData.getAttempts() == 0) {
                         deviceIdsToAddOperation.put(complianceData.getDeviceId(),
-                                deviceIds.get(complianceData.getDeviceId()));
+                                                    deviceIds.get(complianceData.getDeviceId()));
                     } else {
                         deviceIdsWithExistingOperation.put(complianceData.getDeviceId(),
-                                deviceIds.get(complianceData.getDeviceId()));
+                                                           deviceIds.get(complianceData.getDeviceId()));
                         if (complianceData.getAttempts() >= policyConfiguration.getMinRetriesToMarkUnreachable()) {
-                            deviceToMarkUnreachable.put(complianceData.getDeviceId(),
-                                    deviceIds.get(complianceData.getDeviceId()));
+                            devicesToMarkUnreachable.put(complianceData.getDeviceId(),
+                                                        deviceIds.get(complianceData.getDeviceId()));
                         }
                     }
                     if (complianceData.getAttempts() >= policyConfiguration.getMinRetriesToMarkInactive()) {
                         inactiveDeviceIds.put(complianceData.getDeviceId(),
-                                deviceIds.get(complianceData.getDeviceId()));
+                                              deviceIds.get(complianceData.getDeviceId()));
                     }
                 }
             }
@@ -325,14 +321,14 @@ public class MonitoringManagerImpl implements MonitoringManager {
                 log.debug("These devices are in the system for the first time");
                 for (PolicyDeviceWrapper wrapper : firstTimeDevices) {
                     log.debug("First time device primary key : " + wrapper.getDeviceId() + " & policy id " +
-                            wrapper.getPolicyId());
+                              wrapper.getPolicyId());
                 }
             }
 
             PolicyManagementDAOFactory.beginTransaction();
 
             if (!deviceIdsToAddOperation.isEmpty()) {
-//                monitoringDAO.addComplianceDetails(firstTimeDeviceIdsWithPolicyIds);
+                //                monitoringDAO.addComplianceDetails(firstTimeDeviceIdsWithPolicyIds);
                 monitoringDAO.addComplianceDetails(firstTimeDevices);
                 monitoringDAO.updateAttempts(new ArrayList<>(deviceIdsToAddOperation.keySet()), false);
             }
@@ -365,26 +361,29 @@ public class MonitoringManagerImpl implements MonitoringManager {
         // TODO : This should be uncommented, this is to mark the device as unreachable, But given the current
         // implementation we are not able to do so.
 
-//        if(!deviceToMarkUnreachable.isEmpty()) {
-//        ComplianceDecisionPoint decisionPoint = new ComplianceDecisionPointImpl();
-//            decisionPoint.setDevicesAsUnreachable(this.getDeviceIdentifiersFromDevices(
-//                       new ArrayList<>(deviceToMarkUnreachable.values())));
-//        }
+        if (!devicesToMarkUnreachable.isEmpty()) {
+            ComplianceDecisionPoint decisionPoint = new ComplianceDecisionPointImpl();
+            decisionPoint.setDevicesAsUnreachable(this.getDeviceIdentifiersFromDevices(
+                    new ArrayList<>(devicesToMarkUnreachable.values())));
+        }
+
+        if (!inactiveDeviceIds.isEmpty()) {
+            ComplianceDecisionPoint decisionPoint = new ComplianceDecisionPointImpl();
+            decisionPoint.setDevicesAsInactive(this.getDeviceIdentifiersFromDevices(
+                    new ArrayList<>(inactiveDeviceIds.values())));
+        }
 
     }
 
     @Override
-    public List<DeviceType> getDeviceTypes() throws PolicyComplianceException {
+    public List<String> getDeviceTypes() throws PolicyComplianceException {
 
-        List<DeviceType> deviceTypes = new ArrayList<>();
+        List<String> deviceTypes = new ArrayList<>();
         try {
-            DeviceManagementDAOFactory.openConnection();
-            int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
-            deviceTypes = deviceTypeDAO.getDeviceTypes(tenantId);
-        } catch (Exception e) {
-            log.error("Error occurred while getting the device types.", e);
-        } finally {
-            DeviceManagementDAOFactory.closeConnection();
+            deviceTypes =
+                    PolicyManagementDataHolder.getInstance().getDeviceManagementService().getAvailableDeviceTypes();
+        } catch (DeviceManagementException e) {
+            throw new PolicyComplianceException("Error occurred while getting the device types.", e);
         }
         return deviceTypes;
     }
@@ -397,24 +396,24 @@ public class MonitoringManagerImpl implements MonitoringManager {
         monitoringOperation.setEnabled(true);
         monitoringOperation.setType(Operation.Type.COMMAND);
         monitoringOperation.setCode(OPERATION_MONITOR);
-//	    CommandOperation infoOperation = new CommandOperation();
-//	    infoOperation.setEnabled(true);
-//	    infoOperation.setType(Operation.Type.COMMAND);
-//	    infoOperation.setCode(OPERATION_INFO);
-//	    CommandOperation appListOperation = new CommandOperation();
-//	    appListOperation.setEnabled(true);
-//	    appListOperation.setType(Operation.Type.COMMAND);
-//	    appListOperation.setCode(OPERATION_APP_LIST);
+        //	    CommandOperation infoOperation = new CommandOperation();
+        //	    infoOperation.setEnabled(true);
+        //	    infoOperation.setType(Operation.Type.COMMAND);\\
+        //	    infoOperation.setCode(OPERATION_INFO);
+        //	    CommandOperation appListOperation = new CommandOperation();
+        //	    appListOperation.setEnabled(true);
+        //	    appListOperation.setType(Operation.Type.COMMAND);
+        //	    appListOperation.setCode(OPERATION_APP_LIST);
 
         //TODO: Fix this properly later adding device type to be passed in when the task manage executes "addOperations()"
         String type = null;
         if (deviceIdentifiers.size() > 0) {
             type = deviceIdentifiers.get(0).getType();
         }
-        DeviceManagementProviderService service = new DeviceManagementProviderServiceImpl();
+        DeviceManagementProviderService service = PolicyManagementDataHolder.getInstance().getDeviceManagementService();
         service.addOperation(type, monitoringOperation, deviceIdentifiers);
-//	    service.addOperation(infoOperation, deviceIdentifiers);
-//	    service.addOperation(appListOperation, deviceIdentifiers);
+        //	    service.addOperation(infoOperation, deviceIdentifiers);
+        //	    service.addOperation(appListOperation, deviceIdentifiers);
     }
 
     private List<DeviceIdentifier> getDeviceIdentifiersFromDevices(List<Device> devices) {

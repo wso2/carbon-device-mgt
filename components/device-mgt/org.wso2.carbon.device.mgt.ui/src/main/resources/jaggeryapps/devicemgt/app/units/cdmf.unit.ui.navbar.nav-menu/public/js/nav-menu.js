@@ -102,23 +102,28 @@ function loadNewNotifications() {
                         if (responsePayload.count > 0) {
                             $(messageSideBar).html(template(viewModel));
                         } else {
-                            $(messageSideBar).html("<h4 class='text-center'>No new notifications found...</h4>");
+                            $(messageSideBar).html(
+                                "<h4 class='text-center'>No New Notifications</h4>" +
+                                "<h5 class='text-center text-muted'>" +
+                                    "Check this section for error notifications<br>related to device operations" +
+                                "</h5>"
+                            );
                         }
                     } else {
-                        $(messageSideBar).html("<h4 class ='message-danger'>Unexpected error occurred while loading new notifications.</h4>");
+                        $(messageSideBar).html("<h4 class ='message-danger text-center'>Unexpected error occurred while loading new notifications</h4>");
                     }
                 }
             };
             var errorCallback = function (jqXHR) {
                 if (jqXHR.status = 500) {
-                    $(messageSideBar).html("<h4 class ='message-danger'>Unexpected error occurred while trying " +
-                        "to retrieve any new notifications.</h4>");
+                    $(messageSideBar).html("<h4 class ='message-danger text-center'>Unexpected error occurred while trying " +
+                        "to retrieve any new notifications</h4>");
                 }
             };
             invokerUtil.get(serviceURL, successCallback, errorCallback);
         });
     } else {
-        $(messageSideBar).html("<h4 class ='message-danger'>You are not authorized to view notifications</h4>");
+        $(messageSideBar).html("<h4 class ='message-danger text-center'>You are not authorized to view notifications</h4>");
     }
 }
 

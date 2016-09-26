@@ -40,7 +40,6 @@ import java.util.Map;
 
 public class MonitoringTask implements Task {
 
-    private DeviceTypeDAO deviceTypeDAO;
     private static Log log = LogFactory.getLog(MonitoringTask.class);
 
     Map<String, String> properties;
@@ -53,7 +52,6 @@ public class MonitoringTask implements Task {
 
     @Override
     public void init() {
-        deviceTypeDAO = DeviceManagementDAOFactory.getDeviceTypeDAO();
     }
 
     @Override
@@ -63,9 +61,9 @@ public class MonitoringTask implements Task {
             log.debug("Monitoring task started to run.");
         }
 
-        MonitoringManager monitoringManager = new MonitoringManagerImpl();
+        MonitoringManager monitoringManager = PolicyManagementDataHolder.getInstance().getMonitoringManager();
 
-        List<DeviceType> deviceTypes = new ArrayList<>();
+        List<String> deviceTypes = new ArrayList<>();
         try {
             deviceTypes = monitoringManager.getDeviceTypes();
         } catch (PolicyComplianceException e) {
@@ -79,15 +77,15 @@ public class MonitoringTask implements Task {
                 DeviceManagementProviderService deviceManagementProviderService =
                         PolicyManagementDataHolder.getInstance().getDeviceManagementService();
 
-                for (DeviceType deviceType : deviceTypes) {
+                for (String deviceType : deviceTypes) {
 
                     if (log.isDebugEnabled()) {
-                        log.debug("Running task for device type : " + deviceType.getName());
+                        log.debug("Running task for device type : " + deviceType);
                     }
 
                     PolicyMonitoringService monitoringService =
-                            PolicyManagementDataHolder.getInstance().getPolicyMonitoringService(deviceType.getName());
-                    List<Device> devices = deviceManagementProviderService.getAllDevices(deviceType.getName());
+                            PolicyManagementDataHolder.getInstance().getPolicyMonitoringService(deviceType);
+                    List<Device> devices = deviceManagementProviderService.getAllDevices(deviceType);
                     if (monitoringService != null && !devices.isEmpty()) {
 
 
@@ -95,12 +93,11 @@ public class MonitoringTask implements Task {
 
                         if (log.isDebugEnabled()) {
                             log.debug("Removing inactive and blocked devices from the list for the device type : " +
-                                    deviceType.getName());
+                                    deviceType);
                         }
                         for (Device device : devices) {
                             EnrolmentInfo.Status status = device.getEnrolmentInfo().getStatus();
-                            if (status.equals(EnrolmentInfo.Status.INACTIVE) ||
-                                    status.equals(EnrolmentInfo.Status.BLOCKED) ||
+                            if (status.equals(EnrolmentInfo.Status.BLOCKED) ||
                                     status.equals(EnrolmentInfo.Status.REMOVED) ||
                                     status.equals(EnrolmentInfo.Status.UNCLAIMED) ||
                                     status.equals(EnrolmentInfo.Status.DISENROLLMENT_REQUESTED) ||
@@ -111,14 +108,15 @@ public class MonitoringTask implements Task {
                             }
                         }
                         if (log.isDebugEnabled()) {
-                            log.debug("Following devices selected to send the notification for " +
-                                    deviceType.getName());
+                            log.debug("Following devices selected to send the notification for " + deviceType);
                             for (Device device : notifiableDevices) {
                                 log.debug(device.getDeviceIdentifier());
                             }
                         }
-                        monitoringManager.addMonitoringOperation(notifiableDevices);
-                        monitoringService.notifyDevices(notifiableDevices);
+                        if (!notifiableDevices.isEmpty()) {
+                            monitoringManager.addMonitoringOperation(notifiableDevices);
+                            monitoringService.notifyDevices(notifiableDevices);
+                        }
                     }
                 }
                 if (log.isDebugEnabled()) {

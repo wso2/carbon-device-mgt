@@ -56,6 +56,7 @@ public class APIConfig {
     private String contextTemplate;
     private String endpoint;
     private String version;
+    private String policy;
     private String transports;
     private APIProvider provider;
     private boolean isSecured;
@@ -71,6 +72,16 @@ public class APIConfig {
         } catch (APIManagementException e) {
             throw new APIManagementException("Error occurred while initializing API provider", e);
         }
+    }
+
+    @XmlElement(name = "Policy", required = true)
+    public String getPolicy() {
+        return policy;
+    }
+
+    @SuppressWarnings("unused")
+    public void setPolicy(String policy) {
+        this.policy = policy;
     }
 
     @XmlElement(name = "ContextTemplate", required = true)

@@ -22,15 +22,15 @@
     <parent>
         <groupId>org.wso2.carbon.devicemgt</groupId>
         <artifactId>webapp-authenticator-framework-feature</artifactId>
-        <version>1.2.1-SNAPSHOT</version>
+        <version>1.2.2-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>org.wso2.carbon.webapp.authenticator.framework.server.feature</artifactId>
     <packaging>pom</packaging>
-    <version>1.2.1-SNAPSHOT</version>
-    <name>WSO2 Carbon - Device Management Server Feature</name>
+    <version>1.2.2-SNAPSHOT</version>
+    <name>WSO2 Carbon - Webapp Authenticator Framework Server Feature</name>
     <url>http://wso2.org</url>
     <description>This feature contains the core bundles required for Back-end Device Management functionality
     </description>
@@ -43,11 +43,7 @@
         <dependency>
             <groupId>org.wso2.carbon.apimgt</groupId>
             <artifactId>org.wso2.carbon.apimgt.core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon</groupId>
-            <artifactId>org.wso2.carbon.throttle.core</artifactId>
-        </dependency>
+            </dependency>
     </dependencies>
 
     <build>
@@ -103,12 +99,7 @@
                             </bundles>
                             <importBundles>
                                 <importBundleDef>org.wso2.carbon.apimgt:org.wso2.carbon.apimgt.core:${carbon.api.mgt.version}</importBundleDef>
-                                <importBundleDef>org.wso2.carbon:org.wso2.carbon.throttle.core:${carbon.throttle.module.version}</importBundleDef>
                             </importBundles>
-                            <importFeatures>
-                                <importFeatureDef>org.wso2.carbon.core.server:${carbon.kernel.version}</importFeatureDef>
-                                <importFeatureDef>org.wso2.carbon.apimgt.core:${carbon.api.mgt.version}</importFeatureDef>
-                            </importFeatures>
                         </configuration>
                     </execution>
                 </executions>

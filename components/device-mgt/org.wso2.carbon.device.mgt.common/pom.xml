@@ -21,7 +21,7 @@
     <parent>
         <artifactId>device-mgt</artifactId>
         <groupId>org.wso2.carbon.devicemgt</groupId>
-        <version>1.2.1-SNAPSHOT</version>
+        <version>1.2.2-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -49,8 +49,8 @@
                         </Export-Package>
                         <Import-Package>
                             javax.xml.bind.annotation,
-                            com.fasterxml.jackson.annotation,
-                            org.wso2.carbon.apimgt.api.model,
+                            com.fasterxml.jackson.annotation;version="${jackson-annotations.version}",
+                            org.wso2.carbon.apimgt.api.model.*;version="${carbon.api.mgt.version.range}",
                             io.swagger.annotations.*;resolution:=optional
                         </Import-Package>
                     </instructions>

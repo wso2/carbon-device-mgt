@@ -27,12 +27,12 @@ function onRequest(context) {
     var utility = require("/app/modules/utility.js").utility;
     var typesListResponse = deviceModule.getDeviceTypes();
     if (typesListResponse["status"] == "success") {
-        var deviceTypes = typesListResponse["content"];
+        var deviceTypes = typesListResponse.content.deviceTypes;
         if (deviceTypes) {
             var deviceTypesList = [], virtualDeviceTypesList = [];
             for (var i = 0; i < deviceTypes.length; i++) {
-
-                var deviceTypeLabel = deviceTypes[i].name;
+                var deviceType = deviceTypes[i];
+                var deviceTypeLabel = deviceType;
                 var configs = utility.getDeviceTypeConfig(deviceTypeLabel);
                 var deviceCategory = "device";
                 if (configs) {
@@ -45,22 +45,20 @@ function onRequest(context) {
                 }
                 if (deviceCategory == 'virtual') {
                     virtualDeviceTypesList.push({
-                        "hasCustTemplate": false,
-                        "deviceTypeLabel": deviceTypeLabel,
-                        "deviceTypeName": deviceTypes[i].name,
-                        "deviceCategory": deviceCategory,
-                        "deviceTypeId": deviceTypes[i].id,
-                        "thumb": utility.getDeviceThumb(deviceTypes[i].name)
-                    });
+                                                    "hasCustTemplate": false,
+                                                    "deviceTypeLabel": deviceTypeLabel,
+                                                    "deviceTypeName": deviceType,
+                                                    "deviceCategory": deviceCategory,
+                                                    "thumb": utility.getDeviceThumb(deviceType)
+                                                });
                 } else {
                     deviceTypesList.push({
-                        "hasCustTemplate": false,
-                        "deviceTypeLabel": deviceTypeLabel,
-                        "deviceTypeName": deviceTypes[i].name,
-                        "deviceCategory": deviceCategory,
-                        "deviceTypeId": deviceTypes[i].id,
-                        "thumb": utility.getDeviceThumb(deviceTypes[i].name)
-                    });
+                                             "hasCustTemplate": false,
+                                             "deviceTypeLabel": deviceTypeLabel,
+                                             "deviceTypeName": deviceType,
+                                             "deviceCategory": deviceCategory,
+                                             "thumb": utility.getDeviceThumb(deviceType)
+                                         });
                 }
             }
             if (virtualDeviceTypesList.length > 0) {

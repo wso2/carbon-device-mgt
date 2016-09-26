@@ -120,8 +120,8 @@ public class OperationManagerImpl implements OperationManager {
                 boolean isNotRepeated = false;
                 boolean hasExistingTaskOperation;
                 int enrolmentId;
-                if (operationDto.getControl() ==
-                    org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Control.NO_REPEAT) {
+                if (org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Control.NO_REPEAT == operationDto.
+                                                                                                         getControl()) {
                     isNotRepeated = true;
                 }
 
@@ -357,11 +357,24 @@ public class OperationManagerImpl implements OperationManager {
                                                    deviceId.getId() + "'");
         }
 
-        int enrolmentId = this.getEnrolmentByStatus(deviceId, EnrolmentInfo.Status.ACTIVE);
-        if (enrolmentId < 0) {
+        //
+        EnrolmentInfo enrolmentInfo = this.getEnrolmentInfo(deviceId);
+        if (enrolmentInfo == null) {
             throw new OperationManagementException("Device not found for the given device Identifier:" +
                                                    deviceId.getId() + " and given type:" +
                                                    deviceId.getType());
+        }
+        int enrolmentId = enrolmentInfo.getId();
+        //Changing the enrollment status & attempt count if the device is marked as inactive or unreachable
+        switch (enrolmentInfo.getStatus()) {
+            case ACTIVE:
+                this.resetAttemptCount(enrolmentId);
+                break;
+            case INACTIVE:
+            case UNREACHABLE:
+                this.resetAttemptCount(enrolmentId);
+                this.setEnrolmentStatus(deviceId, EnrolmentInfo.Status.ACTIVE);
+                break;
         }
 
         try {
@@ -886,6 +899,65 @@ public class OperationManagerImpl implements OperationManager {
         return enrolmentId;
     }
 
+    private EnrolmentInfo getEnrolmentInfo(DeviceIdentifier deviceId) throws OperationManagementException {
+        EnrolmentInfo enrolmentInfo;
+        try {
+            DeviceManagementDAOFactory.openConnection();
+            int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+            String user = this.getUser();
+            enrolmentInfo = deviceDAO.getEnrolment(deviceId, user, tenantId);
+        } catch (DeviceManagementDAOException e) {
+            throw new OperationManagementException("Error occurred while retrieving enrollment data of '" +
+                                                   deviceId.getType() + "' device carrying the identifier '" +
+                                                   deviceId.getId() + "'", e);
+        } catch (SQLException e) {
+            throw new OperationManagementException(
+                    "Error occurred while opening a connection to the data source", e);
+        } finally {
+            DeviceManagementDAOFactory.closeConnection();
+        }
+        return enrolmentInfo;
+    }
+
+    private boolean setEnrolmentStatus(DeviceIdentifier deviceId, EnrolmentInfo.Status status) throws OperationManagementException {
+        boolean updateStatus;
+        try {
+            DeviceManagementDAOFactory.beginTransaction();
+            int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+            String user = this.getUser();
+            updateStatus = deviceDAO.setEnrolmentStatus(deviceId, user, status, tenantId);
+            DeviceManagementDAOFactory.commitTransaction();
+        } catch (DeviceManagementDAOException e) {
+            DeviceManagementDAOFactory.rollbackTransaction();
+            throw new OperationManagementException("Error occurred while updating enrollment status of '" +
+                                                   deviceId.getType() + "' device carrying the identifier '" +
+                                                   deviceId.getId() + "'", e);
+        } catch (TransactionManagementException e) {
+            throw new OperationManagementException("Error occurred while initiating a transaction", e);
+        } finally {
+            DeviceManagementDAOFactory.closeConnection();
+        }
+        return updateStatus;
+    }
+
+    private boolean resetAttemptCount(int enrolmentId) throws OperationManagementException {
+        boolean resetStatus;
+        try {
+            OperationManagementDAOFactory.beginTransaction();
+            resetStatus = operationDAO.resetAttemptCount(enrolmentId);
+            OperationManagementDAOFactory.commitTransaction();
+        } catch (OperationManagementDAOException e) {
+            OperationManagementDAOFactory.rollbackTransaction();
+            throw new OperationManagementException("Error occurred while resetting attempt count of device id : '" +
+                                                   enrolmentId + "'", e);
+        } catch (TransactionManagementException e) {
+            throw new OperationManagementException("Error occurred while initiating a transaction", e);
+        } finally {
+            OperationManagementDAOFactory.closeConnection();
+        }
+        return resetStatus;
+    }
+
     private boolean isTaskScheduledOperation(Operation operation) {
         TaskConfiguration taskConfiguration = DeviceConfigurationManager.getInstance().getDeviceManagementConfig().
                 getTaskConfiguration();
@@ -896,5 +968,4 @@ public class OperationManagerImpl implements OperationManager {
         }
         return false;
     }
-
 }

@@ -22,14 +22,14 @@
     <parent>
         <groupId>org.wso2.carbon.devicemgt</groupId>
         <artifactId>certificate-mgt-feature</artifactId>
-        <version>1.2.1-SNAPSHOT</version>
+        <version>1.2.2-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>org.wso2.carbon.certificate.mgt.server.feature</artifactId>
     <packaging>pom</packaging>
-    <version>1.2.1-SNAPSHOT</version>
+    <version>1.2.2-SNAPSHOT</version>
     <name>WSO2 Carbon - Certificate Management Server Feature</name>
     <url>http://wso2.org</url>
     <description>This feature contains the core bundles required for back-end Certificate Management functionality
@@ -41,19 +41,15 @@
             <artifactId>org.wso2.carbon.certificate.mgt.core</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.bouncycastle.wso2</groupId>
+            <groupId>org.wso2.orbit.org.bouncycastle</groupId>
             <artifactId>bcprov-jdk15on</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.bouncycastle.wso2</groupId>
+            <groupId>org.wso2.orbit.org.bouncycastle</groupId>
             <artifactId>bcpkix-jdk15on</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.bouncycastle.wso2</groupId>
-            <artifactId>bcmail-jdk15on</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.google.code.jscep.wso2</groupId>
+            <groupId>org.wso2.orbit.com.google.code.jscep</groupId>
             <artifactId>jscep</artifactId>
         </dependency>
         <dependency>
@@ -67,6 +63,10 @@
         <dependency>
             <groupId>commons-codec.wso2</groupId>
             <artifactId>commons-codec</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.registry</groupId>
+            <artifactId>org.wso2.carbon.registry.indexing</artifactId>
         </dependency>
     </dependencies>
 
@@ -122,16 +122,10 @@
                                     org.wso2.carbon.devicemgt:org.wso2.carbon.certificate.mgt.core:${carbon.device.mgt.version}
                                 </bundleDef>
                                 <bundleDef>
-                                    org.bouncycastle.wso2:bcprov-jdk15on:${bcprov.wso2.version}
+                                    org.wso2.orbit.org.bouncycastle:bcpkix-jdk15on:${bcpkix.wso2.version}
                                 </bundleDef>
                                 <bundleDef>
-                                    org.bouncycastle.wso2:bcpkix-jdk15on:${bcpkix.wso2.version}
-                                </bundleDef>
-                                <bundleDef>
-                                    org.bouncycastle.wso2:bcmail-jdk15on:${bcmail.wso2.version}
-                                </bundleDef>
-                                <bundleDef>
-                                    com.google.code.jscep.wso2:jscep:${jscep.version}
+                                    org.wso2.orbit.com.google.code.jscep:jscep:${jscep.version}
                                 </bundleDef>
                                 <bundleDef>
                                     commons-io.wso2:commons-io:${version.commons.io}
@@ -146,6 +140,9 @@
                             <importFeatures>
                                 <importFeatureDef>org.wso2.carbon.core.server:${carbon.kernel.version}</importFeatureDef>
                             </importFeatures>
+                            <importBundles>
+                                <importBundleDef>org.wso2.carbon.registry:org.wso2.carbon.registry.indexing:${carbon.registry.version}</importBundleDef>
+                            </importBundles>
                         </configuration>
                     </execution>
                 </executions>

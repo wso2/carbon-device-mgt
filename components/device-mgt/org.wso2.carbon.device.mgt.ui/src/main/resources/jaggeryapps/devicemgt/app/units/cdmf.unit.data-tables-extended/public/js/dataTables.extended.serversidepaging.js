@@ -48,7 +48,7 @@ $.fn.datatables_extended_serverside_paging = function (settings , url, dataFilte
             filter: false,
             bSortCellsTop: true,
             ajax : {
-                url: "/emm/api/data-tables/invoker",
+                url: context + "/api/data-tables/invoker",
                 data : function (params) {
                     var i;
                     var searchParams = {};

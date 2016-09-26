@@ -124,7 +124,7 @@ $.fn.datatables_extended_serverside_paging = function (settings , url, dataFilte
                                         $("#operation-bar").removeClass("hidden");
                                         //noinspection JSUnresolvedFunction
                                         if (deviceType && ownership) {
-                                            loadOperationBar(deviceType, ownership);
+                                            loadOperationBar(deviceType, ownership, operationBarModeConstants.BULK);
                                         }
                                     }
                                 }
@@ -139,7 +139,7 @@ $.fn.datatables_extended_serverside_paging = function (settings , url, dataFilte
                                         $("#operation-bar").removeClass("hidden");
                                         //noinspection JSUnresolvedFunction
                                         if (deviceType && ownership) {
-                                            loadOperationBar(deviceType, ownership);
+                                            loadOperationBar(deviceType, ownership, operationBarModeConstants.BULK);
                                         }
                                     }
                                 }

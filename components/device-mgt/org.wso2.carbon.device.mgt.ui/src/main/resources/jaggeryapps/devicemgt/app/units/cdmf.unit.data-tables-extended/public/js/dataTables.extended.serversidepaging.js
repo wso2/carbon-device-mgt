@@ -69,6 +69,9 @@ $.fn.datatables_extended_serverside_paging = function (settings , url, dataFilte
                     //     params.filter = params.search.value;
                     // }
                     params.url = url;
+
+                    //Remove this line to add url parameters which is included by data tables it self
+                    delete params.columns;
                 },
                 dataFilter: dataFilter
             },

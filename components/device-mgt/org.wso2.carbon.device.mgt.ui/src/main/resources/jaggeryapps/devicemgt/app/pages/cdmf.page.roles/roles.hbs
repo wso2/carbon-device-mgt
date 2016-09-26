@@ -87,7 +87,7 @@ under the License.
                 <th colspan="3"></th>
             </tr>
             </thead>
-            <tbody id="ast-container" data-app-context="{{appContext}}"></tbody>
+            <tbody id="ast-container" data-app-context="{{@app.context}}"></tbody>
         </table>
     </div>
 
@@ -154,7 +154,7 @@ under the License.
 
 {{#zone "bottomJs"}}
     <!--suppress HtmlUnknownTarget -->
-    <script id="role-listing" data-current-user="{{currentUser.username}}"
+    <script id="role-listing" data-current-user="{{@user.username}}"
             src="{{@page.publicUri}}/templates/role-listing.hbs" type="text/x-handlebars-template"></script>
     {{js "js/role-listing.js"}}
 {{/zone}}

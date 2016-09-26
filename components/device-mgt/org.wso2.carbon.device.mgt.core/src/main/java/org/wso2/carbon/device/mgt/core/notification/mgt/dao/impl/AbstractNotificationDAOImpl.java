@@ -75,8 +75,8 @@ public abstract class AbstractNotificationDAOImpl implements NotificationDAO {
         try {
             conn = NotificationManagementDAOFactory.getConnection();
             String sql =
-                    "SELECT NOTIFICATION_ID, OPERATION_ID, DESCRIPTION, STATUS, DEVICE_IDENTIFICATION, DEVICE_NAME, " +
-                    "DEVICE TYPE FROM DM_NOTIFICATION WHERE TENANT_ID = ? AND NOTIFICATION_ID = ?";
+                    "SELECT NOTIFICATION_ID, OPERATION_ID, DESCRIPTION, STATUS FROM DM_NOTIFICATION WHERE " +
+                    "TENANT_ID = ? AND NOTIFICATION_ID = ?";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, tenantId);
             stmt.setInt(2, notificationId);
@@ -161,7 +161,7 @@ public abstract class AbstractNotificationDAOImpl implements NotificationDAO {
             rs = stmt.executeQuery();
             notifications = new ArrayList<>();
             while (rs.next()) {
-                notifications.add(NotificationDAOUtil.getNotification(rs));
+                notifications.add(NotificationDAOUtil.getNotificationWithDeviceInfo(rs));
             }
         } catch (SQLException e) {
             throw new NotificationManagementException(
@@ -234,7 +234,7 @@ public abstract class AbstractNotificationDAOImpl implements NotificationDAO {
             rs = stmt.executeQuery();
             notifications = new ArrayList<>();
             while (rs.next()) {
-                notifications.add(NotificationDAOUtil.getNotification(rs));
+                notifications.add(NotificationDAOUtil.getNotificationWithDeviceInfo(rs));
             }
         } catch (SQLException e) {
             throw new NotificationManagementException(

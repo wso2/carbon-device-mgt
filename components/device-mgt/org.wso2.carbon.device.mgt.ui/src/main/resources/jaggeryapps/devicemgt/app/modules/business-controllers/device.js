@@ -49,17 +49,17 @@ deviceModule = function () {
     privateMethods.callBackend = function (url, method) {
         if (constants["HTTP_GET"] == method) {
             return serviceInvokers.XMLHttp.get(url,
-                function (backendResponse) {
-                    var response = {};
-                    response.content = backendResponse.responseText;
-                    if (backendResponse.status == 200) {
-                        response.status = "success";
-                    } else if (backendResponse.status == 400 || backendResponse.status == 401 ||
-                        backendResponse.status == 404 || backendResponse.status == 500) {
-                        response.status = "error";
-                    }
-                    return response;
-                }
+                                               function (backendResponse) {
+                                                   var response = {};
+                                                   response.content = backendResponse.responseText;
+                                                   if (backendResponse.status == 200) {
+                                                       response.status = "success";
+                                                   } else if (backendResponse.status == 400 || backendResponse.status == 401 ||
+                                                              backendResponse.status == 404 || backendResponse.status == 500) {
+                                                       response.status = "error";
+                                                   }
+                                                   return response;
+                                               }
             );
         } else {
             log.error("Runtime error : This method only support HTTP GET requests.");
@@ -254,9 +254,11 @@ deviceModule = function () {
                         var device = parse(backendResponse.responseText);
                         var propertiesList = device["properties"];
                         var properties = {};
-                        for (var i = 0; i < propertiesList.length; i++) {
-                            properties[propertiesList[i]["name"]] =
-                                propertiesList[i]["value"];
+                        if (propertiesList) {
+                            for (var i = 0; i < propertiesList.length; i++) {
+                                properties[propertiesList[i]["name"]] =
+                                    propertiesList[i]["value"];
+                            }
                         }
                         var deviceObject = {};
                         deviceObject[constants["DEVICE_IDENTIFIER"]] = device["deviceIdentifier"];
@@ -356,7 +358,7 @@ deviceModule = function () {
 
     publicMethods.getDevices = function (userName) {
         var url = devicemgtProps["httpsURL"] +
-            devicemgtProps["backendRestEndpoints"]["deviceMgt"] + "/devices/user/" + userName;
+                  devicemgtProps["backendRestEndpoints"]["deviceMgt"] + "/devices/user/" + userName;
         return serviceInvokers.XMLHttp.get(
             url, function (responsePayload) {
                 for (var i = 0; i < responsePayload.length; i++) {

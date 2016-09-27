@@ -16,7 +16,15 @@
  * under the License.
  */
 
-function onRequest() {
+function onRequest(context) {
     var constants = require("/app/modules/constants.js");
-    return session.get(constants["USER_SESSION_KEY"]);
+    var user = context.user;
+    var isSuperTenant = false;
+    if (user.tenantId == -1234){
+        isSuperTenant = true;
+    }
+    var viewModal = {};
+    viewModal.isSuperTenant = isSuperTenant;
+    viewModal.USER_SESSION_KEY = session.get(constants["USER_SESSION_KEY"]);
+    return viewModal;
 }

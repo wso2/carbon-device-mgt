@@ -76,32 +76,69 @@ deviceModule = function () {
                 function (backendResponse) {
                     var response = {};
                     if (backendResponse.status == 200 && backendResponse.responseText) {
-                        response["status"] = "success";
                         var device = parse(backendResponse.responseText);
-                        var propertiesList = device["properties"];
-                        var properties = {};
-                        for (var i = 0; i < propertiesList.length; i++) {
-                            properties[propertiesList[i]["name"]] =
-                                propertiesList[i]["value"];
+
+                        var filteredDeviceData = {};
+                        if (device["deviceIdentifier"]) {
+                            filteredDeviceData["deviceIdentifier"] = device["deviceIdentifier"];
                         }
-                        var deviceObject = {};
-                        deviceObject[constants["DEVICE_IDENTIFIER"]] = device["deviceIdentifier"];
-                        deviceObject[constants["DEVICE_NAME"]] = device["name"];
-                        deviceObject[constants["DEVICE_OWNERSHIP"]] = device["enrolmentInfo"]["ownership"];
-                        deviceObject[constants["DEVICE_OWNER"]] = device["enrolmentInfo"]["owner"];
-                        deviceObject[constants["DEVICE_STATUS"]] = device["enrolmentInfo"]["status"];
-                        deviceObject[constants["DEVICE_TYPE"]] = device["type"];
-                        if (device["type"] == constants["PLATFORM_IOS"]) {
-                            properties[constants["DEVICE_MODEL"]] = properties[constants["DEVICE_PRODUCT"]];
-                            delete properties[constants["DEVICE_PRODUCT"]];
-                            properties[constants["DEVICE_VENDOR"]] = constants["VENDOR_APPLE"];
+                        if (device["type"]) {
+                            filteredDeviceData["type"] = device["type"];
                         }
-                        deviceObject[constants["DEVICE_PROPERTIES"]] = properties;
-                        if (device["deviceInfo"]) {
-                            deviceObject[constants["DEVICE_INFO"]] = device["deviceInfo"];
+                        if (device["name"]) {
+                            filteredDeviceData["name"] = device["name"];
+                        }
+                        if (device["enrolmentInfo"]) {
+                            var enrolmentInfo = {};
+                            if (device["enrolmentInfo"]["status"]) {
+                                enrolmentInfo["status"] = device["enrolmentInfo"]["status"];
+                            }
+                            if (device["enrolmentInfo"]["owner"]) {
+                                enrolmentInfo["owner"] = device["enrolmentInfo"]["owner"];
+                            }
+                            if (device["enrolmentInfo"]["ownership"]) {
+                                enrolmentInfo["ownership"] = device["enrolmentInfo"]["ownership"];
+                            }
+                            filteredDeviceData["enrolmentInfo"] = enrolmentInfo;
+                        }
+                        if (device["properties"] && device["properties"].length > 0) {
+                            var propertiesList = device["properties"];
+                            var properties = {};
+                            for (var i = 0; i < propertiesList.length; i++) {
+                                if (propertiesList[i]["value"]) {
+                                    properties[propertiesList[i]["name"]] =
+                                        propertiesList[i]["value"];
+                                }
+                            }
+
+                            filteredDeviceData["initialDeviceInfo"] = properties;
+
+                            if (properties["DEVICE_INFO"]) {
+                                var initialDeviceInfoList = parse(properties["DEVICE_INFO"]);
+                                var initialDeviceInfo = {};
+                                for (var j = 0; j < initialDeviceInfoList.length; j++) {
+                                    if (initialDeviceInfoList[j]["value"]) {
+                                        initialDeviceInfo[initialDeviceInfoList[j]["name"]] =
+                                            initialDeviceInfoList[j]["value"];
+                                    }
+                                }
+
+                                filteredDeviceData["initialDeviceInfo"]["DEVICE_INFO"] = initialDeviceInfo;
+                            }
                         }
 
-                        response["content"] = deviceObject;
+                        if (filteredDeviceData["type"]) {
+                            if (filteredDeviceData["type"] == constants["PLATFORM_IOS"]) {
+                                if (filteredDeviceData["properties"]) {
+                                    filteredDeviceData["properties"]["VENDOR"] = "Apple";
+                                }
+                            }
+                        }
+                        if (device["deviceInfo"]) {
+                            filteredDeviceData["latestDeviceInfo"] = device["deviceInfo"];
+                        }
+                        response["content"] = filteredDeviceData;
+                        response["status"] = "success";
                         return response;
                     } else if (backendResponse.status == 401) {
                         response["status"] = "unauthorized";

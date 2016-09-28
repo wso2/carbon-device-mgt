@@ -85,14 +85,14 @@ public class OracleNotificationDAOImpl extends AbstractNotificationDAOImpl {
         List<Notification> notifications = null;
         try {
             conn = NotificationManagementDAOFactory.getConnection();
-            String sql = "SELECT n1.NOTIFICATION_ID, n1.DEVICE_ID, n1.OPERATION_ID, n1.STATUS," +
-                         " n1.DESCRIPTION, d.DEVICE_IDENTIFICATION, d.NAME as DEVICE_NAME, t.NAME AS DEVICE_TYPE FROM " +
-                         "DM_DEVICE d, DM_DEVICE_TYPE t, (SELECT NOTIFICATION_ID, DEVICE_ID, " +
-                         "OPERATION_ID, STATUS, DESCRIPTION FROM DM_NOTIFICATION WHERE " +
-                         "TENANT_ID = ? AND STATUS = ?) n1 WHERE n1.DEVICE_ID = d.ID AND d.DEVICE_TYPE_ID=t.ID " +
-                         "AND TENANT_ID = ?";
+            String sql = "SELECT n1.NOTIFICATION_ID, n1.DEVICE_ID, n1.OPERATION_ID, n1.STATUS,"
+                    + " n1.DESCRIPTION, d.DEVICE_IDENTIFICATION, d.NAME as DEVICE_NAME, t.NAME AS DEVICE_TYPE FROM "
+                    + "DM_DEVICE d, DM_DEVICE_TYPE t, (SELECT NOTIFICATION_ID, DEVICE_ID, "
+                    + "OPERATION_ID, STATUS, DESCRIPTION FROM DM_NOTIFICATION WHERE "
+                    + "TENANT_ID = ? AND STATUS = ?) n1 WHERE n1.DEVICE_ID = d.ID AND d.DEVICE_TYPE_ID=t.ID "
+                    + "AND TENANT_ID = ?";
 
-            sql = sql + "  OFFSET >= ? AND ROWNUM <= ?";
+            sql = sql + " ORDER BY n1.NOTIFICATION_ID OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
 
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, tenantId);

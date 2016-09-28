@@ -265,9 +265,14 @@ public class DeviceManagementServiceComponent {
 
     private void setupDeviceManagementSchema(DataSourceConfig config) throws DeviceManagementException {
         DeviceManagementSchemaInitializer initializer = new DeviceManagementSchemaInitializer(config);
-        log.info("Initializing device management repository database schema");
+        String checkSql = "select * from DM_DEVICE_TYPE";
         try {
-            initializer.createRegistryDatabase();
+            if (!initializer.isDatabaseStructureCreated(checkSql)) {
+                log.info("Initializing device management repository database schema");
+                initializer.createRegistryDatabase();
+            } else {
+                log.info("Device management database already exists. Not creating a new database.");
+            }
         } catch (Exception e) {
             throw new DeviceManagementException(
                     "Error occurred while initializing Device Management database schema", e);

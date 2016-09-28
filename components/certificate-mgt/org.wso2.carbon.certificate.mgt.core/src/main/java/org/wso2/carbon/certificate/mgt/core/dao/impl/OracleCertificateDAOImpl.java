@@ -54,7 +54,7 @@ public class OracleCertificateDAOImpl extends AbstractCertificateDAOImpl {
         try {
             Connection conn = this.getConnection();
             String sql = "SELECT CERTIFICATE, SERIAL_NUMBER, TENANT_ID, USERNAME FROM "
-                         + "DM_DEVICE_CERTIFICATE WHERE TENANT_ID = ? ORDER BY ID DESC WHERE OFFSET >= ? AND ROWNUM <= ?";
+                         + "DM_DEVICE_CERTIFICATE WHERE TENANT_ID = ? ORDER BY ID DESC OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, tenantId);
             stmt.setInt(2, rowNum);

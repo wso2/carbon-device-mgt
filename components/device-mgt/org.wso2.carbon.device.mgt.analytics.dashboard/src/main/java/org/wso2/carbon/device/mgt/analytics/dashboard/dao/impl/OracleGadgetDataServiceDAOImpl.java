@@ -61,11 +61,10 @@ public class OracleGadgetDataServiceDAOImpl extends AbstractGadgetDataServiceDAO
         int totalRecordsCount = 0;
         try {
             con = this.getConnection();
-            String sql = "SELECT * FROM (SELECT ROWNUM offset, rs.* FROM (SELECT FEATURE_CODE, COUNT(DEVICE_ID) " +
-                "AS DEVICE_COUNT FROM " + GadgetDataServiceDAOConstants.DatabaseView.DEVICES_VIEW_2 +
-                    " WHERE TENANT_ID = ? GROUP BY FEATURE_CODE ORDER BY DEVICE_COUNT DESC) rs) " +
-                        "WHERE offset >= ? AND ROWNUM <= ?";
-
+            String sql = "SELECT FEATURE_CODE, COUNT(DEVICE_ID) AS DEVICE_COUNT FROM " + GadgetDataServiceDAOConstants.
+                    DatabaseView.DEVICES_VIEW_2
+                    + " WHERE TENANT_ID = ? GROUP BY FEATURE_CODE ORDER BY DEVICE_COUNT DESC "
+                    + "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
             stmt = con.prepareStatement(sql);
             stmt.setInt(1, tenantId);
             stmt.setInt(2, startIndex);
@@ -138,11 +137,9 @@ public class OracleGadgetDataServiceDAOImpl extends AbstractGadgetDataServiceDAO
                     advancedSqlFiltering = advancedSqlFiltering + "AND " + column + " = ? ";
                 }
             }
-            sql = "SELECT * FROM (SELECT ROWNUM offset, rs.* FROM (SELECT DEVICE_ID, DEVICE_IDENTIFICATION, PLATFORM, " +
-                "OWNERSHIP, CONNECTIVITY_STATUS FROM " + GadgetDataServiceDAOConstants.DatabaseView.DEVICES_VIEW_1 +
-                    " WHERE TENANT_ID = ? " + advancedSqlFiltering + "ORDER BY DEVICE_ID ASC) rs) " +
-                        "WHERE offset >= ? AND ROWNUM <= ?";
-
+            sql = "SELECT DEVICE_ID, DEVICE_IDENTIFICATION, PLATFORM, OWNERSHIP, CONNECTIVITY_STATUS FROM "
+                    + GadgetDataServiceDAOConstants.DatabaseView.DEVICES_VIEW_1 + " WHERE TENANT_ID = ? "
+                    + advancedSqlFiltering + "ORDER BY DEVICE_ID ASC OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
             stmt = con.prepareStatement(sql);
             // [2] appending filter column values, if exist
             stmt.setInt(1, tenantId);
@@ -235,10 +232,9 @@ public class OracleGadgetDataServiceDAOImpl extends AbstractGadgetDataServiceDAO
                     advancedSqlFiltering = advancedSqlFiltering + "AND " + column + " = ? ";
                 }
             }
-            sql = "SELECT * FROM (SELECT ROWNUM offset, rs.* FROM (SELECT DEVICE_ID, DEVICE_IDENTIFICATION, PLATFORM, " +
-                "OWNERSHIP, CONNECTIVITY_STATUS FROM " + GadgetDataServiceDAOConstants.DatabaseView.DEVICES_VIEW_2 +
-                    " WHERE TENANT_ID = ? AND FEATURE_CODE = ? " + advancedSqlFiltering +
-                        "ORDER BY DEVICE_ID ASC) rs) WHERE offset >= ? AND ROWNUM <= ?";
+            sql = "SELECT DEVICE_ID, DEVICE_IDENTIFICATION, PLATFORM, OWNERSHIP, CONNECTIVITY_STATUS FROM " +
+                    GadgetDataServiceDAOConstants.DatabaseView.DEVICES_VIEW_2 + " WHERE TENANT_ID = ? AND FEATURE_CODE = ? " +
+                    advancedSqlFiltering + "ORDER BY DEVICE_ID ASC OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
             stmt = con.prepareStatement(sql);
             // [2] appending filter column values, if exist
             stmt.setInt(1, tenantId);

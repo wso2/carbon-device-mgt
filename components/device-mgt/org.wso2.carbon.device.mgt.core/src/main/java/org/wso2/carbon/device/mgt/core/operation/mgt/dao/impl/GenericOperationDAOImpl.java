@@ -125,9 +125,9 @@ public class GenericOperationDAOImpl implements OperationDAO {
         ResultSet rs = null;
         try {
             Connection connection = OperationManagementDAOFactory.getConnection();
-            String query = "SELECT EOM.ID FROM DM_ENROLMENT_OP_MAPPING AS EOM INNER JOIN DM_OPERATION DM " +
+            String query = "SELECT EOM.ID FROM DM_ENROLMENT_OP_MAPPING EOM INNER JOIN DM_OPERATION DM " +
                     "ON DM.ID = EOM.OPERATION_ID  WHERE EOM.ENROLMENT_ID = ? AND DM.OPERATION_CODE = ? " +
-                    "AND EOM.STATUS = ?;";
+                    "AND EOM.STATUS = ?";
             stmt = connection.prepareStatement(query);
             stmt.setInt(1, enrolmentId);
             stmt.setString(2, operationCode);
@@ -163,9 +163,9 @@ public class GenericOperationDAOImpl implements OperationDAO {
         boolean result = false;
         try {
             Connection connection = OperationManagementDAOFactory.getConnection();
-            String query = "SELECT EOM.ID FROM DM_ENROLMENT_OP_MAPPING AS EOM INNER JOIN DM_OPERATION DM " +
+            String query = "SELECT EOM.ID FROM DM_ENROLMENT_OP_MAPPING EOM INNER JOIN DM_OPERATION DM " +
                            "ON DM.ID = EOM.OPERATION_ID WHERE EOM.ENROLMENT_ID = ? AND DM.OPERATION_CODE = ? AND " +
-                           "EOM.STATUS = ?;";
+                           "EOM.STATUS = ?";
             stmt = connection.prepareStatement(query);
             stmt.setInt(1, enrolmentId);
             stmt.setString(2, operationCode);
@@ -423,7 +423,7 @@ public class GenericOperationDAOImpl implements OperationDAO {
                     "AND de.TENANT_ID = ? \n";
 
             if(timestamp == 0){
-                sql += "ORDER BY opm.OPERATION_ID LIMIT ? OFFSET ?;";
+                sql += "ORDER BY opm.OPERATION_ID LIMIT ? OFFSET ?";
             }else{
                 sql += "ORDER BY opm.UPDATED_TIMESTAMP asc LIMIT ? OFFSET ?";
             }
@@ -541,7 +541,7 @@ public class GenericOperationDAOImpl implements OperationDAO {
             Connection conn = OperationManagementDAOFactory.getConnection();
             String sql = "SELECT COUNT(*) AS COUNT FROM DM_ENROLMENT_OP_MAPPING AS m \n" +
                     "INNER JOIN DM_ENROLMENT AS d ON m.ENROLMENT_ID = d.ID \n" +
-                    "WHERE m.UPDATED_TIMESTAMP > ? AND d.TENANT_ID = ?;";
+                    "WHERE m.UPDATED_TIMESTAMP > ? AND d.TENANT_ID = ?";
             stmt = conn.prepareStatement(sql);
             stmt.setLong(1, timestamp);
             stmt.setInt(2, PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId());

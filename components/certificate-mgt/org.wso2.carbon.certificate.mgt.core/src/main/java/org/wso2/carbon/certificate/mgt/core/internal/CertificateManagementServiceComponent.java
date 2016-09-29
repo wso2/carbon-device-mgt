@@ -106,9 +106,14 @@ public class CertificateManagementServiceComponent {
 
     private void setupDeviceManagementSchema(DataSourceConfig config) throws CertificateManagementException {
         CertificateMgtSchemaInitializer initializer = new CertificateMgtSchemaInitializer(config);
-        log.info("Initializing Certificate management repository database schema");
+        String checkSql = "select * from DM_DEVICE_CERTIFICATE";
         try {
-            initializer.createRegistryDatabase();
+            if (!initializer.isDatabaseStructureCreated(checkSql)) {
+                log.info("Initializing Certificate management repository database schema");
+                initializer.createRegistryDatabase();
+            } else {
+                log.info("Certificate management repository database already exists. Not creating a new database.");
+            }
         } catch (Exception e) {
             throw new CertificateManagementException(
                     "Error occurred while initializing Certificate Management database schema", e);
@@ -117,6 +122,4 @@ public class CertificateManagementServiceComponent {
             log.debug("Certificate management metadata repository schema has been successfully initialized");
         }
     }
-
-
 }

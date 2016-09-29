@@ -125,7 +125,7 @@
                                     org.wso2.carbon.identity:org.wso2.carbon.identity.oauth.stub:${identity.inbound.auth.oauth.version}
                                 </bundleDef>
                                 <bundleDef>
-                                    com.fasterxml.jackson.core:jackson-annotations:${jackson-annotations.version}
+                                    org.wso2.orbit.com.fasterxml.jackson.core:jackson-annotations:${jackson-annotations.version}
                                 </bundleDef>
                                 <!-- Below should be bundled with the email verification -->
                             </bundles>

@@ -1501,7 +1501,7 @@
                 <version>${carbon.device.mgt.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.fasterxml.jackson.core</groupId>
+                <groupId>org.wso2.orbit.com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-annotations</artifactId>
                 <version>${jackson-annotations.version}</version>
             </dependency>
@@ -1893,7 +1893,7 @@
 
         <!--JWT grant type extension feature-->
         <identity.jwt.extension.version>1.0.2</identity.jwt.extension.version>
-        <jackson-annotations.version>2.7.4</jackson-annotations.version>
+        <jackson-annotations.version>2.6.1.wso2v1</jackson-annotations.version>
         <owasp.encoder.version>1.2.0.wso2v1</owasp.encoder.version>
 
         <hibernate-validator.version>5.0.2.Final</hibernate-validator.version>

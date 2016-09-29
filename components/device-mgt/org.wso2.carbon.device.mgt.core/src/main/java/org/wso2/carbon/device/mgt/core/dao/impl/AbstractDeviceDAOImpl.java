@@ -798,9 +798,9 @@ public abstract class AbstractDeviceDAOImpl implements DeviceDAO {
         ResultSet rs = null;
         try {
             conn = this.getConnection();
-            String sql = "SELECT e.ID ENROLMENT_ID FROM DM_ENROLMENT e, (SELECT d.ID FROM DM_DEVICE d, DM_DEVICE_TYPE t " +
+            String sql = "SELECT e.ID AS ENROLMENT_ID FROM DM_ENROLMENT e, (SELECT d.ID FROM DM_DEVICE d, DM_DEVICE_TYPE t " +
                          "WHERE d.DEVICE_TYPE_ID = t.ID AND d.DEVICE_IDENTIFICATION = ? AND t.NAME = ? AND d.TENANT_ID = ?) dtm " +
-                         "WHERE e.DEVICE_ID = dtm.ID AND e.STATUS = ? AND e.TENANT_ID = ?";
+                         "WHERE e.DEVICE_ID = dtm.ID AND e.STATUS = ? AND e.TENANT_ID = ?;";
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, deviceId.getId());
             stmt.setString(2, deviceId.getType());

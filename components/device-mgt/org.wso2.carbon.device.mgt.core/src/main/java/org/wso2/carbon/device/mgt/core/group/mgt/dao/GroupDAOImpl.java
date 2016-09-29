@@ -187,7 +187,7 @@ public class GroupDAOImpl implements GroupDAO {
         try {
             Connection conn = GroupManagementDAOFactory.getConnection();
             String sql = "SELECT G.ID, G.GROUP_NAME, G.DESCRIPTION, G.DATE_OF_CREATE, G.DATE_OF_LAST_UPDATE, \n" +
-                    "G.OWNER FROM DM_GROUP AS G INNER JOIN DM_DEVICE_GROUP_MAP AS GM ON G.ID = GM.GROUP_ID " +
+                    "G.OWNER FROM DM_GROUP G INNER JOIN DM_DEVICE_GROUP_MAP GM ON G.ID = GM.GROUP_ID " +
                     "WHERE GM.DEVICE_ID = ? AND GM.TENANT_ID = ?";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, deviceId);

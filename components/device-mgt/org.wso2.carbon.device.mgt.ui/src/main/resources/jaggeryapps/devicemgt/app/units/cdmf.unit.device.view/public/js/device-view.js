@@ -17,16 +17,16 @@
  */
 
 (function () {
+    var deviceId = $(".device-id");
+    var deviceIdentifier = deviceId.data("deviceid");
+    var deviceType = deviceId.data("type");
+
     $(document).ready(function () {
         $(".panel-body").removeClass("hidden");
         $("#loading-content").remove();
 
         if ($('#event_log').length) {
             loadOperationsLog();
-        }
-
-        if ($('#policies').length) {
-            loadPolicies();
         }
 
         if ($('#policy_compliance').length) {
@@ -45,160 +45,159 @@
         });
 
     });
-
+    
     function loadOperationsLog(update) {
-        var operationsLog = $("#operations-log");
-        var deviceListingSrc = operationsLog.attr("src");
-        var deviceId = operationsLog.data("device-id");
-        var deviceType = operationsLog.data("device-type");
-
-        $.template("operations-log", deviceListingSrc, function (template) {
-            var serviceURL = "/devicemgt_admin/operations/" + deviceType + "/" + deviceId;
-
-            var successCallback = function (data) {
-                data = JSON.parse(data);
-                $('#operations-spinner').addClass('hidden');
-                var viewModel = {};
-                viewModel.operations = data;
-                if (data.length > 0) {
-                    var content = template(viewModel);
-                    if (!update) {
-                        $("#operations-log-container").html(content);
-                        $('#operations-log-table').datatables_extended();
-                    } else {
-                        $('#operations-log-table').dataTable().fnClearTable();
-                        for (var i = 0; i < data.length; i++) {
-                            var status;
-                            if (data[i].status == "COMPLETED") {
-                                status = "<span><i class='fw fw-ok icon-success'></i> Completed</span>";
-                            } else if (data[i].status == "PENDING") {
-                                status = "<span><i class='fw fw-warning icon-warning'></i> Pending</span>";
-                            } else if (data[i].status == "ERROR") {
-                                status = "<span><i class='fw fw-error icon-danger'></i> Error</span>";
-                            } else if (data[i].status == "IN_PROGRESS") {
-                                status = "<span><i class='fw fw-ok icon-warning'></i> In Progress</span>";
-                            }
-
-                            $('#operations-log-table').dataTable().fnAddData([
-                                                                                 data[i].code,
-                                                                                 status,
-                                                                                 data[i].createdTimeStamp
-                                                                             ]);
-                        }
-                    }
-                }
-
-            };
-            invokerUtil.get(serviceURL,
-                            successCallback, function (message) {
-                        console.log(message);
-                    });
-        });
-
-    }
-
-    function loadPolicies() {
-        var policyList = $("#policy-list");
-        var policyListingSrc = policyList.attr("src");
-        var deviceId = policyList.data("device-id");
-        var deviceType = policyList.data("device-type");
-
-        $.template("policy-list", policyListingSrc, function (template) {
-            var serviceURL = "/devicemgt_admin/policies";
-
-            var successCallback = function (data) {
-                data = JSON.parse(data);
-                $('#policy-spinner').addClass('hidden');
-                var policyListFromRestEndpoint = data.responseContent;
-                if (policyListFromRestEndpoint.length > 0) {
-                    var viewModel = {};
-                    var policyListToView = [];
-                    var i, policyObjectFromRestEndpoint, policyObjectToView;
-                    for (i = 0; i < policyListFromRestEndpoint.length; i++) {
-                        // get list object
-                        policyObjectFromRestEndpoint = policyListFromRestEndpoint[i];
-                        // populate list object values to view-object
-                        policyObjectToView = {};
-                        policyObjectToView["id"] = policyObjectFromRestEndpoint["id"];
-                        policyObjectToView["priorityId"] = policyObjectFromRestEndpoint["priorityId"];
-                        policyObjectToView["name"] = policyObjectFromRestEndpoint["policyName"];
-                        policyObjectToView["platform"] = policyObjectFromRestEndpoint["profile"]["deviceType"]["name"];
-                        policyObjectToView["ownershipType"] = policyObjectFromRestEndpoint["ownershipType"];
-                        policyObjectToView["compliance"] = policyObjectFromRestEndpoint["compliance"];
-
-                        if (policyObjectFromRestEndpoint["active"] == true && policyObjectFromRestEndpoint["updated"] == true) {
-                            policyObjectToView["status"] = "Active/Updated";
-                        } else if (policyObjectFromRestEndpoint["active"] == true && policyObjectFromRestEndpoint["updated"] == false) {
-                            policyObjectToView["status"] = "Active";
-                        } else if (policyObjectFromRestEndpoint["active"] == false && policyObjectFromRestEndpoint["updated"] == true) {
-                            policyObjectToView["status"] = "Inactive/Updated";
-                        } else if (policyObjectFromRestEndpoint["active"] == false && policyObjectFromRestEndpoint["updated"] == false) {
-                            policyObjectToView["status"] = "Inactive";
-                        }
-                        // push view-objects to list
-                        policyListToView.push(policyObjectToView);
-                    }
-                    viewModel.policies = policyListToView;
-                    var content = template(viewModel);
-                    $("#policy-list-container").html(content);
-                    $('#policy-table').datatables_extended();
-                }
-            };
-            invokerUtil.get(serviceURL,
-                            successCallback, function (message) {
-                        console.log(message);
-                    });
-        });
-
+        var operationsLogTable = "#operations-log-table";
+        if (update) {
+            operationTable = $(operationsLogTable).DataTable();
+            operationTable.ajax.reload(false);
+            return;
+        }
+        operationTable = $(operationsLogTable).datatables_extended({
+                                                                       serverSide: true,
+                                                                       processing: false,
+                                                                       searching: false,
+                                                                       ordering:  false,
+                                                                       pageLength : 10,
+                                                                       order: [],
+                                                                       ajax: {
+                                                                           url: context + "/api/operation/paginate",
+                                                                           data: {deviceId : deviceIdentifier, deviceType: deviceType},
+                                                                           dataSrc: function (json) {
+                                                                               $("#operations-spinner").addClass("hidden");
+                                                                               $("#operations-log-container").empty();
+                                                                               return json.data;
+                                                                           }
+                                                                       },
+                                                                       columnDefs: [
+                                                                           {targets: 0, data: "code" },
+                                                                           {targets: 1, data: "status", render:
+                                                                               function (status) {
+                                                                                   var html;
+                                                                                   switch (status) {
+                                                                                       case "COMPLETED" :
+                                                                                           html = "<span><i class='fw fw-ok icon-success'></i> Completed</span>";
+                                                                                           break;
+                                                                                       case "PENDING" :
+                                                                                           html = "<span><i class='fw fw-warning icon-warning'></i> Pending</span>";
+                                                                                           break;
+                                                                                       case "ERROR" :
+                                                                                           html = "<span><i class='fw fw-error icon-danger'></i> Error</span>";
+                                                                                           break;
+                                                                                       case "IN_PROGRESS" :
+                                                                                           html = "<span><i class='fw fw-ok icon-warning'></i> In Progress</span>";
+                                                                                           break;
+                                                                                       case "REPEATED" :
+                                                                                           html = "<span><i class='fw fw-ok icon-warning'></i> Repeated</span>";
+                                                                                           break;
+                                                                                   }
+                                                                                   return html;
+                                                                               }
+                                                                           },
+                                                                           {targets: 2, data: "createdTimeStamp", render:
+                                                                               function (date) {
+                                                                                   var value = String(date);
+                                                                                   return value.slice(0, 16);
+                                                                               }
+                                                                           }
+                                                                       ],
+                                                                       "createdRow": function(row, data) {
+                                                                           $(row).attr("data-type", "selectable");
+                                                                           $(row).attr("data-id", data["id"]);
+                                                                           $.each($("td", row),
+                                                                                  function(colIndex) {
+                                                                                      switch(colIndex) {
+                                                                                          case 1:
+                                                                                              $(this).attr("data-grid-label", "Code");
+                                                                                              $(this).attr("data-display", data["code"]);
+                                                                                              break;
+                                                                                          case 2:
+                                                                                              $(this).attr("data-grid-label", "Status");
+                                                                                              $(this).attr("data-display", data["status"]);
+                                                                                              break;
+                                                                                          case 3:
+                                                                                              $(this).attr("data-grid-label", "Created Timestamp");
+                                                                                              $(this).attr("data-display", data["createdTimeStamp"]);
+                                                                                              break;
+                                                                                      }
+                                                                                  }
+                                                                           );
+                                                                       }
+                                                                   });
     }
 
     function loadPolicyCompliance() {
         var policyCompliance = $("#policy-view");
-        var policySrc = policyCompliance.attr("src");
+        var policyComplianceTemplate = policyCompliance.attr("src");
         var deviceId = policyCompliance.data("device-id");
         var deviceType = policyCompliance.data("device-type");
         var activePolicy = null;
 
-        $.template("policy-view", policySrc, function (template) {
-            var serviceURLPolicy = "/devicemgt_admin/policies/" + deviceType + "/" + deviceId + "/active-policy"
-            var serviceURLCompliance = "/devicemgt_admin/policies/" + deviceType + "/" + deviceId;
+        $.template(
+            "policy-view",
+            policyComplianceTemplate,
+            function (template) {
+                var getEffectivePolicyURL = "/api/device-mgt/v1.0/devices/" + deviceType + "/" + deviceId + "/effective-policy";
+                var getDeviceComplianceURL = "/api/device-mgt/v1.0/devices/" + deviceType + "/" + deviceId + "/compliance-data";
 
-            var successCallbackCompliance = function (data) {
-                var viewModel = {};
-                viewModel.policy = activePolicy;
-                viewModel.deviceType = deviceType;
-                if (data != null && data.complianceFeatures != null && data.complianceFeatures != undefined && data.complianceFeatures.length > 0) {
-                    viewModel.compliance = "NON-COMPLIANT";
-                    viewModel.complianceFeatures = data.complianceFeatures;
-                    var content = template(viewModel);
-                    $("#policy-list-container").html(content);
-                } else {
-                    viewModel.compliance = "COMPLIANT";
-                    var content = template(viewModel);
-                    $("#policy-list-container").html(content);
-                    $("#policy-compliance-table").addClass("hidden");
-                }
-
-            };
-
-            var successCallbackPolicy = function (data) {
-                data = JSON.parse(data);
-                $('#policy-spinner').addClass('hidden');
-                if (data != null && data.active == true) {
-                    activePolicy = data;
-                    invokerUtil.get(serviceURLCompliance,
-                                    successCallbackCompliance, function (message) {
-                                console.log(message);
-                            });
-                }
-            };
-
-            invokerUtil.get(serviceURLPolicy,
-                            successCallbackPolicy, function (message) {
-                        console.log(message);
-                    });
-        });
-
+                invokerUtil.get(
+                    getEffectivePolicyURL,
+                    // success-callback
+                    function (data, textStatus, jqXHR) {
+                        if (jqXHR.status == 200 && data) {
+                            data = JSON.parse(data);
+                            $("#policy-spinner").addClass("hidden");
+                            if (data["active"] == true) {
+                                activePolicy = data;
+                                invokerUtil.get(
+                                    getDeviceComplianceURL,
+                                    // success-callback
+                                    function (data, textStatus, jqXHR) {
+                                        if (jqXHR.status == 200 && data) {
+                                            var viewModel = {};
+                                            viewModel["policy"] = activePolicy;
+                                            viewModel["deviceType"] = deviceType;
+                                            data = JSON.parse(data);
+                                            var content;
+                                            if (data["complianceData"]) {
+                                                if (data["complianceData"]["complianceFeatures"] &&
+                                                    data["complianceData"]["complianceFeatures"].length > 0) {
+                                                    viewModel["compliance"] = "NON-COMPLIANT";
+                                                    viewModel["complianceFeatures"] = data["complianceData"]["complianceFeatures"];
+                                                    content = template(viewModel);
+                                                    $("#policy-list-container").html(content);
+                                                } else {
+                                                    viewModel["compliance"] = "COMPLIANT";
+                                                    content = template(viewModel);
+                                                    $("#policy-list-container").html(content);
+                                                    $("#policy-compliance-table").addClass("hidden");
+                                                }
+                                            } else {
+                                                $("#policy-list-container").
+                                                html("<div class='panel-body'><br><p class='fw-warning'> This device " +
+                                                     "has no policy applied.<p></div>");
+                                            }
+                                        }
+                                    },
+                                    // error-callback
+                                    function () {
+                                        $("#policy-list-container").
+                                        html("<div class='panel-body'><br><p class='fw-warning'> Loading policy compliance related data " +
+                                             "was not successful. please try refreshing data in a while.<p></div>");
+                                    }
+                                );
+                            }
+                        }
+                    },
+                    // error-callback
+                    function () {
+                        $("#policy-list-container").
+                        html("<div class='panel-body'><br><p class='fw-warning'> Loading policy compliance related data " +
+                             "was not successful. please try refreshing data in a while.<p></div>");
+                    }
+                );
+            }
+        );
     }
 
 }());

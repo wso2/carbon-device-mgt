@@ -73,7 +73,7 @@
     <bean id="policyManagementService" class="org.wso2.carbon.device.mgt.jaxrs.service.impl.PolicyManagementServiceImpl"/>
     <bean id="roleManagementService" class="org.wso2.carbon.device.mgt.jaxrs.service.impl.RoleManagementServiceImpl"/>
     <bean id="userManagementService" class="org.wso2.carbon.device.mgt.jaxrs.service.impl.UserManagementServiceImpl"/>
-    <!--<bean id="groupManagementService" class="org.wso2.carbon.device.mgt.jaxrs.service.impl.GroupManagementServiceImpl"/>-->
+    <bean id="groupManagementService" class="org.wso2.carbon.device.mgt.jaxrs.service.impl.GroupManagementServiceImpl"/>
     <bean id="deviceManagementAdminService" class="org.wso2.carbon.device.mgt.jaxrs.service.impl.admin.DeviceManagementAdminServiceImpl"/>
     <bean id="applicationManagementAdminService" class="org.wso2.carbon.device.mgt.jaxrs.service.impl.admin.ApplicationManagementAdminServiceImpl"/>
     <bean id="groupManagementAdminService" class="org.wso2.carbon.device.mgt.jaxrs.service.impl.admin.GroupManagementAdminServiceImpl"/>

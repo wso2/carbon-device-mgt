@@ -24,6 +24,7 @@ utility = function () {
     var log = new Log("/app/modules/utility.js");
     var JavaClass = Packages.java.lang.Class;
     var PrivilegedCarbonContext = Packages.org.wso2.carbon.context.PrivilegedCarbonContext;
+    var server = require("carbon")["server"];
 
     var getOsgiService = function (className) {
         return PrivilegedCarbonContext.getThreadLocalCarbonContext().getOSGiService(JavaClass.forName(className));
@@ -38,8 +39,8 @@ utility = function () {
         PrivilegedCarbonContext.startTenantFlow();
         context = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         context.setTenantDomain(carbon.server.tenantDomain({
-            tenantId: userInfo.tenantId
-        }));
+                                                               tenantId: userInfo.tenantId
+                                                           }));
         context.setTenantId(userInfo.tenantId);
         context.setUsername(userInfo.username || null);
     };
@@ -62,7 +63,7 @@ utility = function () {
 
     publicMethods.getDeviceTypeConfig = function (deviceType) {
         var unitName = publicMethods.getTenantedDeviceUnitName(deviceType, "type-view");
-        
+
         if (deviceType in deviceTypeConfigMap) {
             return deviceTypeConfigMap[deviceType];
         }
@@ -71,7 +72,10 @@ utility = function () {
         if (deviceTypeConfigFile.isExists()) {
             try {
                 deviceTypeConfigFile.open("r");
-                deviceTypeConfig = parse(deviceTypeConfigFile.readAll());
+                var config = deviceTypeConfigFile.readAll();
+                config = config.replace("%https.ip%", server.address("https"));
+                config = config.replace("%http.ip%", server.address("http"));
+                deviceTypeConfig = parse(config);
             } catch (err) {
                 log.error("Error while reading device config file for `" + deviceType + "`: " + err);
             } finally {

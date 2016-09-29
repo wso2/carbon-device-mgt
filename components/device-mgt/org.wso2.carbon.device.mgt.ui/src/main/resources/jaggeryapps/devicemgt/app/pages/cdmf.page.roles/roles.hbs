@@ -47,24 +47,6 @@
 {{/zone}}
 
 {{#zone "content"}}
-{{!
-Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
-
-WSO2 Inc. licenses this file to you under the Apache License,
-Version 2.0 (the "License"); you may not use this file except
-in compliance with the License.
-You may obtain a copy of the License at
-
-http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing,
-software distributed under the License is distributed on an
-"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-KIND, either express or implied. See the License for the
-specific language governing permissions and limitations
-under the License.
-}}
-
     <div id="loading-content" class="col-centered">
         {{#if removePermitted}}
             <input type="hidden" id="can-remove" value="true" />
@@ -87,7 +69,7 @@ under the License.
                 <th colspan="3"></th>
             </tr>
             </thead>
-            <tbody id="ast-container" data-app-context="{{appContext}}"></tbody>
+            <tbody id="ast-container" data-app-context="{{@app.context}}"></tbody>
         </table>
     </div>
 
@@ -154,7 +136,7 @@ under the License.
 
 {{#zone "bottomJs"}}
     <!--suppress HtmlUnknownTarget -->
-    <script id="role-listing" data-current-user="{{currentUser.username}}"
+    <script id="role-listing" data-current-user="{{@user.username}}"
             src="{{@page.publicUri}}/templates/role-listing.hbs" type="text/x-handlebars-template"></script>
     {{js "js/role-listing.js"}}
 {{/zone}}

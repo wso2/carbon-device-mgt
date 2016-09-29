@@ -70,7 +70,7 @@
     {{css "css/listing-grid.css"}}
 {{/zone}}
 {{#zone "bottomJs"}}
-    <script id="device-listing" data-current-user="{{currentUser.username}}"
+    <script id="device-listing" data-current-user="{{@user.username}}"
             src="{{@unit.publicUri}}/templates/listing.hbs"
             type="text/x-handlebars-template"></script>
     <script type="text/javascript">

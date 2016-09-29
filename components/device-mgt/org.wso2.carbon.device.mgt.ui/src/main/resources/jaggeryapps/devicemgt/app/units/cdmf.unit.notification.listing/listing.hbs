@@ -55,7 +55,7 @@
     </div>
 {{/zone}}
 {{#zone "bottomJs"}}
-    <script id="notification-listing" data-current-user="{{currentUser.username}}"
+    <script id="notification-listing" data-current-user="{{@user.username}}"
             data-image-resource="{{@unit.publicUri}}/images/" src="{{@unit.publicUri}}/templates/notification-listing.hbs"
             type="text/x-handlebars-template"></script>
     {{js "js/notification-listing.js"}}

@@ -84,29 +84,28 @@ public class DeviceTaskManagerImpl implements DeviceTaskManager {
 
     @Override
     public void addOperations() throws DeviceMgtTaskException {
-        DeviceManagementProviderService deviceManagementProviderService =
-                DeviceManagementDataHolder.getInstance().getDeviceManagementProvider();
+        DeviceManagementProviderService deviceManagementProviderService = DeviceManagementDataHolder.getInstance().
+                getDeviceManagementProvider();
         try {
-            List<Device> devices = deviceManagementProviderService.getAllDevices();
+            List<String> deviceTypes = deviceManagementProviderService.getAvailableDeviceTypes();
+            List<Device> devices;
             List<String> operations = this.getValidOperationNames();
 
-            if (!devices.isEmpty()) {
-                for (String str : operations) {
-                    CommandOperation operation = new CommandOperation();
-                    operation.setEnabled(true);
-                    operation.setType(Operation.Type.COMMAND);
-                    operation.setCode(str);
-                    //TODO: Fix this properly later adding device type to be passed in when the task manage executes "addOperations()"
-                    String type = null;
-                    if (devices.size() > 0) {
-                        type = devices.get(0).getType();
+            for (String deviceType : deviceTypes) {
+                devices = deviceManagementProviderService.getAllDevices(deviceType);
+                if (!devices.isEmpty()) {
+                    for (String str : operations) {
+                        CommandOperation operation = new CommandOperation();
+                        operation.setEnabled(true);
+                        operation.setType(Operation.Type.COMMAND);
+                        operation.setCode(str);
+                        deviceManagementProviderService.addOperation(deviceType, operation,
+                                                                     DeviceManagerUtil.getValidDeviceIdentifiers(devices));
                     }
-                    deviceManagementProviderService.addOperation(type, operation,
-                            DeviceManagerUtil.convertDevices(devices));
-                }
-            } else {
-                if (log.isDebugEnabled()) {
-                    log.debug("No devices are available to perform the operations.");
+                } else {
+                    if (log.isDebugEnabled()) {
+                        log.debug("No devices are available to perform the operations.");
+                    }
                 }
             }
         } catch (InvalidDeviceException e) {

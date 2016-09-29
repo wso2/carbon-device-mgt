@@ -54,6 +54,8 @@ public class PolicyManagerServiceImpl implements PolicyManagerService {
         policyAdministratorPoint = new PolicyAdministratorPointImpl();
         monitoringManager = new MonitoringManagerImpl();
         policyManager = new PolicyManagerImpl();
+        PolicyManagementDataHolder.getInstance().setMonitoringManager(monitoringManager);
+        PolicyManagementDataHolder.getInstance().setPolicyManager(policyManager);
     }
 
     @Override

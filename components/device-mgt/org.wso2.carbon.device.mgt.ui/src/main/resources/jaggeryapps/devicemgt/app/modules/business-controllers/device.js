@@ -20,25 +20,13 @@ var deviceModule;
 deviceModule = function () {
     var log = new Log("/app/modules/business-controllers/device.js");
 
-    var utility = require('/app/modules/utility.js').utility;
+    var utility = require('/app/modules/utility.js')["utility"];
     var constants = require('/app/modules/constants.js');
     var devicemgtProps = require("/app/modules/conf-reader/main.js")["conf"];
     var serviceInvokers = require("/app/modules/oauth/token-protected-service-invokers.js")["invokers"];
 
-//    var ArrayList = Packages.java.util.ArrayList;
-//    var Properties = Packages.java.util.Properties;
-//    var DeviceIdentifier = Packages.org.wso2.carbon.device.mgt.common.DeviceIdentifier;
-//    var DeviceManagerUtil = Packages.org.wso2.carbon.device.mgt.core.util.DeviceManagerUtil;
-//    var SimpleOperation = Packages.org.wso2.carbon.device.mgt.core.operation.mgt.SimpleOperation;
-//    var ConfigOperation = Packages.org.wso2.carbon.device.mgt.core.operation.mgt.ConfigOperation;
-//    var CommandOperation = Packages.org.wso2.carbon.device.mgt.core.operation.mgt.CommandOperation;
-
-    var deviceManagementService = utility.getDeviceManagementService();
-
     var publicMethods = {};
     var privateMethods = {};
-
-//    var deviceCloudService = devicemgtProps["httpsURL"] + "/common/device_manager";
 
     /**
      * Only GET method is implemented for now since there are no other type of methods used this method.
@@ -67,169 +55,8 @@ deviceModule = function () {
     };
 
     privateMethods.validateAndReturn = function (value) {
-        return (value == undefined || value == null) ? constants.UNSPECIFIED : value;
+        return (value == undefined || value == null) ? constants["UNSPECIFIED"] : value;
     };
-
-    /*
-     @Deprecated
-     */
-//    publicMethods.listDevices = function () {
-//        var carbonUser = session.get(constants.USER_SESSION_KEY);
-//        var utility = require('/app/modules/utility.js').utility;
-//        if (!carbonUser) {
-//            log.error("User object was not found in the session");
-//            throw constants.ERRORS.USER_NOT_FOUND;
-//        }
-//        try {
-//            utility.startTenantFlow(carbonUser);
-//            var deviceManagementService = utility.getDeviceManagementService();
-//            var devices = deviceManagementService.getAllDevices();
-//            var deviceList = [];
-//            var i, device, propertiesList, deviceObject;
-//            for (i = 0; i < devices.size(); i++) {
-//                device = devices.get(i);
-//                propertiesList = DeviceManagerUtil.convertDevicePropertiesToMap(device.getProperties());
-//
-//                deviceObject = {};
-//                deviceObject[constants.DEVICE_IDENTIFIER] =
-//                    privateMethods.validateAndReturn(device.getDeviceIdentifier());
-//                deviceObject[constants.DEVICE_NAME] =
-//                    privateMethods.validateAndReturn(device.getName());
-//                deviceObject[constants.DEVICE_OWNERSHIP] =
-//                    privateMethods.validateAndReturn(device.getEnrolmentInfo().getOwnership());
-//                deviceObject[constants.DEVICE_OWNER] =
-//                    privateMethods.validateAndReturn(device.getEnrolmentInfo().getOwner());
-//                deviceObject[constants.DEVICE_TYPE] =
-//                    privateMethods.validateAndReturn(device.getType());
-//                deviceObject[constants.DEVICE_PROPERTIES] = {};
-//                if (device.getType() == constants.PLATFORM_IOS) {
-//                    deviceObject[constants.DEVICE_PROPERTIES][constants.DEVICE_MODEL] =
-//                        privateMethods.validateAndReturn(propertiesList.get(constants.DEVICE_PRODUCT));
-//                    deviceObject[constants.DEVICE_PROPERTIES][constants.DEVICE_VENDOR] = constants.VENDOR_APPLE;
-//                } else {
-//                    deviceObject[constants.DEVICE_PROPERTIES][constants.DEVICE_MODEL] =
-//                        privateMethods.validateAndReturn(propertiesList.get(constants.DEVICE_MODEL));
-//                    deviceObject[constants.DEVICE_PROPERTIES][constants.DEVICE_VENDOR] =
-//                        privateMethods.validateAndReturn(propertiesList.get(constants.DEVICE_VENDOR));
-//                }
-//                deviceObject[constants.DEVICE_PROPERTIES][constants.DEVICE_OS_VERSION] =
-//                    privateMethods.validateAndReturn(propertiesList.get(constants.DEVICE_OS_VERSION));
-//
-//                deviceList.push(deviceObject);
-//            }
-//            return deviceList;
-//        } catch (e) {
-//            throw e;
-//        } finally {
-//            utility.endTenantFlow();
-//        }
-//    };
-
-    /*
-     @Deprecated
-     */
-    /*
-     Get the supported features by the device type
-     */
-//    publicMethods.getFeatures = function (deviceType) {
-//        var carbonUser = session.get(constants.USER_SESSION_KEY);
-//        var utility = require('/app/modules/utility.js').utility;
-//        if (!carbonUser) {
-//            log.error("User object was not found in the session");
-//            throw constants.ERRORS.USER_NOT_FOUND;
-//        }
-//        try {
-//            utility.startTenantFlow(carbonUser);
-//            var deviceManagementService = utility.getDeviceManagementService();
-//            var features = deviceManagementService.getFeatureManager(deviceType).getFeatures();
-//            var featuresConverted = {};
-//            if (features) {
-//                var i, feature, featureObject;
-//                for (i = 0; i < features.size(); i++) {
-//                    feature = features.get(i);
-//                    featureObject = {};
-//                    featureObject[constants.FEATURE_NAME] = feature.getName();
-//                    featureObject[constants.FEATURE_DESCRIPTION] = feature.getDescription();
-//                    featuresConverted[feature.getName()] = featureObject;
-//                }
-//            }
-//            return featuresConverted;
-//        } catch (e) {
-//            throw e;
-//        } finally {
-//            utility.endTenantFlow();
-//        }
-//    };
-
-    /*
-     @Deprecated
-     */
-//    publicMethods.performOperation = function (devices, operation) {
-//        var carbonUser = session.get(constants.USER_SESSION_KEY);
-//        var utility = require('/app/modules/utility.js').utility;
-//        if (!carbonUser) {
-//            log.error("User object was not found in the session");
-//            throw constants.ERRORS.USER_NOT_FOUND;
-//        }
-//        try {
-//            utility.startTenantFlow(carbonUser);
-//            var deviceManagementService = utility.getDeviceManagementService();
-//            var operationInstance;
-//            if (operation.type == "COMMAND") {
-//                operationInstance = new CommandOperation();
-//            } else if (operation.type == "CONFIG") {
-//                operationInstance = new ConfigOperation();
-//            } else {
-//                operationInstance = new SimpleOperation();
-//            }
-//            operationInstance.setCode(operation.featureName);
-//            var props = new Properties();
-//            var i, object;
-//            for (i = 0; i < operation.properties.length; i++) {
-//                object = properties[i];
-//                props.setProperty(object.key, object.value);
-//            }
-//            operationInstance.setProperties(props);
-//            var deviceList = new ArrayList();
-//            var j, device, deviceIdentifier;
-//            for (j = 0; j < devices.length; i++) {
-//                device = devices[j];
-//                deviceIdentifier = new DeviceIdentifier();
-//                deviceIdentifier.setId(device.id);
-//                deviceIdentifier.setType(device.type);
-//                deviceList.add(deviceIdentifier);
-//            }
-//            deviceManagementService.addOperation(operationInstance, deviceList);
-//        } catch (e) {
-//            throw e;
-//        } finally {
-//            utility.endTenantFlow();
-//        }
-//    };
-
-    /*
-     @Deprecated
-     */
-//    privateMethods.getDevice = function (type, deviceId) {
-//        var carbonUser = session.get(constants.USER_SESSION_KEY);
-//        var utility = require('/app/modules/utility.js').utility;
-//        if (!carbonUser) {
-//            log.error("User object was not found in the session");
-//            throw constants.ERRORS.USER_NOT_FOUND;
-//        }
-//        try {
-//            utility.startTenantFlow(carbonUser);
-//            var deviceManagementService = utility.getDeviceManagementService();
-//            var deviceIdentifier = new DeviceIdentifier();
-//            deviceIdentifier.setType(type);
-//            deviceIdentifier.setId(deviceId);
-//            return deviceManagementService.getDevice(deviceIdentifier);
-//        } catch (e) {
-//            throw e;
-//        } finally {
-//            utility.endTenantFlow();
-//        }
-//    };
 
     /*
      @Updated
@@ -243,38 +70,81 @@ deviceModule = function () {
         var utility = require('/app/modules/utility.js')["utility"];
         try {
             utility.startTenantFlow(carbonUser);
-            //var url = mdmProps["httpsURL"] + "/mdm-admin/devices/view?type=" + deviceType + "&id=" + deviceId;
             var url = devicemgtProps["httpsURL"] + "/api/device-mgt/v1.0/devices/" + deviceType + "/" + deviceId;
             return serviceInvokers.XMLHttp.get(
                 url,
                 function (backendResponse) {
                     var response = {};
                     if (backendResponse.status == 200 && backendResponse.responseText) {
-                        response["status"] = "success";
                         var device = parse(backendResponse.responseText);
-                        var propertiesList = device["properties"];
-                        var properties = {};
-                        for (var i = 0; i < propertiesList.length; i++) {
-                            properties[propertiesList[i]["name"]] =
-                                propertiesList[i]["value"];
+
+                        var filteredDeviceData = {};
+                        if (device["deviceIdentifier"]) {
+                            filteredDeviceData["deviceIdentifier"] = device["deviceIdentifier"];
                         }
-                        var deviceObject = {};
-                        deviceObject[constants["DEVICE_IDENTIFIER"]] = device["deviceIdentifier"];
-                        deviceObject[constants["DEVICE_NAME"]] = device["name"];
-                        deviceObject[constants["DEVICE_OWNERSHIP"]] = device["enrolmentInfo"]["ownership"];
-                        deviceObject[constants["DEVICE_OWNER"]] = device["enrolmentInfo"]["owner"];
-                        deviceObject[constants["DEVICE_STATUS"]] = device["enrolmentInfo"]["status"];
-                        deviceObject[constants["DEVICE_TYPE"]] = device["type"];
-                        if (device["type"] == constants["PLATFORM_IOS"]) {
-                            properties[constants["DEVICE_MODEL"]] = properties[constants["DEVICE_PRODUCT"]];
-                            delete properties[constants["DEVICE_PRODUCT"]];
-                            properties[constants["DEVICE_VENDOR"]] = constants["VENDOR_APPLE"];
+                        if (device["type"]) {
+                            filteredDeviceData["type"] = device["type"];
                         }
-                        deviceObject[constants["DEVICE_PROPERTIES"]] = properties;
-                        response["content"] = deviceObject;
+                        if (device["name"]) {
+                            filteredDeviceData["name"] = device["name"];
+                        }
+                        if (device["enrolmentInfo"]) {
+                            var enrolmentInfo = {};
+                            if (device["enrolmentInfo"]["status"]) {
+                                enrolmentInfo["status"] = device["enrolmentInfo"]["status"];
+                            }
+                            if (device["enrolmentInfo"]["owner"]) {
+                                enrolmentInfo["owner"] = device["enrolmentInfo"]["owner"];
+                            }
+                            if (device["enrolmentInfo"]["ownership"]) {
+                                enrolmentInfo["ownership"] = device["enrolmentInfo"]["ownership"];
+                            }
+                            filteredDeviceData["enrolmentInfo"] = enrolmentInfo;
+                        }
+                        if (device["properties"] && device["properties"].length > 0) {
+                            var propertiesList = device["properties"];
+                            var properties = {};
+                            for (var i = 0; i < propertiesList.length; i++) {
+                                if (propertiesList[i]["value"]) {
+                                    properties[propertiesList[i]["name"]] =
+                                        propertiesList[i]["value"];
+                                }
+                            }
+
+                            filteredDeviceData["initialDeviceInfo"] = properties;
+
+                            if (properties["DEVICE_INFO"]) {
+                                var initialDeviceInfoList = parse(properties["DEVICE_INFO"]);
+                                var initialDeviceInfo = {};
+                                for (var j = 0; j < initialDeviceInfoList.length; j++) {
+                                    if (initialDeviceInfoList[j]["value"]) {
+                                        initialDeviceInfo[initialDeviceInfoList[j]["name"]] =
+                                            initialDeviceInfoList[j]["value"];
+                                    }
+                                }
+
+                                filteredDeviceData["initialDeviceInfo"]["DEVICE_INFO"] = initialDeviceInfo;
+                            }
+                        }
+
+                        if (filteredDeviceData["type"]) {
+                            if (filteredDeviceData["type"] == constants["PLATFORM_IOS"]) {
+                                if (filteredDeviceData["properties"]) {
+                                    filteredDeviceData["properties"]["VENDOR"] = "Apple";
+                                }
+                            }
+                        }
+                        if (device["deviceInfo"]) {
+                            filteredDeviceData["latestDeviceInfo"] = device["deviceInfo"];
+                        }
+                        response["content"] = filteredDeviceData;
+                        response["status"] = "success";
                         return response;
                     } else if (backendResponse.status == 401) {
                         response["status"] = "unauthorized";
+                        return response;
+                    } else if (backendResponse.status == 404) {
+                        response["status"] = "notFound";
                         return response;
                     } else {
                         response["status"] = "error";
@@ -298,10 +168,10 @@ deviceModule = function () {
             var url;
             if (uiPermissions.LIST_DEVICES) {
                 url = devicemgtProps["httpsURL"] +
-                      devicemgtProps["backendRestEndpoints"]["deviceMgt"] + "/devices?offset=0&limit=1";
+                    devicemgtProps["backendRestEndpoints"]["deviceMgt"] + "/devices?offset=0&limit=1";
             } else if (uiPermissions.LIST_OWN_DEVICES) {
                 url = devicemgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"] +
-                      "/devices?offset=0&limit=1&user=" + carbonUser.username;
+                    "/devices?offset=0&limit=1&user=" + carbonUser.username;
             } else {
                 log.error("Access denied for user: " + carbonUser.username);
                 return -1;
@@ -330,8 +200,6 @@ deviceModule = function () {
         return response;
     };
 
-    //Old methods
-    //TODO: make sure these methods are updated
     /*
      @Updated
      */

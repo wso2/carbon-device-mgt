@@ -37,7 +37,17 @@ var modalPopupContainer = modalPopup + " .modal-content";
 var modalPopupContent = modalPopup + " .modal-content";
 var body = "body";
 var isInit = true;
-$(".icon .text").res_text(0.2);
+
+
+/**
+ *
+ * Fires the res_text when ever a data table redraw occurs making
+ * the font icons change the size to respective screen resolution.
+ *
+ */
+$(document).on( 'draw.dt', function () {
+    $(".icon .text").res_text(0.2);
+} );
 
 
 /*

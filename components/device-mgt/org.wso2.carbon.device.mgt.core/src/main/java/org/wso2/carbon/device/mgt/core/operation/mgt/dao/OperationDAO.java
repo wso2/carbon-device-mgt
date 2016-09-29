@@ -79,4 +79,6 @@ public interface OperationDAO {
 
     int getActivityCountUpdatedAfter(long timestamp) throws OperationManagementDAOException;
 
+    boolean resetAttemptCount(int enrolmentId) throws OperationManagementDAOException;
+
 }

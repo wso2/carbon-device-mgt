@@ -64,7 +64,7 @@ public class GenericNotificationDAOImpl extends AbstractNotificationDAOImpl {
             rs = stmt.executeQuery();
             notifications = new ArrayList<>();
             while (rs.next()) {
-                notifications.add(NotificationDAOUtil.getNotification(rs));
+                notifications.add(NotificationDAOUtil.getNotificationWithDeviceInfo(rs));
             }
         } catch (SQLException e) {
             throw new NotificationManagementException(
@@ -108,7 +108,7 @@ public class GenericNotificationDAOImpl extends AbstractNotificationDAOImpl {
             rs = stmt.executeQuery();
             notifications = new ArrayList<>();
             while (rs.next()) {
-                notifications.add(NotificationDAOUtil.getNotification(rs));
+                notifications.add(NotificationDAOUtil.getNotificationWithDeviceInfo(rs));
             }
         } catch (SQLException e) {
             throw new NotificationManagementException(

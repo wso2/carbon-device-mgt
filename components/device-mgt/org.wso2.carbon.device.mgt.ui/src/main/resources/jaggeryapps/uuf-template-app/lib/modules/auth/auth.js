@@ -598,6 +598,7 @@ var module = {};
         if (isAuthenticated) {
             var tenantUser = carbonServer.tenantUser(username);
             utils.setCurrentUser(tenantUser.username, tenantUser.domain, tenantUser.tenantId);
+            module.loadTenant(username);
             var scriptArgument = {
                 input: {username: username, password: password},
                 user: module.getCurrentUser()

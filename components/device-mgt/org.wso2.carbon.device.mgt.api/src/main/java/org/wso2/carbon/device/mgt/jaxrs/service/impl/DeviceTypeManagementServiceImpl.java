@@ -21,14 +21,20 @@ package org.wso2.carbon.device.mgt.jaxrs.service.impl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
+import org.wso2.carbon.device.mgt.common.Feature;
+import org.wso2.carbon.device.mgt.common.FeatureManager;
+import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.device.mgt.jaxrs.beans.DeviceTypeList;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
 import org.wso2.carbon.device.mgt.jaxrs.service.api.DeviceTypeManagementService;
+import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.RequestValidationUtil;
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
 
+import javax.validation.constraints.Size;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
 import java.util.List;
 
@@ -54,6 +60,30 @@ public class DeviceTypeManagementServiceImpl implements DeviceTypeManagementServ
             return Response.serverError().entity(
                     new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
         }
+    }
+
+    @GET
+    @Override
+    @Path("/{type}/features")
+    public Response getFeatures(@PathParam("type") @Size(max = 45) String type, @HeaderParam("If-Modified-Since") String ifModifiedSince) {
+        List<Feature> features;
+        DeviceManagementProviderService dms;
+        try {
+            dms = DeviceMgtAPIUtils.getDeviceManagementService();
+            FeatureManager fm = dms.getFeatureManager(type);
+            if (fm == null) {
+                return Response.status(Response.Status.NOT_FOUND).entity(
+                        new ErrorResponse.ErrorResponseBuilder().setMessage("No feature manager is " +
+                                                                                    "registered with the given type '" + type + "'").build()).build();
+            }
+            features = fm.getFeatures();
+        } catch (DeviceManagementException e) {
+            String msg = "Error occurred while retrieving the list of features of '" + type + "' device type";
+            log.error(msg, e);
+            return Response.serverError().entity(
+                    new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
+        }
+        return Response.status(Response.Status.OK).entity(features).build();
     }
 
 }

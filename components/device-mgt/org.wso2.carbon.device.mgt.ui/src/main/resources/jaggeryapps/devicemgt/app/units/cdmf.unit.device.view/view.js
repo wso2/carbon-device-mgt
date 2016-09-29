@@ -111,7 +111,6 @@ function onRequest(context) {
             }
         }
 
-        log.info(device);
         var utility = require("/app/modules/utility.js").utility;
         var configs = utility.getDeviceTypeConfig(deviceType);
         return {"device": device, "label" : configs["deviceType"]["label"]};

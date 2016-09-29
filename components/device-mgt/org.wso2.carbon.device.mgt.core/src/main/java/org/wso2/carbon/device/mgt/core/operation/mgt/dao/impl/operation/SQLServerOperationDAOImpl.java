@@ -18,13 +18,20 @@
 
 package org.wso2.carbon.device.mgt.core.operation.mgt.dao.impl.operation;
 
+import org.wso2.carbon.context.PrivilegedCarbonContext;
+import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.PaginationRequest;
+import org.wso2.carbon.device.mgt.common.operation.mgt.Activity;
+import org.wso2.carbon.device.mgt.common.operation.mgt.ActivityStatus;
+import org.wso2.carbon.device.mgt.common.operation.mgt.OperationResponse;
 import org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOException;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOUtil;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.impl.GenericOperationDAOImpl;
+import org.wso2.carbon.device.mgt.core.operation.mgt.dao.util.OperationDAOUtil;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -126,4 +133,135 @@ public class SQLServerOperationDAOImpl extends GenericOperationDAOImpl {
         }
         return operations;
     }
+
+    @Override
+    public List<Activity> getActivitiesUpdatedAfter(long timestamp, int limit, int offset) throws OperationManagementDAOException {
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        List<Activity> activities = new ArrayList<>();
+        try {
+            Connection conn = OperationManagementDAOFactory.getConnection();
+            String sql = "SELECT opm.ENROLMENT_ID, opm.CREATED_TIMESTAMP, opm.UPDATED_TIMESTAMP, opm.OPERATION_ID,\n"
+                    + "op.OPERATION_CODE, op.TYPE OPERATION_TYPE, opm.STATUS, en.DEVICE_ID,\n"
+                    + "ops.RECEIVED_TIMESTAMP, ops.ID OP_RES_ID, ops.OPERATION_RESPONSE,\n"
+                    + "de.DEVICE_IDENTIFICATION, dt.NAME DEVICE_TYPE\n" + "FROM DM_ENROLMENT_OP_MAPPING opm\n"
+                    + "LEFT JOIN DM_OPERATION op ON opm.OPERATION_ID = op.ID \n"
+                    + "LEFT JOIN DM_ENROLMENT en ON opm.ENROLMENT_ID = en.ID \n"
+                    + "LEFT JOIN DM_DEVICE de ON en.DEVICE_ID = de.ID \n"
+                    + "LEFT JOIN DM_DEVICE_TYPE  dt ON dt.ID = de.DEVICE_TYPE_ID \n"
+                    + "LEFT JOIN DM_DEVICE_OPERATION_RESPONSE ops ON \n"
+                    + "opm.ENROLMENT_ID = ops.ENROLMENT_ID AND opm.OPERATION_ID = ops.OPERATION_ID \n"
+                    + "WHERE opm.UPDATED_TIMESTAMP > ? \n" + "AND de.TENANT_ID = ? \n";
+
+            if (timestamp == 0) {
+                sql += "ORDER BY opm.OPERATION_ID OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+            } else {
+                sql += "ORDER BY opm.UPDATED_TIMESTAMP asc OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+            }
+            stmt = conn.prepareStatement(sql);
+            stmt.setLong(1, timestamp);
+            int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
+            stmt.setInt(2, tenantId);
+            stmt.setInt(3, offset);
+            stmt.setInt(4, limit);
+
+            rs = stmt.executeQuery();
+
+            int operationId = 0;
+            int enrolmentId = 0;
+            int responseId = 0;
+            Activity activity = null;
+            ActivityStatus activityStatus = null;
+            while (rs.next()) {
+
+                if (operationId != rs.getInt("OPERATION_ID")) {
+                    activity = new Activity();
+                    activities.add(activity);
+                    List<ActivityStatus> statusList = new ArrayList<>();
+                    activityStatus = new ActivityStatus();
+
+                    operationId = rs.getInt("OPERATION_ID");
+                    enrolmentId = rs.getInt("ENROLMENT_ID");
+
+                    activity.setType(Activity.Type.valueOf(rs.getString("OPERATION_TYPE")));
+                    activity.setCreatedTimeStamp(
+                            new java.util.Date(rs.getLong(("CREATED_TIMESTAMP")) * 1000).toString());
+                    activity.setCode(rs.getString("OPERATION_CODE"));
+
+                    DeviceIdentifier deviceIdentifier = new DeviceIdentifier();
+                    deviceIdentifier.setId(rs.getString("DEVICE_IDENTIFICATION"));
+                    deviceIdentifier.setType(rs.getString("DEVICE_TYPE"));
+                    activityStatus.setDeviceIdentifier(deviceIdentifier);
+
+                    activityStatus.setStatus(ActivityStatus.Status.valueOf(rs.getString("STATUS")));
+
+                    List<OperationResponse> operationResponses = new ArrayList<>();
+                    if (rs.getInt("UPDATED_TIMESTAMP") != 0) {
+                        activityStatus.setUpdatedTimestamp(
+                                new java.util.Date(rs.getLong(("UPDATED_TIMESTAMP")) * 1000).toString());
+
+                    }
+                    if (rs.getTimestamp("RECEIVED_TIMESTAMP") != (null)) {
+                        operationResponses.add(OperationDAOUtil.getOperationResponse(rs));
+                        responseId = rs.getInt("OP_RES_ID");
+                    }
+                    activityStatus.setResponses(operationResponses);
+                    statusList.add(activityStatus);
+                    activity.setActivityStatus(statusList);
+                    activity.setActivityId(OperationDAOUtil.getActivityId(rs.getInt("OPERATION_ID")));
+
+                }
+
+                if (operationId == rs.getInt("OPERATION_ID") && enrolmentId != rs.getInt("ENROLMENT_ID")) {
+                    activityStatus = new ActivityStatus();
+
+                    activity.setType(Activity.Type.valueOf(rs.getString("OPERATION_TYPE")));
+                    activity.setCreatedTimeStamp(
+                            new java.util.Date(rs.getLong(("CREATED_TIMESTAMP")) * 1000).toString());
+                    activity.setCode(rs.getString("OPERATION_CODE"));
+
+                    DeviceIdentifier deviceIdentifier = new DeviceIdentifier();
+                    deviceIdentifier.setId(rs.getString("DEVICE_IDENTIFICATION"));
+                    deviceIdentifier.setType(rs.getString("DEVICE_TYPE"));
+                    activityStatus.setDeviceIdentifier(deviceIdentifier);
+
+                    activityStatus.setStatus(ActivityStatus.Status.valueOf(rs.getString("STATUS")));
+
+                    List<OperationResponse> operationResponses = new ArrayList<>();
+                    if (rs.getInt("UPDATED_TIMESTAMP") != 0) {
+                        activityStatus.setUpdatedTimestamp(
+                                new java.util.Date(rs.getLong(("UPDATED_TIMESTAMP")) * 1000).toString());
+                    }
+                    if (rs.getTimestamp("RECEIVED_TIMESTAMP") != (null)) {
+                        operationResponses.add(OperationDAOUtil.getOperationResponse(rs));
+                        responseId = rs.getInt("OP_RES_ID");
+                    }
+                    activityStatus.setResponses(operationResponses);
+                    activity.getActivityStatus().add(activityStatus);
+
+                    enrolmentId = rs.getInt("ENROLMENT_ID");
+                }
+
+                if (rs.getInt("OP_RES_ID") != 0 && responseId != rs.getInt("OP_RES_ID")) {
+                    if (rs.getTimestamp("RECEIVED_TIMESTAMP") != (null)) {
+                        activityStatus.getResponses().add(OperationDAOUtil.getOperationResponse(rs));
+                        responseId = rs.getInt("OP_RES_ID");
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            throw new OperationManagementDAOException(
+                    "Error occurred while getting the operation details from " + "the database.", e);
+        } catch (ClassNotFoundException e) {
+            throw new OperationManagementDAOException(
+                    "Error occurred while converting the operation response to string.", e);
+        } catch (IOException e) {
+            throw new OperationManagementDAOException(
+                    "IO exception occurred while converting the operations responses.", e);
+        } finally {
+            OperationManagementDAOUtil.cleanupResources(stmt, rs);
+        }
+        return activities;
+    }
+
 }

@@ -44,7 +44,8 @@ import java.util.List;
  */
 public class OracleOperationDAOImpl extends GenericOperationDAOImpl {
 
-    @Override public List<? extends Operation> getOperationsForDevice(int enrolmentId, PaginationRequest request)
+    @Override
+    public List<? extends Operation> getOperationsForDevice(int enrolmentId, PaginationRequest request)
             throws OperationManagementDAOException {
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -87,7 +88,8 @@ public class OracleOperationDAOImpl extends GenericOperationDAOImpl {
         return operations;
     }
 
-    @Override public List<? extends Operation> getOperationsByDeviceAndStatus(int enrolmentId,
+    @Override
+    public List<? extends Operation> getOperationsByDeviceAndStatus(int enrolmentId,
             PaginationRequest request, Operation.Status status) throws OperationManagementDAOException {
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -131,7 +133,8 @@ public class OracleOperationDAOImpl extends GenericOperationDAOImpl {
         return operations;
     }
 
-    @Override public void updateEnrollmentOperationsStatus(int enrolmentId, String operationCode,
+    @Override
+    public void updateEnrollmentOperationsStatus(int enrolmentId, String operationCode,
             Operation.Status existingStatus, Operation.Status newStatus) throws OperationManagementDAOException {
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -167,8 +170,8 @@ public class OracleOperationDAOImpl extends GenericOperationDAOImpl {
         }
     }
 
-    @Override public boolean updateTaskOperation(int enrolmentId, String operationCode)
-            throws OperationManagementDAOException {
+    @Override
+    public boolean updateTaskOperation(int enrolmentId, String operationCode) throws OperationManagementDAOException {
         PreparedStatement stmt = null;
         ResultSet rs = null;
         boolean result = false;
@@ -204,8 +207,8 @@ public class OracleOperationDAOImpl extends GenericOperationDAOImpl {
         return result;
     }
 
-    @Override public List<Activity> getActivitiesUpdatedAfter(long timestamp, int limit, int offset)
-            throws OperationManagementDAOException {
+    @Override
+    public List<Activity> getActivitiesUpdatedAfter(long timestamp, int limit, int offset) throws OperationManagementDAOException {
         PreparedStatement stmt = null;
         ResultSet rs = null;
         List<Activity> activities = new ArrayList<>();
@@ -334,7 +337,8 @@ public class OracleOperationDAOImpl extends GenericOperationDAOImpl {
         return activities;
     }
 
-    @Override public int getActivityCountUpdatedAfter(long timestamp) throws OperationManagementDAOException {
+    @Override
+    public int getActivityCountUpdatedAfter(long timestamp) throws OperationManagementDAOException {
         PreparedStatement stmt = null;
         ResultSet rs = null;
         try {

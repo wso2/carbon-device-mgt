@@ -400,7 +400,8 @@ public class MonitoringDAOImpl implements MonitoringDAO {
     }
 
     @Override
-    public void updateAttempts(int deviceId, boolean reset) throws MonitoringDAOException {
+    public boolean updateAttempts(int deviceId, boolean reset) throws MonitoringDAOException {
+        boolean status = false;
         Connection conn;
         PreparedStatement stmt = null;
         Timestamp currentTimestamp = new Timestamp(Calendar.getInstance().getTime().getTime());
@@ -420,11 +421,13 @@ public class MonitoringDAOImpl implements MonitoringDAO {
             stmt.setInt(2, deviceId);
             stmt.setInt(3, tenantId);
             stmt.executeUpdate();
+            status = true;
         } catch (SQLException e) {
             throw new MonitoringDAOException("Unable to update the attempts  data in database.", e);
         } finally {
             PolicyManagementDAOUtil.cleanupResources(stmt, null);
         }
+        return status;
     }
 
     @Override

@@ -55,7 +55,11 @@
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon.apimgt</groupId>
-            <artifactId>org.wso2.carbon.apimgt.keymgt</artifactId>
+            <artifactId>org.wso2.carbon.apimgt.keymgt.client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.registry</groupId>
+            <artifactId>org.wso2.carbon.registry.indexing</artifactId>
         </dependency>
     </dependencies>
 
@@ -121,7 +125,8 @@
                                 </bundleDef>
                             </bundles>
                             <importBundles>
-                                <importBundleDef>org.wso2.carbon.apimgt:org.wso2.carbon.apimgt.keymgt:${carbon.api.mgt.version}</importBundleDef>
+                                <importBundleDef>org.wso2.carbon.apimgt:org.wso2.carbon.apimgt.keymgt.client:${carbon.api.mgt.version}</importBundleDef>
+                                <importBundleDef>org.wso2.carbon.registry:org.wso2.carbon.registry.indexing:${carbon.registry.version}</importBundleDef>
                             </importBundles>
                             <importFeatures>
                                 <importFeatureDef>org.wso2.carbon.core.server:${carbon.kernel.version}

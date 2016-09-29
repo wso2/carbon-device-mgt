@@ -37,6 +37,7 @@ import org.wso2.carbon.device.mgt.core.operation.mgt.dao.util.OperationDAOUtil;
 import java.io.*;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -1071,5 +1072,30 @@ public class GenericOperationDAOImpl implements OperationDAO {
             OperationManagementDAOUtil.cleanupResources(stmt, rs);
         }
         return operations;
+    }
+
+    @Override
+    public boolean resetAttemptCount(int enrolmentId) throws OperationManagementDAOException {
+        boolean status = false;
+        Connection conn;
+        PreparedStatement stmt = null;
+        Timestamp currentTimestamp = new Timestamp(Calendar.getInstance().getTime().getTime());
+        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
+        try {
+            conn = OperationManagementDAOFactory.getConnection();
+            String query = "UPDATE DM_POLICY_COMPLIANCE_STATUS SET ATTEMPTS = 0, LAST_REQUESTED_TIME = ? " +
+                        "WHERE ENROLMENT_ID = ? AND TENANT_ID = ?";
+            stmt = conn.prepareStatement(query);
+            stmt.setTimestamp(1, currentTimestamp);
+            stmt.setInt(2, enrolmentId);
+            stmt.setInt(3, tenantId);
+            stmt.executeUpdate();
+            status = true;
+        } catch (SQLException e) {
+            throw new OperationManagementDAOException("Unable to reset the attempt count in database.", e);
+        } finally {
+            OperationManagementDAOUtil.cleanupResources(stmt, null);
+        }
+        return status;
     }
 }

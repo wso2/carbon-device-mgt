@@ -21,7 +21,6 @@ package org.wso2.carbon.policy.mgt.core.mgt;
 
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
-import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 import org.wso2.carbon.policy.mgt.common.monitor.ComplianceData;
 import org.wso2.carbon.policy.mgt.common.monitor.ComplianceFeature;
 import org.wso2.carbon.policy.mgt.common.monitor.PolicyComplianceException;
@@ -40,6 +39,6 @@ public interface MonitoringManager {
 
     void addMonitoringOperation(List<Device> devices) throws PolicyComplianceException;
 
-    List<DeviceType> getDeviceTypes() throws PolicyComplianceException;
+    List<String> getDeviceTypes() throws PolicyComplianceException;
 
 }

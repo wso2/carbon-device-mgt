@@ -60,9 +60,8 @@ public interface MonitoringDAO {
 
     void deleteNoneComplianceData(int policyComplianceStatusId) throws MonitoringDAOException;
 
-    void updateAttempts(int deviceId, boolean reset) throws MonitoringDAOException;
+    boolean updateAttempts(int deviceId, boolean reset) throws MonitoringDAOException;
 
     void updateAttempts(List<Integer> deviceId, boolean reset) throws MonitoringDAOException;
-
 
 }

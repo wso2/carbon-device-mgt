@@ -241,11 +241,6 @@ public class DeviceManagementServiceComponent {
                 = new NotificationManagementServiceImpl();
         bundleContext.registerService(NotificationManagementService.class.getName(), notificationManagementService, null);
 
-        /* Registering PermissionManager Service */
-        PermissionManagerService permissionManagerService
-                = PermissionManagerServiceImpl.getInstance();
-        bundleContext.registerService(PermissionManagerService.class.getName(), permissionManagerService, null);
-
         /* Registering DeviceAccessAuthorization Service */
         DeviceAccessAuthorizationService deviceAccessAuthorizationService = new DeviceAccessAuthorizationServiceImpl();
         DeviceManagementDataHolder.getInstance().setDeviceAccessAuthorizationService(deviceAccessAuthorizationService);
@@ -262,13 +257,22 @@ public class DeviceManagementServiceComponent {
         } catch (ApplicationManagementException e) {
             log.error("Application management service not registered.", e);
         }
+
+        /* Registering PermissionManager Service */
+        PermissionManagerService permissionManagerService = PermissionManagerServiceImpl.getInstance();
+        bundleContext.registerService(PermissionManagerService.class.getName(), permissionManagerService, null);
     }
 
     private void setupDeviceManagementSchema(DataSourceConfig config) throws DeviceManagementException {
         DeviceManagementSchemaInitializer initializer = new DeviceManagementSchemaInitializer(config);
-        log.info("Initializing device management repository database schema");
+        String checkSql = "select * from DM_DEVICE_TYPE";
         try {
-            initializer.createRegistryDatabase();
+            if (!initializer.isDatabaseStructureCreated(checkSql)) {
+                log.info("Initializing device management repository database schema");
+                initializer.createRegistryDatabase();
+            } else {
+                log.info("Device management database already exists. Not creating a new database.");
+            }
         } catch (Exception e) {
             throw new DeviceManagementException(
                     "Error occurred while initializing Device Management database schema", e);

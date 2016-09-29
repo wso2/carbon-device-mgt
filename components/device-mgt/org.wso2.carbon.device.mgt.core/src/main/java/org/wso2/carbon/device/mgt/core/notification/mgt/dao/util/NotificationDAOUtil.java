@@ -131,6 +131,15 @@ public class NotificationDAOUtil {
 		notification.setOperationId(rs.getInt("OPERATION_ID"));
 		notification.setDescription(rs.getString("DESCRIPTION"));
 		notification.setStatus(rs.getString("STATUS"));
+		return notification;
+	}
+
+	public static Notification getNotificationWithDeviceInfo(ResultSet rs) throws SQLException {
+		Notification notification = new Notification();
+		notification.setNotificationId(rs.getInt("NOTIFICATION_ID"));
+		notification.setOperationId(rs.getInt("OPERATION_ID"));
+		notification.setDescription(rs.getString("DESCRIPTION"));
+		notification.setStatus(rs.getString("STATUS"));
 		notification.setDeviceIdentifier(rs.getString("DEVICE_IDENTIFICATION"));
 		notification.setDeviceName(rs.getString("DEVICE_NAME"));
 		notification.setDeviceType(rs.getString("DEVICE_TYPE"));

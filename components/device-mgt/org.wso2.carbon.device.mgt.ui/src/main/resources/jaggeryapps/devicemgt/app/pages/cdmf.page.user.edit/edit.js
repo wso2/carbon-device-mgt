@@ -22,7 +22,7 @@ function onRequest() {
 
     var userName = request.getParameter("username");
     var user = userModule.getUser(userName)["content"];
-    
+
     if (user) {
         var title;
         if (user.firstname && user.lastname) {
@@ -62,6 +62,9 @@ function onRequest() {
 
     if (userModule.isAuthorized("/permission/admin/device-mgt/users/manage")) {
         page.canManage = true;
+    }
+    if (userModule.isAuthorized("/permission/admin/device-mgt/roles/view")) {
+        page.canViewRoles = true;
     }
 
     page["usernameJSRegEx"] = devicemgtProps["userValidationConfig"]["usernameJSRegEx"];

@@ -103,12 +103,12 @@
                                     <label class=" hidden error email-invalid" for="summary">Invalid Email
                                         Address.</label>
                                 </div>
-                                <label class="wr-input-label"
-                                       title="Optional field that can have 0-to-many roles for the user">
-                                    User Roles
-                                    <span class="wr-help-tip glyphicon glyphicon-question-sign"></span>
-                                </label>
                                 {{#if canViewRoles}}
+                                    <label class="wr-input-label"
+                                           title="Optional field that can have 0-to-many roles for the user">
+                                        User Roles
+                                        <span class="wr-help-tip glyphicon glyphicon-question-sign"></span>
+                                    </label>
                                     <div class="wr-input-control">
                                         <select id="roles" class="form-control select2" multiple="multiple">
                                             {{#each roles}}

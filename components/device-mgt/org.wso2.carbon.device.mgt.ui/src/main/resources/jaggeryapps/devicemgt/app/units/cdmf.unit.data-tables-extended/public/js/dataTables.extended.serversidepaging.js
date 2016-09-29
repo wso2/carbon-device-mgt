@@ -37,6 +37,10 @@ $.fn.datatables_extended_serverside_paging = function (settings , url, dataFilte
     if (InitiateViewOption) {
         $(".viewEnabledIcon").bind("click", InitiateViewOption);
     }
+
+    var deviceType;
+    var ownership;
+
     //--- End of EMM related codes
 
     $(elem).DataTable(
@@ -65,6 +69,9 @@ $.fn.datatables_extended_serverside_paging = function (settings , url, dataFilte
                     //     params.filter = params.search.value;
                     // }
                     params.url = url;
+
+                    //Remove this line to add url parameters which is included by data tables it self
+                    delete params.columns;
                 },
                 dataFilter: dataFilter
             },
@@ -108,14 +115,32 @@ $.fn.datatables_extended_serverside_paging = function (settings , url, dataFilte
                                     .draw();
 
                                 if (filterColumn.eq(column.index()).hasClass('data-platform')) {
-                                    if (!val) {
+                                    deviceType = val;
+                                    if (!deviceType || !ownership) {
                                         $("#operation-bar").addClass("hidden");
                                         $("#operation-guide").removeClass("hidden");
                                     } else {
                                         $("#operation-guide").addClass("hidden");
                                         $("#operation-bar").removeClass("hidden");
                                         //noinspection JSUnresolvedFunction
-                                        loadOperationBar(val);
+                                        if (deviceType && ownership) {
+                                            loadOperationBar(deviceType, ownership, operationBarModeConstants.BULK);
+                                        }
+                                    }
+                                }
+
+                                if (filterColumn.eq(column.index()).hasClass('data-ownership')) {
+                                    ownership = val;
+                                    if (!deviceType || !ownership) {
+                                        $("#operation-bar").addClass("hidden");
+                                        $("#operation-guide").removeClass("hidden");
+                                    } else {
+                                        $("#operation-guide").addClass("hidden");
+                                        $("#operation-bar").removeClass("hidden");
+                                        //noinspection JSUnresolvedFunction
+                                        if (deviceType && ownership) {
+                                            loadOperationBar(deviceType, ownership, operationBarModeConstants.BULK);
+                                        }
                                     }
                                 }
                             });

@@ -32,6 +32,8 @@ public interface ComplianceDecisionPoint {
 
     void setDevicesAsUnreachable(List<DeviceIdentifier> deviceIdentifiers) throws PolicyComplianceException;
 
+    void setDevicesAsInactive(List<DeviceIdentifier> deviceIdentifiers) throws PolicyComplianceException;
+
     void setDevicesAsUnreachableWith(List<Device> devices) throws PolicyComplianceException;
 
     void setDeviceAsReachable(DeviceIdentifier deviceIdentifier) throws PolicyComplianceException;

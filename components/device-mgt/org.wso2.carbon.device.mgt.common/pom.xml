@@ -51,7 +51,7 @@
                             javax.xml.bind.annotation; version="${javax.xml.bind.imp.pkg.version}",
                             com.fasterxml.jackson.annotation;version="${jackson-annotations.version}",
                             org.wso2.carbon.apimgt.api.model.*;version="${carbon.api.mgt.version.range}",
-                            io.swagger.annotations; version="${swagger.annotations.version}"
+                            io.swagger.annotations; version="${swagger.annotations.version}"; resolution:=optional
                         </Import-Package>
                     </instructions>
                 </configuration>

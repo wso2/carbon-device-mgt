@@ -274,15 +274,15 @@ public class OperationManagerImpl implements OperationManager {
                                                    deviceId.getId() + "'");
         }
 
-        int enrolmentId = this.getEnrolmentByStatus(deviceId, EnrolmentInfo.Status.ACTIVE);
-        if (enrolmentId < 0) {
+        EnrolmentInfo enrolmentInfo = this.getActiveEnrolmentInfo(deviceId);
+        if (enrolmentInfo == null) {
             return null;
         }
 
         try {
             OperationManagementDAOFactory.openConnection();
             List<? extends org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation> operationList =
-                    operationDAO.getOperationsForDevice(enrolmentId);
+                    operationDAO.getOperationsForDevice(enrolmentInfo.getId());
 
             operations = new ArrayList<>();
             for (org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation dtoOperation : operationList) {
@@ -314,13 +314,13 @@ public class OperationManagerImpl implements OperationManager {
                                                    deviceId.getId() + "'");
         }
 
-        int enrolmentId = this.getEnrolmentByStatus(deviceId, EnrolmentInfo.Status.ACTIVE);
-        if (enrolmentId < 0) {
+        EnrolmentInfo enrolmentInfo = this.getActiveEnrolmentInfo(deviceId);
+        if (enrolmentInfo == null) {
             throw new OperationManagementException("Device not found for given device " +
                                                    "Identifier:" + deviceId.getId() + " and given type" +
                                                    deviceId.getType());
         }
-
+        int enrolmentId = enrolmentInfo.getId();
         try {
             OperationManagementDAOFactory.openConnection();
             List<? extends org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation> operationList =
@@ -364,7 +364,7 @@ public class OperationManagerImpl implements OperationManager {
         }
 
         //
-        EnrolmentInfo enrolmentInfo = this.getEnrolmentInfo(deviceId);
+        EnrolmentInfo enrolmentInfo = this.getActiveEnrolmentInfo(deviceId);
         if (enrolmentInfo == null) {
             throw new OperationManagementException("Device not found for the given device Identifier:" +
                                                    deviceId.getId() + " and given type:" +
@@ -425,8 +425,8 @@ public class OperationManagerImpl implements OperationManager {
                                                    deviceId.getId() + "'");
         }
 
-        int enrolmentId = this.getEnrolmentByStatus(deviceId, EnrolmentInfo.Status.ACTIVE);
-        if (enrolmentId < 0) {
+        EnrolmentInfo enrolmentInfo = this.getActiveEnrolmentInfo(deviceId);
+        if (enrolmentInfo == null) {
             throw new OperationManagementException("Device not found for given device " +
                                                    "Identifier:" + deviceId.getId() + " and given type" +
                                                    deviceId.getType());
@@ -435,7 +435,7 @@ public class OperationManagerImpl implements OperationManager {
         try {
             OperationManagementDAOFactory.openConnection();
             org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation dtoOperation = operationDAO.getNextOperation(
-                                                                                                           enrolmentId);
+                                                                                                    enrolmentInfo.getId());
             if (dtoOperation != null) {
                 if (org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Type.COMMAND.equals(dtoOperation.getType()
                 )) {
@@ -480,9 +480,15 @@ public class OperationManagerImpl implements OperationManager {
                                                    deviceId.getId() + "'");
         }
 
-        int enrolmentId = this.getEnrolmentByStatus(deviceId, EnrolmentInfo.Status.ACTIVE);
+        EnrolmentInfo enrolmentInfo = this.getActiveEnrolmentInfo(deviceId);
+        if (enrolmentInfo == null) {
+            throw new OperationManagementException(
+                    "Device not found for device id:" + deviceId.getId() + " " + "type:" +
+                    deviceId.getType());
+        }
 
         try {
+            int enrolmentId = enrolmentInfo.getId();
             OperationManagementDAOFactory.beginTransaction();
             boolean isUpdated = false;
             if (operation.getStatus() != null) {
@@ -543,8 +549,8 @@ public class OperationManagerImpl implements OperationManager {
                                                    deviceId.getId() + "'");
         }
 
-        int enrolmentId = this.getEnrolmentByStatus(deviceId, EnrolmentInfo.Status.ACTIVE);
-        if (enrolmentId < 0) {
+        EnrolmentInfo enrolmentInfo = this.getActiveEnrolmentInfo(deviceId);
+        if (enrolmentInfo == null) {
             throw new OperationManagementException("Device not found for given device identifier: " +
                                                    deviceId.getId() + " type: " + deviceId.getType());
         }
@@ -552,7 +558,8 @@ public class OperationManagerImpl implements OperationManager {
         try {
             OperationManagementDAOFactory.openConnection();
             org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation dtoOperation = operationDAO.
-                                                                     getOperationByDeviceAndId(enrolmentId, operationId);
+                                                                     getOperationByDeviceAndId(enrolmentInfo.getId(),
+                                                                                               operationId);
             if (dtoOperation.getType().
                     equals(org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Type.COMMAND)) {
                 org.wso2.carbon.device.mgt.core.dto.operation.mgt.CommandOperation commandOperation;
@@ -602,14 +609,15 @@ public class OperationManagerImpl implements OperationManager {
                                                    deviceId.getId() + "'");
         }
 
-        int enrolmentId = this.getEnrolmentByStatus(deviceId, EnrolmentInfo.Status.ACTIVE);
-        if (enrolmentId < 0) {
+        EnrolmentInfo enrolmentInfo = this.getActiveEnrolmentInfo(deviceId);
+        if (enrolmentInfo == null) {
             throw new OperationManagementException(
                     "Device not found for device id:" + deviceId.getId() + " " + "type:" +
                     deviceId.getType());
         }
 
         try {
+            int enrolmentId = enrolmentInfo.getId();
             OperationManagementDAOFactory.openConnection();
             org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Status dtoOpStatus =
                     org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Status.valueOf(status.toString());
@@ -907,6 +915,25 @@ public class OperationManagerImpl implements OperationManager {
             int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
             String user = this.getUser();
             enrolmentInfo = deviceDAO.getEnrolment(deviceId, user, tenantId);
+        } catch (DeviceManagementDAOException e) {
+            throw new OperationManagementException("Error occurred while retrieving enrollment data of '" +
+                                                   deviceId.getType() + "' device carrying the identifier '" +
+                                                   deviceId.getId() + "'", e);
+        } catch (SQLException e) {
+            throw new OperationManagementException(
+                    "Error occurred while opening a connection to the data source", e);
+        } finally {
+            DeviceManagementDAOFactory.closeConnection();
+        }
+        return enrolmentInfo;
+    }
+
+    private EnrolmentInfo getActiveEnrolmentInfo(DeviceIdentifier deviceId) throws OperationManagementException {
+        EnrolmentInfo enrolmentInfo;
+        try {
+            DeviceManagementDAOFactory.openConnection();
+            int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+            enrolmentInfo = deviceDAO.getActiveEnrolment(deviceId, tenantId);
         } catch (DeviceManagementDAOException e) {
             throw new OperationManagementException("Error occurred while retrieving enrollment data of '" +
                                                    deviceId.getType() + "' device carrying the identifier '" +

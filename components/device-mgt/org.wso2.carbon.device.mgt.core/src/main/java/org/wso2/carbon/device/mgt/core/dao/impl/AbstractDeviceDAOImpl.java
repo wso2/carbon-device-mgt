@@ -28,6 +28,7 @@ import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.dao.util.DeviceManagementDAOUtil;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
+import org.wso2.carbon.utils.xml.StringUtils;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -788,6 +789,38 @@ public abstract class AbstractDeviceDAOImpl implements DeviceDAO {
         } catch (SQLException e) {
             throw new DeviceManagementDAOException("Error occurred while retrieving the enrolment " +
                     "information of user '" + currentOwner + "' upon device '" + deviceId + "'", e);
+        } finally {
+            DeviceManagementDAOUtil.cleanupResources(stmt, rs);
+        }
+    }
+
+    @Override
+    public EnrolmentInfo getActiveEnrolment(DeviceIdentifier deviceId, int tenantId) throws DeviceManagementDAOException {
+        Connection conn;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        EnrolmentInfo enrolmentInfo = null;
+        try {
+            conn = this.getConnection();
+            String sql = "SELECT ID AS ENROLMENT_ID, DEVICE_ID, OWNER, OWNERSHIP, STATUS, DATE_OF_ENROLMENT, " +
+                         "DATE_OF_LAST_UPDATE, TENANT_ID FROM DM_ENROLMENT WHERE DEVICE_ID = (SELECT d.ID " +
+                         "FROM DM_DEVICE d, DM_DEVICE_TYPE t WHERE d.DEVICE_TYPE_ID = t.ID " +
+                         "AND d.DEVICE_IDENTIFICATION = ? AND t.NAME = ? AND d.TENANT_ID = ?) " +
+                         "AND TENANT_ID = ? AND STATUS in ('ACTIVE','UNREACHABLE','INACTIVE')";
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, deviceId.getId());
+            stmt.setString(2, deviceId.getType());
+            stmt.setInt(3, tenantId);
+            stmt.setInt(5, tenantId);
+            rs = stmt.executeQuery();
+            if (rs.next()) {
+                enrolmentInfo = DeviceManagementDAOUtil.loadEnrolment(rs);
+            }
+            return enrolmentInfo;
+        } catch (SQLException e) {
+            throw new DeviceManagementDAOException("Error occurred while retrieving the enrolment " +
+                                                   "information of device '" + deviceId.getId() + "' of type : "
+                                                   + deviceId.getType(), e);
         } finally {
             DeviceManagementDAOUtil.cleanupResources(stmt, rs);
         }

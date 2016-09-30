@@ -811,7 +811,7 @@ public abstract class AbstractDeviceDAOImpl implements DeviceDAO {
             stmt.setString(1, deviceId.getId());
             stmt.setString(2, deviceId.getType());
             stmt.setInt(3, tenantId);
-            stmt.setInt(5, tenantId);
+            stmt.setInt(4, tenantId);
             rs = stmt.executeQuery();
             if (rs.next()) {
                 enrolmentInfo = DeviceManagementDAOUtil.loadEnrolment(rs);

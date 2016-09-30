@@ -44,6 +44,7 @@ function loadNotifications() {
                         if (data["notifications"] && data["notifications"].length > 0) {
                             var viewModel = {};
                             viewModel["notifications"] = data["notifications"];
+                            viewModel["appContext"] = context;
                             var content = template(viewModel);
                             $("#ast-container").html(content);
                             $("#unread-notifications").datatables_extended();

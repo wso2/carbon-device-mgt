@@ -34,6 +34,7 @@ import org.wso2.carbon.device.mgt.core.config.task.TaskConfiguration;
 import org.wso2.carbon.device.mgt.core.dao.DeviceDAO;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
+import org.wso2.carbon.device.mgt.core.dao.EnrollmentDAO;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationDAO;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOException;
@@ -68,6 +69,7 @@ public class OperationManagerImpl implements OperationManager {
     private OperationMappingDAO operationMappingDAO;
     private OperationDAO operationDAO;
     private DeviceDAO deviceDAO;
+    private EnrollmentDAO enrollmentDAO;
     private NotificationStrategy notificationStrategy;
 
     public OperationManagerImpl() {
@@ -78,6 +80,7 @@ public class OperationManagerImpl implements OperationManager {
         operationMappingDAO = OperationManagementDAOFactory.getOperationMappingDAO();
         operationDAO = OperationManagementDAOFactory.getOperationDAO();
         deviceDAO = DeviceManagementDAOFactory.getDeviceDAO();
+        enrollmentDAO = DeviceManagementDAOFactory.getEnrollmentDAO();
     }
 
     public OperationManagerImpl(NotificationStrategy notificationStrategy) {
@@ -373,7 +376,7 @@ public class OperationManagerImpl implements OperationManager {
             case INACTIVE:
             case UNREACHABLE:
                 this.resetAttemptCount(enrolmentId);
-                this.setEnrolmentStatus(deviceId, EnrolmentInfo.Status.ACTIVE);
+                this.setEnrolmentStatus(enrolmentId, EnrolmentInfo.Status.ACTIVE);
                 break;
         }
 
@@ -919,19 +922,18 @@ public class OperationManagerImpl implements OperationManager {
         return enrolmentInfo;
     }
 
-    private boolean setEnrolmentStatus(DeviceIdentifier deviceId, EnrolmentInfo.Status status) throws OperationManagementException {
+    private boolean setEnrolmentStatus(int enrolmentId, EnrolmentInfo.Status status) throws OperationManagementException {
         boolean updateStatus;
         try {
             DeviceManagementDAOFactory.beginTransaction();
             int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
             String user = this.getUser();
-            updateStatus = deviceDAO.setEnrolmentStatus(deviceId, user, status, tenantId);
+            updateStatus = enrollmentDAO.setStatus(enrolmentId, user, status, tenantId);
             DeviceManagementDAOFactory.commitTransaction();
         } catch (DeviceManagementDAOException e) {
             DeviceManagementDAOFactory.rollbackTransaction();
-            throw new OperationManagementException("Error occurred while updating enrollment status of '" +
-                                                   deviceId.getType() + "' device carrying the identifier '" +
-                                                   deviceId.getId() + "'", e);
+            throw new OperationManagementException("Error occurred while updating enrollment status of device of " +
+                                                   "enrolment-id '" + enrolmentId + "'", e);
         } catch (TransactionManagementException e) {
             throw new OperationManagementException("Error occurred while initiating a transaction", e);
         } finally {

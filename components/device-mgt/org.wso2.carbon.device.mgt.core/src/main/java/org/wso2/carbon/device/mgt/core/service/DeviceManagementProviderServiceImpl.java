@@ -240,8 +240,6 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         try {
             int tenantId = this.getTenantId();
             DeviceManagementDAOFactory.beginTransaction();
-
-            DeviceType type = deviceTypeDAO.getDeviceType(device.getType(), tenantId);
             Device currentDevice = deviceDAO.getDevice(deviceIdentifier, tenantId);
             device.setId(currentDevice.getId());
             device.getEnrolmentInfo().setId(currentDevice.getEnrolmentInfo().getId());
@@ -1019,10 +1017,14 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     public boolean setStatus(DeviceIdentifier deviceId, String currentOwner,
                              EnrolmentInfo.Status status) throws DeviceManagementException {
         try {
+            boolean success = false;
             DeviceManagementDAOFactory.beginTransaction();
             int tenantId = this.getTenantId();
             Device device = deviceDAO.getDevice(deviceId, tenantId);
-            boolean success = enrollmentDAO.setStatus(device.getId(), currentOwner, status, tenantId);
+            EnrolmentInfo enrolmentInfo = device.getEnrolmentInfo();
+            if (enrolmentInfo != null) {
+                success = enrollmentDAO.setStatus(enrolmentInfo.getId(), currentOwner, status, tenantId);
+            }
             DeviceManagementDAOFactory.commitTransaction();
             return success;
         } catch (DeviceManagementDAOException e) {
@@ -1032,6 +1034,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             throw new DeviceManagementException("Error occurred while initiating transaction", e);
         } finally {
             DeviceManagementDAOFactory.closeConnection();
+
         }
     }
 

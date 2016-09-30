@@ -323,8 +323,10 @@ public abstract class AbstractDeviceDAOImpl implements DeviceDAO {
             rs = stmt.executeQuery();
             devices = new ArrayList<>();
             while (rs.next()) {
-                Device device = DeviceManagementDAOUtil.loadDevice(rs);
-                devices.add(device);
+                Device device = DeviceManagementDAOUtil.loadActiveDevice(rs, false);
+                if (device != null) {
+                    devices.add(device);
+                }
             }
         } catch (SQLException e) {
             throw new DeviceManagementDAOException("Error occurred while listing devices for type '" + type + "'", e);
@@ -780,7 +782,7 @@ public abstract class AbstractDeviceDAOImpl implements DeviceDAO {
             stmt.setInt(5, tenantId);
             rs = stmt.executeQuery();
             if (rs.next()) {
-                enrolmentInfo = DeviceManagementDAOUtil.loadEnrolment(rs);
+                enrolmentInfo = DeviceManagementDAOUtil.loadMatchingEnrolment(rs);
             }
             return enrolmentInfo;
         } catch (SQLException e) {

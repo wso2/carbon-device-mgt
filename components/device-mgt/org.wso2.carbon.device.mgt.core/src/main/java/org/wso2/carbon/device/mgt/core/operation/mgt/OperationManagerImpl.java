@@ -141,8 +141,10 @@ public class OperationManagerImpl implements OperationManager {
                         }
                     } else if (isNotRepeated) {
                         operationDAO.updateEnrollmentOperationsStatus(enrolmentId, operationCode,
-                                                                      org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Status.PENDING,
-                                                                      org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Status.REPEATED);
+                                                                      org.wso2.carbon.device.mgt.core.dto.operation.mgt.
+                                                                              Operation.Status.PENDING,
+                                                                      org.wso2.carbon.device.mgt.core.dto.operation.mgt.
+                                                                              Operation.Status.REPEATED);
                         operationMappingDAO.addOperationMapping(operationId, enrolmentId);
                     } else {
                         operationMappingDAO.addOperationMapping(operationId, enrolmentId);
@@ -168,7 +170,8 @@ public class OperationManagerImpl implements OperationManager {
                 if (!isScheduledOperation) {
                     //Get the device-type from 1st valid DeviceIdentifier. We know the 1st element is definitely there.
                     String deviceType = validDeviceIds.get(0).getType();
-                    activity.setActivityStatus(this.getActivityStatus(deviceValidationResult, deviceAuthorizationResult, deviceType));
+                    activity.setActivityStatus(this.getActivityStatus(deviceValidationResult, deviceAuthorizationResult,
+                                                                      deviceType));
                 }
                 return activity;
             } else {
@@ -484,10 +487,9 @@ public class OperationManagerImpl implements OperationManager {
             boolean isUpdated = false;
             if (operation.getStatus() != null) {
                 isUpdated = operationDAO.updateOperationStatus(enrolmentId, operationId,
-                                                               org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Status
-                                                                       .
-                                                                               valueOf(operation.getStatus()
-                                                                                                .toString()));
+                                                               org.wso2.carbon.device.mgt.core.dto.operation.mgt.
+                                                                       Operation.Status.valueOf(operation.getStatus().
+                                                                       toString()));
             }
             if (isUpdated && operation.getOperationResponse() != null) {
                 operationDAO.addOperationResponse(enrolmentId, operationId, operation.getOperationResponse());
@@ -550,17 +552,13 @@ public class OperationManagerImpl implements OperationManager {
         try {
             OperationManagementDAOFactory.openConnection();
             org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation dtoOperation = operationDAO.
-                                                                                                           getOperationByDeviceAndId(
-                                                                                                                   enrolmentId,
-                                                                                                                   operationId);
+                                                                     getOperationByDeviceAndId(enrolmentId, operationId);
             if (dtoOperation.getType().
                     equals(org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Type.COMMAND)) {
                 org.wso2.carbon.device.mgt.core.dto.operation.mgt.CommandOperation commandOperation;
                 commandOperation =
                         (org.wso2.carbon.device.mgt.core.dto.operation.mgt.CommandOperation) commandOperationDAO.
-                                                                                                                        getOperation(
-                                                                                                                                dtoOperation
-                                                                                                                                        .getId());
+                                                                      getOperation(dtoOperation.getId());
                 dtoOperation.setEnabled(commandOperation.isEnabled());
             } else if (dtoOperation.getType().
                     equals(org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Type.CONFIG)) {
@@ -617,11 +615,14 @@ public class OperationManagerImpl implements OperationManager {
                     org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Status.valueOf(status.toString());
             dtoOperationList.addAll(commandOperationDAO.getOperationsByDeviceAndStatus(enrolmentId, dtoOpStatus));
             dtoOperationList.addAll(configOperationDAO.getOperationsByDeviceAndStatus(enrolmentId,
-                                                                                      org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Status.PENDING));
+                                                       org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.
+                                                               Status.PENDING));
             dtoOperationList.addAll(profileOperationDAO.getOperationsByDeviceAndStatus(enrolmentId,
-                                                                                       org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Status.PENDING));
+                                                       org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.
+                                                               Status.PENDING));
             dtoOperationList.addAll(policyOperationDAO.getOperationsByDeviceAndStatus(enrolmentId,
-                                                                                      org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Status.PENDING));
+                                                       org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.
+                                                               Status.PENDING));
 
             Operation operation;
 
@@ -649,9 +650,8 @@ public class OperationManagerImpl implements OperationManager {
         Operation operation;
         try {
             OperationManagementDAOFactory.openConnection();
-            org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation dtoOperation = operationDAO.
-                                                                                                           getOperation(
-                                                                                                                   operationId);
+            org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation dtoOperation = operationDAO.getOperation(
+                                                                                                          operationId);
             if (dtoOperation == null) {
                 throw new OperationManagementException("Operation not found for given Id:" + operationId);
             }
@@ -661,9 +661,7 @@ public class OperationManagerImpl implements OperationManager {
                 org.wso2.carbon.device.mgt.core.dto.operation.mgt.CommandOperation commandOperation;
                 commandOperation =
                         (org.wso2.carbon.device.mgt.core.dto.operation.mgt.CommandOperation) commandOperationDAO.
-                                                                                                                        getOperation(
-                                                                                                                                dtoOperation
-                                                                                                                                        .getId());
+                                                                                   getOperation(dtoOperation.getId());
                 dtoOperation.setEnabled(commandOperation.isEnabled());
             } else if (dtoOperation.getType().
                     equals(org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Type.CONFIG)) {

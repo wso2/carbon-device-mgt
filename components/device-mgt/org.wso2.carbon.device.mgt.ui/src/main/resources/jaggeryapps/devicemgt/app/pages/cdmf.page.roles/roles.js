@@ -31,7 +31,6 @@ function onRequest(context) {
         context["removePermitted"] = true;
     }
 
-    context["appContext"] = deviceMgtProps["appContext"];
     context["adminRole"] = deviceMgtProps["adminRole"];
 
     return context;

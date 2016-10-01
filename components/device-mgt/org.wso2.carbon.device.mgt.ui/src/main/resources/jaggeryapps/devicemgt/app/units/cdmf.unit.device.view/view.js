@@ -23,11 +23,11 @@ function onRequest(context) {
 
     if (deviceType != null && deviceType != undefined && deviceId != null && deviceId != undefined) {
         var deviceModule = require("/app/modules/business-controllers/device.js")["deviceModule"];
-        var device = deviceModule.viewDevice(deviceType, deviceId);
+        var device = deviceModule.viewDevice(deviceType, deviceId)["content"];
 
         if (device) {
             var viewModel = {};
-            var deviceInfo = device.properties.DEVICE_INFO;
+            var deviceInfo = (device.properties) ? device.properties.DEVICE_INFO : null;
             if (deviceInfo != undefined && String(deviceInfo.toString()).length > 0) {
                 deviceInfo = parse(stringify(deviceInfo));
                 if (device.type == "ios") {
@@ -111,7 +111,6 @@ function onRequest(context) {
             }
         }
 
-        log.info(device);
         var utility = require("/app/modules/utility.js").utility;
         var configs = utility.getDeviceTypeConfig(deviceType);
         return {"device": device, "label" : configs["deviceType"]["label"]};

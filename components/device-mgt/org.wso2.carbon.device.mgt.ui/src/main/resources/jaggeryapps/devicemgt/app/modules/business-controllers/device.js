@@ -104,10 +104,12 @@ deviceModule = function () {
                         if (device["properties"] && device["properties"].length > 0) {
                             var propertiesList = device["properties"];
                             var properties = {};
-                            for (var i = 0; i < propertiesList.length; i++) {
-                                if (propertiesList[i]["value"]) {
-                                    properties[propertiesList[i]["name"]] =
-                                        propertiesList[i]["value"];
+                            if (propertiesList) {
+                                for (var i = 0; i < propertiesList.length; i++) {
+                                    if (propertiesList[i]["value"]) {
+                                        properties[propertiesList[i]["name"]] =
+                                            propertiesList[i]["value"];
+                                    }
                                 }
                             }
 

@@ -147,6 +147,40 @@ public final class DeviceManagementDAOUtil {
         return enrolmentInfo;
     }
 
+    public static EnrolmentInfo loadMatchingEnrolment(ResultSet rs) throws SQLException {
+        Map<EnrolmentInfo.Status, EnrolmentInfo> enrolmentInfos = new HashMap<>();
+        EnrolmentInfo enrolmentInfo = loadEnrolment(rs);
+        if (EnrolmentInfo.Status.ACTIVE.equals(enrolmentInfo.getStatus())) {
+            return enrolmentInfo;
+        }
+        enrolmentInfos.put(enrolmentInfo.getStatus(), enrolmentInfo);
+        while (rs.next()) {
+            enrolmentInfo = loadEnrolment(rs);
+            if (EnrolmentInfo.Status.ACTIVE.equals(enrolmentInfo.getStatus())) {
+                return enrolmentInfo;
+            }
+            enrolmentInfos.put(enrolmentInfo.getStatus(), enrolmentInfo);
+        }
+        if (enrolmentInfos.containsKey(EnrolmentInfo.Status.UNREACHABLE)) {
+            return enrolmentInfos.get(EnrolmentInfo.Status.UNREACHABLE);
+        } else if (enrolmentInfos.containsKey(EnrolmentInfo.Status.INACTIVE)) {
+            return enrolmentInfos.get(EnrolmentInfo.Status.INACTIVE);
+        } else if (enrolmentInfos.containsKey(EnrolmentInfo.Status.DISENROLLMENT_REQUESTED)) {
+            return enrolmentInfos.get(EnrolmentInfo.Status.DISENROLLMENT_REQUESTED);
+        } else if (enrolmentInfos.containsKey(EnrolmentInfo.Status.CREATED)) {
+            return enrolmentInfos.get(EnrolmentInfo.Status.CREATED);
+        } else if (enrolmentInfos.containsKey(EnrolmentInfo.Status.REMOVED)) {
+            return enrolmentInfos.get(EnrolmentInfo.Status.REMOVED);
+        } else if (enrolmentInfos.containsKey(EnrolmentInfo.Status.UNCLAIMED)) {
+            return enrolmentInfos.get(EnrolmentInfo.Status.UNCLAIMED);
+        } else if (enrolmentInfos.containsKey(EnrolmentInfo.Status.SUSPENDED)) {
+            return enrolmentInfos.get(EnrolmentInfo.Status.SUSPENDED);
+        } else if (enrolmentInfos.containsKey(EnrolmentInfo.Status.BLOCKED)) {
+            return enrolmentInfos.get(EnrolmentInfo.Status.BLOCKED);
+        }
+        return enrolmentInfo;
+    }
+
     public static Device loadDevice(ResultSet rs) throws SQLException {
         Device device = new Device();
         device.setId(rs.getInt("DEVICE_ID"));
@@ -156,6 +190,43 @@ public final class DeviceManagementDAOUtil {
         device.setDeviceIdentifier(rs.getString("DEVICE_IDENTIFICATION"));
         device.setEnrolmentInfo(loadEnrolment(rs));
         return device;
+    }
+
+    //This method will retrieve most appropriate device information when there are multiple device enrollments for
+    //a single device. Here we'll consider only active status.
+    public static Device loadActiveDevice(ResultSet rs, boolean deviceInfoIncluded) throws SQLException {
+        Map<EnrolmentInfo.Status, Device> deviceMap = new HashMap<>();
+        Device device = loadDevice(rs);
+        if (deviceInfoIncluded) {
+            device.setDeviceInfo(loadDeviceInfo(rs));
+        }
+
+        if (EnrolmentInfo.Status.ACTIVE.equals(device.getEnrolmentInfo().getStatus())) {
+            return device;
+        }
+        deviceMap.put(device.getEnrolmentInfo().getStatus(), device);
+        while (rs.next()) {
+            device = loadDevice(rs);
+            if (deviceInfoIncluded) {
+                device.setDeviceInfo(loadDeviceInfo(rs));
+            }
+            if (EnrolmentInfo.Status.ACTIVE.equals(device.getEnrolmentInfo().getStatus())) {
+                return device;
+            }
+            if (device.getEnrolmentInfo() != null) {
+                deviceMap.put(device.getEnrolmentInfo().getStatus(), device);
+            }
+        }
+        if (deviceMap.containsKey(EnrolmentInfo.Status.UNREACHABLE)) {
+            return deviceMap.get(EnrolmentInfo.Status.UNREACHABLE);
+        } else if (deviceMap.containsKey(EnrolmentInfo.Status.INACTIVE)) {
+            return deviceMap.get(EnrolmentInfo.Status.INACTIVE);
+        } else if (deviceMap.containsKey(EnrolmentInfo.Status.CREATED)) {
+            return deviceMap.get(EnrolmentInfo.Status.CREATED);
+        } else if (deviceMap.containsKey(EnrolmentInfo.Status.UNCLAIMED)) {
+            return deviceMap.get(EnrolmentInfo.Status.UNCLAIMED);
+        }
+        return null;
     }
 
     //This method will retrieve most appropriate device information when there are multiple device enrollments for
@@ -182,10 +253,10 @@ public final class DeviceManagementDAOUtil {
                 deviceMap.put(device.getEnrolmentInfo().getStatus(), device);
             }
         }
-        if (deviceMap.containsKey(EnrolmentInfo.Status.INACTIVE)) {
-            return deviceMap.get(EnrolmentInfo.Status.INACTIVE);
-        } else if (deviceMap.containsKey(EnrolmentInfo.Status.UNREACHABLE)) {
+        if (deviceMap.containsKey(EnrolmentInfo.Status.UNREACHABLE)) {
             return deviceMap.get(EnrolmentInfo.Status.UNREACHABLE);
+        } else if (deviceMap.containsKey(EnrolmentInfo.Status.INACTIVE)) {
+            return deviceMap.get(EnrolmentInfo.Status.INACTIVE);
         } else if (deviceMap.containsKey(EnrolmentInfo.Status.DISENROLLMENT_REQUESTED)) {
             return deviceMap.get(EnrolmentInfo.Status.DISENROLLMENT_REQUESTED);
         } else if (deviceMap.containsKey(EnrolmentInfo.Status.CREATED)) {

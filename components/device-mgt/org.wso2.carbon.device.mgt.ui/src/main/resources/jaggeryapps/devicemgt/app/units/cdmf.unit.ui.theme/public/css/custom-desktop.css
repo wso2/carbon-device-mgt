@@ -4562,7 +4562,7 @@ a.wr-side-panel-toggle-btn.selected {
     position: absolute;
     top: 0;
     bottom: 0;
-    left: -900px;
+    left: -1000px;
     z-index: 10000;
     -moz-transition: left 0.4s ease;
     transition: left 0.4s ease 0s;

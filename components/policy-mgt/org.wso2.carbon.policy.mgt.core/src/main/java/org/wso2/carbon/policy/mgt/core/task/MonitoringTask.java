@@ -23,16 +23,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
-import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
-import org.wso2.carbon.device.mgt.core.dao.DeviceTypeDAO;
-import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.ntask.core.Task;
 import org.wso2.carbon.policy.mgt.common.monitor.PolicyComplianceException;
 import org.wso2.carbon.policy.mgt.common.spi.PolicyMonitoringService;
 import org.wso2.carbon.policy.mgt.core.internal.PolicyManagementDataHolder;
 import org.wso2.carbon.policy.mgt.core.mgt.MonitoringManager;
-import org.wso2.carbon.policy.mgt.core.mgt.impl.MonitoringManagerImpl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,35 +58,25 @@ public class MonitoringTask implements Task {
         }
 
         MonitoringManager monitoringManager = PolicyManagementDataHolder.getInstance().getMonitoringManager();
-
         List<String> deviceTypes = new ArrayList<>();
         try {
             deviceTypes = monitoringManager.getDeviceTypes();
         } catch (PolicyComplianceException e) {
             log.error("Error occurred while getting the device types.");
         }
-
         if (!deviceTypes.isEmpty()) {
             try {
-
-
                 DeviceManagementProviderService deviceManagementProviderService =
                         PolicyManagementDataHolder.getInstance().getDeviceManagementService();
-
                 for (String deviceType : deviceTypes) {
-
                     if (log.isDebugEnabled()) {
                         log.debug("Running task for device type : " + deviceType);
                     }
-
                     PolicyMonitoringService monitoringService =
                             PolicyManagementDataHolder.getInstance().getPolicyMonitoringService(deviceType);
                     List<Device> devices = deviceManagementProviderService.getAllDevices(deviceType);
                     if (monitoringService != null && !devices.isEmpty()) {
-
-
                         List<Device> notifiableDevices = new ArrayList<>();
-
                         if (log.isDebugEnabled()) {
                             log.debug("Removing inactive and blocked devices from the list for the device type : " +
                                     deviceType);

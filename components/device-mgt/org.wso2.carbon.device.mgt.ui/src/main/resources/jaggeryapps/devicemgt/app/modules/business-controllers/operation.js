@@ -38,42 +38,42 @@ var operationModule = function () {
     }
 
     privateMethods.getOperationsFromFeatures = function (deviceType, operationType) {
-        var url = devicemgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"] + "/features/" + deviceType;
+        var url = devicemgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"] + "/device-types/" + deviceType + "/features";
         var featuresList = serviceInvokers.XMLHttp.get(url, function (responsePayload) {
-                var features = responsePayload;
-                var featureList = [];
-                var feature;
-                for (var i = 0; i < features.length; i++) {
-                    feature = {};
-                    var analyticStreams = utility.getDeviceTypeConfig(deviceType)["analyticStreams"];
-                    if (analyticStreams) {
-                        for (var stream in analyticStreams) {
-                            if (analyticStreams[stream].name == features[i].name) {
-                                feature.ui_unit = analyticStreams[stream].ui_unit;
-                                break;
-                            }
-                        }
-                    }
+               var features = JSON.parse(responsePayload.responseText);
+               var featureList = [];
+               var feature;
+               for (var i = 0; i < features.length; i++) {
+                   feature = {};
+                   var analyticStreams = utility.getDeviceTypeConfig(deviceType)["analyticStreams"];
+                   if (analyticStreams) {
+                       for (var stream in analyticStreams) {
+                           if (analyticStreams[stream].name == features[i].name) {
+                               feature.ui_unit = analyticStreams[stream].ui_unit;
+                               break;
+                           }
+                       }
+                   }
 
-                    feature["operation"] = features[i].code;
-                    feature["name"] = features[i].name;
-                    feature["description"] = features[i].description;
-                    feature["deviceType"] = deviceType;
-                    feature["params"] = [];
-                    var metaData = features[i].metadataEntries;
-                    if (metaData) {
-                        for (var j = 0; j < metaData.length; j++) {
-                            feature["params"].push(metaData[j].value);
-                        }
-                        featureList.push(feature);
-                    }
-                }
-                return featureList;
-            }, function (responsePayload) {
-                var response = {};
-                response["status"] = "error";
-                return response;
-            }
+                   feature["operation"] = features[i].code;
+                   feature["name"] = features[i].name;
+                   feature["description"] = features[i].description;
+                   feature["deviceType"] = deviceType;
+                   feature["params"] = [];
+                   var metaData = features[i].metadataEntries;
+                   if (metaData) {
+                       for (var j = 0; j < metaData.length; j++) {
+                           feature["params"].push(metaData[j].value);
+                       }
+                       featureList.push(feature);
+                   }
+               }
+               return featureList;
+           }, function (responsePayload) {
+               var response = {};
+               response["status"] = "error";
+               return response;
+           }
         );
         return featuresList;
     };

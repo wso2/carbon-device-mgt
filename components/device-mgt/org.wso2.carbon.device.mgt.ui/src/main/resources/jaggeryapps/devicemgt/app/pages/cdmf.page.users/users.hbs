@@ -327,7 +327,7 @@
 {{/zone}}
 {{#zone "bottomJs"}}
     <!--suppress HtmlUnknownTarget -->
-    <script id="user-listing" data-current-user="{{currentUser.username}}"
+    <script id="user-listing" data-current-user="{{@user.username}}"
             src="{{@page.publicUri}}/templates/listing.hbs" type="text/x-handlebars-template"></script>
     {{js "js/listing.js"}}
 {{/zone}}

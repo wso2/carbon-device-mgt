@@ -145,16 +145,16 @@ public class EnrollmentDAOImpl implements EnrollmentDAO {
     }
 
     @Override
-    public boolean setStatus(int deviceId, String currentOwner, EnrolmentInfo.Status status,
+    public boolean setStatus(int enrolmentID, String currentOwner, EnrolmentInfo.Status status,
                              int tenantId) throws DeviceManagementDAOException {
         Connection conn;
         PreparedStatement stmt = null;
         try {
             conn = this.getConnection();
-            String sql = "UPDATE DM_ENROLMENT SET STATUS = ? WHERE DEVICE_ID = ? AND OWNER = ? AND TENANT_ID = ?";
+            String sql = "UPDATE DM_ENROLMENT SET STATUS = ? WHERE ID = ? AND OWNER = ? AND TENANT_ID = ?";
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, status.toString());
-            stmt.setInt(2, deviceId);
+            stmt.setInt(2, enrolmentID);
             stmt.setString(3, currentOwner);
             stmt.setInt(4, tenantId);
             stmt.executeUpdate();

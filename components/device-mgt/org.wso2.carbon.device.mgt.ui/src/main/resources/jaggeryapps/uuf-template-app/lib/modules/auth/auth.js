@@ -364,10 +364,10 @@ var module = {};
      *     samlToken: string}>} SSO sessions
      */
     function getSsoSessions() {
-        var ssoSessions = session.get(constants.CACHE_KEY_SSO_SESSIONS);
+        var ssoSessions = application.get('sso_sessions');
         if (!ssoSessions) {
             ssoSessions = {};
-            session.put(constants.CACHE_KEY_SSO_SESSIONS, ssoSessions);
+            application.put('sso_sessions', ssoSessions);
         }
         return ssoSessions;
     }

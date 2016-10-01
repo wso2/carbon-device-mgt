@@ -26,7 +26,7 @@ var onFail;
         var utility = require("/app/modules/utility.js").utility;
         var apiWrapperUtil = require("/app/modules/oauth/token-handlers.js")["handlers"];
         if (context.input.samlToken) {
-            apiWrapperUtil.setupTokenPairBySamlGrantType(context.input.username, context.input.samlToken);
+            apiWrapperUtil.setupTokenPairBySamlGrantType(context.user.username, context.input.samlToken);
         } else {
             apiWrapperUtil.setupTokenPairByPasswordGrantType(context.input.username, context.input.password);
         }

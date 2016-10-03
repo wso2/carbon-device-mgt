@@ -546,6 +546,7 @@ var module = {};
                 }
             }
         }
+        // If it is a logout request
         if (samlRequest) {
             var index = ssoClient.decodeSAMLLogoutRequest(ssoClient.getSamlObject(samlRequest));
             if (log.isDebugEnabled()) {

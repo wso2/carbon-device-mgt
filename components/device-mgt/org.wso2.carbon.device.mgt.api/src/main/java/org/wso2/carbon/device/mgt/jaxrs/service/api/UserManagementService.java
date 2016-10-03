@@ -440,7 +440,7 @@ public interface UserManagementService {
             @QueryParam("limit") int limit);
 
     @PUT
-    @Path("/{username}/credentials")
+    @Path("/credentials")
     @ApiOperation(
             consumes = MediaType.APPLICATION_JSON,
             produces = MediaType.APPLICATION_JSON,

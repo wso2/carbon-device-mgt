@@ -24,8 +24,8 @@ import io.swagger.annotations.ApiModelProperty;
 @ApiModel(value = "BasicUserInfo", description = "Basic user information and the roles of the user.")
 public class BasicUserInfo {
 
+    @ApiModelProperty(name = "username", value = "The login name of the user.", required = true )
     private String username;
-
     @ApiModelProperty(name = "firstname", value = "The first name of the user.", required = true )
     private String firstname;
     @ApiModelProperty(name = "lastname", value = "The last name of the user.", required = true )

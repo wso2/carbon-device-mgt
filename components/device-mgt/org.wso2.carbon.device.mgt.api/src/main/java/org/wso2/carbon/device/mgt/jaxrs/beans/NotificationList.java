@@ -46,8 +46,6 @@ public class NotificationList extends BasePaginatedResult {
         sb.append("{");
 
         sb.append("  count: ").append(getCount()).append(",");
-        sb.append("  next: ").append(getNext()).append(",");
-        sb.append("  previous: ").append(getPrevious()).append(",");
         sb.append("  notifications: [").append(notifications).append("");
         sb.append("]}");
         return sb.toString();

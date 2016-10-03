@@ -525,15 +525,15 @@ var module = {};
                 }
                 /**
                  * @type {{sessionId: string, loggedInUser: string, sessionIndex: string, samlToken:
-             *     string}}
+                 *     string}}
                  */
                 var ssoSession = ssoClient.decodeSAMLLoginResponse(samlResponseObj, samlResponse,
                     session.getId());
                 if (ssoSession.sessionId) {
                     var ssoSessions = getSsoSessions();
                     ssoSessions[ssoSession.sessionId] = ssoSession;
-                    if (ssoSessions.sessionIndex != null || ssoSessions.sessionIndex != 'undefined') {
-                        module.loadTenant(ssoSessions.loggedInUser);
+                    if (ssoSession.sessionIndex != null || ssoSession.sessionIndex != 'undefined') {
+                        module.loadTenant(ssoSession.loggedInUser);
                         var carbonUser = (require("carbon")).server.tenantUser(ssoSession.loggedInUser);
                         utils.setCurrentUser(carbonUser.username, carbonUser.domain, carbonUser.tenantId);
                         var scriptArgument = {input: {samlToken: ssoSession.samlToken}, user: module.getCurrentUser()};

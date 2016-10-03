@@ -373,10 +373,10 @@ public class UserManagementServiceImpl implements UserManagementService {
     }
 
     @PUT
-    @Path("/{username}/credentials")
+    @Path("/credentials")
     @Override
-    public Response resetPassword(@PathParam("username") String username, OldPasswordResetWrapper credentials) {
-        return CredentialManagementResponseBuilder.buildChangePasswordResponse(username, credentials);
+    public Response resetPassword(OldPasswordResetWrapper credentials) {
+        return CredentialManagementResponseBuilder.buildChangePasswordResponse(credentials);
     }
 
     /**

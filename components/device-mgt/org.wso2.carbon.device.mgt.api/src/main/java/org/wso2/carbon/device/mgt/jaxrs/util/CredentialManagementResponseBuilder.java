@@ -20,6 +20,7 @@ package org.wso2.carbon.device.mgt.jaxrs.util;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
 import org.wso2.carbon.device.mgt.jaxrs.beans.OldPasswordResetWrapper;
 import org.wso2.carbon.device.mgt.jaxrs.beans.PasswordResetWrapper;
@@ -43,26 +44,23 @@ public class CredentialManagementResponseBuilder {
     /**
      * Builds the response to change the password of a user
      *
-     * @param username    - Username of the user.
      * @param credentials - User credentials
      * @return Response Object
      */
-    public static Response buildChangePasswordResponse(String username, OldPasswordResetWrapper credentials) {
+    public static Response buildChangePasswordResponse(OldPasswordResetWrapper credentials) {
+        String username = "";
         try {
-            UserStoreManager userStoreManager = DeviceMgtAPIUtils.getUserStoreManager();
-            if (!userStoreManager.isExistingUser(username)) {
-                return Response.status(Response.Status.NOT_FOUND).entity(
-                        new ErrorResponse.ErrorResponseBuilder().setMessage("No user found with the username '"
-                                + username + "'").build()).build();
-            }
             RequestValidationUtil.validateCredentials(credentials);
-
             if (!validateCredential(credentials.getNewPassword())) {
                 String errorMsg = DeviceMgtAPIUtils.getRealmService().getBootstrapRealmConfiguration()
-                        .getUserStoreProperty(PASSWORD_VALIDATION_ERROR_MSG_TAG);
+                                                   .getUserStoreProperty(PASSWORD_VALIDATION_ERROR_MSG_TAG);
                 return Response.status(Response.Status.BAD_REQUEST).entity(
                         new ErrorResponse.ErrorResponseBuilder().setMessage(errorMsg).build()).build();
             }
+
+            UserStoreManager userStoreManager = DeviceMgtAPIUtils.getUserStoreManager();
+            // this is the user who initiates the request
+            username = CarbonContext.getThreadLocalCarbonContext().getUsername();
             userStoreManager.updateCredential(username, credentials.getNewPassword(),
                     credentials.getOldPassword());
             return Response.status(Response.Status.OK).entity("UserImpl password by username: " +

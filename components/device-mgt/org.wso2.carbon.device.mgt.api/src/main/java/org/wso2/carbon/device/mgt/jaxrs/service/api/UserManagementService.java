@@ -473,11 +473,6 @@ public interface UserManagementService {
     @Permission(name = "Reset user password", permission = "/login")
     Response resetPassword(
             @ApiParam(
-                    name = "username",
-                    value = "Username of the user.",
-                    required = true)
-            @PathParam("username") String username,
-            @ApiParam(
                     name = "credentials",
                     value = "Credential.",
                     required = true) OldPasswordResetWrapper credentials);

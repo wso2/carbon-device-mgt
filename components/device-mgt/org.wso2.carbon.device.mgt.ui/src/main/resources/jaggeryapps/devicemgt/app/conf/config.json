@@ -61,7 +61,7 @@
         "roleNameHelpMsg" : "should be in minimum 3 characters long and do not include any whitespaces."
     },
     "generalConfig" : {
-        "host" : "https://localhost:9443",
+        "host" : "%http.ip%",
         "companyName" : "WSO2 Carbon Device Manager",
         "browserTitle" : "WSO2 Device Manager",
         "copyrightPrefix" : "\u00A9 %date-year%, ",

@@ -35,6 +35,11 @@ var onFail;
         if (!context.input.samlToken) {
             (new carbonServer.Server({url: devicemgtProps["adminService"]}))
                 .login(context.input.username, context.input.password);
+        } else {
+            var PrivilegedCarbonContext = Packages.org.wso2.carbon.context.PrivilegedCarbonContext;
+            PrivilegedCarbonContext.startTenantFlow();
+            var cxt = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+            cxt.setTenantDomain(context.user.domain, true);
         }
     };
 

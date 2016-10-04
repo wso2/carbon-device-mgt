@@ -60,6 +60,7 @@ public interface GroupManagementProviderService {
      *
      * @param groupName to be deleted.
      * @param owner     of the group.
+     * @return status of the delete operation.
      * @throws GroupManagementException
      */
     boolean deleteGroup(String groupName, String owner) throws GroupManagementException;
@@ -85,24 +86,14 @@ public interface GroupManagementProviderService {
     DeviceGroup getGroup(int groupId) throws GroupManagementException;
 
     /**
-     * Get list of device groups matched with %groupName%
-     *
-     * @param groupName of the groups.
-     * @param username  of user
-     * @return List of Groups that matches with the given DeviceGroup name.
-     * @throws GroupManagementException
-     */
-    List<DeviceGroup> findInGroups(String groupName, String username) throws GroupManagementException;
-
-    /**
      * Get paginated device groups in tenant
      *
      * @param startIndex for pagination.
      * @param rowCount   for pagination.
-     * @return paginated list of groups
+     * @return list of groups.
      * @throws GroupManagementException
      */
-    PaginationResult getGroups(int startIndex, int rowCount) throws GroupManagementException;
+    List<DeviceGroup> getGroups(int startIndex, int rowCount) throws GroupManagementException;
 
     /**
      * Get paginated device groups in tenant
@@ -110,10 +101,10 @@ public interface GroupManagementProviderService {
      * @param username   of user.
      * @param startIndex for pagination.
      * @param rowCount   for pagination.
-     * @return paginated list of groups
+     * @return list of groups
      * @throws GroupManagementException
      */
-    PaginationResult getGroups(String username, int startIndex, int rowCount) throws GroupManagementException;
+    List<DeviceGroup> getGroups(String username, int startIndex, int rowCount) throws GroupManagementException;
 
     /**
      * Get all device group count in tenant
@@ -122,15 +113,6 @@ public interface GroupManagementProviderService {
      * @throws GroupManagementException
      */
     int getGroupCount() throws GroupManagementException;
-
-    /**
-     * Get device groups of user
-     *
-     * @param username of the user
-     * @return list of groups
-     * @throws GroupManagementException
-     */
-    List<DeviceGroup> getGroups(String username) throws GroupManagementException;
 
     /**
      * Get device group count of user
@@ -225,26 +207,16 @@ public interface GroupManagementProviderService {
     List<GroupUser> getUsers(String groupName, String owner) throws GroupManagementException;
 
     /**
-     * Get all devices in device group.
-     *
-     * @param groupName of the group.
-     * @param owner     of the group.
-     * @return list of group devices.
-     * @throws GroupManagementException
-     */
-    List<Device> getDevices(String groupName, String owner) throws GroupManagementException;
-
-    /**
      * Get all devices in device group as paginated result.
      *
      * @param groupName  of the group.
      * @param owner      of the group.
      * @param startIndex for pagination.
      * @param rowCount   for pagination.
-     * @return Paginated list of devices.
+     * @return list of devices in group.
      * @throws GroupManagementException
      */
-    PaginationResult getDevices(String groupName, String owner, int startIndex, int rowCount)
+    List<Device> getDevices(String groupName, String owner, int startIndex, int rowCount)
             throws GroupManagementException;
 
     /**

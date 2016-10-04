@@ -28,7 +28,6 @@ import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroup;
 import org.wso2.carbon.device.mgt.common.group.mgt.GroupAlreadyExistException;
 import org.wso2.carbon.device.mgt.common.group.mgt.GroupManagementException;
 import org.wso2.carbon.device.mgt.common.group.mgt.GroupUser;
-import org.wso2.carbon.device.mgt.core.group.mgt.DeviceGroupBuilder;
 import org.wso2.carbon.device.mgt.core.group.mgt.dao.GroupDAO;
 import org.wso2.carbon.device.mgt.core.group.mgt.dao.GroupManagementDAOException;
 import org.wso2.carbon.device.mgt.core.group.mgt.dao.GroupManagementDAOFactory;
@@ -65,14 +64,13 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
         if (deviceGroup == null) {
             throw new GroupManagementException("DeviceGroup cannot be null.", new NullPointerException());
         }
-        DeviceGroupBuilder groupBroker = new DeviceGroupBuilder(deviceGroup);
         int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
         int groupId = -1;
         try {
             GroupManagementDAOFactory.beginTransaction();
             boolean nameIsExists = this.groupDAO.isGroupExist(deviceGroup.getName(), deviceGroup.getOwner(), tenantId);
             if (!nameIsExists) {
-                groupId = this.groupDAO.addGroup(groupBroker, tenantId);
+                groupId = this.groupDAO.addGroup(deviceGroup, tenantId);
                 GroupManagementDAOFactory.commitTransaction();
             } else {
                 throw new GroupAlreadyExistException("Group exist with name " + deviceGroup.getName());
@@ -87,9 +85,9 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
             GroupManagementDAOFactory.closeConnection();
         }
 
-        addGroupSharingRole(groupBroker.getOwner(), groupId, defaultRole, defaultPermissions);
+        addGroupSharingRole(deviceGroup.getOwner(), groupId, defaultRole, defaultPermissions);
         if (log.isDebugEnabled()) {
-            log.debug("DeviceGroup added: " + groupBroker.getName());
+            log.debug("DeviceGroup added: " + deviceGroup.getName());
         }
     }
 
@@ -125,7 +123,7 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
     @Override
     public boolean deleteGroup(String groupName, String owner) throws GroupManagementException {
         String roleName;
-        DeviceGroupBuilder deviceGroup = getGroupBuilder(groupName, owner);
+        DeviceGroup deviceGroup = buildDeviceGroup(groupName, owner);
         if (deviceGroup == null) {
             return false;
         }
@@ -160,16 +158,15 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
      */
     @Override
     public DeviceGroup getGroup(String groupName, String owner) throws GroupManagementException {
-        return getGroupBuilder(groupName, owner).getGroup();
+        return buildDeviceGroup(groupName, owner);
     }
 
-    @SuppressWarnings("Duplicates")
-    private DeviceGroupBuilder getGroupBuilder(String groupName, String owner) throws GroupManagementException {
-        DeviceGroupBuilder deviceGroupBuilder;
+    private DeviceGroup buildDeviceGroup(String groupName, String owner) throws GroupManagementException {
+        DeviceGroup deviceGroup;
         try {
             GroupManagementDAOFactory.openConnection();
             int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
-            deviceGroupBuilder = this.groupDAO.getGroup(groupName, owner, tenantId);
+            deviceGroup = this.groupDAO.getGroup(groupName, owner, tenantId);
         } catch (GroupManagementDAOException e) {
             throw new GroupManagementException("Error occurred while obtaining group '" + groupName + "'", e);
         } catch (SQLException e) {
@@ -177,19 +174,19 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
         } finally {
             GroupManagementDAOFactory.closeConnection();
         }
-        if (deviceGroupBuilder != null) {
-            deviceGroupBuilder.setUsers(this.getUsers(deviceGroupBuilder.getGroupId()));
-            deviceGroupBuilder.setRoles(this.getRoles(deviceGroupBuilder.getGroupId()));
+        if (deviceGroup != null) {
+            deviceGroup.setUsers(this.getUsers(deviceGroup.getGroupId()));
+            deviceGroup.setRoles(this.getRoles(deviceGroup.getGroupId()));
         }
-        return deviceGroupBuilder;
+        return deviceGroup;
     }
 
 
-    private DeviceGroupBuilder getGroupBuilder(int groupId) throws GroupManagementException {
-        DeviceGroupBuilder groupBroker;
+    private DeviceGroup buildDeviceGroup(int groupId) throws GroupManagementException {
+        DeviceGroup deviceGroup;
         try {
             GroupManagementDAOFactory.openConnection();
-            groupBroker = this.groupDAO.getGroup(groupId, CarbonContext.getThreadLocalCarbonContext().getTenantId());
+            deviceGroup = this.groupDAO.getGroup(groupId, CarbonContext.getThreadLocalCarbonContext().getTenantId());
         } catch (GroupManagementDAOException e) {
             throw new GroupManagementException("Error occurred while obtaining group '" + groupId + "'", e);
         } catch (SQLException e) {
@@ -197,11 +194,11 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
         } finally {
             GroupManagementDAOFactory.closeConnection();
         }
-        if (groupBroker != null) {
-            groupBroker.setUsers(this.getUsers(groupBroker.getGroupId()));
-            groupBroker.setRoles(this.getRoles(groupBroker.getGroupId()));
+        if (deviceGroup != null) {
+            deviceGroup.setUsers(this.getUsers(groupId));
+            deviceGroup.setRoles(this.getRoles(groupId));
         }
-        return groupBroker;
+        return deviceGroup;
     }
 
     /**
@@ -209,43 +206,17 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
      */
     @Override
     public DeviceGroup getGroup(int groupId) throws GroupManagementException {
-        DeviceGroupBuilder groupBroker = this.getGroupBuilder(groupId);
-        if (groupBroker != null) {
-            groupBroker.setUsers(this.getUsers(groupBroker.getGroupId()));
-            groupBroker.setRoles(this.getRoles(groupBroker.getGroupId()));
+        DeviceGroup deviceGroup = this.buildDeviceGroup(groupId);
+        if (deviceGroup != null) {
+            deviceGroup.setUsers(this.getUsers(groupId));
+            deviceGroup.setRoles(this.getRoles(groupId));
         }
-        return groupBroker.getGroup();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<DeviceGroup> findInGroups(String groupName, String owner) throws GroupManagementException {
-        List<DeviceGroupBuilder> deviceGroups = new ArrayList<>();
-        try {
-            int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
-            GroupManagementDAOFactory.openConnection();
-            deviceGroups = this.groupDAO.findInGroups(groupName, tenantId);
-        } catch (GroupManagementDAOException e) {
-            throw new GroupManagementException("Error occurred while finding group " + groupName, e);
-        } catch (SQLException e) {
-            throw new GroupManagementException("Error occurred while opening a connection to the data source.", e);
-        } finally {
-            GroupManagementDAOFactory.closeConnection();
-        }
-        List<DeviceGroup> groupsWithData = new ArrayList<>();
-        for (DeviceGroupBuilder groupBroker : deviceGroups) {
-            groupBroker.setUsers(this.getUsers(groupBroker.getGroupId()));
-            groupBroker.setRoles(this.getRoles(groupBroker.getGroupId()));
-            groupsWithData.add(groupBroker.getGroup());
-        }
-        return groupsWithData;
+        return deviceGroup;
     }
 
     @Override
-    public PaginationResult getGroups(int startIndex, int rowCount) throws GroupManagementException {
-        List<DeviceGroupBuilder> deviceGroups = new ArrayList<>();
+    public List<DeviceGroup> getGroups(int startIndex, int rowCount) throws GroupManagementException {
+        List<DeviceGroup> deviceGroups = new ArrayList<>();
         try {
             int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
             GroupManagementDAOFactory.openConnection();
@@ -257,21 +228,15 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
         } finally {
             GroupManagementDAOFactory.closeConnection();
         }
-        List<DeviceGroup> groupsWithData = new ArrayList<>();
-        for (DeviceGroupBuilder groupBroker : deviceGroups) {
-            groupBroker.setUsers(this.getUsers(groupBroker.getGroupId()));
-            groupBroker.setRoles(this.getRoles(groupBroker.getGroupId()));
-            groupsWithData.add(groupBroker.getGroup());
+        for (DeviceGroup group : deviceGroups) {
+            group.setUsers(this.getUsers(group.getGroupId()));
+            group.setRoles(this.getRoles(group.getGroupId()));
         }
-        PaginationResult paginationResult = new PaginationResult();
-        paginationResult.setRecordsTotal(getGroupCount());
-        paginationResult.setData(groupsWithData);
-        paginationResult.setRecordsFiltered(groupsWithData.size());
-        return paginationResult;
+        return deviceGroups;
     }
 
     @Override
-    public PaginationResult getGroups(String username, int startIndex, int rowCount) throws GroupManagementException {
+    public List<DeviceGroup> getGroups(String username, int startIndex, int rowCount) throws GroupManagementException {
         Map<Integer, DeviceGroup> groups = new HashMap<>();
         UserStoreManager userStoreManager;
         try {
@@ -282,20 +247,16 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
             int index = 0;
             for (String role : roleList) {
                 if (role != null && role.contains("Internal/group-")) {
-                    DeviceGroupBuilder deviceGroupBuilder = extractNewGroupFromRole(groups, role);
+                    DeviceGroup deviceGroupBuilder = extractNewGroupFromRole(groups, role);
                     if (deviceGroupBuilder != null && startIndex <= index++ && index <= rowCount) {
-                        groups.put(deviceGroupBuilder.getGroupId(), deviceGroupBuilder.getGroup());
+                        groups.put(deviceGroupBuilder.getGroupId(), deviceGroupBuilder);
                     }
                 }
             }
         } catch (UserStoreException e) {
             throw new GroupManagementException("Error occurred while getting user store manager.", e);
         }
-        PaginationResult paginationResult = new PaginationResult();
-        paginationResult.setRecordsTotal(getGroupCount());
-        paginationResult.setData(new ArrayList<>(groups.values()));
-        paginationResult.setRecordsFiltered(groups.size());
-        return paginationResult;
+        return new ArrayList<>(groups.values());
     }
 
     @Override
@@ -310,32 +271,6 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
             throw new GroupManagementException("Error occurred while opening a connection to the data source.", e);
         } finally {
             GroupManagementDAOFactory.closeConnection();
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<DeviceGroup> getGroups(String username) throws GroupManagementException {
-        UserStoreManager userStoreManager;
-        try {
-            int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
-            userStoreManager = DeviceManagementDataHolder.getInstance().getRealmService().getTenantUserRealm(tenantId)
-                    .getUserStoreManager();
-            String[] roleList = userStoreManager.getRoleListOfUser(username);
-            Map<Integer, DeviceGroup> groups = new HashMap<>();
-            for (String role : roleList) {
-                if (role != null && role.contains("Internal/group-")) {
-                    DeviceGroupBuilder deviceGroupBuilder = extractNewGroupFromRole(groups, role);
-                    if (deviceGroupBuilder != null) {
-                        groups.put(deviceGroupBuilder.getGroupId(), deviceGroupBuilder.getGroup());
-                    }
-                }
-            }
-            return new ArrayList<>(groups.values());
-        } catch (UserStoreException e) {
-            throw new GroupManagementException("Error occurred while getting user store manager.", e);
         }
     }
 
@@ -421,11 +356,11 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
     }
 
     private int getGroupId(String groupName, String owner) throws GroupManagementException {
-        DeviceGroupBuilder deviceGroupBuilder = getGroupBuilder(groupName, owner);
-        if (deviceGroupBuilder == null) {
+        DeviceGroup deviceGroup = buildDeviceGroup(groupName, owner);
+        if (deviceGroup == null) {
             return -1;
         }
-        return deviceGroupBuilder.getGroupId();
+        return deviceGroup.getGroupId();
     }
 
     /**
@@ -610,25 +545,7 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
      * {@inheritDoc}
      */
     @Override
-    public List<Device> getDevices(String groupName, String owner) throws GroupManagementException {
-        try {
-            int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
-            GroupManagementDAOFactory.openConnection();
-            return this.groupDAO.getDevices(groupName, owner, tenantId);
-        } catch (GroupManagementDAOException e) {
-            throw new GroupManagementException("Error occurred while getting devices in group.", e);
-        } catch (SQLException e) {
-            throw new GroupManagementException("Error occurred while opening a connection to the data source.", e);
-        } finally {
-            GroupManagementDAOFactory.closeConnection();
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public PaginationResult getDevices(String groupName, String owner, int startIndex, int rowCount)
+    public List<Device> getDevices(String groupName, String owner, int startIndex, int rowCount)
             throws GroupManagementException {
         int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
         List<Device> devices;
@@ -642,11 +559,7 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
         } finally {
             GroupManagementDAOFactory.closeConnection();
         }
-        PaginationResult paginationResult = new PaginationResult();
-        paginationResult.setRecordsTotal(getDeviceCount(groupName, owner));
-        paginationResult.setData(devices);
-        paginationResult.setRecordsFiltered(devices.size());
-        return paginationResult;
+        return devices;
     }
 
     /**
@@ -774,9 +687,9 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
             for (String role : roles) {
                 if (role != null && role.contains("Internal/group-") && userRealm.getAuthorizationManager()
                         .isRoleAuthorized(role, permission, CarbonConstants.UI_PERMISSION_ACTION)) {
-                    DeviceGroupBuilder deviceGroupBuilder = extractNewGroupFromRole(groups, role);
-                    if (deviceGroupBuilder != null) {
-                        groups.put(deviceGroupBuilder.getGroupId(), deviceGroupBuilder.getGroup());
+                    DeviceGroup group = extractNewGroupFromRole(groups, role);
+                    if (group != null) {
+                        groups.put(group.getGroupId(), group);
                     }
                 }
             }
@@ -789,15 +702,11 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
     @Override
     public List<DeviceGroup> getGroups(DeviceIdentifier deviceIdentifier) throws GroupManagementException {
         DeviceManagementProviderService managementProviderService = new DeviceManagementProviderServiceImpl();
-        List<DeviceGroup> deviceGroups = new ArrayList<>();
         try {
             Device device = managementProviderService.getDevice(deviceIdentifier);
             GroupManagementDAOFactory.openConnection();
-            List<DeviceGroupBuilder> builders = groupDAO.getGroups(device.getId(),
-                    PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId());
-            for (DeviceGroupBuilder d : builders){
-                deviceGroups.add(d.getGroup());
-            }
+            return groupDAO.getGroups(device.getId(),
+                                      PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId());
         } catch (DeviceManagementException e) {
             throw new GroupManagementException("Error occurred while retrieving the device details.", e);
         } catch (GroupManagementDAOException e) {
@@ -807,15 +716,14 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
         } finally {
             GroupManagementDAOFactory.closeConnection();
         }
-        return deviceGroups;
     }
 
-    private DeviceGroupBuilder extractNewGroupFromRole(Map<Integer, DeviceGroup> groups, String role)
+    private DeviceGroup extractNewGroupFromRole(Map<Integer, DeviceGroup> groups, String role)
             throws GroupManagementException {
         try {
             int groupId = Integer.parseInt(role.split("-")[1]);
             if (!groups.containsKey(groupId)) {
-                return getGroupBuilder(groupId);
+                return buildDeviceGroup(groupId);
             }
         } catch (NumberFormatException e) {
             log.error("Unable to extract groupId from role " + role, e);

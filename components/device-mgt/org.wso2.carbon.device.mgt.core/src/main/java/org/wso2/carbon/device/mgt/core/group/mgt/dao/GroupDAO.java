@@ -20,7 +20,6 @@ package org.wso2.carbon.device.mgt.core.group.mgt.dao;
 
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroup;
-import org.wso2.carbon.device.mgt.core.group.mgt.DeviceGroupBuilder;
 
 import java.util.List;
 
@@ -68,8 +67,7 @@ public interface GroupDAO {
      * @return Device Group in tenant with specified name.
      * @throws GroupManagementDAOException
      */
-    DeviceGroupBuilder getGroup(int groupId, int tenantId) throws GroupManagementDAOException;
-
+    DeviceGroup getGroup(int groupId, int tenantId) throws GroupManagementDAOException;
 
     /**
      * Get device group by name.
@@ -80,7 +78,7 @@ public interface GroupDAO {
      * @return Device Group in tenant with specified name.
      * @throws GroupManagementDAOException
      */
-    DeviceGroupBuilder getGroup(String groupName, String owner, int tenantId) throws GroupManagementDAOException;
+    DeviceGroup getGroup(String groupName, String owner, int tenantId) throws GroupManagementDAOException;
 
     /**
      * Get the groups of device with device id provided
@@ -88,7 +86,7 @@ public interface GroupDAO {
      * @return
      * @throws GroupManagementDAOException
      */
-    List<DeviceGroupBuilder> getGroups(int deviceId, int tenantId) throws GroupManagementDAOException;
+    List<DeviceGroup> getGroups(int deviceId, int tenantId) throws GroupManagementDAOException;
 
     /**
      * Get the list of Device Groups in tenant.
@@ -99,7 +97,7 @@ public interface GroupDAO {
      * @return List of all Device Groups in tenant.
      * @throws GroupManagementDAOException
      */
-    List<DeviceGroupBuilder> getGroups(int startIndex, int rowCount, int tenantId) throws GroupManagementDAOException;
+    List<DeviceGroup> getGroups(int startIndex, int rowCount, int tenantId) throws GroupManagementDAOException;
 
 
     /**
@@ -119,7 +117,7 @@ public interface GroupDAO {
      * @return List of DeviceGroup that matches with the given DeviceGroup name.
      * @throws GroupManagementDAOException
      */
-    List<DeviceGroupBuilder> findInGroups(String groupName, int tenantId) throws GroupManagementDAOException;
+    List<DeviceGroup> findInGroups(String groupName, int tenantId) throws GroupManagementDAOException;
 
     /**
      * Check group already existed with given name.

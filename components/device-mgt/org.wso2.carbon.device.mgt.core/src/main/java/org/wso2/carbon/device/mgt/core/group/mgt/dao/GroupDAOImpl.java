@@ -21,7 +21,6 @@ package org.wso2.carbon.device.mgt.core.group.mgt.dao;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroup;
 import org.wso2.carbon.device.mgt.core.dao.util.DeviceManagementDAOUtil;
-import org.wso2.carbon.device.mgt.core.group.mgt.DeviceGroupBuilder;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -127,7 +126,7 @@ public class GroupDAOImpl implements GroupDAO {
     }
 
     @Override
-    public DeviceGroupBuilder getGroup(int groupId, int tenantId) throws GroupManagementDAOException {
+    public DeviceGroup getGroup(int groupId, int tenantId) throws GroupManagementDAOException {
         PreparedStatement stmt = null;
         ResultSet resultSet = null;
         try {
@@ -152,7 +151,7 @@ public class GroupDAOImpl implements GroupDAO {
     }
 
     @Override
-    public DeviceGroupBuilder getGroup(String groupName, String owner, int tenantId)
+    public DeviceGroup getGroup(String groupName, String owner, int tenantId)
             throws GroupManagementDAOException {
         PreparedStatement stmt = null;
         ResultSet resultSet = null;
@@ -179,11 +178,11 @@ public class GroupDAOImpl implements GroupDAO {
     }
 
     @Override
-    public List<DeviceGroupBuilder> getGroups(int deviceId, int tenantId) throws GroupManagementDAOException {
+    public List<DeviceGroup> getGroups(int deviceId, int tenantId) throws GroupManagementDAOException {
 
         PreparedStatement stmt = null;
         ResultSet resultSet = null;
-        List<DeviceGroupBuilder> deviceGroupBuilders = new ArrayList<>();
+        List<DeviceGroup> deviceGroupBuilders = new ArrayList<>();
         try {
             Connection conn = GroupManagementDAOFactory.getConnection();
             String sql = "SELECT G.ID, G.GROUP_NAME, G.DESCRIPTION, G.DATE_OF_CREATE, G.DATE_OF_LAST_UPDATE, \n" +
@@ -205,11 +204,11 @@ public class GroupDAOImpl implements GroupDAO {
     }
 
     @Override
-    public List<DeviceGroupBuilder> getGroups(int startIndex, int rowCount, int tenantId)
+    public List<DeviceGroup> getGroups(int startIndex, int rowCount, int tenantId)
             throws GroupManagementDAOException {
         PreparedStatement stmt = null;
         ResultSet resultSet = null;
-        List<DeviceGroupBuilder> deviceGroupList = null;
+        List<DeviceGroup> deviceGroupList = null;
         try {
             Connection conn = GroupManagementDAOFactory.getConnection();
             String sql = "SELECT ID, DESCRIPTION, GROUP_NAME, DATE_OF_CREATE, DATE_OF_LAST_UPDATE, OWNER "
@@ -256,11 +255,11 @@ public class GroupDAOImpl implements GroupDAO {
     }
 
     @Override
-    public List<DeviceGroupBuilder> findInGroups(String groupName, int tenantId)
+    public List<DeviceGroup> findInGroups(String groupName, int tenantId)
             throws GroupManagementDAOException {
         PreparedStatement stmt = null;
         ResultSet resultSet = null;
-        List<DeviceGroupBuilder> deviceGroups = new ArrayList<>();
+        List<DeviceGroup> deviceGroups = new ArrayList<>();
         try {
             Connection conn = GroupManagementDAOFactory.getConnection();
             String sql = "SELECT ID, DESCRIPTION, GROUP_NAME, DATE_OF_CREATE, DATE_OF_LAST_UPDATE, OWNER "

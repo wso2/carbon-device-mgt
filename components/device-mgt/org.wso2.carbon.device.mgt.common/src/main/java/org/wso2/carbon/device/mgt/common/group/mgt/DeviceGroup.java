@@ -33,8 +33,7 @@ public class DeviceGroup implements Serializable {
 
     private static final long serialVersionUID = 1998121711L;
 
-    @ApiModelProperty(name = "id", value = "ID of the device group in the device group information database.",
-            required = true)
+    @ApiModelProperty(name = "id", value = "ID of the device group in the device group information database.")
     private int id;
 
     @ApiModelProperty(name = "description", value = "The device group description that can be set on the device group by the user.",
@@ -51,11 +50,11 @@ public class DeviceGroup implements Serializable {
     private List<GroupUser> users;
     private List<String> roles;
 
-    public int getId() {
+    public int getGroupId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setGroupId(int id) {
         this.id = id;
     }
 
@@ -103,7 +102,7 @@ public class DeviceGroup implements Serializable {
         return users;
     }
 
-    protected void setUsers(List<GroupUser> users) {
+    public void setUsers(List<GroupUser> users) {
         this.users = users;
     }
 
@@ -111,21 +110,8 @@ public class DeviceGroup implements Serializable {
         return roles;
     }
 
-    protected void setRoles(List<String> roles) {
+    public void setRoles(List<String> roles) {
         this.roles = roles;
-    }
-
-    protected DeviceGroup getGroup() {
-        DeviceGroup deviceGroup = new DeviceGroup();
-        deviceGroup.setId(getId());
-        deviceGroup.setDescription(getDescription());
-        deviceGroup.setName(getName());
-        deviceGroup.setDateOfCreation(getDateOfCreation());
-        deviceGroup.setDateOfLastUpdate(getDateOfLastUpdate());
-        deviceGroup.setOwner(getOwner());
-        deviceGroup.setUsers(getUsers());
-        deviceGroup.setRoles(getRoles());
-        return deviceGroup;
     }
 
 }

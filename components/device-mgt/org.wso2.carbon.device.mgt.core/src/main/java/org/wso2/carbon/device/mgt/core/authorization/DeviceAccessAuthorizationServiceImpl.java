@@ -203,7 +203,7 @@ public class DeviceAccessAuthorizationServiceImpl implements DeviceAccessAuthori
             Iterator<DeviceGroup> groupsWithDeviceIterator = groupsWithDevice.iterator();
             while (groupsWithDeviceIterator.hasNext()) {
                 DeviceGroup deviceGroup = groupsWithDeviceIterator.next();
-                if (deviceGroup.getId() == group.getId()) {
+                if (deviceGroup.getGroupId() == group.getGroupId()) {
                     return true;
                 }
             }

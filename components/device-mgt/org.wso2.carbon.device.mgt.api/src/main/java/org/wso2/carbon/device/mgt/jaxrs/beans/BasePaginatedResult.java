@@ -24,8 +24,6 @@ import io.swagger.annotations.ApiModelProperty;
 public class BasePaginatedResult {
 
     private int count;
-    private String next;
-    private String previous;
 
     /**
      * Number of Resources returned.

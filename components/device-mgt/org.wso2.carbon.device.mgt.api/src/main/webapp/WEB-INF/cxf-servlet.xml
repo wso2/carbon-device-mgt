@@ -34,7 +34,7 @@
             <ref bean="roleManagementService"/>
             <ref bean="userManagementService"/>
             <ref bean="userManagementAdminService"/>
-            <!--<ref bean="groupManagementService"/>-->
+            <ref bean="groupManagementService"/>
             <ref bean="groupManagementAdminService"/>
             <ref bean="applicationManagementAdminService"/>
             <ref bean="deviceTypeManagementAdminService"/>

@@ -16,6 +16,7 @@
  *   under the License.
  *
  */
+
 package org.wso2.carbon.device.mgt.jaxrs.service.api;
 
 import io.swagger.annotations.Api;
@@ -110,6 +111,49 @@ public interface GroupManagementService {
                                value = "Maximum size of resource array to return.")
                        @QueryParam("limit") int limit);
 
+    @Path("/count")
+    @GET
+    @ApiOperation(
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = HTTPConstants.HEADER_GET,
+            value = "Get the count of groups belongs to current user.",
+            notes = "Returns count of all permitted groups enrolled with the system.",
+            tags = "Device Group Management")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK. \n Successfully fetched the device group count.",
+                    response = DeviceGroupList.class,
+                    responseHeaders = {
+                            @ResponseHeader(
+                                    name = "Content-Type",
+                                    description = "The content type of the body"),
+                            @ResponseHeader(
+                                    name = "ETag",
+                                    description = "Entity Tag of the response resource.\n" +
+                                                  "Used by caches, or in conditional requests."),
+                            @ResponseHeader(
+                                    name = "Last-Modified",
+                                    description = "Date and time the resource has been modified the last time.\n" +
+                                                  "Used by caches, or in conditional requests."),
+                    }),
+            @ApiResponse(
+                    code = 304,
+                    message = "Not Modified. \n Empty body because the client has already the latest version of " +
+                              "the requested resource."),
+            @ApiResponse(
+                    code = 404,
+                    message = "No groups found.",
+                    response = ErrorResponse.class),
+            @ApiResponse(
+                    code = 406,
+                    message = "Not Acceptable.\n The requested media type is not supported."),
+            @ApiResponse(
+                    code = 500,
+                    message = "Internal Server Error. \n Server error occurred while fetching the group count.",
+                    response = ErrorResponse.class)
+    })
+    @Permission(name = "View Groups", permission = "/device-mgt/groups/view")
+    Response getGroupCount();
+
     @POST
     @ApiOperation(
             consumes = MediaType.APPLICATION_JSON,
@@ -170,7 +214,7 @@ public interface GroupManagementService {
                                  required = true)
                          @Valid DeviceGroup group);
 
-    @Path("/{groupName}")
+    @Path("/name/{groupName}")
     @GET
     @ApiOperation(
             produces = MediaType.APPLICATION_JSON,
@@ -217,7 +261,7 @@ public interface GroupManagementService {
                               required = true)
                       @PathParam("groupName") String groupName);
 
-    @Path("/{groupName}")
+    @Path("/name/{groupName}")
     @PUT
     @ApiOperation(
             produces = MediaType.APPLICATION_JSON,
@@ -269,7 +313,7 @@ public interface GroupManagementService {
                                  required = true)
                          @Valid DeviceGroup deviceGroup);
 
-    @Path("/{groupName}")
+    @Path("/name/{groupName}")
     @DELETE
     @ApiOperation(
             produces = MediaType.APPLICATION_JSON,
@@ -316,7 +360,7 @@ public interface GroupManagementService {
                                  required = true)
                          @PathParam("groupName") String groupName);
 
-    @Path("/{groupName}/share")
+    @Path("/name/{groupName}/share")
     @POST
     @ApiOperation(
             produces = MediaType.APPLICATION_JSON,
@@ -368,7 +412,7 @@ public interface GroupManagementService {
                                         required = true)
                                 @Valid DeviceGroupShare deviceGroupShare);
 
-    @Path("/{groupName}/users")
+    @Path("/name/{groupName}/users")
     @GET
     @ApiOperation(
             produces = MediaType.APPLICATION_JSON,
@@ -415,7 +459,7 @@ public interface GroupManagementService {
                                      required = true)
                              @PathParam("groupName") String groupName);
 
-    @Path("/{groupName}/devices")
+    @Path("/name/{groupName}/devices")
     @GET
     @ApiOperation(
             produces = MediaType.APPLICATION_JSON,
@@ -470,7 +514,54 @@ public interface GroupManagementService {
                                        value = "Maximum size of resource array to return.")
                                @QueryParam("limit") int limit);
 
-    @Path("/{groupName}/devices")
+    @Path("/name/{groupName}/devices/count")
+    @GET
+    @ApiOperation(
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = HTTPConstants.HEADER_GET,
+            value = "View list of device count in the device group.",
+            notes = "Returns device count in the device group.",
+            tags = "Device Group Management")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK. \n Successfully fetched the device count.",
+                    response = DeviceList.class,
+                    responseHeaders = {
+                            @ResponseHeader(
+                                    name = "Content-Type",
+                                    description = "The content type of the body"),
+                            @ResponseHeader(
+                                    name = "ETag",
+                                    description = "Entity Tag of the response resource.\n" +
+                                                  "Used by caches, or in conditional requests."),
+                            @ResponseHeader(
+                                    name = "Last-Modified",
+                                    description = "Date and time the resource has been modified the last time.\n" +
+                                                  "Used by caches, or in conditional requests."),
+                    }),
+            @ApiResponse(
+                    code = 304,
+                    message = "Not Modified. \n Empty body because the client has already the latest version of " +
+                              "the requested resource."),
+            @ApiResponse(
+                    code = 404,
+                    message = "No groups found.",
+                    response = ErrorResponse.class),
+            @ApiResponse(
+                    code = 406,
+                    message = "Not Acceptable.\n The requested media type is not supported."),
+            @ApiResponse(
+                    code = 500,
+                    message = "Internal Server Error. \n Server error occurred while fetching device count.",
+                    response = ErrorResponse.class)
+    })
+    @Permission(name = "View devices", permission = "/device-mgt/groups/devices/view")
+    Response getDeviceCountOfGroup(@ApiParam(
+                                           name = "groupName",
+                                           value = "Name of the group.",
+                                           required = true)
+                               @PathParam("groupName") String groupName);
+
+    @Path("/name/{groupName}/devices")
     @POST
     @ApiOperation(
             produces = MediaType.APPLICATION_JSON,
@@ -521,7 +612,7 @@ public interface GroupManagementService {
                                        required = true)
                                @Valid List<DeviceIdentifier> deviceIdentifiers);
 
-    @Path("/{groupName}/devices")
+    @Path("/name/{groupName}/devices")
     @DELETE
     @ApiOperation(
             produces = MediaType.APPLICATION_JSON,

@@ -20,19 +20,21 @@ package org.wso2.carbon.device.mgt.jaxrs.service.impl.admin;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.device.mgt.common.PaginationResult;
+import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroup;
 import org.wso2.carbon.device.mgt.common.group.mgt.GroupManagementException;
+import org.wso2.carbon.device.mgt.core.service.GroupManagementProviderService;
+import org.wso2.carbon.device.mgt.jaxrs.beans.DeviceGroupList;
 import org.wso2.carbon.device.mgt.jaxrs.service.api.admin.GroupManagementAdminService;
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
 
 import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.HeaderParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.List;
 
 @Path("/admin/groups")
 @Produces(MediaType.APPLICATION_JSON)
@@ -41,26 +43,35 @@ public class GroupManagementAdminServiceImpl implements GroupManagementAdminServ
 
     private static final Log log = LogFactory.getLog(GroupManagementAdminServiceImpl.class);
 
-    @GET
     @Override
-    public Response getGroupsOfUser(
-            @QueryParam("username") String username,
-            @HeaderParam("If-Modified-Since") String timestamp,
-            @QueryParam("offset") int offset,
-            @QueryParam("limit") int limit) {
+    public Response getGroups(int offset, int limit) {
         try {
-            PaginationResult result =
-                    DeviceMgtAPIUtils.getGroupManagementProviderService().getGroups(username, offset, limit);
-            if (result != null && result.getRecordsTotal() > 0) {
-                return Response.status(Response.Status.OK).entity(result).build();
+            GroupManagementProviderService service = DeviceMgtAPIUtils.getGroupManagementProviderService();
+            List<DeviceGroup> deviceGroups = service.getGroups(offset, limit);
+            DeviceGroupList deviceGroupList = new DeviceGroupList();
+            deviceGroupList.setList(deviceGroups);
+            deviceGroupList.setCount(service.getGroupCount());
+            if (deviceGroups != null && deviceGroups.size() > 0) {
+                return Response.status(Response.Status.OK).entity(deviceGroupList).build();
             } else {
                 return Response.status(Response.Status.NOT_FOUND).build();
             }
         } catch (GroupManagementException e) {
-            String msg = "ErrorResponse occurred while retrieving the groups of user '" + username + "'";
+            String msg = "ErrorResponse occurred while retrieving all groups.";
             log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         }
     }
 
+    @Override
+    public Response getGroupCount() {
+        try {
+            int count = DeviceMgtAPIUtils.getGroupManagementProviderService().getGroupCount();
+            return Response.status(Response.Status.OK).entity(count).build();
+        } catch (GroupManagementException e) {
+            String msg = "ErrorResponse occurred while retrieving group count.";
+            log.error(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+        }
+    }
 }

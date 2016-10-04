@@ -39,34 +39,4 @@ public class BasePaginatedResult {
     public void setCount(int count) {
         this.count = count;
     }
-
-
-    /**
-     * Link to the next subset of resources qualified. \nEmpty if no more resources are to be returned.
-     */
-    @ApiModelProperty(value = "Link to the next subset of resources qualified. \n " +
-            "Empty if no more resources are to be returned.")
-    @JsonProperty("next")
-    public String getNext() {
-        return next;
-    }
-
-    public void setNext(String next) {
-        this.next = next;
-    }
-
-    /**
-     * Link to the previous subset of resources qualified. \nEmpty if current subset is the first subset returned.
-     */
-    @ApiModelProperty(value = "Link to the previous subset of resources qualified. \n" +
-            "Empty if current subset is the first subset returned.")
-    @JsonProperty("previous")
-    public String getPrevious() {
-        return previous;
-    }
-
-    public void setPrevious(String previous) {
-        this.previous = previous;
-    }
-
 }

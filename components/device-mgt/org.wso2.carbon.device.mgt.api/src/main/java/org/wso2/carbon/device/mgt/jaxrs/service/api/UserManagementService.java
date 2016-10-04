@@ -440,7 +440,7 @@ public interface UserManagementService {
             @QueryParam("limit") int limit);
 
     @PUT
-    @Path("/{username}/credentials")
+    @Path("/credentials")
     @ApiOperation(
             consumes = MediaType.APPLICATION_JSON,
             produces = MediaType.APPLICATION_JSON,
@@ -472,11 +472,6 @@ public interface UserManagementService {
     })
     @Permission(name = "Reset user password", permission = "/login")
     Response resetPassword(
-            @ApiParam(
-                    name = "username",
-                    value = "Username of the user.",
-                    required = true)
-            @PathParam("username") String username,
             @ApiParam(
                     name = "credentials",
                     value = "Credential.",

@@ -431,6 +431,18 @@ public class OperationManagerImpl implements OperationManager {
                                                    "Identifier:" + deviceId.getId() + " and given type" +
                                                    deviceId.getType());
         }
+        int enrolmentId = enrolmentInfo.getId();
+        //Changing the enrollment status & attempt count if the device is marked as inactive or unreachable
+        switch (enrolmentInfo.getStatus()) {
+            case ACTIVE:
+                this.resetAttemptCount(enrolmentId);
+                break;
+            case INACTIVE:
+            case UNREACHABLE:
+                this.resetAttemptCount(enrolmentId);
+                this.setEnrolmentStatus(enrolmentId, EnrolmentInfo.Status.ACTIVE);
+                break;
+        }
 
         try {
             OperationManagementDAOFactory.openConnection();

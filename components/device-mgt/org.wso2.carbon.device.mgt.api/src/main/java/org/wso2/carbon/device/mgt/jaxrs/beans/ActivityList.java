@@ -48,8 +48,6 @@ public class ActivityList extends BasePaginatedResult {
         sb.append("{\n");
 
         sb.append("  count: ").append(getCount()).append(",\n");
-        sb.append("  next: ").append(getNext()).append(",\n");
-        sb.append("  previous: ").append(getPrevious()).append(",\n");
         sb.append("  devices: [").append(activities).append("\n");
         sb.append("]}\n");
         return sb.toString();

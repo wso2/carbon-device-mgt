@@ -45,7 +45,7 @@ var modalPopupContent = modalPopup + " .modal-content";
 var body = "body";
 
 /**
- * 
+ *
  * Fires the res_text when ever a data table redraw occurs making
  * the font icons change the size to respective screen resolution.
  *
@@ -266,7 +266,7 @@ function loadUsers() {
             "recordsFiltered": data.count,
             "data": objects
         };
-
+        console.log(json);
         return JSON.stringify(json);
     };
 
@@ -282,8 +282,8 @@ function loadUsers() {
             class: "remove-padding icon-only content-fill",
             data: null,
             defaultContent: '<div class="thumbnail icon">' +
-                '<i class="square-element text fw fw-user" style="font-size: 74px;"></i>' +
-                '</div>'
+            '<i class="square-element text fw fw-user" style="font-size: 74px;"></i>' +
+            '</div>'
         },
         {
             class: "fade-edge",

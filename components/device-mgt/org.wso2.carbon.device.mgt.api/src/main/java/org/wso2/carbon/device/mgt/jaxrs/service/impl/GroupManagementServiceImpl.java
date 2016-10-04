@@ -20,20 +20,20 @@ package org.wso2.carbon.device.mgt.jaxrs.service.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroup;
 import org.wso2.carbon.device.mgt.common.group.mgt.GroupManagementException;
 import org.wso2.carbon.device.mgt.core.service.GroupManagementProviderService;
+import org.wso2.carbon.device.mgt.jaxrs.beans.DeviceGroupShare;
 import org.wso2.carbon.device.mgt.jaxrs.service.api.GroupManagementService;
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
 import org.wso2.carbon.policy.mgt.common.DeviceGroupWrapper;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
@@ -47,12 +47,12 @@ public class GroupManagementServiceImpl implements GroupManagementService {
     private static final Log log = LogFactory.getLog(GroupManagementServiceImpl.class);
 
     @Override
-    public Response getGroups(@QueryParam("user") String user, @QueryParam("offset") int offset,
-                              @QueryParam("limit") int limit) {
+    public Response getGroups(int offset, int limit) {
         try {
             List<DeviceGroupWrapper> groupWrappers = new ArrayList<>();
             GroupManagementProviderService service = DeviceMgtAPIUtils.getGroupManagementProviderService();
-            List<DeviceGroup> deviceGroups = service.getGroups(user);
+            String currentUser = CarbonContext.getThreadLocalCarbonContext().getUsername();
+            List<DeviceGroup> deviceGroups = service.getGroups(currentUser);
             int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
             for (DeviceGroup dg : deviceGroups) {
                 DeviceGroupWrapper gw = new DeviceGroupWrapper();
@@ -76,61 +76,42 @@ public class GroupManagementServiceImpl implements GroupManagementService {
     }
 
     @Override
-    public Response getGroup(@PathParam("groupName") String groupName) {
+    public Response getGroup(String groupName) {
         return null;
     }
 
     @Override
-    public Response updateGroup(@PathParam("groupName") String groupName, DeviceGroup deviceGroup) {
+    public Response updateGroup(String groupName, DeviceGroup deviceGroup) {
         return null;
     }
 
     @Override
-    public Response deleteGroup(@PathParam("groupName") String groupName) {
+    public Response deleteGroup(String groupName) {
         return null;
     }
 
     @Override
-    public Response shareGroupWithUser(String groupName, String targetUser) {
+    public Response manageGroupSharing(String groupName, DeviceGroupShare deviceGroupShare) {
         return null;
     }
 
     @Override
-    public Response shareGroupWithRole(String groupName, String targetRole) {
+    public Response getUsersOfGroup(String groupName) {
         return null;
     }
 
     @Override
-    public Response removeShareWithUser(@PathParam("groupName") String groupName,
-                                        @QueryParam("username") String targetUser) {
+    public Response getDevicesOfGroup(String groupName, int offset, int limit) {
         return null;
     }
 
     @Override
-    public Response removeShareWithRole(@PathParam("groupName") String groupName,
-                                        @QueryParam("roleName") String targetUser) {
+    public Response addDeviceToGroup(String groupName, DeviceIdentifier deviceIdentifier) {
         return null;
     }
 
     @Override
-    public Response getUsersOfGroup(@PathParam("groupName") String groupName) {
-        return null;
-    }
-
-    @Override
-    public Response getDevicesOfGroup(@PathParam("groupName") String groupName, @QueryParam("offset") int offset,
-                                      @QueryParam("limit") int limit) {
-        return null;
-    }
-
-    @Override
-    public Response addDeviceToGroup(@PathParam("groupName") String groupName, DeviceIdentifier deviceIdentifier) {
-        return null;
-    }
-
-    @Override
-    public Response removeDeviceFromGroup(@PathParam("groupName") String groupName, @QueryParam("type") String type,
-                                          @QueryParam("id") String id) {
+    public Response removeDevicesFromGroup(String groupName, String type, String id) {
         return null;
     }
 }

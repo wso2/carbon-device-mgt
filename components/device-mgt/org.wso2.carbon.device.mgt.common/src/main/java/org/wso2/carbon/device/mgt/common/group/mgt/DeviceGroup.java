@@ -17,6 +17,9 @@
  */
 package org.wso2.carbon.device.mgt.common.group.mgt;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
@@ -25,19 +28,29 @@ import java.util.List;
 /**
  * Holds Device Group details and expose to external access
  */
-@XmlRootElement
+@ApiModel(value = "DeviceGroup", description = "This class carries all information related to a managed device group.")
 public class DeviceGroup implements Serializable {
 
+    private static final long serialVersionUID = 1998121711L;
+
+    @ApiModelProperty(name = "id", value = "ID of the device group in the device group information database.",
+            required = true)
     private int id;
+
+    @ApiModelProperty(name = "description", value = "The device group description that can be set on the device group by the user.",
+            required = true)
     private String description;
+
+    @ApiModelProperty(name = "name", value = "The device group name that can be set on the device group by the user.",
+            required = true)
     private String name;
+
     private Long dateOfCreation;
     private Long dateOfLastUpdate;
     private String owner;
     private List<GroupUser> users;
     private List<String> roles;
 
-    @XmlElement
     public int getId() {
         return id;
     }
@@ -46,7 +59,6 @@ public class DeviceGroup implements Serializable {
         this.id = id;
     }
 
-    @XmlElement
     public String getDescription() {
         return description;
     }
@@ -55,7 +67,6 @@ public class DeviceGroup implements Serializable {
         this.description = description;
     }
 
-    @XmlElement
     public String getName() {
         return name;
     }
@@ -64,7 +75,6 @@ public class DeviceGroup implements Serializable {
         this.name = name;
     }
 
-    @XmlElement
     public Long getDateOfCreation() {
         return dateOfCreation;
     }
@@ -73,7 +83,6 @@ public class DeviceGroup implements Serializable {
         this.dateOfCreation = dateOfCreation;
     }
 
-    @XmlElement
     public Long getDateOfLastUpdate() {
         return dateOfLastUpdate;
     }
@@ -82,7 +91,6 @@ public class DeviceGroup implements Serializable {
         this.dateOfLastUpdate = dateOfLastUpdate;
     }
 
-    @XmlElement
     public String getOwner() {
         return owner;
     }
@@ -91,7 +99,6 @@ public class DeviceGroup implements Serializable {
         this.owner = owner;
     }
 
-    @XmlElement
     public List<GroupUser> getUsers() {
         return users;
     }
@@ -100,7 +107,6 @@ public class DeviceGroup implements Serializable {
         this.users = users;
     }
 
-    @XmlElement
     public List<String> getRoles() {
         return roles;
     }

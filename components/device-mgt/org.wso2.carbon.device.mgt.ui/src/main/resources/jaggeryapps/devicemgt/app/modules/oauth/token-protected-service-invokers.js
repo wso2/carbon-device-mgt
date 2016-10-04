@@ -84,7 +84,6 @@ var invokers = function () {
             if (accessToken == null) {
                 userModule.logout(function () {
                     response.sendRedirect(devicemgtProps["appContext"] + "login");
-                    return responseCallback({"status": 401, "responseText" : "Session expired!"});
                 });
             } else {
                 xmlHttpRequest.setRequestHeader(constants["AUTHORIZATION_HEADER"],

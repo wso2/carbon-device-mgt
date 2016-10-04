@@ -266,7 +266,7 @@ function loadUsers() {
             "recordsFiltered": data.count,
             "data": objects
         };
-        console.log(json);
+
         return JSON.stringify(json);
     };
 
@@ -281,9 +281,11 @@ function loadUsers() {
         {
             class: "remove-padding icon-only content-fill",
             data: null,
-            defaultContent: '<div class="thumbnail icon">' +
-            '<i class="square-element text fw fw-user" style="font-size: 74px;"></i>' +
-            '</div>'
+            render: function (data, type, row, meta) {
+                return '<div class="thumbnail icon viewEnabledIcon" data-url="' + context +'/user/view?username=' + data.filter + '">' +
+                    '<i class="square-element text fw fw-user" style="font-size: 74px;"></i>' +
+                    '</div>';
+            }
         },
         {
             class: "fade-edge",
@@ -318,7 +320,7 @@ function loadUsers() {
             class: "text-right content-fill text-left-on-grid-view no-wrap",
             data: null,
             render: function (data, type, row, meta) {
-                return '&nbsp;<a href="/emm/user/edit?username=' + data.filter + '" data-username="' + data.filter + '" ' +
+                var editbtn=  '&nbsp;<a href="' + context + '/user/edit?username=' + data.filter + '" data-username="' + data.filter + '" ' +
                     'data-click-event="edit-form" ' +
                     'class="btn padding-reduce-on-grid-view edit-user-link"> ' +
                     '<span class="fw-stack"> ' +
@@ -328,8 +330,9 @@ function loadUsers() {
                     '<span class="hidden-xs hidden-on-grid-view">' +
                     '&nbsp;&nbsp;Edit' +
                     '</span>' +
-                    '</a>' +
-                    '<a href="#" data-username="' + data.filter + '" data-userid="' + data.filter + '" ' +
+                    '</a>';
+
+                var resetPasswordbtn = '<a href="#" data-username="' + data.filter + '" data-userid="' + data.filter + '" ' +
                     'data-click-event="edit-form" ' +
                     'onclick="javascript:resetPassword(\'' + data.filter + '\')" ' +
                     'class="btn padding-reduce-on-grid-view remove-user-link">' +
@@ -340,8 +343,9 @@ function loadUsers() {
                     '<span class="hidden-xs hidden-on-grid-view">' +
                     '&nbsp;&nbsp;Reset Password' +
                     '</span>' +
-                    '</a>' +
-                    '<a href="#" data-username="' + data.filter + '" data-userid="' + data.filter + '" ' +
+                    '</a>';
+
+                var removebtn = '<a href="#" data-username="' + data.filter + '" data-userid="' + data.filter + '" ' +
                     'data-click-event="remove-form" ' +
                     'onclick="javascript:removeUser(\'' + data.filter + '\')" ' +
                     'class="btn padding-reduce-on-grid-view remove-user-link">' +
@@ -353,6 +357,19 @@ function loadUsers() {
                     '&nbsp;&nbsp;Remove' +
                     '</span>' +
                     '</a>';
+
+                var returnbtnSet = '';
+                if($("#can-edit").length > 0) {
+                    returnbtnSet = returnbtnSet + editbtn;
+                }
+                if($("#can-reset-password").length > 0) {
+                    returnbtnSet = returnbtnSet + resetPasswordbtn;
+                }
+                if($("#can-remove").length > 0) {
+                    returnbtnSet = returnbtnSet + removebtn;
+                }
+
+                return returnbtnSet;
             }
         }
 
@@ -365,14 +382,15 @@ function loadUsers() {
 
     $('#user-grid').datatables_extended_serverside_paging(null, '/api/device-mgt/v1.0/users', dataFilter, columns, fnCreatedRow, null, options);
     $(loadingContentView).hide();
+
 }
 
 $(document).ready(function () {
     loadUsers();
-    $(".viewEnabledIcon").click(function () {
-        InitiateViewOption();
-    });
     if (!$("#can-invite").val()) {
         $("#invite-user-button").remove();
     }
+    $(".viewEnabledIcon").click(function () {
+        InitiateViewOption();
+    });
 });

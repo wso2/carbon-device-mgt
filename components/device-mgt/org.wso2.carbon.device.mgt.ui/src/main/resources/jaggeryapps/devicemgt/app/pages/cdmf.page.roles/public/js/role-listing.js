@@ -83,7 +83,7 @@ function hidePopup() {
  * initial mode and with out select mode.
  */
 function InitiateViewOption() {
-    $(location).attr('href', $(this).data("url"));
+    // $(location).attr('href', $(this).data("url"));
 }
 
 function loadRoles() {
@@ -124,8 +124,8 @@ function loadRoles() {
             class: "remove-padding icon-only content-fill",
             data: null,
             defaultContent: "<div class='thumbnail icon'>" +
-                "<i class='square-element text fw fw-bookmark' style='font-size: 74px;'></i>" +
-                "</div>"
+            "<i class='square-element text fw fw-bookmark' style='font-size: 74px;'></i>" +
+            "</div>"
         },
         {
             class: "fade-edge",

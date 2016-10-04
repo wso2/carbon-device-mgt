@@ -37,7 +37,10 @@ public class UserManagementAdminServiceImpl implements UserManagementAdminServic
     @Override
     public Response resetUserPassword(@PathParam("username")
                                       @Size(max = 45)
-                                          String user, PasswordResetWrapper credentials) {
+                                          String user, @QueryParam("domain") String domain, PasswordResetWrapper credentials) {
+        if (domain != null) {
+            user = domain + '/' + user;
+        }
         return CredentialManagementResponseBuilder.buildResetPasswordResponse(user, credentials);
     }
 

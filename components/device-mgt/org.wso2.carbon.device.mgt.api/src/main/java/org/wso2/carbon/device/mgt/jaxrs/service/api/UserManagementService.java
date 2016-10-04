@@ -135,6 +135,7 @@ public interface UserManagementService {
                             " fetching the requested user.",
                     response = ErrorResponse.class)
     })
+
     @Permission(name = "View Users", permission = "/device-mgt/users/view")
     Response getUser(
             @ApiParam(
@@ -142,6 +143,11 @@ public interface UserManagementService {
                     value = "Username of the user to be fetched.",
                     required = true)
             @PathParam("username") String username,
+            @ApiParam(
+                    name = "domain",
+                    value = "Domain name of the user store.",
+                    required = false)
+            @QueryParam("domain") String domain,
             @ApiParam(
                     name = "If-Modified-Since",
                     value = "Validates if the requested variant has not been modified since the time specified",
@@ -200,6 +206,11 @@ public interface UserManagementService {
                     required = true)
             @PathParam("username") String username,
             @ApiParam(
+                    name = "domain",
+                    value = "Domain name of the user store.",
+                    required = false)
+            @QueryParam("domain") String domain,
+            @ApiParam(
                     name = "userData",
                     value = "User related details.",
                     required = true) UserInfo userData);
@@ -230,7 +241,12 @@ public interface UserManagementService {
     @Permission(name = "Manage Users", permission = "/device-mgt/users/manage")
     Response removeUser(
             @ApiParam(name = "username", value = "Username of the user to be deleted.", required = true)
-            @PathParam("username") String username);
+            @PathParam("username") String username,
+            @ApiParam(
+                    name = "domain",
+                    value = "Domain name of the user store.",
+                    required = false)
+            @QueryParam("domain") String domain);
 
     @GET
     @Path("/{username}/roles")
@@ -279,7 +295,12 @@ public interface UserManagementService {
     @Permission(name = "View Users", permission = "/device-mgt/users/view")
     Response getRolesOfUser(
             @ApiParam(name = "username", value = "Username of the user.", required = true)
-            @PathParam("username") String username);
+            @PathParam("username") String username,
+            @ApiParam(
+                    name = "domain",
+                    value = "Domain name of the user store.",
+                    required = false)
+            @QueryParam("domain") String domain);
 
     @GET
     @ApiOperation(

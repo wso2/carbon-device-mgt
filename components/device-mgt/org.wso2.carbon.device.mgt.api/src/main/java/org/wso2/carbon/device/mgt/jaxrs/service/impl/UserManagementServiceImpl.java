@@ -105,8 +105,11 @@ public class UserManagementServiceImpl implements UserManagementService {
     @GET
     @Path("/{username}")
     @Override
-    public Response getUser(@PathParam("username") String username,
+    public Response getUser(@PathParam("username") String username, @QueryParam("domain") String domain,
                             @HeaderParam("If-Modified-Since") String ifModifiedSince) {
+        if (domain != null) {
+            username = domain + '/' + username;
+        }
         try {
             UserStoreManager userStoreManager = DeviceMgtAPIUtils.getUserStoreManager();
             if (!userStoreManager.isExistingUser(username)) {
@@ -131,7 +134,10 @@ public class UserManagementServiceImpl implements UserManagementService {
     @PUT
     @Path("/{username}")
     @Override
-    public Response updateUser(@PathParam("username") String username, UserInfo userInfo) {
+    public Response updateUser(@PathParam("username") String username, @QueryParam("domain") String domain, UserInfo userInfo) {
+        if (domain != null) {
+            username = domain + '/' + username;
+        }
         try {
             UserStoreManager userStoreManager = DeviceMgtAPIUtils.getUserStoreManager();
             if (!userStoreManager.isExistingUser(username)) {
@@ -205,7 +211,10 @@ public class UserManagementServiceImpl implements UserManagementService {
     @DELETE
     @Path("/{username}")
     @Override
-    public Response removeUser(@PathParam("username") String username) {
+    public Response removeUser(@PathParam("username") String username, @QueryParam("domain") String domain) {
+        if (domain != null) {
+            username = domain + '/' + username;
+        }
         try {
             UserStoreManager userStoreManager = DeviceMgtAPIUtils.getUserStoreManager();
             if (!userStoreManager.isExistingUser(username)) {
@@ -233,7 +242,10 @@ public class UserManagementServiceImpl implements UserManagementService {
     @GET
     @Path("/{username}/roles")
     @Override
-    public Response getRolesOfUser(@PathParam("username") String username) {
+    public Response getRolesOfUser(@PathParam("username") String username, @QueryParam("domain") String domain) {
+        if (domain != null) {
+            username = domain + '/' + username;
+        }
         try {
             UserStoreManager userStoreManager = DeviceMgtAPIUtils.getUserStoreManager();
             if (!userStoreManager.isExistingUser(username)) {

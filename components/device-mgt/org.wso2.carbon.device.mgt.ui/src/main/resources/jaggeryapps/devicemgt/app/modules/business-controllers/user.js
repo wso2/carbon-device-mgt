@@ -177,10 +177,18 @@ var userModule = function () {
      */
     publicMethods.getUser = function (username) {
         var carbonUser = privateMethods.getCarbonUser();
+        var domain;
+        if (username.indexOf('/') > 0) {
+            domain = username.substr(0, username.indexOf('/'));
+            username = username.substr(username.indexOf('/')+1);
+        }
         try {
             utility.startTenantFlow(carbonUser);
             var url = devicemgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"] + "/users/" +
                       encodeURIComponent(username);
+            if (domain) {
+                url += '?domain=' + domain;
+            }
             var response = privateMethods.callBackend(url, constants["HTTP_GET"]);
             response["content"] = parse(response.content);
             response["userDomain"] = carbonUser.domain;
@@ -199,10 +207,18 @@ var userModule = function () {
      */
     publicMethods.getRolesByUsername = function (username) {
         var carbonUser = privateMethods.getCarbonUser();
+        var domain;
+        if (username.indexOf('/') > 0) {
+            domain = username.substr(0, username.indexOf('/'));
+            username = username.substr(username.indexOf('/')+1);
+        }
         try {
             utility.startTenantFlow(carbonUser);
             var url = devicemgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"] + "/users/" +
                       encodeURIComponent(username) + "/roles";
+            if (domain) {
+                url += '?domain=' + domain;
+            }
             var response = privateMethods.callBackend(url, constants["HTTP_GET"]);
             if (response.status == "success") {
                 response.content = parse(response.content).roles;

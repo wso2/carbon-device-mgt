@@ -33,6 +33,8 @@ public interface CertificateMgtService {
             notes = "This will return a signed certificate upon a given CSR.",
             tags = "Device Management")
     @ApiResponses(
+
+
             value = {
                     @ApiResponse(
                             code = 200,

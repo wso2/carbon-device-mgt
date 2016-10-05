@@ -107,7 +107,7 @@ public class UserManagementServiceImpl implements UserManagementService {
     @Override
     public Response getUser(@PathParam("username") String username, @QueryParam("domain") String domain,
                             @HeaderParam("If-Modified-Since") String ifModifiedSince) {
-        if (domain != null) {
+        if (domain != null && !domain.isEmpty()) {
             username = domain + '/' + username;
         }
         try {
@@ -135,7 +135,7 @@ public class UserManagementServiceImpl implements UserManagementService {
     @Path("/{username}")
     @Override
     public Response updateUser(@PathParam("username") String username, @QueryParam("domain") String domain, UserInfo userInfo) {
-        if (domain != null) {
+        if (domain != null && !domain.isEmpty()) {
             username = domain + '/' + username;
         }
         try {
@@ -212,7 +212,7 @@ public class UserManagementServiceImpl implements UserManagementService {
     @Path("/{username}")
     @Override
     public Response removeUser(@PathParam("username") String username, @QueryParam("domain") String domain) {
-        if (domain != null) {
+        if (domain != null && !domain.isEmpty()) {
             username = domain + '/' + username;
         }
         try {
@@ -243,7 +243,7 @@ public class UserManagementServiceImpl implements UserManagementService {
     @Path("/{username}/roles")
     @Override
     public Response getRolesOfUser(@PathParam("username") String username, @QueryParam("domain") String domain) {
-        if (domain != null) {
+        if (domain != null && !domain.isEmpty()) {
             username = domain + '/' + username;
         }
         try {

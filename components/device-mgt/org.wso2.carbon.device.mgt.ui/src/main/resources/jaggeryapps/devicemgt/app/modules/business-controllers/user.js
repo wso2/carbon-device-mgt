@@ -180,7 +180,7 @@ var userModule = function () {
         var domain;
         if (username.indexOf('/') > 0) {
             domain = username.substr(0, username.indexOf('/'));
-            username = username.substr(username.indexOf('/')+1);
+            username = username.substr(username.indexOf('/') + 1);
         }
         try {
             utility.startTenantFlow(carbonUser);
@@ -210,7 +210,7 @@ var userModule = function () {
         var domain;
         if (username.indexOf('/') > 0) {
             domain = username.substr(0, username.indexOf('/'));
-            username = username.substr(username.indexOf('/')+1);
+            username = username.substr(username.indexOf('/') + 1);
         }
         try {
             utility.startTenantFlow(carbonUser);

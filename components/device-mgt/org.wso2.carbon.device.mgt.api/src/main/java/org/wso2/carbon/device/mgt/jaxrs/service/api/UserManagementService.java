@@ -135,7 +135,6 @@ public interface UserManagementService {
                             " fetching the requested user.",
                     response = ErrorResponse.class)
     })
-
     @Permission(name = "View Users", permission = "/device-mgt/users/view")
     Response getUser(
             @ApiParam(

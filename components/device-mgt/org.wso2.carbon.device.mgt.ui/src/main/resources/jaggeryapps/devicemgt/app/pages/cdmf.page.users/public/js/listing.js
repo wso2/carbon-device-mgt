@@ -411,7 +411,5 @@ $(document).ready(function () {
     if (!$("#can-invite").val()) {
         $("#invite-user-button").remove();
     }
-    $(".viewEnabledIcon").click(function () {
-        InitiateViewOption();
-    });
+
 });

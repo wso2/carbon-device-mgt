@@ -162,9 +162,15 @@ function resetPassword(username) {
         } else {
             var resetPasswordFormData = {};
             resetPasswordFormData.newPassword = unescape(confirmedPassword);
-
-            var resetPasswordServiceURL = apiBasePath + "/admin/users/"+ username +"/credentials";
-
+            var domain;
+            if (username.indexOf('/') > 0) {
+                domain = username.substr(0, username.indexOf('/'));
+                username = username.substr(username.indexOf('/') + 1);
+            }
+            var resetPasswordServiceURL = apiBasePath + "/admin/users/" + username + "/credentials";
+            if (domain) {
+                resetPasswordServiceURL += '?domain=' + domain;
+            }
             invokerUtil.post(
                 resetPasswordServiceURL,
                 resetPasswordFormData,
@@ -198,7 +204,15 @@ function resetPassword(username) {
  * on User Listing page in WSO2 MDM Console.
  */
 function removeUser(username) {
+    var domain;
+    if (username.indexOf('/') > 0) {
+        domain = username.substr(0, username.indexOf('/'));
+        username = username.substr(username.indexOf('/') + 1);
+    }
     var removeUserAPI = apiBasePath + "/users/" + username;
+    if (domain) {
+        removeUserAPI += '?domain=' + domain;
+    }
     $(modalPopupContent).html($('#remove-user-modal-content').html());
     showPopup();
 
@@ -207,7 +221,11 @@ function removeUser(username) {
             removeUserAPI,
             function (data, textStatus, jqXHR) {
                 if (jqXHR.status == 200) {
-                    $("#user-" + username).remove();
+                    if (domain) {
+                        $("#user-" + domain + "\\/" + username).remove();
+                    } else {
+                        $("#user-" + username).remove();
+                    }
                     // update modal-content with success message
                     $(modalPopupContent).html($('#remove-user-success-content').html());
                     $("a#remove-user-success-link").click(function () {

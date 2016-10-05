@@ -31,6 +31,7 @@ import org.wso2.carbon.device.mgt.core.service.GroupManagementProviderService;
 import org.wso2.carbon.device.mgt.jaxrs.beans.DeviceGroupList;
 import org.wso2.carbon.device.mgt.jaxrs.beans.DeviceGroupShare;
 import org.wso2.carbon.device.mgt.jaxrs.service.api.GroupManagementService;
+import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.RequestValidationUtil;
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
 
 import javax.ws.rs.core.Response;
@@ -48,15 +49,20 @@ public class GroupManagementServiceImpl implements GroupManagementService {
     @Override
     public Response getGroups(int offset, int limit) {
         try {
+            RequestValidationUtil.validatePaginationParameters(offset, limit);
             GroupManagementProviderService service = DeviceMgtAPIUtils.getGroupManagementProviderService();
             String currentUser = CarbonContext.getThreadLocalCarbonContext().getUsername();
             List<DeviceGroup> deviceGroups = service.getGroups(currentUser, offset, limit);
-            DeviceGroupList deviceGroupList = new DeviceGroupList();
-            deviceGroupList.setList(deviceGroups);
-            deviceGroupList.setCount(service.getGroupCount(currentUser));
-            return Response.status(Response.Status.OK).entity(deviceGroupList).build();
+            if (deviceGroups != null && deviceGroups.size() > 0) {
+                DeviceGroupList deviceGroupList = new DeviceGroupList();
+                deviceGroupList.setList(deviceGroups);
+                deviceGroupList.setCount(service.getGroupCount(currentUser));
+                return Response.status(Response.Status.OK).entity(deviceGroupList).build();
+            } else {
+                return Response.status(Response.Status.NOT_FOUND).build();
+            }
         } catch (GroupManagementException e) {
-            String error = "Error occurred while getting the groups related to users for policy.";
+            String error = "Error occurred while getting the groups.";
             log.error(error, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(error).build();
         }
@@ -94,52 +100,75 @@ public class GroupManagementServiceImpl implements GroupManagementService {
         } catch (GroupAlreadyExistException e) {
             String msg = "Group already exists with name '" + group.getName() + "'.";
             log.error(msg, e);
+            return Response.status(Response.Status.CONFLICT).entity(msg).build();
+        }
+    }
+
+    @Override
+    public Response getGroup(int groupId) {
+        try {
+            GroupManagementProviderService service = DeviceMgtAPIUtils.getGroupManagementProviderService();
+            DeviceGroup deviceGroup = service.getGroup(groupId);
+            if (deviceGroup != null) {
+                return Response.status(Response.Status.OK).entity(deviceGroup).build();
+            } else {
+                return Response.status(Response.Status.NOT_FOUND).build();
+            }
+        } catch (GroupManagementException e) {
+            String error = "Error occurred while getting the group.";
+            log.error(error, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(error).build();
+        }
+    }
+
+    @Override
+    public Response updateGroup(int groupId, DeviceGroup deviceGroup) {
+        if (deviceGroup == null) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+        deviceGroup.setDateOfLastUpdate(new Date().getTime());
+        try {
+            DeviceMgtAPIUtils.getGroupManagementProviderService().updateGroup(deviceGroup, groupId);
+            return Response.status(Response.Status.OK).build();
+        } catch (GroupManagementException e) {
+            String msg = "Error occurred while adding new group.";
+            log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         }
     }
 
     @Override
-    public Response getGroup(String groupName) {
+    public Response deleteGroup(int groupId) {
         return null;
     }
 
     @Override
-    public Response updateGroup(String groupName, DeviceGroup deviceGroup) {
+    public Response manageGroupSharing(int groupId, DeviceGroupShare deviceGroupShare) {
         return null;
     }
 
     @Override
-    public Response deleteGroup(String groupName) {
+    public Response getUsersOfGroup(int groupId) {
         return null;
     }
 
     @Override
-    public Response manageGroupSharing(String groupName, DeviceGroupShare deviceGroupShare) {
+    public Response getDevicesOfGroup(int groupId, int offset, int limit) {
         return null;
     }
 
     @Override
-    public Response getUsersOfGroup(String groupName) {
+    public Response getDeviceCountOfGroup(int groupId) {
         return null;
     }
 
     @Override
-    public Response getDevicesOfGroup(String groupName, int offset, int limit) {
+    public Response addDevicesToGroup(int groupId, List<DeviceIdentifier> deviceIdentifiers) {
         return null;
     }
 
     @Override
-    public Response getDeviceCountOfGroup(String groupName) {
-        return null;
-    }
-
-    @Override
-    public Response addDevicesToGroup(String groupName, List<DeviceIdentifier> deviceIdentifiers) {
-        return null;
-    }
-
-    @Override
-    public Response removeDevicesFromGroup(String groupName, List<DeviceIdentifier> deviceIdentifiers) {
+    public Response removeDevicesFromGroup(int groupId, List<DeviceIdentifier> deviceIdentifiers) {
         return null;
     }
 

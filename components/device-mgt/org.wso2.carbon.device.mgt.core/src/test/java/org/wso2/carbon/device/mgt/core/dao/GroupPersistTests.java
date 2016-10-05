@@ -56,7 +56,7 @@ public class GroupPersistTests extends BaseDeviceManagementTest {
             GroupManagementDAOFactory.beginTransaction();
             groupId = groupDAO.addGroup(deviceGroup, TestDataHolder.SUPER_TENANT_ID);
             GroupManagementDAOFactory.commitTransaction();
-            log.debug("Group added to database.");
+            log.debug("Group added to database. ID: " + groupId);
         } catch (GroupManagementDAOException e) {
             GroupManagementDAOFactory.rollbackTransaction();
             String msg = "Error occurred while adding device type '" + deviceGroup.getName() + "'.";
@@ -123,8 +123,7 @@ public class GroupPersistTests extends BaseDeviceManagementTest {
         DeviceGroup deviceGroup = getGroupById(groupId);
         try {
             GroupManagementDAOFactory.beginTransaction();
-            groupDAO.addDevice(deviceGroup.getName(), deviceGroup.getOwner(), initialTestDevice.getId(),
-                               TestDataHolder.SUPER_TENANT_ID);
+            groupDAO.addDevice(deviceGroup.getGroupId(), initialTestDevice.getId(), TestDataHolder.SUPER_TENANT_ID);
             GroupManagementDAOFactory.commitTransaction();
             log.debug("Device added to group.");
         } catch (GroupManagementDAOException e) {
@@ -142,8 +141,7 @@ public class GroupPersistTests extends BaseDeviceManagementTest {
 
         try {
             GroupManagementDAOFactory.openConnection();
-            List<Device> groupedDevices = groupDAO.getDevices(deviceGroup.getName(), deviceGroup.getOwner(),
-                                                              TestDataHolder.SUPER_TENANT_ID);
+            List<Device> groupedDevices = groupDAO.getDevices(deviceGroup.getGroupId(), 0, 10, TestDataHolder.SUPER_TENANT_ID);
             Assert.assertNotEquals(groupedDevices.size(), 0, "No device found");
             Assert.assertNotNull(groupedDevices.get(0), "Device is null");
             Assert.assertEquals(groupedDevices.get(0).getId(), initialTestDevice.getId(), "Device ids not matched");
@@ -166,7 +164,7 @@ public class GroupPersistTests extends BaseDeviceManagementTest {
         DeviceGroup deviceGroup = getGroupById(groupId);
         try {
             GroupManagementDAOFactory.beginTransaction();
-            groupDAO.removeDevice(deviceGroup.getName(), deviceGroup.getOwner(), initialTestDevice.getId(), TestDataHolder.SUPER_TENANT_ID);
+            groupDAO.removeDevice(deviceGroup.getGroupId(), initialTestDevice.getId(), TestDataHolder.SUPER_TENANT_ID);
             GroupManagementDAOFactory.commitTransaction();
             log.debug("Device added to group.");
         } catch (GroupManagementDAOException e) {
@@ -195,8 +193,7 @@ public class GroupPersistTests extends BaseDeviceManagementTest {
         group.setDescription(desc);
         try {
             GroupManagementDAOFactory.beginTransaction();
-            groupDAO.updateGroup(group, TestDataHolder.generateDummyGroupData().getName(),
-                                 TestDataHolder.generateDummyGroupData().getOwner(), TestDataHolder.SUPER_TENANT_ID);
+            groupDAO.updateGroup(group, groupId, TestDataHolder.SUPER_TENANT_ID);
             GroupManagementDAOFactory.commitTransaction();
             log.debug("Group updated");
         } catch (GroupManagementDAOException e) {
@@ -225,7 +222,7 @@ public class GroupPersistTests extends BaseDeviceManagementTest {
         try {
             Assert.assertNotNull(group, "Group is null");
             GroupManagementDAOFactory.beginTransaction();
-            groupDAO.deleteGroup(group.getName(), group.getOwner(), TestDataHolder.SUPER_TENANT_ID);
+            groupDAO.deleteGroup(group.getGroupId(), TestDataHolder.SUPER_TENANT_ID);
             GroupManagementDAOFactory.commitTransaction();
             log.debug("Group deleted");
         } catch (GroupManagementDAOException e) {

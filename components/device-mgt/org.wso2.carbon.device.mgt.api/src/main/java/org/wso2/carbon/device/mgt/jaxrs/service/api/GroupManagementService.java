@@ -214,12 +214,12 @@ public interface GroupManagementService {
                                  required = true)
                          @Valid DeviceGroup group);
 
-    @Path("/name/{groupName}")
+    @Path("/id/{groupId}")
     @GET
     @ApiOperation(
             produces = MediaType.APPLICATION_JSON,
             httpMethod = HTTPConstants.HEADER_GET,
-            value = "View group specified with name.",
+            value = "View group specified.",
             notes = "Returns details of group enrolled with the system.",
             tags = "Device Group Management")
     @ApiResponses(value = {
@@ -256,12 +256,12 @@ public interface GroupManagementService {
     })
     @Permission(name = "View Groups", permission = "/device-mgt/groups/view")
     Response getGroup(@ApiParam(
-                              name = "groupName",
-                              value = "Name of the group to view.",
+                              name = "groupId",
+                              value = "ID of the group to view.",
                               required = true)
-                      @PathParam("groupName") String groupName);
+                      @PathParam("groupId") int groupId);
 
-    @Path("/name/{groupName}")
+    @Path("/id/{groupId}")
     @PUT
     @ApiOperation(
             produces = MediaType.APPLICATION_JSON,
@@ -303,17 +303,17 @@ public interface GroupManagementService {
     })
     @Permission(name = "Update Group", permission = "/device-mgt/groups/update")
     Response updateGroup(@ApiParam(
-                                 name = "groupName",
-                                 value = "Name of the group to be updated.",
+                                 name = "groupId",
+                                 value = "ID of the group to be updated.",
                                  required = true)
-                         @PathParam("groupName") String groupName,
+                         @PathParam("groupId") int groupId,
                          @ApiParam(
                                  name = "group",
                                  value = "Group object with data.",
                                  required = true)
                          @Valid DeviceGroup deviceGroup);
 
-    @Path("/name/{groupName}")
+    @Path("/id/{groupId}")
     @DELETE
     @ApiOperation(
             produces = MediaType.APPLICATION_JSON,
@@ -355,12 +355,12 @@ public interface GroupManagementService {
     })
     @Permission(name = "Remove Group", permission = "/device-mgt/groups/remove")
     Response deleteGroup(@ApiParam(
-                                 name = "groupName",
-                                 value = "Name of the group to be deleted.",
+                                 name = "groupId",
+                                 value = "ID of the group to be deleted.",
                                  required = true)
-                         @PathParam("groupName") String groupName);
+                         @PathParam("groupId") int groupId);
 
-    @Path("/name/{groupName}/share")
+    @Path("/id/{groupId}/share")
     @POST
     @ApiOperation(
             produces = MediaType.APPLICATION_JSON,
@@ -405,14 +405,14 @@ public interface GroupManagementService {
                                         name = "groupName",
                                         value = "Name of the group to be shared or unshared.",
                                         required = true)
-                                @PathParam("groupName") String groupName,
+                                @PathParam("groupId") int groupId,
                                 @ApiParam(
                                         name = "deviceGroupShare",
                                         value = "User name and the assigned roles for the share.",
                                         required = true)
                                 @Valid DeviceGroupShare deviceGroupShare);
 
-    @Path("/name/{groupName}/users")
+    @Path("/id/{groupId}/users")
     @GET
     @ApiOperation(
             produces = MediaType.APPLICATION_JSON,
@@ -454,12 +454,12 @@ public interface GroupManagementService {
     })
     @Permission(name = "View users", permission = "/device-mgt/groups/users/view")
     Response getUsersOfGroup(@ApiParam(
-                                     name = "groupName",
-                                     value = "Name of the group.",
+                                     name = "groupId",
+                                     value = "ID of the group.",
                                      required = true)
-                             @PathParam("groupName") String groupName);
+                             @PathParam("groupId") int groupId);
 
-    @Path("/name/{groupName}/devices")
+    @Path("/id/{groupId}/devices")
     @GET
     @ApiOperation(
             produces = MediaType.APPLICATION_JSON,
@@ -501,10 +501,10 @@ public interface GroupManagementService {
     })
     @Permission(name = "View devices", permission = "/device-mgt/groups/devices/view")
     Response getDevicesOfGroup(@ApiParam(
-                                       name = "groupName",
-                                       value = "Name of the group.",
+                                       name = "groupId",
+                                       value = "ID of the group.",
                                        required = true)
-                               @PathParam("groupName") String groupName,
+                               @PathParam("groupId") int groupId,
                                @ApiParam(
                                        name = "offset",
                                        value = "Starting point within the complete list of items qualified.")
@@ -514,7 +514,7 @@ public interface GroupManagementService {
                                        value = "Maximum size of resource array to return.")
                                @QueryParam("limit") int limit);
 
-    @Path("/name/{groupName}/devices/count")
+    @Path("/id/{groupId}/devices/count")
     @GET
     @ApiOperation(
             produces = MediaType.APPLICATION_JSON,
@@ -556,12 +556,12 @@ public interface GroupManagementService {
     })
     @Permission(name = "View devices", permission = "/device-mgt/groups/devices/view")
     Response getDeviceCountOfGroup(@ApiParam(
-                                           name = "groupName",
-                                           value = "Name of the group.",
+                                           name = "groupId",
+                                           value = "ID of the group.",
                                            required = true)
-                               @PathParam("groupName") String groupName);
+                               @PathParam("groupId") int groupId);
 
-    @Path("/name/{groupName}/devices")
+    @Path("/id/{groupId}/devices")
     @POST
     @ApiOperation(
             produces = MediaType.APPLICATION_JSON,
@@ -602,17 +602,17 @@ public interface GroupManagementService {
     })
     @Permission(name = "Add devices", permission = "/device-mgt/groups/devices/add")
     Response addDevicesToGroup(@ApiParam(
-                                       name = "groupName",
-                                       value = "Name of the group.",
+                                       name = "groupId",
+                                       value = "ID of the group.",
                                        required = true)
-                               @PathParam("groupName") String groupName,
+                               @PathParam("groupId") int groupId,
                                @ApiParam(
                                        name = "deviceIdentifiers",
                                        value = "Device identifiers of the devices which needed be added.",
                                        required = true)
                                @Valid List<DeviceIdentifier> deviceIdentifiers);
 
-    @Path("/name/{groupName}/devices")
+    @Path("/id/{groupId}/devices")
     @DELETE
     @ApiOperation(
             produces = MediaType.APPLICATION_JSON,
@@ -653,10 +653,10 @@ public interface GroupManagementService {
     })
     @Permission(name = "Remove devices", permission = "/device-mgt/groups/devices/remove")
     Response removeDevicesFromGroup(@ApiParam(
-                                            name = "groupName",
-                                            value = "Name of the group.",
+                                            name = "groupId",
+                                            value = "ID of the group.",
                                             required = true)
-                                    @PathParam("groupName") String groupName,
+                                    @PathParam("groupId") int groupId,
                                     @ApiParam(
                                             name = "deviceIdentifiers",
                                             value = "Device identifiers of the devices which needed to be removed.",

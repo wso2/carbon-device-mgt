@@ -27,6 +27,7 @@ import org.wso2.carbon.device.mgt.common.group.mgt.GroupManagementException;
 import org.wso2.carbon.device.mgt.core.service.GroupManagementProviderService;
 import org.wso2.carbon.device.mgt.jaxrs.beans.DeviceGroupList;
 import org.wso2.carbon.device.mgt.jaxrs.service.api.admin.GroupManagementAdminService;
+import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.RequestValidationUtil;
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
 
 import javax.ws.rs.Consumes;
@@ -36,9 +37,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
 
-@Path("/admin/groups")
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
 public class GroupManagementAdminServiceImpl implements GroupManagementAdminService {
 
     private static final Log log = LogFactory.getLog(GroupManagementAdminServiceImpl.class);
@@ -46,12 +44,13 @@ public class GroupManagementAdminServiceImpl implements GroupManagementAdminServ
     @Override
     public Response getGroups(int offset, int limit) {
         try {
+            RequestValidationUtil.validatePaginationParameters(offset, limit);
             GroupManagementProviderService service = DeviceMgtAPIUtils.getGroupManagementProviderService();
             List<DeviceGroup> deviceGroups = service.getGroups(offset, limit);
-            DeviceGroupList deviceGroupList = new DeviceGroupList();
-            deviceGroupList.setList(deviceGroups);
-            deviceGroupList.setCount(service.getGroupCount());
             if (deviceGroups != null && deviceGroups.size() > 0) {
+                DeviceGroupList deviceGroupList = new DeviceGroupList();
+                deviceGroupList.setList(deviceGroups);
+                deviceGroupList.setCount(service.getGroupCount());
                 return Response.status(Response.Status.OK).entity(deviceGroupList).build();
             } else {
                 return Response.status(Response.Status.NOT_FOUND).build();

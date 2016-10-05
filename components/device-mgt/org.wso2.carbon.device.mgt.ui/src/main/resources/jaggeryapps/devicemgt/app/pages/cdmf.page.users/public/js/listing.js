@@ -320,7 +320,7 @@ function loadUsers() {
             class: "text-right content-fill text-left-on-grid-view no-wrap",
             data: null,
             render: function (data, type, row, meta) {
-                var editbtn=  '&nbsp;<a href="' + context + '/user/edit?username=' + data.filter + '" data-username="' + data.filter + '" ' +
+                var editbtn=  '&nbsp;<a data-toggle="tooltip" data-placement="bottom" title="Edit User"href="' + context + '/user/edit?username=' + data.filter + '" data-username="' + data.filter + '" ' +
                     'data-click-event="edit-form" ' +
                     'class="btn padding-reduce-on-grid-view edit-user-link"> ' +
                     '<span class="fw-stack"> ' +
@@ -332,7 +332,7 @@ function loadUsers() {
                     '</span>' +
                     '</a>';
 
-                var resetPasswordbtn = '<a href="#" data-username="' + data.filter + '" data-userid="' + data.filter + '" ' +
+                var resetPasswordbtn = '<a data-toggle="tooltip" data-placement="bottom" title="Reset Password" href="#" data-username="' + data.filter + '" data-userid="' + data.filter + '" ' +
                     'data-click-event="edit-form" ' +
                     'onclick="javascript:resetPassword(\'' + data.filter + '\')" ' +
                     'class="btn padding-reduce-on-grid-view remove-user-link">' +
@@ -345,7 +345,7 @@ function loadUsers() {
                     '</span>' +
                     '</a>';
 
-                var removebtn = '<a href="#" data-username="' + data.filter + '" data-userid="' + data.filter + '" ' +
+                var removebtn = '<a data-toggle="tooltip" data-placement="bottom" title="Remove User" href="#" data-username="' + data.filter + '" data-userid="' + data.filter + '" ' +
                     'data-click-event="remove-form" ' +
                     'onclick="javascript:removeUser(\'' + data.filter + '\')" ' +
                     'class="btn padding-reduce-on-grid-view remove-user-link">' +
@@ -387,6 +387,9 @@ function loadUsers() {
 
 $(document).ready(function () {
     loadUsers();
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+    });
     if (!$("#can-invite").val()) {
         $("#invite-user-button").remove();
     }

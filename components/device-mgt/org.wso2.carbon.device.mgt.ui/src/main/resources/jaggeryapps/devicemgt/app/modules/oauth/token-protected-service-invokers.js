@@ -45,12 +45,13 @@ var invokers = function () {
      * If the token pair is not set in the session, this will return null.
      */
     privateMethods.getAccessToken = function () {
-        var tokenPair = session.get(constants["TOKEN_PAIR"]);
-        if (tokenPair) {
-            return parse(tokenPair)["accessToken"];
-        } else {
-            return null;
+        if (session) {
+            var tokenPair = session.get(constants["TOKEN_PAIR"]);
+            if (tokenPair) {
+                return parse(tokenPair)["accessToken"];
+            }
         }
+        return null;
     };
 
     /**
@@ -80,7 +81,7 @@ var invokers = function () {
 
         if (devicemgtProps["isOAuthEnabled"]) {
             var accessToken = privateMethods.getAccessToken();
-            if (!accessToken) {
+            if (accessToken == null) {
                 userModule.logout(function () {
                     response.sendRedirect(devicemgtProps["appContext"] + "login");
                 });

@@ -25,8 +25,7 @@ $.fn.datatables_extended = function(settings){
 
     // EMM related function
     if (InitiateViewOption) {
-        $(".viewEnabledIcon").unbind("click");
-        $(".viewEnabledIcon").bind("click", InitiateViewOption);
+        $(document).on('click','.viewEnabledIcon',InitiateViewOption);
     }
     //--- End of EMM related codes
 

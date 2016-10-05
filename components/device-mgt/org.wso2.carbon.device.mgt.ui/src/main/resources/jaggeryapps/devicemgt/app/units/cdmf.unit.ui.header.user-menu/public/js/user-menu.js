@@ -67,7 +67,7 @@ $(document).ready(function () {
                 changePasswordFormData["oldPassword"] = unescape((currentPassword));
                 changePasswordFormData["newPassword"] = unescape((newPassword));
 
-                var changePasswordAPI = "/api/device-mgt/v1.0/users/" + user + "/credentials";
+                var changePasswordAPI = "/api/device-mgt/v1.0/users/credentials";
 
                 invokerUtil.put(
                     changePasswordAPI,

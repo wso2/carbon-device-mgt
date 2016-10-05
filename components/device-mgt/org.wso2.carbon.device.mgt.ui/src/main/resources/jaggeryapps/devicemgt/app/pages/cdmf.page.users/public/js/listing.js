@@ -213,7 +213,7 @@ function removeUser(username) {
     }
     var removeUserAPI = apiBasePath + "/users/" + username;
     if (domain) {
-        url += '?domain=' + domain;
+        removeUserAPI += '?domain=' + domain;
     }
     $(modalPopupContent).html($('#remove-user-modal-content').html());
     showPopup();
@@ -223,7 +223,11 @@ function removeUser(username) {
             removeUserAPI,
             function (data, textStatus, jqXHR) {
                 if (jqXHR.status == 200) {
-                    $("#user-" + username).remove();
+                    if (domain) {
+                        $("#user-" + domain + "\\/" + username).remove();
+                    } else {
+                        $("#user-" + username).remove();
+                    }
                     // update modal-content with success message
                     $(modalPopupContent).html($('#remove-user-success-content').html());
                     $("a#remove-user-success-link").click(function () {

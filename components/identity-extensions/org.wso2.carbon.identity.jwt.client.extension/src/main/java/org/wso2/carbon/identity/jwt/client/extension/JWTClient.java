@@ -129,10 +129,13 @@ public class JWTClient {
 			JSONParser jsonParser = new JSONParser();
 			JSONObject jsonObject = (JSONObject) jsonParser.parse(response);
 			AccessTokenInfo accessTokenInfo = new AccessTokenInfo();
-			accessTokenInfo.setAccessToken((String) jsonObject.get(JWTConstants.ACCESS_TOKEN_GRANT_TYPE_PARAM_NAME));
-			accessTokenInfo.setRefreshToken((String) jsonObject.get(JWTConstants.REFRESH_TOKEN_GRANT_TYPE_PARAM_NAME));
-			accessTokenInfo.setExpiresIn((Long) jsonObject.get(JWTConstants.OAUTH_EXPIRES_IN));
-			accessTokenInfo.setTokenType((String) jsonObject.get(JWTConstants.OAUTH_TOKEN_TYPE));
+			String accessToken = (String) jsonObject.get(JWTConstants.ACCESS_TOKEN_GRANT_TYPE_PARAM_NAME);
+			if (accessToken != null && !accessToken.isEmpty()) {
+				accessTokenInfo.setAccessToken(accessToken);
+				accessTokenInfo.setRefreshToken((String) jsonObject.get(JWTConstants.REFRESH_TOKEN_GRANT_TYPE_PARAM_NAME));
+				accessTokenInfo.setExpiresIn((Long) jsonObject.get(JWTConstants.OAUTH_EXPIRES_IN));
+				accessTokenInfo.setTokenType((String) jsonObject.get(JWTConstants.OAUTH_TOKEN_TYPE));
+			}
 			return accessTokenInfo;
 		} catch (MalformedURLException e) {
 			throw new JWTClientException("Invalid URL for token endpoint " + jwtConfig.getTokenEndpoint(), e);

@@ -19,7 +19,7 @@
             "owner": "admin@carbon.super",
             "dynamicClientAppRegistrationServiceURL": "%https.ip%/dynamic-client-web/register",
             "apiManagerClientAppRegistrationServiceURL": "%https.ip%/api-application-registration/register/tenants",
-            "grantType": "password refresh_token urn:ietf:params:oauth:grant-type:saml2-bearer",
+            "grantType": "password refresh_token urn:ietf:params:oauth:grant-type:saml2-bearer urn:ietf:params:oauth:grant-type:jwt-bearer",
             "tokenScope": "admin",
             "callbackUrl": "%https.ip%/api/device-mgt/v1.0"
         },

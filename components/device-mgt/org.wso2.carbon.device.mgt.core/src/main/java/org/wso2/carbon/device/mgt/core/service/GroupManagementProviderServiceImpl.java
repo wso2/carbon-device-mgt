@@ -616,7 +616,9 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
                 if (device == null) {
                     throw new DeviceNotFoundException("Device not found for id '" + deviceIdentifier.getId() + "'");
                 }
-                this.groupDAO.addDevice(groupId, device.getId(), tenantId);
+                if (!this.groupDAO.isDeviceMappedToGroup(groupId, device.getId(), tenantId)){
+                    this.groupDAO.addDevice(groupId, device.getId(), tenantId);
+                }
             }
             GroupManagementDAOFactory.commitTransaction();
         } catch (DeviceManagementException e) {

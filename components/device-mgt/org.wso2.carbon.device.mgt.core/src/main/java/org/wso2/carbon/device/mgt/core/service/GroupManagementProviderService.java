@@ -23,6 +23,7 @@ import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.DeviceNotFoundException;
 import org.wso2.carbon.device.mgt.common.GroupPaginationRequest;
 import org.wso2.carbon.device.mgt.common.PaginationRequest;
+import org.wso2.carbon.device.mgt.common.PaginationResult;
 import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroup;
 import org.wso2.carbon.device.mgt.common.group.mgt.GroupAlreadyExistException;
 import org.wso2.carbon.device.mgt.common.group.mgt.GroupManagementException;
@@ -99,7 +100,7 @@ public interface GroupManagementProviderService {
      * @return list of groups.
      * @throws GroupManagementException
      */
-    List<DeviceGroup> getGroups(GroupPaginationRequest paginationRequest) throws GroupManagementException;
+    PaginationResult getGroups(GroupPaginationRequest paginationRequest) throws GroupManagementException;
 
     /**
      * Get device groups with pagination.
@@ -109,7 +110,7 @@ public interface GroupManagementProviderService {
      * @return list of groups.
      * @throws GroupManagementException
      */
-    List<DeviceGroup> getGroups(String username, GroupPaginationRequest paginationRequest) throws GroupManagementException;
+    PaginationResult getGroups(String username, GroupPaginationRequest paginationRequest) throws GroupManagementException;
 
     /**
      * Get all device group count in tenant

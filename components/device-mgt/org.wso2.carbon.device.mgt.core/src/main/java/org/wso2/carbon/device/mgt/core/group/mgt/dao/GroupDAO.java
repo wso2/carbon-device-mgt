@@ -79,7 +79,7 @@ public interface GroupDAO {
     /**
      * Get paginated list of Device Groups in tenant.
      *
-     * @param paginationRequest to filter results
+     * @param paginationRequest to filter results.
      * @param tenantId of user's tenant.
      * @return List of all Device Groups in tenant.
      * @throws GroupManagementDAOException
@@ -105,14 +105,14 @@ public interface GroupDAO {
     int getGroupCount(int tenantId) throws GroupManagementDAOException;
 
     /**
-     * Get the list of Groups that matches with the given DeviceGroup name.
+     * Get paginated count of Device Groups in tenant.
      *
-     * @param groupName of the Device Group.
-     * @param tenantId  of user's tenant.
-     * @return List of DeviceGroup that matches with the given DeviceGroup name.
+     * @param paginationRequest to filter results.
+     * @param tenantId of user's tenant.
+     * @return List of all Device Groups in tenant.
      * @throws GroupManagementDAOException
      */
-    List<DeviceGroup> findInGroups(String groupName, int tenantId) throws GroupManagementDAOException;
+    int getGroupCount(GroupPaginationRequest paginationRequest, int tenantId) throws GroupManagementDAOException;
 
     /**
      * Check group already existed with given name.

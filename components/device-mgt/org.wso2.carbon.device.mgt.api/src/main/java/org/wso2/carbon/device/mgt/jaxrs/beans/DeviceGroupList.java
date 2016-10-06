@@ -20,8 +20,6 @@ package org.wso2.carbon.device.mgt.jaxrs.beans;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
-import org.wso2.carbon.device.mgt.common.Device;
-import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroup;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,13 +28,13 @@ public class DeviceGroupList extends BasePaginatedResult {
 
     @ApiModelProperty(value = "List of device groups returned")
     @JsonProperty("groups")
-    private List<DeviceGroup> deviceGroups = new ArrayList<>();
+    private List<?> deviceGroups = new ArrayList<>();
 
-    public List<DeviceGroup> getList() {
+    public List<?> getList() {
         return deviceGroups;
     }
 
-    public void setList(List<DeviceGroup> deviceGroups) {
+    public void setList(List<?> deviceGroups) {
         this.deviceGroups = deviceGroups;
     }
 

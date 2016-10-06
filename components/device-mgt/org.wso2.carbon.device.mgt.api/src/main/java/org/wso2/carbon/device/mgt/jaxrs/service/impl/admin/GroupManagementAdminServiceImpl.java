@@ -22,6 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.GroupPaginationRequest;
 import org.wso2.carbon.device.mgt.common.PaginationRequest;
+import org.wso2.carbon.device.mgt.common.PaginationResult;
 import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroup;
 import org.wso2.carbon.device.mgt.common.group.mgt.GroupManagementException;
 import org.wso2.carbon.device.mgt.core.service.GroupManagementProviderService;
@@ -41,15 +42,15 @@ public class GroupManagementAdminServiceImpl implements GroupManagementAdminServ
     public Response getGroups(String name, String owner, int offset, int limit) {
         try {
             RequestValidationUtil.validatePaginationParameters(offset, limit);
-            GroupManagementProviderService service = DeviceMgtAPIUtils.getGroupManagementProviderService();
             GroupPaginationRequest request = new GroupPaginationRequest(offset, limit);
             request.setGroupName(name);
             request.setOwner(owner);
-            List<DeviceGroup> deviceGroups = service.getGroups(request);
-            if (deviceGroups != null && deviceGroups.size() > 0) {
+            PaginationResult deviceGroupsResult = DeviceMgtAPIUtils.getGroupManagementProviderService()
+                    .getGroups(request);
+            if (deviceGroupsResult.getData() != null && deviceGroupsResult.getRecordsTotal() > 0) {
                 DeviceGroupList deviceGroupList = new DeviceGroupList();
-                deviceGroupList.setList(deviceGroups);
-                deviceGroupList.setCount(service.getGroupCount());
+                deviceGroupList.setList(deviceGroupsResult.getData());
+                deviceGroupList.setCount(deviceGroupsResult.getRecordsTotal());
                 return Response.status(Response.Status.OK).entity(deviceGroupList).build();
             } else {
                 return Response.status(Response.Status.NOT_FOUND).build();

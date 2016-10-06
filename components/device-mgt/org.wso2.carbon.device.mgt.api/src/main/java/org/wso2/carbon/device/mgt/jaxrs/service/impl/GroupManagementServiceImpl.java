@@ -27,6 +27,7 @@ import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.DeviceNotFoundException;
 import org.wso2.carbon.device.mgt.common.GroupPaginationRequest;
+import org.wso2.carbon.device.mgt.common.PaginationResult;
 import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroup;
 import org.wso2.carbon.device.mgt.common.group.mgt.GroupAlreadyExistException;
 import org.wso2.carbon.device.mgt.common.group.mgt.GroupManagementException;
@@ -58,16 +59,16 @@ public class GroupManagementServiceImpl implements GroupManagementService {
     public Response getGroups(String name, String owner, int offset, int limit) {
         try {
             RequestValidationUtil.validatePaginationParameters(offset, limit);
-            GroupManagementProviderService service = DeviceMgtAPIUtils.getGroupManagementProviderService();
             String currentUser = CarbonContext.getThreadLocalCarbonContext().getUsername();
             GroupPaginationRequest request = new GroupPaginationRequest(offset, limit);
             request.setGroupName(name);
             request.setOwner(owner);
-            List<DeviceGroup> deviceGroups = service.getGroups(currentUser, request);
-            if (deviceGroups != null && deviceGroups.size() > 0) {
+            PaginationResult deviceGroupsResult = DeviceMgtAPIUtils.getGroupManagementProviderService()
+                    .getGroups(currentUser, request);
+            if (deviceGroupsResult.getData() != null && deviceGroupsResult.getRecordsTotal() > 0) {
                 DeviceGroupList deviceGroupList = new DeviceGroupList();
-                deviceGroupList.setList(deviceGroups);
-                deviceGroupList.setCount(service.getGroupCount(currentUser));
+                deviceGroupList.setList(deviceGroupsResult.getData());
+                deviceGroupList.setCount(deviceGroupsResult.getRecordsTotal());
                 return Response.status(Response.Status.OK).entity(deviceGroupList).build();
             } else {
                 return Response.status(Response.Status.NOT_FOUND).build();

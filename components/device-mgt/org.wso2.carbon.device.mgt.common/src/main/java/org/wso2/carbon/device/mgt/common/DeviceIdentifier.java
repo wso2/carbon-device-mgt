@@ -28,12 +28,20 @@ import java.io.Serializable;
                                                     "uniquely.")
 public class DeviceIdentifier implements Serializable{
 
+    @ApiModelProperty(
+            name = "id",
+            value = "Identity of the device.",
+            required = true,
+            example = "123456")
     @JsonProperty(value = "id", required = true)
-    @ApiModelProperty(name = "id", value = "Identity of the device.", required = true)
     private String id;
 
+    @ApiModelProperty(
+            name = "type",
+            value = "Type of the device.",
+            required = true,
+            example = "android")
     @JsonProperty(value = "type", required = true)
-    @ApiModelProperty(name = "type", value = "Type of the device.", required = true)
     private String type;
 
     public DeviceIdentifier() {}

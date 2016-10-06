@@ -19,6 +19,7 @@
 package org.wso2.carbon.device.mgt.core.group.mgt.dao;
 
 import org.wso2.carbon.device.mgt.common.Device;
+import org.wso2.carbon.device.mgt.common.GroupPaginationRequest;
 import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroup;
 
 import java.util.List;
@@ -76,16 +77,23 @@ public interface GroupDAO {
     List<DeviceGroup> getGroups(int deviceId, int tenantId) throws GroupManagementDAOException;
 
     /**
-     * Get the list of Device Groups in tenant.
+     * Get paginated list of Device Groups in tenant.
      *
-     * @param startIndex for pagination.
-     * @param rowCount for pagination.
+     * @param paginationRequest to filter results
      * @param tenantId of user's tenant.
      * @return List of all Device Groups in tenant.
      * @throws GroupManagementDAOException
      */
-    List<DeviceGroup> getGroups(int startIndex, int rowCount, int tenantId) throws GroupManagementDAOException;
+    List<DeviceGroup> getGroups(GroupPaginationRequest paginationRequest, int tenantId) throws GroupManagementDAOException;
 
+    /**
+     * Get the list of Device Groups in tenant.
+     *
+     * @param tenantId of user's tenant.
+     * @return List of all Device Groups in tenant.
+     * @throws GroupManagementDAOException
+     */
+    List<DeviceGroup> getGroups(int tenantId) throws GroupManagementDAOException;
 
     /**
      * Get count of Device Groups in tenant.
@@ -114,7 +122,7 @@ public interface GroupDAO {
      * @return existence of group with name
      * @throws GroupManagementDAOException
      */
-    boolean isGroupExist(String groupName, int tenantId) throws GroupManagementDAOException;
+    DeviceGroup getGroup(String groupName, int tenantId) throws GroupManagementDAOException;
 
     /**
      * Add device to a given Device Group.

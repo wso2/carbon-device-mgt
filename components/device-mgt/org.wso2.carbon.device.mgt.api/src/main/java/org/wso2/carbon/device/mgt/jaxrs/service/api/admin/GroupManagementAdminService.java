@@ -90,6 +90,14 @@ public interface GroupManagementAdminService {
     })
     @Permission(name = "View Groups", permission = "/device-mgt/admin/groups/view")
     Response getGroups(@ApiParam(
+                               name = "name",
+                               value = "Name of the group.")
+                       @QueryParam("name") String name,
+                       @ApiParam(
+                               name = "owner",
+                               value = "Owner of the group.")
+                       @QueryParam("owner") String owner,
+                       @ApiParam(
                                name = "offset",
                                value = "Starting point within the complete list of items qualified.")
                        @QueryParam("offset") int offset,

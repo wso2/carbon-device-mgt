@@ -20,11 +20,14 @@ package org.wso2.carbon.device.mgt.core.service;
 
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
-import org.wso2.carbon.device.mgt.common.PaginationResult;
+import org.wso2.carbon.device.mgt.common.DeviceNotFoundException;
+import org.wso2.carbon.device.mgt.common.GroupPaginationRequest;
+import org.wso2.carbon.device.mgt.common.PaginationRequest;
 import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroup;
 import org.wso2.carbon.device.mgt.common.group.mgt.GroupAlreadyExistException;
 import org.wso2.carbon.device.mgt.common.group.mgt.GroupManagementException;
 import org.wso2.carbon.device.mgt.common.group.mgt.GroupUser;
+import org.wso2.carbon.device.mgt.common.group.mgt.RoleDoesNotExistException;
 import org.wso2.carbon.user.core.multiplecredentials.UserDoesNotExistException;
 
 import java.util.List;
@@ -52,7 +55,7 @@ public interface GroupManagementProviderService {
      * @param groupId of the group.
      * @throws GroupManagementException
      */
-    void updateGroup(DeviceGroup deviceGroup, int groupId) throws GroupManagementException;
+    void updateGroup(DeviceGroup deviceGroup, int groupId) throws GroupManagementException, GroupAlreadyExistException;
 
     /**
      * Delete existing device group.
@@ -73,25 +76,40 @@ public interface GroupManagementProviderService {
     DeviceGroup getGroup(int groupId) throws GroupManagementException;
 
     /**
-     * Get paginated device groups in tenant.
+     * Get all device groups in tenant.
      *
-     * @param startIndex for pagination.
-     * @param rowCount   for pagination.
      * @return list of groups.
      * @throws GroupManagementException
      */
-    List<DeviceGroup> getGroups(int startIndex, int rowCount) throws GroupManagementException;
+    List<DeviceGroup> getGroups() throws GroupManagementException;
 
     /**
-     * Get paginated device groups for user.
+     * Get all device groups for user.
      *
      * @param username   of the user.
-     * @param startIndex for pagination.
-     * @param rowCount   for pagination.
      * @return list of groups
      * @throws GroupManagementException
      */
-    List<DeviceGroup> getGroups(String username, int startIndex, int rowCount) throws GroupManagementException;
+    List<DeviceGroup> getGroups(String username) throws GroupManagementException;
+
+    /**
+     * Get device groups with pagination.
+     *
+     * @param paginationRequest to filter results
+     * @return list of groups.
+     * @throws GroupManagementException
+     */
+    List<DeviceGroup> getGroups(GroupPaginationRequest paginationRequest) throws GroupManagementException;
+
+    /**
+     * Get device groups with pagination.
+     *
+     * @param username   of the user.
+     * @param paginationRequest to filter results
+     * @return list of groups.
+     * @throws GroupManagementException
+     */
+    List<DeviceGroup> getGroups(String username, GroupPaginationRequest paginationRequest) throws GroupManagementException;
 
     /**
      * Get all device group count in tenant
@@ -111,28 +129,15 @@ public interface GroupManagementProviderService {
     int getGroupCount(String username) throws GroupManagementException;
 
     /**
-     * Share device group with user specified by role
+     * Manage device group sharing with user with list of roles.
      *
-     * @param username    of the user
-     * @param groupId   of the group
-     * @param sharingRole to be shared
-     * @return is group shared
+     * @param username of the user
+     * @param groupId  of the group
+     * @param newRoles to be shared
      * @throws GroupManagementException UserDoesNotExistException
      */
-    boolean shareGroup(String username, int groupId, String sharingRole)
-            throws GroupManagementException, UserDoesNotExistException;
-
-    /**
-     * Un share existing group sharing with user specified by role
-     *
-     * @param userName    of the user
-     * @param groupId   of the group
-     * @param sharingRole to be un shared
-     * @return is group un shared
-     * @throws GroupManagementException UserDoesNotExistException
-     */
-    boolean unshareGroup(String userName, int groupId, String sharingRole)
-            throws GroupManagementException, UserDoesNotExistException;
+    void manageGroupSharing(int groupId, String username, List<String> newRoles)
+            throws GroupManagementException, UserDoesNotExistException, RoleDoesNotExistException;
 
     /**
      * Add new sharing role for device group
@@ -208,22 +213,22 @@ public interface GroupManagementProviderService {
     /**
      * Add device to device group.
      *
-     * @param deviceId  of the device.
-     * @param groupId   of the group
-     * @return is device added.
+     * @param groupId   of the group.
+     * @param deviceIdentifiers of devices.
      * @throws GroupManagementException
      */
-    boolean addDevice(DeviceIdentifier deviceId, int groupId) throws GroupManagementException;
+    void addDevices(int groupId, List<DeviceIdentifier> deviceIdentifiers) throws GroupManagementException,
+                                                                                  DeviceNotFoundException;
 
     /**
      * Remove device from device group.
      *
-     * @param deviceId  of the device.
-     * @param groupId   of the group
-     * @return is device removed.
+     * @param groupId   of the group.
+     * @param deviceIdentifiers of devices.
      * @throws GroupManagementException
      */
-    boolean removeDevice(DeviceIdentifier deviceId, int groupId) throws GroupManagementException;
+    void removeDevice(int groupId, List<DeviceIdentifier> deviceIdentifiers) throws GroupManagementException,
+                                                                                       DeviceNotFoundException;
 
     /**
      * Get device group permissions of user.

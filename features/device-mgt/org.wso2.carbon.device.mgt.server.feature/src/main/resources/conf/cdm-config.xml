@@ -65,6 +65,7 @@
     <!-- Default Page size configuration for paginated DM APIs-->
     <PaginationConfiguration>
         <DeviceListPageSize>20</DeviceListPageSize>
+        <GroupListPageSize>20</GroupListPageSize>
         <NotificationListPageSize>20</NotificationListPageSize>
         <ActivityListPageSize>20</ActivityListPageSize>
         <OperationListPageSize>20</OperationListPageSize>

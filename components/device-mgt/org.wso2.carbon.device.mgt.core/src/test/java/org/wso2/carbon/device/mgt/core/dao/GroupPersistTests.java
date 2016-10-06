@@ -24,6 +24,7 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.device.mgt.common.Device;
+import org.wso2.carbon.device.mgt.common.GroupPaginationRequest;
 import org.wso2.carbon.device.mgt.common.TransactionManagementException;
 import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroup;
 import org.wso2.carbon.device.mgt.core.common.BaseDeviceManagementTest;
@@ -100,7 +101,10 @@ public class GroupPersistTests extends BaseDeviceManagementTest {
     public void getGroupTest() {
         try {
             GroupManagementDAOFactory.openConnection();
-            List<DeviceGroup> groups = groupDAO.getGroups(0, 100, TestDataHolder.SUPER_TENANT_ID);
+            GroupPaginationRequest request = new GroupPaginationRequest(0, 10);
+            request.setGroupName(null);
+            request.setOwner(null);
+            List<DeviceGroup> groups = groupDAO.getGroups(request, TestDataHolder.SUPER_TENANT_ID);
             Assert.assertNotEquals(groups.size(), 0, "No groups found");
             Assert.assertNotNull(groups.get(0), "Group is null");
             log.debug("No of Groups found: " + groups.size());

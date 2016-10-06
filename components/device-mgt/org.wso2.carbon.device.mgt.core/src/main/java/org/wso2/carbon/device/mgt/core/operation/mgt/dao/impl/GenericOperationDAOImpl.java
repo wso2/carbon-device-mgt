@@ -17,7 +17,6 @@
  */
 package org.wso2.carbon.device.mgt.core.operation.mgt.dao.impl;
 
-import org.apache.axis2.databinding.types.soapencoding.Integer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
@@ -26,7 +25,6 @@ import org.wso2.carbon.device.mgt.common.PaginationRequest;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Activity;
 import org.wso2.carbon.device.mgt.common.operation.mgt.ActivityStatus;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationResponse;
-import org.wso2.carbon.device.mgt.core.DeviceManagementConstants;
 import org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationDAO;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOException;

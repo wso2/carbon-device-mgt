@@ -28,7 +28,6 @@ import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.dao.util.DeviceManagementDAOUtil;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
-import org.wso2.carbon.utils.xml.StringUtils;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

@@ -20,8 +20,8 @@ package org.wso2.carbon.device.mgt.jaxrs.service.impl.admin;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.context.CarbonContext;
-import org.wso2.carbon.device.mgt.common.PaginationResult;
+import org.wso2.carbon.device.mgt.common.GroupPaginationRequest;
+import org.wso2.carbon.device.mgt.common.PaginationRequest;
 import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroup;
 import org.wso2.carbon.device.mgt.common.group.mgt.GroupManagementException;
 import org.wso2.carbon.device.mgt.core.service.GroupManagementProviderService;
@@ -30,10 +30,6 @@ import org.wso2.carbon.device.mgt.jaxrs.service.api.admin.GroupManagementAdminSe
 import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.RequestValidationUtil;
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
 
@@ -42,11 +38,14 @@ public class GroupManagementAdminServiceImpl implements GroupManagementAdminServ
     private static final Log log = LogFactory.getLog(GroupManagementAdminServiceImpl.class);
 
     @Override
-    public Response getGroups(int offset, int limit) {
+    public Response getGroups(String name, String owner, int offset, int limit) {
         try {
             RequestValidationUtil.validatePaginationParameters(offset, limit);
             GroupManagementProviderService service = DeviceMgtAPIUtils.getGroupManagementProviderService();
-            List<DeviceGroup> deviceGroups = service.getGroups(offset, limit);
+            GroupPaginationRequest request = new GroupPaginationRequest(offset, limit);
+            request.setGroupName(name);
+            request.setOwner(owner);
+            List<DeviceGroup> deviceGroups = service.getGroups(request);
             if (deviceGroups != null && deviceGroups.size() > 0) {
                 DeviceGroupList deviceGroupList = new DeviceGroupList();
                 deviceGroupList.setList(deviceGroups);

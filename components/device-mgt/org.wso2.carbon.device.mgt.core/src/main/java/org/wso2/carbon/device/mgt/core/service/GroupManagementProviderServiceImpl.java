@@ -26,15 +26,19 @@ import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
+import org.wso2.carbon.device.mgt.common.DeviceNotFoundException;
+import org.wso2.carbon.device.mgt.common.GroupPaginationRequest;
 import org.wso2.carbon.device.mgt.common.TransactionManagementException;
 import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroup;
 import org.wso2.carbon.device.mgt.common.group.mgt.GroupAlreadyExistException;
 import org.wso2.carbon.device.mgt.common.group.mgt.GroupManagementException;
 import org.wso2.carbon.device.mgt.common.group.mgt.GroupUser;
+import org.wso2.carbon.device.mgt.common.group.mgt.RoleDoesNotExistException;
 import org.wso2.carbon.device.mgt.core.group.mgt.dao.GroupDAO;
 import org.wso2.carbon.device.mgt.core.group.mgt.dao.GroupManagementDAOException;
 import org.wso2.carbon.device.mgt.core.group.mgt.dao.GroupManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
+import org.wso2.carbon.device.mgt.core.util.DeviceManagerUtil;
 import org.wso2.carbon.user.api.Permission;
 import org.wso2.carbon.user.api.UserRealm;
 import org.wso2.carbon.user.api.UserStoreException;
@@ -75,8 +79,8 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
         int groupId = -1;
         try {
             GroupManagementDAOFactory.beginTransaction();
-            boolean nameIsExists = this.groupDAO.isGroupExist(deviceGroup.getName(), tenantId);
-            if (!nameIsExists) {
+            DeviceGroup existingGroup = this.groupDAO.getGroup(deviceGroup.getName(), tenantId);
+            if (existingGroup == null) {
                 groupId = this.groupDAO.addGroup(deviceGroup, tenantId);
                 GroupManagementDAOFactory.commitTransaction();
             } else {
@@ -103,16 +107,21 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
      */
     @Override
     public void updateGroup(DeviceGroup deviceGroup, int groupId)
-            throws GroupManagementException {
+            throws GroupManagementException, GroupAlreadyExistException {
         if (deviceGroup == null) {
             throw new GroupManagementException("DeviceGroup cannot be null.", new NullPointerException());
         }
         try {
             int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
             GroupManagementDAOFactory.beginTransaction();
-            deviceGroup.setDateOfLastUpdate(new Date().getTime());
-            this.groupDAO.updateGroup(deviceGroup, groupId, tenantId);
-            GroupManagementDAOFactory.commitTransaction();
+            DeviceGroup existingGroup = this.groupDAO.getGroup(deviceGroup.getName(), tenantId);
+            if (existingGroup == null || existingGroup.getGroupId() == groupId) {
+                deviceGroup.setDateOfLastUpdate(new Date().getTime());
+                this.groupDAO.updateGroup(deviceGroup, groupId, tenantId);
+                GroupManagementDAOFactory.commitTransaction();
+            } else {
+                throw new GroupAlreadyExistException("Group exist with name " + deviceGroup.getName());
+            }
         } catch (GroupManagementDAOException e) {
             GroupManagementDAOFactory.rollbackTransaction();
             throw new GroupManagementException("Error occurred while modifying deviceGroup " +
@@ -192,12 +201,12 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
     }
 
     @Override
-    public List<DeviceGroup> getGroups(int startIndex, int rowCount) throws GroupManagementException {
+    public List<DeviceGroup> getGroups() throws GroupManagementException {
         List<DeviceGroup> deviceGroups = new ArrayList<>();
         try {
             int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
             GroupManagementDAOFactory.openConnection();
-            deviceGroups = this.groupDAO.getGroups(startIndex, rowCount, tenantId);
+            deviceGroups = this.groupDAO.getGroups(tenantId);
         } catch (GroupManagementDAOException e) {
             throw new GroupManagementException("Error occurred while retrieving all groups in tenant", e);
         } catch (SQLException e) {
@@ -213,7 +222,29 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
     }
 
     @Override
-    public List<DeviceGroup> getGroups(String username, int startIndex, int rowCount) throws GroupManagementException {
+    public List<DeviceGroup> getGroups(GroupPaginationRequest request) throws GroupManagementException {
+        List<DeviceGroup> deviceGroups = new ArrayList<>();
+        request = DeviceManagerUtil.validateGroupListPageSize(request);
+        try {
+            int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+            GroupManagementDAOFactory.openConnection();
+            deviceGroups = this.groupDAO.getGroups(request, tenantId);
+        } catch (GroupManagementDAOException e) {
+            throw new GroupManagementException("Error occurred while retrieving all groups in tenant", e);
+        } catch (SQLException e) {
+            throw new GroupManagementException("Error occurred while opening a connection to the data source.", e);
+        } finally {
+            GroupManagementDAOFactory.closeConnection();
+        }
+        for (DeviceGroup group : deviceGroups) {
+            group.setUsers(this.getUsers(group.getGroupId()));
+            group.setRoles(this.getRoles(group.getGroupId()));
+        }
+        return deviceGroups;
+    }
+
+    @Override
+    public List<DeviceGroup> getGroups(String username) throws GroupManagementException {
         Map<Integer, DeviceGroup> groups = new HashMap<>();
         UserStoreManager userStoreManager;
         try {
@@ -221,11 +252,36 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
             userStoreManager = DeviceManagementDataHolder.getInstance().getRealmService().getTenantUserRealm(tenantId)
                     .getUserStoreManager();
             String[] roleList = userStoreManager.getRoleListOfUser(username);
+            for (String role : roleList) {
+                if (role != null && role.contains("Internal/group-")) {
+                    DeviceGroup deviceGroup = extractNewGroupFromRole(groups, role);
+                    if (deviceGroup != null) {
+                        groups.put(deviceGroup.getGroupId(), deviceGroup);
+                    }
+                }
+            }
+        } catch (UserStoreException e) {
+            throw new GroupManagementException("Error occurred while getting user store manager.", e);
+        }
+        return new ArrayList<>(groups.values());
+    }
+
+    public List<DeviceGroup> getGroups(String currentUser, GroupPaginationRequest request) throws GroupManagementException {
+        request = DeviceManagerUtil.validateGroupListPageSize(request);
+        Map<Integer, DeviceGroup> groups = new HashMap<>();
+        UserStoreManager userStoreManager;
+        try {
+            int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+            userStoreManager = DeviceManagementDataHolder.getInstance().getRealmService().getTenantUserRealm(tenantId)
+                    .getUserStoreManager();
+            String[] roleList = userStoreManager.getRoleListOfUser(currentUser);
             int index = 0;
             for (String role : roleList) {
                 if (role != null && role.contains("Internal/group-")) {
                     DeviceGroup deviceGroupBuilder = extractNewGroupFromRole(groups, role);
-                    if (deviceGroupBuilder != null && startIndex <= index++ && index <= rowCount) {
+                    if (deviceGroupBuilder != null
+                        && request.getStartIndex() <= index++
+                        && index <= request.getRowCount()) {
                         groups.put(deviceGroupBuilder.getGroupId(), deviceGroupBuilder);
                     }
                 }
@@ -283,50 +339,49 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
      * {@inheritDoc}
      */
     @Override
-    public boolean shareGroup(String username, int groupId, String sharingRole)
-            throws GroupManagementException, UserDoesNotExistException {
-        return modifyGroupShare(username, groupId, sharingRole, true);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean unshareGroup(String username, int groupId, String sharingRole)
-            throws GroupManagementException, UserDoesNotExistException {
-        return modifyGroupShare(username, groupId, sharingRole, false);
-    }
-
-    private boolean modifyGroupShare(String username, int groupId, String sharingRole,
-                                     boolean isAddNew)
-            throws GroupManagementException, UserDoesNotExistException {
-        if (groupId == -1) {
-            return false;
-        }
+    @SuppressWarnings("Duplicates")
+    public void manageGroupSharing(int groupId, String username, List<String> newRoles)
+            throws GroupManagementException, UserDoesNotExistException, RoleDoesNotExistException {
+        int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
         UserStoreManager userStoreManager;
-        String[] roles = new String[1];
         try {
-            int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
             userStoreManager =
                     DeviceManagementDataHolder.getInstance().getRealmService().getTenantUserRealm(
                             tenantId).getUserStoreManager();
             if (!userStoreManager.isExistingUser(username)) {
                 throw new UserDoesNotExistException("User not exists with name " + username);
             }
-            roles[0] = "Internal/group-" + groupId + "-" + sharingRole;
-            List<String> currentRoles = getRoles(username, groupId);
-            if (isAddNew && !currentRoles.contains(sharingRole)) {
-                userStoreManager.updateRoleListOfUser(username, null, roles);
-            } else if (!isAddNew && currentRoles.contains(sharingRole)) {
-                userStoreManager.updateRoleListOfUser(username, roles, null);
+            List<String> currentGroupRoles = getRoles(groupId);
+            List<String> currentUserRoles = getRoles(username, groupId);
+            List<String> rolesToAdd = new ArrayList<>();
+            List<String> rolesToRemove = new ArrayList<>();
+            String roleNamePrefix = "Internal/group-" + groupId + "-";
+            for (String role : newRoles) {
+                if (currentGroupRoles.contains(role)) {
+                    if (!currentUserRoles.contains(role)) {
+                        rolesToAdd.add(roleNamePrefix + role);
+                    }
+                } else {
+                    throw new RoleDoesNotExistException("Role '" + role + "' is not exists iin requested group.");
+                }
             }
-            return true;
+            for (String role : currentUserRoles) {
+                if (currentGroupRoles.contains(role)) {
+                    if (!newRoles.contains(role)) {
+                        rolesToRemove.add(roleNamePrefix + role);
+                    }
+                } else {
+                    throw new RoleDoesNotExistException("Role '" + role + "' is not exists iin requested group.");
+                }
+            }
+            userStoreManager.updateRoleListOfUser(username,
+                                                  rolesToRemove.toArray(new String[rolesToRemove.size()]),
+                                                  rolesToAdd.toArray(new String[rolesToAdd.size()]));
         } catch (UserStoreException e) {
             if (e instanceof UserDoesNotExistException) {
                 throw (UserDoesNotExistException) e;
             }
-            throw new GroupManagementException("User store error in adding user " + username + " to group name:" +
-                                               groupId, e);
+            throw new GroupManagementException("User store error in updating sharing roles.", e);
         }
     }
 
@@ -520,17 +575,19 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
      * {@inheritDoc}
      */
     @Override
-    public boolean addDevice(DeviceIdentifier deviceIdentifier, int groupId)
-            throws GroupManagementException {
+    public void addDevices(int groupId, List<DeviceIdentifier> deviceIdentifiers)
+            throws GroupManagementException, DeviceNotFoundException {
         Device device;
         try {
-            device = DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().getDevice(deviceIdentifier);
-            if (device == null) {
-                return false;
-            }
             int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
             GroupManagementDAOFactory.beginTransaction();
-            this.groupDAO.addDevice(groupId, device.getId(), tenantId);
+            for (DeviceIdentifier deviceIdentifier : deviceIdentifiers){
+                device = DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().getDevice(deviceIdentifier);
+                if (device == null) {
+                    throw new DeviceNotFoundException("Device not found for id '" + deviceIdentifier.getId() + "'");
+                }
+                this.groupDAO.addDevice(groupId, device.getId(), tenantId);
+            }
             GroupManagementDAOFactory.commitTransaction();
         } catch (DeviceManagementException e) {
             throw new GroupManagementException("Error occurred while retrieving device.", e);
@@ -542,23 +599,25 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
         } finally {
             GroupManagementDAOFactory.closeConnection();
         }
-        return true;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public boolean removeDevice(DeviceIdentifier deviceIdentifier, int groupId) throws GroupManagementException {
+    public void removeDevice(int groupId, List<DeviceIdentifier> deviceIdentifiers)
+            throws GroupManagementException, DeviceNotFoundException {
         Device device;
         try {
-            device = DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().getDevice(deviceIdentifier);
-            if (device == null) {
-                return false;
-            }
             int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
             GroupManagementDAOFactory.beginTransaction();
-            this.groupDAO.removeDevice(groupId, device.getId(), tenantId);
+            for (DeviceIdentifier deviceIdentifier : deviceIdentifiers){
+                device = DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().getDevice(deviceIdentifier);
+                if (device == null) {
+                    throw new DeviceNotFoundException("Device not found for id '" + deviceIdentifier.getId() + "'");
+                }
+                this.groupDAO.removeDevice(groupId, device.getId(), tenantId);
+            }
             GroupManagementDAOFactory.commitTransaction();
         } catch (DeviceManagementException e) {
             throw new GroupManagementException("Error occurred while retrieving device.", e);
@@ -570,7 +629,6 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
         } finally {
             GroupManagementDAOFactory.closeConnection();
         }
-        return true;
     }
 
     /**

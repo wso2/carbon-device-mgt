@@ -23,16 +23,24 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
+import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
+import org.wso2.carbon.device.mgt.common.DeviceNotFoundException;
+import org.wso2.carbon.device.mgt.common.GroupPaginationRequest;
 import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroup;
 import org.wso2.carbon.device.mgt.common.group.mgt.GroupAlreadyExistException;
 import org.wso2.carbon.device.mgt.common.group.mgt.GroupManagementException;
+import org.wso2.carbon.device.mgt.common.group.mgt.GroupUser;
+import org.wso2.carbon.device.mgt.common.group.mgt.RoleDoesNotExistException;
 import org.wso2.carbon.device.mgt.core.service.GroupManagementProviderService;
 import org.wso2.carbon.device.mgt.jaxrs.beans.DeviceGroupList;
 import org.wso2.carbon.device.mgt.jaxrs.beans.DeviceGroupShare;
+import org.wso2.carbon.device.mgt.jaxrs.beans.DeviceGroupUsersList;
+import org.wso2.carbon.device.mgt.jaxrs.beans.DeviceList;
 import org.wso2.carbon.device.mgt.jaxrs.service.api.GroupManagementService;
 import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.RequestValidationUtil;
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
+import org.wso2.carbon.user.core.multiplecredentials.UserDoesNotExistException;
 
 import javax.ws.rs.core.Response;
 import java.util.Date;
@@ -47,12 +55,15 @@ public class GroupManagementServiceImpl implements GroupManagementService {
                                                                "/permission/device-mgt/user/groups"};
 
     @Override
-    public Response getGroups(int offset, int limit) {
+    public Response getGroups(String name, String owner, int offset, int limit) {
         try {
             RequestValidationUtil.validatePaginationParameters(offset, limit);
             GroupManagementProviderService service = DeviceMgtAPIUtils.getGroupManagementProviderService();
             String currentUser = CarbonContext.getThreadLocalCarbonContext().getUsername();
-            List<DeviceGroup> deviceGroups = service.getGroups(currentUser, offset, limit);
+            GroupPaginationRequest request = new GroupPaginationRequest(offset, limit);
+            request.setGroupName(name);
+            request.setOwner(owner);
+            List<DeviceGroup> deviceGroups = service.getGroups(currentUser, request);
             if (deviceGroups != null && deviceGroups.size() > 0) {
                 DeviceGroupList deviceGroupList = new DeviceGroupList();
                 deviceGroupList.setList(deviceGroups);
@@ -92,14 +103,14 @@ public class GroupManagementServiceImpl implements GroupManagementService {
         group.setDateOfLastUpdate(new Date().getTime());
         try {
             DeviceMgtAPIUtils.getGroupManagementProviderService().createGroup(group, DEFAULT_ADMIN_ROLE, DEFAULT_ADMIN_PERMISSIONS);
-            return Response.status(Response.Status.OK).build();
+            return Response.status(Response.Status.CREATED).build();
         } catch (GroupManagementException e) {
             String msg = "Error occurred while adding new group.";
             log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         } catch (GroupAlreadyExistException e) {
             String msg = "Group already exists with name '" + group.getName() + "'.";
-            log.error(msg, e);
+            log.warn(msg);
             return Response.status(Response.Status.CONFLICT).entity(msg).build();
         }
     }
@@ -126,7 +137,6 @@ public class GroupManagementServiceImpl implements GroupManagementService {
         if (deviceGroup == null) {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
-        deviceGroup.setDateOfLastUpdate(new Date().getTime());
         try {
             DeviceMgtAPIUtils.getGroupManagementProviderService().updateGroup(deviceGroup, groupId);
             return Response.status(Response.Status.OK).build();
@@ -134,42 +144,120 @@ public class GroupManagementServiceImpl implements GroupManagementService {
             String msg = "Error occurred while adding new group.";
             log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+        } catch (GroupAlreadyExistException e) {
+            String msg = "There is another group already exists with name '" + deviceGroup.getName() + "'.";
+            log.warn(msg);
+            return Response.status(Response.Status.CONFLICT).entity(msg).build();
         }
     }
 
     @Override
     public Response deleteGroup(int groupId) {
-        return null;
+        try {
+            if (DeviceMgtAPIUtils.getGroupManagementProviderService().deleteGroup(groupId)) {
+                return Response.status(Response.Status.OK).build();
+            } else {
+                return Response.status(Response.Status.NOT_FOUND).entity("Group not found.").build();
+            }
+        } catch (GroupManagementException e) {
+            String msg = "Error occurred while deleting the group.";
+            log.error(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+        }
     }
 
     @Override
     public Response manageGroupSharing(int groupId, DeviceGroupShare deviceGroupShare) {
-        return null;
+        try {
+            DeviceMgtAPIUtils.getGroupManagementProviderService()
+                    .manageGroupSharing(groupId, deviceGroupShare.getUsername(), deviceGroupShare.getGroupRoles());
+            return Response.status(Response.Status.OK).build();
+        } catch (GroupManagementException e) {
+            String msg = "Error occurred while managing group share.";
+            log.error(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+        } catch (RoleDoesNotExistException | UserDoesNotExistException e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
+        }
     }
 
     @Override
     public Response getUsersOfGroup(int groupId) {
-        return null;
+        try {
+            List<GroupUser> groupUsers = DeviceMgtAPIUtils.getGroupManagementProviderService().getUsers(groupId);
+            if (groupUsers != null && groupUsers.size() > 0) {
+                DeviceGroupUsersList deviceGroupUsersList = new DeviceGroupUsersList();
+                deviceGroupUsersList.setList(groupUsers);
+                deviceGroupUsersList.setCount(groupUsers.size());
+                return Response.status(Response.Status.OK).entity(deviceGroupUsersList).build();
+            } else {
+                return Response.status(Response.Status.NOT_FOUND).build();
+            }
+        } catch (GroupManagementException e) {
+            String msg = "Error occurred while getting users of the group.";
+            log.error(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+        }
     }
 
     @Override
     public Response getDevicesOfGroup(int groupId, int offset, int limit) {
-        return null;
+        try {
+            GroupManagementProviderService service = DeviceMgtAPIUtils.getGroupManagementProviderService();
+            List<Device> deviceList = service.getDevices(groupId, offset, limit);
+            if (deviceList != null && deviceList.size() > 0) {
+                DeviceList deviceListWrapper = new DeviceList();
+                deviceListWrapper.setList(deviceList);
+                deviceListWrapper.setCount(service.getDeviceCount(groupId));
+                return Response.status(Response.Status.OK).entity(deviceListWrapper).build();
+            } else {
+                return Response.status(Response.Status.NOT_FOUND).build();
+            }
+        } catch (GroupManagementException e) {
+            String msg = "Error occurred while getting devices the group.";
+            log.error(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+        }
     }
 
     @Override
     public Response getDeviceCountOfGroup(int groupId) {
-        return null;
+        try {
+            int count = DeviceMgtAPIUtils.getGroupManagementProviderService().getDeviceCount(groupId);
+            return Response.status(Response.Status.OK).entity(count).build();
+        } catch (GroupManagementException e) {
+            String msg = "Error occurred while getting device count of the group.";
+            log.error(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+        }
     }
 
     @Override
     public Response addDevicesToGroup(int groupId, List<DeviceIdentifier> deviceIdentifiers) {
-        return null;
+        try {
+            DeviceMgtAPIUtils.getGroupManagementProviderService().addDevices(groupId, deviceIdentifiers);
+            return Response.status(Response.Status.OK).build();
+        } catch (GroupManagementException e) {
+            String msg = "Error occurred while adding devices to group.";
+            log.error(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+        } catch (DeviceNotFoundException e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
+        }
     }
 
     @Override
     public Response removeDevicesFromGroup(int groupId, List<DeviceIdentifier> deviceIdentifiers) {
-        return null;
+        try {
+            DeviceMgtAPIUtils.getGroupManagementProviderService().removeDevice(groupId, deviceIdentifiers);
+            return Response.status(Response.Status.OK).build();
+        } catch (GroupManagementException e) {
+            String msg = "Error occurred while removing devices from group.";
+            log.error(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+        } catch (DeviceNotFoundException e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
+        }
     }
 
 }

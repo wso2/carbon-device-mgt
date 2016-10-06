@@ -19,6 +19,7 @@
 package org.wso2.carbon.device.mgt.core.group.mgt.dao;
 
 import org.wso2.carbon.device.mgt.common.Device;
+import org.wso2.carbon.device.mgt.common.GroupPaginationRequest;
 import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroup;
 import org.wso2.carbon.device.mgt.core.dao.util.DeviceManagementDAOUtil;
 
@@ -147,7 +148,6 @@ public class GroupDAOImpl implements GroupDAO {
 
     @Override
     public List<DeviceGroup> getGroups(int deviceId, int tenantId) throws GroupManagementDAOException {
-
         PreparedStatement stmt = null;
         ResultSet resultSet = null;
         List<DeviceGroup> deviceGroupBuilders = new ArrayList<>();
@@ -172,21 +172,66 @@ public class GroupDAOImpl implements GroupDAO {
     }
 
     @Override
-    public List<DeviceGroup> getGroups(int startIndex, int rowCount, int tenantId)
+    public List<DeviceGroup> getGroups(GroupPaginationRequest request, int tenantId)
             throws GroupManagementDAOException {
+        PreparedStatement stmt = null;
+        ResultSet resultSet = null;
+        List<DeviceGroup> deviceGroupList = null;
+
+        String groupName = request.getGroupName();
+        boolean hasGroupName = false;
+        String owner = request.getOwner();
+        boolean hasOwner = false;
+
+        try {
+            Connection conn = GroupManagementDAOFactory.getConnection();
+            String sql = "SELECT ID, DESCRIPTION, GROUP_NAME, DATE_OF_CREATE, DATE_OF_LAST_UPDATE, OWNER "
+                         + "FROM DM_GROUP WHERE TENANT_ID = ?";
+            if (groupName != null && !groupName.isEmpty()) {
+                sql += " GROUP_NAME LIKE ?";
+                hasGroupName = true;
+            }
+            if (owner != null && !owner.isEmpty()) {
+                sql += " OWNER LIKE ?";
+                hasOwner = true;
+            }
+            sql += " LIMIT ?, ?";
+
+            int paramIndex = 1;
+            stmt = conn.prepareStatement(sql);
+            stmt.setInt(paramIndex++, tenantId);
+            if (hasGroupName) {
+                stmt.setString(paramIndex++, groupName);
+            }
+            if (hasOwner) {
+                stmt.setString(paramIndex++, owner);
+            }
+            stmt.setInt(paramIndex++, request.getStartIndex());
+            stmt.setInt(paramIndex, request.getRowCount());
+            resultSet = stmt.executeQuery();
+            deviceGroupList = new ArrayList<>();
+            while (resultSet.next()) {
+                deviceGroupList.add(GroupManagementDAOUtil.loadGroup(resultSet));
+            }
+        } catch (SQLException e) {
+            throw new GroupManagementDAOException("Error occurred while listing all groups in tenant: " + tenantId, e);
+        } finally {
+            GroupManagementDAOUtil.cleanupResources(stmt, resultSet);
+        }
+        return deviceGroupList;
+    }
+
+    @Override
+    public List<DeviceGroup> getGroups(int tenantId) throws GroupManagementDAOException {
         PreparedStatement stmt = null;
         ResultSet resultSet = null;
         List<DeviceGroup> deviceGroupList = null;
         try {
             Connection conn = GroupManagementDAOFactory.getConnection();
             String sql = "SELECT ID, DESCRIPTION, GROUP_NAME, DATE_OF_CREATE, DATE_OF_LAST_UPDATE, OWNER "
-                         + "FROM DM_GROUP WHERE TENANT_ID = ? LIMIT ?, ?";
+                         + "FROM DM_GROUP WHERE TENANT_ID = ?";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, tenantId);
-            //noinspection JpaQueryApiInspection
-            stmt.setInt(2, startIndex);
-            //noinspection JpaQueryApiInspection
-            stmt.setInt(3, rowCount);
             resultSet = stmt.executeQuery();
             deviceGroupList = new ArrayList<>();
             while (resultSet.next()) {
@@ -249,17 +294,21 @@ public class GroupDAOImpl implements GroupDAO {
     }
 
     @Override
-    public boolean isGroupExist(String groupName, int tenantId) throws GroupManagementDAOException {
+    public DeviceGroup getGroup(String groupName, int tenantId) throws GroupManagementDAOException {
         PreparedStatement stmt = null;
         ResultSet resultSet = null;
         try {
             Connection conn = GroupManagementDAOFactory.getConnection();
-            String sql = "SELECT GROUP_NAME FROM DM_GROUP WHERE GROUP_NAME = ? AND TENANT_ID = ?";
+            String sql = "SELECT ID, DESCRIPTION, GROUP_NAME, DATE_OF_CREATE, DATE_OF_LAST_UPDATE, OWNER " +
+                         "FROM DM_GROUP WHERE GROUP_NAME = ? AND TENANT_ID = ?";
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, groupName);
             stmt.setInt(2, tenantId);
             resultSet = stmt.executeQuery();
-            return resultSet.next();
+            if (resultSet.next()) {
+                return GroupManagementDAOUtil.loadGroup(resultSet);
+            }
+            return null;
         } catch (SQLException e) {
             throw new GroupManagementDAOException("Error occurred while group Id listing by group name.'", e);
         } finally {
@@ -351,6 +400,7 @@ public class GroupDAOImpl implements GroupDAO {
         }
     }
 
+    //TODO: Move this to device mgt
     @Override
     public List<Device> getDevices(int groupId, int startIndex, int rowCount, int tenantId)
             throws GroupManagementDAOException {

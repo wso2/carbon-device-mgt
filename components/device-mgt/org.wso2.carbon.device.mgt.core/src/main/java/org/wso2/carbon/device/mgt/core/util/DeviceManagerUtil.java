@@ -22,6 +22,7 @@ import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Document;
 import org.wso2.carbon.base.MultitenantConstants;
 import org.wso2.carbon.device.mgt.common.*;
+import org.wso2.carbon.device.mgt.common.group.mgt.GroupManagementException;
 import org.wso2.carbon.device.mgt.common.notification.mgt.NotificationManagementException;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
 import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
@@ -322,6 +323,22 @@ public final class DeviceManagerUtil {
             } else {
                 throw new DeviceManagementException("Device-Mgt configuration has not initialized. Please check the " +
                                                     "cdm-config.xml file.");
+            }
+        }
+        return paginationRequest;
+    }
+
+    public static GroupPaginationRequest validateGroupListPageSize(GroupPaginationRequest paginationRequest) throws
+                                                                                                    GroupManagementException {
+        if (paginationRequest.getRowCount() == 0) {
+            DeviceManagementConfig deviceManagementConfig = DeviceConfigurationManager.getInstance()
+                    .getDeviceManagementConfig();
+            if (deviceManagementConfig != null) {
+                paginationRequest.setRowCount(deviceManagementConfig.getPaginationConfiguration()
+                                                      .getDeviceListPageSize());
+            } else {
+                throw new GroupManagementException("Device-Mgt configuration has not initialized. Please check the " +
+                                                   "cdm-config.xml file.");
             }
         }
         return paginationRequest;

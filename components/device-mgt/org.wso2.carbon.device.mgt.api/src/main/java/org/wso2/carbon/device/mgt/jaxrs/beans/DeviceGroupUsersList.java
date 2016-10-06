@@ -20,6 +20,7 @@ package org.wso2.carbon.device.mgt.jaxrs.beans;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
+import org.wso2.carbon.device.mgt.common.group.mgt.GroupUser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,13 +29,13 @@ public class DeviceGroupUsersList extends BasePaginatedResult {
 
     @ApiModelProperty(value = "List of device group users returned")
     @JsonProperty("users")
-    private List<DeviceGroupShare> users = new ArrayList<>();
+    private List<GroupUser> users = new ArrayList<>();
 
-    public List<DeviceGroupShare> getList() {
+    public List<GroupUser> getList() {
         return users;
     }
 
-    public void setList(List<DeviceGroupShare> users) {
+    public void setList(List<GroupUser> users) {
         this.users = users;
     }
 

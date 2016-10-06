@@ -3054,7 +3054,7 @@ tbody.collapse.in {
     right: auto;
   }
 }
-@media (max-width : 480px) {
+@media (max-width : 768px) {
     .navbar-right .dropdown-menu-right {
         left: auto;
         right: 0;
@@ -3899,6 +3899,33 @@ tbody.collapse.in {
   }
   .navbar-right ~ .navbar-right {
     margin-right: 0;
+  }
+}
+@media (max-width: 768px) {
+  .navbar-right {
+    margin-right: -15px;
+  }
+  .navbar-default .navbar-toggle{
+
+  }
+  .navbar-default .navbar-toggle .icon-bar{
+    background-color:#fff!important;
+  }
+  .navbar-default .navbar-toggle:hover, .navbar-default .navbar-toggle:focus{
+    background-color:#526a84!important;
+  }
+  .navbar-default .navbar-toggle:hover .icon-bar, .navbar-default .navbar-toggle:focus .icon-bar{
+    background-color:#798EA5!important;
+  }
+  .navbar-toggle {
+    margin-right: 10px;
+    padding: 13px;
+    margin-top: 0px;
+    margin-bottom: 0px;
+  }
+  #navbar .navbar-nav{
+    margin:0px;
+    border-bottom:1px solid #798EA5;
   }
 }
 .navbar-default {

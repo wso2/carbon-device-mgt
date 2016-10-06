@@ -25,8 +25,8 @@ import io.swagger.annotations.ApiModelProperty;
 
 import java.util.List;
 
-@ApiModel(value = "Activity", description = "An activity instance carries a unique identifier that can be " +
-        "used to identify a particular operation instance uniquely")
+@ApiModel(value = "Activity", description = "Each activity instance has a unique identifier that can be " +
+        "used to identify an operation instance.")
 public class Activity {
 
     public enum Type {
@@ -35,21 +35,21 @@ public class Activity {
 
     @ApiModelProperty(
             name = "activityId",
-            value = "Activity identifier",
+            value = "The unique activity identifier",
             required = true)
     @JsonProperty("activityId")
     private String activityId;
 
     @ApiModelProperty(
             name = "code",
-            value = "Activity code",
+            value = "The activity code",
             required = true)
     @JsonProperty("code")
     private String code;
 
     @ApiModelProperty(
             name = "type",
-            value = "Activity type",
+            value = "The type of the activity, such as CONFIG, MESSAGE, INFO, COMMAND, PROFILE, POLICY.",
             required = true,
             allowableValues = "CONFIG, MESSAGE, INFO, COMMAND, PROFILE, POLICY")
     @JsonProperty("type")
@@ -57,14 +57,14 @@ public class Activity {
 
     @ApiModelProperty(
             name = "createdTimeStamp",
-            value = "Timestamp recorded when the activity took place",
+            value = "The recorded timestamp of when the activity took place.",
             required = true)
     @JsonProperty("createdTimestamp")
     private String createdTimeStamp;
 
     @ApiModelProperty(
             name = "activityStatuses",
-            value = "Collection of statuses corresponding to the activity",
+            value = "The collection of statuses for a given activity.",
             required = true)
     @JsonProperty("activityStatuses")
     private List<ActivityStatus> activityStatus;

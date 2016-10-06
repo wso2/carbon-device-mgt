@@ -19,6 +19,7 @@
 
 package org.wso2.carbon.device.mgt.common.operation.mgt;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -26,10 +27,20 @@ import io.swagger.annotations.ApiModelProperty;
         + " responses")
 public class OperationResponse {
 
-    @ApiModelProperty(name = "response", value = "Operation response returned from the device", required = true)
+    @ApiModelProperty(
+            name = "response",
+            value = "Operation response returned from the device",
+            required = true,
+            example = "SUCCESSFUL")
+    @JsonProperty("response")
     private String response;
-    @ApiModelProperty(name = "receivedTimeStamp", value = "Time that the operation response received",
-            required = true)
+
+    @ApiModelProperty(
+            name = "receivedTimeStamp",
+            value = "Time that the operation response received",
+            required = true,
+            example = "Thu Oct 06 11:18:47 IST 2016")
+    @JsonProperty("receivedTimeStamp")
     private String receivedTimeStamp;
 
     public String getResponse() {

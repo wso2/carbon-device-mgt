@@ -23,15 +23,13 @@ import io.swagger.annotations.ApiModelProperty;
 
 public class BasePaginatedResult {
 
-    private int count;
-    private String next;
-    private String previous;
-
     /**
      * Number of Resources returned.
      */
-    @ApiModelProperty(value = "Number of resources returned.")
+    @ApiModelProperty(value = "Number of total resources.", example = "2")
     @JsonProperty("count")
+    private int count;
+
     public int getCount() {
         return count;
     }

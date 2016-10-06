@@ -65,6 +65,15 @@ function loadNotifications() {
 function showAdvanceOperation(operation, button) {
     $(button).addClass('selected');
     $(button).siblings().removeClass('selected');
+
+    if ($(button).attr("id") == 'allNotifications') {
+        $("#ast-container").html('<div class="panel-body">You do not have any unread notifications </div>');
+    } else if ($(button).attr("id") == 'unReadNotifications') {
+        $("#ast-container").html('<div class="panel-body">You do not have any notifications </div>');
+    } else {
+        $("#ast-container").html('<div class="panel-body">You do not have any notifications </div>');
+    }
+
     var hiddenOperation = ".wr-hidden-operations-content > div";
     $(hiddenOperation + '[data-operation="' + operation + '"]').show();
     $(hiddenOperation + '[data-operation="' + operation + '"]').siblings().hide();
@@ -82,7 +91,7 @@ $(document).ready(function () {
 
     loadNotifications();
 
-    $("#ast-container").on("click", ".new-notification", function(e) {
+    $("#ast-container").on("click", ".new-notification", function (e) {
         var notificationId = $(this).data("id");
         // var redirectUrl = $(this).data("url");
         var query = deviceMgtAPIBaseURI + "/notifications" + "/" + notificationId + "/mark-checked";

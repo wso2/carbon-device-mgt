@@ -45,7 +45,7 @@ var modalPopupContent = modalPopup + " .modal-content";
 var body = "body";
 
 /**
- * 
+ *
  * Fires the res_text when ever a data table redraw occurs making
  * the font icons change the size to respective screen resolution.
  *
@@ -162,9 +162,15 @@ function resetPassword(username) {
         } else {
             var resetPasswordFormData = {};
             resetPasswordFormData.newPassword = unescape(confirmedPassword);
-
-            var resetPasswordServiceURL = apiBasePath + "/admin/users/"+ username +"/credentials";
-
+            var domain;
+            if (username.indexOf('/') > 0) {
+                domain = username.substr(0, username.indexOf('/'));
+                username = username.substr(username.indexOf('/') + 1);
+            }
+            var resetPasswordServiceURL = apiBasePath + "/admin/users/" + username + "/credentials";
+            if (domain) {
+                resetPasswordServiceURL += '?domain=' + domain;
+            }
             invokerUtil.post(
                 resetPasswordServiceURL,
                 resetPasswordFormData,
@@ -198,7 +204,15 @@ function resetPassword(username) {
  * on User Listing page in WSO2 MDM Console.
  */
 function removeUser(username) {
+    var domain;
+    if (username.indexOf('/') > 0) {
+        domain = username.substr(0, username.indexOf('/'));
+        username = username.substr(username.indexOf('/') + 1);
+    }
     var removeUserAPI = apiBasePath + "/users/" + username;
+    if (domain) {
+        removeUserAPI += '?domain=' + domain;
+    }
     $(modalPopupContent).html($('#remove-user-modal-content').html());
     showPopup();
 
@@ -207,7 +221,11 @@ function removeUser(username) {
             removeUserAPI,
             function (data, textStatus, jqXHR) {
                 if (jqXHR.status == 200) {
-                    $("#user-" + username).remove();
+                    if (domain) {
+                        $("#user-" + domain + "\\/" + username).remove();
+                    } else {
+                        $("#user-" + username).remove();
+                    }
                     // update modal-content with success message
                     $(modalPopupContent).html($('#remove-user-success-content').html());
                     $("a#remove-user-success-link").click(function () {
@@ -281,9 +299,11 @@ function loadUsers() {
         {
             class: "remove-padding icon-only content-fill",
             data: null,
-            defaultContent: '<div class="thumbnail icon">' +
-                '<i class="square-element text fw fw-user" style="font-size: 74px;"></i>' +
-                '</div>'
+            render: function (data, type, row, meta) {
+                return '<div class="thumbnail icon viewEnabledIcon" data-url="' + context +'/user/view?username=' + data.filter + '">' +
+                    '<i class="square-element text fw fw-user" style="font-size: 74px;"></i>' +
+                    '</div>';
+            }
         },
         {
             class: "fade-edge",
@@ -318,7 +338,7 @@ function loadUsers() {
             class: "text-right content-fill text-left-on-grid-view no-wrap",
             data: null,
             render: function (data, type, row, meta) {
-                return '&nbsp;<a href="/emm/user/edit?username=' + data.filter + '" data-username="' + data.filter + '" ' +
+                var editbtn=  '&nbsp;<a data-toggle="tooltip" data-placement="bottom" title="Edit User"href="' + context + '/user/edit?username=' + data.filter + '" data-username="' + data.filter + '" ' +
                     'data-click-event="edit-form" ' +
                     'class="btn padding-reduce-on-grid-view edit-user-link"> ' +
                     '<span class="fw-stack"> ' +
@@ -328,8 +348,9 @@ function loadUsers() {
                     '<span class="hidden-xs hidden-on-grid-view">' +
                     '&nbsp;&nbsp;Edit' +
                     '</span>' +
-                    '</a>' +
-                    '<a href="#" data-username="' + data.filter + '" data-userid="' + data.filter + '" ' +
+                    '</a>';
+
+                var resetPasswordbtn = '<a data-toggle="tooltip" data-placement="bottom" title="Reset Password" href="#" data-username="' + data.filter + '" data-userid="' + data.filter + '" ' +
                     'data-click-event="edit-form" ' +
                     'onclick="javascript:resetPassword(\'' + data.filter + '\')" ' +
                     'class="btn padding-reduce-on-grid-view remove-user-link">' +
@@ -340,8 +361,9 @@ function loadUsers() {
                     '<span class="hidden-xs hidden-on-grid-view">' +
                     '&nbsp;&nbsp;Reset Password' +
                     '</span>' +
-                    '</a>' +
-                    '<a href="#" data-username="' + data.filter + '" data-userid="' + data.filter + '" ' +
+                    '</a>';
+
+                var removebtn = '<a data-toggle="tooltip" data-placement="bottom" title="Remove User" href="#" data-username="' + data.filter + '" data-userid="' + data.filter + '" ' +
                     'data-click-event="remove-form" ' +
                     'onclick="javascript:removeUser(\'' + data.filter + '\')" ' +
                     'class="btn padding-reduce-on-grid-view remove-user-link">' +
@@ -353,6 +375,19 @@ function loadUsers() {
                     '&nbsp;&nbsp;Remove' +
                     '</span>' +
                     '</a>';
+
+                var returnbtnSet = '';
+                if($("#can-edit").length > 0) {
+                    returnbtnSet = returnbtnSet + editbtn;
+                }
+                if($("#can-reset-password").length > 0) {
+                    returnbtnSet = returnbtnSet + resetPasswordbtn;
+                }
+                if($("#can-remove").length > 0) {
+                    returnbtnSet = returnbtnSet + removebtn;
+                }
+
+                return returnbtnSet;
             }
         }
 
@@ -365,14 +400,16 @@ function loadUsers() {
 
     $('#user-grid').datatables_extended_serverside_paging(null, '/api/device-mgt/v1.0/users', dataFilter, columns, fnCreatedRow, null, options);
     $(loadingContentView).hide();
+
 }
 
 $(document).ready(function () {
     loadUsers();
-    $(".viewEnabledIcon").click(function () {
-        InitiateViewOption();
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
     });
     if (!$("#can-invite").val()) {
         $("#invite-user-button").remove();
     }
+
 });

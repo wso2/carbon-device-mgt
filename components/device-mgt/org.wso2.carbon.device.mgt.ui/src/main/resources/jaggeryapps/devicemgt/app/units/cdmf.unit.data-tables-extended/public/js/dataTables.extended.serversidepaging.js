@@ -35,7 +35,7 @@ $.fn.datatables_extended_serverside_paging = function (settings , url, dataFilte
 
     // EMM related function
     if (InitiateViewOption) {
-        $(".viewEnabledIcon").bind("click", InitiateViewOption);
+        $(document).on('click','.viewEnabledIcon',InitiateViewOption);
     }
 
     var deviceType;
@@ -239,14 +239,14 @@ $.fn.datatables_extended_serverside_paging = function (settings , url, dataFilte
                         $(button).addClass("active").html('Cancel');
                         $(button).parent().next().children("button").removeClass("disabled");
                         // EMM related code
-                        $(".viewEnabledIcon").unbind("click");
+                        $(document).off('click','.viewEnabledIcon');
                         //--- End of EMM related codes
                     } else if ($(button).html() == 'Cancel') {
                         thisTable.removeClass("table-selectable");
                         $(button).addClass("active").html('Select');
                         $(button).parent().next().children().addClass("disabled");
                         // EMM related function
-                        $(".viewEnabledIcon").bind("click", InitiateViewOption);
+                        $(document).on('click','.viewEnabledIcon',InitiateViewOption);
                         //--- End of EMM related codes
                     }
                 });

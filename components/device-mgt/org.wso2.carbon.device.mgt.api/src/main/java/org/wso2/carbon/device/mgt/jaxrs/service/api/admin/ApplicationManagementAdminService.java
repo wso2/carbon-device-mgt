@@ -49,14 +49,14 @@ public interface ApplicationManagementAdminService {
             consumes = MediaType.APPLICATION_JSON,
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "POST",
-            value = "Application installation API.(Internal API)",
-            notes = "This is an internal API used for application installation on a device.",
+            value = "Installing an Application (Internal API)",
+            notes = "This is an internal API that can be used to install an application on a device.",
             response = Activity.class,
             tags = "Application Management Administrative Service")
     @ApiResponses(value = {
             @ApiResponse(
                     code = 202,
-                    message = "OK. \n Install application operation will be delivered to the given devices",
+                    message = "Accepted. \n The install application operation will be delivered to the specified devices",
                     response = Activity.class),
             @ApiResponse(
                     code = 400,
@@ -64,15 +64,15 @@ public interface ApplicationManagementAdminService {
                     response = ErrorResponse.class),
             @ApiResponse(
                     code = 404,
-                    message = "Not Found. \n Resource to be processed does not exist."),
+                    message = "Not Found. \n The specified resource does not exist."),
             @ApiResponse(
                     code = 415,
-                    message = "Unsupported media type. \n The entity of the request was in a not supported format."),
+                    message = "Unsupported media type. \n The format of the requested entity was not supported."),
             @ApiResponse(
                     code = 500,
                     message = "Internal Server Error. \n " +
-                            "Server error occurred while bulk issuing application installation operations upon " +
-                            "a given set of devices.",
+                            "Server error occurred while executing the application install operation in bulk" +
+                            " for a specified set of devices.",
                     response = ErrorResponse.class)
     })
     @Permission(name = "Install/Uninstall applications", permission = "/device-mgt/applications/manage")
@@ -88,14 +88,14 @@ public interface ApplicationManagementAdminService {
             consumes = MediaType.APPLICATION_JSON,
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "POST",
-            value = "Application un-installation API.(Internal API)",
-            notes = "This is an internal API used for application un-installation on a device.",
+            value = "Uninstalling an Application (Internal API)\n",
+            notes = "This is an internal API that can be used to uninstall an application.",
             response = Activity.class,
             tags = "Application Management Administrative Service")
     @ApiResponses(value = {
             @ApiResponse(
                     code = 202,
-                    message = "OK. \n Uninstall application operation will be delivered to the provided devices",
+                    message = "Accepted. \n The uninstall application operation will be delivered to the provided devices",
                     response = Activity.class),
             @ApiResponse(
                     code = 400,
@@ -103,15 +103,14 @@ public interface ApplicationManagementAdminService {
                     response = ErrorResponse.class),
             @ApiResponse(
                     code = 404,
-                    message = "Not Found. \n Resource to be processed does not exist."),
+                    message = "Not Found. \n The specified resource does not exist."),
             @ApiResponse(
                     code = 415,
                     message = "Unsupported media type. \n The entity of the request was in a not supported format."),
             @ApiResponse(
                     code = 500,
-                    message = "Internal Server Error. \n " +
-                            "Server error occurred while bulk issuing application un-installation operations upon " +
-                            "a given set of devices.",
+                    message = "Internal Server Error. \n Server error occurred while executing the application install operation in bulk" +
+                    " for a specified set of devices.",
                     response = ErrorResponse.class)
     })
     @Permission(name = "Install/Uninstall applications", permission = "/device-mgt/applications/manage")

@@ -2791,6 +2791,7 @@ header .brand {
 }
 header .brand img.logo {
   height: 24px;
+  margin-top:0px;
 }
 header .brand a {
   display: inline-block;
@@ -2822,6 +2823,9 @@ header .nav .open > a:focus {
 }
 header .nav .dropdown-menu {
   background: black;
+  padding:0px;
+  margin:0px;
+  top:50px;
 }
 header .nav .dropdown-menu a {
   color: #fff;
@@ -2954,7 +2958,7 @@ tbody.collapse.in {
 }
 .dropdown-menu > li > a {
   display: block;
-  padding: 3px 20px;
+  padding: 8px 20px;
   clear: both;
   font-weight: normal;
   line-height: 1.42857;
@@ -3049,6 +3053,12 @@ tbody.collapse.in {
     left: 0;
     right: auto;
   }
+}
+@media (max-width : 480px) {
+    .navbar-right .dropdown-menu-right {
+        left: auto;
+        right: 0;
+    }
 }
 .btn-group,
 .btn-group-vertical {

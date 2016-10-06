@@ -79,6 +79,11 @@ public interface UserManagementAdminService {
             @Size(max = 45)
             String username,
             @ApiParam(
+                name = "domain",
+                value = "Domain name of the user store.",
+                required = false)
+            @QueryParam("domain") String domain,
+            @ApiParam(
                     name = "credentials",
                     value = "Credential.",
                     required = true) PasswordResetWrapper credentials);

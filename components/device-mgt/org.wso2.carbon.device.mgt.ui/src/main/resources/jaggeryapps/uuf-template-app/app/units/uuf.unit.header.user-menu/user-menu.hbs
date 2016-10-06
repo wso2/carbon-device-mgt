@@ -27,12 +27,7 @@
                     {{@user.username}}<span class="caret"></span>
                 </span>
             </a>
-            <ul class="dropdown-menu dropdown-menu-right float-remove-xs position-static-xs text-center-xs remove-margin-xs slideInDown"
-                role="menu">
-                <li class="dropdown-header visible-xs">
-                    {{@user.username}}<span class="caret"></span>
-                </li>
-                <li class="divider visible-xs"></li>
+            <ul class="dropdown-menu dropdown-menu-right slideInDown" role="menu">
                 {{#defineZone "userMenu-items"}}
                     <li>
                         <a href="{{@app.context}}/signout">Sign Out</a>

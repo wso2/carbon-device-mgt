@@ -65,6 +65,13 @@ function loadNotifications() {
 function showAdvanceOperation(operation, button) {
     $(button).addClass('selected');
     $(button).siblings().removeClass('selected');
+    if ($(button).attr("id") == 'allNotifications') {
+        $("#noNotificationtxt").html('You do not have any unread notifications ');
+    } else if ($(button).attr("id") == 'unReadNotifications') {
+        $("#noNotificationtxt").html('You do not have any notifications ');
+    } else {
+        $("#noNotificationtxt").html('You do not have any notifications ');
+    }
     var hiddenOperation = ".wr-hidden-operations-content > div";
     $(hiddenOperation + '[data-operation="' + operation + '"]').show();
     $(hiddenOperation + '[data-operation="' + operation + '"]').siblings().hide();

@@ -66,11 +66,11 @@ function showAdvanceOperation(operation, button) {
     $(button).addClass('selected');
     $(button).siblings().removeClass('selected');
     if ($(button).attr("id") == 'allNotifications') {
-        $("#ast-container").html('<div class="panel-body">You do not have any unread notifications </div>');
+        $("#noNotificationtxt").html('You do not have any unread notifications ');
     } else if ($(button).attr("id") == 'unReadNotifications') {
-        $("#ast-container").html('<div class="panel-body">You do not have any notifications </div>');
+        $("#noNotificationtxt").html('You do not have any notifications ');
     } else {
-        $("#ast-container").html('<div class="panel-body">You do not have any notifications </div>');
+        $("#noNotificationtxt").html('You do not have any notifications ');
     }
     var hiddenOperation = ".wr-hidden-operations-content > div";
     $(hiddenOperation + '[data-operation="' + operation + '"]').show();

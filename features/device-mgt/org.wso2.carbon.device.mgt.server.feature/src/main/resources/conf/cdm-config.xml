@@ -51,14 +51,26 @@
             <Operation>
                 <Name>DEVICE_INFO</Name>
                 <RecurrentTimes>1</RecurrentTimes>
+                <Platforms>
+                    <platform>android</platform>
+                    <platform>ios</platform>
+                </Platforms>
             </Operation>
             <Operation>
                 <Name>APPLICATION_LIST</Name>
                 <RecurrentTimes>5</RecurrentTimes>
+                <Platforms>
+                    <platform>android</platform>
+                    <platform>ios</platform>
+                </Platforms>
             </Operation>
             <Operation>
                 <Name>DEVICE_LOCATION</Name>
                 <RecurrentTimes>1</RecurrentTimes>
+                <Platforms>
+                    <platform>android</platform>
+                    <platform>ios</platform>
+                </Platforms>
             </Operation>
         </Operations>
     </TaskConfiguration>

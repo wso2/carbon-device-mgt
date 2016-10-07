@@ -79,6 +79,8 @@ public class TaskConfiguration {
 
         private String operationName;
         private int recurrency;
+        private List<String> platforms;
+
 
         @XmlElement(name = "Name", required = true)
         public String getOperationName() {
@@ -97,5 +99,16 @@ public class TaskConfiguration {
         public void setRecurrency(int recurrency) {
             this.recurrency = recurrency;
         }
+
+        @XmlElementWrapper(name = "Platforms")
+        @XmlElement(name = "platform", required = true)
+        public List<String> getPlatforms() {
+            return platforms;
+        }
+
+        public void setPlatforms(List<String> platforms) {
+            this.platforms = platforms;
+        }
+
     }
 }

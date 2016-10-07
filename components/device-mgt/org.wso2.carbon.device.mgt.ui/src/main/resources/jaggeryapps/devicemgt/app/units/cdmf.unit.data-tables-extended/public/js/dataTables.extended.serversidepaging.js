@@ -38,6 +38,15 @@ $.fn.datatables_extended_serverside_paging = function (settings , url, dataFilte
         $(document).on('click','.viewEnabledIcon',InitiateViewOption);
     }
 
+    /*
+     * Work around for accessing settings params inside datatable functions
+     */
+    if(settings != null && settings.sorting != null && settings.sorting != undefined && settings.sorting){
+        elem.addClass('sorting-enabled');
+    }else{
+        elem.addClass('sorting-disabled');
+    }
+
     var deviceType;
     var ownership;
 

@@ -314,7 +314,7 @@ public class OperationManagerImpl implements OperationManager {
                                                    deviceId.getId() + "'");
         }
 
-        EnrolmentInfo enrolmentInfo = this.getActiveEnrolmentInfo(deviceId);
+        EnrolmentInfo enrolmentInfo = this.getEnrolmentInfo(deviceId);
         if (enrolmentInfo == null) {
             throw new OperationManagementException("Device not found for given device " +
                                                    "Identifier:" + deviceId.getId() + " and given type" +

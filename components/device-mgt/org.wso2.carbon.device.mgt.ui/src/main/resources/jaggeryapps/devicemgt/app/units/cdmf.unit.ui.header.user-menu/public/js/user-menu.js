@@ -28,6 +28,16 @@ function inputIsValid(regExp, inputString) {
     return regExp.test(inputString);
 }
 
+/*
+ * Fix for the modal popup overlay disappear bug
+ */
+$('.modal').on('hidden.bs.modal',function(){
+    if($('.modal-backdrop').length == 2){
+        $('.modal-backdrop')[0].remove()
+    }
+});
+
+
 $(document).ready(function () {
     var modalPopup = ".modal";
     // var modalPopupContainer = modalPopup + " .modal-content";

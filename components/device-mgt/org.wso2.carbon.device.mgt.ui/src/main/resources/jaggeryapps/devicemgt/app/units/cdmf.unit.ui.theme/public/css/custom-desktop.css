@@ -5180,17 +5180,16 @@ a:hover.multi-view.remove.enabled {
 }
 
 a.grid-input-add {
-    padding-top: 10px;
-    padding-bottom: 8px;
-    color: #9F9F9F;
-    text-decoration: none;
-    float: left;
-    font-size: 15px;
+    margin-top:10px;
+    margin-bottom:10px;
+    font-size: 14px;
+    border:1px solid #526A84;
+}
+a.grid-input-add:hover, a.grid-input-add:active,a.grid-input-add:focus {
+    color:#333;
+    border:1px solid #fff;
 }
 
-a:hover.grid-input-add {
-    color: #A7E43A;
-}
 
 a.grid-input-remove {
     padding-top: 4px;

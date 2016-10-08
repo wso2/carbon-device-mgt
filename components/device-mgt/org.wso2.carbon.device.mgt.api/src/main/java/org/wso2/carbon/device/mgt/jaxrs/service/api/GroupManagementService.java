@@ -35,7 +35,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-@API(name = "Group Management", version = "1.0.0", context = "/api/device-mgt/v1.0/groups", tags = {"devicemgt_admin"})
+@API(name = "GroupManagement", version = "1.0.0", context = "/api/device-mgt/v1.0/groups", tags = {"device_management"})
 
 @Path("/groups")
 @Produces(MediaType.APPLICATION_JSON)

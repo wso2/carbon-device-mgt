@@ -57,14 +57,6 @@ public class DeviceManagementDataHolder {
     private EmailSenderService emailSenderService;
     private PushNotificationProviderRepository pushNotificationProviderRepository;
 
-    public APIManagerConfiguration getApiManagerConfiguration() {
-        return apiManagerConfiguration;
-    }
-
-    public void setApiManagerConfiguration(APIManagerConfiguration apiManagerConfiguration) {
-        this.apiManagerConfiguration = apiManagerConfiguration;
-    }
-
     private APIManagerConfiguration apiManagerConfiguration;
 
     private DeviceManagementDataHolder() {}

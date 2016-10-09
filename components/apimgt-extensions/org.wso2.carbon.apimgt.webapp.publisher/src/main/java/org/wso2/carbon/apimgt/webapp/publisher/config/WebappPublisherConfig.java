@@ -83,7 +83,7 @@ public class WebappPublisherConfig {
         return isEnabledUpdateApi;
     }
 
-    public void setEnableUpdateApi(boolean isEnabledUpdateApi) {
+    public void setEnabledUpdateApi(boolean isEnabledUpdateApi) {
         this.isEnabledUpdateApi = isEnabledUpdateApi;
     }
 

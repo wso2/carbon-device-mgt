@@ -30,7 +30,7 @@
     <PublishAPI>true</PublishAPI>
 
     <!-- If it is true, the APIs of this instance will be updated when the webapps are redeployed -->
-    <EnableUpdateApi>true</EnableUpdateApi>
+    <EnabledUpdateApi>true</EnabledUpdateApi>
 
     <!--Webapp will be published only when running below profiles-->
     <Profiles>

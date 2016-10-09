@@ -49,72 +49,72 @@ public class APIPublisherLifecycleListener implements LifecycleListener {
 
     @Override
     public void lifecycleEvent(LifecycleEvent lifecycleEvent) {
-//        if (Lifecycle.AFTER_START_EVENT.equals(lifecycleEvent.getType()) && WebappPublisherConfig.getInstance()
-//                .isPublished()) {
-//            StandardContext context = (StandardContext) lifecycleEvent.getLifecycle();
-//            ServletContext servletContext = context.getServletContext();
-//            String param = servletContext.getInitParameter(PARAM_MANAGED_API_ENABLED);
-//            boolean isManagedApi = (param != null && !param.isEmpty()) && Boolean.parseBoolean(param);
-//
-//            String profile = System.getProperty(PROPERTY_PROFILE);
-//
-//            if (WebappPublisherConfig.getInstance().getProfiles().getProfile().contains(profile.toLowerCase())
-//                    && isManagedApi) {
-//                try {
-//                    AnnotationProcessor annotationProcessor = new AnnotationProcessor(context);
-//                    Set<String> annotatedAPIClasses = annotationProcessor.
-//                            scanStandardContext(org.wso2.carbon.apimgt.annotations.api.API.class.getName());
-//
-//                    List<APIResourceConfiguration> apiDefinitions = annotationProcessor.extractAPIInfo(servletContext,
-//                            annotatedAPIClasses);
-//
-//                    for (APIResourceConfiguration apiDefinition : apiDefinitions) {
-//
-//                        APIConfig apiConfig = APIPublisherUtil.buildApiConfig(servletContext, apiDefinition);
-//
-//                        try {
-//                            int tenantId = APIPublisherDataHolder.getInstance().getTenantManager().
-//                                    getTenantId(apiConfig.getTenantDomain());
-//
-//                            boolean isTenantActive = APIPublisherDataHolder.getInstance().
-//                                    getTenantManager().isTenantActive(tenantId);
-//
-//                            if (isTenantActive) {
-//                                apiConfig.init();
-//                                API api = APIPublisherUtil.getAPI(apiConfig);
-//                                boolean isServerStarted = APIPublisherDataHolder.getInstance().isServerStarted();
-//                                if (isServerStarted) {
-//                                    APIPublisherService apiPublisherService =
-//                                            APIPublisherDataHolder.getInstance().getApiPublisherService();
-//                                    if (apiPublisherService == null) {
-//                                        throw new IllegalStateException(
-//                                                "API Publisher service is not initialized properly");
-//                                    }
-//                                    apiPublisherService.publishAPI(api);
-//                                } else {
-//                                    if (log.isDebugEnabled()) {
-//                                        log.debug("Server has not started yet. Hence adding API '" +
-//                                                api.getId().getApiName() + "' to the queue");
-//                                    }
-//                                    APIPublisherDataHolder.getInstance().getUnpublishedApis().push(api);
-//                                }
-//                            } else {
-//                                log.error("No tenant [" + apiConfig.getTenantDomain() + "] " +
-//                                        "found when publishing the Web app");
-//                            }
-//                        } catch (Throwable e) {
-//                            log.error("Error occurred while publishing API '" + apiConfig.getName() +
-//                                    "' with the context '" + apiConfig.getContext() +
-//                                    "' and version '" + apiConfig.getVersion() + "'", e);
-//                        }
-//                    }
-//                } catch (IOException e) {
-//                    log.error("Error encountered while discovering annotated classes", e);
-//                } catch (ClassNotFoundException e) {
-//                    log.error("Error while scanning class for annotations", e);
-//                }
-//            }
-//        }
+        if (Lifecycle.AFTER_START_EVENT.equals(lifecycleEvent.getType()) && WebappPublisherConfig.getInstance()
+                .isPublished()) {
+            StandardContext context = (StandardContext) lifecycleEvent.getLifecycle();
+            ServletContext servletContext = context.getServletContext();
+            String param = servletContext.getInitParameter(PARAM_MANAGED_API_ENABLED);
+            boolean isManagedApi = (param != null && !param.isEmpty()) && Boolean.parseBoolean(param);
+
+            String profile = System.getProperty(PROPERTY_PROFILE);
+
+            if (WebappPublisherConfig.getInstance().getProfiles().getProfile().contains(profile.toLowerCase())
+                    && isManagedApi) {
+                try {
+                    AnnotationProcessor annotationProcessor = new AnnotationProcessor(context);
+                    Set<String> annotatedAPIClasses = annotationProcessor.
+                            scanStandardContext(org.wso2.carbon.apimgt.annotations.api.API.class.getName());
+
+                    List<APIResourceConfiguration> apiDefinitions = annotationProcessor.extractAPIInfo(servletContext,
+                            annotatedAPIClasses);
+
+                    for (APIResourceConfiguration apiDefinition : apiDefinitions) {
+
+                        APIConfig apiConfig = APIPublisherUtil.buildApiConfig(servletContext, apiDefinition);
+
+                        try {
+                            int tenantId = APIPublisherDataHolder.getInstance().getTenantManager().
+                                    getTenantId(apiConfig.getTenantDomain());
+
+                            boolean isTenantActive = APIPublisherDataHolder.getInstance().
+                                    getTenantManager().isTenantActive(tenantId);
+
+                            if (isTenantActive) {
+                                apiConfig.init();
+                                API api = APIPublisherUtil.getAPI(apiConfig);
+                                boolean isServerStarted = APIPublisherDataHolder.getInstance().isServerStarted();
+                                if (isServerStarted) {
+                                    APIPublisherService apiPublisherService =
+                                            APIPublisherDataHolder.getInstance().getApiPublisherService();
+                                    if (apiPublisherService == null) {
+                                        throw new IllegalStateException(
+                                                "API Publisher service is not initialized properly");
+                                    }
+                                    apiPublisherService.publishAPI(api);
+                                } else {
+                                    if (log.isDebugEnabled()) {
+                                        log.debug("Server has not started yet. Hence adding API '" +
+                                                api.getId().getApiName() + "' to the queue");
+                                    }
+                                    APIPublisherDataHolder.getInstance().getUnpublishedApis().push(api);
+                                }
+                            } else {
+                                log.error("No tenant [" + apiConfig.getTenantDomain() + "] " +
+                                        "found when publishing the Web app");
+                            }
+                        } catch (Throwable e) {
+                            log.error("Error occurred while publishing API '" + apiConfig.getName() +
+                                    "' with the context '" + apiConfig.getContext() +
+                                    "' and version '" + apiConfig.getVersion() + "'", e);
+                        }
+                    }
+                } catch (IOException e) {
+                    log.error("Error encountered while discovering annotated classes", e);
+                } catch (ClassNotFoundException e) {
+                    log.error("Error while scanning class for annotations", e);
+                }
+            }
+        }
     }
 
     //TODO : Need to implemented, to merge API Definitions in cases where implementation of an API Lies in two classes

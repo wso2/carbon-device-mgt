@@ -18,16 +18,7 @@
 
 package org.wso2.carbon.apimgt.webapp.publisher;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Document;
-import org.wso2.carbon.context.CarbonContext;
-import org.wso2.carbon.context.PrivilegedCarbonContext;
-import org.wso2.carbon.device.mgt.common.scope.mgt.ScopeManagementService;
-import org.wso2.carbon.user.api.UserRealm;
-import org.wso2.carbon.user.api.UserStoreException;
-import org.wso2.carbon.user.api.UserStoreManager;
-import org.wso2.carbon.user.core.service.RealmService;
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
@@ -40,10 +31,6 @@ import java.io.File;
  */
 public class WebappPublisherUtil {
 
-    private static Log log = LogFactory.getLog(WebappPublisherUtil.class);
-    private static final int CARBON_SUPER = -1234;
-
-
     public static Document convertToDocument(File file) throws WebappPublisherConfigurationFailedException {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setNamespaceAware(true);
@@ -55,34 +42,6 @@ public class WebappPublisherUtil {
             throw new WebappPublisherConfigurationFailedException("Error occurred while parsing file, while converting " +
                     "to a org.w3c.dom.Document", e);
         }
-    }
-
-    public static ScopeManagementService getScopeManagementService() {
-        PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-        ScopeManagementService scopeManagementService =
-                (ScopeManagementService) ctx.getOSGiService(ScopeManagementService.class, null);
-        if (scopeManagementService == null) {
-            String msg = "Scope Management Service has not been initialized.";
-            log.error(msg);
-            throw new IllegalStateException(msg);
-        }
-        return scopeManagementService;
-    }
-
-    /**
-     * Getting the current tenant's user realm
-     */
-    public static UserRealm getUserRealm() throws UserStoreException {
-        RealmService realmService;
-        UserRealm realm;
-        PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-        realmService = (RealmService) ctx.getOSGiService(RealmService.class, null);
-
-        if (realmService == null) {
-            throw new IllegalStateException("Realm service not initialized");
-        }
-        realm = realmService.getTenantUserRealm(CARBON_SUPER);
-        return realm;
     }
 
 }

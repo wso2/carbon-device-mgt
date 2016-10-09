@@ -24,15 +24,12 @@ import org.wso2.carbon.apimgt.api.APIManagementException;
 import org.wso2.carbon.apimgt.api.APIProvider;
 import org.wso2.carbon.apimgt.api.model.*;
 import org.wso2.carbon.apimgt.impl.APIConstants;
+import org.wso2.carbon.apimgt.impl.utils.APIUtil;
 import org.wso2.carbon.apimgt.webapp.publisher.config.APIResource;
 import org.wso2.carbon.apimgt.webapp.publisher.config.APIResourceConfiguration;
 import org.wso2.carbon.apimgt.webapp.publisher.config.WebappPublisherConfig;
 import org.wso2.carbon.base.MultitenantConstants;
 import org.wso2.carbon.core.util.Utils;
-import org.wso2.carbon.device.mgt.common.scope.mgt.ScopeManagementException;
-import org.wso2.carbon.device.mgt.common.scope.mgt.ScopeManagementService;
-import org.wso2.carbon.user.api.UserRealm;
-import org.wso2.carbon.user.api.UserStoreException;
 
 import javax.servlet.ServletContext;
 import java.util.*;
@@ -117,8 +114,6 @@ public class APIPublisherUtil {
         // adding scopes to the api
         Set<URITemplate> uriTemplates = config.getUriTemplates();
         Map<String, Scope> apiScopes = new HashMap<>();
-        Scope existingScope;
-        String existingPermissions;
         if (uriTemplates != null) {
             // this creates distinct scopes list
             for (URITemplate template : uriTemplates) {
@@ -130,13 +125,6 @@ public class APIPublisherUtil {
                 }
             }
             Set<Scope> scopes = new HashSet<>(apiScopes.values());
-            // adding existing persisted roles to the scopes
-            try {
-                setExistingRoles(scopes);
-            } catch (ScopeManagementException | UserStoreException e) {
-                throw new APIManagementException("Error occurred while retrieving roles for the existing scopes");
-            }
-
             // set current scopes to API
             api.setScopes(scopes);
 
@@ -152,6 +140,7 @@ public class APIPublisherUtil {
             }
             api.setUriTemplates(uriTemplates);
         }
+        api.setCorsConfiguration(APIUtil.getDefaultCorsConfiguration());
         return api;
     }
 
@@ -322,36 +311,6 @@ public class APIPublisherUtil {
         apiConfig.setPolicy(policy);
 
         return apiConfig;
-    }
-
-    /**
-     * This method is used to set the existing roles of the given scope.
-     *
-     * @param scopes List of scopes.
-     * @throws ScopeManagementException
-     */
-    private static void setExistingRoles(Set<Scope> scopes) throws ScopeManagementException, UserStoreException {
-        String scopeKey;
-        String roles;
-        ScopeManagementService scopeManagementService = WebappPublisherUtil.getScopeManagementService();
-        UserRealm userRealm = WebappPublisherUtil.getUserRealm();
-
-        if (scopeManagementService == null) {
-            throw new ScopeManagementException("Error occurred while initializing scope management service");
-        } else if (userRealm == null) {
-            throw new UserStoreException("Error occurred while initializing realm service");
-        } else {
-            String adminRole = userRealm.getRealmConfiguration().getAdminRoleName();
-            for (Scope scope : scopes) {
-                scopeKey = scope.getKey();
-                roles = scopeManagementService.getRolesOfScope(scopeKey);
-                if (roles == null) {
-                    roles = adminRole;
-                }
-                scope.setRoles(roles);
-
-            }
-        }
     }
 
 }

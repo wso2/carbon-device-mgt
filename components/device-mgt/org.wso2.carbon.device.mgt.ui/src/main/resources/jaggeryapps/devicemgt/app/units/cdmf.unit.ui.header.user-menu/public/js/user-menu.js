@@ -31,8 +31,8 @@ function inputIsValid(regExp, inputString) {
 /*
  * Fix for the modal popup overlay disappear bug
  */
-$('.modal').on('hidden.bs.modal',function(){
-    if($('.modal-backdrop').length == 2){
+$('.modal').on('hidden.bs.modal', function () {
+    if ($('.modal-backdrop').length == 2) {
         $('.modal-backdrop')[0].remove()
     }
 });
@@ -92,7 +92,8 @@ $(document).ready(function () {
                             $(errorMsg).text("Your current password does not match with the provided value.");
                             $(errorMsgWrapper).removeClass("hidden");
                         } else {
-                            $(errorMsg).text("An unexpected error occurred. Please try again later.");
+                            var response = JSON.parse(jqXHR.responseText).message;
+                            $(errorMsg).text(response);
                             $(errorMsgWrapper).removeClass("hidden");
                         }
                     }

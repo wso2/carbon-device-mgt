@@ -5,13 +5,14 @@
                 <i class="square-element text fw fw-user"></i>
             </div>
         </td>
-        <td class="fade-edge remove-padding-top" >{{roleName}}</td>
+        <td class="fade-edge remove-padding-top">{{roleName}}</td>
         <td class="text-right content-fill text-left-on-grid-view no-wrap">
 
             {{#unequal adminRole roleName }}
-            {{#if canEdit}}
-                <a onclick="javascript:loadRoleBasedActionURL('edit', '{{roleName}}')" data-role="{{roleName}}" data-click-event="edit-form"
-                   class="btn padding-reduce-on-grid-view edit-role-link">
+                {{#if canEdit}}
+                    <a onclick="javascript:loadRoleBasedActionURL('edit', '{{roleName}}')" data-role="{{roleName}}"
+                       data-click-event="edit-form"
+                       class="btn padding-reduce-on-grid-view edit-role-link" title="Edit Role">
                                 <span class="fw-stack fw-lg">
                                    <i class="fw fw-ring fw-stack-2x"></i>
                                    <i class="fw fw-user fw-stack-1x"></i>
@@ -21,10 +22,12 @@
                                       <i class="fw fw-edit fw-stack-1x fw-inverse"></i>
                                    </span>
                                 </span>
-                    <span class="hidden-xs hidden-on-grid-view">Edit</span>
-                </a>
-                <a onclick="javascript:loadRoleBasedActionURL('edit-permission', '{{roleName}}')" data-role="{{roleName}}"
-                   data-click-event="edit-form" class="btn padding-reduce-on-grid-view edit-permission-link">
+                        <span class="hidden-xs hidden-on-grid-view">Edit</span>
+                    </a>
+                    <a onclick="javascript:loadRoleBasedActionURL('edit-permission', '{{roleName}}')"
+                       data-role="{{roleName}}"
+                       data-click-event="edit-form" class="btn padding-reduce-on-grid-view edit-permission-link"
+                       title="Edit Role Permissions">
                                 <span class="fw-stack fw-lg">
                                    <i class="fw fw-ring fw-stack-2x"></i>
                                    <i class="fw fw-security-policy fw-stack-1x"></i>
@@ -34,18 +37,19 @@
                                       <i class="fw fw-edit fw-stack-1x fw-inverse"></i>
                                    </span>
                                 </span>
-                    <span class="hidden-xs hidden-on-grid-view">Edit Permission</span>
-                </a>
-            {{/if}}
-            {{#if canRemove}}
-                <a data-role="{{roleName}}" data-click-event="remove-form" class="btn padding-reduce-on-grid-view remove-role-link">
+                        <span class="hidden-xs hidden-on-grid-view">Edit Permission</span>
+                    </a>
+                {{/if}}
+                {{#if canRemove}}
+                    <a data-role="{{roleName}}" data-click-event="remove-form"
+                       class="btn padding-reduce-on-grid-view remove-role-link" title="Remove Role">
                             <span class="fw-stack">
                                 <i class="fw fw-ring fw-stack-2x"></i>
                                 <i class="fw fw-delete fw-stack-1x"></i>
                             </span>
-                    <span class="hidden-xs hidden-on-grid-view">Remove</span>
-                </a>
-            {{/if}}
+                        <span class="hidden-xs hidden-on-grid-view">Remove</span>
+                    </a>
+                {{/if}}
             {{/unequal}}
         </td>
     </tr>

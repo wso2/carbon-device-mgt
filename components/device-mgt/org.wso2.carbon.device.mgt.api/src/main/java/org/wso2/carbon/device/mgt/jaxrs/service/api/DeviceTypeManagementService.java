@@ -39,7 +39,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-@API(name = "DeviceTypeManagement", version = "1.0.0", context = "/api/device-mgt/v1.0/admin/device-types",
+@API(name = "DeviceTypeManagement", version = "1.0.0", context = "/api/device-mgt/v1.0/device-types",
      tags = {"device_management"})
 
 @Path("/device-types")

@@ -892,9 +892,9 @@ public class PolicyManagerImpl implements PolicyManager {
 
             Policy policySaved = policyDAO.getAppliedPolicy(deviceId, device.getEnrolmentInfo().getId());
             if (policySaved != null && policySaved.getId() != 0) {
-                if (policy.getId() != policySaved.getId()) {
+//                if (policy.getId() != policySaved.getId()) {
                     policyDAO.updateEffectivePolicyToDevice(deviceId, device.getEnrolmentInfo().getId(), policy);
-                }
+//                }
             } else {
                 policyDAO.addEffectivePolicyToDevice(deviceId, device.getEnrolmentInfo().getId(), policy);
             }

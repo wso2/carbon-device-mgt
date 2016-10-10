@@ -45,9 +45,9 @@ var isInit = true;
  * the font icons change the size to respective screen resolution.
  *
  */
-$(document).on( 'draw.dt', function () {
+$(document).on('draw.dt', function () {
     $(".icon .text").res_text(0.2);
-} );
+});
 
 
 /*
@@ -72,7 +72,7 @@ function showPopup() {
 function hidePopup() {
     $(modalPopupContent).html('');
     $(modalPopup).modal('hide');
-    $('body').removeClass('modal-open').css('padding-right','0px');
+    $('body').removeClass('modal-open').css('padding-right', '0px');
     $('.modal-backdrop').remove();
 }
 
@@ -95,7 +95,7 @@ function loadRoles() {
 
         var objects = [];
 
-        $(data.roles).each(function( index ) {
+        $(data.roles).each(function (index) {
             objects.push(
                 {
                     name: data.roles[index],
@@ -182,10 +182,13 @@ function loadRoles() {
 
     var options = {
         "placeholder": "Search By Role Name",
-        "searchKey" : "filter"
+        "searchKey": "filter"
+    };
+    var settings = {
+        "sorting": false
     };
 
-    $('#role-grid').datatables_extended_serverside_paging(null, '/api/device-mgt/v1.0/roles', dataFilter, columns, fnCreatedRow, null, options);
+    $('#role-grid').datatables_extended_serverside_paging(settings, '/api/device-mgt/v1.0/roles', dataFilter, columns, fnCreatedRow, null, options);
     loadingContent.hide();
 
 }

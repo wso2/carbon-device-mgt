@@ -47,8 +47,11 @@ function loadNotifications() {
                             viewModel["appContext"] = context;
                             var content = template(viewModel);
                             $("#ast-container").html(content);
-                            $("#unread-notifications").datatables_extended();
-                            $("#all-notifications").datatables_extended();
+                            var settings = {
+                                "sorting" : false
+                            };
+                            $("#unread-notifications").datatables_extended(settings);
+                            $("#all-notifications").datatables_extended(settings);
                         }
                     }
                 },

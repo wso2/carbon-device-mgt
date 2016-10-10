@@ -20,7 +20,10 @@
 var sortUpdateBtn = "#sortUpdateBtn";
 var sortedIDs;
 var dataTableSelection = '.DTTT_selected';
-$('#policy-grid').datatables_extended();
+var settings = {
+    "sorting": false
+};
+$('#policy-grid').datatables_extended(settings);
 $(".icon .text").res_text(0.2);
 
 var saveNewPrioritiesButton = "#save-new-priorities-button";
@@ -90,7 +93,7 @@ function showPopup() {
 function hidePopup() {
     $(modalPopupContent).html('');
     $(modalPopup).modal('hide');
-    $('body').removeClass('modal-open').css('padding-right','0px');
+    $('body').removeClass('modal-open').css('padding-right', '0px');
     $('.modal-backdrop').remove();
 }
 
@@ -208,7 +211,7 @@ $(document).ready(function () {
             },
             function () {
                 $("#save-policy-priorities-error-content").find(".message-from-server").html(
-                        "Message From Server  :  " + data["statusText"]);
+                    "Message From Server  :  " + data["statusText"]);
                 $(modalPopupContent).html($('#save-policy-priorities-error-content').html());
                 showPopup();
                 $("a#save-policy-priorities-error-link").click(function () {
@@ -222,7 +225,7 @@ $(document).ready(function () {
     $(".policy-unpublish-link").click(function () {
         var policyList = getSelectedPolicies();
         var statusList = getSelectedPolicyStates();
-        if ( ($.inArray( 'Inactive/Updated', statusList ) > -1) || ($.inArray( 'Inactive', statusList ) > -1) ) {
+        if (($.inArray('Inactive/Updated', statusList) > -1) || ($.inArray('Inactive', statusList) > -1)) {
             $(modalPopupContent).html($("#errorPolicyUnPublishSelection").html());
             showPopup();
         } else {
@@ -266,7 +269,7 @@ $(document).ready(function () {
     $(".policy-publish-link").click(function () {
         var policyList = getSelectedPolicies();
         var statusList = getSelectedPolicyStates();
-        if ( ($.inArray( 'Active/Updated', statusList ) > -1) || ($.inArray( 'Active', statusList ) > -1) ) {
+        if (($.inArray('Active/Updated', statusList) > -1) || ($.inArray('Active', statusList) > -1)) {
             $(modalPopupContent).html($("#errorPolicyPublishSelection").html());
             showPopup();
         } else {

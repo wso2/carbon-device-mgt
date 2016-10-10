@@ -30,13 +30,11 @@
                 </button>
                 {{defineZone "navbarHeader"}}
             </div>
-            <div class="navbar-collapse collapse" aria-expanded="false">
+            <div id="navbar" class="navbar-collapse collapse" aria-expanded="false">
                 <ul class="nav navbar-nav">
                     {{defineZone "navbarCollapsableLeftItems"}}
                 </ul>
-                <ul class="nav navbar-nav navbar-right">
-                    {{defineZone "navbarCollapsableRightItems"}}
-                </ul>
+                {{defineZone "navbarCollapsableRightItems"}}
             </div>
         </div>
         {{defineZone "navbarBelow"}}

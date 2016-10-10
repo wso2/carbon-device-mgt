@@ -53,14 +53,30 @@ public class DeviceTaskManagerImpl implements DeviceTaskManager {
 
         List<TaskConfiguration.Operation> ops = taskConfiguration.getOperations();
         List<TaskOperation> taskOperations = new ArrayList<>();
-
         for (TaskConfiguration.Operation op : ops) {
             TaskOperation taskOperation = new TaskOperation();
             taskOperation.setTaskName(op.getOperationName());
             taskOperation.setRecurrentTimes(op.getRecurrency());
+            taskOperation.setTaskPlatforms(op.getPlatforms());
             taskOperations.add(taskOperation);
         }
         return taskOperations;
+    }
+
+    public List<String> getPlatformsForOperations(String opName) {
+        List<String> operationPlatforms =  new ArrayList<>();
+        TaskConfiguration taskConfiguration =
+                DeviceConfigurationManager.getInstance().getDeviceManagementConfig().getTaskConfiguration();
+        List<TaskConfiguration.Operation> ops = taskConfiguration.getOperations();
+        for (TaskConfiguration.Operation op : ops) {
+            if (op.getOperationName().equals(opName)) {
+                List<String> platform = op.getPlatforms();
+                for (String operationPlatform : platform) {
+                     operationPlatforms.add(operationPlatform);
+                }
+            }
+        }
+        return operationPlatforms;
     }
 
     @Override
@@ -84,29 +100,32 @@ public class DeviceTaskManagerImpl implements DeviceTaskManager {
 
     @Override
     public void addOperations() throws DeviceMgtTaskException {
+        List<String> deviceTypes;
         DeviceManagementProviderService deviceManagementProviderService = DeviceManagementDataHolder.getInstance().
                 getDeviceManagementProvider();
         try {
-            List<String> deviceTypes = deviceManagementProviderService.getAvailableDeviceTypes();
             List<Device> devices;
             List<String> operations = this.getValidOperationNames();
+            for (String taskOperation : operations) {
+                deviceTypes = getPlatformsForOperations(taskOperation);
+                 for (String deviceType : deviceTypes) {
+                     devices = deviceManagementProviderService.getAllDevices(deviceType);
+                     if (!devices.isEmpty()) {
+                         for (String str : operations) {
+                             CommandOperation operation = new CommandOperation();
+                             operation.setEnabled(true);
+                             operation.setType(Operation.Type.COMMAND);
+                             operation.setCode(str);
+                             deviceManagementProviderService.addOperation(deviceType, operation,
+                                     DeviceManagerUtil.getValidDeviceIdentifiers(devices));
+                         }
+                     } else {
+                         if (log.isDebugEnabled()) {
+                             log.debug("No devices are available to perform the operations.");
+                         }
+                     }
 
-            for (String deviceType : deviceTypes) {
-                devices = deviceManagementProviderService.getAllDevices(deviceType);
-                if (!devices.isEmpty()) {
-                    for (String str : operations) {
-                        CommandOperation operation = new CommandOperation();
-                        operation.setEnabled(true);
-                        operation.setType(Operation.Type.COMMAND);
-                        operation.setCode(str);
-                        deviceManagementProviderService.addOperation(deviceType, operation,
-                                                                     DeviceManagerUtil.getValidDeviceIdentifiers(devices));
-                    }
-                } else {
-                    if (log.isDebugEnabled()) {
-                        log.debug("No devices are available to perform the operations.");
-                    }
-                }
+                 }
             }
         } catch (InvalidDeviceException e) {
             throw new DeviceMgtTaskException("Invalid DeviceIdentifiers found.", e);
@@ -144,6 +163,8 @@ public class DeviceTaskManagerImpl implements DeviceTaskManager {
         }
         return opNames;
     }
+
+
 
     @Override
     public boolean isTaskOperation(String opName) {

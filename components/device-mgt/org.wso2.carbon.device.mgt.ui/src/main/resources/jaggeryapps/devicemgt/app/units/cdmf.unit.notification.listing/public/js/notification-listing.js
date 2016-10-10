@@ -47,8 +47,11 @@ function loadNotifications() {
                             viewModel["appContext"] = context;
                             var content = template(viewModel);
                             $("#ast-container").html(content);
-                            $("#unread-notifications").datatables_extended();
-                            $("#all-notifications").datatables_extended();
+                            var settings = {
+                                "sorting" : false
+                            };
+                            $("#unread-notifications").datatables_extended(settings);
+                            $("#all-notifications").datatables_extended(settings);
                         }
                     }
                 },
@@ -65,15 +68,13 @@ function loadNotifications() {
 function showAdvanceOperation(operation, button) {
     $(button).addClass('selected');
     $(button).siblings().removeClass('selected');
-
     if ($(button).attr("id") == 'allNotifications') {
-        $("#ast-container").html('<div class="panel-body">You do not have any unread notifications </div>');
+        $("#noNotificationtxt").html('You do not have any unread notifications ');
     } else if ($(button).attr("id") == 'unReadNotifications') {
-        $("#ast-container").html('<div class="panel-body">You do not have any notifications </div>');
+        $("#noNotificationtxt").html('You do not have any notifications ');
     } else {
-        $("#ast-container").html('<div class="panel-body">You do not have any notifications </div>');
+        $("#noNotificationtxt").html('You do not have any notifications ');
     }
-
     var hiddenOperation = ".wr-hidden-operations-content > div";
     $(hiddenOperation + '[data-operation="' + operation + '"]').show();
     $(hiddenOperation + '[data-operation="' + operation + '"]').siblings().hide();
@@ -91,7 +92,7 @@ $(document).ready(function () {
 
     loadNotifications();
 
-    $("#ast-container").on("click", ".new-notification", function (e) {
+    $("#ast-container").on("click", ".new-notification", function(e) {
         var notificationId = $(this).data("id");
         // var redirectUrl = $(this).data("url");
         var query = deviceMgtAPIBaseURI + "/notifications" + "/" + notificationId + "/mark-checked";

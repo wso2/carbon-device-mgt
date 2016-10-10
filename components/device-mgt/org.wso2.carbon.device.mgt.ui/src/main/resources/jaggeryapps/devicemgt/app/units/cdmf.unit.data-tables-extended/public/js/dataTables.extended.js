@@ -29,6 +29,15 @@ $.fn.datatables_extended = function(settings){
     }
     //--- End of EMM related codes
 
+    /*
+     * Work around for accessing settings params inside datatable functions
+     */
+    if(settings != null && settings.sorting != null && settings.sorting != undefined && settings.sorting){
+        elem.addClass('sorting-enabled');
+    }else{
+        elem.addClass('sorting-disabled');
+    }
+
     $(elem).DataTable(
         $.extend({},{
             bSortCellsTop: true,
@@ -131,24 +140,41 @@ $.fn.datatables_extended = function(settings){
                 /**
                  *  create sorting dropdown menu for list table advance operations
                  */
-                var dropdownmenu = $('<ul class="dropdown-menu arrow arrow-top-right dark sort-list add-margin-top-2x"><li class="dropdown-header">Sort by</li></ul>');
-                $('.sort-row th', elem).each(function(){
-                    if(!$(this).hasClass('no-sort')){
-                        dropdownmenu.append('<li><a href="#' + $(this).html() + '" data-column="' + $(this).index() + '">' + $(this).html() + '</a></li>');
-                    }
-                });
+                var table = this;
+                if(table.hasClass('sorting-enabled')){
+                    var dropdownmenu = $('<ul class="dropdown-menu arrow arrow-top-right dark sort-list add-margin-top-2x"><li class="dropdown-header">Sort by</li></ul>');
+                    $('.sort-row th', elem).each(function () {
+                        if (!$(this).hasClass('no-sort')) {
+                            dropdownmenu.append('<li><a href="#' + $(this).html() + '" data-column="' + $(this).index() + '">' + $(this).html() + '</a></li>');
+                        }
+                    });
+                }
+
+                function getAdvanceToolBar(){
+                    if(table.hasClass('sorting-enabled')){
+                        return '<ul class="nav nav-pills navbar-right remove-margin" role="tablist">' +
+                            '<li><button data-click-event="toggle-selectable" class="btn btn-default btn-primary select-enable-btn">Select</li>' +
+                            '<li><button data-click-event="toggle-selected" id="dt-select-all" class="btn btn-default btn-primary disabled">Select All</li>' +
+                            '<li><button data-click-event="toggle-list-view" data-view="grid" class="btn btn-default"><i class="fw fw-grid"></i></button></li>' +
+                            '<li><button data-click-event="toggle-list-view" data-view="list" class="btn btn-default"><i class="fw fw-list"></i></button></li>' +
+                            '<li><button class="btn btn-default" data-toggle="dropdown"><i class="fw fw-sort"></i></button>' + dropdownmenu[0].outerHTML  + '</li>' +
+                            '</ul>'
+                    }else{
+                        return '<ul class="nav nav-pills navbar-right remove-margin" role="tablist">' +
+                            '<li><button data-click-event="toggle-selectable" class="btn btn-default btn-primary select-enable-btn">Select</li>' +
+                            '<li><button data-click-event="toggle-selected" id="dt-select-all" class="btn btn-default btn-primary disabled">Select All</li>' +
+                            '<li><button data-click-event="toggle-list-view" data-view="grid" class="btn btn-default"><i class="fw fw-grid"></i></button></li>' +
+                            '<li><button data-click-event="toggle-list-view" data-view="list" class="btn btn-default"><i class="fw fw-list"></i></button></li>' +
+                            '</ul>'
+                    };
+                }
+
 
                 /**
                  *  append advance operations to list table toolbar
                  */
-                $('.dataTable.list-table').closest('.dataTables_wrapper').find('.dataTablesTop .dataTables_toolbar').html('' +
-                        '<ul class="nav nav-pills navbar-right remove-margin" role="tablist">' +
-                        '<li><button data-click-event="toggle-selectable" class="btn btn-default btn-primary select-enable-btn">Select</li>' +
-                        '<li><button data-click-event="toggle-selected" id="dt-select-all" class="btn btn-default btn-primary disabled">Select All</li>' +
-                        '<li><button data-click-event="toggle-list-view" data-view="grid" class="btn btn-default"><i class="fw fw-grid"></i></button></li>' +
-                        '<li><button data-click-event="toggle-list-view" data-view="list" class="btn btn-default"><i class="fw fw-list"></i></button></li>' +
-                        '<li><button class="btn btn-default" data-toggle="dropdown"><i class="fw fw-sort"></i></button>'+dropdownmenu[0].outerHTML+'</li>' +
-                        '</ul>'
+                $('.dataTable.list-table').closest('.dataTables_wrapper').find('.dataTablesTop .dataTables_toolbar').html(
+                    getAdvanceToolBar()
                 );
 
                 /**
@@ -186,14 +212,14 @@ $.fn.datatables_extended = function(settings){
                         $(button).addClass("active").html('Cancel');
                         $(button).parent().next().children("button").removeClass("disabled");
                         // EMM related code
-                        $(".viewEnabledIcon").unbind("click");
+                        $(document).off('click','.viewEnabledIcon');
                         //--- End of EMM related codes
                     } else if ($(button).html() == 'Cancel'){
                         thisTable.removeClass("table-selectable");
                         $(button).addClass("active").html('Select');
                         $(button).parent().next().children().addClass("disabled");
                         // EMM related function
-                        $(".viewEnabledIcon").bind("click", InitiateViewOption);
+                        $(document).on('click','.viewEnabledIcon',InitiateViewOption);
                         //--- End of EMM related codes
                     }
                 });

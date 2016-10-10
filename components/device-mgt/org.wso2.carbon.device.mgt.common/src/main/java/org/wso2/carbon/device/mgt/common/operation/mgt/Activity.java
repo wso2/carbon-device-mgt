@@ -25,8 +25,8 @@ import io.swagger.annotations.ApiModelProperty;
 
 import java.util.List;
 
-@ApiModel(value = "Activity", description = "Each activity instance has a unique identifier that can be " +
-        "used to identify an operation instance.")
+@ApiModel(value = "Activity", description = "An activity instance carries a unique identifier that can be " +
+        "used to identify a particular operation instance uniquely")
 public class Activity {
 
     public enum Type {
@@ -35,36 +35,40 @@ public class Activity {
 
     @ApiModelProperty(
             name = "activityId",
-            value = "The unique activity identifier",
-            required = true)
+            value = "Activity identifier",
+            required = true,
+            example = "ACTIVITY_1")
     @JsonProperty("activityId")
     private String activityId;
 
     @ApiModelProperty(
             name = "code",
-            value = "The activity code",
-            required = true)
+            value = "Activity code",
+            required = true,
+            example = "DEVICE_RING")
     @JsonProperty("code")
     private String code;
 
     @ApiModelProperty(
             name = "type",
-            value = "The type of the activity, such as CONFIG, MESSAGE, INFO, COMMAND, PROFILE, POLICY.",
+            value = "Activity type",
             required = true,
-            allowableValues = "CONFIG, MESSAGE, INFO, COMMAND, PROFILE, POLICY")
+            allowableValues = "CONFIG, MESSAGE, INFO, COMMAND, PROFILE, POLICY",
+            example = "COMMAND")
     @JsonProperty("type")
     private Type type;
 
     @ApiModelProperty(
             name = "createdTimeStamp",
-            value = "The recorded timestamp of when the activity took place.",
-            required = true)
+            value = "Timestamp recorded when the activity took place",
+            required = true,
+            example = "Thu Oct 06 11:18:47 IST 2016")
     @JsonProperty("createdTimestamp")
     private String createdTimeStamp;
 
     @ApiModelProperty(
             name = "activityStatuses",
-            value = "The collection of statuses for a given activity.",
+            value = "Collection of statuses corresponding to the activity",
             required = true)
     @JsonProperty("activityStatuses")
     private List<ActivityStatus> activityStatus;

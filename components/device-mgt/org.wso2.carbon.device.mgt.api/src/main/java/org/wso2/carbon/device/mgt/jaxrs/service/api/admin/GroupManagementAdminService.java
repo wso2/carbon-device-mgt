@@ -39,7 +39,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-@API(name = "Group Management Admin", version = "1.0.0", context = "/api/device-mgt/v1.0/admin/groups", tags = {"devicemgt_admin"})
+@API(name = "GroupManagementAdmin", version = "1.0.0", context = "/api/device-mgt/v1.0/admin/groups", tags = {"device_management"})
 
 @Path("/admin/groups")
 @Produces(MediaType.APPLICATION_JSON)

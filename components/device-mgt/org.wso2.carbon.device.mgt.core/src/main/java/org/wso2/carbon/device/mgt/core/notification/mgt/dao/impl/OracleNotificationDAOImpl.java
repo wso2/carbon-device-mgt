@@ -24,10 +24,7 @@ import org.wso2.carbon.device.mgt.common.notification.mgt.NotificationManagement
 import org.wso2.carbon.device.mgt.core.notification.mgt.dao.NotificationManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.notification.mgt.dao.util.NotificationDAOUtil;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,6 +32,36 @@ import java.util.List;
  * This class holds the Oracle implementation of NotificationDAO which can be used to support Oracle db syntax.
  */
 public class OracleNotificationDAOImpl extends AbstractNotificationDAOImpl {
+    @Override
+    public int addNotification(int deviceId, int tenantId, Notification notification) throws
+            NotificationManagementException {
+        Connection conn;
+        PreparedStatement stmt = null;
+        ResultSet rs;
+        int notificationId = -1;
+        try {
+            conn = NotificationManagementDAOFactory.getConnection();
+            String sql = "INSERT INTO DM_NOTIFICATION(DEVICE_ID, OPERATION_ID, STATUS, DESCRIPTION, TENANT_ID) "
+                    + "VALUES (?, ?, ?, ?, ?)";
+            stmt = conn.prepareStatement(sql, new int[] { 1 });
+            stmt.setInt(1, deviceId);
+            stmt.setInt(2, notification.getOperationId());
+            stmt.setString(3, notification.getStatus().toString());
+            stmt.setString(4, notification.getDescription());
+            stmt.setInt(5, tenantId);
+            stmt.execute();
+            rs = stmt.getGeneratedKeys();
+            if (rs.next()) {
+                notificationId = rs.getInt(1);
+            }
+        } catch (Exception e) {
+            throw new NotificationManagementException(
+                    "Error occurred while adding the " + "Notification for device id : " + deviceId, e);
+        } finally {
+            NotificationDAOUtil.cleanupResources(stmt, null);
+        }
+        return notificationId;
+    }
 
     @Override
     public List<Notification> getAllNotifications(PaginationRequest request, int tenantId) throws

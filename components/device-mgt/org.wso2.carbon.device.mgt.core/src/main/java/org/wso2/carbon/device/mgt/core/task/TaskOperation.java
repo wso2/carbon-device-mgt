@@ -20,6 +20,8 @@
 package org.wso2.carbon.device.mgt.core.task;
 
 
+import java.util.List;
+
 /**
  * This is the bean for the operations added by the task.
  */
@@ -27,6 +29,15 @@ public class TaskOperation {
 
     private String taskName;
     private int recurrentTimes;
+    private List<String> taskPlatforms;
+
+    public List<String> getTaskPlatforms() {
+        return taskPlatforms;
+    }
+
+    public void setTaskPlatforms(List<String> taskPlatforms) {
+        this.taskPlatforms = taskPlatforms;
+    }
 
     public String getTaskName() {
         return taskName;
@@ -43,5 +54,6 @@ public class TaskOperation {
     public void setRecurrentTimes(int recurrentTimes) {
         this.recurrentTimes = recurrentTimes;
     }
+
 }
 

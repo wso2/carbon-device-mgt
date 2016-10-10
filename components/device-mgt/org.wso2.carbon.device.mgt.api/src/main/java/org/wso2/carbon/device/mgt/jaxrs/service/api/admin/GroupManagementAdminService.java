@@ -106,6 +106,7 @@ public interface GroupManagementAdminService {
                                value = "Maximum size of resource array to return.")
                        @QueryParam("limit") int limit);
 
+    @Path("/count")
     @GET
     @ApiOperation(
             produces = MediaType.APPLICATION_JSON,

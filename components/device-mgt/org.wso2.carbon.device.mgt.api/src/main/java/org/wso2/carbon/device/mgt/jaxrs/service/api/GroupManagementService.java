@@ -53,7 +53,7 @@ import java.util.List;
 /**
  * Device group related REST-API. This can be used to manipulated device group related details.
  */
-@API(name = "Group Management", version = "1.0.0", context = "/api/device-mgt/v1.0/groups", tags = {"device_management"})
+@API(name = "GroupManagement", version = "1.0.0", context = "/api/device-mgt/v1.0/groups", tags = {"device_management"})
 
 @Path("/groups")
 @Api(value = "Device Group Management", description = "This API carries all device group management related operations " +

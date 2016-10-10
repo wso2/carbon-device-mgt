@@ -392,7 +392,7 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
                         rolesToAdd.add(roleNamePrefix + role);
                     }
                 } else {
-                    throw new RoleDoesNotExistException("Role '" + role + "' is not exists iin requested group.");
+                    throw new RoleDoesNotExistException("Role '" + role + "' is not exists in requested group.");
                 }
             }
             for (String role : currentUserRoles) {
@@ -401,7 +401,7 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
                         rolesToRemove.add(roleNamePrefix + role);
                     }
                 } else {
-                    throw new RoleDoesNotExistException("Role '" + role + "' is not exists iin requested group.");
+                    throw new RoleDoesNotExistException("Role '" + role + "' is not exists in requested group.");
                 }
             }
             userStoreManager.updateRoleListOfUser(username,

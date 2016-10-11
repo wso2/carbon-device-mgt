@@ -275,7 +275,8 @@ function showPopup() {
  * hide popup function.
  */
 function hidePopup() {
-    $(modalPopupContent).html('');
+    $(modalPopupContent).html("");
+    $(modalPopupContent).removeClass("operation-data");
     $(modalPopup).modal('hide');
     $('body').removeClass('modal-open').css('padding-right','0px');
     $('.modal-backdrop').remove();

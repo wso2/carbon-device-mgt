@@ -46,23 +46,24 @@ public interface UserManagementAdminService {
             consumes = MediaType.APPLICATION_JSON,
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "POST",
-            value = "Change the user password.",
-            notes = "A user is able to change the password to secure their EMM profile via this REST API.",
+            value = "Changing the User Password.",
+            notes = "The EMM administrator is able to change the password of the users in " +
+                    "the system and block them from logging into their EMM profile using this REST API.",
             tags = "User Management Administrative Service")
     @ApiResponses(value = {
             @ApiResponse(
                     code = 200,
-                    message = "OK. \n Credentials of the user have been updated successfully"),
+                    message = "OK. \n Successfully updated the credentials of the user."),
             @ApiResponse(
                     code = 400,
                     message = "Bad Request. \n Invalid request or validation error.",
                     response = ErrorResponse.class),
             @ApiResponse(
                     code = 404,
-                    message = "Not Found. \n Resource to be deleted does not exist."),
+                    message = "Not Found. \n The resource to be deleted does not exist."),
             @ApiResponse(
                     code = 415,
-                    message = "Unsupported media type. \n The entity of the request was in a not supported format."),
+                    message = "Unsupported media type. \n The format of the requested entity was not supported."),
             @ApiResponse(
                     code = 500,
                     message = "Internal Server Error. \n " +
@@ -73,14 +74,15 @@ public interface UserManagementAdminService {
     Response resetUserPassword(
             @ApiParam(
                     name = "username",
-                    value = "Username of the user.",
+                    value = "The username of the user." +
+                            "INFO: Add a new user using the POST /users API that is under User Management.",
                     required = true)
             @PathParam("username")
             @Size(max = 45)
             String username,
             @ApiParam(
                 name = "domain",
-                value = "Domain name of the user store.",
+                value = "The domain name of the user store.",
                 required = false)
             @QueryParam("domain") String domain,
             @ApiParam(

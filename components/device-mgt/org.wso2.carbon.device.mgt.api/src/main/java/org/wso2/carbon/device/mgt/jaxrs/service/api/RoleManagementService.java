@@ -99,13 +99,13 @@ public interface RoleManagementService {
             @HeaderParam("If-Modified-Since") String ifModifiedSince,
             @ApiParam(
                     name = "offset",
-                    value = "The starting pagination index for the complete list qualified items.",
+                    value = "The starting pagination index for the complete list of qualified items.",
                     required = false,
                     defaultValue = "0")
             @QueryParam("offset") int offset,
             @ApiParam(
                     name = "limit",
-                    value = "Provide how many roles details you require from the starting pagination index/offset.",
+                    value = "Provide how many role details you require from the starting pagination index/offset.",
                     required = false,
                     defaultValue = "5")
             @QueryParam("limit") int limit);
@@ -348,11 +348,13 @@ public interface RoleManagementService {
                     name = "roleName",
                     value = "The name of the role.",
                     required = true,
-                    defaultValue = "engineer")
+                    defaultValue = "admin")
             @PathParam("roleName") String roleName,
             @ApiParam(
                     name = "role",
-                    value = "The properties required to update a role.",
+                    value = "The properties required to update a role.\n" +
+                            "NOTE: Don't change the role and the permissions of the admin user. " +
+                            "If you want to try out this API by updating all the properties, create a new role and update the properties accordingly.",
                     required = true) RoleInfo role);
 
     @DELETE
@@ -384,9 +386,9 @@ public interface RoleManagementService {
     Response deleteRole(
             @ApiParam(
                     name = "roleName",
-                    value = "The name of the role that needs to de deleted.",
-                    required = true,
-                    defaultValue = "engineer")
+                    value = "The name of the role that needs to de deleted.\n" +
+                            "NOTE: Don't delete the admin role",
+                    required = true)
             @PathParam("roleName") String roleName);
 
     @PUT
@@ -443,15 +445,16 @@ public interface RoleManagementService {
     Response updateUsersOfRole(
             @ApiParam(
                     name = "roleName",
-                    value = "Name of the role.",
-                    required = true)
+                    value = "The name of the role.",
+                    required = true,
+                    defaultValue = "admin")
             @PathParam("roleName") String roleName,
             @ApiParam(
                     name = "users",
                     value = "Define the users that belong to the role.\n" +
                             "Multiple users can be added to a role by using comma separated values. ",
                     required = true,
-                    defaultValue = "[jim]"
+                    defaultValue = "[admin]"
             ) List<String> users);
 
 }

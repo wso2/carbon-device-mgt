@@ -147,7 +147,7 @@ public class PolicyManagerImpl implements PolicyManager {
 
             List<ProfileFeature> existingFeaturesList = new ArrayList<>();
             List<ProfileFeature> newFeaturesList = new ArrayList<>();
-            List<ProfileFeature> feturesToDelete = new ArrayList<>();
+            List<ProfileFeature> featuresToDelete = new ArrayList<>();
             List<String> temp = new ArrayList<>();
             List<String> updateDFes = new ArrayList<>();
 
@@ -169,7 +169,7 @@ public class PolicyManagerImpl implements PolicyManager {
             // Check for the features to delete
             for (ProfileFeature feature : existingProfileFeaturesList) {
                 if (!updateDFes.contains(feature.getFeatureCode())) {
-                    feturesToDelete.add(feature);
+                    featuresToDelete.add(feature);
                 }
             }
 
@@ -194,8 +194,8 @@ public class PolicyManagerImpl implements PolicyManager {
                 featureDAO.addProfileFeatures(newFeaturesList, profileId);
             }
 
-            if (!feturesToDelete.isEmpty()) {
-                for (ProfileFeature pf : feturesToDelete)
+            if (!featuresToDelete.isEmpty()) {
+                for (ProfileFeature pf : featuresToDelete)
                     featureDAO.deleteProfileFeatures(pf.getId());
             }
 
@@ -892,9 +892,9 @@ public class PolicyManagerImpl implements PolicyManager {
 
             Policy policySaved = policyDAO.getAppliedPolicy(deviceId, device.getEnrolmentInfo().getId());
             if (policySaved != null && policySaved.getId() != 0) {
-                if (policy.getId() != policySaved.getId()) {
+//                if (policy.getId() != policySaved.getId()) {
                     policyDAO.updateEffectivePolicyToDevice(deviceId, device.getEnrolmentInfo().getId(), policy);
-                }
+//                }
             } else {
                 policyDAO.addEffectivePolicyToDevice(deviceId, device.getEnrolmentInfo().getId(), policy);
             }

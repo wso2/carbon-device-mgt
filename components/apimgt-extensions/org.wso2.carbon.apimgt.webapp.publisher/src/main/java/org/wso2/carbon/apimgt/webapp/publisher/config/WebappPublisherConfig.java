@@ -40,6 +40,7 @@ public class WebappPublisherConfig {
 
     private String host;
     private boolean isPublished;
+    private boolean isEnabledUpdateApi;
     private Profiles profiles;
 
     private static WebappPublisherConfig config;
@@ -75,6 +76,15 @@ public class WebappPublisherConfig {
     @XmlElement(name = "Profiles", required = true)
     public Profiles getProfiles() {
         return profiles;
+    }
+
+    @XmlElement(name = "EnabledUpdateApi", required = true)
+    public boolean isEnabledUpdateApi() {
+        return isEnabledUpdateApi;
+    }
+
+    public void setEnabledUpdateApi(boolean isEnabledUpdateApi) {
+        this.isEnabledUpdateApi = isEnabledUpdateApi;
     }
 
     public void setPublished(boolean published) {

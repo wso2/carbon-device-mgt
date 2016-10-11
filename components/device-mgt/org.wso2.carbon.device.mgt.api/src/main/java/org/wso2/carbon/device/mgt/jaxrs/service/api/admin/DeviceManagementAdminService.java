@@ -29,8 +29,8 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-@API(name = "Device Management Admin", version = "1.0.0", context = "/api/device-mgt/v1.0/admin/devices",
-        tags = {"devicemgt_admin"})
+@API(name = "DeviceManagementAdmin", version = "1.0.0", context = "/api/device-mgt/v1.0/admin/devices",
+        tags = {"device_management"})
 @Path("/admin/devices")
 @Api(value = "Device Management Administrative Service", description = "This an  API intended to be used by " +
         "'internal' components to log in as an admin user and do a selected number of operations. " +

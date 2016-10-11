@@ -226,13 +226,14 @@ deviceModule = function () {
 
     publicMethods.getDevices = function (userName) {
         var url = devicemgtProps["httpsURL"] +
-            devicemgtProps["backendRestEndpoints"]["deviceMgt"] + "/devices/user/" + userName;
+            devicemgtProps["backendRestEndpoints"]["deviceMgt"] + "/devices";
         return serviceInvokers.XMLHttp.get(
             url, function (responsePayload) {
-                for (var i = 0; i < responsePayload.length; i++) {
-                    responsePayload[i].thumb = utility.getDeviceThumb(responsePayload[i].type);
+                var devices = JSON.parse(responsePayload.responseText).devices;
+                for (var i = 0; i < devices.length; i++) {
+                    devices[i].thumb = utility.getDeviceThumb(devices[i].type);
                 }
-                return responsePayload;
+                return devices;
             },
             function (responsePayload) {
                 log.error(responsePayload);

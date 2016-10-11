@@ -18,7 +18,6 @@
 
 package org.wso2.carbon.apimgt.application.extension.api;
 
-import org.wso2.carbon.apimgt.annotations.api.API;
 import org.wso2.carbon.apimgt.application.extension.api.util.RegistrationProfile;
 
 import javax.ws.rs.*;
@@ -28,9 +27,7 @@ import javax.ws.rs.core.Response;
 /**
  * This is the application registration service that exposed for apimApplicationRegistration
  */
-@API(name = "API Registration Service", version = "1.0.0",
-        context = "api-application-registration",
-        tags = {"devicemgt_admin"})
+
 public interface ApiApplicationRegistrationService {
 
     /**

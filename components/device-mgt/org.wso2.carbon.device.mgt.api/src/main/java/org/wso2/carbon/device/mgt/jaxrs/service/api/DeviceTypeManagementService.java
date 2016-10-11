@@ -39,8 +39,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-@API(name = "Device Type Management", version = "1.0.0", context = "/api/device-mgt/v1.0/admin/device-types",
-     tags = {"devicemgt_admin"})
+@API(name = "DeviceTypeManagement", version = "1.0.0", context = "/api/device-mgt/v1.0/device-types",
+     tags = {"device_management"})
 
 @Path("/device-types")
 @Api(value = "Device Type Management", description = "This API corresponds to all tasks related to device " +

@@ -35,8 +35,8 @@ import javax.ws.rs.core.Response;
 /**
  * Notifications related REST-API.
  */
-@API(name = "Device Notification Management", version = "1.0.0", context = "/api/device-mgt/v1.0/notifications",
-        tags = {"devicemgt_admin"})
+@API(name = "DeviceNotificationManagement", version = "1.0.0", context = "/api/device-mgt/v1.0/notifications",
+        tags = {"device_management"})
 @Api(value = "Device Notification Management", description = "Device notification related operations can be found here.")
 @Path("/notifications")
 @Produces(MediaType.APPLICATION_JSON)

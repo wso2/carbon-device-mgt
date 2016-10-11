@@ -50,9 +50,9 @@ var body = "body";
  * the font icons change the size to respective screen resolution.
  *
  */
-$(document).on( 'draw.dt', function () {
+$(document).on('draw.dt', function () {
     $(".icon .text").res_text(0.2);
-} );
+});
 
 /*
  * set popup maximum height function.
@@ -75,7 +75,7 @@ function showPopup() {
 function hidePopup() {
     $(modalPopupContent).html('');
     $(modalPopup).modal('hide');
-    $('body').removeClass('modal-open').css('padding-right','0px');
+    $('body').removeClass('modal-open').css('padding-right', '0px');
     $('.modal-backdrop').remove();
 }
 
@@ -270,13 +270,14 @@ function loadUsers() {
 
         var objects = [];
 
-        $(data.users).each( function (index) {
+        $(data.users).each(function (index) {
             objects.push({
                 filter: data.users[index].username,
-                firstname: data.users[index].firstname ? data.users[index].firstname : "" ,
+                firstname: data.users[index].firstname ? data.users[index].firstname : "",
                 lastname: data.users[index].lastname ? data.users[index].lastname : "",
-                emailAddress : data.users[index].emailAddress ? data.users[index].emailAddress : "",
-                DT_RowId : "user-" + data.users[index].username})
+                emailAddress: data.users[index].emailAddress ? data.users[index].emailAddress : "",
+                DT_RowId: "user-" + data.users[index].username
+            })
         });
 
         var json = {
@@ -300,7 +301,7 @@ function loadUsers() {
             class: "remove-padding icon-only content-fill",
             data: null,
             render: function (data, type, row, meta) {
-                return '<div class="thumbnail icon viewEnabledIcon" data-url="' + context +'/user/view?username=' + data.filter + '">' +
+                return '<div class="thumbnail icon viewEnabledIcon" data-url="' + context + '/user/view?username=' + data.filter + '">' +
                     '<i class="square-element text fw fw-user" style="font-size: 74px;"></i>' +
                     '</div>';
             }
@@ -338,7 +339,7 @@ function loadUsers() {
             class: "text-right content-fill text-left-on-grid-view no-wrap",
             data: null,
             render: function (data, type, row, meta) {
-                var editbtn=  '&nbsp;<a data-toggle="tooltip" data-placement="bottom" title="Edit User"href="' + context + '/user/edit?username=' + data.filter + '" data-username="' + data.filter + '" ' +
+                var editbtn = '&nbsp;<a data-toggle="tooltip" data-placement="bottom" title="Edit User"href="' + context + '/user/edit?username=' + data.filter + '" data-username="' + data.filter + '" ' +
                     'data-click-event="edit-form" ' +
                     'class="btn padding-reduce-on-grid-view edit-user-link"> ' +
                     '<span class="fw-stack"> ' +
@@ -377,13 +378,13 @@ function loadUsers() {
                     '</a>';
 
                 var returnbtnSet = '';
-                if($("#can-edit").length > 0) {
+                if ($("#can-edit").length > 0) {
                     returnbtnSet = returnbtnSet + editbtn;
                 }
-                if($("#can-reset-password").length > 0) {
+                if ($("#can-reset-password").length > 0) {
                     returnbtnSet = returnbtnSet + resetPasswordbtn;
                 }
-                if($("#can-remove").length > 0) {
+                if ($("#can-remove").length > 0) {
                     returnbtnSet = returnbtnSet + removebtn;
                 }
 
@@ -395,10 +396,14 @@ function loadUsers() {
 
     var options = {
         "placeholder": "Search By Username",
-        "searchKey" : "filter"
+        "searchKey": "filter"
     };
 
-    $('#user-grid').datatables_extended_serverside_paging(null, '/api/device-mgt/v1.0/users', dataFilter, columns, fnCreatedRow, null, options);
+    var settings = {
+        "sorting": false
+    };
+
+    $('#user-grid').datatables_extended_serverside_paging(settings, '/api/device-mgt/v1.0/users', dataFilter, columns, fnCreatedRow, null, options);
     $(loadingContentView).hide();
 
 }

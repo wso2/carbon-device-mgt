@@ -30,7 +30,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-@API(name = "User Management Admin", version = "1.0.0", context = "/api/device-mgt/v1.0/admin/users", tags = {"devicemgt_admin"})
+@API(name = "UserManagementAdmin", version = "1.0.0", context = "/api/device-mgt/v1.0/admin/users", tags = {"device_management"})
 
 @Path("/admin/users")
 @Produces(MediaType.APPLICATION_JSON)

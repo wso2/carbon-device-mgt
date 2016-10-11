@@ -23,7 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.policy.mgt.common.PolicyEvaluationPoint;
 import org.wso2.carbon.policy.mgt.core.PolicyManagerService;
-import org.wso2.carbon.simple.policy.decision.point.PolicyEvaluationServiceImpl;
+import org.wso2.carbon.simple.policy.decision.point.SimpleEvaluationPoint;
 import org.wso2.carbon.user.core.service.RealmService;
 
 /**
@@ -52,8 +52,9 @@ public class PolicyEvaluationServiceComponent {
         }
 
         try {
+            //TODO: fetch PEP class from config
             componentContext.getBundleContext().registerService(PolicyEvaluationPoint.class.getName(),
-                    new PolicyEvaluationServiceImpl(), null);
+                    new SimpleEvaluationPoint(), null);
         } catch (Throwable t) {
             log.error("Error occurred while initializing the simple policy evaluation bundle");
         }

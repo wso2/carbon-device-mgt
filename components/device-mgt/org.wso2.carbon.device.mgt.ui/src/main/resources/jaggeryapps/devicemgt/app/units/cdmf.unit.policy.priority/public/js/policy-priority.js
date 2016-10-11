@@ -92,6 +92,7 @@ $(document).ready(function () {
                     $("a#save-policy-priorities-success-link").click(function () {
                         hidePopup();
                     });
+                    $(applyChangesBtn).prop("disabled", false);
                 }
             },
             // on error

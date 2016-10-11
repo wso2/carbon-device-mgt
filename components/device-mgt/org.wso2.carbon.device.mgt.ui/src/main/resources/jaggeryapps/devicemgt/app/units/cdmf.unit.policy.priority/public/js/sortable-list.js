@@ -22,6 +22,7 @@ var sortableListFunction = (function () {
 
         var sortableElem = '.wr-sortable',
             sortUpdateBtn = '#sortUpdateBtn',
+            applyChangesBtn = '#applyChangesBtn',
             sortableElemList = [],
             sortedIDs,
             currentElemId,
@@ -103,6 +104,7 @@ var sortableListFunction = (function () {
                             insertBefore('span[place="place_' + newValue + '"]');
                     }
                     $(sortUpdateBtn).prop('disabled', false);
+                    $(applyChangesBtn).prop('disabled', true);
                     sortedIDs = $(sortableElem).sortable('toArray');
                     addSortableIndexNumbers();
                 }
@@ -126,6 +128,7 @@ var sortableListFunction = (function () {
                     sortedIDs = $(this).sortable('toArray');
                     addSortableIndexNumbers();
                     $(sortUpdateBtn).prop('disabled', false);
+                    $(applyChangesBtn).prop('disabled', true);
                 }
             });
             $(sortableElem).disableSelection();

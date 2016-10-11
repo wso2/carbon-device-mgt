@@ -47,14 +47,14 @@ public interface ActivityInfoProviderService {
     @ApiOperation(
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
-            value = "Retrieve details of a particular activity.",
-            notes = "This will return information of a particular activity i.e. meta information of an operation, " +
-                    "etc; including the responses from the devices.",
+            value = "Getting Details of an Activity",
+            notes = "Retrieve the details of a specific activity/operation, such as the meta information of an operation, " +
+                    "including the responses from the devices.",
             tags = "Activity Info Provider")
     @ApiResponses(value = {
             @ApiResponse(
                     code = 200,
-                    message = "OK. \n Activity details are successfully fetched",
+                    message = "OK. \n Successfully fetched the activity details.",
                     response = Activity.class,
                     responseHeaders = {
                             @ResponseHeader(
@@ -66,13 +66,12 @@ public interface ActivityInfoProviderService {
                                             "Used by caches, or in conditional requests."),
                             @ResponseHeader(
                                     name = "Last-Modified",
-                                    description = "Date and time the resource has been modified the last time.\n" +
+                                    description = "Date and time the resource was last modified.\n" +
                                             "Used by caches, or in conditional requests."),
                     }),
             @ApiResponse(
                     code = 304,
-                    message = "Not Modified. \n Empty body because the client has already the latest version of " +
-                            "the requested resource."),
+                    message = "Not Modified. \n Empty body because the client already has the latest version of the requested resource."),
             @ApiResponse(
                     code = 400,
                     message = "Bad Request. \n Invalid request or validation error.",
@@ -82,28 +81,31 @@ public interface ActivityInfoProviderService {
                     message = "Unauthorized. \n Unauthorized request."),
             @ApiResponse(
                     code = 404,
-                    message = "Not Found. \n No activity is found under the provided id.",
+                    message = "Not Found. \n No activity found with the given ID.",
                     response = ErrorResponse.class),
             @ApiResponse(
                     code = 406,
                     message = "Not Acceptable.\n The requested media type is not supported"),
             @ApiResponse(
                     code = 500,
-                    message = "Internal Server Error. \n Server error occurred while fetching activity data.",
+                    message = "Internal Server Error. \n Server error occurred while fetching the activity data.",
                     response = ErrorResponse.class)
     })
     @Permission(name = "View Activities", permission = "/device-mgt/devices/owning-device/view")
     Response getActivity(
             @ApiParam(
                     name = "id",
-                    value = "Activity id of the operation/activity to be retrieved.",
-                    required = true)
+                    value = "Activity id of the operation/activity.",
+                    required = true,
+                    defaultValue = "ACTIVITY_1")
             @PathParam("id")
             @Size(max = 45)
             String id,
             @ApiParam(
                     name = "If-Modified-Since",
-                    value = "Validates if the requested variant has not been modified since the time specified",
+                    value = "Checks if the requested variant was modified, since the specified date-time\n." +
+                            "Provide the value in the Java Date Format: EEE, d MMM yyyy HH:mm:ss Z\n." +
+                            "Example: Mon, 05 Jan 2014 15:10:00 +0200",
                     required = false)
             @HeaderParam("If-Modified-Since") String ifModifiedSince);
 
@@ -112,14 +114,13 @@ public interface ActivityInfoProviderService {
     @ApiOperation(
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
-            value = "Retrieve details of a particular activity.",
-            notes = "This will return information of a particular activities i.e. meta information of operations, " +
-                    "etc; including the responses from the devices which happened after given time.",
+            value = "Getting Activity Details",
+            notes = "Get the details of the operations/activities executed by the server on the devices registered with WSO2 EMM, during a defined time period.",
             tags = "Activity Info Provider")
     @ApiResponses(value = {
             @ApiResponse(
                     code = 200,
-                    message = "OK. \n Activity details are successfully fetched",
+                    message = "OK. \n Successfully fetched the activity details.",
                     response = ActivityList.class,
                     responseHeaders = {
                             @ResponseHeader(
@@ -131,13 +132,12 @@ public interface ActivityInfoProviderService {
                                             "Used by caches, or in conditional requests."),
                             @ResponseHeader(
                                     name = "Last-Modified",
-                                    description = "Date and time the resource has been modified the last time.\n" +
+                                    description = "Date and time the resource was last modified.\n" +
                                             "Used by caches, or in conditional requests."),
                     }),
             @ApiResponse(
                     code = 304,
-                    message = "Not Modified. \n Empty body because the client has already the latest version of " +
-                            "the requested resource."),
+                    message = "Not Modified. \n Empty body because the client already has the latest version of the requested resource.\n"),
             @ApiResponse(
                     code = 401,
                     message = "Unauthorized. \n Unauthorized request."),
@@ -150,30 +150,35 @@ public interface ActivityInfoProviderService {
                     message = "Not Acceptable.\n The requested media type is not supported"),
             @ApiResponse(
                     code = 500,
-                    message = "Internal Server Error. \n Server error occurred while fetching activity data.",
+                    message = "Internal Server Error. \n Server error occurred while fetching the activity data.",
                     response = ErrorResponse.class)
     })
     @Permission(name = "View Activities", permission = "/device-mgt/devices/owning-device/view")
     Response getActivities(
             @ApiParam(
                     name = "since",
-                    value = "Validates if the requested variant has not been modified since the time specified, this " +
-                            "should be provided in unix format in seconds.",
+                    value = "Checks if the requested variant was created since the specified date-time.\n" +
+                            "Provide the value in the following format: EEE, d MMM yyyy HH:mm:ss Z.\n" +
+                            "Example: Mon, 05 Jan 2014 15:10:00 +0200",
                     required = false)
             @QueryParam("since") String since,
             @ApiParam(
                     name = "offset",
-                    value = "Starting point within the complete list of items qualified.",
-                    required = false)
+                    value = "The starting pagination index for the complete list of qualified items.",
+                    required = false,
+                    defaultValue = "0")
             @QueryParam("offset") int offset,
             @ApiParam(
                     name = "limit",
-                    value = "Maximum size of resource array to return.",
-                    required = false)
+                    value = "Provide how many activity details you require from the starting pagination index/offset.",
+                    required = false,
+                    defaultValue = "5")
             @QueryParam("limit") int limit,
             @ApiParam(
                     name = "If-Modified-Since",
-                    value = "Validates if the requested variant has not been modified since the time specified",
+                    value = "Checks if the requested variant was modified, since the specified date-time\n." +
+                            "Provide the value in the following format: EEE, d MMM yyyy HH:mm:ss Z\n." +
+                            "Example: Mon, 05 Jan 2014 15:10:00 +0200",
                     required = false)
             @HeaderParam("If-Modified-Since") String ifModifiedSince);
 

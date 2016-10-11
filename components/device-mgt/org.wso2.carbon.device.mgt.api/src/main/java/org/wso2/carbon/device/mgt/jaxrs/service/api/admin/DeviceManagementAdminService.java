@@ -43,8 +43,8 @@ public interface DeviceManagementAdminService {
     @ApiOperation(
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
-            value = "Get devices by  name.",
-            notes = "Get devices by name of the device and tenant that they belong to.",
+            value = "Getting Details of a Device",
+            notes = "Get the details of a device by searching via the device name, device type and the tenant domain.",
             response = Device.class,
             responseContainer = "List",
             tags = "Device Management Administrative Service")
@@ -62,20 +62,19 @@ public interface DeviceManagementAdminService {
                                             "Used by caches, or in conditional requests."),
                             @ResponseHeader(
                                     name = "Last-Modified",
-                                    description = "Date and time the resource has been modified the last time.\n" +
+                                    description = "Date and time the resource was last modified.\n" +
                                             "Used by caches, or in conditional requests."),
                     }),
             @ApiResponse(
                     code = 304,
-                    message = "Not Modified. \n Empty body because the client has already the latest version of " +
-                            "the requested resource."),
+                    message = "Not Modified. Empty body because the client already has the latest version of the requested resource.\n"),
             @ApiResponse(
                     code = 401,
-                    message = "Unauthorized.\n The requested resource access is unauthorized",
+                    message = "Unauthorized.\n The unauthorized access to the requested resource.",
                     response = ErrorResponse.class),
             @ApiResponse(
                     code = 404,
-                    message = "Not Found.\n No device found that matches the given name.",
+                    message = "Not Found.\n The specified device does not exist",
                     response = ErrorResponse.class),
             @ApiResponse(
                     code = 406,
@@ -89,37 +88,44 @@ public interface DeviceManagementAdminService {
     Response getDevicesByName(
             @ApiParam(
                     name = "name",
-                    value = "Name of the device.",
+                    value = "The name of the device.If you are unsure of the name of the device, run the GET /devices API that is under Device Management.",
                     required = true)
             @QueryParam("name")
             @Size(max = 45)
             String name,
             @ApiParam(
                     name = "type",
-                    value = "Type of the device.",
-                    required = true)
+                    value = "The type of the device, such as android, ios or windows.",
+                    required = true,
+                    allowableValues = "android, ios, windows")
             @QueryParam("type")
             @Size(min = 2, max = 45)
             String type,
             @ApiParam(
                     name = "tenant-domain",
-                    value = "Name of the tenant.",
-                    required = true)
+                    value = "The name of the tenant.\n" +
+                            "The default tenant domain of WSO2 EMM is carbon.super",
+                    required = true,
+                    defaultValue = "carbon.super")
             @QueryParam("tenant-domain") String tenantDomain,
             @ApiParam(
                     name = "If-Modified-Since",
-                    value = "Validates if the requested variant has not been modified since the time specified",
+                    value = "Checks if the requested variant was modified, since the specified date-time. \n" +
+                            "Provide the value in the following format: EEE, d MMM yyyy HH:mm:ss Z. \n" +
+                            "Example: Mon, 05 Jan 2014 15:10:00 +0200",
                     required = false)
             @HeaderParam("If-Modified-Since") String ifModifiedSince,
             @ApiParam(
                     name = "offset",
-                    value = "Starting point within the complete list of items qualified.",
-                    required = false)
+                    value = "The starting pagination index for the complete list of qualified items.",
+                    required = false,
+                    defaultValue = "0")
             @QueryParam("offset") int offset,
             @ApiParam(
                     name = "limit",
-                    value = "Maximum size of resource array to return.",
-                    required = false)
+                    value = "Provide how many activity details you require from the starting pagination index/offset.",
+                    required = false,
+                    defaultValue = "5")
             @QueryParam("limit") int limit);
 
 }

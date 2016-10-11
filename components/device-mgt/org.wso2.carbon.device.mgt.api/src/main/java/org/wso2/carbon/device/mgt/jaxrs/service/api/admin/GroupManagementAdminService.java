@@ -51,8 +51,9 @@ public interface GroupManagementAdminService {
     @ApiOperation(
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
-            value = "Get groups by the name.",
-            notes = "Get devices the name of device and tenant.",
+            value = "Grouping Devices",
+            notes = "Many devices can be registered with WSO2 IoTS. In order to manage them in an efficient manner, " +
+                    "you can group devices and view the data gathered by the devices or share the groups with users so that they can monitor the devices in the respective group.",
             response = DeviceGroupWrapper.class,
             responseContainer = "List",
             tags = "Group Management Administrative Service")
@@ -70,25 +71,24 @@ public interface GroupManagementAdminService {
                                                  "Used by caches, or in conditional requests."),
                                  @ResponseHeader(
                                          name = "Last-Modified",
-                                         description = "Date and time the resource has been modified the last time.\n" +
+                                         description = "Date and time the resource was last modified.\n" +
                                                  "Used by caches, or in conditional requests."),
                          }),
             @ApiResponse(
                     code = 304,
-                    message = "Not Modified. \n Empty body because the client has already the latest version of the " +
-                            "requested resource."),
+                    message = "Not Modified. \n Empty body because the client already has the latest version of the requested resource."),
             @ApiResponse(
                     code = 406,
                     message = "Not Acceptable.\n The requested media type is not supported"),
             @ApiResponse(
                     code = 500,
-                    message = "Internal Server ErrorResponse. \n Server error occurred while fetching the group list.")
+                    message = "Internal Server ErrorResponse. \n Server error occurred while fetching the list of device groups.")
     })
     @Permission(name = "View All Groups", permission = "/permission/admin/device-mgt/user/groups/list")
     Response getGroupsOfUser(
             @ApiParam(
                     name = "username",
-                    value = "Username of the user.",
+                    value = "The sername of the user.",
                     required = true)
             @QueryParam("username") String username,
             @ApiParam(
@@ -99,11 +99,13 @@ public interface GroupManagementAdminService {
             @ApiParam(
                     name = "offset",
                     value = "Starting point within the complete list of items qualified.",
-                    required = false)
+                    required = false,
+                    defaultValue = "0")
             @QueryParam("offset") int offset,
             @ApiParam(
                     name = "limit",
                     value = "Maximum size of resource array to return.",
-                    required = false)
+                    required = false,
+                    defaultValue = "5")
             @QueryParam("limit") int limit);
 }

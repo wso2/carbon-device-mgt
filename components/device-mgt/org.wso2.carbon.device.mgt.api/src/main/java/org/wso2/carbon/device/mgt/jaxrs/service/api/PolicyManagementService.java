@@ -40,8 +40,7 @@ import java.util.List;
 @API(name = "Device Policy Management", version = "1.0.0", context = "/api/device-mgt/v1.0/policies",
         tags = {"devicemgt_admin"})
 
-@Api(value = "Device Policy Management", description = "This API carries all the necessary functionalities " +
-        "around device policy management")
+@Api(value = "Device Policy Management", description = "This API includes the functionality around device policy management")
 @Path("/policies")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
@@ -52,14 +51,15 @@ public interface PolicyManagementService {
             consumes = MediaType.APPLICATION_JSON,
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "POST",
-            value = "Add a new policy.",
-            notes = "This particular resource can be used to add a new policy, which will be created in in-active state.",
+            value = "Adding a Policy",
+            notes = "Add a policy using this REST API command. When adding a policy you will have the option of saving the policy or saving and publishing the policy." +
+                    "Using this REST API you are able to save a created Policy and this policy will be in the inactive state.",
             tags = "Device Policy Management")
     @ApiResponses(
             value = {
                     @ApiResponse(
                             code = 201,
-                            message = "Created. \n Policy has successfully been created",
+                            message = "Created. \n Successfully created the policy.",
                             responseHeaders = {
                                     @ResponseHeader(
                                             name = "Content-Location",
@@ -73,13 +73,13 @@ public interface PolicyManagementService {
                                                     "Used by caches, or in conditional requests."),
                                     @ResponseHeader(
                                             name = "Last-Modified",
-                                            description = "Date and time the resource has been modified the last time.\n" +
+                                            description = "Date and time the resource was last modified.\n" +
                                                     "Used by caches, or in conditional requests.")
                             }
                     ),
                     @ApiResponse(
                             code = 303,
-                            message = "See Other. \n Source can be retrieved from the URL specified at the Location header.",
+                            message = "See Other. \n he source can be retrieved from the URL specified in the location header",
                             responseHeaders = {
                                     @ResponseHeader(
                                             name = "Content-Location",
@@ -90,11 +90,11 @@ public interface PolicyManagementService {
                             response = ErrorResponse.class),
                     @ApiResponse(
                             code = 401,
-                            message = "Not Found. \n Current logged in user is not authorized to add policies.",
+                            message = "Not Found. \n The user that is currently logged in is not authorized to add policies.",
                             response = ErrorResponse.class),
                     @ApiResponse(
                             code = 415,
-                            message = "Unsupported media type. \n The entity of the request was in a not supported format."),
+                            message = "Unsupported media type. \n The format of the requested entity was not supported."),
                     @ApiResponse(
                             code = 500,
                             message = "Internal Server Error. \n " +
@@ -105,17 +105,18 @@ public interface PolicyManagementService {
     Response addPolicy(
             @ApiParam(
                     name = "policy",
-                    value = "Policy details related to the operation.",
-                    required = true)
+                    value = "The properties required to add a new policy.",
+                    required = true,
+                    defaultValue = "{\"policyName\":\"test\",\"description\":\"test desc\",\"compliance\":\"ENFORCE\",\"ownershipType\":\"string\",\"active\":false,\"profile\":{\"profileId\":0,\"profileName\":\"string\",\"tenantId\":0,\"deviceType\":\"string\",\"createdDate\":\"2016-10-07T04:50:01.931Z\",\"updatedDate\":\"2016-10-07T04:50:01.931Z\",\"profileFeaturesList\":[{\"id\":0,\"featureCode\":\"string\",\"profileId\":0,\"deviceType\":\"string\",\"content\":{}}]},\"roles\":[\"string\"],\"deviceIdentifiers\":[{\"id\":\"string\",\"type\":\"string\"}],\"users\":[\"string\"]}")
                     @Valid PolicyWrapper policy);
 
     @GET
     @ApiOperation(
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
-            value = "Get details of policies.",
+            value = "Getting Details of Policies",
             responseContainer = "List",
-            notes = "Retrieve the details of all the policies that have been created in EMM.",
+            notes = "Retrieve the details of all the policies in WSO2 EMM.",
             response = Policy.class,
             tags = "Device Policy Management")
     @ApiResponses(
@@ -135,13 +136,13 @@ public interface PolicyManagementService {
                                                     "Used by caches, or in conditional requests."),
                                     @ResponseHeader(
                                             name = "Last-Modified",
-                                            description = "Date and time the resource has been modified the last time.\n" +
+                                            description = "Date and time the resource was last modified.\n" +
                                                     "Used by caches, or in conditional requests."),
                             }
                     ),
                     @ApiResponse(
                             code = 304,
-                            message = "Not Modified. \n Empty body because the client has already the latest version of the requested resource."),
+                            message = "Not Modified. \n Empty body because the client already has the latest version of the requested resource."),
                     @ApiResponse(
                             code = 400,
                             message = "Bad Request. \n Invalid request or validation error.",
@@ -151,28 +152,31 @@ public interface PolicyManagementService {
                             message = "Not Acceptable.\n The requested media type is not supported"),
                     @ApiResponse(
                             code = 500,
-                            message = ("Internal Server Error. \n Server error occurred while fetching " +
-                                    "policies."),
+                            message = ("Internal Server Error. \n Server error occurred while fetching the policies."),
                             response = ErrorResponse.class)
             })
     @Permission(name = "View policies", permission = "/device-mgt/policies/view")
     Response getPolicies(
             @ApiParam(
                     name = "If-Modified-Since",
-                    value = "Validates if the requested variant has not been modified since the time specified",
+                    value = "Checks if the requested variant was modified, since the specified date-time. \n" +
+                            "Provide the value in the following format: EEE, d MMM yyyy HH:mm:ss Z.\n" +
+                            "Example: Mon, 05 Jan 2014 15:10:00 +0200",
                     required = false)
             @HeaderParam("If-Modified-Since")
                     String ifModifiedSince,
             @ApiParam(
                     name = "offset",
-                    value = "Starting point within the complete list of items qualified.",
-                    required = false)
+                    value = "The starting pagination index for the complete list of qualified items",
+                    required = false,
+                    defaultValue = "0")
             @QueryParam("offset")
                     int offset,
             @ApiParam(
                     name = "limit",
                     value = "Maximum size of resource array to return.",
-                    required = false)
+                    required = false,
+                    defaultValue = "5")
             @QueryParam("limit")
                     int limit);
 
@@ -181,8 +185,8 @@ public interface PolicyManagementService {
     @ApiOperation(
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
-            value = "Get details of a policy.",
-            notes = "Retrieve the details of a given policy that has been created in EMM.",
+            value = "Getting Details of a Policy",
+            notes = "Retrieve the details of a policy that is in WSO2 EMM.",
             response = Policy.class,
             tags = "Device Policy Management")
     @ApiResponses(
@@ -201,20 +205,20 @@ public interface PolicyManagementService {
                                                     "Used by caches, or in conditional requests."),
                                     @ResponseHeader(
                                             name = "Last-Modified",
-                                            description = "Date and time the resource has been modified the last time.\n" +
+                                            description = "Date and time the resource was last modified.\n" +
                                                     "Used by caches, or in conditional requests."),
                             }
                     ),
                     @ApiResponse(
                             code = 304,
-                            message = "Not Modified. \n Empty body because the client has already the latest version of the requested resource."),
+                            message = "Not Modified. \n Empty body because the client already has the latest version of the requested resource.\n"),
                     @ApiResponse(
                             code = 404,
-                            message = "Not Found. \n No policy is found with the given id.",
+                            message = "Not Found. \n A specified policy was not found.",
                             response = ErrorResponse.class),
                     @ApiResponse(
                             code = 406,
-                            message = "Not Acceptable.\n The requested media type is not supported"),
+                            message = "Not Acceptable.\n The requested media type is not supported."),
                     @ApiResponse(
                             code = 500,
                             message = "Internal Server Error. \n Server error occurred while fetching the " +
@@ -225,13 +229,16 @@ public interface PolicyManagementService {
     Response getPolicy(
             @ApiParam(
                     name = "id",
-                    value = "Policy identifier",
-                    required = true)
+                    value = "The policy identifier.",
+                    required = true,
+                    defaultValue = "")
             @PathParam("id")
                     int id,
             @ApiParam(
                     name = "If-Modified-Since",
-                    value = "Validates if the requested variant has not been modified since the time specified",
+                    value = "Checks if the requested variant was modified, since the specified date-time. \n" +
+                            "Provide the value in the following format: EEE, d MMM yyyy HH:mm:ss Z.\n" +
+                            "Example: Mon, 05 Jan 2014 15:10:00 +0200",
                     required = false)
             @HeaderParam("If-Modified-Since")
                     String ifModifiedSince);
@@ -242,15 +249,14 @@ public interface PolicyManagementService {
             consumes = MediaType.APPLICATION_JSON,
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "PUT",
-            value = "Update a policy.",
-            notes = "If you wish to make changes to an existing policy, that can be done by updating the policy using " +
-                    "this resource.",
+            value = "Updating a Policy",
+            notes = "Make changes to an existing policy by updating the policy using this resource.",
             tags = "Device Policy Management")
     @ApiResponses(
             value = {
                     @ApiResponse(
                             code = 200,
-                            message = "OK. \n Policy has been updated successfully",
+                            message = "OK. \n Successfully updated the policy.",
                             responseHeaders = {
                                     @ResponseHeader(
                                             name = "Content-Location",
@@ -264,7 +270,7 @@ public interface PolicyManagementService {
                                                     "Used by caches, or in conditional requests."),
                                     @ResponseHeader(
                                             name = "Last-Modified",
-                                            description = "Date and time the resource has been modified the last time.\n" +
+                                            description = "Date and time the resource was last modified.\n" +
                                                     "Used by caches, or in conditional requests.")
                             }
                     ),
@@ -274,11 +280,11 @@ public interface PolicyManagementService {
                             response = ErrorResponse.class),
                     @ApiResponse(
                             code = 404,
-                            message = "Not Found. \n Resource to be deleted does not exist.",
+                            message = "Not Found. \n The specified resource does not exist.",
                             response = ErrorResponse.class),
                     @ApiResponse(
                             code = 415,
-                            message = "Unsupported media type. \n The entity of the request was in a not supported format."),
+                            message = "Unsupported media type. \n The format of the requested entity was not supported."),
                     @ApiResponse(
                             code = 500,
                             message = "Internal Server Error. \n " +
@@ -289,13 +295,14 @@ public interface PolicyManagementService {
     Response updatePolicy(
             @ApiParam(
                     name = "id",
-                    value = "The device identifier of the device.",
-                    required = true)
+                    value = "The policy ID.",
+                    required = true,
+                    defaultValue = "1")
             @PathParam("id")
                     int id,
             @ApiParam(
                     name = "policy",
-                    value = "Policy details related to the operation.",
+                    value = "Update the required property details.",
                     required = true)
                     @Valid PolicyWrapper policy);
 
@@ -305,38 +312,39 @@ public interface PolicyManagementService {
             consumes = MediaType.APPLICATION_JSON,
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "POST",
-            value = "Remove multiple policies.",
-            notes = "In situations where you need to delete more than one policy you can do so using this API.",
+            value = "Removing Multiple Policies",
+            notes = "Delete one or more than one policy using this API.",
             tags = "Device Policy Management")
     @ApiResponses(
             value = {
                     @ApiResponse(
                             code = 200,
-                            message = "OK. \n Policies have successfully been removed"),
+                            message = "OK. \n Successfully removed the policy."),
                     @ApiResponse(
                             code = 400,
                             message = "Bad Request. \n Invalid request or validation error.",
                             response = ErrorResponse.class),
                     @ApiResponse(
                             code = 404,
-                            message = "Not Found. \n Resource to be deleted does not exist.",
+                            message = "Not Found. \n The specified resource does not exist.",
                             response = ErrorResponse.class),
                     @ApiResponse(
                             code = 415,
-                            message = "Unsupported media type. \n The entity of the request was in a not "
+                            message = "Unsupported media type. \n The format of the requested entity was not supported.\n "
                                     + "supported format."),
                     @ApiResponse(
                             code = 500,
                             message = "Internal Server Error. \n " +
-                                    "Server error occurred while bulk removing policies.",
+                                    "Server error occurred whilst bulk removing policies.",
                             response = ErrorResponse.class)
             })
     @Permission(name = "Manage policies", permission = "/device-mgt/policies/manage")
     Response removePolicies(
             @ApiParam(
                     name = "policyIds",
-                    value = "Policy id list to be deleted.",
-                    required = true)
+                    value = "The list of policy IDs to be removed.",
+                    required = true,
+                    defaultValue = "[1]")
                     List<Integer> policyIds);
 
     @POST
@@ -344,35 +352,35 @@ public interface PolicyManagementService {
     @ApiOperation(
             consumes = MediaType.APPLICATION_JSON,
             produces = MediaType.APPLICATION_JSON,
-            httpMethod = "PUT",
-            value = "Activating policies.",
-            notes = "Using the REST API command you are able to publish a policy in order to bring a policy that is " +
-                    "in the inactive state to the active state.",
+            httpMethod = "POST",
+            value = "Activating Policies",
+            notes = "Publish a policy using this API to bring a policy that is in the inactive state to the active state.",
             tags = "Device Policy Management")
     @ApiResponses(
             value = {
                     @ApiResponse(
                             code = 200,
-                            message = "Policies have been successfully activated."),
+                            message = "Successfully activated the policy."),
                     @ApiResponse(
                             code = 400,
                             message = "Bad Request. \n Invalid request or validation error.",
                             response = ErrorResponse.class),
                     @ApiResponse(
                             code = 404,
-                            message = "Not Found. \n Resource does not exist.",
+                            message = "Not Found. \n The specified resource/s does not exist.",
                             response = ErrorResponse.class),
                     @ApiResponse(
                             code = 500,
-                            message = "ErrorResponse in activating policies.",
+                            message = "Sever error whilst activating the policies.",
                             response = ErrorResponse.class)
             })
     @Permission(name = "Manage policies", permission = "/device-mgt/policies/manage")
     Response activatePolicies(
             @ApiParam(
                     name = "policyIds",
-                    value = "Policy ID list to be activated.",
-                    required = true)
+                    value = "The list of the policy IDs to be activated",
+                    required = true,
+                    defaultValue = "[1]")
                     List<Integer> policyIds);
 
     @POST
@@ -380,23 +388,22 @@ public interface PolicyManagementService {
     @ApiOperation(
             consumes = MediaType.APPLICATION_JSON,
             produces = MediaType.APPLICATION_JSON,
-            httpMethod = "PUT",
-            value = "Deactivating policies.",
-            notes = "Using the REST API command you are able to unpublish a policy in order to bring a "
-                    + "policy that is in the active state to the inactive state.",
+            httpMethod = "POST",
+            value = "Deactivating Policies",
+            notes = "Unpublish a policy using this API to bring a policy that is in the active state to the inactive state.",
             tags = "Device Policy Management")
     @ApiResponses(
             value = {
             @ApiResponse(
                     code = 200,
-                    message = "Policies have been successfully deactivated."),
+                    message = "Successfully deactivated the policy."),
             @ApiResponse(
                     code = 400,
                     message = "Bad Request. \n Invalid request or validation error.",
                     response = ErrorResponse.class),
             @ApiResponse(
                     code = 404,
-                    message = "Not Found. \n Resource does not exist.",
+                    message = "Not Found. \n The specified resource does not exist.",
                     response = ErrorResponse.class),
             @ApiResponse(
                     code = 500,
@@ -407,8 +414,9 @@ public interface PolicyManagementService {
     Response deactivatePolicies(
             @ApiParam(
                     name = "policyIds",
-                    value = "Policy ID list to be deactivated.",
-                    required = true)
+                    value = "The list of Policy IDs that needs to be deactivated.",
+                    required = true,
+                    defaultValue = "[1]")
                     List<Integer> policyIds);
 
     @PUT
@@ -418,7 +426,7 @@ public interface PolicyManagementService {
             consumes = MediaType.APPLICATION_JSON,
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "PUT",
-            value = "Applying Changes on Policies.",
+            value = "Applying Changes on Policies",
             notes = "Policies in the active state will be applied to new device that register with WSO2 EMM based on" +
                     " the policy enforcement criteria . In a situation where you need to make changes to existing" +
                     " policies (removing, activating, deactivating and updating) or add new policies, the existing" +
@@ -430,7 +438,7 @@ public interface PolicyManagementService {
             value = {
             @ApiResponse(
                     code = 200,
-                    message = "Changes have been successfully updated."),
+                    message = "Successfully updated the EMM server with the policy changes."),
             @ApiResponse(
                     code = 500,
                     message = "ErrorResponse in deactivating policies.",
@@ -446,23 +454,22 @@ public interface PolicyManagementService {
             consumes = MediaType.APPLICATION_JSON,
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "PUT",
-            value = "Prioritizing policies.",
-            notes = "If you wish to make changes to the existing policy priority order, you can do so by "
-                    + "updating the priority order using this end-point",
+            value = "Updating the Policy Priorities",
+            notes = "Make changes to the existing policy priority order by updating the priority order using this API.",
             tags = "Device Policy Management"
     )
     @ApiResponses(
             value = {
             @ApiResponse(
                     code = 200,
-                    message = "Policy Priorities successfully updated."),
+                    message = "Successfully updated the policy priority order."),
             @ApiResponse(
                     code = 400,
-                    message = "Policy priorities did not update. Bad Request.",
+                    message = "Bad Request. Did not update the policy priority order.",
                     response = ErrorResponse.class),
             @ApiResponse(
                     code = 500,
-                    message = "Exception in updating policy priorities.",
+                    message = "Exception in updating the policy priorities.",
                     response = ErrorResponse.class)
     })
     @Permission(name = "Manage policies", permission = "/device-mgt/policies/manage")
@@ -470,7 +477,8 @@ public interface PolicyManagementService {
             @ApiParam(
                     name = "priorityUpdatedPolicies",
                     value = "List of policies with priorities",
-                    required = true)
+                    required = true,
+                    defaultValue = "[{id:1,priority:2}]")
                     List<PriorityUpdatedPolicyWrapper> priorityUpdatedPolicies);
 
 

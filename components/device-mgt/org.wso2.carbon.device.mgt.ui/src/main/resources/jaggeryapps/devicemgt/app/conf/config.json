@@ -12,6 +12,7 @@
     "iOSConfigRoot" : "%https.ip%/ios-enrollment/",
     "iOSAPIRoot" : "%https.ip%/ios/",
     "adminService": "%https.ip%",
+    "apimgt-gateway": false,
     "oauthProvider": {
         "appRegistration": {
             "appType": "webapp",

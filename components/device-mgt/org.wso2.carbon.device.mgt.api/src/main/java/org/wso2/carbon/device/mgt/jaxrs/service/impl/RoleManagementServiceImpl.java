@@ -149,8 +149,7 @@ public class RoleManagementServiceImpl implements RoleManagementService {
                         for (UIPermissionNode subNode : node.getNodeList()) {
                             if (subNode.getResourcePath().equals("/permission/admin/manage/mobileapp")) {
                                 deviceMgtPermissions[2] = subNode;
-                            }
-                            if (subNode.getResourcePath().equals("/permission/admin/manage/webapp")) {
+                            } else if (subNode.getResourcePath().equals("/permission/admin/manage/webapp")) {
                                 deviceMgtPermissions[3] = subNode;
                             }
                         }

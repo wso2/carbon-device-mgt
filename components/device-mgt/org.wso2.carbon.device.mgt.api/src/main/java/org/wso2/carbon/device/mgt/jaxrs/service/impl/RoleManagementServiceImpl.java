@@ -135,7 +135,7 @@ public class RoleManagementServiceImpl implements RoleManagementService {
         final UserRealmProxy userRealmProxy = new UserRealmProxy(userRealmCore);
         final UIPermissionNode rolePermissions =
                 userRealmProxy.getRolePermissions(roleName, MultitenantConstants.SUPER_TENANT_ID);
-        UIPermissionNode[] deviceMgtPermissions = new UIPermissionNode[2];
+        UIPermissionNode[] deviceMgtPermissions = new UIPermissionNode[4];
 
         for (UIPermissionNode permissionNode : rolePermissions.getNodeList()) {
             if (permissionNode.getResourcePath().equals("/permission/admin")) {
@@ -144,6 +144,16 @@ public class RoleManagementServiceImpl implements RoleManagementService {
                         deviceMgtPermissions[0] = node;
                     } else if (node.getResourcePath().equals("/permission/admin/login")) {
                         deviceMgtPermissions[1] = node;
+                    } else if (node.getResourcePath().equals("/permission/admin/manage")) {
+                        // Adding permissions related to app-store in emm-console
+                        for (UIPermissionNode subNode : node.getNodeList()) {
+                            if (subNode.getResourcePath().equals("/permission/admin/manage/mobileapp")) {
+                                deviceMgtPermissions[2] = subNode;
+                            }
+                            if (subNode.getResourcePath().equals("/permission/admin/manage/webapp")) {
+                                deviceMgtPermissions[3] = subNode;
+                            }
+                        }
                     }
                 }
             }

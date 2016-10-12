@@ -313,7 +313,7 @@ function loadUsers() {
                 if (!data.firstname && !data.lastname) {
                     return "";
                 } else if (data.firstname && data.lastname) {
-                    return "<h4>&nbsp;&nbsp;" + data.firstname + " " + data.lastname + "</h4>";
+                    return "<h4>" + data.firstname + " " + data.lastname + "</h4>";
                 }
             }
         },
@@ -321,7 +321,7 @@ function loadUsers() {
             class: "fade-edge remove-padding-top",
             data: 'filter',
             render: function (filter, type, row, meta) {
-                return '&nbsp;&nbsp;<i class="fw-user"></i>&nbsp;&nbsp;' + filter;
+                return '<i class="fw-user"></i>' + filter;
             }
         },
         {
@@ -331,7 +331,7 @@ function loadUsers() {
                 if (!data.emailAddress) {
                     return "";
                 } else {
-                    return "&nbsp;&nbsp;<a href='mailto:" + data.emailAddress + "' ><i class='fw-mail'></i>&nbsp;&nbsp;" + data.emailAddress + "</a>";
+                    return "<a href='mailto:" + data.emailAddress + "' ><i class='fw-mail'></i>" + data.emailAddress + "</a>";
                 }
             }
         },
@@ -339,17 +339,13 @@ function loadUsers() {
             class: "text-right content-fill text-left-on-grid-view no-wrap",
             data: null,
             render: function (data, type, row, meta) {
-                var editbtn = '&nbsp;<a data-toggle="tooltip" data-placement="bottom" title="Edit User"href="' + context + '/user/edit?username=' + data.filter + '" data-username="' + data.filter + '" ' +
+                var editbtn = '<a data-toggle="tooltip" data-placement="bottom" title="Edit User"href="' + context + '/user/edit?username=' + data.filter + '" data-username="' + data.filter + '" ' +
                     'data-click-event="edit-form" ' +
                     'class="btn padding-reduce-on-grid-view edit-user-link"> ' +
                     '<span class="fw-stack"> ' +
                     '<i class="fw fw-ring fw-stack-2x"></i>' +
                     '<i class="fw fw-edit fw-stack-1x"></i>' +
-                    '</span>' +
-                    '<span class="hidden-xs hidden-on-grid-view">' +
-                    '&nbsp;&nbsp;Edit' +
-                    '</span>' +
-                    '</a>';
+                    '</span><span class="hidden-xs hidden-on-grid-view">Edit</span></a>';
 
                 var resetPasswordbtn = '<a data-toggle="tooltip" data-placement="bottom" title="Reset Password" href="#" data-username="' + data.filter + '" data-userid="' + data.filter + '" ' +
                     'data-click-event="edit-form" ' +
@@ -358,11 +354,7 @@ function loadUsers() {
                     '<span class="fw-stack">' +
                     '<i class="fw fw-ring fw-stack-2x"></i>' +
                     '<i class="fw fw-key fw-stack-1x"></i>' +
-                    '</span>' +
-                    '<span class="hidden-xs hidden-on-grid-view">' +
-                    '&nbsp;&nbsp;Reset Password' +
-                    '</span>' +
-                    '</a>';
+                    '</span><span class="hidden-xs hidden-on-grid-view">Reset Password</span></a>';
 
                 var removebtn = '<a data-toggle="tooltip" data-placement="bottom" title="Remove User" href="#" data-username="' + data.filter + '" data-userid="' + data.filter + '" ' +
                     'data-click-event="remove-form" ' +
@@ -371,20 +363,18 @@ function loadUsers() {
                     '<span class="fw-stack">' +
                     '<i class="fw fw-ring fw-stack-2x"></i>' +
                     '<i class="fw fw-delete fw-stack-1x"></i>' +
-                    '</span>' +
-                    '<span class="hidden-xs hidden-on-grid-view">' +
-                    '&nbsp;&nbsp;Remove' +
-                    '</span>' +
-                    '</a>';
+                    '</span><span class="hidden-xs hidden-on-grid-view">Remove</span></a>';
 
                 var returnbtnSet = '';
-                if ($("#can-edit").length > 0) {
+                var adminUser = $("#user-table").data("user");
+                var currentUser = $("#user-table").data("logged-user");
+                if ($("#can-edit").length > 0 && adminUser !== data.filter) {
                     returnbtnSet = returnbtnSet + editbtn;
                 }
-                if ($("#can-reset-password").length > 0) {
+                if ($("#can-reset-password").length > 0 && adminUser !== data.filter) {
                     returnbtnSet = returnbtnSet + resetPasswordbtn;
                 }
-                if ($("#can-remove").length > 0) {
+                if ($("#can-remove").length > 0 && adminUser !== data.filter && currentUser !== data.filter) {
                     returnbtnSet = returnbtnSet + removebtn;
                 }
 

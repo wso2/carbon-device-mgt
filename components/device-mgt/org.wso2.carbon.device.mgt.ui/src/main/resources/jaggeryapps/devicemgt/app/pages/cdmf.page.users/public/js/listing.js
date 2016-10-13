@@ -39,9 +39,6 @@ $(function () {
 });
 
 var apiBasePath = "/api/device-mgt/v1.0";
-var modalPopup = ".modal";
-var modalPopupContainer = modalPopup + " .modal-content";
-var modalPopupContent = modalPopup + " .modal-content";
 var body = "body";
 
 /**
@@ -54,31 +51,6 @@ $(document).on('draw.dt', function () {
     $(".icon .text").res_text(0.2);
 });
 
-/*
- * set popup maximum height function.
- */
-function setPopupMaxHeight() {
-    $(modalPopupContent).css('max-height', ($(body).height() - ($(body).height() / 100 * 30)));
-    $(modalPopupContainer).css('margin-top', (-($(modalPopupContainer).height() / 2)));
-}
-
-/*
- * show popup function.
- */
-function showPopup() {
-    $(modalPopup).modal('show');
-}
-
-/*
- * hide popup function.
- */
-function hidePopup() {
-    $(modalPopupContent).html('');
-    $(modalPopup).modal('hide');
-    $('body').removeClass('modal-open').css('padding-right', '0px');
-    $('.modal-backdrop').remove();
-}
-
 /**
  * Following click function would execute
  * when a user clicks on "Invite" link
@@ -89,34 +61,48 @@ $("a#invite-user-link").click(function () {
     var inviteUserAPI = apiBasePath + "/users/send-invitation";
 
     if (usernameList.length == 0) {
-        $(modalPopupContent).html($("#errorUsers").html());
+        modalDialog.header("Operation cannot be performed !");
+        modalDialog.content("Please select a user or a list of users to send invitation emails.");
+        modalDialog.footer('<div class="buttons"> <a href="javascript:modalDialog.hide()" class="btn-operations">Ok' +
+            '</a> </div>');
+        modalDialog.showAsError();
     } else {
-        $(modalPopupContent).html($('#invite-user-modal-content').html());
-    }
+        modalDialog.header("");
+        modalDialog.content("An invitation mail will be sent to the selected user(s) to initiate an enrolment process." +
+            " Do you wish to continue ?");
+        modalDialog.footer('<div class="buttons"> <a href="#" id="invite-user-yes-link" class="btn-operations">yes</a>' +
+            '<a href="#" id="invite-user-cancel-link" class="btn-operations btn-default">No</a> </div>');
+        modalDialog.show();
 
-    showPopup();
+    }
 
     $("a#invite-user-yes-link").click(function () {
         invokerUtil.post(
             inviteUserAPI,
             usernameList,
             function () {
-                $(modalPopupContent).html($('#invite-user-success-content').html());
+                modalDialog.header("User invitation email for enrollment was successfully sent.");
+                modalDialog.footer('<div class="buttons"> <a href="#" id="invite-user-success-link" ' +
+                    'class="btn-operations">Ok </a> </div>');
                 $("a#invite-user-success-link").click(function () {
-                    hidePopup();
+                    modalPopup.hide();
                 });
             },
             function () {
-                $(modalPopupContent).html($('#invite-user-error-content').html());
+                modalDialog.header('<span class="fw-stack"> <i class="fw fw-ring fw-stack-2x"></i> <i class="fw ' +
+                    'fw-error fw-stack-1x"></i> </span> Unexpected Error !');
+                modalDialog.content('An unexpected error occurred. Try again later.');
+                modalDialog.footer('<div class="buttons"> <a href="#" id="invite-user-error-link" ' +
+                    'class="btn-operations">Ok </a> </div>');
                 $("a#invite-user-error-link").click(function () {
-                    hidePopup();
+                    modalPopup.hide();
                 });
             }
         );
     });
 
     $("a#invite-user-cancel-link").click(function () {
-        hidePopup();
+        modalPopup.hide();
     });
 });
 
@@ -138,13 +124,16 @@ function getSelectedUsernames() {
  * on User Listing page in WSO2 MDM Console.
  */
 function resetPassword(username) {
-    $(modalPopupContent).html($('#reset-password-window').html());
-    showPopup();
+    modalDialog.header('<span class="fw-stack"> <i class="fw fw-ring fw-stack-2x"></i> <i class="fw fw-key ' +
+        'fw-stack-1x"></i> </span> Reset Password');
+    modalDialog.content($("#modal-content-reset-password").html());
+    modalDialog.footer('<div class="buttons"> <a href="#" id="reset-password-yes-link" class="btn-operations"> Save ' +
+        '</a> <a href="#" id="reset-password-cancel-link" class="btn-operations btn-default"> Cancel </a> </div>');
+    modalDialog.show();
 
     $("a#reset-password-yes-link").click(function () {
-        var newPassword = $("#new-password").val();
-        var confirmedPassword = $("#confirmed-password").val();
-
+        var newPassword = $("#basic-modal-view .new-password").val();
+        var confirmedPassword = $("#basic-modal-view .confirmed-password").val();
         var errorMsgWrapper = "#notification-error-msg";
         var errorMsg = "#notification-error-msg span";
         if (!newPassword) {
@@ -177,10 +166,10 @@ function resetPassword(username) {
                 // The success callback
                 function (data, textStatus, jqXHR) {
                     if (jqXHR.status == 200) {
-                        $(modalPopupContent).html($('#reset-password-success-content').html());
-                        $("a#reset-password-success-link").click(function () {
-                            hidePopup();
-                        });
+                        modalDialog.header("Password reset is successful.");
+                        modalDialog.content("");
+                        modalDialog.footer('<div class="buttons"> <a href="javascript:modalDialog.hide()" ' +
+                            'class="btn-operations">Ok</a> </div>');
                     }
                 },
                 // The error callback
@@ -194,7 +183,7 @@ function resetPassword(username) {
     });
 
     $("a#reset-password-cancel-link").click(function () {
-        hidePopup();
+        modalDialog.hide();
     });
 }
 
@@ -213,8 +202,16 @@ function removeUser(username) {
     if (domain) {
         removeUserAPI += '?domain=' + domain;
     }
-    $(modalPopupContent).html($('#remove-user-modal-content').html());
-    showPopup();
+
+    modalDialog.header("Remove User");
+    modalDialog.content("Do you really want to remove this user ?");
+    modalDialog.footer('<div class="buttons"> <a href="#" id="remove-user-yes-link" class="btn-operations">Remove</a> ' +
+        '<a href="#" id="remove-user-cancel-link" class="btn-operations btn-default">Cancel</a> </div>');
+    modalDialog.showAsAWarning();
+
+    $("a#remove-user-cancel-link").click(function () {
+        modalDialog.hide();
+    });
 
     $("a#remove-user-yes-link").click(function () {
         invokerUtil.delete(
@@ -227,24 +224,24 @@ function removeUser(username) {
                         $("#user-" + username).remove();
                     }
                     // update modal-content with success message
-                    $(modalPopupContent).html($('#remove-user-success-content').html());
-                    $("a#remove-user-success-link").click(function () {
-                        hidePopup();
-                    });
+                    modalDialog.header("User Removed.");
+                    modalDialog.content("Done. User was successfully removed.");
+                    modalDialog.footer('<div class="buttons"> <a href="javascript:modalDialog.hide()" ' +
+                        'class="btn-operations">Ok</a> </div>');
+
                 }
             },
             function () {
-                $(modalPopupContent).html($('#remove-user-error-content').html());
-                $("a#remove-user-error-link").click(function () {
-                    hidePopup();
-                });
+                modalDialog.hide();
+                modalDialog.header("Operation cannot be performed !");
+                modalDialog.content("An unexpected error occurred. Please try again later.");
+                modalDialog.footer('<div class="buttons"> <a href="javascript:modalDialog.hide()" ' +
+                    'class="btn-operations">Ok</a> </div>');
+                modalDialog.showAsError();
             }
         );
     });
 
-    $("a#remove-user-cancel-link").click(function () {
-        hidePopup();
-    });
 }
 
 /**
@@ -256,8 +253,10 @@ function InitiateViewOption() {
     if ($("#can-view").val()) {
         $(location).attr('href', $(this).data("url"));
     } else {
-        $(modalPopupContent).html($('#errorUserView').html());
-        showPopup();
+        modalDialog.header("Unauthorized action!");
+        modalDialog.content("You don't have permissions to view users");
+        modalDialog.footer('<div class="buttons"> <a href="javascript:modalDialog.hide()" class="btn-operations">Ok</a> </div>');
+        modalDialog.showAsError();
     }
 }
 

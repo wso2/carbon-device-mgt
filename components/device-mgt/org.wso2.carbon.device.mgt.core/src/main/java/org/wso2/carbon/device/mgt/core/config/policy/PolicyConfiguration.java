@@ -19,7 +19,9 @@
 package org.wso2.carbon.device.mgt.core.config.policy;
 
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.List;
 
 @XmlRootElement(name = "PolicyConfiguration")
 public class PolicyConfiguration {
@@ -30,6 +32,7 @@ public class PolicyConfiguration {
     private int maxRetries;
     private int minRetriesToMarkUnreachable;
     private int minRetriesToMarkInactive;
+    private List<String> platforms;
 
     @XmlElement(name = "MonitoringClass", required = true)
     public String getMonitoringClass() {
@@ -83,6 +86,16 @@ public class PolicyConfiguration {
 
     public void setMonitoringFrequency(int monitoringFrequency) {
         this.monitoringFrequency = monitoringFrequency;
+    }
+
+    @XmlElementWrapper(name = "Platforms", required = true)
+    @XmlElement(name = "Platform", required = true)
+    public List<String> getPlatforms() {
+        return platforms;
+    }
+
+    public void setPlatforms(List<String> platforms) {
+        this.platforms = platforms;
     }
 
 }

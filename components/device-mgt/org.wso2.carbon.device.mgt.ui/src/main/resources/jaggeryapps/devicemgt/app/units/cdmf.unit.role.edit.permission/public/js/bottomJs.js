@@ -132,10 +132,14 @@ $(document).ready(function () {
                     $("#permissionList li input").click(function(){
                         var parentInput = $(this).parents("ul:eq(1) > li").find('input:eq(0)');
                         if(parentInput && parentInput.is(':checked')){
-                            $(modalPopupContent).html($('#child-deselect-error-content').html());
-                            showPopup();
+                            modalDialog.header('');
+                            modalDialog.content('Can\'t deselect child permissions when parent permission is ' +
+                                'selected.');
+                            modalDialog.footer('<div class="buttons"><a href="#" id="child-deselect-error-link" ' +
+                                'class="btn-operations">Ok</a></div>');
+                            modalDialog.showAsAWarning();
                             $("a#child-deselect-error-link").click(function () {
-                                hidePopup();
+                                modalDialog.hide();
                             });
                             return false;
                         }

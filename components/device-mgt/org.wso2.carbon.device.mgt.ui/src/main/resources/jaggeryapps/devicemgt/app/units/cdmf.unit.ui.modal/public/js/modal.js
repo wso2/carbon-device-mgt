@@ -23,6 +23,12 @@ var modalDialog = (function () {
         $("#modal-title-text").html(headerText);
 
     };
+
+    publicMethoads.icon = function (iconClass) {
+        $(".custom-msg-icon").find(".fw-stack-1x").addClass(iconClass);
+        $(".custom-msg-icon").removeClass("hidden");
+    };
+    
     publicMethoads.content = function (contentText) {
         $("#modal-content-text").html(contentText);
 

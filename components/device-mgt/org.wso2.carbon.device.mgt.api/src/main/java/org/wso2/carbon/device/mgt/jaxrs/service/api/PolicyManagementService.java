@@ -79,7 +79,7 @@ public interface PolicyManagementService {
                     ),
                     @ApiResponse(
                             code = 303,
-                            message = "See Other. \n he source can be retrieved from the URL specified in the location header",
+                            message = "See Other. \n The source can be retrieved from the URL specified in the location header",
                             responseHeaders = {
                                     @ResponseHeader(
                                             name = "Content-Location",
@@ -106,8 +106,7 @@ public interface PolicyManagementService {
             @ApiParam(
                     name = "policy",
                     value = "The properties required to add a new policy.",
-                    required = true,
-                    defaultValue = "{\"policyName\":\"test\",\"description\":\"test desc\",\"compliance\":\"ENFORCE\",\"ownershipType\":\"string\",\"active\":false,\"profile\":{\"profileId\":0,\"profileName\":\"string\",\"tenantId\":0,\"deviceType\":\"string\",\"createdDate\":\"2016-10-07T04:50:01.931Z\",\"updatedDate\":\"2016-10-07T04:50:01.931Z\",\"profileFeaturesList\":[{\"id\":0,\"featureCode\":\"string\",\"profileId\":0,\"deviceType\":\"string\",\"content\":{}}]},\"roles\":[\"string\"],\"deviceIdentifiers\":[{\"id\":\"string\",\"type\":\"string\"}],\"users\":[\"string\"]}")
+                    required = true)
                     @Valid PolicyWrapper policy);
 
     @GET
@@ -174,7 +173,7 @@ public interface PolicyManagementService {
                     int offset,
             @ApiParam(
                     name = "limit",
-                    value = "Maximum size of resource array to return.",
+                    value = "Provide how many policy details you require from the starting pagination index/offset.",
                     required = false,
                     defaultValue = "5")
             @QueryParam("limit")
@@ -427,7 +426,7 @@ public interface PolicyManagementService {
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "PUT",
             value = "Applying Changes on Policies",
-            notes = "Policies in the active state will be applied to new device that register with WSO2 EMM based on" +
+            notes = "Policies in the active state will be applied to new devices that register with WSO2 EMM based on" +
                     " the policy enforcement criteria . In a situation where you need to make changes to existing" +
                     " policies (removing, activating, deactivating and updating) or add new policies, the existing" +
                     " devices will not receive these changes immediately. Once all the required changes are made" +
@@ -477,8 +476,7 @@ public interface PolicyManagementService {
             @ApiParam(
                     name = "priorityUpdatedPolicies",
                     value = "List of policies with priorities",
-                    required = true,
-                    defaultValue = "[{id:1,priority:2}]")
+                    required = true)
                     List<PriorityUpdatedPolicyWrapper> priorityUpdatedPolicies);
 
 

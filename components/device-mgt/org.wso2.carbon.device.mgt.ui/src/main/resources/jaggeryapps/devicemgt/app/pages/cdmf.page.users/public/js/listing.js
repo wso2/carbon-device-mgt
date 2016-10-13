@@ -90,34 +90,48 @@ $("a#invite-user-link").click(function () {
     var inviteUserAPI = apiBasePath + "/users/send-invitation";
 
     if (usernameList.length == 0) {
-        $(modalPopupContent).html($("#errorUsers").html());
+        modalDialog.header("Operation cannot be performed !");
+        modalDialog.content("Please select a user or a list of users to send invitation emails.");
+        modalDialog.footer('<div class="buttons"> <a href="javascript:modalDialog.hide()" class="btn-operations">Ok' +
+            '</a> </div>');
+        modalDialog.showAsError();
     } else {
-        $(modalPopupContent).html($('#invite-user-modal-content').html());
-    }
+        modalDialog.header("");
+        modalDialog.content("An invitation mail will be sent to the selected user(s) to initiate an enrolment process." +
+            " Do you wish to continue ?");
+        modalDialog.footer('<div class="buttons"> <a href="#" id="invite-user-yes-link" class="btn-operations">yes</a>' +
+            '<a href="#" id="invite-user-cancel-link" class="btn-operations btn-default">No</a> </div>');
+        modalDialog.show();
 
-    showPopup();
+    }
 
     $("a#invite-user-yes-link").click(function () {
         invokerUtil.post(
             inviteUserAPI,
             usernameList,
             function () {
-                $(modalPopupContent).html($('#invite-user-success-content').html());
+                modalDialog.header("User invitation email for enrollment was successfully sent.");
+                modalDialog.footer('<div class="buttons"> <a href="#" id="invite-user-success-link" ' +
+                    'class="btn-operations">Ok </a> </div>');
                 $("a#invite-user-success-link").click(function () {
-                    hidePopup();
+                    modalPopup.hide();
                 });
             },
             function () {
-                $(modalPopupContent).html($('#invite-user-error-content').html());
+                modalDialog.header('<span class="fw-stack"> <i class="fw fw-ring fw-stack-2x"></i> <i class="fw ' +
+                    'fw-error fw-stack-1x"></i> </span> Unexpected Error !');
+                modalDialog.content('An unexpected error occurred. Try again later.');
+                modalDialog.footer('<div class="buttons"> <a href="#" id="invite-user-error-link" ' +
+                    'class="btn-operations">Ok </a> </div>');
                 $("a#invite-user-error-link").click(function () {
-                    hidePopup();
+                    modalPopup.hide();
                 });
             }
         );
     });
 
     $("a#invite-user-cancel-link").click(function () {
-        hidePopup();
+        modalPopup.hide();
     });
 });
 
@@ -139,13 +153,16 @@ function getSelectedUsernames() {
  * on User Listing page in WSO2 MDM Console.
  */
 function resetPassword(username) {
-    $(modalPopupContent).html($('#reset-password-window').html());
-    showPopup();
+    modalDialog.header('<span class="fw-stack"> <i class="fw fw-ring fw-stack-2x"></i> <i class="fw fw-key ' +
+        'fw-stack-1x"></i> </span> Reset Password');
+    modalDialog.content($("#modal-content-reset-password").html());
+    modalDialog.footer('<div class="buttons"> <a href="#" id="reset-password-yes-link" class="btn-operations"> Save ' +
+        '</a> <a href="#" id="reset-password-cancel-link" class="btn-operations btn-default"> Cancel </a> </div>');
+    modalDialog.show();
 
     $("a#reset-password-yes-link").click(function () {
-        var newPassword = $("#new-password").val();
-        var confirmedPassword = $("#confirmed-password").val();
-
+        var newPassword = $("#basic-modal-view .new-password").val();
+        var confirmedPassword = $("#basic-modal-view .confirmed-password").val();
         var errorMsgWrapper = "#notification-error-msg";
         var errorMsg = "#notification-error-msg span";
         if (!newPassword) {
@@ -178,10 +195,10 @@ function resetPassword(username) {
                 // The success callback
                 function (data, textStatus, jqXHR) {
                     if (jqXHR.status == 200) {
-                        $(modalPopupContent).html($('#reset-password-success-content').html());
-                        $("a#reset-password-success-link").click(function () {
-                            hidePopup();
-                        });
+                        modalDialog.header("Password reset is successful.");
+                        modalDialog.content("");
+                        modalDialog.footer('<div class="buttons"> <a href="javascript:modalDialog.hide()" ' +
+                            'class="btn-operations">Ok</a> </div>');
                     }
                 },
                 // The error callback
@@ -195,7 +212,7 @@ function resetPassword(username) {
     });
 
     $("a#reset-password-cancel-link").click(function () {
-        hidePopup();
+        modalDialog.hide();
     });
 }
 
@@ -214,8 +231,16 @@ function removeUser(username) {
     if (domain) {
         removeUserAPI += '?domain=' + domain;
     }
-    $(modalPopupContent).html($('#remove-user-modal-content').html());
-    showPopup();
+
+    modalDialog.header("Remove User");
+    modalDialog.content("Do you really want to remove this user ?");
+    modalDialog.footer('<div class="buttons"> <a href="#" id="remove-user-yes-link" class="btn-operations">Remove</a> ' +
+        '<a href="#" id="remove-user-cancel-link" class="btn-operations btn-default">Cancel</a> </div>');
+    modalDialog.showAsAWarning();
+
+    $("a#remove-user-cancel-link").click(function () {
+        modalDialog.hide();
+    });
 
     $("a#remove-user-yes-link").click(function () {
         invokerUtil.delete(
@@ -228,17 +253,20 @@ function removeUser(username) {
                         $("#user-" + username).remove();
                     }
                     // update modal-content with success message
-                    $(modalPopupContent).html($('#remove-user-success-content').html());
-                    $("a#remove-user-success-link").click(function () {
-                        hidePopup();
-                    });
+                    modalDialog.header("User Removed.");
+                    modalDialog.content("Done. User was successfully removed.");
+                    modalDialog.footer('<div class="buttons"> <a href="javascript:modalDialog.hide()" ' +
+                        'class="btn-operations">Ok</a> </div>');
+
                 }
             },
             function () {
-                $(modalPopupContent).html($('#remove-user-error-content').html());
-                $("a#remove-user-error-link").click(function () {
-                    hidePopup();
-                });
+                modalDialog.hide();
+                modalDialog.header("Operation cannot be performed !");
+                modalDialog.content("An unexpected error occurred. Please try again later.");
+                modalDialog.footer('<div class="buttons"> <a href="javascript:modalDialog.hide()" ' +
+                    'class="btn-operations">Ok</a> </div>');
+                modalDialog.showAsError();
             }
         );
     });
@@ -257,8 +285,10 @@ function InitiateViewOption() {
     if ($("#can-view").val()) {
         $(location).attr('href', $(this).data("url"));
     } else {
-        $(modalPopupContent).html($('#errorUserView').html());
-        showPopup();
+        modalDialog.header("Unauthorized action!");
+        modalDialog.content("You don't have permissions to view users");
+        modalDialog.footer('<div class="buttons"> <a href="javascript:modalDialog.hide()" class="btn-operations">Ok</a> </div>');
+        modalDialog.showAsError();
     }
 }
 
@@ -314,7 +344,7 @@ function loadUsers() {
                 if (!data.firstname && !data.lastname) {
                     return "";
                 } else if (data.firstname && data.lastname) {
-                    return "<h4>&nbsp;&nbsp;" + data.firstname + " " + data.lastname + "</h4>";
+                    return "<h4>" + data.firstname + " " + data.lastname + "</h4>";
                 }
             }
         },
@@ -322,7 +352,7 @@ function loadUsers() {
             class: "fade-edge remove-padding-top",
             data: 'filter',
             render: function (filter, type, row, meta) {
-                return '&nbsp;&nbsp;<i class="fw-user"></i>&nbsp;&nbsp;' + filter;
+                return '<i class="fw-user"></i>' + filter;
             }
         },
         {
@@ -332,7 +362,7 @@ function loadUsers() {
                 if (!data.emailAddress) {
                     return "";
                 } else {
-                    return "&nbsp;&nbsp;<a href='mailto:" + data.emailAddress + "' ><i class='fw-mail'></i>&nbsp;&nbsp;" + data.emailAddress + "</a>";
+                    return "<a href='mailto:" + data.emailAddress + "' ><i class='fw-mail'></i>" + data.emailAddress + "</a>";
                 }
             }
         },
@@ -340,17 +370,13 @@ function loadUsers() {
             class: "text-right content-fill text-left-on-grid-view no-wrap",
             data: null,
             render: function (data, type, row, meta) {
-                var editbtn = '&nbsp;<a data-toggle="tooltip" data-placement="bottom" title="Edit User"href="' + context + '/user/edit?username=' + data.filter + '" data-username="' + data.filter + '" ' +
+                var editbtn = '<a data-toggle="tooltip" data-placement="bottom" title="Edit User"href="' + context + '/user/edit?username=' + data.filter + '" data-username="' + data.filter + '" ' +
                     'data-click-event="edit-form" ' +
                     'class="btn padding-reduce-on-grid-view edit-user-link"> ' +
                     '<span class="fw-stack"> ' +
                     '<i class="fw fw-ring fw-stack-2x"></i>' +
                     '<i class="fw fw-edit fw-stack-1x"></i>' +
-                    '</span>' +
-                    '<span class="hidden-xs hidden-on-grid-view">' +
-                    '&nbsp;&nbsp;Edit' +
-                    '</span>' +
-                    '</a>';
+                    '</span><span class="hidden-xs hidden-on-grid-view">Edit</span></a>';
 
                 var resetPasswordbtn = '<a data-toggle="tooltip" data-placement="bottom" title="Reset Password" href="#" data-username="' + data.filter + '" data-userid="' + data.filter + '" ' +
                     'data-click-event="edit-form" ' +
@@ -359,11 +385,7 @@ function loadUsers() {
                     '<span class="fw-stack">' +
                     '<i class="fw fw-ring fw-stack-2x"></i>' +
                     '<i class="fw fw-key fw-stack-1x"></i>' +
-                    '</span>' +
-                    '<span class="hidden-xs hidden-on-grid-view">' +
-                    '&nbsp;&nbsp;Reset Password' +
-                    '</span>' +
-                    '</a>';
+                    '</span><span class="hidden-xs hidden-on-grid-view">Reset Password</span></a>';
 
                 var removebtn = '<a data-toggle="tooltip" data-placement="bottom" title="Remove User" href="#" data-username="' + data.filter + '" data-userid="' + data.filter + '" ' +
                     'data-click-event="remove-form" ' +
@@ -372,20 +394,18 @@ function loadUsers() {
                     '<span class="fw-stack">' +
                     '<i class="fw fw-ring fw-stack-2x"></i>' +
                     '<i class="fw fw-delete fw-stack-1x"></i>' +
-                    '</span>' +
-                    '<span class="hidden-xs hidden-on-grid-view">' +
-                    '&nbsp;&nbsp;Remove' +
-                    '</span>' +
-                    '</a>';
+                    '</span><span class="hidden-xs hidden-on-grid-view">Remove</span></a>';
 
                 var returnbtnSet = '';
-                if ($("#can-edit").length > 0) {
+                var adminUser = $("#user-table").data("user");
+                var currentUser = $("#user-table").data("logged-user");
+                if ($("#can-edit").length > 0 && adminUser !== data.filter) {
                     returnbtnSet = returnbtnSet + editbtn;
                 }
-                if ($("#can-reset-password").length > 0) {
+                if ($("#can-reset-password").length > 0 && adminUser !== data.filter) {
                     returnbtnSet = returnbtnSet + resetPasswordbtn;
                 }
-                if ($("#can-remove").length > 0) {
+                if ($("#can-remove").length > 0 && adminUser !== data.filter && currentUser !== data.filter) {
                     returnbtnSet = returnbtnSet + removebtn;
                 }
 

@@ -42,6 +42,11 @@
         <MaxRetries>5</MaxRetries>
         <MinRetriesToMarkUnreachable>8</MinRetriesToMarkUnreachable>
         <MinRetriesToMarkInactive>20</MinRetriesToMarkInactive>
+        <Platforms>
+            <Platform>android</Platform>
+            <Platform>ios</Platform>
+            <Platform>windows</Platform>
+        </Platforms>
     </PolicyConfiguration>
     <TaskConfiguration>
         <Enable>true</Enable>

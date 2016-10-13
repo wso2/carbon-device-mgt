@@ -35,7 +35,7 @@ function onRequest(context) {
     var userStore;
 
     if (isMatched) {
-        if (uriMatcher.match( uriMatcher.match("/{context}/role/edit/{roleName}"))) {
+        if (uriMatcher.match("/{context}/role/edit/{roleName}")) {
             matchedElements = uriMatcher.elements();
             roleName = matchedElements["roleName"];
             response = userModule.getRole(roleName);
@@ -43,19 +43,24 @@ function onRequest(context) {
                 context["role"] = response["content"];
             }
             userStore = "PRIMARY";
-        } else if (uriMatcher.match( uriMatcher.match("/{context}/role/edit/{userStoreName}/{roleName}"))) {
+        } else if (uriMatcher.match("/{context}/role/edit/{userStoreName}/{roleName}")) {
             matchedElements = uriMatcher.elements();
-            roleName = matchedElements["userStoreName"] + "/" + matchedElements["roleName"];
-            response = userModule.getRole(roleName);
+            roleName = matchedElements["roleName"];
+            userStore = matchedElements["userStoreName"];
+            response = userModule.getRole(userStore + "/" + roleName);
             if (response["status"] == "success") {
                 context["role"] = response["content"];
             }
-            userStore = matchedElements["userStoreName"];
+
         }
         context["userStore"] = userStore;
         context["roleNameJSRegEx"] = deviceMgtProps["roleValidationConfig"]["roleNameJSRegEx"];
         context["roleNameHelpText"] = deviceMgtProps["roleValidationConfig"]["roleNameHelpMsg"];
         context["roleNameRegExViolationErrorMsg"] = deviceMgtProps["roleValidationConfig"]["roleNameRegExViolationErrorMsg"];
+        roleName = context["role"]["roleName"];
+        if (roleName.indexOf("/") > -1) {
+            context["role"]["roleName"] = roleName.substr(roleName.indexOf("/") + 1);
+        }
         return context;
     } else {
         //TODO: handle error scenario

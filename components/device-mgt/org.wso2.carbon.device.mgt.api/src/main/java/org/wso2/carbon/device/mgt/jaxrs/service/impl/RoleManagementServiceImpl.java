@@ -93,12 +93,10 @@ public class RoleManagementServiceImpl implements RoleManagementService {
 
     @GET
     @Path("/{roleName}/permissions")
-    @Override
-    public Response getPermissionsOfRole(
-            @PathParam("roleName") String roleName, @QueryParam("user-store") String userStoreName,
-            @HeaderParam("If-Modified-Since") String ifModifiedSince) {
+    @Override public Response getPermissionsOfRole(@PathParam("roleName") String roleName,
+            @QueryParam("user-store") String userStoreName, @HeaderParam("If-Modified-Since") String ifModifiedSince) {
         if (userStoreName != null && !userStoreName.isEmpty()) {
-            roleName = userStoreName + '/' + roleName;
+            roleName = userStoreName + "/" + roleName;
         }
         RequestValidationUtil.validateRoleName(roleName);
         try {
@@ -168,12 +166,12 @@ public class RoleManagementServiceImpl implements RoleManagementService {
     @Path("/{roleName}")
     @Override
     public Response getRole(@PathParam("roleName") String roleName, @QueryParam("user-store") String userStoreName,
-                            @HeaderParam("If-Modified-Since") String ifModifiedSince) {
+            @HeaderParam("If-Modified-Since") String ifModifiedSince) {
         if (log.isDebugEnabled()) {
             log.debug("Getting the list of user roles");
         }
         if (userStoreName != null && !userStoreName.isEmpty()) {
-            roleName = userStoreName + '/' + roleName;
+            roleName = userStoreName + "/" + roleName;
         }
         RequestValidationUtil.validateRoleName(roleName);
         RoleInfo roleInfo = new RoleInfo();
@@ -254,10 +252,11 @@ public class RoleManagementServiceImpl implements RoleManagementService {
 
     @PUT
     @Path("/{roleName}")
-    @Override public Response updateRole(@PathParam("roleName") String roleName, RoleInfo roleInfo,
+    @Override
+    public Response updateRole(@PathParam("roleName") String roleName, RoleInfo roleInfo,
             @QueryParam("user-store") String userStoreName) {
         if (userStoreName != null && !userStoreName.isEmpty()) {
-            roleName = userStoreName + '/' + roleName;
+            roleName = userStoreName + "/" + roleName;
         }
         RequestValidationUtil.validateRoleName(roleName);
         RequestValidationUtil.validateRoleDetails(roleInfo);
@@ -315,7 +314,10 @@ public class RoleManagementServiceImpl implements RoleManagementService {
     @DELETE
     @Path("/{roleName}")
     @Override
-    public Response deleteRole(@PathParam("roleName") String roleName) {
+    public Response deleteRole(@PathParam("roleName") String roleName, @QueryParam("user-store") String userStoreName) {
+        if (userStoreName != null && !userStoreName.isEmpty()) {
+            roleName = userStoreName + "/" + roleName;
+        }
         RequestValidationUtil.validateRoleName(roleName);
         try {
             final UserRealm userRealm = DeviceMgtAPIUtils.getUserRealm();
@@ -346,7 +348,11 @@ public class RoleManagementServiceImpl implements RoleManagementService {
     @PUT
     @Path("/{roleName}/users")
     @Override
-    public Response updateUsersOfRole(@PathParam("roleName") String roleName, List<String> users) {
+    public Response updateUsersOfRole(@PathParam("roleName") String roleName,
+            @QueryParam("user-store") String userStoreName, List<String> users) {
+        if (userStoreName != null && !userStoreName.isEmpty()) {
+            roleName = userStoreName + "/" + roleName;
+        }
         RequestValidationUtil.validateRoleName(roleName);
         RequestValidationUtil.validateUsers(users);
         try {

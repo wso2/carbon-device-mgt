@@ -201,8 +201,15 @@ function loadRoles() {
  */
 $("#role-grid").on("click", ".remove-role-link", function () {
     var role = $(this).data("role");
+    var userStore;
+    if (role.indexOf('/') > 0) {
+        userStore = role.substr(0, role.indexOf('/'));
+        role = role.substr(role.indexOf('/') + 1);
+    }
     var removeRoleAPI = apiBasePath + "/roles/" + role;
-
+    if (userStore) {
+        removeRoleAPI += "?user-store=" + userStore;
+    }
     $(modalPopupContent).html($('#remove-role-modal-content').html());
     showPopup();
 
@@ -210,7 +217,11 @@ $("#role-grid").on("click", ".remove-role-link", function () {
         invokerUtil.delete(
             removeRoleAPI,
             function () {
-                $("#role-" + role).remove();
+                if (userStore) {
+                    $("#role-" + userStore + "\\/" + role).remove();
+                } else {
+                    $("#role-" + role).remove();
+                }
                 $(modalPopupContent).html($('#remove-role-success-content').html());
                 $("a#remove-role-success-link").click(function () {
                     hidePopup();

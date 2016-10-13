@@ -163,11 +163,11 @@ $(document).ready(function () {
         } else {
             var addRoleFormData = {};
             addRoleFormData.roleName = roleName;
+            var addRoleAPI = apiBasePath + "/roles/" + currentRoleName;
             if (domain != "PRIMARY"){
                 addRoleFormData.roleName = domain + "/" + roleName;
+                addRoleAPI = addRoleAPI + "?user-store=" + domain;
             }
-
-            var addRoleAPI = apiBasePath + "/roles/" + currentRoleName;
             invokerUtil.put(
                 addRoleAPI,
                 addRoleFormData,

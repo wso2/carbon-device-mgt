@@ -404,7 +404,12 @@ public interface RoleManagementService {
                     value = "The name of the role that needs to de deleted.\n" +
                             "NOTE: Don't delete the admin role",
                     required = true)
-            @PathParam("roleName") String roleName);
+            @PathParam("roleName") String roleName,
+            @ApiParam(
+                    name = "user-store",
+                    value = "The name of the UserStore you wish to get the list of roles.",
+                    required = false)
+            @QueryParam("user-store") String userStoreName);
 
     @PUT
     @Path("/{roleName}/users")
@@ -464,6 +469,11 @@ public interface RoleManagementService {
                     required = true,
                     defaultValue = "admin")
             @PathParam("roleName") String roleName,
+            @ApiParam(
+                    name = "user-store",
+                    value = "The name of the UserStore you wish to get the list of roles.",
+                    required = false)
+            @QueryParam("user-store") String userStoreName,
             @ApiParam(
                     name = "users",
                     value = "Define the users that belong to the role.\n" +

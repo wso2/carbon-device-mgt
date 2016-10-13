@@ -159,16 +159,14 @@ $(document).ready(function () {
             roleName = roleName.substr(roleName.indexOf('/') + 1);
         }
         var updateRolePermissionAPI = apiBasePath + "/roles/" + roleName;
-        if (userStore) {
-            updateRolePermissionAPI += "?user-store=" + userStore;
-        }
         var updateRolePermissionData = {};
         var perms = [];
         $("#permissionList li input:checked").each(function(){
             perms.push($(this).data("resourcepath"));
         });
         if (userStore) {
-            updateRolePermissionData.roleName = userStore + roleName;
+            updateRolePermissionAPI += "?user-store=" + userStore;
+            updateRolePermissionData.roleName = userStore + "/" + roleName;
         } else {
             updateRolePermissionData.roleName = roleName;
         }

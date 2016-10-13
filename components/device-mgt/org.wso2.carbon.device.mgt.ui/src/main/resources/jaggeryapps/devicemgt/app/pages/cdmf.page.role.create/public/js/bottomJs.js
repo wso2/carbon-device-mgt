@@ -201,7 +201,7 @@ $(document).ready(function () {
                         $("input#roleName").val("");
                         $("#domain").val("PRIMARY");
                         $("#users").val("");
-                        window.location.href = appContext + "/role/edit-permission/" + roleName;
+                        window.location.href = appContext + "/role/edit-permission/" + addRoleFormData.roleName;
                     }
                 },
                 function (jqXHR) {

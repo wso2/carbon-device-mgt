@@ -25,23 +25,32 @@
 function onRequest(context) {
     var userModule = require("/app/modules/business-controllers/user.js")["userModule"];
     var deviceMgtProps = require("/app/modules/conf-reader/main.js")["conf"];
-
     var uri = request.getRequestURI();
     var uriMatcher = new URIMatcher(String(uri));
-    var isMatched = uriMatcher.match("/{context}/role/edit/{roleName}");
+    var isMatched = uriMatcher.match("/{context}/role/edit/{roleName}") ||
+        uriMatcher.match("/{context}/role/edit/{userStoreName}/{roleName}");
+    var matchedElements;
+    var roleName;
+    var response;
+    var userStore;
 
     if (isMatched) {
-        var matchedElements = uriMatcher.elements();
-        var roleName = matchedElements["roleName"];
-        var response = userModule.getRole(roleName);
-        if (response["status"] == "success") {
-            context["role"] = response["content"];
-        }
-        var userStore;
-        if (roleName.indexOf("/") > -1) {
-            userStore = roleName.substring(0, roleName.indexOf("/"));
-        } else {
+        if (uriMatcher.match( uriMatcher.match("/{context}/role/edit/{roleName}"))) {
+            matchedElements = uriMatcher.elements();
+            roleName = matchedElements["roleName"];
+            response = userModule.getRole(roleName);
+            if (response["status"] == "success") {
+                context["role"] = response["content"];
+            }
             userStore = "PRIMARY";
+        } else if (uriMatcher.match( uriMatcher.match("/{context}/role/edit/{userStoreName}/{roleName}"))) {
+            matchedElements = uriMatcher.elements();
+            roleName = matchedElements["userStoreName"] + "/" + matchedElements["roleName"];
+            response = userModule.getRole(roleName);
+            if (response["status"] == "success") {
+                context["role"] = response["content"];
+            }
+            userStore = matchedElements["userStoreName"];
         }
         context["userStore"] = userStore;
         context["roleNameJSRegEx"] = deviceMgtProps["roleValidationConfig"]["roleNameJSRegEx"];

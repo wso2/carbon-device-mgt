@@ -173,6 +173,11 @@ public interface RoleManagementService {
                     defaultValue = "Engineer")
             @PathParam("roleName") String roleName,
             @ApiParam(
+                    name = "user-store",
+                    value = "The name of the UserStore you wish to get the list of roles.",
+                    required = false)
+            @QueryParam("user-store") String userStoreName,
+            @ApiParam(
                     name = "If-Modified-Since",
                     value = "Checks if the requested variant was modified, since the specified date-time." +
                             "Provide the value in the following format: EEE, d MMM yyyy HH:mm:ss Z.\n" +
@@ -237,6 +242,11 @@ public interface RoleManagementService {
                     required = true,
                     defaultValue = "admin")
             @PathParam("roleName") String roleName,
+            @ApiParam(
+                    name = "user-store",
+                    value = "The name of the UserStore you wish to get the list of roles.",
+                    required = false)
+            @QueryParam("user-store") String userStoreName,
             @ApiParam(
                     name = "If-Modified-Since",
                     value = "Checks if the requested variant was modified, since the specified date-time." +
@@ -355,7 +365,12 @@ public interface RoleManagementService {
                     value = "The properties required to update a role.\n" +
                             "NOTE: Don't change the role and the permissions of the admin user. " +
                             "If you want to try out this API by updating all the properties, create a new role and update the properties accordingly.",
-                    required = true) RoleInfo role);
+                    required = true) RoleInfo role,
+            @ApiParam(
+                    name = "user-store",
+                    value = "The name of the UserStore you wish to get the list of roles.",
+                    required = false)
+            @QueryParam("user-store") String userStoreName);
 
     @DELETE
     @Path("/{roleName}")

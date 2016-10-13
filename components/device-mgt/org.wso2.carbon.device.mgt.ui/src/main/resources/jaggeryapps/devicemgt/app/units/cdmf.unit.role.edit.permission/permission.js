@@ -27,11 +27,19 @@ function onRequest(context) {
     var uri = request.getRequestURI();
     var uriMatcher = new URIMatcher(String(uri));
     var isMatched = uriMatcher.match("/{context}/role/edit-permission/{rolename}");
+    var matchedElements;
+    var roleName;
+    var userStore;
 
     if (isMatched) {
-        var matchedElements = uriMatcher.elements();
-        var roleName = matchedElements.rolename;
+        matchedElements = uriMatcher.elements();
+        roleName = matchedElements.rolename;
         context["roleName"] = roleName;
+    } else if (uriMatcher.match("/{context}/role/edit-permission/{userStore}/{rolename}")) {
+        matchedElements = uriMatcher.elements();
+        userStore = matchedElements.userStore;
+        roleName = matchedElements.rolename;
+        context["roleName"] = userStore + '/' + roleName;
     }
     return context;
 }

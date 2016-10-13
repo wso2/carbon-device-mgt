@@ -188,7 +188,7 @@ function loadRoles() {
         "sorting": false
     };
 
-    $('#role-grid').datatables_extended_serverside_paging(settings, '/api/device-mgt/v1.0/roles', dataFilter, columns, fnCreatedRow, null, options);
+    $('#role-grid').datatables_extended_serverside_paging(settings, '/api/device-mgt/v1.0/roles?user-store=all', dataFilter, columns, fnCreatedRow, null, options);
     loadingContent.hide();
 
 }

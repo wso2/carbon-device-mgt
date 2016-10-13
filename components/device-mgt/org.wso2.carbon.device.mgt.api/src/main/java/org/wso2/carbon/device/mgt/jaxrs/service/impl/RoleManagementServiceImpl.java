@@ -95,8 +95,11 @@ public class RoleManagementServiceImpl implements RoleManagementService {
     @Path("/{roleName}/permissions")
     @Override
     public Response getPermissionsOfRole(
-            @PathParam("roleName") String roleName,
+            @PathParam("roleName") String roleName, @QueryParam("user-store") String userStoreName,
             @HeaderParam("If-Modified-Since") String ifModifiedSince) {
+        if (userStoreName != null && !userStoreName.isEmpty()) {
+            roleName = userStoreName + '/' + roleName;
+        }
         RequestValidationUtil.validateRoleName(roleName);
         try {
             final UserRealm userRealm = DeviceMgtAPIUtils.getUserRealm();
@@ -164,10 +167,13 @@ public class RoleManagementServiceImpl implements RoleManagementService {
     @GET
     @Path("/{roleName}")
     @Override
-    public Response getRole(@PathParam("roleName") String roleName,
+    public Response getRole(@PathParam("roleName") String roleName, @QueryParam("user-store") String userStoreName,
                             @HeaderParam("If-Modified-Since") String ifModifiedSince) {
         if (log.isDebugEnabled()) {
             log.debug("Getting the list of user roles");
+        }
+        if (userStoreName != null && !userStoreName.isEmpty()) {
+            roleName = userStoreName + '/' + roleName;
         }
         RequestValidationUtil.validateRoleName(roleName);
         RoleInfo roleInfo = new RoleInfo();
@@ -248,8 +254,11 @@ public class RoleManagementServiceImpl implements RoleManagementService {
 
     @PUT
     @Path("/{roleName}")
-    @Override
-    public Response updateRole(@PathParam("roleName") String roleName, RoleInfo roleInfo) {
+    @Override public Response updateRole(@PathParam("roleName") String roleName, RoleInfo roleInfo,
+            @QueryParam("user-store") String userStoreName) {
+        if (userStoreName != null && !userStoreName.isEmpty()) {
+            roleName = userStoreName + '/' + roleName;
+        }
         RequestValidationUtil.validateRoleName(roleName);
         RequestValidationUtil.validateRoleDetails(roleInfo);
         try {
@@ -372,7 +381,11 @@ public class RoleManagementServiceImpl implements RoleManagementService {
         if (log.isDebugEnabled()) {
             log.debug("Getting the list of user roles");
         }
-        roles = userStoreManager.getRoleNames(userStore+"/*", -1, false, true, true);
+        if (userStore.equals("all")) {
+            roles = userStoreManager.getRoleNames("*", -1, false, true, true);
+        } else {
+            roles = userStoreManager.getRoleNames(userStore + "/*", -1, false, true, true);
+        }
         // removing all internal roles, roles created for Service-providers and application related roles.
         List<String> filteredRoles = new ArrayList<>();
         for (String role : roles) {

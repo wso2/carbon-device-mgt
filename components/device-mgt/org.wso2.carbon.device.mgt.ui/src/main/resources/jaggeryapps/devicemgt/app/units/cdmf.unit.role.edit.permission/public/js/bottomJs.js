@@ -102,7 +102,15 @@ $(document).ready(function () {
     var listPartialSrc = $("#list-partial").attr("src");
     var treeTemplateSrc = $("#tree-template").attr("src");
     var roleName = $("#permissionList").data("currentrole");
+    var userStore;
+    if (roleName.indexOf('/') > 0) {
+        userStore = roleName.substr(0, roleName.indexOf('/'));
+        roleName = roleName.substr(roleName.indexOf('/') + 1);
+    }
     var serviceUrl = apiBasePath + "/roles/" +encodeURIComponent(roleName)+"/permissions";
+    if (userStore) {
+        serviceUrl += "?user-store=" + userStore;
+    }
     $.registerPartial("list", listPartialSrc, function(){
         $.template("treeTemplate", treeTemplateSrc, function (template) {
             invokerUtil.get(serviceUrl,
@@ -145,13 +153,25 @@ $(document).ready(function () {
      */
     $("button#update-permissions-btn").click(function() {
         var roleName = $("#permissionList").data("currentrole");
+        var userStore;
+        if (roleName.indexOf('/') > 0) {
+            userStore = roleName.substr(0, roleName.indexOf('/'));
+            roleName = roleName.substr(roleName.indexOf('/') + 1);
+        }
         var updateRolePermissionAPI = apiBasePath + "/roles/" + roleName;
+        if (userStore) {
+            updateRolePermissionAPI += "?user-store=" + userStore;
+        }
         var updateRolePermissionData = {};
         var perms = [];
         $("#permissionList li input:checked").each(function(){
             perms.push($(this).data("resourcepath"));
         });
-        updateRolePermissionData.roleName = roleName;
+        if (userStore) {
+            updateRolePermissionData.roleName = userStore + roleName;
+        } else {
+            updateRolePermissionData.roleName = roleName;
+        }
         updateRolePermissionData.permissions = perms;
         invokerUtil.put(
             updateRolePermissionAPI,

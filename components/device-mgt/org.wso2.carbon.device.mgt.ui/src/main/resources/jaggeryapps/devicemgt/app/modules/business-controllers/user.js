@@ -39,7 +39,7 @@ var userModule = function () {
      * Get the carbon user object from the session. If not found - it will throw a user not found error.
      * @returns {object} carbon user object
      */
-    privateMethods.getCarbonUser = function () {
+    publicMethods.getCarbonUser = function () {
         var carbon = require("carbon");
         var carbonUser = session.get(constants["USER_SESSION_KEY"]);
         var utility = require("/app/modules/utility.js")["utility"];
@@ -59,17 +59,17 @@ var userModule = function () {
     privateMethods.callBackend = function (url, method) {
         if (constants["HTTP_GET"] == method) {
             return serviceInvokers.XMLHttp.get(url,
-                                               function (backendResponse) {
-                                                   var response = {};
-                                                   response.content = backendResponse.responseText;
-                                                   if (backendResponse.status == 200) {
-                                                       response.status = "success";
-                                                   } else if (backendResponse.status == 400 || backendResponse.status == 401 ||
-                                                              backendResponse.status == 404 || backendResponse.status == 500) {
-                                                       response.status = "error";
-                                                   }
-                                                   return response;
-                                               }
+                function (backendResponse) {
+                    var response = {};
+                    response.content = backendResponse.responseText;
+                    if (backendResponse.status == 200) {
+                        response.status = "success";
+                    } else if (backendResponse.status == 400 || backendResponse.status == 401 ||
+                        backendResponse.status == 404 || backendResponse.status == 500) {
+                        response.status = "error";
+                    }
+                    return response;
+                }
             );
         } else {
             log.error("Runtime error : This method only support HTTP GET requests.");
@@ -176,7 +176,7 @@ var userModule = function () {
      * @returns {object} a response object with status and content on success.
      */
     publicMethods.getUser = function (username) {
-        var carbonUser = privateMethods.getCarbonUser();
+        var carbonUser = publicMethods.getCarbonUser();
         var domain;
         if (username.indexOf('/') > 0) {
             domain = username.substr(0, username.indexOf('/'));
@@ -185,7 +185,7 @@ var userModule = function () {
         try {
             utility.startTenantFlow(carbonUser);
             var url = devicemgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"] + "/users/" +
-                      encodeURIComponent(username);
+                encodeURIComponent(username);
             if (domain) {
                 url += '?domain=' + domain;
             }
@@ -206,7 +206,7 @@ var userModule = function () {
      * @returns {object} a response object with status and content on success.
      */
     publicMethods.getRolesByUsername = function (username) {
-        var carbonUser = privateMethods.getCarbonUser();
+        var carbonUser = publicMethods.getCarbonUser();
         var domain;
         if (username.indexOf('/') > 0) {
             domain = username.substr(0, username.indexOf('/'));
@@ -215,7 +215,7 @@ var userModule = function () {
         try {
             utility.startTenantFlow(carbonUser);
             var url = devicemgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"] + "/users/" +
-                      encodeURIComponent(username) + "/roles";
+                encodeURIComponent(username) + "/roles";
             if (domain) {
                 url += '?domain=' + domain;
             }
@@ -268,7 +268,7 @@ var userModule = function () {
         try {
             utility.startTenantFlow(carbonUser);
             var url = devicemgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"] +
-                      "/roles?offset=0&limit=100";
+                "/roles?offset=0&limit=100";
             var response = privateMethods.callBackend(url, constants["HTTP_GET"]);
             if (response.status == "success") {
                 response.content = parse(response.content).roles;
@@ -294,7 +294,7 @@ var userModule = function () {
         try {
             utility.startTenantFlow(carbonUser);
             var url = devicemgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"] +
-                      "/roles?offset=0&limit=1";
+                "/roles?offset=0&limit=1";
             return serviceInvokers.XMLHttp.get(
                 url, function (responsePayload) {
                     return parse(responsePayload["responseText"])["count"];
@@ -328,7 +328,7 @@ var userModule = function () {
         try {
             utility.startTenantFlow(carbonUser);
             var url = devicemgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"] +
-                      "/roles?user-store=" + userStore + "&limit=100";
+                "/roles?user-store=" + userStore + "&limit=100";
             var response = privateMethods.callBackend(url, constants["HTTP_GET"]);
             if (response.status == "success") {
                 response.content = parse(response.content).roles;
@@ -381,7 +381,7 @@ var userModule = function () {
         try {
             utility.startTenantFlow(carbonUser);
             var url = devicemgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"] +
-                      "/roles/" + encodeURIComponent(roleName);
+                "/roles/" + encodeURIComponent(roleName);
             var response = privateMethods.callBackend(url, constants["HTTP_GET"]);
             if (response.status == "success") {
                 response.content = parse(response.content);

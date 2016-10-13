@@ -436,7 +436,7 @@ function generateRoleMap(groupName, groupOwner, selectedUser, allRoles) {
                     }
                 }
                 str += '<label class="checkbox-text"><input type="checkbox" id="user-role-' + allRoles[i] + '" value="' + allRoles[i]
-                       + '" ' + isChecked + '/>' + allRoles[i] + '</label>&nbsp;&nbsp;&nbsp;&nbsp;';
+                       + '" ' + isChecked + '/>' + allRoles[i] + '</label>';
             }
 
             $('#user-roles').html(str);

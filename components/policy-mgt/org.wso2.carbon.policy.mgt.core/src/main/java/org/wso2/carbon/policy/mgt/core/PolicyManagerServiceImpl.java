@@ -201,7 +201,7 @@ public class PolicyManagerServiceImpl implements PolicyManagerService {
     }
 
     @Override
-    public boolean isCompliance(DeviceIdentifier deviceIdentifier) throws PolicyComplianceException {
-        return monitoringManager.isCompliance(deviceIdentifier);
+    public boolean isCompliant(DeviceIdentifier deviceIdentifier) throws PolicyComplianceException {
+        return monitoringManager.isCompliant(deviceIdentifier);
     }
 }

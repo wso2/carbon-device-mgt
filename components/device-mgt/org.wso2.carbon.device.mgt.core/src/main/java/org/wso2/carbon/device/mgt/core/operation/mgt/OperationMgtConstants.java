@@ -29,4 +29,11 @@ public class OperationMgtConstants {
         public static final String DEVICE_ID_SERVICE_NOT_FOUND =
                 "Issue in retrieving device management service instance for device found at %s";
     }
+
+    public final class OperationCodes {
+        private OperationCodes() {
+            throw new AssertionError();
+        }
+        public static final String POLICY_REVOKE = "POLICY_REVOKE";
+    }
 }

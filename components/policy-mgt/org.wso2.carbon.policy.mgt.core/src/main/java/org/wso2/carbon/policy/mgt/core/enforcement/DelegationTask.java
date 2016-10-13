@@ -64,32 +64,33 @@ public class DelegationTask implements Task {
             if (!deviceTypes.isEmpty()) {
                 DeviceManagementProviderService service = PolicyManagementDataHolder.getInstance()
                         .getDeviceManagementService();
-                List<Device> devices = new ArrayList<>();
+                List<Device> devices;
+                List<Device> toBeNotified;
                 for (String deviceType : deviceTypes) {
                     try {
+                        devices = new ArrayList<>();
+                        toBeNotified = new ArrayList<>();
                         devices.addAll(service.getAllDevices(deviceType));
+                        //HashMap<Integer, Integer> deviceIdPolicy = policyManager.getAppliedPolicyIdsDeviceIds();
+                        for (Device device : devices) {
+                            // if (deviceIdPolicy.containsKey(device.getId())) {
+                            toBeNotified.add(device);
+                            // }
+                        }
+                        if (!toBeNotified.isEmpty()) {
+                            PolicyEnforcementDelegator enforcementDelegator = new PolicyEnforcementDelegatorImpl(toBeNotified);
+                            enforcementDelegator.delegate();
+                        }
                     } catch (DeviceManagementException e) {
-                        throw new PolicyManagementException("Error occurred while taking the devices", e);
+                        throw new PolicyManagementException("Error occurred while fetching the devices", e);
+                    } catch (PolicyDelegationException e) {
+                        throw new PolicyManagementException("Error occurred while running the delegation task on " +
+                                                            "device-type : " + deviceType, e);
                     }
                 }
-//                HashMap<Integer, Integer> deviceIdPolicy = policyManager.getAppliedPolicyIdsDeviceIds();
-                List<Device> toBeNotified = new ArrayList<>();
-
-                for (Device device : devices) {
-//                    if (deviceIdPolicy.containsKey(device.getId())) {
-                    toBeNotified.add(device);
-//                    }
-                }
-                if (!toBeNotified.isEmpty()) {
-                    PolicyEnforcementDelegator enforcementDelegator = new PolicyEnforcementDelegatorImpl(toBeNotified);
-                    enforcementDelegator.delegate();
-                }
             }
-
         } catch (PolicyManagementException e) {
             log.error("Error occurred while getting the policies applied to devices.", e);
-        } catch (PolicyDelegationException e) {
-            log.error("Error occurred while running the delegation task.", e);
         }
     }
 }

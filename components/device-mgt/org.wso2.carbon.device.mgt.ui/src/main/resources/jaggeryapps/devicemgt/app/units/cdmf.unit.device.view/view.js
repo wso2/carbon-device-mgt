@@ -206,6 +206,5 @@ function onRequest(context) {
     } else {
         deviceViewData["deviceFound"] = false;
     }
-    log.error(deviceViewData);
     return deviceViewData;
 }

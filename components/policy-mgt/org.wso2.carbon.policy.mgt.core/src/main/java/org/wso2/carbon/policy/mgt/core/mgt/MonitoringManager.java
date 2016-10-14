@@ -33,7 +33,7 @@ public interface MonitoringManager {
             throws PolicyComplianceException;
 
 
-    boolean isCompliance(DeviceIdentifier deviceIdentifier) throws PolicyComplianceException;
+    boolean isCompliant(DeviceIdentifier deviceIdentifier) throws PolicyComplianceException;
 
     ComplianceData getDevicePolicyCompliance(DeviceIdentifier deviceIdentifier) throws PolicyComplianceException;
 

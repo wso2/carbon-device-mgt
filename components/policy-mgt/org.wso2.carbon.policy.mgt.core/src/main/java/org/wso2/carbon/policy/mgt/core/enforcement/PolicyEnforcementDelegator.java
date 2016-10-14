@@ -31,4 +31,6 @@ public interface PolicyEnforcementDelegator {
 
     void addPolicyOperation(List<DeviceIdentifier> deviceIdentifiers, Policy policy) throws PolicyDelegationException;
 
+    void addPolicyRevokeOperation(List<DeviceIdentifier> deviceIdentifiers) throws PolicyDelegationException;
+
 }

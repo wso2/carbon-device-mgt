@@ -68,12 +68,14 @@ public class PolicyEnforcementDelegatorImpl implements PolicyEnforcementDelegato
             identifier.setType(device.getType());
 
             Policy policy = this.getEffectivePolicy(identifier);
-
+            List<DeviceIdentifier> deviceIdentifiers = new ArrayList<>();
+            deviceIdentifiers.add(identifier);
             if (policy != null) {
-                List<DeviceIdentifier> deviceIdentifiers = new ArrayList<>();
-                deviceIdentifiers.add(identifier);
                 this.addPolicyRevokeOperation(deviceIdentifiers);
                 this.addPolicyOperation(deviceIdentifiers, policy);
+            } else {
+                //This means all the applicable policies have been removed from device. Hence calling a policy revoke.
+                this.addPolicyRevokeOperation(deviceIdentifiers);
             }
         }
     }

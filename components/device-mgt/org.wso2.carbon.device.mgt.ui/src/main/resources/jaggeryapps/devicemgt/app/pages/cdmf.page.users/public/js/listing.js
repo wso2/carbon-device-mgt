@@ -39,9 +39,6 @@ $(function () {
 });
 
 var apiBasePath = "/api/device-mgt/v1.0";
-var modalPopup = ".modal";
-var modalPopupContainer = modalPopup + " .modal-content";
-var modalPopupContent = modalPopup + " .modal-content";
 var body = "body";
 
 /**
@@ -54,31 +51,6 @@ $(document).on('draw.dt', function () {
     $(".icon .text").res_text(0.2);
 });
 
-/*
- * set popup maximum height function.
- */
-function setPopupMaxHeight() {
-    $(modalPopupContent).css('max-height', ($(body).height() - ($(body).height() / 100 * 30)));
-    $(modalPopupContainer).css('margin-top', (-($(modalPopupContainer).height() / 2)));
-}
-
-/*
- * show popup function.
- */
-function showPopup() {
-    $(modalPopup).modal('show');
-}
-
-/*
- * hide popup function.
- */
-function hidePopup() {
-    $(modalPopupContent).html("");
-    $(modalPopupContent).removeClass("operation-data");
-    $(modalPopup).modal('hide');
-    $('body').removeClass('modal-open').css('padding-right','0px');
-    $('.modal-backdrop').remove();
-}
 
 /**
  * Following click function would execute
@@ -271,9 +243,6 @@ function removeUser(username) {
         );
     });
 
-    $("a#remove-user-cancel-link").click(function () {
-        hidePopup();
-    });
 }
 
 /**

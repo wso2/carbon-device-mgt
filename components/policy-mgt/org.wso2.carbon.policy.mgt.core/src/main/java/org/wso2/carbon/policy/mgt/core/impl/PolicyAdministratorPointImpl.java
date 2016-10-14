@@ -114,7 +114,7 @@ public class PolicyAdministratorPointImpl implements PolicyAdministratorPoint {
 
     @Override
     public boolean deletePolicy(int policyId) throws PolicyManagementException {
-        boolean bool =policyManager.deletePolicy(policyId);
+        boolean bool = policyManager.deletePolicy(policyId);
         PolicyCacheManager policyCacheManager = PolicyCacheManagerImpl.getInstance();
         policyCacheManager.rePopulateCache();
         return bool;

@@ -927,6 +927,13 @@ public class OperationManagerImpl implements OperationManager {
             int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
             String user = this.getUser();
             enrolmentInfo = deviceDAO.getEnrolment(deviceId, user, tenantId);
+            if (enrolmentInfo == null) {
+                boolean isAdminUser = DeviceManagementDataHolder.getInstance().getDeviceAccessAuthorizationService().
+                        isDeviceAdminUser();
+                if (isAdminUser) {
+                    enrolmentInfo = deviceDAO.getEnrolment(deviceId, tenantId);
+                }
+            }
         } catch (DeviceManagementDAOException e) {
             throw new OperationManagementException("Error occurred while retrieving enrollment data of '" +
                                                    deviceId.getType() + "' device carrying the identifier '" +
@@ -934,6 +941,10 @@ public class OperationManagerImpl implements OperationManager {
         } catch (SQLException e) {
             throw new OperationManagementException(
                     "Error occurred while opening a connection to the data source", e);
+        } catch (DeviceAccessAuthorizationException e) {
+            throw new OperationManagementException("Error occurred while checking the device access permissions for '" +
+                                                   deviceId.getType() + "' device carrying the identifier '" +
+                                                   deviceId.getId() + "'", e);
         } finally {
             DeviceManagementDAOFactory.closeConnection();
         }

@@ -77,5 +77,5 @@ public interface PolicyManagerService {
 
     ComplianceData getDeviceCompliance(DeviceIdentifier deviceIdentifier) throws PolicyComplianceException;
 
-    boolean isCompliance(DeviceIdentifier deviceIdentifier) throws PolicyComplianceException;
+    boolean isCompliant(DeviceIdentifier deviceIdentifier) throws PolicyComplianceException;
 }

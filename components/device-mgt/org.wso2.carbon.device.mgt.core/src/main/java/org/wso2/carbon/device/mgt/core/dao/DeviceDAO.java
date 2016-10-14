@@ -335,6 +335,16 @@ public interface DeviceDAO {
                                int tenantId) throws DeviceManagementDAOException;
 
     /**
+     * This method is used to retrieve current enrollment of a given device.
+     *
+     * @param deviceId    device id.
+     * @param tenantId    tenant id.
+     * @return returns EnrolmentInfo object.
+     * @throws DeviceManagementDAOException
+     */
+    EnrolmentInfo getEnrolment(DeviceIdentifier deviceId, int tenantId) throws DeviceManagementDAOException;
+
+    /**
      * This method is used to retrieve current active enrollment of a given device and tenant id.
      *
      * @param deviceId    device id.

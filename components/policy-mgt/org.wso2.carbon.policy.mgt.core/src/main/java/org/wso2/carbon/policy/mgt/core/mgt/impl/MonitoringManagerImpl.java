@@ -171,7 +171,7 @@ public class MonitoringManagerImpl implements MonitoringManager {
     }
 
     @Override
-    public boolean isCompliance(DeviceIdentifier deviceIdentifier) throws PolicyComplianceException {
+    public boolean isCompliant(DeviceIdentifier deviceIdentifier) throws PolicyComplianceException {
         try {
             DeviceManagementProviderService service =
                     PolicyManagementDataHolder.getInstance().getDeviceManagementService();

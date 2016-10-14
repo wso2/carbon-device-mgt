@@ -24,22 +24,6 @@
  */
 function onRequest(context) {
     var userModule = require("/app/modules/business-controllers/user.js")["userModule"];
-    var uri = request.getRequestURI();
-    var uriMatcher = new URIMatcher(String(uri));
-    var isMatched = uriMatcher.match("/{context}/role/edit-permission/{rolename}");
-    var matchedElements;
-    var roleName;
-    var userStore;
-
-    if (isMatched) {
-        matchedElements = uriMatcher.elements();
-        roleName = matchedElements.rolename;
-        context["roleName"] = roleName;
-    } else if (uriMatcher.match("/{context}/role/edit-permission/{userStore}/{rolename}")) {
-        matchedElements = uriMatcher.elements();
-        userStore = matchedElements.userStore;
-        roleName = matchedElements.rolename;
-        context["roleName"] = userStore + '/' + roleName;
-    }
+    context["roleName"] = request.getParameter("rolename");
     return context;
 }

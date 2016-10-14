@@ -158,7 +158,7 @@ function resetPassword(username) {
             }
             var resetPasswordServiceURL = apiBasePath + "/admin/users/" + username + "/credentials";
             if (domain) {
-                resetPasswordServiceURL += '?domain=' + domain;
+                resetPasswordServiceURL += '?domain=' + encodeURIComponent(domain);
             }
             invokerUtil.post(
                 resetPasswordServiceURL,
@@ -198,11 +198,10 @@ function removeUser(username) {
         domain = username.substr(0, username.indexOf('/'));
         username = username.substr(username.indexOf('/') + 1);
     }
-    var removeUserAPI = apiBasePath + "/users/" + username;
+    var removeUserAPI = apiBasePath + "/users/" + encodeURIComponent(username);
     if (domain) {
-        removeUserAPI += '?domain=' + domain;
+        removeUserAPI += '?domain=' + encodeURIComponent(domain);
     }
-
     modalDialog.header("Remove User");
     modalDialog.content("Do you really want to remove this user ?");
     modalDialog.footer('<div class="buttons"> <a href="#" id="remove-user-yes-link" class="btn-operations">Remove</a> ' +

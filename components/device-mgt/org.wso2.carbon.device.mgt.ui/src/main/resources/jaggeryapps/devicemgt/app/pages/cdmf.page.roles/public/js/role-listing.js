@@ -206,9 +206,9 @@ $("#role-grid").on("click", ".remove-role-link", function () {
         userStore = role.substr(0, role.indexOf('/'));
         role = role.substr(role.indexOf('/') + 1);
     }
-    var removeRoleAPI = apiBasePath + "/roles/" + role;
+    var removeRoleAPI = apiBasePath + "/roles/" + encodeURIComponent(role);
     if (userStore) {
-        removeRoleAPI += "?user-store=" + userStore;
+        removeRoleAPI += "?user-store=" + encodeURIComponent(userStore);
     }
     $(modalPopupContent).html($('#remove-role-modal-content').html());
     showPopup();

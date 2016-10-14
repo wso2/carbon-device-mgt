@@ -131,7 +131,8 @@ $(document).ready(function () {
             data: function (params) {
                 var postData = {};
                 postData.actionMethod = "GET";
-                postData.actionUrl = apiBasePath + "/users/search/usernames?filter=" + params.term + "&domain=" + domain;
+                postData.actionUrl = apiBasePath + "/users/search/usernames?filter=" + params.term + "&domain=" +
+                    encodeURIComponent(domain);
                 postData.actionPayload = null;
                 return JSON.stringify(postData);
             },
@@ -182,10 +183,10 @@ $(document).ready(function () {
         } else {
             var addRoleFormData = {};
             addRoleFormData.roleName = roleName;
-            var addRoleAPI = apiBasePath + "/roles/" + currentRoleName;
+            var addRoleAPI = apiBasePath + "/roles/" + encodeURIComponent(currentRoleName);
             if (domain != "PRIMARY"){
                 addRoleFormData.roleName = domain + "/" + roleName;
-                addRoleAPI = addRoleAPI + "?user-store=" + domain;
+                addRoleAPI = addRoleAPI + "?user-store=" + encodeURIComponent(domain);
             }
             invokerUtil.put(
                 addRoleAPI,

@@ -187,7 +187,7 @@ var userModule = function () {
             var url = devicemgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"] + "/users/" +
                 encodeURIComponent(username);
             if (domain) {
-                url += '?domain=' + domain;
+                url += '?domain=' + encodeURIComponent(domain);
             }
             var response = privateMethods.callBackend(url, constants["HTTP_GET"]);
             response["content"] = parse(response.content);
@@ -217,7 +217,7 @@ var userModule = function () {
             var url = devicemgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"] + "/users/" +
                 encodeURIComponent(username) + "/roles";
             if (domain) {
-                url += '?domain=' + domain;
+                url += '?domain=' + encodeURIComponent(domain);
             }
             var response = privateMethods.callBackend(url, constants["HTTP_GET"]);
             if (response.status == "success") {
@@ -328,7 +328,7 @@ var userModule = function () {
         try {
             utility.startTenantFlow(carbonUser);
             var url = devicemgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"] +
-                "/roles?user-store=" + userStore + "&limit=100";
+                "/roles?user-store=" + encodeURIComponent(userStore) + "&limit=100";
             var response = privateMethods.callBackend(url, constants["HTTP_GET"]);
             if (response.status == "success") {
                 response.content = parse(response.content).roles;
@@ -388,7 +388,7 @@ var userModule = function () {
             var url = devicemgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"] +
                 "/roles/" + encodeURIComponent(roleName);
             if (userStore) {
-                url += "?user-store=" + userStore;
+                url += "?user-store=" + encodeURIComponent(userStore);
             }
             var response = privateMethods.callBackend(url, constants["HTTP_GET"]);
             if (response.status == "success") {

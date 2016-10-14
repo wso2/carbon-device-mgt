@@ -236,7 +236,8 @@ $(document).ready(function () {
             }
             addUserFormData.roles = roles;
             username = username.substr(username.indexOf('/') + 1);
-            var addUserAPI = deviceMgtBasePath + "/users/" + username + "?domain=" + domain;
+            var addUserAPI = deviceMgtBasePath + "/users/" + encodeURIComponent(username) + "?domain=" +
+                encodeURIComponent(domain);
 
             invokerUtil.put(
                 addUserAPI,

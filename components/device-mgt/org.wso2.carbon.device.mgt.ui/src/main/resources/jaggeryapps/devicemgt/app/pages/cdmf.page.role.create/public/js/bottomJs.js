@@ -130,7 +130,7 @@ $(document).ready(function () {
                 var postData = {};
                 postData.requestMethod = "GET";
                 postData.requestURL = "/api/device-mgt/v1.0/users/search/usernames?filter=" + params.term +
-                    "&domain=" + domain;
+                    "&domain=" + encodeURIComponent(domain);
                 postData.requestPayload = null;
                 return JSON.stringify(postData);
             },
@@ -204,7 +204,7 @@ $(document).ready(function () {
                         $("input#roleName").val("");
                         $("#domain").val("PRIMARY");
                         $("#users").val("");
-                        window.location.href = appContext + "/role/edit-permission/" + addRoleFormData.roleName;
+                        window.location.href = appContext + "/role/edit-permission/?rolename=" + encodeURIComponent(addRoleFormData.roleName);
                     }
                 },
                 function (jqXHR) {

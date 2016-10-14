@@ -22,17 +22,13 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.CarbonConstants;
 import org.wso2.carbon.base.MultitenantConstants;
-import org.wso2.carbon.device.mgt.common.scope.mgt.ScopeManagementException;
-import org.wso2.carbon.device.mgt.common.scope.mgt.ScopeManagementService;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
 import org.wso2.carbon.device.mgt.jaxrs.beans.RoleInfo;
 import org.wso2.carbon.device.mgt.jaxrs.beans.RoleList;
-import org.wso2.carbon.device.mgt.jaxrs.beans.Scope;
 import org.wso2.carbon.device.mgt.jaxrs.service.api.RoleManagementService;
 import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.FilteringUtil;
 import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.RequestValidationUtil;
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
-import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtUtil;
 import org.wso2.carbon.device.mgt.jaxrs.util.SetReferenceTransformer;
 import org.wso2.carbon.user.api.*;
 import org.wso2.carbon.user.core.common.AbstractUserStoreManager;
@@ -49,6 +45,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.wso2.carbon.device.mgt.jaxrs.util.Constants.PRIMARY_USER_STORE;
+
 @Path("/roles")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
@@ -56,7 +54,6 @@ public class RoleManagementServiceImpl implements RoleManagementService {
 
     private static final String API_BASE_PATH = "/roles";
     private static final Log log = LogFactory.getLog(RoleManagementServiceImpl.class);
-    private static final String PRIMARY_USER_STORE = "PRIMARY";
 
     @GET
     @Override
@@ -93,7 +90,8 @@ public class RoleManagementServiceImpl implements RoleManagementService {
 
     @GET
     @Path("/{roleName}/permissions")
-    @Override public Response getPermissionsOfRole(@PathParam("roleName") String roleName,
+    @Override
+    public Response getPermissionsOfRole(@PathParam("roleName") String roleName,
             @QueryParam("user-store") String userStoreName, @HeaderParam("If-Modified-Since") String ifModifiedSince) {
         if (userStoreName != null && !userStoreName.isEmpty()) {
             roleName = userStoreName + "/" + roleName;

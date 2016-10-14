@@ -1,3 +1,21 @@
+/*
+ * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *
+ * WSO2 Inc. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
 /**
  * Checks if provided input is valid against RegEx input.
  *
@@ -12,6 +30,7 @@ function inputIsValid(regExp, inputString) {
 
 var validateInline = {};
 var clearInline = {};
+var domain = $("#domain").val();
 
 var apiBasePath = "/api/device-mgt/v1.0";
 
@@ -112,7 +131,7 @@ $(document).ready(function () {
             data: function (params) {
                 var postData = {};
                 postData.actionMethod = "GET";
-                postData.actionUrl = apiBasePath + "/users/search/usernames?filter=" + params.term;
+                postData.actionUrl = apiBasePath + "/users/search/usernames?filter=" + params.term + "&domain=" + domain;
                 postData.actionPayload = null;
                 return JSON.stringify(postData);
             },
@@ -195,5 +214,13 @@ $(document).ready(function () {
 
     $("#rolename").blur(function() {
         validateInline["role-name"]();
+    });
+
+    /* When the user store domain value is changed, the users who are assigned to that role should be removed, as
+     user and role can be mapped only if both are in same user store
+     */
+    $("#domain").change(function () {
+        $("#users").select2("val", "");
+        domain = $("#domain").val();
     });
 });

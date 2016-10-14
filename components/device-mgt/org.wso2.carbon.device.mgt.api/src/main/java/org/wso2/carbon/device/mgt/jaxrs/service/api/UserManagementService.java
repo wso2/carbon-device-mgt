@@ -458,6 +458,11 @@ public interface UserManagementService {
                     required = true)
             @QueryParam("filter") String filter,
             @ApiParam(
+                    name = "domain",
+                    value = "The user store domain which the user names should be fetched from",
+                    required = false)
+            @QueryParam("domain") String domain,
+            @ApiParam(
                     name = "If-Modified-Since",
                     value = "Checks if the requested variant was modified, since the specified date-time\n." +
                             "Provide the value in the following format: EEE, d MMM yyyy HH:mm:ss Z\n. " +

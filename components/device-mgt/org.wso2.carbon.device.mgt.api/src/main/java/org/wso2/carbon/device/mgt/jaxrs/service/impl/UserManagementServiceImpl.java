@@ -21,6 +21,7 @@ package org.wso2.carbon.device.mgt.jaxrs.service.impl;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.opensaml.ws.wstrust.Primary;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.device.mgt.core.service.EmailMetaInfo;
@@ -353,28 +354,32 @@ public class UserManagementServiceImpl implements UserManagementService {
     @GET
     @Path("/search/usernames")
     @Override
-    public Response getUserNames(@QueryParam("filter") String filter, @HeaderParam("If-Modified-Since") String timestamp,
+    public Response getUserNames(@QueryParam("filter") String filter, @QueryParam("domain") String domain,
+            @HeaderParam("If-Modified-Since") String timestamp,
                                  @QueryParam("offset") int offset, @QueryParam("limit") int limit) {
         if (log.isDebugEnabled()) {
             log.debug("Getting the list of users with all user-related information using the filter : " + filter);
         }
+        String userStoreDomain = Constants.PRIMARY_USER_STORE;
+        if (domain != null && !domain.isEmpty()) {
+            userStoreDomain = domain;
+        }
         List<UserInfo> userList;
         try {
             UserStoreManager userStoreManager = DeviceMgtAPIUtils.getUserStoreManager();
-            String[] users = userStoreManager.listUsers(filter + "*", -1);
-            userList = new ArrayList<>(users.length);
+            String[] users = userStoreManager.listUsers(userStoreDomain + "/*", -1);
+            userList = new ArrayList<>();
             UserInfo user;
             for (String username : users) {
-                user = new UserInfo();
-                user.setUsername(username);
-                user.setEmailAddress(getClaimValue(username, Constants.USER_CLAIM_EMAIL_ADDRESS));
-                user.setFirstname(getClaimValue(username, Constants.USER_CLAIM_FIRST_NAME));
-                user.setLastname(getClaimValue(username, Constants.USER_CLAIM_LAST_NAME));
-                userList.add(user);
+                if (username.contains(filter)) {
+                    user = new UserInfo();
+                    user.setUsername(username);
+                    user.setEmailAddress(getClaimValue(username, Constants.USER_CLAIM_EMAIL_ADDRESS));
+                    user.setFirstname(getClaimValue(username, Constants.USER_CLAIM_FIRST_NAME));
+                    user.setLastname(getClaimValue(username, Constants.USER_CLAIM_LAST_NAME));
+                    userList.add(user);
+                }
             }
-//            if (userList.size() <= 0) {
-//                return Response.status(Response.Status.NOT_FOUND).entity("No user is available to be retrieved").build();
-//            }
             return Response.status(Response.Status.OK).entity(userList).build();
         } catch (UserStoreException e) {
             String msg = "Error occurred while retrieving the list of users using the filter : " + filter;

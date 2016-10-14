@@ -32,6 +32,7 @@ var validateInline = {};
 var clearInline = {};
 
 var apiBasePath = "/api/device-mgt/v1.0";
+var domain = $("#domain").val();
 
 var enableInlineError = function (inputField, errorMsg, errorSign) {
     var fieldIdentifier = "#" + inputField;
@@ -113,6 +114,7 @@ function formatRepoSelection (user) {
 
 $(document).ready(function () {
     var appContext = $("#app-context").data("app-context");
+
     $("#users").select2({
         multiple:true,
         tags: false,
@@ -127,7 +129,8 @@ $(document).ready(function () {
             data: function (params) {
                 var postData = {};
                 postData.requestMethod = "GET";
-                postData.requestURL = "/api/device-mgt/v1.0/users/search/usernames?filter=" + params.term;
+                postData.requestURL = "/api/device-mgt/v1.0/users/search/usernames?filter=" + params.term +
+                    "&domain=" + domain;
                 postData.requestPayload = null;
                 return JSON.stringify(postData);
             },
@@ -221,5 +224,13 @@ $(document).ready(function () {
 
     $(roleNameInputElement).blur(function() {
         validateInline["role-name"]();
+    });
+
+    /* When the user store domain value is changed, the users who are assigned to that role should be removed, as
+       user and role can be mapped only if both are in same user store
+     */
+    $("#domain").change(function () {
+        $("#users").select2("val", "");
+        domain = $("#domain").val();
     });
 });

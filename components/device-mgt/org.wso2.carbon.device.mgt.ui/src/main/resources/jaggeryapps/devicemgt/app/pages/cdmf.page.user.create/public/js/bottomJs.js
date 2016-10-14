@@ -189,10 +189,10 @@ $("#userStore").change(
                     if (data.errorMessage) {
                         $(errorMsg).text("Selected user store prompted an error : " + data.errorMessage);
                         $(errorMsgWrapper).removeClass("hidden");
-                    } else if (data["statusCode"] == 200) {
+                    } else if (data.count > 0) {
                         $("#roles").empty();
-                        for (var i = 0; i < data.responseContent.length; i++) {
-                            var newOption = $('<option value="' + data.responseContent[i] + '">' + data.responseContent[i] + '</option>');
+                        for (var i = 0; i < data.roles.length; i++) {
+                            var newOption = $('<option value="' + data.roles[i] + '">' + data.roles[i] + '</option>');
                             $('#roles').append(newOption);
                         }
                     }

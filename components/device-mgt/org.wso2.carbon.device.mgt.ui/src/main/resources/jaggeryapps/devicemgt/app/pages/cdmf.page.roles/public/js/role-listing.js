@@ -72,7 +72,7 @@ function showPopup() {
 function hidePopup() {
     $(modalPopupContent).html('');
     $(modalPopup).modal('hide');
-    $('body').removeClass('modal-open').css('padding-right', '0px');
+    $('body').removeClass('modal-open').css('padding-right','0px');
     $('.modal-backdrop').remove();
 }
 

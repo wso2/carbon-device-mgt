@@ -51,7 +51,6 @@ $(document).on('draw.dt', function () {
     $(".icon .text").res_text(0.2);
 });
 
-
 /**
  * Following click function would execute
  * when a user clicks on "Invite" link

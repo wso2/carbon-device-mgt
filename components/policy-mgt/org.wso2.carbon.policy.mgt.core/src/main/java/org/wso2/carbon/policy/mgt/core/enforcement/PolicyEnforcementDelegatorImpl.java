@@ -72,12 +72,8 @@ public class PolicyEnforcementDelegatorImpl implements PolicyEnforcementDelegato
             if (policy != null) {
                 List<DeviceIdentifier> deviceIdentifiers = new ArrayList<>();
                 deviceIdentifiers.add(identifier);
-                this.addPolicyOperation(deviceIdentifiers, policy);
-            } else {
-                //This means all the applicable policies have been removed. Hence sending policy-revoke operation.
-                List<DeviceIdentifier> deviceIdentifiers = new ArrayList<>();
-                deviceIdentifiers.add(identifier);
                 this.addPolicyRevokeOperation(deviceIdentifiers);
+                this.addPolicyOperation(deviceIdentifiers, policy);
             }
         }
     }

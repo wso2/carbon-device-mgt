@@ -107,7 +107,8 @@ public class PolicyAdministratorPointImpl implements PolicyAdministratorPoint {
     @Override
     public boolean deletePolicy(Policy policy) throws PolicyManagementException {
         boolean bool = policyManager.deletePolicy(policy);
-        PolicyCacheManagerImpl.getInstance().rePopulateCache();
+        PolicyCacheManager policyCacheManager = PolicyCacheManagerImpl.getInstance();
+        policyCacheManager.rePopulateCache();
         return bool;
     }
 
@@ -116,11 +117,6 @@ public class PolicyAdministratorPointImpl implements PolicyAdministratorPoint {
         boolean bool =policyManager.deletePolicy(policyId);
         PolicyCacheManager policyCacheManager = PolicyCacheManagerImpl.getInstance();
         policyCacheManager.rePopulateCache();
-        List<Policy> appliedPolicies = policyCacheManager.getAllPolicies();
-        //This means all the policies have been deleted. Hence triggering publishChanges to take immediate effect.
-        if (appliedPolicies.isEmpty()) {
-            this.publishChanges();
-        }
         return bool;
     }
 

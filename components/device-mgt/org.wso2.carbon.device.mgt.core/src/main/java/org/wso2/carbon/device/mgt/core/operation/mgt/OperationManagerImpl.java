@@ -881,6 +881,9 @@ public class OperationManagerImpl implements OperationManager {
             case DeviceManagementConstants.AuthorizationSkippedOperationCodes.MONITOR_OPERATION_CODE:
                 status = true;
                 break;
+            case DeviceManagementConstants.AuthorizationSkippedOperationCodes.POLICY_REVOKE_OPERATION_CODE:
+                status = true;
+                break;
             default:
                 status = false;
         }

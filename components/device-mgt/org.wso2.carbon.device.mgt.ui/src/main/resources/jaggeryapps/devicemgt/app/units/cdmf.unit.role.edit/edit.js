@@ -26,32 +26,19 @@ function onRequest(context) {
     var userModule = require("/app/modules/business-controllers/user.js")["userModule"];
     var deviceMgtProps = require("/app/modules/conf-reader/main.js")["conf"];
     var uri = request.getRequestURI();
-    var uriMatcher = new URIMatcher(String(uri));
-    var isMatched = uriMatcher.match("/{context}/role/edit/{roleName}") ||
-        uriMatcher.match("/{context}/role/edit/{userStoreName}/{roleName}");
-    var matchedElements;
-    var roleName;
+    var roleName = request.getParameter("rolename");
     var response;
     var userStore;
 
-    if (isMatched) {
-        if (uriMatcher.match("/{context}/role/edit/{roleName}")) {
-            matchedElements = uriMatcher.elements();
-            roleName = matchedElements["roleName"];
-            response = userModule.getRole(roleName);
-            if (response["status"] == "success") {
-                context["role"] = response["content"];
-            }
+    if (roleName) {
+        if (roleName.indexOf("/") > -1) {
+            userStore = roleName.substr(0, roleName.indexOf("/"));
+        } else {
             userStore = "PRIMARY";
-        } else if (uriMatcher.match("/{context}/role/edit/{userStoreName}/{roleName}")) {
-            matchedElements = uriMatcher.elements();
-            roleName = matchedElements["roleName"];
-            userStore = matchedElements["userStoreName"];
-            response = userModule.getRole(userStore + "/" + roleName);
-            if (response["status"] == "success") {
-                context["role"] = response["content"];
-            }
-
+        }
+        response = userModule.getRole(roleName);
+        if (response["status"] == "success") {
+            context["role"] = response["content"];
         }
         context["userStore"] = userStore;
         context["roleNameJSRegEx"] = deviceMgtProps["roleValidationConfig"]["roleNameJSRegEx"];

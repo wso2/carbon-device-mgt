@@ -17,7 +17,7 @@
  */
 
 var loadRoleBasedActionURL = function (action, rolename) {
-    var href = $("#ast-container").data("app-context") + "role/" + action + "/" + rolename;
+    href = $("#ast-container").data("app-context") + "role/" + action + "/?rolename=" + encodeURIComponent(rolename);
     $(location).attr('href', href);
 };
 

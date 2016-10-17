@@ -94,7 +94,8 @@
                                        data-error-msg="{{roleNameRegExViolationErrorMsg}}" class="form-control" />
                                 <span class="roleNameError hidden glyphicon glyphicon-remove form-control-feedback"></span>
                                 <label class="error roleNameEmpty hidden" for="summary">
-                                    Role name is required, should be in minimum 3 characters long and not include any whitespaces.
+                                    Role name is required, should be in minimum 3 characters long and not include any
+                                    whitespaces or "@" character or "/" character.
                                 </label>
                             </div>
                             {{#if canViewUsers}}

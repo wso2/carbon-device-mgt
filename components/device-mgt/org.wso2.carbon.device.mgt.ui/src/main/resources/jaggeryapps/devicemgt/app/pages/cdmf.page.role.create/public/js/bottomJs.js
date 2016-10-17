@@ -83,7 +83,8 @@ clearInline["role-name"] = function () {
  */
 validateInline["role-name"] = function () {
     var roleNameInput = $("input#roleName");
-    if (inputIsValid( roleNameInput.data("regex"), roleNameInput.val())) {
+    if (inputIsValid( roleNameInput.data("regex"), roleNameInput.val()) && roleNameInput.indexOf("@") < 0 &&
+        roleNameInput.indexOf("/") < 0) {
         disableInlineError("roleNameField", "roleNameEmpty", "roleNameError");
     } else {
         enableInlineError("roleNameField", "roleNameEmpty", "roleNameError");
@@ -114,7 +115,6 @@ function formatRepoSelection (user) {
 
 $(document).ready(function () {
     var appContext = $("#app-context").data("app-context");
-
     $("#users").select2({
         multiple:true,
         tags: false,
@@ -204,7 +204,8 @@ $(document).ready(function () {
                         $("input#roleName").val("");
                         $("#domain").val("PRIMARY");
                         $("#users").val("");
-                        window.location.href = appContext + "/role/edit-permission/?rolename=" + encodeURIComponent(addRoleFormData.roleName);
+                        window.location.href = appContext + "/role/edit-permission/?rolename=" +
+                            encodeURIComponent(addRoleFormData.roleName);
                     }
                 },
                 function (jqXHR) {

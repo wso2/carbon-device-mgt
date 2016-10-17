@@ -174,7 +174,7 @@ public interface RoleManagementService {
             @PathParam("roleName") String roleName,
             @ApiParam(
                     name = "user-store",
-                    value = "The name of the UserStore you wish to get the list of roles.",
+                    value = "The name of the user store from which you wish to get the permission of role.",
                     required = false)
             @QueryParam("user-store") String userStoreName,
             @ApiParam(
@@ -244,7 +244,7 @@ public interface RoleManagementService {
             @PathParam("roleName") String roleName,
             @ApiParam(
                     name = "user-store",
-                    value = "The name of the UserStore you wish to get the list of roles.",
+                    value = "The name of the user store which the particular of role resides in",
                     required = false)
             @QueryParam("user-store") String userStoreName,
             @ApiParam(
@@ -368,7 +368,7 @@ public interface RoleManagementService {
                     required = true) RoleInfo role,
             @ApiParam(
                     name = "user-store",
-                    value = "The name of the UserStore you wish to get the list of roles.",
+                    value = "The name of the user store which the particular role resides in.",
                     required = false)
             @QueryParam("user-store") String userStoreName);
 
@@ -407,7 +407,7 @@ public interface RoleManagementService {
             @PathParam("roleName") String roleName,
             @ApiParam(
                     name = "user-store",
-                    value = "The name of the UserStore you wish to get the list of roles.",
+                    value = "The name of the user store which the particular role resides in.",
                     required = false)
             @QueryParam("user-store") String userStoreName);
 
@@ -471,7 +471,7 @@ public interface RoleManagementService {
             @PathParam("roleName") String roleName,
             @ApiParam(
                     name = "user-store",
-                    value = "The name of the UserStore you wish to get the list of roles.",
+                    value = "The name of the user store which the particular role resides in.",
                     required = false)
             @QueryParam("user-store") String userStoreName,
             @ApiParam(

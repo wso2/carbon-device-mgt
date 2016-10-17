@@ -218,10 +218,9 @@ $("#role-grid").on("click", ".remove-role-link", function () {
             removeRoleAPI,
             function () {
                 if (userStore) {
-                    $("#role-" + userStore + "\\/" + role).remove();
-                } else {
-                    $("#role-" + role).remove();
+                    role = userStore + '/' + role;
                 }
+                $('[id=role-' + role + ']').remove();
                 $(modalPopupContent).html($('#remove-role-success-content').html());
                 $("a#remove-role-success-link").click(function () {
                     hidePopup();

@@ -218,10 +218,9 @@ function removeUser(username) {
             function (data, textStatus, jqXHR) {
                 if (jqXHR.status == 200) {
                     if (domain) {
-                        $("#user-" + domain + "\\/" + username).remove();
-                    } else {
-                        $("#user-" + username).remove();
+                        username = domain + '/' + username;
                     }
+                    $('[id=user-' + username + ']').remove();
                     // update modal-content with success message
                     modalDialog.header("User Removed.");
                     modalDialog.content("Done. User was successfully removed.");

@@ -73,11 +73,26 @@ var invokers = function () {
         var xmlHttpRequest = new XMLHttpRequest();
 
         xmlHttpRequest.open(httpMethod, endpoint);
+
+        var contentTypeFound = false;
+        var acceptTypeFound = false;
         for (var i in headers) {
             xmlHttpRequest.setRequestHeader(headers[i].name, headers[i].value);
+            if(constants["CONTENT_TYPE_IDENTIFIER"] == headers[i].name){
+                contentTypeFound = true;
+            }
+            if(constants["ACCEPT_IDENTIFIER"] == headers[i].name){
+                acceptTypeFound = true;
+            }
         }
-        xmlHttpRequest.setRequestHeader(constants["CONTENT_TYPE_IDENTIFIER"], constants["APPLICATION_JSON"]);
-        xmlHttpRequest.setRequestHeader(constants["ACCEPT_IDENTIFIER"], constants["APPLICATION_JSON"]);
+
+        if (!contentTypeFound) {
+            xmlHttpRequest.setRequestHeader(constants["CONTENT_TYPE_IDENTIFIER"], constants["APPLICATION_JSON"]);
+        }
+
+        if (!acceptTypeFound) {
+            xmlHttpRequest.setRequestHeader(constants["ACCEPT_IDENTIFIER"], constants["APPLICATION_JSON"]);
+        }
 
         if (devicemgtProps["isOAuthEnabled"]) {
             var accessToken = privateMethods.getAccessToken();
@@ -284,23 +299,37 @@ var invokers = function () {
 
             //noinspection JSUnresolvedVariable
             var Header = Packages.org.apache.commons.httpclient.Header;
+            var contentTypeFound = false;
+            var acceptTypeFound = false;
             for (var i in headers) {
                 var header = new Header();
                 header.setName(headers[i].name);
                 header.setValue(headers[i].value);
                 httpMethodObject.addRequestHeader(header);
+
+                if(constants["CONTENT_TYPE_IDENTIFIER"] == headers[i].name){
+                    contentTypeFound = true;
+                }
+                if(constants["ACCEPT_IDENTIFIER"] == headers[i].name){
+                    acceptTypeFound = true;
+                }
             }
 
             var header = new Header();
-            header.setName(constants["CONTENT_TYPE_IDENTIFIER"]);
-            header.setValue(constants["APPLICATION_JSON"]);
-            //noinspection JSUnresolvedFunction
-            httpMethodObject.addRequestHeader(header);
-            header = new Header();
-            header.setName(constants["ACCEPT_IDENTIFIER"]);
-            header.setValue(constants["APPLICATION_JSON"]);
-            //noinspection JSUnresolvedFunction
-            httpMethodObject.addRequestHeader(header);
+            if(!contentTypeFound){
+                header.setName(constants["CONTENT_TYPE_IDENTIFIER"]);
+                header.setValue(constants["APPLICATION_JSON"]);
+                //noinspection JSUnresolvedFunction
+                httpMethodObject.addRequestHeader(header);
+            }
+
+            if(!acceptTypeFound) {
+                header = new Header();
+                header.setName(constants["ACCEPT_IDENTIFIER"]);
+                header.setValue(constants["APPLICATION_JSON"]);
+                //noinspection JSUnresolvedFunction
+                httpMethodObject.addRequestHeader(header);
+            }
 
             if (devicemgtProps["isOAuthEnabled"]) {
                 var accessToken = privateMethods.getAccessToken();

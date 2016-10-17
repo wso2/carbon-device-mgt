@@ -81,9 +81,9 @@ public interface CertificateManagementAdminService {
     Response addCertificate(
             @ApiParam(
                     name = "enrollmentCertificates",
-                    value = "The properties to add a new certificate. It includes the following:\n" +
-                            "serial: The unique ID of the certificate.\n" +
-                            "pem: Convert the OpenSSL certificate to the .pem format and base 64 encode the file.\n" +
+                    value = "The properties to add a new certificate. It includes the following: \n" +
+                            "serial: The unique ID of the certificate. \n" +
+                            "pem: Convert the OpenSSL certificate to the .pem format and base 64 encode the file. \n" +
                             "INFO: Upload the .pem file and base 64 encode it using a tool, such as the base64encode.in tool.",
                     required = true) EnrollmentCertificate[] enrollmentCertificates);
 
@@ -166,7 +166,7 @@ public interface CertificateManagementAdminService {
             value = "Getting Details of Certificates",
             notes = "Get all the details of the certificates you have used for mutual SSL. In a situation where you wish to "
                     + "view all the certificate details, it is not feasible to show all the details on one "
-                    + "page therefore the details are paginated",
+                    + "page. Therefore, the details are paginated.",
             tags = "Certificate Management"
     )
     @ApiResponses(value = {
@@ -216,7 +216,7 @@ public interface CertificateManagementAdminService {
     Response getAllCertificates(
             @ApiParam(
                     name = "offset",
-                    value = "The starting pagination index for the complete list of qualified items",
+                    value = "The starting pagination index for the complete list of qualified items.",
                     required = false,
                     defaultValue = "0")
             @QueryParam("offset") int offset,
@@ -228,7 +228,7 @@ public interface CertificateManagementAdminService {
             @QueryParam("limit") int limit,
             @ApiParam(
                     name = "If-Modified-Since",
-                    value = "Checks if the requested variant was modified, since the specified date-time.\n" +
+                    value = "Checks if the requested variant was modified, since the specified date-time. \n" +
                             "Provide the value in the following format: EEE, d MMM yyyy HH:mm:ss Z.\n" +
                             "Example: Mon, 05 Jan 2014 15:10:00 +0200",
                     required = false)
@@ -241,7 +241,7 @@ public interface CertificateManagementAdminService {
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "DELETE",
             value = "Deleting an SSL Certificate",
-            notes = "Delete an SSL certificate that's on the client end",
+            notes = "Delete an SSL certificate that's on the client end.",
             tags = "Certificate Management")
     @ApiResponses(value = {
             @ApiResponse(
@@ -264,7 +264,7 @@ public interface CertificateManagementAdminService {
             @ApiParam(
                     name = "serialNumber",
                     value = "The serial number of the certificate.\n" +
-                            "NOTE: Make sure that a certificate with the serial number you provide exists in the server. If no, first add a certificate.",
+                            "NOTE: Make sure that a certificate with the serial number you provide exists in the server. If not, first add a certificate.",
                     required = true,
                     defaultValue = "12438035315552875930")
             @PathParam("serialNumber") String serialNumber);

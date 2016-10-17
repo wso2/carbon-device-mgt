@@ -29,6 +29,7 @@
             <ref bean="certificateServiceBean"/>
             <ref bean="swaggerResource"/>
         </jaxrs:serviceBeans>
+
         <jaxrs:providers>
             <ref bean="jsonProvider"/>
             <ref bean="errorHandler"/>

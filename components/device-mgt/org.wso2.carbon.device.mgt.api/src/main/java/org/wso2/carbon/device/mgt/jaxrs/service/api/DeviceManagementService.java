@@ -655,7 +655,7 @@ public interface DeviceManagementService {
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
             value = "Get the details of the policy that is enforced on a device.",
-            notes = "A policy is enforced on all the devices that registers with WSO2 EMM." +
+            notes = "A policy is enforced on all the devices that register with WSO2 EMM." +
                     "WSO2 EMM filters the policies based on the device platform (device type)," +
                     "the device ownership type, the user role or name and finally, the policy that matches these filters will be enforced on the device.",
             tags = "Device Management")

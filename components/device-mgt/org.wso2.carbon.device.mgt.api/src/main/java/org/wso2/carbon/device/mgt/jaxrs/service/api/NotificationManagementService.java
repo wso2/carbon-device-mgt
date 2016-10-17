@@ -112,13 +112,15 @@ public interface NotificationManagementService {
             @ApiParam(
                     name = "offset",
                     value = "The starting pagination index for the complete list of qualified items.",
-                    required = false)
+                    required = false,
+                    defaultValue = "0")
             @QueryParam("offset")
                     int offset,
             @ApiParam(
                     name = "limit",
                     value = "Provide how many notification details you require from the starting pagination index/offset.",
-                    required = false)
+                    required = false,
+                    defaultValue = "5")
             @QueryParam("limit")
                     int limit);
 

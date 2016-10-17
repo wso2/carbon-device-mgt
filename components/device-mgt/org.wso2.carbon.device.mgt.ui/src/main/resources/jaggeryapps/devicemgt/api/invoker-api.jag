@@ -27,6 +27,12 @@ var devicemgtProps = require("/app/modules/conf-reader/main.js")["conf"];
 var serviceInvokers = require("/app/modules/oauth/token-protected-service-invokers.js")["invokers"];
 
 if (uriMatcher.match("/{context}/api/invoker/execute/")) {
+    //NOTE: We are only interested in Content-Type headers. Appending all request headers to the back-end call
+    // will cause unforeseen security issues.
+    var contentType = request.getHeader(constants.CONTENT_TYPE_IDENTIFIER);
+    var requestHeaders = [];
+    requestHeaders.push({"name": constants.CONTENT_TYPE_IDENTIFIER, "value" : contentType});
+
     var restAPIRequestDetails = request.getContent();
 
     var requestMethod = restAPIRequestDetails["requestMethod"];
@@ -57,7 +63,8 @@ if (uriMatcher.match("/{context}/api/invoker/execute/")) {
                         if (restAPIResponse["responseText"]) {
                             response["content"] = restAPIResponse["responseText"];
                         }
-                    }
+                    },
+                    requestHeaders
                 );
                 break;
             case constants["HTTP_POST"]:
@@ -69,7 +76,8 @@ if (uriMatcher.match("/{context}/api/invoker/execute/")) {
                         if (restAPIResponse["responseText"]) {
                             response["content"] = restAPIResponse["responseText"];
                         }
-                    }
+                    },
+                    requestHeaders
                 );
                 break;
             case constants["HTTP_PUT"]:
@@ -81,7 +89,8 @@ if (uriMatcher.match("/{context}/api/invoker/execute/")) {
                         if (restAPIResponse["responseText"]) {
                             response["content"] = restAPIResponse["responseText"];
                         }
-                    }
+                    },
+                    requestHeaders
                 );
                 break;
             case constants["HTTP_DELETE"]:
@@ -92,13 +101,17 @@ if (uriMatcher.match("/{context}/api/invoker/execute/")) {
                         if (restAPIResponse["responseText"]) {
                             response["content"] = restAPIResponse["responseText"];
                         }
-                    }
+                    },
+                    requestHeaders
                 );
                 break;
         }
     } catch (e) {
+        //Since this is an API we'll log the error message.
+        log.error(e.message); // JavaScript error message
+        log.error(e.stack); // Executed JavaScript file stack
         throw new Error("Exception occurred while trying to access " +
-                "backend REST API services from Jaggery API invoker layer", e);
+                        "backend REST API services from Jaggery API invoker layer", e);
     }
 }
 %>

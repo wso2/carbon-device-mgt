@@ -220,7 +220,7 @@ $("#role-grid").on("click", ".remove-role-link", function () {
                 if (userStore) {
                     role = userStore + '/' + role;
                 }
-                $('[id=role-' + role + ']').remove();
+                $('[id="role-' + role + '"]').remove();
                 $(modalPopupContent).html($('#remove-role-success-content').html());
                 $("a#remove-role-success-link").click(function () {
                     hidePopup();

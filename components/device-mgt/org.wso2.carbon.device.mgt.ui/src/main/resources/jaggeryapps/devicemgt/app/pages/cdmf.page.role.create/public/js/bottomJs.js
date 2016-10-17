@@ -83,8 +83,8 @@ clearInline["role-name"] = function () {
  */
 validateInline["role-name"] = function () {
     var roleNameInput = $("input#roleName");
-    if (inputIsValid( roleNameInput.data("regex"), roleNameInput.val()) && roleNameInput.indexOf("@") < 0 &&
-        roleNameInput.indexOf("/") < 0) {
+    var roleName = roleNameInput.val();
+    if (inputIsValid( roleNameInput.data("regex"), roleName) && roleName.indexOf("@") < 0 && roleName.indexOf("/") < 0) {
         disableInlineError("roleNameField", "roleNameEmpty", "roleNameError");
     } else {
         enableInlineError("roleNameField", "roleNameEmpty", "roleNameError");
@@ -173,7 +173,8 @@ $(document).ready(function () {
         if (!roleName) {
             $(errorMsg).text("Role name is a required field. It cannot be empty.");
             $(errorMsgWrapper).removeClass("hidden");
-        } else if (!inputIsValid(roleNameInput.data("regex"), roleName)) {
+        } else if (!inputIsValid(roleNameInput.data("regex"), roleName) || roleName.indexOf("@") >= 0 ||
+            roleName.indexOf("/") >= 0) {
             $(errorMsg).text(roleNameInput.data("error-msg"));
             $(errorMsgWrapper).removeClass("hidden");
         } else if (!domain) {

@@ -39,8 +39,10 @@ import org.wso2.carbon.user.mgt.common.UserAdminException;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -231,9 +233,9 @@ public class RoleManagementServiceImpl implements RoleManagementService {
             userStoreManager.addRole(roleInfo.getRoleName(), roleInfo.getUsers(), permissions);
 
             //TODO fix what's returned in the entity
-            return Response.created(new URI(API_BASE_PATH + "/" + roleInfo.getRoleName())).entity(
-                    "Role '" + roleInfo.getRoleName() + "' has " +
-                            "successfully been added").build();
+            return Response.created(new URI(API_BASE_PATH + "/" + URLEncoder.encode(roleInfo.getRoleName(), "UTF-8"))).
+                    entity("Role '" + roleInfo.getRoleName() + "' has " + "successfully been"
+                    + " added").build();
         } catch (UserStoreException e) {
             String msg = "Error occurred while adding role '" + roleInfo.getRoleName() + "'";
             log.error(msg, e);
@@ -242,6 +244,11 @@ public class RoleManagementServiceImpl implements RoleManagementService {
         } catch (URISyntaxException e) {
             String msg = "Error occurred while composing the URI at which the information of the newly created role " +
                     "can be retrieved";
+            log.error(msg, e);
+            return Response.serverError().entity(
+                    new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
+        } catch (UnsupportedEncodingException e) {
+            String msg = "Error occurred while encoding role name";
             log.error(msg, e);
             return Response.serverError().entity(
                     new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();

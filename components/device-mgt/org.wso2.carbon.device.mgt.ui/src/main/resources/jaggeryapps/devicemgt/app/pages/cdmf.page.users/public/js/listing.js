@@ -220,7 +220,7 @@ function removeUser(username) {
                     if (domain) {
                         username = domain + '/' + username;
                     }
-                    $('[id=user-' + username + ']').remove();
+                    $('[id="user-' + username + '"]').remove();
                     // update modal-content with success message
                     modalDialog.header("User Removed.");
                     modalDialog.content("Done. User was successfully removed.");

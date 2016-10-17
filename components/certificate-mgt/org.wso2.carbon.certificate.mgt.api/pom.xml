@@ -22,7 +22,7 @@
     <parent>
         <artifactId>certificate-mgt</artifactId>
         <groupId>org.wso2.carbon.devicemgt</groupId>
-        <version>1.2.3-SNAPSHOT</version>
+        <version>1.2.4</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 

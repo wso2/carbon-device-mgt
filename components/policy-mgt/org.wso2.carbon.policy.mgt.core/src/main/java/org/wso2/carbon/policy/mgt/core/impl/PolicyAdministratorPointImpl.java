@@ -275,6 +275,11 @@ public class PolicyAdministratorPointImpl implements PolicyAdministratorPoint {
     }
 
     @Override
+    public void removePolicyUsed(DeviceIdentifier deviceIdentifier) throws PolicyManagementException {
+        policyManager.removeAppliedPolicyToDevice(deviceIdentifier);
+    }
+
+    @Override
     public Profile addProfile(Profile profile) throws PolicyManagementException {
         try {
             return profileManager.addProfile(profile);

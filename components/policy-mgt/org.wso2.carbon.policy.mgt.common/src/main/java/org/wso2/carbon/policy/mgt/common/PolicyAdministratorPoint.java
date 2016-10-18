@@ -132,6 +132,13 @@ public interface PolicyAdministratorPoint {
     void setPolicyUsed(DeviceIdentifier deviceIdentifier, Policy policy) throws PolicyManagementException;
 
     /**
+     * This method will remove the policy applied to the device.
+     * @param deviceIdentifier
+      * @throws PolicyManagementException
+     */
+    void removePolicyUsed(DeviceIdentifier deviceIdentifier) throws PolicyManagementException;
+
+    /**
      * This method will add the profile to database,
      * @param profile
      * @throws PolicyManagementException

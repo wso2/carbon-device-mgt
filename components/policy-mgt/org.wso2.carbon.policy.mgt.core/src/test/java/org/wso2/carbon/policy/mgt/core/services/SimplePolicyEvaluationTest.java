@@ -48,7 +48,7 @@ public class SimplePolicyEvaluationTest implements PolicyEvaluationPoint {
                 policyInformationPoint = policyManagerService.getPIP();
                 PIPDevice pipDevice = policyInformationPoint.getDeviceData(deviceIdentifier);
                 policyList = policyInformationPoint.getRelatedPolicies(pipDevice);
-
+                policyAdministratorPoint = policyManagerService.getPAP();
                 for(Policy pol : policyList) {
                     log.debug("Policy used in evaluation -  Name  : " + pol.getPolicyName() );
                 }
@@ -57,12 +57,10 @@ public class SimplePolicyEvaluationTest implements PolicyEvaluationPoint {
                 if(!policyList.isEmpty()) {
                     policy = policyList.get(0);
                 } else {
+                    policyAdministratorPoint.removePolicyUsed(deviceIdentifier);
                     return null;
                 }
-
-                policyAdministratorPoint = policyManagerService.getPAP();
                 policyAdministratorPoint.setPolicyUsed(deviceIdentifier, policy);
-
             }
 
         } catch (PolicyManagementException e) {

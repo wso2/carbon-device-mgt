@@ -1164,6 +1164,30 @@ public class PolicyDAOImpl implements PolicyDAO {
     }
 
     @Override
+    public void deleteEffectivePolicyToDevice(int deviceId, int enrolmentId) throws PolicyManagerDAOException {
+        Connection conn;
+        PreparedStatement stmt = null;
+
+        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
+        try {
+            conn = this.getConnection();
+            String query = "DELETE FROM DM_DEVICE_POLICY_APPLIED WHERE DEVICE_ID = ? AND TENANT_ID = ? " +
+                           "AND ENROLMENT_ID = ?";
+            stmt = conn.prepareStatement(query);
+            stmt.setInt(1, deviceId);
+            stmt.setInt(2, tenantId);
+            stmt.setInt(3, enrolmentId);
+            stmt.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new PolicyManagerDAOException("Error occurred while deleting the effective policy " +
+                                                "to device", e);
+        } finally {
+            PolicyManagementDAOUtil.cleanupResources(stmt, null);
+        }
+    }
+
+    @Override
     public boolean checkPolicyAvailable(int deviceId, int enrollmentId) throws PolicyManagerDAOException {
         Connection conn;
         PreparedStatement stmt = null;

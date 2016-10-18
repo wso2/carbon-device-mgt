@@ -72,6 +72,8 @@ public interface PolicyManager {
 
     void addAppliedPolicyToDevice(DeviceIdentifier deviceIdentifier, Policy policy) throws PolicyManagementException;
 
+    void removeAppliedPolicyToDevice(DeviceIdentifier deviceIdentifier) throws PolicyManagementException;
+
     boolean checkPolicyAvailable(DeviceIdentifier deviceIdentifier) throws PolicyManagementException;
 
     boolean setPolicyApplied(DeviceIdentifier deviceIdentifier) throws PolicyManagementException;

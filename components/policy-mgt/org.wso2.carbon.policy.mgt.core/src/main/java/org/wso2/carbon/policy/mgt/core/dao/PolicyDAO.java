@@ -137,6 +137,8 @@ public interface PolicyDAO {
     void updateEffectivePolicyToDevice(int deviceId, int enrolmentId, Policy policy)
             throws PolicyManagerDAOException;
 
+    void deleteEffectivePolicyToDevice(int deviceId, int enrolmentId) throws PolicyManagerDAOException;
+
     boolean checkPolicyAvailable(int deviceId, int enrollmentId) throws PolicyManagerDAOException;
 
     int getPolicyCount() throws PolicyManagerDAOException;

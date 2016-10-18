@@ -763,34 +763,23 @@ public class PolicyManagerImpl implements PolicyManager {
 
         List<Device> deviceList = new ArrayList<>();
         List<Integer> deviceIds;
-        int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
         try {
             DeviceManagementProviderService service = new DeviceManagementProviderServiceImpl();
             List<Device> allDevices = service.getAllDevices();
-
             PolicyManagementDAOFactory.openConnection();
-
-            //int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
             deviceIds = policyDAO.getPolicyAppliedDevicesIds(policyId);
-
-
             HashMap<Integer, Device> allDeviceMap = new HashMap<>();
-
             if (!allDevices.isEmpty()) {
                 allDeviceMap = PolicyManagerUtil.covertDeviceListToMap(allDevices);
             }
-
             for (int deviceId : deviceIds) {
-
                 if (allDeviceMap.containsKey(deviceId)) {
                     if (log.isDebugEnabled()) {
                         log.debug("Policy Applied device ids .............: " + deviceId + " - Policy Id " + policyId);
                     }
                     deviceList.add(allDeviceMap.get(deviceId));
                 }
-
                 //TODO FIX ME -- This is wrong, Device id is not  device identifier, so converting is wrong.
-
                 //deviceList.add(deviceDAO.getDevice(new DeviceIdentifier(Integer.toString(deviceId), ""), tenantId));
             }
         } catch (PolicyManagerDAOException e) {
@@ -804,7 +793,6 @@ public class PolicyManagerImpl implements PolicyManager {
         } finally {
             PolicyManagementDAOFactory.closeConnection();
         }
-
         return deviceList;
     }
 
@@ -907,6 +895,34 @@ public class PolicyManagerImpl implements PolicyManager {
             PolicyManagementDAOFactory.rollbackTransaction();
             throw new PolicyManagementException("Error occurred while getting the device details (" +
                     deviceIdentifier.getId() + ")", e);
+        } finally {
+            PolicyManagementDAOFactory.closeConnection();
+        }
+    }
+
+    @Override
+    public void removeAppliedPolicyToDevice(DeviceIdentifier deviceIdentifier) throws PolicyManagementException {
+
+        int deviceId = -1;
+        try {
+            DeviceManagementProviderService service = new DeviceManagementProviderServiceImpl();
+            Device device = service.getDevice(deviceIdentifier);
+            deviceId = device.getId();
+            PolicyManagementDAOFactory.beginTransaction();
+
+            Policy policySaved = policyDAO.getAppliedPolicy(deviceId, device.getEnrolmentInfo().getId());
+            if (policySaved != null) {
+                 policyDAO.deleteEffectivePolicyToDevice(deviceId, device.getEnrolmentInfo().getId());
+            }
+            PolicyManagementDAOFactory.commitTransaction();
+        } catch (PolicyManagerDAOException e) {
+            PolicyManagementDAOFactory.rollbackTransaction();
+            throw new PolicyManagementException("Error occurred while removing the applied policy to device (" +
+                                                deviceId + ")", e);
+        } catch (DeviceManagementException e) {
+            PolicyManagementDAOFactory.rollbackTransaction();
+            throw new PolicyManagementException("Error occurred while getting the device details (" +
+                                                deviceIdentifier.getId() + ")", e);
         } finally {
             PolicyManagementDAOFactory.closeConnection();
         }

@@ -53,15 +53,15 @@ public class SimpleEvaluationImpl implements SimpleEvaluation {
                 policyInformationPoint = policyManagerService.getPIP();
                 PIPDevice pipDevice = policyInformationPoint.getDeviceData(deviceIdentifier);
                 policyList = policyInformationPoint.getRelatedPolicies(pipDevice);
-
+                policyAdministratorPoint = policyManagerService.getPAP();
                 sortPolicies();
                 if(!policyList.isEmpty()) {
                     policy = policyList.get(0);
                 } else {
+                    policyAdministratorPoint.removePolicyUsed(deviceIdentifier);
                     return null;
                 }
                 //TODO : UNCOMMENT THE FOLLOWING CASE
-                policyAdministratorPoint = policyManagerService.getPAP();
                 policyAdministratorPoint.setPolicyUsed(deviceIdentifier, policy);
 
             }

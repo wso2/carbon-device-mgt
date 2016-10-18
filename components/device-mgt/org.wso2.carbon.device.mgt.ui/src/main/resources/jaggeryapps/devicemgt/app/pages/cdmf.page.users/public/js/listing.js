@@ -158,7 +158,7 @@ function resetPassword(username) {
             }
             var resetPasswordServiceURL = apiBasePath + "/admin/users/" + username + "/credentials";
             if (domain) {
-                resetPasswordServiceURL += '?domain=' + domain;
+                resetPasswordServiceURL += '?domain=' + encodeURIComponent(domain);
             }
             invokerUtil.post(
                 resetPasswordServiceURL,
@@ -198,11 +198,10 @@ function removeUser(username) {
         domain = username.substr(0, username.indexOf('/'));
         username = username.substr(username.indexOf('/') + 1);
     }
-    var removeUserAPI = apiBasePath + "/users/" + username;
+    var removeUserAPI = apiBasePath + "/users/" + encodeURIComponent(username);
     if (domain) {
-        removeUserAPI += '?domain=' + domain;
+        removeUserAPI += '?domain=' + encodeURIComponent(domain);
     }
-
     modalDialog.header("Remove User");
     modalDialog.content("Do you really want to remove this user ?");
     modalDialog.footer('<div class="buttons"> <a href="#" id="remove-user-yes-link" class="btn-operations">Remove</a> ' +
@@ -219,10 +218,9 @@ function removeUser(username) {
             function (data, textStatus, jqXHR) {
                 if (jqXHR.status == 200) {
                     if (domain) {
-                        $("#user-" + domain + "\\/" + username).remove();
-                    } else {
-                        $("#user-" + username).remove();
+                        username = domain + '/' + username;
                     }
+                    $('[id="user-' + username + '"]').remove();
                     // update modal-content with success message
                     modalDialog.header("User Removed.");
                     modalDialog.content("Done. User was successfully removed.");
@@ -338,7 +336,8 @@ function loadUsers() {
             class: "text-right content-fill text-left-on-grid-view no-wrap",
             data: null,
             render: function (data, type, row, meta) {
-                var editbtn = '<a data-toggle="tooltip" data-placement="bottom" title="Edit User"href="' + context + '/user/edit?username=' + data.filter + '" data-username="' + data.filter + '" ' +
+                var editbtn = '<a data-toggle="tooltip" data-placement="bottom" title="Edit User"href="' + context +
+                    '/user/edit?username=' + encodeURIComponent(data.filter) + '" data-username="' + data.filter + '" ' +
                     'data-click-event="edit-form" ' +
                     'class="btn padding-reduce-on-grid-view edit-user-link"> ' +
                     '<span class="fw-stack"> ' +

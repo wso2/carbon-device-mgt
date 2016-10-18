@@ -180,8 +180,7 @@ $("#userStore").change(
             str += $(this).text() + "";
         });
         if ($("#roles").length > 0) {
-            var getRolesAPI = deviceMgtAPIsBasePath + "/roles?user-store=" + str + "&limit=100";
-
+            var getRolesAPI = deviceMgtAPIsBasePath + "/roles?user-store=" + encodeURIComponent(str) + "&limit=100";
             invokerUtil.get(
                 getRolesAPI,
                 function (data) {
@@ -189,10 +188,10 @@ $("#userStore").change(
                     if (data.errorMessage) {
                         $(errorMsg).text("Selected user store prompted an error : " + data.errorMessage);
                         $(errorMsgWrapper).removeClass("hidden");
-                    } else if (data["statusCode"] == 200) {
+                    } else {
                         $("#roles").empty();
-                        for (var i = 0; i < data.responseContent.length; i++) {
-                            var newOption = $('<option value="' + data.responseContent[i] + '">' + data.responseContent[i] + '</option>');
+                        for (var i = 0; i < data.roles.length; i++) {
+                            var newOption = $('<option value="' + data.roles[i] + '">' + data.roles[i] + '</option>');
                             $('#roles').append(newOption);
                         }
                     }

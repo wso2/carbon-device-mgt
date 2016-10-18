@@ -17,7 +17,7 @@
  */
 
 var loadRoleBasedActionURL = function (action, rolename) {
-    var href = $("#ast-container").data("app-context") + "role/" + action + "/" + rolename;
+    href = $("#ast-container").data("app-context") + "role/" + action + "/?rolename=" + encodeURIComponent(rolename);
     $(location).attr('href', href);
 };
 
@@ -188,7 +188,7 @@ function loadRoles() {
         "sorting": false
     };
 
-    $('#role-grid').datatables_extended_serverside_paging(settings, '/api/device-mgt/v1.0/roles', dataFilter, columns, fnCreatedRow, null, options);
+    $('#role-grid').datatables_extended_serverside_paging(settings, '/api/device-mgt/v1.0/roles?user-store=all', dataFilter, columns, fnCreatedRow, null, options);
     loadingContent.hide();
 
 }
@@ -201,8 +201,15 @@ function loadRoles() {
  */
 $("#role-grid").on("click", ".remove-role-link", function () {
     var role = $(this).data("role");
-    var removeRoleAPI = apiBasePath + "/roles/" + role;
-
+    var userStore;
+    if (role.indexOf('/') > 0) {
+        userStore = role.substr(0, role.indexOf('/'));
+        role = role.substr(role.indexOf('/') + 1);
+    }
+    var removeRoleAPI = apiBasePath + "/roles/" + encodeURIComponent(role);
+    if (userStore) {
+        removeRoleAPI += "?user-store=" + encodeURIComponent(userStore);
+    }
     $(modalPopupContent).html($('#remove-role-modal-content').html());
     showPopup();
 
@@ -210,7 +217,10 @@ $("#role-grid").on("click", ".remove-role-link", function () {
         invokerUtil.delete(
             removeRoleAPI,
             function () {
-                $("#role-" + role).remove();
+                if (userStore) {
+                    role = userStore + '/' + role;
+                }
+                $('[id="role-' + role + '"]').remove();
                 $(modalPopupContent).html($('#remove-role-success-content').html());
                 $("a#remove-role-success-link").click(function () {
                     hidePopup();

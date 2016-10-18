@@ -187,7 +187,7 @@ var userModule = function () {
             var url = devicemgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"] + "/users/" +
                 encodeURIComponent(username);
             if (domain) {
-                url += '?domain=' + domain;
+                url += '?domain=' + encodeURIComponent(domain);
             }
             var response = privateMethods.callBackend(url, constants["HTTP_GET"]);
             response["content"] = parse(response.content);
@@ -217,7 +217,7 @@ var userModule = function () {
             var url = devicemgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"] + "/users/" +
                 encodeURIComponent(username) + "/roles";
             if (domain) {
-                url += '?domain=' + domain;
+                url += '?domain=' + encodeURIComponent(domain);
             }
             var response = privateMethods.callBackend(url, constants["HTTP_GET"]);
             if (response.status == "success") {
@@ -268,7 +268,7 @@ var userModule = function () {
         try {
             utility.startTenantFlow(carbonUser);
             var url = devicemgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"] +
-                "/roles?offset=0&limit=100";
+                "/roles?offset=0&limit=100&user-store=all";
             var response = privateMethods.callBackend(url, constants["HTTP_GET"]);
             if (response.status == "success") {
                 response.content = parse(response.content).roles;
@@ -294,7 +294,7 @@ var userModule = function () {
         try {
             utility.startTenantFlow(carbonUser);
             var url = devicemgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"] +
-                "/roles?offset=0&limit=1";
+                "/roles?offset=0&limit=1&user-store=all";
             return serviceInvokers.XMLHttp.get(
                 url, function (responsePayload) {
                     return parse(responsePayload["responseText"])["count"];
@@ -328,7 +328,7 @@ var userModule = function () {
         try {
             utility.startTenantFlow(carbonUser);
             var url = devicemgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"] +
-                "/roles?user-store=" + userStore + "&limit=100";
+                "/roles?user-store=" + encodeURIComponent(userStore) + "&limit=100";
             var response = privateMethods.callBackend(url, constants["HTTP_GET"]);
             if (response.status == "success") {
                 response.content = parse(response.content).roles;
@@ -374,14 +374,22 @@ var userModule = function () {
     publicMethods.getRole = function (roleName) {
         var carbonUser = session.get(constants["USER_SESSION_KEY"]);
         var utility = require("/app/modules/utility.js")["utility"];
+        var userStore;
         if (!carbonUser) {
             log.error("User object was not found in the session");
             throw constants["ERRORS"]["USER_NOT_FOUND"];
         }
         try {
             utility.startTenantFlow(carbonUser);
+            if (roleName.indexOf('/') > 0) {
+                userStore = roleName.substr(0, roleName.indexOf('/'));
+                roleName = roleName.substr(roleName.indexOf('/') + 1);
+            }
             var url = devicemgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"] +
                 "/roles/" + encodeURIComponent(roleName);
+            if (userStore) {
+                url += "?user-store=" + encodeURIComponent(userStore);
+            }
             var response = privateMethods.callBackend(url, constants["HTTP_GET"]);
             if (response.status == "success") {
                 response.content = parse(response.content);

@@ -599,9 +599,14 @@ var module = {};
         try {
             isAuthenticated = (new carbonServer.Server()).authenticate(username, password);
         } catch (e) {
-            log.error(e.message, e);
-            response.sendError(500, e.message);
-            return;
+            log.error(e.message);
+            var messageForNotExistingDomain = "Could not find a domain for the username";
+            if (e.message.indexOf(messageForNotExistingDomain) < 0) {
+                response.sendError(500, e.message);
+                return;
+            } else {
+                isAuthenticated = false;
+            }
         }
         if (isAuthenticated) {
             var tenantUser = carbonServer.tenantUser(username);

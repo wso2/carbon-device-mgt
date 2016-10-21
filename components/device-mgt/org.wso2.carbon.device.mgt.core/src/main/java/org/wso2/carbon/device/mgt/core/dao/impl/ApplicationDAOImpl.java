@@ -173,7 +173,7 @@ public class ApplicationDAOImpl implements ApplicationDAO {
         try {
             conn = this.getConnection();
             conn.setAutoCommit(false);
-            stmt = conn.prepareStatement("DELETE DM_APPLICATION WHERE APP_IDENTIFIER = ? AND TENANT_ID = ?",
+            stmt = conn.prepareStatement("DELETE FROM DM_APPLICATION WHERE APP_IDENTIFIER = ? AND TENANT_ID = ?",
                     new String[]{"id"});
 
             for (Application app : apps) {

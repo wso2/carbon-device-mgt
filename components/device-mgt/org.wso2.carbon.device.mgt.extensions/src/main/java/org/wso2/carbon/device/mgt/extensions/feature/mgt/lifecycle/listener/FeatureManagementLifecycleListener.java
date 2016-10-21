@@ -23,6 +23,9 @@ import org.apache.catalina.LifecycleListener;
 import org.apache.catalina.core.StandardContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.base.MultitenantConstants;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
+import org.wso2.carbon.device.mgt.common.DeviceTypeIdentifier;
 import org.wso2.carbon.device.mgt.common.Feature;
 import org.wso2.carbon.device.mgt.extensions.feature.mgt.GenericFeatureManager;
 import org.wso2.carbon.device.mgt.extensions.feature.mgt.annotations.DeviceType;
@@ -40,6 +43,8 @@ public class FeatureManagementLifecycleListener implements LifecycleListener {
     private static final String API_CONFIG_DEFAULT_VERSION = "1.0.0";
 
     private static final String PARAM_MANAGED_API_ENABLED = "managed-api-enabled";
+    private static final String PARAM_SHARED_WITH_ALL_TENANTS = "isSharedWithAllTenants";
+    private static final String PARAM_PROVIDER_TENANT_DOMAIN = "providerTenantDomain";
 
     private static final Log log = LogFactory.getLog(FeatureManagementLifecycleListener.class);
 
@@ -54,9 +59,24 @@ public class FeatureManagementLifecycleListener implements LifecycleListener {
                 try {
                     AnnotationProcessor annotationProcessor = new AnnotationProcessor(context);
                     Set<String> annotatedAPIClasses = annotationProcessor.scanStandardContext(DeviceType.class.getName());
-                    Map<String, List<Feature>> features = annotationProcessor.extractFeatures(annotatedAPIClasses);
-                    if (features != null && !features.isEmpty()) {
-                        GenericFeatureManager.getInstance().addFeatures(features);
+                    String tenantDomain = servletContext.getInitParameter(PARAM_PROVIDER_TENANT_DOMAIN);
+                    tenantDomain = (tenantDomain != null && !tenantDomain.isEmpty()) ? tenantDomain :
+                            MultitenantConstants.SUPER_TENANT_DOMAIN_NAME;
+                    try {
+                        PrivilegedCarbonContext.startTenantFlow();
+                        PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(tenantDomain, true);
+                        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
+
+                        String sharingValueParam = servletContext.getInitParameter(PARAM_SHARED_WITH_ALL_TENANTS);
+                        boolean isSharedWithAllTenants = Boolean.parseBoolean(sharingValueParam);
+
+                        Map<DeviceTypeIdentifier, List<Feature>> features = annotationProcessor.extractFeatures(
+                                annotatedAPIClasses, tenantId, isSharedWithAllTenants);
+                        if (features != null && !features.isEmpty()) {
+                            GenericFeatureManager.getInstance().addFeatures(features);
+                        }
+                    } finally {
+                        PrivilegedCarbonContext.endTenantFlow();
                     }
                 } catch (IOException e) {
                     log.error("Error enconterd while discovering annotated classes.", e);

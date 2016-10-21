@@ -20,6 +20,7 @@ package org.wso2.carbon.device.mgt.extensions.feature.mgt;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
+import org.wso2.carbon.device.mgt.common.DeviceTypeIdentifier;
 import org.wso2.carbon.device.mgt.common.Feature;
 
 import java.util.HashMap;
@@ -32,7 +33,7 @@ import java.util.Map;
 public class GenericFeatureManager {
 
     private static final Log log = LogFactory.getLog(GenericFeatureManager.class);
-    private static Map<String, List<Feature>> featureSet = new HashMap<>();
+    private static Map<DeviceTypeIdentifier, List<Feature>> featureSet = new HashMap<>();
     private static GenericFeatureManager instance = new GenericFeatureManager();
 
     private GenericFeatureManager() {
@@ -45,7 +46,7 @@ public class GenericFeatureManager {
     /**
      * @param deviceTypeFeatures feature list for each device type.
      */
-    public void addFeatures(Map<String, List<Feature>> deviceTypeFeatures) {
+    public void addFeatures(Map<DeviceTypeIdentifier, List<Feature>> deviceTypeFeatures) {
         this.featureSet.putAll(deviceTypeFeatures);
     }
 
@@ -54,7 +55,7 @@ public class GenericFeatureManager {
      * @param featureName
      * @return the extracted feature for the which matches the feature name and device type.
      */
-    public Feature getFeature(String deviceType, String featureName) {
+    public Feature getFeature(DeviceTypeIdentifier deviceType, String featureName) {
         Feature extractedFeature = null;
         List<Feature> deviceFeatureList = featureSet.get(deviceType);
         for (Feature feature : deviceFeatureList) {
@@ -69,7 +70,7 @@ public class GenericFeatureManager {
      * @param deviceType returns the features for the device type.
      * @return
      */
-    public List<Feature> getFeatures(String deviceType) {
+    public List<Feature> getFeatures(DeviceTypeIdentifier deviceType) {
         return featureSet.get(deviceType);
     }
 

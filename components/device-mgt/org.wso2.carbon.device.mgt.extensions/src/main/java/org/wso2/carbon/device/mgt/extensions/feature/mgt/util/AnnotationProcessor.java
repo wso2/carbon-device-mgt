@@ -24,6 +24,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scannotation.AnnotationDB;
 import org.scannotation.WarUrlFinder;
+import org.wso2.carbon.device.mgt.common.DeviceTypeIdentifier;
 import org.wso2.carbon.device.mgt.common.Feature;
 import org.wso2.carbon.device.mgt.extensions.feature.mgt.annotations.DeviceType;
 
@@ -98,15 +99,17 @@ public class AnnotationProcessor {
     /**
      * Method identifies the URL templates and context by reading the annotations of a class
      */
-    public Map<String, List<Feature>> extractFeatures(Set<String> entityClasses) throws ClassNotFoundException {
-        Map<String, List<Feature>> features = null;
+    public Map<DeviceTypeIdentifier, List<Feature>> extractFeatures(Set<String> entityClasses, final int tenantId,
+                                                                    final boolean isSharedWithAllTenants)
+            throws ClassNotFoundException {
+        Map<DeviceTypeIdentifier, List<Feature>> features = null;
         if (entityClasses != null && !entityClasses.isEmpty()) {
             features = new HashMap<>();
             for (final String className : entityClasses) {
-                final Map<String, List<Feature>> featureMap =
-                        AccessController.doPrivileged(new PrivilegedAction<Map<String, List<Feature>>>() {
-                            public Map<String, List<Feature>> run() {
-                                Map<String, List<Feature>> featureMap = new HashMap<>();
+                final Map<DeviceTypeIdentifier, List<Feature>> featureMap =
+                        AccessController.doPrivileged(new PrivilegedAction<Map<DeviceTypeIdentifier, List<Feature>>>() {
+                            public Map<DeviceTypeIdentifier, List<Feature>> run() {
+                                Map<DeviceTypeIdentifier, List<Feature>> featureMap = new HashMap<>();
                                 try {
                                     Class<?> clazz = classLoader.loadClass(className);
                                     Class<DeviceType> deviceTypeClazz = (Class<DeviceType>) classLoader.loadClass(
@@ -121,7 +124,13 @@ public class AnnotationProcessor {
                                                         org.wso2.carbon.device.mgt.extensions.feature.mgt
                                                                 .annotations.Feature.class.getName());
                                         List<Feature> featureList = getFeatures(clazz.getDeclaredMethods());
-                                        featureMap.put(deviceType, featureList);
+                                        DeviceTypeIdentifier deviceTypeIdentifier;
+                                        if (isSharedWithAllTenants) {
+                                            deviceTypeIdentifier = new DeviceTypeIdentifier(deviceType);
+                                        } else {
+                                            deviceTypeIdentifier = new DeviceTypeIdentifier(deviceType, tenantId);
+                                        }
+                                        featureMap.put(deviceTypeIdentifier, featureList);
                                     }
                                 } catch (Throwable e) {
                                     log.error("Failed to load the annotation from the features in the " +

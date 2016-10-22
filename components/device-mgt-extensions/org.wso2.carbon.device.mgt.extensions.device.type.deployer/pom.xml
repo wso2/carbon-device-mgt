@@ -81,7 +81,26 @@
                             org.wso2.carbon.device.mgt.extensions.device.type.deployer.*
                         </Export-Package>
                         <Import-Package>
-
+                            javax.naming,
+                            javax.sql,
+                            javax.xml.bind,
+                            javax.xml.bind.annotation,
+                            javax.xml.parsers,
+                            org.apache.axis2.context,
+                            org.apache.axis2.deployment.*,
+                            org.apache.commons.lang,
+                            org.apache.commons.logging,
+                            org.osgi.framework,
+                            org.osgi.service.component,
+                            org.w3c.dom,
+                            org.wso2.carbon.context,
+                            org.wso2.carbon.device.mgt.common.*,
+                            org.wso2.carbon.device.mgt.extensions.*,
+                            org.wso2.carbon.registry.api,
+                            org.wso2.carbon.registry.core,
+                            org.wso2.carbon.registry.core.*,
+                            org.wso2.carbon.utils,
+                            org.wso2.carbon.utils.dbcreator
                         </Import-Package>
                         <Axis2Deployer>DeviceTypeDeployer</Axis2Deployer>
                     </instructions>

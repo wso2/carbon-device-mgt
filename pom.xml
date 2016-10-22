@@ -1487,6 +1487,11 @@
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.devicemgt</groupId>
+                <artifactId>org.wso2.carbon.device.mgt.extensions.device.type.deployer</artifactId>
+                <version>${carbon.device.mgt.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.devicemgt</groupId>
                 <artifactId>org.wso2.carbon.device.mgt.extensions.push.notification.provider.gcm</artifactId>
                 <version>${carbon.device.mgt.version}</version>
             </dependency>

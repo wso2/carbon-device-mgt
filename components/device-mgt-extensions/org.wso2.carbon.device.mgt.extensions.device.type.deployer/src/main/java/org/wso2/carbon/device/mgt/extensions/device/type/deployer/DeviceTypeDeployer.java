@@ -31,7 +31,7 @@ import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.common.spi.DeviceManagementService;
 import org.wso2.carbon.device.mgt.extensions.device.type.deployer.config.DeviceManagementConfiguration;
 import org.wso2.carbon.device.mgt.extensions.device.type.deployer.config.exception.DeviceTypeConfigurationException;
-import org.wso2.carbon.device.mgt.extensions.push.notification.provider.internal.DeviceTypeManagementDataHolder;
+import org.wso2.carbon.device.mgt.extensions.device.type.deployer.internal.DeviceTypeManagementDataHolder;
 import org.wso2.carbon.device.mgt.extensions.device.type.deployer.template.DeviceTypeConfigIdentifier;
 import org.wso2.carbon.device.mgt.extensions.device.type.deployer.template.DeviceTypeManagerService;
 import org.wso2.carbon.device.mgt.extensions.device.type.deployer.util.DeviceTypeConfigUtil;
@@ -125,7 +125,7 @@ public class DeviceTypeDeployer extends AbstractDeployer {
 
     private void unregisterDeviceType(String filePath) {
         if (log.isDebugEnabled()) {
-            log.debug("De-activating Virtual Firealarm Device Management Service Component");
+            log.debug("De-activating Device Management Service.");
         }
         try {
             if (this.deviceTypeServiceRegistrations.get(filePath) != null) {

@@ -11,6 +11,8 @@ import org.wso2.carbon.device.mgt.common.configuration.mgt.PlatformConfiguration
 import org.wso2.carbon.device.mgt.common.push.notification.PushNotificationConfig;
 import org.wso2.carbon.device.mgt.common.spi.DeviceManagementService;
 import org.wso2.carbon.device.mgt.extensions.device.type.deployer.config.DeviceManagementConfiguration;
+import org.wso2.carbon.device.mgt.extensions.device.type.deployer.config.Property;
+import org.wso2.carbon.device.mgt.extensions.device.type.deployer.config.PushNotificationConfiguration;
 
 import java.util.HashMap;
 import java.util.List;
@@ -29,9 +31,8 @@ public class DeviceTypeManagerService implements DeviceManagementService {
                                     DeviceManagementConfiguration deviceManagementConfiguration) {
         this.setProvisioningConfig(deviceTypeConfigIdentifier.getTenantDomain(), deviceManagementConfiguration);
         this.deviceManager = new DeviceTypeManager(deviceTypeConfigIdentifier, deviceManagementConfiguration);
-        this.setType(deviceManagementConfiguration);
-        this.populatePushNotificationConfig(deviceManagementConfiguration);
-
+        this.setType(deviceManagementConfiguration.getDeviceType());
+        this.populatePushNotificationConfig(deviceManagementConfiguration.getPushNotificationConfiguration());
     }
 
     @Override
@@ -43,14 +44,11 @@ public class DeviceTypeManagerService implements DeviceManagementService {
     public void init() throws DeviceManagementException {
     }
 
-    private void populatePushNotificationConfig(DeviceManagementConfiguration deviceManagementConfiguration) {
-        org.wso2.carbon.device.mgt.extensions.device.type.deployer.config.PushNotificationConfig sourceConfig =
-                deviceManagementConfiguration.getPushNotificationConfig();
+    private void populatePushNotificationConfig(PushNotificationConfiguration sourceConfig) {
         if (sourceConfig != null) {
-            if (true) {
+            if (sourceConfig.isFileBasedProperties()) {
                 Map<String, String> staticProps = new HashMap<>();
-                for (org.wso2.carbon.device.mgt.extensions.device.type.deployer.config.PushNotificationConfig.Property
-                        property : sourceConfig.getProperties()) {
+                for (Property property : sourceConfig.getProperties().getProperty()) {
                     staticProps.put(property.getName(), property.getValue());
                 }
                 pushNotificationConfig = new PushNotificationConfig(sourceConfig.getPushNotificationProvider(),
@@ -95,12 +93,12 @@ public class DeviceTypeManagerService implements DeviceManagementService {
 
     private void setProvisioningConfig(String tenantDomain, DeviceManagementConfiguration deviceManagementConfiguration) {
         boolean sharedWithAllTenants = deviceManagementConfiguration
-                .getDeviceManagementConfigRepository().getProvisioningConfig().isSharedWithAllTenants();
+                .getManagementRepository().getProvisioningConfig().isSharedWithAllTenants();
         provisioningConfig = new ProvisioningConfig(tenantDomain, sharedWithAllTenants);
     }
 
-    private void setType(DeviceManagementConfiguration deviceManagementConfiguration) {
-        type = deviceManagementConfiguration.getDeviceType();
+    private void setType(String type) {
+        this.type = type;
     }
 
     private Map<String, String> getConfigProperty(List<ConfigurationEntry> configs) {

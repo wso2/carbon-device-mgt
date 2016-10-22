@@ -21,6 +21,7 @@ package org.wso2.carbon.device.mgt.extensions.device.type.deployer.template.dao;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.extensions.device.type.deployer.config.DeviceManagementConfiguration;
+import org.wso2.carbon.device.mgt.extensions.device.type.deployer.exception.DeviceTypeDeployerFileException;
 import org.wso2.carbon.device.mgt.extensions.device.type.deployer.exception.DeviceTypeMgtPluginException;
 
 import javax.naming.Context;
@@ -37,19 +38,17 @@ public class DeviceTypePluginDAOManager {
     private ThreadLocal<Connection> currentConnection = new ThreadLocal<Connection>();
     private DeviceTypePluginDAO deviceTypePluginDAO;
 
-    public DeviceTypePluginDAOManager(DeviceManagementConfiguration deviceManagementConfiguration) {
-        initDAO(deviceManagementConfiguration);
-        deviceTypePluginDAO = new DeviceTypePluginDAO(deviceManagementConfiguration);
+    public DeviceTypePluginDAOManager(String datasourceName, DeviceDAODefinition deviceDAODefinition) {
+        initDAO(datasourceName);
+        deviceTypePluginDAO = new DeviceTypePluginDAO(deviceDAODefinition, this);
     }
 
-    public void initDAO(DeviceManagementConfiguration deviceManagementConfiguration) {
-        String datasourceName = deviceManagementConfiguration.getDeviceManagementConfigRepository()
-                .getDataSourceConfig().getJndiLookupDefinition().getJndiName();
+    public void initDAO(String datasourceName) {
         try {
             Context ctx = new InitialContext();
             dataSource = (DataSource) ctx.lookup(datasourceName);
         } catch (NamingException e) {
-            log.error("Error while looking up the data source: " + datasourceName, e);
+            throw new DeviceTypeDeployerFileException("Error while looking up the data source: " + datasourceName, e);
         }
     }
 

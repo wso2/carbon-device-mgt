@@ -27,9 +27,6 @@ import java.io.File;
 
 public class DeviceTypeConfigUtil {
 
-    public static final String CARBON_HOME = "carbon.home";
-    public static final String CARBON_HOME_ENTRY = "${carbon.home}";
-
     public static Document convertToDocument(File file) throws DeviceTypeConfigurationException {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setNamespaceAware(true);

@@ -8,16 +8,16 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for ProvisioningConfig complex type.
+ * <p>Java class for JndiLookupDefinition complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="ProvisioningConfig">
+ * &lt;complexType name="JndiLookupDefinition">
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="SharedWithAllTenants" type="{http://www.w3.org/2001/XMLSchema}string"/>
+ *         &lt;element name="Name" type="{http://www.w3.org/2001/XMLSchema}string"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -27,36 +27,36 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "ProvisioningConfig", propOrder = {
-    "sharedWithAllTenants"
+@XmlType(name = "JndiLookupDefinition", propOrder = {
+    "name"
 })
-public class ProvisioningConfig {
+public class JndiLookupDefinition {
 
-    @XmlElement(name = "SharedWithAllTenants", required = true)
-    protected boolean sharedWithAllTenants;
+    @XmlElement(name = "Name", required = true)
+    protected String name;
 
     /**
-     * Gets the value of the sharedWithAllTenants property.
+     * Gets the value of the name property.
      * 
      * @return
      *     possible object is
-     *     {@link boolean }
+     *     {@link String }
      *     
      */
-    public boolean isSharedWithAllTenants() {
-        return sharedWithAllTenants;
+    public String getName() {
+        return name;
     }
 
     /**
-     * Sets the value of the sharedWithAllTenants property.
+     * Sets the value of the name property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setSharedWithAllTenants(boolean value) {
-        this.sharedWithAllTenants = value;
+    public void setName(String value) {
+        this.name = value;
     }
 
 }

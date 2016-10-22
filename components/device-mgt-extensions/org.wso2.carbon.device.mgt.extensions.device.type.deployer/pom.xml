@@ -68,6 +68,10 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.felix</groupId>
+                <artifactId>maven-scr-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
                 <extensions>true</extensions>
                 <configuration>
@@ -85,7 +89,7 @@
                             javax.sql,
                             javax.xml.bind,
                             javax.xml.bind.annotation,
-                            javax.xml.parsers,
+                            javax.xml.parsers; version="${javax.xml.parsers.import.pkg.version}",
                             org.apache.axis2.context,
                             org.apache.axis2.deployment.*,
                             org.apache.commons.lang,

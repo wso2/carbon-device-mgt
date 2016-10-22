@@ -29,12 +29,13 @@ import javax.xml.bind.annotation.XmlType;
  * 
  * 
  */
-//@XmlAccessorType(XmlAccessType.FIELD)
+
 //@XmlType(name = "DeviceManagementConfiguration", propOrder = {
 //    "deviceType",
 //    "managementRepository",
 //    "pushNotificationConfiguration"
 //})
+@XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "DeviceManagementConfiguration")
 public class DeviceManagementConfiguration {
 
@@ -44,6 +45,9 @@ public class DeviceManagementConfiguration {
     protected ManagementRepository managementRepository;
     @XmlElement(name = "PushNotificationConfiguration", required = true)
     protected PushNotificationConfiguration pushNotificationConfiguration;
+
+    private DeviceManagementConfiguration() {
+    }
 
     /**
      * Gets the value of the device property.

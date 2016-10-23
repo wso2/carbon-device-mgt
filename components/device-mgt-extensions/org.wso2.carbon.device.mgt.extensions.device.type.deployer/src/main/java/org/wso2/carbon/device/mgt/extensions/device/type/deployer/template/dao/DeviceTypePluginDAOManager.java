@@ -22,17 +22,18 @@ package org.wso2.carbon.device.mgt.extensions.device.type.deployer.template.dao;
 public class DeviceTypePluginDAOManager {
 
     private DeviceTypePluginDAO deviceTypePluginDAO;
+    private DeviceTypeDAOHandler deviceTypeDAOHandler;
 
     public DeviceTypePluginDAOManager(String datasourceName, DeviceDAODefinition deviceDAODefinition) {
-        DeviceTypeDAOHandler deviceTypeDAOHandler = new DeviceTypeDAOHandler(datasourceName);
+        deviceTypeDAOHandler = new DeviceTypeDAOHandler(datasourceName);
         deviceTypePluginDAO = new DeviceTypePluginDAO(deviceDAODefinition, deviceTypeDAOHandler);
     }
-
-
 
     public DeviceTypePluginDAO getDeviceDAO() {
         return deviceTypePluginDAO;
     }
 
-
+    public DeviceTypeDAOHandler getDeviceTypeDAOHandler() {
+        return deviceTypeDAOHandler;
+    }
 }

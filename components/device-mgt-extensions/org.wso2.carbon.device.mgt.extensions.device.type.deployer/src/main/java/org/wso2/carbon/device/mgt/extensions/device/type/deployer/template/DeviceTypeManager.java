@@ -222,13 +222,13 @@ public class DeviceTypeManager implements DeviceManager {
                 if (isEnrolled) {
                     this.modifyEnrollment(device);
                 } else {
-                    deviceTypePluginDAOManager.beginTransaction();
+                    deviceTypePluginDAOManager.getDeviceTypeDAOHandler().beginTransaction();
                     status = deviceTypePluginDAOManager.getDeviceDAO().addDevice(device);
-                    deviceTypePluginDAOManager.commitTransaction();
+                    deviceTypePluginDAOManager.getDeviceTypeDAOHandler().commitTransaction();
                 }
             } catch (DeviceTypeMgtPluginException e) {
                 try {
-                    deviceTypePluginDAOManager.rollbackTransaction();
+                    deviceTypePluginDAOManager.getDeviceTypeDAOHandler().rollbackTransaction();
                 } catch (DeviceTypeMgtPluginException ex) {
                     String msg = "Error occurred while roll back the device enrol transaction :" +
                             device.toString();
@@ -250,12 +250,12 @@ public class DeviceTypeManager implements DeviceManager {
                 if (log.isDebugEnabled()) {
                     log.debug("Modifying the Android device enrollment data");
                 }
-                deviceTypePluginDAOManager.beginTransaction();
+                deviceTypePluginDAOManager.getDeviceTypeDAOHandler().beginTransaction();
                 status = deviceTypePluginDAOManager.getDeviceDAO().updateDevice(device);
-                deviceTypePluginDAOManager.commitTransaction();
+                deviceTypePluginDAOManager.getDeviceTypeDAOHandler().commitTransaction();
             } catch (DeviceTypeMgtPluginException e) {
                 try {
-                    deviceTypePluginDAOManager.rollbackTransaction();
+                    deviceTypePluginDAOManager.getDeviceTypeDAOHandler().rollbackTransaction();
                 } catch (DeviceTypeMgtPluginException mobileDAOEx) {
                     String msg = "Error occurred while roll back the update device transaction :" +
                             device.toString();
@@ -373,12 +373,12 @@ public class DeviceTypeManager implements DeviceManager {
                     log.debug(
                             "updating the details of " + deviceType + " device : " + device.getDeviceIdentifier());
                 }
-                deviceTypePluginDAOManager.beginTransaction();
+                deviceTypePluginDAOManager.getDeviceTypeDAOHandler().beginTransaction();
                 status = deviceTypePluginDAOManager.getDeviceDAO().updateDevice(existingDevice);
-                deviceTypePluginDAOManager.commitTransaction();
+                deviceTypePluginDAOManager.getDeviceTypeDAOHandler().commitTransaction();
             } catch (DeviceTypeMgtPluginException e) {
                 try {
-                    deviceTypePluginDAOManager.rollbackTransaction();
+                    deviceTypePluginDAOManager.getDeviceTypeDAOHandler().rollbackTransaction();
                 } catch (DeviceTypeMgtPluginException e1) {
                     log.warn("Error occurred while roll back the update device info transaction : '" +
                                      device.toString() + "'", e1);

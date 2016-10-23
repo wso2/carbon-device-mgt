@@ -157,7 +157,8 @@
                             org.apache.commons.lang,
                             javax.ws.rs;version="0.0.0";resolution:=optional,
                             org.scannotation,
-                            org.scannotation.archiveiterator
+                            org.scannotation.archiveiterator,
+                            org.wso2.carbon.base
                         </Import-Package>
                     </instructions>
                 </configuration>

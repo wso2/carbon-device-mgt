@@ -103,8 +103,7 @@
                             org.wso2.carbon.registry.api,
                             org.wso2.carbon.registry.core,
                             org.wso2.carbon.registry.core.*,
-                            org.wso2.carbon.utils,
-                            org.wso2.carbon.utils.dbcreator
+                            org.wso2.carbon.utils.*,
                         </Import-Package>
                         <Axis2Deployer>DeviceTypeDeployer</Axis2Deployer>
                     </instructions>

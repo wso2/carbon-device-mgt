@@ -272,15 +272,22 @@ public class DeviceManagementServiceComponent {
      * @param deviceManagementService An instance of DeviceManagementService
      */
     protected void setDeviceManagementService(DeviceManagementService deviceManagementService) {
-        if (log.isDebugEnabled()) {
-            log.debug("Setting Device Management Service Provider: '" +
-                    deviceManagementService.getType() + "'");
-        }
-        synchronized (LOCK) {
-            deviceManagers.add(deviceManagementService);
-            for (PluginInitializationListener listener : listeners) {
-                listener.registerDeviceManagementService(deviceManagementService);
+        try {
+            if (log.isDebugEnabled()) {
+                log.debug("Setting Device Management Service Provider: '" +
+                                  deviceManagementService.getType() + "'");
             }
+            synchronized (LOCK) {
+                deviceManagers.add(deviceManagementService);
+                for (PluginInitializationListener listener : listeners) {
+                    listener.registerDeviceManagementService(deviceManagementService);
+                }
+            }
+            log.info("Device Type deployed successfully : " + deviceManagementService.getType() + " for tenant "
+                             + deviceManagementService.getProvisioningConfig().getProviderTenantDomain());
+        } catch (Throwable e) {
+            log.error("Failed to register device management service for device type" + deviceManagementService.getType() +
+                            " for tenant " + deviceManagementService.getProvisioningConfig().getProviderTenantDomain(), e);
         }
     }
 

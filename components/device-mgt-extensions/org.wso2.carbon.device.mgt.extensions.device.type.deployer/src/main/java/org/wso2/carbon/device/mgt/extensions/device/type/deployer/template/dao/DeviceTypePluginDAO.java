@@ -33,7 +33,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Implements CRUD for Devices.
+ * Implements CRUD for Devices. This holds the generic implementation. An instance of this will be created for
+ * each device type.
  */
 public class DeviceTypePluginDAO {
 

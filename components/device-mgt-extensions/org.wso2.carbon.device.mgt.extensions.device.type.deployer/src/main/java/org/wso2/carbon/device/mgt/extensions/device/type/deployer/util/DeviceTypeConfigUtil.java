@@ -25,6 +25,9 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
 
+/**
+ * This hold the utility functions for this bundle.
+ */
 public class DeviceTypeConfigUtil {
 
     public static Document convertToDocument(File file) throws DeviceTypeConfigurationException {

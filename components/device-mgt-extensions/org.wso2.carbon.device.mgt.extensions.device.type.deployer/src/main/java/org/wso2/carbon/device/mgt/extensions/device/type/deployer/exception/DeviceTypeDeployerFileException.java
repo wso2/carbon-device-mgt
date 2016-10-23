@@ -17,7 +17,9 @@
  */
 package org.wso2.carbon.device.mgt.extensions.device.type.deployer.exception;
 
-
+/**
+ * This exception will be thrown if there are any issues with the content of the deployer.
+ */
 public class DeviceTypeDeployerFileException extends RuntimeException {
 
     public DeviceTypeDeployerFileException(String msg, Exception nestedEx) {

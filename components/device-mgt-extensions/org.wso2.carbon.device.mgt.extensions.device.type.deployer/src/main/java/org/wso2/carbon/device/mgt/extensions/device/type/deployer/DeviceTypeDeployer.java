@@ -43,7 +43,10 @@ import java.io.File;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-
+/**
+ * This is the device deployer that will read and deploy the device type files from "deployment/server/devicetypes"
+ * directory.
+ */
 public class DeviceTypeDeployer extends AbstractDeployer {
 
     private static Log log = LogFactory.getLog(DeviceTypeDeployer.class);

@@ -326,15 +326,21 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
     @Override
     public boolean isEnrolled(DeviceIdentifier deviceId) throws DeviceManagementException {
-        DeviceManager deviceManager = this.getDeviceManager(deviceId.getType());
-        if (deviceManager == null) {
-            if (log.isDebugEnabled()) {
-                log.debug("Device Manager associated with the device type '" + deviceId.getType() + "' is null. " +
-                        "Therefore, not attempting method 'isEnrolled'");
+        try {
+            DeviceManagementDAOFactory.openConnection();
+            Device device = deviceDAO.getDevice(deviceId, this.getTenantId());
+            if (device != null) {
+                return true;
             }
-            return false;
+        } catch (DeviceManagementDAOException e) {
+            throw new DeviceManagementException("Error occurred while obtaining the enrollment information device for" +
+                                                        "id '" + deviceId.getId() + "'", e);
+        } catch (SQLException e) {
+            throw new DeviceManagementException("Error occurred while opening a connection to the data source", e);
+        } finally {
+            DeviceManagementDAOFactory.closeConnection();
         }
-        return deviceManager.isEnrolled(deviceId);
+        return false;
     }
 
     @Override

@@ -75,16 +75,14 @@ public class DeviceTypeUtils {
     /**
      * Creates the device management schema.
      */
-    public static void setupDeviceManagementSchema(DeviceManagementConfiguration deviceManagementConfiguration)
+    public static void setupDeviceManagementSchema(String datasourceName, String deviceType, String testTableName)
             throws DeviceTypeMgtPluginException {
-        String datasourceName = deviceManagementConfiguration.getManagementRepository().getDataSourceConfiguration()
-                .getJndiLookupDefinition().getName();
         try {
             Context ctx = new InitialContext();
             DataSource dataSource = (DataSource) ctx.lookup(datasourceName);
-            DeviceSchemaInitializer initializer = new DeviceSchemaInitializer(dataSource, deviceManagementConfiguration
-                    .getDeviceType());
-            String checkSql = "select * from VIRTUAL_FIREALARM_DEVICE";
+            String tenantDomain = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantDomain(true);
+            DeviceSchemaInitializer initializer = new DeviceSchemaInitializer(dataSource, deviceType, tenantDomain);
+            String checkSql = "select * from " + testTableName;
             if (!initializer.isDatabaseStructureCreated(checkSql)) {
                 log.info("Initializing device management repository database schema");
                 initializer.createRegistryDatabase();

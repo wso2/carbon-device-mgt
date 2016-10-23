@@ -23,6 +23,9 @@ import org.wso2.carbon.device.mgt.extensions.feature.mgt.GenericFeatureManager;
 
 import java.util.List;
 
+/**
+ * This feature manager implementation reads the annotation @Feature and creates a feature manager.
+ */
 public class AnnotationBasedFeatureManager implements FeatureManager {
 	private DeviceTypeIdentifier deviceType;
 

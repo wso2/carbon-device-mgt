@@ -22,6 +22,9 @@ import org.osgi.framework.BundleContext;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.utils.ConfigurationContextService;
 
+/**
+ * This holds the necessary services required for the bundle.
+ */
 public class DeviceTypeManagementDataHolder {
 
     private ConfigurationContextService configurationContextService;

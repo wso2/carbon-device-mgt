@@ -22,6 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.utils.CarbonUtils;
 import org.wso2.carbon.utils.dbcreator.DatabaseCreator;
+import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 
 import javax.sql.DataSource;
 import java.io.File;
@@ -34,10 +35,15 @@ public class DeviceSchemaInitializer extends DatabaseCreator{
 	private static final Log log = LogFactory.getLog(DeviceSchemaInitializer.class);
 	private String setupSQLScriptBaseLocation;
 
-	public DeviceSchemaInitializer(DataSource dataSource, String deviceType) {
+	public DeviceSchemaInitializer(DataSource dataSource, String deviceType, String tenantDomain) {
 		super(dataSource);
+		String tenantSeperator = "";
+		if (!MultitenantConstants.SUPER_TENANT_DOMAIN_NAME.equals(tenantDomain)) {
+			tenantSeperator = tenantDomain + File.separator;
+		}
+
 		setupSQLScriptBaseLocation = CarbonUtils.getCarbonHome() + File.separator + "dbscripts"
-				+ File.separator + "cdm" + File.separator + "plugins" + File.separator
+				+ File.separator + "cdm" + File.separator + "plugins" + File.separator + tenantSeperator
 				+ deviceType + File.separator;
 	}
 

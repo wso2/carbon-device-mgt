@@ -64,6 +64,7 @@ public class APIPublisherServiceImpl implements APIPublisherService {
                     CommonUtil.getRootSystemRegistry(tenantId));
             APIProvider provider = APIManagerFactory.getInstance().getAPIProvider(api.getApiOwner());
             MultitenantUtils.getTenantDomain(api.getApiOwner());
+            processHttpVerbs(api);
             if (provider != null) {
                 if (provider.isDuplicateContextTemplate(api.getContext())) {
                     throw new APIManagementException(
@@ -170,6 +171,31 @@ public class APIPublisherServiceImpl implements APIPublisherService {
             log.debug("API swagger definition: " + swaggerDefinition.toString());
         }
         return swaggerDefinition.toString();
+    }
+
+    /**
+     * Sometimes the httpVerb string attribute is not existing in
+     * the list of httpVerbs attribute of uriTemplate. In such cases when creating the api in the
+     * synapse configuration, it doesn't have http methods correctly assigned for the resources.
+     * Therefore this method takes care of such inconsistency issue.
+     *
+     * @param api The actual API model object
+     */
+    private void processHttpVerbs(API api){
+        for (URITemplate uriTemplate : api.getUriTemplates()){
+            String httpVerbString = uriTemplate.getHTTPVerb();
+            String[] httpVerbs = uriTemplate.getMethodsAsString().split(" ");
+            boolean httpVerbStringExistsMethods = false;
+            for (String aHttpVerb: httpVerbs){
+                if (aHttpVerb.trim().equalsIgnoreCase(httpVerbString)){
+                    httpVerbStringExistsMethods = true;
+                    break;
+                }
+            }
+            if (!httpVerbStringExistsMethods){
+                uriTemplate.setHttpVerbs(httpVerbString);
+            }
+        }
     }
 
     @Override

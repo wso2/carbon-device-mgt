@@ -88,8 +88,8 @@ public class APIPublisherServiceImpl implements APIPublisherService {
                         provider.updateAPI(api);
                         if (log.isDebugEnabled()) {
                             log.debug("An API already exists with the name '" + api.getId().getApiName() +
-                                              "', context '" + api.getContext() + "' and version '"
-                                              + api.getId().getVersion() + "'. Thus, the API config is updated");
+                                    "', context '" + api.getContext() + "' and version '"
+                                    + api.getId().getVersion() + "'. Thus, the API config is updated");
                         }
                     }
                 }
@@ -181,18 +181,10 @@ public class APIPublisherServiceImpl implements APIPublisherService {
      *
      * @param api The actual API model object
      */
-    private void processHttpVerbs(API api){
-        for (URITemplate uriTemplate : api.getUriTemplates()){
+    private void processHttpVerbs(API api) {
+        for (URITemplate uriTemplate : api.getUriTemplates()) {
             String httpVerbString = uriTemplate.getHTTPVerb();
-            String[] httpVerbs = uriTemplate.getMethodsAsString().split(" ");
-            boolean httpVerbStringExistsMethods = false;
-            for (String aHttpVerb: httpVerbs){
-                if (aHttpVerb.trim().equalsIgnoreCase(httpVerbString)){
-                    httpVerbStringExistsMethods = true;
-                    break;
-                }
-            }
-            if (!httpVerbStringExistsMethods){
+            if (httpVerbString != null && !httpVerbString.isEmpty()) {
                 uriTemplate.setHttpVerbs(httpVerbString);
             }
         }

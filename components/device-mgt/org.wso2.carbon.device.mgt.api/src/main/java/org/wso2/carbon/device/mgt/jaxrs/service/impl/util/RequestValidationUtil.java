@@ -345,4 +345,12 @@ public class RequestValidationUtil {
 
     }
 
+    public static void validateOwnerParameter(String owner) {
+        if (owner == null || owner.isEmpty()) {
+            throw new InputValidationException(
+                    new ErrorResponse.ErrorResponseBuilder().setCode(400l).setMessage("Request parameter owner should" +
+                            " be non empty.").build());
+        }
+    }
+
 }

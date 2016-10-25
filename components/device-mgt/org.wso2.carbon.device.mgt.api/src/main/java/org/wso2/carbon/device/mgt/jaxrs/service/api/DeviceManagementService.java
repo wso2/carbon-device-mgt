@@ -647,7 +647,14 @@ public interface DeviceManagementService {
                     required = false,
                     defaultValue = "5")
             @QueryParam("limit")
-            int limit);
+            int limit,
+            @ApiParam(
+                    name = "owner",
+                    value = "Provides the owner of the required device.",
+                    required = true,
+                    defaultValue = "")
+            @QueryParam("owner")
+                    String owner);
 
     @GET
     @Path("/{type}/{id}/effective-policy")

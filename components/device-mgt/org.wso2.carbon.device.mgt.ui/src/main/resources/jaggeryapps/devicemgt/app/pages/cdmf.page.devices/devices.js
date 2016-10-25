@@ -23,6 +23,7 @@ function onRequest(context) {
 
     var groupName = request.getParameter("groupName");
     var groupOwner = request.getParameter("groupOwner");
+    var groupId = request.getParameter("groupId");
 
     var viewModel = {};
     var title = "Devices";
@@ -41,9 +42,9 @@ function onRequest(context) {
         }
         viewModel.currentUser = currentUser;
         var deviceCount = 0;
-        if (groupName && groupOwner) {
+        if (groupId && groupOwner) {
             var groupModule = require("/app/modules/business-controllers/group.js")["groupModule"];
-            deviceCount = groupModule.getGroupDeviceCount(groupName, groupOwner);
+            deviceCount = groupModule.getGroupDeviceCount(groupId, groupOwner);
         } else {
             deviceCount = deviceModule.getDevicesCount();
         }

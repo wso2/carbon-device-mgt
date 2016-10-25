@@ -129,6 +129,12 @@ public interface DeviceManagementService {
             @Size(max = 45)
             String status,
             @ApiParam(
+                    name = "groupId",
+                    value = "The group name of the device included",
+                    required = false)
+            @QueryParam("groupId")
+                    int groupId,
+            @ApiParam(
                     name = "since",
                     value = "Checks if the requested variant was created since the specified date-time.\n" +
                             "Provide the value in the following format: EEE, d MMM yyyy HH:mm:ss Z.\n" +

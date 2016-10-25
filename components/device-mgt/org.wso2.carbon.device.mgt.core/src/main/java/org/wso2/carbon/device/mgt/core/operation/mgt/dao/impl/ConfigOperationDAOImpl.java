@@ -64,7 +64,7 @@ public class ConfigOperationDAOImpl extends GenericOperationDAOImpl {
         try {
             super.deleteOperation(id);
             Connection connection = OperationManagementDAOFactory.getConnection();
-            stmt = connection.prepareStatement("DELETE DM_CONFIG_OPERATION WHERE OPERATION_ID = ?") ;
+            stmt = connection.prepareStatement("DELETE FROM DM_CONFIG_OPERATION WHERE OPERATION_ID = ?") ;
             stmt.setInt(1, id);
             stmt.executeUpdate();
         } catch (SQLException e) {
@@ -82,7 +82,7 @@ public class ConfigOperationDAOImpl extends GenericOperationDAOImpl {
         try {
             super.updateOperation(operation);
             Connection connection = OperationManagementDAOFactory.getConnection();
-            stmt = connection.prepareStatement("UPDATE DM_CONFIG_OPERATION SET OPERATION_CONFIG = ? " +
+            stmt = connection.prepareStatement("UPDATE FROM DM_CONFIG_OPERATION SET OPERATION_CONFIG = ? " +
                     "WHERE OPERATION_ID = ?");
             bao = new ByteArrayOutputStream();
             oos = new ObjectOutputStream(bao);

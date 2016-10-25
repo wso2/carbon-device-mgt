@@ -622,7 +622,7 @@ public class GenericOperationDAOImpl implements OperationDAO {
         PreparedStatement stmt = null;
         try {
             Connection connection = OperationManagementDAOFactory.getConnection();
-            stmt = connection.prepareStatement("DELETE DM_OPERATION WHERE ID = ?");
+            stmt = connection.prepareStatement("DELETE FROM DM_OPERATION WHERE ID = ?");
             stmt.setInt(1, id);
             stmt.executeUpdate();
         } catch (SQLException e) {

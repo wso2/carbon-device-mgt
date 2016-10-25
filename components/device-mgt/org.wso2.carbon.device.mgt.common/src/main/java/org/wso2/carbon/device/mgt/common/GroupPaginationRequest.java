@@ -18,24 +18,17 @@
 
 package org.wso2.carbon.device.mgt.common;
 
-import java.util.Date;
-
 /**
- * This class holds required parameters for a querying a paginated device response.
+ * This class holds required parameters for a querying a paginated device group response.
  */
-public class PaginationRequest {
+public class GroupPaginationRequest {
 
     private int startIndex;
     private int rowCount;
-    private int groupId;
     private String owner;
-    private String status;
-    private String deviceType;
-    private String deviceName;
-    private String ownership;
-    private Date since;
+    private String groupName;
 
-    public PaginationRequest(int start, int rowCount) {
+    public GroupPaginationRequest(int start, int rowCount) {
         this.startIndex = start;
         this.rowCount = rowCount;
     }
@@ -56,14 +49,6 @@ public class PaginationRequest {
         this.rowCount = rowCount;
     }
 
-    public int getGroupId() {
-        return groupId;
-    }
-
-    public void setGroupId(int groupId) {
-        this.groupId = groupId;
-    }
-
     public String getOwner() {
         return owner;
     }
@@ -72,44 +57,12 @@ public class PaginationRequest {
         this.owner = owner;
     }
 
-    public String getStatus() {
-        return status;
+    public String getGroupName() {
+        return groupName;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public String getDeviceType() {
-        return deviceType;
-    }
-
-    public void setDeviceType(String deviceType) {
-        this.deviceType = deviceType;
-    }
-
-    public String getDeviceName() {
-        return deviceName;
-    }
-
-    public void setDeviceName(String deviceName) {
-        this.deviceName = deviceName;
-    }
-
-    public String getOwnership() {
-        return ownership;
-    }
-
-    public void setOwnership(String ownership) {
-        this.ownership = ownership;
-    }
-
-    public Date getSince() {
-        return since;
-    }
-
-    public void setSince(Date since) {
-        this.since = since;
+    public void setGroupName(String groupName) {
+        this.groupName = groupName;
     }
 
 }

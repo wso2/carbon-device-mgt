@@ -231,7 +231,7 @@ public class PolicyManagerUtil {
     public static Map<Integer, DeviceGroup> convertDeviceGroupMap(List<DeviceGroup> deviceGroups) {
         Map<Integer, DeviceGroup> groupMap = new HashMap<>();
         for (DeviceGroup dg: deviceGroups){
-            groupMap.put(dg.getId(), dg);
+            groupMap.put(dg.getGroupId(), dg);
         }
         return groupMap;
     }

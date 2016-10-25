@@ -16,28 +16,27 @@
  *   under the License.
  *
  */
-package org.wso2.carbon.device.mgt.common.group.mgt;
+package org.wso2.carbon.device.mgt.jaxrs.beans;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.List;
 
-/**
- * This class holds Device Group user name and assigned group roles of user. Exposed to external access
- */
-@ApiModel(value = "GroupUser", description = "This class carries all information related to a user of a managed device group.")
-public class GroupUser implements Serializable {
 
-    private static final long serialVersionUID = 1998131711L;
+/**
+ * This class holds Device Group user name and assigned roles of user for particular group. Exposed to external access.
+ */
+@ApiModel(value = "DeviceGroupShare", description = "This class carries roles assigned to a user of a managed device group.")
+public class DeviceGroupShare implements Serializable {
+
+    private static final long serialVersionUID = 1998141711L;
 
     @ApiModelProperty(name = "username", value = "Username of the user.", required = true)
     private String username;
 
-    @ApiModelProperty(name = "roles", value = "List of roles assigned to the user.")
+    @ApiModelProperty(name = "roles", value = "List of roles assigned to user from the group.")
     private List<String> groupRoles;
 
     public String getUsername() {
@@ -55,5 +54,5 @@ public class GroupUser implements Serializable {
     public void setGroupRoles(List<String> groupRoles) {
         this.groupRoles = groupRoles;
     }
-
 }
+

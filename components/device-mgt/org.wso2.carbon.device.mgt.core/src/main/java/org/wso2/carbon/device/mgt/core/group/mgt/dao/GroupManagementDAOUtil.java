@@ -21,7 +21,6 @@ package org.wso2.carbon.device.mgt.core.group.mgt.dao;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroup;
-import org.wso2.carbon.device.mgt.core.group.mgt.DeviceGroupBuilder;
 
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
@@ -80,8 +79,8 @@ public final class GroupManagementDAOUtil {
         }
     }
 
-    public static DeviceGroupBuilder loadGroup(ResultSet resultSet) throws SQLException {
-        DeviceGroupBuilder group = new DeviceGroupBuilder(new DeviceGroup());
+    public static DeviceGroup loadGroup(ResultSet resultSet) throws SQLException {
+        DeviceGroup group = new DeviceGroup();
         group.setGroupId(resultSet.getInt("ID"));
         group.setDescription(resultSet.getString("DESCRIPTION"));
         group.setName(resultSet.getString("GROUP_NAME"));

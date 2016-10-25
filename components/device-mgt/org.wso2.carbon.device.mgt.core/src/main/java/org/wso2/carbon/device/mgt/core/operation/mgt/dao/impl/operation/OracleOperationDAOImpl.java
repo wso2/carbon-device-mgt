@@ -90,7 +90,7 @@ public class OracleOperationDAOImpl extends GenericOperationDAOImpl {
 
     @Override
     public List<? extends Operation> getOperationsByDeviceAndStatus(int enrolmentId,
-            PaginationRequest request, Operation.Status status) throws OperationManagementDAOException {
+                                                                    PaginationRequest request, Operation.Status status) throws OperationManagementDAOException {
         PreparedStatement stmt = null;
         ResultSet rs = null;
         Operation operation;

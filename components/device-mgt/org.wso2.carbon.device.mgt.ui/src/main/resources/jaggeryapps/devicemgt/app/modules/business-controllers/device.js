@@ -118,12 +118,17 @@ deviceModule = function () {
                             if (properties["DEVICE_INFO"]) {
                                 var initialDeviceInfoList = parse(properties["DEVICE_INFO"]);
                                 var initialDeviceInfo = {};
-                                for (var j = 0; j < initialDeviceInfoList.length; j++) {
-                                    if (initialDeviceInfoList[j]["value"]) {
-                                        initialDeviceInfo[initialDeviceInfoList[j]["name"]] =
-                                            initialDeviceInfoList[j]["value"];
+                                if (Array.isArray(initialDeviceInfoList) {
+                                    for (var j = 0; j < initialDeviceInfoList.length; j++) {
+                                        if (initialDeviceInfoList[j]["value"]) {
+                                            initialDeviceInfo[initialDeviceInfoList[j]["name"]] =
+                                                initialDeviceInfoList[j]["value"];
+                                        }
                                     }
+                                } else {
+                                    initialDeviceInfo = initialDeviceInfoList;
                                 }
+
 
                                 filteredDeviceData["initialDeviceInfo"]["DEVICE_INFO"] = initialDeviceInfo;
                             }

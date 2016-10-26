@@ -47,8 +47,6 @@ public class DeviceGroup implements Serializable {
     private Long dateOfCreation;
     private Long dateOfLastUpdate;
     private String owner;
-    private List<GroupUser> users;
-    private List<String> roles;
 
     public int getGroupId() {
         return id;
@@ -96,22 +94,6 @@ public class DeviceGroup implements Serializable {
 
     public void setOwner(String owner) {
         this.owner = owner;
-    }
-
-    public List<GroupUser> getUsers() {
-        return users;
-    }
-
-    public void setUsers(List<GroupUser> users) {
-        this.users = users;
-    }
-
-    public List<String> getRoles() {
-        return roles;
-    }
-
-    public void setRoles(List<String> roles) {
-        this.roles = roles;
     }
 
 }

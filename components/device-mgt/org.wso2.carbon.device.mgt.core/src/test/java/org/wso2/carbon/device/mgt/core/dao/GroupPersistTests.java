@@ -29,9 +29,6 @@ import org.wso2.carbon.device.mgt.common.TransactionManagementException;
 import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroup;
 import org.wso2.carbon.device.mgt.core.common.BaseDeviceManagementTest;
 import org.wso2.carbon.device.mgt.core.common.TestDataHolder;
-import org.wso2.carbon.device.mgt.core.group.mgt.dao.GroupDAO;
-import org.wso2.carbon.device.mgt.core.group.mgt.dao.GroupManagementDAOException;
-import org.wso2.carbon.device.mgt.core.group.mgt.dao.GroupManagementDAOFactory;
 
 import java.sql.SQLException;
 import java.util.Date;

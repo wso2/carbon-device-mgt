@@ -103,7 +103,7 @@ public interface GroupManagementProviderService {
     PaginationResult getGroups(GroupPaginationRequest paginationRequest) throws GroupManagementException;
 
     /**
-     * Get device groups with pagination.
+     * Get device groups belongs to specified user with pagination.
      *
      * @param username   of the user.
      * @param paginationRequest to filter results

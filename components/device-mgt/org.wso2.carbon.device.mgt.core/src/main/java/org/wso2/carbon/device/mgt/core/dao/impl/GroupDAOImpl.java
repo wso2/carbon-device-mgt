@@ -16,12 +16,16 @@
  * under the License.
  */
 
-package org.wso2.carbon.device.mgt.core.group.mgt.dao;
+package org.wso2.carbon.device.mgt.core.dao.impl;
 
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.GroupPaginationRequest;
 import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroup;
+import org.wso2.carbon.device.mgt.core.dao.GroupDAO;
 import org.wso2.carbon.device.mgt.core.dao.util.DeviceManagementDAOUtil;
+import org.wso2.carbon.device.mgt.core.dao.GroupManagementDAOException;
+import org.wso2.carbon.device.mgt.core.dao.GroupManagementDAOFactory;
+import org.wso2.carbon.device.mgt.core.dao.util.GroupManagementDAOUtil;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

@@ -35,9 +35,9 @@ import org.wso2.carbon.device.mgt.common.group.mgt.GroupAlreadyExistException;
 import org.wso2.carbon.device.mgt.common.group.mgt.GroupManagementException;
 import org.wso2.carbon.device.mgt.common.group.mgt.GroupUser;
 import org.wso2.carbon.device.mgt.common.group.mgt.RoleDoesNotExistException;
-import org.wso2.carbon.device.mgt.core.group.mgt.dao.GroupDAO;
-import org.wso2.carbon.device.mgt.core.group.mgt.dao.GroupManagementDAOException;
-import org.wso2.carbon.device.mgt.core.group.mgt.dao.GroupManagementDAOFactory;
+import org.wso2.carbon.device.mgt.core.dao.GroupDAO;
+import org.wso2.carbon.device.mgt.core.dao.GroupManagementDAOException;
+import org.wso2.carbon.device.mgt.core.dao.GroupManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 import org.wso2.carbon.device.mgt.core.util.DeviceManagerUtil;
 import org.wso2.carbon.user.api.Permission;
@@ -185,10 +185,6 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
         } finally {
             GroupManagementDAOFactory.closeConnection();
         }
-        if (deviceGroup != null) {
-            deviceGroup.setUsers(this.getUsers(groupId));
-            deviceGroup.setRoles(this.getRoles(groupId));
-        }
         return deviceGroup;
     }
 
@@ -206,10 +202,6 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
         } finally {
             GroupManagementDAOFactory.closeConnection();
         }
-        for (DeviceGroup group : deviceGroups) {
-            group.setUsers(this.getUsers(group.getGroupId()));
-            group.setRoles(this.getRoles(group.getGroupId()));
-        }
         return deviceGroups;
     }
 
@@ -217,10 +209,6 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
     public PaginationResult getGroups(GroupPaginationRequest request) throws GroupManagementException {
         request = DeviceManagerUtil.validateGroupListPageSize(request);
         List<DeviceGroup> deviceGroups = getPlainDeviceGroups(request);
-        for (DeviceGroup group : deviceGroups) {
-            group.setUsers(this.getUsers(group.getGroupId()));
-            group.setRoles(this.getRoles(group.getGroupId()));
-        }
         PaginationResult groupResult = new PaginationResult();
         groupResult.setData(deviceGroups);
         groupResult.setRecordsTotal(getGroupCount(request));
@@ -292,8 +280,6 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
                 int groupId = group.getGroupId();
                 if (groupIds.contains(groupId)) {
                     if (startIndex <= index && index < count) {
-                        group.setUsers(this.getUsers(groupId));
-                        group.setRoles(this.getRoles(groupId));
                         deviceGroups.add(group);
                     }
                     index++;

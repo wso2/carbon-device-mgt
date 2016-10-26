@@ -53,11 +53,11 @@ var groupModule = {};
         );
     };
 
-    groupModule.getGroupDeviceCount = function (groupName, owner) {
-        endPoint = deviceServiceEndpoint + "/owner/" + owner + "/name/" + groupName + "/devices/count";
+    groupModule.getGroupDeviceCount = function (groupId) {
+        endPoint = deviceServiceEndpoint + "/groups/id/" + groupId + "/devices/count";
         return serviceInvokers.XMLHttp.get(
                 endPoint, function (responsePayload) {
-                    return responsePayload;
+                    return responsePayload["responseText"];
                 },
                 function (responsePayload) {
                     log.error(responsePayload);
@@ -67,7 +67,7 @@ var groupModule = {};
     };
 
     groupModule.getGroupDevices = function (groupName, owner) {
-        endPoint = deviceServiceEndpoint + "/owner/" + owner + "/name/" + groupName + "/devices";
+        endPoint = deviceServiceEndpoint + "/groups/owner/" + owner + "/name/" + groupName + "/devices";
         return serviceInvokers.XMLHttp.get(
                 endPoint, function (responsePayload) {
                     return responsePayload;

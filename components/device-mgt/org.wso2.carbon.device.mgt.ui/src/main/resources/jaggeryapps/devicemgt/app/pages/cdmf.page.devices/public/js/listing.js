@@ -554,7 +554,7 @@ function attachDeviceEvents() {
 
             var serviceURL;
             if ($.hasPermission("LIST_ALL_GROUPS")) {
-                serviceURL = "/api/device-mgt/v1.0/groups/all";
+                serviceURL = "/api/device-mgt/v1.0/groups";
             } else if ($.hasPermission("LIST_GROUPS")) {
                 //Get authenticated users groups
                 serviceURL = "/api/device-mgt/v1.0/groups/user/" + currentUser + "/all";
@@ -563,18 +563,18 @@ function attachDeviceEvents() {
             invokerUtil.get(serviceURL, function (data) {
                 var groups = JSON.parse(data);
                 var str = '<br /><select id="assign-group-selector" style="color:#3f3f3f;padding:5px;width:250px;">';
-                for (var i = 0; i < groups.length; i++) {
-                    str += '<option value="' + groups[i].owner + "/name/" + groups[i].name + '">' +
-                           groups[i].name + '</option>';
+                for (var i = 0; i < groups.deviceGroups.length; i++) {
+                    str += '<option value="' + groups.deviceGroups[i].id + '">' +
+                           groups.deviceGroups[i].name + '</option>';
                 }
                 str += '</select>';
                 $('#user-groups').html(str);
                 $("a#group-device-yes-link").show();
                 $("a#group-device-yes-link").click(function () {
                     var selectedGroup = $('#assign-group-selector').val();
-                    serviceURL = "/api/device-mgt/v1.0/groups/owner/" + selectedGroup + "/devices";
-                    var device = {"id": deviceId, "type": deviceType};
-                    invokerUtil.post(serviceURL, device, function (data) {
+                    serviceURL = "/api/device-mgt/v1.0/groups/id/" + selectedGroup + "/devices";
+                    var deviceIdentifiers = [{"id":deviceId,"type":deviceType}];
+                    invokerUtil.post(serviceURL, deviceIdentifiers, function (data) {
                         $(modalPopupContent).html($('#group-associate-device-200-content').html());
                         setTimeout(function () {
                             hidePopup();

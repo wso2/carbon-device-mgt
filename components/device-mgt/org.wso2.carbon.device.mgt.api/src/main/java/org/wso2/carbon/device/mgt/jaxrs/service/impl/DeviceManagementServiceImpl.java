@@ -71,6 +71,7 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
             @QueryParam("user") String user,
             @QueryParam("ownership") String ownership,
             @QueryParam("status") String status,
+            @QueryParam("groupId") int groupId,
             @QueryParam("since") String since,
             @HeaderParam("If-Modified-Since") String ifModifiedSince,
             @QueryParam("offset") int offset,
@@ -106,6 +107,9 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
             if (status != null && !status.isEmpty()) {
                 RequestValidationUtil.validateStatus(status);
                 request.setStatus(status);
+            }
+            if (groupId != 0 ) {
+                request.setGroupId(groupId);
             }
 
             // this is the user who initiates the request

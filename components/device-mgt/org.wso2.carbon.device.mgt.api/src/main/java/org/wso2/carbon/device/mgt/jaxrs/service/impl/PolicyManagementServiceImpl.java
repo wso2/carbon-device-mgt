@@ -231,8 +231,8 @@ public class PolicyManagementServiceImpl implements PolicyManagementService {
                     policyDeleted = false;
                 }
             }
-            if(policyDeleted) {
-                for(int i : policyIds) {
+            if (policyDeleted) {
+                for (int i : policyIds) {
                     Policy policy = pap.getPolicy(i);
                     pap.deletePolicy(policy);
                 }
@@ -244,13 +244,16 @@ public class PolicyManagementServiceImpl implements PolicyManagementService {
                     new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
         }
         if (policyDeleted) {
-            return Response.status(Response.Status.OK).entity("Policies have been successfully deleted").build();
+            return Response.status(Response.Status.OK).entity("Policies have been successfully " +
+                                                              "deleted").build();
         } else {
             //TODO:Check of this logic is correct
-            String ModifiedInvalidPolicyIds = invalidPolicyIds.substring(0, invalidPolicyIds.length()-1);
-            return Response.status(Response.Status.BAD_REQUEST).entity(
-                    new ErrorResponse.ErrorResponseBuilder().setMessage("Policies with the policy ID " +
-                                                                        ModifiedInvalidPolicyIds + " doesn't exist").build()).build();
+            String modifiedInvalidPolicyIds =
+                    invalidPolicyIds.substring(0, invalidPolicyIds.length() - 1);
+            return Response.status(Response.Status.BAD_REQUEST).
+                    entity(new ErrorResponse.ErrorResponseBuilder().
+                            setMessage("Policies with the policy ID " + modifiedInvalidPolicyIds +
+                                       " doesn't exist").build()).build();
         }
     }
 

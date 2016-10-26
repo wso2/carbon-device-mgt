@@ -295,9 +295,13 @@ function attachEvents() {
     $("a.share-group-link").click(function () {
         var groupName = $(this).data("group-name");
         var groupOwner = $(this).data("group-owner");
-        $(modalPopupContent).html($('#share-group-w1-modal-content').html());
+        modalDialog.header('Enter user name to manage group sharing');
+        modalDialog.content('<input type="text" id="share-user-selector" ' +
+            'style="color:#3f3f3f;padding:5px;width:250px;" />');
+        modalDialog.footer('<div class="buttons"><a href="#" id="share-group-next-link" class="btn-operations">Next' +
+            '</a><a href="#" id="share-group-w1-cancel-link" class="btn-operations btn-default">Cancel</a></div>');
         $("a#share-group-next-link").show();
-        showPopup();
+        modalDialog.show();
         $("a#share-group-next-link").click(function () {
             var selectedUser = $('#share-user-selector').val();
             if (selectedUser == $("#group-listing").data("current-user")) {
@@ -308,7 +312,7 @@ function attachEvents() {
             }
         });
         $("a#share-group-w1-cancel-link").click(function () {
-            hidePopup();
+            modalDialog.hide();
         });
     });
 
@@ -321,16 +325,18 @@ function attachEvents() {
         var groupName = $(this).data("group-name");
         var groupOwner = $(this).data("group-owner");
 
-        $(modalPopupContent).html($('#remove-group-modal-content').html());
-        showPopup();
+        modalDialog.header('Do you really want to remove this group from your Group List?');
+        modalDialog.footer('<div class="buttons"><a href="#" id="remove-group-yes-link" class="btn-operations">Yes' +
+            '</a><a href="#" id="remove-group-cancel-link" class="btn-operations btn-default">Cancel</a></div>');
+        modalDialog.show();
 
         $("a#remove-group-yes-link").click(function () {
             var successCallback = function (data, textStatus, xhr) {
                 data = JSON.parse(data);
                 if (xhr.status == 200) {
-                    $(modalPopupContent).html($('#remove-group-200-content').html());
+                    modalDialog.header('Group was successfully removed.');
                     setTimeout(function () {
-                        hidePopup();
+                        modalDialog.hide();
                         location.reload(false);
                     }, 2000);
                 } else {
@@ -345,7 +351,7 @@ function attachEvents() {
         });
 
         $("a#remove-group-cancel-link").click(function () {
-            hidePopup();
+            modalDialog.hide();
         });
 
     });
@@ -360,10 +366,15 @@ function attachEvents() {
         var groupOwner = $(this).data("group-owner");
         var groupDescription = $(this).data("group-description");
 
-        $(modalPopupContent).html($('#edit-group-modal-content').html());
+        modalDialog.header('Please enter new name and description for the group.');
+        modalDialog.content('<div><input id="edit-group-name" style="color:#3f3f3f;padding:5px" type="text" value="" ' +
+            'placeholder="Group Name" size="60"></div><br/><div><input id="edit-group-description" ' +
+            'style="color:#3f3f3f;padding:5px" type="text" value="" placeholder="Group Description" size="60"></div>');
+        modalDialog.footer('<div class="buttons"><a href="#" id="edit-group-yes-link" class="btn-operations">Update' +
+            '</a><a href="#" id="edit-group-cancel-link" class="btn-operations btn-default">Cancel</a></div>');
         $('#edit-group-name').val(groupName);
         $('#edit-group-description').val(groupDescription);
-        showPopup();
+        modalDialog.show();
 
         $("a#edit-group-yes-link").click(function () {
             var newGroupName = $('#edit-group-name').val();
@@ -373,8 +384,11 @@ function attachEvents() {
             var successCallback = function (data, textStatus, xhr) {
                 data = JSON.parse(data);
                 if (xhr.status == 200) {
+                    modalDialog.hide();
+                    modalDialog.header('Group was successfully updated.');
+                    modalDialog.show();
                     setTimeout(function () {
-                        hidePopup();
+                        modalDialog.hide();
                         location.reload(false);
                     }, 2000);
                 } else {
@@ -389,14 +403,19 @@ function attachEvents() {
         });
 
         $("a#edit-group-cancel-link").click(function () {
-            hidePopup();
+            modalDialog.hide();
         });
     });
 }
 
 function getAllRoles(groupName, groupOwner, selectedUser) {
-    $(modalPopupContent).html($('#share-group-w2-modal-content').html());
-    $('#user-roles').html('<div style="height:100px" data-state="loading" data-loading-text="Loading..." data-loading-style="icon-only" data-loading-inverse="true"></div>');
+    modalDialog.header('Select sharing roles');
+    modalDialog.content('<div id="user-roles">Loading...</div>');
+    modalDialog.footer('<div class="buttons"><a href="#" id="share-group-yes-link" class="btn-operations">OK</a><a ' +
+        'href="#" id="share-group-w2-cancel-link" class="btn-operations btn-default">Cancel</a></div>');
+    modalDialog.show();
+    $('#user-roles').html('<div style="height:100px" data-state="loading" data-loading-text="Loading..." ' +
+        'data-loading-style="icon-only" data-loading-inverse="true"></div>');
     $("a#share-group-yes-link").hide();
     var successCallback = function (data, textStatus, xhr) {
         data = JSON.parse(data);
@@ -417,7 +436,7 @@ function getAllRoles(groupName, groupOwner, selectedUser) {
         });
 
     $("a#share-group-w2-cancel-link").click(function () {
-        hidePopup();
+        modalDialog.hide();
     });
 }
 
@@ -463,15 +482,17 @@ function generateRoleMap(groupName, groupOwner, selectedUser, allRoles) {
         });
 
     $("a#share-group-w2-cancel-link").click(function () {
-        hidePopup();
+        modalDialog.hide();
     });
 }
 
 function updateGroupShare(groupName, groupOwner, selectedUser, roles) {
     var successCallback = function (data) {
-        $(modalPopupContent).html($('#share-group-200-content').html());
+        // $(modalPopupContent).html($('#share-group-200-content').html());
+        modalDialog.header('Group sharing updated successfully.');
+        modalDialog.show();
         setTimeout(function () {
-            hidePopup();
+            modalDialog.hide();
             location.reload(false);
         }, 2000);
     };
@@ -483,35 +504,44 @@ function updateGroupShare(groupName, groupOwner, selectedUser, roles) {
 }
 
 function displayErrors(jqXHR) {
-    showPopup();
     if (jqXHR.status == 400) {
-        $(modalPopupContent).html($('#group-400-content').html());
+        modalDialog.header('<h3 id="error-msg">Bad Request. Please contact your administrator.</h3>');
+        modalDialog.footer('<div class="buttons"><a href="#" id="group-400-link" class="btn-operations">Ok</a></div>');
+        modalDialog.showAsError();
         if (jqXHR.responseText) {
             $('#error-msg').html(jqXHR.responseText.replace(new RegExp("\"", 'g'), ""));
         }
         $("a#group-400-link").click(function () {
-            hidePopup();
+            modalDialog.hide();
         });
     } else if (jqXHR.status == 403) {
-        $(modalPopupContent).html($('#group-403-content').html());
+        modalDialog.header('Operation not permitted.');
+        modalDialog.footer('<div class="buttons"><a href="#" id="group-403-link" class="btn-operations">Ok</a></div>');
+        modalDialog.showAsError();
         $("a#group-403-link").click(function () {
-            hidePopup();
+            modalDialog.hide();
         });
     } else if (jqXHR.status == 404) {
-        $(modalPopupContent).html($('#group-404-content').html());
+        modalDialog.header('<h3 id="group-404-message">Not found.</h3>');
+        modalDialog.footer('<div class="buttons"><a href="#" id="group-404-link" class="btn-operations">Ok</a></div>');
+        modalDialog.showAsError();
         $("#group-404-message").html(jqXHR.responseText);
         $("a#group-404-link").click(function () {
-            hidePopup();
+            modalDialog.hide();
         });
     } else if (jqXHR.status == 409) {
-        $(modalPopupContent).html($('#group-409-content').html());
+        modalDialog.header('Group does not exist..');
+        modalDialog.footer('<div class="buttons"><a href="#" id="group-409-link" class="btn-operations">Ok</a></div>');
+        modalDialog.showAsError();
         $("a#group-409-link").click(function () {
-            hidePopup();
+            modalDialog.hide();
         });
     } else {
-        $(modalPopupContent).html($('#group-unexpected-error-content').html());
+        modalDialog.header('Unexpected error occurred!');
+        modalDialog.footer('<div class="buttons"><a href="#" id="group-unexpected-error-link" class="btn-operations">Ok</a></div>');
+        modalDialog.showAsError();
         $("a#group-unexpected-error-link").click(function () {
-            hidePopup();
+            modalDialog.hide();
         });
         console.log("Error code: " + jqXHR.status);
     }

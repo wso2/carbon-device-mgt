@@ -59,7 +59,7 @@ $(function () {
                 }
             };
 
-            invokerUtil.post("/devicemgt_admin/groups", group,
+            invokerUtil.post("/api/device-mgt/v1.0/groups", group,
                              successCallback, function (message) {
                         displayErrors(message);
                     });

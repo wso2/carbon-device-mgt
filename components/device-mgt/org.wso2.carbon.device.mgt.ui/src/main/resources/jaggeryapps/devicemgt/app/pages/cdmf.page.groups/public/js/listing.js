@@ -170,10 +170,10 @@ function loadGroups() {
                     '<span class="hidden-xs hidden-on-grid-view">Share</span></a>';
 
                 html += '<a href="#" data-click-event="remove-form" class="btn padding-reduce-on-grid-view edit-group-link" data-group-name="' + row.name + '" ' +
-                    'data-group-owner="' + row.owner + '" data-group-description="' + row.description + '"><span class="fw-stack"><i class="fw fw-ring fw-stack-2x"></i>' +
+                    'data-group-owner="' + row.owner + '" data-group-description="' + row.description + '" data-group-id="'+row.groupId+'"><span class="fw-stack"><i class="fw fw-ring fw-stack-2x"></i>' +
                     '<i class="fw fw-edit fw-stack-1x"></i></span><span class="hidden-xs hidden-on-grid-view">Edit</span></a>';
 
-                html += '<a href="#" data-click-event="remove-form" class="btn padding-reduce-on-grid-view remove-group-link" data-group-name="' + row.name + '" ' +
+                html += '<a href="#" data-click-event="remove-form" class="btn padding-reduce-on-grid-view remove-group-link" data-group-id="' + row.groupId + '" ' +
                     'data-group-owner="' + row.owner + '"><span class="fw-stack"><i class="fw fw-ring fw-stack-2x"></i><i class="fw fw-delete fw-stack-1x"></i>' +
                     '</span><span class="hidden-xs hidden-on-grid-view">Delete</span></a>';
 
@@ -351,7 +351,7 @@ function attachEvents() {
      * on Group Management page in WSO2 IoT Server Console.
      */
     $("a.remove-group-link").click(function () {
-        var groupName = $(this).data("group-name");
+        var groupId = $(this).data("group-id");
         var groupOwner = $(this).data("group-owner");
 
         $(modalPopupContent).html($('#remove-group-modal-content').html());
@@ -359,7 +359,6 @@ function attachEvents() {
 
         $("a#remove-group-yes-link").click(function () {
             var successCallback = function (data, textStatus, xhr) {
-                data = JSON.parse(data);
                 if (xhr.status == 200) {
                     $(modalPopupContent).html($('#remove-group-200-content').html());
                     setTimeout(function () {
@@ -371,7 +370,7 @@ function attachEvents() {
                 }
             };
 
-            invokerUtil.delete("/devicemgt_admin/groups/owner/" + groupOwner + "/name/" + groupName,
+            invokerUtil.delete("/api/device-mgt/v1.0/groups/id/" + groupId,
                 successCallback, function (message) {
                         displayErrors(message);
                 });
@@ -389,6 +388,7 @@ function attachEvents() {
      * on Device Management page in WSO2 MDM Console.
      */
     $("a.edit-group-link").click(function () {
+        var groupId = $(this).data("group-id");
         var groupName = $(this).data("group-name");
         var groupOwner = $(this).data("group-owner");
         var groupDescription = $(this).data("group-description");
@@ -404,8 +404,8 @@ function attachEvents() {
             var group = {"name": newGroupName, "description": newGroupDescription, "owner": groupOwner};
 
             var successCallback = function (data, textStatus, xhr) {
-                data = JSON.parse(data);
                 if (xhr.status == 200) {
+                    $(modalPopupContent).html($('#edit-group-200-content').html());
                     setTimeout(function () {
                         hidePopup();
                         location.reload(false);
@@ -415,7 +415,7 @@ function attachEvents() {
                 }
             };
 
-            invokerUtil.put("/devicemgt_admin/groups/owner/" + groupOwner + "/name/" + groupName, group,
+            invokerUtil.put("/api/device-mgt/v1.0/groups/id/" + groupId, group,
                 successCallback, function (message) {
                         displayErrors(message);
                 });

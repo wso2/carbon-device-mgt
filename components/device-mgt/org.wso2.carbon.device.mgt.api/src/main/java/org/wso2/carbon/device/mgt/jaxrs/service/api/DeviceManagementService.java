@@ -130,7 +130,7 @@ public interface DeviceManagementService {
             String status,
             @ApiParam(
                     name = "groupId",
-                    value = "The group name of the device included",
+                    value = "Id of the group which device belongs",
                     required = false)
             @QueryParam("groupId")
                     int groupId,

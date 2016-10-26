@@ -53,7 +53,7 @@ var groupModule = {};
         );
     };
 
-    groupModule.getGroupDeviceCount = function (groupId, owner) {
+    groupModule.getGroupDeviceCount = function (groupId) {
         endPoint = deviceServiceEndpoint + "/groups/id/" + groupId + "/devices/count";
         return serviceInvokers.XMLHttp.get(
                 endPoint, function (responsePayload) {

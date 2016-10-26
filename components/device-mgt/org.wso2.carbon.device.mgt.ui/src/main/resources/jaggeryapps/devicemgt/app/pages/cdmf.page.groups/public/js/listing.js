@@ -352,7 +352,6 @@ function attachEvents() {
      */
     $("a.remove-group-link").click(function () {
         var groupId = $(this).data("group-id");
-        var groupOwner = $(this).data("group-owner");
 
         $(modalPopupContent).html($('#remove-group-modal-content').html());
         showPopup();

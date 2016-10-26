@@ -210,8 +210,10 @@ $("#role-grid").on("click", ".remove-role-link", function () {
     if (userStore) {
         removeRoleAPI += "?user-store=" + encodeURIComponent(userStore);
     }
-    $(modalPopupContent).html($('#remove-role-modal-content').html());
-    showPopup();
+    modalDialog.header('Do you really want to remove this role ?');
+    modalDialog.footer('<div class="buttons"><a href="#" id="remove-role-yes-link" class="btn-operations">Remove</a>' +
+        '<a href="#" id="remove-role-cancel-link" class="btn-operations btn-default">Cancel</a></div>');
+    modalDialog.show();
 
     $("a#remove-role-yes-link").click(function () {
         invokerUtil.delete(
@@ -221,22 +223,28 @@ $("#role-grid").on("click", ".remove-role-link", function () {
                     role = userStore + '/' + role;
                 }
                 $('[id="role-' + role + '"]').remove();
-                $(modalPopupContent).html($('#remove-role-success-content').html());
+                modalDialog.header('Done. Role was successfully removed.');
+                modalDialog.footer('<div class="buttons"><a href="#" id="remove-role-success-link" ' +
+                    'class="btn-operations">Ok</a></div>');
                 $("a#remove-role-success-link").click(function () {
-                    hidePopup();
+                    modalDialog.hide();
                 });
             },
             function () {
-                $(modalPopupContent).html($('#remove-role-error-content').html());
+                // $(modalPopupContent).html($('#remove-role-error-content').html());
+                modalDialog.header('An unexpected error occurred. Please try again later.');
+                modalDialog.footer('<div class="buttons"><a href="#" id="remove-role-error-link" ' +
+                    'class="btn-operations">Ok</a></div>');
+                modalDialog.showAsError();
                 $("a#remove-role-error-link").click(function () {
-                    hidePopup();
+                    modalDialog.hide();
                 });
             }
         );
     });
 
     $("a#remove-role-cancel-link").click(function () {
-        hidePopup();
+        modalDialog.hide();
     });
 });
 

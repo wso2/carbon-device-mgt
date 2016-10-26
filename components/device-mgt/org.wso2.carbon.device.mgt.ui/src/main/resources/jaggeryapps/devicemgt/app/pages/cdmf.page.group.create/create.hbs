@@ -1,4 +1,5 @@
 {{unit "cdmf.unit.ui.title" pageTitle="Group Management"}}
+{{unit "cdmf.unit.ui.modal"}}
 
 {{#zone "breadcrumbs"}}
     <li>
@@ -51,22 +52,6 @@
                         Add</button>
                     <button class="wr-btn" onclick="window.location = '{{@app.context}}/groups';return false;">
                         Cancel</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="group-error-content" class="hide">
-        <div class="modal-content">
-            <div class="row">
-                <div class="col-md-7 col-centered center-container">
-                    <h4 id="error-msg">Unexpected error occurred!</h4>
-                    <br/>
-                    <div class="buttons">
-                        <a href="#" id="group-unexpected-error-link" class="btn-operations">
-                            Ok
-                        </a>
-                    </div>
                 </div>
             </div>
         </div>

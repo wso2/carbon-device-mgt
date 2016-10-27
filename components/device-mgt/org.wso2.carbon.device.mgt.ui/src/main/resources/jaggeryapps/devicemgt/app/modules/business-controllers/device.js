@@ -118,7 +118,7 @@ deviceModule = function () {
                             if (properties["DEVICE_INFO"]) {
                                 var initialDeviceInfoList = parse(properties["DEVICE_INFO"]);
                                 var initialDeviceInfo = {};
-                                if (Array.isArray(initialDeviceInfoList) {
+                                if (Array.isArray(initialDeviceInfoList)) {
                                     for (var j = 0; j < initialDeviceInfoList.length; j++) {
                                         if (initialDeviceInfoList[j]["value"]) {
                                             initialDeviceInfo[initialDeviceInfoList[j]["name"]] =

@@ -66,8 +66,8 @@ var groupModule = {};
         );
     };
 
-    groupModule.getGroupDevices = function (groupName, owner) {
-        endPoint = deviceServiceEndpoint + "/groups/owner/" + owner + "/name/" + groupName + "/devices";
+    groupModule.getGroupDevices = function (groupId) {
+        endPoint = deviceServiceEndpoint + "/groups/id/" + groupId + "/devices?limit=10";
         return serviceInvokers.XMLHttp.get(
                 endPoint, function (responsePayload) {
                     return responsePayload;

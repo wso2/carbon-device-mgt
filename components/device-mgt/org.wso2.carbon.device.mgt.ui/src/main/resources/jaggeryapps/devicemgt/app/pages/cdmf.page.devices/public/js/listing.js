@@ -29,7 +29,6 @@ function InitiateViewOption(url) {
 
 (function () {
     var cache = {};
-    var permissionSet = {};
     var validateAndReturn = function (value) {
         return (value == undefined || value == null) ? "Unspecified" : value;
     };
@@ -44,15 +43,6 @@ function InitiateViewOption(url) {
             }, {});
         }
     });
-
-    //This method is used to setup permission for device listing
-    $.setPermission = function (permission) {
-        permissionSet[permission] = true;
-    };
-
-    $.hasPermission = function (permission) {
-        return permissionSet[permission];
-    };
 })();
 
 /*
@@ -77,13 +67,6 @@ $(document).ready(function () {
     $(deviceCheckbox).each(function () {
         addDeviceSelectedClass(this);
     });
-
-    var permissionList = $("#permission").data("permission");
-    for (var key in permissionList) {
-        if (permissionList.hasOwnProperty(key)) {
-            $.setPermission(key);
-        }
-    }
 
     /* for device list sorting drop down */
     $(".ctrl-filter-type-switcher").popover({
@@ -168,11 +151,11 @@ function toTitleCase(str) {
 
 function loadDevices(searchType, searchParam) {
     var serviceURL;
-    if (groupName && groupOwner && $.hasPermission("LIST_OWN_DEVICES")) {
+    if (groupName && groupOwner && permissionsUtil.hasPermission("LIST_OWN_DEVICES")) {
         serviceURL = "/api/device-mgt/v1.0/groups/owner/" + groupOwner + "/name/" + groupName + "/devices";
-    } else if ($.hasPermission("LIST_DEVICES")) {
+    } else if (permissionsUtil.hasPermission("LIST_DEVICES")) {
         serviceURL = "/api/device-mgt/v1.0/devices";
-    } else if ($.hasPermission("LIST_OWN_DEVICES")) {
+    } else if (permissionsUtil.hasPermission("LIST_OWN_DEVICES")) {
         //Get authenticated users devices
         serviceURL = "/api/device-mgt/v1.0/users/devices?username=" + currentUser;
     } else {
@@ -227,6 +210,38 @@ function loadDevices(searchType, searchParam) {
         return type;
     }
 
+    function analyticsEnabled(type) {
+        var deviceTypes = deviceListing.data("deviceTypes");
+        for (var i = 0; i < deviceTypes.length; i++) {
+            if (deviceTypes[i].type == type) {
+                var analyticsEnabled = deviceTypes[i].analyticsEnabled;
+                if (analyticsEnabled == undefined) {
+                    // By default it should be enabled
+                    return true;
+                }
+                // In JS Boolean("false") returns TRUE => http://stackoverflow.com/a/264037/1560536
+                return (analyticsEnabled == "true");
+            }
+        }
+        return true;
+    }
+
+    function groupingEnabled(type) {
+        var deviceTypes = deviceListing.data("deviceTypes");
+        for (var i = 0; i < deviceTypes.length; i++) {
+            if (deviceTypes[i].type == type) {
+                var groupingEnabled = deviceTypes[i].groupingEnabled;
+                if (groupingEnabled == undefined) {
+                    // By default it should be enabled
+                    return true;
+                }
+                // In JS Boolean("false") returns TRUE => http://stackoverflow.com/a/264037/1560536
+                return (analyticsEnabled == "true");
+            }
+        }
+        return true;
+    }
+
     var columns = [
         {
             targets: 0,
@@ -251,7 +266,8 @@ function loadDevices(searchType, searchParam) {
                 return html;
             }
         },
-        {targets: 2,
+        {
+            targets: 2,
             data: 'user',
             class: 'fade-edge remove-padding-top',
         },
@@ -292,7 +308,7 @@ function loadDevices(searchType, searchParam) {
             class: 'fade-edge remove-padding-top',
             render: function (status, type, row, meta) {
                 if (getDeviceTypeCategory(row.deviceType) == 'mobile') {
-                    return row.enrolmentInfo.ownership;
+                    return row.ownership;
                 } else {
                     return null;
                 }
@@ -313,15 +329,19 @@ function loadDevices(searchType, searchParam) {
                         ' class="btn padding-reduce-on-grid-view"><span class="fw-stack"><i class="fw fw-ring fw-stack-2x"></i>'
                         +
                         '<i class="fw fw-view fw-stack-1x"></i></span><span class="hidden-xs hidden-on-grid-view">View</span></a>';
-                    html += '<a href="device/' + deviceType + '/analytics?deviceId=' + deviceIdentifier + '&deviceName='
+
+                    if (analyticsEnabled(row.deviceType)) {
+                        html +=
+                            '<a href="device/' + deviceType + '/analytics?deviceId=' + deviceIdentifier + '&deviceName='
                             + row.name + '" ' +
                             'data-click-event="remove-form" class="btn padding-reduce-on-grid-view"><span class="fw-stack">'
                             +
                             '<i class="fw fw-ring fw-stack-2x"></i><i class="fw fw-statistics fw-stack-1x"></i></span>'
                             +
                             '<span class="hidden-xs hidden-on-grid-view">Analytics</span>';
+                    }
 
-                    if (!groupName || !groupOwner) {
+                    if (groupingEnabled(deviceType) && (!groupName || !groupOwner)) {
                         html +=
                             '<a href="#" data-click-event="remove-form" class="btn padding-reduce-on-grid-view group-device-link" '
                             +
@@ -528,7 +548,7 @@ function hidePopup() {
     $(modalPopupContent).html("");
     $(modalPopupContent).removeClass("operation-data");
     $(modalPopup).modal('hide');
-    $('body').removeClass('modal-open').css('padding-right','0px');
+    $('body').removeClass('modal-open').css('padding-right', '0px');
     $('.modal-backdrop').remove();
 }
 
@@ -553,9 +573,9 @@ function attachDeviceEvents() {
             showPopup();
 
             var serviceURL;
-            if ($.hasPermission("LIST_ALL_GROUPS")) {
+            if (permissionsUtil.hasPermission("LIST_ALL_GROUPS")) {
                 serviceURL = "/api/device-mgt/v1.0/groups/all";
-            } else if ($.hasPermission("LIST_GROUPS")) {
+            } else if (permissionsUtil.hasPermission("LIST_GROUPS")) {
                 //Get authenticated users groups
                 serviceURL = "/api/device-mgt/v1.0/groups/user/" + currentUser + "/all";
             }

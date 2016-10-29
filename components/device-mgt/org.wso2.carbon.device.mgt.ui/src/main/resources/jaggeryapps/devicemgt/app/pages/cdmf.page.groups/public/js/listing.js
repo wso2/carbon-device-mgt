@@ -82,26 +82,13 @@ function toTitleCase(str) {
     });
 }
 
-(function () {
-    var permissionSet = {};
-
-    //This method is used to setup permission for device listing
-    $.setPermission = function (permission) {
-        permissionSet[permission] = true;
-    };
-
-    $.hasPermission = function (permission) {
-        return permissionSet[permission];
-    };
-})();
-
 function loadGroups() {
     var groupListing = $("#group-listing");
     var currentUser = groupListing.data("currentUser");
     var serviceURL;
-    if ($.hasPermission("LIST_ALL_GROUPS")) {
+    if (permissionsUtil.hasPermission("LIST_ALL_GROUPS")) {
         serviceURL = "/devicemgt_admin/groups";
-    } else if ($.hasPermission("LIST_GROUPS")) {
+    } else if (permissionsUtil.hasPermission("LIST_GROUPS")) {
         //Get authenticated users groups
         serviceURL = "/devicemgt_admin/groups/user/" + currentUser;
     } else {

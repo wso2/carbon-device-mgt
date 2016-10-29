@@ -18,10 +18,11 @@
 
 package org.wso2.carbon.device.mgt.common.sensor.mgt.dao;
 
-import org.wso2.carbon.device.mgt.common.sensor.mgt.Sensor;
-
 import java.util.List;
 
+/**
+ * This is an interface intended for use by the device-plugin writer
+ */
 public interface DeviceSensorDAO {
     boolean addSensor(SensorTransactionObject sensorTransactionObject) throws DeviceSensorDAOException;
 

@@ -35,7 +35,7 @@ public interface SensorManager {
     /**
      * @throws DeviceManagementException
      */
-    void initDeviceTypeSensors() throws DeviceManagementException;
+            void initDeviceTypeSensors() throws DeviceManagementException;
 
     List<DeviceTypeSensor> getDeviceTypeSensors() throws DeviceManagementException;
 

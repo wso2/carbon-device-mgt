@@ -59,8 +59,21 @@ public class GenericDeviceDAOImpl extends AbstractDeviceDAOImpl {
             String sql = "SELECT d1.ID AS DEVICE_ID, d1.DESCRIPTION, d1.NAME AS DEVICE_NAME, d1.DEVICE_TYPE, " +
                          "d1.DEVICE_IDENTIFICATION, e.OWNER, e.OWNERSHIP, e.STATUS, e.DATE_OF_LAST_UPDATE, " +
                          "e.DATE_OF_ENROLMENT, e.ID AS ENROLMENT_ID FROM DM_ENROLMENT e, (SELECT d.ID, d.DESCRIPTION, " +
-                         "d.NAME, d.DEVICE_IDENTIFICATION, t.NAME AS DEVICE_TYPE FROM DM_DEVICE d, DM_DEVICE_TYPE t " +
-                         "WHERE DEVICE_TYPE_ID = t.ID AND d.TENANT_ID = ?";
+                         "d.NAME, d.DEVICE_IDENTIFICATION, t.NAME AS DEVICE_TYPE " +
+                         "FROM DM_DEVICE d, DM_DEVICE_TYPE t ";
+
+            //Add the query to filter active devices on timestamp
+            if (since != null) {
+                sql = sql + ", DM_DEVICE_DETAIL dt";
+                isSinceProvided = true;
+            }
+
+            sql = sql + " WHERE DEVICE_TYPE_ID = t.ID AND d.TENANT_ID = ?";
+
+            //Add query for last updated timestamp
+            if (isSinceProvided) {
+                sql = sql + " AND dt.DEVICE_ID = d.ID AND dt.UPDATE_TIMESTAMP > ?";
+            }
 
             //Add the query for device-type
             if (deviceType != null && !deviceType.isEmpty()) {
@@ -71,12 +84,6 @@ public class GenericDeviceDAOImpl extends AbstractDeviceDAOImpl {
             if (deviceName != null && !deviceName.isEmpty()) {
                 sql = sql + " AND d.NAME LIKE ?";
                 isDeviceNameProvided = true;
-            }
-
-            //Add query for last updated timestamp
-            if (since != null) {
-                sql = sql + " AND d.LAST_UPDATED_TIMESTAMP > ?";
-                isSinceProvided = true;
             }
 
             sql = sql + ") d1 WHERE d1.ID = e.DEVICE_ID AND TENANT_ID = ?";
@@ -102,15 +109,16 @@ public class GenericDeviceDAOImpl extends AbstractDeviceDAOImpl {
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, tenantId);
             int paramIdx = 2;
+            if (isSinceProvided) {
+                stmt.setLong(paramIdx++, since.getTime());
+            }
             if (isDeviceTypeProvided) {
                 stmt.setString(paramIdx++, request.getDeviceType());
             }
             if (isDeviceNameProvided) {
                 stmt.setString(paramIdx++, request.getDeviceName() + "%");
             }
-            if (isSinceProvided) {
-                stmt.setTimestamp(paramIdx++, new Timestamp(since.getTime()));
-            }
+
             stmt.setInt(paramIdx++, tenantId);
             if (isOwnershipProvided) {
                 stmt.setString(paramIdx++, request.getOwnership());

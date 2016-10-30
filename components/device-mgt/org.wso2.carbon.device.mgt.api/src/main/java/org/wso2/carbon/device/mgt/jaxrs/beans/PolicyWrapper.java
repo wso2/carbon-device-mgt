@@ -22,6 +22,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 
+import javax.validation.constraints.Size;
 import java.util.List;
 
 @ApiModel(value = "PolicyWrapper", description = "This class carries all information related to Policy "
@@ -29,9 +30,11 @@ import java.util.List;
 public class PolicyWrapper {
 
     @ApiModelProperty(name = "policyName", value = "The name of the policy", required = true)
+    @Size(max = 45)
     private String policyName;
 
     @ApiModelProperty(name = "description", value = "Gives a description on the policy", required = true)
+    @Size(max = 1000)
     private String description;
 
     @ApiModelProperty(name = "compliance", value = "Provides the non-compliance rules. WSO2 EMM provides the"
@@ -41,6 +44,7 @@ public class PolicyWrapper {
             + "Monitor - If the device does not adhere to the given policies the server is notified of the "
             + "violation unknown to the user and the administrator can take the necessary actions with regard"
             + " to the reported", required = true)
+    @Size(max = 100)
     private String compliance;
 
     @ApiModelProperty(name = "ownershipType", value = "The policy ownership type. It can be any of the "
@@ -49,6 +53,7 @@ public class PolicyWrapper {
             + "BYOD (Bring Your Own Device) - The policy will only be applied on the BYOD device type\n"
             + "COPE (Corporate-Owned, Personally-Enabled) - The policy will only be applied on the COPE "
             + "device type", required = true)
+    @Size(max = 45)
     private String ownershipType;
 
     @ApiModelProperty(name = "active", value = "If the value is true it indicates that the policy is active. "

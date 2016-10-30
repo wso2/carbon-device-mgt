@@ -23,16 +23,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
-import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
-import org.wso2.carbon.device.mgt.core.dao.DeviceTypeDAO;
-import org.wso2.carbon.device.mgt.core.dto.DeviceType;
+import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
+import org.wso2.carbon.device.mgt.core.config.policy.PolicyConfiguration;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.ntask.core.Task;
 import org.wso2.carbon.policy.mgt.common.monitor.PolicyComplianceException;
 import org.wso2.carbon.policy.mgt.common.spi.PolicyMonitoringService;
 import org.wso2.carbon.policy.mgt.core.internal.PolicyManagementDataHolder;
 import org.wso2.carbon.policy.mgt.core.mgt.MonitoringManager;
-import org.wso2.carbon.policy.mgt.core.mgt.impl.MonitoringManagerImpl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +38,6 @@ import java.util.Map;
 
 public class MonitoringTask implements Task {
 
-    private DeviceTypeDAO deviceTypeDAO;
     private static Log log = LogFactory.getLog(MonitoringTask.class);
 
     Map<String, String> properties;
@@ -53,7 +50,6 @@ public class MonitoringTask implements Task {
 
     @Override
     public void init() {
-        deviceTypeDAO = DeviceManagementDAOFactory.getDeviceTypeDAO();
     }
 
     @Override
@@ -63,44 +59,40 @@ public class MonitoringTask implements Task {
             log.debug("Monitoring task started to run.");
         }
 
-        MonitoringManager monitoringManager = new MonitoringManagerImpl();
-
-        List<DeviceType> deviceTypes = new ArrayList<>();
+        MonitoringManager monitoringManager = PolicyManagementDataHolder.getInstance().getMonitoringManager();
+        List<String> deviceTypes = new ArrayList<>();
+        List<String> configDeviceTypes = new ArrayList<>();
         try {
             deviceTypes = monitoringManager.getDeviceTypes();
+            for (String deviceType : deviceTypes) {
+                if (isPlatformExist(deviceType)) {
+                    configDeviceTypes.add(deviceType);
+                }
+            }
         } catch (PolicyComplianceException e) {
             log.error("Error occurred while getting the device types.");
         }
-
         if (!deviceTypes.isEmpty()) {
             try {
-
-
                 DeviceManagementProviderService deviceManagementProviderService =
                         PolicyManagementDataHolder.getInstance().getDeviceManagementService();
-
-                for (DeviceType deviceType : deviceTypes) {
-
+                for (String deviceType : configDeviceTypes) {
                     if (log.isDebugEnabled()) {
-                        log.debug("Running task for device type : " + deviceType.getName());
+                        log.debug("Running task for device type : " + deviceType);
                     }
-
                     PolicyMonitoringService monitoringService =
-                            PolicyManagementDataHolder.getInstance().getPolicyMonitoringService(deviceType.getName());
-                    List<Device> devices = deviceManagementProviderService.getAllDevices(deviceType.getName());
+                            PolicyManagementDataHolder.getInstance().getPolicyMonitoringService(deviceType);
+                    List<Device> devices = deviceManagementProviderService.getAllDevices(deviceType);
                     if (monitoringService != null && !devices.isEmpty()) {
-
-
                         List<Device> notifiableDevices = new ArrayList<>();
-
                         if (log.isDebugEnabled()) {
                             log.debug("Removing inactive and blocked devices from the list for the device type : " +
-                                    deviceType.getName());
+                                    deviceType);
                         }
                         for (Device device : devices) {
+
                             EnrolmentInfo.Status status = device.getEnrolmentInfo().getStatus();
-                            if (status.equals(EnrolmentInfo.Status.INACTIVE) ||
-                                    status.equals(EnrolmentInfo.Status.BLOCKED) ||
+                            if (status.equals(EnrolmentInfo.Status.BLOCKED) ||
                                     status.equals(EnrolmentInfo.Status.REMOVED) ||
                                     status.equals(EnrolmentInfo.Status.UNCLAIMED) ||
                                     status.equals(EnrolmentInfo.Status.DISENROLLMENT_REQUESTED) ||
@@ -111,14 +103,15 @@ public class MonitoringTask implements Task {
                             }
                         }
                         if (log.isDebugEnabled()) {
-                            log.debug("Following devices selected to send the notification for " +
-                                    deviceType.getName());
+                            log.debug("Following devices selected to send the notification for " + deviceType);
                             for (Device device : notifiableDevices) {
                                 log.debug(device.getDeviceIdentifier());
                             }
                         }
-                        monitoringManager.addMonitoringOperation(notifiableDevices);
-                        monitoringService.notifyDevices(notifiableDevices);
+                        if (!notifiableDevices.isEmpty()) {
+                            monitoringManager.addMonitoringOperation(notifiableDevices);
+                            monitoringService.notifyDevices(notifiableDevices);
+                        }
                     }
                 }
                 if (log.isDebugEnabled()) {
@@ -131,5 +124,19 @@ public class MonitoringTask implements Task {
             log.info("No device types registered currently. So did not run the monitoring task.");
         }
 
+    }
+
+    /**
+     * Check whether Device platform (ex: android) is exist in the cdm-config.xml file before adding a
+     * Monitoring operation to a specific device type.
+     *
+     * @param deviceType available device types.
+     * @return return platform is exist(true) or not (false).
+     */
+
+    private boolean isPlatformExist(String deviceType) {
+        PolicyConfiguration policyConfiguration =
+                DeviceConfigurationManager.getInstance().getDeviceManagementConfig().getPolicyConfiguration();
+        return (policyConfiguration.getPlatforms().contains(deviceType));
     }
 }

@@ -42,11 +42,11 @@ public class PushNotificationBasedOperationManager implements OperationManager {
 
     @Override
     public Activity addOperation(Operation operation,
-                                 List<DeviceIdentifier> devices) throws OperationManagementException {
+                                 List<DeviceIdentifier> devices) throws OperationManagementException, InvalidDeviceException {
         Activity activity = this.operationManager.addOperation(operation, devices);
         for (DeviceIdentifier deviceId : devices) {
             try {
-                this.notificationProvider.execute(new NotificationContext(deviceId));
+                this.notificationProvider.execute(new NotificationContext(deviceId, operation));
             } catch (PushNotificationExecutionFailedException e) {
                 throw new OperationManagementException("Error occurred while sending push notification to device", e);
             }

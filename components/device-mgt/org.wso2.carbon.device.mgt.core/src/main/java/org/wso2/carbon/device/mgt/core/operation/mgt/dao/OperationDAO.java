@@ -60,6 +60,8 @@ public interface OperationDAO {
     void updateEnrollmentOperationsStatus(int enrolmentId, String operationCode, Operation.Status existingStatus,
                                           Operation.Status newStatus) throws OperationManagementDAOException;
 
+    boolean updateTaskOperation(int enrolmentId, String operationCode) throws OperationManagementDAOException;
+
     void addOperationResponse(int enrolmentId, int operationId, Object operationResponse)
             throws OperationManagementDAOException;
 
@@ -76,5 +78,7 @@ public interface OperationDAO {
     List<Activity> getActivitiesUpdatedAfter(long timestamp, int limit, int offset) throws OperationManagementDAOException;
 
     int getActivityCountUpdatedAfter(long timestamp) throws OperationManagementDAOException;
+
+    boolean resetAttemptCount(int enrolmentId) throws OperationManagementDAOException;
 
 }

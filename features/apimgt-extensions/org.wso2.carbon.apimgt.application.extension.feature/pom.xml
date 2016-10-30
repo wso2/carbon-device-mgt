@@ -21,14 +21,14 @@
     <parent>
         <groupId>org.wso2.carbon.devicemgt</groupId>
         <artifactId>apimgt-extensions-feature</artifactId>
-        <version>1.1.2-SNAPSHOT</version>
+        <version>1.2.6-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>org.wso2.carbon.apimgt.application.extension.feature</artifactId>
     <packaging>pom</packaging>
-    <version>1.1.2-SNAPSHOT</version>
+    <version>1.2.6-SNAPSHOT</version>
     <name>WSO2 Carbon - API Management Application Extension Feature</name>
     <url>http://wso2.org</url>
     <description>This feature contains an implementation of a api application registration, which takes care of subscription
@@ -111,7 +111,7 @@
                             <adviceFile>
                                 <properties>
                                     <propertyDef>org.wso2.carbon.p2.category.type:server</propertyDef>
-                                    <propertyDef>org.eclipse.equinox.p2.type.group:false</propertyDef>
+                                    <propertyDef>org.eclipse.equinox.p2.type.group:true</propertyDef>
                                 </properties>
                             </adviceFile>
                             <bundles>

@@ -1,7 +1,9 @@
 package org.wso2.carbon.certificate.mgt.cert.jaxrs.api;
 
 import io.swagger.annotations.*;
+import org.wso2.carbon.apimgt.annotations.api.API;
 import org.wso2.carbon.apimgt.annotations.api.Permission;
+import org.wso2.carbon.apimgt.annotations.api.Scope;
 import org.wso2.carbon.certificate.mgt.cert.jaxrs.api.beans.CertificateList;
 import org.wso2.carbon.certificate.mgt.cert.jaxrs.api.beans.EnrollmentCertificate;
 import org.wso2.carbon.certificate.mgt.cert.jaxrs.api.beans.ErrorResponse;
@@ -11,8 +13,11 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-@Api(value = "Certificate Management", description = "This API carries all certificate management related operations " +
-        "such as get all the available devices, etc.")
+@API(name = "Certificate Management", version = "1.0.0",
+        context = "api/certificate-mgt/v1.0/admin/certificates",
+        tags = {"devicemgt_admin"})
+
+@Api(value = "Certificate Management", description = "This API includes all the certificate management related operations")
 @Path("/admin/certificates")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
@@ -30,14 +35,14 @@ public interface CertificateManagementAdminService {
             consumes = MediaType.APPLICATION_JSON,
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "POST",
-            value = "Add a SSL certificate",
-            notes = "Add a new SSL certificate",
+            value = "Adding a new SSL certificate",
+            notes = "Add a new SSL certificate to the client end database.\n",
             tags = "Certificate Management")
     @ApiResponses(
             value = {
                     @ApiResponse(
                             code = 201,
-                            message = "Created. \n Certificates have successfully been added",
+                            message = "Created. \n Successfully added the certificate.",
                             responseHeaders = {
                                     @ResponseHeader(
                                             name = "Content-Location",
@@ -51,11 +56,11 @@ public interface CertificateManagementAdminService {
                                                     "Used by caches, or in conditional requests."),
                                     @ResponseHeader(
                                             name = "Last-Modified",
-                                            description = "Date and time the resource has been modified the last time.\n" +
+                                            description = "Date and time the resource was last modified.\n" +
                                                     "Used by caches, or in conditional requests.")}),
                     @ApiResponse(
                             code = 303,
-                            message = "See Other. \n Source can be retrieved from the URL specified at the Location header.",
+                            message = "See Other. \n The source can be retrieved from the URL specified in the location header.",
                             responseHeaders = {
                                     @ResponseHeader(
                                             name = "Content-Location",
@@ -66,18 +71,20 @@ public interface CertificateManagementAdminService {
                             response = ErrorResponse.class),
                     @ApiResponse(
                             code = 415,
-                            message = "Unsupported media type. \n The entity of the request was in a not supported format."),
+                            message = "Unsupported Media Type. \n The format of the requested entity was not supported."),
                     @ApiResponse(
                             code = 500,
                             message = "Internal Server Error. \n Server error occurred while adding certificates.",
                             response = ErrorResponse.class)
             })
-    @Permission(scope = "certificate-modify", permissions = {"/permission/admin/device-mgt/certificate/save"})
+    @Permission(name = "Manage certificates", permission = "/device-mgt/certificates/manage")
     Response addCertificate(
             @ApiParam(
                     name = "enrollmentCertificates",
-                    value = "certificate with serial, "
-                            + "pem and tenant id",
+                    value = "The properties to add a new certificate. It includes the following: \n" +
+                            "serial: The unique ID of the certificate. \n" +
+                            "pem: Convert the OpenSSL certificate to the .pem format and base 64 encode the file. \n" +
+                            "INFO: Upload the .pem file and base 64 encode it using a tool, such as the base64encode.in tool.",
                     required = true) EnrollmentCertificate[] enrollmentCertificates);
 
     /**
@@ -92,13 +99,13 @@ public interface CertificateManagementAdminService {
             consumes = MediaType.APPLICATION_JSON,
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
-            value = "Getting Details of an SSL CertificateManagementAdminService",
-            notes = "Get the client side SSL certificate details",
+            value = "Getting Details of an SSL Certificate",
+            notes = "Get the client side SSL certificate details.",
             tags = "Certificate Management")
     @ApiResponses(value = {
             @ApiResponse(
                     code = 200,
-                    message = "OK. \n Successfully fetched information of the device.",
+                    message = "OK. \n Successfully fetched the certificate details.",
                     response = CertificateResponse.class,
                     responseHeaders = {
                             @ResponseHeader(
@@ -110,7 +117,7 @@ public interface CertificateManagementAdminService {
                                             "Used by caches, or in conditional requests."),
                             @ResponseHeader(
                                     name = "Last-Modified",
-                                    description = "Date and time the resource has been modified the last time.\n" +
+                                    description = "Date and time the resource was last modified.\n" +
                                             "Used by caches, or in conditional requests."),
                     }),
             @ApiResponse(
@@ -123,22 +130,25 @@ public interface CertificateManagementAdminService {
                     response = ErrorResponse.class),
             @ApiResponse(
                     code = 404,
-                    message = "Not Found. \n No device is found under the provided type and id."),
+                    message = "Not Found. \n The specified certificate does not exist."),
             @ApiResponse(
                     code = 500,
                     message = "Internal Server Error. \n " +
-                            "Server error occurred while retrieving information requested certificate.",
+                            "Server error occurred while retrieving the requested certificate information.",
                     response = ErrorResponse.class)
     })
-    @Permission(scope = "certificate-view", permissions = {"/permission/admin/device-mgt/certificate/view"})
+    @Permission(name = "View certificates", permission = "/device-mgt/certificates/view")
     Response getCertificate(
             @ApiParam(name = "serialNumber",
-                    value = "Provide the serial number of the certificate that you wish to get the details of",
-                    required = true)
+                    value = "The serial number of the certificate.",
+                    required = true,
+                    defaultValue = "124380353155528759302")
             @PathParam("serialNumber") String serialNumber,
             @ApiParam(
                     name = "If-Modified-Since",
-                    value = "Validates if the requested variant has not been modified since the time specified",
+                    value = "Checks if the requested variant was modified, since the specified date-time.\n" +
+                            "Provide the value in the following format: EEE, d MMM yyyy HH:mm:ss Z.\n" +
+                            "Example: Mon, 05 Jan 2014 15:10:00 +0200",
                     required = false)
             @HeaderParam("If-Modified-Since") String ifModifiedSince
     );
@@ -153,16 +163,16 @@ public interface CertificateManagementAdminService {
             consumes = MediaType.APPLICATION_JSON,
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
-            value = "Get certificates",
-            notes = "You will have many certificates used for mutual SSL. In a situation where you wish to "
+            value = "Getting Details of Certificates",
+            notes = "Get all the details of the certificates you have used for mutual SSL. In a situation where you wish to "
                     + "view all the certificate details, it is not feasible to show all the details on one "
-                    + "page therefore the details are paginated",
+                    + "page. Therefore, the details are paginated.",
             tags = "Certificate Management"
     )
     @ApiResponses(value = {
             @ApiResponse(
                     code = 200,
-                    message = "OK. \n List of certificates enrolled in the system",
+                    message = "OK. \n Successfully fetched the list of certificates.",
                     response = CertificateList.class,
                     responseContainer = "List",
                     responseHeaders = {
@@ -175,12 +185,12 @@ public interface CertificateManagementAdminService {
                                             "Used by caches, or in conditional requests."),
                             @ResponseHeader(
                                     name = "Last-Modified",
-                                    description = "Date and time the resource has been modified the last time.\n" +
+                                    description = "Date and time the resource was last modified.\n" +
                                             "Used by caches, or in conditional requests.")}),
             @ApiResponse(
                     code = 303,
                     message = "See Other. \n " +
-                            "Source can be retrieved from the URL specified at the Location header.",
+                            "The source can be retrieved from the URL specified in the location header.\n",
                     responseHeaders = {
                             @ResponseHeader(
                                     name = "Content-Location",
@@ -199,24 +209,28 @@ public interface CertificateManagementAdminService {
             @ApiResponse(
                     code = 500,
                     message = "Internal Server Error. \n " +
-                            "Server error occurred while retrieving all certificates enrolled in the system.",
+                            "Server error occurred while retrieving the certificate details.",
                     response = ErrorResponse.class)
     })
-    @Permission(scope = "certificate-view", permissions = {"/permission/admin/device-mgt/certificate/view"})
+    @Permission(name = "View certificates", permission = "/device-mgt/certificates/view")
     Response getAllCertificates(
             @ApiParam(
                     name = "offset",
-                    value = "Starting point within the complete list of items qualified.",
-                    required = false)
+                    value = "The starting pagination index for the complete list of qualified items.",
+                    required = false,
+                    defaultValue = "0")
             @QueryParam("offset") int offset,
             @ApiParam(
                     name = "limit",
-                    value = "Maximum size of resource array to return.",
-                    required = false)
+                    value = "Provide how many certificate details you require from the starting pagination index/offset.",
+                    required = false,
+                    defaultValue = "5")
             @QueryParam("limit") int limit,
             @ApiParam(
                     name = "If-Modified-Since",
-                    value = "Validates if the requested variant has not been modified since the time specified",
+                    value = "Checks if the requested variant was modified, since the specified date-time. \n" +
+                            "Provide the value in the following format: EEE, d MMM yyyy HH:mm:ss Z.\n" +
+                            "Example: Mon, 05 Jan 2014 15:10:00 +0200",
                     required = false)
             @HeaderParam("If-Modified-Since") String ifModifiedSince);
 
@@ -226,32 +240,33 @@ public interface CertificateManagementAdminService {
             consumes = MediaType.APPLICATION_JSON,
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "DELETE",
-            value = "Delete an SSL certificate",
-            notes = "Delete an SSL certificate that's on the client end",
+            value = "Deleting an SSL Certificate",
+            notes = "Delete an SSL certificate that's on the client end.",
             tags = "Certificate Management")
     @ApiResponses(value = {
             @ApiResponse(
                     code = 200,
-                    message = "OK. \n Certificate has successfully been removed"),
+                    message = "OK. \n Successfully removed the certificate."),
             @ApiResponse(
                     code = 400,
                     message = "Bad Request. \n Invalid request or validation error.",
                     response = ErrorResponse.class),
             @ApiResponse(
                     code = 404,
-                    message = "Not Found. \n Resource to be deleted does not exist."),
+                    message = "Not Found. \n The specified resource does not exist."),
             @ApiResponse(
                     code = 500,
                     message = "Internal Server Error. \n " +
                             "Server error occurred while removing the certificate.",
                     response = ErrorResponse.class)})
-    @Permission(scope = "certificate-modify", permissions = {"/permission/admin/device-mgt/certificate/remove"})
+    @Permission(name = "Manage certificates", permission = "/device-mgt/certificates/manage")
     Response removeCertificate(
             @ApiParam(
                     name = "serialNumber",
-                    value = "Provide the serial number of the "
-                            + "certificate that you wish to delete",
-                    required = true)
+                    value = "The serial number of the certificate.\n" +
+                            "NOTE: Make sure that a certificate with the serial number you provide exists in the server. If not, first add a certificate.",
+                    required = true,
+                    defaultValue = "12438035315552875930")
             @PathParam("serialNumber") String serialNumber);
 
 }

@@ -20,7 +20,6 @@ function onRequest(context) {
     var userModule = require("/app/modules/business-controllers/user.js")["userModule"];
     var username = request.getParameter("username");
     var user = userModule.getUser(username)["content"];
-    var userModule = require("/app/modules/user.js")["userModule"];
 
     var userName = request.getParameter("username");
 
@@ -41,5 +40,10 @@ function onRequest(context) {
         var deviceModule = require("/app/modules/business-controllers/device.js")["deviceModule"];
         devices = deviceModule.getDevices(userName);
     }
-    return {"user": user, "userRoles": userRoles, "devices": devices};
+
+    var canView = false;
+    if (userModule.isAuthorized("/permission/admin/device-mgt/users/view")) {
+        canView = true;
+    }
+    return {"user": user, "userRoles": userRoles, "devices": devices, "canView": canView};
 }

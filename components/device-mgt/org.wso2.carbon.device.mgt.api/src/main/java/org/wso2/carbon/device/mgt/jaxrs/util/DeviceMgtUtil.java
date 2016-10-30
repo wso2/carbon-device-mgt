@@ -18,11 +18,17 @@
 
 package org.wso2.carbon.device.mgt.jaxrs.util;
 
+import org.wso2.carbon.apimgt.api.model.Scope;
+import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorListItem;
+import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ProfileFeature;
+import org.wso2.carbon.device.mgt.jaxrs.exception.BadRequestException;
 import org.wso2.carbon.policy.mgt.common.Profile;
 
+import javax.validation.ConstraintViolation;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class DeviceMgtUtil {
 
@@ -57,5 +63,82 @@ public class DeviceMgtUtil {
         profileFeature.setId(mdmProfileFeature.getId());
         return profileFeature;
 
+    }
+
+    public static List<Scope> convertScopesListToAPIScopes(List<String> scopes, String roleName) {
+        List<Scope> convertedScopes = new ArrayList<>();
+        Scope convertedScope;
+        for (String scope : scopes) {
+            convertedScope = new Scope();
+            convertedScope.setKey(scope);
+            convertedScope.setRoles(roleName);
+            convertedScopes.add(convertedScope);
+        }
+        return convertedScopes;
+    }
+
+    public static List<org.wso2.carbon.device.mgt.jaxrs.beans.Scope> convertAPIScopestoScopes(List<Scope> scopes) {
+        List<org.wso2.carbon.device.mgt.jaxrs.beans.Scope> convertedScopes = new ArrayList<>();
+        org.wso2.carbon.device.mgt.jaxrs.beans.Scope convertedScope;
+        for (Scope scope : scopes) {
+            convertedScope = new org.wso2.carbon.device.mgt.jaxrs.beans.Scope();
+            convertedScope.setKey(scope.getKey());
+            convertedScope.setName(scope.getName());
+            convertedScope.setDescription(scope.getDescription());
+            convertedScopes.add(convertedScope);
+        }
+        return convertedScopes;
+    }
+
+    public static List<String> convertAPIScopesToScopeKeys(List<Scope> scopes) {
+        List<String> convertedScopes = new ArrayList<>();
+        for (Scope scope : scopes) {
+            convertedScopes.add(scope.getKey());
+        }
+        return convertedScopes;
+    }
+    /**
+     * Returns a new BadRequestException
+     *
+     * @param description description of the exception
+     * @return a new BadRequestException with the specified details as a response DTO
+     */
+    public static BadRequestException buildBadRequestException(String description) {
+        ErrorResponse errorResponse = getErrorResponse(Constants.
+                ErrorMessages.STATUS_BAD_REQUEST_MESSAGE_DEFAULT,400l, description);
+        return new BadRequestException(errorResponse);
+    }
+
+    /**
+     * Returns generic ErrorResponse.
+     * @param message specific error message
+     * @param code
+     * @param description
+     * @return generic Response with error specific details.
+     */
+    public static ErrorResponse getErrorResponse(String message, Long code, String description) {
+        ErrorResponse errorResponse = new ErrorResponse();
+        errorResponse.setCode(code);
+        errorResponse.setMoreInfo("");
+        errorResponse.setMessage(message);
+        errorResponse.setDescription(description);
+        return errorResponse;
+    }
+
+    public static <T> ErrorResponse getConstraintViolationErrorDTO(Set<ConstraintViolation<T>> violations) {
+        ErrorResponse errorResponse = new ErrorResponse();
+        errorResponse.setDescription("Validation Error");
+        errorResponse.setMessage("Bad Request");
+        errorResponse.setCode(400l);
+        errorResponse.setMoreInfo("");
+        List<ErrorListItem> errorListItems = new ArrayList<>();
+        for (ConstraintViolation violation : violations) {
+            ErrorListItem errorListItemDTO = new ErrorListItem();
+            errorListItemDTO.setCode(400 + "_" + violation.getPropertyPath());
+            errorListItemDTO.setMessage(violation.getPropertyPath() + ": " + violation.getMessage());
+            errorListItems.add(errorListItemDTO);
+        }
+        errorResponse.setErrorItems(errorListItems);
+        return errorResponse;
     }
 }

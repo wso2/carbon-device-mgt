@@ -20,18 +20,14 @@ package org.wso2.carbon.apimgt.application.extension.api;
 
 import org.wso2.carbon.apimgt.application.extension.api.util.RegistrationProfile;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.POST;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 /**
  * This is the application registration service that exposed for apimApplicationRegistration
  */
+
 public interface ApiApplicationRegistrationService {
 
     /**
@@ -40,6 +36,7 @@ public interface ApiApplicationRegistrationService {
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
+    @Path("register/tenants")
     Response register(@PathParam("tenantDomain") String tenantDomain,
                       @QueryParam("applicationName") String applicationName);
 
@@ -51,6 +48,7 @@ public interface ApiApplicationRegistrationService {
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
+    @Path("register")
     Response register(RegistrationProfile registrationProfile);
 
     /**
@@ -59,5 +57,6 @@ public interface ApiApplicationRegistrationService {
      * @return the response status of request.
      */
     @DELETE
+    @Path("unregister")
     Response unregister(@QueryParam("applicationName") String applicationName);
 }

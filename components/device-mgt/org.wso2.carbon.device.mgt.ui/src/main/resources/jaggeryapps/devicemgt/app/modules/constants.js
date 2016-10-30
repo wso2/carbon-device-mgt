@@ -16,9 +16,6 @@
  * under the License.
  */
 
-var WEB_APP_TITLE = "WSO2 CDM";
-var WEB_APP_CONTEXT = "/devicemgt";
-var ADMIN_SERVICE_CONTEXT = "/devicemgt_admin";
 var USER_SESSION_KEY = "_UUF_USER";
 var UNSPECIFIED = "Unspecified";
 var httpURL = "httpURL";
@@ -37,6 +34,7 @@ var DEVICE_OS_BUILD_DATE = "osBuildDate";
 var DEVICE_PROPERTIES = "properties";
 var DEVICE_ENROLLMENT_INFO = "enrolmentInfo";
 var DEVICE_STATUS = "status";
+var DEVICE_INFO = "deviceInfo";
 
 var FEATURE_NAME = "featureName";
 var FEATURE_DESCRIPTION = "featureDescription";
@@ -72,14 +70,9 @@ var HTTP_GET = "GET";
 var HTTP_POST = "POST";
 var HTTP_PUT = "PUT";
 var HTTP_DELETE = "DELETE";
-var REFERER = "referer"
-
-var GRANT_TYPE_PASSWORD = "password";
-var GRANT_TYPE_SAML = "saml";
-
-var MQTT_QUEUE_CONFIG_NAME = "MQTT";
 
 var HTTP_CONFLICT = 409;
 var HTTP_CREATED = 201;
 
 var CACHED_CREDENTIALS = "tenantBasedCredentials";
+var ALLOWED_SCOPES = "scopes";

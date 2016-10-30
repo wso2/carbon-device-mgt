@@ -15,107 +15,122 @@
   specific language governing permissions and limitations
   under the License.
 }}
-<div class="row">
-    <div class="col-md-12">
-        <!-- content -->
-        <div id="config-save-form" class="container col-centered wr-content">
-            <br>
+{{#zone "content"}}
+    {{#if isAuthorized}}
+    <div class="row">
+        <div class="col-md-12">
+            <!-- content -->
+            <div id="config-save-form" class="container col-centered wr-content">
+                <br>
 
-            <h1 class="page-sub-title">
-                Platform Configurations
-            </h1>
-            <br>
-            General and Platform Specific Server Settings for the Tenant
-            <br>
-            <br>
+                <h1 class="page-sub-title">
+                    Platform Configurations
+                </h1>
+                <br>
+                General and Platform Specific Server Settings for the Tenant
+                <br>
+                <br>
 
-            <div class="wr-advance-operations">
-                <div class="row no-gutter">
-                    <div class="wr-hidden-operations-nav col-lg-4">
-                        <a id="generalConfigLink" href="javascript:void(0)" onclick="showAdvanceOperation('general', this)" class="selected">
-                                        <span class="wr-hidden-operations-icon fw-stack">
-                                            <i class="fw fw-settings fw-stack-2x"></i>
-                                        </span>
-                            General Configurations
-                        </a>
-                        {{#each deviceTypes}}
-                            <a id="{{name}}ConfigLink" href="javascript:void(0)" onclick="showAdvanceOperation('{{name}}', this)">
-                                        <span class="wr-hidden-operations-icon fw-stack">
-                                            <i class="fw fw-settings fw-stack-2x"></i>
-                                        </span>
-                                {{label}} Configurations
+                <div class="wr-advance-operations">
+                    <div class="row no-gutter">
+                        <div class="wr-hidden-operations-nav col-lg-4">
+                            <a id="generalConfigLink" href="javascript:void(0)" onclick="showAdvanceOperation('general', this)" class="selected">
+                                <span class="wr-hidden-operations-icon fw-stack">
+                                    <i class="fw fw-settings fw-stack-2x"></i>
+                                    <span class="fw-stack fw-move-right fw-move-bottom">
+                                        <i class="fw fw-circle fw-stack-2x fw-stroke fw-inverse"></i>
+                                        <i class="fw fw-circle fw-stack-2x"></i>
+                                        <i class="fw fw-mobile fw-stack-1x fw-inverse"></i>
+                                    </span>
+                                </span>
+                                General Configurations
                             </a>
-                        {{/each}}
-                    </div>
-
-                    <div class="wr-hidden-operations-content col-lg-8">
-                        <!-- general -->
-                        <div class="wr-hidden-operation" data-operation="general" style="display: block">
-                            <div class="panel panel-default">
-                                <div id="general-config-heading" class="panel-heading" role="tab">
-                                    <h2 class="sub-title panel-title">
-                                        Policy Monitoring
-                                    </h2>
-                                </div>
-                                <div id="email-config-body" class="panel-collapse panel-body"
-                                     role="tabpanel">
-                                    <div id="email-config-error-msg"
-                                         class="alert alert-danger hidden" role="alert">
-                                        <i class="icon fw fw-error"></i><span></span>
-                                    </div>
-                                    <div class="wr-input-control">
-                                        <label class="wr-input-label" for="email-config-host">
-                                            Monitoring Frequency
-                                                <span class="helper" title="SMTP Server Host">
-                                                    <span class="wr-help-tip glyphicon glyphicon-question-sign"></span>
-                                                </span>
-                                            <br>
-                                            ( Should be in milliseconds )
-                                        </label>
-                                        <input id="monitoring-config-frequency" type="text"
-                                               class="form-control"
-                                               placeholder="[ Required Field ]">
-                                    </div>
-                                    <div class="wr-input-control wr-btn-grp">
-                                        <button id="save-general-btn" class="wr-btn">
-                                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Save&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
+                            {{#each deviceTypes}}
+                                <a id="{{name}}ConfigLink" href="javascript:void(0)" onclick="showAdvanceOperation('{{name}}', this)">
+                                    <span class="wr-hidden-operations-icon fw-stack">
+                                        <i class="fw fw-settings fw-stack-2x"></i>
+                                        <span class="fw-stack fw-move-right fw-move-bottom">
+                                            <i class="fw fw-circle fw-stack-2x fw-stroke fw-inverse"></i>
+                                            <i class="fw fw-circle fw-stack-2x"></i>
+                                            <i class="fw fw-{{name}} fw-stack-1x fw-inverse"></i>
+                                        </span>
+                                    </span>
+                                    {{label}} Configurations
+                                </a>
+                            {{/each}}
                         </div>
-                        <!-- general-->
-                        {{#each deviceTypes}}
-                            <div class="wr-hidden-operation" data-operation="{{name}}" style="display: none;">
-                                {{unit unitName}}
-                            </div>
-                        {{/each}}
 
+                        <div class="wr-hidden-operations-content col-lg-8">
+                            <!-- general -->
+                            <div class="wr-hidden-operation" data-operation="general" style="display: block">
+                                <div class="panel panel-default">
+                                    <div id="general-config-heading" class="panel-heading" role="tab">
+                                        <h2 class="sub-title panel-title">
+                                            Policy Monitoring
+                                        </h2>
+                                    </div>
+                                    <div id="email-config-body" class="panel-collapse panel-body"
+                                         role="tabpanel">
+                                        <div id="email-config-error-msg"
+                                             class="alert alert-danger hidden" role="alert">
+                                            <i class="icon fw fw-error"></i><span></span>
+                                        </div>
+                                        <div class="wr-input-control">
+                                            <label class="wr-input-label" for="email-config-host">
+                                                Monitoring Frequency
+                                                    <span class="helper" title="SMTP Server Host">
+                                                        <span class="wr-help-tip glyphicon glyphicon-question-sign"></span>
+                                                    </span>
+                                                <br>
+                                                ( Should be in milliseconds )
+                                            </label>
+                                            <input id="monitoring-config-frequency" type="text"
+                                                   class="form-control"
+                                                   placeholder="[ Required Field ]">
+                                        </div>
+                                        <div class="wr-input-control wr-btn-grp">
+                                            <button id="save-general-btn" class="wr-btn">Save</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- general-->
+                            {{#each deviceTypes}}
+                                <div class="wr-hidden-operation" data-operation="{{name}}" style="display: none;">
+                                    {{unit unitName}}
+                                </div>
+                            {{/each}}
+
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div id="record-created-msg" class="container col-centered wr-content hidden">
-            <div class="wr-form">
-                <p class="page-sub-title">Configuration was saved successfully.</p>
-                <br>
-                <br>Please click <b>"Go back to configurations"</b>, if you wish to save another
-                    configuration or click
-                <b>"Exit"</b> to complete the process and go back to the dashboard.
-                <hr/>
-                <button class="wr-btn"
-                        onclick="window.location.href='{{@app.context}}/platform-configuration'">Go
-                                                                                                 back
-                                                                                                 to
-                                                                                                 configurations
-                </button>
-                <button class="wr-btn" onclick="window.location.href='{{@app.context}}'">&nbsp;&nbsp;&nbsp;&nbsp;Exit&nbsp;&nbsp;&nbsp;&nbsp;</button>
+            <div id="record-created-msg" class="container col-centered wr-content hidden">
+                <div class="wr-form">
+                    <p class="page-sub-title">Configuration was saved successfully.</p>
+                    <br>
+                    <br>Please click <b>"Go back to configurations"</b>, if you wish to save another
+                        configuration or click
+                    <b>"Exit"</b> to complete the process and go back to the dashboard.
+                    <hr/>
+                    <button class="wr-btn"
+                            onclick="window.location.href='{{@app.context}}/platform-configuration'">Go back to configurations</button>
+                    <button class="wr-btn" onclick="window.location.href='{{@app.context}}'">Exit</button>
+                </div>
             </div>
+            <!-- /content -->
         </div>
-        <!-- /content -->
     </div>
-</div>
+    {{else}}
+        <h1 class="page-sub-title">
+            Permission Denied
+        </h1>
+        <br>
+        You not authorized to enter General and Platform Specific Server Setting Management Section.
+        <br>
+    {{/if}}
+{{/zone}}
 {{#zone "bottomJs"}}
     {{js "js/platform-configuration.js"}}
 {{/zone}}

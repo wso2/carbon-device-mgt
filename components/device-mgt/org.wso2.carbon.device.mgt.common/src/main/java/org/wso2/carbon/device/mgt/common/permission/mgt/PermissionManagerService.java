@@ -29,7 +29,6 @@ public interface PermissionManagerService {
     /**
      *
      * @param permission - Permission to be added
-     * @return The status of the operation.
      * @throws PermissionManagementException If some unusual behaviour is observed while adding the
      * permission.
      */

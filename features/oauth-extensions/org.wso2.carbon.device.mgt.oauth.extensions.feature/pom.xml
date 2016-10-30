@@ -23,14 +23,14 @@
     <parent>
         <groupId>org.wso2.carbon.devicemgt</groupId>
         <artifactId>oauth-extensions-feature</artifactId>
-        <version>1.1.2-SNAPSHOT</version>
+        <version>1.2.6-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>org.wso2.carbon.device.mgt.oauth.extensions.feature</artifactId>
     <packaging>pom</packaging>
-    <version>1.1.2-SNAPSHOT</version>
+    <version>1.2.6-SNAPSHOT</version>
     <name>WSO2 Carbon - Device Mgt OAuth Extensions Feature</name>
     <url>http://wso2.org</url>
     <description>This feature contains devicemgt related OAuth extensions</description>
@@ -47,6 +47,10 @@
         <dependency>
             <groupId>org.wso2.carbon.devicemgt</groupId>
             <artifactId>org.wso2.carbon.identity.authenticator.backend.oauth</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.registry</groupId>
+            <artifactId>org.wso2.carbon.registry.indexing</artifactId>
         </dependency>
     </dependencies>
 
@@ -84,6 +88,9 @@
                                 <importFeatureDef>org.wso2.carbon.core.server:${carbon.kernel.version}
                                 </importFeatureDef>
                             </importFeatures>
+                            <importBundles>
+                                <importBundleDef>org.wso2.carbon.registry:org.wso2.carbon.registry.indexing:${carbon.registry.version}</importBundleDef>
+                            </importBundles>
                         </configuration>
                     </execution>
                 </executions>

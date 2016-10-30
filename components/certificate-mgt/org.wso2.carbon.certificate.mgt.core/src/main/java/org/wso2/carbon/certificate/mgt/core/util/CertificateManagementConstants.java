@@ -21,6 +21,34 @@ package org.wso2.carbon.certificate.mgt.core.util;
 
 public final class CertificateManagementConstants {
 
-    public static final String DEVICE_CONFIG_XML_NAME = "cdm-config.xml";
+    public static final String CERTIFICATE_CONFIG_XML_FILE = "certificate-config.xml";
+    public static final String SETUP_PROPERTY = "setup";
+    public static final String CARBON_HOME = "carbon.home";
+    public static final String CARBON_HOME_ENTRY = "${carbon.home}";
 
+    public static final String PROVIDER = "BC";
+    public static final String CERTIFICATE_KEYSTORE = "CertificateKeystoreType";
+    public static final String RSA = "RSA";
+    public static final String SHA256_RSA = "SHA256WithRSAEncryption";
+    public static final String X_509 = "X.509";
+    public static final String POST_BODY_CA_CAPS = "POSTPKIOperation\nSHA-1\nDES3\n";
+    public static final String DES_EDE = "DESede";
+    public static final String CONF_LOCATION = "conf.location";
+    public static final String DEFAULT_PRINCIPAL = "O=WSO2, OU=Mobile, C=LK";
+    public static final String RSA_PRIVATE_KEY_BEGIN_TEXT = "-----BEGIN RSA PRIVATE KEY-----\n";
+    public static final String RSA_PRIVATE_KEY_END_TEXT = "-----END RSA PRIVATE KEY-----";
+    public static final String EMPTY_TEXT = "";
+    public static final int RSA_KEY_LENGTH = 1024;
+
+    public static final class DataBaseTypes {
+        private DataBaseTypes() {
+            throw new AssertionError();
+        }
+        public static final String DB_TYPE_MYSQL = "MySQL";
+        public static final String DB_TYPE_ORACLE = "Oracle";
+        public static final String DB_TYPE_MSSQL = "Microsoft SQL Server";
+        public static final String DB_TYPE_DB2 = "DB2";
+        public static final String DB_TYPE_H2 = "H2";
+        public static final String DB_TYPE_POSTGRESQL = "PostgreSQL";
+    }
 }

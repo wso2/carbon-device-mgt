@@ -25,47 +25,47 @@ function onRequest(context) {
     var viewModel = {};
     var deviceModule = require("/app/modules/business-controllers/device.js")["deviceModule"];
     var utility = require("/app/modules/utility.js").utility;
-    var deviceTypes = deviceModule.getDeviceTypes();
-
-    if (deviceTypes) {
-        var deviceTypesList = [], virtualDeviceTypesList = [];
-        for (var i = 0; i < deviceTypes.length; i++) {
-
-            var deviceTypeLabel = deviceTypes[i].name;
-            var configs = utility.getDeviceTypeConfig(deviceTypeLabel);
-            var deviceCategory = "device";
-            if (configs) {
-                if (configs[DTYPE_CONF_DEVICE_TYPE_KEY][DTYPE_CONF_DEVICE_CATEGORY]) {
-                    deviceCategory = configs[DTYPE_CONF_DEVICE_TYPE_KEY][DTYPE_CONF_DEVICE_CATEGORY];
+    var typesListResponse = deviceModule.getDeviceTypes();
+    if (typesListResponse["status"] == "success") {
+        var deviceTypes = typesListResponse.content.deviceTypes;
+        if (deviceTypes) {
+            var deviceTypesList = [], virtualDeviceTypesList = [];
+            for (var i = 0; i < deviceTypes.length; i++) {
+                var deviceType = deviceTypes[i];
+                var deviceTypeLabel = deviceType;
+                var configs = utility.getDeviceTypeConfig(deviceTypeLabel);
+                var deviceCategory = "device";
+                if (configs) {
+                    if (configs[DTYPE_CONF_DEVICE_TYPE_KEY][DTYPE_CONF_DEVICE_CATEGORY]) {
+                        deviceCategory = configs[DTYPE_CONF_DEVICE_TYPE_KEY][DTYPE_CONF_DEVICE_CATEGORY];
+                    }
+                    if (configs[DTYPE_CONF_DEVICE_TYPE_KEY][DTYPE_CONF_DEVICE_TYPE_LABEL_KEY]) {
+                        deviceTypeLabel = configs[DTYPE_CONF_DEVICE_TYPE_KEY][DTYPE_CONF_DEVICE_TYPE_LABEL_KEY];
+                    }
                 }
-                if (configs[DTYPE_CONF_DEVICE_TYPE_KEY][DTYPE_CONF_DEVICE_TYPE_LABEL_KEY]) {
-                    deviceTypeLabel = configs[DTYPE_CONF_DEVICE_TYPE_KEY][DTYPE_CONF_DEVICE_TYPE_LABEL_KEY];
+                if (deviceCategory == 'virtual') {
+                    virtualDeviceTypesList.push({
+                                                    "hasCustTemplate": false,
+                                                    "deviceTypeLabel": deviceTypeLabel,
+                                                    "deviceTypeName": deviceType,
+                                                    "deviceCategory": deviceCategory,
+                                                    "thumb": utility.getDeviceThumb(deviceType)
+                                                });
+                } else {
+                    deviceTypesList.push({
+                                             "hasCustTemplate": false,
+                                             "deviceTypeLabel": deviceTypeLabel,
+                                             "deviceTypeName": deviceType,
+                                             "deviceCategory": deviceCategory,
+                                             "thumb": utility.getDeviceThumb(deviceType)
+                                         });
                 }
             }
-            if (deviceCategory == 'virtual') {
-                virtualDeviceTypesList.push({
-                    "hasCustTemplate": false,
-                    "deviceTypeLabel": deviceTypeLabel,
-                    "deviceTypeName": deviceTypes[i].name,
-                    "deviceCategory": deviceCategory,
-                                                "deviceTypeId": deviceTypes[i].id,
-                                                "thumb": utility.getDeviceThumb(deviceTypes[i].name)
-                });
-            } else {
-                deviceTypesList.push({
-                    "hasCustTemplate": false,
-                    "deviceTypeLabel": deviceTypeLabel,
-                    "deviceTypeName": deviceTypes[i].name,
-                    "deviceCategory": deviceCategory,
-                                         "deviceTypeId": deviceTypes[i].id,
-                                         "thumb": utility.getDeviceThumb(deviceTypes[i].name)
-                });
+            if (virtualDeviceTypesList.length > 0) {
+                viewModel.virtualDeviceTypesList = virtualDeviceTypesList;
             }
+            viewModel.deviceTypesList = stringify(deviceTypesList);
         }
-        if (virtualDeviceTypesList.length > 0) {
-            viewModel.virtualDeviceTypesList = virtualDeviceTypesList;
-        }
-        viewModel.deviceTypesList = stringify(deviceTypesList);
     } else {
         log.error("Unable to fetch device types data");
         throw new Error("Unable to fetch device types!");

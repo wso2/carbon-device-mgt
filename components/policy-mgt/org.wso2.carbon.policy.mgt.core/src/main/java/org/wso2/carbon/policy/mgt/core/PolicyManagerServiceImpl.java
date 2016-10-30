@@ -22,6 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.Feature;
+import org.wso2.carbon.device.mgt.common.InvalidDeviceException;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
 import org.wso2.carbon.policy.mgt.common.*;
 import org.wso2.carbon.policy.mgt.common.monitor.ComplianceData;
@@ -53,6 +54,8 @@ public class PolicyManagerServiceImpl implements PolicyManagerService {
         policyAdministratorPoint = new PolicyAdministratorPointImpl();
         monitoringManager = new MonitoringManagerImpl();
         policyManager = new PolicyManagerImpl();
+        PolicyManagementDataHolder.getInstance().setMonitoringManager(monitoringManager);
+        PolicyManagementDataHolder.getInstance().setPolicyManager(policyManager);
     }
 
     @Override
@@ -105,6 +108,10 @@ public class PolicyManagerServiceImpl implements PolicyManagerService {
             PolicyManagementDataHolder.getInstance().getDeviceManagementService().addOperation(type,
                     PolicyManagerUtil.transformPolicy(policy), deviceIdentifiers);
             return policy;
+        } catch (InvalidDeviceException e) {
+            String msg = "Error occurred while getting the effective policies for invalid DeviceIdentifiers";
+            log.error(msg, e);
+            throw new PolicyManagementException(msg, e);
         } catch (PolicyEvaluationException e) {
             String msg = "Error occurred while getting the effective policies from the PEP service for device " +
                     deviceIdentifier.getId() + " - " + deviceIdentifier.getType();
@@ -194,7 +201,7 @@ public class PolicyManagerServiceImpl implements PolicyManagerService {
     }
 
     @Override
-    public boolean isCompliance(DeviceIdentifier deviceIdentifier) throws PolicyComplianceException {
-        return monitoringManager.isCompliance(deviceIdentifier);
+    public boolean isCompliant(DeviceIdentifier deviceIdentifier) throws PolicyComplianceException {
+        return monitoringManager.isCompliant(deviceIdentifier);
     }
 }

@@ -22,8 +22,9 @@ import org.wso2.carbon.device.mgt.common.permission.mgt.Permission;
 import org.wso2.carbon.device.mgt.common.permission.mgt.PermissionManagementException;
 import org.wso2.carbon.device.mgt.common.permission.mgt.PermissionManagerService;
 
-import java.util.List;
+import java.util.HashSet;
 import java.util.Properties;
+import java.util.Set;
 
 /**
  * This class will add, update custom permissions defined in permission.xml in webapps and it will
@@ -54,6 +55,7 @@ public class PermissionManagerServiceImpl implements PermissionManagerService {
     @Override
     public boolean addPermission(Permission permission) throws PermissionManagementException {
         // adding a permission to the tree
+        permission.setPath(PermissionUtils.getAbsolutePermissionPath(permission.getPath()));
         permissionTree.addPermission(permission);
         return PermissionUtils.putPermission(permission);
     }
@@ -62,6 +64,10 @@ public class PermissionManagerServiceImpl implements PermissionManagerService {
     public Permission getPermission(Properties properties) throws PermissionManagementException {
         String url = (String) properties.get(URL_PROPERTY);
         String httpMethod = (String) properties.get(HTTP_METHOD_PROPERTY);
+
+        if (url == null || url.isEmpty() || httpMethod == null || httpMethod.isEmpty()) {
+            throw new PermissionManagementException("Resource URI/HTTP method is empty");
+        }
         return permissionTree.getPermission(url, httpMethod);
     }
 }

@@ -47,7 +47,8 @@ import java.util.Map;
  */
 public class DeviceAccessAuthorizationServiceImpl implements DeviceAccessAuthorizationService {
 
-    private final static String CDM_ADMIN_PERMISSION = "/device-mgt/admin";
+    private final static String CDM_ADMIN_PERMISSION = "/device-mgt/devices/any-device/permitted-actions-under-owning-device";
+    private final static String CDM_ADMIN = "Device Management Administrator";
     private static Log log = LogFactory.getLog(DeviceAccessAuthorizationServiceImpl.class);
 
     public DeviceAccessAuthorizationServiceImpl() {
@@ -63,7 +64,7 @@ public class DeviceAccessAuthorizationServiceImpl implements DeviceAccessAuthori
             throws DeviceAccessAuthorizationException {
         int tenantId = this.getTenantId();
         if (username == null || username.isEmpty()) {
-            return false;
+            return !DeviceManagementDataHolder.getInstance().requireDeviceAuthorization(deviceIdentifier.getType());
         }
         //check for admin and ownership permissions
         if (isAdminOrDeviceOwner(username, tenantId, deviceIdentifier)) {
@@ -103,6 +104,18 @@ public class DeviceAccessAuthorizationServiceImpl implements DeviceAccessAuthori
     @Override
     public boolean isUserAuthorized(DeviceIdentifier deviceIdentifier) throws DeviceAccessAuthorizationException {
         return isUserAuthorized(deviceIdentifier, this.getUserName(), null);
+    }
+
+    @Override
+    public boolean isDeviceAdminUser() throws DeviceAccessAuthorizationException {
+        String username = this.getUserName();
+        int tenantId = this.getTenantId();
+        try {
+            return isAdminUser(username, tenantId);
+        } catch (UserStoreException e) {
+            throw new DeviceAccessAuthorizationException("Unable to check the admin permissions of user : " +
+                                                         username + " in tenant : " + tenantId, e);
+        }
     }
 
     @Override
@@ -244,6 +257,7 @@ public class DeviceAccessAuthorizationServiceImpl implements DeviceAccessAuthori
 
     private boolean addAdminPermissionToRegistry() throws PermissionManagementException {
         Permission permission = new Permission();
+        permission.setName(CDM_ADMIN);
         permission.setPath(PermissionUtils.getAbsolutePermissionPath(CDM_ADMIN_PERMISSION));
         return PermissionUtils.putPermission(permission);
     }

@@ -24,6 +24,7 @@ import org.wso2.carbon.apimgt.annotations.api.Permission;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
 import org.wso2.carbon.device.mgt.jaxrs.beans.RoleInfo;
 import org.wso2.carbon.device.mgt.jaxrs.beans.RoleList;
+import org.wso2.carbon.device.mgt.jaxrs.beans.Scope;
 import org.wso2.carbon.user.mgt.common.UIPermissionNode;
 
 import javax.ws.rs.*;
@@ -31,7 +32,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
 
-@API(name = "Role", version = "1.0.0", context = "/devicemgt_admin/roles", tags = {"devicemgt_admin"})
+@API(name = "RoleManagement", version = "1.0.0", context = "/api/device-mgt/v1.0/roles", tags = {"device_management"})
 
 @Path("/roles")
 @Api(value = "Role Management", description = "Role management related operations can be found here.")
@@ -43,15 +44,15 @@ public interface RoleManagementService {
     @ApiOperation(
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
-            value = "Get the list of roles.",
-            notes = "If you wish to get the details of all the roles in EMM, you can do so using this REST API. All " +
-                    "internal roles, roles created for Service-providers and application related roles are omitted.",
+            value = "Getting the List of Roles",
+            notes = "WSO2 EMM supports role-based access control (RBAC) and role management. Using this API you can the list of roles that are in WSO2 EMM.\n" +
+                    "Note: Internal roles, roles created for service-providers, and application related roles will not be given in the output.",
             tags = "Role Management")
     @ApiResponses(
             value = {
                     @ApiResponse(
                             code = 200,
-                            message = "OK. \n Successfully fetched the requested list of roles.",
+                            message = "OK. \n Successfully fetched the list of roles in WSO2 EMM.",
                             response = RoleList.class,
                             responseHeaders = {
                                     @ResponseHeader(
@@ -68,45 +69,45 @@ public interface RoleManagementService {
                             }),
                     @ApiResponse(
                             code = 304,
-                            message = "Not Modified. \n Empty body because the client has already the latest version of the requested resource."),
+                            message = "Not Modified. \n Empty body because the client already has the latest version of the requested resource."),
                     @ApiResponse(
                             code = 406,
                             message = "Not Acceptable.\n The requested media type is not supported"),
                     @ApiResponse(
                             code = 500,
-                            message = "Internal Server Error. \n Server error occurred while fetching requested list of roles.",
+                            message = "Internal Server Error. \n Server error occurred while fetching list of roles.",
                             response = ErrorResponse.class)
             })
-    @Permission(scope = "roles-view", permissions = {
-            "/permission/admin/device-mgt/admin/roles/list",
-            "/permission/admin/device-mgt/admin/users/view",
-            "/permission/admin/device-mgt/admin/policies/add",
-            "/permission/admin/device-mgt/admin/policies/update"})
+    @Permission(name = "View Roles", permission = "/device-mgt/roles/view")
     Response getRoles(
             @ApiParam(
                     name = "filter",
-                    value = "Role name or a part of it to search.",
+                    value = "Provide a character or a few characters in the role name.",
                     required = false)
             @QueryParam("filter") String filter,
             @ApiParam(
                     name = "user-store",
-                    value = "From which user store the roles must be fetched.",
+                    value = "The name of the UserStore you wish to get the list of roles.",
                     required = false)
             @QueryParam("user-store") String userStoreName,
             @ApiParam(
                     name = "If-Modified-Since",
-                    value = "Validates if the requested variant has not been modified since the time specified",
+                    value = "Checks if the requested variant was modified, since the specified date-time." +
+                            "Provide the value in the following format: EEE, d MMM yyyy HH:mm:ss Z.\n" +
+                            "Example: Mon, 05 Jan 2014 15:10:00 +0200",
                     required = false)
             @HeaderParam("If-Modified-Since") String ifModifiedSince,
             @ApiParam(
                     name = "offset",
-                    value = "Starting point within the complete list of items qualified.",
-                    required = false)
+                    value = "The starting pagination index for the complete list of qualified items.",
+                    required = false,
+                    defaultValue = "0")
             @QueryParam("offset") int offset,
             @ApiParam(
                     name = "limit",
-                    value = "Maximum size of resource array to return.",
-                    required = false)
+                    value = "Provide how many role details you require from the starting pagination index/offset.",
+                    required = false,
+                    defaultValue = "5")
             @QueryParam("limit") int limit);
 
     @GET
@@ -114,10 +115,10 @@ public interface RoleManagementService {
     @ApiOperation(
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
-            value = "Getting permission details of a role.",
-            notes = "In an organization an individual is associated a with set of responsibilities based on their " +
-                    "role. In  EMM you are able to configure permissions based on the responsibilities carried " +
-                    "out by a role. Therefore if you wish to retrieve the permission details of a role, you can do " +
+            value = "Getting Permission Details of a Role",
+            notes = "An individual is associated a with set of responsibilities based on their " +
+                    "role. In  WSO2 EMM you are able to configure permissions based on the responsibilities carried " +
+                    "out by various roles. Therefore, if you wish to retrieve the permission details of a role, you can do " +
                     "so using this REST API.",
             response = UIPermissionNode.class,
             responseContainer = "List",
@@ -127,7 +128,7 @@ public interface RoleManagementService {
             value = {
                     @ApiResponse(
                             code = 200,
-                            message = "OK. \n Successfully fetched the permission list of the given role.",
+                            message = "OK. \n Successfully fetched the permissions details for the specified role.",
                             response = UIPermissionNode.class,
                             responseContainer = "List",
                             responseHeaders = {
@@ -145,14 +146,14 @@ public interface RoleManagementService {
                             }),
                     @ApiResponse(
                             code = 304,
-                            message = "Not Modified. \n Empty body because the client has already the latest version of the requested resource."),
+                            message = "Not Modified. \n Empty body because the client already has the latest version of the requested resource.\n"),
                     @ApiResponse(
                             code = 400,
                             message = "Bad Request. \n Invalid request or validation error.",
                             response = ErrorResponse.class),
                     @ApiResponse(
                             code = 404,
-                            message = "Not Found. \n Role does not exist.",
+                            message = "Not Found. \n The specified role does not exist.",
                             response = ErrorResponse.class),
                     @ApiResponse(
                             code = 406,
@@ -160,19 +161,27 @@ public interface RoleManagementService {
                             response = ErrorResponse.class),
                     @ApiResponse(
                             code = 500,
-                            message = "Internal Server ErrorResponse. \n Server error occurred while fetching the permission list of the requested role.",
+                            message = "Internal Server ErrorResponse. \n Server error occurred while fetching the permission list for the requested role.",
                             response = ErrorResponse.class)
             })
-    @Permission(scope = "roles-view", permissions = {"/permission/admin/device-mgt/admin/roles/list"})
+    @Permission(name = "View Roles", permission = "/device-mgt/roles/view")
     Response getPermissionsOfRole(
             @ApiParam(
                     name = "roleName",
-                    value = "Name of the role.",
-                    required = true)
+                    value = "The name of the role.",
+                    required = true,
+                    defaultValue = "Engineer")
             @PathParam("roleName") String roleName,
             @ApiParam(
+                    name = "user-store",
+                    value = "The name of the user store from which you wish to get the permission of role.",
+                    required = false)
+            @QueryParam("user-store") String userStoreName,
+            @ApiParam(
                     name = "If-Modified-Since",
-                    value = "Validates if the requested variant has not been modified since the time specified",
+                    value = "Checks if the requested variant was modified, since the specified date-time." +
+                            "Provide the value in the following format: EEE, d MMM yyyy HH:mm:ss Z.\n" +
+                            "Example: Mon, 05 Jan 2014 15:10:00 +0200",
                     required = false)
             @HeaderParam("If-Modified-Since") String ifModifiedSince);
 
@@ -181,15 +190,15 @@ public interface RoleManagementService {
     @ApiOperation(
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
-            value = "Get details of a role.",
-            notes = "If you wish to get the details of a role in  EMM, you can do so using this REST API.",
+            value = "Getting Details of a Role",
+            notes = "Get the permissions associated with a role and role specific details using this REST API.",
             response = RoleInfo.class,
             tags = "Role Management")
     @ApiResponses(
             value = {
                     @ApiResponse(
                             code = 200,
-                            message = "OK. \n Successfully fetched the requested role.",
+                            message = "OK. \n Successfully fetched the details of the role.",
                             response = RoleInfo.class,
                             responseHeaders = {
                                     @ResponseHeader(
@@ -206,15 +215,14 @@ public interface RoleManagementService {
                             }),
                     @ApiResponse(
                             code = 304,
-                            message = "Not Modified. \n Empty body because the client has already the latest version of" +
-                                    " the requested resource."),
+                            message = "Not Modified. \n Empty body because the client already has the latest version of the requested resource."),
                     @ApiResponse(
                             code = 400,
                             message = "Bad Request. \n Invalid request or validation error.",
                             response = ErrorResponse.class),
                     @ApiResponse(
                             code = 404,
-                            message = "Not Found. \n Role does not exist.",
+                            message = "Not Found. \n The specified role does not exist.",
                             response = ErrorResponse.class),
                     @ApiResponse(
                             code = 406,
@@ -222,20 +230,28 @@ public interface RoleManagementService {
                             response = ErrorResponse.class),
                     @ApiResponse(
                             code = 500,
-                            message = "Internal Server Error. \n Server error occurred while fetching the " +
+                            message = "Internal Server Error. \n Server error occurred while fetching the details of" +
                                     "requested role.",
                             response = ErrorResponse.class)
     })
-    @Permission(scope = "roles-view", permissions = {"/permission/admin/device-mgt/admin/roles/list"})
+    @Permission(name = "View Roles", permission = "/device-mgt/roles/view")
     Response getRole(
             @ApiParam(
                     name = "roleName",
-                    value = "Name of the role.",
-                    required = true)
+                    value = "The name of the role.",
+                    required = true,
+                    defaultValue = "admin")
             @PathParam("roleName") String roleName,
             @ApiParam(
+                    name = "user-store",
+                    value = "The name of the user store which the particular of role resides in",
+                    required = false)
+            @QueryParam("user-store") String userStoreName,
+            @ApiParam(
                     name = "If-Modified-Since",
-                    value = "Validates if the requested variant has not been modified since the time specified",
+                    value = "Checks if the requested variant was modified, since the specified date-time." +
+                            "Provide the value in the following format: EEE, d MMM yyyy HH:mm:ss Z.\n" +
+                            "Example: Mon, 05 Jan 2014 15:10:00 +0200",
                     required = false)
             @HeaderParam("If-Modified-Since") String ifModifiedSince);
 
@@ -244,17 +260,17 @@ public interface RoleManagementService {
             consumes = MediaType.APPLICATION_JSON,
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "POST",
-            value = "Add a role.",
-            notes = "You are able to add a new role to EMM using the REST API.",
+            value = "Adding a Role",
+            notes = "WSO2 EMM supports role-based access control (RBAC) and role management. Add a new role to WSO2 EMM using this REST API.",
             tags = "Role Management")
     @ApiResponses(value = {
             @ApiResponse(
                     code = 201,
-                    message = "Created. \n Role has successfully been created",
+                    message = "Created. \n Successfully created the role.",
                     responseHeaders = {
                             @ResponseHeader(
                                     name = "Content-Location",
-                                    description = "The URL of the role added."),
+                                    description = "The URL to the newly added role."),
                             @ResponseHeader(
                                     name = "Content-Type",
                                     description = "The content type of the body"),
@@ -268,7 +284,7 @@ public interface RoleManagementService {
                                             "Used by caches, or in conditional requests.")}),
             @ApiResponse(
                     code = 303,
-                    message = "See Other. \n Source can be retrieved from the URL specified at the Location header.",
+                    message = "See Other. \n The source can be retrieved from the URL specified in the location header.",
                     responseHeaders = {
                             @ResponseHeader(
                                     name = "Content-Location",
@@ -279,18 +295,18 @@ public interface RoleManagementService {
                     response = ErrorResponse.class),
             @ApiResponse(
                     code = 415,
-                    message = "Unsupported media type. \n The entity of the request was in a not supported format.",
+                    message = "Unsupported media type. \n The format of the requested entity was not supported.",
                     response = ErrorResponse.class),
             @ApiResponse(
                     code = 500,
                     message = "Internal Server Error. \n Server error occurred while adding a new role.",
                     response = ErrorResponse.class)
     })
-    @Permission(scope = "roles-modify", permissions = {"/permission/admin/device-mgt/admin/roles/add"})
+    @Permission(name = "Manage Roles", permission = "/device-mgt/roles/manage")
     Response addRole(
             @ApiParam(
                     name = "role",
-                    value = "Details about the role to be added.",
+                    value = "The properties required to add a new role.",
                     required = true) RoleInfo role);
 
     @PUT
@@ -299,14 +315,14 @@ public interface RoleManagementService {
             consumes = MediaType.APPLICATION_JSON,
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "PUT",
-            value = "Update a role.",
-            notes = "There will be situations where you will need to update the role details, such as the permissions" +
-                    " or the role name. In such situation you can update the role details.",
+            value = "Updating Role Details",
+            notes = "There will be situations where you need to update the role details, such as the permissions" +
+                    " or the role name. Update the role details using this REST API.",
             tags = "Role Management")
     @ApiResponses(value = {
             @ApiResponse(
                     code = 200,
-                    message = "OK. \n Role has been updated successfully",
+                    message = "OK. \n Successfully updated the specified role.",
                     responseHeaders = {
                             @ResponseHeader(
                                     name = "Content-Type",
@@ -317,7 +333,7 @@ public interface RoleManagementService {
                                             "Used by caches, or in conditional requests."),
                             @ResponseHeader(
                                     name = "Last-Modified",
-                                    description = "Date and time the resource has been modified the last time.\n" +
+                                    description = "Date and time the resource was last modified.\n" +
                                             "Used by caches, or in conditional requests.")}),
             @ApiResponse(
                     code = 400,
@@ -325,61 +341,75 @@ public interface RoleManagementService {
                     response = ErrorResponse.class),
             @ApiResponse(
                     code = 404,
-                    message = "Not Found. \n Role to be deleted does not exist.",
+                    message = "Not Found. \n The specified role does not exist.",
                     response = ErrorResponse.class),
             @ApiResponse(
                     code = 415,
-                    message = "Unsupported media type. \n The entity of the request was in a not supported format.",
+                    message = "Unsupported media type. \n The format of the requested entity was not supported.\n",
                     response = ErrorResponse.class),
             @ApiResponse(
                     code = 500,
                     message = "Internal Server Error. \n Server error occurred while updating the role.",
                     response = ErrorResponse.class)
     })
-    @Permission(scope = "roles-modify", permissions = {"/permission/admin/device-mgt/admin/roles/update"})
+    @Permission(name = "Manage Roles", permission = "/device-mgt/roles/manage")
     Response updateRole(
             @ApiParam(
                     name = "roleName",
-                    value = "Name of the role.",
-                    required = true)
+                    value = "The name of the role.",
+                    required = true,
+                    defaultValue = "admin")
             @PathParam("roleName") String roleName,
             @ApiParam(
                     name = "role",
-                    value = "Details about the role to be added.",
-                    required = true) RoleInfo role);
+                    value = "The properties required to update a role.\n" +
+                            "NOTE: Don't change the role and the permissions of the admin user. " +
+                            "If you want to try out this API by updating all the properties, create a new role and update the properties accordingly.",
+                    required = true) RoleInfo role,
+            @ApiParam(
+                    name = "user-store",
+                    value = "The name of the user store which the particular role resides in.",
+                    required = false)
+            @QueryParam("user-store") String userStoreName);
 
     @DELETE
     @Path("/{roleName}")
     @ApiOperation(
             httpMethod = "DELETE",
-            value = "Delete a role.",
-            notes = "In a situation when your Organization identifies that a specific role is no longer required you " +
-                    "will need to remove the role details from  EMM.",
+            value = "Deleting a Role",
+            notes = "Roles become obsolete over time due to various reasons. In a situation where your Organization identifies that a specific role is no longer required, you " +
+                    "can delete a role using this REST API.",
             tags = "Role Management")
     @ApiResponses(value = {
             @ApiResponse(
                     code = 200,
-                    message = "OK. \n Role has successfully been removed"),
+                    message = "OK. \n Successfully removed the specified role."),
             @ApiResponse(
                     code = 400,
                     message = "Bad Request. \n Invalid request or validation error.",
                     response = ErrorResponse.class),
             @ApiResponse(
                     code = 404,
-                    message = "Not Found. \n Role to be deleted does not exist.",
+                    message = "Not Found. \n The specified role does not exist.",
                     response = ErrorResponse.class),
             @ApiResponse(
                     code = 500,
                     message = "Internal Server Error. \n Server error occurred while removing the role.",
                     response = ErrorResponse.class)
     })
-    @Permission(scope = "roles-modify", permissions = {"/permission/admin/device-mgt/admin/roles/remove"})
+    @Permission(name = "Manage Roles", permission = "/device-mgt/roles/manage")
     Response deleteRole(
             @ApiParam(
                     name = "roleName",
-                    value = "Name of the role to de deleted.",
+                    value = "The name of the role that needs to de deleted.\n" +
+                            "NOTE: Don't delete the admin role",
                     required = true)
-            @PathParam("roleName") String roleName);
+            @PathParam("roleName") String roleName,
+            @ApiParam(
+                    name = "user-store",
+                    value = "The name of the user store which the particular role resides in.",
+                    required = false)
+            @QueryParam("user-store") String userStoreName);
 
     @PUT
     @Path("/{roleName}/users")
@@ -387,19 +417,19 @@ public interface RoleManagementService {
             consumes = MediaType.APPLICATION_JSON,
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "PUT",
-            value = "Add users to a role.",
-            notes = "Defining the users to a role at the point of creating a new role is optional, " +
-                    "therefore you are able to update the users that belong to a given role after you have created " +
-                    "a role using this REST API." +
+            value = "Adding Users to a Role",
+            notes = "Defining users to a role at the point of creating a new role is optional. " +
+                    "You can update the users that belong to a given role after you have created " +
+                    "a role using this REST API.\n" +
                     "Example: Your Organization hires 30 new engineers. Updating the role details for each user can " +
-                    "be cumbersome, therefore you can define all the new employees that belong to the engineering " +
+                    "be cumbersome. Therefore, you can define all the new employees that belong to the engineering " +
                     "role using this API.",
             tags = "Role Management")
     @ApiResponses(
             value = {
                     @ApiResponse(
                             code = 200,
-                            message = "OK. \n User list of the role has been updated successfully",
+                            message = "OK. \n Successfully added the users to the specified role.",
                             responseHeaders = {
                                     @ResponseHeader(
                                             name = "Content-Type",
@@ -418,29 +448,38 @@ public interface RoleManagementService {
                             response = ErrorResponse.class),
                     @ApiResponse(
                             code = 404,
-                            message = "Not Found. \n Resource to be deleted does not exist.",
+                            message = "Not Found. \n The specified role does not exist.",
                             response = ErrorResponse.class),
                     @ApiResponse(
                             code = 415,
-                            message = "Unsupported media type. \n The entity of the request was in a not " +
+                            message = "Unsupported media type. \n The format of the requested entity was not supported.\n" +
                                     "supported format.",
                             response = ErrorResponse.class),
                     @ApiResponse(
                             code = 500,
                             message = "Internal Server Error. \n " +
-                                    "Server error occurred while updating the user list of the role.",
+                                    "Server error occurred while adding the user to the specified role.",
                             response = ErrorResponse.class)
     })
-    @Permission(scope = "roles-modify", permissions = {"/permission/admin/device-mgt/admin/roles/update"})
+    @Permission(name = "Manage Roles", permission = "/device-mgt/roles/manage")
     Response updateUsersOfRole(
             @ApiParam(
                     name = "roleName",
-                    value = "Name of the role.",
-                    required = true)
+                    value = "The name of the role.",
+                    required = true,
+                    defaultValue = "admin")
             @PathParam("roleName") String roleName,
             @ApiParam(
+                    name = "user-store",
+                    value = "The name of the user store which the particular role resides in.",
+                    required = false)
+            @QueryParam("user-store") String userStoreName,
+            @ApiParam(
                     name = "users",
-                    value = "List of usernames to be added.",
-                    required = true) List<String> users);
+                    value = "Define the users that belong to the role.\n" +
+                            "Multiple users can be added to a role by using comma separated values. ",
+                    required = true,
+                    defaultValue = "[admin]"
+            ) List<String> users);
 
 }

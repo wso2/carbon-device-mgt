@@ -23,6 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.tomcat.util.buf.ByteChunk;
 import org.apache.tomcat.util.buf.MessageBytes;
+import org.wso2.carbon.device.mgt.common.permission.mgt.PermissionManagementException;
 import org.wso2.carbon.webapp.authenticator.framework.AuthenticationException;
 import org.wso2.carbon.webapp.authenticator.framework.AuthenticationFrameworkUtil;
 import org.wso2.carbon.webapp.authenticator.framework.AuthenticationInfo;
@@ -105,7 +106,7 @@ public class OAuthAuthenticator implements WebappAuthenticator {
 
         StringTokenizer tokenizer = new StringTokenizer(requestUri, "/");
         String context = tokenizer.nextToken();
-        if ((context == null) || ("".equals(context))) {
+        if ((context == null) || (context.isEmpty())) {
             authenticationInfo.setStatus(WebappAuthenticator.Status.CONTINUE);
         }
         String apiVersion = tokenizer.nextToken();

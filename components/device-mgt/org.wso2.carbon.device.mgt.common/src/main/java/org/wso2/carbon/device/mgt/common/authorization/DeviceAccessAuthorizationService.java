@@ -116,6 +116,14 @@ public interface DeviceAccessAuthorizationService {
                                                                                  DeviceAccessAuthorizationException;
 
     /**
+     * This method will check whether the authenticated user has the admin permissions.
+     *
+     * @return Boolean authorization result.
+     * @throws DeviceAccessAuthorizationException if something goes wrong when checking the authorization.
+     */
+    boolean isDeviceAdminUser() throws DeviceAccessAuthorizationException;
+
+    /**
      * This method will check whether the given user has the access to the devices identified by the given
      * DeviceIdentifier list.
      *

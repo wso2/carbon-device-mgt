@@ -16,11 +16,17 @@
   under the License.
 }}
 <!-- content/body -->
+
+{{unit "cdmf.unit.ui.modal"}}
+
 <div class="row">
     <div class="col-md-12">
         <!-- content -->
         <div id="role-create-form" class="container col-centered wr-content">
             <div class="wr-form">
+                <div id="permission-add-error-msg" class="alert alert-danger hidden" role="alert">
+                    <i class="icon fw fw-error"></i><span></span>
+                </div>
                 <p class="page-sub-title">Change Role permissions</p>
                 <p>Please note that * sign represents required fields of data.</p>
                 <div class="wr-steps hidden" id="role_wizard_header">
@@ -69,7 +75,7 @@
                 <button class="wr-btn" onclick="window.location.href='{{@app.context}}/roles'">
                     View Role List
                 </button>
-                <a href="{{@app.context}}/roles/add-role" class="cu-btn-inner">
+                <a href="{{@app.context}}/role/add" class="cu-btn-inner">
                         <span class="fw-stack">
                             <i class="fw fw-ring fw-stack-2x"></i>
                             <i class="fw fw-add fw-stack-1x"></i>

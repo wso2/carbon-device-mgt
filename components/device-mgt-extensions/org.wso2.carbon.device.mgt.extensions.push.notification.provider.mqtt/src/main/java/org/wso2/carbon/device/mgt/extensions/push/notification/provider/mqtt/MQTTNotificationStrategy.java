@@ -20,6 +20,8 @@ package org.wso2.carbon.device.mgt.extensions.push.notification.provider.mqtt;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
+import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.push.notification.NotificationContext;
 import org.wso2.carbon.device.mgt.common.push.notification.NotificationStrategy;
 import org.wso2.carbon.device.mgt.common.push.notification.PushNotificationConfig;
@@ -32,6 +34,7 @@ import org.wso2.carbon.event.output.adapter.core.exception.OutputEventAdapterExc
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 public class MQTTNotificationStrategy implements NotificationStrategy {
 
@@ -75,9 +78,22 @@ public class MQTTNotificationStrategy implements NotificationStrategy {
     @Override
     public void execute(NotificationContext ctx) throws PushNotificationExecutionFailedException {
         Map<String, String> dynamicProperties = new HashMap<>();
-        dynamicProperties.put("topic", (String) ctx.getOperation().getProperties().get(MQTT_ADAPTER_TOPIC));
+        Operation operation = ctx.getOperation();
+        Properties properties = operation.getProperties();
+        if (properties != null && properties.get(MQTT_ADAPTER_TOPIC) != null) {
+            dynamicProperties.put("topic", (String) properties.get(MQTT_ADAPTER_TOPIC));
+        } else {
+            String topic = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantDomain(true) + "/"
+                    + ctx.getDeviceId().getType() + "/" + ctx.getDeviceId().getId() + "/" + operation.getType()
+                    + "/" + operation.getCode();
+            dynamicProperties.put("topic", topic);
+            if (operation.getPayLoad() == null) {
+                operation.setPayLoad("");
+            }
+        }
+
         MQTTDataHolder.getInstance().getOutputEventAdapterService().publish(mqttAdapterName, dynamicProperties,
-                                                                            ctx.getOperation().getPayLoad());
+                                                                            operation.getPayLoad());
     }
 
     @Override

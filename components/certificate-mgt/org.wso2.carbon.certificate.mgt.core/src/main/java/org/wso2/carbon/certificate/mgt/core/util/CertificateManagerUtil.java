@@ -22,6 +22,8 @@ package org.wso2.carbon.certificate.mgt.core.util;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Document;
+import org.wso2.carbon.certificate.mgt.core.config.CertificateConfigurationManager;
+import org.wso2.carbon.certificate.mgt.core.config.CertificateManagementConfig;
 import org.wso2.carbon.certificate.mgt.core.config.datasource.DataSourceConfig;
 import org.wso2.carbon.certificate.mgt.core.config.datasource.JNDILookupDefinition;
 import org.wso2.carbon.certificate.mgt.core.dao.CertificateManagementDAOUtil;
@@ -86,6 +88,20 @@ public class CertificateManagerUtil {
             }
         }
         return dataSource;
+    }
+
+    public static int validateCertificateListPageSize(int limit) throws CertificateManagementException {
+        if (limit == 0) {
+            CertificateManagementConfig certificateManagementConfig = CertificateConfigurationManager.getInstance().
+                    getCertificateManagementConfig();
+            if (certificateManagementConfig != null) {
+                return certificateManagementConfig.getDefaultPageSize();
+            } else {
+                throw new CertificateManagementException("Certificate-Mgt configuration has not initialized. Please check the " +
+                                                    "certificate-config.xml file.");
+            }
+        }
+        return limit;
     }
 
 }

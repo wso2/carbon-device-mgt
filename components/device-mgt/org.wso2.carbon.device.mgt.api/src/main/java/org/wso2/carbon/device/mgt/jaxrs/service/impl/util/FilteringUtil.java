@@ -32,7 +32,7 @@ public class FilteringUtil {
      * This is used to filter from the cached policies.
      */
     public static <T> List<T> getFilteredList(List<T> sourceList, int offset, int limit) {
-        if(sourceList == null || sourceList.size() < offset){
+        if (sourceList == null || sourceList.size() < offset) {
             return Collections.emptyList();
         }
         return sourceList.subList(offset, Math.min(offset + limit, sourceList.size()));

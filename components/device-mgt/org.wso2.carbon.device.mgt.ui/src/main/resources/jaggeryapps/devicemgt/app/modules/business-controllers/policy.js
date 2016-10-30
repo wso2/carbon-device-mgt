@@ -45,6 +45,12 @@ policyModule = function () {
                 policyObjectToView["priorityId"] = policyObjectFromRestEndpoint["priorityId"];
                 policyObjectToView["name"] = policyObjectFromRestEndpoint["policyName"];
                 policyObjectToView["platform"] = policyObjectFromRestEndpoint["profile"]["deviceType"];
+                if (policyObjectToView["platform"] == "ios") {
+                    policyObjectToView["deviceTypeIcon"] = "apple";
+                } else {
+                    policyObjectToView["deviceTypeIcon"] = policyObjectToView["platform"];
+                }
+                //policyObjectToView["icon"] = utility.getDeviceThumb(policyObjectToView["platform"]);
                 policyObjectToView["ownershipType"] = policyObjectFromRestEndpoint["ownershipType"];
 
                 var assignedRoleCount = policyObjectFromRestEndpoint["roles"].length;
@@ -127,6 +133,32 @@ policyModule = function () {
             var url = devicemgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"] +
                       "/policies?offset=0&limit=100";
             return serviceInvokers.XMLHttp.get(url, privateMethods.handleGetAllPoliciesResponse);
+        } catch (e) {
+            throw e;
+        }
+    };
+
+    /*
+     Get policies count from backend services.
+     */
+    publicMethods.getPoliciesCount = function () {
+        var carbonUser = session.get(constants["USER_SESSION_KEY"]);
+        if (!carbonUser) {
+            log.error("User object was not found in the session");
+            throw constants["ERRORS"]["USER_NOT_FOUND"];
+        }
+        try {
+            var url = devicemgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"] +
+                      "/policies?offset=0&limit=1";
+            return serviceInvokers.XMLHttp.get(
+                url, function (responsePayload) {
+                    return parse(responsePayload["responseText"])["count"];
+                },
+                function (responsePayload) {
+                    log.error(responsePayload["responseText"]);
+                    return -1;
+                }
+            );
         } catch (e) {
             throw e;
         }

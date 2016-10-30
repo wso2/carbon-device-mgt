@@ -32,6 +32,7 @@ public class APIPublisherStartupHandler implements ServerStartupObserver {
     private static final Log log = LogFactory.getLog(APIPublisherStartupHandler.class);
     private static int retryTime = 2000;
     private static final int CONNECTION_RETRY_FACTOR = 2;
+    private static final int MAX_RETRY_COUNT = 5;
     private static Stack<API> failedAPIsStack = new Stack<>();
     private static Stack<API> currentAPIsStack;
 
@@ -55,19 +56,35 @@ public class APIPublisherStartupHandler implements ServerStartupObserver {
                             + APIPublisherDataHolder.getInstance().getUnpublishedApis().size());
                 }
                 publisher = APIPublisherDataHolder.getInstance().getApiPublisherService();
-                while (!failedAPIsStack.isEmpty() || !currentAPIsStack.isEmpty()) {
+                int retryCount = 0;
+                while (retryCount < MAX_RETRY_COUNT && (!failedAPIsStack.isEmpty() || !currentAPIsStack.isEmpty())) {
                     try {
                         retryTime = retryTime * CONNECTION_RETRY_FACTOR;
                         Thread.sleep(retryTime);
                     } catch (InterruptedException te) {
-                        log.error("Error occurred while sleeping", te);
+                        //do nothing.
                     }
+                    Stack<API> failedApis;
                     if (!APIPublisherDataHolder.getInstance().getUnpublishedApis().isEmpty()) {
                         publishAPIs(currentAPIsStack, failedAPIsStack);
+                        failedApis = failedAPIsStack;
                     } else {
                         publishAPIs(failedAPIsStack, currentAPIsStack);
+                        failedApis = currentAPIsStack;
+                    }
+                    retryCount++;
+                    if (retryCount == MAX_RETRY_COUNT && !failedApis.isEmpty()) {
+                        StringBuilder error = new StringBuilder();
+                        error.append("Error occurred while publishing API ['");
+                        while (!failedApis.isEmpty()) {
+                            API api = failedApis.pop();
+                            error.append(api.getId().getApiName() + ",");
+                        }
+                        error.append("']");
+                        log.error(error.toString());
                     }
                 }
+
             }
         });
         t.start();
@@ -79,7 +96,6 @@ public class APIPublisherStartupHandler implements ServerStartupObserver {
             try {
                 publisher.publishAPI(api);
             } catch (Exception e) {
-                log.error("Error occurred while publishing API '" + api.getId().getApiName() + "'");
                 failedStack.push(api);
             }
         }

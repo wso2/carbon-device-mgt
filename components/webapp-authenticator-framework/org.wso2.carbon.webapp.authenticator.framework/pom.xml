@@ -21,14 +21,14 @@
     <parent>
         <groupId>org.wso2.carbon.devicemgt</groupId>
         <artifactId>webapp-authenticator-framework</artifactId>
-        <version>1.1.2-SNAPSHOT</version>
+        <version>1.2.6-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.wso2.carbon.devicemgt</groupId>
     <artifactId>org.wso2.carbon.webapp.authenticator.framework</artifactId>
-    <version>1.1.2-SNAPSHOT</version>
+    <version>1.2.6-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <name>WSO2 Carbon - Web Application Authenticator Framework Bundle</name>
     <description>WSO2 Carbon - Web Application Authenticator Framework Bundle</description>
@@ -61,9 +61,8 @@
                             com.nimbusds.jwt,
                             javax.xml.bind,
                             javax.xml.bind.annotation,
-                            javax.xml.parsers,
+                            javax.xml.parsers;version="${javax.xml.parsers.import.pkg.version}";resolution:=optional,
                             javax.xml.validation,
-                            org.apache.axiom.util.base64,
                             org.apache.catalina,
                             org.apache.catalina.connector,
                             org.apache.catalina.util,
@@ -110,13 +109,9 @@
                             org.apache.commons.pool.impl,
                             org.apache.http.conn,
                             org.apache.http.impl.conn,
-                            javax.xml.soap,
+                            javax.xml.soap; version="${javax.xml.soap.imp.pkg.version}",
                             javax.xml.stream,
-                            org.apache.axiom.soap,
-                            org.apache.axiom.soap.impl.builder,
-                            org.apache.axiom.om,
-                            org.apache.axiom.om.impl.builder,
-                            org.apache.axiom.om.util,
+			    org.apache.axiom.*; version="${axiom.osgi.version.range}",
                             org.wso2.carbon.registry.core.*,
                             org.wso2.carbon.registry.common.*;version="${carbon.registry.imp.pkg.version.range}",
                             org.wso2.carbon.registry.indexing.*; version="${carbon.registry.imp.pkg.version.range}",
@@ -166,10 +161,10 @@
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.tomcat.ext</artifactId>
         </dependency>
-        <dependency>
+        <!--dependency>
             <groupId>org.apache.ws.commons.axiom.wso2</groupId>
             <artifactId>axiom</artifactId>
-        </dependency>
+        </dependency-->
         <dependency>
             <groupId>org.wso2.carbon.identity</groupId>
             <artifactId>org.wso2.carbon.identity.base</artifactId>

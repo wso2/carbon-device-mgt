@@ -48,27 +48,28 @@ if (!user) {
         var deviceType = request.getParameter("deviceType"); // need a better solution here
         deviceTypeConfig = utility.getDeviceTypeConfig(deviceType);
         if (deviceTypeConfig && deviceTypeConfig.deviceType.downloadAgentUri) {
+            hearders = [{"name": constants["ACCEPT_IDENTIFIER"], "value": constants["APPLICATION_ZIP"]}];
             sketchDownloadEndPoint = devicemgtProps["httpsURL"] + "/" + deviceTypeConfig.deviceType.downloadAgentUri;
             serviceInvokers.HttpClient.get(sketchDownloadEndPoint + queryString, function (responsePayload, responseHeaders) {
-                    if (responseHeaders) {
-                        for (var i = 0; i < responseHeaders.length; i++) {
-                            var header = responseHeaders[i]
-                            var headerName = String(header.getName());
-                            var headerValue = String(header.getValue());
-                            response.addHeader(headerName, headerValue);
-                        }
-                        var streamObject = new Stream(responsePayload);
-                        print(streamObject);
-                    } else {
-                        return responsePayload;
-                    }
-                }, function (responsePayload) {
-                    log.error(responsePayload)
-                    var response = {};
-                    response["status"] = "error";
-                    return response;
-                }
-            );
+                                               if (responseHeaders) {
+                                                   for (var i = 0; i < responseHeaders.length; i++) {
+                                                       var header = responseHeaders[i];
+                                                       var headerName = String(header.getName());
+                                                       var headerValue = String(header.getValue());
+                                                       response.addHeader(headerName, headerValue);
+                                                   }
+                                                   var streamObject = new Stream(responsePayload);
+                                                   print(streamObject);
+                                               } else {
+                                                   return responsePayload;
+                                               }
+                                           }, function (responsePayload) {
+                                               log.error(responsePayload);
+                                               var response = {};
+                                               response["status"] = "error";
+                                               return response;
+                                           }
+                , hearders);
         } else {
             result = 400;
         }
@@ -143,16 +144,16 @@ if (!user) {
         }
 
         serviceInvokers.XMLHttp.get(
-                targetURL, function (responsePayload) {
-                    response.status = 200;
-                    result =  responsePayload;
-                },
-                function (responsePayload) {
-                    response.status = responsePayload.status;
-                    result =  responsePayload.responseText;
-                });
+            targetURL, function (responsePayload) {
+                response.status = 200;
+                result =  responsePayload;
+            },
+            function (responsePayload) {
+                response.status = responsePayload.status;
+                result =  responsePayload.responseText;
+            });
     } else if (uriMatcher.match("/{context}/api/devices/")) {
-        if (userModule.isAuthorized("/permission/admin/device-mgt/admin/devices/list")) {
+        if (userModule.isAuthorized("/permission/admin/device-mgt/devices/list")) {
             result = deviceModule.listDevices();
         } else {
             response.sendError(403);
@@ -161,7 +162,7 @@ if (!user) {
         elements = uriMatcher.elements();
         deviceId = elements.deviceId;
         type = elements.type;
-        if (userModule.isAuthorized("/permission/admin/device-mgt/admin/devices/list")) {
+        if (userModule.isAuthorized("/permission/admin/device-mgt/devices/list")) {
             result = deviceModule.viewDevice(type, deviceId);
         }else {
             response.sendError(403);
@@ -171,7 +172,7 @@ if (!user) {
         deviceId = elements.deviceId;
         type = elements.type;
         operation = elements.operation;
-        if (userModule.isAuthorized("/permission/admin/device-mgt/admin/devices/operation")) {
+        if (userModule.isAuthorized("/permission/admin/device-mgt/devices/operation")) {
             result = deviceModule.performOperation(deviceId, operation, [], type);
         } else {
             response.sendError(403);

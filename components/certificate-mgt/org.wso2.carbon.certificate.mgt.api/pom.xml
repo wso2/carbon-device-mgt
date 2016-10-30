@@ -22,7 +22,7 @@
     <parent>
         <artifactId>certificate-mgt</artifactId>
         <groupId>org.wso2.carbon.devicemgt</groupId>
-        <version>1.1.2-SNAPSHOT</version>
+        <version>1.2.6-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -76,7 +76,7 @@
                                     <tasks>
                                         <copy todir="${basedir}/../../../repository/deployment/server/webapps" overwrite="true">
                                             <fileset dir="${basedir}/target">
-                                                <include name="api#scep-mgt#v1.0.war" />
+                                                <include name="api-scep-mgt-v1.0.war" />
                                             </fileset>
                                         </copy>
                                     </tasks>
@@ -150,26 +150,6 @@
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon.devicemgt</groupId>
-            <artifactId>org.wso2.carbon.device.mgt.common</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon.devicemgt</groupId>
-            <artifactId>org.wso2.carbon.device.mgt.core</artifactId>
-            <scope>provided</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.apache.axis2.wso2</groupId>
-                    <artifactId>axis2-client</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.apache.neethi.wso2</groupId>
-                    <artifactId>neethi</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon.devicemgt</groupId>
             <artifactId>org.wso2.carbon.certificate.mgt.core</artifactId>
             <scope>provided</scope>
         </dependency>
@@ -182,6 +162,10 @@
             <artifactId>swagger-core</artifactId>
             <exclusions>
                 <exclusion>
+                    <groupId>org.wso2.orbit.com.fasterxml.jackson.core</groupId>
+                    <artifactId>jackson-annotations</artifactId>
+                </exclusion>
+                <exclusion>
                     <groupId>org.slf4j</groupId>
                     <artifactId>slf4j-api</artifactId>
                 </exclusion>
@@ -190,6 +174,16 @@
         <dependency>
             <groupId>io.swagger</groupId>
             <artifactId>swagger-jaxrs</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.fasterxml.jackson.module</groupId>
+                    <artifactId>jackson-module-jaxb-annotations</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>

@@ -30,7 +30,7 @@ import java.util.List;
 public class ActivityStatus {
 
     public enum Status {
-        IN_PROGRESS, PENDING, COMPLETED, ERROR, REPEATED
+        IN_PROGRESS, PENDING, COMPLETED, ERROR, REPEATED, INVALID, UNAUTHORIZED
     }
 
     @ApiModelProperty(
@@ -43,7 +43,8 @@ public class ActivityStatus {
     @ApiModelProperty(
             name = "status",
             value = "Status of the activity performed.",
-            required = true)
+            required = true,
+            example = "PENDING")
     @JsonProperty("status")
     private Status status;
 
@@ -57,7 +58,8 @@ public class ActivityStatus {
     @ApiModelProperty(
             name = "updatedTimestamp    ",
             value = "Last updated time of the activity.",
-            required = true)
+            required = true,
+            example = "Thu Oct 06 11:18:47 IST 2016")
     @JsonProperty("updatedTimestamp")
     private String updatedTimestamp;
 

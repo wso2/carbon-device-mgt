@@ -45,12 +45,13 @@ var invokers = function () {
      * If the token pair is not set in the session, this will return null.
      */
     privateMethods.getAccessToken = function () {
-        var tokenPair = parse(session.get(constants["TOKEN_PAIR"]));
-        if (tokenPair) {
-            return tokenPair["accessToken"];
-        } else {
-            return null;
+        if (session) {
+            var tokenPair = session.get(constants["TOKEN_PAIR"]);
+            if (tokenPair) {
+                return parse(tokenPair)["accessToken"];
+            }
         }
+        return null;
     };
 
     /**
@@ -66,23 +67,42 @@ var invokers = function () {
      * @param endpoint Backend REST API url.
      * @param responseCallback a function to be called with response retrieved.
      * @param count a counter which hold the number of recursive execution
+     * @param headers a list of name value pairs for additional http headers
      */
-    privateMethods["execute"] = function (httpMethod, requestPayload, endpoint, responseCallback, count) {
+    privateMethods["execute"] = function (httpMethod, requestPayload, endpoint, responseCallback, count, headers) {
         var xmlHttpRequest = new XMLHttpRequest();
 
         xmlHttpRequest.open(httpMethod, endpoint);
-        xmlHttpRequest.setRequestHeader(constants["CONTENT_TYPE_IDENTIFIER"], constants["APPLICATION_JSON"]);
-        xmlHttpRequest.setRequestHeader(constants["ACCEPT_IDENTIFIER"], constants["APPLICATION_JSON"]);
+
+        var contentTypeFound = false;
+        var acceptTypeFound = false;
+        for (var i in headers) {
+            xmlHttpRequest.setRequestHeader(headers[i].name, headers[i].value);
+            if(constants["CONTENT_TYPE_IDENTIFIER"] == headers[i].name){
+                contentTypeFound = true;
+            }
+            if(constants["ACCEPT_IDENTIFIER"] == headers[i].name){
+                acceptTypeFound = true;
+            }
+        }
+
+        if (!contentTypeFound) {
+            xmlHttpRequest.setRequestHeader(constants["CONTENT_TYPE_IDENTIFIER"], constants["APPLICATION_JSON"]);
+        }
+
+        if (!acceptTypeFound) {
+            xmlHttpRequest.setRequestHeader(constants["ACCEPT_IDENTIFIER"], constants["APPLICATION_JSON"]);
+        }
 
         if (devicemgtProps["isOAuthEnabled"]) {
             var accessToken = privateMethods.getAccessToken();
-            if (!accessToken) {
+            if (accessToken == null) {
                 userModule.logout(function () {
                     response.sendRedirect(devicemgtProps["appContext"] + "login");
                 });
             } else {
                 xmlHttpRequest.setRequestHeader(constants["AUTHORIZATION_HEADER"],
-                    constants["BEARER_PREFIX"] + accessToken);
+                                                constants["BEARER_PREFIX"] + accessToken);
             }
         }
 
@@ -92,18 +112,15 @@ var invokers = function () {
             xmlHttpRequest.send();
         }
 
-        log.debug("Service Invoker-URL: " + endpoint);
-        log.debug("Service Invoker-Method: " + httpMethod);
-
-//        log.info("Request : " + httpMethod + " " + endpoint);
-//        log.info("Request payload if any : " + stringify(requestPayload));
-//        log.info("Response status : " + xmlHttpRequest.status);
-//        log.info("Response payload if any : " + xmlHttpRequest.responseText);
+        log.debug("Request : " + httpMethod + " " + endpoint);
+        log.debug("Request payload if any : " + stringify(requestPayload));
+        log.debug("Response status : " + xmlHttpRequest.status);
+        log.debug("Response payload if any : " + xmlHttpRequest.responseText);
 
         if (xmlHttpRequest.status == 401 && (xmlHttpRequest.responseText == TOKEN_EXPIRED ||
-            xmlHttpRequest.responseText == TOKEN_INVALID ) && count < 5) {
+                                             xmlHttpRequest.responseText == TOKEN_INVALID ) && count < 5) {
             tokenUtil.refreshTokenPair();
-            return privateMethods.execute(httpMethod, requestPayload, endpoint, responseCallback, ++count);
+            return privateMethods.execute(httpMethod, requestPayload, endpoint, responseCallback, ++count, headers);
         } else {
             return responseCallback(xmlHttpRequest);
         }
@@ -116,18 +133,20 @@ var invokers = function () {
      * @param endpoint Backend REST API url.
      * @param responseCallback a function to be called with response retrieved.
      */
-    privateMethods["initiateXMLHTTPRequest"] = function (httpMethod, requestPayload, endpoint, responseCallback) {
-        return privateMethods.execute(httpMethod, requestPayload, endpoint, responseCallback, 0);
-    };
+    privateMethods["initiateXMLHTTPRequest"] =
+        function (httpMethod, requestPayload, endpoint, responseCallback, headers) {
+            return privateMethods.execute(httpMethod, requestPayload, endpoint, responseCallback, 0, headers);
+        };
 
     /**
      * This method invokes return initiateXMLHttpRequest for get calls.
      * @param endpoint Backend REST API url.
      * @param responseCallback a function to be called with response retrieved.
      */
-    publicXMLHTTPInvokers["get"] = function (endpoint, responseCallback) {
+    publicXMLHTTPInvokers["get"] = function (endpoint, responseCallback, headers) {
         var requestPayload = null;
-        return privateMethods.initiateXMLHTTPRequest(constants["HTTP_GET"], requestPayload, endpoint, responseCallback);
+        return privateMethods.initiateXMLHTTPRequest(constants["HTTP_GET"], requestPayload, endpoint, responseCallback,
+                                                     headers);
     };
 
     /**
@@ -136,8 +155,9 @@ var invokers = function () {
      * @param requestPayload payload/data if exists which is needed to be send.
      * @param responseCallback a function to be called with response retrieved.
      */
-    publicXMLHTTPInvokers["post"] = function (endpoint, requestPayload, responseCallback) {
-        return privateMethods.initiateXMLHTTPRequest(constants["HTTP_POST"], requestPayload, endpoint, responseCallback);
+    publicXMLHTTPInvokers["post"] = function (endpoint, requestPayload, responseCallback, headers) {
+        return privateMethods.initiateXMLHTTPRequest(constants["HTTP_POST"], requestPayload, endpoint, responseCallback,
+                                                     headers);
     };
 
     /**
@@ -146,8 +166,9 @@ var invokers = function () {
      * @param requestPayload payload/data if exists which is needed to be send.
      * @param responseCallback a function to be called with response retrieved.
      */
-    publicXMLHTTPInvokers["put"] = function (endpoint, requestPayload, responseCallback) {
-        return privateMethods.initiateXMLHTTPRequest(constants["HTTP_PUT"], requestPayload, endpoint, responseCallback);
+    publicXMLHTTPInvokers["put"] = function (endpoint, requestPayload, responseCallback, headers) {
+        return privateMethods.initiateXMLHTTPRequest(constants["HTTP_PUT"], requestPayload, endpoint, responseCallback,
+                                                     headers);
     };
 
     /**
@@ -155,9 +176,10 @@ var invokers = function () {
      * @param endpoint Backend REST API url.
      * @param responseCallback a function to be called with response retrieved.
      */
-    publicXMLHTTPInvokers["delete"] = function (endpoint, responseCallback) {
+    publicXMLHTTPInvokers["delete"] = function (endpoint, responseCallback, headers) {
         var requestPayload = null;
-        return privateMethods.initiateXMLHTTPRequest(constants["HTTP_DELETE"], requestPayload, endpoint, responseCallback);
+        return privateMethods.initiateXMLHTTPRequest(constants["HTTP_DELETE"], requestPayload, endpoint,
+                                                     responseCallback, headers);
     };
 
     /**
@@ -242,96 +264,133 @@ var invokers = function () {
      * @param payload payload/data which need to be send.
      * @param successCallback a function to be called if the respond if successful.
      * @param errorCallback a function to be called if en error is reserved.
+     * @param headers a list of name value pairs for additional http headers.
      */
-    privateMethods["initiateHTTPClientRequest"] = function (method, url, successCallback, errorCallback, payload) {
-        //noinspection JSUnresolvedVariable
-        var HttpClient = Packages.org.apache.commons.httpclient.HttpClient;
-        var httpMethodObject;
-        switch (method) {
-            case constants["HTTP_GET"]:
-                //noinspection JSUnresolvedVariable
-                var GetMethod = Packages.org.apache.commons.httpclient.methods.GetMethod;
-                httpMethodObject = new GetMethod(url);
-                break;
-            case constants["HTTP_POST"]:
-                //noinspection JSUnresolvedVariable
-                var PostMethod = Packages.org.apache.commons.httpclient.methods.PostMethod;
-                httpMethodObject = new PostMethod(url);
-                break;
-            case constants["HTTP_PUT"]:
-                //noinspection JSUnresolvedVariable
-                var PutMethod = Packages.org.apache.commons.httpclient.methods.PutMethod;
-                httpMethodObject = new PutMethod(url);
-                break;
-            case constants["HTTP_DELETE"]:
-                //noinspection JSUnresolvedVariable
-                var DeleteMethod = Packages.org.apache.commons.httpclient.methods.DeleteMethod;
-                httpMethodObject = new DeleteMethod(url);
-                break;
-            default:
-                //noinspection JSUnresolvedFunction
-                throw new IllegalArgumentException("Invalid HTTP request method: " + method);
-        }
-        //noinspection JSUnresolvedVariable
-        var Header = Packages.org.apache.commons.httpclient.Header;
-        var header = new Header();
-        header.setName(constants["CONTENT_TYPE_IDENTIFIER"]);
-        header.setValue(constants["APPLICATION_JSON"]);
-        //noinspection JSUnresolvedFunction
-        httpMethodObject.addRequestHeader(header);
-        header = new Header();
-        header.setName(constants["ACCEPT_IDENTIFIER"]);
-        header.setValue(constants["APPLICATION_JSON"]);
-        //noinspection JSUnresolvedFunction
-        httpMethodObject.addRequestHeader(header);
+    privateMethods["initiateHTTPClientRequest"] =
+        function (method, url, successCallback, errorCallback, payload, headers) {
+            //noinspection JSUnresolvedVariable
+            var HttpClient = Packages.org.apache.commons.httpclient.HttpClient;
+            var httpMethodObject;
+            switch (method) {
+                case constants["HTTP_GET"]:
+                    //noinspection JSUnresolvedVariable
+                    var GetMethod = Packages.org.apache.commons.httpclient.methods.GetMethod;
+                    httpMethodObject = new GetMethod(url);
+                    break;
+                case constants["HTTP_POST"]:
+                    //noinspection JSUnresolvedVariable
+                    var PostMethod = Packages.org.apache.commons.httpclient.methods.PostMethod;
+                    httpMethodObject = new PostMethod(url);
+                    break;
+                case constants["HTTP_PUT"]:
+                    //noinspection JSUnresolvedVariable
+                    var PutMethod = Packages.org.apache.commons.httpclient.methods.PutMethod;
+                    httpMethodObject = new PutMethod(url);
+                    break;
+                case constants["HTTP_DELETE"]:
+                    //noinspection JSUnresolvedVariable
+                    var DeleteMethod = Packages.org.apache.commons.httpclient.methods.DeleteMethod;
+                    httpMethodObject = new DeleteMethod(url);
+                    break;
+                default:
+                    //noinspection JSUnresolvedFunction
+                    throw new IllegalArgumentException("Invalid HTTP request method: " + method);
+            }
 
-        if (devicemgtProps["isOAuthEnabled"]) {
-            var accessToken = privateMethods.getAccessToken();
-            if (accessToken) {
-                header = new Header();
-                header.setName(constants["AUTHORIZATION_HEADER"]);
-                header.setValue(constants["BEARER_PREFIX"] + accessToken);
+            //noinspection JSUnresolvedVariable
+            var Header = Packages.org.apache.commons.httpclient.Header;
+            var contentTypeFound = false;
+            var acceptTypeFound = false;
+            for (var i in headers) {
+                var header = new Header();
+                header.setName(headers[i].name);
+                header.setValue(headers[i].value);
+                httpMethodObject.addRequestHeader(header);
+
+                if(constants["CONTENT_TYPE_IDENTIFIER"] == headers[i].name){
+                    contentTypeFound = true;
+                }
+                if(constants["ACCEPT_IDENTIFIER"] == headers[i].name){
+                    acceptTypeFound = true;
+                }
+            }
+
+            var header = new Header();
+            if(!contentTypeFound){
+                header.setName(constants["CONTENT_TYPE_IDENTIFIER"]);
+                header.setValue(constants["APPLICATION_JSON"]);
                 //noinspection JSUnresolvedFunction
                 httpMethodObject.addRequestHeader(header);
-            } else {
-                response.sendRedirect(devicemgtProps["appContext"] + "login");
             }
-        }
-        //noinspection JSUnresolvedFunction
-        var stringRequestEntity = new StringRequestEntity(stringify(payload));
-        //noinspection JSUnresolvedFunction
-        httpMethodObject.setRequestEntity(stringRequestEntity);
-        var client = new HttpClient();
-        try {
-            //noinspection JSUnresolvedFunction
-            client.executeMethod(httpMethodObject);
-            //noinspection JSUnresolvedFunction
-            var status = httpMethodObject.getStatusCode();
-            if (status == 200) {
+
+            if(!acceptTypeFound) {
+                header = new Header();
+                header.setName(constants["ACCEPT_IDENTIFIER"]);
+                header.setValue(constants["APPLICATION_JSON"]);
                 //noinspection JSUnresolvedFunction
-                return successCallback(httpMethodObject.getResponseBody());
-            } else {
-                //noinspection JSUnresolvedFunction
-                return errorCallback(httpMethodObject.getResponseBody());
+                httpMethodObject.addRequestHeader(header);
             }
-        } catch (e) {
-            return errorCallback(response);
-        } finally {
+
+            if (devicemgtProps["isOAuthEnabled"]) {
+                var accessToken = privateMethods.getAccessToken();
+                if (accessToken) {
+                    header = new Header();
+                    header.setName(constants["AUTHORIZATION_HEADER"]);
+                    header.setValue(constants["BEARER_PREFIX"] + accessToken);
+                    //noinspection JSUnresolvedFunction
+                    httpMethodObject.addRequestHeader(header);
+                } else {
+                    response.sendRedirect(devicemgtProps["appContext"] + "login");
+                }
+            }
             //noinspection JSUnresolvedFunction
-            method.releaseConnection();
-        }
-    };
+            if (payload != null) {
+                var StringRequestEntity = Packages.org.apache.commons.httpclient.methods.StringRequestEntity;
+                var stringRequestEntity = new StringRequestEntity(stringify(payload));
+                //noinspection JSUnresolvedFunction
+                httpMethodObject.setRequestEntity(stringRequestEntity);
+            }
+            var client = new HttpClient();
+            try {
+                //noinspection JSUnresolvedFunction
+                client.executeMethod(httpMethodObject);
+                //noinspection JSUnresolvedFunction
+                var status = httpMethodObject.getStatusCode();
+                if (status == 200) {
+                    var responseContentDispositionHeader = httpMethodObject.getResponseHeader(
+                        constants["CONTENT_DISPOSITION_IDENTIFIER"]);
+                    if (responseContentDispositionHeader) {
+                        return successCallback(httpMethodObject.getResponseBodyAsStream(),
+                                               httpMethodObject.getResponseHeaders());
+                    } else {
+                        return successCallback(httpMethodObject.getResponseBodyAsString(),
+                                               httpMethodObject.getResponseHeaders());
+                    }
+                } else {
+                    return errorCallback(httpMethodObject.getResponseBodyAsString(),
+                                         httpMethodObject.getResponseHeaders());
+                }
+            } catch (e) {
+                return errorCallback(response);
+            } finally {
+                //noinspection JSUnresolvedFunction
+                if (method != constants["HTTP_GET"]) {
+                    method.releaseConnection();
+                }
+            }
+        };
 
     /**
      * This method invokes return initiateHTTPClientRequest for get calls.
      * @param url target url.
      * @param successCallback a function to be called if the respond if successful.
      * @param errorCallback a function to be called if en error is reserved.
+     * @param headers a list of name value pairs for additional http headers.
      */
-    publicHTTPClientInvokers["get"] = function (url, successCallback, errorCallback) {
+    publicHTTPClientInvokers["get"] = function (url, successCallback, errorCallback, headers) {
         var requestPayload = null;
-        return privateMethods.
-            initiateHTTPClientRequest(constants["HTTP_GET"], url, successCallback, errorCallback, requestPayload);
+        return privateMethods.initiateHTTPClientRequest(constants["HTTP_GET"], url, successCallback, errorCallback,
+                                                        requestPayload, headers);
     };
 
     /**
@@ -340,10 +399,11 @@ var invokers = function () {
      * @param payload payload/data which need to be send.
      * @param successCallback a function to be called if the respond if successful.
      * @param errorCallback a function to be called if en error is reserved.
+     * @param headers a list of name value pairs for additional http headers.
      */
-    publicHTTPClientInvokers["post"] = function (url, payload, successCallback, errorCallback) {
-        return privateMethods.
-            initiateHTTPClientRequest(constants["HTTP_POST"], url, successCallback, errorCallback, payload);
+    publicHTTPClientInvokers["post"] = function (url, payload, successCallback, errorCallback, headers) {
+        return privateMethods.initiateHTTPClientRequest(constants["HTTP_POST"], url, successCallback, errorCallback,
+                                                        payload, headers);
     };
 
     /**
@@ -352,10 +412,11 @@ var invokers = function () {
      * @param payload payload/data which need to be send.
      * @param successCallback a function to be called if the respond if successful.
      * @param errorCallback a function to be called if en error is reserved.
+     * @param headers a list of name value pairs for additional http headers.
      */
-    publicHTTPClientInvokers["put"] = function (url, payload, successCallback, errorCallback) {
-        return privateMethods.
-            initiateHTTPClientRequest(constants["HTTP_PUT"], url, successCallback, errorCallback, payload);
+    publicHTTPClientInvokers["put"] = function (url, payload, successCallback, errorCallback, headers) {
+        return privateMethods.initiateHTTPClientRequest(constants["HTTP_PUT"], url, successCallback, errorCallback,
+                                                        payload, headers);
     };
 
     /**
@@ -363,11 +424,12 @@ var invokers = function () {
      * @param url target url.
      * @param successCallback a function to be called if the respond if successful.
      * @param errorCallback a function to be called if en error is reserved.
+     * @param headers a list of name value pairs for additional http headers.
      */
-    publicHTTPClientInvokers["delete"] = function (url, successCallback, errorCallback) {
+    publicHTTPClientInvokers["delete"] = function (url, successCallback, errorCallback, headers) {
         var requestPayload = null;
-        return privateMethods.
-            initiateHTTPClientRequest(constants["HTTP_DELETE"], url, successCallback, errorCallback, requestPayload);
+        return privateMethods.initiateHTTPClientRequest(constants["HTTP_DELETE"], url, successCallback, errorCallback,
+                                                        requestPayload, headers);
     };
 
     var publicMethods = {};

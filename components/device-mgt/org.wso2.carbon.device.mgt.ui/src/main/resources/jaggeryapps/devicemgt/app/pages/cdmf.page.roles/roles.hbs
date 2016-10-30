@@ -15,9 +15,10 @@
   specific language governing permissions and limitations
   under the License.
 }}
-{{unit "cdmf.unit.ui.title" pageTitle="Role Management"}}
 
+{{unit "cdmf.unit.ui.title" pageTitle="Role Management"}}
 {{unit "cdmf.unit.data-tables-extended"}}
+{{unit "cdmf.unit.ui.modal"}}
 
 {{#zone "breadcrumbs"}}
     <li>
@@ -26,6 +27,7 @@
         </a>
     </li>
     <li>
+        <!--suppress HtmlUnknownTarget -->
         <a href="{{@app.context}}/roles">
             Roles
         </a>
@@ -34,7 +36,8 @@
 
 {{#zone "navbarActions"}}
     <li>
-        <a href="{{@app.context}}/roles/add-role" class="cu-btn">
+        <!--suppress HtmlUnknownTarget -->
+        <a href="{{@app.context}}/role/add" class="cu-btn">
             <span class="icon fw-stack">
                 <i class="fw fw-add fw-stack-1x"></i>
                 <i class="fw fw-ring fw-stack-2x"></i>
@@ -45,5 +48,44 @@
 {{/zone}}
 
 {{#zone "content"}}
-    {{unit "cdmf.unit.role.listing"}}
+    <div id="loading-content" class="col-centered">
+        {{#if removePermitted}}
+            <input type="hidden" id="can-remove" value="true" />
+        {{/if}}
+        {{#if editPermitted}}
+            <input type="hidden" id="can-edit" value="true" />
+        {{/if}}
+        <i class="fw fw-settings fw-spin fw-2x"></i>
+        Loading roles . . .
+        <br>
+    </div>
+
+    <div id="role-table" data-role={{adminRole}}>
+        <table class="table table-striped table-hover list-table display responsive nowrap data-table grid-view" id="role-grid">
+            <thead>
+            <tr class="sort-row">
+                <th>By Role Name</th>
+            </tr>
+            <tr class="bulk-action-row">
+                <th colspan="3"></th>
+            </tr>
+            </thead>
+            <tbody id="ast-container" data-app-context="{{@app.context}}/"></tbody>
+        </table>
+    </div>
+
+    <div id="content-filter-types" style="display: none">
+        <div class="sort-title">Sort By</div>
+        <div class="sort-options">
+            <!--suppress HtmlUnknownTag -->
+            <th>By Role name</th>
+        </div>
+    </div>
+{{/zone}}
+
+{{#zone "bottomJs"}}
+    <!--suppress HtmlUnknownTarget -->
+    <script id="role-listing" data-current-user="{{@user.username}}"
+            src="{{@page.publicUri}}/templates/role-listing.hbs" type="text/x-handlebars-template"></script>
+    {{js "js/role-listing.js"}}
 {{/zone}}

@@ -30,6 +30,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -54,13 +55,28 @@ public class SQLServerDeviceDAOImpl extends AbstractDeviceDAOImpl {
         boolean isOwnershipProvided = false;
         String status = request.getStatus();
         boolean isStatusProvided = false;
+        Date since = request.getSince();
+        boolean isSinceProvided = false;
         try {
             conn = this.getConnection();
             String sql = "SELECT d1.ID AS DEVICE_ID, d1.DESCRIPTION, d1.NAME AS DEVICE_NAME, d1.DEVICE_TYPE, " +
                          "d1.DEVICE_IDENTIFICATION, e.OWNER, e.OWNERSHIP, e.STATUS, e.DATE_OF_LAST_UPDATE, " +
                          "e.DATE_OF_ENROLMENT, e.ID AS ENROLMENT_ID FROM DM_ENROLMENT e, (SELECT d.ID, d.DESCRIPTION, " +
-                         "d.NAME, d.DEVICE_IDENTIFICATION, t.NAME AS DEVICE_TYPE FROM DM_DEVICE d, DM_DEVICE_TYPE t " +
-                         "WHERE DEVICE_TYPE_ID = t.ID AND d.TENANT_ID = ?";
+                         "d.NAME, d.DEVICE_IDENTIFICATION, t.NAME AS DEVICE_TYPE " +
+                         "FROM DM_DEVICE d, DM_DEVICE_TYPE t ";
+
+            //Add the query to filter active devices on timestamp
+            if (since != null) {
+                sql = sql + ", DM_DEVICE_DETAIL dt";
+                isSinceProvided = true;
+            }
+
+            sql = sql + " WHERE DEVICE_TYPE_ID = t.ID AND d.TENANT_ID = ?";
+
+            //Add query for last updated timestamp
+            if (isSinceProvided) {
+                sql = sql + " AND dt.DEVICE_ID = d.ID AND dt.UPDATE_TIMESTAMP > ?";
+            }
 
             //Add the query for device-type
             if (deviceType != null && !deviceType.isEmpty()) {
@@ -96,6 +112,9 @@ public class SQLServerDeviceDAOImpl extends AbstractDeviceDAOImpl {
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, tenantId);
             int paramIdx = 2;
+            if (isSinceProvided) {
+                stmt.setLong(paramIdx++, since.getTime());
+            }
             if (isDeviceTypeProvided) {
                 stmt.setString(paramIdx++, request.getDeviceType());
             }
@@ -143,7 +162,8 @@ public class SQLServerDeviceDAOImpl extends AbstractDeviceDAOImpl {
                          "e.DATE_OF_ENROLMENT, e.ID AS ENROLMENT_ID FROM DM_ENROLMENT e, (SELECT d.ID, d.DESCRIPTION, " +
                          "d.NAME, d.DEVICE_IDENTIFICATION, t.NAME AS DEVICE_TYPE FROM DM_DEVICE d, " +
                          "DM_DEVICE_TYPE t WHERE DEVICE_TYPE_ID = t.ID AND t.NAME = ? " +
-                         "AND d.TENANT_ID = ?) d1 WHERE d1.ID = e.DEVICE_ID AND TENANT_ID = ? OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+                         "AND d.TENANT_ID = ?) d1 WHERE d1.ID = e.DEVICE_ID AND TENANT_ID = ? ORDER BY ENROLMENT_ID" +
+                         " OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, request.getDeviceType());
             stmt.setInt(2, tenantId);
@@ -177,7 +197,7 @@ public class SQLServerDeviceDAOImpl extends AbstractDeviceDAOImpl {
                          "AS DEVICE_TYPE FROM DM_DEVICE d, (SELECT e.OWNER, e.OWNERSHIP, e.ID AS ENROLMENT_ID, " +
                          "e.DEVICE_ID, e.STATUS, e.DATE_OF_LAST_UPDATE, e.DATE_OF_ENROLMENT FROM DM_ENROLMENT e WHERE " +
                          "e.TENANT_ID = ? AND e.OWNER = ?) e1, DM_DEVICE_TYPE t WHERE d.ID = e1.DEVICE_ID " +
-                         "AND t.ID = d.DEVICE_TYPE_ID OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+                         "AND t.ID = d.DEVICE_TYPE_ID ORDER BY ENROLMENT_ID OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, tenantId);
             stmt.setString(2, request.getOwner());
@@ -211,7 +231,8 @@ public class SQLServerDeviceDAOImpl extends AbstractDeviceDAOImpl {
                          "e.DATE_OF_ENROLMENT, e.ID AS ENROLMENT_ID FROM DM_ENROLMENT e, (SELECT d.ID, d.NAME, " +
                          "d.DESCRIPTION, t.NAME AS DEVICE_TYPE, d.DEVICE_IDENTIFICATION FROM DM_DEVICE d, " +
                          "DM_DEVICE_TYPE t WHERE d.DEVICE_TYPE_ID = t.ID AND d.NAME LIKE ? AND d.TENANT_ID = ?) d1 " +
-                         "WHERE DEVICE_ID = e.DEVICE_ID AND TENANT_ID = ? OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+                         "WHERE DEVICE_ID = e.DEVICE_ID AND TENANT_ID = ? ORDER BY ENROLMENT_ID " +
+                         "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, request.getDeviceName() + "%");
             stmt.setInt(2, tenantId);
@@ -246,8 +267,8 @@ public class SQLServerDeviceDAOImpl extends AbstractDeviceDAOImpl {
                          "e.DATE_OF_ENROLMENT, e.ID AS ENROLMENT_ID FROM (SELECT e.ID, e.DEVICE_ID, e.OWNER, e.OWNERSHIP, e.STATUS, " +
                          "e.DATE_OF_ENROLMENT, e.DATE_OF_LAST_UPDATE, e.ID AS ENROLMENT_ID FROM DM_ENROLMENT e " +
                          "WHERE TENANT_ID = ? AND OWNERSHIP = ?) e, DM_DEVICE d, DM_DEVICE_TYPE t " +
-                         "WHERE DEVICE_ID = e.DEVICE_ID AND d.DEVICE_TYPE_ID = t.ID AND d.TENANT_ID = ? OFFSET ? " +
-                         "ROWS FETCH NEXT ? ROWS ONLY";
+                         "WHERE DEVICE_ID = e.DEVICE_ID AND d.DEVICE_TYPE_ID = t.ID AND d.TENANT_ID = ? ORDER BY ENROLMENT_ID " +
+                         "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, tenantId);
             stmt.setString(2, request.getOwnership());
@@ -282,8 +303,8 @@ public class SQLServerDeviceDAOImpl extends AbstractDeviceDAOImpl {
                          "e.DATE_OF_ENROLMENT, e.ID AS ENROLMENT_ID FROM (SELECT e.ID, e.DEVICE_ID, e.OWNER, e.OWNERSHIP, e.STATUS, " +
                          "e.DATE_OF_ENROLMENT, e.DATE_OF_LAST_UPDATE, e.ID AS ENROLMENT_ID FROM DM_ENROLMENT e " +
                          "WHERE TENANT_ID = ? AND STATUS = ?) e, DM_DEVICE d, DM_DEVICE_TYPE t " +
-                         "WHERE DEVICE_ID = e.DEVICE_ID AND d.DEVICE_TYPE_ID = t.ID AND d.TENANT_ID = ? OFFSET ? ROWS" +
-                         " FETCH NEXT ? ROWS ONLY";
+                         "WHERE DEVICE_ID = e.DEVICE_ID AND d.DEVICE_TYPE_ID = t.ID AND d.TENANT_ID = ? ORDER BY ENROLMENT_ID " +
+                         "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, tenantId);
             stmt.setString(2, request.getStatus());
@@ -337,7 +358,7 @@ public class SQLServerDeviceDAOImpl extends AbstractDeviceDAOImpl {
                     "e.DATE_OF_ENROLMENT, e.ID AS ENROLMENT_ID FROM DM_ENROLMENT e, (SELECT d.ID, d.NAME, " +
                         "d.DESCRIPTION, d.DEVICE_IDENTIFICATION, t.NAME AS DEVICE_TYPE FROM DM_DEVICE d, " +
                             "DM_DEVICE_TYPE t WHERE d.DEVICE_TYPE_ID = t.ID AND d.TENANT_ID = ?" + filteringString +
-                                ") d1 WHERE d1.ID = e.DEVICE_ID OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+                                ") d1 WHERE d1.ID = e.DEVICE_ID ORDER BY ENROLMENT_ID OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
 
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, tenantId);

@@ -18,13 +18,13 @@
 
 package org.wso2.carbon.apimgt.webapp.publisher;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.apimgt.api.APIManagementException;
 import org.wso2.carbon.apimgt.api.APIProvider;
 import org.wso2.carbon.apimgt.api.model.*;
 import org.wso2.carbon.apimgt.impl.APIConstants;
+import org.wso2.carbon.apimgt.impl.utils.APIUtil;
 import org.wso2.carbon.apimgt.webapp.publisher.config.APIResource;
 import org.wso2.carbon.apimgt.webapp.publisher.config.APIResourceConfiguration;
 import org.wso2.carbon.apimgt.webapp.publisher.config.WebappPublisherConfig;
@@ -44,6 +44,7 @@ public class APIPublisherUtil {
     private static final String PARAM_MANAGED_API_ENDPOINT = "managed-api-endpoint";
     private static final String PARAM_MANAGED_API_OWNER = "managed-api-owner";
     private static final String PARAM_MANAGED_API_TRANSPORTS = "managed-api-transports";
+    private static final String PARAM_MANAGED_API_POLICY = "managed-api-policy";
     private static final String PARAM_MANAGED_API_IS_SECURED = "managed-api-isSecured";
     private static final String PARAM_SHARED_WITH_ALL_TENANTS = "isSharedWithAllTenants";
     private static final String PARAM_PROVIDER_TENANT_DOMAIN = "providerTenantDomain";
@@ -77,6 +78,7 @@ public class APIPublisherUtil {
         api.setEndpointSecured(true);
         api.setStatus(APIStatus.CREATED);
         api.setTransports(config.getTransports());
+        api.setApiLevelPolicy(config.getPolicy());
         api.setContextTemplate(config.getContextTemplate());
         Set<String> environments = new HashSet<>();
         environments.add(API_PUBLISH_ENVIRONMENT);
@@ -112,8 +114,6 @@ public class APIPublisherUtil {
         // adding scopes to the api
         Set<URITemplate> uriTemplates = config.getUriTemplates();
         Map<String, Scope> apiScopes = new HashMap<>();
-        Scope existingScope;
-        String existingPermissions;
         if (uriTemplates != null) {
             // this creates distinct scopes list
             for (URITemplate template : uriTemplates) {
@@ -121,16 +121,11 @@ public class APIPublisherUtil {
                 if (scope != null) {
                     if (apiScopes.get(scope.getKey()) == null) {
                         apiScopes.put(scope.getKey(), scope);
-                    } else {
-                        existingScope = apiScopes.get(scope.getKey());
-                        existingPermissions = existingScope.getRoles();
-                        existingPermissions = getDistinctPermissions(existingPermissions + "," + scope.getRoles());
-                        existingScope.setRoles(existingPermissions);
-                        apiScopes.put(scope.getKey(), existingScope);
                     }
                 }
             }
             Set<Scope> scopes = new HashSet<>(apiScopes.values());
+            // set current scopes to API
             api.setScopes(scopes);
 
             // this has to be done because of the use of pass by reference
@@ -145,6 +140,7 @@ public class APIPublisherUtil {
             }
             api.setUriTemplates(uriTemplates);
         }
+        api.setCorsConfiguration(APIUtil.getDefaultCorsConfiguration());
         return api;
     }
 
@@ -304,12 +300,17 @@ public class APIPublisherUtil {
         }
         apiConfig.setUriTemplates(uriTemplates);
 
-        return apiConfig;
-    }
+        String policy = servletContext.getInitParameter(PARAM_MANAGED_API_POLICY);
+        if (policy == null || policy.isEmpty()) {
+            if (log.isDebugEnabled()) {
+                log.debug("'managed-api-policy' attribute is not configured. Therefore using the default, " +
+                        "which is 'null'");
+            }
+            policy = null;
+        }
+        apiConfig.setPolicy(policy);
 
-    private static String getDistinctPermissions(String permissions) {
-        String[] unique = new HashSet<String>(Arrays.asList(permissions.split(","))).toArray(new String[0]);
-        return StringUtils.join(unique, ",");
+        return apiConfig;
     }
 
 }

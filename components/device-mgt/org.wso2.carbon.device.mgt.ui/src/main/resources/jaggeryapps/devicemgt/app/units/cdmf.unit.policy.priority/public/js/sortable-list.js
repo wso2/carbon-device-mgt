@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -22,6 +22,7 @@ var sortableListFunction = (function () {
 
         var sortableElem = '.wr-sortable',
             sortUpdateBtn = '#sortUpdateBtn',
+            applyChangesBtn = '#applyChangesBtn',
             sortableElemList = [],
             sortedIDs,
             currentElemId,
@@ -47,7 +48,7 @@ var sortableListFunction = (function () {
         }
 
         /**
-         * on input text field focus autocomplete bind function
+         * on input text field focus auto-complete bind function
          */
         $(sortableElem).on('focus', '.wr-sort-index input.index', function () {
             currentElemId = $(this).val();
@@ -103,6 +104,7 @@ var sortableListFunction = (function () {
                             insertBefore('span[place="place_' + newValue + '"]');
                     }
                     $(sortUpdateBtn).prop('disabled', false);
+                    $(applyChangesBtn).prop('disabled', true);
                     sortedIDs = $(sortableElem).sortable('toArray');
                     addSortableIndexNumbers();
                 }
@@ -126,6 +128,7 @@ var sortableListFunction = (function () {
                     sortedIDs = $(this).sortable('toArray');
                     addSortableIndexNumbers();
                     $(sortUpdateBtn).prop('disabled', false);
+                    $(applyChangesBtn).prop('disabled', true);
                 }
             });
             $(sortableElem).disableSelection();

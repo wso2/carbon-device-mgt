@@ -28,12 +28,13 @@ var devicemgtProps = require("/app/modules/conf-reader/main.js")["conf"];
 if (uriMatcher.match("/{context}/api/operation/paginate")) {
     var deviceType = request.getParameter("deviceType");
     var deviceId = request.getParameter("deviceId");
+    var owner = request.getParameter("owner");
     var index = request.getParameter("start");
     var length = request.getParameter("length");
     var search = request.getParameter("search[value]");
 
-    var restAPIEndpoint = devicemgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"] + "/devices/" +
-        deviceType + "/" + deviceId + "/operations?offset=" + index + "&limit=" + length;
+    var restAPIEndpoint = devicemgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"] +
+        "/devices/" + deviceType + "/" + deviceId + "/operations?owner=" + owner + "&offset=" + index + "&limit=" + length;
 
     serviceInvokers.XMLHttp.get(
         restAPIEndpoint,
@@ -46,12 +47,17 @@ if (uriMatcher.match("/{context}/api/operation/paginate")) {
                 paginatedResult["recordsFiltered"] = responsePayload["count"];
                 paginatedResult["data"] = responsePayload["operations"];
 
-                response["status"] = 200;
+                response["status"] = restAPIResponse["status"];
                 response["content"] = paginatedResult;
             } else {
                 response["status"] = restAPIResponse["status"];
                 if (restAPIResponse["responseText"]) {
-                    response["content"] =  parse(restAPIResponse["responseText"]);
+                    var responseText = "";
+                    try {
+                        response["content"] =  parse(restAPIResponse["responseText"]);
+                    } catch (e) {
+                        responseText = restAPIResponse["responseText"];
+                    }
                 }
             }
         }

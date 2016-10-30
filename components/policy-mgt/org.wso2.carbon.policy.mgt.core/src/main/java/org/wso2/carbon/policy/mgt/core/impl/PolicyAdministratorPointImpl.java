@@ -107,14 +107,16 @@ public class PolicyAdministratorPointImpl implements PolicyAdministratorPoint {
     @Override
     public boolean deletePolicy(Policy policy) throws PolicyManagementException {
         boolean bool = policyManager.deletePolicy(policy);
-        PolicyCacheManagerImpl.getInstance().rePopulateCache();
+        PolicyCacheManager policyCacheManager = PolicyCacheManagerImpl.getInstance();
+        policyCacheManager.rePopulateCache();
         return bool;
     }
 
     @Override
     public boolean deletePolicy(int policyId) throws PolicyManagementException {
-        boolean bool =policyManager.deletePolicy(policyId);
-        PolicyCacheManagerImpl.getInstance().rePopulateCache();
+        boolean bool = policyManager.deletePolicy(policyId);
+        PolicyCacheManager policyCacheManager = PolicyCacheManagerImpl.getInstance();
+        policyCacheManager.rePopulateCache();
         return bool;
     }
 
@@ -270,6 +272,11 @@ public class PolicyAdministratorPointImpl implements PolicyAdministratorPoint {
     @Override
     public void setPolicyUsed(DeviceIdentifier deviceIdentifier, Policy policy) throws PolicyManagementException {
         policyManager.addAppliedPolicyToDevice(deviceIdentifier, policy);
+    }
+
+    @Override
+    public void removePolicyUsed(DeviceIdentifier deviceIdentifier) throws PolicyManagementException {
+        policyManager.removeAppliedPolicyToDevice(deviceIdentifier);
     }
 
     @Override

@@ -23,6 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
+import org.wso2.carbon.device.mgt.common.InvalidDeviceException;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
 import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
@@ -52,14 +53,30 @@ public class DeviceTaskManagerImpl implements DeviceTaskManager {
 
         List<TaskConfiguration.Operation> ops = taskConfiguration.getOperations();
         List<TaskOperation> taskOperations = new ArrayList<>();
-
         for (TaskConfiguration.Operation op : ops) {
             TaskOperation taskOperation = new TaskOperation();
             taskOperation.setTaskName(op.getOperationName());
             taskOperation.setRecurrentTimes(op.getRecurrency());
+            taskOperation.setTaskPlatforms(op.getPlatforms());
             taskOperations.add(taskOperation);
         }
         return taskOperations;
+    }
+
+    public List<String> getPlatformsForOperations(String opName) {
+        List<String> operationPlatforms =  new ArrayList<>();
+        TaskConfiguration taskConfiguration =
+                DeviceConfigurationManager.getInstance().getDeviceManagementConfig().getTaskConfiguration();
+        List<TaskConfiguration.Operation> ops = taskConfiguration.getOperations();
+        for (TaskConfiguration.Operation op : ops) {
+            if (op.getOperationName().equals(opName)) {
+                List<String> platform = op.getPlatforms();
+                for (String operationPlatform : platform) {
+                     operationPlatforms.add(operationPlatform);
+                }
+            }
+        }
+        return operationPlatforms;
     }
 
     @Override
@@ -83,31 +100,35 @@ public class DeviceTaskManagerImpl implements DeviceTaskManager {
 
     @Override
     public void addOperations() throws DeviceMgtTaskException {
-        DeviceManagementProviderService deviceManagementProviderService =
-                DeviceManagementDataHolder.getInstance().getDeviceManagementProvider();
+        List<String> deviceTypes;
+        DeviceManagementProviderService deviceManagementProviderService = DeviceManagementDataHolder.getInstance().
+                getDeviceManagementProvider();
         try {
-            List<Device> devices = deviceManagementProviderService.getAllDevices();
+            List<Device> devices;
             List<String> operations = this.getValidOperationNames();
+            for (String taskOperation : operations) {
+                deviceTypes = getPlatformsForOperations(taskOperation);
+                 for (String deviceType : deviceTypes) {
+                     devices = deviceManagementProviderService.getAllDevices(deviceType);
+                     if (!devices.isEmpty()) {
+                         for (String str : operations) {
+                             CommandOperation operation = new CommandOperation();
+                             operation.setEnabled(true);
+                             operation.setType(Operation.Type.COMMAND);
+                             operation.setCode(str);
+                             deviceManagementProviderService.addOperation(deviceType, operation,
+                                     DeviceManagerUtil.getValidDeviceIdentifiers(devices));
+                         }
+                     } else {
+                         if (log.isDebugEnabled()) {
+                             log.debug("No devices are available to perform the operations.");
+                         }
+                     }
 
-            if (!devices.isEmpty()) {
-                for (String str : operations) {
-                    CommandOperation operation = new CommandOperation();
-                    operation.setEnabled(true);
-                    operation.setType(Operation.Type.COMMAND);
-                    operation.setCode(str);
-                    //TODO: Fix this properly later adding device type to be passed in when the task manage executes "addOperations()"
-                    String type = null;
-                    if (devices.size() > 0) {
-                        type = devices.get(0).getType();
-                    }
-                    deviceManagementProviderService.addOperation(type, operation,
-                            DeviceManagerUtil.convertDevices(devices));
-                }
-            } else {
-                if (log.isDebugEnabled()) {
-                    log.debug("No devices are available to perform the operations.");
-                }
+                 }
             }
+        } catch (InvalidDeviceException e) {
+            throw new DeviceMgtTaskException("Invalid DeviceIdentifiers found.", e);
         } catch (DeviceManagementException e) {
             throw new DeviceMgtTaskException("Error occurred while retrieving the device list.", e);
         } catch (OperationManagementException e) {
@@ -142,6 +163,8 @@ public class DeviceTaskManagerImpl implements DeviceTaskManager {
         }
         return opNames;
     }
+
+
 
     @Override
     public boolean isTaskOperation(String opName) {

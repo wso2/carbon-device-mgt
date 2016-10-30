@@ -30,6 +30,9 @@ function inputIsValid(regExp, inputString) {
 
 var validateInline = {};
 var clearInline = {};
+var domain = $("#domain").val();
+
+var apiBasePath = "/api/device-mgt/v1.0";
 
 var enableInlineError = function (inputField, errorMsg, errorSign) {
     var fieldIdentifier = "#" + inputField;
@@ -113,12 +116,12 @@ function formatRepoSelection (user) {
 }
 
 $(document).ready(function () {
-
+    var appContext = $("#app-context").data("app-context");
     $("#users").select2({
         multiple:true,
         tags: false,
         ajax: {
-            url: window.location.origin + "/devicemgt/api/invoker/execute/",
+            url: appContext + "/api/invoker/execute/",
             method: "POST",
             dataType: 'json',
             delay: 250,
@@ -128,7 +131,8 @@ $(document).ready(function () {
             data: function (params) {
                 var postData = {};
                 postData.actionMethod = "GET";
-                postData.actionUrl = "/devicemgt_admin/users/view-users?username=" + params.term;
+                postData.actionUrl = apiBasePath + "/users/search/usernames?filter=" + params.term + "&domain=" +
+                    encodeURIComponent(domain);
                 postData.actionPayload = null;
                 return JSON.stringify(postData);
             },
@@ -155,7 +159,7 @@ $(document).ready(function () {
     /**
      * Following click function would execute
      * when a user clicks on "Add Role" button
-     * on Add Role page in WSO2 Devicemgt Console.
+     * on Add Role page in WSO2 MDM Console.
      */
     $("button#add-role-btn").click(function() {
         var rolenameInput = $("input#rolename");
@@ -179,16 +183,16 @@ $(document).ready(function () {
         } else {
             var addRoleFormData = {};
             addRoleFormData.roleName = roleName;
+            var addRoleAPI = apiBasePath + "/roles/" + encodeURIComponent(currentRoleName);
             if (domain != "PRIMARY"){
                 addRoleFormData.roleName = domain + "/" + roleName;
+                addRoleAPI = addRoleAPI + "?user-store=" + encodeURIComponent(domain);
             }
-
-            var addRoleAPI = "/devicemgt_admin/roles?rolename=" + encodeURIComponent(currentRoleName);
             invokerUtil.put(
                 addRoleAPI,
                 addRoleFormData,
-                function (jqXHR) {
-                    if (JSON.parse(jqXHR).status == 200 || jqXHR.status == 200) {
+                function (data, textStatus, jqXHR) {
+                    if (jqXHR.status == 200) {
                         // Clearing user input fields.
                         $("input#rolename").val("");
                         $("#domain").val("");
@@ -197,7 +201,8 @@ $(document).ready(function () {
                         $("#role-created-msg").removeClass("hidden");
                     }
                 }, function (data) {
-                    $(errorMsg).text(JSON.parse(data.responseText).errorMessage);
+                    var payload = JSON.parse(data.responseText);
+                    $(errorMsg).text(payload.message);
                     $(errorMsgWrapper).removeClass("hidden");
                 }
             );
@@ -210,5 +215,13 @@ $(document).ready(function () {
 
     $("#rolename").blur(function() {
         validateInline["role-name"]();
+    });
+
+    /* When the user store domain value is changed, the users who are assigned to that role should be removed, as
+     user and role can be mapped only if both are in same user store
+     */
+    $("#domain").change(function () {
+        $("#users").select2("val", "");
+        domain = $("#domain").val();
     });
 });

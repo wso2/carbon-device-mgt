@@ -228,6 +228,34 @@ public class ApplicationDAOImpl implements ApplicationDAO {
         }
     }
 
+    @Override
+    public Application getApplication(String identifier, String version, int tenantId) throws DeviceManagementDAOException {
+        Connection conn;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        Application application = null;
+        try {
+            conn = this.getConnection();
+            stmt = conn.prepareStatement("SELECT ID, NAME, APP_IDENTIFIER, PLATFORM, CATEGORY, VERSION, TYPE, " +
+                    "LOCATION_URL, IMAGE_URL, APP_PROPERTIES, MEMORY_USAGE, IS_ACTIVE, TENANT_ID FROM DM_APPLICATION WHERE APP_IDENTIFIER = ? " +
+                    "AND VERSION = ?  AND TENANT_ID = ?");
+            stmt.setString(1, identifier);
+            stmt.setString(2, version);
+            stmt.setInt(3, tenantId);
+            rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                application = this.loadApplication(rs);
+            }
+            return application;
+        } catch (SQLException e) {
+            throw new DeviceManagementDAOException("Error occurred while retrieving application application '" +
+                    identifier + "' and version '" + version + "'.", e);
+        } finally {
+            DeviceManagementDAOUtil.cleanupResources(stmt, rs);
+        }
+    }
+
     private Connection getConnection() throws SQLException {
         return DeviceManagementDAOFactory.getConnection();
     }

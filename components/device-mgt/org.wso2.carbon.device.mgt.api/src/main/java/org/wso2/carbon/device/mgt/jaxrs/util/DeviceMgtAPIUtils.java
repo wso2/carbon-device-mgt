@@ -24,10 +24,12 @@ import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.analytics.dashboard.GadgetDataService;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
+import org.wso2.carbon.device.mgt.common.authorization.DeviceAccessAuthorizationService;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.ConfigurationEntry;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.PlatformConfiguration;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.PlatformConfigurationManagementService;
 import org.wso2.carbon.device.mgt.common.notification.mgt.NotificationManagementService;
+import org.wso2.carbon.device.mgt.common.scope.mgt.ScopeManagementService;
 import org.wso2.carbon.device.mgt.core.app.mgt.ApplicationManagementProviderService;
 import org.wso2.carbon.device.mgt.core.device.details.mgt.DeviceInformationManager;
 import org.wso2.carbon.device.mgt.core.search.mgt.SearchManagerService;
@@ -101,6 +103,18 @@ public class DeviceMgtAPIUtils {
             throw new IllegalStateException(msg);
         }
         return deviceManagementProviderService;
+    }
+
+    public static DeviceAccessAuthorizationService getDeviceAccessAuthorizationService() {
+        PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        DeviceAccessAuthorizationService deviceAccessAuthorizationService =
+                (DeviceAccessAuthorizationService) ctx.getOSGiService(DeviceAccessAuthorizationService.class, null);
+        if (deviceAccessAuthorizationService == null) {
+            String msg = "DeviceAccessAuthorization service has not initialized.";
+            log.error(msg);
+            throw new IllegalStateException(msg);
+        }
+        return deviceAccessAuthorizationService;
     }
 
     public static GroupManagementProviderService getGroupManagementProviderService() {
@@ -246,6 +260,16 @@ public class DeviceMgtAPIUtils {
             throw new IllegalStateException("Gadget Data Service has not been initialized.");
         }
         return gadgetDataService;
+    }
+
+    public static ScopeManagementService getScopeManagementService() {
+        PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        ScopeManagementService scopeManagementService =
+                (ScopeManagementService) ctx.getOSGiService(ScopeManagementService.class, null);
+        if (scopeManagementService == null) {
+            throw new IllegalStateException("Scope Management Service has not been initialized.");
+        }
+        return scopeManagementService;
     }
 
     public static int getTenantId(String tenantDomain) throws DeviceManagementException {

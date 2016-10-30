@@ -28,13 +28,15 @@
     <baseDirectory>${basedir}/src</baseDirectory>
     <fileSets>
         <fileSet>
+            <!-- CDMF base app -->
             <directory>${basedir}/src/main/resources/jaggeryapps/devicemgt</directory>
             <outputDirectory>/jaggeryapps/devicemgt-cdmf/</outputDirectory>
             <useDefaultExcludes>true</useDefaultExcludes>
         </fileSet>
         <fileSet>
+            <!-- UUF framework app -->
             <directory>${basedir}/src/main/resources/jaggeryapps/uuf-template-app</directory>
-            <outputDirectory>/jaggeryapps/devicemgt-cdmf/</outputDirectory>
+            <outputDirectory>/jaggeryapps/uuf-template-app/</outputDirectory>
             <useDefaultExcludes>true</useDefaultExcludes>
         </fileSet>
         <fileSet>

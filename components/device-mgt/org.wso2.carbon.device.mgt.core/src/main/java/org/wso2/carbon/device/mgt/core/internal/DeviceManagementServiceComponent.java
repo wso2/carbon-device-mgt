@@ -32,7 +32,6 @@ import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManager;
 import org.wso2.carbon.device.mgt.common.permission.mgt.PermissionManagerService;
 import org.wso2.carbon.device.mgt.common.spi.DeviceManagementService;
 import org.wso2.carbon.device.mgt.core.DeviceManagementConstants;
-import org.wso2.carbon.device.mgt.core.DeviceManagementPluginRepository;
 import org.wso2.carbon.device.mgt.core.app.mgt.ApplicationManagementProviderService;
 import org.wso2.carbon.device.mgt.core.app.mgt.ApplicationManagerProviderServiceImpl;
 import org.wso2.carbon.device.mgt.core.app.mgt.config.AppManagementConfig;
@@ -116,7 +115,6 @@ public class DeviceManagementServiceComponent {
     private static List<PluginInitializationListener> listeners = new ArrayList<>();
     private static List<DeviceManagementService> deviceManagers = new ArrayList<>();
     private static List<DeviceManagerStartupListener> startupListeners = new ArrayList<>();
-    private DeviceManagementPluginRepository pluginRepository = new DeviceManagementPluginRepository();
 
     public static void registerPluginInitializationListener(PluginInitializationListener listener) {
         synchronized (LOCK) {
@@ -149,10 +147,10 @@ public class DeviceManagementServiceComponent {
                     DeviceConfigurationManager.getInstance().getDeviceManagementConfig();
 
             DataSourceConfig dsConfig = config.getDeviceManagementConfigRepository().getDataSourceConfig();
+
             DeviceManagementDAOFactory.init(dsConfig);
             GroupManagementDAOFactory.init(dsConfig);
             NotificationManagementDAOFactory.init(dsConfig);
-
             OperationManagementDAOFactory.init(dsConfig);
 
             /* Initialize Operation Manager */
@@ -169,7 +167,7 @@ public class DeviceManagementServiceComponent {
 
             /* If -Dsetup option enabled then create device management database schema */
             String setupOption =
-                    System.getProperty(DeviceManagementConstants.Common.PROPERTY_SETUP);
+                    System.getProperty(DeviceManagementConstants.Common.SETUP_PROPERTY);
             if (setupOption != null) {
                 if (log.isDebugEnabled()) {
                     log.debug("-Dsetup is enabled. Device management repository schema initialization is about to " +
@@ -227,11 +225,6 @@ public class DeviceManagementServiceComponent {
                 = new NotificationManagementServiceImpl();
         bundleContext.registerService(NotificationManagementService.class.getName(), notificationManagementService, null);
 
-        /* Registering PermissionManager Service */
-        PermissionManagerService permissionManagerService
-                = PermissionManagerServiceImpl.getInstance();
-        bundleContext.registerService(PermissionManagerService.class.getName(), permissionManagerService, null);
-
         /* Registering DeviceAccessAuthorization Service */
         DeviceAccessAuthorizationService deviceAccessAuthorizationService = new DeviceAccessAuthorizationServiceImpl();
         DeviceManagementDataHolder.getInstance().setDeviceAccessAuthorizationService(deviceAccessAuthorizationService);
@@ -248,13 +241,22 @@ public class DeviceManagementServiceComponent {
         } catch (ApplicationManagementException e) {
             log.error("Application management service not registered.", e);
         }
+
+        /* Registering PermissionManager Service */
+        PermissionManagerService permissionManagerService = PermissionManagerServiceImpl.getInstance();
+        bundleContext.registerService(PermissionManagerService.class.getName(), permissionManagerService, null);
     }
 
     private void setupDeviceManagementSchema(DataSourceConfig config) throws DeviceManagementException {
         DeviceManagementSchemaInitializer initializer = new DeviceManagementSchemaInitializer(config);
-        log.info("Initializing device management repository database schema");
+        String checkSql = "select * from DM_DEVICE_TYPE";
         try {
-            initializer.createRegistryDatabase();
+            if (!initializer.isDatabaseStructureCreated(checkSql)) {
+                log.info("Initializing device management repository database schema");
+                initializer.createRegistryDatabase();
+            } else {
+                log.info("Device management database already exists. Not creating a new database.");
+            }
         } catch (Exception e) {
             throw new DeviceManagementException(
                     "Error occurred while initializing Device Management database schema", e);

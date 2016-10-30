@@ -20,13 +20,16 @@ package org.wso2.carbon.policy.mgt.core.dao;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.device.mgt.common.DeviceManagementConstants;
 import org.wso2.carbon.device.mgt.common.IllegalTransactionStateException;
+import org.wso2.carbon.device.mgt.common.UnsupportedDatabaseEngineException;
 import org.wso2.carbon.policy.mgt.core.config.datasource.DataSourceConfig;
 import org.wso2.carbon.policy.mgt.core.config.datasource.JNDILookupDefinition;
-import org.wso2.carbon.policy.mgt.core.dao.impl.FeatureDAOImpl;
 import org.wso2.carbon.policy.mgt.core.dao.impl.MonitoringDAOImpl;
 import org.wso2.carbon.policy.mgt.core.dao.impl.PolicyDAOImpl;
 import org.wso2.carbon.policy.mgt.core.dao.impl.ProfileDAOImpl;
+import org.wso2.carbon.policy.mgt.core.dao.impl.feature.GenericFeatureDAOImpl;
+import org.wso2.carbon.policy.mgt.core.dao.impl.feature.SQLServerFeatureDAOImpl;
 import org.wso2.carbon.policy.mgt.core.dao.util.PolicyManagementDAOUtil;
 
 import javax.sql.DataSource;
@@ -38,15 +41,26 @@ import java.util.List;
 public class PolicyManagementDAOFactory {
 
     private static DataSource dataSource;
+    private static String databaseEngine;
     private static final Log log = LogFactory.getLog(PolicyManagementDAOFactory.class);
     private static ThreadLocal<Connection> currentConnection = new ThreadLocal<>();
 
     public static void init(DataSourceConfig config) {
         dataSource = resolveDataSource(config);
+        try {
+            databaseEngine = dataSource.getConnection().getMetaData().getDatabaseProductName();
+        } catch (SQLException e) {
+            log.error("Error occurred while retrieving config.datasource connection", e);
+        }
     }
 
     public static void init(DataSource dtSource) {
         dataSource = dtSource;
+        try {
+            databaseEngine = dataSource.getConnection().getMetaData().getDatabaseProductName();
+        } catch (SQLException e) {
+            log.error("Error occurred while retrieving config.datasource connection", e);
+        }
     }
 
     public static PolicyDAO getPolicyDAO() {
@@ -58,7 +72,20 @@ public class PolicyManagementDAOFactory {
     }
 
     public static FeatureDAO getFeatureDAO() {
-        return new FeatureDAOImpl();
+        if (databaseEngine != null) {
+            switch (databaseEngine) {
+                case DeviceManagementConstants.DataBaseTypes.DB_TYPE_MSSQL:
+                    return new SQLServerFeatureDAOImpl();
+                case DeviceManagementConstants.DataBaseTypes.DB_TYPE_ORACLE:
+                case DeviceManagementConstants.DataBaseTypes.DB_TYPE_POSTGRESQL:
+                case DeviceManagementConstants.DataBaseTypes.DB_TYPE_H2:
+                case DeviceManagementConstants.DataBaseTypes.DB_TYPE_MYSQL:
+                    return new GenericFeatureDAOImpl();
+                default:
+                    throw new UnsupportedDatabaseEngineException("Unsupported database engine : " + databaseEngine);
+            }
+        }
+        throw new IllegalStateException("Database engine has not initialized properly.");
     }
 
     public static MonitoringDAO getMonitoringDAO() {

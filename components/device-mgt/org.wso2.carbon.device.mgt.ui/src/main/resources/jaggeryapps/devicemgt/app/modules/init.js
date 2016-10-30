@@ -18,17 +18,20 @@
 
 var carbonModule = require("carbon");
 var devicemgtProps = require("/app/modules/conf-reader/main.js")["conf"];
+var userModule = require("/app/modules/business-controllers/user.js")["userModule"];
+var utility = require("/app/modules/utility.js")["utility"];
+
+//noinspection JSUnresolvedFunction Server
 var carbonServer = new carbonModule.server.Server({
     tenanted: true,
     url: devicemgtProps["httpsURL"] + "/admin"
 });
+
 application.put("carbonServer", carbonServer);
 
-var userModule = require("/app/modules/business-controllers/user.js")["userModule"];
-var utility = require("/app/modules/utility.js")["utility"];
+//var permissions = {
+//    "/permission/admin/device-mgt/user": ["ui.execute"],
+//    "/permission/admin/manage/api/subscribe": ["ui.execute"]
+//};
 
-var permissions = {
-    '/permission/admin/device-mgt/user': ['ui.execute'],
-    '/permission/admin/manage/api/subscribe': ['ui.execute']
-};
 //userModule.addRole("internal/devicemgt-user", ["admin"], permissions);

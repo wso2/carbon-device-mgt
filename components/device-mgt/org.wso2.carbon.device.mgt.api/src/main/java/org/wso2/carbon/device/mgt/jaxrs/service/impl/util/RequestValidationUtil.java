@@ -18,11 +18,12 @@
  */
 package org.wso2.carbon.device.mgt.jaxrs.service.impl.util;
 
+import org.wso2.carbon.device.mgt.jaxrs.beans.Scope;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
-import org.wso2.carbon.device.mgt.common.PaginationRequest;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.PlatformConfiguration;
 import org.wso2.carbon.device.mgt.common.notification.mgt.Notification;
 import org.wso2.carbon.device.mgt.jaxrs.beans.*;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -308,8 +309,20 @@ public class RequestValidationUtil {
     public static void validateRoleDetails(RoleInfo roleInfo) {
         if (roleInfo == null) {
             throw new InputValidationException(
-                    new ErrorResponse.ErrorResponseBuilder().setCode(400l).setMessage("Request body is incorrect or" +
-                            " empty").build());
+                    new ErrorResponse.ErrorResponseBuilder().setCode(400l).setMessage("Request body is "
+                            + "empty").build());
+        } else if (roleInfo.getRoleName() == null) {
+            throw new InputValidationException(
+                    new ErrorResponse.ErrorResponseBuilder().setCode(400l).setMessage("Request body is "
+                            + "incorrect").build());
+        }
+    }
+
+    public static void validateScopes(List<Scope> scopes) {
+        if (scopes == null || scopes.isEmpty()) {
+            throw new InputValidationException(
+                    new ErrorResponse.ErrorResponseBuilder().setCode(400l).setMessage("Scope details of the request body" +
+                            " is incorrect or empty").build());
         }
     }
 
@@ -317,12 +330,26 @@ public class RequestValidationUtil {
         if (offset < 0) {
             throw new InputValidationException(
                     new ErrorResponse.ErrorResponseBuilder().setCode(400l).setMessage("Request parameter offset is s " +
-                                                                                      "negative value.").build());
+                            "negative value.").build());
         }
         if (limit < 0) {
             throw new InputValidationException(
                     new ErrorResponse.ErrorResponseBuilder().setCode(400l).setMessage("Request parameter limit is a " +
-                                                                                      "negative value.").build());
+                            "negative value.").build());
+        }
+        if (limit > 100) {
+            throw new InputValidationException(
+                    new ErrorResponse.ErrorResponseBuilder().setCode(400l).setMessage("Request parameter limit should" +
+                            " be less than or equal to 100.").build());
+        }
+
+    }
+
+    public static void validateOwnerParameter(String owner) {
+        if (owner == null || owner.isEmpty()) {
+            throw new InputValidationException(
+                    new ErrorResponse.ErrorResponseBuilder().setCode(400l).setMessage("Request parameter owner should" +
+                            " be non empty.").build());
         }
     }
 

@@ -28,23 +28,30 @@
  * Tree view function
  * @return {Null}
  */
-var modalPopup = ".wr-modalpopup";
-var modalPopupContent = modalPopup + " .modalpopup-content";
+var modalPopup = ".modal";
+var modalPopupContent = modalPopup + " .modal-content";
+var errorMsgWrapper = "#permission-add-error-msg";
+var errorMsg = "#permission-add-error-msg span";
+
+var apiBasePath = "/api/device-mgt/v1.0";
 
 /*
  * hide popup function.
  */
 function hidePopup() {
-    $(modalPopupContent).html('');
-    $(modalPopup).hide();
+    $(modalPopupContent).html("");
+    $(modalPopupContent).removeClass("operation-data");
+    $(modalPopup).modal('hide');
+    $('body').removeClass('modal-open').css('padding-right','0px');
+    $('.modal-backdrop').remove();
 }
 
 /*
  * show popup function.
  */
 function showPopup() {
-    $(modalPopup).show();
-    setPopupMaxHeight();
+    $(modalPopup).modal('show');
+    //setPopupMaxHeight();
 }
 $.fn.tree_view = function(){
     var tree = $(this);
@@ -96,29 +103,45 @@ $(document).ready(function () {
     var listPartialSrc = $("#list-partial").attr("src");
     var treeTemplateSrc = $("#tree-template").attr("src");
     var roleName = $("#permissionList").data("currentrole");
-    var serviceUrl = "/devicemgt_admin/roles/permissions?rolename=" + encodeURIComponent(roleName);
+    var userStore;
+    if (roleName.indexOf('/') > 0) {
+        userStore = roleName.substr(0, roleName.indexOf('/'));
+        roleName = roleName.substr(roleName.indexOf('/') + 1);
+    }
+    var serviceUrl = apiBasePath + "/roles/" +encodeURIComponent(roleName)+"/permissions";
+    if (userStore) {
+        serviceUrl += "?user-store=" + encodeURIComponent(userStore);
+    }
     $.registerPartial("list", listPartialSrc, function(){
         $.template("treeTemplate", treeTemplateSrc, function (template) {
             invokerUtil.get(serviceUrl,
                 function(data){
                     data = JSON.parse(data);
-                    var treeData = data.responseContent;
+                    var treeData = data;
                     if(treeData.nodeList.length > 0){
                         treeData = { nodeList: treeData.nodeList };
                         var content = template(treeData);
                         $("#permissionList").html(content);
-                        $("#permissionList").on("click", ".permissionTree .permissionItem", function() {
+                        $("#permissionList").on("click", ".permissionTree .permissionItem", function(){
                             var parentValue = $(this).prop('checked');
                             $(this).closest("li").find("li input").each(function () {
                                 $(this).prop('checked',parentValue);
                             });
                         });
                     }
-                    $("#permissionList li input").click(function() {
+                    $("#permissionList li input").click(function(){
                         var parentInput = $(this).parents("ul:eq(1) > li").find('input:eq(0)');
                         if(parentInput && parentInput.is(':checked')){
-                            parentInput.prop('checked', false);
-                            return true;
+                            modalDialog.header('');
+                            modalDialog.content('Can\'t deselect child permissions when parent permission is ' +
+                                'selected.');
+                            modalDialog.footer('<div class="buttons"><a href="#" id="child-deselect-error-link" ' +
+                                'class="btn-operations">Ok</a></div>');
+                            modalDialog.showAsAWarning();
+                            $("a#child-deselect-error-link").click(function () {
+                                modalDialog.hide();
+                            });
+                            return false;
                         }
                     });
                     $('#permissionList').tree_view();
@@ -135,24 +158,36 @@ $(document).ready(function () {
      */
     $("button#update-permissions-btn").click(function() {
         var roleName = $("#permissionList").data("currentrole");
-        var updateRolePermissionAPI = "/devicemgt_admin/roles?rolename=" + roleName;
+        var userStore;
+        if (roleName.indexOf('/') > 0) {
+            userStore = roleName.substr(0, roleName.indexOf('/'));
+            roleName = roleName.substr(roleName.indexOf('/') + 1);
+        }
+        var updateRolePermissionAPI = apiBasePath + "/roles/" + encodeURIComponent(roleName);
         var updateRolePermissionData = {};
         var perms = [];
         $("#permissionList li input:checked").each(function(){
             perms.push($(this).data("resourcepath"));
         });
+        if (userStore) {
+            updateRolePermissionAPI += "?user-store=" + encodeURIComponent(userStore);
+            updateRolePermissionData.roleName = userStore + "/" + roleName;
+        } else {
+            updateRolePermissionData.roleName = roleName;
+        }
         updateRolePermissionData.permissions = perms;
         invokerUtil.put(
             updateRolePermissionAPI,
             updateRolePermissionData,
-            function (jqXHR) {
-                if (JSON.parse(jqXHR).status == 200 || jqXHR.status == 200) {
+            function (data, textStatus, jqXHR) {
+                if (jqXHR.status == 200) {
                     // Refreshing with success message
                     $("#role-create-form").addClass("hidden");
                     $("#role-created-msg").removeClass("hidden");
                 }
             }, function (data) {
-                $(errorMsg).text(JSON.parse(data.responseText).errorMessage);
+                var payload = JSON.parse(data.responseText);
+                $(errorMsg).text(payload.message);
                 $(errorMsgWrapper).removeClass("hidden");
             }
         );

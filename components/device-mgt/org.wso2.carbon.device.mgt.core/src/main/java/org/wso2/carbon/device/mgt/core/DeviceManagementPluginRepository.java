@@ -27,6 +27,7 @@ import org.wso2.carbon.device.mgt.common.ProvisioningConfig;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManager;
 import org.wso2.carbon.device.mgt.common.push.notification.NotificationStrategy;
 import org.wso2.carbon.device.mgt.common.push.notification.PushNotificationConfig;
+import org.wso2.carbon.device.mgt.common.push.notification.PushNotificationProvider;
 import org.wso2.carbon.device.mgt.common.sensor.mgt.DeviceTypeSensor;
 import org.wso2.carbon.device.mgt.common.sensor.mgt.SensorManager;
 import org.wso2.carbon.device.mgt.common.sensor.mgt.SensorManager;
@@ -156,10 +157,16 @@ public class DeviceManagementPluginRepository implements DeviceManagerStartupLis
                 int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
                 deviceTypeIdentifier = new DeviceTypeIdentifier(deviceManagementService.getType(), tenantId);
             }
+
             if (pushNoteConfig != null) {
-                NotificationStrategy notificationStrategy =
-                        DeviceManagementDataHolder.getInstance().getPushNotificationProviderRepository().getProvider(
-                                pushNoteConfig.getType()).getNotificationStrategy(pushNoteConfig);
+                PushNotificationProvider provider = DeviceManagementDataHolder.getInstance()
+                        .getPushNotificationProviderRepository().getProvider(pushNoteConfig.getType());
+                if (provider == null) {
+                    throw new DeviceManagementException(
+                            "No registered push notification provider found for the type: '" +
+                                    pushNoteConfig.getType() + "'.");
+                }
+                NotificationStrategy notificationStrategy = provider.getNotificationStrategy(pushNoteConfig);
                 operationManagerRepository.addOperationManager(deviceTypeIdentifier, new OperationManagerImpl(
                         notificationStrategy));
             } else {

@@ -26,14 +26,16 @@ var onFail;
         var utility = require("/app/modules/utility.js").utility;
         var apiWrapperUtil = require("/app/modules/oauth/token-handlers.js")["handlers"];
         if (context.input.samlToken) {
-            apiWrapperUtil.setupTokenPairBySamlGrantType(context.input.username, context.input.samlToken);
+            apiWrapperUtil.setupTokenPairBySamlGrantType(context.user.username + '@' + context.user.domain, context.input.samlToken);
         } else {
             apiWrapperUtil.setupTokenPairByPasswordGrantType(context.input.username, context.input.password);
         }
         var devicemgtProps = require("/app/modules/conf-reader/main.js")["conf"];
         var carbonServer = require("carbon").server;
-        (new carbonServer.Server({url: devicemgtProps["adminService"]}))
-            .login(context.input.username, context.input.password);
+        if (!context.input.samlToken) {
+            (new carbonServer.Server({url: devicemgtProps["adminService"]}))
+                .login(context.input.username, context.input.password);
+        }
     };
 
     onFail = function (error) {

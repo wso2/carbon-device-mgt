@@ -18,12 +18,15 @@
  */
 package org.wso2.carbon.device.mgt.jaxrs.service.impl;
 
+import com.google.gson.JsonArray;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.device.mgt.common.*;
 import org.wso2.carbon.device.mgt.common.app.mgt.Application;
 import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManagementException;
+import org.wso2.carbon.device.mgt.common.authorization.DeviceAccessAuthorizationException;
+import org.wso2.carbon.device.mgt.common.authorization.DeviceAccessAuthorizationService;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
 import org.wso2.carbon.device.mgt.common.search.SearchContext;
@@ -44,11 +47,13 @@ import org.wso2.carbon.policy.mgt.common.monitor.ComplianceData;
 import org.wso2.carbon.policy.mgt.common.monitor.PolicyComplianceException;
 import org.wso2.carbon.policy.mgt.core.PolicyManagerService;
 
+import javax.validation.constraints.Size;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -65,7 +70,6 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
             @QueryParam("name") String name,
             @QueryParam("type") String type,
             @QueryParam("user") String user,
-            @QueryParam("roleName") String roleName,
             @QueryParam("ownership") String ownership,
             @QueryParam("status") String status,
             @QueryParam("since") String since,
@@ -76,11 +80,18 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
 //            RequestValidationUtil.validateSelectionCriteria(type, user, roleName, ownership, status);
             RequestValidationUtil.validatePaginationParameters(offset, limit);
             DeviceManagementProviderService dms = DeviceMgtAPIUtils.getDeviceManagementService();
+            DeviceAccessAuthorizationService deviceAccessAuthorizationService =
+                    DeviceMgtAPIUtils.getDeviceAccessAuthorizationService();
+            if (deviceAccessAuthorizationService == null) {
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(
+                        new ErrorResponse.ErrorResponseBuilder().setMessage("Device access authorization service is " +
+                                                                            "failed").build()).build();
+            }
             PaginationRequest request = new PaginationRequest(offset, limit);
             PaginationResult result;
             DeviceList devices = new DeviceList();
 
-            if(name != null && !name.isEmpty()){
+            if (name != null && !name.isEmpty()) {
                 request.setDeviceName(name);
             }
             if (type != null && !type.isEmpty()) {
@@ -96,6 +107,30 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
             if (status != null && !status.isEmpty()) {
                 RequestValidationUtil.validateStatus(status);
                 request.setStatus(status);
+            }
+
+            // this is the user who initiates the request
+            String authorizedUser = CarbonContext.getThreadLocalCarbonContext().getUsername();
+
+            // check whether the user is device-mgt admin
+            if (deviceAccessAuthorizationService.isDeviceAdminUser()) {
+                if (user != null && !user.isEmpty()) {
+                    request.setOwner(user);
+                }
+            } else {
+                if (user != null && !user.isEmpty()) {
+                    if (user.equals(authorizedUser)) {
+                        request.setOwner(user);
+                    } else {
+                        String msg = "User '" + authorizedUser + "' is not authorized to retrieve devices of '" + user
+                                     + "' user";
+                        log.error(msg);
+                        return Response.status(Response.Status.UNAUTHORIZED).entity(
+                                new ErrorResponse.ErrorResponseBuilder().setCode(401l).setMessage(msg).build()).build();
+                    }
+                } else {
+                    request.setOwner(authorizedUser);
+                }
             }
 
             if (ifModifiedSince != null && !ifModifiedSince.isEmpty()) {
@@ -127,8 +162,9 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
                 request.setSince(sinceDate);
                 result = dms.getAllDevices(request);
                 if (result == null || result.getData() == null || result.getData().size() <= 0) {
-                    return Response.status(Response.Status.OK).entity("No device is modified " +
-                            "after the timestamp provided in 'since' filter").build();
+                    devices.setList(new ArrayList<Device>());
+                    devices.setCount(0);
+                    return Response.status(Response.Status.OK).entity(devices).build();
                 }
             } else {
                 result = dms.getAllDevices(request);
@@ -143,6 +179,11 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
             return Response.status(Response.Status.OK).entity(devices).build();
         } catch (DeviceManagementException e) {
             String msg = "Error occurred while fetching all enrolled devices";
+            log.error(msg, e);
+            return Response.serverError().entity(
+                    new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
+        } catch (DeviceAccessAuthorizationException e) {
+            String msg = "Error occurred while checking device access authorization";
             log.error(msg, e);
             return Response.serverError().entity(
                     new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
@@ -175,22 +216,71 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
         }
     }
 
+    @DELETE
+    @Override
+    @Path("/type/{device-type}/id/{device-id}")
+    public Response deleteDevice(@PathParam("device-type") String deviceType, @PathParam("device-id") String deviceId) {
+
+        log.info("Deleting " + deviceType + " " + deviceId + "is not supported");
+        try {
+            return Response.status(Response.Status.BAD_REQUEST).entity("{Deleting device(s) is not supported}").build();
+        } catch (Exception e) {
+            String msg = "Error occurred while deleting device(s)";
+            log.error(msg, e);
+            return Response.serverError().entity(new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
+        }
+    }
 
     @GET
     @Path("/{type}/{id}")
     @Override
     public Response getDevice(
-            @PathParam("type") String type,
-            @PathParam("id") String id,
+            @PathParam("type") @Size(max = 45) String type,
+            @PathParam("id") @Size(max = 45) String id,
             @HeaderParam("If-Modified-Since") String ifModifiedSince) {
-        Device device;
+        Device device = null;
         try {
             RequestValidationUtil.validateDeviceIdentifier(type, id);
-
             DeviceManagementProviderService dms = DeviceMgtAPIUtils.getDeviceManagementService();
-            device = dms.getDevice(new DeviceIdentifier(id, type));
+            DeviceAccessAuthorizationService deviceAccessAuthorizationService =
+                    DeviceMgtAPIUtils.getDeviceAccessAuthorizationService();
+
+            // this is the user who initiates the request
+            String authorizedUser = CarbonContext.getThreadLocalCarbonContext().getUsername();
+            DeviceIdentifier deviceIdentifier = new DeviceIdentifier(id, type);
+            // check whether the user is authorized
+            if (!deviceAccessAuthorizationService.isUserAuthorized(deviceIdentifier, authorizedUser)) {
+                String msg = "User '" + authorizedUser + "' is not authorized to retrieve the given device id '" + id;
+                log.error(msg);
+                return Response.status(Response.Status.UNAUTHORIZED).entity(
+                        new ErrorResponse.ErrorResponseBuilder().setCode(401l).setMessage(msg).build()).build();
+            }
+
+            if (ifModifiedSince != null && !ifModifiedSince.isEmpty()) {
+                Date sinceDate;
+                SimpleDateFormat format = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z");
+                try {
+                    sinceDate = format.parse(ifModifiedSince);
+                } catch (ParseException e) {
+                    return Response.status(Response.Status.BAD_REQUEST).entity(
+                            new ErrorResponse.ErrorResponseBuilder().setMessage("Invalid date " +
+                                                                                "string is provided in 'If-Modified-Since' header").build()).build();
+                }
+                device = dms.getDevice(new DeviceIdentifier(id, type), sinceDate);
+                if (device == null) {
+                    return Response.status(Response.Status.NOT_MODIFIED).entity("No device is modified " +
+                                                                                "after the timestamp provided in 'If-Modified-Since' header").build();
+                }
+            } else {
+                device = dms.getDevice(new DeviceIdentifier(id, type));
+            }
         } catch (DeviceManagementException e) {
             String msg = "Error occurred while fetching the device information.";
+            log.error(msg, e);
+            return Response.serverError().entity(
+                    new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
+        } catch (DeviceAccessAuthorizationException e) {
+            String msg = "Error occurred while checking the device authorization.";
             log.error(msg, e);
             return Response.serverError().entity(
                     new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
@@ -207,14 +297,13 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
     @Path("/{type}/{id}/features")
     @Override
     public Response getFeaturesOfDevice(
-            @PathParam("type") String type,
-            @PathParam("id") String id,
+            @PathParam("type") @Size(max = 45) String type,
+            @PathParam("id") @Size(max = 45) String id,
             @HeaderParam("If-Modified-Since") String ifModifiedSince) {
         List<Feature> features;
         DeviceManagementProviderService dms;
         try {
             RequestValidationUtil.validateDeviceIdentifier(type, id);
-
             dms = DeviceMgtAPIUtils.getDeviceManagementService();
             FeatureManager fm = dms.getFeatureManager(type);
             if (fm == null) {
@@ -258,8 +347,8 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
     @Path("/{type}/{id}/applications")
     @Override
     public Response getInstalledApplications(
-            @PathParam("type") String type,
-            @PathParam("id") String id,
+            @PathParam("type") @Size(max = 45) String type,
+            @PathParam("id") @Size(max = 45) String id,
             @HeaderParam("If-Modified-Since") String ifModifiedSince,
             @QueryParam("offset") int offset,
             @QueryParam("limit") int limit) {
@@ -287,14 +376,17 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
     @Path("/{type}/{id}/operations")
     @Override
     public Response getDeviceOperations(
-            @PathParam("type") String type,
-            @PathParam("id") String id,
+            @PathParam("type") @Size(max = 45) String type,
+            @PathParam("id") @Size(max = 45) String id,
             @HeaderParam("If-Modified-Since") String ifModifiedSince,
             @QueryParam("offset") int offset,
-            @QueryParam("limit") int limit) {
+            @QueryParam("limit") int limit,
+            @QueryParam("owner") String owner) {
         OperationList operationsList = new OperationList();
+        RequestValidationUtil.validateOwnerParameter(owner);
         RequestValidationUtil.validatePaginationParameters(offset, limit);
         PaginationRequest request = new PaginationRequest(offset, limit);
+        request.setOwner(owner);
         PaginationResult result;
         DeviceManagementProviderService dms;
         try {
@@ -318,8 +410,8 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
     @GET
     @Path("/{type}/{id}/effective-policy")
     @Override
-    public Response getEffectivePolicyOfDevice(@PathParam("type") String type,
-                                               @PathParam("id") String id,
+    public Response getEffectivePolicyOfDevice(@PathParam("type") @Size(max = 45) String type,
+                                               @PathParam("id") @Size(max = 45) String id,
                                                @HeaderParam("If-Modified-Since") String ifModifiedSince) {
         try {
             RequestValidationUtil.validateDeviceIdentifier(type, id);
@@ -339,8 +431,8 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
 
     @GET
     @Path("{type}/{id}/compliance-data")
-    public Response getComplianceDataOfDevice(@PathParam("type") String type,
-                                              @PathParam("id") String id) {
+    public Response getComplianceDataOfDevice(@PathParam("type") @Size(max = 45) String type,
+                                              @PathParam("id") @Size(max = 45) String id) {
 
         RequestValidationUtil.validateDeviceIdentifier(type, id);
         PolicyManagerService policyManagementService = DeviceMgtAPIUtils.getPolicyManagementService();

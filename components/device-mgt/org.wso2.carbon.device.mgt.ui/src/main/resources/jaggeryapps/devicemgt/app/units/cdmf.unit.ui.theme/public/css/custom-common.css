@@ -16,14 +16,11 @@
  * under the License.
  */
 
-.wr-content {
-    padding-left: 33px;
-    padding-right: 33px;
-}
 
 .wr-input-control .helper {
     font-weight: 100;
 }
+
 
 .wr-input-control .cus-col-25 {
     float: left;
@@ -68,7 +65,7 @@
 }
 
 .itm-wiz {
-    font-weight: 100;
+    font-weight: 300;
 }
 
 .itm-wiz div {

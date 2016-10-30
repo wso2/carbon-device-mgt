@@ -33,7 +33,6 @@ import org.wso2.carbon.apimgt.impl.APIManagerFactory;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 
-import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 
@@ -159,14 +158,8 @@ public class APIManagementProviderServiceImpl implements APIManagementProviderSe
                     }
                 }
 
-                String[] allowedDomains = new String[1];
-                if (isAllowedAllDomains) {
-                    allowedDomains[0] = ApiApplicationConstants.ALLOWED_DOMAINS;
-                } else {
-                    allowedDomains[0] = APIManagerUtil.getTenantDomain();
-                }
                 apiConsumer.mapExistingOAuthClient(jsonString, username, clientId, applicationName,
-                                                   ApiApplicationConstants.DEFAULT_TOKEN_TYPE, allowedDomains);
+                                                   ApiApplicationConstants.DEFAULT_TOKEN_TYPE);
                 if (tags != null && tags.length > 0) {
                     createApplicationAndSubscribeToAPIs(applicationName, tags, username);
                 }
@@ -327,11 +320,7 @@ public class APIManagementProviderServiceImpl implements APIManagementProviderSe
             if (consumer != null) {
                 synchronized (consumer) {
                     if (consumer.getSubscriber(subscriberName) == null) {
-                        Subscriber subscriber = new Subscriber(subscriberName);
-                        subscriber.setSubscribedDate(new Date());
-                        subscriber.setEmail(subscriberEmail);
-                        subscriber.setTenantId(tenantId);
-                        consumer.addSubscriber(subscriber, groupId);
+                        consumer.addSubscriber(subscriberName, groupId);
                         if (log.isDebugEnabled()) {
                             log.debug("Successfully created subscriber with name : " + subscriberName +
                                               " with groupID : " + groupId);
@@ -365,7 +354,7 @@ public class APIManagementProviderServiceImpl implements APIManagementProviderSe
             Subscriber subscriber = apiConsumer.getSubscriber(username);
             Set<API> userVisibleAPIs = null;
             for (String tag : tags) {
-                Set<API> tagAPIs = apiConsumer.getAPIsWithTag(tag);
+                Set<API> tagAPIs = apiConsumer.getAPIsWithTag(tag, APIManagerUtil.getTenantDomain());
                 if (userVisibleAPIs == null) {
                     userVisibleAPIs = tagAPIs;
                 } else {

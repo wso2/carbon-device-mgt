@@ -21,12 +21,13 @@ package org.wso2.carbon.device.mgt.jaxrs.service.api;
 import io.swagger.annotations.*;
 import org.wso2.carbon.apimgt.annotations.api.API;
 import org.wso2.carbon.apimgt.annotations.api.Permission;
-import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
+import org.wso2.carbon.apimgt.annotations.api.Scope;
 import org.wso2.carbon.device.mgt.common.notification.mgt.Notification;
-import org.wso2.carbon.device.mgt.jaxrs.NotificationContext;
 import org.wso2.carbon.device.mgt.jaxrs.NotificationList;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Size;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -34,8 +35,8 @@ import javax.ws.rs.core.Response;
 /**
  * Notifications related REST-API.
  */
-@API(name = "Device Notification Management API", version = "1.0.0", context = "/devicemgt_admin/notifications",
-        tags = {"devicemgt_admin"})
+@API(name = "DeviceNotificationManagement", version = "1.0.0", context = "/api/device-mgt/v1.0/notifications",
+        tags = {"device_management"})
 @Api(value = "Device Notification Management", description = "Device notification related operations can be found here.")
 @Path("/notifications")
 @Produces(MediaType.APPLICATION_JSON)
@@ -46,9 +47,8 @@ public interface NotificationManagementService {
     @ApiOperation(
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
-            value = "Getting all device notification details.",
-            notes = "Get the details of all notifications that were pushed to the device in WSO2 EMM using "
-                    + "this REST API",
+            value = "Getting All Device Notification Details",
+            notes = "Get the details of all the notifications that were pushed to the devices registered with WSO2 EMM using this REST API.",
             tags = "Device Notification Management")
     @ApiResponses(
             value = {
@@ -66,20 +66,20 @@ public interface NotificationManagementService {
                                                     "Used by caches, or in conditional requests."),
                                     @ResponseHeader(
                                             name = "Last-Modified",
-                                            description = "Date and time the resource has been modified the last time.\n" +
+                                            description = "Date and time the resource was last modified.\n" +
                                                     "Used by caches, or in conditional requests."),
                             }),
                     @ApiResponse(
                             code = 304,
-                            message = "Not Modified. \n Empty body because the client has already the latest version of the requested resource."),
+                            message = "Not Modified. \n Empty body because the client already has the latest version of the requested resource."),
                     @ApiResponse(
                             code = 400,
-                            message = "Bad Request. \n Invalid notification status type " +
-                                    "received. Valid status types are NEW | CHECKED",
+                            message = "Bad Request. \n Invalid notification status type received. \n" +
+                                    "Valid status types are NEW | CHECKED",
                             response = ErrorResponse.class),
                     @ApiResponse(
                             code = 404,
-                            message = "Not Found. \n No notification is available to be retrieved.",
+                            message = "Not Found. \n There are no notification.",
                             response = ErrorResponse.class),
                     @ApiResponse(
                             code = 406,
@@ -89,38 +89,38 @@ public interface NotificationManagementService {
                             message = "Internal Server Error. " +
                                     "\n Server error occurred while fetching the notification list.",
                             response = ErrorResponse.class)
-            }
-    )
-    @Permission(
-            scope = "device-notification-view",
-            permissions = {
-            "/permission/admin/device-mgt/admin/notifications/view",
-            "/permission/admin/device-mgt/user/notifications/view" }
-    )
+            })
+    @Permission(name = "View notifications", permission = "/device-mgt/notifications/view")
     Response getNotifications(
             @ApiParam(
                     name = "status",
-                    value = "Status of the notification.",
+                    value = "The status of the notification. Provide any of the following values: \n" +
+                            " - NEW: Will keep the message in the unread state.\n" +
+                            " - CHECKED: Will keep the message in the read state.",
                     allowableValues = "NEW, CHECKED",
                     required = false)
-            @QueryParam("status")
+            @QueryParam("status") @Size(max = 45)
                     String status,
             @ApiParam(
                     name = "If-Modified-Since",
-                    value = "Validates if the requested variant has not been modified since the time specified",
+                    value = "Checks if the requested variant was modified, since the specified date-time. \n" +
+                            "Provide the value in the following format: EEE, d MMM yyyy HH:mm:ss Z.\n" +
+                            "Example: Mon, 05 Jan 2014 15:10:00 +0200",
                     required = false)
             @HeaderParam("If-Modified-Since")
                     String ifModifiedSince,
             @ApiParam(
                     name = "offset",
-                    value = "Starting point within the complete list of items qualified.",
-                    required = false)
+                    value = "The starting pagination index for the complete list of qualified items.",
+                    required = false,
+                    defaultValue = "0")
             @QueryParam("offset")
                     int offset,
             @ApiParam(
                     name = "limit",
-                    value = "Maximum size of resource array to return.",
-                    required = false)
+                    value = "Provide how many notification details you require from the starting pagination index/offset.",
+                    required = false,
+                    defaultValue = "5")
             @QueryParam("limit")
                     int limit);
 
@@ -142,21 +142,20 @@ public interface NotificationManagementService {
                     @ApiResponse(
                             code = 200,
                             message = "Notification updated successfully. But the retrial of the updated "
-                                    + "notification failed."),
+                                    + "notification failed.",
+                            response = Notification.class),
                     @ApiResponse(
                             code = 500,
                             message = "Error occurred while updating notification status.")
             }
     )
-    @Permission(
-            scope = "",
-            permissions = { "" }
-    )
+    @Permission(name = "View notifications", permission = "/device-mgt/notifications/view")
     Response updateNotificationStatus(
             @ApiParam(
                     name = "id",
-                    value = "Notification ID.",
-                    required = true)
-            @PathParam("id")
+                    value = "The notification ID.",
+                    required = true,
+                    defaultValue = "1")
+            @PathParam("id") @Max(45)
                     int id);
 }

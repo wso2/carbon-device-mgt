@@ -20,17 +20,35 @@ function onRequest(context) {
     var utility = require("/app/modules/utility.js").utility;
     var deviceModule = require("/app/modules/business-controllers/device.js")["deviceModule"];
     //get all device types
-    var data = deviceModule.getDeviceTypes();
+    var isAuthorized = false;
+    if (userModule.isAuthorized("/permission/admin/device-mgt/notifications/view")) {
+        isAuthorized = true;
+    }
     var deviceTypesArray = [];
-    if (data) {
-        for (var i = 0; i < data.length; i++) {
-            var deviceTypeName = data[i].name;
-            var configUnitName = utility.getTenantedDeviceUnitName(deviceTypeName, "platform.configuration");
-            if(configUnitName) {
-                var deviceTypeConfig = utility.getDeviceTypeConfig(deviceTypeName);
-                deviceTypesArray.push({name: deviceTypeName, label:deviceTypeConfig.deviceType.label, unitName : configUnitName});
+    var typesListResponse = deviceModule.getDeviceTypes();
+    if (typesListResponse["status"] == "success") {
+        var data = typesListResponse["content"].deviceTypes;
+        if (data) {
+            for (var i = 0; i < data.length; i++) {
+                var deviceTypeName = data[i];
+                var configUnitName = utility.getTenantedDeviceUnitName(deviceTypeName, "platform.configuration");
+                if (configUnitName) {
+                    var deviceTypeConfig = utility.getDeviceTypeConfig(deviceTypeName);
+                    var deviceTypeLabel = deviceTypeName;
+                    if (deviceTypeConfig) {
+                        deviceTypeLabel = deviceTypeConfig.deviceType.label;
+                    }
+                    deviceTypesArray.push({
+                        name: deviceTypeName,
+                        label: deviceTypeLabel,
+                        unitName: configUnitName
+                    });
+                }
             }
         }
     }
-    return {"deviceTypes" : deviceTypesArray};
+    return {
+        "deviceTypes": deviceTypesArray,
+        "isAuthorized": isAuthorized
+    };
 }

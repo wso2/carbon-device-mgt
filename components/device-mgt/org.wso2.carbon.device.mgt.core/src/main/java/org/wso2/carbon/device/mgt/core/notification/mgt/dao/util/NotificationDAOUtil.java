@@ -21,6 +21,7 @@ package org.wso2.carbon.device.mgt.core.notification.mgt.dao.util;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.CarbonContext;
+import org.wso2.carbon.device.mgt.common.notification.mgt.Notification;
 import org.wso2.carbon.device.mgt.common.notification.mgt.NotificationManagementException;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 import org.wso2.carbon.user.api.UserStoreException;
@@ -122,5 +123,26 @@ public class NotificationDAOUtil {
 		} catch (Exception e) {
 			throw new RuntimeException("Error in looking up data source: " + e.getMessage(), e);
 		}
+	}
+
+	public static Notification getNotification(ResultSet rs) throws SQLException {
+		Notification notification = new Notification();
+		notification.setNotificationId(rs.getInt("NOTIFICATION_ID"));
+		notification.setOperationId(rs.getInt("OPERATION_ID"));
+		notification.setDescription(rs.getString("DESCRIPTION"));
+		notification.setStatus(rs.getString("STATUS"));
+		return notification;
+	}
+
+	public static Notification getNotificationWithDeviceInfo(ResultSet rs) throws SQLException {
+		Notification notification = new Notification();
+		notification.setNotificationId(rs.getInt("NOTIFICATION_ID"));
+		notification.setOperationId(rs.getInt("OPERATION_ID"));
+		notification.setDescription(rs.getString("DESCRIPTION"));
+		notification.setStatus(rs.getString("STATUS"));
+		notification.setDeviceIdentifier(rs.getString("DEVICE_IDENTIFICATION"));
+		notification.setDeviceName(rs.getString("DEVICE_NAME"));
+		notification.setDeviceType(rs.getString("DEVICE_TYPE"));
+		return notification;
 	}
 }

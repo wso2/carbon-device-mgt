@@ -26,5 +26,20 @@ public class Constants {
 	public static final String USER_CLAIM_EMAIL_ADDRESS = "http://wso2.org/claims/emailaddress";
 	public static final String USER_CLAIM_FIRST_NAME = "http://wso2.org/claims/givenname";
 	public static final String USER_CLAIM_LAST_NAME = "http://wso2.org/claims/lastname";
+	public static final String PRIMARY_USER_STORE = "PRIMARY";
+
+	public final class ErrorMessages {
+		private ErrorMessages () { throw new AssertionError(); }
+
+		public static final String STATUS_BAD_REQUEST_MESSAGE_DEFAULT = "Bad Request";
+
+	}
+
+	public final class DeviceConstants {
+		private DeviceConstants () { throw new AssertionError(); }
+
+		public static final String APPLICATION_JSON = "application/json";
+		public static final String HEADER_CONTENT_TYPE = "Content-Type";
+	}
 
 }

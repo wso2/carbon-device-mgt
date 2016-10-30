@@ -16,30 +16,32 @@
  * under the License.
  */
 
-function onRequest(context) {
+function onRequest() {
     var constants = require("/app/modules/constants.js");
-    var user = session.get(constants.USER_SESSION_KEY);
     var userModule = require("/app/modules/business-controllers/user.js")["userModule"];
-    var permissions = userModule.getUIPermissions();
     var devicemgtProps = require("/app/modules/conf-reader/main.js")["conf"];
-
-    if (!permissions.VIEW_DASHBOARD) {
-        response.sendRedirect(constants.WEB_APP_CONTEXT + "/devices");
-        return;
-    }
-
-    var page = {};
-    page.permissions = permissions;
-    page.enrollmentURL = devicemgtProps.enrollmentURL;
     var deviceModule = require("/app/modules/business-controllers/device.js")["deviceModule"];
     var groupModule = require("/app/modules/business-controllers/group.js")["groupModule"];
     var policyModule = require("/app/modules/business-controllers/policy.js")["policyModule"];
 
-    page.device_count = deviceModule.getDevicesCount();
-    page.group_count = groupModule.getGroupCount();
-    page.user_count = userModule.getUsers()["content"].length;
-    page.policy_count = policyModule.getAllPolicies()["content"].length;
-    page.role_count = userModule.getRoles()["content"].length;
+    var user = session.get(constants["USER_SESSION_KEY"]);
+    var permissions = userModule.getUIPermissions();
 
-    return page;
+    if (!permissions.VIEW_DASHBOARD) {
+        response.sendRedirect(devicemgtProps["appContext"] + "devices");
+        return;
+    }
+
+    var viewModel = {};
+    viewModel.permissions = permissions;
+    viewModel.enrollmentURL = devicemgtProps.enrollmentURL;
+    viewModel.deviceCount = deviceModule.getDevicesCount();
+    //TODO: Enable Group Management Service API on CDMF
+    //page.group_count = groupModule.getGroupCount();
+    viewModel.groupCount = -1;
+    viewModel.userCount = userModule.getUsersCount();
+    viewModel.policyCount = policyModule.getPoliciesCount();
+    viewModel.roleCount = userModule.getRolesCount();
+
+    return viewModel;
 }

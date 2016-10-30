@@ -34,7 +34,7 @@ import java.util.Map;
 )
 public class SecurityDefinitionConfigurator implements ReaderListener {
 
-    public static final String TOKEN_AUTH_SCHEME = "tokenAuthScheme";
+    public static final String TOKEN_AUTH_SCHEME = "swagger_auth";
 
     @Override
     public void beforeScan(Reader reader, Swagger swagger) {
@@ -45,9 +45,10 @@ public class SecurityDefinitionConfigurator implements ReaderListener {
     public void afterScan(Reader reader, Swagger swagger) {
         OAuth2Definition tokenScheme = new OAuth2Definition();
         tokenScheme.setType("oauth2");
-        tokenScheme.setFlow("password");
-        tokenScheme.setTokenUrl("https://" + swagger.getHost() + "/oauth/token");
-        tokenScheme.setAuthorizationUrl("https://" + swagger.getHost() + "/oauth/authorize");
+        tokenScheme.setFlow("application");
+        tokenScheme.setTokenUrl("https://" + swagger.getHost() + "/oauth2/token");
+        tokenScheme.setAuthorizationUrl("https://" + swagger.getHost() + "/oauth2/authorize");
+        tokenScheme.addScope("write:everything", "Full access");
 
         Map<String, SecuritySchemeDefinition> schemes = new HashMap<>();
         schemes.put(TOKEN_AUTH_SCHEME, tokenScheme);

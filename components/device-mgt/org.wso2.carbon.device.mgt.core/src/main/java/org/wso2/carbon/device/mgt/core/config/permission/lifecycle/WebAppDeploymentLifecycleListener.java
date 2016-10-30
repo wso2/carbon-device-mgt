@@ -26,17 +26,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.permission.mgt.Permission;
 import org.wso2.carbon.device.mgt.common.permission.mgt.PermissionManagementException;
-import org.wso2.carbon.device.mgt.core.config.permission.PermissionConfiguration;
+import org.wso2.carbon.device.mgt.common.permission.mgt.PermissionManagerService;
+import org.wso2.carbon.device.mgt.core.config.permission.AnnotationProcessor;
 import org.wso2.carbon.device.mgt.core.permission.mgt.PermissionManagerServiceImpl;
-import org.wso2.carbon.device.mgt.core.permission.mgt.PermissionUtils;
 
 import javax.servlet.ServletContext;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-import java.io.File;
-import java.io.InputStream;
+import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 
 /**
  * This listener class will initiate the permission addition of permissions defined in
@@ -45,7 +42,8 @@ import java.util.List;
 @SuppressWarnings("unused")
 public class WebAppDeploymentLifecycleListener implements LifecycleListener {
 
-    private static final String PERMISSION_CONFIG_PATH = "META-INF" + File.separator + "permissions.xml";
+    private static final String PARAM_MANAGED_API_ENABLED = "managed-api-enabled";
+
     private static final Log log = LogFactory.getLog(WebAppDeploymentLifecycleListener.class);
 
     @Override
@@ -54,34 +52,27 @@ public class WebAppDeploymentLifecycleListener implements LifecycleListener {
             StandardContext context = (StandardContext) lifecycleEvent.getLifecycle();
             ServletContext servletContext = context.getServletContext();
             String contextPath = context.getServletContext().getContextPath();
-            try {
-                InputStream permissionStream = servletContext.getResourceAsStream(PERMISSION_CONFIG_PATH);
-                if (permissionStream != null) {
-                /* Un-marshaling Device Management configuration */
-                    JAXBContext cdmContext = JAXBContext.newInstance(PermissionConfiguration.class);
-                    Unmarshaller unmarshaller = cdmContext.createUnmarshaller();
-                    PermissionConfiguration permissionConfiguration = (PermissionConfiguration)
-                            unmarshaller.unmarshal(permissionStream);
-                    List<Permission> permissions = permissionConfiguration.getPermissions();
-                    String apiVersion = permissionConfiguration.getApiVersion();
-                    if (permissionConfiguration != null && permissions != null) {
+            String param = servletContext.getInitParameter(PARAM_MANAGED_API_ENABLED);
+            boolean isManagedApi = (param != null && !param.isEmpty()) && Boolean.parseBoolean(param);
+
+            if (isManagedApi) {
+                try {
+                    AnnotationProcessor annotationProcessor = new AnnotationProcessor(context);
+                    Set<String> annotatedAPIClasses = annotationProcessor.
+                            scanStandardContext(org.wso2.carbon.apimgt.annotations.api.API.class.getName());
+                    List<Permission> permissions = annotationProcessor.extractPermissions(annotatedAPIClasses);
+                    PermissionManagerService permissionManagerService = PermissionManagerServiceImpl.getInstance();
+                    if (permissions != null) {
                         for (Permission permission : permissions) {
-                            // update the permission path to absolute permission path
-                            permission.setPath(PermissionUtils.getAbsolutePermissionPath(permission.getPath()));
-                            permission.setUrl(PermissionUtils.getAbsoluteContextPathOfAPI(contextPath, apiVersion,
-                                    permission.getUrl()).toLowerCase());
-                            permission.setMethod(permission.getMethod().toUpperCase());
-                            PermissionManagerServiceImpl.getInstance().addPermission(permission);
+                            permissionManagerService.addPermission(permission);
                         }
                     }
+                } catch (PermissionManagementException e) {
+                    log.error("Exception occurred while adding the permissions from webapp : "
+                            + servletContext.getContextPath(), e);
+                } catch (IOException e) {
+                    log.error("Cannot find API annotation Class in the webapp '" + contextPath + "' class path", e);
                 }
-            } catch (JAXBException e) {
-                log.error(
-                        "Exception occurred while parsing the permission configuration of webapp : "
-                                + context.getServletContext().getContextPath(), e);
-            } catch (PermissionManagementException e) {
-                log.error("Exception occurred while adding the permissions from webapp : "
-                        + servletContext.getContextPath(), e);
             }
 
         }

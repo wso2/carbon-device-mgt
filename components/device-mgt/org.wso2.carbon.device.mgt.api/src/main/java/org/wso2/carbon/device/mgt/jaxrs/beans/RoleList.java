@@ -29,7 +29,8 @@ public class RoleList extends BasePaginatedResult {
 
     private List<String> roles;
 
-    @ApiModelProperty(value = "List of roles returned")
+    @ApiModelProperty(value = "Returns the list of roles that match the offset and limit parameter values "
+            + "that were specified.")
     @JsonProperty("roles")
     public List<String> getList() {
         return roles;
@@ -44,8 +45,6 @@ public class RoleList extends BasePaginatedResult {
         StringBuilder sb = new StringBuilder();
         sb.append("{\n");
         sb.append("  count: ").append(getCount()).append(",\n");
-        sb.append("  next: ").append(getNext()).append(",\n");
-        sb.append("  previous: ").append(getPrevious()).append(",\n");
         sb.append("  roles: [").append(roles).append("\n");
         sb.append("]}\n");
         return sb.toString();

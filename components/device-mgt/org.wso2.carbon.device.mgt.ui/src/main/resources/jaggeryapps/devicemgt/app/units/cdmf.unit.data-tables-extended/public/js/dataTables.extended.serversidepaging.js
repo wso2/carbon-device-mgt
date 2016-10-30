@@ -29,50 +29,75 @@
  * For ex: $(this) means jQuery(this) and S.fn.x means jQuery.fn.x
  */
 
- $.fn.datatables_extended_serverside_paging = function (settings , url, dataFilter,
-                                                        columns, fnCreatedRow, fnDrawCallback) {
+$.fn.datatables_extended_serverside_paging = function (settings, url, dataFilter,
+                                                       columns, fnCreatedRow, fnDrawCallback, options) {
     var elem = $(this);
 
     // EMM related function
-    if (initiateViewOption) {
-        $(".viewEnabledIcon").bind("click", initiateViewOption);
+    if (InitiateViewOption) {
+        $(document).on('click', '.viewEnabledIcon', InitiateViewOption);
     }
     //--- End of EMM related codes
 
+    /*
+     * Work around for accessing settings params inside datatable functions
+     */
+    if (settings != null && settings.sorting != null && settings.sorting != undefined && settings.sorting) {
+        elem.addClass('sorting-enabled');
+    } else {
+        elem.addClass('sorting-disabled');
+    }
+
+    var deviceType;
+    var ownership;
+
+    //--- End of EMM related codes
+
     $(elem).DataTable(
-        $.extend({},{
+        $.extend({}, {
             serverSide: true,
+            processing: false,
+            searching: true,
+            ordering: false,
+            filter: false,
             bSortCellsTop: true,
-            ajax : {
-                url: "/emm/api/data-tables/invoker",
-                data : function (params) {
-                    var filter = "";
+            ajax: {
+                url: context + "/api/data-tables/invoker",
+                data: function (params) {
                     var i;
+                    var searchParams = {};
                     for (i = 0; i < params.columns.length; i++) {
-                        // console.log(i);
-                        filter += "&" + params.columns[i].data + "=" + params.columns[i].search.value;
+                        searchParams[params.columns[i].data] = encodeURIComponent(params.columns[i].search.value);
                     }
-                    // console.log(filter);
+                    if (options) {
+                        searchParams[options.searchKey] = encodeURIComponent(params.search.value);
+                    }
+                    params.filter = JSON.stringify(searchParams);
                     params.offset = params.start;
                     params.limit = params.length;
-                    params.filter = filter;
+                    // if(params.search.value){
+                    //     params.filter = params.search.value;
+                    // }
                     params.url = url;
+
+                    //Remove this line to add url parameters which is included by data tables it self
+                    delete params.columns;
                 },
                 dataFilter: dataFilter
             },
             columns: columns,
             responsive: false,
             autoWidth: false,
-            dom:'<"dataTablesTop"' +
-                'f' +
-                '<"dataTables_toolbar">' +
-                '>' +
-                'rt' +
-                '<"dataTablesBottom"' +
-                'lip' +
-                '>',
+            dom: '<"dataTablesTop"' +
+            'f' +
+            '<"dataTables_toolbar">' +
+            '>' +
+            'rt' +
+            '<"dataTablesBottom"' +
+            'lip' +
+            '>',
             language: {
-                searchPlaceholder: 'Search by Role name',
+                searchPlaceholder: options.placeholder,
                 search: ''
             },
             fnCreatedRow: fnCreatedRow,
@@ -100,13 +125,32 @@
                                     .draw();
 
                                 if (filterColumn.eq(column.index()).hasClass('data-platform')) {
-                                    if (val == null || val == undefined || val == "") {
-                                        $("#operation-bar").hide();
-                                        $("#operation-guide").show();
+                                    deviceType = val;
+                                    if (!deviceType || !ownership) {
+                                        $("#operation-bar").addClass("hidden");
+                                        $("#operation-guide").removeClass("hidden");
                                     } else {
-                                        $("#operation-guide").hide();
-                                        $("#operation-bar").show();
-                                        loadOperationBar(val);
+                                        $("#operation-guide").addClass("hidden");
+                                        $("#operation-bar").removeClass("hidden");
+                                        //noinspection JSUnresolvedFunction
+                                        if (deviceType && ownership) {
+                                            loadOperationBar(deviceType, ownership, operationBarModeConstants.BULK);
+                                        }
+                                    }
+                                }
+
+                                if (filterColumn.eq(column.index()).hasClass('data-ownership')) {
+                                    ownership = val;
+                                    if (!deviceType || !ownership) {
+                                        $("#operation-bar").addClass("hidden");
+                                        $("#operation-guide").removeClass("hidden");
+                                    } else {
+                                        $("#operation-guide").addClass("hidden");
+                                        $("#operation-bar").removeClass("hidden");
+                                        //noinspection JSUnresolvedFunction
+                                        if (deviceType && ownership) {
+                                            loadOperationBar(deviceType, ownership, operationBarModeConstants.BULK);
+                                        }
                                     }
                                 }
                             });
@@ -133,13 +177,9 @@
                         var title = filterColumn.eq(column.index()).attr('data-for');
                         $(filterColumn.eq(column.index()).empty()).html('<input type="text" class="form-control" placeholder="Search ' + title + '" />');
 
+                        //noinspection SpellCheckingInspection
                         filterColumn.eq(column.index()).find('input').on('keyup change', function () {
                             column.search($(this).val()).draw();
-                            if ($('.dataTables_empty').length > 0) {
-                                $('.bulk-action-row').addClass("hidden");
-                            } else {
-                                $('.bulk-action-row').removeClass("hidden");
-                            }
                         });
                     }
 
@@ -154,24 +194,42 @@
                 /**
                  *  create sorting dropdown menu for list table advance operations
                  */
-                var dropdownmenu = $('<ul class="dropdown-menu arrow arrow-top-right dark sort-list add-margin-top-2x"><li class="dropdown-header">Sort by</li></ul>');
-                $('.sort-row th', elem).each(function () {
-                    if (!$(this).hasClass('no-sort')) {
-                        dropdownmenu.append('<li><a href="#' + $(this).html() + '" data-column="' + $(this).index() + '">' + $(this).html() + '</a></li>');
+                var table = this;
+                if (table.hasClass('sorting-enabled')) {
+                    var dropdownmenu = $('<ul class="dropdown-menu arrow arrow-top-right dark sort-list add-margin-top-2x"><li class="dropdown-header">Sort by</li></ul>');
+                    $('.sort-row th', elem).each(function () {
+                        if (!$(this).hasClass('no-sort')) {
+                            dropdownmenu.append('<li><a href="#' + $(this).html() + '" data-column="' + $(this).index() + '">' + $(this).html() + '</a></li>');
+                        }
+                    });
+                }
+
+                function getAdvanceToolBar() {
+                    if (table.hasClass('sorting-enabled')) {
+                        return '<ul class="nav nav-pills navbar-right remove-margin" role="tablist">' +
+                            '<li><button data-click-event="toggle-selectable" class="btn btn-default btn-primary select-enable-btn">Select</li>' +
+                            '<li><button data-click-event="toggle-selected" id="dt-select-all" class="btn btn-default btn-primary disabled">Select All</li>' +
+                            '<li><button data-click-event="toggle-list-view" data-view="grid" class="btn btn-default"><i class="fw fw-grid"></i></button></li>' +
+                            '<li><button data-click-event="toggle-list-view" data-view="list" class="btn btn-default"><i class="fw fw-list"></i></button></li>' +
+                            '<li><button class="btn btn-default" data-toggle="dropdown"><i class="fw fw-sort"></i></button>' + dropdownmenu[0].outerHTML + '</li>' +
+                            '</ul>'
+                    } else {
+                        return '<ul class="nav nav-pills navbar-right remove-margin" role="tablist">' +
+                            '<li><button data-click-event="toggle-selectable" class="btn btn-default btn-primary select-enable-btn">Select</li>' +
+                            '<li><button data-click-event="toggle-selected" id="dt-select-all" class="btn btn-default btn-primary disabled">Select All</li>' +
+                            '<li><button data-click-event="toggle-list-view" data-view="grid" class="btn btn-default"><i class="fw fw-grid"></i></button></li>' +
+                            '<li><button data-click-event="toggle-list-view" data-view="list" class="btn btn-default"><i class="fw fw-list"></i></button></li>' +
+                            '</ul>'
                     }
-                });
+                    ;
+                }
+
 
                 /**
                  *  append advance operations to list table toolbar
                  */
-                $('.dataTable.list-table').closest('.dataTables_wrapper').find('.dataTablesTop .dataTables_toolbar').html('' +
-                    '<ul class="nav nav-pills navbar-right remove-margin" role="tablist">' +
-                    '<li><button data-click-event="toggle-selectable" class="btn btn-default btn-primary select-enable-btn">Select</li>' +
-                    '<li><button data-click-event="toggle-selected" id="dt-select-all" class="btn btn-default btn-primary disabled">Select All</li>' +
-                    '<li><button data-click-event="toggle-list-view" data-view="grid" class="btn btn-default"><i class="fw fw-grid"></i></button></li>' +
-                    '<li><button data-click-event="toggle-list-view" data-view="list" class="btn btn-default"><i class="fw fw-list"></i></button></li>' +
-                    '<li><button class="btn btn-default" data-toggle="dropdown"><i class="fw fw-sort"></i></button>' + dropdownmenu[0].outerHTML + '</li>' +
-                    '</ul>'
+                $('.dataTable.list-table').closest('.dataTables_wrapper').find('.dataTablesTop .dataTables_toolbar').html(
+                    getAdvanceToolBar()
                 );
 
                 /**
@@ -209,14 +267,14 @@
                         $(button).addClass("active").html('Cancel');
                         $(button).parent().next().children("button").removeClass("disabled");
                         // EMM related code
-                        $(".viewEnabledIcon").unbind("click");
+                        $(document).off('click', '.viewEnabledIcon');
                         //--- End of EMM related codes
                     } else if ($(button).html() == 'Cancel') {
                         thisTable.removeClass("table-selectable");
                         $(button).addClass("active").html('Select');
                         $(button).parent().next().children().addClass("disabled");
                         // EMM related function
-                        $(".viewEnabledIcon").bind("click", initiateViewOption);
+                        $(document).on('click', '.viewEnabledIcon', InitiateViewOption);
                         //--- End of EMM related codes
                     }
                 });
@@ -275,7 +333,6 @@
                     }
                 })
             }
-        },settings)
+        }, settings)
     );
-
 };

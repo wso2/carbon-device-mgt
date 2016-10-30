@@ -23,15 +23,13 @@ import io.swagger.annotations.ApiModelProperty;
 
 public class BasePaginatedResult {
 
-    private int count;
-    private String next;
-    private String previous;
-
     /**
      * Number of Resources returned.
      */
-    @ApiModelProperty(value = "Number of resources returned.")
+    @ApiModelProperty(value = "Number of total resources.", example = "2")
     @JsonProperty("count")
+    private int count;
+
     public int getCount() {
         return count;
     }
@@ -39,34 +37,4 @@ public class BasePaginatedResult {
     public void setCount(int count) {
         this.count = count;
     }
-
-
-    /**
-     * Link to the next subset of resources qualified. \nEmpty if no more resources are to be returned.
-     */
-    @ApiModelProperty(value = "Link to the next subset of resources qualified. \n " +
-            "Empty if no more resources are to be returned.")
-    @JsonProperty("next")
-    public String getNext() {
-        return next;
-    }
-
-    public void setNext(String next) {
-        this.next = next;
-    }
-
-    /**
-     * Link to the previous subset of resources qualified. \nEmpty if current subset is the first subset returned.
-     */
-    @ApiModelProperty(value = "Link to the previous subset of resources qualified. \n" +
-            "Empty if current subset is the first subset returned.")
-    @JsonProperty("previous")
-    public String getPrevious() {
-        return previous;
-    }
-
-    public void setPrevious(String previous) {
-        this.previous = previous;
-    }
-
 }

@@ -17,22 +17,17 @@
  */
 package org.wso2.carbon.device.mgt.core.service;
 
-import org.wso2.carbon.device.mgt.common.Device;
-import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
-import org.wso2.carbon.device.mgt.common.DeviceManagementException;
-import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
-import org.wso2.carbon.device.mgt.common.FeatureManager;
-import org.wso2.carbon.device.mgt.common.PaginationRequest;
-import org.wso2.carbon.device.mgt.common.PaginationResult;
+import org.wso2.carbon.device.mgt.common.*;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.PlatformConfiguration;
 import org.wso2.carbon.device.mgt.common.license.mgt.License;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Activity;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
 import org.wso2.carbon.device.mgt.common.sensor.mgt.DeviceTypeSensor;
-import org.wso2.carbon.device.mgt.common.sensor.mgt.Sensor;
 import org.wso2.carbon.device.mgt.common.sensor.mgt.SensorManager;
 
+import java.util.HashMap;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -41,8 +36,23 @@ import java.util.List;
  */
 public interface DeviceManagementProviderService {
 
+    /**
+     * Method to retrieve all the devices of a given device type.
+     *
+     * @param deviceType Device-type of the required devices
+     * @return List of devices of given device-type.
+     * @throws DeviceManagementException If some unusual behaviour is observed while fetching the
+     *                                   devices.
+     */
     List<Device> getAllDevices(String deviceType) throws DeviceManagementException;
 
+    /**
+     * Method to retrieve all the devices registered in the system.
+     *
+     * @return List of registered devices.
+     * @throws DeviceManagementException If some unusual behaviour is observed while fetching the
+     *                                   devices.
+     */
     List<Device> getAllDevices() throws DeviceManagementException;
 
     /**
@@ -199,7 +209,7 @@ public interface DeviceManagementProviderService {
      * @return true if the user owns the device else will return false.
      * @throws DeviceManagementException If some unusual behaviour is observed while fetching the device.
      */
-    public boolean isEnrolled(DeviceIdentifier deviceId, String user) throws DeviceManagementException;
+    boolean isEnrolled(DeviceIdentifier deviceId, String user) throws DeviceManagementException;
 
     License getLicense(String deviceType, String languageCode) throws DeviceManagementException;
 
@@ -223,6 +233,10 @@ public interface DeviceManagementProviderService {
 
     Device getDevice(DeviceIdentifier deviceId) throws DeviceManagementException;
 
+    Device getDevice(DeviceIdentifier deviceId, Date since) throws DeviceManagementException;
+
+    HashMap<Integer, Device> getTenantedDevice(DeviceIdentifier deviceIdentifier) throws DeviceManagementException;
+
     Device getDevice(DeviceIdentifier deviceId, EnrolmentInfo.Status status) throws DeviceManagementException;
 
     List<String> getAvailableDeviceTypes() throws DeviceManagementException;
@@ -240,7 +254,7 @@ public interface DeviceManagementProviderService {
                                   List<DeviceIdentifier> deviceIds) throws DeviceManagementException;
 
     Activity addOperation(String type, Operation operation,
-                          List<DeviceIdentifier> devices) throws OperationManagementException;
+                          List<DeviceIdentifier> devices) throws OperationManagementException, InvalidDeviceException;
 
     List<? extends Operation> getOperations(DeviceIdentifier deviceId) throws OperationManagementException;
 

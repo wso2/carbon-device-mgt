@@ -26,13 +26,14 @@ import org.wso2.carbon.device.mgt.common.operation.mgt.Activity;
 import java.util.ArrayList;
 import java.util.List;
 
-@ApiModel(value = "List of activities", description = "This contains a set of activities that matches a given " +
-        "criteria as a collection")
+@ApiModel(value = "List of activities", description = "This contains a set of activities that matches a given"
+        + " criteria as a collection")
 public class ActivityList extends BasePaginatedResult {
 
     private List<Activity> activities;
 
-    @ApiModelProperty(value = "List of devices returned")
+    @ApiModelProperty(value = "Returns the list of activities that match the offset and limit parameter values"
+            + " that were specified.")
     @JsonProperty("activities")
     public List<Activity> getList() {
         return activities;
@@ -46,10 +47,7 @@ public class ActivityList extends BasePaginatedResult {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("{\n");
-
         sb.append("  count: ").append(getCount()).append(",\n");
-        sb.append("  next: ").append(getNext()).append(",\n");
-        sb.append("  previous: ").append(getPrevious()).append(",\n");
         sb.append("  devices: [").append(activities).append("\n");
         sb.append("]}\n");
         return sb.toString();

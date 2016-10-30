@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.wso2.carbon.apimgt.annotations.api.Permission;
+import org.wso2.carbon.apimgt.annotations.api.Scope;
 import org.wso2.carbon.certificate.mgt.jaxrs.beans.ErrorResponse;
 
 import javax.ws.rs.*;
@@ -46,7 +47,8 @@ public interface CertificateMgtService {
                             message = "Internal Server Error. \n Error occurred while retrieving signed certificate.",
                             response = ErrorResponse.class)
             })
-    @Permission(scope = "sign-csr", permissions = {"/permission/admin/device-mgt/scep/sign-csr"})
+    @Scope(key = "certificate:sign-csr", name = "Sign CSR", description = "")
+    @Permission(name = "Sign CSR", permission = "/device-mgt/certificates/manage")
     Response getSignedCertFromCSR(
             @ApiParam(
                     name = "If-Modified-Since",

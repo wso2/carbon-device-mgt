@@ -25,6 +25,7 @@ import org.wso2.carbon.device.mgt.common.EnrolmentInfo.Status;
 import org.wso2.carbon.device.mgt.common.PaginationRequest;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -123,6 +124,18 @@ public interface DeviceDAO {
      * @throws DeviceManagementDAOException
      */
     Device getDevice(DeviceIdentifier deviceIdentifier, int tenantId) throws DeviceManagementDAOException;
+
+    /**
+     * This method is used to retrieve a device of a given device-identifier and tenant-id.
+     *
+     * @param deviceIdentifier device id.
+     * @param ifModifiedSince last modified time.
+     * @param tenantId tenant id.
+     * @return returns the device object.
+     * @throws DeviceManagementDAOException
+     */
+    Device getDevice(DeviceIdentifier deviceIdentifier, Date ifModifiedSince, int tenantId) throws
+                                                                                            DeviceManagementDAOException;
 
     /**
      * This method is used to retrieve a device of a given device-identifier, enrollment status and tenant-id.
@@ -320,6 +333,26 @@ public interface DeviceDAO {
      */
     EnrolmentInfo getEnrolment(DeviceIdentifier deviceId, String currentUser,
                                int tenantId) throws DeviceManagementDAOException;
+
+    /**
+     * This method is used to retrieve current enrollment of a given device.
+     *
+     * @param deviceId    device id.
+     * @param tenantId    tenant id.
+     * @return returns EnrolmentInfo object.
+     * @throws DeviceManagementDAOException
+     */
+    EnrolmentInfo getEnrolment(DeviceIdentifier deviceId, int tenantId) throws DeviceManagementDAOException;
+
+    /**
+     * This method is used to retrieve current active enrollment of a given device and tenant id.
+     *
+     * @param deviceId    device id.
+     * @param tenantId    tenant id.
+     * @return returns EnrolmentInfo object.
+     * @throws DeviceManagementDAOException
+     */
+    EnrolmentInfo getActiveEnrolment(DeviceIdentifier deviceId, int tenantId) throws DeviceManagementDAOException;
 
     /**
      * This method is used to retrieve devices of a given enrollment status.

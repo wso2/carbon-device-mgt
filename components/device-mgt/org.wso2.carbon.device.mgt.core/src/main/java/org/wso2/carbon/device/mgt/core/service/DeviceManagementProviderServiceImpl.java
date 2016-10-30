@@ -352,8 +352,6 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         try {
             int tenantId = this.getTenantId();
             DeviceManagementDAOFactory.beginTransaction();
-
-            DeviceType type = deviceTypeDAO.getDeviceType(device.getType(), tenantId);
             Device currentDevice = deviceDAO.getDevice(deviceIdentifier, tenantId);
             device.setId(currentDevice.getId());
             device.getEnrolmentInfo().setId(currentDevice.getEnrolmentInfo().getId());
@@ -940,6 +938,30 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     }
 
     @Override
+    public HashMap<Integer, Device> getTenantedDevice(DeviceIdentifier deviceIdentifier) throws DeviceManagementException {
+        HashMap<Integer, Device> deviceHashMap;
+        try {
+            DeviceManagementDAOFactory.openConnection();
+            deviceHashMap = deviceDAO.getDevice(deviceIdentifier);
+            if (deviceHashMap == null) {
+                if (log.isDebugEnabled()) {
+                    log.debug("No device is found upon the type '" + deviceIdentifier.getType() + "' and id '" +
+                            deviceIdentifier.getId() + "'");
+                }
+                return null;
+            }
+        } catch (DeviceManagementDAOException e) {
+            throw new DeviceManagementException("Error occurred while obtaining the device for id " +
+                    "'" + deviceIdentifier.getId() + "'", e);
+        } catch (SQLException e) {
+            throw new DeviceManagementException("Error occurred while opening a connection to the data source", e);
+        } finally {
+            DeviceManagementDAOFactory.closeConnection();
+        }
+        return deviceHashMap;
+    }
+
+    @Override
     public Device getDevice(DeviceIdentifier deviceId) throws DeviceManagementException {
         Device device;
         try {
@@ -992,6 +1014,54 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         List<Sensor> deviceSensorList = this.getDeviceSensorList(deviceManager, device);
         if (deviceSensorList != null) {
             device.setSensors(deviceSensorList);
+        }
+        return device;
+    }
+
+    @Override
+    public Device getDevice(DeviceIdentifier deviceId, Date since) throws DeviceManagementException {
+        Device device;
+        try {
+            DeviceManagementDAOFactory.openConnection();
+            device = deviceDAO.getDevice(deviceId, since, this.getTenantId());
+            if (device == null) {
+                if (log.isDebugEnabled()) {
+                    log.debug("No device is found upon the type '" + deviceId.getType() + "' and id '" +
+                              deviceId.getId() + "'");
+                }
+                return null;
+            }
+            DeviceLocation location = deviceInfoDAO.getDeviceLocation(device.getId());
+            if (device.getDeviceInfo() != null) {
+                device.getDeviceInfo().setLocation(location);
+            }
+
+            List<Application> applications = applicationDAO.getInstalledApplications(device.getId());
+            device.setApplications(applications);
+        } catch (DeviceManagementDAOException e) {
+            throw new DeviceManagementException("Error occurred while obtaining the device for id " +
+                                                "'" + deviceId.getId() + "'", e);
+        } catch (SQLException e) {
+            throw new DeviceManagementException("Error occurred while opening a connection to the data source", e);
+        } catch (DeviceDetailsMgtDAOException e) {
+            throw new DeviceManagementException("Error occurred while fetching advanced device information", e);
+        } finally {
+            DeviceManagementDAOFactory.closeConnection();
+        }
+        // The changes made here to prevent unit tests getting failed. They failed because when running the unit
+        // tests there is no osgi services. So getDeviceManager() returns a null.
+        DeviceManager deviceManager = this.getDeviceManager(deviceId.getType());
+        if (deviceManager == null) {
+            if (log.isDebugEnabled()) {
+                log.debug("Device Manager associated with the device type '" + deviceId.getType() + "' is null. " +
+                          "Therefore, not attempting method 'getDevice'");
+            }
+            return device;
+        }
+        Device pluginSpecificInfo = deviceManager.getDevice(deviceId);
+        if (pluginSpecificInfo != null) {
+            device.setFeatures(pluginSpecificInfo.getFeatures());
+            device.setProperties(pluginSpecificInfo.getProperties());
         }
         return device;
     }
@@ -1143,10 +1213,14 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     public boolean setStatus(DeviceIdentifier deviceId, String currentOwner,
                              EnrolmentInfo.Status status) throws DeviceManagementException {
         try {
+            boolean success = false;
             DeviceManagementDAOFactory.beginTransaction();
             int tenantId = this.getTenantId();
             Device device = deviceDAO.getDevice(deviceId, tenantId);
-            boolean success = enrollmentDAO.setStatus(device.getId(), currentOwner, status, tenantId);
+            EnrolmentInfo enrolmentInfo = device.getEnrolmentInfo();
+            if (enrolmentInfo != null) {
+                success = enrollmentDAO.setStatus(enrolmentInfo.getId(), currentOwner, status, tenantId);
+            }
             DeviceManagementDAOFactory.commitTransaction();
             return success;
         } catch (DeviceManagementDAOException e) {
@@ -1156,6 +1230,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             throw new DeviceManagementException("Error occurred while initiating transaction", e);
         } finally {
             DeviceManagementDAOFactory.closeConnection();
+
         }
     }
 
@@ -1218,7 +1293,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
     @Override
     public Activity addOperation(String type, Operation operation,
-                                 List<DeviceIdentifier> devices) throws OperationManagementException {
+                                 List<DeviceIdentifier> devices) throws OperationManagementException, InvalidDeviceException {
         return pluginRepository.getOperationManager(type, this.getTenantId()).addOperation(operation, devices);
     }
 

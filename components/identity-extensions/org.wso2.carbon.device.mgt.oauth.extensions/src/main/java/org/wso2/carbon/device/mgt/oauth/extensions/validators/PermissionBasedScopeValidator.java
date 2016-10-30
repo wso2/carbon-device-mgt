@@ -60,7 +60,7 @@ public class PermissionBasedScopeValidator extends OAuth2ScopeValidator {
     @Override
     public boolean validateScope(AccessTokenDO accessTokenDO, String resource)
             throws IdentityOAuth2Exception {
-        boolean status = false;
+        boolean status = true;
         //Extract the url & http method
         int idx = resource.lastIndexOf(':');
         String url = resource.substring(0, idx);
@@ -80,6 +80,12 @@ public class PermissionBasedScopeValidator extends OAuth2ScopeValidator {
             Permission permission = permissionManagerService.getPermission(properties);
             User authzUser = accessTokenDO.getAuthzUser();
             if ((permission != null) && (authzUser != null)) {
+                if (permission.getPath() == null) {
+                    if (log.isDebugEnabled()) {
+                        log.debug("Permission is not defined for the resource '" + resource + "'");
+                    }
+                    return true;
+                }
                 String username = authzUser.getUserName();
                 String userStore = authzUser.getUserStoreDomain();
                 int tenantId = OAuthExtUtils.getTenantId(authzUser.getTenantDomain());

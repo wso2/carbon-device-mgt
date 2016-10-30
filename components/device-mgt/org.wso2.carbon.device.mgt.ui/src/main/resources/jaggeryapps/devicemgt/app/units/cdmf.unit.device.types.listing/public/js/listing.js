@@ -41,11 +41,11 @@ $(document).ready(function () {
 
     /* for device list sorting drop down */
     $(".ctrl-filter-type-switcher").popover({
-        html : true,
-        content : function () {
-            return $("#content-filter-types").html();
-        }
-    });
+                                                html : true,
+                                                content : function () {
+                                                    return $("#content-filter-types").html();
+                                                }
+                                            });
 
     $(".ast-container").on("click", ".claim-btn", function(e){
         e.stopPropagation();
@@ -142,7 +142,13 @@ function loadDevices(searchType, searchParam){
         }
     } else {
         $('#device-grid').addClass('hidden');
-        $('#device-listing-status-msg').text('No device is available to be displayed.');
+        $('#device-listing-status-msg').html(
+            '<div class="col-centered text-center"><h3 class="text-muted"><i class="fw fw-mobile fw-3x"></i>' +
+            '</h3><h3 class="text-muted">No device type is available to be displayed.</h3>' +
+            '<a href="https://docs.wso2.com/display/IoTS100/Quick+Start+Guide" target="_blank" ' +
+            'class="btn-operations btn-default"><span class="fw-stack">' +
+            '<i class="fw fw-ring fw-stack-2x"></i> <i class="fw fw-document fw-stack-1x"></i></span>' +
+            'Quick Startup Guide</a></div>');
     }
 
     $(".icon .text").res_text(0.2);
@@ -197,11 +203,11 @@ $(document).ready(function () {
 
     /* for device list sorting drop down */
     $(".ctrl-filter-type-switcher").popover({
-        html : true,
-        content : function () {
-            return $("#content-filter-types").html();
-        }
-    });
+                                                html : true,
+                                                content : function () {
+                                                    return $("#content-filter-types").html();
+                                                }
+                                            });
 
     $(".ast-container").on("click", ".claim-btn", function(e){
         e.stopPropagation();
@@ -223,17 +229,17 @@ $(document).ready(function () {
     $("[data-toggle=popover]").popover();
 
     $(".ctrl-filter-type-switcher").popover({
-        html : true,
-        content: function() {
-            return $('#content-filter-types').html();
-        }
-    });
+                                                html : true,
+                                                content: function() {
+                                                    return $('#content-filter-types').html();
+                                                }
+                                            });
 
     $('#nav').affix({
-        offset: {
-            top: $('header').height()
-        }
-    });
+                        offset: {
+                            top: $('header').height()
+                        }
+                    });
 
     $(document).on("click", "tr.clickable-row", function(){
         window.document.location =  $(this).data('href');

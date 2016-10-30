@@ -28,28 +28,20 @@ function onRequest(context) {
     });
 
     var page = {};
-    var userModule = require("/app/modules/user.js")["userModule"];
+    var userModule = require("/app/modules/business-controllers/user.js")["userModule"];
     var deviceMgtProps = require("/app/modules/conf-reader/main.js")["conf"];
 
-    page["adminUser"] = deviceMgtProps["adminUser"];
-    page["permissions"] = userModule.getUIPermissions();
+    page["currentUser"] = userModule.getCarbonUser().username;
+    page["adminUser"] = deviceMgtProps["adminUser"].split("@")[0];
 
-    if (userModule.isAuthorized("/permission/admin/device-mgt/users/remove")) {
-        page["removePermitted"] = true;
+    if (userModule.isAuthorized("/permission/admin/device-mgt/users/manage")) {
+        page.canManage = true;
     }
 
-    if (userModule.isAuthorized("/permission/admin/device-mgt/users/update")) {
-        page["editPermitted"] = true;
-    }
     if (userModule.isAuthorized("/permission/admin/device-mgt/users/view")) {
-        page["viewPermitted"] = true;
+        page.canView = true;
     }
-    if (userModule.isAuthorized("/permission/admin/device-mgt/users/invite")) {
-        page["invitePermitted"] = true;
-    }
-    if (userModule.isAuthorized("/permission/admin/device-mgt/users/reset-password")) {
-        page["resetPasswordPermitted"] = true;
-    }
+
 
     return page;
 }

@@ -67,7 +67,7 @@ public class DeviceGroupConstants {
 
     public static class Permissions {
         public static final String[] DEFAULT_ADMIN_PERMISSIONS =
-                {"/permission/device-mgt/admin/groups", "/permission/device-mgt/user/groups"};
+                {"/permission/device-mgt/groups", "/permission/device-mgt/user/groups"};
         public static final String[] DEFAULT_OPERATOR_PERMISSIONS =
                 {"/permission/device-mgt/user/groups/device_operation"};
         public static final String[] DEFAULT_STATS_MONITOR_PERMISSIONS =

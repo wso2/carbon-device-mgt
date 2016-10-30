@@ -31,11 +31,11 @@ import javax.ws.rs.core.Response;
 /**
  * General Tenant Configuration REST-API.
  */
-@API(name = "Configuration", version = "1.0.0", context = "/devicemgt_admin/configuration", tags = {"devicemgt_admin"})
+@API(name = "ConfigurationManagement", version = "1.0.0", context = "/api/device-mgt/v1.0/configuration", tags = {"device_management"})
 
 @Path("/configuration")
-@Api(value = "Configuration Management", description = "General Tenant Configuration management capabilities are exposed " +
-        "through this API")
+@Api(value = "Configuration Management", description = "The general platform configuration management capabilities are exposed " +
+        "through this API.")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public interface ConfigurationManagementService {
@@ -44,14 +44,16 @@ public interface ConfigurationManagementService {
     @ApiOperation(
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
-            value = "Get the general platform configurations.",
-            notes = "Get the general platform level configuration details.",
+            value = "Getting General Platform Configurations",
+            notes = "WSO2 EMM monitors policies to verify that the devices comply with the policies enforced on them. " +
+                    "General platform configurations include the settings on how often the device need to be monitored. " +
+                    "Using this REST API you can get the general platform level configurations.",
             tags = "Configuration Management")
     @ApiResponses(
             value = {
             @ApiResponse(
                     code = 200,
-                    message = "OK. \n Successfully fetched general platform configuration.",
+                    message = "OK. \n Successfully fetched the general platform configurations.",
                     response = PlatformConfiguration.class,
                     responseContainer = "List",
                     responseHeaders = {
@@ -70,26 +72,23 @@ public interface ConfigurationManagementService {
             ),
             @ApiResponse(
                     code = 304,
-                    message = "Not Modified. \n Empty body because the client has already the latest version of " +
-                            "the requested resource."),
+                    message = "Not Modified. \n Empty body because the client already has the latest version of the requested resource."),
             @ApiResponse(
                     code = 406,
-                    message = "Not Acceptable.\n The requested media type is not supported"),
+                    message = "Not Acceptable.\n The requested media type is not supported."),
             @ApiResponse(
                     code = 500,
                     message = "Internal Server Error. \n Server error occurred while fetching the general " +
-                            "platform configuration.",
+                            "platform configurations.",
                     response = ErrorResponse.class)
-            }
-    )
-    @Permission(
-            scope = "configuration-view",
-            permissions = {"/permission/admin/device-mgt/admin/platform-configs/view"}
-    )
+    })
+    @Permission(name = "View Configurations", permission = "/device-mgt/platform-configurations/view")
     Response getConfiguration(
             @ApiParam(
                     name = "If-Modified-Since",
-                    value = "Validates if the requested variant has not been modified since the time specified",
+                    value = "Checks if the requested variant was modified, since the specified date-time.\n" +
+                            "Provide the value in the following format: EEE, d MMM yyyy HH:mm:ss Z." +
+                            "Example: Mon, 05 Jan 2014 15:10:00 +0200",
                     required = false)
             @HeaderParam("If-Modified-Since")
                     String ifModifiedSince);
@@ -99,14 +98,16 @@ public interface ConfigurationManagementService {
             consumes = MediaType.APPLICATION_JSON,
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "PUT",
-            value = "Update General Platform Configurations.",
-            notes = "This resource is used to update the general platform configuration.",
+            value = "Updating General Platform Configurations",
+            notes = "WSO2 EMM monitors policies to verify that the devices comply with the policies enforced on them." +
+                    "General platform configurations include the settings on how often the the device need to be monitored." +
+                    "Using this REST API you can update the general platform level configurations.",
             tags = "Configuration Management")
     @ApiResponses(
             value = {
             @ApiResponse(
                     code = 200,
-                    message = "OK. \n General platform configuration has been updated successfully",
+                    message = "OK. \n Successfully updated the general platform configurations.",
                     responseHeaders = {
                             @ResponseHeader(
                                     name = "Content-Type",
@@ -124,22 +125,18 @@ public interface ConfigurationManagementService {
                     message = "Bad Request. \n Invalid request or validation error."),
             @ApiResponse(
                     code = 415,
-                    message = "Unsupported media type. \n The entity of the request was in a not supported format."),
+                    message = "Unsupported media type. \n The format of the requested entity was not supported."),
             @ApiResponse(
                     code = 500,
                     message = "Internal Server Error. \n " +
-                            "Server error occurred while modifying general platform configuration.",
+                            "Server error occurred while modifying the general platform configurations.",
                     response = ErrorResponse.class)
-            }
-    )
-    @Permission(
-            scope = "configuration-modify",
-            permissions = {"/permission/admin/device-mgt/admin/platform-configs/modify"}
-    )
+    })
+    @Permission(name = "Manage configurations", permission = "/device-mgt/platform-configurations/manage")
     Response updateConfiguration(
             @ApiParam(
                     name = "configuration",
-                    value = "The required properties to be updated in the platform configuration.",
+                    value = "The properties required to update the platform configurations.",
                     required = true)
                     PlatformConfiguration configuration);
 

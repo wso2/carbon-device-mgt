@@ -17,12 +17,11 @@
   ~ under the License.
   -->
 
-<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:jaxrs="http://cxf.apache.org/jaxrs"
-       xmlns="http://www.springframework.org/schema/beans"
-       xsi:schemaLocation="
-         http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
-         http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd">
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:jaxrs="http://cxf.apache.org/jaxrs" xmlns:cxf="http://cxf.apache.org/core"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+         http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd http://cxf.apache.org/core http://cxf.apache.org/schemas/core.xsd">
 
     <jaxrs:server id="services" address="/">
         <jaxrs:serviceBeans>
@@ -36,7 +35,7 @@
             <ref bean="userManagementService"/>
             <ref bean="userManagementAdminService"/>
             <!--<ref bean="groupManagementService"/>-->
-            <ref bean="groupManagementAdminService"/>
+            <!--ref bean="groupManagementAdminService"/> -->
             <ref bean="applicationManagementAdminService"/>
             <ref bean="deviceTypeManagementAdminService"/>
             <ref bean="dashboardServiceBean"/>
@@ -51,6 +50,8 @@
 
     <bean id="swaggerWriter" class="io.swagger.jaxrs.listing.SwaggerSerializers" />
     <bean id="swaggerResource" class="io.swagger.jaxrs.listing.ApiListingResource" />
+    <bean id="ValidationInterceptor" class="org.wso2.carbon.device.mgt.jaxrs.exception.ValidationInterceptor"/>
+    <bean id="GlobalExceptionMapper" class="org.wso2.carbon.device.mgt.jaxrs.exception.GlobalThrowableMapper"/>
 
     <bean id="swaggerConfig" class="io.swagger.jaxrs.config.BeanConfig">
         <property name="resourcePackage" value="org.wso2.carbon.device.mgt.jaxrs"/>
@@ -72,14 +73,20 @@
     <bean id="policyManagementService" class="org.wso2.carbon.device.mgt.jaxrs.service.impl.PolicyManagementServiceImpl"/>
     <bean id="roleManagementService" class="org.wso2.carbon.device.mgt.jaxrs.service.impl.RoleManagementServiceImpl"/>
     <bean id="userManagementService" class="org.wso2.carbon.device.mgt.jaxrs.service.impl.UserManagementServiceImpl"/>
-    <!--<bean id="groupManagementService" class="org.wso2.carbon.device.mgt.jaxrs.service.impl.GroupManagementServiceImpl"/>-->
+    <!--bean id="groupManagementService" class="org.wso2.carbon.device.mgt.jaxrs.service.impl.GroupManagementServiceImpl"/>-->
     <bean id="deviceManagementAdminService" class="org.wso2.carbon.device.mgt.jaxrs.service.impl.admin.DeviceManagementAdminServiceImpl"/>
     <bean id="applicationManagementAdminService" class="org.wso2.carbon.device.mgt.jaxrs.service.impl.admin.ApplicationManagementAdminServiceImpl"/>
-    <bean id="groupManagementAdminService" class="org.wso2.carbon.device.mgt.jaxrs.service.impl.admin.GroupManagementAdminServiceImpl"/>
+    <!--bean id="groupManagementAdminService" class="org.wso2.carbon.device.mgt.jaxrs.service.impl.admin.GroupManagementAdminServiceImpl"/>-->
     <bean id="userManagementAdminService" class="org.wso2.carbon.device.mgt.jaxrs.service.impl.admin.UserManagementAdminServiceImpl"/>
     <bean id="dashboardServiceBean" class="org.wso2.carbon.device.mgt.jaxrs.service.impl.DashboardImpl"/>
-    <bean id="deviceTypeManagementAdminService" class="org.wso2.carbon.device.mgt.jaxrs.service.impl.admin.DeviceTypeManagementServiceImpl"/>
+    <bean id="deviceTypeManagementAdminService" class="org.wso2.carbon.device.mgt.jaxrs.service.impl.DeviceTypeManagementServiceImpl"/>
     <bean id="jsonProvider" class="org.wso2.carbon.device.mgt.jaxrs.common.GsonMessageBodyHandler"/>
+
     <!--<bean id="errorHandler" class="org.wso2.carbon.device.mgt.jaxrs.common.ErrorHandler"/>-->
+    <cxf:bus>
+        <cxf:inInterceptors>
+            <ref bean="ValidationInterceptor"/>
+        </cxf:inInterceptors>
+    </cxf:bus>
 
 </beans>

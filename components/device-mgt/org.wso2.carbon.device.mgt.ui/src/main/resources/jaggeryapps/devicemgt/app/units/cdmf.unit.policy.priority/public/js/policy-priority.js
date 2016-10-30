@@ -1,17 +1,17 @@
 /*
- * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied. See the License for the
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
  */
@@ -30,9 +30,9 @@ if (saveNewPrioritiesButtonEnabled) {
  * Modal related stuff are as follows.
  */
 
-var modalPopup = ".wr-modalpopup";
-var modalPopupContainer = modalPopup + " .modalpopup-container";
-var modalPopupContent = modalPopup + " .modalpopup-content";
+var modalPopup = ".modal";
+var modalPopupContainer = modalPopup + " .modal-content";
+var modalPopupContent = modalPopup + " .modal-content";
 var body = "body";
 
 /*
@@ -50,8 +50,8 @@ function setPopupMaxHeight() {
  * show popup function.
  */
 function showPopup() {
-    $(modalPopup).show();
-    setPopupMaxHeight();
+    $(modalPopup).modal('show');
+    //setPopupMaxHeight();
 }
 
 /*
@@ -59,7 +59,9 @@ function showPopup() {
  */
 function hidePopup() {
     $(modalPopupContent).html('');
-    $(modalPopup).hide();
+    $(modalPopup).modal('hide');
+    $('body').removeClass('modal-open').css('padding-right','0px');
+    $('.modal-backdrop').remove();
 }
 
 $(document).ready(function () {
@@ -78,59 +80,79 @@ $(document).ready(function () {
             newPolicyPriorityList.push(policy);
         }
 
-        var updatePolicyAPI = "/devicemgt_admin/policies/priorities";
+        var updatePolicyAPI = "/api/device-mgt/v1.0/policies/priorities";
         invokerUtil.put(
             updatePolicyAPI,
             newPolicyPriorityList,
-            function () {
-                $(modalPopupContent).html($('#save-policy-priorities-success-content').html());
-                showPopup();
-                $("a#save-policy-priorities-success-link").click(function () {
-                    hidePopup();
-                });
+            // on success
+            function (data, textStatus, jqXHR) {
+                if (jqXHR.status == 200) {
+                    modalDialog.header('Done. New Policy priorities were successfully updated.');
+                    modalDialog.footer('<div class="buttons"><a href="javascript:void(0)" ' +
+                        'id="save-policy-priorities-success-link" class="btn-operations">Ok</a></div>');
+                    modalDialog.show();
+                    $("a#save-policy-priorities-success-link").click(function () {
+                        modalDialog.hide();
+                    });
+                    $(applyChangesBtn).prop("disabled", false);
+                }
             },
-            function () {
-                $("#save-policy-priorities-error-content").find(".message-from-server").html(
-                        "Message From Server  :  " + data["statusText"]);
-                $(modalPopupContent).html($('#save-policy-priorities-error-content').html());
-                showPopup();
-                $("a#save-policy-priorities-error-link").click(function () {
-                    hidePopup();
-                });
+            // on error
+            function (jqXHR) {
+                if (jqXHR.status == 400 || jqXHR.status == 500) {
+                    modalDialog.header('An unexpected error occurred. Please try again later.');
+                    modalDialog.footer('<div class="buttons"><a href="javascript:void(0)" ' +
+                        'id="save-policy-priorities-error-link" class="btn-operations">Ok</a></div>');
+                    modalDialog.showAsError();                    
+                    $("a#save-policy-priorities-error-link").click(function () {
+                        modalDialog.hide();
+                    });
+                }
             }
         );
     });
 
     $(applyChangesBtn).click(function () {
-        var applyPolicyChangesAPI = "/devicemgt_admin/policies/apply-changes";
-        $(modalPopupContent).html($('#change-policy-modal-content').html());
-        showPopup();
+        var applyPolicyChangesAPI = "/api/device-mgt/v1.0/policies/apply-changes";
+        modalDialog.header('Do you really want to apply changes to all policies?');
+        modalDialog.footer('<div class="buttons"><a href="javascript:void(0)" id="apply-changes-yes-link" ' +
+            'class="btn-operations">Yes</a><a href="javascript:void(0)" id="apply-changes-cancel-link" ' +
+            'class="btn-operations">No</a></div>');
+        modalDialog.show();
 
-        $("a#change-policy-yes-link").click(function () {
+        $("a#apply-changes-yes-link").click(function () {
             invokerUtil.put(
                 applyPolicyChangesAPI,
                 null,
                 // on success
-                function () {
-                    $(modalPopupContent).html($('#change-policy-success-content').html());
-                    showPopup();
-                    $("a#change-policy-success-link").click(function () {
-                        hidePopup();
-                    });
+                function (data, textStatus, jqXHR) {
+                    if (jqXHR.status == 200) {
+                        modalDialog.header('Done. Changes applied successfully.');
+                        modalDialog.footer('<div class="buttons"><a href="javascript:void(0)" ' +
+                            'id="apply-changes-success-link" class="btn-operations">Ok</a></div>');
+                        modalDialog.show();
+                        $("a#apply-changes-success-link").click(function () {
+                            modalDialog.hide();
+                        });
+                    }
                 },
                 // on error
-                function () {
-                    $(modalPopupContent).html($('#change-policy-error-content').html());
-                    showPopup();
-                    $("a#change-policy-error-link").click(function () {
-                        hidePopup();
-                    });
+                function (jqXHR) {
+                    if (jqXHR.status == 500) {
+                        modalDialog.header('An unexpected error occurred. Please try again later.');
+                        modalDialog.footer('<div class="buttons"><a href="javascript:void(0)" ' +
+                            'id="apply-changes-error-link" class="btn-operations">Ok</a></div>');
+                        modalDialog.showAsError();
+                        $("a#apply-changes-error-link").click(function () {
+                            modalDialog.hide();
+                        });
+                    }
                 }
             );
         });
 
-        $("a#change-policy-cancel-link").click(function () {
-            hidePopup();
+        $("a#apply-changes-cancel-link").click(function () {
+            modalDialog.hide();
         });
     });
 

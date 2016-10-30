@@ -29,6 +29,7 @@
             <ref bean="certificateServiceBean"/>
             <ref bean="swaggerResource"/>
         </jaxrs:serviceBeans>
+
         <jaxrs:providers>
             <ref bean="jsonProvider"/>
             <ref bean="errorHandler"/>
@@ -44,7 +45,7 @@
         <property name="version" value="1.0.0"/>
         <property name="host" value="localhost:9443"/>
         <property name="schemes" value="https" />
-        <property name="basePath" value="/api/certificate-mgt/v1.0"/>
+        <property name="basePath" value="/api-certificate-mgt-v1.0"/>
         <property name="title" value="Certificate Management Admin Service API Definitions"/>
         <property name="contact" value="dev@wso2.org"/>
         <property name="license" value="Apache 2.0"/>

@@ -21,13 +21,13 @@
     <parent>
         <groupId>org.wso2.carbon.devicemgt</groupId>
         <artifactId>certificate-mgt</artifactId>
-        <version>1.1.2-SNAPSHOT</version>
+        <version>1.2.6-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>org.wso2.carbon.certificate.mgt.core</artifactId>
-    <version>1.1.2-SNAPSHOT</version>
+    <version>1.2.6-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <name>WSO2 Carbon - Certificate Management Core</name>
     <description>WSO2 Carbon - Certificate Management Core</description>
@@ -57,13 +57,14 @@
                             org.apache.commons.logging,
                             javax.security.auth.x500,
                             javax.xml.*,
+			                javax.xml.parsers;version="${javax.xml.parsers.import.pkg.version}";resolution:=optional,
                             org.apache.commons.codec.binary,
                             org.bouncycastle.asn1,
                             org.bouncycastle.asn1.x500,
                             org.bouncycastle.asn1.x509,
                             org.bouncycastle.asn1.pkcs,
-                            org.bouncycastle.cert,
-                            org.bouncycastle.cert.jcajce,
+                            org.bouncycastle.cert; version="${bcprov.wso2.version.range}",
+                            org.bouncycastle.cert.jcajce; version="${bcprov.wso2.version.range}",
                             org.bouncycastle.cms,
                             org.bouncycastle.jce.provider,
                             org.bouncycastle.operator,
@@ -89,6 +90,7 @@
                             org.wso2.carbon.device.mgt.common.*,
                             io.swagger.annotations.*;resolution:=optional,
                             org.wso2.carbon.device.mgt.core.*,
+                            org.wso2.carbon.registry.indexing.*,
                             <!--org.bouncycastle.pkcs.jcajce-->
                         </Import-Package>
                         <Export-Package>
@@ -134,19 +136,15 @@
             <artifactId>org.wso2.carbon.logging</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.bouncycastle.wso2</groupId>
+            <groupId>org.wso2.orbit.org.bouncycastle</groupId>
             <artifactId>bcprov-jdk15on</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.bouncycastle.wso2</groupId>
+            <groupId>org.wso2.orbit.org.bouncycastle</groupId>
             <artifactId>bcpkix-jdk15on</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.bouncycastle.wso2</groupId>
-            <artifactId>bcmail-jdk15on</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.google.code.jscep.wso2</groupId>
+            <groupId>org.wso2.orbit.com.google.code.jscep</groupId>
             <artifactId>jscep</artifactId>
         </dependency>
         <dependency>
@@ -177,9 +175,16 @@
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.user.core</artifactId>
-            <version>4.4.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.registry</groupId>
+            <artifactId>org.wso2.carbon.registry.indexing</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
-
 </project>
 

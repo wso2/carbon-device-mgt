@@ -73,18 +73,16 @@ public class EnrollmentDAOImpl implements EnrollmentDAO {
         int status = -1;
         try {
             conn = this.getConnection();
-            String sql = "UPDATE DM_ENROLMENT SET OWNERSHIP = ?, STATUS = ?, " +
-                    "DATE_OF_ENROLMENT = ?, DATE_OF_LAST_UPDATE = ? WHERE DEVICE_ID = ? AND OWNER = ? AND TENANT_ID = ?" +
-                         " AND ID = ?";
+            String sql = "UPDATE DM_ENROLMENT SET OWNERSHIP = ?, STATUS = ?, DATE_OF_LAST_UPDATE = ? WHERE DEVICE_ID = ?" +
+                         " AND OWNER = ? AND TENANT_ID = ? AND ID = ?";
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, enrolmentInfo.getOwnership().toString());
             stmt.setString(2, enrolmentInfo.getStatus().toString());
-            stmt.setTimestamp(3, new Timestamp(enrolmentInfo.getDateOfEnrolment()));
-            stmt.setTimestamp(4, new Timestamp(new Date().getTime()));
-            stmt.setInt(5, deviceId);
-            stmt.setString(6, enrolmentInfo.getOwner());
-            stmt.setInt(7, tenantId);
-            stmt.setInt(8, enrolmentInfo.getId());
+            stmt.setTimestamp(3, new Timestamp(new Date().getTime()));
+            stmt.setInt(4, deviceId);
+            stmt.setString(5, enrolmentInfo.getOwner());
+            stmt.setInt(6, tenantId);
+            stmt.setInt(7, enrolmentInfo.getId());
             stmt.executeUpdate();
             return status;
         } catch (SQLException e) {
@@ -102,14 +100,12 @@ public class EnrollmentDAOImpl implements EnrollmentDAO {
         int status = -1;
         try {
             conn = this.getConnection();
-            String sql = "UPDATE DM_ENROLMENT SET OWNERSHIP = ?, STATUS = ?, " +
-                         "DATE_OF_ENROLMENT = ?, DATE_OF_LAST_UPDATE = ? WHERE ID = ?";
+            String sql = "UPDATE DM_ENROLMENT SET OWNERSHIP = ?, STATUS = ?, DATE_OF_LAST_UPDATE = ? WHERE ID = ?";
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, enrolmentInfo.getOwnership().toString());
             stmt.setString(2, enrolmentInfo.getStatus().toString());
-            stmt.setTimestamp(3, new Timestamp(enrolmentInfo.getDateOfEnrolment()));
-            stmt.setTimestamp(4, new Timestamp(new Date().getTime()));
-            stmt.setInt(5, enrolmentInfo.getId());
+            stmt.setTimestamp(3, new Timestamp(new Date().getTime()));
+            stmt.setInt(4, enrolmentInfo.getId());
             stmt.executeUpdate();
             return status;
         } catch (SQLException e) {
@@ -149,16 +145,16 @@ public class EnrollmentDAOImpl implements EnrollmentDAO {
     }
 
     @Override
-    public boolean setStatus(int deviceId, String currentOwner, EnrolmentInfo.Status status,
+    public boolean setStatus(int enrolmentID, String currentOwner, EnrolmentInfo.Status status,
                              int tenantId) throws DeviceManagementDAOException {
         Connection conn;
         PreparedStatement stmt = null;
         try {
             conn = this.getConnection();
-            String sql = "UPDATE DM_ENROLMENT SET STATUS = ? WHERE DEVICE_ID = ? AND OWNER = ? AND TENANT_ID = ?";
+            String sql = "UPDATE DM_ENROLMENT SET STATUS = ? WHERE ID = ? AND OWNER = ? AND TENANT_ID = ?";
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, status.toString());
-            stmt.setInt(2, deviceId);
+            stmt.setInt(2, enrolmentID);
             stmt.setString(3, currentOwner);
             stmt.setInt(4, tenantId);
             stmt.executeUpdate();

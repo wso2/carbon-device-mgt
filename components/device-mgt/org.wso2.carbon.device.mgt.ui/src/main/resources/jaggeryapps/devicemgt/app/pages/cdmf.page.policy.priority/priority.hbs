@@ -15,7 +15,7 @@
   specific language governing permissions and limitations
   under the License.
 }}
-{{unit "cdmf.unit.ui.title" pageTitle="Policy Management"}}
+{{unit "cdmf.unit.ui.title" pageTitle="Policy Management | Policy Priorities"}}
 
 {{#zone "breadcrumbs"}}
     <li>
@@ -24,12 +24,28 @@
         </a>
     </li>
     <li>
+        <!--suppress HtmlUnknownTarget -->
         <a href="{{@app.context}}/policies">
             Policies
+        </a>
+    </li>
+    <li>
+        <!--suppress HtmlUnknownTarget -->
+        <a href="{{@app.context}}/policy/priority">
+            Priorities
         </a>
     </li>
 {{/zone}}
 
 {{#zone "content"}}
-    {{unit "cdmf.unit.policy.priority"}}
+    {{#if isAuthorized}}
+        {{unit "cdmf.unit.policy.priority"}}
+    {{else}}
+        <h1 class="page-sub-title">
+            Permission Denied
+        </h1>
+        <br>
+        You not authorized to enter Policy Management Section.
+        <br>
+    {{/if}}
 {{/zone}}

@@ -18,9 +18,6 @@
 
 package org.wso2.carbon.device.mgt.core.app.mgt;
 
-import org.apache.axis2.AxisFault;
-import org.apache.axis2.context.ConfigurationContext;
-import org.apache.axis2.context.ConfigurationContextFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.CarbonContext;
@@ -30,18 +27,10 @@ import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManagementException;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Activity;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
-import org.wso2.carbon.device.mgt.core.DeviceManagementConstants;
 import org.wso2.carbon.device.mgt.core.app.mgt.config.AppManagementConfig;
-import org.wso2.carbon.device.mgt.core.app.mgt.oauth.ServiceAuthenticator;
-import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
-import org.wso2.carbon.device.mgt.core.config.identity.IdentityConfigurations;
 import org.wso2.carbon.device.mgt.core.dao.*;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
-import org.wso2.carbon.identity.oauth.stub.OAuthAdminServiceException;
-import org.wso2.carbon.identity.oauth.stub.OAuthAdminServiceStub;
-import org.wso2.carbon.identity.oauth.stub.dto.OAuthConsumerAppDTO;
 
-import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -97,8 +86,8 @@ public class ApplicationManagerProviderServiceImpl implements ApplicationManagem
             if (deviceIds.size() > 0) {
                 type = deviceIds.get(0).getType().toLowerCase();
             }
-            Activity activity =  DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().
-                   addOperation(type, operation, deviceIds);
+            Activity activity = DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().
+                    addOperation(type, operation, deviceIds);
             DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().notifyOperationToDevices
                     (operation, deviceIds);
             return activity;
@@ -106,6 +95,8 @@ public class ApplicationManagerProviderServiceImpl implements ApplicationManagem
             throw new ApplicationManagementException("Error in add operation at app installation", e);
         } catch (DeviceManagementException e) {
             throw new ApplicationManagementException("Error in notify operation at app installation", e);
+        } catch (InvalidDeviceException e) {
+            throw new ApplicationManagementException("Invalid DeviceIdentifiers found.", e);
         }
     }
 
@@ -140,6 +131,8 @@ public class ApplicationManagerProviderServiceImpl implements ApplicationManagem
 
             return DeviceManagementDataHolder.getInstance().getDeviceManagementProvider()
                     .addOperation(type, operation, deviceIdentifierList);
+        } catch (InvalidDeviceException e) {
+            throw new ApplicationManagementException("Invalid DeviceIdentifiers found.", e);
         } catch (DeviceManagementException e) {
             throw new ApplicationManagementException("Error in get devices for user: " + userName +
                     " in app installation", e);
@@ -179,6 +172,8 @@ public class ApplicationManagerProviderServiceImpl implements ApplicationManagem
             }
             return DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().addOperation(type, operation,
                     deviceIdentifierList);
+        } catch (InvalidDeviceException e) {
+            throw new ApplicationManagementException("Invalid DeviceIdentifiers found.", e);
         } catch (DeviceManagementException e) {
             throw new ApplicationManagementException("Error in get devices for user role " + userRole +
                     " in app installation", e);
@@ -217,13 +212,14 @@ public class ApplicationManagerProviderServiceImpl implements ApplicationManagem
                     appIdsToRemove.add(installedApp.getId());
                 }
             }
-
+            applicationMappingDAO.removeApplicationMapping(device.getId(), appIdsToRemove, tenantId);
             Application installedApp;
             List<Integer> applicationIds = new ArrayList<>();
 
             for (Application application : applications) {
                 if (!installedAppList.contains(application)) {
-                    installedApp = applicationDAO.getApplication(application.getApplicationIdentifier(), tenantId);
+                    installedApp = applicationDAO.getApplication(application.getApplicationIdentifier(),
+                            application.getVersion(), tenantId);
                     if (installedApp == null) {
                         appsToAdd.add(application);
                     } else {
@@ -244,7 +240,7 @@ public class ApplicationManagerProviderServiceImpl implements ApplicationManagem
             if (log.isDebugEnabled()) {
                 log.debug("num of remove app Ids:" + appIdsToRemove.size());
             }
-            applicationMappingDAO.removeApplicationMapping(device.getId(), appIdsToRemove, tenantId);
+
             DeviceManagementDAOFactory.commitTransaction();
         } catch (DeviceManagementDAOException e) {
             DeviceManagementDAOFactory.rollbackTransaction();

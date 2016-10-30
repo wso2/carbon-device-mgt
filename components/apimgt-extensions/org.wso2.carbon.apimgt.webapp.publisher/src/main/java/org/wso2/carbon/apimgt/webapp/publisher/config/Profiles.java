@@ -41,16 +41,13 @@ import java.util.List;
 public class Profiles {
 
     @XmlElement(name = "Profile")
-    protected List<String> profile;
+    protected List<String> profile = new ArrayList<String>();;
 
     /**
      * Gets the value of the profile property.
      *
      */
     public List<String> getProfile() {
-        if (profile == null) {
-            profile = new ArrayList<String>();
-        }
         return this.profile;
     }
 

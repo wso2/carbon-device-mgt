@@ -39,10 +39,10 @@ var userModule = function () {
      * Get the carbon user object from the session. If not found - it will throw a user not found error.
      * @returns {object} carbon user object
      */
-    privateMethods.getCarbonUser = function () {
+    publicMethods.getCarbonUser = function () {
         var carbon = require("carbon");
         var carbonUser = session.get(constants["USER_SESSION_KEY"]);
-        var utility = require("/modules/utility.js")["utility"];
+        var utility = require("/app/modules/utility.js")["utility"];
         if (!carbonUser) {
             log.error("User object was not found in the session");
             throw constants["ERRORS"]["USER_NOT_FOUND"];
@@ -141,17 +141,54 @@ var userModule = function () {
         }
     };
 
+    /*
+     Get users count from backend services.
+     */
+    publicMethods.getUsersCount = function () {
+        var carbonUser = session.get(constants["USER_SESSION_KEY"]);
+        var utility = require("/app/modules/utility.js")["utility"];
+        if (!carbonUser) {
+            log.error("User object was not found in the session");
+            throw constants["ERRORS"]["USER_NOT_FOUND"];
+        }
+        try {
+            utility.startTenantFlow(carbonUser);
+            var url = devicemgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"] + "/users?offset=0&limit=1";
+            return serviceInvokers.XMLHttp.get(
+                url, function (responsePayload) {
+                    return parse(responsePayload["responseText"])["count"];
+                },
+                function (responsePayload) {
+                    log.error(responsePayload["responseText"]);
+                    return -1;
+                }
+            );
+        } catch (e) {
+            throw e;
+        } finally {
+            utility.endTenantFlow();
+        }
+    };
+
     /**
      * Return a User object from the backend by calling the JAX-RS
      * @param username
      * @returns {object} a response object with status and content on success.
      */
     publicMethods.getUser = function (username) {
-        var carbonUser = privateMethods.getCarbonUser();
+        var carbonUser = publicMethods.getCarbonUser();
+        var domain;
+        if (username.indexOf('/') > 0) {
+            domain = username.substr(0, username.indexOf('/'));
+            username = username.substr(username.indexOf('/') + 1);
+        }
         try {
             utility.startTenantFlow(carbonUser);
             var url = devicemgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"] + "/users/" +
                 encodeURIComponent(username);
+            if (domain) {
+                url += '?domain=' + encodeURIComponent(domain);
+            }
             var response = privateMethods.callBackend(url, constants["HTTP_GET"]);
             response["content"] = parse(response.content);
             response["userDomain"] = carbonUser.domain;
@@ -169,12 +206,24 @@ var userModule = function () {
      * @returns {object} a response object with status and content on success.
      */
     publicMethods.getRolesByUsername = function (username) {
-        var carbonUser = privateMethods.getCarbonUser();
+        var carbonUser = publicMethods.getCarbonUser();
+        var domain;
+        if (username.indexOf('/') > 0) {
+            domain = username.substr(0, username.indexOf('/'));
+            username = username.substr(username.indexOf('/') + 1);
+        }
         try {
             utility.startTenantFlow(carbonUser);
             var url = devicemgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"] + "/users/" +
                 encodeURIComponent(username) + "/roles";
-            return privateMethods.callBackend(url, constants["HTTP_GET"]);
+            if (domain) {
+                url += '?domain=' + encodeURIComponent(domain);
+            }
+            var response = privateMethods.callBackend(url, constants["HTTP_GET"]);
+            if (response.status == "success") {
+                response.content = parse(response.content).roles;
+            }
+            return response;
         } catch (e) {
             throw e;
         } finally {
@@ -218,12 +267,43 @@ var userModule = function () {
         }
         try {
             utility.startTenantFlow(carbonUser);
-            var url = devicemgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"] + "/roles";
+            var url = devicemgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"] +
+                "/roles?offset=0&limit=100&user-store=all";
             var response = privateMethods.callBackend(url, constants["HTTP_GET"]);
             if (response.status == "success") {
                 response.content = parse(response.content).roles;
             }
             return response;
+        } catch (e) {
+            throw e;
+        } finally {
+            utility.endTenantFlow();
+        }
+    };
+
+    /**
+     * Get User Roles count from user store (Internal roles not included).
+     */
+    publicMethods.getRolesCount = function () {
+        var carbonUser = session.get(constants["USER_SESSION_KEY"]);
+        var utility = require("/app/modules/utility.js")["utility"];
+        if (!carbonUser) {
+            log.error("User object was not found in the session");
+            throw constants["ERRORS"]["USER_NOT_FOUND"];
+        }
+        try {
+            utility.startTenantFlow(carbonUser);
+            var url = devicemgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"] +
+                "/roles?offset=0&limit=1&user-store=all";
+            return serviceInvokers.XMLHttp.get(
+                url, function (responsePayload) {
+                    return parse(responsePayload["responseText"])["count"];
+                },
+                function (responsePayload) {
+                    log.error(responsePayload["responseText"]);
+                    return -1;
+                }
+            );
         } catch (e) {
             throw e;
         } finally {
@@ -238,8 +318,7 @@ var userModule = function () {
      * Get User Roles from user store (Internal roles not included).
      * @returns {object} a response object with status and content on success.
      */
-    publicMethods.getRolesByUserStore = function () {
-        var ROLE_LIMIT = devicemgtProps["pageSize"];
+    publicMethods.getRolesByUserStore = function (userStore) {
         var carbonUser = session.get(constants["USER_SESSION_KEY"]);
         var utility = require("/app/modules/utility.js")["utility"];
         if (!carbonUser) {
@@ -248,7 +327,8 @@ var userModule = function () {
         }
         try {
             utility.startTenantFlow(carbonUser);
-            var url = devicemgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"] + "/roles?limit=" + ROLE_LIMIT;
+            var url = devicemgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"] +
+                "/roles?user-store=" + encodeURIComponent(userStore) + "&limit=100";
             var response = privateMethods.callBackend(url, constants["HTTP_GET"]);
             if (response.status == "success") {
                 response.content = parse(response.content).roles;
@@ -263,6 +343,7 @@ var userModule = function () {
 
     /**
      * Get Platforms.
+     * @deprecated moved this device module under getDeviceTypes.
      */
     //TODO Move this piece of logic out of user.js to somewhere else appropriate.
     publicMethods.getPlatforms = function () {
@@ -274,7 +355,7 @@ var userModule = function () {
         }
         try {
             utility.startTenantFlow(carbonUser);
-            var url = devicemgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"] + "/admin/device-types";
+            var url = devicemgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"] + "/device-types";
             var response = privateMethods.callBackend(url, constants["HTTP_GET"]);
             if (response.status == "success") {
                 response.content = parse(response.content);
@@ -293,16 +374,26 @@ var userModule = function () {
     publicMethods.getRole = function (roleName) {
         var carbonUser = session.get(constants["USER_SESSION_KEY"]);
         var utility = require("/app/modules/utility.js")["utility"];
+        var userStore;
         if (!carbonUser) {
             log.error("User object was not found in the session");
             throw constants["ERRORS"]["USER_NOT_FOUND"];
         }
         try {
             utility.startTenantFlow(carbonUser);
+            if (roleName.indexOf('/') > 0) {
+                userStore = roleName.substr(0, roleName.indexOf('/'));
+                roleName = roleName.substr(roleName.indexOf('/') + 1);
+            }
             var url = devicemgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"] +
                 "/roles/" + encodeURIComponent(roleName);
+            if (userStore) {
+                url += "?user-store=" + encodeURIComponent(userStore);
+            }
             var response = privateMethods.callBackend(url, constants["HTTP_GET"]);
-            response.content = parse(response.content);
+            if (response.status == "success") {
+                response.content = parse(response.content);
+            }
             return response;
         } catch (e) {
             throw e;
@@ -388,25 +479,25 @@ var userModule = function () {
 
     publicMethods.getUIPermissions = function () {
         var permissions = {};
-        if (publicMethods.isAuthorized("/permission/admin/device-mgt/admin/devices/list")) {
+        if (publicMethods.isAuthorized("/permission/admin/device-mgt/devices/list")) {
             permissions["LIST_DEVICES"] = true;
         }
         if (publicMethods.isAuthorized("/permission/admin/device-mgt/user/devices/list")) {
             permissions["LIST_OWN_DEVICES"] = true;
         }
-        if (publicMethods.isAuthorized("/permission/admin/device-mgt/admin/groups/list")) {
+        if (publicMethods.isAuthorized("/permission/admin/device-mgt/groups/list")) {
             permissions["LIST_ALL_GROUPS"] = true;
         }
         if (publicMethods.isAuthorized("/permission/admin/device-mgt/user/groups/list")) {
             permissions["LIST_GROUPS"] = true;
         }
-        if (publicMethods.isAuthorized("/permission/admin/device-mgt/admin/users/list")) {
+        if (publicMethods.isAuthorized("/permission/admin/device-mgt/users/list")) {
             permissions["LIST_USERS"] = true;
         }
-        if (publicMethods.isAuthorized("/permission/admin/device-mgt/admin/roles/list")) {
+        if (publicMethods.isAuthorized("/permission/admin/device-mgt/roles/list")) {
             permissions["LIST_ROLES"] = true;
         }
-        if (publicMethods.isAuthorized("/permission/admin/device-mgt/admin/policies/list")) {
+        if (publicMethods.isAuthorized("/permission/admin/device-mgt/policies/list")) {
             permissions["LIST_ALL_POLICIES"] = true;
         }
         if (publicMethods.isAuthorized("/permission/admin/device-mgt/user/policies/list")) {
@@ -418,28 +509,28 @@ var userModule = function () {
         if (publicMethods.isAuthorized("/permission/admin/device-mgt/user/groups/add")) {
             permissions["ADD_GROUP"] = true;
         }
-        if (publicMethods.isAuthorized("/permission/admin/device-mgt/admin/users/add")) {
+        if (publicMethods.isAuthorized("/permission/admin/device-mgt/users/add")) {
             permissions["ADD_USER"] = true;
         }
-        if (publicMethods.isAuthorized("/permission/admin/device-mgt/admin/users/remove")) {
+        if (publicMethods.isAuthorized("/permission/admin/device-mgt/users/remove")) {
             permissions["REMOVE_USER"] = true;
         }
-        if (publicMethods.isAuthorized("/permission/admin/device-mgt/admin/roles/add")) {
+        if (publicMethods.isAuthorized("/permission/admin/device-mgt/roles/add")) {
             permissions["ADD_ROLE"] = true;
         }
-        if (publicMethods.isAuthorized("/permission/admin/device-mgt/admin/policies/add")) {
+        if (publicMethods.isAuthorized("/permission/admin/device-mgt/policies/add")) {
             permissions["ADD_ADMIN_POLICY"] = true;
         }
         if (publicMethods.isAuthorized("/permission/admin/device-mgt/user/policies/add")) {
             permissions["ADD_POLICY"] = true;
         }
-        if (publicMethods.isAuthorized("/permission/admin/device-mgt/admin/policies/priority")) {
+        if (publicMethods.isAuthorized("/permission/admin/device-mgt/policies/priority")) {
             permissions["CHANGE_POLICY_PRIORITY"] = true;
         }
-        if (publicMethods.isAuthorized("/permission/admin/device-mgt/admin/dashboard/view")) {
+        if (publicMethods.isAuthorized("/permission/admin/device-mgt/dashboard/view")) {
             permissions["VIEW_DASHBOARD"] = true;
         }
-        if (publicMethods.isAuthorized("/permission/admin/device-mgt/admin/platform-configs/view")) {
+        if (publicMethods.isAuthorized("/permission/admin/device-mgt/platform-configs/view")) {
             permissions["TENANT_CONFIGURATION"] = true;
         }
 

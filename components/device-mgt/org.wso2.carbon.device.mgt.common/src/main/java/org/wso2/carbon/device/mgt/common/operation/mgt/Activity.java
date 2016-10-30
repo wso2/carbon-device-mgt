@@ -36,14 +36,16 @@ public class Activity {
     @ApiModelProperty(
             name = "activityId",
             value = "Activity identifier",
-            required = true)
+            required = true,
+            example = "ACTIVITY_1")
     @JsonProperty("activityId")
     private String activityId;
 
     @ApiModelProperty(
             name = "code",
             value = "Activity code",
-            required = true)
+            required = true,
+            example = "DEVICE_RING")
     @JsonProperty("code")
     private String code;
 
@@ -51,14 +53,16 @@ public class Activity {
             name = "type",
             value = "Activity type",
             required = true,
-            allowableValues = "CONFIG, MESSAGE, INFO, COMMAND, PROFILE, POLICY")
+            allowableValues = "CONFIG, MESSAGE, INFO, COMMAND, PROFILE, POLICY",
+            example = "COMMAND")
     @JsonProperty("type")
     private Type type;
 
     @ApiModelProperty(
             name = "createdTimeStamp",
             value = "Timestamp recorded when the activity took place",
-            required = true)
+            required = true,
+            example = "Thu Oct 06 11:18:47 IST 2016")
     @JsonProperty("createdTimestamp")
     private String createdTimeStamp;
 

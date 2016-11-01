@@ -76,7 +76,7 @@ public class CommandOperationDAOImpl extends GenericOperationDAOImpl {
         try {
             super.deleteOperation(id);
             Connection connection = OperationManagementDAOFactory.getConnection();
-            stmt = connection.prepareStatement("DELETE DM_COMMAND_OPERATION WHERE OPERATION_ID = ?");
+            stmt = connection.prepareStatement("DELETE FROM DM_COMMAND_OPERATION WHERE OPERATION_ID = ?");
             stmt.setInt(1, id);
             stmt.executeUpdate();
         } catch (SQLException e) {

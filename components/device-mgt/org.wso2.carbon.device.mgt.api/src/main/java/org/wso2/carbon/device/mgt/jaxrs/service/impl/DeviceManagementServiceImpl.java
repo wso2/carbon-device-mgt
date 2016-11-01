@@ -383,10 +383,13 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
             @PathParam("id") @Size(max = 45) String id,
             @HeaderParam("If-Modified-Since") String ifModifiedSince,
             @QueryParam("offset") int offset,
-            @QueryParam("limit") int limit) {
+            @QueryParam("limit") int limit,
+            @QueryParam("owner") String owner) {
         OperationList operationsList = new OperationList();
+        RequestValidationUtil.validateOwnerParameter(owner);
         RequestValidationUtil.validatePaginationParameters(offset, limit);
         PaginationRequest request = new PaginationRequest(offset, limit);
+        request.setOwner(owner);
         PaginationResult result;
         DeviceManagementProviderService dms;
         try {

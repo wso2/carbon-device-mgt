@@ -1525,6 +1525,11 @@
                 <artifactId>slf4j-simple</artifactId>
                 <version>${slf4j.simple.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.sun.jersey</groupId>
+                <artifactId>jersey-core</artifactId>
+                <version>${jersey.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -1850,6 +1855,7 @@
         <jsr311.version>1.1.1</jsr311.version>
         <commons.logging.version>1.2</commons.logging.version>
         <apache.http.version>4.5.1</apache.http.version>
+        <jersey.version>1.9</jersey.version>
 
         <!-- Neethi version-->
         <neethi.version>2.0.4</neethi.version>

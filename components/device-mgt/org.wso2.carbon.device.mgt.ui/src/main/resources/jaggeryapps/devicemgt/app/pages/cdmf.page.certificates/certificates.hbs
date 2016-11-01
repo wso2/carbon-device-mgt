@@ -16,6 +16,7 @@
   under the License.
 }}
 {{unit "cdmf.unit.ui.title" pageTitle="Add Certificate"}}
+{{unit "cdmf.unit.ui.modal"}}
 
 {{#zone "breadcrumbs"}}
     <li>
@@ -108,73 +109,6 @@
         <div class="sort-title">Sort By</div>
         <div class="sort-options">
             <a href="#">By Serial Number</a>
-        </div>
-    </div>
-
-    <div id="remove-certificate-modal-content" class="hide">
-        <div class="content">
-            <div class="row">
-                <div class="col-lg-5 col-md-6 col-centered">
-                    <h3>Do you really want to remove this certificate ?</h3>
-
-                    <div class="buttons">
-                        <a href="#" id="remove-certificate-yes-link" class="btn-operations">
-                            Remove
-                        </a>
-                        <a href="#" id="remove-certificate-cancel-link" class="btn-operations btn-default">
-                            Cancel
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="remove-certificate-success-content" class="hide">
-        <div class="modal-header">
-            <h3 class="pull-left modal-title">Done. Certificate was successfully removed.</h3>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fw fw-cancel"></i></button>
-        </div>
-        <div class="modal-body add-margin-top-2x add-margin-bottom-2x">
-
-        </div>
-        <div class="modal-footer">
-            <div class="buttons">
-            </div>
-        </div>
-    </div>
-
-    <div id="remove-certificate-error-content" class="hide">
-        <div class="modal-header">
-            <h3 class="pull-left modal-title">An unexpected error occurred. Please try again later.</h3>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fw fw-cancel"></i></button>
-        </div>
-        <div class="modal-body add-margin-top-2x add-margin-bottom-2x">
-
-        </div>
-        <div class="modal-footer">
-            <div class="buttons">
-            </div>
-        </div>
-    </div>
-
-    <div id="errorCertificateView" class="hide">
-        <div class="modal-header">
-            <h3 class="pull-left modal-title">
-                <span class="fw-stack">
-                    <i class="fw fw-ring fw-stack-2x"></i>
-                    <i class="fw fw-error fw-stack-1x"></i>
-                </span>
-                Unauthorized action!
-            </h3>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fw fw-cancel"></i></button>
-        </div>
-        <div class="modal-body add-margin-top-2x add-margin-bottom-2x">
-
-        </div>
-        <div class="modal-footer">
-            <div class="buttons">
-            </div>
         </div>
     </div>
 {{/zone}}

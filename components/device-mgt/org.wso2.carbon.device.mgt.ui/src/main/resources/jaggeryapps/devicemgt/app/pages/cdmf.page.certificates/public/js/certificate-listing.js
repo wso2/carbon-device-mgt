@@ -54,8 +54,11 @@ function hidePopup() {
  */
 function removeCertificate(serialNumber) {
     var serviceUrl = base_api_url + "/admin/certificates/" + serialNumber;
-    $(modalPopupContent).html($('#remove-certificate-modal-content').html());
-    showPopup();
+    modalDialog.header('Do you really want to remove this certificate ?');
+    modalDialog.footer('<div class="buttons"><a href="#" id="remove-certificate-yes-link" class="btn-operations">' +
+        'Remove</a><a href="#" id="remove-certificate-cancel-link" class="btn-operations btn-default">Cancel</a>' +
+        '</div>');
+    modalDialog.show();
 
     $("a#remove-certificate-yes-link").click(function () {
         invokerUtil.delete(
@@ -63,23 +66,29 @@ function removeCertificate(serialNumber) {
             function () {
                 $("#" + serialNumber).remove();
                 var newCertificateListCount = $(".user-list > span").length;
-                $("#certificate-listing-status-msg").text("Total number of Certificates found : " + newCertificateListCount);
-                $(modalPopupContent).html($('#remove-certificate-success-content').html());
+                $("#certificate-listing-status-msg").text("Total number of Certificates found : " +
+                    newCertificateListCount);
+                modalDialog.header('Done. Certificate was successfully removed.');
+                modalDialog.footer('<div class="buttons"><a href="#" id="remove-certificate-success-link" ' +
+                    'class="btn-operations">Ok</a></div>');
                 $("a#remove-certificate-success-link").click(function () {
-                    hidePopup();
+                    modalDialog.hide();
                 });
             },
             function () {
-                $(modalPopupContent).html($('#remove-certificate-error-content').html());
+                modalDialog.header('An unexpected error occurred. Please try again later.');
+                modalDialog.footer('<div class="buttons"><a href="#" id="remove-certificate-error-link" ' +
+                    'class="btn-operations">Ok</a></div>');
+                modalDialog.showAsError();
                 $("a#remove-certificate-error-link").click(function () {
-                    hidePopup();
+                    modalDialog.hide();
                 });
             }
         );
     });
 
     $("a#remove-certificate-cancel-link").click(function () {
-        hidePopup();
+        modalDialog.hide();
     });
 }
 
@@ -103,8 +112,9 @@ function InitiateViewOption() {
     if ($("#can-view").val()) {
         $(location).attr('href', $(this).data("url"));
     } else {
-        $(modalPopupContent).html($('#errorCertificateView').html());
-        showPopup();
+        modalDialog.header('Unauthorized action!');
+        modalDialog.content('You do not have permission to view this certificate.');
+        modalDialog.showAsAWarning();
     }
 }
 

@@ -128,7 +128,7 @@ public class PolicyOperationDAOImpl extends GenericOperationDAOImpl {
         try {
             super.deleteOperation(operationId);
             Connection connection = OperationManagementDAOFactory.getConnection();
-            stmt = connection.prepareStatement("DELETE DM_POLICY_OPERATION WHERE OPERATION_ID=?");
+            stmt = connection.prepareStatement("DELETE FROM DM_POLICY_OPERATION WHERE OPERATION_ID=?");
             stmt.setInt(1, operationId);
             stmt.executeUpdate();
         } catch (SQLException e) {

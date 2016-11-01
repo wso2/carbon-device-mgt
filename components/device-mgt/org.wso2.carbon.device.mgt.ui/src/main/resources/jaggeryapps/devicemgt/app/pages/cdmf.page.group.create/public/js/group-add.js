@@ -70,10 +70,13 @@ $(function () {
 });
 
 function displayErrors(message) {
-    showPopup();
     $('#error-msg').html(message.responseText);
-    $(modalPopupContent).html($('#group-error-content').html());
+    modalDialog.header('Unexpected error occurred!');
+    modalDialog.content('<h4 id="error-msg"></h4>');
+    modalDialog.footer('<div class="buttons"><a href="#" id="group-unexpected-error-link" class="btn-operations">Ok' +
+        '</a></div>');
+    modalDialog.showAsError();
     $("a#group-unexpected-error-link").click(function () {
-        hidePopup();
+        modalDialog.hide();
     });
 }

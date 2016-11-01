@@ -152,20 +152,30 @@ function loadGroups() {
             class: 'fade-edge'
         },
         {
+            targets: 2,
+            data: 'owner',
+            class: 'fade-edge remove-padding-top',
+        },
+        {
             targets: 3,
+            data: 'description',
+            class: 'fade-edge remove-padding-top',
+        },
+        {
+            targets: 4,
             data: 'id',
             class: 'text-right content-fill text-left-on-grid-view no-wrap',
             render: function (id, type, row, meta) {
                 var html;
-                html = '<a href="devices?groupId=' + row.groupId + '&groupOwner=' + row.owner + '" data-click-event="remove-form" class="btn padding-reduce-on-grid-view">' +
+                html = '<a href="devices?groupId=' + row.groupId + '&groupName=' + row.name + '" data-click-event="remove-form" class="btn padding-reduce-on-grid-view">' +
                     '<span class="fw-stack"><i class="fw fw-ring fw-stack-2x"></i><i class="fw fw-view fw-stack-1x"></i></span>' +
                     '<span class="hidden-xs hidden-on-grid-view">View Devices</span></a>';
 
-                html += '<a href="group/' + row.owner + '/' + row.name + '/analytics" data-click-event="remove-form" class="btn padding-reduce-on-grid-view">' +
+                html += '<a href="group/' + row.name + '/' + row.groupId + '/analytics" data-click-event="remove-form" class="btn padding-reduce-on-grid-view">' +
                     '<span class="fw-stack"><i class="fw fw-ring fw-stack-2x"></i><i class="fw fw-statistics fw-stack-1x"></i></span>' +
                     '<span class="hidden-xs hidden-on-grid-view">Analytics</span></a>';
 
-                html += '<a href="#" data-click-event="remove-form" class="btn padding-reduce-on-grid-view share-group-link" data-group-name="' + row.name + '" ' +
+                html += '<a href="#" data-click-event="remove-form" class="btn padding-reduce-on-grid-view share-group-link" data-group-id="' + row.groupId + '" ' +
                     'data-group-owner="' + row.owner + '"><span class="fw-stack"><i class="fw fw-ring fw-stack-2x"></i><i class="fw fw-share fw-stack-1x"></i></span>' +
                     '<span class="hidden-xs hidden-on-grid-view">Share</span></a>';
 
@@ -197,6 +207,11 @@ function loadGroups() {
                     $(this).attr('data-grid-label', "Owner");
                     $(this).attr('data-search', data.owner);
                     $(this).attr('data-display', data.owner);
+                    break;
+                case 3:
+                    $(this).attr('data-grid-label', "Description");
+                    $(this).attr('data-search', data.description);
+                    $(this).attr('data-display', data.description);
                     break;
             }
         });
@@ -326,7 +341,7 @@ function attachEvents() {
      * on Group Management page in WSO2 Device Management Server Console.
      */
     $("a.share-group-link").click(function () {
-        var groupName = $(this).data("group-name");
+        var groupId = $(this).data("group-id");
         var groupOwner = $(this).data("group-owner");
         $(modalPopupContent).html($('#share-group-w1-modal-content').html());
         $("a#share-group-next-link").show();
@@ -337,7 +352,7 @@ function attachEvents() {
                 $("#user-names").html("Please specify a user other than current user.");
                 $("a#share-group-next-link").hide();
             } else {
-                getAllRoles(groupName, groupOwner, selectedUser);
+                getAllRoles(groupId, selectedUser);
             }
         });
         $("a#share-group-w1-cancel-link").click(function () {
@@ -352,6 +367,7 @@ function attachEvents() {
      */
     $("a.remove-group-link").click(function () {
         var groupId = $(this).data("group-id");
+        var groupOwner = $(this).data("group-owner");
 
         $(modalPopupContent).html($('#remove-group-modal-content').html());
         showPopup();
@@ -426,15 +442,15 @@ function attachEvents() {
     });
 }
 
-function getAllRoles(groupName, groupOwner, selectedUser) {
+function getAllRoles(groupId, selectedUser) {
     $(modalPopupContent).html($('#share-group-w2-modal-content').html());
     $('#user-roles').html('<div style="height:100px" data-state="loading" data-loading-text="Loading..." data-loading-style="icon-only" data-loading-inverse="true"></div>');
     $("a#share-group-yes-link").hide();
     var successCallback = function (data, textStatus, xhr) {
         data = JSON.parse(data);
         if (xhr.status == 200) {
-            if (data.length > 0) {
-                generateRoleMap(groupName, groupOwner, selectedUser, data);
+            if (data.roles.length > 0) {
+                generateRoleMap(groupId, selectedUser, data.roles);
             } else {
                 $('#user-roles').html("There is no any roles for this group.");
             }
@@ -443,7 +459,7 @@ function getAllRoles(groupName, groupOwner, selectedUser) {
         }
     };
 
-    invokerUtil.get("/devicemgt_admin/groups/owner/" + groupOwner + "/name/" + groupName + "/share/roles",
+    invokerUtil.get("/api/device-mgt/v1.0/groups/id/" + groupId + "/roles",
         successCallback, function (message) {
                 displayErrors(message);
         });
@@ -453,11 +469,14 @@ function getAllRoles(groupName, groupOwner, selectedUser) {
     });
 }
 
-function generateRoleMap(groupName, groupOwner, selectedUser, allRoles) {
+function generateRoleMap(groupId, selectedUser, allRoles) {
     var successCallback = function (data, textStatus, xhr) {
         data = JSON.parse(data);
         if (xhr.status == 200) {
-            var userRoles = data;
+            var userRoles = [];
+            if(data != "EMPTY") {
+                userRoles = data.roles;
+            }
             var str = '';
 
             for (var i = 0; i < allRoles.length; i++) {
@@ -482,14 +501,14 @@ function generateRoleMap(groupName, groupOwner, selectedUser, allRoles) {
                         roles.push(allRoles[i]);
                     }
                 }
-                updateGroupShare(groupName, groupOwner, selectedUser, roles);
+                updateGroupShare(groupId, selectedUser, roles);
             });
         } else {
             displayErrors(xhr);
         }
     };
 
-    invokerUtil.get("/devicemgt_admin/groups/owner/" + groupOwner + "/name/" + groupName + "/share/roles?userName=" + selectedUser,
+    invokerUtil.get("/api/device-mgt/v1.0/groups/id/" + groupId + "/roles?userName=" + selectedUser,
         successCallback, function (message) {
                 displayErrors(message);
         });
@@ -499,7 +518,7 @@ function generateRoleMap(groupName, groupOwner, selectedUser, allRoles) {
     });
 }
 
-function updateGroupShare(groupName, groupOwner, selectedUser, roles) {
+function updateGroupShare(groupId, selectedUser, roles) {
     var successCallback = function (data) {
         $(modalPopupContent).html($('#share-group-200-content').html());
         setTimeout(function () {
@@ -508,8 +527,9 @@ function updateGroupShare(groupName, groupOwner, selectedUser, roles) {
         }, 2000);
     };
 
-    invokerUtil.put("/devicemgt_admin/groups/owner/" + groupOwner + "/name/" + groupName + "/user/" + selectedUser + "/share/roles",
-                    roles, successCallback, function (message) {
+    var deviceGroupShare = {"username": selectedUser, "groupRoles": roles };
+    invokerUtil.post("/api/device-mgt/v1.0/groups/id/" + groupId + "/share",
+                deviceGroupShare, successCallback, function (message) {
                 displayErrors(message);
             });
 }

@@ -34,13 +34,11 @@ import org.wso2.carbon.device.mgt.common.group.mgt.GroupManagementException;
 import org.wso2.carbon.device.mgt.common.group.mgt.GroupUser;
 import org.wso2.carbon.device.mgt.common.group.mgt.RoleDoesNotExistException;
 import org.wso2.carbon.device.mgt.core.service.GroupManagementProviderService;
-import org.wso2.carbon.device.mgt.jaxrs.beans.DeviceGroupList;
-import org.wso2.carbon.device.mgt.jaxrs.beans.DeviceGroupShare;
-import org.wso2.carbon.device.mgt.jaxrs.beans.DeviceGroupUsersList;
-import org.wso2.carbon.device.mgt.jaxrs.beans.DeviceList;
+import org.wso2.carbon.device.mgt.jaxrs.beans.*;
 import org.wso2.carbon.device.mgt.jaxrs.service.api.GroupManagementService;
 import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.RequestValidationUtil;
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
+import org.wso2.carbon.user.core.UserStoreException;
 import org.wso2.carbon.user.core.multiplecredentials.UserDoesNotExistException;
 
 import javax.ws.rs.core.Response;
@@ -54,6 +52,7 @@ public class GroupManagementServiceImpl implements GroupManagementService {
     private static final String DEFAULT_ADMIN_ROLE = "admin";
     private static final String[] DEFAULT_ADMIN_PERMISSIONS = {"/permission/device-mgt/admin/groups",
                                                                "/permission/device-mgt/user/groups"};
+    private static final String EMPTY_RESULT = "EMPTY";
 
     @Override
     public Response getGroups(String name, String owner, int offset, int limit) {
@@ -196,6 +195,35 @@ public class GroupManagementServiceImpl implements GroupManagementService {
             }
         } catch (GroupManagementException e) {
             String msg = "Error occurred while getting users of the group.";
+            log.error(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+        }
+    }
+
+    @Override
+    public Response getRolesOfGroup(int groupId, String userName) {
+        try {
+            List<String> groupRoles;
+            if(userName != null) {
+                groupRoles = DeviceMgtAPIUtils.getGroupManagementProviderService().getRoles(userName, groupId);
+            } else {
+                groupRoles = DeviceMgtAPIUtils.getGroupManagementProviderService().getRoles(groupId);
+            }
+
+            if(groupRoles != null && groupRoles.size() > 0) {
+                RoleList deviceGroupRolesList = new RoleList();
+                deviceGroupRolesList.setList(groupRoles);
+                deviceGroupRolesList.setCount(groupRoles.size());
+                return Response.status(Response.Status.OK).entity(deviceGroupRolesList).build();
+            } else {
+                return Response.status(Response.Status.OK).entity(EMPTY_RESULT).build();
+            }
+        } catch (GroupManagementException e) {
+            String msg = "Error occurred while getting roles of the group.";
+            log.error(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+        } catch (UserStoreException e) {
+            String msg = "Error while retrieving the user.";
             log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         }

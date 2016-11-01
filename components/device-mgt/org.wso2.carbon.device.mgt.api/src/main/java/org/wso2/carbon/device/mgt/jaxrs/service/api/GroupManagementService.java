@@ -467,6 +467,58 @@ public interface GroupManagementService {
                                      required = true)
                              @PathParam("groupId") int groupId);
 
+    @Path("/id/{groupId}/roles")
+    @GET
+    @ApiOperation(
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = HTTPConstants.HEADER_GET,
+            value = "View list of roles of a device group.",
+            notes = "Returns details of roles which particular group has been shared with.",
+            tags = "Device Group Management")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK. \n Successfully fetched the users.",
+                    response = DeviceGroupUsersList.class,
+                    responseHeaders = {
+                            @ResponseHeader(
+                                    name = "Content-Type",
+                                    description = "The content type of the body"),
+                            @ResponseHeader(
+                                    name = "ETag",
+                                    description = "Entity Tag of the response resource.\n" +
+                                            "Used by caches, or in conditional requests."),
+                            @ResponseHeader(
+                                    name = "Last-Modified",
+                                    description = "Date and time the resource has been modified the last time.\n" +
+                                            "Used by caches, or in conditional requests."),
+                    }),
+            @ApiResponse(
+                    code = 304,
+                    message = "Not Modified. \n Empty body because the client has already the latest version of " +
+                            "the requested resource."),
+            @ApiResponse(
+                    code = 404,
+                    message = "No groups found.",
+                    response = ErrorResponse.class),
+            @ApiResponse(
+                    code = 406,
+                    message = "Not Acceptable.\n The requested media type is not supported."),
+            @ApiResponse(
+                    code = 500,
+                    message = "Internal Server Error. \n Server error occurred while fetching the roles.",
+                    response = ErrorResponse.class)
+    })
+    @Permission(name = "View roles", permission = "/device-mgt/groups/roles/view")
+    Response getRolesOfGroup(@ApiParam(
+                                     name = "groupId",
+                                     value = "ID of the group.",
+                                     required = true)
+                             @PathParam("groupId") int groupId,
+                             @ApiParam(
+                                     name = "userName",
+                                     value = "User name of the current user.",
+                                     required = false)
+                             @QueryParam("userName") String userName);
+
     @Path("/id/{groupId}/devices")
     @GET
     @ApiOperation(

@@ -22,6 +22,12 @@
 var groupCheckbox = "#ast-container .ctrl-wr-asset .itm-select input[type='checkbox']";
 var assetContainer = "#ast-container";
 
+function InitiateViewOption() {
+    if ($(".select-enable-btn").text() == "Select") {
+        $(location).attr('href', $(this).data("url"));
+    }
+}
+
 /*
  * On Select All Groups button click function.
  *
@@ -86,11 +92,11 @@ function loadGroups() {
     var groupListing = $("#group-listing");
     var currentUser = groupListing.data("currentUser");
     var serviceURL;
-    if (permissionsUtil.hasPermission("LIST_ALL_GROUPS")) {
-        serviceURL = "/devicemgt_admin/groups";
-    } else if (permissionsUtil.hasPermission("LIST_GROUPS")) {
+    if ($.hasPermission("LIST_ALL_GROUPS")) {
+        serviceURL = "/api/device-mgt/v1.0/groups";
+    } else if ($.hasPermission("LIST_GROUPS")) {
         //Get authenticated users groups
-        serviceURL = "/devicemgt_admin/groups/user/" + currentUser;
+        serviceURL = "/api/device-mgt/v1.0/groups/user/" + currentUser;
     } else {
         $("#loading-content").remove();
         $('#device-table').addClass('hidden');
@@ -99,78 +105,120 @@ function loadGroups() {
         return;
     }
 
-    $('#group-grid').datatables_extended ({
-        serverSide: true,
-        processing: false,
-        searching: true,
-        ordering:  false,
-        filter: false,
-        pageLength : 16,
-        ajax: { url : '/devicemgt/api/groups', data : {url : serviceURL},
-            dataSrc: function ( json ) {
-                $('#group-grid').removeClass('hidden');
-                var $list = $("#group-listing :input[type='search']");
-                $list.each(function(){
-                    $(this).addClass("hidden");
-                });
-                return json.data;
+    var dataFilter = function (data) {
+        data = JSON.parse(data);
+        var objects = [];
+        $(data.deviceGroups).each(function (index) {
+            objects.push({
+                groupId: data.deviceGroups[index].id,
+                name: data.deviceGroups[index].name,
+                description: data.deviceGroups[index].description,
+                owner: data.deviceGroups[index].owner,
+                dateOfCreation: data.deviceGroups[index].dateOfCreation
+            })
+        });
+        var json = {
+            "recordsTotal": data.count,
+            "data": objects
+        }
+
+        return JSON.stringify(json);
+    };
+
+    var columns = [{
+        targets: 0,
+        data: 'id',
+        class: 'remove-padding icon-only content-fill',
+        render: function (data, type, row, meta) {
+            return '<div class="thumbnail icon"><img class="square-element text fw " src="public/cdmf.page.groups/images/group-icon.png"/></div>';
+        }
+    },
+        {
+            targets: 1,
+            data: 'name',
+            class: 'fade-edge'
+        },
+        {
+            targets: 2,
+            data: 'owner',
+            class: 'fade-edge remove-padding-top',
+        },
+        {
+            targets: 3,
+            data: 'description',
+            class: 'fade-edge remove-padding-top',
+        },
+        {
+            targets: 4,
+            data: 'id',
+            class: 'text-right content-fill text-left-on-grid-view no-wrap',
+            render: function (id, type, row, meta) {
+                var html;
+                html = '<a href="devices?groupId=' + row.groupId + '&groupName=' + row.name + '" data-click-event="remove-form" class="btn padding-reduce-on-grid-view">' +
+                    '<span class="fw-stack"><i class="fw fw-ring fw-stack-2x"></i><i class="fw fw-view fw-stack-1x"></i></span>' +
+                    '<span class="hidden-xs hidden-on-grid-view">View Devices</span></a>';
+
+                html += '<a href="group/' + row.name + '/' + row.groupId + '/analytics" data-click-event="remove-form" class="btn padding-reduce-on-grid-view">' +
+                    '<span class="fw-stack"><i class="fw fw-ring fw-stack-2x"></i><i class="fw fw-statistics fw-stack-1x"></i></span>' +
+                    '<span class="hidden-xs hidden-on-grid-view">Analytics</span></a>';
+
+                html += '<a href="#" data-click-event="remove-form" class="btn padding-reduce-on-grid-view share-group-link" data-group-id="' + row.groupId + '" ' +
+                    'data-group-owner="' + row.owner + '"><span class="fw-stack"><i class="fw fw-ring fw-stack-2x"></i><i class="fw fw-share fw-stack-1x"></i></span>' +
+                    '<span class="hidden-xs hidden-on-grid-view">Share</span></a>';
+
+                html += '<a href="#" data-click-event="remove-form" class="btn padding-reduce-on-grid-view edit-group-link" data-group-name="' + row.name + '" ' +
+                    'data-group-owner="' + row.owner + '" data-group-description="' + row.description + '" data-group-id="'+row.groupId+'"><span class="fw-stack"><i class="fw fw-ring fw-stack-2x"></i>' +
+                    '<i class="fw fw-edit fw-stack-1x"></i></span><span class="hidden-xs hidden-on-grid-view">Edit</span></a>';
+
+                html += '<a href="#" data-click-event="remove-form" class="btn padding-reduce-on-grid-view remove-group-link" data-group-id="' + row.groupId + '" ' +
+                    'data-group-owner="' + row.owner + '"><span class="fw-stack"><i class="fw fw-ring fw-stack-2x"></i><i class="fw fw-delete fw-stack-1x"></i>' +
+                    '</span><span class="hidden-xs hidden-on-grid-view">Delete</span></a>';
+
+                return html;
             }
-        },
-        columnDefs: [
-            { targets: 0, data: 'id', className: 'remove-padding icon-only content-fill' , render: function ( data, type, row, meta ) {
-                return '<div class="thumbnail icon"><img class="square-element text fw " src="public/cdmf.page.groups/images/group-icon.png"/></div>';
-            }},
-            {targets: 1, data: 'name', className: 'fade-edge'},
-            { targets: 2, data: 'owner', className: 'fade-edge remove-padding-top'},
-            { targets: 3, data: 'id', className: 'text-right content-fill text-left-on-grid-view no-wrap' ,
-                render: function ( id, type, row, meta ) {
-                    var html;
-                    html = '<a href="devices?groupName=' + row.name + '&groupOwner=' + row.owner + '" data-click-event="remove-form" class="btn padding-reduce-on-grid-view">' +
-                           '<span class="fw-stack"><i class="fw fw-ring fw-stack-2x"></i><i class="fw fw-view fw-stack-1x"></i></span>' +
-                           '<span class="hidden-xs hidden-on-grid-view">View Devices</span></a>';
+        }
 
-                    html += '<a href="group/' + row.owner + '/' + row.name + '/analytics" data-click-event="remove-form" class="btn padding-reduce-on-grid-view">' +
-                            '<span class="fw-stack"><i class="fw fw-ring fw-stack-2x"></i><i class="fw fw-statistics fw-stack-1x"></i></span>' +
-                            '<span class="hidden-xs hidden-on-grid-view">Analytics</span></a>';
+    ];
 
-                    html += '<a href="#" data-click-event="remove-form" class="btn padding-reduce-on-grid-view share-group-link" data-group-name="' + row.name + '" ' +
-                            'data-group-owner="' + row.owner + '"><span class="fw-stack"><i class="fw fw-ring fw-stack-2x"></i><i class="fw fw-share fw-stack-1x"></i></span>' +
-                            '<span class="hidden-xs hidden-on-grid-view">Share</span></a>';
+    var fnCreatedRow = function (row, data) {
+        $(row).attr('data-type', 'selectable');
+        $(row).attr('data-groupid', data.id);
+        $.each($('td', row), function (colIndex) {
+            switch (colIndex) {
+                case 1:
+                    $(this).attr('data-grid-label', "Name");
+                    $(this).attr('data-search', data.name);
+                    $(this).attr('data-display', data.name);
+                    break;
+                case 2:
+                    $(this).attr('data-grid-label', "Owner");
+                    $(this).attr('data-search', data.owner);
+                    $(this).attr('data-display', data.owner);
+                    break;
+                case 3:
+                    $(this).attr('data-grid-label', "Description");
+                    $(this).attr('data-search', data.description);
+                    $(this).attr('data-display', data.description);
+                    break;
+            }
+        });
+    };
 
-                    html += '<a href="#" data-click-event="remove-form" class="btn padding-reduce-on-grid-view edit-group-link" data-group-name="' + row.name + '" ' +
-                            'data-group-owner="' + row.owner + '" data-group-description="' + row.description + '"><span class="fw-stack"><i class="fw fw-ring fw-stack-2x"></i>' +
-                            '<i class="fw fw-edit fw-stack-1x"></i></span><span class="hidden-xs hidden-on-grid-view">Edit</span></a>';
 
-                    html += '<a href="#" data-click-event="remove-form" class="btn padding-reduce-on-grid-view remove-group-link" data-group-name="' + row.name + '" ' +
-                            'data-group-owner="' + row.owner + '"><span class="fw-stack"><i class="fw fw-ring fw-stack-2x"></i><i class="fw fw-delete fw-stack-1x"></i>' +
-                            '</span><span class="hidden-xs hidden-on-grid-view">Delete</span></a>';
-
-                    return html;
-                }}
-        ],
-        "createdRow": function( row, data, dataIndex ) {
-            $(row).attr('data-type', 'selectable');
-            $(row).attr('data-groupid', data.id);
-            $.each($('td', row), function (colIndex) {
-                switch(colIndex) {
-                    case 1:
-                        $(this).attr('data-grid-label', "Name");
-                        $(this).attr('data-search', data.name);
-                        $(this).attr('data-display', data.name);
-                        break;
-                    case 2:
-                        $(this).attr('data-grid-label', "Owner");
-                        $(this).attr('data-search', data.owner);
-                        $(this).attr('data-display', data.owner);
-                        break;
-                }
-            });
-        },
-        "fnDrawCallback": function( oSettings ) {
+    $('#group-grid').datatables_extended_serverside_paging(
+        null,
+        serviceURL,
+        dataFilter,
+        columns,
+        fnCreatedRow,
+        function (oSettings) {
             $(".icon .text").res_text(0.2);
             attachEvents();
-        }
-    });
+        },
+        {
+            "placeholder": "Search By Group Name",
+            "searchKey": "name"
+        });
     $(groupCheckbox).click(function () {
         addGroupSelectedClass(this);
     });
@@ -280,7 +328,7 @@ function attachEvents() {
      * on Group Management page in WSO2 Device Management Server Console.
      */
     $("a.share-group-link").click(function () {
-        var groupName = $(this).data("group-name");
+        var groupId = $(this).data("group-id");
         var groupOwner = $(this).data("group-owner");
         $(modalPopupContent).html($('#share-group-w1-modal-content').html());
         $("a#share-group-next-link").show();
@@ -291,7 +339,7 @@ function attachEvents() {
                 $("#user-names").html("Please specify a user other than current user.");
                 $("a#share-group-next-link").hide();
             } else {
-                getAllRoles(groupName, groupOwner, selectedUser);
+                getAllRoles(groupId, selectedUser);
             }
         });
         $("a#share-group-w1-cancel-link").click(function () {
@@ -305,7 +353,7 @@ function attachEvents() {
      * on Group Management page in WSO2 IoT Server Console.
      */
     $("a.remove-group-link").click(function () {
-        var groupName = $(this).data("group-name");
+        var groupId = $(this).data("group-id");
         var groupOwner = $(this).data("group-owner");
 
         $(modalPopupContent).html($('#remove-group-modal-content').html());
@@ -313,7 +361,6 @@ function attachEvents() {
 
         $("a#remove-group-yes-link").click(function () {
             var successCallback = function (data, textStatus, xhr) {
-                data = JSON.parse(data);
                 if (xhr.status == 200) {
                     $(modalPopupContent).html($('#remove-group-200-content').html());
                     setTimeout(function () {
@@ -325,7 +372,7 @@ function attachEvents() {
                 }
             };
 
-            invokerUtil.delete("/devicemgt_admin/groups/owner/" + groupOwner + "/name/" + groupName,
+            invokerUtil.delete("/api/device-mgt/v1.0/groups/id/" + groupId,
                 successCallback, function (message) {
                         displayErrors(message);
                 });
@@ -343,6 +390,7 @@ function attachEvents() {
      * on Device Management page in WSO2 MDM Console.
      */
     $("a.edit-group-link").click(function () {
+        var groupId = $(this).data("group-id");
         var groupName = $(this).data("group-name");
         var groupOwner = $(this).data("group-owner");
         var groupDescription = $(this).data("group-description");
@@ -358,8 +406,8 @@ function attachEvents() {
             var group = {"name": newGroupName, "description": newGroupDescription, "owner": groupOwner};
 
             var successCallback = function (data, textStatus, xhr) {
-                data = JSON.parse(data);
                 if (xhr.status == 200) {
+                    $(modalPopupContent).html($('#edit-group-200-content').html());
                     setTimeout(function () {
                         hidePopup();
                         location.reload(false);
@@ -369,7 +417,7 @@ function attachEvents() {
                 }
             };
 
-            invokerUtil.put("/devicemgt_admin/groups/owner/" + groupOwner + "/name/" + groupName, group,
+            invokerUtil.put("/api/device-mgt/v1.0/groups/id/" + groupId, group,
                 successCallback, function (message) {
                         displayErrors(message);
                 });
@@ -381,15 +429,15 @@ function attachEvents() {
     });
 }
 
-function getAllRoles(groupName, groupOwner, selectedUser) {
+function getAllRoles(groupId, selectedUser) {
     $(modalPopupContent).html($('#share-group-w2-modal-content').html());
     $('#user-roles').html('<div style="height:100px" data-state="loading" data-loading-text="Loading..." data-loading-style="icon-only" data-loading-inverse="true"></div>');
     $("a#share-group-yes-link").hide();
     var successCallback = function (data, textStatus, xhr) {
         data = JSON.parse(data);
         if (xhr.status == 200) {
-            if (data.length > 0) {
-                generateRoleMap(groupName, groupOwner, selectedUser, data);
+            if (data.roles.length > 0) {
+                generateRoleMap(groupId, selectedUser, data.roles);
             } else {
                 $('#user-roles').html("There is no any roles for this group.");
             }
@@ -398,7 +446,7 @@ function getAllRoles(groupName, groupOwner, selectedUser) {
         }
     };
 
-    invokerUtil.get("/devicemgt_admin/groups/owner/" + groupOwner + "/name/" + groupName + "/share/roles",
+    invokerUtil.get("/api/device-mgt/v1.0/groups/id/" + groupId + "/roles",
         successCallback, function (message) {
                 displayErrors(message);
         });
@@ -408,11 +456,14 @@ function getAllRoles(groupName, groupOwner, selectedUser) {
     });
 }
 
-function generateRoleMap(groupName, groupOwner, selectedUser, allRoles) {
+function generateRoleMap(groupId, selectedUser, allRoles) {
     var successCallback = function (data, textStatus, xhr) {
         data = JSON.parse(data);
         if (xhr.status == 200) {
-            var userRoles = data;
+            var userRoles = [];
+            if(data != "EMPTY") {
+                userRoles = data.roles;
+            }
             var str = '';
 
             for (var i = 0; i < allRoles.length; i++) {
@@ -437,14 +488,14 @@ function generateRoleMap(groupName, groupOwner, selectedUser, allRoles) {
                         roles.push(allRoles[i]);
                     }
                 }
-                updateGroupShare(groupName, groupOwner, selectedUser, roles);
+                updateGroupShare(groupId, selectedUser, roles);
             });
         } else {
             displayErrors(xhr);
         }
     };
 
-    invokerUtil.get("/devicemgt_admin/groups/owner/" + groupOwner + "/name/" + groupName + "/share/roles?userName=" + selectedUser,
+    invokerUtil.get("/api/device-mgt/v1.0/groups/id/" + groupId + "/roles?userName=" + selectedUser,
         successCallback, function (message) {
                 displayErrors(message);
         });
@@ -454,7 +505,7 @@ function generateRoleMap(groupName, groupOwner, selectedUser, allRoles) {
     });
 }
 
-function updateGroupShare(groupName, groupOwner, selectedUser, roles) {
+function updateGroupShare(groupId, selectedUser, roles) {
     var successCallback = function (data) {
         $(modalPopupContent).html($('#share-group-200-content').html());
         setTimeout(function () {
@@ -463,8 +514,9 @@ function updateGroupShare(groupName, groupOwner, selectedUser, roles) {
         }, 2000);
     };
 
-    invokerUtil.put("/devicemgt_admin/groups/owner/" + groupOwner + "/name/" + groupName + "/user/" + selectedUser + "/share/roles",
-                    roles, successCallback, function (message) {
+    var deviceGroupShare = {"username": selectedUser, "groupRoles": roles };
+    invokerUtil.post("/api/device-mgt/v1.0/groups/id/" + groupId + "/share",
+                deviceGroupShare, successCallback, function (message) {
                 displayErrors(message);
             });
 }

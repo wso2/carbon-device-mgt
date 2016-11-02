@@ -6506,3 +6506,8 @@ select > option:hover {
 .label-bold{
     font-weight:400;
 }
+
+/* Adding style for required fields */
+.required:before {
+  content: "*";
+}

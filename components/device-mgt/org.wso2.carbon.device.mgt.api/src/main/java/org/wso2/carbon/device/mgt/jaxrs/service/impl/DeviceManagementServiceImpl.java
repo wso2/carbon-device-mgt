@@ -18,7 +18,6 @@
  */
 package org.wso2.carbon.device.mgt.jaxrs.service.impl;
 
-import com.google.gson.JsonArray;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.CarbonContext;
@@ -72,6 +71,7 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
             @QueryParam("user") String user,
             @QueryParam("ownership") String ownership,
             @QueryParam("status") String status,
+            @QueryParam("groupId") int groupId,
             @QueryParam("since") String since,
             @HeaderParam("If-Modified-Since") String ifModifiedSince,
             @QueryParam("offset") int offset,
@@ -107,6 +107,9 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
             if (status != null && !status.isEmpty()) {
                 RequestValidationUtil.validateStatus(status);
                 request.setStatus(status);
+            }
+            if (groupId != 0 ) {
+                request.setGroupId(groupId);
             }
 
             // this is the user who initiates the request
@@ -380,10 +383,13 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
             @PathParam("id") @Size(max = 45) String id,
             @HeaderParam("If-Modified-Since") String ifModifiedSince,
             @QueryParam("offset") int offset,
-            @QueryParam("limit") int limit) {
+            @QueryParam("limit") int limit,
+            @QueryParam("owner") String owner) {
         OperationList operationsList = new OperationList();
+        RequestValidationUtil.validateOwnerParameter(owner);
         RequestValidationUtil.validatePaginationParameters(offset, limit);
         PaginationRequest request = new PaginationRequest(offset, limit);
+        request.setOwner(owner);
         PaginationResult result;
         DeviceManagementProviderService dms;
         try {

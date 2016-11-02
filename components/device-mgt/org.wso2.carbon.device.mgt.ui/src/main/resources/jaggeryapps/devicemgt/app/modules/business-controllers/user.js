@@ -485,10 +485,10 @@ var userModule = function () {
         if (publicMethods.isAuthorized("/permission/admin/device-mgt/user/devices/list")) {
             permissions["LIST_OWN_DEVICES"] = true;
         }
-        if (publicMethods.isAuthorized("/permission/admin/device-mgt/groups/list")) {
+        if (publicMethods.isAuthorized("/permission/admin/device-mgt/admin/groups/view")) {
             permissions["LIST_ALL_GROUPS"] = true;
         }
-        if (publicMethods.isAuthorized("/permission/admin/device-mgt/user/groups/list")) {
+        if (publicMethods.isAuthorized("/permission/admin/device-mgt/groups/view")) {
             permissions["LIST_GROUPS"] = true;
         }
         if (publicMethods.isAuthorized("/permission/admin/device-mgt/users/list")) {

@@ -129,7 +129,7 @@ public class ProfileOperationDAOImpl extends GenericOperationDAOImpl {
         try {
             super.deleteOperation(id);
             Connection connection = OperationManagementDAOFactory.getConnection();
-            stmt = connection.prepareStatement("DELETE DM_PROFILE_OPERATION WHERE OPERATION_ID=?");
+            stmt = connection.prepareStatement("DELETE FROM DM_PROFILE_OPERATION WHERE OPERATION_ID=?");
             stmt.setInt(1, id);
             stmt.executeUpdate();
         } catch (SQLException e) {

@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.wso2.carbon.device.mgt.core.group.mgt.dao;
+package org.wso2.carbon.device.mgt.core.dao;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -24,6 +24,8 @@ import org.wso2.carbon.device.mgt.common.IllegalTransactionStateException;
 import org.wso2.carbon.device.mgt.common.TransactionManagementException;
 import org.wso2.carbon.device.mgt.core.config.datasource.DataSourceConfig;
 import org.wso2.carbon.device.mgt.core.config.datasource.JNDILookupDefinition;
+import org.wso2.carbon.device.mgt.core.dao.impl.GroupDAOImpl;
+import org.wso2.carbon.device.mgt.core.dao.util.GroupManagementDAOUtil;
 
 import javax.sql.DataSource;
 import java.sql.Connection;

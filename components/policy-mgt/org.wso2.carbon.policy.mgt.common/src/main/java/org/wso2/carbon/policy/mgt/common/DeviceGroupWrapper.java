@@ -22,7 +22,7 @@ package org.wso2.carbon.policy.mgt.common;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-@ApiModel(value = "DeviceGroupWrapper", description = "This class carries all information related to device groups")
+@ApiModel(value = "DeviceGroupWrapper", description = "This class carries information related to device groups expect users and devices.")
 public class DeviceGroupWrapper {
 
     @ApiModelProperty(name = "id", value = "Id of the group", required = true)

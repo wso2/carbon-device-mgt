@@ -606,7 +606,6 @@ var userModule = function () {
      */
     publicMethods.getSecondaryUserStores = function () {
         var returnVal = [];
-
         // To call the userstore admin service, user needs to have admin permission
         if (publicMethods.isAuthorized("/permission/admin")) {
             var endpoint = devicemgtProps["adminService"] + constants["USER_STORE_CONFIG_ADMIN_SERVICE_END_POINT"];

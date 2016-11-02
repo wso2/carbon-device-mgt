@@ -57,6 +57,16 @@ var deviceListing, currentUser, groupName, groupOwner;
  * DOM ready functions.
  */
 $(document).ready(function () {
+
+    var permissionSet = {};
+    $.setPermission = function (permission) {
+        permissionSet[permission] = true;
+    };
+
+    $.hasPermission = function (permission) {
+        return permissionSet[permission];
+    };
+    
     deviceListing = $("#device-listing");
     currentUser = deviceListing.data("current-user");
 

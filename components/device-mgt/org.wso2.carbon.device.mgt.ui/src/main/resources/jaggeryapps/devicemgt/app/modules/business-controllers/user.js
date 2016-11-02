@@ -606,23 +606,31 @@ var userModule = function () {
      */
     publicMethods.getSecondaryUserStores = function () {
         var returnVal = [];
-        var endpoint = devicemgtProps["adminService"] + constants["USER_STORE_CONFIG_ADMIN_SERVICE_END_POINT"];
-        var wsPayload = "<xsd:getSecondaryRealmConfigurations  xmlns:xsd='http://org.apache.axis2/xsd'/>";
-        serviceInvokers.WS.soapRequest(
-            "urn:getSecondaryRealmConfigurations",
-            wsPayload,
-            endpoint,
-            function (wsResponse) {
-                var domainIDs = stringify(wsResponse.*::['return']. *::domainId.text());
-                if (domainIDs != "\"\"") {
-                    var regExpForSearch = new RegExp(constants["USER_STORES_NOISY_CHAR"], "g");
-                    domainIDs = domainIDs.replace(regExpForSearch, "");
-                    returnVal = domainIDs.split(constants["USER_STORES_SPLITTING_CHAR"]);
-                }
-            }, function (e) {
-                log.error("Error retrieving secondary user stores", e);
-            },
-            constants["SOAP_VERSION"]);
+
+        // To call the userstore admin service, user needs to have admin permission
+        if (publicMethods.isAuthorized("/permission/admin")) {
+            var endpoint = devicemgtProps["adminService"] + constants["USER_STORE_CONFIG_ADMIN_SERVICE_END_POINT"];
+            var wsPayload = "<xsd:getSecondaryRealmConfigurations  xmlns:xsd='http://org.apache.axis2/xsd'/>";
+            serviceInvokers.WS.soapRequest(
+                "urn:getSecondaryRealmConfigurations",
+                wsPayload,
+                endpoint,
+                function (wsResponse) {
+                    var domainIDs = stringify(wsResponse. * ::['return']. * ::domainId.text());
+                    if (domainIDs != "\"\"") {
+                        var regExpForSearch = new RegExp(constants["USER_STORES_NOISY_CHAR"], "g");
+                        domainIDs = domainIDs.replace(regExpForSearch, "");
+                        returnVal = domainIDs.split(constants["USER_STORES_SPLITTING_CHAR"]);
+                    }
+                }, function (e) {
+                    log.error("Error retrieving secondary user stores", e);
+                },
+                constants["SOAP_VERSION"]);
+        } else {
+            if (log.isDebugEnabled()) {
+                log.debug("User does not have admin permission to get the secondary user store details.");
+            }
+        }
         return returnVal;
     };
 

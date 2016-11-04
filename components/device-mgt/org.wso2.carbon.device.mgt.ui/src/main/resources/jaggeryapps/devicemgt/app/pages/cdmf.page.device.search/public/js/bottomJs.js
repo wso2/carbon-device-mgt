@@ -58,8 +58,8 @@ var dynamicForm = '<div class="dynamic-search-param row"><div class="row"><a cla
                   '<option value = "pluggedIn">Plugged In</option></select></div>' +
                   '<div class="form-group wr-input-control col-md-2">' +
                   '<label class="wr-input-label ">Operator</label><select id = "operators" class="form-control' +
-                  ' select2-custom no-tag operator"><option>=</option><option> !=</option></select></div><div class="form-group ' +
-                  'wr-input-control col-md-4"><label class="wr-input-label">Value</label>' +
+                  ' select2-custom no-tag operator"><option>=</option><option> !=</option><option> %</option>' +
+                  '</select></div><div class="form-group ' + 'wr-input-control col-md-4"><label class="wr-input-label">Value</label>' +
                   '<input type="text" class="form-control txt-value"/></div></div>';
 
 var nonNumericKeyValuePair = ["deviceModel", "vendor", "osVersion", "connectionType", "ssid", "pluggedIn"];
@@ -87,9 +87,9 @@ $(document).ready(function () {
     function getOperators(keyValue) {
         if (nonNumericKeyValuePair.indexOf(keyValue) < 0) {
             return '<option> =</option><option> !=</option><option> <</option><option> =<</option><option>' +
-                ' ></option><option> >=</option><option> %</option>';
+                ' ></option><option> >=</option>';
         } else {
-            return '<option> =</option><option> !=</option><option>';
+            return '<option> =</option><option> !=</option><option><option> %</option>';
         }
     }
 
@@ -125,7 +125,7 @@ $(document).ready(function () {
         $("#customSearchParam .dynamic-search-param").each(function () {
             var value = $(this).find(".txt-value").val();
             var key = $(this).find(".txt-key").val();
-            if (!hasError & value && key ) {
+            if (!hasError && value && key ) {
                 if (isValidKeyAndValue(key, value)) {
                     var conditionObject = {};
                     conditionObject.key = key;

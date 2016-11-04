@@ -17,63 +17,61 @@
   ~ specific language governing permissions and limitations
   ~ under the License.
   -->
-<DeviceManagementConfiguration>
-    <DeviceType>sample</DeviceType>
+<DeviceManagementConfiguration name="samples">
 
-    <ManagementRepository>
-        <DataSourceConfiguration>
-            <JndiLookupDefinition>
-                <Name>jdbc/SampleDM_DB</Name>
-            </JndiLookupDefinition>
-        </DataSourceConfiguration>
+    <License>
+        <Language>en_US</Language>
+        <Version>1.0.0</Version>
+        <Text>This is license text</Text>
+    </License>
 
-        <DeviceDefinition>
-            <TableName>SAMPLE_DEVICE</TableName>
-            <!--Primary Key should be the device identifier-->
-            <PrimaryKey>SAMPLE_DEVICE_ID</PrimaryKey>
-            <Attributes>
-                <Attribute>column1</Attribute>
-                <Attribute>column2</Attribute>
-            </Attributes>
-            <License>
-                <Language>en_US</Language>
-                <Version>1.0.0</Version>
-                <Text>This is license text</Text>
-            </License>
-            <!--if generate is set to true then the feature information will be picked up from the annotation in the api-->
-            <Features generate="false">
-                <Feature>
-                    <Code>FEATURE_CODE_1</Code>
-                    <Name>feature name 1</Name>
-                    <Description>description</Description>
-                </Feature>
-                <Feature>
-                    <Code>FEATURE_CODE_2</Code>
-                    <Name>feature name 2</Name>
-                    <Description>description</Description>
-                </Feature>
-            </Features>
-        </DeviceDefinition>
+    <DataSource>
+        <jndiConfig>
+            <name>jdbc/SampleDM_DB</name>
+        </jndiConfig>
+        <tableDefinitions>
+            <Table name="SAMPLE_DEVICE">
+                <PrimaryKey>SAMPLE_DEVICE_ID</PrimaryKey>
+                <Attributes>
+                    <Attribute>column1</Attribute>
+                    <Attribute>column2</Attribute>
+                </Attributes>
+            </Table>
+        </tableDefinitions>
+    </DataSource>
+
+    <!--if generate is set to true then the feature information will be picked up from the annotation in the api-->
+        <Features>
+            <Feature code="abc">
+                <Name>abc</Name>
+                <affectedVersion>5.0.0</affectedVersion>
+                <Description>this is a feature</Description>
+                <FeatureProperties>
+                    <Property name="prop1">place_holder</Property>
+                    <Property name="prop2">place_holder</Property>
+                    <Property name="prop3">place_holder</Property>
+                </FeatureProperties>
+            </Feature>
+        </Features>
 
         <ProvisioningConfig>
             <SharedWithAllTenants>false</SharedWithAllTenants>
         </ProvisioningConfig>
-    </ManagementRepository>
 
+    <NotificationProviders>
+        <PushNotificationProvider type="MQTT">
+            <FileBasedProperties>true</FileBasedProperties>
+            <!--if file based properties is set to false then the configuration will be picked from platform configuration-->
+            <ConfigProperties>
+                <Property Name="mqtt.adapter.name">sample.mqtt.adapter</Property>
+                <Property Name="url">tcp://localhost:1883</Property>
+                <Property Name="username">admin</Property>
+                <Property Name="dcrUrl">https://localhost:9443/dynamic-client-web/register</Property>
+                <Property Name="qos">0</Property>
+                <Property Name="scopes"/>
+                <Property Name="clearSession">true</Property>
+            </ConfigProperties>
+        </PushNotificationProvider>
+    </NotificationProviders>
 
-    <PushNotificationConfiguration>
-        <!--MQTT Config-->
-        <PushNotificationProvider>MQTT</PushNotificationProvider>
-        <FileBasedProperties>true</FileBasedProperties>
-        <!--if file based properties is set to false then the configuration will be picked from platform configuration-->
-        <Properties>
-            <Property Name="mqtt.adapter.name">sample.mqtt.adapter</Property>
-            <Property Name="url">tcp://localhost:1883</Property>
-            <Property Name="username">admin</Property>
-            <Property Name="dcrUrl">https://localhost:9443/dynamic-client-web/register</Property>
-            <Property Name="qos">0</Property>
-            <Property Name="scopes"/>
-            <Property Name="clearSession">true</Property>
-        </Properties>
-    </PushNotificationConfiguration>
 </DeviceManagementConfiguration>

@@ -72,6 +72,11 @@ public class SimpleEvaluationPoint implements PolicyEvaluationPoint {
 
     @Override
     public Policy getEffectivePolicy(DeviceIdentifier deviceIdentifier) throws PolicyEvaluationException {
+
+        if (policyManagerService == null || policyList.size() == 0) {
+            return null;
+        }
+        
         Policy policy = new Policy();
         Profile profile = new Profile();
         profile.setProfileFeaturesList(getEffectiveFeatures(deviceIdentifier));

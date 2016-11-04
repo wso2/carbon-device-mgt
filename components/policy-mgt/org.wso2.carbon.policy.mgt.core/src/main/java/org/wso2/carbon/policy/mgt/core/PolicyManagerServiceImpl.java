@@ -91,11 +91,18 @@ public class PolicyManagerServiceImpl implements PolicyManagerService {
     @Override
     public Policy getEffectivePolicy(DeviceIdentifier deviceIdentifier) throws PolicyManagementException {
         try {
-            Policy policy = PolicyManagementDataHolder.getInstance().getPolicyEvaluationPoint().
-                    getEffectivePolicy(deviceIdentifier);
+            PolicyEvaluationPoint policyEvaluationPoint = PolicyManagementDataHolder.getInstance().getPolicyEvaluationPoint();
+            Policy policy;
 
-            if (policy == null) {
-                return null;
+            if (policyEvaluationPoint != null) {
+                policy = policyEvaluationPoint.
+                        getEffectivePolicy(deviceIdentifier);
+                if (policy == null) {
+                    return null;
+                }
+            } else {
+                throw new PolicyEvaluationException("Error occurred while getting the policy evaluation point " +
+                        deviceIdentifier.getId() + " - " + deviceIdentifier.getType());
             }
             List<DeviceIdentifier> deviceIdentifiers = new ArrayList<DeviceIdentifier>();
             deviceIdentifiers.add(deviceIdentifier);

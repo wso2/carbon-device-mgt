@@ -20,11 +20,15 @@ package org.wso2.carbon.device.mgt.core.service;
 
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
+import org.wso2.carbon.device.mgt.common.DeviceNotFoundException;
+import org.wso2.carbon.device.mgt.common.GroupPaginationRequest;
+import org.wso2.carbon.device.mgt.common.PaginationRequest;
 import org.wso2.carbon.device.mgt.common.PaginationResult;
 import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroup;
 import org.wso2.carbon.device.mgt.common.group.mgt.GroupAlreadyExistException;
 import org.wso2.carbon.device.mgt.common.group.mgt.GroupManagementException;
 import org.wso2.carbon.device.mgt.common.group.mgt.GroupUser;
+import org.wso2.carbon.device.mgt.common.group.mgt.RoleDoesNotExistException;
 import org.wso2.carbon.user.core.multiplecredentials.UserDoesNotExistException;
 
 import java.util.List;
@@ -49,71 +53,64 @@ public interface GroupManagementProviderService {
      * Update existing device group.
      *
      * @param deviceGroup  to update.
-     * @param oldGroupName of the group.
-     * @param oldOwner     of the group.
+     * @param groupId of the group.
      * @throws GroupManagementException
      */
-    void updateGroup(DeviceGroup deviceGroup, String oldGroupName, String oldOwner) throws GroupManagementException;
+    void updateGroup(DeviceGroup deviceGroup, int groupId) throws GroupManagementException, GroupAlreadyExistException;
 
     /**
      * Delete existing device group.
      *
-     * @param groupName to be deleted.
-     * @param owner     of the group.
+     * @param groupId to be deleted.
+     * @return status of the delete operation.
      * @throws GroupManagementException
      */
-    boolean deleteGroup(String groupName, String owner) throws GroupManagementException;
-
-    /**
-     * Get device group specified by group name.
-     *
-     * @param groupName of the group.
-     * @param owner     of the group.
-     * @return group
-     * @throws GroupManagementException
-     */
-    DeviceGroup getGroup(String groupName, String owner) throws GroupManagementException;
-
+    boolean deleteGroup(int groupId) throws GroupManagementException;
 
     /**
      * Get the device group provided the device group id.
      *
-     * @param groupId
-     * @return
+     * @param groupId of the group.
+     * @return group with details.
      * @throws GroupManagementException
      */
     DeviceGroup getGroup(int groupId) throws GroupManagementException;
 
     /**
-     * Get list of device groups matched with %groupName%
+     * Get all device groups in tenant.
      *
-     * @param groupName of the groups.
-     * @param username  of user
-     * @return List of Groups that matches with the given DeviceGroup name.
+     * @return list of groups.
      * @throws GroupManagementException
      */
-    List<DeviceGroup> findInGroups(String groupName, String username) throws GroupManagementException;
+    List<DeviceGroup> getGroups() throws GroupManagementException;
 
     /**
-     * Get paginated device groups in tenant
+     * Get all device groups for user.
      *
-     * @param startIndex for pagination.
-     * @param rowCount   for pagination.
-     * @return paginated list of groups
+     * @param username   of the user.
+     * @return list of groups
      * @throws GroupManagementException
      */
-    PaginationResult getGroups(int startIndex, int rowCount) throws GroupManagementException;
+    List<DeviceGroup> getGroups(String username) throws GroupManagementException;
 
     /**
-     * Get paginated device groups in tenant
+     * Get device groups with pagination.
      *
-     * @param username   of user.
-     * @param startIndex for pagination.
-     * @param rowCount   for pagination.
-     * @return paginated list of groups
+     * @param paginationRequest to filter results
+     * @return list of groups.
      * @throws GroupManagementException
      */
-    PaginationResult getGroups(String username, int startIndex, int rowCount) throws GroupManagementException;
+    PaginationResult getGroups(GroupPaginationRequest paginationRequest) throws GroupManagementException;
+
+    /**
+     * Get device groups belongs to specified user with pagination.
+     *
+     * @param username   of the user.
+     * @param paginationRequest to filter results
+     * @return list of groups.
+     * @throws GroupManagementException
+     */
+    PaginationResult getGroups(String username, GroupPaginationRequest paginationRequest) throws GroupManagementException;
 
     /**
      * Get all device group count in tenant
@@ -122,15 +119,6 @@ public interface GroupManagementProviderService {
      * @throws GroupManagementException
      */
     int getGroupCount() throws GroupManagementException;
-
-    /**
-     * Get device groups of user
-     *
-     * @param username of the user
-     * @return list of groups
-     * @throws GroupManagementException
-     */
-    List<DeviceGroup> getGroups(String username) throws GroupManagementException;
 
     /**
      * Get device group count of user
@@ -142,154 +130,116 @@ public interface GroupManagementProviderService {
     int getGroupCount(String username) throws GroupManagementException;
 
     /**
-     * Share device group with user specified by role
+     * Manage device group sharing with user with list of roles.
      *
-     * @param username    of the user
-     * @param groupName   of the group
-     * @param owner       of the group
-     * @param sharingRole to be shared
-     * @return is group shared
+     * @param username of the user
+     * @param groupId  of the group
+     * @param newRoles to be shared
      * @throws GroupManagementException UserDoesNotExistException
      */
-    boolean shareGroup(String username, String groupName, String owner, String sharingRole)
-            throws GroupManagementException, UserDoesNotExistException;
-
-    /**
-     * Un share existing group sharing with user specified by role
-     *
-     * @param userName    of the user
-     * @param groupName   of the group
-     * @param owner       of the group
-     * @param sharingRole to be un shared
-     * @return is group un shared
-     * @throws GroupManagementException UserDoesNotExistException
-     */
-    boolean unshareGroup(String userName, String groupName, String owner, String sharingRole)
-            throws GroupManagementException, UserDoesNotExistException;
+    void manageGroupSharing(int groupId, String username, List<String> newRoles)
+            throws GroupManagementException, UserDoesNotExistException, RoleDoesNotExistException;
 
     /**
      * Add new sharing role for device group
      *
      * @param userName    of the user
-     * @param groupName   of the group
-     * @param owner       of the group
+     * @param groupId   of the group
      * @param roleName    to add
      * @param permissions to bind with role
      * @return is role added
      * @throws GroupManagementException
      */
-    boolean addGroupSharingRole(String userName, String groupName, String owner, String roleName, String[] permissions)
+    boolean addGroupSharingRole(String userName, int groupId, String roleName, String[] permissions)
             throws GroupManagementException;
 
     /**
      * Remove existing sharing role for device group
      *
-     * @param groupName of the group
-     * @param owner     of the group
+     * @param groupId   of the group
      * @param roleName  to remove
      * @return is role removed
      * @throws GroupManagementException
      */
-    boolean removeGroupSharingRole(String groupName, String owner, String roleName) throws GroupManagementException;
+    boolean removeGroupSharingRole(int groupId, String roleName) throws GroupManagementException;
 
     /**
      * Get all sharing roles for device group
      *
-     * @param groupName of the group
-     * @param owner     of the group
+     * @param groupId   of the group
      * @return list of roles
      * @throws GroupManagementException
      */
-    List<String> getRoles(String groupName, String owner) throws GroupManagementException;
+    List<String> getRoles(int groupId) throws GroupManagementException;
 
     /**
      * Get specific device group sharing roles for user
      *
      * @param userName  of the user
-     * @param groupName of the group
-     * @param owner     of the group
+     * @param groupId   of the group
      * @return list of roles
      * @throws GroupManagementException UserDoesNotExistException
      */
-    List<String> getRoles(String userName, String groupName, String owner)
-            throws GroupManagementException, UserDoesNotExistException;
+    List<String> getRoles(String userName, int groupId) throws GroupManagementException, UserDoesNotExistException;
 
     /**
      * Get device group users
      *
-     * @param groupName of the group
-     * @param owner     of the group
+     * @param groupId   of the group
      * @return list of group users
      * @throws GroupManagementException
      */
-    List<GroupUser> getUsers(String groupName, String owner) throws GroupManagementException;
-
-    /**
-     * Get all devices in device group.
-     *
-     * @param groupName of the group.
-     * @param owner     of the group.
-     * @return list of group devices.
-     * @throws GroupManagementException
-     */
-    List<Device> getDevices(String groupName, String owner) throws GroupManagementException;
+    List<GroupUser> getUsers(int groupId) throws GroupManagementException;
 
     /**
      * Get all devices in device group as paginated result.
      *
-     * @param groupName  of the group.
-     * @param owner      of the group.
+     * @param groupId   of the group
      * @param startIndex for pagination.
      * @param rowCount   for pagination.
-     * @return Paginated list of devices.
+     * @return list of devices in group.
      * @throws GroupManagementException
      */
-    PaginationResult getDevices(String groupName, String owner, int startIndex, int rowCount)
-            throws GroupManagementException;
+    List<Device> getDevices(int groupId, int startIndex, int rowCount) throws GroupManagementException;
 
     /**
      * This method is used to retrieve the device count of a given group.
      *
-     * @param groupName of the group.
-     * @param owner     of the group.
+     * @param groupId   of the group
      * @return returns the device count.
      * @throws GroupManagementException
      */
-    int getDeviceCount(String groupName, String owner) throws GroupManagementException;
+    int getDeviceCount(int groupId) throws GroupManagementException;
 
     /**
      * Add device to device group.
      *
-     * @param deviceId  of the device.
-     * @param groupName of the group.
-     * @param owner     of the group.
-     * @return is device added.
+     * @param groupId   of the group.
+     * @param deviceIdentifiers of devices.
      * @throws GroupManagementException
      */
-    boolean addDevice(DeviceIdentifier deviceId, String groupName, String owner) throws GroupManagementException;
+    void addDevices(int groupId, List<DeviceIdentifier> deviceIdentifiers) throws GroupManagementException,
+                                                                                  DeviceNotFoundException;
 
     /**
      * Remove device from device group.
      *
-     * @param deviceId  of the device.
-     * @param groupName of the group.
-     * @param owner     of the group.
-     * @return is device removed.
+     * @param groupId   of the group.
+     * @param deviceIdentifiers of devices.
      * @throws GroupManagementException
      */
-    boolean removeDevice(DeviceIdentifier deviceId, String groupName, String owner) throws GroupManagementException;
+    void removeDevice(int groupId, List<DeviceIdentifier> deviceIdentifiers) throws GroupManagementException,
+                                                                                       DeviceNotFoundException;
 
     /**
      * Get device group permissions of user.
      *
      * @param username  of the user.
-     * @param groupName of the group.
-     * @param owner     of the group.
+     * @param groupId   of the group
      * @return array of permissions.
      * @throws GroupManagementException UserDoesNotExistException
      */
-    String[] getPermissions(String username, String groupName, String owner)
-            throws GroupManagementException, UserDoesNotExistException;
+    String[] getPermissions(String username, int groupId) throws GroupManagementException, UserDoesNotExistException;
 
     /**
      * Get device groups of user with permission.

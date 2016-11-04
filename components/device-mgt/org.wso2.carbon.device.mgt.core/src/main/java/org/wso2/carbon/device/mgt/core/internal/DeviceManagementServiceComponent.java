@@ -42,7 +42,7 @@ import org.wso2.carbon.device.mgt.core.config.DeviceManagementConfig;
 import org.wso2.carbon.device.mgt.core.config.datasource.DataSourceConfig;
 import org.wso2.carbon.device.mgt.core.config.tenant.PlatformConfigurationManagementServiceImpl;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
-import org.wso2.carbon.device.mgt.core.group.mgt.dao.GroupManagementDAOFactory;
+import org.wso2.carbon.device.mgt.core.dao.GroupManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.notification.mgt.NotificationManagementServiceImpl;
 import org.wso2.carbon.device.mgt.core.notification.mgt.dao.NotificationManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.operation.mgt.OperationManagerImpl;

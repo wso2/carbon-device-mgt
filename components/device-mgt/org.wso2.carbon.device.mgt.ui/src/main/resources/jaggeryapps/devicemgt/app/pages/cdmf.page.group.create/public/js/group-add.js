@@ -45,9 +45,8 @@ $(function () {
         } else {
             var group = {"name": name, "description": description};
 
-            var successCallback = function (jqXHR) {
-                var data = JSON.parse(jqXHR);
-                if (data.status == 201) {
+            var successCallback = function (jqXHR, status, resp) {
+                if (resp.status == 201) {
                     $('.wr-validation-summary strong').text("Group created. You will be redirected to groups");
                     $('.wr-validation-summary').removeClass("hidden");
                     $('.wr-validation-summary strong').removeClass("label-danger");
@@ -56,11 +55,11 @@ $(function () {
                         window.location = "../groups";
                     }, 1500);
                 } else {
-                    displayErrors(data.status);
+                    displayErrors(resp.status);
                 }
             };
 
-            invokerUtil.post("/devicemgt_admin/groups", group,
+            invokerUtil.post("/api/device-mgt/v1.0/groups", group,
                              successCallback, function (message) {
                         displayErrors(message);
                     });
@@ -71,10 +70,13 @@ $(function () {
 });
 
 function displayErrors(message) {
-    showPopup();
     $('#error-msg').html(message.responseText);
-    $(modalPopupContent).html($('#group-error-content').html());
+    modalDialog.header('Unexpected error occurred!');
+    modalDialog.content('<h4 id="error-msg"></h4>');
+    modalDialog.footer('<div class="buttons"><a href="#" id="group-unexpected-error-link" class="btn-operations">Ok' +
+        '</a></div>');
+    modalDialog.showAsError();
     $("a#group-unexpected-error-link").click(function () {
-        hidePopup();
+        modalDialog.hide();
     });
 }

@@ -16,11 +16,11 @@
  * under the License.
  */
 
-package org.wso2.carbon.device.mgt.core.group.mgt.dao;
+package org.wso2.carbon.device.mgt.core.dao;
 
 import org.wso2.carbon.device.mgt.common.Device;
+import org.wso2.carbon.device.mgt.common.GroupPaginationRequest;
 import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroup;
-import org.wso2.carbon.device.mgt.core.group.mgt.DeviceGroupBuilder;
 
 import java.util.List;
 
@@ -41,24 +41,22 @@ public interface GroupDAO {
     /**
      * Update an existing Device Group.
      *
-     * @param deviceGroup   group to update.
-     * @param oldGroupName  of the group.
-     * @param oldOwner      of the group.
-     * @param tenantId      of the group.
+     * @param deviceGroup group to update.
+     * @param groupId of Device Group.
+     * @param tenantId of the group.
      * @throws GroupManagementDAOException
      */
-    void updateGroup(DeviceGroup deviceGroup, String oldGroupName, String oldOwner, int tenantId)
+    void updateGroup(DeviceGroup deviceGroup, int groupId, int tenantId)
             throws GroupManagementDAOException;
 
     /**
      * Delete an existing Device Group.
      *
-     * @param groupName to be deleted.
-     * @param owner     of the group.
+     * @param groupId of Device Group.
      * @param tenantId  of the group.
      * @throws GroupManagementDAOException
      */
-    void deleteGroup(String groupName, String owner, int tenantId) throws GroupManagementDAOException;
+    void deleteGroup(int groupId, int tenantId) throws GroupManagementDAOException;
 
     /**
      * Get device group by id.
@@ -68,39 +66,34 @@ public interface GroupDAO {
      * @return Device Group in tenant with specified name.
      * @throws GroupManagementDAOException
      */
-    DeviceGroupBuilder getGroup(int groupId, int tenantId) throws GroupManagementDAOException;
-
-
-    /**
-     * Get device group by name.
-     *
-     * @param groupName of Device Group.
-     * @param owner of the group.
-     * @param tenantId  of the group.
-     * @return Device Group in tenant with specified name.
-     * @throws GroupManagementDAOException
-     */
-    DeviceGroupBuilder getGroup(String groupName, String owner, int tenantId) throws GroupManagementDAOException;
+    DeviceGroup getGroup(int groupId, int tenantId) throws GroupManagementDAOException;
 
     /**
      * Get the groups of device with device id provided
      * @param deviceId
-     * @return
+     * @return groups which has the device.
      * @throws GroupManagementDAOException
      */
-    List<DeviceGroupBuilder> getGroups(int deviceId, int tenantId) throws GroupManagementDAOException;
+    List<DeviceGroup> getGroups(int deviceId, int tenantId) throws GroupManagementDAOException;
 
     /**
-     * Get the list of Device Groups in tenant.
+     * Get paginated list of Device Groups in tenant.
      *
-     * @param startIndex for pagination.
-     * @param rowCount for pagination.
+     * @param paginationRequest to filter results.
      * @param tenantId of user's tenant.
      * @return List of all Device Groups in tenant.
      * @throws GroupManagementDAOException
      */
-    List<DeviceGroupBuilder> getGroups(int startIndex, int rowCount, int tenantId) throws GroupManagementDAOException;
+    List<DeviceGroup> getGroups(GroupPaginationRequest paginationRequest, int tenantId) throws GroupManagementDAOException;
 
+    /**
+     * Get the list of Device Groups in tenant.
+     *
+     * @param tenantId of user's tenant.
+     * @return List of all Device Groups in tenant.
+     * @throws GroupManagementDAOException
+     */
+    List<DeviceGroup> getGroups(int tenantId) throws GroupManagementDAOException;
 
     /**
      * Get count of Device Groups in tenant.
@@ -112,94 +105,77 @@ public interface GroupDAO {
     int getGroupCount(int tenantId) throws GroupManagementDAOException;
 
     /**
-     * Get the list of Groups that matches with the given DeviceGroup name.
+     * Get paginated count of Device Groups in tenant.
      *
-     * @param groupName of the Device Group.
-     * @param tenantId  of user's tenant.
-     * @return List of DeviceGroup that matches with the given DeviceGroup name.
+     * @param paginationRequest to filter results.
+     * @param tenantId of user's tenant.
+     * @return List of all Device Groups in tenant.
      * @throws GroupManagementDAOException
      */
-    List<DeviceGroupBuilder> findInGroups(String groupName, int tenantId) throws GroupManagementDAOException;
+    int getGroupCount(GroupPaginationRequest paginationRequest, int tenantId) throws GroupManagementDAOException;
 
     /**
      * Check group already existed with given name.
      *
      * @param groupName of the Device Group.
-     * @param owner of the Device Group.
      * @param tenantId of user's tenant.
      * @return existence of group with name
      * @throws GroupManagementDAOException
      */
-    boolean isGroupExist(String groupName, String owner, int tenantId) throws GroupManagementDAOException;
+    DeviceGroup getGroup(String groupName, int tenantId) throws GroupManagementDAOException;
 
     /**
      * Add device to a given Device Group.
      *
-     * @param groupName of the Device Group.
-     * @param owner of the Device Group.
+     * @param groupId of Device Group.
      * @param deviceId of the device.
      * @param tenantId of user's tenant.
      * @throws GroupManagementDAOException
      */
-    void addDevice(String groupName, String owner, int deviceId, int tenantId) throws GroupManagementDAOException;
+    void addDevice(int groupId, int deviceId, int tenantId) throws GroupManagementDAOException;
 
     /**
      * Remove device from the Device Group.
      *
-     * @param groupName of the Device Group.
-     * @param owner of the Device Group.
+     * @param groupId of Device Group.
      * @param deviceId of the device.
      * @param tenantId of user's tenant.
      * @throws GroupManagementDAOException
      */
-    void removeDevice(String groupName, String owner, int deviceId, int tenantId) throws GroupManagementDAOException;
+    void removeDevice(int groupId, int deviceId, int tenantId) throws GroupManagementDAOException;
 
     /**
      * Check device is belonging to a Device Group.
      *
-     * @param groupName of the Device Group.
-     * @param owner of the Device Group.
+     * @param groupId of Device Group.
      * @param deviceId of the device.
      * @param tenantId of user's tenant.
      * @throws GroupManagementDAOException
      */
-    boolean isDeviceMappedToGroup(String groupName, String owner, int deviceId, int tenantId)
+    boolean isDeviceMappedToGroup(int groupId, int deviceId, int tenantId)
             throws GroupManagementDAOException;
 
     /**
      * Get count of devices in a Device Group.
      *
-     * @param groupName of the Device Group.
-     * @param owner of the Device Group.
+     * @param groupId of Device Group.
      * @param tenantId of user's tenant.
      * @return device count.
      * @throws GroupManagementDAOException
      */
-    int getDeviceCount(String groupName, String owner, int tenantId) throws GroupManagementDAOException;
-
-    /**
-     * Get all devices of a given tenant and device group.
-     *
-     * @param groupName of the group.
-     * @param owner of the Device Group.
-     * @param tenantId of user's tenant.
-     * @return list of device in group
-     * @throws GroupManagementDAOException
-     */
-    List<Device> getDevices(String groupName, String owner, int tenantId) throws GroupManagementDAOException;
+    int getDeviceCount(int groupId, int tenantId) throws GroupManagementDAOException;
 
     /**
      * Get paginated result of devices of a given tenant and device group.
      *
-     * @param groupName of the group.
-     * @param owner of the Device Group.
+     * @param groupId of Device Group.
      * @param startIndex for pagination.
      * @param rowCount for pagination.
      * @param tenantId of user's tenant.
      * @return list of device in group
      * @throws GroupManagementDAOException
      */
-    List<Device> getDevices(String groupName, String owner, int startIndex, int rowCount, int tenantId)
+    List<Device> getDevices(int groupId, int startIndex, int rowCount, int tenantId)
             throws GroupManagementDAOException;
 
 }

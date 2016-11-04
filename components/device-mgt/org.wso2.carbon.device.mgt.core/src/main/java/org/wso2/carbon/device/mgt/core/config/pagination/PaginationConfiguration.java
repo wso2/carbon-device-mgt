@@ -28,6 +28,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class PaginationConfiguration {
 
     private int deviceListPageSize;
+    private int groupListPageSize;
     private int operationListPageSize;
     private int notificationListPageSize;
     private int activityListPageSize;
@@ -39,6 +40,15 @@ public class PaginationConfiguration {
     @XmlElement(name = "DeviceListPageSize", required = true)
     public void setDeviceListPageSize(int deviceListPageSize) {
         this.deviceListPageSize = deviceListPageSize;
+    }
+
+    public int getGroupListPageSize() {
+        return groupListPageSize;
+    }
+
+    @XmlElement(name = "GroupListPageSize", required = true)
+    public void setGroupListPageSize(int groupListPageSize) {
+        this.groupListPageSize = groupListPageSize;
     }
 
     public int getOperationListPageSize() {

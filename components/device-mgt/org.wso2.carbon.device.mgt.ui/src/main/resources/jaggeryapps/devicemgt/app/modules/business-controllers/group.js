@@ -26,8 +26,7 @@ var groupModule = {};
     var utility = require("/app/modules/utility.js").utility;
     var serviceInvokers = require("/app/modules/oauth/token-protected-service-invokers.js")["invokers"];
 
-    var groupServiceEndpoint = devicemgtProps["httpsURL"] +
-        devicemgtProps["backendRestEndpoints"]["deviceMgt"] + "/groups";
+    var deviceServiceEndpoint = devicemgtProps["httpsURL"] + "/api/device-mgt/v1.0";
 
     var user = session.get(constants.USER_SESSION_KEY);
 
@@ -36,29 +35,29 @@ var groupModule = {};
     groupModule.getGroupCount = function () {
         var permissions = userModule.getUIPermissions();
         if (permissions.LIST_ALL_GROUPS) {
-            endPoint = groupServiceEndpoint + "/count";
+            endPoint = deviceServiceEndpoint + "/admin/groups/count";
         } else if (permissions.LIST_GROUPS) {
-            endPoint = groupServiceEndpoint + "/user/" + user.username + "/count";
+            endPoint = deviceServiceEndpoint + "/groups/count";
         } else {
             log.error("Access denied for user: " + carbonUser.username);
             return -1;
         }
         return serviceInvokers.XMLHttp.get(
                 endPoint, function (responsePayload) {
-                    return responsePayload;
+                    return responsePayload["responseText"];
                 },
                 function (responsePayload) {
-                    log.error(responsePayload);
+                    log.error(responsePayload["responseText"]);
                     return -1;
                 }
         );
     };
 
-    groupModule.getGroupDeviceCount = function (groupName, owner) {
-        endPoint = groupServiceEndpoint + "/owner/" + owner + "/name/" + groupName + "/devices/count";
+    groupModule.getGroupDeviceCount = function (groupId) {
+        endPoint = deviceServiceEndpoint + "/groups/id/" + groupId + "/devices/count";
         return serviceInvokers.XMLHttp.get(
                 endPoint, function (responsePayload) {
-                    return responsePayload;
+                    return responsePayload["responseText"];
                 },
                 function (responsePayload) {
                     log.error(responsePayload);
@@ -67,8 +66,8 @@ var groupModule = {};
         );
     };
 
-    groupModule.getGroupDevices = function (groupName, owner) {
-        endPoint = groupServiceEndpoint + "/owner/" + owner + "/name/" + groupName + "/devices";
+    groupModule.getGroupDevices = function (groupId) {
+        endPoint = deviceServiceEndpoint + "/groups/id/" + groupId + "/devices?limit=10";
         return serviceInvokers.XMLHttp.get(
                 endPoint, function (responsePayload) {
                     return responsePayload;

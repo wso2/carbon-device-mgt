@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.wso2.carbon.device.mgt.core.group.mgt.dao;
+package org.wso2.carbon.device.mgt.core.dao;
 
 /**
  * Custom exception class for group management data access related exceptions.

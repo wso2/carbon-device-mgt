@@ -23,6 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
+import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
 import org.wso2.carbon.device.mgt.common.device.details.DeviceInfo;
 import org.wso2.carbon.device.mgt.common.device.details.DeviceLocation;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
@@ -60,9 +61,15 @@ public class SearchDAOImpl implements SearchDAO {
                     Device device = new Device();
                     device.setId(rs.getInt("ID"));
                     device.setDescription(rs.getString("DESCRIPTION"));
-                    device.setName("NAME");
+                    device.setName(rs.getString("NAME"));
                     device.setType(rs.getString("DEVICE_TYPE_NAME"));
                     device.setDeviceIdentifier(rs.getString("DEVICE_IDENTIFICATION"));
+
+                    EnrolmentInfo enrolmentInfo = new EnrolmentInfo();
+                    enrolmentInfo.setStatus(EnrolmentInfo.Status.valueOf(rs.getString("DE_STATUS")));
+                    enrolmentInfo.setOwner(rs.getString("OWNER"));
+                    enrolmentInfo.setOwnership(EnrolmentInfo.OwnerShip.valueOf(rs.getString("OWNERSHIP")));
+                    device.setEnrolmentInfo(enrolmentInfo);
 
                     DeviceIdentifier identifier = new DeviceIdentifier();
                     identifier.setType(rs.getString("DEVICE_TYPE_NAME"));
@@ -142,6 +149,12 @@ public class SearchDAOImpl implements SearchDAO {
                     device.setType(rs.getString("DEVICE_TYPE_NAME"));
                     device.setDeviceIdentifier(rs.getString("DEVICE_IDENTIFICATION"));
 
+                    EnrolmentInfo enrolmentInfo = new EnrolmentInfo();
+                    enrolmentInfo.setStatus(EnrolmentInfo.Status.valueOf(rs.getString("DE_STATUS")));
+                    enrolmentInfo.setOwner(rs.getString("OWNER"));
+                    enrolmentInfo.setOwnership(EnrolmentInfo.OwnerShip.valueOf(rs.getString("OWNERSHIP")));
+                    device.setEnrolmentInfo(enrolmentInfo);
+
                     DeviceIdentifier identifier = new DeviceIdentifier();
                     identifier.setType(rs.getString("DEVICE_TYPE_NAME"));
                     identifier.setId(rs.getString("DEVICE_IDENTIFICATION"));
@@ -214,13 +227,21 @@ public class SearchDAOImpl implements SearchDAO {
 
         try {
             conn = this.getConnection();
-            String query = "SELECT * FROM DM_DEVICE_INFO WHERE DEVICE_ID IN (?) ORDER BY DEVICE_ID ;";
-            stmt = conn.prepareStatement(query);
-            if (conn.getMetaData().getDatabaseProductName().contains("H2") ||
-                    conn.getMetaData().getDatabaseProductName().contains("MySQL")) {
-                String inData = Utils.getDeviceIdsAsString(devices);
-                stmt.setString(1, inData);
+            String query = "SELECT * FROM DM_DEVICE_INFO WHERE DEVICE_ID IN (";
+            if (conn.getMetaData().getDatabaseProductName().contains("H2") || conn.getMetaData()
+                    .getDatabaseProductName().contains("MySQL")) {
+                StringBuilder builder = new StringBuilder();
+                for (int i = 0; i < devices.size(); i++) {
+                    builder.append("?,");
+                }
+                query += builder.deleteCharAt(builder.length() - 1).toString() + ") ORDER BY DEVICE_ID";
+                stmt = conn.prepareStatement(query);
+                for (int i = 0; i < devices.size(); i++) {
+                    stmt.setInt(i + 1, devices.get(i).getId());
+                }
             } else {
+                query += "?) ORDER BY DEVICE_ID";
+                stmt = conn.prepareStatement(query);
                 Array array = conn.createArrayOf("INT", Utils.getArrayOfDeviceIds(devices));
                 stmt.setArray(1, array);
             }

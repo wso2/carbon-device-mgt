@@ -319,6 +319,7 @@ var userModule = function () {
      * @returns {object} a response object with status and content on success.
      */
     publicMethods.getRolesByUserStore = function (userStore) {
+        userStore = userStore ? userStore : "all";
         var carbonUser = session.get(constants["USER_SESSION_KEY"]);
         var utility = require("/app/modules/utility.js")["utility"];
         if (!carbonUser) {

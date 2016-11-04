@@ -36,6 +36,7 @@ public class QueryBuilderImpl implements QueryBuilder {
 
 
     private static final Log log = LogFactory.getLog(QueryBuilderImpl.class);
+    private final String WILDCARD_OPERATOR = "%";
 
     @Override
     public Map<String, List<String>> buildQueries(List<Condition> conditions) throws InvalidOperatorException {
@@ -107,34 +108,42 @@ public class QueryBuilderImpl implements QueryBuilder {
 
     @Override
     public String processAND(List<Condition> conditions) throws InvalidOperatorException {
-
         String querySuffix = "";
-
         for (Condition con : conditions) {
-            if (Utils.checkDeviceDetailsColumns(con.getKey().toLowerCase())) {
-                querySuffix = querySuffix + " AND DD." + Utils.getDeviceDetailsColumnNames().get(con.getKey().toLowerCase()) +
-                        con.getOperator() + Utils.getConvertedValue(con.getKey().toLowerCase(), con.getValue());
+            if (Utils.checkDeviceDetailsColumns(con.getKey())) {
+                if (con.operator.equals(WILDCARD_OPERATOR)){
+                    querySuffix = querySuffix + " AND DD." + Utils.getDeviceDetailsColumnNames().get(con.getKey())
+                            + " LIKE \'" + con.operator + Utils.getConvertedValue(con.getKey(), con.getValue())
+                            + con.operator + "\'";
+                } else {
+                    querySuffix = querySuffix + " AND DD." + Utils.getDeviceDetailsColumnNames().get(con.getKey()) + con
+                            .getOperator() + Utils.getConvertedValue(con.getKey(), con.getValue());
+                }
             } else if (Utils.checkDeviceLocationColumns(con.getKey().toLowerCase())) {
                 querySuffix = querySuffix + " AND DL." + Utils.getDeviceLocationColumnNames().get(con.getKey().toLowerCase()) +
                         con.getOperator() + con.getValue();
             }
         }
-
         return querySuffix;
     }
 
     @Override
     public String processOR(List<Condition> conditions) throws InvalidOperatorException {
-
         String querySuffix = "";
-
         for (Condition con : conditions) {
-            if (Utils.checkDeviceDetailsColumns(con.getKey().toLowerCase())) {
-                querySuffix = querySuffix + " OR DD." + Utils.getDeviceDetailsColumnNames().get(con.getKey().toLowerCase()) +
-                        con.getOperator() + Utils.getConvertedValue(con.getKey(), con.getValue());
+            if (Utils.checkDeviceDetailsColumns(con.getKey())) {
+                if (con.operator.equals(WILDCARD_OPERATOR)) {
+                    querySuffix = querySuffix + " OR DD." + Utils.getDeviceDetailsColumnNames().get(con.getKey())
+                                + " LIKE \'" + con.operator + Utils.getConvertedValue(con.getKey(), con.getValue())
+                                + con.operator + "\'";
+                } else {
+                    querySuffix = querySuffix + " OR DD." + Utils.getDeviceDetailsColumnNames().get(con.getKey()) + con
+                            .getOperator() + Utils.getConvertedValue(con.getKey(), con.getValue());
+                }
             } else if (Utils.checkDeviceLocationColumns(con.getKey().toLowerCase())) {
-                querySuffix = querySuffix + " OR DL." + Utils.getDeviceLocationColumnNames().get(con.getKey().toLowerCase()) +
-                        con.getOperator() + con.getValue();
+                querySuffix =
+                        querySuffix + " OR DL." + Utils.getDeviceLocationColumnNames().get(con.getKey().toLowerCase())
+                                + con.getOperator() + con.getValue();
             }
         }
         return querySuffix;
@@ -187,7 +196,6 @@ public class QueryBuilderImpl implements QueryBuilder {
     }
 
     private String getGenericQueryPart() {
-
         return "SELECT D.ID, D.DESCRIPTION, D.NAME,  \n" +
                 "D.DEVICE_TYPE_ID, D.DEVICE_IDENTIFICATION,  DT.ID AS DEVICE_TYPE_ID, \n" +
                 "DT.NAME AS DEVICE_TYPE_NAME, DD.DEVICE_ID, DD.DEVICE_MODEL, DD.VENDOR, \n" +
@@ -195,18 +203,16 @@ public class QueryBuilderImpl implements QueryBuilder {
                 "DD.EXTERNAL_TOTAL_MEMORY, DD.EXTERNAL_AVAILABLE_MEMORY, DD.CONNECTION_TYPE, \n" +
                 "DD.SSID, DD.CPU_USAGE, DD.TOTAL_RAM_MEMORY, DD.AVAILABLE_RAM_MEMORY, \n" +
                 "DD.PLUGGED_IN, DD.UPDATE_TIMESTAMP, DL.LATITUDE, DL.LONGITUDE, DL.STREET1, DL.STREET2, DL.CITY, DL.ZIP, \n" +
-                "DL.STATE, DL.COUNTRY, DL.UPDATE_TIMESTAMP AS DL_UPDATED_TIMESTAMP \n" +
-                "FROM DM_DEVICE_DETAIL AS DD INNER JOIN DM_DEVICE AS D ON  D.ID=DD.DEVICE_ID\n" +
+                "DL.STATE, DL.COUNTRY, DL.UPDATE_TIMESTAMP AS DL_UPDATED_TIMESTAMP, DE.OWNER, DE.OWNERSHIP, DE.STATUS " +
+                "AS DE_STATUS FROM DM_DEVICE_DETAIL AS DD INNER JOIN DM_DEVICE AS D ON  D.ID=DD.DEVICE_ID\n" +
                 "LEFT JOIN DM_DEVICE_LOCATION AS DL ON DL.DEVICE_ID=D.ID \n" +
-                "INNER JOIN  DM_DEVICE_TYPE AS DT ON DT.ID=D.DEVICE_TYPE_ID\n" +
+                "INNER JOIN DM_DEVICE_TYPE AS DT ON DT.ID=D.DEVICE_TYPE_ID\n" +
+                "INNER JOIN DM_ENROLMENT AS DE ON D.ID=DE.DEVICE_ID\n" +
                 "WHERE D.TENANT_ID = " +
                 PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
-
-
     }
 
     private String getPropertyQueryPart() {
-
         return "SELECT D.ID, D.DESCRIPTION, D.NAME,  \n" +
                 "D.DEVICE_TYPE_ID, D.DEVICE_IDENTIFICATION,  DT.ID AS DEVICE_TYPE_ID, \n" +
                 "DT.NAME AS DEVICE_TYPE_NAME, DD.DEVICE_ID, DD.DEVICE_MODEL, DD.VENDOR, \n" +
@@ -214,13 +220,14 @@ public class QueryBuilderImpl implements QueryBuilder {
                 "DD.EXTERNAL_TOTAL_MEMORY, DD.EXTERNAL_AVAILABLE_MEMORY, DD.CONNECTION_TYPE, \n" +
                 "DD.SSID, DD.CPU_USAGE, DD.TOTAL_RAM_MEMORY, DD.AVAILABLE_RAM_MEMORY, \n" +
                 "DD.PLUGGED_IN, DD.UPDATE_TIMESTAMP, DL.LATITUDE, DL.LONGITUDE, DL.STREET1, DL.STREET2, DL.CITY, DL.ZIP, \n" +
-                "DL.STATE, DL.COUNTRY, DL.UPDATE_TIMESTAMP AS DL_UPDATED_TIMESTAMP, DI.KEY_FIELD, DI.VALUE_FIELD \n" +
+                "DL.STATE, DL.COUNTRY, DL.UPDATE_TIMESTAMP AS DL_UPDATED_TIMESTAMP, DI.KEY_FIELD, DI.VALUE_FIELD, \n" +
+                "DE.OWNER, DE.OWNERSHIP, DE.STATUS AS DE_STATUS " +
                 "FROM DM_DEVICE_DETAIL AS DD INNER JOIN DM_DEVICE AS D ON  D.ID=DD.DEVICE_ID\n" +
                 "LEFT JOIN DM_DEVICE_LOCATION AS DL ON DL.DEVICE_ID=D.ID  \n" +
-                "INNER JOIN  DM_DEVICE_TYPE AS DT ON DT.ID=D.DEVICE_TYPE_ID\n" +
+                "INNER JOIN DM_DEVICE_TYPE AS DT ON DT.ID=D.DEVICE_TYPE_ID\n" +
+                "INNER JOIN DM_ENROLMENT AS DE ON D.ID=DE.DEVICE_ID\n" +
                 "LEFT JOIN DM_DEVICE_INFO AS DI ON DI.DEVICE_ID=D.ID\n" +
                 "WHERE D.TENANT_ID = " +
                 PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
-
     }
 }

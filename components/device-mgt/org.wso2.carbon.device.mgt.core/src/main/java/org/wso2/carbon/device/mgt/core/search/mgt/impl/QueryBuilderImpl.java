@@ -37,10 +37,11 @@ public class QueryBuilderImpl implements QueryBuilder {
 
     private static final Log log = LogFactory.getLog(QueryBuilderImpl.class);
     private final String WILDCARD_OPERATOR = "%";
+    private String current_username;
+    private boolean isDeviceAdminUser;
 
     @Override
     public Map<String, List<String>> buildQueries(List<Condition> conditions) throws InvalidOperatorException {
-
         List<Condition> andColumns = new ArrayList<>();
         List<Condition> orColumns = new ArrayList<>();
         List<Condition> otherANDColumns = new ArrayList<>();
@@ -112,9 +113,8 @@ public class QueryBuilderImpl implements QueryBuilder {
         for (Condition con : conditions) {
             if (Utils.checkDeviceDetailsColumns(con.getKey())) {
                 if (con.operator.equals(WILDCARD_OPERATOR)){
-                    querySuffix = querySuffix + " AND DD." + Utils.getDeviceDetailsColumnNames().get(con.getKey())
-                            + " LIKE \'" + con.operator + Utils.getConvertedValue(con.getKey(), con.getValue())
-                            + con.operator + "\'";
+                    querySuffix = querySuffix + " OR DD." + Utils.getDeviceDetailsColumnNames().get(con.getKey())
+                            + " LIKE \'%" + con.getValue() + "%\'";
                 } else {
                     querySuffix = querySuffix + " AND DD." + Utils.getDeviceDetailsColumnNames().get(con.getKey()) + con
                             .getOperator() + Utils.getConvertedValue(con.getKey(), con.getValue());
@@ -134,8 +134,7 @@ public class QueryBuilderImpl implements QueryBuilder {
             if (Utils.checkDeviceDetailsColumns(con.getKey())) {
                 if (con.operator.equals(WILDCARD_OPERATOR)) {
                     querySuffix = querySuffix + " OR DD." + Utils.getDeviceDetailsColumnNames().get(con.getKey())
-                                + " LIKE \'" + con.operator + Utils.getConvertedValue(con.getKey(), con.getValue())
-                                + con.operator + "\'";
+                                + " LIKE \'%" + con.getValue() + "%\'";
                 } else {
                     querySuffix = querySuffix + " OR DD." + Utils.getDeviceDetailsColumnNames().get(con.getKey()) + con
                             .getOperator() + Utils.getConvertedValue(con.getKey(), con.getValue());
@@ -186,12 +185,12 @@ public class QueryBuilderImpl implements QueryBuilder {
     private String buildLocationQuery(String location) {
 
         String query = this.getGenericQueryPart();
-        query = query + " AND DL.STREET1 LIKE \'%" + location + "%\'";
+        query = query + " AND (DL.STREET1 LIKE \'%" + location + "%\'";
         query = query + " OR DL.STREET2 LIKE \'%" + location + "%\'";
         query = query + " OR DL.CITY LIKE \'%" + location + "%\'";
         query = query + " OR DL.STATE LIKE \'%" + location + "%\'";
         query = query + " OR DL.COUNTRY LIKE \'%" + location + "%\'";
-        query = query + " OR DL.ZIP LIKE \'%" + location + "%\'";
+        query = query + " OR DL.ZIP LIKE \'%" + location + "%\')";
         return query;
     }
 
@@ -208,8 +207,7 @@ public class QueryBuilderImpl implements QueryBuilder {
                 "LEFT JOIN DM_DEVICE_LOCATION AS DL ON DL.DEVICE_ID=D.ID \n" +
                 "INNER JOIN DM_DEVICE_TYPE AS DT ON DT.ID=D.DEVICE_TYPE_ID\n" +
                 "INNER JOIN DM_ENROLMENT AS DE ON D.ID=DE.DEVICE_ID\n" +
-                "WHERE D.TENANT_ID = " +
-                PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
+                "WHERE D.TENANT_ID = " + PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
     }
 
     private String getPropertyQueryPart() {

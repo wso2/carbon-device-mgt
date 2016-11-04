@@ -24,9 +24,5 @@ import org.wso2.carbon.device.mgt.common.Device;
 import java.util.List;
 
 public interface SearchDAO {
-
     List<Device> searchDeviceDetailsTable(String query) throws SearchDAOException;
-
-    List<Device> searchDevicePropertyTable(String query) throws SearchDAOException;
-
 }

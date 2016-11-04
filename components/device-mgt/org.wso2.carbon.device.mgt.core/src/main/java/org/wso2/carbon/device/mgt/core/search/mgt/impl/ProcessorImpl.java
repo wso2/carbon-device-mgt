@@ -19,7 +19,13 @@
 
 package org.wso2.carbon.device.mgt.core.search.mgt.impl;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.common.Device;
+import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
+import org.wso2.carbon.device.mgt.common.authorization.DeviceAccessAuthorizationException;
+import org.wso2.carbon.device.mgt.common.authorization.DeviceAccessAuthorizationService;
 import org.wso2.carbon.device.mgt.common.search.SearchContext;
 import org.wso2.carbon.device.mgt.core.dao.ApplicationDAO;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
@@ -38,10 +44,20 @@ public class ProcessorImpl implements Processor {
 
     private SearchDAO searchDAO;
     private ApplicationDAO applicationDAO;
+    private static final Log log = LogFactory.getLog(ProcessorImpl.class);
+    private DeviceAccessAuthorizationService deviceAccessAuthorizationService;
 
     public ProcessorImpl() {
         searchDAO = DeviceManagementDAOFactory.getSearchDAO();
         applicationDAO = DeviceManagementDAOFactory.getApplicationDAO();
+        PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        deviceAccessAuthorizationService =
+                (DeviceAccessAuthorizationService) ctx.getOSGiService(DeviceAccessAuthorizationService.class, null);
+        if (deviceAccessAuthorizationService == null) {
+            String msg = "DeviceAccessAuthorization service has not initialized.";
+            log.error(msg);
+            throw new IllegalStateException(msg);
+        }
     }
 
     @Override
@@ -61,19 +77,18 @@ public class ProcessorImpl implements Processor {
             }
             if (queries.containsKey(Constants.PROP_AND)) {
                 for (String query : queries.get(Constants.PROP_AND)) {
-                    List<Device> andDevices = searchDAO.searchDevicePropertyTable(query);
+                    List<Device> andDevices = searchDAO.searchDeviceDetailsTable(query);
                     allANDDevices.add(andDevices);
                 }
             }
             if (queries.containsKey(Constants.PROP_OR)) {
                 for (String query : queries.get(Constants.PROP_OR)) {
-                    List<Device> orDevices = searchDAO.searchDevicePropertyTable(query);
+                    List<Device> orDevices = searchDAO.searchDeviceDetailsTable(query);
                     allORDevices.add(orDevices);
                 }
             }
             if (queries.containsKey(Constants.LOCATION)) {
-                locationDevices = searchDAO.searchDevicePropertyTable(
-                        queries.get(Constants.LOCATION).get(0));
+                locationDevices = searchDAO.searchDeviceDetailsTable(queries.get(Constants.LOCATION).get(0));
             }
         } catch (InvalidOperatorException e) {
             throw new SearchMgtException("Invalid operator was provided, so cannot execute the search.", e);
@@ -95,8 +110,33 @@ public class ProcessorImpl implements Processor {
         devices.put(Constants.LOCATION, locationDevices);
 
         List<Device> finalDevices = aggregator.aggregate(devices);
+        finalDevices = authorizedDevices(finalDevices);
         this.setApplicationListOfDevices(finalDevices);
         return finalDevices;
+    }
+
+    /**
+     * To get the authorized devices for a particular user
+     *
+     * @param devices Devices that satisfy search results
+     * @return Devices that satisfy search results and authorized to be viewed by particular user
+     */
+    private List<Device> authorizedDevices(List<Device> devices) throws SearchMgtException {
+        List<Device> filteredList = new ArrayList<>();
+        try {
+            for (Device device : devices) {
+                DeviceIdentifier deviceIdentifier = new DeviceIdentifier(device.getDeviceIdentifier(),
+                        device.getType());
+                if (deviceAccessAuthorizationService != null && deviceAccessAuthorizationService
+                        .isUserAuthorized(deviceIdentifier)) {
+                    filteredList.add(device);
+                }
+            }
+            return filteredList;
+        } catch (DeviceAccessAuthorizationException e) {
+            log.error("Error getting authorized search results for logged in user");
+            throw new SearchMgtException(e);
+        }
     }
 
     @Override

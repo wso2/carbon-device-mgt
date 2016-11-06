@@ -29,7 +29,7 @@ import org.osgi.framework.ServiceRegistration;
 import org.w3c.dom.Document;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.common.spi.DeviceManagementService;
-import org.wso2.carbon.device.mgt.extensions.device.type.deployer.config.DeviceManagementConfiguration;
+import org.wso2.carbon.device.mgt.extensions.device.type.deployer.config.DeviceTypeConfiguration;
 import org.wso2.carbon.device.mgt.extensions.device.type.deployer.config.exception.DeviceTypeConfigurationException;
 import org.wso2.carbon.device.mgt.extensions.device.type.deployer.internal.DeviceTypeManagementDataHolder;
 import org.wso2.carbon.device.mgt.extensions.device.type.deployer.template.DeviceTypeConfigIdentifier;
@@ -72,16 +72,16 @@ public class DeviceTypeDeployer extends AbstractDeployer {
     @Override
     public void deploy(DeploymentFileData deploymentFileData) throws DeploymentException {
         try {
-            DeviceManagementConfiguration deviceManagementConfiguration = getDeviceTypeConfiguration(
+            DeviceTypeConfiguration deviceTypeConfiguration = getDeviceTypeConfiguration(
                     deploymentFileData.getFile().getAbsoluteFile());
-            String deviceType = deviceManagementConfiguration.getDeviceType();
+            String deviceType = deviceTypeConfiguration.getName();
             String tenantDomain = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantDomain(true);
             if (deviceType != null && !deviceType.isEmpty() && tenantDomain != null
                     && !tenantDomain.isEmpty()) {
                 DeviceTypeConfigIdentifier deviceTypeConfigIdentifier = new DeviceTypeConfigIdentifier(deviceType,
                                                                                                        tenantDomain);
                 ServiceRegistration serviceRegistration = registerDeviceType(deviceTypeConfigIdentifier,
-                                                                             deviceManagementConfiguration);
+                                                                             deviceTypeConfiguration);
                 this.deviceTypeServiceRegistrations.put(deploymentFileData.getAbsolutePath(), serviceRegistration);
                 this.deviceTypeConfigurationDataMap.put(deploymentFileData.getAbsolutePath(),
                                                         deviceTypeConfigIdentifier);
@@ -102,16 +102,16 @@ public class DeviceTypeDeployer extends AbstractDeployer {
                          + deviceTypeConfigIdentifier.getTenantDomain());
     }
 
-    private DeviceManagementConfiguration getDeviceTypeConfiguration(File configurationFile)
+    private DeviceTypeConfiguration getDeviceTypeConfiguration(File configurationFile)
             throws DeviceTypeConfigurationException {
         try {
             Document doc = DeviceTypeConfigUtil.convertToDocument(configurationFile);
 
             /* Un-marshaling Webapp Authenticator configuration */
-            JAXBContext ctx = JAXBContext.newInstance(DeviceManagementConfiguration.class);
+            JAXBContext ctx = JAXBContext.newInstance(DeviceTypeConfiguration.class);
             Unmarshaller unmarshaller = ctx.createUnmarshaller();
             //unmarshaller.setSchema(getSchema());
-            return (DeviceManagementConfiguration) unmarshaller.unmarshal(doc);
+            return (DeviceTypeConfiguration) unmarshaller.unmarshal(doc);
         } catch (JAXBException e) {
             throw new DeviceTypeConfigurationException("Error occurred while un-marshalling the file " +
                                                                configurationFile.getAbsolutePath(), e);
@@ -119,7 +119,7 @@ public class DeviceTypeDeployer extends AbstractDeployer {
     }
 
     private ServiceRegistration registerDeviceType(DeviceTypeConfigIdentifier deviceTypeConfigIdentifier,
-                                                   DeviceManagementConfiguration deviceManagementConfiguration) {
+                                                   DeviceTypeConfiguration deviceManagementConfiguration) {
         DeviceTypeManagerService deviceTypeManagerService = new DeviceTypeManagerService(deviceTypeConfigIdentifier,
                                                                                          deviceManagementConfiguration);
         BundleContext bundleContext = DeviceTypeManagementDataHolder.getInstance().getBundleContext();

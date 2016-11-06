@@ -56,7 +56,7 @@ public class DeviceTypePluginDAO {
         try {
             conn = deviceTypeDAOHandler.getConnection();
             String selectDBQuery = "SELECT " + getDeviceTableColumnNames() + " FROM " +
-                    deviceDAODefinition.getDeviceTableName() + " WHERE " + deviceDAODefinition.getPrimarkey() + " = ?";
+                    deviceDAODefinition.getDeviceTableName() + " WHERE " + deviceDAODefinition.getPrimaryKey() + " = ?";
             stmt = conn.prepareStatement(selectDBQuery);
             stmt.setString(1, deviceId);
             resultSet = stmt.executeQuery();
@@ -97,7 +97,7 @@ public class DeviceTypePluginDAO {
         try {
             conn = deviceTypeDAOHandler.getConnection();
             String createDBQuery = "INSERT INTO " + deviceDAODefinition.getDeviceTableName() + "("
-                    + deviceDAODefinition.getPrimarkey() + " , " + getDeviceTableColumnNames() + ") VALUES ("
+                    + deviceDAODefinition.getPrimaryKey() + " , " + getDeviceTableColumnNames() + ") VALUES ("
                     + getPreparedInputString(deviceDAODefinition.getColumnNames().size() + 1) + ")";
             stmt = conn.prepareStatement(createDBQuery);
             stmt.setString(1, device.getDeviceIdentifier());
@@ -132,7 +132,7 @@ public class DeviceTypePluginDAO {
         try {
             conn = deviceTypeDAOHandler.getConnection();
             String updateDBQuery = "UPDATE " + deviceDAODefinition.getDeviceTableName() + " SET "
-                            + getDeviceTableColumnNamesForUpdateQuery()+ " WHERE " + deviceDAODefinition.getPrimarkey()
+                            + getDeviceTableColumnNamesForUpdateQuery()+ " WHERE " + deviceDAODefinition.getPrimaryKey()
                             + " = ?";
 
             stmt = conn.prepareStatement(updateDBQuery);
@@ -167,7 +167,7 @@ public class DeviceTypePluginDAO {
         try {
             conn = deviceTypeDAOHandler.getConnection();
             String deleteDBQuery = "DELETE FROM " + deviceDAODefinition.getDeviceTableName()
-                    + " WHERE " + deviceDAODefinition.getPrimarkey() + " = ?";
+                    + " WHERE " + deviceDAODefinition.getPrimaryKey() + " = ?";
             stmt = conn.prepareStatement(deleteDBQuery);
             stmt.setString(1, deviceId);
             int rows = stmt.executeUpdate();
@@ -203,7 +203,7 @@ public class DeviceTypePluginDAO {
             resultSet = stmt.executeQuery();
             while (resultSet.next()) {
                 device = new Device();
-                device.setDeviceIdentifier(resultSet.getString(deviceDAODefinition.getPrimarkey()));
+                device.setDeviceIdentifier(resultSet.getString(deviceDAODefinition.getPrimaryKey()));
                 List<Device.Property> properties = new ArrayList<>();
                 for (String columnName : deviceDAODefinition.getColumnNames()) {
                     Device.Property property = new Device.Property();

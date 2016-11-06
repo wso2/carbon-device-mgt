@@ -20,28 +20,25 @@ package org.wso2.carbon.device.mgt.extensions.device.type.deployer.template;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.DeviceManager;
-import org.wso2.carbon.device.mgt.common.DeviceTypeIdentifier;
 import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
 import org.wso2.carbon.device.mgt.common.FeatureManager;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.PlatformConfiguration;
 import org.wso2.carbon.device.mgt.common.license.mgt.License;
 import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManagementException;
 import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManager;
+import org.wso2.carbon.device.mgt.extensions.device.type.deployer.config.DeviceDetails;
+import org.wso2.carbon.device.mgt.extensions.device.type.deployer.config.DeviceTypeConfiguration;
+import org.wso2.carbon.device.mgt.extensions.device.type.deployer.config.Table;
 import org.wso2.carbon.device.mgt.extensions.device.type.deployer.util.DeviceTypePluginConstants;
-import org.wso2.carbon.device.mgt.extensions.device.type.deployer.config.DeviceDefinition;
-import org.wso2.carbon.device.mgt.extensions.device.type.deployer.config.DeviceManagementConfiguration;
 import org.wso2.carbon.device.mgt.extensions.device.type.deployer.config.Feature;
-import org.wso2.carbon.device.mgt.extensions.device.type.deployer.config.Features;
 import org.wso2.carbon.device.mgt.extensions.device.type.deployer.exception.DeviceTypeDeployerFileException;
 import org.wso2.carbon.device.mgt.extensions.device.type.deployer.exception.DeviceTypeMgtPluginException;
 import org.wso2.carbon.device.mgt.extensions.device.type.deployer.template.dao.DeviceDAODefinition;
 import org.wso2.carbon.device.mgt.extensions.device.type.deployer.template.dao.DeviceTypePluginDAOManager;
-import org.wso2.carbon.device.mgt.extensions.device.type.deployer.template.feature.AnnotationBasedFeatureManager;
 import org.wso2.carbon.device.mgt.extensions.device.type.deployer.template.feature.ConfigurationBasedFeatureManager;
 import org.wso2.carbon.device.mgt.extensions.device.type.deployer.template.util.DeviceTypeUtils;
 import org.wso2.carbon.device.mgt.extensions.license.mgt.registry.RegistryBasedLicenseManager;
@@ -71,61 +68,53 @@ public class DeviceTypeManager implements DeviceManager {
 
     private FeatureManager featureManager;
     public DeviceTypeManager(DeviceTypeConfigIdentifier deviceTypeConfigIdentifier,
-                                    DeviceManagementConfiguration deviceManagementConfiguration) {
-
-        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId(true);
-        boolean isSharedWithAllTenants = deviceManagementConfiguration.getManagementRepository().getProvisioningConfig()
-                        .isSharedWithAllTenants();
-        DeviceTypeIdentifier deviceTypeIdentifier;
+                                    DeviceTypeConfiguration deviceTypeConfiguration) {
         deviceType = deviceTypeConfigIdentifier.getDeviceType();
-        if (isSharedWithAllTenants) {
-            deviceTypeIdentifier = new DeviceTypeIdentifier(deviceType);
-        } else {
-            deviceTypeIdentifier = new DeviceTypeIdentifier(deviceType, tenantId);
+        if (deviceTypeConfiguration.getFeatures() != null && deviceTypeConfiguration.getFeatures().getFeature() != null ) {
+            List<Feature> features = deviceTypeConfiguration.getFeatures().getFeature();
+            if (features != null) {
+                featureManager = new ConfigurationBasedFeatureManager(features);
+            }
         }
 
-        DeviceDefinition deviceDefinition = deviceManagementConfiguration.getManagementRepository().getDeviceDefinition();
-        if (deviceDefinition != null) {
-            //generate features.
-            Features featuresList = deviceManagementConfiguration.getManagementRepository().getDeviceDefinition().getFeatures();
-            if (featuresList != null) {
-                if (featuresList.isGenerate()) {
-                    featureManager = new AnnotationBasedFeatureManager(deviceTypeIdentifier);
-                } else {
-                    List<Feature> features = deviceDefinition.getFeatures().getFeature();
-                    if (features != null) {
-                        featureManager = new ConfigurationBasedFeatureManager(features);
-                    }
+        //add license to registry.
+        this.licenseManager = new RegistryBasedLicenseManager();
+        try {
+            if (licenseManager.getLicense(deviceType, DeviceTypePluginConstants.LANGUAGE_CODE_ENGLISH_US) == null) {
+
+                if (deviceTypeConfiguration.getLicense() != null) {
+                    License defaultLicense = new License();
+                    defaultLicense.setLanguage(deviceTypeConfiguration.getLicense().getLanguage());
+                    defaultLicense.setVersion(deviceTypeConfiguration.getLicense().getVersion());
+                    defaultLicense.setText(deviceTypeConfiguration.getLicense().getText());
+                    licenseManager.addLicense(deviceType, defaultLicense);
                 }
             }
+        } catch (LicenseManagementException e) {
+            String msg = "Error occurred while adding default license for " + deviceType + " devices";
+            throw new DeviceTypeDeployerFileException(msg, e);
+        }
 
-            //add license to registry.
-            this.licenseManager = new RegistryBasedLicenseManager();
-            try {
-                if (licenseManager.getLicense(deviceType, DeviceTypePluginConstants.LANGUAGE_CODE_ENGLISH_US) == null) {
-
-                    if (deviceDefinition.getLicense() != null) {
-                        License defaultLicense = new License();
-                        defaultLicense.setLanguage(deviceDefinition.getLicense().getLanguage());
-                        defaultLicense.setVersion(deviceDefinition.getLicense().getVersion());
-                        defaultLicense.setText(deviceDefinition.getLicense().getText());
-                        licenseManager.addLicense(deviceType, defaultLicense);
-                    }
-                }
-            } catch (LicenseManagementException e) {
-                String msg = "Error occurred while adding default license for " + deviceType + " devices";
-                throw new DeviceTypeDeployerFileException(msg, e);
-            }
+        DeviceDetails deviceDetails = deviceTypeConfiguration.getDeviceDetails();
+        if (deviceDetails != null) {
 
             //Check whether device dao definition exist.
-
-            String tableName = deviceManagementConfiguration.getManagementRepository().getDeviceDefinition()
-                    .getTableName();
+            String tableName = deviceTypeConfiguration.getDeviceDetails().getTableId();
             if (tableName != null && !tableName.isEmpty()) {
+                List<Table> tables = deviceTypeConfiguration.getDataSource().getTableConfig().getTable();
+                Table deviceDefinitionTable = null;
+                for (Table table : tables) {
+                    if (tableName.equals(table.getName())) {
+                        deviceDefinitionTable = table;
+                        break;
+                    }
+                }
+                if (deviceDefinitionTable == null) {
+                    throw new DeviceTypeDeployerFileException("Could not find definition for table: " + tableName);
+                }
                 propertiesExist = true;
-                DeviceDAODefinition deviceDAODefinition = new DeviceDAODefinition(deviceDefinition);
-                String datasourceName = deviceManagementConfiguration.getManagementRepository()
-                        .getDataSourceConfiguration().getJndiLookupDefinition().getName();
+                DeviceDAODefinition deviceDAODefinition = new DeviceDAODefinition(deviceDefinitionTable);
+                String datasourceName = deviceTypeConfiguration.getDataSource().getJndiConfig().getName();
                 if (datasourceName != null && !datasourceName.isEmpty()) {
                     String setupOption = System.getProperty("setup");
                     if (setupOption != null) {

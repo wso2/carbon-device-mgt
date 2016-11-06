@@ -21,15 +21,27 @@ package org.wso2.carbon.device.mgt.extensions.device.type.deployer.template.feat
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.Feature;
 import org.wso2.carbon.device.mgt.common.FeatureManager;
+import org.wso2.carbon.device.mgt.extensions.device.type.deployer.config.Operation;
 
+import javax.ws.rs.HttpMethod;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * This implementation retreives the features that are configured through the deployer.
  */
 public class ConfigurationBasedFeatureManager implements FeatureManager {
     private List<Feature> features = new ArrayList<>();
+    private static final String METHOD = "method";
+    private static final String URI = "uri";
+    private static final String PATH_PARAMS = "pathParams";
+    private static final String QUERY_PARAMS = "queryParams";
+    private static final String FORM_PARAMS = "formParams";
+    private static final Pattern PATH_PARAM_REGEX = Pattern.compile("\\{(.*?)\\}");
 
     public ConfigurationBasedFeatureManager(
             List<org.wso2.carbon.device.mgt.extensions.device.type.deployer.config.Feature> features) {
@@ -38,6 +50,29 @@ public class ConfigurationBasedFeatureManager implements FeatureManager {
             deviceFeature.setCode(feature.getCode());
             deviceFeature.setName(feature.getName());
             deviceFeature.setDescription(feature.getDescription());
+            Operation operation = feature.getOperation();
+            if (operation != null) {
+                Map<String, Object> apiParams = new HashMap<>();
+                apiParams.put(METHOD, operation.getMethod().toUpperCase());
+                apiParams.put(URI, operation.getContext());
+                List<String> pathParams = getPathParams(operation.getContext());
+                if (!pathParams.isEmpty()) {
+                    apiParams.put(PATH_PARAMS, pathParams);
+                }
+
+                if (operation.getQueryParameters() != null) {
+                    apiParams.put(QUERY_PARAMS, operation.getQueryParameters().getParameter());
+                }
+                if (operation.getFormParameters() != null) {
+                    apiParams.put(FORM_PARAMS, operation.getFormParameters().getParameter());
+                }
+                List<Feature.MetadataEntry> metadataEntries = new ArrayList<>();
+                Feature.MetadataEntry metadataEntry = new Feature.MetadataEntry();
+                metadataEntry.setId(-1);
+                metadataEntry.setValue(apiParams);
+                metadataEntries.add(metadataEntry);
+                deviceFeature.setMetadataEntries(metadataEntries);
+            }
             this.features.add(deviceFeature);
         }
     }
@@ -76,5 +111,14 @@ public class ConfigurationBasedFeatureManager implements FeatureManager {
     @Override
     public boolean addSupportedFeaturesToDB() throws DeviceManagementException {
         return false;
+    }
+
+    private List<String> getPathParams(String context) {
+        List<String> matchList = new ArrayList<String>();
+        Matcher regexMatcher = PATH_PARAM_REGEX.matcher(context);
+        while (regexMatcher.find()) {
+            matchList.add(regexMatcher.group(1));
+        }
+        return matchList;
     }
 }

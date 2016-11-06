@@ -22,21 +22,19 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
-import java.util.ArrayList;
-import java.util.List;
 
 
 /**
- * <p>Java class for Features complex type.
+ * <p>Java class for jndiConfig complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="Features">
+ * &lt;complexType name="jndiConfig">
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="Feature" type="{}Feature"/>
+ *         &lt;element name="name" type="{http://www.w3.org/2001/XMLSchema}string"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -46,27 +44,36 @@ import java.util.List;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "Features", propOrder = {
-    "feature"
+@XmlType(name = "jndiConfig", propOrder = {
+    "name"
 })
-public class Features {
+public class JndiConfig {
 
-    @XmlElement(name = "Feature")
-    protected List<Feature> feature;
+    @XmlElement(required = true)
+    protected String name;
 
     /**
-     * Gets the value of the feature property.
+     * Gets the value of the name property.
      * 
      * @return
      *     possible object is
-     *     {@link Feature }
+     *     {@link String }
      *     
      */
-    public List<Feature> getFeature() {
-        if (feature == null) {
-            feature = new ArrayList<Feature>();
-        }
-        return this.feature;
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * Sets the value of the name property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setName(String value) {
+        this.name = value;
     }
 
 }

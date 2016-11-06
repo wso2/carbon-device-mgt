@@ -26,15 +26,15 @@ import javax.xml.bind.annotation.XmlValue;
 
 
 /**
- * <p>Java class for Attribute complex type.
+ * <p>Java class for DeviceDetails complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="Attribute">
+ * &lt;complexType name="DeviceDetails">
  *   &lt;simpleContent>
  *     &lt;extension base="&lt;http://www.w3.org/2001/XMLSchema>string">
- *       &lt;attribute name="type" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="table-id" type="{http://www.w3.org/2001/XMLSchema}string" />
  *     &lt;/extension>
  *   &lt;/simpleContent>
  * &lt;/complexType>
@@ -43,11 +43,15 @@ import javax.xml.bind.annotation.XmlValue;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Attribute {
+@XmlType(name = "DeviceDetails", propOrder = {
+    "value"
+})
+public class DeviceDetails {
 
     @XmlValue
     protected String value;
-
+    @XmlAttribute(name = "table-id")
+    protected String tableId;
 
     /**
      * Gets the value of the value property.
@@ -71,6 +75,30 @@ public class Attribute {
      */
     public void setValue(String value) {
         this.value = value;
+    }
+
+    /**
+     * Gets the value of the tableId property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getTableId() {
+        return tableId;
+    }
+
+    /**
+     * Sets the value of the tableId property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setTableId(String value) {
+        this.tableId = value;
     }
 
 }

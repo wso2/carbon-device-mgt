@@ -21,7 +21,6 @@ package org.wso2.carbon.device.mgt.extensions.device.type.deployer.template.util
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
-import org.wso2.carbon.device.mgt.extensions.device.type.deployer.config.DeviceManagementConfiguration;
 import org.wso2.carbon.device.mgt.extensions.device.type.deployer.exception.DeviceTypeMgtPluginException;
 import org.wso2.carbon.device.mgt.extensions.device.type.deployer.internal.DeviceTypeManagementDataHolder;
 import org.wso2.carbon.registry.api.RegistryException;
@@ -30,7 +29,6 @@ import org.wso2.carbon.registry.core.Registry;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
-import javax.naming.NamingException;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -89,8 +87,6 @@ public class DeviceTypeUtils {
             } else {
                 log.info("Device management repository database already exists. Not creating a new database.");
             }
-        } catch (NamingException e) {
-            log.error("Error while looking up the data source: " + datasourceName, e);
         } catch (Exception e) {
             throw new DeviceTypeMgtPluginException("Error occurred while initializing Device " +
                                                                        "Management database schema", e);

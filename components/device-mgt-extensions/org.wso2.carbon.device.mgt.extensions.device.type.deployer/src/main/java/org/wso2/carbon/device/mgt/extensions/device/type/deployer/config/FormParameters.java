@@ -22,19 +22,21 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
- * <p>Java class for DataSourceConfiguration complex type.
+ * <p>Java class for FormParameters complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="DataSourceConfiguration">
+ * &lt;complexType name="FormParameters">
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="JndiLookupDefinition" type="{}JndiLookupDefinition"/>
+ *         &lt;element name="Parameter" type="{http://www.w3.org/2001/XMLSchema}string"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -44,36 +46,19 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "DataSourceConfiguration", propOrder = {
-    "jndiLookupDefinition"
+@XmlType(name = "FormParameters", propOrder = {
+    "parameter"
 })
-public class DataSourceConfiguration {
+public class FormParameters {
 
-    @XmlElement(name = "JndiLookupDefinition", required = true)
-    protected JndiLookupDefinition jndiLookupDefinition;
+    @XmlElement(name = "Parameter")
+    protected List<String> parameter;
 
-    /**
-     * Gets the value of the jndiLookupDefinition property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link JndiLookupDefinition }
-     *     
-     */
-    public JndiLookupDefinition getJndiLookupDefinition() {
-        return jndiLookupDefinition;
-    }
-
-    /**
-     * Sets the value of the jndiLookupDefinition property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link JndiLookupDefinition }
-     *     
-     */
-    public void setJndiLookupDefinition(JndiLookupDefinition value) {
-        this.jndiLookupDefinition = value;
+    public List<String> getParameter() {
+        if (parameter == null) {
+            parameter = new ArrayList<String>();
+        }
+        return this.parameter;
     }
 
 }

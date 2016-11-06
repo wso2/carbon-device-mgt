@@ -26,20 +26,20 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for Feature complex type.
+ * <p>Java class for Operation complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="Feature">
+ * &lt;complexType name="Operation">
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="Name" type="{http://www.w3.org/2001/XMLSchema}string"/>
- *         &lt;element name="Description" type="{http://www.w3.org/2001/XMLSchema}string"/>
- *         &lt;element name="Operation" type="{}Operation"/>
+ *         &lt;element name="QueryParameters" type="{}QueryParameters"/>
+ *         &lt;element name="FormParameters" type="{}FormParameters"/>
  *       &lt;/sequence>
- *       &lt;attribute name="code" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="context" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="method" type="{http://www.w3.org/2001/XMLSchema}string" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -48,116 +48,115 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "Feature", propOrder = {
-    "name",
-    "description",
-    "operation"
+@XmlType(name = "Operation", propOrder = {
+    "queryParameters",
+    "formParameters"
 })
-public class Feature {
+public class Operation {
 
-    @XmlElement(name = "Name", required = true)
-    protected String name;
-    @XmlElement(name = "Description", required = true)
-    protected String description;
-    @XmlElement(name = "Operation", required = true)
-    protected Operation operation;
-    @XmlAttribute(name = "code")
-    protected String code;
+    @XmlElement(name = "QueryParameters")
+    protected QueryParameters queryParameters;
+    @XmlElement(name = "FormParameters")
+    protected FormParameters formParameters;
+    @XmlAttribute(name = "context")
+    protected String context;
+    @XmlAttribute(name = "method")
+    protected String method;
 
     /**
-     * Gets the value of the name property.
+     * Gets the value of the queryParameters property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link QueryParameters }
+     *     
+     */
+    public QueryParameters getQueryParameters() {
+        return queryParameters;
+    }
+
+    /**
+     * Sets the value of the queryParameters property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link QueryParameters }
+     *     
+     */
+    public void setQueryParameters(QueryParameters value) {
+        this.queryParameters = value;
+    }
+
+    /**
+     * Gets the value of the formParameters property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link FormParameters }
+     *     
+     */
+    public FormParameters getFormParameters() {
+        return formParameters;
+    }
+
+    /**
+     * Sets the value of the formParameters property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link FormParameters }
+     *     
+     */
+    public void setFormParameters(FormParameters value) {
+        this.formParameters = value;
+    }
+
+    /**
+     * Gets the value of the context property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getName() {
-        return name;
+    public String getContext() {
+        return context;
     }
 
     /**
-     * Sets the value of the name property.
+     * Sets the value of the context property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setName(String value) {
-        this.name = value;
+    public void setContext(String value) {
+        this.context = value;
     }
 
     /**
-     * Gets the value of the description property.
+     * Gets the value of the method property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getDescription() {
-        return description;
+    public String getMethod() {
+        return method;
     }
 
     /**
-     * Sets the value of the description property.
+     * Sets the value of the method property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setDescription(String value) {
-        this.description = value;
-    }
-
-    /**
-     * Gets the value of the operation property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Operation }
-     *     
-     */
-    public Operation getOperation() {
-        return operation;
-    }
-
-    /**
-     * Sets the value of the operation property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Operation }
-     *     
-     */
-    public void setOperation(Operation value) {
-        this.operation = value;
-    }
-
-    /**
-     * Gets the value of the code property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getCode() {
-        return code;
-    }
-
-    /**
-     * Sets the value of the code property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setCode(String value) {
-        this.code = value;
+    public void setMethod(String value) {
+        this.method = value;
     }
 
 }

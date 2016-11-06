@@ -104,6 +104,7 @@
                             org.wso2.carbon.registry.core,
                             org.wso2.carbon.registry.core.*,
                             org.wso2.carbon.utils.*,
+                            javax.xml.namespace
                         </Import-Package>
                         <Axis2Deployer>DeviceTypeDeployer</Axis2Deployer>
                     </instructions>

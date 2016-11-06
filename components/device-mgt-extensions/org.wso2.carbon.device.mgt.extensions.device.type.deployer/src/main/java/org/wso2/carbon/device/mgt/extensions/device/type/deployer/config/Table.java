@@ -20,24 +20,25 @@ package org.wso2.carbon.device.mgt.extensions.device.type.deployer.config;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for PushNotificationConfiguration complex type.
+ * <p>Java class for Table complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="PushNotificationConfiguration">
+ * &lt;complexType name="Table">
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="PushNotificationProvider" type="{http://www.w3.org/2001/XMLSchema}string"/>
- *         &lt;element name="FileBasedProperties" type="{http://www.w3.org/2001/XMLSchema}string"/>
- *         &lt;element name="Properties" type="{}Properties"/>
+ *         &lt;element name="PrimaryKey" type="{http://www.w3.org/2001/XMLSchema}string"/>
+ *         &lt;element name="Attributes" type="{}Attributes"/>
  *       &lt;/sequence>
+ *       &lt;attribute name="name" type="{http://www.w3.org/2001/XMLSchema}string" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -46,90 +47,89 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "PushNotificationConfiguration", propOrder = {
-    "pushNotificationProvider",
-    "fileBasedProperties",
-    "properties"
+@XmlType(name = "Table", propOrder = {
+    "primaryKey",
+    "attributes"
 })
-public class PushNotificationConfiguration {
+public class Table {
 
-    @XmlElement(name = "PushNotificationProvider", required = true)
-    protected String pushNotificationProvider;
-    @XmlElement(name = "FileBasedProperties", required = true)
-    protected boolean fileBasedProperties;
-    @XmlElement(name = "Properties", required = true)
-    protected Properties properties;
+    @XmlElement(name = "PrimaryKey", required = true)
+    protected String primaryKey;
+    @XmlElement(name = "Attributes", required = true)
+    protected Attributes attributes;
+    @XmlAttribute(name = "name")
+    protected String name;
 
     /**
-     * Gets the value of the pushNotificationProvider property.
+     * Gets the value of the primaryKey property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getPushNotificationProvider() {
-        return pushNotificationProvider;
+    public String getPrimaryKey() {
+        return primaryKey;
     }
 
     /**
-     * Sets the value of the pushNotificationProvider property.
+     * Sets the value of the primaryKey property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setPushNotificationProvider(String value) {
-        this.pushNotificationProvider = value;
+    public void setPrimaryKey(String value) {
+        this.primaryKey = value;
     }
 
     /**
-     * Gets the value of the fileBasedProperties property.
+     * Gets the value of the attributes property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Attributes }
+     *     
+     */
+    public Attributes getAttributes() {
+        return attributes;
+    }
+
+    /**
+     * Sets the value of the attributes property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Attributes }
+     *     
+     */
+    public void setAttributes(Attributes value) {
+        this.attributes = value;
+    }
+
+    /**
+     * Gets the value of the name property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public boolean isFileBasedProperties() {
-        return fileBasedProperties;
+    public String getName() {
+        return name;
     }
 
     /**
-     * Sets the value of the fileBasedProperties property.
+     * Sets the value of the name property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setFileBasedProperties(boolean value) {
-        this.fileBasedProperties = value;
-    }
-
-    /**
-     * Gets the value of the properties property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Properties }
-     *     
-     */
-    public Properties getProperties() {
-        return properties;
-    }
-
-    /**
-     * Sets the value of the properties property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Properties }
-     *     
-     */
-    public void setProperties(Properties value) {
-        this.properties = value;
+    public void setName(String value) {
+        this.name = value;
     }
 
 }

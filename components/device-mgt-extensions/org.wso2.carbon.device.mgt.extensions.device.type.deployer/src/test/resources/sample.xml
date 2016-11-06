@@ -17,7 +17,65 @@
   ~ specific language governing permissions and limitations
   ~ under the License.
   -->
-<DeviceManagementConfiguration name="samples">
+<DeviceTypeConfiguration name="samples">
+
+    <DeviceDetails table-id="SAMPLE_DEVICE_1"/>
+
+    <Features>
+        <Feature code="abc">
+            <Name>abc</Name>
+            <Description>this is a feature</Description>
+            <Operation context="/bulb/{state}" method="PUT">
+                <QueryParameters>
+                    <Parameter>deviceId</Parameter>
+                </QueryParameters>
+                <FormParameters>
+                    <Parameter>test</Parameter>
+                </FormParameters>
+            </Operation>
+        </Feature>
+    </Features>
+
+    <!-- <Sensors table-id="SAMPLE_DEVICE_2">
+		<Sensor code="CPU_Temperature">
+			<Name>temperature sensor fitted</Name>
+			<StreamDefinition>org.wso2.temperature.stream<StreamDefinition>
+			<Description>this is a sensor</Description>
+			<SensorStaticProperties>
+				<Property name="unit">celcius</Property>
+				<Property name="model_number">atmeggga11234</Property>
+			</SensorStaticProperties>
+		</Sensor>
+		<Sensor code="DHT11_Temperature">
+			<Name>temperature sensor fitted</Name>
+			<StreamDefinition>org.wso2.temperature.stream<StreamDefinition>
+			<Description>this is a sensor</Description>
+			<SensorStaticProperties>
+				<Property name="unit">celcius</Property>
+			</SensorStaticProperties>
+			<SensorDynamicProperties>
+				<Property name="model_number"/>
+			</SensorDynamicProperties>
+		</Sensor>
+	</Sensors> -->
+
+    <ProvisioningConfig>
+        <SharedWithAllTenants>false</SharedWithAllTenants>
+    </ProvisioningConfig>
+
+    <PushNotificationProvider type="MQTT">
+        <FileBasedProperties>true</FileBasedProperties>
+        <!--if file based properties is set to false then the configuration will be picked from platform configuration-->
+        <ConfigProperties>
+            <Property Name="mqtt.adapter.name">sample.mqtt.adapter</Property>
+            <Property Name="url">tcp://localhost:1883</Property>
+            <Property Name="username">admin</Property>
+            <Property Name="dcrUrl">https://localhost:9443/dynamic-client-web/register</Property>
+            <Property Name="qos">0</Property>
+            <Property Name="scopes"/>
+            <Property Name="clearSession">true</Property>
+        </ConfigProperties>
+    </PushNotificationProvider>
 
     <License>
         <Language>en_US</Language>
@@ -29,49 +87,15 @@
         <jndiConfig>
             <name>jdbc/SampleDM_DB</name>
         </jndiConfig>
-        <tableDefinitions>
-            <Table name="SAMPLE_DEVICE">
+        <tableConfig>
+            <Table name="SAMPLE_DEVICE_1">
                 <PrimaryKey>SAMPLE_DEVICE_ID</PrimaryKey>
                 <Attributes>
                     <Attribute>column1</Attribute>
                     <Attribute>column2</Attribute>
                 </Attributes>
             </Table>
-        </tableDefinitions>
+        </tableConfig>
     </DataSource>
 
-    <!--if generate is set to true then the feature information will be picked up from the annotation in the api-->
-        <Features>
-            <Feature code="abc">
-                <Name>abc</Name>
-                <affectedVersion>5.0.0</affectedVersion>
-                <Description>this is a feature</Description>
-                <FeatureProperties>
-                    <Property name="prop1">place_holder</Property>
-                    <Property name="prop2">place_holder</Property>
-                    <Property name="prop3">place_holder</Property>
-                </FeatureProperties>
-            </Feature>
-        </Features>
-
-        <ProvisioningConfig>
-            <SharedWithAllTenants>false</SharedWithAllTenants>
-        </ProvisioningConfig>
-
-    <NotificationProviders>
-        <PushNotificationProvider type="MQTT">
-            <FileBasedProperties>true</FileBasedProperties>
-            <!--if file based properties is set to false then the configuration will be picked from platform configuration-->
-            <ConfigProperties>
-                <Property Name="mqtt.adapter.name">sample.mqtt.adapter</Property>
-                <Property Name="url">tcp://localhost:1883</Property>
-                <Property Name="username">admin</Property>
-                <Property Name="dcrUrl">https://localhost:9443/dynamic-client-web/register</Property>
-                <Property Name="qos">0</Property>
-                <Property Name="scopes"/>
-                <Property Name="clearSession">true</Property>
-            </ConfigProperties>
-        </PushNotificationProvider>
-    </NotificationProviders>
-
-</DeviceManagementConfiguration>
+</DeviceTypeConfiguration>

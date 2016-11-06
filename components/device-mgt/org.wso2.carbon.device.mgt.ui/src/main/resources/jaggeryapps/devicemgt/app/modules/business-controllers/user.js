@@ -512,8 +512,32 @@ var userModule = function () {
         if (publicMethods.isAuthorized("/permission/admin/device-mgt/users/add")) {
             permissions["ADD_USER"] = true;
         }
+        if (publicMethods.isAuthorized("/permission/admin/device-mgt/groups/devices/add")) {
+            permissions["ADD_GROUP_DEVICES"] = true;
+        }
+        if (publicMethods.isAuthorized("/permission/admin/device-mgt/groups/devices/remove")) {
+            permissions["REMOVE_GROUP_DEVICES"] = true;
+        }
+        if (publicMethods.isAuthorized("/permission/admin/device-mgt/groups/devices/view")) {
+            permissions["VIEW_GROUP_DEVICES"] = true;
+        }
+        if (publicMethods.isAuthorized("/permission/admin/device-mgt/groups/roles/create")) {
+            permissions["CREATE_GROUP_ROLES"] = true;
+        }
+        if (publicMethods.isAuthorized("/permission/admin/device-mgt/groups/roles/view")) {
+            permissions["VIEW_GROUP_ROLES"] = true;
+        }
+        if (publicMethods.isAuthorized("/permission/admin/device-mgt/groups/update")) {
+            permissions["UPDATE_GROUP"] = true;
+        }
+        if (publicMethods.isAuthorized("/permission/admin/device-mgt/groups/share")) {
+            permissions["SHARE_GROUP"] = true;
+        }
         if (publicMethods.isAuthorized("/permission/admin/device-mgt/users/remove")) {
             permissions["REMOVE_USER"] = true;
+        }
+        if (publicMethods.isAuthorized("/permission/admin/device-mgt/groups/remove")) {
+            permissions["REMOVE_GROUP"] = true;
         }
         if (publicMethods.isAuthorized("/permission/admin/device-mgt/roles/add")) {
             permissions["ADD_ROLE"] = true;

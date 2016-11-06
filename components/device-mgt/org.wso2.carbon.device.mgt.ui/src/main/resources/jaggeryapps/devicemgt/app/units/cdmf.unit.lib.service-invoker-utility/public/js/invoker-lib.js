@@ -21,20 +21,31 @@ var invokerUtil = function () {
     var publicMethods = {};
     var privateMethods = {};
 
-    privateMethods.execute = function (requestMethod, requestURL, requestPayload, successCallback, errorCallback) {
+    privateMethods.execute = function (requestMethod, requestURL, requestPayload, successCallback, errorCallback, contentType, acceptType) {
         var restAPIRequestDetails = {};
         restAPIRequestDetails["requestMethod"] = requestMethod;
         restAPIRequestDetails["requestURL"] = requestURL;
-        restAPIRequestDetails["requestPayload"] = JSON.stringify(requestPayload);
+        restAPIRequestDetails["requestPayload"] = requestPayload;
 
         var appContext = $("#app-context").data("app-context");
+        var contentTypeValue = "application/json";
+        if (contentType) {
+            contentTypeValue = contentType;
+        }
+        var acceptTypeValue = "application/json";
+        if (acceptType) {
+            acceptTypeValue = acceptType;
+        }
 
+        if(contentTypeValue == "application/json"){
+            restAPIRequestDetails["requestPayload"] = JSON.stringify(requestPayload);
+        }
         var request = {
             url: appContext + "/api/invoker/execute/",
             type: "POST",
-            contentType: "application/json",
+            contentType: contentTypeValue,
             data: JSON.stringify(restAPIRequestDetails),
-            accept: "application/json",
+            accept: acceptTypeValue,
             success: successCallback,
             error: function (jqXHR) {
                 if (jqXHR.status == 401) {
@@ -50,22 +61,22 @@ var invokerUtil = function () {
         $.ajax(request);
     };
 
-    publicMethods.get = function (requestURL, successCallback, errorCallback) {
+    publicMethods.get = function (requestURL, successCallback, errorCallback, contentType, acceptType) {
         var requestPayload = null;
-        privateMethods.execute("GET", requestURL, requestPayload, successCallback, errorCallback);
+        privateMethods.execute("GET", requestURL, requestPayload, successCallback, errorCallback, contentType, acceptType);
     };
 
-    publicMethods.post = function (requestURL, requestPayload, successCallback, errorCallback) {
-        privateMethods.execute("POST", requestURL, requestPayload, successCallback, errorCallback);
+    publicMethods.post = function (requestURL, requestPayload, successCallback, errorCallback, contentType, acceptType) {
+        privateMethods.execute("POST", requestURL, requestPayload, successCallback, errorCallback, contentType, acceptType);
     };
 
-    publicMethods.put = function (requestURL, requestPayload, successCallback, errorCallback) {
-        privateMethods.execute("PUT", requestURL, requestPayload, successCallback, errorCallback);
+    publicMethods.put = function (requestURL, requestPayload, successCallback, errorCallback, contentType, acceptType) {
+        privateMethods.execute("PUT", requestURL, requestPayload, successCallback, errorCallback, contentType, acceptType);
     };
 
-    publicMethods.delete = function (requestURL, successCallback, errorCallback) {
+    publicMethods.delete = function (requestURL, successCallback, errorCallback, contentType, acceptType) {
         var requestPayload = null;
-        privateMethods.execute("DELETE", requestURL, requestPayload, successCallback, errorCallback);
+        privateMethods.execute("DELETE", requestURL, requestPayload, successCallback, errorCallback, contentType, acceptType);
     };
 
     return publicMethods;

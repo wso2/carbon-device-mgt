@@ -101,4 +101,9 @@ public class MQTTNotificationStrategy implements NotificationStrategy {
         return null;
     }
 
+    @Override
+    public void undeploy() {
+        MQTTDataHolder.getInstance().getOutputEventAdapterService().destroy(mqttAdapterName);
+    }
+
 }

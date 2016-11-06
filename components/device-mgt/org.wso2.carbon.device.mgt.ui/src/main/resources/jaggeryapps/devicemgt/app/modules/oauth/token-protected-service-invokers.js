@@ -301,6 +301,7 @@ var invokers = function () {
             var Header = Packages.org.apache.commons.httpclient.Header;
             var contentTypeFound = false;
             var acceptTypeFound = false;
+            var acceptTypeValue = constants["APPLICATION_JSON"];
             for (var i in headers) {
                 var header = new Header();
                 header.setName(headers[i].name);
@@ -312,6 +313,7 @@ var invokers = function () {
                 }
                 if(constants["ACCEPT_IDENTIFIER"] == headers[i].name){
                     acceptTypeFound = true;
+                    acceptTypeValue = headers[i].value;
                 }
             }
 
@@ -356,10 +358,8 @@ var invokers = function () {
                 client.executeMethod(httpMethodObject);
                 //noinspection JSUnresolvedFunction
                 var status = httpMethodObject.getStatusCode();
-                if (status == 200) {
-                    var responseContentDispositionHeader = httpMethodObject.getResponseHeader(
-                        constants["CONTENT_DISPOSITION_IDENTIFIER"]);
-                    if (responseContentDispositionHeader) {
+                if (status >= 200 && status < 300) {
+                    if (constants["STREAMING_FILES_ACCEPT_HEADERS"].indexOf(acceptTypeValue) > -1) {
                         return successCallback(httpMethodObject.getResponseBodyAsStream(),
                                                httpMethodObject.getResponseHeaders());
                     } else {

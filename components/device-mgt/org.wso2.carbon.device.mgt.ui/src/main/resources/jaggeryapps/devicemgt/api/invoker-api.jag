@@ -30,8 +30,10 @@ if (uriMatcher.match("/{context}/api/invoker/execute/")) {
     //NOTE: We are only interested in Content-Type headers. Appending all request headers to the back-end call
     // will cause unforeseen security issues.
     var contentType = request.getHeader(constants.CONTENT_TYPE_IDENTIFIER);
+    var acceptType = request.getHeader(constants.ACCEPT_IDENTIFIER);
     var requestHeaders = [];
     requestHeaders.push({"name": constants.CONTENT_TYPE_IDENTIFIER, "value" : contentType});
+    requestHeaders.push({"name": constants.ACCEPT_IDENTIFIER, "value" : acceptType});
 
     var restAPIRequestDetails = request.getContent();
 

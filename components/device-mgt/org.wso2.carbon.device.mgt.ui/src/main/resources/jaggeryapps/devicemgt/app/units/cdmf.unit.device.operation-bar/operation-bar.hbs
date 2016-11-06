@@ -15,11 +15,106 @@
   specific language governing permissions and limitations
   under the License.
 }}
+{{#if control_operations}}
+    <div class="wr-operations" style="height: 87px; display: block;">
+        <style>
+            ::-webkit-input-placeholder {
+                color: #B8B8B8;
+            }
 
-<div class="wr-operations"></div>
+            ::-moz-placeholder {
+                color: #B8B8B8;
+            }
+
+            :-ms-input-placeholder {
+                color: #B8B8B8;
+            }
+
+            input:-moz-placeholder {
+                color: #B8B8B8;
+            }
+        </style>
+        {{#each control_operations}}
+            <a href="javascript:operationSelect('{{operation}}')">
+                {{#if icon}}
+                    <img src="{{@app.context}}/{{icon}}" style="width: 48px;"/>
+                {{else}}
+                    <i class="fw fw-service"></i>
+                {{/if}}
+                <span>{{name}}</span>
+            </a>
+
+            <div class="operation" data-operation-code="{{operation}}">
+                <div class="content">
+                    <div class="row">
+                        <div class="col-lg-5 col-md-6 col-centered">
+                            <h3>
+                        <span class="fw-stack">
+                            <i class="fw fw-ring fw-stack-2x"></i>
+                            <i class="fw fw-service fw-stack-1x"></i>
+                        </span>
+                                {{name}}
+                                <br>
+                            </h3>
+                            <h4>
+                                {{description}}
+                                <br>
+                            </h4>
+
+                            <form action="{{@unit.params.backendApiUri}}{{params.0.uri}}" method="{{params.0.method}}" style="padding-bottom: 20px;" id="form-{{operation}}">
+                                {{#each params.0.pathParams}}
+                                    <input type="{{type}}" id="{{name}}" placeholder="{{name}}" class="form-control" data-param-type="path" value="{{value}}" />
+                                    <br />
+                                {{/each}}
+                                {{#each params.0.formParams}}
+                                    <input type="{{type}}" id="{{name}}" name="{{name}}" placeholder="{{name}}" class="form-control" data-param-type="form" value="{{value}}" />
+                                    <br />
+                                {{/each}}
+                                {{#each params.0.queryParams}}
+                                    <input type="{{type}}" id="{{name}}" placeholder="{{name}}" class="form-control" data-param-type="query" value="{{value}}" />
+                                    <br />
+                                {{/each}}
+                                <button id="btnSend" type="button" onclick="submitForm('form-{{operation}}')" class="btn btn-default">&nbsp;&nbsp;&nbsp;&nbsp;Send
+                                                       to Device&nbsp;&nbsp;&nbsp;&nbsp;</button>
+                                <label id="lblSending" class="wr-input-label hidden"><i
+                                        class="fw fw-lifecycle fw-spin fw-2x"></i> Sending..</label>
+                                <label id="lblSent" class="wr-input-label hidden"><i
+                                        class="fw fw-check fw-2x"></i> Sent</label>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {{/each}}
+    </div>
+{{else}}
+    <div align="center">
+        <h4 style="color: #D8000C"><i class="icon fw fw-error" style="color: #D8000C"></i>
+            Operations Loading Failed!</h4>
+    </div>
+{{/if}}
+
+<div id="operation-response-template" style="display: none">
+    <div class="content">
+        <div class="row">
+            <div class="col-lg-5 col-md-6 col-centered">
+                <h3>
+                    <span class="fw-stack">
+                        <i class="fw fw-ring fw-stack-2x"></i>
+                        <i id="status-icon" class="fw fw-error fw-stack-1x"></i>
+                    </span>
+                    <br>
+                </h3>
+                <h4>
+                    <span id="title"></span>
+                    <br>
+                </h4>
+                <span id="description"></span>
+            </div>
+        </div>
+    </div>
+</div>
 
 {{#zone "bottomJs"}}
-    <script id="operations-bar" src="{{@unit.publicUri}}/templates/operations.hbs"
-            type="text/x-handlebars-template"></script>
     {{js "js/operation-bar.js"}}
 {{/zone}}

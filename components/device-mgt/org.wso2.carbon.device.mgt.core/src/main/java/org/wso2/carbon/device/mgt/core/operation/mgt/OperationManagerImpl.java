@@ -83,6 +83,14 @@ public class OperationManagerImpl implements OperationManager {
         enrollmentDAO = DeviceManagementDAOFactory.getEnrollmentDAO();
     }
 
+    public NotificationStrategy getNotificationStrategy() {
+        return notificationStrategy;
+    }
+
+    public void setNotificationStrategy(NotificationStrategy notificationStrategy) {
+        this.notificationStrategy = notificationStrategy;
+    }
+
     public OperationManagerImpl(NotificationStrategy notificationStrategy) {
         this();
         this.notificationStrategy = notificationStrategy;

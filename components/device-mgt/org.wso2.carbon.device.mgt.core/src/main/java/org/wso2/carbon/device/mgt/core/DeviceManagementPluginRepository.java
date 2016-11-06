@@ -99,7 +99,14 @@ public class DeviceManagementPluginRepository implements DeviceManagerStartupLis
             deviceTypeIdentifier = new DeviceTypeIdentifier(deviceTypeName, providerTenantId);
             providers.remove(deviceTypeIdentifier);
         }
-        operationManagerRepository.removeOperationManager(deviceTypeIdentifier);
+        OperationManager operationManager = operationManagerRepository.getOperationManager(deviceTypeIdentifier);
+        if (operationManager != null) {
+            NotificationStrategy notificationStrategy = operationManager.getNotificationStrategy();
+            if (notificationStrategy != null) {
+                notificationStrategy.undeploy();
+            }
+            operationManagerRepository.removeOperationManager(deviceTypeIdentifier);
+        }
     }
 
     public DeviceManagementService getDeviceManagementService(String type, int tenantId) {

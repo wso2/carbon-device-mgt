@@ -42,6 +42,10 @@ public class ConfigurationBasedFeatureManager implements FeatureManager {
     private static final String QUERY_PARAMS = "queryParams";
     private static final String FORM_PARAMS = "formParams";
     private static final Pattern PATH_PARAM_REGEX = Pattern.compile("\\{(.*?)\\}");
+    private List<String> pathParams = new ArrayList<>();
+    private List<String> queryParams = new ArrayList<>();
+    private List<String> formParams = new ArrayList<>();
+
 
     public ConfigurationBasedFeatureManager(
             List<org.wso2.carbon.device.mgt.extensions.device.type.deployer.config.Feature> features) {
@@ -55,17 +59,16 @@ public class ConfigurationBasedFeatureManager implements FeatureManager {
                 Map<String, Object> apiParams = new HashMap<>();
                 apiParams.put(METHOD, operation.getMethod().toUpperCase());
                 apiParams.put(URI, operation.getContext());
-                List<String> pathParams = getPathParams(operation.getContext());
-                if (!pathParams.isEmpty()) {
-                    apiParams.put(PATH_PARAMS, pathParams);
-                }
-
+                setPathParams(operation.getContext());
+                apiParams.put(PATH_PARAMS, pathParams);
                 if (operation.getQueryParameters() != null) {
-                    apiParams.put(QUERY_PARAMS, operation.getQueryParameters().getParameter());
+                    queryParams = operation.getQueryParameters().getParameter();
                 }
+                apiParams.put(QUERY_PARAMS, queryParams);
                 if (operation.getFormParameters() != null) {
-                    apiParams.put(FORM_PARAMS, operation.getFormParameters().getParameter());
+                    formParams = operation.getFormParameters().getParameter();
                 }
+                apiParams.put(FORM_PARAMS, formParams);
                 List<Feature.MetadataEntry> metadataEntries = new ArrayList<>();
                 Feature.MetadataEntry metadataEntry = new Feature.MetadataEntry();
                 metadataEntry.setId(-1);
@@ -113,12 +116,10 @@ public class ConfigurationBasedFeatureManager implements FeatureManager {
         return false;
     }
 
-    private List<String> getPathParams(String context) {
-        List<String> matchList = new ArrayList<String>();
+    private void setPathParams(String context) {
         Matcher regexMatcher = PATH_PARAM_REGEX.matcher(context);
         while (regexMatcher.find()) {
-            matchList.add(regexMatcher.group(1));
+            pathParams.add(regexMatcher.group(1));
         }
-        return matchList;
     }
 }

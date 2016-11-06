@@ -26,4 +26,9 @@ public interface NotificationStrategy {
 
     NotificationContext buildContext();
 
+    /**
+     * This will be executed when undeploying the device type.
+     */
+    void undeploy();
+
 }

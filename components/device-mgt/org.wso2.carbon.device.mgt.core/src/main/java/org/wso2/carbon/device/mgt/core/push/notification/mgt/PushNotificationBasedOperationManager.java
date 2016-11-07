@@ -136,4 +136,14 @@ public class PushNotificationBasedOperationManager implements OperationManager {
         return this.operationManager.getActivityCountUpdatedAfter(timestamp);
     }
 
+    @Override
+    public void setNotificationStrategy(NotificationStrategy notificationStrategy) {
+
+    }
+
+    @Override
+    public NotificationStrategy getNotificationStrategy() {
+        return notificationProvider;
+    }
+
 }

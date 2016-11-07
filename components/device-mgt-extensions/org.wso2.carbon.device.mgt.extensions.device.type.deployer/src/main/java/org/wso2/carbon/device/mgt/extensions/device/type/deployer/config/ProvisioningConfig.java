@@ -34,7 +34,7 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="SharedWithAllTenants" type="{http://www.w3.org/2001/XMLSchema}string"/>
+ *         &lt;element name="SharedWithAllTenants" type="{http://www.w3.org/2001/XMLSchema}boolean"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -49,16 +49,12 @@ import javax.xml.bind.annotation.XmlType;
 })
 public class ProvisioningConfig {
 
-    @XmlElement(name = "SharedWithAllTenants", required = true)
+    @XmlElement(name = "SharedWithAllTenants")
     protected boolean sharedWithAllTenants;
 
     /**
      * Gets the value of the sharedWithAllTenants property.
      * 
-     * @return
-     *     possible object is
-     *     {@link boolean }
-     *     
      */
     public boolean isSharedWithAllTenants() {
         return sharedWithAllTenants;
@@ -67,10 +63,6 @@ public class ProvisioningConfig {
     /**
      * Sets the value of the sharedWithAllTenants property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
      */
     public void setSharedWithAllTenants(boolean value) {
         this.sharedWithAllTenants = value;

@@ -89,4 +89,9 @@ public class XMPPNotificationStrategy implements NotificationStrategy {
         return null;
     }
 
+    @Override
+    public void undeploy() {
+        XMPPDataHolder.getInstance().getOutputEventAdapterService().destroy(xmppAdapterName);
+    }
+
 }

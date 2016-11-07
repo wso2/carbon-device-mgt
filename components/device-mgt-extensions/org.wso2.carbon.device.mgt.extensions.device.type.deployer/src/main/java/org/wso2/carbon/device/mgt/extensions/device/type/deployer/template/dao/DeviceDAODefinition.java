@@ -18,8 +18,7 @@
  */
 package org.wso2.carbon.device.mgt.extensions.device.type.deployer.template.dao;
 
-import org.wso2.carbon.device.mgt.extensions.device.type.deployer.config.Attribute;
-import org.wso2.carbon.device.mgt.extensions.device.type.deployer.config.DeviceDefinition;
+import org.wso2.carbon.device.mgt.extensions.device.type.deployer.config.Table;
 import org.wso2.carbon.device.mgt.extensions.device.type.deployer.exception.DeviceTypeDeployerFileException;
 
 import java.util.ArrayList;
@@ -32,7 +31,7 @@ import java.util.List;
 public class DeviceDAODefinition {
 
     private String deviceTableName;
-    private String primarkey;
+    private String primarykey;
 
     public List<String> getColumnNames() {
         return columnNames;
@@ -41,26 +40,26 @@ public class DeviceDAODefinition {
     private List<String> columnNames = new ArrayList<>();
 
 
-    public DeviceDAODefinition(DeviceDefinition deviceDefinition) {
-        deviceTableName = deviceDefinition.getTableName();
-        primarkey = deviceDefinition.getPrimaryKey();
-        List<Attribute> attributes = deviceDefinition.getAttributes().getAttribute();
+    public DeviceDAODefinition(Table table) {
+        deviceTableName = table.getName();
+        primarykey = table.getPrimaryKey();
+        List<String> attributes = table.getAttributes().getAttribute();
         if (deviceTableName == null || deviceTableName.isEmpty()) {
             throw new DeviceTypeDeployerFileException("Missing deviceTableName");
         }
 
-        if (primarkey == null || primarkey.isEmpty()) {
+        if (primarykey == null || primarykey.isEmpty()) {
             throw new DeviceTypeDeployerFileException("Missing primaryKey ");
         }
 
         if (attributes == null || attributes.size() == 0) {
             throw new DeviceTypeDeployerFileException("Missing Attributes ");
         }
-        for (Attribute attribute : attributes) {
-            if (attribute.getValue() == null ||attribute.getValue().isEmpty()) {
+        for (String attribute : attributes) {
+            if (attribute.isEmpty()) {
                 throw new DeviceTypeDeployerFileException("Unsupported attribute format for device definition");
             }
-            columnNames.add(attribute.getValue());
+            columnNames.add(attribute);
         }
     }
 
@@ -68,8 +67,8 @@ public class DeviceDAODefinition {
         return deviceTableName;
     }
 
-    public String getPrimarkey() {
-        return primarkey;
+    public String getPrimaryKey() {
+        return primarykey;
     }
 
 

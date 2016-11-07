@@ -63,6 +63,7 @@ var CONTENT_TYPE_IDENTIFIER = "Content-Type";
 var CONTENT_DISPOSITION_IDENTIFIER = "Content-Disposition";
 var APPLICATION_JSON = "application/json";
 var APPLICATION_ZIP = "application/zip";
+var STREAMING_FILES_ACCEPT_HEADERS = ["application/zip", "application/pdf", "application/octet-stream"];
 var ACCEPT_IDENTIFIER = "Accept";
 var AUTHORIZATION_HEADER= "Authorization";
 var BEARER_PREFIX = "Bearer ";

@@ -71,6 +71,11 @@ public class GCMNotificationStrategy implements NotificationStrategy {
         return null;
     }
 
+    @Override
+    public void undeploy() {
+
+    }
+
     private void sendWakeUpCall(String message,
                                 Device device) throws IOException, PushNotificationExecutionFailedException {
         OutputStream os = null;

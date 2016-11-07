@@ -28,7 +28,7 @@ function onRequest(context) {
         }
     });
     var page = {};
-    var policyModule = require("/app/modules/business-controllers/group.js")["groupModule"];
+    var policyModule = require("/app/modules/business-controllers/policy.js")["policyModule"];
     var userModule = require("/app/modules/business-controllers/user.js")["userModule"];
     var response = policyModule.getAllPolicies();
     if (response["status"] == "success") {

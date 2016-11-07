@@ -36,7 +36,14 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="Attribute" type="{}Attribute" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element name="Attribute" maxOccurs="unbounded" minOccurs="0">
+ *           &lt;simpleType>
+ *             &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
+ *               &lt;enumeration value="column1"/>
+ *               &lt;enumeration value="column2"/>
+ *             &lt;/restriction>
+ *           &lt;/simpleType>
+ *         &lt;/element>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -52,7 +59,7 @@ import javax.xml.bind.annotation.XmlType;
 public class Attributes {
 
     @XmlElement(name = "Attribute")
-    protected List<Attribute> attribute;
+    protected List<String> attribute;
 
     /**
      * Gets the value of the attribute property.
@@ -72,13 +79,13 @@ public class Attributes {
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link Attribute }
+     * {@link String }
      * 
      * 
      */
-    public List<Attribute> getAttribute() {
+    public List<String> getAttribute() {
         if (attribute == null) {
-            attribute = new ArrayList<Attribute>();
+            attribute = new ArrayList<String>();
         }
         return this.attribute;
     }

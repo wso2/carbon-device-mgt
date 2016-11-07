@@ -22,21 +22,20 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
-import java.util.ArrayList;
-import java.util.List;
 
 
 /**
- * <p>Java class for Features complex type.
+ * <p>Java class for DataSource complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="Features">
+ * &lt;complexType name="DataSource">
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="Feature" type="{}Feature"/>
+ *         &lt;element name="jndiConfig" type="{}jndiConfig"/>
+ *         &lt;element name="tableConfig" type="{}tableConfig"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -46,27 +45,63 @@ import java.util.List;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "Features", propOrder = {
-    "feature"
+@XmlType(name = "DataSource", propOrder = {
+    "jndiConfig",
+    "tableConfig"
 })
-public class Features {
+public class DataSource {
 
-    @XmlElement(name = "Feature")
-    protected List<Feature> feature;
+    @XmlElement(required = true)
+    protected JndiConfig jndiConfig;
+    @XmlElement(required = true)
+    protected TableConfig tableConfig;
 
     /**
-     * Gets the value of the feature property.
+     * Gets the value of the jndiConfig property.
      * 
      * @return
      *     possible object is
-     *     {@link Feature }
+     *     {@link JndiConfig }
      *     
      */
-    public List<Feature> getFeature() {
-        if (feature == null) {
-            feature = new ArrayList<Feature>();
-        }
-        return this.feature;
+    public JndiConfig getJndiConfig() {
+        return jndiConfig;
+    }
+
+    /**
+     * Sets the value of the jndiConfig property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link JndiConfig }
+     *     
+     */
+    public void setJndiConfig(JndiConfig value) {
+        this.jndiConfig = value;
+    }
+
+    /**
+     * Gets the value of the tableConfig property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link TableConfig }
+     *     
+     */
+    public TableConfig getTableConfig() {
+        return tableConfig;
+    }
+
+    /**
+     * Sets the value of the tableConfig property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link TableConfig }
+     *     
+     */
+    public void setTableConfig(TableConfig value) {
+        this.tableConfig = value;
     }
 
 }

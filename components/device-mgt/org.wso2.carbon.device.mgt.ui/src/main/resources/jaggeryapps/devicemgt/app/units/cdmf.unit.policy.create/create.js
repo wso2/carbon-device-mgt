@@ -22,7 +22,7 @@ function onRequest(context) {
 
     var utility = require("/app/modules/utility.js").utility;
     var userModule = require("/app/modules/business-controllers/user.js")["userModule"];
-
+    var deviceModule = require("/app/modules/business-controllers/device.js")["deviceModule"];
     var types = {};
 
     types.isAuthorized = userModule.isAuthorized("/permission/admin/device-mgt/policies/manage");

@@ -28,9 +28,9 @@ import org.wso2.carbon.device.mgt.common.configuration.mgt.ConfigurationEntry;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.PlatformConfiguration;
 import org.wso2.carbon.device.mgt.common.push.notification.PushNotificationConfig;
 import org.wso2.carbon.device.mgt.common.spi.DeviceManagementService;
-import org.wso2.carbon.device.mgt.extensions.device.type.deployer.config.DeviceManagementConfiguration;
+import org.wso2.carbon.device.mgt.extensions.device.type.deployer.config.DeviceTypeConfiguration;
 import org.wso2.carbon.device.mgt.extensions.device.type.deployer.config.Property;
-import org.wso2.carbon.device.mgt.extensions.device.type.deployer.config.PushNotificationConfiguration;
+import org.wso2.carbon.device.mgt.extensions.device.type.deployer.config.PushNotificationProvider;
 
 import java.util.HashMap;
 import java.util.List;
@@ -50,11 +50,11 @@ public class DeviceTypeManagerService implements DeviceManagementService {
     private String type;
 
     public DeviceTypeManagerService(DeviceTypeConfigIdentifier deviceTypeConfigIdentifier,
-                                    DeviceManagementConfiguration deviceManagementConfiguration) {
-        this.setProvisioningConfig(deviceTypeConfigIdentifier.getTenantDomain(), deviceManagementConfiguration);
-        this.deviceManager = new DeviceTypeManager(deviceTypeConfigIdentifier, deviceManagementConfiguration);
-        this.setType(deviceManagementConfiguration.getDeviceType());
-        this.populatePushNotificationConfig(deviceManagementConfiguration.getPushNotificationConfiguration());
+                                    DeviceTypeConfiguration deviceTypeConfiguration) {
+        this.setProvisioningConfig(deviceTypeConfigIdentifier.getTenantDomain(), deviceTypeConfiguration);
+        this.deviceManager = new DeviceTypeManager(deviceTypeConfigIdentifier, deviceTypeConfiguration);
+        this.setType(deviceTypeConfiguration.getName());
+        this.populatePushNotificationConfig(deviceTypeConfiguration.getPushNotificationProvider());
     }
 
     @Override
@@ -66,15 +66,14 @@ public class DeviceTypeManagerService implements DeviceManagementService {
     public void init() throws DeviceManagementException {
     }
 
-    private void populatePushNotificationConfig(PushNotificationConfiguration sourceConfig) {
-        if (sourceConfig != null) {
-            if (sourceConfig.isFileBasedProperties()) {
+    private void populatePushNotificationConfig(PushNotificationProvider pushNotificationProvider) {
+        if (pushNotificationProvider != null) {
+            if (pushNotificationProvider.isFileBasedProperties()) {
                 Map<String, String> staticProps = new HashMap<>();
-                for (Property property : sourceConfig.getProperties().getProperty()) {
+                for (Property property : pushNotificationProvider.getConfigProperties().getProperty()) {
                     staticProps.put(property.getName(), property.getValue());
                 }
-                pushNotificationConfig = new PushNotificationConfig(sourceConfig.getPushNotificationProvider(),
-                                                                    staticProps);
+                pushNotificationConfig = new PushNotificationConfig(pushNotificationProvider.getType(), staticProps);
             } else {
                 try {
                     PlatformConfiguration deviceTypeConfig = deviceManager.getConfiguration();
@@ -83,7 +82,7 @@ public class DeviceTypeManagerService implements DeviceManagementService {
                         if (configuration.size() > 0) {
                             Map<String, String> properties = this.getConfigProperty(configuration);
                             pushNotificationConfig = new PushNotificationConfig(
-                                    sourceConfig.getPushNotificationProvider(), properties);
+                                    pushNotificationProvider.getType(), properties);
                         }
                     }
                 } catch (DeviceManagementException e) {
@@ -113,10 +112,13 @@ public class DeviceTypeManagerService implements DeviceManagementService {
         return pushNotificationConfig;
     }
 
-    private void setProvisioningConfig(String tenantDomain, DeviceManagementConfiguration deviceManagementConfiguration) {
-        boolean sharedWithAllTenants = deviceManagementConfiguration
-                .getManagementRepository().getProvisioningConfig().isSharedWithAllTenants();
-        provisioningConfig = new ProvisioningConfig(tenantDomain, sharedWithAllTenants);
+    private void setProvisioningConfig(String tenantDomain, DeviceTypeConfiguration deviceTypeConfiguration) {
+        if (deviceTypeConfiguration.getProvisioningConfig() != null) {
+            boolean sharedWithAllTenants = deviceTypeConfiguration.getProvisioningConfig().isSharedWithAllTenants();
+            provisioningConfig = new ProvisioningConfig(tenantDomain, sharedWithAllTenants);
+        } else {
+            provisioningConfig = new ProvisioningConfig(tenantDomain, false);
+        }
     }
 
     private void setType(String type) {

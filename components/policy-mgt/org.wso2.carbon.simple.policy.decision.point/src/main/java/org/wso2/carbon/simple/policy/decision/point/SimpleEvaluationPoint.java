@@ -33,6 +33,7 @@ public class SimpleEvaluationPoint implements PolicyEvaluationPoint {
     //TODO : to revove the stale reference
     private PolicyManagerService policyManagerService;
     private List<Policy> policyList;
+    PIPDevice pipDevice;
 //    public SimpleEvaluationPoint() {
 //        policyManagerService = PolicyDecisionPointDataHolder.getInstance().getPolicyManagerService();
 //    }
@@ -73,15 +74,26 @@ public class SimpleEvaluationPoint implements PolicyEvaluationPoint {
     @Override
     public Policy getEffectivePolicy(DeviceIdentifier deviceIdentifier) throws PolicyEvaluationException {
 
-        if (policyManagerService == null || policyList.size() == 0) {
-            return null;
+        try {
+            policyManagerService = getPolicyManagerService();
+            PolicyInformationPoint policyInformationPoint = policyManagerService.getPIP();
+            pipDevice = policyInformationPoint.getDeviceData(deviceIdentifier);
+            policyList = policyInformationPoint.getRelatedPolicies(pipDevice);
+
+            if (policyManagerService == null || policyList.size() == 0) {
+                return null;
+            }
+
+            Policy policy = new Policy();
+            Profile profile = new Profile();
+            profile.setProfileFeaturesList(getEffectiveFeatures(deviceIdentifier));
+            policy.setProfile(profile);
+            return policy;
+        } catch (PolicyManagementException e) {
+            String msg = "Error occurred when retrieving the policy related data from policy management service.";
+            log.error(msg, e);
+            throw new PolicyEvaluationException(msg, e);
         }
-        
-        Policy policy = new Policy();
-        Profile profile = new Profile();
-        profile.setProfileFeaturesList(getEffectiveFeatures(deviceIdentifier));
-        policy.setProfile(profile);
-        return policy;
     }
 
     private Policy policyResolve(List<Policy> policyList) throws PolicyEvaluationException, PolicyManagementException {

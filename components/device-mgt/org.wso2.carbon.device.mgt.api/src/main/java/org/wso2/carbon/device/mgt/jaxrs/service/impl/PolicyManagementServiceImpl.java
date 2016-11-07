@@ -373,4 +373,29 @@ public class PolicyManagementServiceImpl implements PolicyManagementService {
         }
     }
 
+    @GET
+    @Path("/effective-policy/{deviceType}/{deviceId}")
+    @Override
+    public Response getEffectivePolicy(@PathParam("deviceId") String deviceId, @PathParam("deviceType") String deviceType) {
+        PolicyManagerService policyManagementService = DeviceMgtAPIUtils.getPolicyManagementService();
+        final org.wso2.carbon.policy.mgt.common.Policy policy;
+        try {
+            DeviceIdentifier deviceIdentifier = new DeviceIdentifier();
+            deviceIdentifier.setId(deviceId);
+            deviceIdentifier.setType(deviceType);
+            policy = policyManagementService.getEffectivePolicy(deviceIdentifier);
+            if (policy == null) {
+                return Response.status(Response.Status.NOT_FOUND).entity(
+                        new ErrorResponse.ErrorResponseBuilder().setMessage(
+                                "No policy found for device ID '" + deviceId + "'"+ deviceId).build()).build();
+            }
+        } catch (PolicyManagementException e) {
+            String msg = "Error occurred while retrieving policy corresponding to the id '" + deviceType + "'"+ deviceId;
+            log.error(msg, e);
+            return Response.serverError().entity(
+                    new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
+        }
+        return Response.status(Response.Status.OK).entity(policy).build();
+    }
+
 }

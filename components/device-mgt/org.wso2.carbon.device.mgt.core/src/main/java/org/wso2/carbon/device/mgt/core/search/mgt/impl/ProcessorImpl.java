@@ -21,7 +21,6 @@ package org.wso2.carbon.device.mgt.core.search.mgt.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.authorization.DeviceAccessAuthorizationException;
@@ -30,6 +29,7 @@ import org.wso2.carbon.device.mgt.common.search.SearchContext;
 import org.wso2.carbon.device.mgt.core.dao.ApplicationDAO;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
+import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 import org.wso2.carbon.device.mgt.core.search.mgt.*;
 import org.wso2.carbon.device.mgt.core.search.mgt.dao.SearchDAO;
 import org.wso2.carbon.device.mgt.core.search.mgt.dao.SearchDAOException;
@@ -50,9 +50,8 @@ public class ProcessorImpl implements Processor {
     public ProcessorImpl() {
         searchDAO = DeviceManagementDAOFactory.getSearchDAO();
         applicationDAO = DeviceManagementDAOFactory.getApplicationDAO();
-        PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-        deviceAccessAuthorizationService =
-                (DeviceAccessAuthorizationService) ctx.getOSGiService(DeviceAccessAuthorizationService.class, null);
+        deviceAccessAuthorizationService = DeviceManagementDataHolder.getInstance()
+                .getDeviceAccessAuthorizationService();
         if (deviceAccessAuthorizationService == null) {
             String msg = "DeviceAccessAuthorization service has not initialized.";
             log.error(msg);

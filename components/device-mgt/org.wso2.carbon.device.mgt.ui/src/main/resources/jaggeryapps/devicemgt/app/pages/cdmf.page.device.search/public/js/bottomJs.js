@@ -155,7 +155,6 @@ $(document).ready(function () {
             var deviceListing = $("#device-listing");
             var deviceListingSrc = deviceListing.attr("src");
             $.template("device-listing", deviceListingSrc, function (template) {
-
                 var successCallback = function (data) {
                     if (!data) {
                         $("#loading-content").addClass('hidden');

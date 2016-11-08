@@ -21,6 +21,7 @@ package org.wso2.carbon.policy.decision.point.internal;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osgi.service.component.ComponentContext;
+import org.wso2.carbon.policy.decision.point.merged.MergedEvaluationPoint;
 import org.wso2.carbon.policy.mgt.common.PolicyEvaluationPoint;
 import org.wso2.carbon.policy.mgt.core.PolicyManagerService;
 import org.wso2.carbon.user.core.service.RealmService;
@@ -51,11 +52,8 @@ public class MergedPolicyEvaluationServiceComponent {
         }
 
         try {
-            //TODO: fetch PEP class from config
-
-
             componentContext.getBundleContext().registerService(PolicyEvaluationPoint.class.getName(),
-                    new MergedPolicyEvaluationServiceComponent(), null);
+                    new MergedEvaluationPoint(), null);
         } catch (Throwable t) {
             log.error("Error occurred while initializing the policy evaluation bundle");
         }

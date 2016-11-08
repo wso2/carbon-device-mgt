@@ -51,7 +51,7 @@ public class PolicyEvaluationTestCase extends BasePolicyManagementDAOTest {
     @Override
     public void init() throws Exception {
         PolicyEvaluationPoint evaluationPoint = new SimplePolicyEvaluationTest();
-        PolicyManagementDataHolder.getInstance().setPolicyEvaluationPoint(evaluationPoint);
+        PolicyManagementDataHolder.getInstance().putPolicyEvaluationPoint(evaluationPoint.getName(), evaluationPoint);
     }
 
     @Test
@@ -93,7 +93,7 @@ public class PolicyEvaluationTestCase extends BasePolicyManagementDAOTest {
     }
 
     @Test(dependsOnMethods = ("activatePolicies"))
-    public void getEffectivePolicy() throws DeviceManagementException, PolicyEvaluationException {
+    public void getEffectivePolicy(DeviceIdentifier identifier) throws DeviceManagementException, PolicyEvaluationException {
 
         log.debug("Getting effective policy for device started ..........");
 
@@ -103,7 +103,6 @@ public class PolicyEvaluationTestCase extends BasePolicyManagementDAOTest {
         PolicyEvaluationPoint evaluationPoint = PolicyManagementDataHolder.getInstance().getPolicyEvaluationPoint();
 
         for (Device device : devices) {
-            DeviceIdentifier identifier = new DeviceIdentifier();
             identifier.setType(device.getType());
             identifier.setId(device.getDeviceIdentifier());
             Policy policy = evaluationPoint.getEffectivePolicy(identifier);

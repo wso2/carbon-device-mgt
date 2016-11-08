@@ -35,6 +35,7 @@
                         <Bundle-Description>Simple Policy Decision Point Bundle</Bundle-Description>
                         <Private-Package>org.wso2.carbon.simple.policy.decision.point.internal</Private-Package>
                         <Import-Package>
+                            org.wso2.carbon.context.*;
                             org.osgi.framework,
                             org.osgi.service.component,
                             org.apache.commons.logging,

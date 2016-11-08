@@ -133,11 +133,16 @@ public class PolicyManagerServiceImpl implements PolicyManagerService {
     }
 
     @Override
-    public List<ProfileFeature> getEffectiveFeatures(DeviceIdentifier deviceIdentifier) throws
+    public List<ProfileFeature> getEffectiveFeatures(List<Policy> policyList,DeviceIdentifier deviceIdentifier) throws
             FeatureManagementException {
         try {
-            return PolicyManagementDataHolder.getInstance().
-                    getPolicyEvaluationPoint().getEffectiveFeatures(deviceIdentifier);
+            PolicyEvaluationPoint policyEvaluationPoint = PolicyManagementDataHolder.getInstance().getPolicyEvaluationPoint();
+            if (policyEvaluationPoint != null) {
+                return policyEvaluationPoint.getEffectiveFeatures(policyList, deviceIdentifier);
+            } else {
+                throw new FeatureManagementException("Error occurred while getting the policy evaluation point " +
+                        deviceIdentifier.getId() + " - " + deviceIdentifier.getType());
+            }
         } catch (PolicyEvaluationException e) {
             String msg = "Error occurred while getting the effective features from the PEP service " +
                     deviceIdentifier.getId() + " - " + deviceIdentifier.getType();

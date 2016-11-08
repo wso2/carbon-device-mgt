@@ -72,7 +72,7 @@ public class SimplePolicyEvaluationTest implements PolicyEvaluationPoint {
     }
 
     @Override
-    public List<ProfileFeature> getEffectiveFeatures(DeviceIdentifier deviceIdentifier) throws PolicyEvaluationException {
+    public List<ProfileFeature> getEffectiveFeatures(List<Policy> policyList,DeviceIdentifier deviceIdentifier) throws PolicyEvaluationException {
         return null;
     }
 

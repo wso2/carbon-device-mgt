@@ -47,7 +47,7 @@
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon.devicemgt</groupId>
-            <artifactId>org.wso2.carbon.simple.policy.decision.point</artifactId>
+            <artifactId>org.wso2.carbon.policy.decision.point</artifactId>
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon.devicemgt</groupId>
@@ -118,7 +118,7 @@
                                     org.wso2.carbon.devicemgt:org.wso2.carbon.policy.mgt.common:${carbon.device.mgt.version}
                                 </bundleDef>
                                 <bundleDef>
-                                    org.wso2.carbon.devicemgt:org.wso2.carbon.simple.policy.decision.point:${carbon.device.mgt.version}
+                                    org.wso2.carbon.devicemgt:org.wso2.carbon.policy.decision.point:${carbon.device.mgt.version}
                                 </bundleDef>
                                 <bundleDef>
                                     org.wso2.carbon.devicemgt:org.wso2.carbon.policy.information.point:${carbon.device.mgt.version}

@@ -9,11 +9,11 @@
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.wso2.carbon.devicemgt</groupId>
-    <artifactId>org.wso2.carbon.simple.policy.decision.point</artifactId>
+    <artifactId>org.wso2.carbon.policy.decision.point</artifactId>
     <version>2.0.4-SNAPSHOT</version>
     <packaging>bundle</packaging>
-    <name>WSO2 Carbon - Simple Policy Decision Point</name>
-    <description>WSO2 Carbon - Simple Policy Decision Point</description>
+    <name>WSO2 Carbon - Policy Decision Point</name>
+    <description>WSO2 Carbon - Policy Decision Point</description>
     <url>http://wso2.org</url>
 
     <build>
@@ -32,8 +32,8 @@
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Bundle-Version>${carbon.device.mgt.version}</Bundle-Version>
-                        <Bundle-Description>Simple Policy Decision Point Bundle</Bundle-Description>
-                        <Private-Package>org.wso2.carbon.simple.policy.decision.point.internal</Private-Package>
+                        <Bundle-Description>Policy Decision Point Bundle</Bundle-Description>
+                        <Private-Package>org.wso2.carbon.policy.decision.point.internal</Private-Package>
                         <Import-Package>
                             org.wso2.carbon.context.*;
                             org.osgi.framework,
@@ -45,7 +45,7 @@
                             org.wso2.carbon.device.mgt.common.*
                         </Import-Package>
                         <Export-Package>
-                            org.wso2.carbon.simple.policy.decision.point.*
+                            org.wso2.carbon.policy.decision.point.*
                         </Export-Package>
                     </instructions>
                 </configuration>

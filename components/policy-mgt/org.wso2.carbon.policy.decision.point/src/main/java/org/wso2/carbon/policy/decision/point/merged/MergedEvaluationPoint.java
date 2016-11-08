@@ -16,7 +16,7 @@
 * under the License.
 */
 
-package org.wso2.carbon.simple.policy.decision.point;
+package org.wso2.carbon.policy.decision.point.merged;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -24,14 +24,14 @@ import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.policy.mgt.common.*;
 import org.wso2.carbon.policy.mgt.core.PolicyManagerService;
-import org.wso2.carbon.simple.policy.decision.point.internal.PolicyDecisionPointDataHolder;
+import org.wso2.carbon.policy.decision.point.internal.PolicyDecisionPointDataHolder;
 
 import java.sql.Timestamp;
 import java.util.*;
 
-public class SimpleEvaluationPoint implements PolicyEvaluationPoint {
+public class MergedEvaluationPoint implements PolicyEvaluationPoint {
 
-    private static final Log log = LogFactory.getLog(SimpleEvaluationPoint.class);
+    private static final Log log = LogFactory.getLog(MergedEvaluationPoint.class);
     private PolicyManagerService policyManagerService;
     private List<Policy> policyList;
     PIPDevice pipDevice;

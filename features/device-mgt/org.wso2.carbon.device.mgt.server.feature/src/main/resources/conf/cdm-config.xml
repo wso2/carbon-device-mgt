@@ -43,6 +43,8 @@
         <MaxRetries>5</MaxRetries>
         <MinRetriesToMarkUnreachable>8</MinRetriesToMarkUnreachable>
         <MinRetriesToMarkInactive>20</MinRetriesToMarkInactive>
+        <!--<PolicyEvaluationPointName>SimplePolicyEvaluationServiceComponent</PolicyEvaluationPointName>-->
+        <PolicyEvaluationPointName>MergedPolicyEvaluationServiceComponent</PolicyEvaluationPointName>
         <Platforms>
             <Platform>android</Platform>
             <Platform>ios</Platform>

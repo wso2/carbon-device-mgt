@@ -61,6 +61,11 @@ public class MergedEvaluationPoint implements PolicyEvaluationPoint {
     }
 
     @Override
+    public String getName() {
+        return "MergedPolicyEvaluationServiceComponent";
+    }
+
+    @Override
     public Policy getEffectivePolicy(DeviceIdentifier deviceIdentifier) throws PolicyEvaluationException {
 
         try {

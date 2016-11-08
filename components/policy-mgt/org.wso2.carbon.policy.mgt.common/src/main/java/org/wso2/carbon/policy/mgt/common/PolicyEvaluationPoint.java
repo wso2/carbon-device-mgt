@@ -43,4 +43,6 @@ public interface PolicyEvaluationPoint {
      * @return   returns the effective feature set.
      */
     List<ProfileFeature> getEffectiveFeatures(List<Policy> policyList,DeviceIdentifier deviceIdentifier)  throws PolicyEvaluationException;
+
+    String getName();
 }

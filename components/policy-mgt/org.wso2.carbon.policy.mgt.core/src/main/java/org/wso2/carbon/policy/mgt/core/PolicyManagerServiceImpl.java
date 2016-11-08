@@ -173,6 +173,7 @@ public class PolicyManagerServiceImpl implements PolicyManagerService {
 
     @Override
     public PolicyEvaluationPoint getPEP() throws PolicyManagementException {
+        PolicyManagementDataHolder.getInstance().getPolicyEvaluationPoint();
         return PolicyManagementDataHolder.getInstance().getPolicyEvaluationPoint();
     }
 

@@ -46,9 +46,9 @@ import org.wso2.carbon.user.core.service.RealmService;
  * policy="dynamic"
  * bind="setRealmService"
  * unbind="unsetRealmService"
- * @scr.reference name="org.wso2.carbon.devicemgt.simple.policy.evaluation.manager"
+ * @scr.reference name="org.wso2.carbon.devicemgt.policy.evaluation.manager"
  * interface="org.wso2.carbon.policy.mgt.common.PolicyEvaluationPoint"
- * cardinality="1..1"
+ * cardinality="1..n"
  * policy="dynamic"
  * bind="setPEPService"
  * unbind="unsetPEPService"
@@ -159,14 +159,14 @@ public class PolicyManagementServiceComponent {
         if (log.isDebugEnabled()) {
             log.debug("Setting Policy Information Service");
         }
-        PolicyManagementDataHolder.getInstance().setPolicyEvaluationPoint(pepService);
+        PolicyManagementDataHolder.getInstance().putPolicyEvaluationPoint(pepService.getName(), pepService);
     }
 
     protected void unsetPEPService(PolicyEvaluationPoint pepService) {
         if (log.isDebugEnabled()) {
             log.debug("Removing Policy Information Service");
         }
-        PolicyManagementDataHolder.getInstance().setPolicyEvaluationPoint(null);
+        PolicyManagementDataHolder.getInstance().removePolicyEvaluationPoint(null);
     }
 
     protected void setDeviceManagementService(DeviceManagementProviderService deviceManagerService) {

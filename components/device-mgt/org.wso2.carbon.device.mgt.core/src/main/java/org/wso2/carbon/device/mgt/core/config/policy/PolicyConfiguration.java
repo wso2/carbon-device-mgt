@@ -33,7 +33,7 @@ public class PolicyConfiguration {
     private int minRetriesToMarkUnreachable;
     private int minRetriesToMarkInactive;
     private List<String> platforms;
-    private String  policyEvaluationPointName;
+    private String policyEvaluationPointName;
 
     @XmlElement(name = "MonitoringClass", required = true)
     public String getMonitoringClass() {

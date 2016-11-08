@@ -42,5 +42,5 @@ public interface PolicyEvaluationPoint {
      * @param deviceIdentifier   device  information.
      * @return   returns the effective feature set.
      */
-    List<ProfileFeature> getEffectiveFeatures(DeviceIdentifier deviceIdentifier)  throws PolicyEvaluationException;
+    List<ProfileFeature> getEffectiveFeatures(List<Policy> policyList,DeviceIdentifier deviceIdentifier)  throws PolicyEvaluationException;
 }

@@ -37,24 +37,16 @@ public class MergedEvaluationPoint implements PolicyEvaluationPoint {
     PIPDevice pipDevice;
 
     @Override
-    public List<ProfileFeature> getEffectiveFeatures(DeviceIdentifier deviceIdentifier) throws PolicyEvaluationException {
+    public List<ProfileFeature> getEffectiveFeatures(List<Policy> policyList, DeviceIdentifier deviceIdentifier) throws PolicyEvaluationException {
         PolicyAdministratorPoint policyAdministratorPoint;
-        PolicyInformationPoint policyInformationPoint;
         policyManagerService = getPolicyManagerService();
 
         try {
             if (policyManagerService != null) {
 
-                policyInformationPoint = policyManagerService.getPIP();
-                PIPDevice pipDevice = policyInformationPoint.getDeviceData(deviceIdentifier);
-                policyList = policyInformationPoint.getRelatedPolicies(pipDevice);
-
                 if (!policyList.isEmpty()) {
-                    //policy = policyList.get(0);
-                    //policyList = new ArrayList<Policy>();
                     Policy effectivePolicy = policyResolve(policyList);
                     effectivePolicy.setActive(true);
-                    //TODO : UNCOMMENT THE FOLLOWING CASE
                     policyAdministratorPoint = policyManagerService.getPAP();
                     policyAdministratorPoint.setPolicyUsed(deviceIdentifier, effectivePolicy);
                     return effectivePolicy.getProfile().getProfileFeaturesList();
@@ -83,7 +75,7 @@ public class MergedEvaluationPoint implements PolicyEvaluationPoint {
 
             Policy policy = new Policy();
             Profile profile = new Profile();
-            profile.setProfileFeaturesList(getEffectiveFeatures(deviceIdentifier));
+            profile.setProfileFeaturesList(getEffectiveFeatures(policyList, deviceIdentifier));
             policy.setProfile(profile);
             Timestamp currentTimestamp = new Timestamp(Calendar.getInstance().getTime().getTime());
             profile.setCreatedDate(currentTimestamp);
@@ -113,6 +105,8 @@ public class MergedEvaluationPoint implements PolicyEvaluationPoint {
 
         // Iterate through all policies
         Map<String, ProfileFeature> featureMap = new HashMap<>();
+        // Merge roles of policies
+        //Map<String, java.lang.Integer> rolesMap = new HashMap<>();
         Iterator<Policy> policyIterator = policyList.iterator();
         while (policyIterator.hasNext()) {
             Policy policy = policyIterator.next();
@@ -124,6 +118,16 @@ public class MergedEvaluationPoint implements PolicyEvaluationPoint {
                     featureMap.put(feature.getFeatureCode(), feature);
                 }
             }
+//            List<String> policyRolesList = policy.getRoles();
+//
+//            if (policyRolesList != null) {
+//                Iterator<String> roleIterator = policyRolesList.iterator();
+//                while (roleIterator.hasNext()) {
+//                    String role = roleIterator.next();
+//                    rolesMap.put(role,policy.getId());
+//                }
+//            }
+
         }
 
         // Get prioritized features list
@@ -133,6 +137,7 @@ public class MergedEvaluationPoint implements PolicyEvaluationPoint {
 
         Policy effectivePolicy = new Policy();
         effectivePolicy.setProfile(profile);
+        //effectivePolicy.setRoles(rolesList);
 
         return effectivePolicy;
     }

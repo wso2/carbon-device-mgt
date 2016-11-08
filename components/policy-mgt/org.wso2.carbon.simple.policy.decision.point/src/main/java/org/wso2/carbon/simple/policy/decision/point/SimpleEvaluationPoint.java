@@ -20,24 +20,21 @@ package org.wso2.carbon.simple.policy.decision.point;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.policy.mgt.common.*;
 import org.wso2.carbon.policy.mgt.core.PolicyManagerService;
 import org.wso2.carbon.simple.policy.decision.point.internal.PolicyDecisionPointDataHolder;
 
+import java.sql.Timestamp;
 import java.util.*;
 
 public class SimpleEvaluationPoint implements PolicyEvaluationPoint {
 
     private static final Log log = LogFactory.getLog(SimpleEvaluationPoint.class);
-    //TODO : to revove the stale reference
     private PolicyManagerService policyManagerService;
     private List<Policy> policyList;
     PIPDevice pipDevice;
-//    public SimpleEvaluationPoint() {
-//        policyManagerService = PolicyDecisionPointDataHolder.getInstance().getPolicyManagerService();
-//    }
-
 
     @Override
     public List<ProfileFeature> getEffectiveFeatures(DeviceIdentifier deviceIdentifier) throws PolicyEvaluationException {
@@ -88,6 +85,21 @@ public class SimpleEvaluationPoint implements PolicyEvaluationPoint {
             Profile profile = new Profile();
             profile.setProfileFeaturesList(getEffectiveFeatures(deviceIdentifier));
             policy.setProfile(profile);
+            Timestamp currentTimestamp = new Timestamp(Calendar.getInstance().getTime().getTime());
+            profile.setCreatedDate(currentTimestamp);
+            profile.setUpdatedDate(currentTimestamp);
+            profile.setDeviceType(deviceIdentifier.getType());
+            profile.setTenantId(PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId());
+            policy.setPolicyName("Effective-Policy");
+            policy.setOwnershipType(pipDevice.getOwnershipType());
+            policy.setRoles(null);
+            policy.setDevices(null);
+            policy.setUsers(null);
+            policy.setActive(true);
+            policy.setUpdated(true);
+            policy.setTenantId(PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId());
+            policy.setDescription("This is a system generated effective policy by merging relevant policies.");
+            policy.setCompliance(policyList.get(0).getCompliance());
             return policy;
         } catch (PolicyManagementException e) {
             String msg = "Error occurred when retrieving the policy related data from policy management service.";
@@ -126,7 +138,6 @@ public class SimpleEvaluationPoint implements PolicyEvaluationPoint {
     }
 
     public void sortPolicies() throws PolicyEvaluationException {
-        //Collections.sort(policyList);
         Collections.sort(policyList, Collections.reverseOrder());
     }
 

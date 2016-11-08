@@ -59,4 +59,9 @@ public class PolicyEvaluationServiceImpl implements PolicyEvaluationPoint {
         policyOperation.setCode(PolicyManagementConstants.POLICY_BUNDLE);*/
         return effectiveFeatures;
     }
+
+    @Override
+    public String getName() {
+        return "SimplePolicyEvaluationServiceComponent";
+    }
 }

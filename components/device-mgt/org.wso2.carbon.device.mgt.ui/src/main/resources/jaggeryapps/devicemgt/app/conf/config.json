@@ -5,7 +5,7 @@
     "httpsURL" : "%https.ip%",
     "httpURL" : "%http.ip%",
     "httpsWebURL" : "%https.ip%",
-    "wssURL" : "https://localhost:9444",
+    "wssURL" : "https://localhost:9445",
     "wsURL" : "%http.ip%",
     "dashboardServerURL" : "%https.ip%",
     "enrollmentDir": "/emm-web-agent/enrollment",

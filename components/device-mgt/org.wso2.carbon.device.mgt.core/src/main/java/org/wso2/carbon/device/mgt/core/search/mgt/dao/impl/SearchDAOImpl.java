@@ -23,6 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
+import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
 import org.wso2.carbon.device.mgt.common.device.details.DeviceInfo;
 import org.wso2.carbon.device.mgt.common.device.details.DeviceLocation;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
@@ -48,85 +49,7 @@ public class SearchDAOImpl implements SearchDAO {
         }
         Connection conn;
         PreparedStatement stmt = null;
-        ResultSet rs;
-        List<Device> devices = new ArrayList<>();
-        Map<Integer, Integer> devs = new HashMap<>();
-        try {
-            conn = this.getConnection();
-            stmt = conn.prepareStatement(query);
-            rs = stmt.executeQuery();
-            while (rs.next()) {
-                if (!devs.containsKey(rs.getInt("ID"))) {
-                    Device device = new Device();
-                    device.setId(rs.getInt("ID"));
-                    device.setDescription(rs.getString("DESCRIPTION"));
-                    device.setName("NAME");
-                    device.setType(rs.getString("DEVICE_TYPE_NAME"));
-                    device.setDeviceIdentifier(rs.getString("DEVICE_IDENTIFICATION"));
-
-                    DeviceIdentifier identifier = new DeviceIdentifier();
-                    identifier.setType(rs.getString("DEVICE_TYPE_NAME"));
-                    identifier.setId(rs.getString("DEVICE_IDENTIFICATION"));
-
-                    DeviceInfo deviceInfo = new DeviceInfo();
-                    deviceInfo.setAvailableRAMMemory(rs.getDouble("AVAILABLE_RAM_MEMORY"));
-                    deviceInfo.setBatteryLevel(rs.getDouble("BATTERY_LEVEL"));
-                    deviceInfo.setConnectionType(rs.getString("CONNECTION_TYPE"));
-                    deviceInfo.setCpuUsage(rs.getDouble("CPU_USAGE"));
-                    deviceInfo.setDeviceModel(rs.getString("DEVICE_MODEL"));
-                    deviceInfo.setExternalAvailableMemory(rs.getDouble("EXTERNAL_AVAILABLE_MEMORY"));
-                    deviceInfo.setExternalTotalMemory(rs.getDouble("EXTERNAL_TOTAL_MEMORY"));
-                    deviceInfo.setInternalAvailableMemory(rs.getDouble("INTERNAL_AVAILABLE_MEMORY"));
-                    deviceInfo.setInternalTotalMemory(rs.getDouble("EXTERNAL_TOTAL_MEMORY"));
-                    deviceInfo.setOsVersion(rs.getString("OS_VERSION"));
-                    deviceInfo.setOsBuildDate(rs.getString("OS_BUILD_DATE"));
-                    deviceInfo.setPluggedIn(rs.getBoolean("PLUGGED_IN"));
-                    deviceInfo.setSsid(rs.getString("SSID"));
-                    deviceInfo.setTotalRAMMemory(rs.getDouble("TOTAL_RAM_MEMORY"));
-                    deviceInfo.setVendor(rs.getString("VENDOR"));
-                    deviceInfo.setUpdatedTime(new java.util.Date(rs.getLong("UPDATE_TIMESTAMP")));
-
-                    DeviceLocation deviceLocation = new DeviceLocation();
-                    deviceLocation.setLatitude(rs.getDouble("LATITUDE"));
-                    deviceLocation.setLongitude(rs.getDouble("LONGITUDE"));
-                    deviceLocation.setStreet1(rs.getString("STREET1"));
-                    deviceLocation.setStreet2(rs.getString("STREET2"));
-                    deviceLocation.setCity(rs.getString("CITY"));
-                    deviceLocation.setState(rs.getString("STATE"));
-                    deviceLocation.setZip(rs.getString("ZIP"));
-                    deviceLocation.setCountry(rs.getString("COUNTRY"));
-                    deviceLocation.setDeviceId(rs.getInt("ID"));
-                    deviceLocation.setUpdatedTime(new java.util.Date(rs.getLong("DL_UPDATED_TIMESTAMP")));
-
-                    deviceInfo.setLocation(deviceLocation);
-                    device.setDeviceInfo(deviceInfo);
-                    devices.add(device);
-                    devs.put(device.getId(), device.getId());
-                }
-            }
-        } catch (SQLException e) {
-            throw new SearchDAOException("Error occurred while acquiring the device details.", e);
-        } finally {
-            DeviceManagementDAOUtil.cleanupResources(stmt, null);
-        }
-
-        this.fillPropertiesOfDevices(devices);
-
-        if (log.isDebugEnabled()) {
-            log.debug("Number of the device returned from the query : " + devices.size());
-        }
-        return devices;
-    }
-
-    @Override
-    public List<Device> searchDevicePropertyTable(String query) throws SearchDAOException {
-        if (log.isDebugEnabled()) {
-            log.debug("Query : " + query);
-        }
-
-        Connection conn;
-        PreparedStatement stmt = null;
-        ResultSet rs;
+        ResultSet rs = null;
         List<Device> devices = new ArrayList<>();
         Map<Integer, Integer> devs = new HashMap<>();
         try {
@@ -142,6 +65,12 @@ public class SearchDAOImpl implements SearchDAO {
                     device.setType(rs.getString("DEVICE_TYPE_NAME"));
                     device.setDeviceIdentifier(rs.getString("DEVICE_IDENTIFICATION"));
 
+                    EnrolmentInfo enrolmentInfo = new EnrolmentInfo();
+                    enrolmentInfo.setStatus(EnrolmentInfo.Status.valueOf(rs.getString("DE_STATUS")));
+                    enrolmentInfo.setOwner(rs.getString("OWNER"));
+                    enrolmentInfo.setOwnership(EnrolmentInfo.OwnerShip.valueOf(rs.getString("OWNERSHIP")));
+                    device.setEnrolmentInfo(enrolmentInfo);
+
                     DeviceIdentifier identifier = new DeviceIdentifier();
                     identifier.setType(rs.getString("DEVICE_TYPE_NAME"));
                     identifier.setId(rs.getString("DEVICE_IDENTIFICATION"));
@@ -181,20 +110,16 @@ public class SearchDAOImpl implements SearchDAO {
                     devices.add(device);
                     devs.put(device.getId(), device.getId());
                 }
-
             }
         } catch (SQLException e) {
             throw new SearchDAOException("Error occurred while aquiring the device details.", e);
         } finally {
-            DeviceManagementDAOUtil.cleanupResources(stmt, null);
+            DeviceManagementDAOUtil.cleanupResources(stmt, rs);
         }
-
         this.fillPropertiesOfDevices(devices);
-
         if (log.isDebugEnabled()) {
             log.debug("Number of the device returned from the query : " + devices.size());
         }
-
         return devices;
     }
 
@@ -207,20 +132,26 @@ public class SearchDAOImpl implements SearchDAO {
         if (devices.isEmpty()) {
             return null;
         }
-
         Connection conn;
-        PreparedStatement stmt;
-        ResultSet rs;
-
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
         try {
             conn = this.getConnection();
-            String query = "SELECT * FROM DM_DEVICE_INFO WHERE DEVICE_ID IN (?) ORDER BY DEVICE_ID ;";
-            stmt = conn.prepareStatement(query);
-            if (conn.getMetaData().getDatabaseProductName().contains("H2") ||
-                    conn.getMetaData().getDatabaseProductName().contains("MySQL")) {
-                String inData = Utils.getDeviceIdsAsString(devices);
-                stmt.setString(1, inData);
+            String query = "SELECT * FROM DM_DEVICE_INFO WHERE DEVICE_ID IN (";
+            if (conn.getMetaData().getDatabaseProductName().contains("H2") || conn.getMetaData()
+                    .getDatabaseProductName().contains("MySQL")) {
+                StringBuilder builder = new StringBuilder();
+                for (int i = 0; i < devices.size(); i++) {
+                    builder.append("?,");
+                }
+                query += builder.deleteCharAt(builder.length() - 1).toString() + ") ORDER BY DEVICE_ID";
+                stmt = conn.prepareStatement(query);
+                for (int i = 0; i < devices.size(); i++) {
+                    stmt.setInt(i + 1, devices.get(i).getId());
+                }
             } else {
+                query += "?) ORDER BY DEVICE_ID";
+                stmt = conn.prepareStatement(query);
                 Array array = conn.createArrayOf("INT", Utils.getArrayOfDeviceIds(devices));
                 stmt.setArray(1, array);
             }
@@ -233,6 +164,8 @@ public class SearchDAOImpl implements SearchDAO {
             }
         } catch (SQLException e) {
             throw new SearchDAOException("Error occurred while retrieving the device properties.", e);
+        }  finally {
+            DeviceManagementDAOUtil.cleanupResources(stmt,rs);
         }
         return devices;
     }
@@ -248,6 +181,5 @@ public class SearchDAOImpl implements SearchDAO {
         }
         return null;
     }
-
 }
 

@@ -99,12 +99,10 @@ public class PolicyManagementDataHolder {
 
     public void putPolicyEvaluationPoint(String name, PolicyEvaluationPoint policyEvaluationPoint) {
         policyEvaluationPoints.put(name,policyEvaluationPoint);
-//        this.policyEvaluationPoint = policyEvaluationPoint;
     }
 
     public void removePolicyEvaluationPoint(PolicyEvaluationPoint policyEvaluationPoint) {
         policyEvaluationPoints.put(policyEvaluationPoint.getName(), this.policyEvaluationPoint);
-//        this.policyEvaluationPoint = policyEvaluationPoint;
     }
 
 

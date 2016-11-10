@@ -159,7 +159,7 @@ public class PolicyManagementServiceComponent {
         if (log.isDebugEnabled()) {
             log.debug("Setting Policy Information Service");
         }
-        PolicyManagementDataHolder.getInstance().putPolicyEvaluationPoint(pepService.getName(), pepService);
+        PolicyManagementDataHolder.getInstance().setPolicyEvaluationPoint(pepService.getName(), pepService);
     }
 
     protected void unsetPEPService(PolicyEvaluationPoint pepService) {

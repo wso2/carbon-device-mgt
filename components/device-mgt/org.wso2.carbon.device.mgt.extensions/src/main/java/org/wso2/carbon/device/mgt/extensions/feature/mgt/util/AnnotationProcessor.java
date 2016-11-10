@@ -19,25 +19,13 @@
 package org.wso2.carbon.device.mgt.extensions.feature.mgt.util;
 
 import org.apache.catalina.core.StandardContext;
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.scannotation.AnnotationDB;
-import org.scannotation.WarUrlFinder;
 import org.wso2.carbon.device.mgt.common.Feature;
 import org.wso2.carbon.device.mgt.extensions.feature.mgt.annotations.DeviceType;
 
 import javax.servlet.ServletContext;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.FormParam;
-import javax.ws.rs.GET;
-import javax.ws.rs.HttpMethod;
-import javax.ws.rs.OPTIONS;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.*;
 import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
@@ -49,11 +37,7 @@ import java.net.URI;
 import java.net.URL;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * This has the utility function to extract feature information.
@@ -68,6 +52,7 @@ public class AnnotationProcessor {
     private static final String STRING_ARR = "string_arr";
     private static final String STRING = "string";
     private static final String METHOD = "method";
+    private static final String DEVICE_TYPE_CLASS_NAME = DeviceType.class.getName();
     private Class<org.wso2.carbon.device.mgt.extensions.feature.mgt.annotations.Feature>
             featureAnnotationClazz;
     private ClassLoader classLoader;
@@ -83,16 +68,19 @@ public class AnnotationProcessor {
      * Scan the context for classes with annotations
      */
     public Set<String> scanStandardContext(String className) throws IOException {
-        ExtendedAnnotationDB db = new ExtendedAnnotationDB();
-        db.addIgnoredPackages(PACKAGE_ORG_APACHE);
-        db.addIgnoredPackages(PACKAGE_ORG_CODEHAUS);
-        db.addIgnoredPackages(PACKAGE_ORG_SPRINGFRAMEWORK);
+        if (className.equals(DEVICE_TYPE_CLASS_NAME)) {
+            ExtendedAnnotationDB db = new ExtendedAnnotationDB();
+            db.addIgnoredPackages(PACKAGE_ORG_APACHE);
+            db.addIgnoredPackages(PACKAGE_ORG_CODEHAUS);
+            db.addIgnoredPackages(PACKAGE_ORG_SPRINGFRAMEWORK);
 
-        URL classPath = findWebInfClassesPath(servletContext);
-        db.scanArchives(classPath);
+            URL classPath = findWebInfClassesPath(servletContext);
+            db.scanArchives(classPath);
 
-        //Returns a list of classes with given Annotation
-        return db.getAnnotationIndex().get(className);
+            //Returns a list of classes with given Annotation
+            return db.getAnnotationIndex().get(className);
+        }
+        return null;
     }
 
     /**
@@ -286,8 +274,7 @@ public class AnnotationProcessor {
      * @param servletContext
      * @return null if cannot determin /WEB-INF/classes
      */
-    public static URL findWebInfClassesPath(ServletContext servletContext)
-    {
+    private static URL findWebInfClassesPath(ServletContext servletContext) {
         String path = servletContext.getRealPath("/WEB-INF/classes");
         if (path == null) return null;
         File fp = new File(path);

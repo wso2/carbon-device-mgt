@@ -56,6 +56,7 @@ public class AnnotationProcessor {
     private static final String AUTH_TYPE = "Any";
     private static final String STRING_ARR = "string_arr";
     private static final String STRING = "string";
+    private static final String API_CLASS_NAME = org.wso2.carbon.apimgt.annotations.api.API.class.getName();
 
     Class<API> apiClazz;
     private StandardContext context;
@@ -77,16 +78,18 @@ public class AnnotationProcessor {
      * @throws IOException
      */
     public Set<String> scanStandardContext(String className) throws IOException {
-        ExtendedAnnotationDB db = new ExtendedAnnotationDB();
-        db.addIgnoredPackages(PACKAGE_ORG_APACHE);
-        db.addIgnoredPackages(PACKAGE_ORG_CODEHAUS);
-        db.addIgnoredPackages(PACKAGE_ORG_SPRINGFRAMEWORK);
+        if (className.equals(API_CLASS_NAME)) {
+            ExtendedAnnotationDB db = new ExtendedAnnotationDB();
+            db.addIgnoredPackages(PACKAGE_ORG_APACHE);
+            db.addIgnoredPackages(PACKAGE_ORG_CODEHAUS);
+            db.addIgnoredPackages(PACKAGE_ORG_SPRINGFRAMEWORK);
+            URL classPath = findWebInfClassesPath(servletContext);
+            db.scanArchives(classPath);
 
-        URL classPath = findWebInfClassesPath(servletContext);
-        db.scanArchives(classPath);
-
-        //Returns a list of classes with given Annotation
-        return db.getAnnotationIndex().get(className);
+            //Returns a list of classes with given Annotation
+            return db.getAnnotationIndex().get(className);
+        }
+        return null;
     }
 
     /**
@@ -372,8 +375,7 @@ public class AnnotationProcessor {
      * @param servletContext
      * @return null if cannot determin /WEB-INF/classes
      */
-    public static URL findWebInfClassesPath(ServletContext servletContext)
-    {
+    private static URL findWebInfClassesPath(ServletContext servletContext) {
         String path = servletContext.getRealPath("/WEB-INF/classes");
         if (path == null) return null;
         File fp = new File(path);

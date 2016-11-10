@@ -134,6 +134,8 @@
                             org.wso2.carbon.identity.application.authentication.framework.model,
                             org.apache.oltu.oauth2.common,
                             org.wso2.carbon.base,
+                            org.apache.xerces.impl; resolution:=optional,
+                            org.apache.xerces.util; resolution:=optional
                         </Import-Package>
                     </instructions>
                 </configuration>

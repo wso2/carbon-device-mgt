@@ -31,7 +31,7 @@
             <class name="org.wso2.carbon.device.mgt.core.DeviceManagementConfigTests"/>
             <class name="org.wso2.carbon.device.mgt.core.app.mgt.AppManagementConfigurationManagerTest"/>
             <class name="org.wso2.carbon.device.mgt.core.dao.ApplicationPersistenceTests"/>
-            <class name="org.wso2.carbon.device.mgt.core.search.DeviceDetails"/>
+            <class name="org.wso2.carbon.device.mgt.core.Search.DeviceDetails"/>
             <class name="org.wso2.carbon.device.mgt.core.dao.GroupPersistTests"/>
             </classes>
     </test>

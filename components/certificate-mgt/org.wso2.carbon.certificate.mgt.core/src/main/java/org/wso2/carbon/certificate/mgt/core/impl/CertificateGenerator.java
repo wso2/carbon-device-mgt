@@ -21,8 +21,6 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.bouncycastle.asn1.ASN1Encodable;
-import org.bouncycastle.asn1.ASN1InputStream;
-import org.bouncycastle.asn1.ASN1Primitive;
 import org.bouncycastle.asn1.pkcs.Attribute;
 import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
 import org.bouncycastle.asn1.x500.RDN;
@@ -65,13 +63,13 @@ import org.wso2.carbon.context.PrivilegedCarbonContext;
 
 import javax.security.auth.x500.X500Principal;
 import javax.xml.bind.DatatypeConverter;
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigInteger;
 import java.security.*;
 import java.security.cert.Certificate;
 import java.security.cert.*;
-import java.security.spec.InvalidKeySpecException;
-import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -526,62 +524,6 @@ public class CertificateGenerator {
         }
     }
 
-    private PrivateKey getSignerKey(String signerPrivateKeyPath) throws KeystoreException {
-
-        File file = new File(signerPrivateKeyPath);
-        FileInputStream fis;
-
-        try {
-            fis = new FileInputStream(file);
-            DataInputStream dis = new DataInputStream(fis);
-            byte[] keyBytes = new byte[(int) file.length()];
-            dis.readFully(keyBytes);
-            dis.close();
-
-            String temp = new String(keyBytes);
-            String privateKeyPEM = temp.replace(
-                    CertificateManagementConstants.RSA_PRIVATE_KEY_BEGIN_TEXT, CertificateManagementConstants.EMPTY_TEXT);
-            privateKeyPEM = privateKeyPEM
-                    .replace(CertificateManagementConstants.RSA_PRIVATE_KEY_END_TEXT, CertificateManagementConstants.EMPTY_TEXT);
-
-            byte[] decoded = Base64.decodeBase64(privateKeyPEM);
-            PKCS8EncodedKeySpec encodedKeySpec = new PKCS8EncodedKeySpec(decoded);
-            KeyFactory keyFactory = KeyFactory.getInstance(CertificateManagementConstants.RSA);
-
-            return keyFactory.generatePrivate(encodedKeySpec);
-        } catch (FileNotFoundException e) {
-            String errorMsg = "Private key file not found in getSignerKey";
-            throw new KeystoreException(errorMsg, e);
-        } catch (IOException e) {
-            String errorMsg = "Input output issue in getSignerKey";
-            throw new KeystoreException(errorMsg, e);
-        } catch (NoSuchAlgorithmException e) {
-            String errorMsg = "Algorithm not not found in getSignerKey";
-            throw new KeystoreException(errorMsg, e);
-        } catch (InvalidKeySpecException e) {
-            String errorMsg = "Invalid key found in getSignerKey";
-            throw new KeystoreException(errorMsg, e);
-        }
-    }
-
-    private X509Certificate getSigner(String signerCertificatePath) throws KeystoreException {
-
-        X509Certificate certificate;
-        try {
-            CertificateFactory certificateFactory = CertificateFactory.getInstance(CertificateManagementConstants.X_509);
-            certificate = (X509Certificate) certificateFactory.generateCertificate(
-                    new FileInputStream(signerCertificatePath));
-
-            return certificate;
-        } catch (CertificateException e) {
-            String errorMsg = "Certificate related issue occurred in getSigner";
-            throw new KeystoreException(errorMsg, e);
-        } catch (FileNotFoundException e) {
-            String errorMsg = "Signer certificate path not found in getSigner";
-            throw new KeystoreException(errorMsg, e);
-        }
-    }
-
     public SCEPResponse getCACert() throws KeystoreException {
 
         try {
@@ -652,29 +594,6 @@ public class CertificateGenerator {
 
         if (challengePassword != null) {
             return new String(challengePassword);
-        }
-
-        return null;
-    }
-
-    private ASN1Primitive toASN1Primitive(byte[] data) {
-
-        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(data);
-        ASN1InputStream inputStream = new ASN1InputStream(byteArrayInputStream);
-
-        try {
-            return inputStream.readObject();
-        } catch (IOException e) {
-            String errorMsg = "IOException occurred when converting binary array to ASN1Primitive";
-            log.error(errorMsg, e);
-        } finally {
-            try {
-                byteArrayInputStream.close();
-                inputStream.close();
-            } catch (IOException e) {
-                String errorMsg = "IOException occurred when closing streams";
-                log.error(errorMsg, e);
-            }
         }
 
         return null;

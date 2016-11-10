@@ -26,7 +26,10 @@ import org.wso2.carbon.device.mgt.common.TransactionManagementException;
 import org.wso2.carbon.device.mgt.common.UnsupportedDatabaseEngineException;
 import org.wso2.carbon.device.mgt.core.config.datasource.DataSourceConfig;
 import org.wso2.carbon.device.mgt.core.config.datasource.JNDILookupDefinition;
-import org.wso2.carbon.device.mgt.core.dao.impl.*;
+import org.wso2.carbon.device.mgt.core.dao.impl.ApplicationDAOImpl;
+import org.wso2.carbon.device.mgt.core.dao.impl.ApplicationMappingDAOImpl;
+import org.wso2.carbon.device.mgt.core.dao.impl.DeviceTypeDAOImpl;
+import org.wso2.carbon.device.mgt.core.dao.impl.EnrollmentDAOImpl;
 import org.wso2.carbon.device.mgt.core.dao.impl.device.GenericDeviceDAOImpl;
 import org.wso2.carbon.device.mgt.core.dao.impl.device.OracleDeviceDAOImpl;
 import org.wso2.carbon.device.mgt.core.dao.impl.device.PostgreSQLDeviceDAOImpl;
@@ -34,8 +37,6 @@ import org.wso2.carbon.device.mgt.core.dao.impl.device.SQLServerDeviceDAOImpl;
 import org.wso2.carbon.device.mgt.core.dao.util.DeviceManagementDAOUtil;
 import org.wso2.carbon.device.mgt.core.device.details.mgt.dao.DeviceDetailsDAO;
 import org.wso2.carbon.device.mgt.core.device.details.mgt.dao.impl.DeviceDetailsDAOImpl;
-import org.wso2.carbon.device.mgt.core.search.mgt.dao.SearchDAO;
-import org.wso2.carbon.device.mgt.core.search.mgt.dao.impl.SearchDAOImpl;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -133,10 +134,6 @@ public class DeviceManagementDAOFactory {
 
     public static DeviceDetailsDAO getDeviceDetailsDAO() {
         return new DeviceDetailsDAOImpl();
-    }
-
-    public static SearchDAO getSearchDAO() {
-        return new SearchDAOImpl();
     }
 
     public static void init(DataSourceConfig config) {

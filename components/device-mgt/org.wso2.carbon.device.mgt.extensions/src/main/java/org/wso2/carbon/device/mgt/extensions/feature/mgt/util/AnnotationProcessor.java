@@ -25,7 +25,16 @@ import org.wso2.carbon.device.mgt.common.Feature;
 import org.wso2.carbon.device.mgt.extensions.feature.mgt.annotations.DeviceType;
 
 import javax.servlet.ServletContext;
-import javax.ws.rs.*;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.FormParam;
+import javax.ws.rs.GET;
+import javax.ws.rs.HttpMethod;
+import javax.ws.rs.OPTIONS;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
 import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
@@ -37,7 +46,11 @@ import java.net.URI;
 import java.net.URL;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * This has the utility function to extract feature information.
@@ -68,7 +81,7 @@ public class AnnotationProcessor {
      * Scan the context for classes with annotations
      */
     public Set<String> scanStandardContext(String className) throws IOException {
-        if (className.equals(DEVICE_TYPE_CLASS_NAME)) {
+        if (DEVICE_TYPE_CLASS_NAME.equals(className)) {
             ExtendedAnnotationDB db = new ExtendedAnnotationDB();
             db.addIgnoredPackages(PACKAGE_ORG_APACHE);
             db.addIgnoredPackages(PACKAGE_ORG_CODEHAUS);

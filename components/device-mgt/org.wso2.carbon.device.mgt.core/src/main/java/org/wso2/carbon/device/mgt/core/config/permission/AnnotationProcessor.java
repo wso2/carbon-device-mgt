@@ -25,7 +25,13 @@ import org.wso2.carbon.apimgt.annotations.api.API;
 import org.wso2.carbon.device.mgt.common.permission.mgt.Permission;
 
 import javax.servlet.ServletContext;
-import javax.ws.rs.*;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.HttpMethod;
+import javax.ws.rs.OPTIONS;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
 import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
@@ -75,7 +81,7 @@ public class AnnotationProcessor {
      * @throws IOException
      */
     public Set<String> scanStandardContext(String className) throws IOException {
-        if (className.equals(API_CLASS_NAME)) {
+        if (API_CLASS_NAME.equals(className)) {
             ExtendedAnnotationDB db = new ExtendedAnnotationDB();
             db.addIgnoredPackages(PACKAGE_ORG_APACHE);
             db.addIgnoredPackages(PACKAGE_ORG_CODEHAUS);

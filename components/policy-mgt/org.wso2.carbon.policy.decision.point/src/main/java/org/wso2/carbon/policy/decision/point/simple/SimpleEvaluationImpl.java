@@ -32,13 +32,8 @@ import java.util.List;
 public class SimpleEvaluationImpl implements SimpleEvaluation {
 
     private static final Log log = LogFactory.getLog(SimpleEvaluationImpl.class);
-    //TODO : to revove the stale reference
     private PolicyManagerService policyManagerService;
     private List<Policy> policyList = new ArrayList<Policy>();
-
-//    public SimpleEvaluationImpl() {
-//        policyManagerService = PolicyDecisionPointDataHolder.getInstance().getPolicyManagerService();
-//    }
 
     @Override
     public Policy getEffectivePolicy(DeviceIdentifier deviceIdentifier) throws PolicyEvaluationException {
@@ -73,7 +68,6 @@ public class SimpleEvaluationImpl implements SimpleEvaluation {
         }
         return policy;
     }
-
 
     @Override
     public void sortPolicies() throws PolicyEvaluationException {

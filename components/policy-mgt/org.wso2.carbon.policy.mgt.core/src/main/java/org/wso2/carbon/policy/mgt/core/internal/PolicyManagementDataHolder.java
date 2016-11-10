@@ -97,7 +97,7 @@ public class PolicyManagementDataHolder {
         return policyEvaluationPoints.get(policyEvaluationPointName);
     }
 
-    public void putPolicyEvaluationPoint(String name, PolicyEvaluationPoint policyEvaluationPoint) {
+    public void setPolicyEvaluationPoint(String name, PolicyEvaluationPoint policyEvaluationPoint) {
         policyEvaluationPoints.put(name,policyEvaluationPoint);
     }
 

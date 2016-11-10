@@ -21,8 +21,6 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.bouncycastle.asn1.ASN1Encodable;
-import org.bouncycastle.asn1.ASN1InputStream;
-import org.bouncycastle.asn1.ASN1Primitive;
 import org.bouncycastle.asn1.pkcs.Attribute;
 import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
 import org.bouncycastle.asn1.x500.RDN;
@@ -596,29 +594,6 @@ public class CertificateGenerator {
 
         if (challengePassword != null) {
             return new String(challengePassword);
-        }
-
-        return null;
-    }
-
-    private ASN1Primitive toASN1Primitive(byte[] data) {
-
-        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(data);
-        ASN1InputStream inputStream = new ASN1InputStream(byteArrayInputStream);
-
-        try {
-            return inputStream.readObject();
-        } catch (IOException e) {
-            String errorMsg = "IOException occurred when converting binary array to ASN1Primitive";
-            log.error(errorMsg, e);
-        } finally {
-            try {
-                byteArrayInputStream.close();
-                inputStream.close();
-            } catch (IOException e) {
-                String errorMsg = "IOException occurred when closing streams";
-                log.error(errorMsg, e);
-            }
         }
 
         return null;

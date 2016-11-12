@@ -504,24 +504,21 @@ var module = {};
             } else {
                 // This is a login response.
                 var ssoConfigs = getSsoConfigurations();
-                var rsEnabled = ssoConfigs[constants.APP_CONF_AUTH_MODULE_SSO_RESPONSE_SIGNING_ENABLED];
-                if (utils.parseBoolean(rsEnabled)) {
-                    var CarbonUtils = Packages.org.wso2.carbon.utils.CarbonUtils;
-                    var keyStorePassword = CarbonUtils.getServerConfiguration().getFirstProperty("Security.TrustStore.Password");
-                    var keyStoreName = CarbonUtils.getServerConfiguration().getFirstProperty("Security.TrustStore.Location");
-                    var identityAlias = ssoConfigs[constants.APP_CONF_AUTH_MODULE_SSO_IDENTITY_ALIAS];
-                    var keyStoreParams = {
-                        KEY_STORE_NAME: keyStoreName,
-                        KEY_STORE_PASSWORD: keyStorePassword,
-                        IDP_ALIAS: identityAlias,
-                        USE_ST_KEY: !ssoConfigs[constants.APP_CONF_AUTH_MODULE_SSO_USE_ST_KEY]
-                    };
-                    if (!ssoClient.validateSignature(samlResponseObj, keyStoreParams)) {
-                        var msg = "Invalid signature found in the SAML response.";
-                        log.error(msg);
-                        response.sendError(500, msg);
-                        return;
-                    }
+                var CarbonUtils = Packages.org.wso2.carbon.utils.CarbonUtils;
+                var keyStorePassword = CarbonUtils.getServerConfiguration().getFirstProperty("Security.TrustStore.Password");
+                var keyStoreName = CarbonUtils.getServerConfiguration().getFirstProperty("Security.TrustStore.Location");
+                var identityAlias = ssoConfigs[constants.APP_CONF_AUTH_MODULE_SSO_IDENTITY_ALIAS];
+                var keyStoreParams = {
+                    KEY_STORE_NAME: keyStoreName,
+                    KEY_STORE_PASSWORD: keyStorePassword,
+                    IDP_ALIAS: identityAlias
+                };
+
+                if (!ssoClient.validateSamlResponse(samlResponseObj, ssoConfigs, keyStoreParams)) {
+                    var msg = "Invalid signature found in the SAML response.";
+                    log.error(msg);
+                    response.sendError(500, msg);
+                    return;
                 }
                 /**
                  * @type {{sessionId: string, loggedInUser: string, sessionIndex: string, samlToken:
@@ -533,9 +530,9 @@ var module = {};
                     var ssoSessions = getSsoSessions();
                     ssoSessions[ssoSession.sessionId] = ssoSession;
                     if (ssoSession.sessionIndex != null || ssoSession.sessionIndex != 'undefined') {
-                        module.loadTenant(ssoSession.loggedInUser);
                         var carbonUser = (require("carbon")).server.tenantUser(ssoSession.loggedInUser);
                         utils.setCurrentUser(carbonUser.username, carbonUser.domain, carbonUser.tenantId);
+                        module.loadTenant(ssoSession.loggedInUser);
                         var scriptArgument = {input: {samlToken: ssoSession.samlToken}, user: module.getCurrentUser()};
                         handleEvent(OPERATION_LOGIN, EVENT_SUCCESS, scriptArgument);
                     }
@@ -611,34 +608,37 @@ var module = {};
         if (isAuthenticated) {
             var tenantUser = carbonServer.tenantUser(username);
             utils.setCurrentUser(tenantUser.username, tenantUser.domain, tenantUser.tenantId);
+            new Log().info("sasasa");
+            new Log().info(tenantUser);
             module.loadTenant(username);
             var scriptArgument = {
                 input: {username: username, password: password},
                 user: module.getCurrentUser()
             };
-            handleEvent(OPERATION_LOGIN, EVENT_SUCCESS, scriptArgument);
-        } else {
-            handleEvent(OPERATION_LOGIN, EVENT_FAIL, new Error("Incorrect username or password."));
-        }
-    };
+                handleEvent(OPERATION_LOGIN, EVENT_SUCCESS, scriptArgument);
 
-    /**
-     * Basic logout.
-     * @param response {Object} HTTP response
-     */
-    module.logout = function (response) {
-        var previousUser = module.getCurrentUser();
-        try {
-            session.invalidate();
-        } catch (e) {
-            log.error(e.message, e);
-            response.sendError(500, e.message);
-            return;
-        }
-        if (log.isDebugEnabled()) {
-            log.debug("User '" + previousUser.username + "' logged out.");
-        }
-        var scriptArgument = {input: {}, user: previousUser};
-        handleEvent(OPERATION_LOGOUT, EVENT_SUCCESS, scriptArgument);
-    };
-})(module);
+        } else {
+                handleEvent(OPERATION_LOGIN, EVENT_FAIL, new Error("Incorrect username or password."));
+            }
+        };
+
+        /**
+         * Basic logout.
+         * @param response {Object} HTTP response
+         */
+        module.logout = function (response) {
+            var previousUser = module.getCurrentUser();
+            try {
+                session.invalidate();
+            } catch (e) {
+                log.error(e.message, e);
+                response.sendError(500, e.message);
+                return;
+            }
+            if (log.isDebugEnabled()) {
+                log.debug("User '" + previousUser.username + "' logged out.");
+            }
+            var scriptArgument = {input: {}, user: previousUser};
+            handleEvent(OPERATION_LOGOUT, EVENT_SUCCESS, scriptArgument);
+        };
+    })(module);

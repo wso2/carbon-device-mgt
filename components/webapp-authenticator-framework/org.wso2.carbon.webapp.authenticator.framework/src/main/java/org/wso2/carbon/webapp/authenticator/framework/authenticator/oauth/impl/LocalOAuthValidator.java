@@ -19,6 +19,7 @@ package org.wso2.carbon.webapp.authenticator.framework.authenticator.oauth.impl;
 
 import org.wso2.carbon.identity.oauth2.dto.OAuth2TokenValidationRequestDTO;
 import org.wso2.carbon.identity.oauth2.dto.OAuth2TokenValidationResponseDTO;
+import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 import org.wso2.carbon.webapp.authenticator.framework.AuthenticatorFrameworkDataHolder;
 import org.wso2.carbon.webapp.authenticator.framework.authenticator.oauth.OAuth2TokenValidator;
@@ -64,6 +65,10 @@ public class LocalOAuthValidator implements OAuth2TokenValidator {
                     tokenValidationResponse.getAuthorizedUser());
             tenantDomain =
                     MultitenantUtils.getTenantDomain(tokenValidationResponse.getAuthorizedUser());
+
+            if (tenantDomain.equals(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME)) {
+                tenantDomain = MultitenantUtils.getTenantDomain(userName);
+            }
         } else {
             OAuthValidationResponse oAuthValidationResponse = new OAuthValidationResponse();
             oAuthValidationResponse.setErrorMsg(tokenValidationResponse.getErrorMsg());

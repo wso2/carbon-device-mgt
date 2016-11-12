@@ -20,10 +20,10 @@ package org.wso2.carbon.device.mgt.oauth.extensions.validators;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.common.permission.mgt.Permission;
 import org.wso2.carbon.device.mgt.common.permission.mgt.PermissionManagementException;
 import org.wso2.carbon.device.mgt.common.permission.mgt.PermissionManagerService;
-import org.wso2.carbon.device.mgt.oauth.extensions.OAuthExtUtils;
 import org.wso2.carbon.device.mgt.oauth.extensions.internal.OAuthExtensionsDataHolder;
 import org.wso2.carbon.identity.application.common.model.User;
 import org.wso2.carbon.identity.oauth2.IdentityOAuth2Exception;
@@ -31,6 +31,8 @@ import org.wso2.carbon.identity.oauth2.model.AccessTokenDO;
 import org.wso2.carbon.identity.oauth2.validators.OAuth2ScopeValidator;
 import org.wso2.carbon.user.api.UserRealm;
 import org.wso2.carbon.user.api.UserStoreException;
+import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
+import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 
 import java.util.Properties;
 
@@ -88,16 +90,22 @@ public class PermissionBasedScopeValidator extends OAuth2ScopeValidator {
                 }
                 String username = authzUser.getUserName();
                 String userStore = authzUser.getUserStoreDomain();
-                int tenantId = OAuthExtUtils.getTenantId(authzUser.getTenantDomain());
-                UserRealm userRealm = OAuthExtensionsDataHolder.getInstance().getRealmService().getTenantUserRealm(tenantId);
+                String tenantDomain = authzUser.getTenantDomain();
+                if (tenantDomain.equals(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME)) {
+                    tenantDomain = MultitenantUtils.getTenantDomain(username);
+                }
+                PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(tenantDomain, true);
+                UserRealm userRealm = OAuthExtensionsDataHolder.getInstance().getRealmService().getTenantUserRealm
+                        (PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId());
                 if (userRealm != null && userRealm.getAuthorizationManager() != null) {
                     if (userStore != null) {
                         status = userRealm.getAuthorizationManager()
-                                .isUserAuthorized(userStore + "/" + username, permission.getPath(),
-                                                  PermissionMethod.UI_EXECUTE);
+                                .isUserAuthorized(userStore + "/" + MultitenantUtils.getTenantAwareUsername(username),
+                                        permission.getPath(), PermissionMethod.UI_EXECUTE);
                     } else {
                         status = userRealm.getAuthorizationManager()
-                                .isUserAuthorized(username, permission.getPath(), PermissionMethod.UI_EXECUTE);
+                                .isUserAuthorized(MultitenantUtils.getTenantAwareUsername(username),
+                                        permission.getPath(), PermissionMethod.UI_EXECUTE);
                     }
                 }
             }

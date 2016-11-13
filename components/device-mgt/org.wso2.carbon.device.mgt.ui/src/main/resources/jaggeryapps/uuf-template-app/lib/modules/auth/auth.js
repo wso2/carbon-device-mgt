@@ -608,37 +608,34 @@ var module = {};
         if (isAuthenticated) {
             var tenantUser = carbonServer.tenantUser(username);
             utils.setCurrentUser(tenantUser.username, tenantUser.domain, tenantUser.tenantId);
-            new Log().info("sasasa");
-            new Log().info(tenantUser);
             module.loadTenant(username);
             var scriptArgument = {
                 input: {username: username, password: password},
                 user: module.getCurrentUser()
             };
-                handleEvent(OPERATION_LOGIN, EVENT_SUCCESS, scriptArgument);
-
+            handleEvent(OPERATION_LOGIN, EVENT_SUCCESS, scriptArgument);
         } else {
-                handleEvent(OPERATION_LOGIN, EVENT_FAIL, new Error("Incorrect username or password."));
-            }
-        };
+            handleEvent(OPERATION_LOGIN, EVENT_FAIL, new Error("Incorrect username or password."));
+        }
+    };
 
-        /**
-         * Basic logout.
-         * @param response {Object} HTTP response
-         */
-        module.logout = function (response) {
-            var previousUser = module.getCurrentUser();
-            try {
-                session.invalidate();
-            } catch (e) {
-                log.error(e.message, e);
-                response.sendError(500, e.message);
-                return;
-            }
-            if (log.isDebugEnabled()) {
-                log.debug("User '" + previousUser.username + "' logged out.");
-            }
-            var scriptArgument = {input: {}, user: previousUser};
-            handleEvent(OPERATION_LOGOUT, EVENT_SUCCESS, scriptArgument);
-        };
-    })(module);
+    /**
+     * Basic logout.
+     * @param response {Object} HTTP response
+     */
+    module.logout = function (response) {
+        var previousUser = module.getCurrentUser();
+        try {
+            session.invalidate();
+        } catch (e) {
+            log.error(e.message, e);
+            response.sendError(500, e.message);
+            return;
+        }
+        if (log.isDebugEnabled()) {
+            log.debug("User '" + previousUser.username + "' logged out.");
+        }
+        var scriptArgument = {input: {}, user: previousUser};
+        handleEvent(OPERATION_LOGOUT, EVENT_SUCCESS, scriptArgument);
+    };
+})(module);

@@ -65,8 +65,7 @@ public class LocalOAuthValidator implements OAuth2TokenValidator {
                     tokenValidationResponse.getAuthorizedUser());
             tenantDomain =
                     MultitenantUtils.getTenantDomain(tokenValidationResponse.getAuthorizedUser());
-
-            if (tenantDomain.equals(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME)) {
+            if (MultitenantConstants.SUPER_TENANT_DOMAIN_NAME.equals(tenantDomain)) {
                 tenantDomain = MultitenantUtils.getTenantDomain(userName);
             }
         } else {

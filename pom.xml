@@ -26,7 +26,7 @@
     <version>1.2.7-SNAPSHOT</version>
     <name>WSO2 Carbon - Device Management - Parent</name>
     <url>http://wso2.org</url>
-    <description>WSO2 Connected Device Manager Components</description>
+    <description>WSO2 Connected Device Manager Components </description>
 
     <parent>
         <groupId>org.wso2</groupId>

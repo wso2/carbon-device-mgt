@@ -77,6 +77,27 @@ var userModule = function () {
     };
 
     /**
+     * Build default user claims.
+     *
+     * @param firstname First name of the user
+     * @param lastname Last name of the user
+     * @param emailAddress Email address of the user
+     *
+     * @returns {Object} Default user claims to be provided
+     */
+    privateMethods.buildDefaultUserClaims = function (firstname, lastname, emailAddress) {
+        var defaultUserClaims = {
+            "http://wso2.org/claims/givenname": firstname,
+            "http://wso2.org/claims/lastname": lastname,
+            "http://wso2.org/claims/emailaddress": emailAddress
+        };
+        if (log.isDebugEnabled()) {
+            log.debug("ClaimMap created for new user : " + stringify(defaultUserClaims));
+        }
+        return defaultUserClaims;
+    };
+
+    /**
      * Register user to dc-user-store.
      *
      * @param username Username of the user

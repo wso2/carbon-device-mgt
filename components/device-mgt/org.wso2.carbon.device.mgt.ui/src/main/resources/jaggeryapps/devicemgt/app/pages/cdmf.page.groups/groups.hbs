@@ -18,6 +18,7 @@
 {{unit "cdmf.unit.ui.title" pageTitle="Group Management"}}
 {{unit "cdmf.unit.ui.content.title" pageHeader="Groups"}}
 
+{{unit "cdmf.unit.lib.service-invoker-utility"}}
 {{unit "cdmf.unit.data-tables-extended"}}
 {{unit "cdmf.unit.lib.ui-permissions-utility"}}
 
@@ -96,46 +97,140 @@
                 {{/if}}
 
                 <div id="share-group-w1-modal-content" class="hide">
-                    <div class="content">
-                        <div class="row">
-                            <div class="col-lg-5 col-md-6 col-centered">
-                                <h3>Enter user name to manage group sharing</h3>
-                                <div id="user-names">
-                                    <br />
-                                    <input type="text" id="share-user-selector" style="color:#3f3f3f;padding:5px;width:250px;">
-                                    </input>
-                                </div>
-                                <div class="buttons">
-                                    <a href="#" id="share-group-next-link" class="btn-operations">
-                                        Next
-                                    </a>
+                    <div class="modal-header">
+                        <h3 class="pull-left modal-title">
+                            <span>
+                                <span class="fw-stack">
+                                    <i class="fw fw-ring fw-stack-2x"></i>
+                                    <i class="fw fw-share fw-stack-1x"></i>
+                                </span> Group Sharing
+                            </span>
+                        </h3>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i
+                                class="fw fw-cancel"></i></button>
+                    </div>
+                    <div class="modal-body add-margin-top-2x add-margin-bottom-2x">
+                        <div id="notification-error-msg" class="alert alert-danger hidden" role="alert">
+                            <i class="icon fw fw-error"></i><span></span>
+                        </div>
+                        <div id="user-names">
+                            <h4>
+                                Enter user name to manage group sharing
+                                <br><br>
+                                <input type="text" id="share-user-selector" class="form-control modal-input operationDataKeys">
+                                </input>
+                            </h4>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="buttons">
+                            <a href="#" id="share-group-next-link" class="btn-operations">
+                                Next
+                            </a>
 
-                                    <a href="#" id="share-group-w1-cancel-link" class="btn-operations btn-default">
-                                        Cancel
-                                    </a>
-                                </div>
-                            </div>
+                            <a href="#" id="share-group-w1-cancel-link" class="btn-operations btn-default">
+                                Cancel
+                            </a>
                         </div>
                     </div>
                 </div>
 
                 <div id="share-group-w2-modal-content" class="hide">
-                    <div class="content">
-                        <div class="row">
-                            <div class="col-lg-5 col-md-6 col-centered">
-                                <h3>Select sharing roles</h3>
-                                <br/>
-                                <div id="user-roles">Loading...</div>
-                                <div class="buttons">
-                                    <a href="#" id="share-group-yes-link" class="btn-operations">
-                                        OK
-                                    </a>
-
-                                    <a href="#" id="share-group-w2-cancel-link" class="btn-operations btn-default">
-                                        Cancel
-                                    </a>
-                                </div>
+                    <div class="modal-header">
+                        <h3 class="pull-left modal-title">
+                            <span>
+                                <span class="fw-stack">
+                                    <i class="fw fw-ring fw-stack-2x"></i>
+                                    <i class="fw fw-share fw-stack-1x"></i>
+                                </span> Group Sharing
+                            </span>
+                        </h3>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i
+                                class="fw fw-cancel"></i></button>
+                    </div>
+                    <div class="modal-body add-margin-top-2x add-margin-bottom-2x">
+                        <div id="notification-error-msg" class="alert alert-danger hidden" role="alert">
+                            <i class="icon fw fw-error"></i><span></span>
+                        </div>
+                        <div id="user-roles">
+                            <h4>
+                                Select sharing roles
+                                <br><br>
+                            </h4>
+                        </div>
+                        {{#if permissions.CREATE_GROUP_ROLES}}
+                            <div class="buttons">
+                                <a href="#" id="share-group-w2-add-new-role-link" class="btn-operations">
+                                    <span class="fw-stack"><i class="fw fw-ring fw-stack-2x"></i><i class="fw fw-add fw-stack-1x"></i></span> Add New Role
+                                </a>
                             </div>
+                        {{/if}}
+                    </div>
+                    <div class="modal-footer">
+                        <div class="buttons">
+                            <a href="#" id="share-group-yes-link" class="btn-operations">
+                                OK
+                            </a>
+
+                            <a href="#" id="share-group-w2-cancel-link" class="btn-operations btn-default">
+                                Cancel
+                            </a>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div id="share-group-w3-modal-content" class="hide">
+                    <div class="modal-header">
+                        <h3 class="pull-left modal-title">
+                            <span>
+                                <span class="fw-stack">
+                                    <i class="fw fw-ring fw-stack-2x"></i>
+                                    <i class="fw fw-bookmark fw-stack-1x"></i>
+                                </span> Group Sharing Role
+                            </span>
+                        </h3>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i
+                                class="fw fw-cancel"></i></button>
+                    </div>
+                    <div class="modal-body add-margin-top-2x add-margin-bottom-2x">
+                        <div id="notification-error-msg" class="alert alert-danger hidden" role="alert">
+                            <i class="icon fw fw-error"></i><span></span>
+                        </div>
+                        <div id="user-roles">
+                            <h4>
+                                Enter Group Sharing Role Name
+                                <br><br>
+                                <input type="text" id="group-sharing-role-name" class="form-control modal-input operationDataKeys"/>
+                                <br><br>
+                                Role Permissions
+                                <br><br>
+                            </h4>
+                            <table class="table">
+                                <tbody id="permission-table-container">
+                                {{#each groupPermissions}}
+                                    <tr>
+                                        <td>{{this}}</td>
+                                        <td>
+                                            <a href="#" class="btn-operations btn-default" onclick="togglePermissionAction(this)" data-value="unchecked">
+                                                <span class="fw-stack"><i class="fw fw-ring fw-stack-2x"></i><i class="fw fw-add fw-stack-1x"></i></span>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {{/each}}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="buttons">
+                            <a href="#" id="share-group-w3-yes-link" class="btn-operations">
+                                OK
+                            </a>
+
+                            <a href="#" id="share-group-w3-cancel-link" class="btn-operations btn-default">
+                                Cancel
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -181,34 +276,46 @@
                 </div>
 
                 <div id="edit-group-modal-content" class="hide">
-                    <div class="content">
-                        <div class="row">
-                            <div class="col-lg-5 col-md-6 col-centered">
-                                <h3>Please enter new name and description for the group</h3>
-                                <br/>
+                    <div class="modal-header">
+                        <h3 class="pull-left modal-title">
+                            <span>
+                                <span class="fw-stack">
+                                    <i class="fw fw-ring fw-stack-2x"></i>
+                                    <i class="fw fw-edit fw-stack-1x"></i>
+                                </span> Update Group
+                            </span>
+                        </h3>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i
+                                class="fw fw-cancel"></i></button>
+                    </div>
+                    <div class="modal-body add-margin-top-2x add-margin-bottom-2x">
+                        <div id="notification-error-msg" class="alert alert-danger hidden" role="alert">
+                            <i class="icon fw fw-error"></i><span></span>
+                        </div>
+                        <div>
+                            <h4>
+                                Enter new name and description for the group
+                                <br><br>
+                                <input type="text" id="edit-group-name"
+                                       class="form-control modal-input operationDataKeys" placeholder="Group Name"
+                                       value="">
+                                </input>
+                                <br>
+                                <input type="text" id="edit-group-description"
+                                       class="form-control modal-input operationDataKeys"
+                                       placeholder="Group Description" value="">
+                            </h4>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="buttons">
+                            <a href="#" id="edit-group-yes-link" class="btn-operations">
+                                Update
+                            </a>
 
-                                <div>
-                                    <input id="edit-group-name" style="color:#3f3f3f;padding:5px" type="text"
-                                           value=""
-                                           placeholder="Group Name" size="60">
-                                </div>
-                                <br/>
-
-                                <div>
-                                    <input id="edit-group-description" style="color:#3f3f3f;padding:5px" type="text"
-                                           value=""
-                                           placeholder="Group Description" size="60">
-                                </div>
-                                <div class="buttons">
-                                    <a href="#" id="edit-group-yes-link" class="btn-operations">
-                                        Update
-                                    </a>
-
-                                    <a href="#" id="edit-group-cancel-link" class="btn-operations btn-default">
-                                        Cancel
-                                    </a>
-                                </div>
-                            </div>
+                            <a href="#" id="edit-group-cancel-link" class="btn-operations btn-default">
+                                Cancel
+                            </a>
                         </div>
                     </div>
                 </div>

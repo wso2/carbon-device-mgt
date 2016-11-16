@@ -31,6 +31,7 @@ import org.wso2.carbon.identity.oauth2.model.AccessTokenDO;
 import org.wso2.carbon.identity.oauth2.validators.OAuth2ScopeValidator;
 import org.wso2.carbon.user.api.UserRealm;
 import org.wso2.carbon.user.api.UserStoreException;
+import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 
 import java.util.Properties;
 
@@ -88,7 +89,12 @@ public class PermissionBasedScopeValidator extends OAuth2ScopeValidator {
                 }
                 String username = authzUser.getUserName();
                 String userStore = authzUser.getUserStoreDomain();
-                int tenantId = OAuthExtUtils.getTenantId(authzUser.getTenantDomain());
+                String tenantDomain = authzUser.getTenantDomain();
+                if (!"password".equals(accessTokenDO.getGrantType())) {
+                    tenantDomain = MultitenantUtils.getTenantDomain(username);
+                    username = MultitenantUtils.getTenantAwareUsername(username);
+                }
+                int tenantId = OAuthExtUtils.getTenantId(tenantDomain);
                 UserRealm userRealm = OAuthExtensionsDataHolder.getInstance().getRealmService().getTenantUserRealm(tenantId);
                 if (userRealm != null && userRealm.getAuthorizationManager() != null) {
                     if (userStore != null) {

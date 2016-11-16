@@ -582,6 +582,30 @@ var userModule = function () {
         return permissions;
     };
 
+    /**
+     * Add new role with permissions.
+     *
+     * @param roleName    Name of the role
+     * @param users       List of users to assign the role
+     * @param permissions List of permissions
+     */
+    publicMethods.addRole = function (roleName, users, permissions) {
+        var carbon = require('carbon');
+        var tenantId = carbon.server.tenantId();
+        var url = carbon.server.address('https') + "/admin/services";
+        var server = new carbon.server.Server(url);
+        var userManager = new carbon.user.UserManager(server, tenantId);
+        try {
+            if (!userManager.roleExists(roleName)) {
+                userManager.addRole(roleName, users, permissions);
+            } else {
+                log.info("Role exist with name: " + roleName);
+            }
+        } catch (e) {
+            throw e;
+        }
+    };
+
     publicMethods.addPermissions = function (permissionList, path, init) {
         var registry, carbon = require("carbon");
         var carbonServer = application.get("carbonServer");

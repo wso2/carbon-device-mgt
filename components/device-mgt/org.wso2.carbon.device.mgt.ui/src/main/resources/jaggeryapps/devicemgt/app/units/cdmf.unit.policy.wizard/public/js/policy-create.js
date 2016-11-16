@@ -220,6 +220,7 @@ var savePolicy = function (policy, state) {
         "description": policy["description"],
         "compliance": policy["selectedNonCompliantAction"],
         "ownershipType": "ANY",
+        "active": (state != "save"),
         "profile": {
             "profileName": policy["policyName"],
             "deviceType": {
@@ -239,14 +240,8 @@ var savePolicy = function (policy, state) {
         payload["roles"] = [];
     }
 
-    var serviceURL;
-    if (state == "save") {
-        serviceURL = "/devicemgt_admin/policies/inactive-policy"
-    } else if (state == "publish") {
-        serviceURL = "/devicemgt_admin/policies/active-policy"
-    }
     invokerUtil.post(
-            serviceURL,
+            "/api/device-mgt/v1.0/policies",
             payload,
             function (response) {
                 response = JSON.parse(response);

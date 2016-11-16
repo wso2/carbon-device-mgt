@@ -31,7 +31,7 @@ function onRequest(context) {
     types["types"] = [];
     var typesListResponse = deviceModule.getDeviceTypes();
     if (typesListResponse["status"] == "success") {
-        for (var type in typesListResponse["content"]) {
+        for (var type in typesListResponse["content"]["deviceTypes"]) {
             var content = {};
             var deviceType = typesListResponse["content"]["deviceTypes"][type];
             content["name"] = deviceType;

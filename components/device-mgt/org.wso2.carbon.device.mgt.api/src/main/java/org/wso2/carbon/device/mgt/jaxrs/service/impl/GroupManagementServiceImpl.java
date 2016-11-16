@@ -38,7 +38,8 @@ import org.wso2.carbon.device.mgt.jaxrs.beans.*;
 import org.wso2.carbon.device.mgt.jaxrs.service.api.GroupManagementService;
 import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.RequestValidationUtil;
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
-import org.wso2.carbon.user.core.UserStoreException;
+import org.wso2.carbon.user.api.UserStoreException;
+import org.wso2.carbon.user.api.UserStoreManager;
 import org.wso2.carbon.user.core.multiplecredentials.UserDoesNotExistException;
 
 import javax.ws.rs.core.Response;
@@ -201,10 +202,31 @@ public class GroupManagementServiceImpl implements GroupManagementService {
     }
 
     @Override
+    public Response createGroupSharingRole(int groupId, String userName, RoleInfo roleInfo) {
+        try {
+            DeviceMgtAPIUtils.getGroupManagementProviderService()
+                    .addGroupSharingRole(userName, groupId, roleInfo.getRoleName(), roleInfo.getPermissions());
+            return Response.status(Response.Status.CREATED).build();
+        } catch (GroupManagementException e) {
+            String msg = "Error occurred while creating group sharing role.";
+            log.error(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+        }
+    }
+
+    @Override
     public Response getRolesOfGroup(int groupId, String userName) {
         try {
             List<String> groupRoles;
             if(userName != null) {
+                UserStoreManager userStoreManager = DeviceMgtAPIUtils.getUserStoreManager();
+                if (!userStoreManager.isExistingUser(userName)) {
+                    // returning response with bad request state
+                    return Response.status(Response.Status.CONFLICT).entity(
+                            new ErrorResponse.ErrorResponseBuilder().setMessage("User by username: " +
+                                    userName + " doesn't exists. Therefore, request made to get user " +
+                                    "was refused.").build()).build();
+                }
                 groupRoles = DeviceMgtAPIUtils.getGroupManagementProviderService().getRoles(userName, groupId);
             } else {
                 groupRoles = DeviceMgtAPIUtils.getGroupManagementProviderService().getRoles(groupId);
@@ -275,8 +297,7 @@ public class GroupManagementServiceImpl implements GroupManagementService {
         }
     }
 
-    @Override
-    public Response removeDevicesFromGroup(int groupId, List<DeviceIdentifier> deviceIdentifiers) {
+    @Override public Response removeDevicesFromGroup(int groupId, List<DeviceIdentifier> deviceIdentifiers) {
         try {
             DeviceMgtAPIUtils.getGroupManagementProviderService().removeDevice(groupId, deviceIdentifiers);
             return Response.status(Response.Status.OK).build();

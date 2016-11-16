@@ -20,11 +20,13 @@ function onRequest(context) {
     var groupModule = require("/app/modules/business-controllers/group.js")["groupModule"];
     var userModule = require("/app/modules/business-controllers/user.js")["userModule"];
     var constants = require("/app/modules/constants.js");
+    var groupPermissions = require("/app/pages/cdmf.page.groups/public/group-permissions.json");
     var currentUser = session.get(constants.USER_SESSION_KEY);
     var page = {};
     if (currentUser) {
         page.permissions = userModule.getUIPermissions();
         page.permissions.list = stringify(page.permissions);
+        page.groupPermissions = groupPermissions.permissionList;
         page.currentUser = currentUser;
         var groupCount = groupModule.getGroupCount();
         if (groupCount > 0) {

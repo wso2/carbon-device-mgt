@@ -154,26 +154,38 @@ function loadGroups() {
             class: 'text-right content-fill text-left-on-grid-view no-wrap',
             render: function (id, type, row, meta) {
                 var html;
-                html = '<a href="devices?groupId=' + row.groupId + '&groupName=' + row.name + '" data-click-event="remove-form" class="btn padding-reduce-on-grid-view">' +
-                    '<span class="fw-stack"><i class="fw fw-ring fw-stack-2x"></i><i class="fw fw-view fw-stack-1x"></i></span>' +
-                    '<span class="hidden-xs hidden-on-grid-view">View Devices</span></a>';
+                if ($.hasPermission("VIEW_GROUP_DEVICES")){
+                    html = '<a href="devices?groupId=' + row.groupId + '&groupName=' + row.name + '" data-click-event="remove-form" class="btn padding-reduce-on-grid-view">' +
+                        '<span class="fw-stack"><i class="fw fw-ring fw-stack-2x"></i><i class="fw fw-view fw-stack-1x"></i></span>' +
+                        '<span class="hidden-xs hidden-on-grid-view">View Devices</span></a>';
 
-                html += '<a href="group/' + row.name + '/' + row.groupId + '/analytics" data-click-event="remove-form" class="btn padding-reduce-on-grid-view">' +
-                    '<span class="fw-stack"><i class="fw fw-ring fw-stack-2x"></i><i class="fw fw-statistics fw-stack-1x"></i></span>' +
-                    '<span class="hidden-xs hidden-on-grid-view">Analytics</span></a>';
-
-                html += '<a href="#" data-click-event="remove-form" class="btn padding-reduce-on-grid-view share-group-link" data-group-id="' + row.groupId + '" ' +
-                    'data-group-owner="' + row.owner + '"><span class="fw-stack"><i class="fw fw-ring fw-stack-2x"></i><i class="fw fw-share fw-stack-1x"></i></span>' +
-                    '<span class="hidden-xs hidden-on-grid-view">Share</span></a>';
-
-                html += '<a href="#" data-click-event="remove-form" class="btn padding-reduce-on-grid-view edit-group-link" data-group-name="' + row.name + '" ' +
-                    'data-group-owner="' + row.owner + '" data-group-description="' + row.description + '" data-group-id="'+row.groupId+'"><span class="fw-stack"><i class="fw fw-ring fw-stack-2x"></i>' +
-                    '<i class="fw fw-edit fw-stack-1x"></i></span><span class="hidden-xs hidden-on-grid-view">Edit</span></a>';
-
-                html += '<a href="#" data-click-event="remove-form" class="btn padding-reduce-on-grid-view remove-group-link" data-group-id="' + row.groupId + '" ' +
-                    'data-group-owner="' + row.owner + '"><span class="fw-stack"><i class="fw fw-ring fw-stack-2x"></i><i class="fw fw-delete fw-stack-1x"></i>' +
-                    '</span><span class="hidden-xs hidden-on-grid-view">Delete</span></a>';
-
+                    html += '<a href="group/' + row.name + '/' + row.groupId + '/analytics" data-click-event="remove-form" class="btn padding-reduce-on-grid-view">' +
+                        '<span class="fw-stack"><i class="fw fw-ring fw-stack-2x"></i><i class="fw fw-statistics fw-stack-1x"></i></span>' +
+                        '<span class="hidden-xs hidden-on-grid-view">Analytics</span></a>';
+                } else {
+                    html = '';
+                }
+                if($.hasPermission("SHARE_GROUP")) {
+                    html += '<a href="#" data-click-event="remove-form" class="btn padding-reduce-on-grid-view share-group-link" data-group-id="' + row.groupId + '" ' +
+                        'data-group-owner="' + row.owner + '"><span class="fw-stack"><i class="fw fw-ring fw-stack-2x"></i><i class="fw fw-share fw-stack-1x"></i></span>' +
+                        '<span class="hidden-xs hidden-on-grid-view">Share</span></a>';
+                } else {
+                    html += '';
+                }
+                if($.hasPermission("UPDATE_GROUP")) {
+                    html += '<a href="#" data-click-event="remove-form" class="btn padding-reduce-on-grid-view edit-group-link" data-group-name="' + row.name + '" ' +
+                        'data-group-owner="' + row.owner + '" data-group-description="' + row.description + '" data-group-id="' + row.groupId + '"><span class="fw-stack"><i class="fw fw-ring fw-stack-2x"></i>' +
+                        '<i class="fw fw-edit fw-stack-1x"></i></span><span class="hidden-xs hidden-on-grid-view">Edit</span></a>';
+                } else {
+                    html += '';
+                }
+                if ($.hasPermission("REMOVE_GROUP")) {
+                    html += '<a href="#" data-click-event="remove-form" class="btn padding-reduce-on-grid-view remove-group-link" data-group-id="' + row.groupId + '" ' +
+                        'data-group-owner="' + row.owner + '"><span class="fw-stack"><i class="fw fw-ring fw-stack-2x"></i><i class="fw fw-delete fw-stack-1x"></i>' +
+                        '</span><span class="hidden-xs hidden-on-grid-view">Delete</span></a>';
+                } else {
+                    html += '';
+                }
                 return html;
             }
         }
@@ -237,6 +249,17 @@ function openCollapsedNav() {
  * DOM ready functions.
  */
 $(document).ready(function () {
+    var permissionSet = {};
+
+    //This method is used to setup permission for device listing
+    $.setPermission = function (permission) {
+        permissionSet[permission] = true;
+    };
+
+    $.hasPermission = function (permission) {
+        return permissionSet[permission];
+    };
+
     var permissionList = $("#permission").data("permission");
     for (var key in permissionList) {
         if (permissionList.hasOwnProperty(key)) {
@@ -321,7 +344,6 @@ function hidePopup() {
  * Following functions should be triggered after AJAX request is made.
  */
 function attachEvents() {
-
     /**
      * Following click function would execute
      * when a user clicks on "Share" link
@@ -334,12 +356,25 @@ function attachEvents() {
         $("a#share-group-next-link").show();
         showPopup();
         $("a#share-group-next-link").click(function () {
+            var successCallback = function (data) {
+                if(data === 'true') {
+                    getAllRoles(groupId, selectedUser);
+                } else {
+                    var errorMsgWrapper = "#notification-error-msg";
+                    var errorMsg = "#notification-error-msg span";
+                    $(errorMsg).text("User does not exist.");
+                    $(errorMsgWrapper).removeClass("hidden");
+                }
+            }
             var selectedUser = $('#share-user-selector').val();
             if (selectedUser == $("#group-listing").data("current-user")) {
                 $("#user-names").html("Please specify a user other than current user.");
                 $("a#share-group-next-link").hide();
             } else {
-                getAllRoles(groupId, selectedUser);
+                invokerUtil.get("/api/device-mgt/v1.0/users/checkUser?username=" + selectedUser,
+                    successCallback, function (message) {
+                        displayErrors(message);
+                    });
             }
         });
         $("a#share-group-w1-cancel-link").click(function () {
@@ -431,7 +466,6 @@ function attachEvents() {
 
 function getAllRoles(groupId, selectedUser) {
     $(modalPopupContent).html($('#share-group-w2-modal-content').html());
-    $('#user-roles').html('<div style="height:100px" data-state="loading" data-loading-text="Loading..." data-loading-style="icon-only" data-loading-inverse="true"></div>');
     $("a#share-group-yes-link").hide();
     var successCallback = function (data, textStatus, xhr) {
         data = JSON.parse(data);
@@ -464,7 +498,7 @@ function generateRoleMap(groupId, selectedUser, allRoles) {
             if(data != "EMPTY") {
                 userRoles = data.roles;
             }
-            var str = '';
+            var str = $('#user-roles').html();
 
             for (var i = 0; i < allRoles.length; i++) {
                 var isChecked = '';
@@ -474,8 +508,8 @@ function generateRoleMap(groupId, selectedUser, allRoles) {
                         break;
                     }
                 }
-                str += '<label class="checkbox-text"><input type="checkbox" id="user-role-' + allRoles[i] + '" value="' + allRoles[i]
-                       + '" ' + isChecked + '/>' + allRoles[i] + '</label>';
+                str += '<label class="wr-input-control checkbox"><input type="checkbox" class="form-control modal-input operationDataKeys" id="user-role-' + allRoles[i] + '" value="' + allRoles[i]
+                       + '" ' + isChecked + '/>' +'<span class="helper" title="Check to share this group role with user."> &nbsp;&nbsp;&nbsp;'+ allRoles[i] + '</span></label><br><br>';
             }
 
             $('#user-roles').html(str);
@@ -490,6 +524,9 @@ function generateRoleMap(groupId, selectedUser, allRoles) {
                 }
                 updateGroupShare(groupId, selectedUser, roles);
             });
+            $("a#share-group-w2-add-new-role-link").click(function () {
+                addNewRole(groupId, selectedUser, allRoles);
+            });
         } else {
             displayErrors(xhr);
         }
@@ -497,12 +534,69 @@ function generateRoleMap(groupId, selectedUser, allRoles) {
 
     invokerUtil.get("/api/device-mgt/v1.0/groups/id/" + groupId + "/roles?userName=" + selectedUser,
         successCallback, function (message) {
-                displayErrors(message);
+            displayErrors(message);
         });
 
     $("a#share-group-w2-cancel-link").click(function () {
         hidePopup();
     });
+}
+
+function addNewRole(groupId, selectedUser, allRoles) {
+    $(modalPopupContent).html($('#share-group-w3-modal-content').html());
+    function getPermissions() {
+        var PERMISSION_PREFIX = '/permission/admin/';
+        var permissions = [];
+        $('#permission-table-container').find('tr').each(function () {
+            var row = $(this).closest('tr');
+            var permission = $(row).find('td:nth-child(1)').text();
+            var check = $(row).find('td:nth-child(2) a').data('value');
+            if(check === 'checked') {
+                permission = PERMISSION_PREFIX + permission;
+                permissions.push(permission);
+            }
+        });
+        return permissions;
+    };
+    $("a#share-group-w3-yes-link").click(function () {
+        var successCallback = function (data, status, jqXHR) {
+            if(status == "success") {
+                getAllRoles(groupId, selectedUser);
+            }
+        }
+        var roleName = $('#group-sharing-role-name').val();
+        var users = [];
+        if(roleName) {
+            var groupRoleInfo = {"roleName": roleName, "permissions": getPermissions(), "users": users};
+            var currentUser = $("#group-listing").data("current-user");
+            invokerUtil.post("/api/device-mgt/v1.0/groups/id/" + groupId + "/roles/create?userName=" + currentUser,
+                groupRoleInfo, successCallback, function (message) {
+                    displayErrors(message);
+                });
+        } else {
+            var errorMsgWrapper = "#notification-error-msg";
+            var errorMsg = "#notification-error-msg span";
+            $(errorMsg).text("Role name cannot be empty.");
+            $(errorMsgWrapper).removeClass("hidden");
+        }
+    });
+    $("a#share-group-w3-cancel-link").click(function () {
+        hidePopup();
+    });
+}
+
+function togglePermissionAction(element) {
+    $(element).data('value', 'checked');
+    var icon = $(element).find("i")[1];
+    if($(icon).hasClass('fw-minus')) {
+        $(icon).removeClass('fw-minus');
+        $(icon).addClass('fw-add');
+        $(element).data('value', 'unchecked');
+    } else {
+        $(icon).removeClass('fw-add');
+        $(icon).addClass('fw-minus');
+        $(element).data('value', 'checked');
+    }
 }
 
 function updateGroupShare(groupId, selectedUser, roles) {

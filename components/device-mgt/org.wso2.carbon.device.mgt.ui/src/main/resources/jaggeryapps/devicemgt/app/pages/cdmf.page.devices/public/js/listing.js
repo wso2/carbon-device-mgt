@@ -51,7 +51,7 @@ function InitiateViewOption(url) {
 var deviceCheckbox = "#ast-container .ctrl-wr-asset .itm-select input[type='checkbox']";
 var assetContainer = "#ast-container";
 
-var deviceListing, currentUser, groupName, groupOwner;
+var deviceListing, currentUser, groupName, groupId;
 
 /*
  * DOM ready functions.
@@ -71,7 +71,7 @@ $(document).ready(function () {
     currentUser = deviceListing.data("current-user");
 
     groupName = getParameterByName("groupName");
-    groupOwner = getParameterByName("groupOwner");
+    groupId = getParameterByName("groupId");
 
     /* Adding selected class for selected devices */
     $(deviceCheckbox).each(function () {
@@ -161,9 +161,9 @@ function toTitleCase(str) {
 
 function loadDevices(searchType, searchParam) {
     var serviceURL;
-    if (groupName && groupOwner && permissionsUtil.hasPermission("LIST_OWN_DEVICES")) {
-        serviceURL = "/api/device-mgt/v1.0/groups/owner/" + groupOwner + "/name/" + groupName + "/devices";
-    } else if (permissionsUtil.hasPermission("LIST_DEVICES")) {
+    if (groupName && groupId && $.hasPermission("LIST_OWN_DEVICES")) {
+        serviceURL = "/api/device-mgt/v1.0/groups/id/" + groupId + "/devices";
+    } else if ($.hasPermission("LIST_DEVICES")) {
         serviceURL = "/api/device-mgt/v1.0/devices";
     } else if (permissionsUtil.hasPermission("LIST_OWN_DEVICES")) {
         //Get authenticated users devices
@@ -351,7 +351,7 @@ function loadDevices(searchType, searchParam) {
                             '<span class="hidden-xs hidden-on-grid-view">Analytics</span>';
                     }
 
-                    if (groupingEnabled(deviceType) && (!groupName || !groupOwner)) {
+                    if (!groupName || !groupId) {
                         html +=
                             '<a href="#" data-click-event="remove-form" class="btn padding-reduce-on-grid-view group-device-link" '
                             +
@@ -602,8 +602,8 @@ function attachDeviceEvents() {
                 $("a#group-device-yes-link").show();
                 $("a#group-device-yes-link").click(function () {
                     var selectedGroup = $('#assign-group-selector').val();
-                    serviceURL = "/api/device-mgt/v1.0/groups/id/" + selectedGroup + "/devices";
-                    var deviceIdentifiers = [{"id":deviceId,"type":deviceType}];
+                    serviceURL = "/api/device-mgt/v1.0/groups/id/" + selectedGroup + "/devices/add";
+                    var deviceIdentifiers = [{"id": deviceId, "type": deviceType}];
                     invokerUtil.post(serviceURL, deviceIdentifiers, function (data) {
                         $(modalPopupContent).html($('#group-associate-device-200-content').html());
                         setTimeout(function () {
@@ -646,15 +646,29 @@ function attachDeviceEvents() {
         showPopup();
 
         $("a#remove-device-yes-link").click(function () {
-            invokerUtil.delete(serviceURL, function (message) {
-                $(modalPopupContent).html($('#remove-device-200-content').html());
-                setTimeout(function () {
-                    hidePopup();
-                    location.reload(false);
-                }, 2000);
-            }, function (message) {
-                displayDeviceErrors(jqXHR);
-            });
+            if(groupId && groupName) {
+                var deviceIdentifiers = [{"id": deviceId,"type": deviceType}];
+                serviceURL = "/api/device-mgt/v1.0/groups/id/" + groupId + "/devices/remove";
+                invokerUtil.post(serviceURL, deviceIdentifiers, function (message) {
+                    $(modalPopupContent).html($('#remove-device-from-group-200-content').html());
+                    setTimeout(function () {
+                        hidePopup();
+                        location.reload(false);
+                    }, 2000);
+                }, function (message) {
+                    displayDeviceErrors(message);
+                });
+            } else {
+                invokerUtil.delete(serviceURL, function (message) {
+                    $(modalPopupContent).html($('#remove-device-200-content').html());
+                    setTimeout(function () {
+                        hidePopup();
+                        location.reload(false);
+                    }, 2000);
+                }, function (message) {
+                    displayDeviceErrors(jqXHR);
+                });
+            }
         });
 
         $("a#remove-device-cancel-link").click(function () {

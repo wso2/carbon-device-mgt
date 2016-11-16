@@ -529,7 +529,7 @@ var module = {};
                 if (ssoSession.sessionId) {
                     var ssoSessions = getSsoSessions();
                     ssoSessions[ssoSession.sessionId] = ssoSession;
-                    if (ssoSession.sessionIndex != null || ssoSession.sessionIndex != 'undefined') {
+                    if (ssoSession.sessionIndex) {
                         var carbonUser = (require("carbon")).server.tenantUser(ssoSession.loggedInUser);
                         utils.setCurrentUser(carbonUser.username, carbonUser.domain, carbonUser.tenantId);
                         module.loadTenant(ssoSession.loggedInUser);

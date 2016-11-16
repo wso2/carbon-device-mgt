@@ -606,10 +606,9 @@ var userModule = function () {
      * @returns Array of secondary user stores.
      */
     publicMethods.getSecondaryUserStores = function () {
-        var authModule = require("/lib/modules/auth/auth.js").module;
         var returnVal = [];
         // To call the userstore admin service, user needs to have admin permission
-        if (publicMethods.isAuthorized("/permission/admin") && !authModule.isSsoEnabled()) {
+        if (publicMethods.isAuthorized("/permission/admin")) {
             var endpoint = devicemgtProps["adminService"] + constants["USER_STORE_CONFIG_ADMIN_SERVICE_END_POINT"];
             var wsPayload = "<xsd:getSecondaryRealmConfigurations  xmlns:xsd='http://org.apache.axis2/xsd'/>";
             serviceInvokers.WS.soapRequest(

@@ -73,7 +73,7 @@ var operationModule = function () {
         var features = utility.getDeviceTypeConfig(deviceType).deviceType.features;
         for (var op in operations) {
             var iconIdentifier = operations[op].operation;
-            if (features[iconIdentifier]) {
+            if (features && features[iconIdentifier]) {
                 var icon = features[iconIdentifier].icon;
                 if (icon) {
                     operations[op]["iconFont"] = icon;

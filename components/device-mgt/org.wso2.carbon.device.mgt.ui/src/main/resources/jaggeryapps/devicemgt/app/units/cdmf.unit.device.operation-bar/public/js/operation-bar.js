@@ -59,7 +59,6 @@ function submitForm(formId) {
         contentType = "application/x-www-form-urlencoded";
         payload = uriencodedFormStr;
     }
-    alert(featurePayload);
     //setting responses callbacks
     var defaultStatusClasses = "fw fw-stack-1x";
     var content = $("#operation-response-template").find(".content");

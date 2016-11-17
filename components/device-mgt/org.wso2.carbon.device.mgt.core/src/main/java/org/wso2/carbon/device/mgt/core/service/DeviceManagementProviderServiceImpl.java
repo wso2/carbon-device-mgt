@@ -20,11 +20,16 @@ package org.wso2.carbon.device.mgt.core.service;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.CarbonContext;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.common.*;
 import org.wso2.carbon.device.mgt.common.app.mgt.Application;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.PlatformConfiguration;
 import org.wso2.carbon.device.mgt.common.device.details.DeviceInfo;
 import org.wso2.carbon.device.mgt.common.device.details.DeviceLocation;
+import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroup;
+import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroupConstants;
+import org.wso2.carbon.device.mgt.common.group.mgt.GroupAlreadyExistException;
+import org.wso2.carbon.device.mgt.common.group.mgt.GroupManagementException;
 import org.wso2.carbon.device.mgt.common.license.mgt.License;
 import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManagementException;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Activity;
@@ -130,7 +135,6 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             return false;
         }
         deviceManager.enrollDevice(device);
-
         if (deviceManager.isClaimable(deviceIdentifier)) {
             device.getEnrolmentInfo().setStatus(EnrolmentInfo.Status.INACTIVE);
         } else {
@@ -221,6 +225,9 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             status = true;
         }
 
+        if (status) {
+            addDeviceToGroups(deviceIdentifier, device.getEnrolmentInfo().getOwnership());
+        }
         return status;
     }
 
@@ -1834,4 +1841,67 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         return deviceManagementService.getDeviceManager();
     }
 
+    /**
+     * Adds the enrolled devices to the default groups based on ownership
+     *
+     * @param deviceIdentifier of the device.
+     * @param ownerShip        of the device.
+     * @throws DeviceManagementException If error occurred in adding the device to the group.
+     */
+    private void addDeviceToGroups(DeviceIdentifier deviceIdentifier, EnrolmentInfo.OwnerShip ownerShip)
+            throws DeviceManagementException {
+        GroupManagementProviderService groupManagementProviderService = new GroupManagementProviderServiceImpl();
+        DeviceGroup defaultGroup = null;
+        try {
+            if (ownerShip == EnrolmentInfo.OwnerShip.BYOD) {
+                defaultGroup = createDefaultGroup(groupManagementProviderService,
+                        DeviceGroupConstants.DefaultGroups.BYOD_GROUP_NAME,
+                        DeviceGroupConstants.DefaultGroups.BYOD_GROUP_DESCRIPTION);
+            } else if (ownerShip == EnrolmentInfo.OwnerShip.COPE) {
+                defaultGroup = createDefaultGroup(groupManagementProviderService,
+                        DeviceGroupConstants.DefaultGroups.COPE_GROUP_NAME,
+                        DeviceGroupConstants.DefaultGroups.COPE_GROUP_DESCRIPTION);
+            }
+            if (defaultGroup != null) {
+                groupManagementProviderService.addDevice(defaultGroup.getGroupId(), deviceIdentifier);
+            }
+        } catch (DeviceNotFoundException e) {
+            throw new DeviceManagementException("Unable to find the device with the id: '" + deviceIdentifier.getId(),
+                    e);
+        } catch (GroupManagementException | GroupAlreadyExistException e) {
+            throw new DeviceManagementException("An error occurred when adding the device to the group.", e);
+        }
+    }
+
+    /**
+     * Checks for the default group existence and create group based on device ownership
+     *
+     * @param service          {@link GroupManagementProviderService}
+     * @param groupName        of the group to create.
+     * @param groupDescription of the group to create.
+     * @return Group with details.
+     * @throws GroupManagementException
+     * @throws GroupAlreadyExistException
+     */
+    private DeviceGroup createDefaultGroup(GroupManagementProviderService service, String groupName,
+            String groupDescription) throws GroupManagementException, GroupAlreadyExistException {
+        DeviceGroup defaultGroup = service.getGroup(groupName);
+        if (defaultGroup == null) {
+            defaultGroup = new DeviceGroup(groupName, groupDescription);
+            defaultGroup.setOwner(PrivilegedCarbonContext.getThreadLocalCarbonContext().getUsername());
+            defaultGroup.setDateOfCreation(new Date().getTime());
+            defaultGroup.setDateOfLastUpdate(new Date().getTime());
+            try {
+                service.createGroup(defaultGroup, DeviceGroupConstants.Roles.DEFAULT_ADMIN_ROLE,
+                        DeviceGroupConstants.Permissions.DEFAULT_ADMIN_PERMISSIONS);
+            } catch (GroupAlreadyExistException e) {
+                if (log.isDebugEnabled()) {
+                    log.debug("Default group: " + defaultGroup.getName() + " already exists.", e);
+                }
+            }
+            return service.getGroup(groupName);
+        } else {
+            return defaultGroup;
+        }
+    }
 }

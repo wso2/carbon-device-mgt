@@ -50,10 +50,16 @@ function submitForm(formId) {
     var httpMethod = form.attr("method").toUpperCase();
     var contentType = form.attr("enctype");
     console.log(payload);
-    if (contentType == undefined || contentType.isEmpty()) {
+    var featurePayload = form.attr("data-payload");
+    if (featurePayload) {
+        contentType = "application/json";
+        payload = JSON.parse(atob(featurePayload));
+
+    } else if (contentType == undefined || contentType.isEmpty()) {
         contentType = "application/x-www-form-urlencoded";
         payload = uriencodedFormStr;
     }
+    alert(featurePayload);
     //setting responses callbacks
     var defaultStatusClasses = "fw fw-stack-1x";
     var content = $("#operation-response-template").find(".content");

@@ -15,19 +15,20 @@
   specific language governing permissions and limitations
   under the License.
 }}
-
 {{#zone "content"}}
     {{#if deviceFound}}
         {{#if isAuthorized}}
-            <h1 class="page-sub-title device-id device-select" data-deviceid="{{device.deviceIdentifier}}"
-                data-type="{{device.type}}">
-                Device {{device.name}}
-                {{#if device.viewModel.model}}
-                    <span class="lbl-device">
+            {{#defineZone "device-details-header"}}
+                <h1 class="page-sub-title device-id device-select" data-deviceid="{{device.deviceIdentifier}}"
+                    data-type="{{device.type}}">
+                    Device {{device.name}}
+                    {{#if device.viewModel.model}}
+                        <span class="lbl-device">
                 ( {{device.viewModel.vendor}} {{device.viewModel.model}} )
             </span>
-                {{/if}}
-            </h1>
+                    {{/if}}
+                </h1>
+            {{/defineZone}}
             <div class="row no-gutter add-padding-5x add-margin-top-5x" style="border: 1px solid #e4e4e4;">
                 <div class="media">
                     <div id="device_overview">
@@ -38,10 +39,13 @@
                                 {{/defineZone}}
                             </div>
                         </div>
+
                         <div class="media-body asset-desc add-padding-left-5x">
-                            <div style="background: #11375B; color: #fff; padding: 10px; margin-bottom: 5px">
-                                Device Overview - {{label}}</div>
-                            {{unit "cdmf.unit.device.overview-section" device=device}}
+                            {{#defineZone "overview-section"}}
+                                <div style="background: #11375B; color: #fff; padding: 10px; margin-bottom: 5px">
+                                    Device Overview - {{label}}</div>
+                                {{unit "cdmf.unit.device.overview-section" device=device}}
+                            {{/defineZone}}
                             {{#defineZone "operation-status"}}{{/defineZone}}
                             {{#defineZone "device-opetations"}}
                                 <div style="background: #11375B; color: #fff; padding: 10px; margin-bottom: 5px">
@@ -57,6 +61,7 @@
 
                 {{#defineZone "device-detail-properties"}}
                     <div class="media">
+
                         <div class="media-left col-xs-12 col-sm-2 col-md-2 col-lg-2">
                             <ul class="list-group" role="tablist">
                                 <li class="active"><a class="list-group-item"
@@ -84,6 +89,7 @@
                                                                                    Log</a></li>
                             </ul>
                         </div>
+
                         <div class="media-body add-padding-left-5x remove-padding-xs tab-content">
                             <div class="panel-group tab-content">
 

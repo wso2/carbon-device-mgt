@@ -1,0 +1,15 @@
+{
+    "permissionList":["device-mgt/admin/groups/view",
+        "device-mgt/groups/add",
+        "device-mgt/groups/devices/add",
+        "device-mgt/groups/devices/remove",
+        "device-mgt/groups/devices/view",
+        "device-mgt/groups/remove",
+        "device-mgt/groups/roles/create",
+        "device-mgt/groups/roles/view",
+        "device-mgt/groups/share",
+        "device-mgt/groups/update",
+        "device-mgt/groups/users/view",
+        "device-mgt/groups/view"
+    ]
+}

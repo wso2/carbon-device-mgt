@@ -19,7 +19,6 @@
 var carbonModule = require("carbon");
 var devicemgtProps = require("/app/modules/conf-reader/main.js")["conf"];
 var userModule = require("/app/modules/business-controllers/user.js")["userModule"];
-var utility = require("/app/modules/utility.js")["utility"];
 
 //noinspection JSUnresolvedFunction Server
 var carbonServer = new carbonModule.server.Server({
@@ -29,9 +28,12 @@ var carbonServer = new carbonModule.server.Server({
 
 application.put("carbonServer", carbonServer);
 
-//var permissions = {
-//    "/permission/admin/device-mgt/user": ["ui.execute"],
-//    "/permission/admin/manage/api/subscribe": ["ui.execute"]
-//};
+var permissions = {
+    "/permission/admin/device-mgt/devices": ["ui.execute"],
+    "/permission/admin/device-mgt/groups": ["ui.execute"],
+    "/permission/admin/device-mgt/notifications": ["ui.execute"],
+    "/permission/admin/device-mgt/policies": ["ui.execute"],
+    "/permission/admin/manage/api/subscribe": ["ui.execute"]
+};
 
-//userModule.addRole("internal/devicemgt-user", ["admin"], permissions);
+userModule.addRole("internal/devicemgt-user", ["admin"], permissions);

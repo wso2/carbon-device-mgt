@@ -35,6 +35,7 @@ import org.wso2.carbon.device.mgt.jaxrs.beans.DeviceGroupShare;
 import org.wso2.carbon.device.mgt.jaxrs.beans.DeviceGroupUsersList;
 import org.wso2.carbon.device.mgt.jaxrs.beans.DeviceList;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
+import org.wso2.carbon.device.mgt.jaxrs.beans.RoleInfo;
 
 import javax.validation.Valid;
 import javax.ws.rs.Consumes;
@@ -467,6 +468,65 @@ public interface GroupManagementService {
                                      required = true)
                              @PathParam("groupId") int groupId);
 
+
+    @Path("id/{groupId}/roles/create")
+    @POST
+    @ApiOperation(
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = HTTPConstants.HEADER_GET,
+            value = "Create a group sharing role to a device group.",
+            notes = "Group sharing is done through a group sharing role.",
+            tags = "Device Group Management")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK. \n Successfully created the role.",
+                    response = DeviceGroupUsersList.class,
+                    responseHeaders = {
+                            @ResponseHeader(
+                                    name = "Content-Type",
+                                    description = "The content type of the body"),
+                            @ResponseHeader(
+                                    name = "ETag",
+                                    description = "Entity Tag of the response resource.\n" +
+                                            "Used by caches, or in conditional requests."),
+                            @ResponseHeader(
+                                    name = "Last-Modified",
+                                    description = "Date and time the resource has been modified the last time.\n" +
+                                            "Used by caches, or in conditional requests."),
+                    }),
+            @ApiResponse(
+                    code = 304,
+                    message = "Not Modified. \n Empty body because the client has already the latest version of " +
+                            "the requested resource."),
+            @ApiResponse(
+                    code = 404,
+                    message = "No groups found.",
+                    response = ErrorResponse.class),
+            @ApiResponse(
+                    code = 406,
+                    message = "Not Acceptable.\n The requested media type is not supported."),
+            @ApiResponse(
+                    code = 500,
+                    message = "Internal Server Error. \n Server error occurred while creating the role.",
+                    response = ErrorResponse.class)
+    })
+    @Permission(name = "Create roles", permission = "/device-mgt/groups/roles/create")
+    Response createGroupSharingRole(
+            @ApiParam(
+                    name = "groupId",
+                    value = "ID of the group.",
+                    required = true)
+            @PathParam("groupId") int groupId,
+            @ApiParam(
+                    name = "userName",
+                    value = "User name of the current user.",
+                    required = false)
+            @QueryParam("userName") String userName,
+            @ApiParam(
+                    name = "roleInfo",
+                    value = "Group role information with permissions and users",
+                    required = true)
+            @Valid RoleInfo roleInfo);
+
     @Path("/id/{groupId}/roles")
     @GET
     @ApiOperation(
@@ -621,7 +681,7 @@ public interface GroupManagementService {
                                            required = true)
                                @PathParam("groupId") int groupId);
 
-    @Path("/id/{groupId}/devices")
+    @Path("/id/{groupId}/devices/add")
     @POST
     @ApiOperation(
             produces = MediaType.APPLICATION_JSON,
@@ -672,8 +732,8 @@ public interface GroupManagementService {
                                        required = true)
                                @Valid List<DeviceIdentifier> deviceIdentifiers);
 
-    @Path("/id/{groupId}/devices")
-    @DELETE
+    @Path("/id/{groupId}/devices/remove")
+    @POST
     @ApiOperation(
             produces = MediaType.APPLICATION_JSON,
             httpMethod = HTTPConstants.HEADER_DELETE,

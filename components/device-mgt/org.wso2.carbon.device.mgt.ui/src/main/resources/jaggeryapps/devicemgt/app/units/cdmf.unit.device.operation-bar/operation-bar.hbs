@@ -36,10 +36,14 @@
         </style>
         {{#each control_operations}}
             <a href="javascript:operationSelect('{{operation}}')">
-                {{#if icon}}
-                    <img src="{{@app.context}}/{{icon}}" style="width: 48px;"/>
+                {{#if iconFont}}
+                    <i class="fw {{iconFont}}"></i>
                 {{else}}
-                    <i class="fw fw-service"></i>
+                    {{#if icon}}
+                        <img src="{{@app.context}}/{{icon}}" style="width: 48px;"/>
+                    {{else}}
+                        <i class="fw fw-service"></i>
+                    {{/if}}
                 {{/if}}
                 <span>{{name}}</span>
             </a>
@@ -61,7 +65,8 @@
                                 <br>
                             </h4>
 
-                            <form action="{{@unit.params.backendApiUri}}{{params.0.uri}}" method="{{params.0.method}}" style="padding-bottom: 20px;" id="form-{{operation}}">
+                            <form action="{{params.0.uri}}" method="{{params.0.method}}" style="padding-bottom: 20px;"
+                                  data-payload="{{payload}}" id="form-{{operation}}">
                                 {{#each params.0.pathParams}}
                                     <input type="{{type}}" id="{{name}}" placeholder="{{name}}" class="form-control" data-param-type="path" value="{{value}}" />
                                     <br />

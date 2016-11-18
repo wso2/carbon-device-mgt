@@ -21,6 +21,7 @@ function onRequest(context) {
     var operationModule = require("/app/modules/business-controllers/operation.js")["operationModule"];
     var device = context.unit.params.device;
     var autoCompleteParams = context.unit.params.autoCompleteParams;
+    var encodedFeaturePayloads=context.unit.params.encodedFeaturePayloads;
     var controlOperations = operationModule.getControlOperations(device.type);
     var queryParams = [];
     var formParams = [];
@@ -34,6 +35,9 @@ function onRequest(context) {
             currentParamList[j]["pathParams"] = processParams(currentParam["pathParams"], autoCompleteParams);
         }
         controlOperations[i]["params"] = currentParamList;
+        if (encodedFeaturePayloads) {
+            controlOperations[i]["payload"] = getPayload(encodedFeaturePayloads, controlOperations[i]["operation"]);
+        }
     }
     return {"control_operations": controlOperations, "device": device};
 }
@@ -52,4 +56,9 @@ function processParams(paramsList, autoCompleteParams) {
         paramsList[i] = {"name": paramName, "value": paramValue, "type": paramType};
     }
     return paramsList;
+}
+
+function getPayload(featuresPayload, featureCode){
+    var featuresJSONPayloads = JSON.parse(featuresPayload);
+    return featuresJSONPayloads[featureCode];
 }

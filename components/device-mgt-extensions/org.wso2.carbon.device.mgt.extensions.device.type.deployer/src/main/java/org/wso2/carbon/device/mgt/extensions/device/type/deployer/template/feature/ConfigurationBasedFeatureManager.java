@@ -42,10 +42,6 @@ public class ConfigurationBasedFeatureManager implements FeatureManager {
     private static final String QUERY_PARAMS = "queryParams";
     private static final String FORM_PARAMS = "formParams";
     private static final Pattern PATH_PARAM_REGEX = Pattern.compile("\\{(.*?)\\}");
-    private List<String> pathParams = new ArrayList<>();
-    private List<String> queryParams = new ArrayList<>();
-    private List<String> formParams = new ArrayList<>();
-
 
     public ConfigurationBasedFeatureManager(
             List<org.wso2.carbon.device.mgt.extensions.device.type.deployer.config.Feature> features) {
@@ -59,7 +55,10 @@ public class ConfigurationBasedFeatureManager implements FeatureManager {
                 Map<String, Object> apiParams = new HashMap<>();
                 apiParams.put(METHOD, operation.getMethod().toUpperCase());
                 apiParams.put(URI, operation.getContext());
-                setPathParams(operation.getContext());
+                List<String> pathParams = new ArrayList<>();
+                List<String> queryParams = new ArrayList<>();
+                List<String> formParams = new ArrayList<>();
+                setPathParams(operation.getContext(), pathParams);
                 apiParams.put(PATH_PARAMS, pathParams);
                 if (operation.getQueryParameters() != null) {
                     queryParams = operation.getQueryParameters().getParameter();
@@ -116,7 +115,7 @@ public class ConfigurationBasedFeatureManager implements FeatureManager {
         return false;
     }
 
-    private void setPathParams(String context) {
+    private void setPathParams(String context, List<String> pathParams) {
         Matcher regexMatcher = PATH_PARAM_REGEX.matcher(context);
         while (regexMatcher.find()) {
             pathParams.add(regexMatcher.group(1));

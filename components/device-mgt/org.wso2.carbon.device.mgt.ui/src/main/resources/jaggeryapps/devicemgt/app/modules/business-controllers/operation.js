@@ -45,16 +45,6 @@ var operationModule = function () {
                var feature;
                for (var i = 0; i < features.length; i++) {
                    feature = {};
-                   var analyticStreams = utility.getDeviceTypeConfig(deviceType)["analyticStreams"];
-                   if (analyticStreams) {
-                       for (var stream in analyticStreams) {
-                           if (analyticStreams[stream].name == features[i].name) {
-                               feature.ui_unit = analyticStreams[stream].ui_unit;
-                               break;
-                           }
-                       }
-                   }
-
                    feature["operation"] = features[i].code;
                    feature["name"] = features[i].name;
                    feature["description"] = features[i].description;
@@ -80,10 +70,17 @@ var operationModule = function () {
 
     publicMethods.getControlOperations = function (deviceType) {
         var operations = privateMethods.getOperationsFromFeatures(deviceType, "operation");
+        var features = utility.getDeviceTypeConfig(deviceType).deviceType.features;
         for (var op in operations) {
-            var iconPath = utility.getOperationIcon(deviceType, operations[op].operation);
-            if (iconPath) {
-                operations[op]["icon"] = iconPath;
+            var iconIdentifier = operations[op].operation;
+            if (features && features[iconIdentifier]) {
+                var icon = features[iconIdentifier].icon;
+                if (icon) {
+                    operations[op]["iconFont"] = icon;
+                } else if (iconPath) {
+                    var iconPath = utility.getOperationIcon(deviceType, iconIdentifier);
+                    operations[op]["icon"] = iconPath;
+                }
             }
         }
         return operations;

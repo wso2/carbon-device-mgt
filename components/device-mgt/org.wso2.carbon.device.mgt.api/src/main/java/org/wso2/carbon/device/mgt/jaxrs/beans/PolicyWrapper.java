@@ -29,49 +29,71 @@ import java.util.List;
         + "Wrappers")
 public class PolicyWrapper {
 
-    @ApiModelProperty(name = "policyName", value = "The name of the policy", required = true)
+    @ApiModelProperty(
+            name = "policyName",
+            value = "The name of the policy",
+            required = true)
     @Size(max = 45)
     private String policyName;
 
-    @ApiModelProperty(name = "description", value = "Gives a description on the policy", required = true)
+    @ApiModelProperty(
+            name = "description",
+            value = "Gives a description on the policy",
+            required = true)
     @Size(max = 1000)
     private String description;
 
-    @ApiModelProperty(name = "compliance", value = "Provides the non-compliance rules. WSO2 EMM provides the"
-            + " following non-compliance rules:\n"
+    @ApiModelProperty(
+            name = "compliance",
+            value = "Provides the non-compliance rules. WSO2 EMM provides the following non-compliance rules:\n"
             + "Enforce - Forcefully enforce the policies on the devices\n"
             + "Warning - If the device does not adhere to the given policies a warning message will be sent\n"
             + "Monitor - If the device does not adhere to the given policies the server is notified of the "
             + "violation unknown to the user and the administrator can take the necessary actions with regard"
-            + " to the reported", required = true)
+            + " to the reported",
+            required = true)
     @Size(max = 100)
     private String compliance;
 
-    @ApiModelProperty(name = "ownershipType", value = "The policy ownership type. It can be any of the "
-            + "following values:\n"
+    @ApiModelProperty(
+            name = "ownershipType",
+            value = "The policy ownership type. It can be any of the following values:\n"
             + "ANY - The policy will be applied on the BYOD and COPE device types\n"
             + "BYOD (Bring Your Own Device) - The policy will only be applied on the BYOD device type\n"
             + "COPE (Corporate-Owned, Personally-Enabled) - The policy will only be applied on the COPE "
-            + "device type", required = true)
+            + "device type",
+            required = true)
     @Size(max = 45)
     private String ownershipType;
 
-    @ApiModelProperty(name = "active", value = "If the value is true it indicates that the policy is active. "
-            + "If the value is false it indicates that the policy is inactive", required = true)
+    @ApiModelProperty(
+            name = "active",
+            value = "If the value is true it indicates that the policy is active. If the value is false it "
+                    + "indicates that the policy is inactive",
+            required = true)
     private boolean active;
 
-    @ApiModelProperty(name = "profile", value = "Contains the details of the profile that is included in the"
-            + " policy", required = true)
+    @ApiModelProperty(
+            name = "profile",
+            value = "Contains the details of the profile that is included in the policy",
+            required = true)
     private Profile profile;
 
-    @ApiModelProperty(name = "roles", value = "The roles to whom the policy is applied on", required = true)
+    @ApiModelProperty(
+            name = "roles",
+            value = "The roles to whom the policy is applied on",
+            required = true)
     private List<String> roles;
 
-    @ApiModelProperty(name = "deviceIdentifiers", value = "Lists out the devices the policy is enforced on",
+    @ApiModelProperty(
+            name = "deviceIdentifiers",
+            value = "Lists out the devices the policy is enforced on",
             required = true)
     private List<DeviceIdentifier> deviceIdentifiers;
 
-    @ApiModelProperty(name = "users", value = "Lists out the users on whose devices the policy is enforced",
+    @ApiModelProperty(
+            name = "users",
+            value = "Lists out the users on whose devices the policy is enforced",
             required = true)
     private List<String> users;
 

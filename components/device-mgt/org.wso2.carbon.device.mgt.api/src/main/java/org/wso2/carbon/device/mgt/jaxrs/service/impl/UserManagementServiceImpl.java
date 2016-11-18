@@ -87,6 +87,19 @@ public class UserManagementServiceImpl implements UserManagementService {
             if (log.isDebugEnabled()) {
                 log.debug("User by username: " + userInfo.getUsername() + " was found.");
             }
+
+            DeviceManagementProviderService dms = DeviceMgtAPIUtils.getDeviceManagementService();
+            String[] bits = userInfo.getUsername().split("/");
+            String username = bits[bits.length - 1];
+            String recipient = userInfo.getEmailAddress();
+            Properties props = new Properties();
+            props.setProperty("first-name", userInfo.getFirstname());
+            props.setProperty("username", username);
+            props.setProperty("password", initialUserPassword);
+
+            EmailMetaInfo metaInfo = new EmailMetaInfo(recipient, props);
+            dms.sendRegistrationEmail(metaInfo);
+
             return Response.created(new URI(API_BASE_PATH + "/" + URIEncoder.encode(userInfo.getUsername(), "UTF-8")))
                     .entity(
                     createdUserInfo).build();
@@ -104,6 +117,12 @@ public class UserManagementServiceImpl implements UserManagementService {
                     new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
         } catch (UnsupportedEncodingException e) {
             String msg = "Error occurred while encoding username in the URI for the newly created user " +
+                    userInfo.getUsername();
+            log.error(msg, e);
+            return Response.serverError().entity(
+                    new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
+        } catch (DeviceManagementException e) {
+            String msg = "Error occurred while sending registration email to the user " +
                     userInfo.getUsername();
             log.error(msg, e);
             return Response.serverError().entity(

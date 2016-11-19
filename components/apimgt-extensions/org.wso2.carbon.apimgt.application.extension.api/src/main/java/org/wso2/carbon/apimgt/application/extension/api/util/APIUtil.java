@@ -22,7 +22,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.apimgt.application.extension.APIManagementProviderService;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
+import org.wso2.carbon.device.mgt.common.DeviceManagementException;
+import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.user.core.service.RealmService;
+
+import java.util.List;
 
 /**
  * This class provides utility functions used by REST-API.
@@ -30,6 +34,7 @@ import org.wso2.carbon.user.core.service.RealmService;
 public class APIUtil {
 
     private static Log log = LogFactory.getLog(APIUtil.class);
+    private static final String DEFAULT_CDMF_API_TAG = "device_management";
 
     public static String getAuthenticatedUser() {
         PrivilegedCarbonContext threadLocalCarbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
@@ -69,5 +74,24 @@ public class APIUtil {
             throw new IllegalStateException(msg);
         }
         return realmService;
+    }
+
+    public static DeviceManagementProviderService getDeviceManagementProviderService() {
+        PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        DeviceManagementProviderService deviceManagementProviderService =
+                (DeviceManagementProviderService) ctx.getOSGiService(DeviceManagementProviderService.class, null);
+        if (deviceManagementProviderService == null) {
+            String msg = "Device Management service has not initialized.";
+            log.error(msg);
+            throw new IllegalStateException(msg);
+        }
+        return deviceManagementProviderService;
+    }
+
+    public static List<String> getAllowedApisTags() throws DeviceManagementException {
+        //Todo get allowed cdmf service tags from config.
+        List<String> allowedApisTags = getDeviceManagementProviderService().getAvailableDeviceTypes();
+        allowedApisTags.add(DEFAULT_CDMF_API_TAG);
+        return getAllowedApisTags();
     }
 }

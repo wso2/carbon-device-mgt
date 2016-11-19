@@ -42,20 +42,6 @@ public interface APIManagementProviderService {
             throws APIManagerException;
 
     /**
-     * Generate and retreive application keys. if the application does exist then
-     * create it and subscribe to all apis.
-     *
-     * @param apiApplicationName name of the application.
-     * @param keyType            of the application.
-     * @param username           to whom the application is created
-     * @return consumerkey and secrete of the created application.
-     * @throws APIManagerException
-     */
-    ApiApplicationKey generateAndRetrieveApplicationKeys(String apiApplicationName, String keyType,
-                                                         String username, boolean isAllowedAllDomains)
-            throws APIManagerException;
-
-    /**
      * Register existing Oauth application as apim application.
      */
     void registerExistingOAuthApplicationToAPIApplication(String jsonString, String applicationName, String clientId,

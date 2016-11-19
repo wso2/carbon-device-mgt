@@ -35,10 +35,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.wso2.carbon.devicemgt</groupId>
-            <artifactId>org.wso2.carbon.device.mgt.common</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.wso2.carbon.identity</groupId>
             <artifactId>org.wso2.carbon.identity.oauth</artifactId>
         </dependency>
@@ -54,18 +50,10 @@
             <groupId>org.wso2.carbon.apimgt</groupId>
             <artifactId>org.wso2.carbon.apimgt.keymgt</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.googlecode.json-simple.wso2</groupId>
-            <artifactId>json-simple</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon.identity</groupId>
-            <artifactId>org.wso2.carbon.identity.oauth2.grant.jwt</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon.devicemgt</groupId>
-            <artifactId>org.wso2.carbon.device.mgt.core</artifactId>
-        </dependency>
+		<dependency>
+			<groupId>com.googlecode.json-simple.wso2</groupId>
+			<artifactId>json-simple</artifactId>
+		</dependency>
     </dependencies>
 
     <build>
@@ -94,9 +82,7 @@
                             javax.security.auth.*,
                             org.apache.commons.logging,
                             org.osgi.service.component,
-                            org.wso2.carbon.device.mgt.common.permission.mgt,
                             org.wso2.carbon.device.mgt.oauth.extensions.*,
-                            org.wso2.carbon.device.mgt.*,
                             org.wso2.carbon.identity.application.common.model,
                             org.wso2.carbon.identity.oauth.callback,
                             org.wso2.carbon.identity.oauth2,
@@ -123,10 +109,6 @@
                             org.wso2.carbon.utils.multitenancy,
                             org.wso2.carbon.identity.oauth2.grant.jwt.*,
                             org.wso2.carbon.device.mgt.core.*,
-                            javax.xml.bind,
-                            javax.xml.bind.annotation,
-                            javax.xml.parsers;version="${javax.xml.parsers.import.pkg.version}";resolution:=optional,
-                            org.w3c.dom,
                             org.wso2.carbon.apimgt.keymgt,
                             org.wso2.carbon.apimgt.keymgt.handlers,
                             com.google.gson,

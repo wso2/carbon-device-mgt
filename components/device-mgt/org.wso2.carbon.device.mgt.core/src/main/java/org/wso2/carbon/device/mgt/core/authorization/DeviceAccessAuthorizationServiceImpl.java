@@ -67,7 +67,7 @@ public class DeviceAccessAuthorizationServiceImpl implements DeviceAccessAuthori
             return !DeviceManagementDataHolder.getInstance().requireDeviceAuthorization(deviceIdentifier.getType());
         }
         //check for admin and ownership permissions
-        if (isAdminOrDeviceOwner(username, tenantId, deviceIdentifier)) {
+        if (isAdmin(username, tenantId) || isDeviceOwner(deviceIdentifier, username)) {
             return true;
         }
         //check for group permissions
@@ -127,9 +127,12 @@ public class DeviceAccessAuthorizationServiceImpl implements DeviceAccessAuthori
             return null;
         }
         DeviceAuthorizationResult deviceAuthorizationResult = new DeviceAuthorizationResult();
+        if (isAdmin(username, tenantId)) {
+            deviceAuthorizationResult.setAuthorizedDevices(deviceIdentifiers);
+        }
         for (DeviceIdentifier deviceIdentifier : deviceIdentifiers) {
             //check for admin and ownership permissions
-            if (isAdminOrDeviceOwner(username, tenantId, deviceIdentifier)) {
+            if (isDeviceOwner(deviceIdentifier, username)) {
                 deviceAuthorizationResult.addAuthorizedDevice(deviceIdentifier);
             } else {
                 try {
@@ -179,15 +182,13 @@ public class DeviceAccessAuthorizationServiceImpl implements DeviceAccessAuthori
         return isUserAuthorized(deviceIdentifiers, this.getUserName(), groupPermissions);
     }
 
-    private boolean isAdminOrDeviceOwner(String username, int tenantId, DeviceIdentifier deviceIdentifier)
+    private boolean isAdmin(String username, int tenantId)
             throws DeviceAccessAuthorizationException {
         try {
-            //First Check for admin users. If the user is an admin user we authorize the access to that device.
-            //Secondly Check for device ownership. If the user is the owner of the device we allow the access.
-            return (isAdminUser(username, tenantId) || isDeviceOwner(deviceIdentifier, username));
+            //Check for admin users. If the user is an admin user we authorize the access to that device.
+            return (isAdminUser(username, tenantId));
         } catch (UserStoreException e) {
-            throw new DeviceAccessAuthorizationException("Unable to authorize the access to device : " +
-                                                                 deviceIdentifier.getId() + " for the user : " +
+            throw new DeviceAccessAuthorizationException("Unable to authorize the access for the user : " +
                                                                  username, e);
         }
     }

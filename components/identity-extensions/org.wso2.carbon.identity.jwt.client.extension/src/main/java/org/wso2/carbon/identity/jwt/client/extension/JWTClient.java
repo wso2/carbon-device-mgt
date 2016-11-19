@@ -73,7 +73,9 @@ public class JWTClient {
 			throw new JWTClientException("JWT is not configured properly for user : " + username);
 		}
 		params.add(new BasicNameValuePair(JWTConstants.JWT_PARAM_NAME, assertion));
-		params.add(new BasicNameValuePair(JWTConstants.SCOPE_PARAM_NAME, scopes));
+        if (scopes != null && !scopes.isEmpty()) {
+            params.add(new BasicNameValuePair(JWTConstants.SCOPE_PARAM_NAME, scopes));
+        }
 		return getTokenInfo(params, consumerKey, consumerSecret);
 	}
 
@@ -87,7 +89,9 @@ public class JWTClient {
 			throw new JWTClientException("JWT is not configured properly for user : " + username);
 		}
 		params.add(new BasicNameValuePair(JWTConstants.JWT_PARAM_NAME, assertion));
-		params.add(new BasicNameValuePair(JWTConstants.SCOPE_PARAM_NAME, scopes));
+        if (scopes != null && !scopes.isEmpty()) {
+            params.add(new BasicNameValuePair(JWTConstants.SCOPE_PARAM_NAME, scopes));
+        }
 		if (paramsMap != null) {
 			for (String key : paramsMap.keySet()) {
 				params.add(new BasicNameValuePair(key, paramsMap.get(key)));

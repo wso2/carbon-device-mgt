@@ -156,6 +156,9 @@ public class JWTClient {
 		return new String(Base64.encodeBase64((consumerKey + ":" + consumerSecret).getBytes()));
 	}
 
+	public String getJwtToken(String username) throws JWTClientException {
+		return JWTClientUtil.generateSignedJWTAssertion(username, jwtConfig, isDefaultJWTClient);
+	}
 
 }
 

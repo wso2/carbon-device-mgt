@@ -134,7 +134,8 @@ public class DeviceAccessAuthorizationServiceImpl implements DeviceAccessAuthori
             } else {
                 try {
                     if (groupPermissions == null || groupPermissions.length == 0) {
-                        return null;
+                        deviceAuthorizationResult.setUnauthorizedDevices(deviceIdentifiers);
+                        return deviceAuthorizationResult;
                     }
                     //check for group permissions
                     boolean isAuthorized = true;

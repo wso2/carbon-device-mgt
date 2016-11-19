@@ -109,7 +109,7 @@ var utils = function () {
                     var xhr = new XMLHttpRequest();
                     xhr.open("POST", requestURL, false);
                     xhr.setRequestHeader("Content-Type", "application/json");
-                    xhr.setRequestHeader("Authorization", "Bearer " + jwtToken);
+                    xhr.setRequestHeader("Authorization", "X-JWT-Assertion " + jwtToken);
                     xhr.send();
 
                     if (xhr["status"] == 201 && xhr["responseText"]) {
@@ -288,6 +288,22 @@ var utils = function () {
             // returning access token by JWT grant type
             return jwtClient.getAccessToken(clientAppCredentials["clientId"], clientAppCredentials["clientSecret"],
                 deviceMgtProps["oauthProvider"]["appRegistration"]["owner"], null)["accessToken"];
+        }
+    };
+
+    publicMethods["getJwtToken"] =  function (username) {
+        if (!username) {
+            log.error("{/app/modules/oauth/token-handler-utils.js} Error in retrieving new jwt token");
+            return null;
+        } else {
+            var JWTClientManagerServicePackagePath =
+                "org.wso2.carbon.identity.jwt.client.extension.service.JWTClientManagerService";
+            //noinspection JSUnresolvedFunction, JSUnresolvedVariable
+            var JWTClientManagerService = carbon.server.osgiService(JWTClientManagerServicePackagePath);
+            //noinspection JSUnresolvedFunction
+            var jwtClient = JWTClientManagerService.getJWTClient();
+            // returning access token by JWT grant type
+            return jwtClient.getJwtToken(username);
         }
     };
 

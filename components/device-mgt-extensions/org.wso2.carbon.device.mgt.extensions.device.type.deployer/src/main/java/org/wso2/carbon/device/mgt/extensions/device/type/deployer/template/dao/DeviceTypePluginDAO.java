@@ -228,7 +228,7 @@ public class DeviceTypePluginDAO {
     }
 
     private String getDeviceTableColumnNamesForUpdateQuery() {
-        return StringUtils.join(deviceDAODefinition.getColumnNames(), "= ?,");
+        return StringUtils.join(deviceDAODefinition.getColumnNames(), "= ?,") + "= ?";
     }
 
     private String getPreparedInputString(int length) {

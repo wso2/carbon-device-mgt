@@ -77,6 +77,27 @@ var userModule = function () {
     };
 
     /**
+     * Build default user claims.
+     *
+     * @param firstname First name of the user
+     * @param lastname Last name of the user
+     * @param emailAddress Email address of the user
+     *
+     * @returns {Object} Default user claims to be provided
+     */
+    privateMethods.buildDefaultUserClaims = function (firstname, lastname, emailAddress) {
+        var defaultUserClaims = {
+            "http://wso2.org/claims/givenname": firstname,
+            "http://wso2.org/claims/lastname": lastname,
+            "http://wso2.org/claims/emailaddress": emailAddress
+        };
+        if (log.isDebugEnabled()) {
+            log.debug("ClaimMap created for new user : " + stringify(defaultUserClaims));
+        }
+        return defaultUserClaims;
+    };
+
+    /**
      * Register user to dc-user-store.
      *
      * @param username Username of the user
@@ -512,8 +533,32 @@ var userModule = function () {
         if (publicMethods.isAuthorized("/permission/admin/device-mgt/users/add")) {
             permissions["ADD_USER"] = true;
         }
+        if (publicMethods.isAuthorized("/permission/admin/device-mgt/groups/devices/add")) {
+            permissions["ADD_GROUP_DEVICES"] = true;
+        }
+        if (publicMethods.isAuthorized("/permission/admin/device-mgt/groups/devices/remove")) {
+            permissions["REMOVE_GROUP_DEVICES"] = true;
+        }
+        if (publicMethods.isAuthorized("/permission/admin/device-mgt/groups/devices/view")) {
+            permissions["VIEW_GROUP_DEVICES"] = true;
+        }
+        if (publicMethods.isAuthorized("/permission/admin/device-mgt/groups/roles/create")) {
+            permissions["CREATE_GROUP_ROLES"] = true;
+        }
+        if (publicMethods.isAuthorized("/permission/admin/device-mgt/groups/roles/view")) {
+            permissions["VIEW_GROUP_ROLES"] = true;
+        }
+        if (publicMethods.isAuthorized("/permission/admin/device-mgt/groups/update")) {
+            permissions["UPDATE_GROUP"] = true;
+        }
+        if (publicMethods.isAuthorized("/permission/admin/device-mgt/groups/share")) {
+            permissions["SHARE_GROUP"] = true;
+        }
         if (publicMethods.isAuthorized("/permission/admin/device-mgt/users/remove")) {
             permissions["REMOVE_USER"] = true;
+        }
+        if (publicMethods.isAuthorized("/permission/admin/device-mgt/groups/remove")) {
+            permissions["REMOVE_GROUP"] = true;
         }
         if (publicMethods.isAuthorized("/permission/admin/device-mgt/roles/add")) {
             permissions["ADD_ROLE"] = true;
@@ -535,6 +580,30 @@ var userModule = function () {
         }
 
         return permissions;
+    };
+
+    /**
+     * Add new role with permissions.
+     *
+     * @param roleName    Name of the role
+     * @param users       List of users to assign the role
+     * @param permissions List of permissions
+     */
+    publicMethods.addRole = function (roleName, users, permissions) {
+        var carbon = require('carbon');
+        var tenantId = carbon.server.tenantId();
+        var url = carbon.server.address('https') + "/admin/services";
+        var server = new carbon.server.Server(url);
+        var userManager = new carbon.user.UserManager(server, tenantId);
+        try {
+            if (!userManager.roleExists(roleName)) {
+                userManager.addRole(roleName, users, permissions);
+            } else {
+                log.info("Role exist with name: " + roleName);
+            }
+        } catch (e) {
+            throw e;
+        }
     };
 
     publicMethods.addPermissions = function (permissionList, path, init) {

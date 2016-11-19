@@ -360,6 +360,25 @@ public class UserManagementServiceImpl implements UserManagementService {
     }
 
     @GET
+    @Path("/checkUser")
+    @Override public Response isUserExists(@QueryParam("username") String userName) {
+        try {
+            UserStoreManager userStoreManager = DeviceMgtAPIUtils.getUserStoreManager();
+            boolean userExists = false;
+            if (userStoreManager.isExistingUser(userName)) {
+                userExists = true;
+                return Response.status(Response.Status.OK).entity(userExists).build();
+            } else {
+                return Response.status(Response.Status.OK).entity(userExists).build();
+            }
+        } catch (UserStoreException e) {
+            String msg = "Error while retrieving the user.";
+            log.error(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+        }
+    }
+
+    @GET
     @Path("/search/usernames")
     @Override
     public Response getUserNames(@QueryParam("filter") String filter, @QueryParam("domain") String domain,

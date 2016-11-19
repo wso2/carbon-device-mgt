@@ -190,21 +190,39 @@
                 {{/if}}
 
                 <div id="group-device-modal-content" class="hide">
-                    <div class="modal-content">
-                        <div class="row">
-                            <div class="col-md-3 col-centered">
-                                <h3>Please select group</h3>
+                    <div class="modal-header">
+                        <h3 class="pull-left modal-title">
+                            <span>
+                                <span class="fw-stack">
+                                    <i class="fw fw-ring fw-stack-2x"></i>
+                                    <i class="fw fw-grouping fw-stack-1x"></i>
+                                </span> Device Grouping
+                            </span>
+                        </h3>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i
+                                class="fw fw-cancel"></i></button>
+                    </div>
+                    <div class="modal-body add-margin-top-2x add-margin-bottom-2x">
+                        <div id="notification-error-msg" class="alert alert-danger hidden" role="alert">
+                            <i class="icon fw fw-error"></i><span></span>
+                        </div>
+                        <div>
+                            <h4>
+                                Please select group
+                                <br>
                                 <div id="user-groups">Loading...</div>
-                                <div class="buttons">
-                                    <a href="#" id="group-device-yes-link" class="btn-operations">
-                                        Assign
-                                    </a>
+                            </h4>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="buttons">
+                            <a href="#" id="group-device-yes-link" class="btn-operations">
+                                Assign
+                            </a>
 
-                                    <a href="#" id="group-device-cancel-link" class="btn-operations btn-default">
-                                        Cancel
-                                    </a>
-                                </div>
-                            </div>
+                            <a href="#" id="group-device-cancel-link" class="btn-operations btn-default">
+                                Cancel
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -258,6 +276,25 @@
                     <div class="modal-header">
                         <h3 class="pull-left modal-title">
                             Device was successfully removed.
+                        </h3>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i
+                                class="fw fw-cancel"></i>
+                        </button>
+                    </div>
+                    <div class="modal-body add-margin-top-2x add-margin-bottom-2x">
+
+                    </div>
+                    <div class="modal-footer">
+                        <div class="buttons">
+                            <a href="javascript:hidePopup()" class="btn-operations">Ok</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="remove-device-from-group-200-content" class="hide">
+                    <div class="modal-header">
+                        <h3 class="pull-left modal-title">
+                            Device was successfully removed from group.
                         </h3>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i
                                 class="fw fw-cancel"></i>

@@ -409,6 +409,40 @@ public interface UserManagementService {
     Response getUserCount();
 
     @GET
+    @Path("/checkUser")
+    @ApiOperation(
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "GET",
+            value = "Getting the User existence status",
+            notes = "Check if the user exists in the user store.",
+            tags = "User Management")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    code = 200,
+                    message = "OK. \n Successfully fetched user exist status.",
+                    response = BasicUserInfoList.class,
+                    responseHeaders = {
+                            @ResponseHeader(
+                                    name = "Content-Type",
+                                    description = "The content type of the body")
+                    }),
+            @ApiResponse(
+                    code = 406,
+                    message = "Not Acceptable.\n The requested media type is not supported",
+                    response = ErrorResponse.class),
+            @ApiResponse(
+                    code = 500,
+                    message = "Internal Server Error. \n Server error occurred while fetching the total user exist status.",
+                    response = ErrorResponse.class)
+    })
+    @Permission(name = "View Users", permission = "/device-mgt/users/view")
+    Response isUserExists(@ApiParam(
+                    name = "username",
+                    value = "The username of the user.",
+                    required = true)
+            @QueryParam("username") String userName);
+
+    @GET
     @Path("/search/usernames")
     @ApiOperation(
             produces = MediaType.APPLICATION_JSON,

@@ -18,9 +18,19 @@
  */
 package org.wso2.carbon.device.mgt.jaxrs.service.api;
 
-import io.swagger.annotations.*;
-import org.wso2.carbon.apimgt.annotations.api.API;
-import org.wso2.carbon.apimgt.annotations.api.Permission;
+import io.swagger.annotations.SwaggerDefinition;
+import io.swagger.annotations.Info;
+import io.swagger.annotations.ExtensionProperty;
+import io.swagger.annotations.Extension;
+import io.swagger.annotations.Tag;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.AuthorizationScope;
+import io.swagger.annotations.Authorization;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.ResponseHeader;
 import org.wso2.carbon.device.mgt.jaxrs.beans.*;
 
 import javax.ws.rs.*;
@@ -28,9 +38,21 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
 
-
-@API(name = "UserManagement", version = "1.0.0", context = "/api/device-mgt/v1.0/users", tags = {"device_management"})
-
+@SwaggerDefinition(
+        info = @Info(
+                version = "1.0.0",
+                title = "",
+                extensions = {
+                        @Extension(properties = {
+                                @ExtensionProperty(name = "name", value = "UserManagement"),
+                                @ExtensionProperty(name = "context", value = "/api/device-mgt/v1.0/users"),
+                        })
+                }
+        ),
+        tags = {
+                @Tag(name = "device_management", description = "")
+        }
+)
 @Path("/users")
 @Api(value = "User Management", description = "User management related operations can be found here.")
 @Produces(MediaType.APPLICATION_JSON)
@@ -44,7 +66,15 @@ public interface UserManagementService {
             httpMethod = "POST",
             value = "Adding a User",
             notes = "WSO2 EMM supports user management. Add a new user to the WSO2 EMM user management system via this REST API",
-            tags = "User Management")
+            tags = "User Management",
+            authorizations = {
+                    @Authorization(
+                            value="permission",
+                            scopes = { @AuthorizationScope(scope = "/device-mgt/users/manage",
+                                    description = "Manage Users") }
+                    )
+            }
+    )
     @ApiResponses(
             value = {
                     @ApiResponse(
@@ -83,7 +113,6 @@ public interface UserManagementService {
                             message = "Internal Server Error. \n Server error occurred while adding a new user.",
                             response = ErrorResponse.class)
             })
-    @Permission(name = "Manage Users", permission = "/device-mgt/users/manage")
     Response addUser(
             @ApiParam(
                     name = "user",
@@ -99,7 +128,15 @@ public interface UserManagementService {
             value = "Getting Details of a User",
             notes = "Get the details of a user registered with WSO2 EMM using the REST API.",
             response = BasicUserInfo.class,
-            tags = "User Management")
+            tags = "User Management",
+            authorizations = {
+                    @Authorization(
+                            value="permission",
+                            scopes = { @AuthorizationScope(scope = "/device-mgt/users/view",
+                                    description = "View Users") }
+                    )
+            }
+    )
     @ApiResponses(value = {
             @ApiResponse(
                     code = 200,
@@ -135,7 +172,6 @@ public interface UserManagementService {
                             " fetching the ruser details.",
                     response = ErrorResponse.class)
     })
-    @Permission(name = "View Users", permission = "/device-mgt/users/view")
     Response getUser(
             @ApiParam(
                     name = "username",
@@ -165,7 +201,15 @@ public interface UserManagementService {
             value = "Updating Details of a User",
             notes = "There will be situations where you will want to update the user details. In such "
                     + "situation you can update the user details using this REST API.",
-            tags = "User Management")
+            tags = "User Management",
+            authorizations = {
+                    @Authorization(
+                            value="permission",
+                            scopes = { @AuthorizationScope(scope = "/device-mgt/users/manage",
+                                    description = "Manage Users") }
+                    )
+            }
+    )
     @ApiResponses(value = {
             @ApiResponse(
                     code = 200,
@@ -200,7 +244,6 @@ public interface UserManagementService {
                             "Server error occurred while updating the user.",
                     response = ErrorResponse.class)
     })
-    @Permission(name = "Manage Users", permission = "/device-mgt/users/manage")
     Response updateUser(
             @ApiParam(
                     name = "username",
@@ -225,7 +268,15 @@ public interface UserManagementService {
             httpMethod = "DELETE",
             value = "Deleting a User",
             notes = "When an employee leaves the organization, you can remove the user details from WSO2 EMM using this REST API.",
-            tags = "User Management")
+            tags = "User Management",
+            authorizations = {
+                    @Authorization(
+                            value="permission",
+                            scopes = { @AuthorizationScope(scope = "/device-mgt/users/manage",
+                                    description = "Manage Users") }
+                    )
+            }
+    )
     @ApiResponses(value = {
             @ApiResponse(
                     code = 200,
@@ -241,7 +292,6 @@ public interface UserManagementService {
                     response = ErrorResponse.class
             )
     })
-    @Permission(name = "Manage Users", permission = "/device-mgt/users/manage")
     Response removeUser(
             @ApiParam(
                     name = "username",
@@ -263,7 +313,15 @@ public interface UserManagementService {
             httpMethod = "GET",
             value = "Getting the Role Details of a User",
             notes = "A user can be assigned to one or more role in EMM. Using this REST API you can get the role/roles a user is assigned to.",
-            tags = "User Management")
+            tags = "User Management",
+            authorizations = {
+                    @Authorization(
+                            value="permission",
+                            scopes = { @AuthorizationScope(scope = "/device-mgt/users/view",
+                                    description = "View Users") }
+                    )
+            }
+    )
     @ApiResponses(value = {
             @ApiResponse(
                     code = 200,
@@ -299,7 +357,6 @@ public interface UserManagementService {
                             " assigned to the specified user.",
                     response = ErrorResponse.class)
     })
-    @Permission(name = "View Users", permission = "/device-mgt/users/view")
     Response getRolesOfUser(
             @ApiParam(
                     name = "username",
@@ -320,7 +377,15 @@ public interface UserManagementService {
             value = "Getting Details of Users",
             notes = "You are able to manage users in WSO2 EMM by adding, updating and removing users. If you wish to get the list of users registered with WSO2 EMM, you can do so "
                     + "using this REST API",
-            tags = "User Management")
+            tags = "User Management",
+            authorizations = {
+                    @Authorization(
+                            value="permission",
+                            scopes = { @AuthorizationScope(scope = "/device-mgt/users/view",
+                                    description = "View Users") }
+                    )
+            }
+    )
     @ApiResponses(value = {
             @ApiResponse(
                     code = 200,
@@ -341,7 +406,8 @@ public interface UserManagementService {
                     }),
             @ApiResponse(
                     code = 304,
-                    message = "Not Modified. \n Empty body because the client already has the latest version of the requested resource.\n"),
+                    message = "Not Modified. \n Empty body because the client already has the latest version of " +
+                            "the requested resource.\n"),
             @ApiResponse(
                     code = 406,
                     message = "Not Acceptable.\n The requested media type is not supported",
@@ -351,7 +417,6 @@ public interface UserManagementService {
                     message = "Internal Server Error. \n Server error occurred while fetching the list of WSO2 EMM users.",
                     response = ErrorResponse.class)
     })
-    @Permission(name = "View Users", permission = "/device-mgt/users/view")
     Response getUsers(
             @ApiParam(
                     name = "filter",
@@ -385,7 +450,14 @@ public interface UserManagementService {
             httpMethod = "GET",
             value = "Getting the User Count",
             notes = "Get the number of users in WSO2 EMM via this REST API.",
-            tags = "User Management")
+            tags = "User Management",
+            authorizations = {
+                    @Authorization(
+                            value="permission",
+                            scopes = { @AuthorizationScope(scope = "/device-mgt/users/view", description = "View Users") }
+                    )
+            }
+    )
     @ApiResponses(value = {
             @ApiResponse(
                     code = 200,
@@ -405,7 +477,6 @@ public interface UserManagementService {
                     message = "Internal Server Error. \n Server error occurred while fetching the total number of users in WSO2 EMM.",
                     response = ErrorResponse.class)
     })
-    @Permission(name = "View Users", permission = "/device-mgt/users/view")
     Response getUserCount();
 
     @GET
@@ -415,7 +486,15 @@ public interface UserManagementService {
             httpMethod = "GET",
             value = "Getting the User existence status",
             notes = "Check if the user exists in the user store.",
-            tags = "User Management")
+            tags = "User Management",
+            authorizations = {
+                    @Authorization(
+                            value="permission",
+                            scopes = { @AuthorizationScope(scope = "/device-mgt/users/view",
+                                    description = "View Users") }
+                    )
+            }
+    )
     @ApiResponses(value = {
             @ApiResponse(
                     code = 200,
@@ -432,10 +511,10 @@ public interface UserManagementService {
                     response = ErrorResponse.class),
             @ApiResponse(
                     code = 500,
-                    message = "Internal Server Error. \n Server error occurred while fetching the total user exist status.",
+                    message = "Internal Server Error. \n Server error occurred while fetching the " +
+                            "total user exist status.",
                     response = ErrorResponse.class)
     })
-    @Permission(name = "View Users", permission = "/device-mgt/users/view")
     Response isUserExists(@ApiParam(
                     name = "username",
                     value = "The username of the user.",
@@ -452,7 +531,14 @@ public interface UserManagementService {
                     + "search for that user by giving a character or a few characters in the username. "
                     + "You will be given a list of users having the user name in the exact order of the "
                     + "characters you provided.",
-            tags = "User Management")
+            tags = "User Management",
+            authorizations = {
+                    @Authorization(
+                            value="permission",
+                            scopes = { @AuthorizationScope(scope = "/device-mgt/users/view", description = "View Users") }
+                    )
+            }
+    )
     @ApiResponses(value = {
             @ApiResponse(
                     code = 200,
@@ -484,7 +570,6 @@ public interface UserManagementService {
                     message = "Internal Server Error. \n Server error occurred while fetching the list of users that matched the given filter.",
                     response = ErrorResponse.class)
     })
-    @Permission(name = "View Users", permission = "/device-mgt/users/view")
     Response getUserNames(
             @ApiParam(
                     name = "filter",
@@ -524,7 +609,14 @@ public interface UserManagementService {
             httpMethod = "PUT",
             value = "Changing the User Password",
             notes = "A user is able to change the password to secure their WSO2 EMM profile via this REST API.",
-            tags = "User Management")
+            tags = "User Management",
+            authorizations = {
+                    @Authorization(
+                            value="permission",
+                            scopes = { @AuthorizationScope(scope = "/login", description = "Reset user password") }
+                    )
+            }
+    )
     @ApiResponses(value = {
             @ApiResponse(
                     code = 200,
@@ -547,7 +639,6 @@ public interface UserManagementService {
                             "Server error occurred while updating the user credentials.",
                     response = ErrorResponse.class)
     })
-    @Permission(name = "Reset user password", permission = "/login")
     Response resetPassword(
             @ApiParam(
                     name = "credentials",
@@ -564,7 +655,14 @@ public interface UserManagementService {
             value = "Sending Enrollment Invitations to Users",
             notes = "Send the users a mail inviting them to download the EMM mobile application on their devices using the REST API given below.\n" +
                     "Before running the REST API command to send the enrollment invitations to users make sure to configure WSO2 EMM as explained in step 4, under the WSO2 EMM general server configurations documentation.",
-            tags = "User Management")
+            tags = "User Management",
+            authorizations = {
+                    @Authorization(
+                            value="permission",
+                            scopes = { @AuthorizationScope(scope = "/device-mgt/users/manage", description = "Manage Users") }
+                    )
+            }
+    )
     @ApiResponses(value = {
             @ApiResponse(
                     code = 200,
@@ -587,7 +685,6 @@ public interface UserManagementService {
                             "Server error occurred while updating the user credentials.",
                     response = ErrorResponse.class)
     })
-    @Permission(name = "Manage Users", permission = "/device-mgt/users/manage")
     Response inviteExistingUsersToEnrollDevice(
             @ApiParam(
                     name = "users",

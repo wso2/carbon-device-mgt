@@ -19,28 +19,42 @@
 
 package org.wso2.carbon.device.mgt.jaxrs.service.api.admin;
 
+import io.swagger.annotations.SwaggerDefinition;
+import io.swagger.annotations.Info;
+import io.swagger.annotations.ExtensionProperty;
+import io.swagger.annotations.Extension;
+import io.swagger.annotations.Tag;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.AuthorizationScope;
+import io.swagger.annotations.Authorization;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import io.swagger.annotations.ResponseHeader;
 import org.apache.axis2.transport.http.HTTPConstants;
-import org.wso2.carbon.apimgt.annotations.api.API;
-import org.wso2.carbon.apimgt.annotations.api.Permission;
 import org.wso2.carbon.device.mgt.jaxrs.beans.DeviceGroupList;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-@API(name = "GroupManagementAdmin", version = "1.0.0", context = "/api/device-mgt/v1.0/admin/groups", tags = {"device_management"})
-
+@SwaggerDefinition(
+        info = @Info(
+                version = "1.0.0",
+                title = "",
+                extensions = {
+                        @Extension(properties = {
+                                @ExtensionProperty(name = "name", value = "GroupManagementAdmin"),
+                                @ExtensionProperty(name = "context", value = "/api/device-mgt/v1.0/admin/groups"),
+                        })
+                }
+        ),
+        tags = {
+                @Tag(name = "device_management", description = "")
+        }
+)
 @Path("/admin/groups")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
@@ -55,7 +69,15 @@ public interface GroupManagementAdminService {
             httpMethod = HTTPConstants.HEADER_GET,
             value = "Get the list of groups.",
             notes = "Returns all groups enrolled with the system.",
-            tags = "Device Group Management")
+            tags = "Device Group Management",
+            authorizations = {
+                    @Authorization(
+                            value="permission",
+                            scopes = { @AuthorizationScope(scope = "/device-mgt/admin/groups/view", description
+                                    = "View Groups") }
+                    )
+            }
+    )
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK. \n Successfully fetched the list of device groups.",
                     response = DeviceGroupList.class,
@@ -88,7 +110,6 @@ public interface GroupManagementAdminService {
                     message = "Internal Server Error. \n Server error occurred while fetching the groups list.",
                     response = ErrorResponse.class)
     })
-    @Permission(name = "View Groups", permission = "/device-mgt/admin/groups/view")
     Response getGroups(@ApiParam(
                                name = "name",
                                value = "Name of the group.")
@@ -113,7 +134,15 @@ public interface GroupManagementAdminService {
             httpMethod = HTTPConstants.HEADER_GET,
             value = "Get the count of groups belongs to current user.",
             notes = "Returns count of all permitted groups enrolled with the system.",
-            tags = "Device Group Management")
+            tags = "Device Group Management",
+            authorizations = {
+                    @Authorization(
+                            value="permission",
+                            scopes = { @AuthorizationScope(scope = "/device-mgt/admin/groups/view", description
+                                    = "View Groups") }
+                    )
+            }
+    )
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK. \n Successfully fetched the device group count.",
                     response = DeviceGroupList.class,
@@ -146,7 +175,6 @@ public interface GroupManagementAdminService {
                     message = "Internal Server Error. \n Server error occurred while fetching the group count.",
                     response = ErrorResponse.class)
     })
-    @Permission(name = "View Groups", permission = "/device-mgt/admin/groups/view")
     Response getGroupCount();
 
 }

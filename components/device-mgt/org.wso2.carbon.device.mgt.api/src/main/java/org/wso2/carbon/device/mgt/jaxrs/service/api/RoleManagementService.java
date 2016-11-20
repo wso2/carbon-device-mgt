@@ -18,13 +18,22 @@
  */
 package org.wso2.carbon.device.mgt.jaxrs.service.api;
 
-import io.swagger.annotations.*;
-import org.wso2.carbon.apimgt.annotations.api.API;
-import org.wso2.carbon.apimgt.annotations.api.Permission;
+import io.swagger.annotations.SwaggerDefinition;
+import io.swagger.annotations.Info;
+import io.swagger.annotations.ExtensionProperty;
+import io.swagger.annotations.Extension;
+import io.swagger.annotations.Tag;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.AuthorizationScope;
+import io.swagger.annotations.Authorization;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.ResponseHeader;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
 import org.wso2.carbon.device.mgt.jaxrs.beans.RoleInfo;
 import org.wso2.carbon.device.mgt.jaxrs.beans.RoleList;
-import org.wso2.carbon.device.mgt.jaxrs.beans.Scope;
 import org.wso2.carbon.user.mgt.common.UIPermissionNode;
 
 import javax.ws.rs.*;
@@ -32,8 +41,21 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
 
-@API(name = "RoleManagement", version = "1.0.0", context = "/api/device-mgt/v1.0/roles", tags = {"device_management"})
-
+@SwaggerDefinition(
+        info = @Info(
+                version = "1.0.0",
+                title = "",
+                extensions = {
+                        @Extension(properties = {
+                                @ExtensionProperty(name = "name", value = "RoleManagement"),
+                                @ExtensionProperty(name = "context", value = "/api/device-mgt/v1.0/roles"),
+                        })
+                }
+        ),
+        tags = {
+                @Tag(name = "device_management", description = "")
+        }
+)
 @Path("/roles")
 @Api(value = "Role Management", description = "Role management related operations can be found here.")
 @Produces(MediaType.APPLICATION_JSON)
@@ -47,7 +69,14 @@ public interface RoleManagementService {
             value = "Getting the List of Roles",
             notes = "WSO2 EMM supports role-based access control (RBAC) and role management. Using this API you can the list of roles that are in WSO2 EMM.\n" +
                     "Note: Internal roles, roles created for service-providers, and application related roles will not be given in the output.",
-            tags = "Role Management")
+            tags = "Role Management",
+            authorizations = {
+                    @Authorization(
+                            value="permission",
+                            scopes = { @AuthorizationScope(scope = "/device-mgt/roles/view", description = "View Roles") }
+                    )
+            }
+    )
     @ApiResponses(
             value = {
                     @ApiResponse(
@@ -78,7 +107,6 @@ public interface RoleManagementService {
                             message = "Internal Server Error. \n Server error occurred while fetching list of roles.",
                             response = ErrorResponse.class)
             })
-    @Permission(name = "View Roles", permission = "/device-mgt/roles/view")
     Response getRoles(
             @ApiParam(
                     name = "filter",
@@ -122,7 +150,13 @@ public interface RoleManagementService {
                     "so using this REST API.",
             response = UIPermissionNode.class,
             responseContainer = "List",
-            tags = "Role Management"
+            tags = "Role Management",
+            authorizations = {
+                    @Authorization(
+                            value="permission",
+                            scopes = { @AuthorizationScope(scope = "/device-mgt/roles/view", description = "View Roles") }
+                    )
+            }
     )
     @ApiResponses(
             value = {
@@ -164,7 +198,6 @@ public interface RoleManagementService {
                             message = "Internal Server ErrorResponse. \n Server error occurred while fetching the permission list for the requested role.",
                             response = ErrorResponse.class)
             })
-    @Permission(name = "View Roles", permission = "/device-mgt/roles/view")
     Response getPermissionsOfRole(
             @ApiParam(
                     name = "roleName",
@@ -193,7 +226,15 @@ public interface RoleManagementService {
             value = "Getting Details of a Role",
             notes = "Get the permissions associated with a role and role specific details using this REST API.",
             response = RoleInfo.class,
-            tags = "Role Management")
+            tags = "Role Management",
+            authorizations = {
+                    @Authorization(
+                            value="permission",
+                            scopes = { @AuthorizationScope(scope = "/device-mgt/roles/view",
+                                    description = "View Roles") }
+                    )
+            }
+    )
     @ApiResponses(
             value = {
                     @ApiResponse(
@@ -234,7 +275,6 @@ public interface RoleManagementService {
                                     "requested role.",
                             response = ErrorResponse.class)
     })
-    @Permission(name = "View Roles", permission = "/device-mgt/roles/view")
     Response getRole(
             @ApiParam(
                     name = "roleName",
@@ -262,7 +302,15 @@ public interface RoleManagementService {
             httpMethod = "POST",
             value = "Adding a Role",
             notes = "WSO2 EMM supports role-based access control (RBAC) and role management. Add a new role to WSO2 EMM using this REST API.",
-            tags = "Role Management")
+            tags = "Role Management",
+            authorizations = {
+                    @Authorization(
+                            value="permission",
+                            scopes = { @AuthorizationScope(scope = "/device-mgt/roles/manage",
+                                    description = "Manage Roles") }
+                    )
+            }
+    )
     @ApiResponses(value = {
             @ApiResponse(
                     code = 201,
@@ -302,7 +350,6 @@ public interface RoleManagementService {
                     message = "Internal Server Error. \n Server error occurred while adding a new role.",
                     response = ErrorResponse.class)
     })
-    @Permission(name = "Manage Roles", permission = "/device-mgt/roles/manage")
     Response addRole(
             @ApiParam(
                     name = "role",
@@ -318,7 +365,15 @@ public interface RoleManagementService {
             value = "Updating Role Details",
             notes = "There will be situations where you need to update the role details, such as the permissions" +
                     " or the role name. Update the role details using this REST API.",
-            tags = "Role Management")
+            tags = "Role Management",
+            authorizations = {
+                    @Authorization(
+                            value="permission",
+                            scopes = { @AuthorizationScope(scope = "/device-mgt/roles/manage",
+                                    description = "Manage Roles") }
+                    )
+            }
+    )
     @ApiResponses(value = {
             @ApiResponse(
                     code = 200,
@@ -352,7 +407,6 @@ public interface RoleManagementService {
                     message = "Internal Server Error. \n Server error occurred while updating the role.",
                     response = ErrorResponse.class)
     })
-    @Permission(name = "Manage Roles", permission = "/device-mgt/roles/manage")
     Response updateRole(
             @ApiParam(
                     name = "roleName",
@@ -379,7 +433,15 @@ public interface RoleManagementService {
             value = "Deleting a Role",
             notes = "Roles become obsolete over time due to various reasons. In a situation where your Organization identifies that a specific role is no longer required, you " +
                     "can delete a role using this REST API.",
-            tags = "Role Management")
+            tags = "Role Management",
+            authorizations = {
+                    @Authorization(
+                            value="permission",
+                            scopes = { @AuthorizationScope(scope = "/device-mgt/roles/manage",
+                                    description = "Manage Roles") }
+                    )
+            }
+    )
     @ApiResponses(value = {
             @ApiResponse(
                     code = 200,
@@ -397,7 +459,6 @@ public interface RoleManagementService {
                     message = "Internal Server Error. \n Server error occurred while removing the role.",
                     response = ErrorResponse.class)
     })
-    @Permission(name = "Manage Roles", permission = "/device-mgt/roles/manage")
     Response deleteRole(
             @ApiParam(
                     name = "roleName",
@@ -424,7 +485,15 @@ public interface RoleManagementService {
                     "Example: Your Organization hires 30 new engineers. Updating the role details for each user can " +
                     "be cumbersome. Therefore, you can define all the new employees that belong to the engineering " +
                     "role using this API.",
-            tags = "Role Management")
+            tags = "Role Management",
+            authorizations = {
+                    @Authorization(
+                            value="permission",
+                            scopes = { @AuthorizationScope(scope = "/device-mgt/roles/manage",
+                                    description = "Manage Roles") }
+                    )
+            }
+    )
     @ApiResponses(
             value = {
                     @ApiResponse(
@@ -461,7 +530,6 @@ public interface RoleManagementService {
                                     "Server error occurred while adding the user to the specified role.",
                             response = ErrorResponse.class)
     })
-    @Permission(name = "Manage Roles", permission = "/device-mgt/roles/manage")
     Response updateUsersOfRole(
             @ApiParam(
                     name = "roleName",

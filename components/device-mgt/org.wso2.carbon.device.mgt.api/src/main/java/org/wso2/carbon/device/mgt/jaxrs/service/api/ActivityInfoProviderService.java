@@ -18,9 +18,19 @@
  */
 package org.wso2.carbon.device.mgt.jaxrs.service.api;
 
-import io.swagger.annotations.*;
-import org.wso2.carbon.apimgt.annotations.api.API;
-import org.wso2.carbon.apimgt.annotations.api.Permission;
+import io.swagger.annotations.SwaggerDefinition;
+import io.swagger.annotations.Info;
+import io.swagger.annotations.ExtensionProperty;
+import io.swagger.annotations.Extension;
+import io.swagger.annotations.Tag;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.AuthorizationScope;
+import io.swagger.annotations.Authorization;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.ResponseHeader;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Activity;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ActivityList;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
@@ -33,11 +43,24 @@ import javax.ws.rs.core.Response;
 /**
  * Activity related REST-API implementation.
  */
-@API(name = "ActivityInfoProvider", version = "1.0.0", context = "/api/device-mgt/v1.0/activities", tags = {"device_management"})
-
+@SwaggerDefinition(
+        info = @Info(
+                version = "1.0.0",
+                title = "",
+                extensions = {
+                        @Extension(properties = {
+                                @ExtensionProperty(name = "name", value = "ActivityInfoProvider"),
+                                @ExtensionProperty(name = "context", value = "/api/device-mgt/v1.0/activities"),
+                        })
+                }
+        ),
+        tags = {
+                @Tag(name = "device_management", description = "")
+        }
+)
 @Path("/activities")
-@Api(value = "Activity Info Provider", description = "Activity related information manipulation. For example operation details " +
-        "and responses from devices.")
+@Api(value = "Activity Info Provider", description = "Activity related information manipulation. For example" +
+        " operation details and responses from devices.")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public interface ActivityInfoProviderService {
@@ -48,9 +71,17 @@ public interface ActivityInfoProviderService {
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
             value = "Getting Details of an Activity",
-            notes = "Retrieve the details of a specific activity/operation, such as the meta information of an operation, " +
-                    "including the responses from the devices.",
-            tags = "Activity Info Provider")
+            notes = "Retrieve the details of a specific activity/operation, such as the meta information of " +
+                    "an operation, including the responses from the devices.",
+            tags = "Activity Info Provider",
+            authorizations = {
+                    @Authorization(
+                            value="permission",
+                            scopes = { @AuthorizationScope(scope = "/device-mgt/devices/owning-device/view"
+                                    , description = "View Activities") }
+                    )
+            }
+    )
     @ApiResponses(value = {
             @ApiResponse(
                     code = 200,
@@ -71,7 +102,8 @@ public interface ActivityInfoProviderService {
                     }),
             @ApiResponse(
                     code = 304,
-                    message = "Not Modified. \n Empty body because the client already has the latest version of the requested resource."),
+                    message = "Not Modified. \n Empty body because the client already has the latest version of " +
+                            "the requested resource."),
             @ApiResponse(
                     code = 400,
                     message = "Bad Request. \n Invalid request or validation error.",
@@ -91,7 +123,6 @@ public interface ActivityInfoProviderService {
                     message = "Internal Server Error. \n Server error occurred while fetching the activity data.",
                     response = ErrorResponse.class)
     })
-    @Permission(name = "View Activities", permission = "/device-mgt/devices/owning-device/view")
     Response getActivity(
             @ApiParam(
                     name = "id",
@@ -115,8 +146,17 @@ public interface ActivityInfoProviderService {
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
             value = "Getting Activity Details",
-            notes = "Get the details of the operations/activities executed by the server on the devices registered with WSO2 EMM, during a defined time period.",
-            tags = "Activity Info Provider")
+            notes = "Get the details of the operations/activities executed by the server on the devices registered" +
+                    " with WSO2 EMM, during a defined time period.",
+            tags = "Activity Info Provider",
+            authorizations = {
+                    @Authorization(
+                            value="permission",
+                            scopes = { @AuthorizationScope(scope = "/device-mgt/devices/owning-device/view"
+                                    , description = "View Activities") }
+                    )
+            }
+    )
     @ApiResponses(value = {
             @ApiResponse(
                     code = 200,
@@ -137,7 +177,8 @@ public interface ActivityInfoProviderService {
                     }),
             @ApiResponse(
                     code = 304,
-                    message = "Not Modified. \n Empty body because the client already has the latest version of the requested resource.\n"),
+                    message = "Not Modified. \n Empty body because the client already has the latest version of the" +
+                            " requested resource.\n"),
             @ApiResponse(
                     code = 401,
                     message = "Unauthorized. \n Unauthorized request."),
@@ -153,7 +194,6 @@ public interface ActivityInfoProviderService {
                     message = "Internal Server Error. \n Server error occurred while fetching the activity data.",
                     response = ErrorResponse.class)
     })
-    @Permission(name = "View Activities", permission = "/device-mgt/devices/owning-device/view")
     Response getActivities(
             @ApiParam(
                     name = "since",

@@ -199,7 +199,7 @@ public class APIPublisherUtil {
         String name = apiDef.getName();
         if (name == null || name.isEmpty()) {
             if (log.isDebugEnabled()) {
-                log.debug("API Name not set in @API Annotation");
+                log.debug("API Name not set in @SwaggerDefinition Annotation");
             }
             name = servletContext.getServletContextName();
         }
@@ -208,7 +208,7 @@ public class APIPublisherUtil {
         String version = apiDef.getVersion();
         if (version == null || version.isEmpty()) {
             if (log.isDebugEnabled()) {
-                log.debug("'API Version not set in @API Annotation'");
+                log.debug("'API Version not set in @SwaggerDefinition Annotation'");
             }
             version = API_CONFIG_DEFAULT_VERSION;
         }
@@ -218,7 +218,7 @@ public class APIPublisherUtil {
         String context = apiDef.getContext();
         if (context == null || context.isEmpty()) {
             if (log.isDebugEnabled()) {
-                log.debug("'API Context not set in @API Annotation'");
+                log.debug("'API Context not set in @SwaggerDefinition Annotation'");
             }
             context = servletContext.getContextPath();
         }
@@ -227,7 +227,7 @@ public class APIPublisherUtil {
         String[] tags = apiDef.getTags();
         if (tags == null || tags.length == 0) {
             if (log.isDebugEnabled()) {
-                log.debug("'API tag not set in @API Annotation'");
+                log.debug("'API tag not set in @SwaggerDefinition Annotation'");
             }
         } else {
             apiConfig.setTags(tags);

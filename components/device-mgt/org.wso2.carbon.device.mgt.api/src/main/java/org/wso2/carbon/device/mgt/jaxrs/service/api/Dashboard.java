@@ -19,20 +19,39 @@
 
 package org.wso2.carbon.device.mgt.jaxrs.service.api;
 
+import io.swagger.annotations.SwaggerDefinition;
+import io.swagger.annotations.Info;
+import io.swagger.annotations.ExtensionProperty;
+import io.swagger.annotations.Extension;
+import io.swagger.annotations.Tag;
 import io.swagger.annotations.Api;
-import org.wso2.carbon.apimgt.annotations.api.API;
 import org.wso2.carbon.apimgt.annotations.api.Permission;
 
-import javax.ws.rs.*;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 /**
  * Device Analytics Dashboard related REST-APIs. This can be used to obtain device related analytics.
  */
-@API(name = "DeviceAnalyticsDashboard",
-        version = "1.0.0", context = "/api/device-mgt/v1.0/dashboard", tags = {"device_management"})
-
+@SwaggerDefinition(
+        info = @Info(
+                version = "1.0.0",
+                title = "",
+                extensions = {
+                        @Extension(properties = {
+                                @ExtensionProperty(name = "name", value = "DeviceAnalyticsDashboard"),
+                                @ExtensionProperty(name = "context", value = "/api/device-mgt/v1.0/dashboard"),
+                        })
+                }
+        ),
+        tags = {
+                @Tag(name = "device_management", description = "")
+        }
+)
 @Path("/dashboard")
 @Api(value = "Device Analytics Dashboard",
         description = "Device Analytics Dashboard related information APIs are described here.")

@@ -4,7 +4,8 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import org.wso2.carbon.apimgt.annotations.api.Permission;
+import io.swagger.annotations.Authorization;
+import io.swagger.annotations.AuthorizationScope;
 import org.wso2.carbon.apimgt.annotations.api.Scope;
 import org.wso2.carbon.certificate.mgt.jaxrs.beans.ErrorResponse;
 
@@ -31,7 +32,15 @@ public interface CertificateMgtService {
             httpMethod = "POST",
             value = "Process a given CSR and return signed certificates.",
             notes = "This will return a signed certificate upon a given CSR.",
-            tags = "Device Management")
+            tags = "Device Management",
+            authorizations = {
+                    @Authorization(
+                            value="permission",
+                            scopes = { @AuthorizationScope(scope = "/device-mgt/certificates/manage",
+                                    description = "Sign CSR") }
+                    )
+            }
+    )
     @ApiResponses(
             value = {
                     @ApiResponse(
@@ -48,7 +57,6 @@ public interface CertificateMgtService {
                             response = ErrorResponse.class)
             })
     @Scope(key = "certificate:sign-csr", name = "Sign CSR", description = "")
-    @Permission(name = "Sign CSR", permission = "/device-mgt/certificates/manage")
     Response getSignedCertFromCSR(
             @ApiParam(
                     name = "If-Modified-Since",

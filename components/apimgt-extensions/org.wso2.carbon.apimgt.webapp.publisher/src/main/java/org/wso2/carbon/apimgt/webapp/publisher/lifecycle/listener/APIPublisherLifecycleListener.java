@@ -57,28 +57,22 @@ public class APIPublisherLifecycleListener implements LifecycleListener {
             boolean isManagedApi = (param != null && !param.isEmpty()) && Boolean.parseBoolean(param);
 
             String profile = System.getProperty(PROPERTY_PROFILE);
-
             if (WebappPublisherConfig.getInstance().getProfiles().getProfile().contains(profile.toLowerCase())
                     && isManagedApi) {
                 try {
                     AnnotationProcessor annotationProcessor = new AnnotationProcessor(context);
-                    Set<String> annotatedAPIClasses = annotationProcessor.
-                            scanStandardContext(org.wso2.carbon.apimgt.annotations.api.API.class.getName());
-
+                    Set<String> annotatedSwaggerAPIClasses = annotationProcessor.
+                            scanStandardContext(io.swagger.annotations.SwaggerDefinition.class.getName());
                     List<APIResourceConfiguration> apiDefinitions = annotationProcessor.extractAPIInfo(servletContext,
-                            annotatedAPIClasses);
-
+                            annotatedSwaggerAPIClasses);
                     for (APIResourceConfiguration apiDefinition : apiDefinitions) {
-
                         APIConfig apiConfig = APIPublisherUtil.buildApiConfig(servletContext, apiDefinition);
-
                         try {
                             int tenantId = APIPublisherDataHolder.getInstance().getTenantManager().
                                     getTenantId(apiConfig.getTenantDomain());
 
                             boolean isTenantActive = APIPublisherDataHolder.getInstance().
                                     getTenantManager().isTenantActive(tenantId);
-
                             if (isTenantActive) {
                                 apiConfig.init();
                                 API api = APIPublisherUtil.getAPI(apiConfig);

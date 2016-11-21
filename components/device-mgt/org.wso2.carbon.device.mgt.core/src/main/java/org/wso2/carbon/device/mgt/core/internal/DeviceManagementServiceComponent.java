@@ -21,7 +21,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.ComponentContext;
-import org.wso2.carbon.apimgt.impl.APIManagerConfiguration;
 import org.wso2.carbon.apimgt.impl.APIManagerConfigurationService;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManagementException;
@@ -33,7 +32,6 @@ import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManager;
 import org.wso2.carbon.device.mgt.common.permission.mgt.PermissionManagerService;
 import org.wso2.carbon.device.mgt.common.spi.DeviceManagementService;
 import org.wso2.carbon.device.mgt.core.DeviceManagementConstants;
-import org.wso2.carbon.device.mgt.core.DeviceManagementPluginRepository;
 import org.wso2.carbon.device.mgt.core.app.mgt.ApplicationManagementProviderService;
 import org.wso2.carbon.device.mgt.core.app.mgt.ApplicationManagerProviderServiceImpl;
 import org.wso2.carbon.device.mgt.core.app.mgt.config.AppManagementConfig;
@@ -51,7 +49,6 @@ import org.wso2.carbon.device.mgt.core.operation.mgt.OperationManagerImpl;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.permission.mgt.PermissionManagerServiceImpl;
 import org.wso2.carbon.device.mgt.core.push.notification.mgt.PushNotificationProviderRepository;
-import org.wso2.carbon.device.mgt.core.scope.mgt.dao.ScopeManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderServiceImpl;
 import org.wso2.carbon.device.mgt.core.service.GroupManagementProviderService;
@@ -61,10 +58,8 @@ import org.wso2.carbon.email.sender.core.service.EmailSenderService;
 import org.wso2.carbon.ndatasource.core.DataSourceService;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.user.core.service.RealmService;
-import org.wso2.carbon.utils.CarbonUtils;
 import org.wso2.carbon.utils.ConfigurationContextService;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -120,10 +115,6 @@ public class DeviceManagementServiceComponent {
     private static List<PluginInitializationListener> listeners = new ArrayList<>();
     private static List<DeviceManagementService> deviceManagers = new ArrayList<>();
     private static List<DeviceManagerStartupListener> startupListeners = new ArrayList<>();
-    private DeviceManagementPluginRepository pluginRepository = new DeviceManagementPluginRepository();
-    private static final String APIM_CONFIGURATION_PATH = CarbonUtils.getCarbonHome() + File.separator + "repository" +
-            File.separator + "conf" + File.separator + "api-manager.xml";
-    private static final String DATA_SOURCE_NAME = "DataSourceName";
 
     public static void registerPluginInitializationListener(PluginInitializationListener listener) {
         synchronized (LOCK) {
@@ -157,17 +148,10 @@ public class DeviceManagementServiceComponent {
 
             DataSourceConfig dsConfig = config.getDeviceManagementConfigRepository().getDataSourceConfig();
 
-            APIManagerConfiguration apiManagerConfiguration = new APIManagerConfiguration();
-            apiManagerConfiguration.load(APIM_CONFIGURATION_PATH);
-            DeviceManagementDataHolder.getInstance().setApiManagerConfiguration(apiManagerConfiguration);
-
             DeviceManagementDAOFactory.init(dsConfig);
             GroupManagementDAOFactory.init(dsConfig);
             NotificationManagementDAOFactory.init(dsConfig);
             OperationManagementDAOFactory.init(dsConfig);
-
-            String apiManagerDataSource = apiManagerConfiguration.getFirstProperty(DATA_SOURCE_NAME);
-            ScopeManagementDAOFactory.init(apiManagerDataSource);
 
             /* Initialize Operation Manager */
             this.initOperationsManager();

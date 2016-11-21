@@ -30,6 +30,7 @@ import org.wso2.carbon.apimgt.api.APIProvider;
 import org.wso2.carbon.apimgt.api.FaultGatewaysException;
 import org.wso2.carbon.apimgt.api.model.*;
 import org.wso2.carbon.apimgt.impl.APIManagerFactory;
+import org.wso2.carbon.apimgt.webapp.publisher.config.WebappPublisherConfig;
 import org.wso2.carbon.apimgt.webapp.publisher.internal.APIPublisherDataHolder;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.governance.lcm.util.CommonUtil;
@@ -63,6 +64,7 @@ public class APIPublisherServiceImpl implements APIPublisherService {
                     CommonUtil.getRootSystemRegistry(tenantId));
             APIProvider provider = APIManagerFactory.getInstance().getAPIProvider(api.getApiOwner());
             MultitenantUtils.getTenantDomain(api.getApiOwner());
+            processHttpVerbs(api);
             if (provider != null) {
                 if (provider.isDuplicateContextTemplate(api.getContext())) {
                     throw new APIManagementException(
@@ -78,15 +80,17 @@ public class APIPublisherServiceImpl implements APIPublisherService {
                                 + api.getId().getVersion() + "'");
                     }
                 } else {
-                    if  (provider.getAPI(api.getId()).getStatus() == APIStatus.CREATED) {
-                        provider.changeLifeCycleStatus(api.getId(), PUBLISH_ACTION);
-                    }
-                    api.setStatus(APIStatus.PUBLISHED);
-                    provider.updateAPI(api);
-                    if (log.isDebugEnabled()) {
-                        log.debug("An API already exists with the name '" + api.getId().getApiName() +
-                                "', context '" + api.getContext() + "' and version '"
-                                + api.getId().getVersion() + "'. Thus, the API config is updated");
+                    if (WebappPublisherConfig.getInstance().isEnabledUpdateApi()) {
+                        if (provider.getAPI(api.getId()).getStatus() == APIStatus.CREATED) {
+                            provider.changeLifeCycleStatus(api.getId(), PUBLISH_ACTION);
+                        }
+                        api.setStatus(APIStatus.PUBLISHED);
+                        provider.updateAPI(api);
+                        if (log.isDebugEnabled()) {
+                            log.debug("An API already exists with the name '" + api.getId().getApiName() +
+                                    "', context '" + api.getContext() + "' and version '"
+                                    + api.getId().getVersion() + "'. Thus, the API config is updated");
+                        }
                     }
                 }
                 provider.saveSwagger20Definition(api.getId(), createSwaggerDefinition(api));
@@ -167,6 +171,23 @@ public class APIPublisherServiceImpl implements APIPublisherService {
             log.debug("API swagger definition: " + swaggerDefinition.toString());
         }
         return swaggerDefinition.toString();
+    }
+
+    /**
+     * Sometimes the httpVerb string attribute is not existing in
+     * the list of httpVerbs attribute of uriTemplate. In such cases when creating the api in the
+     * synapse configuration, it doesn't have http methods correctly assigned for the resources.
+     * Therefore this method takes care of such inconsistency issue.
+     *
+     * @param api The actual API model object
+     */
+    private void processHttpVerbs(API api) {
+        for (URITemplate uriTemplate : api.getUriTemplates()) {
+            String httpVerbString = uriTemplate.getHTTPVerb();
+            if (httpVerbString != null && !httpVerbString.isEmpty()) {
+                uriTemplate.setHttpVerbs(httpVerbString);
+            }
+        }
     }
 
     @Override

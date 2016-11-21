@@ -31,7 +31,8 @@ function onRequest(context) {
     var userModule = require("/app/modules/business-controllers/user.js")["userModule"];
     var deviceMgtProps = require("/app/modules/conf-reader/main.js")["conf"];
 
-    page["adminUser"] = deviceMgtProps["adminUser"];
+    page["currentUser"] = userModule.getCarbonUser().username;
+    page["adminUser"] = deviceMgtProps["adminUser"].split("@")[0];
 
     if (userModule.isAuthorized("/permission/admin/device-mgt/users/manage")) {
         page.canManage = true;

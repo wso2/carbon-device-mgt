@@ -32,6 +32,7 @@ var validateInline = {};
 var clearInline = {};
 
 var apiBasePath = "/api/device-mgt/v1.0";
+var domain = $("#domain").val();
 
 var enableInlineError = function (inputField, errorMsg, errorSign) {
     var fieldIdentifier = "#" + inputField;
@@ -82,7 +83,8 @@ clearInline["role-name"] = function () {
  */
 validateInline["role-name"] = function () {
     var roleNameInput = $("input#roleName");
-    if (inputIsValid( roleNameInput.data("regex"), roleNameInput.val())) {
+    var roleName = roleNameInput.val();
+    if (inputIsValid( roleNameInput.data("regex"), roleName) && roleName.indexOf("@") < 0 && roleName.indexOf("/") < 0) {
         disableInlineError("roleNameField", "roleNameEmpty", "roleNameError");
     } else {
         enableInlineError("roleNameField", "roleNameEmpty", "roleNameError");
@@ -127,7 +129,8 @@ $(document).ready(function () {
             data: function (params) {
                 var postData = {};
                 postData.requestMethod = "GET";
-                postData.requestURL = "/api/device-mgt/v1.0/users/search/usernames?filter=" + params.term;
+                postData.requestURL = "/api/device-mgt/v1.0/users/search/usernames?filter=" + params.term +
+                    "&domain=" + encodeURIComponent(domain);
                 postData.requestPayload = null;
                 return JSON.stringify(postData);
             },
@@ -170,7 +173,8 @@ $(document).ready(function () {
         if (!roleName) {
             $(errorMsg).text("Role name is a required field. It cannot be empty.");
             $(errorMsgWrapper).removeClass("hidden");
-        } else if (!inputIsValid(roleNameInput.data("regex"), roleName)) {
+        } else if (!inputIsValid(roleNameInput.data("regex"), roleName) || roleName.indexOf("@") >= 0 ||
+            roleName.indexOf("/") >= 0) {
             $(errorMsg).text(roleNameInput.data("error-msg"));
             $(errorMsgWrapper).removeClass("hidden");
         } else if (!domain) {
@@ -201,7 +205,8 @@ $(document).ready(function () {
                         $("input#roleName").val("");
                         $("#domain").val("PRIMARY");
                         $("#users").val("");
-                        window.location.href = appContext + "/role/edit-permission/" + roleName;
+                        window.location.href = appContext + "/role/edit-permission/?rolename=" +
+                            encodeURIComponent(addRoleFormData.roleName);
                     }
                 },
                 function (jqXHR) {
@@ -221,5 +226,13 @@ $(document).ready(function () {
 
     $(roleNameInputElement).blur(function() {
         validateInline["role-name"]();
+    });
+
+    /* When the user store domain value is changed, the users who are assigned to that role should be removed, as
+       user and role can be mapped only if both are in same user store
+     */
+    $("#domain").change(function () {
+        $("#users").select2("val", "");
+        domain = $("#domain").val();
     });
 });

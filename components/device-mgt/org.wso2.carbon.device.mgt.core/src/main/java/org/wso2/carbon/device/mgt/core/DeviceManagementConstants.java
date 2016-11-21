@@ -17,6 +17,7 @@
  */
 package org.wso2.carbon.device.mgt.core;
 
+import org.wso2.carbon.device.mgt.core.operation.mgt.OperationMgtConstants;
 import org.wso2.carbon.device.mgt.core.operation.mgt.PolicyOperation;
 
 public final class DeviceManagementConstants {
@@ -57,6 +58,7 @@ public final class DeviceManagementConstants {
 
         public static final String MONITOR_OPERATION_CODE = "MONITOR";
         public static final String POLICY_OPERATION_CODE = PolicyOperation.POLICY_OPERATION_CODE;
+        public static final String POLICY_REVOKE_OPERATION_CODE = OperationMgtConstants.OperationCodes.POLICY_REVOKE;
     }
 
     public static final class EmailAttributes {

@@ -39,7 +39,8 @@ var apiBasePath = "/api/device-mgt/v1.0";
  * hide popup function.
  */
 function hidePopup() {
-    $(modalPopupContent).html('');
+    $(modalPopupContent).html("");
+    $(modalPopupContent).removeClass("operation-data");
     $(modalPopup).modal('hide');
     $('body').removeClass('modal-open').css('padding-right','0px');
     $('.modal-backdrop').remove();
@@ -102,7 +103,15 @@ $(document).ready(function () {
     var listPartialSrc = $("#list-partial").attr("src");
     var treeTemplateSrc = $("#tree-template").attr("src");
     var roleName = $("#permissionList").data("currentrole");
+    var userStore;
+    if (roleName.indexOf('/') > 0) {
+        userStore = roleName.substr(0, roleName.indexOf('/'));
+        roleName = roleName.substr(roleName.indexOf('/') + 1);
+    }
     var serviceUrl = apiBasePath + "/roles/" +encodeURIComponent(roleName)+"/permissions";
+    if (userStore) {
+        serviceUrl += "?user-store=" + encodeURIComponent(userStore);
+    }
     $.registerPartial("list", listPartialSrc, function(){
         $.template("treeTemplate", treeTemplateSrc, function (template) {
             invokerUtil.get(serviceUrl,
@@ -123,10 +132,14 @@ $(document).ready(function () {
                     $("#permissionList li input").click(function(){
                         var parentInput = $(this).parents("ul:eq(1) > li").find('input:eq(0)');
                         if(parentInput && parentInput.is(':checked')){
-                            $(modalPopupContent).html($('#child-deselect-error-content').html());
-                            showPopup();
+                            modalDialog.header('');
+                            modalDialog.content('Can\'t deselect child permissions when parent permission is ' +
+                                'selected.');
+                            modalDialog.footer('<div class="buttons"><a href="#" id="child-deselect-error-link" ' +
+                                'class="btn-operations">Ok</a></div>');
+                            modalDialog.showAsAWarning();
                             $("a#child-deselect-error-link").click(function () {
-                                hidePopup();
+                                modalDialog.hide();
                             });
                             return false;
                         }
@@ -145,13 +158,23 @@ $(document).ready(function () {
      */
     $("button#update-permissions-btn").click(function() {
         var roleName = $("#permissionList").data("currentrole");
-        var updateRolePermissionAPI = apiBasePath + "/roles/" + roleName;
+        var userStore;
+        if (roleName.indexOf('/') > 0) {
+            userStore = roleName.substr(0, roleName.indexOf('/'));
+            roleName = roleName.substr(roleName.indexOf('/') + 1);
+        }
+        var updateRolePermissionAPI = apiBasePath + "/roles/" + encodeURIComponent(roleName);
         var updateRolePermissionData = {};
         var perms = [];
         $("#permissionList li input:checked").each(function(){
             perms.push($(this).data("resourcepath"));
         });
-        updateRolePermissionData.roleName = roleName;
+        if (userStore) {
+            updateRolePermissionAPI += "?user-store=" + encodeURIComponent(userStore);
+            updateRolePermissionData.roleName = userStore + "/" + roleName;
+        } else {
+            updateRolePermissionData.roleName = roleName;
+        }
         updateRolePermissionData.permissions = perms;
         invokerUtil.put(
             updateRolePermissionAPI,

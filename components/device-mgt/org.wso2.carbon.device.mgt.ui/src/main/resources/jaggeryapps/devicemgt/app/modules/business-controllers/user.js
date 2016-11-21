@@ -39,7 +39,7 @@ var userModule = function () {
      * Get the carbon user object from the session. If not found - it will throw a user not found error.
      * @returns {object} carbon user object
      */
-    privateMethods.getCarbonUser = function () {
+    publicMethods.getCarbonUser = function () {
         var carbon = require("carbon");
         var carbonUser = session.get(constants["USER_SESSION_KEY"]);
         var utility = require("/app/modules/utility.js")["utility"];
@@ -59,17 +59,17 @@ var userModule = function () {
     privateMethods.callBackend = function (url, method) {
         if (constants["HTTP_GET"] == method) {
             return serviceInvokers.XMLHttp.get(url,
-                                               function (backendResponse) {
-                                                   var response = {};
-                                                   response.content = backendResponse.responseText;
-                                                   if (backendResponse.status == 200) {
-                                                       response.status = "success";
-                                                   } else if (backendResponse.status == 400 || backendResponse.status == 401 ||
-                                                              backendResponse.status == 404 || backendResponse.status == 500) {
-                                                       response.status = "error";
-                                                   }
-                                                   return response;
-                                               }
+                function (backendResponse) {
+                    var response = {};
+                    response.content = backendResponse.responseText;
+                    if (backendResponse.status == 200) {
+                        response.status = "success";
+                    } else if (backendResponse.status == 400 || backendResponse.status == 401 ||
+                        backendResponse.status == 404 || backendResponse.status == 500) {
+                        response.status = "error";
+                    }
+                    return response;
+                }
             );
         } else {
             log.error("Runtime error : This method only support HTTP GET requests.");
@@ -176,7 +176,7 @@ var userModule = function () {
      * @returns {object} a response object with status and content on success.
      */
     publicMethods.getUser = function (username) {
-        var carbonUser = privateMethods.getCarbonUser();
+        var carbonUser = publicMethods.getCarbonUser();
         var domain;
         if (username.indexOf('/') > 0) {
             domain = username.substr(0, username.indexOf('/'));
@@ -185,9 +185,9 @@ var userModule = function () {
         try {
             utility.startTenantFlow(carbonUser);
             var url = devicemgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"] + "/users/" +
-                      encodeURIComponent(username);
+                encodeURIComponent(username);
             if (domain) {
-                url += '?domain=' + domain;
+                url += '?domain=' + encodeURIComponent(domain);
             }
             var response = privateMethods.callBackend(url, constants["HTTP_GET"]);
             response["content"] = parse(response.content);
@@ -206,7 +206,7 @@ var userModule = function () {
      * @returns {object} a response object with status and content on success.
      */
     publicMethods.getRolesByUsername = function (username) {
-        var carbonUser = privateMethods.getCarbonUser();
+        var carbonUser = publicMethods.getCarbonUser();
         var domain;
         if (username.indexOf('/') > 0) {
             domain = username.substr(0, username.indexOf('/'));
@@ -215,9 +215,9 @@ var userModule = function () {
         try {
             utility.startTenantFlow(carbonUser);
             var url = devicemgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"] + "/users/" +
-                      encodeURIComponent(username) + "/roles";
+                encodeURIComponent(username) + "/roles";
             if (domain) {
-                url += '?domain=' + domain;
+                url += '?domain=' + encodeURIComponent(domain);
             }
             var response = privateMethods.callBackend(url, constants["HTTP_GET"]);
             if (response.status == "success") {
@@ -268,7 +268,7 @@ var userModule = function () {
         try {
             utility.startTenantFlow(carbonUser);
             var url = devicemgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"] +
-                      "/roles?offset=0&limit=100";
+                "/roles?offset=0&limit=100&user-store=all";
             var response = privateMethods.callBackend(url, constants["HTTP_GET"]);
             if (response.status == "success") {
                 response.content = parse(response.content).roles;
@@ -294,7 +294,7 @@ var userModule = function () {
         try {
             utility.startTenantFlow(carbonUser);
             var url = devicemgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"] +
-                      "/roles?offset=0&limit=1";
+                "/roles?offset=0&limit=1&user-store=all";
             return serviceInvokers.XMLHttp.get(
                 url, function (responsePayload) {
                     return parse(responsePayload["responseText"])["count"];
@@ -319,6 +319,7 @@ var userModule = function () {
      * @returns {object} a response object with status and content on success.
      */
     publicMethods.getRolesByUserStore = function (userStore) {
+        userStore = userStore ? userStore : "all";
         var carbonUser = session.get(constants["USER_SESSION_KEY"]);
         var utility = require("/app/modules/utility.js")["utility"];
         if (!carbonUser) {
@@ -328,7 +329,7 @@ var userModule = function () {
         try {
             utility.startTenantFlow(carbonUser);
             var url = devicemgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"] +
-                      "/roles?user-store=" + userStore + "&limit=100";
+                "/roles?user-store=" + encodeURIComponent(userStore) + "&limit=100";
             var response = privateMethods.callBackend(url, constants["HTTP_GET"]);
             if (response.status == "success") {
                 response.content = parse(response.content).roles;
@@ -374,14 +375,22 @@ var userModule = function () {
     publicMethods.getRole = function (roleName) {
         var carbonUser = session.get(constants["USER_SESSION_KEY"]);
         var utility = require("/app/modules/utility.js")["utility"];
+        var userStore;
         if (!carbonUser) {
             log.error("User object was not found in the session");
             throw constants["ERRORS"]["USER_NOT_FOUND"];
         }
         try {
             utility.startTenantFlow(carbonUser);
+            if (roleName.indexOf('/') > 0) {
+                userStore = roleName.substr(0, roleName.indexOf('/'));
+                roleName = roleName.substr(roleName.indexOf('/') + 1);
+            }
             var url = devicemgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"] +
-                      "/roles/" + encodeURIComponent(roleName);
+                "/roles/" + encodeURIComponent(roleName);
+            if (userStore) {
+                url += "?user-store=" + encodeURIComponent(userStore);
+            }
             var response = privateMethods.callBackend(url, constants["HTTP_GET"]);
             if (response.status == "success") {
                 response.content = parse(response.content);
@@ -598,23 +607,30 @@ var userModule = function () {
      */
     publicMethods.getSecondaryUserStores = function () {
         var returnVal = [];
-        var endpoint = devicemgtProps["adminService"] + constants["USER_STORE_CONFIG_ADMIN_SERVICE_END_POINT"];
-        var wsPayload = "<xsd:getSecondaryRealmConfigurations  xmlns:xsd='http://org.apache.axis2/xsd'/>";
-        serviceInvokers.WS.soapRequest(
-            "urn:getSecondaryRealmConfigurations",
-            wsPayload,
-            endpoint,
-            function (wsResponse) {
-                var domainIDs = stringify(wsResponse.*::['return']. *::domainId.text());
-                if (domainIDs != "\"\"") {
-                    var regExpForSearch = new RegExp(constants["USER_STORES_NOISY_CHAR"], "g");
-                    domainIDs = domainIDs.replace(regExpForSearch, "");
-                    returnVal = domainIDs.split(constants["USER_STORES_SPLITTING_CHAR"]);
-                }
-            }, function (e) {
-                log.error("Error retrieving secondary user stores", e);
-            },
-            constants["SOAP_VERSION"]);
+        // To call the userstore admin service, user needs to have admin permission
+        if (publicMethods.isAuthorized("/permission/admin")) {
+            var endpoint = devicemgtProps["adminService"] + constants["USER_STORE_CONFIG_ADMIN_SERVICE_END_POINT"];
+            var wsPayload = "<xsd:getSecondaryRealmConfigurations  xmlns:xsd='http://org.apache.axis2/xsd'/>";
+            serviceInvokers.WS.soapRequest(
+                "urn:getSecondaryRealmConfigurations",
+                wsPayload,
+                endpoint,
+                function (wsResponse) {
+                    var domainIDs = stringify(wsResponse. * ::['return']. * ::domainId.text());
+                    if (domainIDs != "\"\"") {
+                        var regExpForSearch = new RegExp(constants["USER_STORES_NOISY_CHAR"], "g");
+                        domainIDs = domainIDs.replace(regExpForSearch, "");
+                        returnVal = domainIDs.split(constants["USER_STORES_SPLITTING_CHAR"]);
+                    }
+                }, function (e) {
+                    log.error("Error retrieving secondary user stores", e);
+                },
+                constants["SOAP_VERSION"]);
+        } else {
+            if (log.isDebugEnabled()) {
+                log.debug("User does not have admin permission to get the secondary user store details.");
+            }
+        }
         return returnVal;
     };
 

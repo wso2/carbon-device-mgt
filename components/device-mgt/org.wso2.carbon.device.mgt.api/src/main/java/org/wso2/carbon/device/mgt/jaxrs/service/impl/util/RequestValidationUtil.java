@@ -337,12 +337,20 @@ public class RequestValidationUtil {
                     new ErrorResponse.ErrorResponseBuilder().setCode(400l).setMessage("Request parameter limit is a " +
                             "negative value.").build());
         }
-        if (limit - offset > 100) {
+        if (limit > 100) {
             throw new InputValidationException(
-                    new ErrorResponse.ErrorResponseBuilder().setCode(400l).setMessage("Request results list should" +
-                            " be less than or equal 100 values.").build());
+                    new ErrorResponse.ErrorResponseBuilder().setCode(400l).setMessage("Request parameter limit should" +
+                            " be less than or equal to 100.").build());
         }
 
+    }
+
+    public static void validateOwnerParameter(String owner) {
+        if (owner == null || owner.isEmpty()) {
+            throw new InputValidationException(
+                    new ErrorResponse.ErrorResponseBuilder().setCode(400l).setMessage("Request parameter owner should" +
+                            " be non empty.").build());
+        }
     }
 
 }

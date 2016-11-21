@@ -39,8 +39,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-@API(name = "Device Type Management", version = "1.0.0", context = "/api/device-mgt/v1.0/admin/device-types",
-     tags = {"devicemgt_admin"})
+@API(name = "DeviceTypeManagement", version = "1.0.0", context = "/api/device-mgt/v1.0/device-types",
+     tags = {"device_management"})
 
 @Path("/device-types")
 @Api(value = "Device Type Management", description = "This API corresponds to all tasks related to device " +
@@ -53,8 +53,8 @@ public interface DeviceTypeManagementService {
     @ApiOperation(
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
-            value = "Get the list of device types registered.",
-            notes = "Retrieves the list of device types of which the devices intended to be managed.",
+            value = "Getting the Supported Device Platforms",
+            notes = "Get the list of device platforms supported by WSO2 EMM.",
             tags = "Device Type Management")
     @ApiResponses(
             value = {
@@ -73,16 +73,14 @@ public interface DeviceTypeManagementService {
                                     @ResponseHeader(
                                             name = "Last-Modified",
                                             description =
-                                                    "Date and time the resource has been modified the last time.\n" +
+                                                    "Date and time the resource was last modified.\n" +
                                                             "Used by caches, or in conditional requests."),
                             }
                     ),
                     @ApiResponse(
                             code = 304,
                             message =
-                                    "Not Modified. \n Empty body because the client has already the latest version of" +
-                                            " " +
-                                            "the requested resource."),
+                                    "Not Modified. \n Empty body because the client already has the latest version of the requested resource.\n"),
                     @ApiResponse(
                             code = 406,
                             message = "Not Acceptable.\n The requested media type is not supported"),
@@ -97,7 +95,9 @@ public interface DeviceTypeManagementService {
     Response getDeviceTypes(
             @ApiParam(
                     name = "If-Modified-Since",
-                    value = "Validates if the requested variant has not been modified since the time specified",
+                    value = "Checks if the requested variant was modified, since the specified date-time.\n" +
+                            "Provide the value in the following format: EEE, d MMM yyyy HH:mm:ss Z.\n" +
+                            "Example: Mon, 05 Jan 2014 15:10:00 +0200",
                     required = false)
             @HeaderParam("If-Modified-Since")
                     String ifModifiedSince);
@@ -106,8 +106,9 @@ public interface DeviceTypeManagementService {
     @ApiOperation(
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
-            value = "Get the list of features for a give device type.",
-            notes = "Retrieves the list of features of a given device type.",
+            value = "Get Feature Details of a Device Type",
+            notes = "The features in WSO2 EMM enables you to carry out many operations on a given device platform. " +
+                    "Using this REST API you can get the features that can be carried out on a preferred device type, such as iOS, Android or Windows.",
             tags = "Device Type Management")
     @ApiResponses(
             value = {
@@ -126,16 +127,14 @@ public interface DeviceTypeManagementService {
                                     @ResponseHeader(
                                             name = "Last-Modified",
                                             description =
-                                                    "Date and time the resource has been modified the last time.\n" +
+                                                    "Date and time the resource was last modified.\n" +
                                                             "Used by caches, or in conditional requests."),
                             }
                     ),
                     @ApiResponse(
                             code = 304,
                             message =
-                                    "Not Modified. \n Empty body because the client has already the latest version of" +
-                                            " " +
-                                            "the requested resource."),
+                                    "Not Modified. \n Empty body because the client already has the latest version of the requested resource.\n"),
                     @ApiResponse(
                             code = 406,
                             message = "Not Acceptable.\n The requested media type is not supported"),
@@ -151,13 +150,16 @@ public interface DeviceTypeManagementService {
             @ApiParam(
                     name = "type",
                     value = "The device type, such as ios, android or windows.",
-                    required = true)
+                    required = true,
+                    allowableValues = "android, ios, windows")
             @PathParam("type")
             @Size(max = 45)
                     String type,
             @ApiParam(
                     name = "If-Modified-Since",
-                    value = "Validates if the requested variant has not been modified since the time specified",
+                    value = "Checks if the requested variant was modified, since the specified date-time.\n" +
+                            "Provide the value in the following format: EEE, d MMM yyyy HH:mm:ss Z.\n" +
+                            "Example: Mon, 05 Jan 2014 15:10:00 +0200",
                     required = false)
             @HeaderParam("If-Modified-Since")
                     String ifModifiedSince);

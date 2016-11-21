@@ -25,11 +25,11 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class ExtendedIteratorFactory {
+class ExtendedIteratorFactory {
 
     private static final ConcurrentHashMap<String, DirectoryIteratorFactory> registry = new ConcurrentHashMap();
 
-    public static StreamIterator create(URL url, Filter filter) throws IOException {
+    static StreamIterator create(URL url, Filter filter) throws IOException {
         String urlString = url.toString();
         if(urlString.endsWith("!/")) {
             urlString = urlString.substring(4);

@@ -17,7 +17,7 @@
  */
 
 var loadRoleBasedActionURL = function (action, rolename) {
-    var href = $("#ast-container").data("app-context") + "role/" + action + "/" + rolename;
+    href = $("#ast-container").data("app-context") + "role/" + action + "/?rolename=" + encodeURIComponent(rolename);
     $(location).attr('href', href);
 };
 
@@ -45,9 +45,9 @@ var isInit = true;
  * the font icons change the size to respective screen resolution.
  *
  */
-$(document).on( 'draw.dt', function () {
+$(document).on('draw.dt', function () {
     $(".icon .text").res_text(0.2);
-} );
+});
 
 
 /*
@@ -95,7 +95,7 @@ function loadRoles() {
 
         var objects = [];
 
-        $(data.roles).each(function( index ) {
+        $(data.roles).each(function (index) {
             objects.push(
                 {
                     name: data.roles[index],
@@ -131,14 +131,14 @@ function loadRoles() {
             class: "fade-edge",
             data: "name",
             render: function (name, type, row, meta) {
-                return '<h4>&nbsp;&nbsp;' + name + '&nbsp;role</h4>';
+                return '<h4>' + name + 'role</h4>';
             }
         },
         {
             class: "text-right content-fill text-left-on-grid-view no-wrap",
             data: null,
             render: function (data, type, row, meta) {
-                return '&nbsp;' +
+                return '' +
                     '<a onclick="javascript:loadRoleBasedActionURL(\'edit\', \'' + data.name + '\')" ' +
                     'data-role="' + data.name + '" ' +
                     'data-click-event="edit-form" ' +
@@ -151,9 +151,9 @@ function loadRoles() {
                     '<i class="fw fw-circle fw-stack-2x"></i><i class="fw fw-edit fw-stack-1x fw-inverse"></i>' +
                     '</span>' +
                     '</span>' +
-                    '<span class="hidden-xs hidden-on-grid-view">&nbsp;&nbsp;Edit</span>' +
+                    '<span class="hidden-xs hidden-on-grid-view">Edit</span>' +
                     '</a>' +
-                    '&nbsp;<a onclick="javascript:loadRoleBasedActionURL(\'edit-permission\', \'' + data.name + '\')" ' +
+                    '<a onclick="javascript:loadRoleBasedActionURL(\'edit-permission\', \'' + data.name + '\')" ' +
                     'data-role="' + data.name + '" ' +
                     'data-click-event="edit-form" ' +
                     'class="btn padding-reduce-on-grid-view edit-permission-link">' +
@@ -165,16 +165,16 @@ function loadRoles() {
                     '<i class="fw fw-circle fw-stack-2x"></i><i class="fw fw-edit fw-stack-1x fw-inverse"></i>' +
                     '</span>' +
                     '</span>' +
-                    '<span class="hidden-xs hidden-on-grid-view">&nbsp;&nbsp;Edit Permission</span>' +
+                    '<span class="hidden-xs hidden-on-grid-view">Edit Permission</span>' +
                     '</a>' +
-                    '&nbsp;<a data-role="' + data.name + '" ' +
+                    '<a data-role="' + data.name + '" ' +
                     'data-click-event="remove-form" ' +
                     'class="btn padding-reduce-on-grid-view remove-role-link">' +
                     '<span class="fw-stack">' +
                     '<i class="fw fw-ring fw-stack-2x"></i>' +
                     '<i class="fw fw-delete fw-stack-1x"></i>' +
                     '</span>' +
-                    '<span class="hidden-xs hidden-on-grid-view">&nbsp;&nbsp;Remove</span>' +
+                    '<span class="hidden-xs hidden-on-grid-view">Remove</span>' +
                     '</a>';
             }
         }
@@ -182,10 +182,13 @@ function loadRoles() {
 
     var options = {
         "placeholder": "Search By Role Name",
-        "searchKey" : "filter"
+        "searchKey": "filter"
+    };
+    var settings = {
+        "sorting": false
     };
 
-    $('#role-grid').datatables_extended_serverside_paging(null, '/api/device-mgt/v1.0/roles', dataFilter, columns, fnCreatedRow, null, options);
+    $('#role-grid').datatables_extended_serverside_paging(settings, '/api/device-mgt/v1.0/roles?user-store=all', dataFilter, columns, fnCreatedRow, null, options);
     loadingContent.hide();
 
 }
@@ -198,32 +201,50 @@ function loadRoles() {
  */
 $("#role-grid").on("click", ".remove-role-link", function () {
     var role = $(this).data("role");
-    var removeRoleAPI = apiBasePath + "/roles/" + role;
-
-    $(modalPopupContent).html($('#remove-role-modal-content').html());
-    showPopup();
+    var userStore;
+    if (role.indexOf('/') > 0) {
+        userStore = role.substr(0, role.indexOf('/'));
+        role = role.substr(role.indexOf('/') + 1);
+    }
+    var removeRoleAPI = apiBasePath + "/roles/" + encodeURIComponent(role);
+    if (userStore) {
+        removeRoleAPI += "?user-store=" + encodeURIComponent(userStore);
+    }
+    modalDialog.header('Do you really want to remove this role ?');
+    modalDialog.footer('<div class="buttons"><a href="#" id="remove-role-yes-link" class="btn-operations">Remove</a>' +
+        '<a href="#" id="remove-role-cancel-link" class="btn-operations btn-default">Cancel</a></div>');
+    modalDialog.show();
 
     $("a#remove-role-yes-link").click(function () {
         invokerUtil.delete(
             removeRoleAPI,
             function () {
-                $("#role-" + role).remove();
-                $(modalPopupContent).html($('#remove-role-success-content').html());
+                if (userStore) {
+                    role = userStore + '/' + role;
+                }
+                $('[id="role-' + role + '"]').remove();
+                modalDialog.header('Done. Role was successfully removed.');
+                modalDialog.footer('<div class="buttons"><a href="#" id="remove-role-success-link" ' +
+                    'class="btn-operations">Ok</a></div>');
                 $("a#remove-role-success-link").click(function () {
-                    hidePopup();
+                    modalDialog.hide();
                 });
             },
             function () {
-                $(modalPopupContent).html($('#remove-role-error-content').html());
+                // $(modalPopupContent).html($('#remove-role-error-content').html());
+                modalDialog.header('An unexpected error occurred. Please try again later.');
+                modalDialog.footer('<div class="buttons"><a href="#" id="remove-role-error-link" ' +
+                    'class="btn-operations">Ok</a></div>');
+                modalDialog.showAsError();
                 $("a#remove-role-error-link").click(function () {
-                    hidePopup();
+                    modalDialog.hide();
                 });
             }
         );
     });
 
     $("a#remove-role-cancel-link").click(function () {
-        hidePopup();
+        modalDialog.hide();
     });
 });
 

@@ -171,7 +171,7 @@ public class MonitoringManagerImpl implements MonitoringManager {
     }
 
     @Override
-    public boolean isCompliance(DeviceIdentifier deviceIdentifier) throws PolicyComplianceException {
+    public boolean isCompliant(DeviceIdentifier deviceIdentifier) throws PolicyComplianceException {
         try {
             DeviceManagementProviderService service =
                     PolicyManagementDataHolder.getInstance().getDeviceManagementService();
@@ -380,8 +380,11 @@ public class MonitoringManagerImpl implements MonitoringManager {
 
         List<String> deviceTypes = new ArrayList<>();
         try {
+		//when shutdown, it sets DeviceManagementService to null, therefore need to have a null check
+		if (PolicyManagementDataHolder.getInstance().getDeviceManagementService() != null) {
             deviceTypes =
                     PolicyManagementDataHolder.getInstance().getDeviceManagementService().getAvailableDeviceTypes();
+		}
         } catch (DeviceManagementException e) {
             throw new PolicyComplianceException("Error occurred while getting the device types.", e);
         }

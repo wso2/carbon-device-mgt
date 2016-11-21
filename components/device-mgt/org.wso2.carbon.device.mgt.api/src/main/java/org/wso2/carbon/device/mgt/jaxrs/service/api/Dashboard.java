@@ -40,8 +40,8 @@ import javax.ws.rs.core.Response;
 /**
  * Device Analytics Dashboard related REST-APIs. This can be used to obtain device related analytics.
  */
-@API(name = "Device Analytics Dashboard",
-        version = "1.0.0", context = "/api/device-mgt/v1.0/dashboard", tags = {"devicemgt_admin"})
+@API(name = "DeviceAnalyticsDashboard",
+        version = "1.0.0", context = "/api/device-mgt/v1.0/dashboard", tags = {"device_management"})
 
 @Path("/dashboard")
 @Api(value = "Device Analytics Dashboard",

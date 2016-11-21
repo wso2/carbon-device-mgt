@@ -16,10 +16,12 @@
   under the License.
 }}
 
+{{unit "cdmf.unit.ui.modal"}}
+
 <div class="row wr-device-board">
     <div class="col-lg-12 wr-secondary-bar">
             <span class="page-sub-title">
-                &nbsp;Policy List by priority order
+                Policy List by priority order
             </span>
     </div>
     <div class="row">
@@ -86,111 +88,6 @@
                     <button class="wr-btn" id="applyChangesBtn">Apply Changes to Devices</button>
                 </div>
             {{/equal}}
-        </div>
-    </div>
-
-    <div id="apply-changes-modal-content" class="hide">
-        <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fw fw-cancel"></i>
-            </button>
-        </div>
-        <div class="modal-body add-margin-top-2x add-margin-bottom-2x">
-            <h3>Do you really want to apply changes to all policies?</h3>
-        </div>
-        <div class="modal-footer">
-            <div class="buttons">
-                <a href="javascript:void(0)" id="apply-changes-yes-link" class="btn-operations">
-                    Yes
-                </a>
-                <a href="javascript:void(0)" id="apply-changes-cancel-link" class="btn-operations">
-                    No
-                </a>
-            </div>
-        </div>
-    </div>
-
-    <div id="apply-changes-success-content" class="hide">
-        <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fw fw-cancel"></i>
-            </button>
-        </div>
-        <div class="modal-body add-margin-top-2x add-margin-bottom-2x">
-            <h3>Done. Changes applied successfully.</h3>
-        </div>
-        <div class="modal-footer">
-            <div class="buttons">
-                <a href="javascript:void(0)" id="apply-changes-success-link" class="btn-operations">
-                    Ok
-                </a>
-            </div>
-        </div>
-    </div>
-
-    <div id="apply-changes-error-content" class="hide">
-        <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fw fw-cancel"></i>
-            </button>
-        </div>
-        <div class="modal-body add-margin-top-2x add-margin-bottom-2x">
-            <h3>An unexpected error occurred. Please try again later.</h3>
-        </div>
-        <div class="modal-footer">
-            <div class="buttons">
-                <a href="javascript:void(0)" id="apply-changes-error-link" class="btn-operations">
-                    Ok
-                </a>
-            </div>
-        </div>
-    </div>
-
-    <div id="remove-policy-error-content" class="hide">
-        <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fw fw-cancel"></i>
-            </button>
-        </div>
-        <div class="modal-body add-margin-top-2x add-margin-bottom-2x">
-            <h3>An unexpected error occurred. Please try again later.</h3>
-        </div>
-        <div class="modal-footer">
-            <div class="buttons">
-                <a href="javascript:void(0)" id="remove-policy-error-link" class="btn-operations">
-                    Ok
-                </a>
-            </div>
-        </div>
-    </div>
-
-    <div id="save-policy-priorities-success-content" class="hide">
-        <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fw fw-cancel"></i>
-            </button>
-        </div>
-        <div class="modal-body add-margin-top-2x add-margin-bottom-2x">
-            <h3>Done. New Policy priorities were successfully updated.</h3>
-        </div>
-        <div class="modal-footer">
-            <div class="buttons">
-                <a href="javascript:void(0)" id="save-policy-priorities-success-link" class="btn-operations">
-                    Ok
-                </a>
-            </div>
-        </div>
-    </div>
-
-    <div id="save-policy-priorities-error-content" class="hide">
-        <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fw fw-cancel"></i>
-            </button>
-        </div>
-        <div class="modal-body add-margin-top-2x add-margin-bottom-2x">
-            <h3>An unexpected error occurred. Please try again later.</h3>
-        </div>
-        <div class="modal-footer">
-            <div class="buttons">
-                <a href="javascript:void(0)" id="save-policy-priorities-error-link" class="btn-operations">
-                    Ok
-                </a>
-            </div>
         </div>
     </div>
 </div>

@@ -87,20 +87,25 @@ $(document).ready(function () {
             // on success
             function (data, textStatus, jqXHR) {
                 if (jqXHR.status == 200) {
-                    $(modalPopupContent).html($('#save-policy-priorities-success-content').html());
-                    showPopup();
+                    modalDialog.header('Done. New Policy priorities were successfully updated.');
+                    modalDialog.footer('<div class="buttons"><a href="javascript:void(0)" ' +
+                        'id="save-policy-priorities-success-link" class="btn-operations">Ok</a></div>');
+                    modalDialog.show();
                     $("a#save-policy-priorities-success-link").click(function () {
-                        hidePopup();
+                        modalDialog.hide();
                     });
+                    $(applyChangesBtn).prop("disabled", false);
                 }
             },
             // on error
             function (jqXHR) {
                 if (jqXHR.status == 400 || jqXHR.status == 500) {
-                    $(modalPopupContent).html($("#save-policy-priorities-error-content").html());
-                    showPopup();
+                    modalDialog.header('An unexpected error occurred. Please try again later.');
+                    modalDialog.footer('<div class="buttons"><a href="javascript:void(0)" ' +
+                        'id="save-policy-priorities-error-link" class="btn-operations">Ok</a></div>');
+                    modalDialog.showAsError();                    
                     $("a#save-policy-priorities-error-link").click(function () {
-                        hidePopup();
+                        modalDialog.hide();
                     });
                 }
             }
@@ -109,8 +114,11 @@ $(document).ready(function () {
 
     $(applyChangesBtn).click(function () {
         var applyPolicyChangesAPI = "/api/device-mgt/v1.0/policies/apply-changes";
-        $(modalPopupContent).html($("#apply-changes-modal-content").html());
-        showPopup();
+        modalDialog.header('Do you really want to apply changes to all policies?');
+        modalDialog.footer('<div class="buttons"><a href="javascript:void(0)" id="apply-changes-yes-link" ' +
+            'class="btn-operations">Yes</a><a href="javascript:void(0)" id="apply-changes-cancel-link" ' +
+            'class="btn-operations">No</a></div>');
+        modalDialog.show();
 
         $("a#apply-changes-yes-link").click(function () {
             invokerUtil.put(
@@ -119,20 +127,24 @@ $(document).ready(function () {
                 // on success
                 function (data, textStatus, jqXHR) {
                     if (jqXHR.status == 200) {
-                        $(modalPopupContent).html($("#apply-changes-success-content").html());
-                        showPopup();
+                        modalDialog.header('Done. Changes applied successfully.');
+                        modalDialog.footer('<div class="buttons"><a href="javascript:void(0)" ' +
+                            'id="apply-changes-success-link" class="btn-operations">Ok</a></div>');
+                        modalDialog.show();
                         $("a#apply-changes-success-link").click(function () {
-                            hidePopup();
+                            modalDialog.hide();
                         });
                     }
                 },
                 // on error
                 function (jqXHR) {
                     if (jqXHR.status == 500) {
-                        $(modalPopupContent).html($("#apply-changes-error-content").html());
-                        showPopup();
+                        modalDialog.header('An unexpected error occurred. Please try again later.');
+                        modalDialog.footer('<div class="buttons"><a href="javascript:void(0)" ' +
+                            'id="apply-changes-error-link" class="btn-operations">Ok</a></div>');
+                        modalDialog.showAsError();
                         $("a#apply-changes-error-link").click(function () {
-                            hidePopup();
+                            modalDialog.hide();
                         });
                     }
                 }
@@ -140,7 +152,7 @@ $(document).ready(function () {
         });
 
         $("a#apply-changes-cancel-link").click(function () {
-            hidePopup();
+            modalDialog.hide();
         });
     });
 

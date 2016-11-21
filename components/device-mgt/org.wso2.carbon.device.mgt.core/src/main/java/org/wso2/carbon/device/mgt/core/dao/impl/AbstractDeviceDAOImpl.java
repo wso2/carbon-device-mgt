@@ -795,6 +795,37 @@ public abstract class AbstractDeviceDAOImpl implements DeviceDAO {
     }
 
     @Override
+    public EnrolmentInfo getEnrolment(DeviceIdentifier deviceId, int tenantId) throws DeviceManagementDAOException {
+        Connection conn;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        EnrolmentInfo enrolmentInfo = null;
+        try {
+            conn = this.getConnection();
+            String sql = "SELECT ID AS ENROLMENT_ID, DEVICE_ID, OWNER, OWNERSHIP, STATUS, DATE_OF_ENROLMENT, " +
+                         "DATE_OF_LAST_UPDATE, TENANT_ID FROM DM_ENROLMENT WHERE DEVICE_ID = (SELECT d.ID " +
+                         "FROM DM_DEVICE d, DM_DEVICE_TYPE t WHERE d.DEVICE_TYPE_ID = t.ID " +
+                         "AND d.DEVICE_IDENTIFICATION = ? AND t.NAME = ? AND d.TENANT_ID = ?) " +
+                         "AND TENANT_ID = ?";
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, deviceId.getId());
+            stmt.setString(2, deviceId.getType());
+            stmt.setInt(3, tenantId);
+            stmt.setInt(4, tenantId);
+            rs = stmt.executeQuery();
+            if (rs.next()) {
+                enrolmentInfo = DeviceManagementDAOUtil.loadMatchingEnrolment(rs);
+            }
+            return enrolmentInfo;
+        } catch (SQLException e) {
+            throw new DeviceManagementDAOException("Error occurred while retrieving the enrolment " +
+                                                   "of device '" + deviceId + "'", e);
+        } finally {
+            DeviceManagementDAOUtil.cleanupResources(stmt, rs);
+        }
+    }
+
+    @Override
     public EnrolmentInfo getActiveEnrolment(DeviceIdentifier deviceId, int tenantId) throws DeviceManagementDAOException {
         Connection conn;
         PreparedStatement stmt = null;

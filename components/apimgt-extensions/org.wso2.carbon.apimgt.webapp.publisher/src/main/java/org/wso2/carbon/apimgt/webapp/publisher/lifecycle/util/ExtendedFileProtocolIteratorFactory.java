@@ -21,7 +21,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
-public class ExtendedFileProtocolIteratorFactory implements DirectoryIteratorFactory {
+final class ExtendedFileProtocolIteratorFactory implements DirectoryIteratorFactory {
 
     private static final String ENCODING_SCHEME = "UTF-8";
 

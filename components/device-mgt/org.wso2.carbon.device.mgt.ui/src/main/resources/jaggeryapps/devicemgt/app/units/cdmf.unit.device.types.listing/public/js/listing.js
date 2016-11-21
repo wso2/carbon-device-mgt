@@ -148,7 +148,7 @@ function loadDevices(searchType, searchParam){
             '<a href="https://docs.wso2.com/display/IoTS100/Quick+Start+Guide" target="_blank" ' +
             'class="btn-operations btn-default"><span class="fw-stack">' +
             '<i class="fw fw-ring fw-stack-2x"></i> <i class="fw fw-document fw-stack-1x"></i></span>' +
-            '&nbsp;&nbsp;Quick Startup Guide</a></div>');
+            'Quick Startup Guide</a></div>');
     }
 
     $(".icon .text").res_text(0.2);

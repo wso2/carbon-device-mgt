@@ -31,12 +31,8 @@
                     {{/if}}
                 </span>
             </a>
-            <ul class="dropdown-menu dropdown-menu-right float-remove-xs position-static-xs text-center-xs remove-margin-xs slideInDown"
+            <ul class="dropdown-menu dropdown-menu-right slideInDown"
                 role="menu">
-                <li class="dropdown-header visible-xs">
-                    {{@user.username}}<span class="caret"></span>
-                </li>
-                <li class="divider visible-xs"></li>
                 <li>
                     <a href="javascript:void(0)" id="change-password">Change password</a>
                 </li>
@@ -57,7 +53,7 @@
                       <i class="fw fw-edit fw-stack-1x fw-inverse"></i>
                    </span>
                 </span>
-                            &nbsp;&nbsp;Change password
+                            Change password
                         </h4>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i
                                 class="fw fw-cancel"></i></button>
@@ -71,20 +67,20 @@
                             Type your current password *
                             <br><br>
                             <div>
-                                <input id="current-password" type="password" class="form-control modal-input"/>
+                                <input id="current-password" type="password" autocomplete="off" class="form-control modal-input"/>
                             </div>
                             <br><br>
                             Type a new password *
                             <br><br>
                             <div>
-                                <input id="new-password" type="password" class="form-control modal-input"
+                                <input id="new-password" type="password" autocomplete="off" class="form-control modal-input"
                                        placeholder="[ Password should be in minimum 5 characters long and should not include any whitespaces ]"/>
                             </div>
                             <br><br>
                             Reconfirm your new password *
                             <br><br>
                             <div>
-                                <input id="retyped-new-password" type="password" class="form-control modal-input"/>
+                                <input id="retyped-new-password" autocomplete="off" type="password" class="form-control modal-input"/>
                             </div>
                             <br><br>
                         </h5>
@@ -104,7 +100,7 @@
                     <i class="fw fw-circle fw-stack-2x fw-stroke text-success"></i>
                     <i class="fw fw-check fw-stack-1x fw-inverse"></i>
                 </span>
-                            &nbsp;&nbsp;Password has been successfully updated
+                            Password has been successfully updated
                         </h4>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i
                                 class="fw fw-cancel"></i></button>

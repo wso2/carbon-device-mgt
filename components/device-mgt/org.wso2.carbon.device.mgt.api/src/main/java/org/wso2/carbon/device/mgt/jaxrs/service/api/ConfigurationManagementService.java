@@ -31,7 +31,7 @@ import javax.ws.rs.core.Response;
 /**
  * General Tenant Configuration REST-API.
  */
-@API(name = "Configuration Management", version = "1.0.0", context = "/api/device-mgt/v1.0/configuration", tags = {"devicemgt_admin"})
+@API(name = "ConfigurationManagement", version = "1.0.0", context = "/api/device-mgt/v1.0/configuration", tags = {"device_management"})
 
 @Path("/configuration")
 @Api(value = "Configuration Management", description = "The general platform configuration management capabilities are exposed " +
@@ -46,7 +46,7 @@ public interface ConfigurationManagementService {
             httpMethod = "GET",
             value = "Getting General Platform Configurations",
             notes = "WSO2 EMM monitors policies to verify that the devices comply with the policies enforced on them. " +
-                    "General platform configurations include the settings on how often the the device need to be monitored. " +
+                    "General platform configurations include the settings on how often the device need to be monitored. " +
                     "Using this REST API you can get the general platform level configurations.",
             tags = "Configuration Management")
     @ApiResponses(

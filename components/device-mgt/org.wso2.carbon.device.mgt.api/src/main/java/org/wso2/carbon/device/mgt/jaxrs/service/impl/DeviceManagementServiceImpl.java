@@ -216,6 +216,20 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
         }
     }
 
+    @DELETE
+    @Override
+    @Path("/type/{device-type}/id/{device-id}")
+    public Response deleteDevice(@PathParam("device-type") String deviceType, @PathParam("device-id") String deviceId) {
+
+        log.info("Deleting " + deviceType + " " + deviceId + "is not supported");
+        try {
+            return Response.status(Response.Status.BAD_REQUEST).entity("{Deleting device(s) is not supported}").build();
+        } catch (Exception e) {
+            String msg = "Error occurred while deleting device(s)";
+            log.error(msg, e);
+            return Response.serverError().entity(new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
+        }
+    }
 
     @GET
     @Path("/{type}/{id}")
@@ -366,10 +380,13 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
             @PathParam("id") @Size(max = 45) String id,
             @HeaderParam("If-Modified-Since") String ifModifiedSince,
             @QueryParam("offset") int offset,
-            @QueryParam("limit") int limit) {
+            @QueryParam("limit") int limit,
+            @QueryParam("owner") String owner) {
         OperationList operationsList = new OperationList();
+        RequestValidationUtil.validateOwnerParameter(owner);
         RequestValidationUtil.validatePaginationParameters(offset, limit);
         PaginationRequest request = new PaginationRequest(offset, limit);
+        request.setOwner(owner);
         PaginationResult result;
         DeviceManagementProviderService dms;
         try {

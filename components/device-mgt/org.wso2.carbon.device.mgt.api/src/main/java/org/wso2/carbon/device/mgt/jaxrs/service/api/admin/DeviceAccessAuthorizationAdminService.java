@@ -22,7 +22,6 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import org.wso2.carbon.apimgt.annotations.api.API;
 import org.wso2.carbon.apimgt.annotations.api.Permission;
 import org.wso2.carbon.device.mgt.common.authorization.DeviceAuthorizationResult;
 import org.wso2.carbon.device.mgt.jaxrs.beans.AuthorizationRequest;
@@ -35,8 +34,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-@API(name = "DeviceAuthorizationAdmin", version = "1.0.0", context = "/api/device-mgt/v1.0/admin/authorization",
-        tags = {"device_management"})
 @Path("/admin/authorization")
 @Api(value = "Device Authorization Administrative Service", description = "This an  API intended to be used by " +
         "'internal' components to log in as an admin user and validate whether the user/device are trusted entity." +
@@ -78,6 +75,5 @@ public interface DeviceAccessAuthorizationAdminService {
                             " for a specified set of devices.",
                     response = ErrorResponse.class)
     })
-    @Permission(name = "Check the access authorization of the device", permission = "/device-mgt/device/authorize")
     Response isAuthorized(AuthorizationRequest authorizationRequest);
 }

@@ -30,7 +30,8 @@ public class PolicyList extends BasePaginatedResult {
 
     private List<Policy> policies;
 
-    @ApiModelProperty(value = "List of policies returned")
+    @ApiModelProperty(value = "Returns the list of policies that match the offset and limit parameter values"
+            + " that were specified.")
     @JsonProperty("policies")
     public List<Policy> getList() {
         return policies;

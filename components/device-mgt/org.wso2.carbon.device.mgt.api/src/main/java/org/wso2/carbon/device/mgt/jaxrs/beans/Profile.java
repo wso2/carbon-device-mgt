@@ -30,23 +30,53 @@ import java.util.List;
 @ApiModel(value = "Profile", description = "This class carries all information related to policy profiles")
 public class Profile {
 
-    @ApiModelProperty(name = "profileId", value = "The ID of each profile that is in the selected policy",
-            required = true)
+    @ApiModelProperty(
+            name = "profileId",
+            value = "The ID of each profile that is in the selected policy",
+            required = true,
+            example = "1")
     private int profileId;
-    @ApiModelProperty(name = "profileName", value = "The name of the profile", required = true)
+
+    @ApiModelProperty(
+            name = "profileName",
+            value = "The name of the profile",
+            required = true,
+            example = "Block Camera")
     private String profileName;
-    @ApiModelProperty(name = "tenantId", value = "The ID of the tenant that added the policy", required = true)
+
+    @ApiModelProperty(
+            name = "tenantId",
+            value = "The ID of the tenant that added the policy",
+            required = true,
+            example = "-1234")
     private int tenantId;
-    @ApiModelProperty(name = "deviceType", value = "Contains the device type details the policy was created "
-            + "for", required = true)
+
+    @ApiModelProperty(
+            name = "deviceType",
+            value = "Contains the device type details the policy was created for",
+            required = true,
+            example = "android")
     private String deviceType;
-    @ApiModelProperty(name = "createdDate", value = "The date the policy was created", required = true)
+
+    @ApiModelProperty(
+            name = "createdDate",
+            value = "The date the policy was created",
+            required = true,
+            example = "Thu, 6 Oct 2016 14:39:32 +0530")
     private Timestamp createdDate;
-    @ApiModelProperty(name = "updatedDate", value = "The date the changes made to the policy was published to"
-            + " the devices registered with the EMM", required = true)
+
+    @ApiModelProperty(
+            name = "updatedDate",
+            value = "The date the changes made to the policy was published to"
+                    + " the devices registered with the EMM",
+            required = true,
+            example = "Thu, 6 Oct 2016 14:39:32 +0530")
     private Timestamp updatedDate;
-    @ApiModelProperty(name = "profileFeaturesList", value = "Contains the features specific to each profile "
-            + "in the policy", required = true)
+
+    @ApiModelProperty(
+            name = "profileFeaturesList",
+            value = "Contains the features specific to each profile in the policy",
+            required = true)
     private List<ProfileFeature> profileFeaturesList;     // Features included in the policies.
 
     public String getDeviceType() {

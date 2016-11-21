@@ -18,10 +18,19 @@
  */
 package org.wso2.carbon.device.mgt.jaxrs.service.api;
 
-import io.swagger.annotations.*;
-import org.wso2.carbon.apimgt.annotations.api.API;
-import org.wso2.carbon.apimgt.annotations.api.Permission;
-import org.wso2.carbon.apimgt.annotations.api.Scope;
+import io.swagger.annotations.SwaggerDefinition;
+import io.swagger.annotations.Info;
+import io.swagger.annotations.ExtensionProperty;
+import io.swagger.annotations.Extension;
+import io.swagger.annotations.Tag;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.AuthorizationScope;
+import io.swagger.annotations.Authorization;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.ResponseHeader;
 import org.wso2.carbon.device.mgt.common.notification.mgt.Notification;
 import org.wso2.carbon.device.mgt.jaxrs.NotificationList;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
@@ -35,8 +44,22 @@ import javax.ws.rs.core.Response;
 /**
  * Notifications related REST-API.
  */
-@API(name = "DeviceNotificationManagement", version = "1.0.0", context = "/api/device-mgt/v1.0/notifications",
-        tags = {"device_management"})
+
+@SwaggerDefinition(
+        info = @Info(
+                version = "1.0.0",
+                title = "",
+                extensions = {
+                        @Extension(properties = {
+                                @ExtensionProperty(name = "name", value = "DeviceNotificationManagement"),
+                                @ExtensionProperty(name = "context", value = "/api/device-mgt/v1.0/notifications"),
+                        })
+                }
+        ),
+        tags = {
+                @Tag(name = "device_management", description = "")
+        }
+)
 @Api(value = "Device Notification Management", description = "Device notification related operations can be found here.")
 @Path("/notifications")
 @Produces(MediaType.APPLICATION_JSON)
@@ -49,7 +72,15 @@ public interface NotificationManagementService {
             httpMethod = "GET",
             value = "Getting All Device Notification Details",
             notes = "Get the details of all the notifications that were pushed to the devices registered with WSO2 EMM using this REST API.",
-            tags = "Device Notification Management")
+            tags = "Device Notification Management",
+            authorizations = {
+                    @Authorization(
+                            value="permission",
+                            scopes = { @AuthorizationScope(scope = "/device-mgt/notifications/view",
+                                    description = "View notifications") }
+                    )
+            }
+    )
     @ApiResponses(
             value = {
                     @ApiResponse(
@@ -71,7 +102,8 @@ public interface NotificationManagementService {
                             }),
                     @ApiResponse(
                             code = 304,
-                            message = "Not Modified. \n Empty body because the client already has the latest version of the requested resource."),
+                            message = "Not Modified. \n Empty body because the client already has the latest version " +
+                                    "of the requested resource."),
                     @ApiResponse(
                             code = 400,
                             message = "Bad Request. \n Invalid notification status type received. \n" +
@@ -90,7 +122,6 @@ public interface NotificationManagementService {
                                     "\n Server error occurred while fetching the notification list.",
                             response = ErrorResponse.class)
             })
-    @Permission(name = "View notifications", permission = "/device-mgt/notifications/view")
     Response getNotifications(
             @ApiParam(
                     name = "status",
@@ -132,7 +163,15 @@ public interface NotificationManagementService {
             value = "Updating the Device Notification Status",
             notes = "When a user has read the the device notification the device notification status must "
                     + "change from NEW to CHECKED. This API is used to update device notification status.",
-            tags = "Device Notification Management")
+            tags = "Device Notification Management",
+            authorizations = {
+                    @Authorization(
+                            value="permission",
+                            scopes = { @AuthorizationScope(scope = "/device-mgt/notifications/view",
+                                    description = "View notifications") }
+                    )
+            }
+    )
     @ApiResponses(
             value = {
                     @ApiResponse(
@@ -149,7 +188,6 @@ public interface NotificationManagementService {
                             message = "Error occurred while updating notification status.")
             }
     )
-    @Permission(name = "View notifications", permission = "/device-mgt/notifications/view")
     Response updateNotificationStatus(
             @ApiParam(
                     name = "id",

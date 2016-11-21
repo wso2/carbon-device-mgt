@@ -1,28 +1,25 @@
 /*
- * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright 2005-2015 WSO2, Inc. (http://wso2.com)
  *
- * WSO2 Inc. licenses this file to you under the Apache License,
- * Version 2.0 (the "License"); you may not use this file except
- * in compliance with the License.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied. See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package org.wso2.carbon.apimgt.webapp.publisher.lifecycle.util;
 
+import io.swagger.annotations.SwaggerDefinition;
 import org.apache.catalina.core.StandardContext;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.apimgt.annotations.api.API;
 import org.wso2.carbon.apimgt.webapp.publisher.APIPublisherUtil;
 import org.wso2.carbon.apimgt.webapp.publisher.config.APIResource;
 import org.wso2.carbon.apimgt.webapp.publisher.config.APIResourceConfiguration;
@@ -48,152 +45,134 @@ public class AnnotationProcessor {
 
     private static final Log log = LogFactory.getLog(AnnotationProcessor.class);
 
+    private static final String AUTH_TYPE = "Any";
+    private static final String STRING_ARR = "string_arr";
+    private static final String STRING = "string";
     private static final String PACKAGE_ORG_APACHE = "org.apache";
     private static final String PACKAGE_ORG_CODEHAUS = "org.codehaus";
     private static final String PACKAGE_ORG_SPRINGFRAMEWORK = "org.springframework";
     private static final String WILD_CARD = "/*";
 
-    private static final String AUTH_TYPE = "Any";
-    private static final String STRING_ARR = "string_arr";
-    private static final String STRING = "string";
+    private static final String SWAGGER_ANNOTATIONS_INFO = "info";
+    private static final String SWAGGER_ANNOTATIONS_TAGS = "tags";
+    private static final String SWAGGER_ANNOTATIONS_EXTENSIONS = "extensions";
+    private static final String SWAGGER_ANNOTATIONS_PROPERTIES = "properties";
+    private static final String SWAGGER_ANNOTATIONS_PROPERTIES_NAME = "name";
+    private static final String SWAGGER_ANNOTATIONS_PROPERTIES_VERSION = "version";
+    private static final String SWAGGER_ANNOTATIONS_PROPERTIES_CONTEXT = "context";
+    private static final String SWAGGER_ANNOTATIONS_PROPERTIES_VALUE = "value";
 
-    Class<API> apiClazz;
+
     private StandardContext context;
     private Method[] pathClazzMethods;
     private Class<Path> pathClazz;
     private ClassLoader classLoader;
     private ServletContext servletContext;
-
+    private Class<SwaggerDefinition> apiClazz;
+    private Class<Consumes> consumesClass;
+    private Class<Produces> producesClass;
+    private Class<io.swagger.annotations.Info> infoClass;
+    private Class<io.swagger.annotations.Tag> tagClass;
+    private Class<io.swagger.annotations.Extension> extensionClass;
+    private Class<io.swagger.annotations.ExtensionProperty> extensionPropertyClass;
 
     public AnnotationProcessor(final StandardContext context) {
         servletContext = context.getServletContext();
         classLoader = servletContext.getClassLoader();
+        try {
+            pathClazz = (Class<Path>) classLoader.loadClass(Path.class.getName());
+            consumesClass = (Class<Consumes>) classLoader.loadClass(Consumes.class.getName());
+            producesClass = (Class<Produces>) classLoader.loadClass(Produces.class.getName());
+            apiClazz= (Class<SwaggerDefinition>)classLoader.loadClass((SwaggerDefinition.class.getName()));
+            infoClass = (Class<io.swagger.annotations.Info>)classLoader
+                    .loadClass((io.swagger.annotations.Info.class.getName()));
+            tagClass = (Class<io.swagger.annotations.Tag>)classLoader
+                    .loadClass((io.swagger.annotations.Tag.class.getName()));
+            extensionClass = (Class<io.swagger.annotations.Extension>)classLoader
+                    .loadClass((io.swagger.annotations.Extension.class.getName()));
+            extensionPropertyClass = (Class<io.swagger.annotations.ExtensionProperty>)classLoader
+                    .loadClass((io.swagger.annotations.ExtensionProperty.class.getName()));
+        } catch (ClassNotFoundException e) {
+            log.error("An error has occurred while loading classes ", e);
+        }
     }
 
-    /**
-     * Scan the context for classes with annotations
-     *
-     * @return
-     * @throws IOException
-     */
     public Set<String> scanStandardContext(String className) throws IOException {
         ExtendedAnnotationDB db = new ExtendedAnnotationDB();
         db.addIgnoredPackages(PACKAGE_ORG_APACHE);
         db.addIgnoredPackages(PACKAGE_ORG_CODEHAUS);
         db.addIgnoredPackages(PACKAGE_ORG_SPRINGFRAMEWORK);
-
         URL classPath = findWebInfClassesPath(servletContext);
         db.scanArchives(classPath);
-
-        //Returns a list of classes with given Annotation
         return db.getAnnotationIndex().get(className);
     }
 
-    /**
-     * Method identifies the URL templates and context by reading the annotations of a class
-     *
-     * @param entityClasses
-     * @return
-     */
     public List<APIResourceConfiguration> extractAPIInfo(final ServletContext servletContext, Set<String> entityClasses)
             throws ClassNotFoundException {
-
         List<APIResourceConfiguration> apiResourceConfigs = new ArrayList<APIResourceConfiguration>();
-
         if (entityClasses != null && !entityClasses.isEmpty()) {
             for (final String className : entityClasses) {
-
-                APIResourceConfiguration resource =
+                APIResourceConfiguration apiResourceConfiguration =
                         AccessController.doPrivileged(new PrivilegedAction<APIResourceConfiguration>() {
                             public APIResourceConfiguration run() {
                                 Class<?> clazz = null;
                                 APIResourceConfiguration apiResourceConfig = null;
                                 try {
                                     clazz = classLoader.loadClass(className);
-
-                                    apiClazz = (Class<API>)
-                                            classLoader.loadClass(org.wso2.carbon.apimgt.annotations.api.API
-                                                    .class.getName());
-
-                                    Annotation apiAnno = clazz.getAnnotation(apiClazz);
+                                    Annotation swaggerDefinition = clazz.getAnnotation(apiClazz);
                                     List<APIResource> resourceList;
-
-                                    if (apiAnno != null) {
-
+                                    if (swaggerDefinition != null) {
                                         if (log.isDebugEnabled()) {
                                             log.debug("Application Context root = " + servletContext.getContextPath());
                                         }
-
                                         try {
-                                            apiResourceConfig = processAPIAnnotation(apiAnno);
-                                            String rootContext = servletContext.getContextPath();
-                                            pathClazz = (Class<Path>) classLoader.loadClass(Path.class.getName());
-                                            pathClazzMethods = pathClazz.getMethods();
-
-                                            Annotation rootContectAnno = clazz.getAnnotation(pathClazz);
-                                            String subContext;
-                                            if (rootContectAnno != null) {
-                                                subContext = invokeMethod(pathClazzMethods[0], rootContectAnno, STRING);
-                                                if (subContext != null && !subContext.isEmpty()) {
-                                                    if (subContext.trim().startsWith("/")) {
-                                                        rootContext = rootContext + subContext;
-                                                    } else {
-                                                        rootContext = rootContext + "/" + subContext;
+                                            apiResourceConfig = processAPIAnnotation(swaggerDefinition);
+                                            if(apiResourceConfig != null){
+                                                String rootContext = servletContext.getContextPath();
+                                                pathClazzMethods = pathClazz.getMethods();
+                                                Annotation rootContectAnno = clazz.getAnnotation(pathClazz);
+                                                String subContext;
+                                                if (rootContectAnno != null) {
+                                                    subContext = invokeMethod(pathClazzMethods[0], rootContectAnno
+                                                            , STRING);
+                                                    if (subContext != null && !subContext.isEmpty()) {
+                                                        if (subContext.trim().startsWith("/")) {
+                                                            rootContext = rootContext + subContext;
+                                                        } else {
+                                                            rootContext = rootContext + "/" + subContext;
+                                                        }
+                                                    }
+                                                    if (log.isDebugEnabled()) {
+                                                        log.debug("API Root  Context = " + rootContext);
                                                     }
                                                 }
-                                                if (log.isDebugEnabled()) {
-                                                    log.debug("API Root  Context = " + rootContext);
-                                                }
+                                                Method[] annotatedMethods = clazz.getDeclaredMethods();
+                                                resourceList = getApiResources(rootContext, annotatedMethods);
+                                                apiResourceConfig.setResources(resourceList);
                                             }
 
-                                            Method[] annotatedMethods = clazz.getDeclaredMethods();
-                                            resourceList = getApiResources(rootContext, annotatedMethods);
-                                            apiResourceConfig.setResources(resourceList);
                                         } catch (Throwable throwable) {
                                             log.error("Error encountered while scanning for annotations", throwable);
                                         }
                                     }
-                                } catch (ClassNotFoundException e) {
-                                    log.error("Error when passing the api annotation for device type apis.", e);
+                                } catch (ClassNotFoundException e1) {
+                                    String msg = "Failed to load service class " + className + " for publishing APIs." +
+                                            " This API will not be published.";
+                                    log.error(msg);
+                                } catch (RuntimeException e) {
+                                    log.error("Unexpected error has been occurred while publishing "+ className
+                                            +"hence, this API will not be published.");
+                                    throw new RuntimeException(e);
                                 }
                                 return apiResourceConfig;
                             }
                         });
-                apiResourceConfigs.add(resource);
+                if(apiResourceConfiguration !=null)
+                    apiResourceConfigs.add(apiResourceConfiguration);
             }
         }
         return apiResourceConfigs;
     }
-
-    /**
-     * Iterate API annotation and build API Configuration
-     *
-     * @param apiAnno
-     * @return
-     * @throws Throwable
-     */
-    private APIResourceConfiguration processAPIAnnotation(Annotation apiAnno) throws Throwable {
-        Method[] apiClazzMethods = apiClazz.getMethods();
-        APIResourceConfiguration apiResourceConfig = new APIResourceConfiguration();
-        for (int k = 0; k < apiClazzMethods.length; k++) {
-            switch (apiClazzMethods[k].getName()) {
-                case "name":
-                    apiResourceConfig.setName(invokeMethod(apiClazzMethods[k], apiAnno, STRING));
-                    break;
-                case "version":
-                    apiResourceConfig.setVersion(invokeMethod(apiClazzMethods[k], apiAnno, STRING));
-                    break;
-                case "context":
-                    apiResourceConfig.setContext(invokeMethod(apiClazzMethods[k], apiAnno, STRING));
-                    break;
-                case "tags":
-                    apiResourceConfig.setTags(invokeMethod(apiClazzMethods[k], apiAnno));
-                    break;
-            }
-        }
-        return apiResourceConfig;
-    }
-
 
     /**
      * Get Resources for each API
@@ -209,7 +188,6 @@ public class AnnotationProcessor {
         for (Method method : annotatedMethods) {
             Annotation[] annotations = method.getDeclaredAnnotations();
             APIResource resource = new APIResource();
-
             if (isHttpMethodAvailable(annotations)) {
                 Annotation methodContextAnno = method.getAnnotation(pathClazz);
                 if (methodContextAnno != null) {
@@ -218,32 +196,20 @@ public class AnnotationProcessor {
                     subCtx = WILD_CARD;
                 }
                 resource.setUriTemplate(makeContextURLReady(subCtx));
-
                 resource.setUri(APIPublisherUtil.getServerBaseUrl() + makeContextURLReady(resourceRootContext) +
                         makeContextURLReady(subCtx));
                 resource.setAuthType(AUTH_TYPE);
-
                 for (int i = 0; i < annotations.length; i++) {
                     processHTTPMethodAnnotation(resource, annotations[i]);
                     if (annotations[i].annotationType().getName().equals(Consumes.class.getName())) {
-                        Class<Consumes> consumesClass = (Class<Consumes>) classLoader.loadClass(
-                                Consumes.class.getName());
                         Method[] consumesClassMethods = consumesClass.getMethods();
                         Annotation consumesAnno = method.getAnnotation(consumesClass);
                         resource.setConsumes(invokeMethod(consumesClassMethods[0], consumesAnno, STRING_ARR));
                     }
                     if (annotations[i].annotationType().getName().equals(Produces.class.getName())) {
-                        Class<Produces> producesClass = (Class<Produces>) classLoader.loadClass(
-                                Produces.class.getName());
                         Method[] producesClassMethods = producesClass.getMethods();
                         Annotation producesAnno = method.getAnnotation(producesClass);
                         resource.setProduces(invokeMethod(producesClassMethods[0], producesAnno, STRING_ARR));
-                    }
-                    if (annotations[i].annotationType().getName().equals(org.wso2.carbon.apimgt.annotations.api.Scope.class.getName())) {
-                        org.wso2.carbon.apimgt.api.model.Scope scope = this.getScope(method);
-                        if (scope != null) {
-                            resource.setScope(scope);
-                        }
                     }
                 }
                 resourceList.add(resource);
@@ -294,6 +260,61 @@ public class AnnotationProcessor {
     }
 
     /**
+     * Iterate API annotation and build API Configuration
+     *
+     * @param annotation reading @SwaggerDefinition annotation
+     * @return APIResourceConfiguration which compose with an API information which has its name, context,version,and tags
+     * @throws Throwable
+     */
+    private APIResourceConfiguration processAPIAnnotation(Annotation annotation) throws Throwable {
+        InvocationHandler methodHandler = Proxy.getInvocationHandler(annotation);
+        Annotation info = (Annotation) methodHandler.invoke(annotation, apiClazz
+                .getMethod(SWAGGER_ANNOTATIONS_INFO,null),null);
+        Annotation[] tags = (Annotation[]) methodHandler.invoke(annotation, apiClazz
+                .getMethod(SWAGGER_ANNOTATIONS_TAGS,null),null);
+        String[] tagNames = new String[tags.length];
+        for(int i=0; i<tags.length; i++){
+            methodHandler = Proxy.getInvocationHandler(tags[i]);
+            tagNames[i]=(String)methodHandler.invoke(tags[i], tagClass
+                    .getMethod(SWAGGER_ANNOTATIONS_PROPERTIES_NAME, null),null);
+        }
+        methodHandler = Proxy.getInvocationHandler(info);
+        String version = (String)methodHandler.invoke(info, infoClass
+                .getMethod(SWAGGER_ANNOTATIONS_PROPERTIES_VERSION,null),null);
+        if("".equals(version))return null;
+        Annotation[] apiInfo = (Annotation[])methodHandler.invoke(info, infoClass
+                .getMethod(SWAGGER_ANNOTATIONS_EXTENSIONS,null),null);
+        methodHandler = Proxy.getInvocationHandler(apiInfo[0]);
+        Annotation[] properties =  (Annotation[])methodHandler.invoke(apiInfo[0], extensionClass
+                        .getMethod(SWAGGER_ANNOTATIONS_PROPERTIES,null), null);
+        APIResourceConfiguration apiResourceConfig = new APIResourceConfiguration();
+        for (Annotation property : properties) {
+            methodHandler = Proxy.getInvocationHandler(property);
+            String key = (String) methodHandler.invoke(property, extensionPropertyClass
+                            .getMethod(SWAGGER_ANNOTATIONS_PROPERTIES_NAME, null),
+                    null);
+            String value = (String) methodHandler.invoke(property, extensionPropertyClass
+                            .getMethod(SWAGGER_ANNOTATIONS_PROPERTIES_VALUE, null),null);
+            if ("".equals(key)) return null;
+            switch (key) {
+                case SWAGGER_ANNOTATIONS_PROPERTIES_NAME:
+                    if ("".equals(value)) return null;
+                    apiResourceConfig.setName(value);
+                    break;
+                case SWAGGER_ANNOTATIONS_PROPERTIES_CONTEXT:
+                    if ("".equals(value)) return null;
+                    apiResourceConfig.setContext(value);
+                    break;
+                default:
+                    break;
+            }
+        }
+        apiResourceConfig.setVersion(version);
+        apiResourceConfig.setTags(tagNames);
+        return apiResourceConfig;
+    }
+
+    /**
      * Append '/' to the context and make it URL ready
      *
      * @param context
@@ -332,40 +353,6 @@ public class AnnotationProcessor {
     }
 
     /**
-     * When an annotation and method is passed, this method invokes that executes said method against the annotation
-     */
-    private String[] invokeMethod(Method method, Annotation annotation) throws Throwable {
-        InvocationHandler methodHandler = Proxy.getInvocationHandler(annotation);
-        return ((String[]) methodHandler.invoke(annotation, method, null));
-    }
-
-    private org.wso2.carbon.apimgt.api.model.Scope getScope(Method currentMethod) throws Throwable {
-        Class<org.wso2.carbon.apimgt.annotations.api.Scope> scopeClass =
-                (Class<org.wso2.carbon.apimgt.annotations.api.Scope>) classLoader.
-                        loadClass(org.wso2.carbon.apimgt.annotations.api.Scope.class.getName());
-        Annotation permissionAnnotation = currentMethod.getAnnotation(scopeClass);
-        if (scopeClass != null) {
-            Method[] permissionClassMethods = scopeClass.getMethods();
-            org.wso2.carbon.apimgt.api.model.Scope scope = new org.wso2.carbon.apimgt.api.model.Scope();
-            for (Method method : permissionClassMethods) {
-                switch (method.getName()) {
-                    case "key":
-                        scope.setKey(invokeMethod(method, permissionAnnotation, STRING));
-                        break;
-                    case "name":
-                        scope.setName(invokeMethod(method, permissionAnnotation, STRING));
-                        break;
-                    case "description":
-                        scope.setDescription(invokeMethod(method, permissionAnnotation, STRING));
-                        break;
-                }
-            }
-            return scope;
-        }
-        return null;
-    }
-
-    /**
      * Find the URL pointing to "/WEB-INF/classes"  This method may not work in conjunction with IteratorFactory
      * if your servlet container does not extract the /WEB-INF/classes into a real file-based directory
      *
@@ -388,5 +375,4 @@ public class AnnotationProcessor {
             throw new RuntimeException(e);
         }
     }
-
 }

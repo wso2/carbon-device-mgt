@@ -19,9 +19,7 @@
 package org.wso2.carbon.device.mgt.jaxrs.service.api.admin;
 
 import io.swagger.annotations.*;
-import org.wso2.carbon.apimgt.annotations.api.API;
 import org.wso2.carbon.apimgt.annotations.api.Permission;
-import org.wso2.carbon.apimgt.annotations.api.Scope;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Activity;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ApplicationWrapper;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
@@ -33,8 +31,21 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-@API(name = "ApplicationManagementAdmin", version = "1.0.0", context = "/api/device-mgt/v1.0/admin/applications", tags = {"device_management"})
-
+@SwaggerDefinition(
+        info = @Info(
+                version = "1.0.0",
+                title = "",
+                extensions = {
+                        @Extension(properties = {
+                                @ExtensionProperty(name = "name", value = "ApplicationManagementAdmin"),
+                                @ExtensionProperty(name = "context", value = "/api/device-mgt/v1.0/admin/applications"),
+                        })
+                }
+        ),
+        tags = {
+                @Tag(name = "device_management", description = "")
+        }
+)
 @Path("/admin/applications")
 @Api(value = "Application Management Administrative Service", description = "This an  API intended to be used by " +
         "'internal' components to log in as an admin user and do a selected number of operations. " +
@@ -52,7 +63,15 @@ public interface ApplicationManagementAdminService {
             value = "Installing an Application (Internal API)",
             notes = "This is an internal API that can be used to install an application on a device.",
             response = Activity.class,
-            tags = "Application Management Administrative Service")
+            tags = "Application Management Administrative Service",
+            authorizations = {
+                    @Authorization(
+                            value="permission",
+                            scopes = { @AuthorizationScope(scope = "/device-mgt/applications/manage", description
+                                    = "Install/Uninstall applications") }
+                    )
+            }
+    )
     @ApiResponses(value = {
             @ApiResponse(
                     code = 202,
@@ -75,7 +94,6 @@ public interface ApplicationManagementAdminService {
                             " for a specified set of devices.",
                     response = ErrorResponse.class)
     })
-    @Permission(name = "Install/Uninstall applications", permission = "/device-mgt/applications/manage")
     Response installApplication(
             @ApiParam(
                     name = "applicationWrapper",
@@ -91,7 +109,15 @@ public interface ApplicationManagementAdminService {
             value = "Uninstalling an Application (Internal API)\n",
             notes = "This is an internal API that can be used to uninstall an application.",
             response = Activity.class,
-            tags = "Application Management Administrative Service")
+            tags = "Application Management Administrative Service",
+            authorizations = {
+                    @Authorization(
+                            value="permission",
+                            scopes = { @AuthorizationScope(scope = "/device-mgt/applications/manage", description
+                                    = "Install/Uninstall applications") }
+                    )
+            }
+    )
     @ApiResponses(value = {
             @ApiResponse(
                     code = 202,
@@ -109,11 +135,10 @@ public interface ApplicationManagementAdminService {
                     message = "Unsupported media type. \n The entity of the request was in a not supported format."),
             @ApiResponse(
                     code = 500,
-                    message = "Internal Server Error. \n Server error occurred while executing the application install operation in bulk" +
-                    " for a specified set of devices.",
+                    message = "Internal Server Error. \n Server error occurred while executing the application install" +
+                            " operation in bulk for a specified set of devices.",
                     response = ErrorResponse.class)
     })
-    @Permission(name = "Install/Uninstall applications", permission = "/device-mgt/applications/manage")
     Response uninstallApplication(
             @ApiParam(
                     name = "applicationWrapper",

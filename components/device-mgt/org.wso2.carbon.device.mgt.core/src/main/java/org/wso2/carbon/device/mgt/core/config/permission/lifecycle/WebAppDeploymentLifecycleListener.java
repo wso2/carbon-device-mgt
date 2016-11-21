@@ -59,7 +59,7 @@ public class WebAppDeploymentLifecycleListener implements LifecycleListener {
                 try {
                     AnnotationProcessor annotationProcessor = new AnnotationProcessor(context);
                     Set<String> annotatedAPIClasses = annotationProcessor.
-                            scanStandardContext(org.wso2.carbon.apimgt.annotations.api.API.class.getName());
+                            scanStandardContext(io.swagger.annotations.SwaggerDefinition.class.getName());
                     List<Permission> permissions = annotationProcessor.extractPermissions(annotatedAPIClasses);
                     PermissionManagerService permissionManagerService = PermissionManagerServiceImpl.getInstance();
                     if (permissions != null) {

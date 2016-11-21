@@ -1,9 +1,18 @@
 package org.wso2.carbon.certificate.mgt.cert.jaxrs.api;
 
-import io.swagger.annotations.*;
-import org.wso2.carbon.apimgt.annotations.api.API;
-import org.wso2.carbon.apimgt.annotations.api.Permission;
-import org.wso2.carbon.apimgt.annotations.api.Scope;
+import io.swagger.annotations.SwaggerDefinition;
+import io.swagger.annotations.Info;
+import io.swagger.annotations.ExtensionProperty;
+import io.swagger.annotations.Extension;
+import io.swagger.annotations.Tag;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.AuthorizationScope;
+import io.swagger.annotations.Authorization;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.ResponseHeader;
 import org.wso2.carbon.certificate.mgt.cert.jaxrs.api.beans.CertificateList;
 import org.wso2.carbon.certificate.mgt.cert.jaxrs.api.beans.EnrollmentCertificate;
 import org.wso2.carbon.certificate.mgt.cert.jaxrs.api.beans.ErrorResponse;
@@ -13,10 +22,21 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-@API(name = "Certificate Management", version = "1.0.0",
-        context = "api/certificate-mgt/v1.0/admin/certificates",
-        tags = {"devicemgt_admin"})
-
+@SwaggerDefinition(
+        info = @Info(
+                version = "1.0.0",
+                title = "",
+                extensions = {
+                        @Extension(properties = {
+                                @ExtensionProperty(name = "name", value = "Certificate Management"),
+                                @ExtensionProperty(name = "context", value = "api/certificate-mgt/v1.0/admin/certificates"),
+                        })
+                }
+        ),
+        tags = {
+                @Tag(name = "devicemgt_admin", description = "")
+        }
+)
 @Api(value = "Certificate Management", description = "This API includes all the certificate management related operations")
 @Path("/admin/certificates")
 @Produces(MediaType.APPLICATION_JSON)
@@ -37,7 +57,15 @@ public interface CertificateManagementAdminService {
             httpMethod = "POST",
             value = "Adding a new SSL certificate",
             notes = "Add a new SSL certificate to the client end database.\n",
-            tags = "Certificate Management")
+            tags = "Certificate Management",
+            authorizations = {
+                    @Authorization(
+                            value="permission",
+                            scopes = { @AuthorizationScope(scope = "/device-mgt/certificates/manage",
+                                    description = "Manage certificates") }
+                    )
+            }
+    )
     @ApiResponses(
             value = {
                     @ApiResponse(
@@ -77,7 +105,6 @@ public interface CertificateManagementAdminService {
                             message = "Internal Server Error. \n Server error occurred while adding certificates.",
                             response = ErrorResponse.class)
             })
-    @Permission(name = "Manage certificates", permission = "/device-mgt/certificates/manage")
     Response addCertificate(
             @ApiParam(
                     name = "enrollmentCertificates",
@@ -101,7 +128,15 @@ public interface CertificateManagementAdminService {
             httpMethod = "GET",
             value = "Getting Details of an SSL Certificate",
             notes = "Get the client side SSL certificate details.",
-            tags = "Certificate Management")
+            tags = "Certificate Management",
+            authorizations = {
+                    @Authorization(
+                            value="permission",
+                            scopes = { @AuthorizationScope(scope = "/device-mgt/certificates/view",
+                                    description = "View certificates") }
+                    )
+            }
+    )
     @ApiResponses(value = {
             @ApiResponse(
                     code = 200,
@@ -137,7 +172,6 @@ public interface CertificateManagementAdminService {
                             "Server error occurred while retrieving the requested certificate information.",
                     response = ErrorResponse.class)
     })
-    @Permission(name = "View certificates", permission = "/device-mgt/certificates/view")
     Response getCertificate(
             @ApiParam(name = "serialNumber",
                     value = "The serial number of the certificate.",
@@ -167,7 +201,14 @@ public interface CertificateManagementAdminService {
             notes = "Get all the details of the certificates you have used for mutual SSL. In a situation where you wish to "
                     + "view all the certificate details, it is not feasible to show all the details on one "
                     + "page. Therefore, the details are paginated.",
-            tags = "Certificate Management"
+            tags = "Certificate Management",
+            authorizations = {
+                    @Authorization(
+                            value="permission",
+                            scopes = { @AuthorizationScope(scope = "/device-mgt/certificates/view",
+                                    description = "View certificates") }
+                    )
+            }
     )
     @ApiResponses(value = {
             @ApiResponse(
@@ -212,7 +253,6 @@ public interface CertificateManagementAdminService {
                             "Server error occurred while retrieving the certificate details.",
                     response = ErrorResponse.class)
     })
-    @Permission(name = "View certificates", permission = "/device-mgt/certificates/view")
     Response getAllCertificates(
             @ApiParam(
                     name = "offset",
@@ -242,7 +282,15 @@ public interface CertificateManagementAdminService {
             httpMethod = "DELETE",
             value = "Deleting an SSL Certificate",
             notes = "Delete an SSL certificate that's on the client end.",
-            tags = "Certificate Management")
+            tags = "Certificate Management",
+            authorizations = {
+                    @Authorization(
+                            value="permission",
+                            scopes = { @AuthorizationScope(scope = "/device-mgt/certificates/manage",
+                                    description = "Manage certificates") }
+                    )
+            }
+    )
     @ApiResponses(value = {
             @ApiResponse(
                     code = 200,
@@ -259,7 +307,6 @@ public interface CertificateManagementAdminService {
                     message = "Internal Server Error. \n " +
                             "Server error occurred while removing the certificate.",
                     response = ErrorResponse.class)})
-    @Permission(name = "Manage certificates", permission = "/device-mgt/certificates/manage")
     Response removeCertificate(
             @ApiParam(
                     name = "serialNumber",

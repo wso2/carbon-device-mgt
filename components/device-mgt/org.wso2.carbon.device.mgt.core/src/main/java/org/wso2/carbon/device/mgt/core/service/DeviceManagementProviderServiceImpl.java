@@ -37,6 +37,7 @@ import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
 import org.wso2.carbon.device.mgt.common.spi.DeviceManagementService;
 import org.wso2.carbon.device.mgt.core.DeviceManagementPluginRepository;
+import org.wso2.carbon.device.mgt.core.config.identity.IdentityConfigurations;
 import org.wso2.carbon.device.mgt.core.dao.*;
 import org.wso2.carbon.device.mgt.core.device.details.mgt.dao.DeviceDetailsDAO;
 import org.wso2.carbon.device.mgt.core.device.details.mgt.dao.DeviceDetailsMgtDAOException;
@@ -1868,7 +1869,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         } catch (DeviceNotFoundException e) {
             throw new DeviceManagementException("Unable to find the device with the id: '" + deviceIdentifier.getId(),
                     e);
-        } catch (GroupManagementException | GroupAlreadyExistException e) {
+        } catch (GroupManagementException | UserStoreException e) {
             throw new DeviceManagementException("An error occurred when adding the device to the group.", e);
         }
     }
@@ -1876,19 +1877,20 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     /**
      * Checks for the default group existence and create group based on device ownership
      *
-     * @param service          {@link GroupManagementProviderService}
+     * @param service          {@link GroupManagementProviderService} instance.
      * @param groupName        of the group to create.
      * @param groupDescription of the group to create.
      * @return Group with details.
      * @throws GroupManagementException
-     * @throws GroupAlreadyExistException
      */
     private DeviceGroup createDefaultGroup(GroupManagementProviderService service, String groupName,
-            String groupDescription) throws GroupManagementException, GroupAlreadyExistException {
+            String groupDescription) throws GroupManagementException, UserStoreException {
         DeviceGroup defaultGroup = service.getGroup(groupName);
         if (defaultGroup == null) {
             defaultGroup = new DeviceGroup(groupName, groupDescription);
-            defaultGroup.setOwner(PrivilegedCarbonContext.getThreadLocalCarbonContext().getUsername());
+            defaultGroup.setOwner(
+                    PrivilegedCarbonContext.getThreadLocalCarbonContext().getUserRealm().getRealmConfiguration()
+                            .getAdminUserName());
             defaultGroup.setDateOfCreation(new Date().getTime());
             defaultGroup.setDateOfLastUpdate(new Date().getTime());
             try {
@@ -1896,7 +1898,8 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                         DeviceGroupConstants.Permissions.DEFAULT_ADMIN_PERMISSIONS);
             } catch (GroupAlreadyExistException e) {
                 if (log.isDebugEnabled()) {
-                    log.debug("Default group: " + defaultGroup.getName() + " already exists.", e);
+                    log.debug("Default group: " + defaultGroup.getName() + " already exists. Skipping group creation.",
+                            e);
                 }
             }
             return service.getGroup(groupName);

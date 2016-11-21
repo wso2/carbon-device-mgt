@@ -78,7 +78,7 @@ public interface GroupManagementProviderService {
     DeviceGroup getGroup(int groupId) throws GroupManagementException;
 
     /**
-     * Get the device group provided the device group id.
+     * Get the device group provided the device group name.
      *
      * @param groupName of the group.
      * @return group with details.

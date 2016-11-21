@@ -47,17 +47,25 @@ public class DeviceAccessAuthorizationAdminServiceImpl implements DeviceAccessAu
     @POST
     @Override
     public Response isAuthorized(AuthorizationRequest authorizationRequest) {
+        int currentTenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+        String loggedinUserTenantDomain = CarbonContext.getThreadLocalCarbonContext().getTenantDomain();
+        if (authorizationRequest.getTenantDomain() != null) {
+            if (!loggedinUserTenantDomain.equals(authorizationRequest.getTenantDomain())) {
+                if (MultitenantConstants.SUPER_TENANT_ID != currentTenantId) {
+                    return Response.status(Response.Status.UNAUTHORIZED).entity(
+                            new ErrorResponse.ErrorResponseBuilder().setMessage(
+                                    "Current logged in user is not authorized to perform this operation").build())
+                            .build();
+                }
+            }
+        } else {
+            authorizationRequest.setTenantDomain(loggedinUserTenantDomain);
+        }
+        if (authorizationRequest.getTenantDomain() == null || authorizationRequest.getTenantDomain().isEmpty()) {
+            authorizationRequest.setTenantDomain(
+                    PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantDomain());
+        }
         try {
-            int currentTenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
-            if (MultitenantConstants.SUPER_TENANT_ID != currentTenantId) {
-                return Response.status(Response.Status.UNAUTHORIZED).entity(
-                        new ErrorResponse.ErrorResponseBuilder().setMessage(
-                                "Current logged in user is not authorized to perform this operation").build()).build();
-            }
-            if (authorizationRequest.getTenantDomain() == null || authorizationRequest.getTenantDomain().isEmpty()) {
-                authorizationRequest.setTenantDomain(
-                        PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantDomain());
-            }
             PrivilegedCarbonContext.startTenantFlow();
             PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(
                     authorizationRequest.getTenantDomain(), true);

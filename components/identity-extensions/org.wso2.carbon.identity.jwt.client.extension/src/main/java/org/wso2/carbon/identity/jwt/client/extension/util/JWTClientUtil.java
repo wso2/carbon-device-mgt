@@ -33,6 +33,7 @@ import org.apache.http.conn.ssl.SSLContextBuilder;
 import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.apache.solr.common.util.Hash;
 import org.wso2.carbon.base.MultitenantConstants;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.core.util.KeyStoreManager;
@@ -55,7 +56,9 @@ import java.security.*;
 import java.security.cert.CertificateException;
 import java.security.interfaces.RSAPrivateKey;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -193,8 +196,13 @@ public class JWTClientUtil {
 		tenantRegistryLoader.loadTenantRegistry(tenantId);
 	}
 
-	public static String generateSignedJWTAssertion(String username, JWTConfig jwtConfig, boolean isDefaultJWTClient)
-			throws JWTClientException {
+    public static String generateSignedJWTAssertion(String username, JWTConfig jwtConfig, boolean isDefaultJWTClient)
+            throws JWTClientException {
+        return generateSignedJWTAssertion(username, jwtConfig, isDefaultJWTClient, null);
+    }
+
+	public static String generateSignedJWTAssertion(String username, JWTConfig jwtConfig, boolean isDefaultJWTClient,
+                                                    Map<String, String> customClaims) throws JWTClientException {
 		try {
 			String subject = username;
 			long currentTimeMillis = System.currentTimeMillis();
@@ -222,6 +230,11 @@ public class JWTClientUtil {
 			claimsSet.setNotBeforeTime(new Date(nbf));
 			claimsSet.setJWTID(jti);
 			claimsSet.setAudience(aud);
+            if (customClaims != null && !customClaims.isEmpty()) {
+                for (String key : customClaims.keySet()) {
+                    claimsSet.setClaim(key, customClaims.get(key));
+                }
+            }
 
 			// get Keystore params
 			String keyStorePath = jwtConfig.getKeyStorePath();

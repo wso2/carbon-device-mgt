@@ -129,6 +129,7 @@ public class DeviceAccessAuthorizationServiceImpl implements DeviceAccessAuthori
         DeviceAuthorizationResult deviceAuthorizationResult = new DeviceAuthorizationResult();
         if (isAdmin(username, tenantId)) {
             deviceAuthorizationResult.setAuthorizedDevices(deviceIdentifiers);
+            return deviceAuthorizationResult;
         }
         for (DeviceIdentifier deviceIdentifier : deviceIdentifiers) {
             //check for admin and ownership permissions

@@ -43,6 +43,7 @@ import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -163,6 +164,10 @@ public class JWTClient {
 	public String getJwtToken(String username) throws JWTClientException {
 		return JWTClientUtil.generateSignedJWTAssertion(username, jwtConfig, isDefaultJWTClient);
 	}
+
+    public String getJwtToken(String username, Map<String, String> claims) throws JWTClientException {
+        return JWTClientUtil.generateSignedJWTAssertion(username, jwtConfig, isDefaultJWTClient, claims);
+    }
 
 }
 

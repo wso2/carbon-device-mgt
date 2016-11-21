@@ -92,6 +92,6 @@ public class APIUtil {
         //Todo get allowed cdmf service tags from config.
         List<String> allowedApisTags = getDeviceManagementProviderService().getAvailableDeviceTypes();
         allowedApisTags.add(DEFAULT_CDMF_API_TAG);
-        return getAllowedApisTags();
+        return allowedApisTags;
     }
 }

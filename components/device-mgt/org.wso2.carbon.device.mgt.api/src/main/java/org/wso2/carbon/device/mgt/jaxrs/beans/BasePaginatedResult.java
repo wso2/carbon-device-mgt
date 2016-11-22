@@ -26,7 +26,9 @@ public class BasePaginatedResult {
     /**
      * Number of Resources returned.
      */
-    @ApiModelProperty(value = "Number of total resources.", example = "2")
+    @ApiModelProperty(
+            value = "Number of total resources.",
+            example = "1")
     @JsonProperty("count")
     private int count;
 

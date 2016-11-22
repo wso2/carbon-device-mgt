@@ -50,9 +50,8 @@ public class DeviceGroup implements Serializable {
 
     public DeviceGroup() {}
 
-    public DeviceGroup(String name, String description) {
+    public DeviceGroup(String name) {
         this.name = name;
-        this.description = description;
     }
 
     public int getGroupId() {

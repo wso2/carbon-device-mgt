@@ -19,8 +19,8 @@ package org.wso2.carbon.device.mgt.core.service;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.CarbonConstants;
 import org.wso2.carbon.context.CarbonContext;
-import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.common.*;
 import org.wso2.carbon.device.mgt.common.app.mgt.Application;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.PlatformConfiguration;
@@ -1846,30 +1846,21 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
      * Adds the enrolled devices to the default groups based on ownership
      *
      * @param deviceIdentifier of the device.
-     * @param ownerShip        of the device.
+     * @param ownership        of the device.
      * @throws DeviceManagementException If error occurred in adding the device to the group.
      */
-    private void addDeviceToGroups(DeviceIdentifier deviceIdentifier, EnrolmentInfo.OwnerShip ownerShip)
+    private void addDeviceToGroups(DeviceIdentifier deviceIdentifier, EnrolmentInfo.OwnerShip ownership)
             throws DeviceManagementException {
         GroupManagementProviderService groupManagementProviderService = new GroupManagementProviderServiceImpl();
-        DeviceGroup defaultGroup = null;
         try {
-            if (ownerShip == EnrolmentInfo.OwnerShip.BYOD) {
-                defaultGroup = createDefaultGroup(groupManagementProviderService,
-                        DeviceGroupConstants.DefaultGroups.BYOD_GROUP_NAME,
-                        DeviceGroupConstants.DefaultGroups.BYOD_GROUP_DESCRIPTION);
-            } else if (ownerShip == EnrolmentInfo.OwnerShip.COPE) {
-                defaultGroup = createDefaultGroup(groupManagementProviderService,
-                        DeviceGroupConstants.DefaultGroups.COPE_GROUP_NAME,
-                        DeviceGroupConstants.DefaultGroups.COPE_GROUP_DESCRIPTION);
-            }
+            DeviceGroup defaultGroup = createDefaultGroup(groupManagementProviderService, ownership.toString());
             if (defaultGroup != null) {
                 groupManagementProviderService.addDevice(defaultGroup.getGroupId(), deviceIdentifier);
             }
         } catch (DeviceNotFoundException e) {
             throw new DeviceManagementException("Unable to find the device with the id: '" + deviceIdentifier.getId(),
                     e);
-        } catch (GroupManagementException | UserStoreException e) {
+        } catch (GroupManagementException e) {
             throw new DeviceManagementException("An error occurred when adding the device to the group.", e);
         }
     }
@@ -1879,18 +1870,16 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
      *
      * @param service          {@link GroupManagementProviderService} instance.
      * @param groupName        of the group to create.
-     * @param groupDescription of the group to create.
      * @return Group with details.
      * @throws GroupManagementException
      */
-    private DeviceGroup createDefaultGroup(GroupManagementProviderService service, String groupName,
-            String groupDescription) throws GroupManagementException, UserStoreException {
+    private DeviceGroup createDefaultGroup(GroupManagementProviderService service, String groupName)
+            throws GroupManagementException {
         DeviceGroup defaultGroup = service.getGroup(groupName);
         if (defaultGroup == null) {
-            defaultGroup = new DeviceGroup(groupName, groupDescription);
-            defaultGroup.setOwner(
-                    PrivilegedCarbonContext.getThreadLocalCarbonContext().getUserRealm().getRealmConfiguration()
-                            .getAdminUserName());
+            defaultGroup = new DeviceGroup(groupName);
+            // Setting system level user (wso2.system.user) as the owner
+            defaultGroup.setOwner(CarbonConstants.REGISTRY_SYSTEM_USERNAME);
             defaultGroup.setDateOfCreation(new Date().getTime());
             defaultGroup.setDateOfLastUpdate(new Date().getTime());
             try {

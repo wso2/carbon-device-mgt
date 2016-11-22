@@ -79,16 +79,4 @@ public class DeviceGroupConstants {
         public static final String[] DEFAULT_VIEW_EVENTS_PERMISSIONS =
                 {"/permission/device-mgt/user/groups/device_events"};
     }
-
-    /**
-     * Holds the constants related to default (System Generated) groups.
-     */
-    public static class DefaultGroups {
-        public static final String BYOD_GROUP_NAME = "BYOD";
-        public static final String BYOD_GROUP_DESCRIPTION = "This is the default group for BYOD (Bring Your Own Device)"
-                + " type devices.";
-        public static final String COPE_GROUP_NAME = "COPE";
-        public static final String COPE_GROUP_DESCRIPTION = "This is the default group for COPE (Corporate Owned) type"
-                + " devices.";
-    }
 }

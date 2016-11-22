@@ -27,6 +27,7 @@
         <jaxrs:serviceBeans>
             <ref bean="deviceManagementService"/>
             <ref bean="deviceManagementAdminService"/>
+			<ref bean="deviceAccessAuthorizationAdminService"/>
             <ref bean="deviceTypeManagementService"/>
             <ref bean="activityProviderService"/>
             <ref bean="notificationManagementService"/>
@@ -80,6 +81,7 @@
     <bean id="userManagementAdminService" class="org.wso2.carbon.device.mgt.jaxrs.service.impl.admin.UserManagementAdminServiceImpl"/>
     <bean id="dashboardServiceBean" class="org.wso2.carbon.device.mgt.jaxrs.service.impl.DashboardImpl"/>
     <bean id="deviceTypeManagementAdminService" class="org.wso2.carbon.device.mgt.jaxrs.service.impl.DeviceTypeManagementServiceImpl"/>
+	<bean id="deviceAccessAuthorizationAdminService" class="org.wso2.carbon.device.mgt.jaxrs.service.impl.admin.DeviceAccessAuthorizationAdminServiceImpl"/>
     <bean id="jsonProvider" class="org.wso2.carbon.device.mgt.jaxrs.common.GsonMessageBodyHandler"/>
 
     <!--<bean id="errorHandler" class="org.wso2.carbon.device.mgt.jaxrs.common.ErrorHandler"/>-->

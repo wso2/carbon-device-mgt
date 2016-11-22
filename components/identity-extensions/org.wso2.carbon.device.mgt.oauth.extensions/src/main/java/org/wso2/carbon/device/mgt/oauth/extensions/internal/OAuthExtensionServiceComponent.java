@@ -24,12 +24,6 @@ import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.apimgt.api.APIManagementException;
 import org.wso2.carbon.apimgt.impl.APIConstants;
 import org.wso2.carbon.apimgt.impl.APIManagerConfiguration;
-import org.wso2.carbon.device.mgt.common.authorization.DeviceAccessAuthorizationException;
-import org.wso2.carbon.device.mgt.common.authorization.DeviceAccessAuthorizationService;
-import org.wso2.carbon.device.mgt.common.permission.mgt.PermissionManagerService;
-import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
-import org.wso2.carbon.device.mgt.oauth.extensions.config.DeviceMgtScopesConfig;
-import org.wso2.carbon.device.mgt.oauth.extensions.config.DeviceMgtScopesConfigurationFailedException;
 import org.wso2.carbon.identity.oauth2.OAuth2TokenValidationService;
 import org.wso2.carbon.user.core.service.RealmService;
 import org.wso2.carbon.utils.CarbonUtils;
@@ -52,18 +46,6 @@ import java.util.List;
  * policy="dynamic"
  * bind="setOAuth2ValidationService"
  * unbind="unsetOAuth2ValidationService"
- * @scr.reference name="permission.manager.service"
- * interface="org.wso2.carbon.device.mgt.common.permission.mgt.PermissionManagerService"
- * cardinality="1..1"
- * policy="dynamic"
- * bind="setPermissionManagerService"
- * unbind="unsetPermissionManagerService"
- * @scr.reference name="org.wso2.carbon.device.authorization"
- * interface="org.wso2.carbon.device.mgt.common.authorization.DeviceAccessAuthorizationService"
- * cardinality="1..1"
- * policy="dynamic"
- * bind="setDeviceAccessAuthorizationService"
- * unbind="unsetDeviceAccessAuthorizationService"
  */
 public class OAuthExtensionServiceComponent {
 
@@ -79,7 +61,6 @@ public class OAuthExtensionServiceComponent {
             log.debug("Starting OAuthExtensionBundle");
         }
         try {
-            DeviceMgtScopesConfig.init();
 
             APIManagerConfiguration configuration = new APIManagerConfiguration();
             String filePath = new StringBuilder().
@@ -108,8 +89,6 @@ public class OAuthExtensionServiceComponent {
             OAuthExtensionsDataHolder.getInstance().setWhitelistedScopes(whiteList);
         } catch (APIManagementException e) {
             log.error("Error occurred while loading DeviceMgtConfig configurations", e);
-        } catch (DeviceMgtScopesConfigurationFailedException e) {
-            log.error("Failed to initialize device scope configuration.", e);
         }
     }
 
@@ -168,50 +147,5 @@ public class OAuthExtensionServiceComponent {
         OAuthExtensionsDataHolder.getInstance().setoAuth2TokenValidationService(null);
     }
 
-    /**
-     * Sets PermissionManagerService Service.
-     *
-     * @param permissionManagerService An instance of PermissionManagerService
-     */
-    protected void setPermissionManagerService(PermissionManagerService permissionManagerService) {
-        if (log.isDebugEnabled()) {
-            log.debug("Setting PermissionManager Service");
-        }
-        OAuthExtensionsDataHolder.getInstance().setPermissionManagerService(permissionManagerService);
-    }
-
-    /**
-     * Unsets PermissionManagerService Service.
-     *
-     * @param permissionManagerService An instance of PermissionManagerService
-     */
-    protected void unsetPermissionManagerService(PermissionManagerService permissionManagerService) {
-        if (log.isDebugEnabled()) {
-            log.debug("Unsetting PermissionManager Service");
-        }
-        OAuthExtensionsDataHolder.getInstance().setPermissionManagerService(null);
-    }
-
-    /**
-     *  Set DeviceManagementProviderService
-     * @param deviceAccessAuthorizationService  An instance of deviceAccessAuthorizationService
-     */
-    protected void setDeviceAccessAuthorizationService(DeviceAccessAuthorizationService deviceAccessAuthorizationService) {
-        if (log.isDebugEnabled()) {
-            log.debug("Setting Device Management Service");
-        }
-        OAuthExtensionsDataHolder.getInstance().setDeviceAccessAuthorizationService(deviceAccessAuthorizationService);
-    }
-
-    /**
-     * unset DeviceManagementProviderService
-     * @param deviceAccessAuthorizationService  An instance of deviceAccessAuthorizationService
-     */
-    protected void unsetDeviceAccessAuthorizationService(DeviceAccessAuthorizationService deviceAccessAuthorizationService) {
-        if (log.isDebugEnabled()) {
-            log.debug("Removing Device Management Service");
-        }
-        OAuthExtensionsDataHolder.getInstance().setDeviceAccessAuthorizationService(null);
-    }
 
 }

@@ -80,14 +80,14 @@ var utils = function () {
         return dynamicClientAppCredentials;
     };
 
-    publicMethods["getTenantBasedClientAppCredentials"] = function (username, jwtToken) {
-        if (!username || !jwtToken) {
+    publicMethods["getTenantBasedClientAppCredentials"] = function (username) {
+        if (!username) {
             log.error("{/app/modules/oauth/token-handler-utils.js} Error in retrieving tenant " +
-                "based client app credentials. No username or jwt token is found " +
-                    "as input - getTenantBasedClientAppCredentials(x, y)");
+                "based client app credentials. No username " +
+                    "as input - getTenantBasedClientAppCredentials(x)");
             return null;
         } else {
-            //noinspection JSUnresolvedFunction, JSUnresolvedVariable
+			//noinspection JSUnresolvedFunction, JSUnresolvedVariable
             var tenantDomain = carbon.server.tenantDomain({username: username});
             if (!tenantDomain) {
                 log.error("{/app/modules/oauth/token-handler-utils.js} Error in retrieving tenant " +
@@ -100,6 +100,13 @@ var utils = function () {
                 if (cachedTenantBasedClientAppCredentials) {
                     return cachedTenantBasedClientAppCredentials;
                 } else {
+					var adminUsername = deviceMgtProps["adminUser"];
+					var adminUserTenantId = deviceMgtProps["adminUserTenantId"];
+					//claims required for jwtAuthenticator.
+					var claims = {"http://wso2.org/claims/enduserTenantId": adminUserTenantId,
+						"http://wso2.org/claims/enduser": adminUsername};
+					var jwtToken = publicMethods.getJwtToken(adminUsername, claims);
+
                     // register a tenant based client app at API Manager
                     var applicationName = "webapp_" + tenantDomain;
                     var requestURL = deviceMgtProps["oauthProvider"]["appRegistration"]
@@ -109,7 +116,7 @@ var utils = function () {
                     var xhr = new XMLHttpRequest();
                     xhr.open("POST", requestURL, false);
                     xhr.setRequestHeader("Content-Type", "application/json");
-                    xhr.setRequestHeader("Authorization", "Bearer " + jwtToken);
+                    xhr.setRequestHeader("X-JWT-Assertion", "" + jwtToken);
                     xhr.send();
 
                     if (xhr["status"] == 201 && xhr["responseText"]) {
@@ -288,6 +295,27 @@ var utils = function () {
             // returning access token by JWT grant type
             return jwtClient.getAccessToken(clientAppCredentials["clientId"], clientAppCredentials["clientSecret"],
                 deviceMgtProps["oauthProvider"]["appRegistration"]["owner"], null)["accessToken"];
+        }
+    };
+
+    publicMethods["getJwtToken"] =  function (username, claims) {
+        if (!username) {
+            log.error("{/app/modules/oauth/token-handler-utils.js} Error in retrieving new jwt token");
+            return null;
+        } else {
+            var JWTClientManagerServicePackagePath =
+                "org.wso2.carbon.identity.jwt.client.extension.service.JWTClientManagerService";
+            //noinspection JSUnresolvedFunction, JSUnresolvedVariable
+            var JWTClientManagerService = carbon.server.osgiService(JWTClientManagerServicePackagePath);
+            //noinspection JSUnresolvedFunction
+            var jwtClient = JWTClientManagerService.getJWTClient();
+            // returning access token by JWT grant type
+			if (claims) {
+				return jwtClient.getJwtToken(username, claims);
+			} else {
+				return jwtClient.getJwtToken(username);
+			}
+
         }
     };
 

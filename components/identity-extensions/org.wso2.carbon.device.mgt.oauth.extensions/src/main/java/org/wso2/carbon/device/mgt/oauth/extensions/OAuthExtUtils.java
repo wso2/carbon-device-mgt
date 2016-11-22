@@ -18,25 +18,14 @@
 
 package org.wso2.carbon.device.mgt.oauth.extensions;
 
-import com.google.gson.Gson;
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.w3c.dom.Document;
 import org.wso2.carbon.apimgt.api.APIManagementException;
 import org.wso2.carbon.apimgt.impl.APIConstants;
 import org.wso2.carbon.apimgt.impl.dao.ApiMgtDAO;
 import org.wso2.carbon.apimgt.impl.utils.APIUtil;
-import org.wso2.carbon.apimgt.keymgt.ScopesIssuer;
-import org.wso2.carbon.context.PrivilegedCarbonContext;
-import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
-import org.wso2.carbon.device.mgt.common.authorization.DeviceAccessAuthorizationException;
-import org.wso2.carbon.device.mgt.common.authorization.DeviceAuthorizationResult;
-import org.wso2.carbon.device.mgt.oauth.extensions.config.DeviceMgtScopesConfig;
-import org.wso2.carbon.device.mgt.oauth.extensions.config.DeviceMgtScopesConfigurationFailedException;
 import org.wso2.carbon.device.mgt.oauth.extensions.internal.OAuthExtensionsDataHolder;
 import org.wso2.carbon.identity.core.util.IdentityTenantUtil;
-import org.wso2.carbon.identity.oauth2.model.RequestParameter;
 import org.wso2.carbon.identity.oauth2.token.OAuthTokenReqMessageContext;
 import org.wso2.carbon.user.api.TenantManager;
 import org.wso2.carbon.user.api.UserRealm;
@@ -44,9 +33,6 @@ import org.wso2.carbon.user.api.UserStoreException;
 import org.wso2.carbon.user.core.service.RealmService;
 
 import javax.cache.Caching;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -126,7 +112,6 @@ public class OAuthExtUtils {
                 restAPIScopesOfCurrentTenant = APIUtil.
                         getRESTAPIScopesFromConfig(APIUtil.getTenantRESTAPIScopesConfig(tenantDomain));
 
-                //call load tenant org.wso2.carbon.device.mgt.iot.output.adapter.ui.config for rest API.
                 //then put cache
                 appScopes.putAll(restAPIScopesOfCurrentTenant);
                 Caching.getCacheManager(APIConstants.API_MANAGER_CACHE_MANAGER)
@@ -286,84 +271,6 @@ public class OAuthExtUtils {
         }
         String trimmedName = username.trim();
         return trimmedName.substring(START_INDEX, trimmedName.lastIndexOf('@'));
-    }
-
-    public static boolean validateScope(OAuthTokenReqMessageContext tokReqMsgCtx) {
-        boolean isScopesSet = ScopesIssuer.getInstance().setScopes(tokReqMsgCtx);
-        if (isScopesSet) {
-            PrivilegedCarbonContext.startTenantFlow();
-            PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(
-                    tokReqMsgCtx.getAuthorizedUser().getTenantDomain(), true);
-            String username = tokReqMsgCtx.getAuthorizedUser().getUserName();
-            PrivilegedCarbonContext.getThreadLocalCarbonContext().setUsername(username);
-            try {
-
-                DeviceRequestDTO deviceRequestDTO = null;
-                RequestParameter parameters[] = tokReqMsgCtx.getOauth2AccessTokenReqDTO().getRequestParameters();
-                for (RequestParameter parameter : parameters) {
-                    if (OAuthConstants.DEFAULT_DEVICE_ASSERTION.equals(parameter.getKey())) {
-                        String deviceJson = parameter.getValue()[0];
-                        Gson gson = new Gson();
-                        deviceRequestDTO = gson.fromJson(new String(Base64.decodeBase64(deviceJson)),
-                                                         DeviceRequestDTO.class);
-                    }
-                }
-                if (deviceRequestDTO != null) {
-                    String requestScopes = deviceRequestDTO.getScope();
-                    String scopeNames[] = requestScopes.split(" ");
-                    for (String scopeName : scopeNames) {
-                        List<DeviceIdentifier> deviceIdentifiers = deviceRequestDTO.getDeviceIdentifiers();
-                        DeviceAuthorizationResult deviceAuthorizationResult = OAuthExtensionsDataHolder.getInstance()
-                                .getDeviceAccessAuthorizationService()
-                                .isUserAuthorized(deviceIdentifiers, username, getPermissions(scopeName));
-                        if (deviceAuthorizationResult != null &&
-                                deviceAuthorizationResult.getAuthorizedDevices() != null) {
-                            String scopes[] = tokReqMsgCtx.getScope();
-                            String authorizedScopes[] = new String[scopes.length + deviceAuthorizationResult
-                                    .getAuthorizedDevices().size()];
-                            int scopeIndex = 0;
-                            for (String scope : scopes) {
-                                authorizedScopes[scopeIndex] = scope;
-                                scopeIndex++;
-                            }
-                            for (DeviceIdentifier deviceIdentifier : deviceAuthorizationResult.getAuthorizedDevices()) {
-                                authorizedScopes[scopeIndex] =
-                                        DEFAULT_SCOPE_TAG + ":" + deviceIdentifier.getType() + ":" +
-                                                deviceIdentifier.getId() + ":" + scopeName;
-                                scopeIndex++;
-                            }
-                            tokReqMsgCtx.setScope(authorizedScopes);
-                        }
-                    }
-                }
-            }  catch (DeviceAccessAuthorizationException e) {
-                log.error("Error occurred while checking authorization for the user " + username, e);
-            } finally {
-                PrivilegedCarbonContext.endTenantFlow();
-            }
-        }
-        return isScopesSet;
-    }
-
-    /**
-     * retrieve the permission related to given scope.
-     * @param scopeName requested scope action
-     * @return set of permission associated with the given scope.
-     */
-    private static String[] getPermissions(String scopeName) {
-        return DeviceMgtScopesConfig.getInstance().getDeviceMgtScopePermissionMap().get(scopeName);
-    }
-
-    public static Document convertToDocument(File file) throws DeviceMgtScopesConfigurationFailedException {
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        factory.setNamespaceAware(true);
-        try {
-            DocumentBuilder docBuilder = factory.newDocumentBuilder();
-            return docBuilder.parse(file);
-        } catch (Exception e) {
-            throw new DeviceMgtScopesConfigurationFailedException("Error occurred while parsing file, while converting " +
-                                                                          "to a org.w3c.dom.Document", e);
-        }
     }
 
 }

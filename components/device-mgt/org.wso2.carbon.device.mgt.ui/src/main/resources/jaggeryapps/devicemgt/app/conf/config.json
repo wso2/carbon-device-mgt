@@ -28,6 +28,7 @@
         "tokenServiceURL": "%https.ip%/oauth2/token"
     },
     "adminUser":"admin@carbon.super",
+    "adminUserTenantId":"-1234",
     "adminRole":"admin",
     "usernameLength":30,
     "pageSize":10,

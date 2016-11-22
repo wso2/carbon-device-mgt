@@ -101,8 +101,9 @@ var utils = function () {
                     return cachedTenantBasedClientAppCredentials;
                 } else {
 					var adminUsername = deviceMgtProps["adminUser"];
+					var adminUserTenantId = deviceMgtProps["adminUserTenantId"];
 					//claims required for jwtAuthenticator.
-					var claims = {"http://wso2.org/claims/enduserTenantId": "-1234",
+					var claims = {"http://wso2.org/claims/enduserTenantId": adminUserTenantId,
 						"http://wso2.org/claims/enduser": adminUsername};
 					var jwtToken = publicMethods.getJwtToken(adminUsername, claims);
 

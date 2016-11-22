@@ -20,10 +20,7 @@ package org.wso2.carbon.device.mgt.common.group.mgt;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
-import java.util.List;
 
 /**
  * Holds Device Group details and expose to external access
@@ -44,8 +41,6 @@ public class DeviceGroup implements Serializable {
             required = true)
     private String name;
 
-    private Long dateOfCreation;
-    private Long dateOfLastUpdate;
     private String owner;
 
     public int getGroupId() {
@@ -70,22 +65,6 @@ public class DeviceGroup implements Serializable {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public Long getDateOfCreation() {
-        return dateOfCreation;
-    }
-
-    public void setDateOfCreation(Long dateOfCreation) {
-        this.dateOfCreation = dateOfCreation;
-    }
-
-    public Long getDateOfLastUpdate() {
-        return dateOfLastUpdate;
-    }
-
-    public void setDateOfLastUpdate(Long dateOfLastUpdate) {
-        this.dateOfLastUpdate = dateOfLastUpdate;
     }
 
     public String getOwner() {

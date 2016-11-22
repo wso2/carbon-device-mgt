@@ -31,7 +31,6 @@ import org.wso2.carbon.device.mgt.core.common.BaseDeviceManagementTest;
 import org.wso2.carbon.device.mgt.core.common.TestDataHolder;
 
 import java.sql.SQLException;
-import java.util.Date;
 import java.util.List;
 
 public class GroupPersistTests extends BaseDeviceManagementTest {
@@ -165,12 +164,10 @@ public class GroupPersistTests extends BaseDeviceManagementTest {
 
     @Test(dependsOnMethods = {"removeDeviceFromGroupTest"})
     public void updateGroupTest() {
-        long time = new Date().getTime();
         String name = "Test Updated";
         String desc = "Desc updated";
         DeviceGroup group = getGroupById(groupId);
         Assert.assertNotNull(group, "Group is null");
-        group.setDateOfLastUpdate(time);
         group.setName(name);
         group.setDescription(desc);
         try {
@@ -195,7 +192,6 @@ public class GroupPersistTests extends BaseDeviceManagementTest {
         Assert.assertNotNull(group, "Group is null");
         Assert.assertEquals(group.getName(), name, "Group name");
         Assert.assertEquals(group.getDescription(), desc, "Group description");
-        Assert.assertEquals((long) group.getDateOfLastUpdate(), time, "Update time");
     }
 
     @Test(dependsOnMethods = {"updateGroupTest"})

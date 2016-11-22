@@ -87,6 +87,18 @@ public interface GroupDAO {
     List<DeviceGroup> getGroups(GroupPaginationRequest paginationRequest, int tenantId) throws GroupManagementDAOException;
 
     /**
+     * Get paginated list of Device Groups in tenant with specified device group ids.
+     *
+     * @param paginationRequest to filter results.
+     * @param deviceGroupIds    of groups required.
+     * @param tenantId          of user's tenant.
+     * @return List of all Device Groups in tenant.
+     * @throws GroupManagementDAOException
+     */
+    List<DeviceGroup> getGroups(GroupPaginationRequest paginationRequest, List<Integer> deviceGroupIds,
+                                int tenantId) throws GroupManagementDAOException;
+
+    /**
      * Get the list of Device Groups in tenant.
      *
      * @param tenantId of user's tenant.
@@ -177,5 +189,95 @@ public interface GroupDAO {
      */
     List<Device> getDevices(int groupId, int startIndex, int rowCount, int tenantId)
             throws GroupManagementDAOException;
+
+    /**
+     * Get all user roles for device group.
+     *
+     * @param groupId  of the group
+     * @param tenantId of user's tenant.
+     * @return list of roles
+     * @throws GroupManagementDAOException
+     */
+    List<String> getRoles(int groupId, int tenantId) throws GroupManagementDAOException;
+
+    /**
+     * Add user role for device group.
+     *
+     * @param groupId  of the group.
+     * @param role     to be added.
+     * @param tenantId of user's tenant.
+     * @throws GroupManagementDAOException
+     */
+    void addRole(int groupId, String role, int tenantId) throws GroupManagementDAOException;
+
+    /**
+     * Add user role for device group.
+     *
+     * @param groupId  of the group.
+     * @param role     to be removed.
+     * @param tenantId of user's tenant.
+     * @throws GroupManagementDAOException
+     */
+    void removeRole(int groupId, String role, int tenantId) throws GroupManagementDAOException;
+
+    /**
+     * Get all device groups which shared with a user role.
+     *
+     * @param roles    of the group.
+     * @param tenantId of user's tenant.
+     * @return list of device groups.
+     * @throws GroupManagementDAOException
+     */
+    List<DeviceGroup> getGroups(String[] roles, int tenantId) throws GroupManagementDAOException;
+
+    /**
+     * Get all device group ids which shared with a user role.
+     *
+     * @param roles    of the group.
+     * @param tenantId of user's tenant.
+     * @return list of device group ids.
+     * @throws GroupManagementDAOException
+     */
+    List<Integer> getGroupIds(String[] roles, int tenantId) throws GroupManagementDAOException;
+
+    /**
+     * Get count of all device groups which shared with a user role.
+     *
+     * @param roles    of the group.
+     * @param tenantId of user's tenant.
+     * @return count of device groups.
+     * @throws GroupManagementDAOException
+     */
+    int getGroupsCount(String[] roles, int tenantId) throws GroupManagementDAOException;
+
+    /**
+     * Get all device groups which owned by user.
+     *
+     * @param username of the owner.
+     * @param tenantId of user's tenant.
+     * @return list of device groups.
+     * @throws GroupManagementDAOException
+     */
+    List<DeviceGroup> getOwnGroups(String username, int tenantId) throws GroupManagementDAOException;
+
+    /**
+     * Get all device group ids which owned by user.
+     *
+     * @param username of the owner.
+     * @param tenantId of user's tenant.
+     * @return list of device group ids.
+     * @throws GroupManagementDAOException
+     */
+    List<Integer> getOwnGroupIds(String username, int tenantId) throws GroupManagementDAOException;
+
+    /**
+     * Get count of device groups which owned by user.
+     *
+     * @param username of the owner.
+     * @param tenantId of user's tenant.
+     * @return count of device groups.
+     * @throws GroupManagementDAOException
+     */
+    int getOwnGroupsCount(String username, int tenantId) throws GroupManagementDAOException;
 
 }

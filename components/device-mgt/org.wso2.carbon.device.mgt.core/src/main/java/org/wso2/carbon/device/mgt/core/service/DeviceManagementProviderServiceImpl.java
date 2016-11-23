@@ -21,7 +21,18 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.CarbonConstants;
 import org.wso2.carbon.context.CarbonContext;
-import org.wso2.carbon.device.mgt.common.*;
+import org.wso2.carbon.device.mgt.common.Device;
+import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
+import org.wso2.carbon.device.mgt.common.DeviceManagementException;
+import org.wso2.carbon.device.mgt.common.DeviceManager;
+import org.wso2.carbon.device.mgt.common.DeviceNotFoundException;
+import org.wso2.carbon.device.mgt.common.DeviceTypeIdentifier;
+import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
+import org.wso2.carbon.device.mgt.common.FeatureManager;
+import org.wso2.carbon.device.mgt.common.InvalidDeviceException;
+import org.wso2.carbon.device.mgt.common.PaginationRequest;
+import org.wso2.carbon.device.mgt.common.PaginationResult;
+import org.wso2.carbon.device.mgt.common.TransactionManagementException;
 import org.wso2.carbon.device.mgt.common.app.mgt.Application;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.PlatformConfiguration;
 import org.wso2.carbon.device.mgt.common.device.details.DeviceInfo;
@@ -37,8 +48,12 @@ import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
 import org.wso2.carbon.device.mgt.common.spi.DeviceManagementService;
 import org.wso2.carbon.device.mgt.core.DeviceManagementPluginRepository;
-import org.wso2.carbon.device.mgt.core.config.identity.IdentityConfigurations;
-import org.wso2.carbon.device.mgt.core.dao.*;
+import org.wso2.carbon.device.mgt.core.dao.ApplicationDAO;
+import org.wso2.carbon.device.mgt.core.dao.DeviceDAO;
+import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
+import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
+import org.wso2.carbon.device.mgt.core.dao.DeviceTypeDAO;
+import org.wso2.carbon.device.mgt.core.dao.EnrollmentDAO;
 import org.wso2.carbon.device.mgt.core.device.details.mgt.dao.DeviceDetailsDAO;
 import org.wso2.carbon.device.mgt.core.device.details.mgt.dao.DeviceDetailsMgtDAOException;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
@@ -53,7 +68,13 @@ import org.wso2.carbon.email.sender.core.TypedValue;
 import org.wso2.carbon.user.api.UserStoreException;
 
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class DeviceManagementProviderServiceImpl implements DeviceManagementProviderService,
         PluginInitializationListener {
@@ -1855,7 +1876,9 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         try {
             DeviceGroup defaultGroup = createDefaultGroup(groupManagementProviderService, ownership.toString());
             if (defaultGroup != null) {
-                groupManagementProviderService.addDevice(defaultGroup.getGroupId(), deviceIdentifier);
+                List<DeviceIdentifier> deviceIdentifiers = new ArrayList<>();
+                deviceIdentifiers.add(deviceIdentifier);
+                groupManagementProviderService.addDevices(defaultGroup.getGroupId(), deviceIdentifiers);
             }
         } catch (DeviceNotFoundException e) {
             throw new DeviceManagementException("Unable to find the device with the id: '" + deviceIdentifier.getId(),
@@ -1880,8 +1903,6 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             defaultGroup = new DeviceGroup(groupName);
             // Setting system level user (wso2.system.user) as the owner
             defaultGroup.setOwner(CarbonConstants.REGISTRY_SYSTEM_USERNAME);
-            defaultGroup.setDateOfCreation(new Date().getTime());
-            defaultGroup.setDateOfLastUpdate(new Date().getTime());
             try {
                 service.createGroup(defaultGroup, DeviceGroupConstants.Roles.DEFAULT_ADMIN_ROLE,
                         DeviceGroupConstants.Permissions.DEFAULT_ADMIN_PERMISSIONS);

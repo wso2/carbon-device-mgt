@@ -36,10 +36,9 @@ import org.apache.axis2.transport.http.HTTPConstants;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroup;
 import org.wso2.carbon.device.mgt.jaxrs.beans.DeviceGroupList;
-import org.wso2.carbon.device.mgt.jaxrs.beans.DeviceGroupShare;
-import org.wso2.carbon.device.mgt.jaxrs.beans.DeviceGroupUsersList;
 import org.wso2.carbon.device.mgt.jaxrs.beans.DeviceList;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
+import org.wso2.carbon.device.mgt.jaxrs.beans.RoleList;
 
 import javax.validation.Valid;
 import javax.ws.rs.Consumes;
@@ -70,12 +69,14 @@ import java.util.List;
                 }
         ),
         tags = {
-                @Tag(name = "device_management", description = "")
+                @Tag(name = "device_management", description = "Device group related REST-API. " +
+                                                               "This can be used to manipulated device group related " +
+                                                               "details.")
         }
 )
 @Path("/groups")
-@Api(value = "Device Group Management", description = "This API carries all device group management related operations " +
-                                                      "such as get all the available groups, etc.")
+@Api(value = "Device Group Management", description = "This API carries all device group management related " +
+                                                      "operations such as get all the available groups, etc.")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public interface GroupManagementService {
@@ -482,10 +483,10 @@ public interface GroupManagementService {
                                         required = true)
                                 @PathParam("groupId") int groupId,
                                 @ApiParam(
-                                        name = "deviceGroupShare",
-                                        value = "User name and the assigned roles for the share.",
+                                        name = "userRoles",
+                                        value = "User roles to share group with.",
                                         required = true)
-                                @Valid DeviceGroupShare deviceGroupShare);
+                                @Valid List<String> userRoles);
 
     @Path("/id/{groupId}/roles")
     @GET
@@ -505,7 +506,7 @@ public interface GroupManagementService {
     )
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK. \n Successfully fetched the users.",
-                    response = DeviceGroupUsersList.class,
+                    response = RoleList.class,
                     responseHeaders = {
                             @ResponseHeader(
                                     name = "Content-Type",

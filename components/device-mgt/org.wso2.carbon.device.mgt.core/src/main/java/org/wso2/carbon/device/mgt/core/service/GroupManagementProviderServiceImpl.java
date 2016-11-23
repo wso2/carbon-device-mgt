@@ -463,36 +463,6 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
      * {@inheritDoc}
      */
     @Override
-    public void addDevice(int groupId, DeviceIdentifier deviceIdentifier)
-            throws DeviceNotFoundException, GroupManagementException {
-        Device device;
-        try {
-            int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
-            GroupManagementDAOFactory.beginTransaction();
-            device = DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().getDevice(deviceIdentifier);
-            if (device == null) {
-                throw new DeviceNotFoundException("Device not found for id '" + deviceIdentifier.getId() + "'");
-            }
-            if (!this.groupDAO.isDeviceMappedToGroup(groupId, device.getId(), tenantId)) {
-                this.groupDAO.addDevice(groupId, device.getId(), tenantId);
-            }
-            GroupManagementDAOFactory.commitTransaction();
-        } catch (DeviceManagementException e) {
-            throw new GroupManagementException("Error occurred while retrieving device.", e);
-        } catch (GroupManagementDAOException e) {
-            GroupManagementDAOFactory.rollbackTransaction();
-            throw new GroupManagementException("Error occurred while adding device to group.", e);
-        } catch (TransactionManagementException e) {
-            throw new GroupManagementException("Error occurred while initiating transaction.", e);
-        } finally {
-            GroupManagementDAOFactory.closeConnection();
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public void addDevices(int groupId, List<DeviceIdentifier> deviceIdentifiers)
             throws GroupManagementException, DeviceNotFoundException {
         Device device;

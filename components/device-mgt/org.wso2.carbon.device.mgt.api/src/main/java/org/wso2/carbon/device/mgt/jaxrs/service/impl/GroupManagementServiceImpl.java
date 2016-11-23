@@ -34,7 +34,6 @@ import org.wso2.carbon.device.mgt.common.group.mgt.GroupManagementException;
 import org.wso2.carbon.device.mgt.common.group.mgt.RoleDoesNotExistException;
 import org.wso2.carbon.device.mgt.core.service.GroupManagementProviderService;
 import org.wso2.carbon.device.mgt.jaxrs.beans.DeviceGroupList;
-import org.wso2.carbon.device.mgt.jaxrs.beans.DeviceGroupShare;
 import org.wso2.carbon.device.mgt.jaxrs.beans.DeviceList;
 import org.wso2.carbon.device.mgt.jaxrs.beans.RoleList;
 import org.wso2.carbon.device.mgt.jaxrs.service.api.GroupManagementService;
@@ -164,10 +163,10 @@ public class GroupManagementServiceImpl implements GroupManagementService {
     }
 
     @Override
-    public Response manageGroupSharing(int groupId, DeviceGroupShare deviceGroupShare) {
+    public Response manageGroupSharing(int groupId, List<String> userRoles) {
         try {
             DeviceMgtAPIUtils.getGroupManagementProviderService()
-                    .manageGroupSharing(groupId, deviceGroupShare.getGroupRoles());
+                    .manageGroupSharing(groupId, userRoles);
             return Response.status(Response.Status.OK).build();
         } catch (GroupManagementException e) {
             String msg = "Error occurred while managing group share.";

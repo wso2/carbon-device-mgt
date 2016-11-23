@@ -50,15 +50,17 @@ under the License. --}}
 
         {{defineZone "header"}}
 
-        <div class="navbar-wrapper">
-            {{defineZone "navbars"}}
-        </div>
-
         {{defineZone "sidePanes"}}
 
         <!-- page-content-wrapper -->
         <div class="page-content-wrapper">
-            {{defineZone "contentTitle"}}
+
+            <div class="navbar-wrapper">
+                {{defineZone "navbars"}}
+            </div>
+
+            {{!defineZone "contentTitle"}}
+
             <div class="container-fluid ">
                 <div class="body-wrapper">
                     {{defineZone "content"}}

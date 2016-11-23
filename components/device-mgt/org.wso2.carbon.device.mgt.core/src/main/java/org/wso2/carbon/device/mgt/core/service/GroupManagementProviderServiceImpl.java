@@ -188,6 +188,25 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
         return deviceGroup;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public DeviceGroup getGroup(String groupName) throws GroupManagementException {
+        DeviceGroup deviceGroup;
+        try {
+            GroupManagementDAOFactory.openConnection();
+            deviceGroup = this.groupDAO.getGroup(groupName, CarbonContext.getThreadLocalCarbonContext().getTenantId());
+        } catch (GroupManagementDAOException e) {
+            throw new GroupManagementException("Error occurred while obtaining group with name: '" + groupName + "'", e);
+        } catch (SQLException e) {
+            throw new GroupManagementException("Error occurred while opening a connection to the data source.", e);
+        } finally {
+            GroupManagementDAOFactory.closeConnection();
+        }
+        return deviceGroup;
+    }
+
     @Override
     public List<DeviceGroup> getGroups() throws GroupManagementException {
         List<DeviceGroup> deviceGroups = new ArrayList<>();
@@ -582,6 +601,36 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
             throw new GroupManagementException("Error occurred while retrieving all groups in tenant", e);
         } catch (SQLException e) {
             throw new GroupManagementException("Error occurred while opening a connection to the data source.", e);
+        } finally {
+            GroupManagementDAOFactory.closeConnection();
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void addDevice(int groupId, DeviceIdentifier deviceIdentifier)
+            throws DeviceNotFoundException, GroupManagementException {
+        Device device;
+        try {
+            int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+            GroupManagementDAOFactory.beginTransaction();
+            device = DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().getDevice(deviceIdentifier);
+            if (device == null) {
+                throw new DeviceNotFoundException("Device not found for id '" + deviceIdentifier.getId() + "'");
+            }
+            if (!this.groupDAO.isDeviceMappedToGroup(groupId, device.getId(), tenantId)) {
+                this.groupDAO.addDevice(groupId, device.getId(), tenantId);
+            }
+            GroupManagementDAOFactory.commitTransaction();
+        } catch (DeviceManagementException e) {
+            throw new GroupManagementException("Error occurred while retrieving device.", e);
+        } catch (GroupManagementDAOException e) {
+            GroupManagementDAOFactory.rollbackTransaction();
+            throw new GroupManagementException("Error occurred while adding device to group.", e);
+        } catch (TransactionManagementException e) {
+            throw new GroupManagementException("Error occurred while initiating transaction.", e);
         } finally {
             GroupManagementDAOFactory.closeConnection();
         }

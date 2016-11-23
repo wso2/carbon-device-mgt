@@ -48,6 +48,12 @@ public class DeviceGroup implements Serializable {
     private Long dateOfLastUpdate;
     private String owner;
 
+    public DeviceGroup() {}
+
+    public DeviceGroup(String name) {
+        this.name = name;
+    }
+
     public int getGroupId() {
         return id;
     }

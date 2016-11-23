@@ -27,6 +27,7 @@ import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroup;
 import org.wso2.carbon.device.mgt.common.group.mgt.GroupAlreadyExistException;
 import org.wso2.carbon.device.mgt.common.group.mgt.GroupManagementException;
 import org.wso2.carbon.device.mgt.common.group.mgt.RoleDoesNotExistException;
+import org.wso2.carbon.user.core.multiplecredentials.UserDoesNotExistException;
 
 import java.util.List;
 
@@ -72,6 +73,15 @@ public interface GroupManagementProviderService {
      * @throws GroupManagementException
      */
     DeviceGroup getGroup(int groupId) throws GroupManagementException;
+
+    /**
+     * Get the device group provided the device group name.
+     *
+     * @param groupName of the group.
+     * @return group with details.
+     * @throws GroupManagementException
+     */
+    DeviceGroup getGroup(String groupName) throws GroupManagementException;
 
     /**
      * Get all device groups in tenant.
@@ -166,14 +176,23 @@ public interface GroupManagementProviderService {
     int getDeviceCount(int groupId) throws GroupManagementException;
 
     /**
+     * @param groupId          of the group.
+     * @param deviceIdentifier of the device to add.
+     * @throws DeviceNotFoundException  If device does not exist.
+     * @throws GroupManagementException If unable to add device to the group.
+     */
+    void addDevice(int groupId, DeviceIdentifier deviceIdentifier)
+            throws DeviceNotFoundException, GroupManagementException;
+
+    /**
      * Add device to device group.
      *
      * @param groupId   of the group.
      * @param deviceIdentifiers of devices.
      * @throws GroupManagementException
      */
-    void addDevices(int groupId, List<DeviceIdentifier> deviceIdentifiers) throws GroupManagementException,
-                                                                                  DeviceNotFoundException;
+    void addDevices(int groupId, List<DeviceIdentifier> deviceIdentifiers)
+            throws GroupManagementException, DeviceNotFoundException;
 
     /**
      * Remove device from device group.

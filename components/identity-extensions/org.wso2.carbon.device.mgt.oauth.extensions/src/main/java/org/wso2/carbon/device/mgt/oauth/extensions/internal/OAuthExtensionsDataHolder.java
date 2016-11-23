@@ -18,9 +18,6 @@
 
 package org.wso2.carbon.device.mgt.oauth.extensions.internal;
 
-import org.wso2.carbon.device.mgt.common.authorization.DeviceAccessAuthorizationService;
-import org.wso2.carbon.device.mgt.common.permission.mgt.PermissionManagerService;
-import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.identity.oauth2.OAuth2TokenValidationService;
 import org.wso2.carbon.user.core.service.RealmService;
 
@@ -33,10 +30,7 @@ public class OAuthExtensionsDataHolder {
 
     private RealmService realmService;
     private OAuth2TokenValidationService oAuth2TokenValidationService;
-    private PermissionManagerService permissionManagerService;
     private List<String> whitelistedScopes;
-    private String deviceScope;
-    private DeviceAccessAuthorizationService deviceAccessAuthorizationService;
 
     private static OAuthExtensionsDataHolder thisInstance = new OAuthExtensionsDataHolder();
 
@@ -69,17 +63,6 @@ public class OAuthExtensionsDataHolder {
         this.oAuth2TokenValidationService = oAuth2TokenValidationService;
     }
 
-    public void setPermissionManagerService(PermissionManagerService permissionManagerService) {
-        this.permissionManagerService = permissionManagerService;
-    }
-
-    public PermissionManagerService getPermissionManagerService() {
-        if (permissionManagerService == null) {
-            throw new IllegalStateException("PermissionManager service is not initialized properly");
-        }
-        return permissionManagerService;
-    }
-
     public List<String> getWhitelistedScopes() {
         return whitelistedScopes;
     }
@@ -88,15 +71,4 @@ public class OAuthExtensionsDataHolder {
         this.whitelistedScopes = whitelistedScopes;
     }
 
-    public String getDeviceScope() {
-        return deviceScope;
-    }
-
-    public DeviceAccessAuthorizationService getDeviceAccessAuthorizationService() {
-        return deviceAccessAuthorizationService;
-    }
-
-    public void setDeviceAccessAuthorizationService(DeviceAccessAuthorizationService deviceAccessAuthorizationService) {
-        this.deviceAccessAuthorizationService = deviceAccessAuthorizationService;
-    }
 }

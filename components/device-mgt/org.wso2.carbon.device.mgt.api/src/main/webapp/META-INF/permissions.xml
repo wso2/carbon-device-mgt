@@ -110,6 +110,12 @@
         <url>/admin/devices</url>
         <method>GET</method>
     </Permission>
+	<Permission>
+		<name>Verify device authorization</name>
+		<path>/device-mgt/devices</path>
+		<url>/admin/authorization</url>
+		<method>POST</method>
+	</Permission>
     <Permission>
         <name>View device types</name>
         <path>/device-mgt/devices/Admin-DeviceType-View﻿</path>

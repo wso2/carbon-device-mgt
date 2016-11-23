@@ -34,6 +34,10 @@
     <url>http://wso2.org</url>
 
     <dependencies>
+		<dependency>
+			<groupId>commons-lang.wso2</groupId>
+			<artifactId>commons-lang</artifactId>
+		</dependency>
         <dependency>
             <groupId>org.apache.axis2.wso2</groupId>
             <artifactId>axis2</artifactId>
@@ -81,7 +85,7 @@
                         <Bundle-Version>${carbon.device.mgt.version}</Bundle-Version>
                         <Bundle-Description>Device Type Deployer Bundle</Bundle-Description>
                         <Export-Package>
-                            !org.wso2.carbon.device.mgt.extensions.push.notification.provider.internal,
+                            !org.wso2.carbon.device.mgt.extensions.device.type.deployer.internal,
                             org.wso2.carbon.device.mgt.extensions.device.type.deployer.*
                         </Export-Package>
                         <Import-Package>
@@ -92,7 +96,7 @@
                             javax.xml.parsers; version="${javax.xml.parsers.import.pkg.version}",
                             org.apache.axis2.context,
                             org.apache.axis2.deployment.*,
-                            org.apache.commons.lang,
+                            org.apache.commons.lang;version="${commons-lang.wso2.osgi.version.range}",
                             org.apache.commons.logging,
                             org.osgi.framework,
                             org.osgi.service.component,

@@ -1,2 +1,1 @@
 instructions.configure = \
-org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.wso2.carbon.device.mgt.oauth.extensions_${feature.version}/device-mgt-scopes.xml,target:${installFolder}/../../conf/etc/device-mgt-scopes.xml,overwrite:true);\

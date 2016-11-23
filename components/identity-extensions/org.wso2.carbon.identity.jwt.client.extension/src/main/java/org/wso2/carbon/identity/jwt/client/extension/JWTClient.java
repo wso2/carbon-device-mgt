@@ -43,6 +43,7 @@ import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -73,7 +74,9 @@ public class JWTClient {
 			throw new JWTClientException("JWT is not configured properly for user : " + username);
 		}
 		params.add(new BasicNameValuePair(JWTConstants.JWT_PARAM_NAME, assertion));
-		params.add(new BasicNameValuePair(JWTConstants.SCOPE_PARAM_NAME, scopes));
+        if (scopes != null && !scopes.isEmpty()) {
+            params.add(new BasicNameValuePair(JWTConstants.SCOPE_PARAM_NAME, scopes));
+        }
 		return getTokenInfo(params, consumerKey, consumerSecret);
 	}
 
@@ -87,7 +90,9 @@ public class JWTClient {
 			throw new JWTClientException("JWT is not configured properly for user : " + username);
 		}
 		params.add(new BasicNameValuePair(JWTConstants.JWT_PARAM_NAME, assertion));
-		params.add(new BasicNameValuePair(JWTConstants.SCOPE_PARAM_NAME, scopes));
+        if (scopes != null && !scopes.isEmpty()) {
+            params.add(new BasicNameValuePair(JWTConstants.SCOPE_PARAM_NAME, scopes));
+        }
 		if (paramsMap != null) {
 			for (String key : paramsMap.keySet()) {
 				params.add(new BasicNameValuePair(key, paramsMap.get(key)));
@@ -156,6 +161,13 @@ public class JWTClient {
 		return new String(Base64.encodeBase64((consumerKey + ":" + consumerSecret).getBytes()));
 	}
 
+	public String getJwtToken(String username) throws JWTClientException {
+		return JWTClientUtil.generateSignedJWTAssertion(username, jwtConfig, isDefaultJWTClient);
+	}
+
+    public String getJwtToken(String username, Map<String, String> claims) throws JWTClientException {
+        return JWTClientUtil.generateSignedJWTAssertion(username, jwtConfig, isDefaultJWTClient, claims);
+    }
 
 }
 

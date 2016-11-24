@@ -15,13 +15,13 @@
  * under the License.
  */
 
-var validateStep = {};
 var stepForwardFrom = {};
 var stepBackFrom = {};
 var policy = {};
 var configuredOperations = [];
 var validateInline = {};
 var clearInline = {};
+var validateStep = {};
 
 var enableInlineError = function (inputField, errorMsg, errorSign) {
     var fieldIdentifier = "#" + inputField;
@@ -86,6 +86,8 @@ $("#policy-name-input").focus(function(){
 });
 
 stepForwardFrom["policy-platform"] = function (actionButton) {
+    $("#device-type-policy-operations").html("").addClass("hidden");
+    $("#generic-policy-operations").addClass("hidden");
     policy["platform"] = $(actionButton).data("platform");
     policy["platformId"] = $(actionButton).data("platform-type");
     // updating next-page wizard title with selected platform
@@ -104,29 +106,33 @@ stepForwardFrom["policy-platform"] = function (actionButton) {
         if (status) {
             $.template(policyOperationsTemplateCacheKey, policyOperationsTemplateSrc, function (template) {
                 var content = template();
-                $(".wr-advance-operations").html(content);
+                $("#device-type-policy-operations").html(content).removeClass("hidden");
+                // $("#device-type-policy-operations").removeClass("hidden");
                 $(".policy-platform").addClass("hidden");
             });
-        }
-    });
 
-    $.isResourceExists(policyOperationsScriptSrc, function (status) {
-        if (status) {
-            var script = document.createElement('script');
-            script.type = 'text/javascript';
-            script.src = policyOperationsScriptSrc;
-            $(".wr-advance-operations").prepend(script);
-        }
-    });
+            $.isResourceExists(policyOperationsScriptSrc, function (status) {
+                if (status) {
+                    var script = document.createElement('script');
+                    script.type = 'text/javascript';
+                    script.src = policyOperationsScriptSrc;
+                    $(".wr-advance-operations").prepend(script);
+                }
+            });
 
-    $.isResourceExists(policyOperationsStylesSrc, function (status) {
-        if (status) {
-            var style = document.createElement('link');
-            style.type = 'text/css';
-            style.rel = 'stylesheet';
-            style.href = policyOperationsStylesSrc;
-            $(".wr-advance-operations").prepend(style);
+            $.isResourceExists(policyOperationsStylesSrc, function (status) {
+                if (status) {
+                    var style = document.createElement('link');
+                    style.type = 'text/css';
+                    style.rel = 'stylesheet';
+                    style.href = policyOperationsStylesSrc;
+                    $(".wr-advance-operations").prepend(style);
+                }
+            });
+        } else {
+            $("#generic-policy-operations").removeClass("hidden");
         }
+        $(".wr-advance-operations-init").addClass("hidden");
     });
 };
 
@@ -139,18 +145,6 @@ stepForwardFrom["policy-profile"] = function () {
 stepBackFrom["policy-profile"] = function () {
     // reinitialize configuredOperations
     configuredOperations = [];
-    // clearing already-loaded platform specific hidden-operations html content from the relevant div
-    // so that, the wrong content would not be shown at the first glance, in case
-    // the user selects a different platform
-    $(".wr-advance-operations").html(
-        "<div class='wr-advance-operations-init'>" +
-        "<br>" +
-        "<i class='fw fw-settings fw-spin fw-2x'></i>" +
-        "Loading Platform Features . . ." +
-        "<br>" +
-        "<br>" +
-        "</div>"
-    );
 };
 
 stepForwardFrom["policy-criteria"] = function () {
@@ -475,7 +469,11 @@ $(document).ready(function () {
         var wizardIsToBeContinued;
 
         if (validationIsRequired) {
-            wizardIsToBeContinued = validateStep[currentStep]();
+            if (currentStep == "policy-profile") {
+                wizardIsToBeContinued = validatePolicyProfile();
+            } else {
+                wizardIsToBeContinued = validateStep[currentStep]();
+            }
         } else {
             wizardIsToBeContinued = true;
         }

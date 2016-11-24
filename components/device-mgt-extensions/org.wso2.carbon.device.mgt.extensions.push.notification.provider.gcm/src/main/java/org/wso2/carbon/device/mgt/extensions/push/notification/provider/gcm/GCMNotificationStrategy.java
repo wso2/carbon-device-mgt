@@ -38,7 +38,7 @@ import java.util.List;
 public class GCMNotificationStrategy implements NotificationStrategy {
 
     private static final String GCM_TOKEN = "GCM_TOKEN";
-    private final static String GCM_ENDPOINT = "https://gcm-http.googleapis.com/gcm/send";
+    private final static String GCM_ENDPOINT = "https://fcm.googleapis.com/fcm/send";
     private static final String GCM_API_KEY = "gcmAPIKey";
     private static final int TIME_TO_LIVE = 60;
     private static final int HTTP_STATUS_CODE_OK = 200;
@@ -79,13 +79,10 @@ public class GCMNotificationStrategy implements NotificationStrategy {
         HttpURLConnection conn = null;
         try {
             conn = (HttpURLConnection) new URL(GCM_ENDPOINT).openConnection();
-            conn.setDoOutput(true);
-            conn.setUseCaches(false);
-            conn.setFixedLengthStreamingMode(bytes.length);
-            conn.setRequestMethod("POST");
             conn.setRequestProperty("Content-Type", "application/json");
             conn.setRequestProperty("Authorization", "key=" + config.getProperty(GCM_API_KEY));
-
+            conn.setRequestMethod("POST");
+            conn.setDoOutput(true);
             os = conn.getOutputStream();
             os.write(bytes);
         } finally {

@@ -78,8 +78,6 @@ public class TestDataHolder {
         DeviceGroup deviceGroup = new DeviceGroup();
         deviceGroup.setName("Test device group");
         deviceGroup.setDescription("Test description");
-        deviceGroup.setDateOfCreation(new Date().getTime());
-        deviceGroup.setDateOfLastUpdate(new Date().getTime());
         deviceGroup.setOwner(OWNER);
         return deviceGroup;
     }

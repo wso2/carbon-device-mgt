@@ -3522,7 +3522,7 @@ a.btn-operations {
     font-size: 13px;
     color: #fff;
     background: #11375B;
-    padding: 10px 24px;
+    padding: 5px 20px;
     display: inline-block;
     margin-right: 2px;
     text-decoration: none;
@@ -4615,7 +4615,7 @@ a.wr-side-panel-toggle-btn.selected {
 }
 
 .wr-hidden-operations-content .panel-body {
-    padding: 5px 20px 20px;
+    padding: 0px 20px 20px;
     background: #ffffff;
 }
 .wr-hidden-operations-content .panel-body hr{

@@ -382,7 +382,7 @@ public class PolicyManagementServiceImpl implements PolicyManagementService {
             DeviceIdentifier deviceIdentifier = new DeviceIdentifier();
             deviceIdentifier.setId(deviceId);
             deviceIdentifier.setType(deviceType);
-            policy = policyManagementService.getEffectivePolicy(deviceIdentifier);
+            policy = policyManagementService.getAppliedPolicyToDevice(deviceIdentifier);
             if (policy == null) {
                 return Response.status(Response.Status.NOT_FOUND).entity(
                         new ErrorResponse.ErrorResponseBuilder().setMessage(

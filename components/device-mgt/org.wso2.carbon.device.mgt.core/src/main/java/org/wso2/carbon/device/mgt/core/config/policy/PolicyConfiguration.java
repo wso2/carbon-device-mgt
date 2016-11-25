@@ -33,7 +33,7 @@ public class PolicyConfiguration {
     private int minRetriesToMarkUnreachable;
     private int minRetriesToMarkInactive;
     private List<String> platforms;
-    private String policyEvaluationPointName;
+    private String policyEvaluationPoint;
 
     @XmlElement(name = "MonitoringClass", required = true)
     public String getMonitoringClass() {
@@ -99,13 +99,13 @@ public class PolicyConfiguration {
         this.platforms = platforms;
     }
 
-    @XmlElement(name = "PolicyEvaluationPointName", required = true)
+    @XmlElement(name = "PolicyEvaluationPoint", required = true)
     public String getPolicyEvaluationPointName() {
-        return policyEvaluationPointName;
+        return policyEvaluationPoint;
     }
 
     public void setPolicyEvaluationPointName(String policyEvaluationPointName) {
-        this.policyEvaluationPointName = policyEvaluationPointName;
+        this.policyEvaluationPoint = policyEvaluationPointName;
     }
 
 }

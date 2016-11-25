@@ -102,7 +102,7 @@ public class PolicyManagementDataHolder {
     }
 
     public void removePolicyEvaluationPoint(PolicyEvaluationPoint policyEvaluationPoint) {
-        policyEvaluationPoints.put(policyEvaluationPoint.getName(), this.policyEvaluationPoint);
+        policyEvaluationPoints.remove(policyEvaluationPoint.getName());
     }
 
 

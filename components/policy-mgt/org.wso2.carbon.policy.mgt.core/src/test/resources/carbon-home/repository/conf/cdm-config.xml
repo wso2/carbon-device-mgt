@@ -42,8 +42,8 @@
             <maxRetries>5</maxRetries>
             <minRetriesToMarkUnreachable>8</minRetriesToMarkUnreachable>
             <minRetriesToMarkInactive>20</minRetriesToMarkInactive>
-            <!--<PolicyEvaluationPointName>SimplePolicyEvaluationServiceComponent</PolicyEvaluationPointName>-->
-            <PolicyEvaluationPointName>MergedPolicyEvaluationServiceComponent</PolicyEvaluationPointName>
+            <!--<PolicyEvaluationPoint>Simple</PolicyEvaluationPoint>-->
+            <PolicyEvaluationPoint>Merged</PolicyEvaluationPoint>
         </PolicyConfiguration>
     </ManagementRepository>
 </DeviceMgtConfiguration>

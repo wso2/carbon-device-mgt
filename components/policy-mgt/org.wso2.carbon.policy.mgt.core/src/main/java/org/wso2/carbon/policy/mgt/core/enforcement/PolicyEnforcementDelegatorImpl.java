@@ -30,6 +30,7 @@ import org.wso2.carbon.device.mgt.core.operation.mgt.CommandOperation;
 import org.wso2.carbon.device.mgt.core.operation.mgt.OperationManagerImpl;
 import org.wso2.carbon.device.mgt.core.operation.mgt.OperationMgtConstants;
 import org.wso2.carbon.policy.mgt.common.Policy;
+import org.wso2.carbon.policy.mgt.common.PolicyAdministratorPoint;
 import org.wso2.carbon.policy.mgt.common.PolicyEvaluationException;
 import org.wso2.carbon.policy.mgt.common.PolicyManagementException;
 import org.wso2.carbon.policy.mgt.core.PolicyManagerService;
@@ -84,7 +85,12 @@ public class PolicyEnforcementDelegatorImpl implements PolicyEnforcementDelegato
     public Policy getEffectivePolicy(DeviceIdentifier identifier) throws PolicyDelegationException {
         try {
             PolicyManagerService policyManagerService = new PolicyManagerServiceImpl();
-            return policyManagerService.getPEP().getEffectivePolicy(identifier);
+            PolicyAdministratorPoint policyAdministratorPoint;
+
+            Policy policy = policyManagerService.getPEP().getEffectivePolicy(identifier);
+            policyAdministratorPoint = policyManagerService.getPAP();
+            policyAdministratorPoint.setPolicyUsed(identifier, policy);
+            return policy;
             //return PolicyManagementDataHolder.getInstance().getPolicyEvaluationPoint().getEffectivePolicy(identifier);
         } catch (PolicyEvaluationException e) {
             String msg = "Error occurred while retrieving the effective policy for devices.";

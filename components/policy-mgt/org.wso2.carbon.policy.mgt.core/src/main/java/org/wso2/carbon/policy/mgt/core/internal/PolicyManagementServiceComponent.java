@@ -166,7 +166,7 @@ public class PolicyManagementServiceComponent {
         if (log.isDebugEnabled()) {
             log.debug("Removing Policy Information Service");
         }
-        PolicyManagementDataHolder.getInstance().removePolicyEvaluationPoint(null);
+        PolicyManagementDataHolder.getInstance().removePolicyEvaluationPoint(pepService);
     }
 
     protected void setDeviceManagementService(DeviceManagementProviderService deviceManagerService) {

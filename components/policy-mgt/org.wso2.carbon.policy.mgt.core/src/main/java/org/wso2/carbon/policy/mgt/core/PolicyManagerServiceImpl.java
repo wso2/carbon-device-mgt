@@ -100,6 +100,7 @@ public class PolicyManagerServiceImpl implements PolicyManagerService {
                 if (policy == null) {
                     return null;
                 }
+                this.getPAP().setPolicyUsed(deviceIdentifier, policy);
             } else {
                 throw new PolicyEvaluationException("Error occurred while getting the policy evaluation point " +
                         deviceIdentifier.getId() + " - " + deviceIdentifier.getType());

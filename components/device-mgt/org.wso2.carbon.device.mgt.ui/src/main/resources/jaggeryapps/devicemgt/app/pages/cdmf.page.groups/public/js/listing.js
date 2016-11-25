@@ -372,7 +372,7 @@ function attachEvents() {
         $(modalPopupContent).html($('#share-group-w1-modal-content').html());
         showPopup();
 
-        markAlreadySavedUsersRoles(groupId);
+        listAllRoles(groupId);
         var shareGroupNextLink = $("a#share-group-next-link");
         shareGroupNextLink.click(function () {
             var roles = [];
@@ -512,6 +512,41 @@ function markAlreadySavedUsersRoles(groupId) {
         });
 }
 
+function listAllRoles(groupId) {
+    var successCallback = function (data, textStatus, xhr) {
+        data = JSON.parse(data);
+        if (xhr.status == 200) {
+            if (data.roles.length > 0) {
+                var html = "<br/>";
+                for (var i = 0; i < data.roles.length; i++) {
+                    html += '<div class="wr-input-control"><label class="wr-input-control checkbox">' +
+                            '<input class="roleCheckBoxes" type="checkbox" data-role-name="' + data.roles[i] + '" />' +
+                            '<span class="helper" title="' + data.roles[i] + '">' + data.roles[i] +
+                            '</span></label></div>';
+                    $('.roleCheckBoxes').each(
+                        function () {
+                            if (data.roles[i] == $(this).data('role-name')) {
+                                $(this).attr('checked', true);
+                            }
+                        }
+                    );
+                }
+                $("#rolesListing").html(html);
+                markAlreadySavedUsersRoles(groupId);
+            } else {
+                $("#rolesListing").html("No roles available");
+            }
+        } else {
+            displayErrors(xhr);
+        }
+    };
+
+    invokerUtil.get("/api/device-mgt/v1.0/roles?offset=0&limit=100&user-store=all",
+                    successCallback, function (message) {
+            displayErrors(message);
+        });
+}
+
 function addNewRole(roles) {
     $(modalPopupContent).html($('#share-group-w3-modal-content').html());
     $("a#share-group-w3-yes-link").click(function () {
@@ -547,10 +582,6 @@ function togglePermissionAction(element) {
 function updateGroupShare(groupId, roles) {
     var successCallback = function (data) {
         $(modalPopupContent).html($('#share-group-200-content').html());
-        setTimeout(function () {
-            hidePopup();
-            location.reload(false);
-        }, 2000);
     };
 
     invokerUtil.post("/api/device-mgt/v1.0/groups/id/" + groupId + "/share",

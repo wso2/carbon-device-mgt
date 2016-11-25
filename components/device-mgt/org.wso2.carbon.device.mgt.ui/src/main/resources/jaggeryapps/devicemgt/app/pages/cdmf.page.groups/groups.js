@@ -23,10 +23,6 @@ function onRequest(context) {
     var groupPermissions = require("/app/pages/cdmf.page.groups/public/group-permissions.json");
     var currentUser = session.get(constants.USER_SESSION_KEY);
     var page = {};
-    var rolesResult = userModule.getRoles();
-    if (rolesResult.status == "success") {
-        page.userRoles = rolesResult.content;
-    }
     if (currentUser) {
         page.permissions = userModule.getUIPermissions();
         page.permissions.list = stringify(page.permissions);

@@ -22,14 +22,11 @@ import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.DeviceNotFoundException;
 import org.wso2.carbon.device.mgt.common.GroupPaginationRequest;
-import org.wso2.carbon.device.mgt.common.PaginationRequest;
 import org.wso2.carbon.device.mgt.common.PaginationResult;
 import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroup;
 import org.wso2.carbon.device.mgt.common.group.mgt.GroupAlreadyExistException;
 import org.wso2.carbon.device.mgt.common.group.mgt.GroupManagementException;
-import org.wso2.carbon.device.mgt.common.group.mgt.GroupUser;
 import org.wso2.carbon.device.mgt.common.group.mgt.RoleDoesNotExistException;
-import org.wso2.carbon.user.core.multiplecredentials.UserDoesNotExistException;
 
 import java.util.List;
 
@@ -75,6 +72,15 @@ public interface GroupManagementProviderService {
      * @throws GroupManagementException
      */
     DeviceGroup getGroup(int groupId) throws GroupManagementException;
+
+    /**
+     * Get the device group provided the device group name.
+     *
+     * @param groupName of the group.
+     * @return group with details.
+     * @throws GroupManagementException
+     */
+    DeviceGroup getGroup(String groupName) throws GroupManagementException;
 
     /**
      * Get all device groups in tenant.
@@ -132,36 +138,12 @@ public interface GroupManagementProviderService {
     /**
      * Manage device group sharing with user with list of roles.
      *
-     * @param username of the user
      * @param groupId  of the group
      * @param newRoles to be shared
      * @throws GroupManagementException UserDoesNotExistException
      */
-    void manageGroupSharing(int groupId, String username, List<String> newRoles)
-            throws GroupManagementException, UserDoesNotExistException, RoleDoesNotExistException;
-
-    /**
-     * Add new sharing role for device group
-     *
-     * @param userName    of the user
-     * @param groupId   of the group
-     * @param roleName    to add
-     * @param permissions to bind with role
-     * @return is role added
-     * @throws GroupManagementException
-     */
-    boolean addGroupSharingRole(String userName, int groupId, String roleName, String[] permissions)
-            throws GroupManagementException;
-
-    /**
-     * Remove existing sharing role for device group
-     *
-     * @param groupId   of the group
-     * @param roleName  to remove
-     * @return is role removed
-     * @throws GroupManagementException
-     */
-    boolean removeGroupSharingRole(int groupId, String roleName) throws GroupManagementException;
+    void manageGroupSharing(int groupId, List<String> newRoles)
+            throws GroupManagementException, RoleDoesNotExistException;
 
     /**
      * Get all sharing roles for device group
@@ -171,25 +153,6 @@ public interface GroupManagementProviderService {
      * @throws GroupManagementException
      */
     List<String> getRoles(int groupId) throws GroupManagementException;
-
-    /**
-     * Get specific device group sharing roles for user
-     *
-     * @param userName  of the user
-     * @param groupId   of the group
-     * @return list of roles
-     * @throws GroupManagementException UserDoesNotExistException
-     */
-    List<String> getRoles(String userName, int groupId) throws GroupManagementException, UserDoesNotExistException;
-
-    /**
-     * Get device group users
-     *
-     * @param groupId   of the group
-     * @return list of group users
-     * @throws GroupManagementException
-     */
-    List<GroupUser> getUsers(int groupId) throws GroupManagementException;
 
     /**
      * Get all devices in device group as paginated result.
@@ -218,8 +181,8 @@ public interface GroupManagementProviderService {
      * @param deviceIdentifiers of devices.
      * @throws GroupManagementException
      */
-    void addDevices(int groupId, List<DeviceIdentifier> deviceIdentifiers) throws GroupManagementException,
-                                                                                  DeviceNotFoundException;
+    void addDevices(int groupId, List<DeviceIdentifier> deviceIdentifiers)
+            throws GroupManagementException, DeviceNotFoundException;
 
     /**
      * Remove device from device group.
@@ -230,17 +193,6 @@ public interface GroupManagementProviderService {
      */
     void removeDevice(int groupId, List<DeviceIdentifier> deviceIdentifiers) throws GroupManagementException,
                                                                                        DeviceNotFoundException;
-
-    /**
-     * Get device group permissions of user.
-     *
-     * @param username  of the user.
-     * @param groupId   of the group
-     * @return array of permissions.
-     * @throws GroupManagementException UserDoesNotExistException
-     */
-    String[] getPermissions(String username, int groupId) throws GroupManagementException, UserDoesNotExistException;
-
     /**
      * Get device groups of user with permission.
      *
@@ -252,10 +204,10 @@ public interface GroupManagementProviderService {
     List<DeviceGroup> getGroups(String username, String permission) throws GroupManagementException;
 
     /**
-     * Get the group of device.
+     * Get groups which contains particular device.
      *
-     * @param deviceIdentifier
-     * @return
+     * @param deviceIdentifier of the device.
+     * @return groups contain the device.
      * @throws GroupManagementException
      */
     List<DeviceGroup> getGroups(DeviceIdentifier deviceIdentifier) throws GroupManagementException;

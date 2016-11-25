@@ -31,7 +31,7 @@ import org.wso2.carbon.device.mgt.core.common.BaseDeviceManagementTest;
 import org.wso2.carbon.device.mgt.core.common.TestDataHolder;
 
 import java.sql.SQLException;
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.List;
 
 public class GroupPersistTests extends BaseDeviceManagementTest {
@@ -48,7 +48,7 @@ public class GroupPersistTests extends BaseDeviceManagementTest {
     }
 
     @Test
-    public void testAddGroupTest() {
+    public void addGroupTest() {
         DeviceGroup deviceGroup = TestDataHolder.generateDummyGroupData();
         try {
             GroupManagementDAOFactory.beginTransaction();
@@ -73,7 +73,7 @@ public class GroupPersistTests extends BaseDeviceManagementTest {
         log.debug("Group name: " + group.getName());
     }
 
-    @Test(dependsOnMethods = {"testAddGroupTest"})
+    @Test(dependsOnMethods = {"addGroupTest"})
     public void getGroupTest() {
         try {
             GroupManagementDAOFactory.openConnection();
@@ -97,7 +97,82 @@ public class GroupPersistTests extends BaseDeviceManagementTest {
         }
     }
 
-    @Test(dependsOnMethods = {"testAddGroupTest"})
+    @Test(dependsOnMethods = {"addGroupTest"})
+    public void shareGroupTest() {
+        try {
+            GroupManagementDAOFactory.beginTransaction();
+            List<String> addedRoles = new ArrayList<>();
+            for (int i = 0; i < 3; i++) {
+                String role = "role-" + i;
+                groupDAO.addRole(groupId, role, TestDataHolder.SUPER_TENANT_ID);
+                addedRoles.add(role);
+            }
+            GroupManagementDAOFactory.commitTransaction();
+            List<String> roles = groupDAO.getRoles(groupId, TestDataHolder.SUPER_TENANT_ID);
+            Assert.assertEquals(roles, addedRoles, "Added roles are not equal to returned roles.");
+            log.debug("Group shared with roles.");
+        } catch (GroupManagementDAOException e) {
+            String msg = "Error occurred while find group by name.";
+            log.error(msg, e);
+            Assert.fail(msg, e);
+        } catch (TransactionManagementException e) {
+            String msg = "Error occurred while opening a connection to the data source.";
+            log.error(msg, e);
+            Assert.fail(msg, e);
+        } finally {
+            GroupManagementDAOFactory.closeConnection();
+        }
+    }
+
+    @Test(dependsOnMethods = {"shareGroupTest"})
+    public void getShareGroupTest() {
+        try {
+            GroupManagementDAOFactory.openConnection();
+            List<String> roles = groupDAO.getRoles(groupId, TestDataHolder.SUPER_TENANT_ID);
+            roles.remove(0);
+            List<DeviceGroup> deviceGroups = groupDAO.getGroups(roles.toArray(new String[roles.size()]), TestDataHolder.SUPER_TENANT_ID);
+            Assert.assertEquals(deviceGroups.size(), 1, "Unexpected number of device groups found with role.");
+            Assert.assertEquals(deviceGroups.get(0).getGroupId(), groupId, "Unexpected groupId found with role.");
+            log.debug("Group found for given roles.");
+        } catch (GroupManagementDAOException e) {
+            String msg = "Error occurred while getting groups shared with roles.";
+            log.error(msg, e);
+            Assert.fail(msg, e);
+        } catch (SQLException e) {
+            String msg = "Error occurred while opening a connection to the data source.";
+            log.error(msg, e);
+            Assert.fail(msg, e);
+        } finally {
+            GroupManagementDAOFactory.closeConnection();
+        }
+    }
+
+    @Test(dependsOnMethods = {"getShareGroupTest"})
+    public void unshareGroupTest() {
+        try {
+            GroupManagementDAOFactory.beginTransaction();
+            List<String> rolesToRemove = groupDAO.getRoles(groupId, TestDataHolder.SUPER_TENANT_ID);
+            for (String role : rolesToRemove) {
+                groupDAO.removeRole(groupId, role, TestDataHolder.SUPER_TENANT_ID);
+            }
+            GroupManagementDAOFactory.commitTransaction();
+            List<String> roles = groupDAO.getRoles(groupId, TestDataHolder.SUPER_TENANT_ID);
+            Assert.assertNotEquals(roles, rolesToRemove, "Roles not removed.");
+            log.debug("Group unshared with given roles.");
+        } catch (GroupManagementDAOException e) {
+            String msg = "Error occurred while find group by name.";
+            log.error(msg, e);
+            Assert.fail(msg, e);
+        } catch (TransactionManagementException e) {
+            String msg = "Error occurred while opening a connection to the data source.";
+            log.error(msg, e);
+            Assert.fail(msg, e);
+        } finally {
+            GroupManagementDAOFactory.closeConnection();
+        }
+    }
+
+    @Test(dependsOnMethods = {"addGroupTest"})
     public void addDeviceToGroupTest() {
         Device initialTestDevice = TestDataHolder.initialTestDevice;
         DeviceGroup deviceGroup = getGroupById(groupId);
@@ -163,14 +238,12 @@ public class GroupPersistTests extends BaseDeviceManagementTest {
         }
     }
 
-    @Test(dependsOnMethods = {"removeDeviceFromGroupTest"})
+    @Test(dependsOnMethods = {"removeDeviceFromGroupTest", "unshareGroupTest"})
     public void updateGroupTest() {
-        long time = new Date().getTime();
         String name = "Test Updated";
         String desc = "Desc updated";
         DeviceGroup group = getGroupById(groupId);
         Assert.assertNotNull(group, "Group is null");
-        group.setDateOfLastUpdate(time);
         group.setName(name);
         group.setDescription(desc);
         try {
@@ -195,7 +268,6 @@ public class GroupPersistTests extends BaseDeviceManagementTest {
         Assert.assertNotNull(group, "Group is null");
         Assert.assertEquals(group.getName(), name, "Group name");
         Assert.assertEquals(group.getDescription(), desc, "Group description");
-        Assert.assertEquals((long) group.getDateOfLastUpdate(), time, "Update time");
     }
 
     @Test(dependsOnMethods = {"updateGroupTest"})

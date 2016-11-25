@@ -16,7 +16,8 @@
   ~ under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <parent>
         <artifactId>dynamic-client-registration</artifactId>
@@ -26,9 +27,7 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.wso2.mdm</groupId>
     <artifactId>dynamic-client-web-proxy</artifactId>
-    <version>2.0.1-SNAPSHOT</version>
     <name>WSO2 Carbon - Proxy endpoint of Dynamic Client Registration Web Service</name>
     <description>WSO2 Carbon - Dynamic Client Registration Web Proxy</description>
     <packaging>war</packaging>

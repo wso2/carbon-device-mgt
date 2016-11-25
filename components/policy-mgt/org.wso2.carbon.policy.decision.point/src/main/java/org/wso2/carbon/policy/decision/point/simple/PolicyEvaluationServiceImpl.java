@@ -29,6 +29,7 @@ import java.util.List;
 public class PolicyEvaluationServiceImpl implements PolicyEvaluationPoint {
 
     private SimpleEvaluationImpl evaluation;
+    private static final String policyEvaluationPoint = "Simple";
 
     public PolicyEvaluationServiceImpl() {
         evaluation = new SimpleEvaluationImpl();
@@ -50,6 +51,6 @@ public class PolicyEvaluationServiceImpl implements PolicyEvaluationPoint {
 
     @Override
     public String getName() {
-        return "SimplePolicyEvaluationServiceComponent";
+        return policyEvaluationPoint;
     }
 }

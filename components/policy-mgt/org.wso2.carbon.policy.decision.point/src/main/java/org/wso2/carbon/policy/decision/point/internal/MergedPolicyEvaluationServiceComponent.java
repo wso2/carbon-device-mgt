@@ -104,9 +104,9 @@ public class MergedPolicyEvaluationServiceComponent {
         PolicyDecisionPointDataHolder.getInstance().setPolicyManagerService(null);
     }
 
-    protected String getName() {
-        return MergedPolicyEvaluationServiceComponent.class.getName();
-    }
+//    protected String getName() {
+//        return MergedPolicyEvaluationServiceComponent.class.getName();
+//    }
 
 }
 

@@ -79,7 +79,7 @@ SimplePolicyEvaluationTest implements PolicyEvaluationPoint {
 
     @Override
     public String getName() {
-        return "SimplePolicyEvaluationServiceComponent";
+        return "SimplePolicy";
     }
 
     public void sortPolicies(List<Policy> policyList) throws PolicyEvaluationException {

@@ -29,74 +29,63 @@ import org.wso2.carbon.policy.decision.point.internal.PolicyDecisionPointDataHol
 import java.sql.Timestamp;
 import java.util.*;
 
+/**
+ * This class helps to merge related policies and return as a effective policy.
+ */
 public class MergedEvaluationPoint implements PolicyEvaluationPoint {
 
     private static final Log log = LogFactory.getLog(MergedEvaluationPoint.class);
     private PolicyManagerService policyManagerService;
-    private List<Policy> policyList;
-    PIPDevice pipDevice;
+    private static final String effectivePolicyName = "Effective-Policy";
+    private static final String policyEvaluationPoint = "Merged";
 
     @Override
-    public List<ProfileFeature> getEffectiveFeatures(List<Policy> policyList, DeviceIdentifier deviceIdentifier) throws PolicyEvaluationException {
-        PolicyAdministratorPoint policyAdministratorPoint;
-        policyManagerService = getPolicyManagerService();
-
-        try {
-            if (policyManagerService != null) {
-
-                if (!policyList.isEmpty()) {
-                    Policy effectivePolicy = policyResolve(policyList);
-                    effectivePolicy.setActive(true);
-                    policyAdministratorPoint = policyManagerService.getPAP();
-                    policyAdministratorPoint.setPolicyUsed(deviceIdentifier, effectivePolicy);
-                    return effectivePolicy.getProfile().getProfileFeaturesList();
-                }
-            }
-            return null;
-        } catch (PolicyManagementException e) {
-            String msg = "Error occurred when retrieving the policy related data from policy management service.";
-            log.error(msg, e);
-            throw new PolicyEvaluationException(msg, e);
-        }
+    public List<ProfileFeature> getEffectiveFeatures(List<Policy> policyList, DeviceIdentifier deviceIdentifier)
+            throws PolicyEvaluationException {
+        return this.getEffectivePolicy(deviceIdentifier).getProfile().getProfileFeaturesList();
     }
 
     @Override
     public String getName() {
-        return "MergedPolicyEvaluationServiceComponent";
+        return policyEvaluationPoint;
     }
 
     @Override
     public Policy getEffectivePolicy(DeviceIdentifier deviceIdentifier) throws PolicyEvaluationException {
-
+        PIPDevice pipDevice;
+        List<Policy> policyList;
+        Policy policy;
         try {
             policyManagerService = getPolicyManagerService();
+            if (policyManagerService == null) {
+                return null;
+            }
             PolicyInformationPoint policyInformationPoint = policyManagerService.getPIP();
             pipDevice = policyInformationPoint.getDeviceData(deviceIdentifier);
             policyList = policyInformationPoint.getRelatedPolicies(pipDevice);
 
-            if (policyManagerService == null || policyList.size() == 0) {
+            if (policyList.size() == 0) {
                 return null;
             }
 
-            Policy policy = new Policy();
+            // Set effective-policy information
             Profile profile = new Profile();
-            profile.setProfileFeaturesList(getEffectiveFeatures(policyList, deviceIdentifier));
+            policy = policyResolve(policyList);
+            profile.setProfileFeaturesList(policy.getProfile().getProfileFeaturesList());
             policy.setProfile(profile);
             Timestamp currentTimestamp = new Timestamp(Calendar.getInstance().getTime().getTime());
             profile.setCreatedDate(currentTimestamp);
             profile.setUpdatedDate(currentTimestamp);
             profile.setDeviceType(deviceIdentifier.getType());
             profile.setTenantId(PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId());
-            policy.setPolicyName("Effective-Policy");
+            policy.setPolicyName(effectivePolicyName);
             policy.setOwnershipType(pipDevice.getOwnershipType());
-            policy.setRoles(null);
-            policy.setDevices(null);
-            policy.setUsers(null);
             policy.setActive(true);
             policy.setUpdated(true);
             policy.setTenantId(PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId());
             policy.setDescription("This is a system generated effective policy by merging relevant policies.");
             policy.setCompliance(policyList.get(0).getCompliance());
+            policy.setId(-1);
             return policy;
         } catch (PolicyManagementException e) {
             String msg = "Error occurred when retrieving the policy related data from policy management service.";
@@ -106,52 +95,30 @@ public class MergedEvaluationPoint implements PolicyEvaluationPoint {
     }
 
     private Policy policyResolve(List<Policy> policyList) throws PolicyEvaluationException, PolicyManagementException {
-        sortPolicies();
+        Collections.sort(policyList, Collections.reverseOrder());
 
         // Iterate through all policies
         Map<String, ProfileFeature> featureMap = new HashMap<>();
-        // Merge roles of policies
-        //Map<String, java.lang.Integer> rolesMap = new HashMap<>();
-        Iterator<Policy> policyIterator = policyList.iterator();
-        while (policyIterator.hasNext()) {
-            Policy policy = policyIterator.next();
+        for (Policy policy : policyList) {
             List<ProfileFeature> profileFeaturesList = policy.getProfile().getProfileFeaturesList();
             if (profileFeaturesList != null) {
-                Iterator<ProfileFeature> featureIterator = profileFeaturesList.iterator();
-                while (featureIterator.hasNext()) {
-                    ProfileFeature feature = featureIterator.next();
+                for (ProfileFeature feature : profileFeaturesList) {
                     featureMap.put(feature.getFeatureCode(), feature);
                 }
             }
-//            List<String> policyRolesList = policy.getRoles();
-//
-//            if (policyRolesList != null) {
-//                Iterator<String> roleIterator = policyRolesList.iterator();
-//                while (roleIterator.hasNext()) {
-//                    String role = roleIterator.next();
-//                    rolesMap.put(role,policy.getId());
-//                }
-//            }
-
         }
 
         // Get prioritized features list
         List<ProfileFeature> newFeaturesList = new ArrayList<>(featureMap.values());
         Profile profile = new Profile();
         profile.setProfileFeaturesList(newFeaturesList);
-
         Policy effectivePolicy = new Policy();
         effectivePolicy.setProfile(profile);
-        //effectivePolicy.setRoles(rolesList);
-
         return effectivePolicy;
-    }
-
-    public void sortPolicies() throws PolicyEvaluationException {
-        Collections.sort(policyList, Collections.reverseOrder());
     }
 
     private PolicyManagerService getPolicyManagerService() {
         return PolicyDecisionPointDataHolder.getInstance().getPolicyManagerService();
     }
+
 }

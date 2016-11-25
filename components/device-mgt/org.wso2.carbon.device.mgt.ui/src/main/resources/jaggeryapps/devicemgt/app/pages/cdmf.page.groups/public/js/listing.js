@@ -110,12 +110,12 @@ function loadGroups() {
         var objects = [];
         $(data.deviceGroups).each(function (index) {
             objects.push({
-                groupId: data.deviceGroups[index].id,
-                name: data.deviceGroups[index].name,
-                description: data.deviceGroups[index].description,
-                owner: data.deviceGroups[index].owner,
-                dateOfCreation: data.deviceGroups[index].dateOfCreation
-            })
+                             groupId: data.deviceGroups[index].id,
+                             name: data.deviceGroups[index].name,
+                             description: data.deviceGroups[index].description,
+                             owner: data.deviceGroups[index].owner,
+                             dateOfCreation: data.deviceGroups[index].dateOfCreation
+                         })
         });
         var json = {
             "recordsTotal": data.count,
@@ -154,34 +154,50 @@ function loadGroups() {
             class: 'text-right content-fill text-left-on-grid-view no-wrap',
             render: function (id, type, row, meta) {
                 var html;
-                if ($.hasPermission("VIEW_GROUP_DEVICES")){
-                    html = '<a href="devices?groupId=' + row.groupId + '&groupName=' + row.name + '" data-click-event="remove-form" class="btn padding-reduce-on-grid-view">' +
-                        '<span class="fw-stack"><i class="fw fw-ring fw-stack-2x"></i><i class="fw fw-view fw-stack-1x"></i></span>' +
-                        '<span class="hidden-xs hidden-on-grid-view">View Devices</span></a>';
+                if ($.hasPermission("VIEW_GROUP_DEVICES")) {
+                    html = '<a href="devices?groupId=' + row.groupId + '&groupName=' + row.name
+                           + '" data-click-event="remove-form" class="btn padding-reduce-on-grid-view">' +
+                           '<span class="fw-stack"><i class="fw fw-ring fw-stack-2x"></i><i class="fw fw-view fw-stack-1x"></i></span>'
+                           +
+                           '<span class="hidden-xs hidden-on-grid-view">View Devices</span></a>';
 
-                    html += '<a href="group/' + row.name + '/' + row.groupId + '/analytics" data-click-event="remove-form" class="btn padding-reduce-on-grid-view">' +
-                        '<span class="fw-stack"><i class="fw fw-ring fw-stack-2x"></i><i class="fw fw-statistics fw-stack-1x"></i></span>' +
-                        '<span class="hidden-xs hidden-on-grid-view">Analytics</span></a>';
+                    html += '<a href="group/' + row.name + '/' + row.groupId
+                            + '/analytics" data-click-event="remove-form" class="btn padding-reduce-on-grid-view">' +
+                            '<span class="fw-stack"><i class="fw fw-ring fw-stack-2x"></i><i class="fw fw-statistics fw-stack-1x"></i></span>'
+                            +
+                            '<span class="hidden-xs hidden-on-grid-view">Analytics</span></a>';
                 } else {
                     html = '';
                 }
-                if($.hasPermission("SHARE_GROUP")) {
-                    html += '<a href="#" data-click-event="remove-form" class="btn padding-reduce-on-grid-view share-group-link" data-group-id="' + row.groupId + '" ' +
-                        'data-group-owner="' + row.owner + '"><span class="fw-stack"><i class="fw fw-ring fw-stack-2x"></i><i class="fw fw-share fw-stack-1x"></i></span>' +
+                if ($.hasPermission("SHARE_GROUP")) {
+                    html +=
+                        '<a href="#" data-click-event="remove-form" class="btn padding-reduce-on-grid-view share-group-link" data-group-id="'
+                        + row.groupId + '" ' +
+                        'data-group-owner="' + row.owner
+                        + '"><span class="fw-stack"><i class="fw fw-ring fw-stack-2x"></i><i class="fw fw-share fw-stack-1x"></i></span>'
+                        +
                         '<span class="hidden-xs hidden-on-grid-view">Share</span></a>';
                 } else {
                     html += '';
                 }
-                if($.hasPermission("UPDATE_GROUP")) {
-                    html += '<a href="#" data-click-event="remove-form" class="btn padding-reduce-on-grid-view edit-group-link" data-group-name="' + row.name + '" ' +
-                        'data-group-owner="' + row.owner + '" data-group-description="' + row.description + '" data-group-id="' + row.groupId + '"><span class="fw-stack"><i class="fw fw-ring fw-stack-2x"></i>' +
+                if ($.hasPermission("UPDATE_GROUP")) {
+                    html +=
+                        '<a href="#" data-click-event="remove-form" class="btn padding-reduce-on-grid-view edit-group-link" data-group-name="'
+                        + row.name + '" ' +
+                        'data-group-owner="' + row.owner + '" data-group-description="' + row.description
+                        + '" data-group-id="' + row.groupId
+                        + '"><span class="fw-stack"><i class="fw fw-ring fw-stack-2x"></i>' +
                         '<i class="fw fw-edit fw-stack-1x"></i></span><span class="hidden-xs hidden-on-grid-view">Edit</span></a>';
                 } else {
                     html += '';
                 }
                 if ($.hasPermission("REMOVE_GROUP")) {
-                    html += '<a href="#" data-click-event="remove-form" class="btn padding-reduce-on-grid-view remove-group-link" data-group-id="' + row.groupId + '" ' +
-                        'data-group-owner="' + row.owner + '"><span class="fw-stack"><i class="fw fw-ring fw-stack-2x"></i><i class="fw fw-delete fw-stack-1x"></i>' +
+                    html +=
+                        '<a href="#" data-click-event="remove-form" class="btn padding-reduce-on-grid-view remove-group-link" data-group-id="'
+                        + row.groupId + '" ' +
+                        'data-group-owner="' + row.owner
+                        + '"><span class="fw-stack"><i class="fw fw-ring fw-stack-2x"></i><i class="fw fw-delete fw-stack-1x"></i>'
+                        +
                         '</span><span class="hidden-xs hidden-on-grid-view">Delete</span></a>';
                 } else {
                     html += '';
@@ -336,7 +352,7 @@ function hidePopup() {
     $(modalPopupContent).html("");
     $(modalPopupContent).removeClass("operation-data");
     $(modalPopup).modal('hide');
-    $('body').removeClass('modal-open').css('padding-right','0px');
+    $('body').removeClass('modal-open').css('padding-right', '0px');
     $('.modal-backdrop').remove();
 }
 
@@ -352,33 +368,37 @@ function attachEvents() {
     $("a.share-group-link").click(function () {
         var groupId = $(this).data("group-id");
         var groupOwner = $(this).data("group-owner");
+
         $(modalPopupContent).html($('#share-group-w1-modal-content').html());
-        $("a#share-group-next-link").show();
         showPopup();
-        $("a#share-group-next-link").click(function () {
-            var successCallback = function (data) {
-                if(data === 'true') {
-                    getAllRoles(groupId, selectedUser);
-                } else {
-                    var errorMsgWrapper = "#notification-error-msg";
-                    var errorMsg = "#notification-error-msg span";
-                    $(errorMsg).text("User does not exist.");
-                    $(errorMsgWrapper).removeClass("hidden");
+
+        listAllRoles(groupId);
+        var shareGroupNextLink = $("a#share-group-next-link");
+        shareGroupNextLink.click(function () {
+            var roles = [];
+            $('.modal .roleCheckBoxes').each(
+                function () {
+                    if ($(this).is(':checked')) {
+                        roles.push($(this).data('role-name'));
+                    }
                 }
-            }
-            var selectedUser = $('#share-user-selector').val();
-            if (selectedUser == $("#group-listing").data("current-user")) {
-                $("#user-names").html("Please specify a user other than current user.");
-                $("a#share-group-next-link").hide();
-            } else {
-                invokerUtil.get("/api/device-mgt/v1.0/users/checkUser?username=" + selectedUser,
-                    successCallback, function (message) {
-                        displayErrors(message);
-                    });
-            }
+            );
+            updateGroupShare(groupId, roles);
         });
-        $("a#share-group-w1-cancel-link").click(function () {
-            hidePopup();
+
+        var shareGroupNewRoleFromSelectionLink = $("a#share-group-new-role-from-selection");
+        shareGroupNewRoleFromSelectionLink.click(function () {
+            var roles = [];
+            $('.modal .roleCheckBoxes').each(
+                function () {
+                    if ($(this).is(':checked')) {
+                        roles.push($(this).data('role-name'));
+                    }
+                }
+            );
+            addNewRole(roles);
+            // $(modalPopupContent).html($('#share-group-w3-modal-content').html());
+            // createNewRole(roles);
         });
     });
 
@@ -408,8 +428,8 @@ function attachEvents() {
             };
 
             invokerUtil.delete("/api/device-mgt/v1.0/groups/id/" + groupId,
-                successCallback, function (message) {
-                        displayErrors(message);
+                               successCallback, function (message) {
+                    displayErrors(message);
                 });
         });
 
@@ -453,8 +473,8 @@ function attachEvents() {
             };
 
             invokerUtil.put("/api/device-mgt/v1.0/groups/id/" + groupId, group,
-                successCallback, function (message) {
-                        displayErrors(message);
+                            successCallback, function (message) {
+                    displayErrors(message);
                 });
         });
 
@@ -464,16 +484,22 @@ function attachEvents() {
     });
 }
 
-function getAllRoles(groupId, selectedUser) {
-    $(modalPopupContent).html($('#share-group-w2-modal-content').html());
-    $("a#share-group-yes-link").hide();
+function markAlreadySavedUsersRoles(groupId) {
     var successCallback = function (data, textStatus, xhr) {
         data = JSON.parse(data);
         if (xhr.status == 200) {
             if (data.roles.length > 0) {
-                generateRoleMap(groupId, selectedUser, data.roles);
+                for (var i = 0; i < data.roles.length; i++) {
+                    $('.roleCheckBoxes').each(
+                        function () {
+                            if (data.roles[i] == $(this).data('role-name')) {
+                                $(this).attr('checked', true);
+                            }
+                        }
+                    );
+                }
             } else {
-                $('#user-roles').html("There is no any roles for this group.");
+                return;
             }
         } else {
             displayErrors(xhr);
@@ -481,98 +507,52 @@ function getAllRoles(groupId, selectedUser) {
     };
 
     invokerUtil.get("/api/device-mgt/v1.0/groups/id/" + groupId + "/roles",
-        successCallback, function (message) {
-                displayErrors(message);
+                    successCallback, function (message) {
+            displayErrors(message);
         });
-
-    $("a#share-group-w2-cancel-link").click(function () {
-        hidePopup();
-    });
 }
 
-function generateRoleMap(groupId, selectedUser, allRoles) {
+function listAllRoles(groupId) {
     var successCallback = function (data, textStatus, xhr) {
         data = JSON.parse(data);
         if (xhr.status == 200) {
-            var userRoles = [];
-            if(data != "EMPTY") {
-                userRoles = data.roles;
-            }
-            var str = $('#user-roles').html();
-
-            for (var i = 0; i < allRoles.length; i++) {
-                var isChecked = '';
-                for (var j = 0; j < userRoles.length; j++) {
-                    if (allRoles[i] == userRoles[j]) {
-                        isChecked = 'checked';
-                        break;
-                    }
+            if (data.roles.length > 0) {
+                var html = "<br/>";
+                for (var i = 0; i < data.roles.length; i++) {
+                    html += '<div class="wr-input-control"><label class="wr-input-control checkbox">' +
+                            '<input class="roleCheckBoxes" type="checkbox" data-role-name="' + data.roles[i] + '" />' +
+                            '<span class="helper" title="' + data.roles[i] + '">' + data.roles[i] +
+                            '</span></label></div>';
+                    $('.roleCheckBoxes').each(
+                        function () {
+                            if (data.roles[i] == $(this).data('role-name')) {
+                                $(this).attr('checked', true);
+                            }
+                        }
+                    );
                 }
-                str += '<label class="wr-input-control checkbox"><input type="checkbox" class="form-control modal-input operationDataKeys" id="user-role-' + allRoles[i] + '" value="' + allRoles[i]
-                       + '" ' + isChecked + '/>' +'<span class="helper" title="Check to share this group role with user."> &nbsp;&nbsp;&nbsp;'+ allRoles[i] + '</span></label><br><br>';
+                $("#rolesListing").html(html);
+                markAlreadySavedUsersRoles(groupId);
+            } else {
+                $("#rolesListing").html("No roles available");
             }
-
-            $('#user-roles').html(str);
-            $("a#share-group-yes-link").show();
-            $("a#share-group-yes-link").show();
-            $("a#share-group-yes-link").click(function () {
-                var roles = [];
-                for (var i = 0; i < allRoles.length; i++) {
-                    if ($('#user-role-' + allRoles[i]).is(':checked')) {
-                        roles.push(allRoles[i]);
-                    }
-                }
-                updateGroupShare(groupId, selectedUser, roles);
-            });
-            $("a#share-group-w2-add-new-role-link").click(function () {
-                addNewRole(groupId, selectedUser, allRoles);
-            });
         } else {
             displayErrors(xhr);
         }
     };
 
-    invokerUtil.get("/api/device-mgt/v1.0/groups/id/" + groupId + "/roles?userName=" + selectedUser,
-        successCallback, function (message) {
+    invokerUtil.get("/api/device-mgt/v1.0/roles?offset=0&limit=100&user-store=all",
+                    successCallback, function (message) {
             displayErrors(message);
         });
-
-    $("a#share-group-w2-cancel-link").click(function () {
-        hidePopup();
-    });
 }
 
-function addNewRole(groupId, selectedUser, allRoles) {
+function addNewRole(roles) {
     $(modalPopupContent).html($('#share-group-w3-modal-content').html());
-    function getPermissions() {
-        var PERMISSION_PREFIX = '/permission/admin/';
-        var permissions = [];
-        $('#permission-table-container').find('tr').each(function () {
-            var row = $(this).closest('tr');
-            var permission = $(row).find('td:nth-child(1)').text();
-            var check = $(row).find('td:nth-child(2) a').data('value');
-            if(check === 'checked') {
-                permission = PERMISSION_PREFIX + permission;
-                permissions.push(permission);
-            }
-        });
-        return permissions;
-    };
     $("a#share-group-w3-yes-link").click(function () {
-        var successCallback = function (data, status, jqXHR) {
-            if(status == "success") {
-                getAllRoles(groupId, selectedUser);
-            }
-        }
         var roleName = $('#group-sharing-role-name').val();
-        var users = [];
-        if(roleName) {
-            var groupRoleInfo = {"roleName": roleName, "permissions": getPermissions(), "users": users};
-            var currentUser = $("#group-listing").data("current-user");
-            invokerUtil.post("/api/device-mgt/v1.0/groups/id/" + groupId + "/roles/create?userName=" + currentUser,
-                groupRoleInfo, successCallback, function (message) {
-                    displayErrors(message);
-                });
+        if (roleName) {
+            createNewCombinedRole(roleName, roles);
         } else {
             var errorMsgWrapper = "#notification-error-msg";
             var errorMsg = "#notification-error-msg span";
@@ -588,7 +568,7 @@ function addNewRole(groupId, selectedUser, allRoles) {
 function togglePermissionAction(element) {
     $(element).data('value', 'checked');
     var icon = $(element).find("i")[1];
-    if($(icon).hasClass('fw-minus')) {
+    if ($(icon).hasClass('fw-minus')) {
         $(icon).removeClass('fw-minus');
         $(icon).addClass('fw-add');
         $(element).data('value', 'unchecked');
@@ -599,20 +579,26 @@ function togglePermissionAction(element) {
     }
 }
 
-function updateGroupShare(groupId, selectedUser, roles) {
+function updateGroupShare(groupId, roles) {
     var successCallback = function (data) {
         $(modalPopupContent).html($('#share-group-200-content').html());
-        setTimeout(function () {
-            hidePopup();
-            location.reload(false);
-        }, 2000);
     };
 
-    var deviceGroupShare = {"username": selectedUser, "groupRoles": roles };
     invokerUtil.post("/api/device-mgt/v1.0/groups/id/" + groupId + "/share",
-                deviceGroupShare, successCallback, function (message) {
-                displayErrors(message);
-            });
+                     roles, successCallback, function (message) {
+            displayErrors(message);
+        });
+}
+
+function createNewCombinedRole(roleName, roleList) {
+    var successCallback = function (data, status, jqXHR, isLast) {
+        $(modalPopupContent).html($('#create-combined-role-200-content').html());
+        showPopup();
+    };
+    invokerUtil.post("/api/device-mgt/v1.0/roles/create-combined-role/" + roleName, roleList,
+                     successCallback, function (message) {
+            displayErrors(message);
+        });
 }
 
 function displayErrors(jqXHR) {

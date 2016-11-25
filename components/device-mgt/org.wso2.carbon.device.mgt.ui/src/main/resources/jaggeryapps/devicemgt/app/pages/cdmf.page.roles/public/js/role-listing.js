@@ -131,7 +131,7 @@ function loadRoles() {
             class: "fade-edge",
             data: "name",
             render: function (name, type, row, meta) {
-                return '<h4>' + name + 'role</h4>';
+                return '<h4>' + name + '</h4>';
             }
         },
         {

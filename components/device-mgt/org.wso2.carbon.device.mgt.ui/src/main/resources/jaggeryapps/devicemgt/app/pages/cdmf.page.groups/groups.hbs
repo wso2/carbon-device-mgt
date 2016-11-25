@@ -80,7 +80,7 @@
                     <div id="ast-container" class="ast-container list-view">
                         <div class="ctrl-info-panel col-centered text-center wr-login">
                             <h2>You don't have any group registered at the moment.</h2>
-                            <br/>
+                            <br />
                             {{#if permissions.ADD_GROUP}}
                                 <p class="text-center">
                                     <a href="{{@app.context}}/group/add" class="wr-btn">
@@ -115,67 +115,26 @@
                         </div>
                         <div id="user-names">
                             <h4>
-                                Enter user name to manage group sharing
+                                Select user roles to manage group sharing
                                 <br><br>
-                                <input type="text" id="share-user-selector" class="form-control modal-input operationDataKeys">
-                                </input>
+                                <div style="max-height: 200px; overflow: scroll" id="rolesListing">
+                                </div>
                             </h4>
                         </div>
                     </div>
                     <div class="modal-footer">
                         <div class="buttons">
-                            <a href="#" id="share-group-next-link" class="btn-operations">
-                                Next
-                            </a>
-
-                            <a href="#" id="share-group-w1-cancel-link" class="btn-operations btn-default">
-                                Cancel
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="share-group-w2-modal-content" class="hide">
-                    <div class="modal-header">
-                        <h3 class="pull-left modal-title">
-                            <span>
-                                <span class="fw-stack">
-                                    <i class="fw fw-ring fw-stack-2x"></i>
-                                    <i class="fw fw-share fw-stack-1x"></i>
-                                </span> Group Sharing
-                            </span>
-                        </h3>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i
-                                class="fw fw-cancel"></i></button>
-                    </div>
-                    <div class="modal-body add-margin-top-2x add-margin-bottom-2x">
-                        <div id="notification-error-msg" class="alert alert-danger hidden" role="alert">
-                            <i class="icon fw fw-error"></i><span></span>
-                        </div>
-                        <div id="user-roles">
-                            <h4>
-                                Select sharing roles
-                                <br><br>
-                            </h4>
-                        </div>
-                        {{#if permissions.CREATE_GROUP_ROLES}}
-                            <div class="buttons">
-                                <a href="#" id="share-group-w2-add-new-role-link" class="btn-operations">
-                                    <span class="fw-stack"><i class="fw fw-ring fw-stack-2x"></i><i class="fw fw-add fw-stack-1x"></i></span> Add New Role
+                            {{#if permissions.CREATE_GROUP_ROLES}}
+                                <a href="{{@app.context}}/role/add" class="btn-operations">
+                                    New Role
                                 </a>
-                            </div>
-                        {{/if}}
-                    </div>
-                    <div class="modal-footer">
-                        <div class="buttons">
-                            <a href="#" id="share-group-yes-link" class="btn-operations">
-                                OK
+                                <a href="#" id="share-group-new-role-from-selection" class="btn-operations">
+                                    New Role from Selection
+                                </a>
+                            {{/if}}
+                            <a href="#" id="share-group-next-link" class="btn-operations">
+                                Share
                             </a>
-
-                            <a href="#" id="share-group-w2-cancel-link" class="btn-operations btn-default">
-                                Cancel
-                            </a>
-
                         </div>
                     </div>
                 </div>
@@ -201,25 +160,10 @@
                             <h4>
                                 Enter Group Sharing Role Name
                                 <br><br>
-                                <input type="text" id="group-sharing-role-name" class="form-control modal-input operationDataKeys"/>
-                                <br><br>
-                                Role Permissions
+                                <input type="text" id="group-sharing-role-name"
+                                       class="form-control modal-input operationDataKeys" />
                                 <br><br>
                             </h4>
-                            <table class="table">
-                                <tbody id="permission-table-container">
-                                {{#each groupPermissions}}
-                                    <tr>
-                                        <td>{{this}}</td>
-                                        <td>
-                                            <a href="#" class="btn-operations btn-default" onclick="togglePermissionAction(this)" data-value="unchecked">
-                                                <span class="fw-stack"><i class="fw fw-ring fw-stack-2x"></i><i class="fw fw-add fw-stack-1x"></i></span>
-                                            </a>
-                                        </td>
-                                    </tr>
-                                {{/each}}
-                                </tbody>
-                            </table>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -239,7 +183,43 @@
                     <div class="content">
                         <div class="row">
                             <div class="col-lg-5 col-md-6 col-centered">
-                                <h3>Group sharing updated successfully.</h3>
+                                <h3>Group was successfully updated.</h3>
+                                <br />
+                                Do you need to Add / Remove users to the chosen roles?
+                                <div class="buttons">
+                                    <a href="{{@app.context}}/users" id="share-group-add-users-yes-link"
+                                       class="btn-operations">
+                                        Yes
+                                    </a>
+
+                                    <a href="#" class="btn-operations btn-default" data-dismiss="modal">
+                                        No
+                                    </a>
+                                </div>
+                                <br />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="create-combined-role-200-content" class="hide">
+                    <div class="content">
+                        <div class="row">
+                            <div class="col-lg-5 col-md-6 col-centered">
+                                <h3>New Role was successfully created.</h3>
+                                <br />
+                                Do you need to Add / Remove users to the chosen roles?
+                                <div class="buttons">
+                                    <a href="{{@app.context}}/users" id="share-group-add-users-yes-link"
+                                       class="btn-operations">
+                                        Yes
+                                    </a>
+
+                                    <a href="#" class="btn-operations btn-default" data-dismiss="modal">
+                                        No
+                                    </a>
+                                </div>
+                                <br />
                             </div>
                         </div>
                     </div>
@@ -256,7 +236,8 @@
                                         Yes
                                     </a>
 
-                                    <a href="#" id="remove-group-cancel-link" class="btn-operations btn-default">
+                                    <a href="#" id="remove-group-cancel-link" class="btn-operations btn-default"
+                                       data-dismiss="modal">
                                         Cancel
                                     </a>
                                 </div>

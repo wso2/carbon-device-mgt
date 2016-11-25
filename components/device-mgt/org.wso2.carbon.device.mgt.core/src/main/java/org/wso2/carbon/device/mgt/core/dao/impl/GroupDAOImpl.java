@@ -608,10 +608,10 @@ public class GroupDAOImpl implements GroupDAO {
                     "(SELECT GROUP_ID FROM DM_ROLE_GROUP_MAP WHERE ROLE IN (";
 
             int index = 0;
-            while (index++ < rolesCount) {
-                sql += (rolesCount - 1 != index) ? "?," : "?";
+            while (index++ < rolesCount - 1) {
+                sql += "?,";
             }
-            sql += ")) gr WHERE g.ID = gr.GROUP_ID AND TENANT_ID = ? GROUP BY g.ID";
+            sql += "?)) gr WHERE g.ID = gr.GROUP_ID AND TENANT_ID = ? GROUP BY g.ID";
 
             stmt = conn.prepareStatement(sql);
             index = 0;

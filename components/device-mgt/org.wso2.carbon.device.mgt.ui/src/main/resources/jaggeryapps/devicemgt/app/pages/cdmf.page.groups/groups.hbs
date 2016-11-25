@@ -117,18 +117,7 @@
                             <h4>
                                 Select user roles to manage group sharing
                                 <br><br>
-                                <div style="max-height: 200px; overflow: scroll">
-                                    <br />
-                                    {{#each userRoles}}
-                                        <div class="wr-input-control">
-                                            <label class="wr-input-control checkbox">
-                                                <input class="roleCheckBoxes" type="checkbox"
-                                                       data-role-name="{{this}}" />
-                                            <span class="helper"
-                                                  title="{{this}}">{{this}}</span>
-                                            </label>
-                                        </div>
-                                    {{/each}}
+                                <div style="max-height: 200px; overflow: scroll" id="rolesListing">
                                 </div>
                             </h4>
                         </div>

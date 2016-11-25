@@ -30,13 +30,26 @@ import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.FilteringUtil;
 import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.RequestValidationUtil;
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
 import org.wso2.carbon.device.mgt.jaxrs.util.SetReferenceTransformer;
-import org.wso2.carbon.user.api.*;
+import org.wso2.carbon.user.api.AuthorizationManager;
+import org.wso2.carbon.user.api.Permission;
+import org.wso2.carbon.user.api.UserRealm;
+import org.wso2.carbon.user.api.UserStoreException;
+import org.wso2.carbon.user.api.UserStoreManager;
 import org.wso2.carbon.user.core.common.AbstractUserStoreManager;
 import org.wso2.carbon.user.mgt.UserRealmProxy;
 import org.wso2.carbon.user.mgt.common.UIPermissionNode;
 import org.wso2.carbon.user.mgt.common.UserAdminException;
 
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.UnsupportedEncodingException;
@@ -45,7 +58,9 @@ import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static org.wso2.carbon.device.mgt.jaxrs.util.Constants.PRIMARY_USER_STORE;
 
@@ -69,7 +84,7 @@ public class RoleManagementServiceImpl implements RoleManagementService {
         RoleList targetRoles = new RoleList();
 
         //if user store is null set it to primary
-        if(userStore == null || "".equals(userStore)){
+        if (userStore == null || "".equals(userStore)) {
             userStore = PRIMARY_USER_STORE;
         }
 
@@ -94,7 +109,8 @@ public class RoleManagementServiceImpl implements RoleManagementService {
     @Path("/{roleName}/permissions")
     @Override
     public Response getPermissionsOfRole(@PathParam("roleName") String roleName,
-            @QueryParam("user-store") String userStoreName, @HeaderParam("If-Modified-Since") String ifModifiedSince) {
+                                         @QueryParam("user-store") String userStoreName,
+                                         @HeaderParam("If-Modified-Since") String ifModifiedSince) {
         if (userStoreName != null && !userStoreName.isEmpty()) {
             roleName = userStoreName + "/" + roleName;
         }
@@ -166,7 +182,7 @@ public class RoleManagementServiceImpl implements RoleManagementService {
     @Path("/{roleName}")
     @Override
     public Response getRole(@PathParam("roleName") String roleName, @QueryParam("user-store") String userStoreName,
-            @HeaderParam("If-Modified-Since") String ifModifiedSince) {
+                            @HeaderParam("If-Modified-Since") String ifModifiedSince) {
         if (log.isDebugEnabled()) {
             log.debug("Getting the list of user roles");
         }
@@ -181,7 +197,7 @@ public class RoleManagementServiceImpl implements RoleManagementService {
             if (!userStoreManager.isExistingRole(roleName)) {
                 return Response.status(404).entity(
                         new ErrorResponse.ErrorResponseBuilder().setMessage("No role exists with the name '" +
-                                roleName + "'").build()).build();
+                                                                                    roleName + "'").build()).build();
             }
             roleInfo.setRoleName(roleName);
             roleInfo.setUsers(userStoreManager.getUserListOfRole(roleName));
@@ -235,9 +251,74 @@ public class RoleManagementServiceImpl implements RoleManagementService {
             //TODO fix what's returned in the entity
             return Response.created(new URI(API_BASE_PATH + "/" + URLEncoder.encode(roleInfo.getRoleName(), "UTF-8"))).
                     entity("Role '" + roleInfo.getRoleName() + "' has " + "successfully been"
-                    + " added").build();
+                                   + " added").build();
         } catch (UserStoreException e) {
             String msg = "Error occurred while adding role '" + roleInfo.getRoleName() + "'";
+            log.error(msg, e);
+            return Response.serverError().entity(
+                    new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
+        } catch (URISyntaxException e) {
+            String msg = "Error occurred while composing the URI at which the information of the newly created role " +
+                    "can be retrieved";
+            log.error(msg, e);
+            return Response.serverError().entity(
+                    new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
+        } catch (UnsupportedEncodingException e) {
+            String msg = "Error occurred while encoding role name";
+            log.error(msg, e);
+            return Response.serverError().entity(
+                    new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
+        }
+    }
+
+    @POST
+    @Path("/create-combined-role/{roleName}")
+    @Override
+    public Response addCombinedRole(List<String> roles, @PathParam("roleName") String roleName,
+                                    @QueryParam("user-store") String userStoreName) {
+        if (userStoreName != null && !userStoreName.isEmpty()) {
+            roleName = userStoreName + "/" + roleName;
+        }
+        if (roles.size() < 2) {
+            return Response.status(400).entity(
+                    new ErrorResponse.ErrorResponseBuilder().setMessage("Combining Roles requires at least two roles.")
+                            .build()
+            ).build();
+        }
+        for (String role : roles) {
+            RequestValidationUtil.validateRoleName(role);
+        }
+        try {
+            UserStoreManager userStoreManager = DeviceMgtAPIUtils.getUserStoreManager();
+            if (log.isDebugEnabled()) {
+                log.debug("Persisting the role in the underlying user store");
+            }
+
+            HashSet<Permission> permsSet = new HashSet<>();
+            try {
+                for (String role : roles) {
+                    mergePermissions(new UIPermissionNode[]{getRolePermissions(role)}, permsSet);
+                }
+            } catch (IllegalArgumentException e) {
+                return Response.status(404).entity(
+                        new ErrorResponse.ErrorResponseBuilder().setMessage(e.getMessage()).build()
+                ).build();
+            }
+
+            Permission[] permissions = permsSet.toArray(new Permission[permsSet.size()]);
+            userStoreManager.addRole(roleName, new String[0], permissions);
+
+            //TODO fix what's returned in the entity
+            return Response.created(new URI(API_BASE_PATH + "/" + URLEncoder.encode(roleName, "UTF-8"))).
+                    entity("Role '" + roleName + "' has " + "successfully been"
+                                   + " added").build();
+        } catch (UserAdminException e) {
+            String msg = "Error occurred while retrieving the permissions of role '" + roleName + "'";
+            log.error(msg, e);
+            return Response.serverError().entity(
+                    new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
+        } catch (UserStoreException e) {
+            String msg = "Error occurred while adding role '" + roleName + "'";
             log.error(msg, e);
             return Response.serverError().entity(
                     new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
@@ -259,7 +340,7 @@ public class RoleManagementServiceImpl implements RoleManagementService {
     @Path("/{roleName}")
     @Override
     public Response updateRole(@PathParam("roleName") String roleName, RoleInfo roleInfo,
-            @QueryParam("user-store") String userStoreName) {
+                               @QueryParam("user-store") String userStoreName) {
         if (userStoreName != null && !userStoreName.isEmpty()) {
             roleName = userStoreName + "/" + roleName;
         }
@@ -271,7 +352,7 @@ public class RoleManagementServiceImpl implements RoleManagementService {
             if (!userStoreManager.isExistingRole(roleName)) {
                 return Response.status(404).entity(
                         new ErrorResponse.ErrorResponseBuilder().setMessage("No role exists with the name '" +
-                                roleName + "'").build()).build();
+                                                                                    roleName + "'").build()).build();
             }
 
             final AuthorizationManager authorizationManager = userRealm.getAuthorizationManager();
@@ -287,7 +368,7 @@ public class RoleManagementServiceImpl implements RoleManagementService {
             if (roleInfo.getUsers() != null) {
                 SetReferenceTransformer<String> transformer = new SetReferenceTransformer<>();
                 transformer.transform(Arrays.asList(userStoreManager.getUserListOfRole(newRoleName)),
-                        Arrays.asList(roleInfo.getUsers()));
+                                      Arrays.asList(roleInfo.getUsers()));
                 final String[] usersToAdd = transformer.getObjectsToAdd().toArray(new String[transformer
                         .getObjectsToAdd().size()]);
                 final String[] usersToDelete = transformer.getObjectsToRemove().toArray(new String[transformer
@@ -307,7 +388,7 @@ public class RoleManagementServiceImpl implements RoleManagementService {
             }
             //TODO: Need to send the updated role information in the entity back to the client
             return Response.status(Response.Status.OK).entity("Role '" + roleInfo.getRoleName() + "' has " +
-                    "successfully been updated").build();
+                                                                      "successfully been updated").build();
         } catch (UserStoreException e) {
             String msg = "Error occurred while updating role '" + roleName + "'";
             log.error(msg, e);
@@ -330,7 +411,7 @@ public class RoleManagementServiceImpl implements RoleManagementService {
             if (!userStoreManager.isExistingRole(roleName)) {
                 return Response.status(404).entity(
                         new ErrorResponse.ErrorResponseBuilder().setMessage("No role exists with the name '" +
-                                roleName + "'").build()).build();
+                                                                                    roleName + "'").build()).build();
             }
 
             final AuthorizationManager authorizationManager = userRealm.getAuthorizationManager();
@@ -354,7 +435,7 @@ public class RoleManagementServiceImpl implements RoleManagementService {
     @Path("/{roleName}/users")
     @Override
     public Response updateUsersOfRole(@PathParam("roleName") String roleName,
-            @QueryParam("user-store") String userStoreName, List<String> users) {
+                                      @QueryParam("user-store") String userStoreName, List<String> users) {
         if (userStoreName != null && !userStoreName.isEmpty()) {
             roleName = userStoreName + "/" + roleName;
         }
@@ -367,7 +448,7 @@ public class RoleManagementServiceImpl implements RoleManagementService {
             }
             SetReferenceTransformer<String> transformer = new SetReferenceTransformer<>();
             transformer.transform(Arrays.asList(userStoreManager.getUserListOfRole(roleName)),
-                    users);
+                                  users);
             final String[] usersToAdd = transformer.getObjectsToAdd().toArray(new String[transformer
                     .getObjectsToAdd().size()]);
             final String[] usersToDelete = transformer.getObjectsToRemove().toArray(new String[transformer
@@ -376,7 +457,8 @@ public class RoleManagementServiceImpl implements RoleManagementService {
             userStoreManager.updateUserListOfRole(roleName, usersToDelete, usersToAdd);
 
             return Response.status(Response.Status.OK).entity("Role '" + roleName + "' has " +
-                    "successfully been updated with the user list").build();
+                                                                      "successfully been updated with the user list")
+                    .build();
         } catch (UserStoreException e) {
             String msg = "Error occurred while updating the users of the role '" + roleName + "'";
             log.error(msg, e);
@@ -400,7 +482,8 @@ public class RoleManagementServiceImpl implements RoleManagementService {
         // removing all internal roles, roles created for Service-providers and application related roles.
         List<String> filteredRoles = new ArrayList<>();
         for (String role : roles) {
-            if (!(role.startsWith("Internal/") || role.startsWith("Authentication/") || role.startsWith("Application/"))) {
+            if (!(role.startsWith("Internal/") || role.startsWith("Authentication/") || role.startsWith(
+                    "Application/"))) {
                 if (!filterRolesByName) {
                     filteredRoles.add(role);
                 } else {
@@ -413,4 +496,31 @@ public class RoleManagementServiceImpl implements RoleManagementService {
         return filteredRoles;
     }
 
+    private Set<Permission> mergePermissions(UIPermissionNode[] permissionNodes, Set<Permission> permissions)
+            throws UserStoreException, UserAdminException {
+        for (UIPermissionNode permissionNode : permissionNodes) {
+            if (permissionNode.getNodeList().length > 0) {
+                mergePermissions(permissionNode.getNodeList(), permissions);
+            }
+            if (permissionNode.isSelected()) {
+                permissions.add(new Permission(permissionNode.getResourcePath(), CarbonConstants.UI_PERMISSION_ACTION));
+            }
+        }
+        return permissions;
+    }
+
+    private UIPermissionNode getRolePermissions(String roleName) throws UserStoreException, UserAdminException {
+        final UserRealm userRealm = DeviceMgtAPIUtils.getUserRealm();
+        if (!userRealm.getUserStoreManager().isExistingRole(roleName)) {
+            throw new IllegalArgumentException("No role exists with the name '" + roleName + "'");
+        }
+
+        final UIPermissionNode rolePermissions = this.getUIPermissionNode(roleName, userRealm);
+        if (rolePermissions == null) {
+            if (log.isDebugEnabled()) {
+                log.debug("No permissions found for the role '" + roleName + "'");
+            }
+        }
+        return rolePermissions;
+    }
 }

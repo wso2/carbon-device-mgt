@@ -31,19 +31,16 @@ import org.wso2.carbon.device.mgt.common.PaginationResult;
 import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroup;
 import org.wso2.carbon.device.mgt.common.group.mgt.GroupAlreadyExistException;
 import org.wso2.carbon.device.mgt.common.group.mgt.GroupManagementException;
-import org.wso2.carbon.device.mgt.common.group.mgt.GroupUser;
 import org.wso2.carbon.device.mgt.common.group.mgt.RoleDoesNotExistException;
 import org.wso2.carbon.device.mgt.core.service.GroupManagementProviderService;
-import org.wso2.carbon.device.mgt.jaxrs.beans.*;
+import org.wso2.carbon.device.mgt.jaxrs.beans.DeviceGroupList;
+import org.wso2.carbon.device.mgt.jaxrs.beans.DeviceList;
+import org.wso2.carbon.device.mgt.jaxrs.beans.RoleList;
 import org.wso2.carbon.device.mgt.jaxrs.service.api.GroupManagementService;
 import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.RequestValidationUtil;
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
-import org.wso2.carbon.user.api.UserStoreException;
-import org.wso2.carbon.user.api.UserStoreManager;
-import org.wso2.carbon.user.core.multiplecredentials.UserDoesNotExistException;
 
 import javax.ws.rs.core.Response;
-import java.util.Date;
 import java.util.List;
 
 public class GroupManagementServiceImpl implements GroupManagementService {
@@ -100,8 +97,6 @@ public class GroupManagementServiceImpl implements GroupManagementService {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
         group.setOwner(owner);
-        group.setDateOfCreation(new Date().getTime());
-        group.setDateOfLastUpdate(new Date().getTime());
         try {
             DeviceMgtAPIUtils.getGroupManagementProviderService().createGroup(group, DEFAULT_ADMIN_ROLE, DEFAULT_ADMIN_PERMISSIONS);
             return Response.status(Response.Status.CREATED).build();
@@ -168,69 +163,24 @@ public class GroupManagementServiceImpl implements GroupManagementService {
     }
 
     @Override
-    public Response manageGroupSharing(int groupId, DeviceGroupShare deviceGroupShare) {
+    public Response manageGroupSharing(int groupId, List<String> userRoles) {
         try {
             DeviceMgtAPIUtils.getGroupManagementProviderService()
-                    .manageGroupSharing(groupId, deviceGroupShare.getUsername(), deviceGroupShare.getGroupRoles());
+                    .manageGroupSharing(groupId, userRoles);
             return Response.status(Response.Status.OK).build();
         } catch (GroupManagementException e) {
             String msg = "Error occurred while managing group share.";
             log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
-        } catch (RoleDoesNotExistException | UserDoesNotExistException e) {
+        } catch (RoleDoesNotExistException e) {
             return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
         }
     }
 
     @Override
-    public Response getUsersOfGroup(int groupId) {
+    public Response getRolesOfGroup(int groupId) {
         try {
-            List<GroupUser> groupUsers = DeviceMgtAPIUtils.getGroupManagementProviderService().getUsers(groupId);
-            if (groupUsers != null && groupUsers.size() > 0) {
-                DeviceGroupUsersList deviceGroupUsersList = new DeviceGroupUsersList();
-                deviceGroupUsersList.setList(groupUsers);
-                deviceGroupUsersList.setCount(groupUsers.size());
-                return Response.status(Response.Status.OK).entity(deviceGroupUsersList).build();
-            } else {
-                return Response.status(Response.Status.NOT_FOUND).build();
-            }
-        } catch (GroupManagementException e) {
-            String msg = "Error occurred while getting users of the group.";
-            log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
-        }
-    }
-
-    @Override
-    public Response createGroupSharingRole(int groupId, String userName, RoleInfo roleInfo) {
-        try {
-            DeviceMgtAPIUtils.getGroupManagementProviderService()
-                    .addGroupSharingRole(userName, groupId, roleInfo.getRoleName(), roleInfo.getPermissions());
-            return Response.status(Response.Status.CREATED).build();
-        } catch (GroupManagementException e) {
-            String msg = "Error occurred while creating group sharing role.";
-            log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
-        }
-    }
-
-    @Override
-    public Response getRolesOfGroup(int groupId, String userName) {
-        try {
-            List<String> groupRoles;
-            if(userName != null) {
-                UserStoreManager userStoreManager = DeviceMgtAPIUtils.getUserStoreManager();
-                if (!userStoreManager.isExistingUser(userName)) {
-                    // returning response with bad request state
-                    return Response.status(Response.Status.CONFLICT).entity(
-                            new ErrorResponse.ErrorResponseBuilder().setMessage("User by username: " +
-                                    userName + " doesn't exists. Therefore, request made to get user " +
-                                    "was refused.").build()).build();
-                }
-                groupRoles = DeviceMgtAPIUtils.getGroupManagementProviderService().getRoles(userName, groupId);
-            } else {
-                groupRoles = DeviceMgtAPIUtils.getGroupManagementProviderService().getRoles(groupId);
-            }
+            List<String> groupRoles = DeviceMgtAPIUtils.getGroupManagementProviderService().getRoles(groupId);
 
             if(groupRoles != null && groupRoles.size() > 0) {
                 RoleList deviceGroupRolesList = new RoleList();
@@ -242,10 +192,6 @@ public class GroupManagementServiceImpl implements GroupManagementService {
             }
         } catch (GroupManagementException e) {
             String msg = "Error occurred while getting roles of the group.";
-            log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
-        } catch (UserStoreException e) {
-            String msg = "Error while retrieving the user.";
             log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         }

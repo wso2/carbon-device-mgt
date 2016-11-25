@@ -356,6 +356,70 @@ public interface RoleManagementService {
                     value = "The properties required to add a new role.",
                     required = true) RoleInfo role);
 
+    @POST
+    @Path("/create-combined-role/{roleName}")
+    @ApiOperation(
+            consumes = MediaType.APPLICATION_JSON,
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "POST",
+            value = "Adding a combined Role",
+            notes = "WSO2 EMM supports role-based access control (RBAC) and role management. Add a new combined role to WSO2 EMM using this REST API.",
+            tags = "Role Management",
+            authorizations = {
+                    @Authorization(
+                            value="permission",
+                            scopes = { @AuthorizationScope(scope = "/device-mgt/roles/manage",
+                                                           description = "Manage Roles") }
+                    )
+            }
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    code = 201,
+                    message = "Created. \n Successfully created the role.",
+                    responseHeaders = {
+                            @ResponseHeader(
+                                    name = "Content-Location",
+                                    description = "The URL to the newly added role."),
+                            @ResponseHeader(
+                                    name = "Content-Type",
+                                    description = "The content type of the body"),
+                            @ResponseHeader(
+                                    name = "ETag",
+                                    description = "Entity Tag of the response resource.\n" +
+                                            "Used by caches, or in conditional requests."),
+                            @ResponseHeader(
+                                    name = "Last-Modified",
+                                    description = "Date and time the resource has been modified the last time.\n" +
+                                            "Used by caches, or in conditional requests.")}),
+            @ApiResponse(
+                    code = 303,
+                    message = "See Other. \n The source can be retrieved from the URL specified in the location header.",
+                    responseHeaders = {
+                            @ResponseHeader(
+                                    name = "Content-Location",
+                                    description = "The Source URL of the document.")}),
+            @ApiResponse(
+                    code = 400,
+                    message = "Bad Request. \n Invalid request or validation error.",
+                    response = ErrorResponse.class),
+            @ApiResponse(
+                    code = 415,
+                    message = "Unsupported media type. \n The format of the requested entity was not supported.",
+                    response = ErrorResponse.class),
+            @ApiResponse(
+                    code = 500,
+                    message = "Internal Server Error. \n Server error occurred while adding a new role.",
+                    response = ErrorResponse.class)
+    })
+    Response addCombinedRole(
+            @ApiParam(
+                    name = "roles",
+                    value = "List of roles names required to add a new combined role.",
+                    required = true) List<String> roles,
+            @PathParam("roleName") String roleName,
+            @QueryParam("user-store") String userStoreName);
+
     @PUT
     @Path("/{roleName}")
     @ApiOperation(

@@ -582,10 +582,6 @@ function togglePermissionAction(element) {
 function updateGroupShare(groupId, roles) {
     var successCallback = function (data) {
         $(modalPopupContent).html($('#share-group-200-content').html());
-        setTimeout(function () {
-            hidePopup();
-            location.reload(false);
-        }, 2000);
     };
 
     invokerUtil.post("/api/device-mgt/v1.0/groups/id/" + groupId + "/share",

@@ -121,6 +121,5 @@
     "isOAuthEnabled" : true,
     "backendRestEndpoints" : {
         "deviceMgt" : "/api/device-mgt/v1.0"
-    },
-    "deviceStatisticsEnabled" : false
+    }
 }

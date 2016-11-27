@@ -120,6 +120,15 @@ public interface DeviceManagementProviderService {
     List<Device> getDevicesOfUser(String userName) throws DeviceManagementException;
 
     /**
+     * This method returns the list of device owned by a user of given device type.
+     * @param userName user name.
+     * @param deviceType device type name
+     * @return
+     * @throws DeviceManagementException
+     */
+    List<Device> getDevicesOfUser(String userName, String deviceType) throws DeviceManagementException;
+
+    /**
      * Method to get the list of devices owned by users of a particular user-role.
      *
      * @param roleName Role name of the users

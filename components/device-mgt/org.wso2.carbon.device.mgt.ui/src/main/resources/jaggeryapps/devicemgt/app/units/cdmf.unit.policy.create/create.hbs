@@ -1,74 +1,315 @@
-{{!
-  Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
-
-  WSO2 Inc. licenses this file to you under the Apache License,
-  Version 2.0 (the "License"); you may not use this file except
-  in compliance with the License.
-  You may obtain a copy of the License at
-
-  http://www.apache.org/licenses/LICENSE-2.0
-
-  Unless required by applicable law or agreed to in writing,
-  software distributed under the License is distributed on an
-  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-  KIND, either express or implied. See the License for the
-  specific language governing permissions and limitations
-  under the License.
-}}
 {{#zone "content"}}
     {{#if isAuthorized}}
+        <span id="logged-in-user" class="hidden" data-username="{{user.username}}" data-domain="{{user.domain}}"
+              data-tenant-id="{{user.tenantId}}"></span>
         <div class="row">
             <div class="col-md-12">
-                <div class="container col-centered wr-content policy-platform">
-                    <div class="wr-form">
-                        <h1 id="policy-platform-page-wizard-title" class="page-sub-title">ADD POLICY</h1>
-                        <hr>
-                        <div id="policy-platform-wizard-steps" class="row wr-wizard">
-                            <div class="col-md-3 col-xs-3">
-                                <div class="itm-wiz itm-wiz-current" data-step="policy-platform">
-                                    <div class="wiz-no">1</div>
-                                    <div class="wiz-lbl hidden-xs"><span>Select a platform</span></div>
-                                </div>
-                                <br class="c-both"/>
-                            </div>
-                            <div class="col-md-3 col-xs-3">
-                                <div class="itm-wiz" data-step="policy-profile">
-                                    <div class="wiz-no">2</div>
-                                    <div class="wiz-lbl hidden-xs"><span>Configure profile</span></div>
-                                </div>
-                                <br class="c-both"/>
-                            </div>
-                            <div class="col-md-3 col-xs-3">
-                                <div class="itm-wiz" data-step="policy-criteria">
-                                    <div class="wiz-no">3</div>
-                                    <div class="wiz-lbl hidden-xs"><span>Assign</span></div>
-                                </div>
-                                <br class="c-both"/>
-                            </div>
-                            <div class="col-md-3 col-xs-3">
-                                <div class="itm-wiz" data-step="policy-naming">
-                                    <div class="wiz-no">4</div>
-                                    <div class="wiz-lbl hidden-xs"><span>Publish to devices</span></div>
-                                </div>
-                                <br class="c-both"/>
-                            </div>
+
+                <div class="wr-steps hidden">
+                    <div class="col-md-3 col-xs-3">
+                        <div class="itm-wiz itm-wiz-current" data-step="policy-platform">
+                            <div class="wiz-no">1</div>
+                            <div class="wiz-lbl hidden-xs"><span>Select a platform</span></div>
                         </div>
+                        <br class="c-both"/>
+                    </div>
+                    <div class="col-md-3 col-xs-3">
+                        <div class="itm-wiz" data-step="policy-profile">
+                            <div class="wiz-no">2</div>
+                            <div class="wiz-lbl hidden-xs"><span>Configure profile</span></div>
+                        </div>
+                        <br class="c-both"/>
+                    </div>
+                    <div class="col-md-3 col-xs-3">
+                        <div class="itm-wiz" data-step="policy-criteria">
+                            <div class="wiz-no">3</div>
+                            <div class="wiz-lbl hidden-xs"><span>Assign to groups</span></div>
+                        </div>
+                        <br class="c-both"/>
+                    </div>
+                    <div class="col-md-3 col-xs-3">
+                        <div class="itm-wiz" data-step="policy-naming">
+                            <div class="wiz-no">4</div>
+                            <div class="wiz-lbl hidden-xs"><span>Publish to devices</span></div>
+                        </div>
+                        <br class="c-both"/>
+                    </div>
+                </div>
+
+                <div class="col-centered policy-message hidden">
+                    <div class="wr-form">
+                        <h1 id="policy-message-page-wizard-title" class="page-sub-title">Policy creation is
+                            successful.</h1>
+                        <br>Please click <b>"Add Another Policy"</b>, if you wish to add another policy or click
+                        <b>"View policy list"</b> to complete the process and go back to the policy list.
+                        <hr>
+                        <button class="wr-btn wizard-stepper" data-current="policy-message"
+                                data-direct="{{@app.context}}/policies/">
+                            View policy list
+                        </button>
+                        <!--suppress HtmlUnknownTarget -->
+                        <a href="{{@app.context}}/policy/add" class="cu-btn-inner">
+                        <span class="fw-stack">
+                            <i class="fw fw-ring fw-stack-2x"></i>
+                            <i class="fw fw-add fw-stack-1x"></i>
+                        </span>
+                            Add another policy
+                        </a>
+                    </div>
+                </div>
+
+                <div class="col-centered wr-content policy-naming hidden">
+                    <div class="wr-form">
+                        <h1 id="policy-naming-page-wizard-title" class="page-sub-title">ADD POLICY</h1>
+                        <hr>
+                        <div id="policy-naming-wizard-steps" class="row wr-wizard"></div>
                         <hr>
                         <div class="row">
                             <div class="col-lg-12">
-                                <h4>Step 1: Select a platform</h4>
+                                <h4 class="hidden-xs">Step 4: Publish to devices</h4>
                                 <br>
+                                <div id="policy-naming-main-error-msg" class="alert alert-danger hidden" role="alert">
+                                    <i class="icon fw fw-error"></i><span></span>
+                                </div>
+                                <div class="clearfix">
+                                    <label class="wr-input-label">Set a Name for your Policy *</label>
+                                    <br/>
+                                    <label class="wr-input-label">
+                                        (Policy name should be 1-to-30 characters long)
+                                    </label>
+                                    <div id="policyNameField" class="wr-input-control">
+                                        <div class="cus-col-50 form-group wr-input-control">
+                                            <!--suppress HtmlFormInputWithoutLabel -->
+                                            <input id="policy-name-input" class="form-control" type="text" value=""/>
+                                            <label class="error nameEmpty hidden" for="summary">Policy name is required
+                                                &
+                                                Should be be 1-to-30
+                                                characters long.</label>
+                                        </div>
+                                        <br class="c-both"/>
+                                    </div>
+                                    <br class="c-both"/>
+                                    <label class="wr-input-label">
+                                        Add a description
+                                    </label>
+                                    <div class="wr-input-control">
+                                        <div class="cus-col-50">
+                                <textarea id="policy-description-input" class="form-control" rows="10"
+                                          placeholder="[ Summary about the policy ]"></textarea>
+                                        </div>
+                                        <br class="c-both"/>
+                                    </div>
+                                </div>
+                                <div class="wr-input-control wr-btn-grp">
+                                    <a href="javascript:void(0)" class="wr-btn wizard-stepper" data-is-back-btn="true"
+                                       data-current="policy-naming" data-next="policy-criteria">Back</a>
+                                    <a href="javascript:void(0)" class="wr-btn wizard-stepper"
+                                       data-current="policy-naming-publish" data-next="policy-message"
+                                       data-validate="true">Publish</a>
+                                    <a href="javascript:void(0)" class="wr-btn wizard-stepper"
+                                       data-current="policy-naming"
+                                       data-next="policy-message" data-validate="true">Save</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
+                <div class="col-centered wr-content policy-criteria hidden">
+                    <div class="wr-form">
+                        <h1 id="policy-criteria-page-wizard-title" class="page-sub-title">ADD POLICY</h1>
+                        <hr>
+                        <div id="policy-criteria-wizard-steps" class="row wr-wizard"></div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <h4 class="hidden-xs">Step 3: Assign to groups</h4>
+                                <br>
+                                <div id="policy-criteria-main-error-msg" class="alert alert-danger hidden" role="alert">
+                                    <i class="icon fw fw-error"></i><span></span>
+                                </div>
+                                <div>
+                                    <label class="wr-input-label">
+                                        Set device ownership type
+                                    </label>
+                                    <div class="wr-input-control">
+                                        <div class="cus-col-50">
+                                            <!--suppress HtmlFormInputWithoutLabel -->
+                                            <select id="ownership-input" class="form-control">
+                                                <option value="ANY" selected>ANY</option>
+                                                <option value="BYOD">BYOD (Bring Your Own Device)</option>
+                                                <option value="COPE">COPE (Corporate-Owned, Personally Enabled)</option>
+                                            </select>
+                                        </div>
+                                        <br class="c-both"/>
+                                    </div>
+                                    <div class="wr-input-control">
+                                        {{#if isAuthorizedViewRoles}}
+                                            <label class="wr-input-control radio light">
+                                                <input id="user-roles-radio-btn" type="radio"
+                                                       name="select-users-radio-btn"
+                                                       class="select-users-radio" checked/>
+                                                <span class="helper">Set user role(s)</span>
+                                            </label>
+                                        {{/if}}
+                                        {{#if isAuthorizedViewUsers}}
+                                            <label class="wr-input-control radio light" rel="assetfilter">
+                                                <input id="users-radio-btn" type="radio" name="select-users-radio-btn"
+                                                       class="select-users-radio"/>
+                                                <span class="helper">Set user(s)</span>
+                                            </label>
+                                        {{/if}}
+                                    </div>
+                                    {{#if isAuthorizedViewRoles}}
+                                        <div id="user-roles-select-field" class="select-users">
+                                            <div class="wr-input-control">
+                                                <div class="cus-col-50">
+                                                    <!--suppress HtmlFormInputWithoutLabel -->
+                                                    <select id="user-roles-input" class="form-control select2"
+                                                            multiple="multiple">
+                                                        <option value="ANY" selected>ANY</option>
+                                                        {{#each roles}}
+                                                            <option>{{this}}</option>
+                                                        {{/each}}
+                                                    </select>
+                                                </div>
+                                                <br class="c-both"/>
+                                            </div>
+                                        </div>
+                                    {{/if}}
+                                    {{#if isAuthorizedViewUsers}}
+                                        <div id="users-select-field" class="select-users">
+                                            <div class="wr-input-control">
+                                                <div class="cus-col-50">
+                                                    <!--suppress HtmlFormInputWithoutLabel -->
+                                                    <select id="users-input" class="form-control select2"
+                                                            multiple="multiple">
+                                                    </select>
+                                                </div>
+                                                <br class="c-both"/>
+                                            </div>
+                                        </div>
+                                    {{/if}}
+                                    {{#if isAuthorizedViewGroups}}
+                                        <label class="wr-input-label">
+                                            Select Groups
+                                        </label>
+                                        <div id="groups-select-field" class="select-users">
+                                            <div class="wr-input-control">
+                                                <div class="cus-col-50">
+                                                    <!--suppress HtmlFormInputWithoutLabel -->
+                                                    <select id="groups-input" class="form-control select2"
+                                                            multiple="multiple">
+                                                        <option value="NONE" selected>NONE</option>
+                                                        {{#each groups}}
+                                                            <option>{{this.name}}</option>
+                                                        {{/each}}
+                                                    </select>
+                                                </div>
+                                                <br class="c-both"/>
+                                            </div>
+                                        </div>
+                                    {{/if}}
+                                    <br>
+                                    <label class="wr-input-label" title="">
+                                        Set an action upon non-compliance
+                                    </label>
+                                    <div class="wr-input-control">
+                                        <div class="cus-col-50">
+                                            <!--suppress HtmlFormInputWithoutLabel -->
+                                            <select id="action-input" class="form-control">
+                                                <option data-action="enforce" selected>Enforce</option>
+                                                <option data-action="warn">Warn</option>
+                                                <option data-action="monitor">Monitor</option>
+                                            </select>
+                                        </div>
+                                        <br class="c-both"/>
+                                    </div>
+                                </div>
+                                <div class="wr-input-control wr-btn-grp">
+                                    <a href="javascript:void(0)" class="wr-btn wizard-stepper" data-is-back-btn="true"
+                                       data-current="policy-criteria" data-next="policy-profile">Back</a>
+                                    <a href="javascript:void(0)" class="wr-btn wizard-stepper"
+                                       data-current="policy-criteria" data-next="policy-naming" data-validate="true">Continue</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-centered wr-content policy-profile hidden">
+                    <div class="wr-form">
+                        <h1 id="policy-profile-page-wizard-title" class="page-sub-title">ADD POLICY</h1>
+                        <hr>
+                        <div id="policy-profile-wizard-steps" class="row wr-wizard"></div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <h4 class="hidden-xs">Step 2: Configure profile</h4>
+                                <br>
+                                <div id="policy-profile-main-error-msg" class="alert alert-danger hidden" role="alert">
+                                    <i class="icon fw fw-error"></i><span></span>
+                                </div>
+                                <div class="wr-advance-operations">
+                                    <div class='wr-advance-operations-init'>
+                                        <br/>
+                                        <i class='fw fw-settings fw-spin fw-2x'></i>
+                                        Loading Platform Features . . .
+                                        <br/>
+                                        <br/>
+                                    </div>
+                                    <div id="device-type-policy-operations" class="hidden">
+                                    </div>
+                                    <div id="generic-policy-operations" class="hidden">
+                                        {{unit "cdmf.unit.device.type.generic.policy-wizard"}}
+                                    </div>
+                                </div>
+                                <div class="wr-input-control wr-btn-grp">
+                                    <a href="javascript:void(0)" class="wr-btn wizard-stepper" data-is-back-btn="true"
+                                       data-current="policy-profile" data-next="policy-platform">Back</a>
+                                    <a href="javascript:void(0)" class="wr-btn wizard-stepper"
+                                       data-current="policy-profile"
+                                       data-next="policy-criteria" data-validate="true">Continue</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="loading-content" class="col-centered">
+                    <br><br>
+                    <i class="fw fw-settings fw-spin fw-2x"></i>
+                    Loading policy creation wizard . . .
+                    <br><br>
+                </div>
+                <div class=" col-centered wr-content policy-platform hidden">
+                    <div class="wr-form">
+                        <h1 id="policy-platform-page-wizard-title" class="page-sub-title">ADD POLICY</h1>
+                        <hr>
+                        <div id="policy-platform-wizard-steps" class="row wr-wizard"></div>
+                        <hr>
+                        <!--<div id="policy-platform-main-error-msg" class="alert alert-danger hidden" role="alert">-->
+                        <!--<i class="icon fw fw-error"></i><span></span>-->
+                        <!--</div>-->
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <h4 class="hidden-xs"> Step 1: Select a platform</h4>
+                                <br>
+                                <div id="policy-platform-main-error-msg" class="alert alert-danger hidden" role="alert">
+                                    <i class="icon fw fw-error"></i><span></span>
+                                </div>
                                 <div class="row wr-tile-buttons-list">
                                     <div class="wr-input-control">
                                         <ul class="tile-buttons row">
                                             {{#each types}}
-                                                <li class="col-lg-4"
-                                                    style="margin-top: 5px;margin-bottom: 5px;">
-                                                    <a href="{{@app.context}}/policy/add/{{name}}"
-                                                       class="wizard-stepper">
-                                                        <img src="{{icon}}" width="50px"
-                                                             height="50px"><br><br>
+                                                <li class="col-xs-12 col-sm-12 col-md-4 col-lg-4"
+                                                    style="margin-top: 5px; margin-bottom: 5px;">
+                                                    <a href="javascript:void(0)"
+                                                       class="{{name}}-platform wizard-stepper"
+                                                       data-current="policy-platform"
+                                                       data-next="policy-profile"
+                                                       data-platform="{{name}}"
+                                                       data-validate="false">
+                                                        <img src="{{icon}}" width="50px" height="50px"><br><br>
                                                         <b>{{label}}</b>
                                                     </a>
                                                 </li>
@@ -83,12 +324,8 @@
                 <!-- content -->
             </div>
         </div>
-    {{else}}
-        <h1 class="page-sub-title">
-            Permission Denied
-        </h1>
-        <br>
-        You not authorized to enter Policy Management Section.
-        <br>
     {{/if}}
+{{/zone}}
+{{#zone "bottomJs"}}
+    {{js "/js/policy-create.js"}}
 {{/zone}}

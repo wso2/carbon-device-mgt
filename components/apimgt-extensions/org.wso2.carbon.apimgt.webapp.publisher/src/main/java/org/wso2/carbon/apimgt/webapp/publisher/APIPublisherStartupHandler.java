@@ -21,7 +21,9 @@ package org.wso2.carbon.apimgt.webapp.publisher;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.eclipse.californium.core.CoapClient;
 import org.wso2.carbon.apimgt.api.model.API;
+import org.wso2.carbon.apimgt.webapp.publisher.config.ResourceDirectoryClient;
 import org.wso2.carbon.apimgt.webapp.publisher.internal.APIPublisherDataHolder;
 import org.wso2.carbon.core.ServerStartupObserver;
 
@@ -55,6 +57,21 @@ public class APIPublisherStartupHandler implements ServerStartupObserver {
                     log.debug("Total number of unpublished APIs: "
                             + APIPublisherDataHolder.getInstance().getUnpublishedApis().size());
                 }
+
+                /*coap client bound to the server
+                [the server is inthe static default port for now]
+                */
+                APIPublisherDataHolder.getInstance().setClient(new ResourceDirectoryClient());
+//                if (APIPublisherDataHolder.getInstance().getClient().isServerConnected()) {
+//                    if (log.isDebugEnabled()) {
+//                        log.debug("Client set to the started coap server @ " + APIPublisherDataHolder.getInstance().getClient().getURI());
+//                    }
+//                } else {
+//                    if (log.isDebugEnabled()) {
+//                        log.debug("Coap server not connected");
+//                    }
+//                }
+
                 publisher = APIPublisherDataHolder.getInstance().getApiPublisherService();
                 int retryCount = 0;
                 while (retryCount < MAX_RETRY_COUNT && (!failedAPIsStack.isEmpty() || !currentAPIsStack.isEmpty())) {

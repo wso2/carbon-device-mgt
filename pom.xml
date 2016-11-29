@@ -1758,6 +1758,11 @@
                 <enabled>false</enabled>
             </releases>
         </repository>
+        <repository>
+            <id>eclipse_snapshots</id>
+            <name>Eclipse Snapshots</name>
+            <url>https://repo.eclipse.org/content/repositories/snapshots/</url>
+        </repository>
     </repositories>
 
     <properties>

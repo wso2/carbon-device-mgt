@@ -30,6 +30,7 @@ import org.wso2.carbon.apimgt.api.APIProvider;
 import org.wso2.carbon.apimgt.api.FaultGatewaysException;
 import org.wso2.carbon.apimgt.api.model.*;
 import org.wso2.carbon.apimgt.impl.APIManagerFactory;
+import org.wso2.carbon.apimgt.webapp.publisher.config.ResourceDirectoryClient;
 import org.wso2.carbon.apimgt.webapp.publisher.config.WebappPublisherConfig;
 import org.wso2.carbon.apimgt.webapp.publisher.internal.APIPublisherDataHolder;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
@@ -53,6 +54,8 @@ public class APIPublisherServiceImpl implements APIPublisherService {
 
     @Override
     public void publishAPI(final API api) throws APIManagementException, FaultGatewaysException {
+
+        ResourceDirectoryClient client=APIPublisherDataHolder.getInstance().getClient();
         String tenantDomain = MultitenantUtils.getTenantDomain(api.getApiOwner());
         PrivilegedCarbonContext.startTenantFlow();
         PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(tenantDomain, true);
@@ -94,6 +97,11 @@ public class APIPublisherServiceImpl implements APIPublisherService {
                     }
                 }
                 provider.saveSwagger20Definition(api.getId(), createSwaggerDefinition(api));
+
+                /*register api using the client*/
+                if(!api.getContext().split("/")[1].equals("api")) //remove device mgt API from registering into CoAP server
+                    client.registerAPI(api,tenantDomain);
+
             } else {
                 throw new APIManagementException("API provider configured for the given API configuration " +
                         "is null. Thus, the API is not published");

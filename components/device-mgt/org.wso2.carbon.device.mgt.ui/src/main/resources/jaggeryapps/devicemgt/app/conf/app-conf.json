@@ -26,7 +26,7 @@
             }
         },
         "sso": {
-            "enabled": false,
+            "enabled": true,
             "issuer" : "devicemgt",
             "appName" : "devicemgt",
             "identityProviderUrl" : "https://localhost:9443/samlsso",

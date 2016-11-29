@@ -23,7 +23,7 @@
     <groupId>org.wso2.carbon.devicemgt</groupId>
     <artifactId>carbon-devicemgt</artifactId>
     <packaging>pom</packaging>
-    <version>1.2.7</version>
+    <version>1.2.8-SNAPSHOT</version>
     <name>WSO2 Carbon - Device Management - Parent</name>
     <url>http://wso2.org</url>
     <description>WSO2 Connected Device Manager Components </description>
@@ -1532,7 +1532,7 @@
         <url>https://github.com/wso2/carbon-device-mgt.git</url>
         <developerConnection>scm:git:https://github.com/wso2/carbon-device-mgt.git</developerConnection>
         <connection>scm:git:https://github.com/wso2/carbon-device-mgt.git</connection>
-        <tag>v1.2.7</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <build>
@@ -1807,7 +1807,7 @@
         <axiom.wso2.version>1.2.11.wso2v10</axiom.wso2.version>
 
         <!-- Carbon Device Management -->
-        <carbon.device.mgt.version>1.2.7</carbon.device.mgt.version>
+        <carbon.device.mgt.version>1.2.8-SNAPSHOT</carbon.device.mgt.version>
 
         <!-- Carbon Commons -->
         <carbon.commons.version>4.4.8</carbon.commons.version>

@@ -63,6 +63,35 @@ var disableInlineError = function (inputField, errorMsg, errorSign) {
     }
 };
 
+function loadGroups(callback) {
+    invokerUtil.get(
+        "/api/device-mgt/v1.0/groups",
+        function (data) {
+            data = JSON.parse(data);
+            callback(data.deviceGroups);
+        });
+}
+
+var createDeviceGroupWrapper = function (selectedGroups) {
+    var groupObjects = [];
+    loadGroups(function (deviceGroups) {
+        var tenantId = $("#logged-in-user").data("tenant-id");
+        for (var index in deviceGroups) {
+            if(deviceGroups.hasOwnProperty(index)) {
+                var deviceGroupWrapper = {};
+                if (selectedGroups.indexOf(deviceGroups[index].name) > -1) {
+                    deviceGroupWrapper.id = deviceGroups[index].id;
+                    deviceGroupWrapper.name = deviceGroups[index].name;
+                    deviceGroupWrapper.owner = deviceGroups[index].owner;
+                    deviceGroupWrapper.tenantId = tenantId;
+                    groupObjects.push(deviceGroupWrapper);
+                }
+            }
+        }
+    });
+    return groupObjects;
+};
+
 /**
  *clear inline validation messages.
  */
@@ -96,12 +125,14 @@ skipStep["policy-platform"] = function (policyPayloadObj) {
     var userRoleInput = $("#user-roles-input");
     var ownershipInput = $("#ownership-input");
     var userInput = $("#users-input");
+    var groupsInput = $("#groups-input");
     var actionInput = $("#action-input");
     var policyNameInput = $("#policy-name-input");
     var policyDescriptionInput = $("#policy-description-input");
 
     currentlyEffected["roles"] = policyPayloadObj.roles;
     currentlyEffected["users"] = policyPayloadObj.users;
+    currentlyEffected["groups"] = policyPayloadObj.deviceGroups;
 
     if (currentlyEffected["roles"].length > 0) {
         $("#user-roles-radio-btn").prop("checked", true);
@@ -113,6 +144,10 @@ skipStep["policy-platform"] = function (policyPayloadObj) {
         $("#users-select-field").show();
         $("#user-roles-select-field").hide();
         userInput.val(currentlyEffected["users"]).trigger("change");
+    }
+    
+    if(currentlyEffected["groups"].length > 0) {
+        groupsInput.val(currentlyEffected["groups"]).trigger("change");
     }
 
     ownershipInput.val(policyPayloadObj.ownershipType);
@@ -186,6 +221,11 @@ stepForwardFrom["policy-criteria"] = function () {
             }
         }
     });
+    policy["selectedGroups"] = $("#groups-input").val();
+    if (policy["selectedGroups"].length > 1 || policy["selectedGroups"][0] !== "NONE") {
+        policy["selectedGroups"] = createDeviceGroupWrapper(policy["selectedGroups"]);
+    }
+
     policy["selectedNonCompliantAction"] = $("#action-input").find(":selected").data("action");
     policy["selectedOwnership"] = $("#ownership-input").val();
     // updating next-page wizard title with selected platform
@@ -382,6 +422,10 @@ var updatePolicy = function (policy, state) {
         payload["roles"] = [];
     }
 
+    if(policy["selectedGroups"]) {
+        payload["deviceGroups"] = policy["selectedGroups"];
+    }
+
     var serviceURL = "/api/device-mgt/v1.0/policies/" + getParameterByName("id");
     invokerUtil.put(
         serviceURL,
@@ -473,6 +517,16 @@ $(document).ready(function () {
             $(this).val("ANY").trigger("change");
         } else {
             $("option[value=ANY]", this).prop("selected", false).parent().trigger("change");
+        }
+    });
+
+    $("#groups-input").select2({
+        "tags": false
+    }).on("select2:select", function (e) {
+        if (e.params.data.id == "NONE") {
+            $(this).val("NONE").trigger("change");
+        } else {
+            $("option[value=NONE]", this).prop("selected", false).parent().trigger("change");
         }
     });
 

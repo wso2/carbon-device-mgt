@@ -1,5 +1,7 @@
 {{#zone "content"}}
     {{#if isAuthorized}}
+        <span id="logged-in-user" class="hidden" data-username="{{user.username}}" data-domain="{{user.domain}}"
+              data-tenant-id="{{user.tenantId}}"></span>
         <div class="row">
             <div class="col-md-12">
 
@@ -182,6 +184,26 @@
                                                     <!--suppress HtmlFormInputWithoutLabel -->
                                                     <select id="users-input" class="form-control select2"
                                                             multiple="multiple">
+                                                    </select>
+                                                </div>
+                                                <br class="c-both"/>
+                                            </div>
+                                        </div>
+                                    {{/if}}
+                                    {{#if isAuthorizedViewGroups}}
+                                        <label class="wr-input-label">
+                                            Select Groups
+                                        </label>
+                                        <div id="groups-select-field" class="select-users">
+                                            <div class="wr-input-control">
+                                                <div class="cus-col-50">
+                                                    <!--suppress HtmlFormInputWithoutLabel -->
+                                                    <select id="groups-input" class="form-control select2"
+                                                            multiple="multiple">
+                                                        <option value="NONE" selected>NONE</option>
+                                                        {{#each groups}}
+                                                            <option>{{this.name}}</option>
+                                                        {{/each}}
                                                     </select>
                                                 </div>
                                                 <br class="c-both"/>

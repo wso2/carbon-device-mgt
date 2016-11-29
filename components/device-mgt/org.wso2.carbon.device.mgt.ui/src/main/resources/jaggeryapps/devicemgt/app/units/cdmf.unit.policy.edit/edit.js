@@ -18,9 +18,9 @@
 
 function onRequest(context) {
     var log = new Log("policy-view-edit-unit backend js");
-    log.debug("calling policy-view-edit-unit");
 
     var userModule = require("/app/modules/business-controllers/user.js")["userModule"];
+    var groupModule = require("/app/modules/business-controllers/group.js")["groupModule"];
 
     var rolesResult = userModule.getRoles();
     if (rolesResult.status == "success") {
@@ -32,9 +32,15 @@ function onRequest(context) {
         context.users = usersResult.content;
     }
 
+    context["groups"] = groupModule.getGroups();
+
+    var user = userModule.getCarbonUser();
+    context["user"] = {username: user.username, domain: user.domain, tenantId: user.tenantId};
+
     context.isAuthorized = userModule.isAuthorized("/permission/admin/device-mgt/policies/manage");
     context.isAuthorizedViewUsers = userModule.isAuthorized("/permission/admin/device-mgt/roles/view");
     context.isAuthorizedViewRoles = userModule.isAuthorized("/permission/admin/device-mgt/users/view");
+    context.isAuthorizedViewGroups = userModule.isAuthorized("/permission/admin/device-mgt/groups/view");
 
     return context;
 }

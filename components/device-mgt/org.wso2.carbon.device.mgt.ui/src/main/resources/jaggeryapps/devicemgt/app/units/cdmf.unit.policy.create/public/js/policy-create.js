@@ -59,6 +59,35 @@ var disableInlineError = function (inputField, errorMsg, errorSign) {
     }
 };
 
+function loadGroups(callback) {
+    invokerUtil.get(
+        "/api/device-mgt/v1.0/groups",
+        function (data) {
+            data = JSON.parse(data);
+            callback(data.deviceGroups);
+        });
+}
+
+var createDeviceGroupWrapper = function (selectedGroups) {
+    var groupObjects = [];
+    loadGroups(function (deviceGroups) {
+        var tenantId = $("#logged-in-user").data("tenant-id");
+        for (var index in deviceGroups) {
+            if(deviceGroups.hasOwnProperty(index)) {
+                var deviceGroupWrapper = {};
+                if (selectedGroups.indexOf(deviceGroups[index].name) > -1) {
+                    deviceGroupWrapper.id = deviceGroups[index].id;
+                    deviceGroupWrapper.name = deviceGroups[index].name;
+                    deviceGroupWrapper.owner = deviceGroups[index].owner;
+                    deviceGroupWrapper.tenantId = tenantId;
+                    groupObjects.push(deviceGroupWrapper);
+                }
+            }
+        }
+    });
+    return groupObjects;
+};
+
 /**
  *clear inline validation messages.
  */
@@ -161,6 +190,11 @@ stepForwardFrom["policy-criteria"] = function () {
             }
         }
     });
+    policy["selectedGroups"] = $("#groups-input").val();
+    if (policy["selectedGroups"].length > 1 || policy["selectedGroups"][0] !== "NONE") {
+        policy["selectedGroups"] = createDeviceGroupWrapper(policy["selectedGroups"]);
+    }
+
     policy["selectedNonCompliantAction"] = $("#action-input").find(":selected").data("action");
     policy["selectedOwnership"] = $("#ownership-input").val();
     //updating next-page wizard title with selected platform
@@ -347,6 +381,10 @@ var savePolicy = function (policy, isActive, serviceURL) {
         payload["roles"] = [];
     }
 
+    if(policy["selectedGroups"]) {
+        payload["deviceGroups"] = policy["selectedGroups"];
+    }
+
     invokerUtil.post(
         serviceURL,
         payload,
@@ -458,6 +496,16 @@ $(document).ready(function () {
             $(this).val("ANY").trigger("change");
         } else {
             $("option[value=ANY]", this).prop("selected", false).parent().trigger("change");
+        }
+    });
+
+    $("#groups-input").select2({
+        "tags": false
+    }).on("select2:select", function (e) {
+        if (e.params.data.id == "NONE") {
+            $(this).val("NONE").trigger("change");
+        } else {
+            $("option[value=NONE]", this).prop("selected", false).parent().trigger("change");
         }
     });
 

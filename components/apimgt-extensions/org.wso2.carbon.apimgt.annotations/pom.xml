@@ -22,13 +22,13 @@
     <parent>
         <artifactId>apimgt-extensions</artifactId>
         <groupId>org.wso2.carbon.devicemgt</groupId>
-        <version>1.2.7-SNAPSHOT</version>
+        <version>1.2.7</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>org.wso2.carbon.apimgt.annotations</artifactId>
-    <version>1.2.7-SNAPSHOT</version>
+    <version>1.2.7</version>
     <packaging>bundle</packaging>
     <name>WSO2 Carbon - API Management Annotations</name>
     <description>WSO2 Carbon - API Management Custom Annotation Module</description>

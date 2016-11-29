@@ -21,6 +21,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import org.wso2.carbon.device.mgt.common.app.mgt.Application;
 import org.wso2.carbon.device.mgt.common.device.details.DeviceInfo;
+import org.wso2.carbon.device.mgt.common.sensor.mgt.Sensor;
 
 import java.io.Serializable;
 import java.util.List;
@@ -59,6 +60,9 @@ public class Device implements Serializable {
     @ApiModelProperty(name = "features", value = "List of features.", required = true)
     private List<Feature> features;
 
+    @ApiModelProperty(name = "sensors", value = "List of sensors attached to the device.", required = true)
+    private List<Sensor> sensors;
+
     private List<Device.Property> properties;
 
     @ApiModelProperty(name = "advanceInfo", value = "This defines the device registration related information. " +
@@ -73,13 +77,14 @@ public class Device implements Serializable {
     }
 
     public Device(String name, String type, String description, String deviceId, EnrolmentInfo enrolmentInfo,
-                  List<Feature> features, List<Property> properties) {
+                  List<Feature> features, List<Sensor> sensors, List<Property> properties) {
         this.name = name;
         this.type = type;
         this.description = description;
         this.deviceIdentifier = deviceId;
         this.enrolmentInfo = enrolmentInfo;
         this.features = features;
+        this.sensors = sensors;
         this.properties = properties;
     }
 
@@ -137,6 +142,14 @@ public class Device implements Serializable {
 
     public void setFeatures(List<Feature> features) {
         this.features = features;
+    }
+
+    public List<Sensor> getSensors() {
+        return sensors;
+    }
+
+    public void setSensors(List<Sensor> sensors) {
+        this.sensors = sensors;
     }
 
     public List<Device.Property> getProperties() {

@@ -21,12 +21,16 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
+import org.wso2.carbon.device.mgt.common.DeviceManager;
 import org.wso2.carbon.device.mgt.common.DeviceTypeIdentifier;
 import org.wso2.carbon.device.mgt.common.ProvisioningConfig;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManager;
 import org.wso2.carbon.device.mgt.common.push.notification.NotificationStrategy;
 import org.wso2.carbon.device.mgt.common.push.notification.PushNotificationConfig;
 import org.wso2.carbon.device.mgt.common.push.notification.PushNotificationProvider;
+import org.wso2.carbon.device.mgt.common.sensor.mgt.DeviceTypeSensor;
+import org.wso2.carbon.device.mgt.common.sensor.mgt.SensorManager;
+import org.wso2.carbon.device.mgt.common.sensor.mgt.SensorManager;
 import org.wso2.carbon.device.mgt.common.spi.DeviceManagementService;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementServiceComponent;
@@ -37,6 +41,7 @@ import org.wso2.carbon.device.mgt.core.util.DeviceManagerUtil;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class DeviceManagementPluginRepository implements DeviceManagerStartupListener {
@@ -54,6 +59,11 @@ public class DeviceManagementPluginRepository implements DeviceManagerStartupLis
 
     public void addDeviceManagementProvider(DeviceManagementService provider) throws DeviceManagementException {
         String deviceType = provider.getType().toLowerCase();
+        DeviceManager deviceManager = provider.getDeviceManager();
+        SensorManager deviceTypeSensorManager = null;
+        if (deviceManager != null) {
+            deviceTypeSensorManager = provider.getDeviceManager().getSensorManager();
+        }
 
         ProvisioningConfig provisioningConfig = provider.getProvisioningConfig();
         String tenantDomain = provisioningConfig.getProviderTenantDomain();
@@ -67,10 +77,19 @@ public class DeviceManagementPluginRepository implements DeviceManagerStartupLis
                 if (isInited) {
                     /* Initializing Device Management Service Provider */
                     provider.init();
+                    // Register the Device-Type on the DB and then register the DeviceTypeSensors.
                     DeviceManagerUtil.registerDeviceType(deviceType, tenantId, isSharedWithAllTenants);
-                    DeviceManagementDataHolder.getInstance().setRequireDeviceAuthorization(deviceType,
-                                                                                           provider.getDeviceManager()
-                                                                                                   .requireDeviceAuthorization());
+
+                    // If a list of DeviceTypeSensors has been set by the DeviceManager's SensorManager then register.
+                    if (deviceTypeSensorManager != null) {
+                        List<DeviceTypeSensor> deviceTypeSensors = deviceTypeSensorManager.getDeviceTypeSensors();
+                        if (deviceTypeSensors != null && deviceTypeSensors.size() > 0) {
+                            DeviceManagerUtil.registerDeviceTypeSensors(deviceType, tenantId, deviceTypeSensors);
+                        }
+                    }
+
+                    DeviceManagementDataHolder.getInstance().setRequireDeviceAuthorization(
+                            deviceType, provider.getDeviceManager().requireDeviceAuthorization());
                     registerPushNotificationStrategy(provider);
                 }
             } catch (DeviceManagementException e) {
@@ -177,10 +196,22 @@ public class DeviceManagementPluginRepository implements DeviceManagerStartupLis
                 try {
                     provider.init();
                     deviceTypeName = provider.getType().toLowerCase();
+                    SensorManager deviceTypeSensorManager = provider.getDeviceManager().getSensorManager();
                     ProvisioningConfig provisioningConfig = provider.getProvisioningConfig();
                     int tenantId = DeviceManagerUtil.getTenantId(provisioningConfig.getProviderTenantDomain());
-                    DeviceManagerUtil.registerDeviceType(deviceTypeName, tenantId,
-                                                         provisioningConfig.isSharedWithAllTenants());
+
+                    // Register the Device-Type on the DB and then register the DeviceTypeSensors.
+                    DeviceManagerUtil.registerDeviceType(
+                            deviceTypeName, tenantId, provisioningConfig.isSharedWithAllTenants());
+
+                    // If a list of DeviceTypeSensors has been set by the DeviceManager's SensorManager then register.
+                    if (deviceTypeSensorManager != null) {
+                        List<DeviceTypeSensor> deviceTypeSensors = deviceTypeSensorManager.getDeviceTypeSensors();
+                        if (deviceTypeSensors != null && deviceTypeSensors.size() > 0) {
+                            DeviceManagerUtil.registerDeviceTypeSensors(deviceTypeName, tenantId, deviceTypeSensors);
+                        }
+                    }
+
                     registerPushNotificationStrategy(provider);
                     //TODO:
                     //This is a temporory fix.

@@ -23,6 +23,8 @@ import org.wso2.carbon.device.mgt.common.license.mgt.License;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Activity;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
+import org.wso2.carbon.device.mgt.common.sensor.mgt.DeviceTypeSensor;
+import org.wso2.carbon.device.mgt.common.sensor.mgt.SensorManager;
 
 import java.util.HashMap;
 import java.util.Date;
@@ -78,6 +80,16 @@ public interface DeviceManagementProviderService {
     void sendRegistrationEmail(EmailMetaInfo metaInfo) throws DeviceManagementException;
 
     FeatureManager getFeatureManager(String deviceType) throws DeviceManagementException;
+
+    /**
+     * Method to retrieve the SensorManger implementation specific to the given deviceType.
+     *
+     * @param deviceType The deviceType of whose SensorManager is of interest/required.
+     * @return SensorManager - The SensorManager object of the given deviceType.
+     * @throws DeviceManagementException In the event of some error whilst trying to return the SensorManager of the
+     * given deviceType.
+     */
+    SensorManager getSensorManager(String deviceType) throws DeviceManagementException;
 
     /**
      * Proxy method to get the tenant configuration of a given platform.
@@ -164,7 +176,8 @@ public interface DeviceManagementProviderService {
      * @throws DeviceManagementException If some unusual behaviour is observed while fetching the
      *                                   device list
      */
-    List<Device> getDevicesByNameAndType(String deviceName, String type, int offset, int limit) throws DeviceManagementException;
+    List<Device> getDevicesByNameAndType(String deviceName, String type, int offset, int limit)
+            throws DeviceManagementException;
 
     /**
      * This method is used to retrieve list of devices that matches with the given device name with paging information.
@@ -201,8 +214,7 @@ public interface DeviceManagementProviderService {
      * This method is used to check whether the device is enrolled with the give user.
      *
      * @param deviceId identifier of the device that needs to be checked against the user.
-     * @param user username of the device owner.
-     *
+     * @param user     username of the device owner.
      * @return true if the user owns the device else will return false.
      * @throws DeviceManagementException If some unusual behaviour is observed while fetching the device.
      */
@@ -283,5 +295,24 @@ public interface DeviceManagementProviderService {
     List<Activity> getActivitiesUpdatedAfter(long timestamp, int limit, int offset) throws OperationManagementException;
 
     int getActivityCountUpdatedAfter(long timestamp) throws OperationManagementException;
+
+    /**
+     *
+     * @param deviceTypeName
+     * @return
+     * @throws DeviceManagementException
+     */
+    List<DeviceTypeSensor> getAssociatedSensorsForDeviceType(String deviceTypeName) throws DeviceManagementException;
+
+    DeviceTypeSensor getDeviceTypeSensorByUniqueName(String deviceTypeName, String sensorTypeUniqueName) throws DeviceManagementException;
+
+    /**
+     *
+     * @param deviceTypeName
+     * @param deviceTypeSensor
+     * @return
+     * @throws DeviceManagementException
+     */
+    boolean updateDeviceTypeSensor(String deviceTypeName, DeviceTypeSensor deviceTypeSensor) throws DeviceManagementException;
 
 }

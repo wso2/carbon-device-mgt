@@ -22,8 +22,7 @@ import java.io.Serializable;
 import java.util.List;
 import io.swagger.annotations.*;
 
-@ApiModel(value = "Feature", description = "This class carries all information related to a devices enrollment" +
-                                                 " status.")
+@ApiModel(value = "Feature", description = "This class carries all information related to a devices enrollment status.")
 public class Feature implements Serializable {
 
     @ApiModelProperty(name = "id", value = "Feature Id.", required = true )

@@ -29,6 +29,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
 import java.io.File;
 
+//TODO::Write Class and Method Comments
 /**
  * Class responsible for the certificate manager configuration initialization
  */
@@ -40,6 +41,10 @@ public class CertificateConfigurationManager {
     private final String certMgtConfigXMLPath = CarbonUtils.getCarbonConfigDirPath() + File.separator +
                                                 CertificateManagementConstants.CERTIFICATE_CONFIG_XML_FILE;
 
+    /**
+     *
+     * @return
+     */
     public static CertificateConfigurationManager getInstance() {
         if (certificateConfigurationManager == null) {
             synchronized (CertificateConfigurationManager.class) {
@@ -51,6 +56,10 @@ public class CertificateConfigurationManager {
         return certificateConfigurationManager;
     }
 
+    /**
+     *
+     * @throws CertificateManagementException
+     */
     public synchronized void initConfig() throws CertificateManagementException {
         try {
             File certMgtConfig = new File(certMgtConfigXMLPath);

@@ -6511,3 +6511,10 @@ select > option:hover {
 .required:before {
   content: "*";
 }
+
+.device-type-img.fw {
+    font-size: 250px;
+    color: white;
+    background: #11375b;
+    padding: 35px;
+}

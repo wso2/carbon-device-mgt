@@ -35,12 +35,10 @@ $(function () {
         var description = $("input#description").val();
 
         if (!name) {
-            $('.wr-validation-summary strong').text("Group Name is a required field. It cannot be empty.");
-            $('.wr-validation-summary').removeClass("hidden");
+            triggerError($("input#name"),"Group Name is a required field. It cannot be empty.");
             return false;
         } else if (!inputIsValid($("input#name").data("regex"), name)) {
-            $('.wr-validation-summary strong').text($("input#name").data("errormsg"));
-            $('.wr-validation-summary').removeClass("hidden");
+            triggerError($("input#name"),$("input#name").data("errormsg"));
             return false;
         } else {
             var group = {"name": name, "description": description};
@@ -68,6 +66,61 @@ $(function () {
         }
     });
 });
+
+/**
+ * @param el
+ * @param errorMsg
+ *
+ * Triggers validation error for provided element.
+ * Note : the basic jQuery validation elements should be present in the markup
+ *
+ */
+function triggerError(el,errorMsg){
+    var parent = el.parents('.form-group'),
+        errorSpan = parent.find('span'),
+        errorMsgContainer = parent.find('label');
+
+    errorSpan.on('click',function(event){
+        event.stopPropagation();
+        removeErrorStyling($(this));
+        el.unbind('.errorspace');
+    });
+
+    el.bind('focusin.errorspace',function(){
+        removeErrorStyling($(this))
+    }).bind('focusout.errorspace',function(){
+        addErrorStyling($(this));
+    }).bind('keypress.errorspace',function(){
+        $(this).unbind('.errorspace');
+        removeErrorStyling($(this));
+    });
+
+    errorMsgContainer.text(errorMsg);
+
+    parent.addClass('has-error has-feedback');
+    errorSpan.removeClass('hidden');
+    errorMsgContainer.removeClass('hidden');
+
+    function removeErrorStyling(el){
+        var parent = el.parents('.form-group'),
+            errorSpan = parent.find('span'),
+            errorMsgContainer = parent.find('label');
+
+        parent.removeClass('has-error has-feedback');
+        errorSpan.addClass('hidden');
+        errorMsgContainer.addClass('hidden');
+    }
+
+    function addErrorStyling(el){
+        var parent = el.parents('.form-group'),
+            errorSpan = parent.find('span'),
+            errorMsgContainer = parent.find('label');
+
+        parent.addClass('has-error has-feedback');
+        errorSpan.removeClass('hidden');
+        errorMsgContainer.removeClass('hidden');
+    }
+}
 
 function displayErrors(message) {
     $('#error-msg').html(message.responseText);

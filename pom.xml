@@ -920,6 +920,10 @@
                         <groupId>xerces</groupId>
                         <artifactId>xercesImpl</artifactId>
                     </exclusion>
+                    <exclusion>
+                        <groupId>io.swagger</groupId>
+                        <artifactId>swagger-annotations</artifactId>
+                    </exclusion>
                 </exclusions>
             </dependency>
             <dependency>

@@ -37,7 +37,6 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
-import java.util.ArrayList;
 import java.util.Arrays;
 
 
@@ -106,8 +105,13 @@ public class ApiApplicationRegistrationServiceImpl implements ApiApplicationRegi
                 jsonStringObject.put(ApiApplicationConstants.OAUTH_CLIENT_ID, registrationProfile.getConsumerKey());
                 jsonStringObject.put(ApiApplicationConstants.OAUTH_CLIENT_SECRET,
                                      registrationProfile.getConsumerSecret());
-                jsonStringObject.put(ApiApplicationConstants.JSONSTRING_VALIDITY_PERIOD_TAG,
-                                     ApiApplicationConstants.DEFAULT_VALIDITY_PERIOD);
+                if (registrationProfile.getValidityPeriod() == 0) {
+                    jsonStringObject.put(ApiApplicationConstants.JSONSTRING_VALIDITY_PERIOD_TAG,
+                            ApiApplicationConstants.DEFAULT_VALIDITY_PERIOD);
+                } else {
+                    jsonStringObject.put(ApiApplicationConstants.JSONSTRING_VALIDITY_PERIOD_TAG,
+                            registrationProfile.getValidityPeriod());
+                }
                 apiManagementProviderService.registerExistingOAuthApplicationToAPIApplication(
                         jsonStringObject.toJSONString(), registrationProfile.getApplicationName(),
                         registrationProfile.getConsumerKey(), username, registrationProfile.isAllowedToAllDomains(),

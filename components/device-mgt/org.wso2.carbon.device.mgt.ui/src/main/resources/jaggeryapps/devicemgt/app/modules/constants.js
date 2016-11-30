@@ -60,6 +60,8 @@ var WEB_SERVICE_ADDRESSING_VERSION = 1.0;
 var TOKEN_PAIR = "tokenPair";
 var ENCODED_TENANT_BASED_CLIENT_APP_CREDENTIALS = "encodedTenantBasedClientAppCredentials";
 var CONTENT_TYPE_IDENTIFIER = "Content-Type";
+var ENCODED_TENANT_BASED_WEB_SOCKET_CLIENT_CREDENTIALS = "encodedTenantBasedWebSocketClientCredentials";
+
 var CONTENT_DISPOSITION_IDENTIFIER = "Content-Disposition";
 var APPLICATION_JSON = "application/json";
 var APPLICATION_ZIP = "application/zip";
@@ -76,4 +78,6 @@ var HTTP_CONFLICT = 409;
 var HTTP_CREATED = 201;
 
 var CACHED_CREDENTIALS = "tenantBasedCredentials";
+var CACHED_CREDENTIALS_FOR_WEBSOCKET_APP = "tenantBasedWebSocketClientCredentials";
+
 var ALLOWED_SCOPES = "scopes";

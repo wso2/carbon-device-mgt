@@ -17,7 +17,7 @@
  */
 
 function onRequest(context) {
-    //var log = new Log("wizard.js");
+    //  var log = new Log("wizard.js");
     var constants = require("/app/modules/constants.js");
     var DTYPE_CONF_DEVICE_TYPE_KEY = "deviceType";
     var DTYPE_CONF_DEVICE_TYPE_LABEL_KEY = "label";
@@ -32,15 +32,11 @@ function onRequest(context) {
     var deviceType = context.uriParams.deviceType;
     var typesListResponse = userModule.getPlatforms();
     if (typesListResponse["status"] == "success") {
-        for (var type in typesListResponse["content"]) {
-            if (deviceType == typesListResponse["content"][type]["name"]) {
-                wizardPage["type"] = typesListResponse["content"][type];
-                var deviceTypeLabel = deviceType;
-                var configs = utility.getDeviceTypeConfig(deviceType);
-                if (configs && configs[DTYPE_CONF_DEVICE_TYPE_KEY][DTYPE_CONF_DEVICE_TYPE_LABEL_KEY]) {
-                    deviceTypeLabel = configs[DTYPE_CONF_DEVICE_TYPE_KEY][DTYPE_CONF_DEVICE_TYPE_LABEL_KEY];
-                }
-                wizardPage["type"]["label"] = deviceTypeLabel;
+        wizardPage["type"] = {};
+        for (var type in typesListResponse["content"]["deviceTypes"]) {
+            if (deviceType == typesListResponse["content"]["deviceTypes"][type]) {
+                wizardPage["type"]["name"] = deviceType;
+                wizardPage["type"]["label"] = deviceType;
             }
         }
     }

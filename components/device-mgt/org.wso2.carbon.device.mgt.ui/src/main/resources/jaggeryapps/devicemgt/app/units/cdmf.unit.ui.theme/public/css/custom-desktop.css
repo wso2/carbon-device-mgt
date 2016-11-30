@@ -6511,3 +6511,13 @@ select > option:hover {
 .required:before {
   content: "*";
 }
+
+.table.list-table:not(.grid-view){
+  margin: 0px !important;
+}
+.table.list-table:not(.grid-view) > thead, .table.list-table:not(.grid-view) > tbody, .table.list-table:not(.grid-view) > tfoot{
+  margin-bottom: 10px !important;
+}
+.table.list-table:not(.grid-view) tbody{
+  margin: 0px !important;
+}

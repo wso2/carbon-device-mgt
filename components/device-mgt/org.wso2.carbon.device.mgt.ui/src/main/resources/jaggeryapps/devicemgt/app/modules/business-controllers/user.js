@@ -500,10 +500,11 @@ var userModule = function () {
 
     publicMethods.getUIPermissions = function () {
         var permissions = {};
-        if (publicMethods.isAuthorized("/permission/admin/device-mgt/devices/list")) {
+        if (publicMethods.isAuthorized("/permission/admin/device-mgt/devices/any-device")) {
             permissions["LIST_DEVICES"] = true;
+            permissions["LIST_OWN_DEVICES"] = true;
         }
-        if (publicMethods.isAuthorized("/permission/admin/device-mgt/user/devices/list")) {
+        if (publicMethods.isAuthorized("/permission/admin/device-mgt/devices/owning-device")) {
             permissions["LIST_OWN_DEVICES"] = true;
         }
         if (publicMethods.isAuthorized("/permission/admin/device-mgt/admin/groups/view")) {
@@ -524,10 +525,10 @@ var userModule = function () {
         if (publicMethods.isAuthorized("/permission/admin/device-mgt/user/policies/list")) {
             permissions["LIST_POLICIES"] = true;
         }
-        if (publicMethods.isAuthorized("/permission/admin/device-mgt/user/devices/add")) {
+        if (publicMethods.isAuthorized("/permission/admin/device-mgt/devices/add")) {
             permissions["ADD_DEVICE"] = true;
         }
-        if (publicMethods.isAuthorized("/permission/admin/device-mgt/user/groups/add")) {
+        if (publicMethods.isAuthorized("/permission/admin/device-mgt/groups/add")) {
             permissions["ADD_GROUP"] = true;
         }
         if (publicMethods.isAuthorized("/permission/admin/device-mgt/users/add")) {
@@ -541,9 +542,6 @@ var userModule = function () {
         }
         if (publicMethods.isAuthorized("/permission/admin/device-mgt/groups/devices/view")) {
             permissions["VIEW_GROUP_DEVICES"] = true;
-        }
-        if (publicMethods.isAuthorized("/permission/admin/device-mgt/groups/roles/create")) {
-            permissions["CREATE_GROUP_ROLES"] = true;
         }
         if (publicMethods.isAuthorized("/permission/admin/device-mgt/groups/roles/view")) {
             permissions["VIEW_GROUP_ROLES"] = true;

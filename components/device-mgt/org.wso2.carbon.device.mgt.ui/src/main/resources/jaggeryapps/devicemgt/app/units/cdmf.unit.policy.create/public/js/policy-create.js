@@ -59,6 +59,11 @@ var disableInlineError = function (inputField, errorMsg, errorSign) {
     }
 };
 
+/**
+ * Load all device groups.
+ *
+ * @param callback  function to call on loading completion.
+ */
 function loadGroups(callback) {
     invokerUtil.get(
         "/api/device-mgt/v1.0/groups",
@@ -68,6 +73,12 @@ function loadGroups(callback) {
         });
 }
 
+/**
+ * Creates DeviceGroupWrapper object from selected groups.
+ *
+ * @param selectedGroups
+ * @returns {Array} DeviceGroupWrapper list.
+ */
 var createDeviceGroupWrapper = function (selectedGroups) {
     var groupObjects = [];
     loadGroups(function (deviceGroups) {
@@ -136,7 +147,6 @@ stepForwardFrom["policy-platform"] = function (actionButton) {
             $.template(policyOperationsTemplateCacheKey, policyOperationsTemplateSrc, function (template) {
                 var content = template();
                 $("#device-type-policy-operations").html(content).removeClass("hidden");
-                // $("#device-type-policy-operations").removeClass("hidden");
                 $(".policy-platform").addClass("hidden");
             });
 

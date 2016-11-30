@@ -10,6 +10,7 @@
     "dashboardServerURL" : "%https.ip%",
     "androidEnrollmentDir": "/android-web-agent/enrollment",
     "windowsEnrollmentDir": "/windows-web-agent/enrollment",
+    "iOSEnrollmentDir": "/ios-web-agent/enrollment",
     "iOSConfigRoot" : "%https.ip%/ios-enrollment/",
     "iOSAPIRoot" : "%https.ip%/ios/",
     "adminService": "%https.ip%",

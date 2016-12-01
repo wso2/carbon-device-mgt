@@ -425,7 +425,7 @@ var updatePolicy = function (policy, state) {
         "policyName": policy["policyName"],
         "description": policy["description"],
         "compliance": policy["selectedNonCompliantAction"],
-        "ownershipType": policy["selectedOwnership"],
+        "ownershipType": null,
         "profile": {
             "profileName": policy["policyName"],
             "deviceType": policy["platform"],

@@ -22,22 +22,27 @@ package org.wso2.carbon.device.mgt.core.task.impl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.Device;
+import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.InvalidDeviceException;
+import org.wso2.carbon.device.mgt.common.TaskOperation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
 import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
-import org.wso2.carbon.device.mgt.core.config.task.TaskConfiguration;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 import org.wso2.carbon.device.mgt.core.operation.mgt.CommandOperation;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.device.mgt.core.task.DeviceMgtTaskException;
 import org.wso2.carbon.device.mgt.core.task.DeviceTaskManager;
-import org.wso2.carbon.device.mgt.core.task.TaskOperation;
 import org.wso2.carbon.device.mgt.core.task.Utils;
 import org.wso2.carbon.device.mgt.core.util.DeviceManagerUtil;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class DeviceTaskManagerImpl implements DeviceTaskManager {
 
@@ -47,34 +52,35 @@ public class DeviceTaskManagerImpl implements DeviceTaskManager {
 
 
     @Override
-    public List<TaskOperation> getOperationList() throws DeviceMgtTaskException {
-        TaskConfiguration taskConfiguration =
-                DeviceConfigurationManager.getInstance().getDeviceManagementConfig().getTaskConfiguration();
+    //get device type specific operations
+    public List<TaskOperation> getOperationList(String deviceType) throws DeviceMgtTaskException {
 
-        List<TaskConfiguration.Operation> ops = taskConfiguration.getOperations();
         List<TaskOperation> taskOperations = new ArrayList<>();
-        for (TaskConfiguration.Operation op : ops) {
-            TaskOperation taskOperation = new TaskOperation();
-            taskOperation.setTaskName(op.getOperationName());
-            taskOperation.setRecurrentTimes(op.getRecurrency());
-            taskOperation.setTaskPlatforms(op.getPlatforms());
-            taskOperations.add(taskOperation);
+        Map<String, List<TaskOperation>> deviceTypeSpecificTasks;
+        //This Map contains task list against device type
+        DeviceManagementProviderService deviceManagementProviderService = DeviceManagementDataHolder.getInstance().
+                getDeviceManagementProvider();
+
+        deviceTypeSpecificTasks = deviceManagementProviderService.getTaskList();//Get task list from each device type
+        for(String dti : deviceTypeSpecificTasks.keySet()){
+            if (dti.equals(deviceType)) {
+                taskOperations = deviceTypeSpecificTasks.get(dti);
+            }
         }
         return taskOperations;
     }
 
-    public List<String> getPlatformsForOperations(String opName) {
+    private List<String> getDeviceTypes() {
         List<String> operationPlatforms =  new ArrayList<>();
-        TaskConfiguration taskConfiguration =
-                DeviceConfigurationManager.getInstance().getDeviceManagementConfig().getTaskConfiguration();
-        List<TaskConfiguration.Operation> ops = taskConfiguration.getOperations();
-        for (TaskConfiguration.Operation op : ops) {
-            if (op.getOperationName().equals(opName)) {
-                List<String> platform = op.getPlatforms();
-                for (String operationPlatform : platform) {
-                     operationPlatforms.add(operationPlatform);
-                }
-            }
+        Map<String, List<TaskOperation>> deviceTypeSpecificTasks;
+
+        DeviceManagementProviderService deviceManagementProviderService = DeviceManagementDataHolder.getInstance().
+                getDeviceManagementProvider();
+        deviceTypeSpecificTasks = deviceManagementProviderService.getTaskList();
+
+        Set<String> platformTypes = deviceTypeSpecificTasks.keySet();
+        for(String platformType : platformTypes ){
+          operationPlatforms.add(platformType);
         }
         return operationPlatforms;
     }
@@ -100,32 +106,31 @@ public class DeviceTaskManagerImpl implements DeviceTaskManager {
 
     @Override
     public void addOperations() throws DeviceMgtTaskException {
-        List<String> deviceTypes;
         DeviceManagementProviderService deviceManagementProviderService = DeviceManagementDataHolder.getInstance().
                 getDeviceManagementProvider();
         try {
             List<Device> devices;
-            List<String> operations = this.getValidOperationNames();
-            for (String taskOperation : operations) {
-                deviceTypes = getPlatformsForOperations(taskOperation);
-                 for (String deviceType : deviceTypes) {
-                     devices = deviceManagementProviderService.getAllDevices(deviceType);
-                     if (!devices.isEmpty()) {
-                         for (String str : operations) {
-                             CommandOperation operation = new CommandOperation();
-                             operation.setEnabled(true);
-                             operation.setType(Operation.Type.COMMAND);
-                             operation.setCode(str);
-                             deviceManagementProviderService.addOperation(deviceType, operation,
-                                     DeviceManagerUtil.getValidDeviceIdentifiers(devices));
-                         }
-                     } else {
-                         if (log.isDebugEnabled()) {
-                             log.debug("No devices are available to perform the operations.");
-                         }
-                     }
+            List<String> operations;
+            List<String> deviceTypes = this.getDeviceTypes();//list available device types
 
-                 }
+            for(String deviceType : deviceTypes){
+                operations = this.getValidOperationNames(deviceType); //list operations for each device type
+                devices = deviceManagementProviderService.getAllDevices(deviceType);//list devices for each type
+                if (!devices.isEmpty()) {
+                    for (String str : operations) {
+                        CommandOperation operation = new CommandOperation();
+                        operation.setEnabled(true);
+                        operation.setType(Operation.Type.COMMAND);
+                        operation.setCode(str);
+                        deviceManagementProviderService.addOperation(deviceType, operation,
+                                DeviceManagerUtil.getValidDeviceIdentifiers(devices));
+                    }
+                } else {
+                    if (log.isDebugEnabled()) {
+                        log.debug("No devices are available to perform the operations.");
+                    }
+                }
+
             }
         } catch (InvalidDeviceException e) {
             throw new DeviceMgtTaskException("Invalid DeviceIdentifiers found.", e);
@@ -137,8 +142,9 @@ public class DeviceTaskManagerImpl implements DeviceTaskManager {
     }
 
     @Override
-    public List<String> getValidOperationNames() throws DeviceMgtTaskException {
-        List<TaskOperation> taskOperations = this.getOperationList();
+    public List<String> getValidOperationNames(String deviceType) throws DeviceMgtTaskException {
+
+        List<TaskOperation> taskOperations = this.getOperationList(deviceType);
         List<String> opNames = new ArrayList<>();
         Long milliseconds = System.currentTimeMillis();
         int frequency = this.getTaskFrequency();
@@ -167,17 +173,22 @@ public class DeviceTaskManagerImpl implements DeviceTaskManager {
 
 
     @Override
-    public boolean isTaskOperation(String opName) {
-        try {
-            List<TaskOperation> taskOperations = this.getOperationList();
-            for (TaskOperation taop : taskOperations) {
-                if (taop.getTaskName().equalsIgnoreCase(opName)) {
-                    return true;
+    public boolean isTaskOperation(String opName, List<DeviceIdentifier> deviceIds) {
+
+        for(DeviceIdentifier deviceIdentifier : deviceIds){
+            String deviceType = deviceIdentifier.getType();
+            try {
+                List<TaskOperation> taskOperations = this.getOperationList(deviceType);
+                for (TaskOperation taop : taskOperations) {
+                    if (taop.getTaskName().equalsIgnoreCase(opName)) {
+                        return true;
+                    }
                 }
+            } catch (DeviceMgtTaskException e) {
+                // ignoring the error, no need to throw, If error occurs, return value will be false.
             }
-        } catch (DeviceMgtTaskException e) {
-            // ignoring the error, no need to throw, If error occurs, return value will be false.
         }
+
         return false;
 
     }

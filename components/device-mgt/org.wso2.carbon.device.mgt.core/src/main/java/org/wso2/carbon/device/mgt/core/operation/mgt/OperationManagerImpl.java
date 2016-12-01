@@ -21,16 +21,25 @@ package org.wso2.carbon.device.mgt.core.operation.mgt;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.CarbonContext;
-import org.wso2.carbon.device.mgt.common.*;
+import org.wso2.carbon.device.mgt.common.Device;
+import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
+import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
+import org.wso2.carbon.device.mgt.common.InvalidDeviceException;
+import org.wso2.carbon.device.mgt.common.PaginationRequest;
+import org.wso2.carbon.device.mgt.common.PaginationResult;
+import org.wso2.carbon.device.mgt.common.TaskOperation;
+import org.wso2.carbon.device.mgt.common.TransactionManagementException;
 import org.wso2.carbon.device.mgt.common.authorization.DeviceAccessAuthorizationException;
 import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroupConstants;
-import org.wso2.carbon.device.mgt.common.operation.mgt.*;
+import org.wso2.carbon.device.mgt.common.operation.mgt.Activity;
+import org.wso2.carbon.device.mgt.common.operation.mgt.ActivityStatus;
+import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
+import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
+import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManager;
 import org.wso2.carbon.device.mgt.common.push.notification.NotificationContext;
 import org.wso2.carbon.device.mgt.common.push.notification.NotificationStrategy;
 import org.wso2.carbon.device.mgt.common.push.notification.PushNotificationExecutionFailedException;
 import org.wso2.carbon.device.mgt.core.DeviceManagementConstants;
-import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
-import org.wso2.carbon.device.mgt.core.config.task.TaskConfiguration;
 import org.wso2.carbon.device.mgt.core.dao.DeviceDAO;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
@@ -43,6 +52,7 @@ import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationMappingDAO;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.util.OperationDAOUtil;
 import org.wso2.carbon.device.mgt.core.operation.mgt.util.DeviceIDHolder;
 import org.wso2.carbon.device.mgt.core.operation.mgt.util.OperationCreateTimeComparator;
+import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.device.mgt.core.task.DeviceTaskManager;
 import org.wso2.carbon.device.mgt.core.task.impl.DeviceTaskManagerImpl;
 import org.wso2.carbon.device.mgt.core.util.DeviceManagerUtil;
@@ -51,7 +61,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * This class implements all the functionality exposed as part of the OperationManager. Any transaction initiated
@@ -127,7 +139,7 @@ public class OperationManagerImpl implements OperationManager {
                 org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation operationDto =
                         OperationDAOUtil.convertOperation(operation);
                 int operationId = this.lookupOperationDAO(operation).addOperation(operationDto);
-                boolean isScheduledOperation = this.isTaskScheduledOperation(operation);
+                boolean isScheduledOperation = this.isTaskScheduledOperation(operation, deviceIds);
                 boolean isNotRepeated = false;
                 boolean hasExistingTaskOperation;
                 int enrolmentId;
@@ -231,7 +243,7 @@ public class OperationManagerImpl implements OperationManager {
         List<String> unAuthorizedDeviceList = new ArrayList<>();
         DeviceIDHolder deviceIDHolder = new DeviceIDHolder();
         try {
-            if (operation != null && isAuthenticationSkippedOperation(operation)) {
+            if (operation != null && isAuthenticationSkippedOperation(operation, deviceIds)) {
                 authorizedDeviceList = deviceIds;
             } else {
                 boolean isAuthorized;
@@ -873,11 +885,11 @@ public class OperationManagerImpl implements OperationManager {
         return CarbonContext.getThreadLocalCarbonContext().getUsername();
     }
 
-    private boolean isAuthenticationSkippedOperation(Operation operation) {
+    private boolean isAuthenticationSkippedOperation(Operation operation, List<DeviceIdentifier> deviceIds) {
 
         //This is to check weather operations are coming from the task related to retrieving device information.
         DeviceTaskManager taskManager = new DeviceTaskManagerImpl();
-        if (taskManager.isTaskOperation(operation.getCode())) {
+        if (taskManager.isTaskOperation(operation.getCode(), deviceIds)) {
             return true;
         }
 
@@ -1021,14 +1033,37 @@ public class OperationManagerImpl implements OperationManager {
         return resetStatus;
     }
 
-    private boolean isTaskScheduledOperation(Operation operation) {
-        TaskConfiguration taskConfiguration = DeviceConfigurationManager.getInstance().getDeviceManagementConfig().
-                getTaskConfiguration();
-        for (TaskConfiguration.Operation op : taskConfiguration.getOperations()) {
-            if (operation.getCode().equals(op.getOperationName())) {
-                return true;
+    private boolean isTaskScheduledOperation(Operation operation, List<DeviceIdentifier> deviceIds) {
+        List<TaskOperation> taskOperations = new ArrayList<>();
+        Map<String, List<TaskOperation>> deviceTypeSpecificTasks = new HashMap<>();
+        DeviceManagementProviderService deviceManagementProviderService = DeviceManagementDataHolder.getInstance().
+                getDeviceManagementProvider();
+
+        deviceTypeSpecificTasks = deviceManagementProviderService.getTaskList();//Get task list from each device type
+
+        for(DeviceIdentifier deviceIdentifier : deviceIds){
+            String deviceType = deviceIdentifier.getType();
+            for(String dti : deviceTypeSpecificTasks.keySet()){
+                if (dti.equals(deviceType)) {
+                    taskOperations = deviceTypeSpecificTasks.get(dti);
+                    for(TaskOperation op : taskOperations){
+                    if (operation.getCode().equals(op.getTaskName())) {
+                        return true;
+                    }
+                    }
+                }
             }
+
+
         }
+
+//        TaskConfiguration taskConfiguration = DeviceConfigurationManager.getInstance().getDeviceManagementConfig().
+//                getTaskConfiguration();
+//        for (TaskConfiguration.Operation op : taskConfiguration.getOperations()) {
+//            if (operation.getCode().equals(op.getOperationName())) {
+//                return true;
+//            }
+//        }
         return false;
     }
 

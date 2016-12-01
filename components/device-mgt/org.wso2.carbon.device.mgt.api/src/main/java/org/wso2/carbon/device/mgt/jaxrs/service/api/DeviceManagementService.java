@@ -447,8 +447,8 @@ public interface DeviceManagementService {
             produces = MediaType.APPLICATION_JSON,
             consumes = MediaType.APPLICATION_JSON,
             httpMethod = "POST",
-            value = "Advanced Search for Devices",
-            notes = "Search for devices by filtering the search result through the specified search terms.",
+            value = "Advanced search for Devices",
+            notes = "search for devices by filtering the search result through the specified search terms.",
             tags = "Device Management",
             authorizations = {
                     @Authorization(

@@ -39,6 +39,8 @@ public class DeviceTaskManagerServiceImpl implements DeviceTaskManagerService {
     public static final String TASK_TYPE = "DEVICE_DETAILS";
     public static final String TASK_NAME = "DEVICE_DETAILS_TASK";
     public static final String TENANT_ID = "TENANT_ID";
+    private static String TASK_CLASS = "org.wso2.carbon.device.mgt.core.task.impl.DeviceDetailsRetrieverTask";
+
 
     private DeviceTaskManager deviceTaskManager;
 
@@ -75,7 +77,7 @@ public class DeviceTaskManagerServiceImpl implements DeviceTaskManagerService {
 
             if (!taskManager.isTaskScheduled(TASK_NAME)) {
 
-                TaskInfo taskInfo = new TaskInfo(TASK_NAME, deviceTaskManager.getTaskImplementedClazz(),
+                TaskInfo taskInfo = new TaskInfo(TASK_NAME, TASK_CLASS,
                         properties, triggerInfo);
 
                 taskManager.registerTask(taskInfo);
@@ -130,7 +132,7 @@ public class DeviceTaskManagerServiceImpl implements DeviceTaskManagerService {
                 Map<String, String> properties = new HashMap<>();
                 properties.put(TENANT_ID, String.valueOf(tenantId));
 
-                TaskInfo taskInfo = new TaskInfo(TASK_NAME, deviceTaskManager.getTaskImplementedClazz(), properties,
+                TaskInfo taskInfo = new TaskInfo(TASK_NAME, TASK_CLASS, properties,
                         triggerInfo);
 
                 taskManager.registerTask(taskInfo);

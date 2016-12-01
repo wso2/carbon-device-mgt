@@ -93,7 +93,7 @@ function loadGroups() {
     var currentUser = groupListing.data("currentUser");
     var serviceURL;
     if ($.hasPermission("LIST_ALL_GROUPS")) {
-        serviceURL = "/api/device-mgt/v1.0/groups";
+        serviceURL = "/api/device-mgt/v1.0/admin/groups";
     } else if ($.hasPermission("LIST_GROUPS")) {
         //Get authenticated users groups
         serviceURL = "/api/device-mgt/v1.0/groups/user/" + currentUser;
@@ -113,8 +113,7 @@ function loadGroups() {
                              groupId: data.deviceGroups[index].id,
                              name: data.deviceGroups[index].name,
                              description: data.deviceGroups[index].description,
-                             owner: data.deviceGroups[index].owner,
-                             dateOfCreation: data.deviceGroups[index].dateOfCreation
+                             owner: data.deviceGroups[index].owner
                          })
         });
         var json = {
@@ -153,7 +152,7 @@ function loadGroups() {
             data: 'id',
             class: 'text-right content-fill text-left-on-grid-view no-wrap',
             render: function (id, type, row, meta) {
-                var html;
+                var html = '';
                 if ($.hasPermission("VIEW_GROUP_DEVICES")) {
                     html = '<a href="devices?groupId=' + row.groupId + '&groupName=' + row.name
                            + '" data-click-event="remove-form" class="btn padding-reduce-on-grid-view">' +
@@ -166,46 +165,39 @@ function loadGroups() {
                             '<span class="fw-stack"><i class="fw fw-ring fw-stack-2x"></i><i class="fw fw-statistics fw-stack-1x"></i></span>'
                             +
                             '<span class="hidden-xs hidden-on-grid-view">Analytics</span></a>';
-                } else {
-                    html = '';
                 }
-                if ($.hasPermission("SHARE_GROUP")) {
-                    html +=
-                        '<a href="#" data-click-event="remove-form" class="btn padding-reduce-on-grid-view share-group-link" data-group-id="'
-                        + row.groupId + '" ' +
-                        'data-group-owner="' + row.owner
-                        + '"><span class="fw-stack"><i class="fw fw-ring fw-stack-2x"></i><i class="fw fw-share fw-stack-1x"></i></span>'
-                        +
-                        '<span class="hidden-xs hidden-on-grid-view">Share</span></a>';
-                } else {
-                    html += '';
-                }
-                if ($.hasPermission("UPDATE_GROUP")) {
-                    html +=
-                        '<a href="#" data-click-event="remove-form" class="btn padding-reduce-on-grid-view edit-group-link" data-group-name="'
-                        + row.name + '" ' +
-                        'data-group-owner="' + row.owner + '" data-group-description="' + row.description
-                        + '" data-group-id="' + row.groupId
-                        + '"><span class="fw-stack"><i class="fw fw-ring fw-stack-2x"></i>' +
-                        '<i class="fw fw-edit fw-stack-1x"></i></span><span class="hidden-xs hidden-on-grid-view">Edit</span></a>';
-                } else {
-                    html += '';
-                }
-                if ($.hasPermission("REMOVE_GROUP")) {
-                    html +=
-                        '<a href="#" data-click-event="remove-form" class="btn padding-reduce-on-grid-view remove-group-link" data-group-id="'
-                        + row.groupId + '" ' +
-                        'data-group-owner="' + row.owner
-                        + '"><span class="fw-stack"><i class="fw fw-ring fw-stack-2x"></i><i class="fw fw-delete fw-stack-1x"></i>'
-                        +
-                        '</span><span class="hidden-xs hidden-on-grid-view">Delete</span></a>';
-                } else {
-                    html += '';
+                if (row.owner != "wso2.system.user") {
+                    if ($.hasPermission("SHARE_GROUP")) {
+                        html +=
+                                '<a href="#" data-click-event="remove-form" class="btn padding-reduce-on-grid-view share-group-link" data-group-id="'
+                                + row.groupId + '" ' +
+                                'data-group-owner="' + row.owner
+                                + '"><span class="fw-stack"><i class="fw fw-ring fw-stack-2x"></i><i class="fw fw-share fw-stack-1x"></i></span>'
+                                +
+                                '<span class="hidden-xs hidden-on-grid-view">Share</span></a>';
+                    }
+                    if ($.hasPermission("UPDATE_GROUP")) {
+                        html +=
+                                '<a href="#" data-click-event="remove-form" class="btn padding-reduce-on-grid-view edit-group-link" data-group-name="'
+                                + row.name + '" ' +
+                                'data-group-owner="' + row.owner + '" data-group-description="' + row.description
+                                + '" data-group-id="' + row.groupId
+                                + '"><span class="fw-stack"><i class="fw fw-ring fw-stack-2x"></i>' +
+                                '<i class="fw fw-edit fw-stack-1x"></i></span><span class="hidden-xs hidden-on-grid-view">Edit</span></a>';
+                    }
+                    if ($.hasPermission("REMOVE_GROUP")) {
+                        html +=
+                                '<a href="#" data-click-event="remove-form" class="btn padding-reduce-on-grid-view remove-group-link" data-group-id="'
+                                + row.groupId + '" ' +
+                                'data-group-owner="' + row.owner
+                                + '"><span class="fw-stack"><i class="fw fw-ring fw-stack-2x"></i><i class="fw fw-delete fw-stack-1x"></i>'
+                                +
+                                '</span><span class="hidden-xs hidden-on-grid-view">Delete</span></a>';
+                    }
                 }
                 return html;
             }
         }
-
     ];
 
     var fnCreatedRow = function (row, data) {

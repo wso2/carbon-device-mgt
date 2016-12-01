@@ -1903,6 +1903,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             defaultGroup = new DeviceGroup(groupName);
             // Setting system level user (wso2.system.user) as the owner
             defaultGroup.setOwner(CarbonConstants.REGISTRY_SYSTEM_USERNAME);
+            defaultGroup.setDescription("Default system group for devices with " + groupName + " ownership.");
             try {
                 service.createGroup(defaultGroup, DeviceGroupConstants.Roles.DEFAULT_ADMIN_ROLE,
                         DeviceGroupConstants.Permissions.DEFAULT_ADMIN_PERMISSIONS);

@@ -63,6 +63,11 @@ var disableInlineError = function (inputField, errorMsg, errorSign) {
     }
 };
 
+/**
+ * Load all device groups.
+ * 
+ * @param callback  function to call on loading completion.
+ */
 function loadGroups(callback) {
     invokerUtil.get(
         "/api/device-mgt/v1.0/groups",
@@ -72,12 +77,18 @@ function loadGroups(callback) {
         });
 }
 
+/**
+ * Creates DeviceGroupWrapper object from selected groups.
+ * 
+ * @param selectedGroups
+ * @returns {Array} DeviceGroupWrapper list.
+ */
 var createDeviceGroupWrapper = function (selectedGroups) {
     var groupObjects = [];
     loadGroups(function (deviceGroups) {
         var tenantId = $("#logged-in-user").data("tenant-id");
         for (var index in deviceGroups) {
-            if(deviceGroups.hasOwnProperty(index)) {
+            if (deviceGroups.hasOwnProperty(index)) {
                 var deviceGroupWrapper = {};
                 if (selectedGroups.indexOf(deviceGroups[index].name) > -1) {
                     deviceGroupWrapper.id = deviceGroups[index].id;
@@ -132,7 +143,18 @@ skipStep["policy-platform"] = function (policyPayloadObj) {
 
     currentlyEffected["roles"] = policyPayloadObj.roles;
     currentlyEffected["users"] = policyPayloadObj.users;
-    currentlyEffected["groups"] = policyPayloadObj.deviceGroups;
+    currentlyEffected["groups"] = [];
+
+    if (policyPayloadObj.deviceGroups) {
+        var deviceGroups = policyPayloadObj.deviceGroups;
+        for (var index in deviceGroups) {
+            if (deviceGroups.hasOwnProperty(index)) {
+                currentlyEffected["groups"].push(deviceGroups[index].name);
+            }
+        }
+    } else {
+        currentlyEffected["groups"].push("NONE");
+    }
 
     if (currentlyEffected["roles"].length > 0) {
         $("#user-roles-radio-btn").prop("checked", true);
@@ -145,8 +167,8 @@ skipStep["policy-platform"] = function (policyPayloadObj) {
         $("#user-roles-select-field").hide();
         userInput.val(currentlyEffected["users"]).trigger("change");
     }
-    
-    if(currentlyEffected["groups"].length > 0) {
+
+    if (currentlyEffected["groups"].length > 0) {
         groupsInput.val(currentlyEffected["groups"]).trigger("change");
     }
 
@@ -178,8 +200,8 @@ skipStep["policy-platform"] = function (policyPayloadObj) {
                         script.type = 'text/javascript';
                         script.src = policyOperationsScriptSrc;
                         $(".wr-advance-operations").prepend(script);
-                        var configuredOperations = operationModule.
-                        populateProfile(policy["platform"], policyPayloadObj["profile"]["profileFeaturesList"]);
+                        var configuredOperations = operationModule.populateProfile(policy["platform"], 
+                            policyPayloadObj["profile"]["profileFeaturesList"]);
                         polulateProfileOperations(configuredOperations);
                     }
                 });
@@ -222,7 +244,7 @@ stepForwardFrom["policy-criteria"] = function () {
         }
     });
     policy["selectedGroups"] = $("#groups-input").val();
-    if (policy["selectedGroups"].length > 1 || policy["selectedGroups"][0] !== "NONE") {
+    if (policy["selectedGroups"] && (policy["selectedGroups"].length > 1 || policy["selectedGroups"][0] !== "NONE")) {
         policy["selectedGroups"] = createDeviceGroupWrapper(policy["selectedGroups"]);
     }
 
@@ -422,7 +444,7 @@ var updatePolicy = function (policy, state) {
         payload["roles"] = [];
     }
 
-    if(policy["selectedGroups"]) {
+    if (policy["selectedGroups"]) {
         payload["deviceGroups"] = policy["selectedGroups"];
     }
 

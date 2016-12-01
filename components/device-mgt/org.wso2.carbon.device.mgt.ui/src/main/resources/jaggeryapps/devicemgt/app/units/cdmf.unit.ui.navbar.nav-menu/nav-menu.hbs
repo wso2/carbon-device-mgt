@@ -30,22 +30,13 @@
             </a>
         </li>
     {{/if}}
-    {{#if permissions.LIST_DEVICES_ADMIN}}
+    {{#if permissions.LIST_OWN_DEVICES}}
         <li>
             <a href="{{@app.context}}/devices">
                 <i class="fw fw-mobile"></i>
                 Device Management
             </a>
         </li>
-    {{else}}
-        {{#if permissions.LIST_OWN_DEVICES}}
-            <li>
-                <a href="{{@app.context}}/devices">
-                    <i class="fw fw-mobile"></i>
-                    Device Management
-                </a>
-            </li>
-        {{/if}}
     {{/if}}
     {{#if permissions.LIST_GROUPS}}
         <li>

@@ -105,6 +105,11 @@ public class GroupDAOImpl implements GroupDAO {
             stmt.setInt(1, groupId);
             stmt.setInt(2, tenantId);
             stmt.executeUpdate();
+            sql = "DELETE FROM DM_DEVICE_GROUP_POLICY WHERE DEVICE_GROUP_ID = ? AND TENANT_ID = ?";
+            stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, groupId);
+            stmt.setInt(2, tenantId);
+            stmt.executeUpdate();
         } catch (SQLException e) {
             throw new GroupManagementDAOException("Error occurred while removing mappings for group.'", e);
         } finally {

@@ -39,6 +39,7 @@ var handlers = function () {
                     "as input - setupTokenPairByPasswordGrantType(x, y)");
         } else {
             privateMethods.setUpEncodedTenantBasedClientAppCredentials(username);
+            privateMethods.setUpEncodedTenantBasedWebSocketClientAppCredentials(username);
             var encodedClientAppCredentials = session.get(constants["ENCODED_TENANT_BASED_CLIENT_APP_CREDENTIALS"]);
             if (!encodedClientAppCredentials) {
                 throw new Error("{/app/modules/oauth/token-handlers.js} Could not set up access token pair by " +
@@ -81,6 +82,7 @@ var handlers = function () {
                     "as input - setupTokenPairByPasswordGrantType(x, y)");
         } else {
             privateMethods.setUpEncodedTenantBasedClientAppCredentials(username);
+            privateMethods.setUpEncodedTenantBasedWebSocketClientAppCredentials(username);
             var encodedClientAppCredentials = session.get(constants["ENCODED_TENANT_BASED_CLIENT_APP_CREDENTIALS"]);
             if (!encodedClientAppCredentials) {
                 throw new Error("{/app/modules/oauth/token-handlers.js} Could not set up access token pair " +
@@ -163,6 +165,45 @@ var handlers = function () {
                 // setting up encoded tenant based client credentials to session context.
                 session.put(constants["ENCODED_TENANT_BASED_CLIENT_APP_CREDENTIALS"],
                     encodedTenantBasedClientAppCredentials);
+            }
+
+        }
+    };
+
+    privateMethods["setUpEncodedTenantBasedWebSocketClientAppCredentials"] = function (username) {
+        if (!username) {
+            throw new Error("{/app/modules/oauth/token-handlers.js} Could not set up encoded tenant based " +
+                "client credentials to session context. No username of logged in user is found as " +
+                "input - setUpEncodedTenantBasedWebSocketClientAppCredentials(x)");
+        } else {
+            if (devicemgtProps["apimgt-gateway"]) {
+                var tenantBasedWebSocketClientAppCredentials
+                    = tokenUtil.getTenantBasedWebSocketClientAppCredentials(username);
+                if (!tenantBasedWebSocketClientAppCredentials) {
+                    throw new Error("{/app/modules/oauth/token-handlers.js} Could not set up encoded tenant " +
+                        "based client credentials to session context as the server is unable " +
+                        "to obtain such credentials - setUpEncodedTenantBasedWebSocketClientAppCredentials(x)");
+                } else {
+                    var encodedTenantBasedWebSocketClientAppCredentials =
+                        tokenUtil.encode(tenantBasedWebSocketClientAppCredentials["clientId"] + ":" +
+                            tenantBasedWebSocketClientAppCredentials["clientSecret"]);
+                    // setting up encoded tenant based client credentials to session context.
+                    session.put(constants["ENCODED_TENANT_BASED_WEB_SOCKET_CLIENT_CREDENTIALS"],
+                        encodedTenantBasedWebSocketClientAppCredentials);
+                }
+            } else {
+                var dynamicClientAppCredentials = tokenUtil.getDynamicClientAppCredentials();
+                if (!dynamicClientAppCredentials) {
+                    throw new Error("{/app/modules/oauth/token-handlers.js} Could not set up encoded tenant based " +
+                        "client credentials to session context as the server is unable to obtain " +
+                        "dynamic client credentials - setUpEncodedTenantBasedWebSocketClientAppCredentials(x)");
+                }
+                var encodedTenantBasedWebSocketClientAppCredentials =
+                    tokenUtil.encode(dynamicClientAppCredentials["clientId"] + ":" +
+                        dynamicClientAppCredentials["clientSecret"]);
+                // setting up encoded tenant based client credentials to session context.
+                session.put(constants["ENCODED_TENANT_BASED_WEB_SOCKET_CLIENT_CREDENTIALS"],
+                    encodedTenantBasedWebSocketClientAppCredentials);
             }
 
         }

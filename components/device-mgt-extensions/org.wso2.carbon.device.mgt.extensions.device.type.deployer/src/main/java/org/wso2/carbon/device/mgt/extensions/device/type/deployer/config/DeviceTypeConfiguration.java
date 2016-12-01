@@ -66,8 +66,34 @@ public class DeviceTypeConfiguration {
     protected License license;
     @XmlElement(name = "DataSource", required = true)
     protected DataSource dataSource;
+    @XmlElement(name = "TaskConfiguration", required = true)
+    private TaskConfiguration taskConfiguration;
     @XmlAttribute(name = "name")
     protected String name;
+
+    /**
+     * Gets the value of the taskConfiguration property.
+     *
+     * @return
+     *     possible object is
+     *     {@link TaskConfiguration }
+     *
+     */
+    public TaskConfiguration getTaskConfiguration() {
+        return taskConfiguration;
+    }
+
+    /**
+     * Sets the value of the taskConfiguration property.
+     *
+     * @param taskConfiguration
+     *     allowed object is
+     *     {@link TaskConfiguration }
+     *
+     */
+    public void setTaskConfiguration(TaskConfiguration taskConfiguration) {
+        this.taskConfiguration = taskConfiguration;
+    }
 
     /**
      * Gets the value of the deviceDetails property.

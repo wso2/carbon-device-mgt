@@ -19,6 +19,8 @@
 
 package org.wso2.carbon.device.mgt.core.task;
 
+import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
+
 import java.util.List;
 
 public interface DeviceTaskManager {
@@ -29,8 +31,8 @@ public interface DeviceTaskManager {
      * @return - list of Task Operations.
      * @throws DeviceMgtTaskException
      */
-    List<TaskOperation> getOperationList() throws DeviceMgtTaskException;
-
+    List<org.wso2.carbon.device.mgt.common.TaskOperation> getOperationList(String deviceType)
+            throws DeviceMgtTaskException;
 
     /**
      * This method will take the monitoring frequency.
@@ -66,7 +68,7 @@ public interface DeviceTaskManager {
      * @return
      * @throws DeviceMgtTaskException
      */
-    List<String> getValidOperationNames() throws DeviceMgtTaskException;
+    List<String> getValidOperationNames(String deviceType) throws DeviceMgtTaskException;
 
     /**
      * This method will check wheather give operation is added by the task.
@@ -74,6 +76,6 @@ public interface DeviceTaskManager {
      * @return - true or false
      * @throws DeviceMgtTaskException
      */
-    boolean isTaskOperation(String opName);
+    boolean isTaskOperation(String opName, List<DeviceIdentifier> deviceIds);
 
 }

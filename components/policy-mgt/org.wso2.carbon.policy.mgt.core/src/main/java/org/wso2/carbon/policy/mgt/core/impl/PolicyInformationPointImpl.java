@@ -128,6 +128,12 @@ public class PolicyInformationPointImpl implements PolicyInformationPoint {
         }
         if (pipDevice.getDeviceGroups() != null && !pipDevice.getDeviceGroups().isEmpty()) {
 
+            Map<Integer, DeviceGroup> groupMap = new HashMap<>();
+            List<DeviceGroup> groups = pipDevice.getDeviceGroups();
+            for(DeviceGroup gr: groups){
+                groupMap.put(gr.getGroupId(), gr);
+            }
+            policies = policyFilter.filterDeviceGroupsPolicies(groupMap, policies);
         }
 
         if (log.isDebugEnabled()) {

@@ -201,7 +201,7 @@ stepForwardFrom["policy-criteria"] = function () {
         }
     });
     policy["selectedGroups"] = $("#groups-input").val();
-    if (policy["selectedGroup"] && (policy["selectedGroups"].length > 1 || policy["selectedGroups"][0] !== "NONE")) {
+    if (policy["selectedGroups"] && (policy["selectedGroups"].length > 1 || policy["selectedGroups"][0] !== "NONE")) {
         policy["selectedGroups"] = createDeviceGroupWrapper(policy["selectedGroups"]);
     }
 

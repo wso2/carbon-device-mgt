@@ -141,7 +141,7 @@ function loadDevices(searchType, searchParam){
             compileTemplate(viewModel, deviceListingSrc);
         }
     } else {
-        $('#device-grid').addClass('hidden');
+        $('#device-type-grid').addClass('hidden');
         $('#device-listing-status-msg').html(
             '<div class="col-centered text-center"><h3 class="text-muted"><i class="fw fw-mobile fw-3x"></i>' +
             '</h3><h3 class="text-muted">No device type is available to be displayed.</h3>' +
@@ -167,7 +167,7 @@ function compileTemplate(viewModel, templateSrc){
         $("#ast-container").html($("#ast-container").html() + template(viewModel));
         compiledDeviceTypesCount++;
         if(deviceTypeCount == compiledDeviceTypesCount){
-            $('#device-grid').datatables_extended({"bFilter": true, "order": [[ 1, "asc" ]]});
+            $('#device-type-grid').datatables_extended({"bFilter": false, "order": [[ 1, "asc" ]]});
         }
     });
 }
@@ -194,7 +194,7 @@ function openCollapsedNav(){
  */
 $(document).ready(function () {
     loadDevices();
-    //$('#device-grid').datatables_extended();
+    //$('#device-type-grid').datatables_extended();
 
     /* Adding selected class for selected devices */
     $(deviceCheckbox).each(function () {

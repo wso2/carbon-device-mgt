@@ -79,18 +79,21 @@
                 {{else}}
                     <div id="ast-container" class="ast-container list-view">
                         <div class="ctrl-info-panel col-centered text-center wr-login">
-                            <h2>You don't have any group registered at the moment.</h2>
-                            <br />
+                            <h3 class="text-muted">
+                                <i class="fw fw-grouping fw-3x"></i>
+                            </h3>
+                            <h3 class="text-muted">You don't have any group registered at the moment</h3>
                             {{#if permissions.ADD_GROUP}}
-                                <p class="text-center">
-                                    <a href="{{@app.context}}/group/add" class="wr-btn">
+                                <h3>
+                                    <!--suppress HtmlUnknownTarget -->
+                                    <a href="{{@app.context}}/group/add" class="btn-operations btn-default">
                                         <span class="fw-stack">
                                             <i class="fw fw-ring fw-stack-2x"></i>
                                             <i class="fw fw-add fw-stack-1x"></i>
                                         </span>
                                         Add New Group
                                     </a>
-                                </p>
+                                </h3>
                             {{/if}}
                         </div>
                     </div>

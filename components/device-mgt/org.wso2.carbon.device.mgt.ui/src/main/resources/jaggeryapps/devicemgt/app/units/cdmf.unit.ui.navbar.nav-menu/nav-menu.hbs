@@ -22,14 +22,6 @@
 {{/zone}}
 
 {{#zone "navMenu-items"}}
-    {{#if permissions.VIEW_DASHBOARD}}
-        <li>
-            <a href="{{@app.context}}">
-                <i class="fw fw-dashboard"></i>
-                Admin Dashboard
-            </a>
-        </li>
-    {{/if}}
     {{#if permissions.LIST_OWN_DEVICES}}
         <li>
             <a href="{{@app.context}}/devices">

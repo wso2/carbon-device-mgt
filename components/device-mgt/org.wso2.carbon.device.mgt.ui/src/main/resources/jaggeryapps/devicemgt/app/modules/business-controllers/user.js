@@ -525,7 +525,7 @@ var userModule = function () {
         if (publicMethods.isAuthorized("/permission/admin/device-mgt/user/policies/list")) {
             permissions["LIST_POLICIES"] = true;
         }
-        if (publicMethods.isAuthorized("/permission/admin/device-mgt/devices/add")) {
+        if (publicMethods.isAuthorized("/permission/admin/device-mgt/devices/enroll")) {
             permissions["ADD_DEVICE"] = true;
         }
         if (publicMethods.isAuthorized("/permission/admin/device-mgt/groups/add")) {

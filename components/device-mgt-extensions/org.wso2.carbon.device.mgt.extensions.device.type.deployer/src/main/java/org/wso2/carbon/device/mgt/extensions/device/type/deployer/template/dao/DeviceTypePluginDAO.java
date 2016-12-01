@@ -69,7 +69,7 @@ public class DeviceTypePluginDAO {
                 device = new Device();
                 if (log.isDebugEnabled()) {
                     log.debug(deviceId + " data has been fetched from " + deviceDAODefinition.getDeviceTableName() +
-                                      " database.");
+                            " database.");
                 }
                 List<Device.Property> properties = new ArrayList<>();
                 for (String columnName : deviceDAODefinition.getColumnNames()) {
@@ -112,7 +112,7 @@ public class DeviceTypePluginDAO {
                 status = true;
                 if (log.isDebugEnabled()) {
                     log.debug("device " + device.getDeviceIdentifier() + " data has been" +
-                                      " added to the " + deviceDAODefinition.getDeviceTableName() + " database.");
+                            " added to the " + deviceDAODefinition.getDeviceTableName() + " database.");
                 }
             }
         } catch (SQLException e) {
@@ -170,7 +170,7 @@ public class DeviceTypePluginDAO {
                 status = true;
                 if (log.isDebugEnabled()) {
                     log.debug("device " + deviceId + " data has deleted from the " +
-                                      deviceDAODefinition.getDeviceTableName() + " table.");
+                            deviceDAODefinition.getDeviceTableName() + " table.");
                 }
             }
         } catch (SQLException e) {
@@ -241,7 +241,7 @@ public class DeviceTypePluginDAO {
 
     private String getPropertString(List<Device.Property> properties, String propertyName) {
         for (Device.Property property : properties) {
-            if (property.getName().equals(propertyName)) {
+            if (property.getName() != null && property.getName().equals(propertyName)) {
                 return property.getValue();
             }
         }
@@ -257,7 +257,7 @@ public class DeviceTypePluginDAO {
                 + getPreparedInputString(deviceDAODefinition.getColumnNames().size() + 1) + ")";
 
         updateDBQueryForUpdateDevice = "UPDATE " + deviceDAODefinition.getDeviceTableName() + " SET "
-                + getDeviceTableColumnNamesForUpdateQuery()+ " WHERE " + deviceDAODefinition.getPrimaryKey()
+                + getDeviceTableColumnNamesForUpdateQuery() + " WHERE " + deviceDAODefinition.getPrimaryKey()
                 + " = ?";
 
         deleteDBQueryToRemoveDevicd = "DELETE FROM " + deviceDAODefinition.getDeviceTableName()

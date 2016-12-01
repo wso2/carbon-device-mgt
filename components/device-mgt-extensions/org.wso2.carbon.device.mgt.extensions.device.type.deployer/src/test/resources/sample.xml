@@ -63,6 +63,10 @@
         <SharedWithAllTenants>false</SharedWithAllTenants>
     </ProvisioningConfig>
 
+    <DeviceAuthorizationConfig>
+        <authorizationRequired>true</authorizationRequired>
+    </DeviceAuthorizationConfig>
+
     <PushNotificationProvider type="MQTT">
         <FileBasedProperties>true</FileBasedProperties>
         <!--if file based properties is set to false then the configuration will be picked from platform configuration-->

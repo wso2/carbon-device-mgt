@@ -27,9 +27,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * <p>Java class for DeviceTypeConfiguration complex type.
- * 
+ * <p/>
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ * <p/>
  * <pre>
  * &lt;complexType name="DeviceTypeConfiguration">
  *   &lt;complexContent>
@@ -41,14 +41,13 @@ import javax.xml.bind.annotation.XmlRootElement;
  *         &lt;element name="PushNotificationProvider" type="{}PushNotificationProvider"/>
  *         &lt;element name="License" type="{}License"/>
  *         &lt;element name="DataSource" type="{}DataSource"/>
+ *         &lt;element name="DeviceAuthorizationConfig" type="{}DeviceAuthorizationConfig"/>
  *       &lt;/sequence>
  *       &lt;attribute name="name" type="{http://www.w3.org/2001/XMLSchema}string" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "DeviceTypeConfiguration")
@@ -68,6 +67,8 @@ public class DeviceTypeConfiguration {
     protected DataSource dataSource;
     @XmlElement(name = "TaskConfiguration", required = true)
     private TaskConfiguration taskConfiguration;
+    @XmlElement(name = "DeviceAuthorizationConfig", required = true)
+    protected DeviceAuthorizationConfig deviceAuthorizationConfig;
     @XmlAttribute(name = "name")
     protected String name;
 
@@ -97,11 +98,9 @@ public class DeviceTypeConfiguration {
 
     /**
      * Gets the value of the deviceDetails property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link DeviceDetails }
-     *     
+     *
+     * @return possible object is
+     * {@link DeviceDetails }
      */
     public DeviceDetails getDeviceDetails() {
         return deviceDetails;
@@ -109,11 +108,9 @@ public class DeviceTypeConfiguration {
 
     /**
      * Sets the value of the deviceDetails property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link DeviceDetails }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link DeviceDetails }
      */
     public void setDeviceDetails(DeviceDetails value) {
         this.deviceDetails = value;
@@ -121,11 +118,9 @@ public class DeviceTypeConfiguration {
 
     /**
      * Gets the value of the features property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Features }
-     *     
+     *
+     * @return possible object is
+     * {@link Features }
      */
     public Features getFeatures() {
         return features;
@@ -133,11 +128,9 @@ public class DeviceTypeConfiguration {
 
     /**
      * Sets the value of the features property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Features }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link Features }
      */
     public void setFeatures(Features value) {
         this.features = value;
@@ -145,11 +138,9 @@ public class DeviceTypeConfiguration {
 
     /**
      * Gets the value of the provisioningConfig property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link ProvisioningConfig }
-     *     
+     *
+     * @return possible object is
+     * {@link ProvisioningConfig }
      */
     public ProvisioningConfig getProvisioningConfig() {
         return provisioningConfig;
@@ -157,11 +148,9 @@ public class DeviceTypeConfiguration {
 
     /**
      * Sets the value of the provisioningConfig property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link ProvisioningConfig }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link ProvisioningConfig }
      */
     public void setProvisioningConfig(ProvisioningConfig value) {
         this.provisioningConfig = value;
@@ -169,11 +158,9 @@ public class DeviceTypeConfiguration {
 
     /**
      * Gets the value of the pushNotificationProvider property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link PushNotificationProvider }
-     *     
+     *
+     * @return possible object is
+     * {@link PushNotificationProvider }
      */
     public PushNotificationProvider getPushNotificationProvider() {
         return pushNotificationProvider;
@@ -181,11 +168,9 @@ public class DeviceTypeConfiguration {
 
     /**
      * Sets the value of the pushNotificationProvider property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link PushNotificationProvider }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link PushNotificationProvider }
      */
     public void setPushNotificationProvider(PushNotificationProvider value) {
         this.pushNotificationProvider = value;
@@ -193,11 +178,9 @@ public class DeviceTypeConfiguration {
 
     /**
      * Gets the value of the license property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link License }
-     *     
+     *
+     * @return possible object is
+     * {@link License }
      */
     public License getLicense() {
         return license;
@@ -205,11 +188,9 @@ public class DeviceTypeConfiguration {
 
     /**
      * Sets the value of the license property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link License }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link License }
      */
     public void setLicense(License value) {
         this.license = value;
@@ -217,11 +198,9 @@ public class DeviceTypeConfiguration {
 
     /**
      * Gets the value of the dataSource property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link DataSource }
-     *     
+     *
+     * @return possible object is
+     * {@link DataSource }
      */
     public DataSource getDataSource() {
         return dataSource;
@@ -229,11 +208,9 @@ public class DeviceTypeConfiguration {
 
     /**
      * Sets the value of the dataSource property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link DataSource }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link DataSource }
      */
     public void setDataSource(DataSource value) {
         this.dataSource = value;
@@ -241,11 +218,9 @@ public class DeviceTypeConfiguration {
 
     /**
      * Gets the value of the name property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getName() {
         return name;
@@ -253,14 +228,32 @@ public class DeviceTypeConfiguration {
 
     /**
      * Sets the value of the name property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setName(String value) {
         this.name = value;
+    }
+
+    /**
+     * Gets the value of the authorizationRequired property.
+     *
+     * @return possible object is
+     * {@link DeviceAuthorizationConfig }
+     */
+    public DeviceAuthorizationConfig getDeviceAuthorizationConfig() {
+        return deviceAuthorizationConfig;
+    }
+
+    /**
+     * Sets the value of the provisioningConfig property.
+     *
+     * @param value allowed object is
+     *              {@link DeviceAuthorizationConfig }
+     */
+    public void setDeviceAuthorizationConfig(DeviceAuthorizationConfig value) {
+        this.deviceAuthorizationConfig = value;
     }
 
 }

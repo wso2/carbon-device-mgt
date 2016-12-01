@@ -30,6 +30,13 @@
             </a>
         </li>
     {{/if}}
+    {{#if permissions.VIEW_DASHBOARD}}
+        <li>
+            <a href="/portal/t/{{currentUser.domain}}/dashboards/device-statistics-dashboard/">
+                <i class="fw fw-bar-chart"></i>Device Statistics
+            </a>
+        </li>
+    {{/if}}
     {{#if permissions.LIST_GROUPS}}
         <li>
             <a href="{{@app.context}}/groups">

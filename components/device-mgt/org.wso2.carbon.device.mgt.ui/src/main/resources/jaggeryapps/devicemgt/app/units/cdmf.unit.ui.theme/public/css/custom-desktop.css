@@ -6512,6 +6512,12 @@ select > option:hover {
   content: "*";
 }
 
+.device-type-img.fw {
+    font-size: 250px;
+    color: white;
+    background: #11375b;
+    padding: 35px;
+}
 .table.list-table:not(.grid-view){
   margin: 0px !important;
 }

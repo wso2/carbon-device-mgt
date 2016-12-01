@@ -201,12 +201,11 @@ stepForwardFrom["policy-criteria"] = function () {
         }
     });
     policy["selectedGroups"] = $("#groups-input").val();
-    if (policy["selectedGroups"].length > 1 || policy["selectedGroups"][0] !== "NONE") {
+    if (policy["selectedGroup"] && (policy["selectedGroups"].length > 1 || policy["selectedGroups"][0] !== "NONE")) {
         policy["selectedGroups"] = createDeviceGroupWrapper(policy["selectedGroups"]);
     }
 
     policy["selectedNonCompliantAction"] = $("#action-input").find(":selected").data("action");
-    policy["selectedOwnership"] = $("#ownership-input").val();
     //updating next-page wizard title with selected platform
     $("#policy-naming-page-wizard-title").text("ADD " + policy["platform"] + " POLICY");
 };
@@ -373,7 +372,7 @@ var savePolicy = function (policy, isActive, serviceURL) {
         "policyName": policy["policyName"],
         "description": policy["description"],
         "compliance": policy["selectedNonCompliantAction"],
-        "ownershipType": policy["selectedOwnership"],
+        "ownershipType": null,
         "active": isActive,
         "profile": {
             "profileName": policy["policyName"],

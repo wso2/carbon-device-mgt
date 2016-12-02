@@ -89,7 +89,12 @@ public class PolicyEnforcementDelegatorImpl implements PolicyEnforcementDelegato
 
             Policy policy = policyManagerService.getPEP().getEffectivePolicy(identifier);
             policyAdministratorPoint = policyManagerService.getPAP();
-            policyAdministratorPoint.setPolicyUsed(identifier, policy);
+            if (policy != null) {
+                policyAdministratorPoint.setPolicyUsed(identifier, policy);
+            } else {
+                policyAdministratorPoint.removePolicyUsed(identifier);
+                return null;
+            }
             return policy;
             //return PolicyManagementDataHolder.getInstance().getPolicyEvaluationPoint().getEffectivePolicy(identifier);
         } catch (PolicyEvaluationException e) {

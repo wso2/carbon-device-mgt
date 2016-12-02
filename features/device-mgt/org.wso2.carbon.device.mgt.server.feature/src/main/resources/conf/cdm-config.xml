@@ -43,7 +43,9 @@
         <MaxRetries>5</MaxRetries>
         <MinRetriesToMarkUnreachable>8</MinRetriesToMarkUnreachable>
         <MinRetriesToMarkInactive>20</MinRetriesToMarkInactive>
-        <!--<PolicyEvaluationPoint>Simple</PolicyEvaluationPoint>-->
+        <!--Set the policy evaluation point name-->
+        <!--Simple ->  Simple policy evaluation point-->
+        <!--Merged ->  Merged policy evaluation point -->
         <PolicyEvaluationPoint>Merged</PolicyEvaluationPoint>
         <Platforms>
             <Platform>android</Platform>

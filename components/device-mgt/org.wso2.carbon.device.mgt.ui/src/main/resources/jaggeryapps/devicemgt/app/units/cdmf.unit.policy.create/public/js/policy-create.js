@@ -125,6 +125,11 @@ $("#policy-name-input").focus(function(){
     validateInline["policy-name"]();
 });
 
+/**
+ * Forward action of device type selection step. Loads relevant policy profile configurations.
+ *
+ * @param actionButton
+ */
 stepForwardFrom["policy-platform"] = function (actionButton) {
     $("#device-type-policy-operations").html("").addClass("hidden");
     $("#generic-policy-operations").addClass("hidden");
@@ -175,17 +180,26 @@ stepForwardFrom["policy-platform"] = function (actionButton) {
     });
 };
 
+/**
+ * Forward action of policy profile page. Generates policy profile payload.
+ */
 stepForwardFrom["policy-profile"] = function () {
     policy["profile"] = operationModule.generateProfile(policy["platform"], configuredOperations);
     // updating next-page wizard title with selected platform
     $("#policy-criteria-page-wizard-title").text("ADD " + policy["platform"] + " POLICY");
 };
 
+/**
+ * Backward action of policy profile page. Moves back to platform selection step.
+ */
 stepBackFrom["policy-profile"] = function () {
     // reinitialize configuredOperations
     configuredOperations = [];
 };
 
+/**
+ * Forward action of policy criteria page.
+ */
 stepForwardFrom["policy-criteria"] = function () {
     $("input[type='radio'].select-users-radio").each(function () {
         if ($(this).is(':radio')) {
@@ -223,6 +237,11 @@ var inputIsValidAgainstLength = function (input, minLength, maxLength) {
     return (length == minLength || (length > minLength && length < maxLength) || length == maxLength);
 };
 
+/**
+ * Validates policy criteria inputs.
+ *
+ * @returns {boolean} whether the validation is successful.
+ */
 validateStep["policy-criteria"] = function () {
     var validationStatus = {};
     var selectedAssignees;
@@ -261,6 +280,11 @@ validateStep["policy-criteria"] = function () {
     return wizardIsToBeContinued;
 };
 
+/**
+ * Validating policy naming.
+ *
+ * @returns {boolean} whether the validation is successful.
+ */
 validateStep["policy-naming"] = function () {
     var validationStatus = {};
 
@@ -390,7 +414,7 @@ var savePolicy = function (policy, isActive, serviceURL) {
         payload["roles"] = [];
     }
 
-    if(policy["selectedGroups"]) {
+    if(policy["selectedGroups"] && policy["selectedGroups"][0] !== "NONE") {
         payload["deviceGroups"] = policy["selectedGroups"];
     }
 

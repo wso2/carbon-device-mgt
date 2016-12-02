@@ -65,7 +65,7 @@ var disableInlineError = function (inputField, errorMsg, errorSign) {
 
 /**
  * Load all device groups.
- * 
+ *
  * @param callback  function to call on loading completion.
  */
 function loadGroups(callback) {
@@ -79,7 +79,7 @@ function loadGroups(callback) {
 
 /**
  * Creates DeviceGroupWrapper object from selected groups.
- * 
+ *
  * @param selectedGroups
  * @returns {Array} DeviceGroupWrapper list.
  */
@@ -200,7 +200,7 @@ skipStep["policy-platform"] = function (policyPayloadObj) {
                         script.type = 'text/javascript';
                         script.src = policyOperationsScriptSrc;
                         $(".wr-advance-operations").prepend(script);
-                        var configuredOperations = operationModule.populateProfile(policy["platform"], 
+                        var configuredOperations = operationModule.populateProfile(policy["platform"],
                             policyPayloadObj["profile"]["profileFeaturesList"]);
                         polulateProfileOperations(configuredOperations);
                     }
@@ -223,12 +223,18 @@ skipStep["policy-platform"] = function (policyPayloadObj) {
     });
 };
 
+/**
+ * Forward action of policy profile page. Generates policy profile payload.
+ */
 stepForwardFrom["policy-profile"] = function () {
     policy["profile"] = operationModule.generateProfile(policy["platform"], configuredOperations);
     // updating next-page wizard title with selected platform
     $("#policy-criteria-page-wizard-title").text("EDIT " + policy["platform"] + " POLICY - " + policy["name"]);
 };
 
+/**
+ * Forward action of policy criteria page.
+ */
 stepForwardFrom["policy-criteria"] = function () {
     $("input[type='radio'].select-users-radio").each(function () {
         if ($(this).is(':radio')) {
@@ -267,6 +273,11 @@ var inputIsValidAgainstLength = function (input, minLength, maxLength) {
     return (length == minLength || (length > minLength && length < maxLength) || length == maxLength);
 };
 
+/**
+ * Validates policy criteria inputs.
+ *
+ * @returns {boolean} whether the validation is successful.
+ */
 validateStep["policy-criteria"] = function () {
     var validationStatus = {};
     var selectedAssignees;
@@ -305,6 +316,11 @@ validateStep["policy-criteria"] = function () {
     return wizardIsToBeContinued;
 };
 
+/**
+ * Validating policy naming.
+ *
+ * @returns {boolean} whether the validation is successful.
+ */
 validateStep["policy-naming"] = function () {
     var validationStatus = {};
 
@@ -444,7 +460,7 @@ var updatePolicy = function (policy, state) {
         payload["roles"] = [];
     }
 
-    if (policy["selectedGroups"]) {
+    if (policy["selectedGroups"] && policy["selectedGroups"][0] !== "NONE") {
         payload["deviceGroups"] = policy["selectedGroups"];
     }
 

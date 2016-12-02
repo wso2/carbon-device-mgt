@@ -20,7 +20,5 @@ function onRequest(context) {
     var utility = require("/app/modules/utility.js")["utility"];
     var deviceType = context.uriParams.deviceType;
     var deviceId = context.uriParams.deviceId;
-    new Log().info("Device Type : "+deviceType);
-    new Log().info("Device ID : "+deviceId);
     return {"deviceTypePolicyView": utility.getTenantedDeviceUnitName(deviceType, deviceId,"policy-view")};
 }

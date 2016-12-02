@@ -78,13 +78,23 @@ public class MergedEvaluationPoint implements PolicyEvaluationPoint {
             profile.setUpdatedDate(currentTimestamp);
             profile.setDeviceType(deviceIdentifier.getType());
             profile.setTenantId(PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId());
+            // Set effective policy name
             policy.setPolicyName(effectivePolicyName);
             policy.setOwnershipType(pipDevice.getOwnershipType());
+            // Set effective policy Active and Updated
             policy.setActive(true);
             policy.setUpdated(true);
             policy.setTenantId(PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId());
-            policy.setDescription("This is a system generated effective policy by merging relevant policies.");
+            String policyIds = "";
+            Collections.sort(policyList);
+            for (Policy appliedPolicy : policyList) {
+                policyIds += appliedPolicy.getId() + ", ";
+            }
+            policyIds = policyIds.substring(0, policyIds.length() - 2);
+            policy.setDescription("This is a system generated effective policy by merging Policy Id : " + policyIds);
+            // Need to set compliance of the effective policy. Get compliance of first policy using priority order
             policy.setCompliance(policyList.get(0).getCompliance());
+            // Change default 0 effective policy id to (-1)
             policy.setId(-1);
             return policy;
         } catch (PolicyManagementException e) {

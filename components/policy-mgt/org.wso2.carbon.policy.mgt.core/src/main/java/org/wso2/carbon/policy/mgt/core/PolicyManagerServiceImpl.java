@@ -98,6 +98,7 @@ public class PolicyManagerServiceImpl implements PolicyManagerService {
                 policy = policyEvaluationPoint.
                         getEffectivePolicy(deviceIdentifier);
                 if (policy == null) {
+                    policyAdministratorPoint.removePolicyUsed(deviceIdentifier);
                     return null;
                 }
                 this.getPAP().setPolicyUsed(deviceIdentifier, policy);

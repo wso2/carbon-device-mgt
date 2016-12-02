@@ -50,20 +50,20 @@ public class PolicyEvaluationServiceComponent {
 
     protected void activate(ComponentContext componentContext) {
         if (log.isDebugEnabled()) {
-            log.debug("Activating the simple policy evaluation bundle.");
+            log.debug("Activating the policy evaluation bundle.");
         }
 
         try {
             componentContext.getBundleContext().registerService(PolicyEvaluationPoint.class.getName(),
                     new PolicyEvaluationServiceImpl(), null);
         } catch (Throwable t) {
-            log.error("Error occurred while initializing the simple policy evaluation bundle");
+            log.error("Error occurred while initializing the policy evaluation bundle");
         }
     }
 
     protected void deactivate(ComponentContext componentContext) {
         if (log.isDebugEnabled()) {
-            log.debug("De-activating the simple policy evaluation bundle.");
+            log.debug("De-activating the policy evaluation bundle.");
         }
     }
 

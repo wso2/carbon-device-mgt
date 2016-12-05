@@ -65,7 +65,8 @@ public class ApiApplicationRegistrationServiceImpl implements ApiApplicationRegi
             APIManagementProviderService apiManagementProviderService = APIUtil.getAPIManagementProviderService();
             ApiApplicationKey apiApplicationKey = apiManagementProviderService.generateAndRetrieveApplicationKeys(
                     applicationName, APIUtil.getAllowedApisTags().toArray(new String[APIUtil.getAllowedApisTags().size()]),
-                    ApiApplicationConstants.DEFAULT_TOKEN_TYPE, username, false);
+                    ApiApplicationConstants.DEFAULT_TOKEN_TYPE, username, false,
+                    ApiApplicationConstants.DEFAULT_VALIDITY_PERIOD);
             return Response.status(Response.Status.CREATED).entity(apiApplicationKey.toString()).build();
         } catch (APIManagerException e) {
             String msg = "Error occurred while registering an application '" + applicationName + "'";
@@ -97,6 +98,12 @@ public class ApiApplicationRegistrationServiceImpl implements ApiApplicationRegi
             }
             String username = APIUtil.getAuthenticatedUser() + "@" + APIUtil.getTenantDomainOftheUser();
             APIManagementProviderService apiManagementProviderService = APIUtil.getAPIManagementProviderService();
+            String validityPeriod;
+            if (registrationProfile.getValidityPeriod() == null) {
+                validityPeriod  =  ApiApplicationConstants.DEFAULT_VALIDITY_PERIOD;
+            } else {
+                validityPeriod = registrationProfile.getValidityPeriod();
+            }
             if (registrationProfile.isMappingAnExistingOAuthApp()) {
                 JSONObject jsonStringObject = new JSONObject();
                 jsonStringObject.put(ApiApplicationConstants.JSONSTRING_USERNAME_TAG, username);
@@ -105,13 +112,7 @@ public class ApiApplicationRegistrationServiceImpl implements ApiApplicationRegi
                 jsonStringObject.put(ApiApplicationConstants.OAUTH_CLIENT_ID, registrationProfile.getConsumerKey());
                 jsonStringObject.put(ApiApplicationConstants.OAUTH_CLIENT_SECRET,
                                      registrationProfile.getConsumerSecret());
-                if (registrationProfile.getValidityPeriod() == 0) {
-                    jsonStringObject.put(ApiApplicationConstants.JSONSTRING_VALIDITY_PERIOD_TAG,
-                            ApiApplicationConstants.DEFAULT_VALIDITY_PERIOD);
-                } else {
-                    jsonStringObject.put(ApiApplicationConstants.JSONSTRING_VALIDITY_PERIOD_TAG,
-                            registrationProfile.getValidityPeriod());
-                }
+                jsonStringObject.put(ApiApplicationConstants.JSONSTRING_VALIDITY_PERIOD_TAG, validityPeriod);
                 apiManagementProviderService.registerExistingOAuthApplicationToAPIApplication(
                         jsonStringObject.toJSONString(), registrationProfile.getApplicationName(),
                         registrationProfile.getConsumerKey(), username, registrationProfile.isAllowedToAllDomains(),
@@ -120,7 +121,8 @@ public class ApiApplicationRegistrationServiceImpl implements ApiApplicationRegi
             } else {
                 ApiApplicationKey apiApplicationKey = apiManagementProviderService.generateAndRetrieveApplicationKeys(
                         registrationProfile.getApplicationName(), registrationProfile.getTags(),
-                        ApiApplicationConstants.DEFAULT_TOKEN_TYPE, username, false);
+                        ApiApplicationConstants.DEFAULT_TOKEN_TYPE, username,
+                        registrationProfile.isAllowedToAllDomains(), validityPeriod);
                 return Response.status(Response.Status.CREATED).entity(apiApplicationKey.toString()).build();
             }
         } catch (APIManagerException e) {

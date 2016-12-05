@@ -38,6 +38,7 @@ public class ConfigurationBasedFeatureManager implements FeatureManager {
     private List<Feature> features = new ArrayList<>();
     private static final String METHOD = "method";
     private static final String URI = "uri";
+    private static final String CONTENT_TYPE = "contentType";
     private static final String PATH_PARAMS = "pathParams";
     private static final String QUERY_PARAMS = "queryParams";
     private static final String FORM_PARAMS = "formParams";
@@ -55,6 +56,7 @@ public class ConfigurationBasedFeatureManager implements FeatureManager {
                 Map<String, Object> apiParams = new HashMap<>();
                 apiParams.put(METHOD, operation.getMethod().toUpperCase());
                 apiParams.put(URI, operation.getContext());
+                apiParams.put(CONTENT_TYPE, operation.getType());
                 List<String> pathParams = new ArrayList<>();
                 List<String> queryParams = new ArrayList<>();
                 List<String> formParams = new ArrayList<>();

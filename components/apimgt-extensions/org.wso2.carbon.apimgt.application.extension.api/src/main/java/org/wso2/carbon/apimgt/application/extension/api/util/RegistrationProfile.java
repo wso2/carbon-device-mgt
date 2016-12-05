@@ -42,7 +42,7 @@ public class RegistrationProfile {
     private String consumerKey;
     private String consumerSecret;
     @XmlElement(required = false)
-    private int validityPeriod;
+    private String validityPeriod;
 
     public String getApplicationName() {
         return applicationName;
@@ -92,11 +92,11 @@ public class RegistrationProfile {
         this.consumerSecret = consumerSecret;
     }
 
-    public int getValidityPeriod() {
+    public String getValidityPeriod() {
         return validityPeriod;
     }
 
-    public void setValidityPeriod(int validityPeriod) {
+    public void setValidityPeriod(String validityPeriod) {
         this.validityPeriod = validityPeriod;
     }
 }

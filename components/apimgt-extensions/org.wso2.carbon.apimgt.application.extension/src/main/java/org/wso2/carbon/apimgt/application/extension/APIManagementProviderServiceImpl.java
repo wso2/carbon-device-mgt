@@ -133,7 +133,7 @@ public class APIManagementProviderServiceImpl implements APIManagementProviderSe
     @Override
     public ApiApplicationKey generateAndRetrieveApplicationKeys(String apiApplicationName, String tags[],
                                                                 String keyType, String username,
-                                                                boolean isAllowedAllDomains)
+                                                                boolean isAllowedAllDomains, String validityTime)
             throws APIManagerException {
         try {
             APIManagerUtil.loadTenantRegistry();
@@ -172,7 +172,6 @@ public class APIManagementProviderServiceImpl implements APIManagementProviderSe
             } else {
                 allowedDomains[0] = APIManagerUtil.getTenantDomain();
             }
-            String validityTime = "3600";
             String ownerJsonString = "{\"username\":\"" + username + "\"}";
             Map<String, Object> keyDetails = apiConsumer.requestApprovalForApplicationRegistration(username,
                                                                                                    apiApplicationName,

@@ -21,6 +21,7 @@ package org.wso2.carbon.device.mgt.jaxrs.beans;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
+import org.wso2.carbon.policy.mgt.common.DeviceGroupWrapper;
 
 import javax.validation.constraints.Size;
 import java.util.List;
@@ -74,6 +75,10 @@ public class PolicyWrapper {
     @ApiModelProperty(name = "users", value = "Lists out the users on whose devices the policy is enforced",
             required = true)
     private List<String> users;
+
+    @ApiModelProperty(name = "deviceGroups", value = "Lists out the groups on whose devices the policy is enforced",
+            required = true)
+    private List<DeviceGroupWrapper> deviceGroups;
 
     public Profile getProfile() {
         return profile;
@@ -145,6 +150,14 @@ public class PolicyWrapper {
 
     public void setUsers(List<String> users) {
         this.users = users;
+    }
+
+    public List<DeviceGroupWrapper> getDeviceGroups() {
+        return deviceGroups;
+    }
+
+    public void setDeviceGroups(List<DeviceGroupWrapper> deviceGroups) {
+        this.deviceGroups = deviceGroups;
     }
 
 }

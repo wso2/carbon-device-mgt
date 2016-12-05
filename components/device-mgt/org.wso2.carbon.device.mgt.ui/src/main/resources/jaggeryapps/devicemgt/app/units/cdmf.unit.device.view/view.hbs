@@ -59,141 +59,108 @@
                     </div>
                 </div>
 
-                {{#defineZone "device-detail-properties"}}
-                    <div class="media">
+                <div class="media tab-responsive">
+                    <div class="media-left col-xs-1 col-sm-1 col-md-2 col-lg-2 hidden-xs">
+                        <ul class="list-group nav nav-pills nav-stacked" role="tablist">
+                            {{#defineZone "device-view-tabs"}}
+                                {{#defineZone "device-details-tab"}}
+                                    <li role="presentation" class="list-group-item active">
+                                        <a href="#device_details_tab" role="tab" data-toggle="tab"
+                                           aria-controls="device_details_tab">
+                                            <i class="icon fw fw-mobile"></i><span class="hidden-sm">Device Details</span>
+                                        </a>
+                                    </li>
+                                {{/defineZone}}
+                                {{#defineZone "device-details-tab-injected"}}
+                                {{/defineZone}}
+                                {{#defineZone "device-details-tab-operations"}}
+                                    <li role="presentation" class="list-group-item">
+                                        <a href="#event_log_tab" role="tab" data-toggle="tab" aria-controls="event_log_tab">
+                                            <i class="icon fw fw-text"></i><span class="hidden-sm">Operations Log</span>
+                                        </a>
+                                    </li>
+                                {{/defineZone}}
+                            {{/defineZone}}
+                        </ul>
+                    </div>
+                    <div class="media-body add-padding-left-5x remove-padding-xs">
+                        <div class="panel-group tab-content remove-padding" id="tabs" role="tablist"
+                             data-status="{{device.isNotRemoved}}" aria-multiselectable="true">
+                            <div class="arrow-left hidden-xs"></div>
 
-                        <div class="media-left col-xs-12 col-sm-2 col-md-2 col-lg-2">
-                            <ul class="list-group" role="tablist">
-                                <li class="active"><a class="list-group-item"
-                                                      href="#device_details"
-                                                      role="tab" data-toggle="tab"
-                                                      aria-controls="device_details">Device
-                                                                                     Details</a>
-                                </li>
-                                <li><a class="list-group-item" href="#policies"
-                                       role="tab"
-                                       data-toggle="tab" aria-controls="policies">Policies</a>
-                                </li>
-                                <li><a class="list-group-item" href="#policy_compliance"
-                                       role="tab"
-                                       data-toggle="tab" aria-controls="policy_compliance">Policy
-                                                                                           Compliance</a>
-                                </li>
-                                <li><a class="list-group-item" href="#device_location"
-                                       role="tab"
-                                       data-toggle="tab" aria-controls="device_location">Device
-                                                                                         Location</a>
-                                </li>
-                                <li><a class="list-group-item" href="#event_log" role="tab"
-                                       data-toggle="tab" aria-controls="event_log">Operations
-                                                                                   Log</a></li>
-                            </ul>
-                        </div>
+                            {{#defineZone "device-view-tab-contents"}}
+                                {{#defineZone "device-details-tab-contents"}}
+                                    <div class="message message-info">
+                                        <h4 class="remove-margin">
+                                            <i class="icon fw fw-info"></i>
+                                            No Device details avaialbe yet.
+                                        </h4>
+                                    </div>
+                                {{/defineZone}}
 
-                        <div class="media-body add-padding-left-5x remove-padding-xs tab-content">
-                            <div class="panel-group tab-content">
+                                {{#defineZone "device-view-tab-injected-conents"}}
+                                {{/defineZone}}
 
-                                <div class="panel panel-default tab-pane active"
-                                     id="device_details" role="tabpanel"
-                                     aria-labelledby="device_details">
-                                    {{unit "cdmf.unit.device.details" device=device}}
-                                </div>
-                                <div class="panel panel-default tab-pane" id="policies" role="tabpanel"
-                                     aria-labelledby="policies">
-                                    <div class="panel-heading">Policies</div>
-                                    <div class="panel-body">
-                                        <div id="policy-spinner" class="wr-advance-operations-init hidden">
-                                            <br>
-
-                                            <i class="fw fw-settings fw-spin fw-2x"></i>
-
-                                            Loading Policies . . .
-                                            <br>
-                                            <br>
+                                {{#defineZone "device-view-tab-operations-log-conents"}}
+                                    <div class="panel panel-default visible-xs-block" role="tabpanel" id="event_log_tab">
+                                        <div class="panel-heading visible-xs collapsed" id="event_log">
+                                            <h4 class="panel-title">
+                                                <a role="button" data-toggle="collapse" data-parent="#tabs"
+                                                   href="#collapseFive" aria-expanded="true" aria-controls="collapseFive">
+                                                    <i class="fw fw-text fw-2x"></i>
+                                                    Operations Log
+                                                    <i class="caret-updown fw fw-down"></i>
+                                                </a>
+                                            </h4>
                                         </div>
-                                        <div id="policy-list-container">
+                                        <div class="panel-heading display-none-xs">
+                                            Operations Log
+                                        <span>
+                            <a href="javascript:void(0);" id="refresh-operations">
+                                <i class="fw fw-refresh"></i>
+                            </a>
+                        </span>
+                                        </div>
+                                        <div id="collapseFive" class="panel-collapse collapse in" role="tabpanel"
+                                             aria-labelledby="event_log">
                                             <div class="panel-body">
-                                                No policies found
+                                            <span class="visible-xs add-padding-2x text-right">
+                                                <a href="javascript:void(0);" id="refresh-operations">
+                                                    <i class="fw fw-refresh"></i>
+                                                </a>
+                                            </span>
+                                                <div id="operations-spinner" class="wr-advance-operations-init hidden">
+                                                    <i class="fw fw-settings fw-spin fw-2x"></i> Loading Operations Log...
+                                                </div>
+                                                <div id="operations-log-container">
+                                                    <div class="message message-info">
+                                                        <h4 class="remove-margin">
+                                                            <i class="icon fw fw-info"></i>
+                                                            There are no operations, performed yet on this device.
+                                                        </h4>
+                                                    </div>
+                                                </div>
+                                                <table class="table table-striped table-hover table-bordered display data-table"
+                                                       id="operations-log-table">
+                                                    <thead>
+                                                    <tr class="sort-row">
+                                                        <th>Operation Code</th>
+                                                        <th>Status</th>
+                                                        <th>Request created at</th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    </tbody>
+                                                </table>
                                             </div>
-                                            <br class="c-both" />
                                         </div>
                                     </div>
-                                    <a class="padding-left"
-                                       href="{{@app.context}}/policy/add/{{device.type}}?deviceId={{device.deviceIdentifier}}">
-                                        <span class="fw-stack">
-                                            <i class="fw fw-ring fw-stack-2x"></i>
-                                            <i class="fw fw-policy fw-stack-1x"></i>
-                                        </span> Add device specific policy</a>
-                                </div>
+                                {{/defineZone}}
+                            {{/defineZone}}
 
-                                <div class="panel panel-default tab-pane" id="policy_compliance"
-                                     role="tabpanel" aria-labelledby="policy_compliance">
-                                    <div class="panel-heading">Policy Compliance <span><a
-                                            href="#" id="refresh-policy"><i
-                                            class="fw fw-refresh"></i></a></span></div>
-                                    <div class="panel-body">
-                                        <div id="policy-spinner"
-                                             class="wr-advance-operations-init hidden">
-                                            <br>
-
-                                            <i class="fw fw-settings fw-spin fw-2x"></i>
-
-                                            Loading Policy Compliance . . .
-                                            <br>
-                                            <br>
-                                        </div>
-                                        <div id="policy-list-container">
-                                            <div class="panel-body">
-                                                Not available yet
-                                            </div>
-                                            <br class="c-both" />
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="panel panel-default tab-pane" id="device_location"
-                                     role="tabpanel" aria-labelledby="device_location">
-                                    <div class="panel-heading">Device Location</div>
-                                    <div class="panel-body">
-                                        <div id="device-location"
-                                             data-lat="{{device.viewModel.location.latitude}}"
-                                             data-long="{{device.viewModel.location.longitude}}"
-                                             style="height:450px" class="panel-body">
-                                        </div>
-                                        <div id="map-error" class="panel-body">
-                                            Not available yet
-                                        </div>
-                                        <br class="c-both" />
-                                    </div>
-                                </div>
-                                <div class="panel panel-default tab-pane" id="event_log"
-                                     role="tabpanel" aria-labelledby="event_log">
-                                    <div class="panel-heading">Operations Log <span><a href="#"
-                                                                                       id="refresh-operations"><i
-                                            class="fw fw-refresh"></i></a></span></div>
-                                    <div class="panel-body">
-                                        <div id="operations-spinner"
-                                             class="wr-advance-operations-init hidden">
-                                            <br>
-
-                                            <i class="fw fw-settings fw-spin fw-2x"></i>
-
-                                            Loading Operations Log . . .
-                                            <br>
-                                            <br>
-                                        </div>
-                                        <div id="operations-log-container">
-                                            <div class="panel-body">
-                                                Not available yet
-                                            </div>
-                                            <br class="c-both" />
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
                     </div>
-
-                {{/defineZone}}
+                </div>
             </div>
         {{else}}
             <h1 class="page-sub-title">
@@ -205,6 +172,7 @@
     {{else}}
         <h1 class="page-sub-title">
             Device not found
+        </h1>
         </h1>
         <br>
         You have tried to access either a removed or non-existing device.
@@ -219,9 +187,6 @@
             data-device-id="{{device.deviceIdentifier}}" data-device-type="{{device.type}}"
             type="text/x-handlebars-template"></script>
     <script id="applications-list" src="{{@unit.publicUri}}/templates/applications-list.hbs"
-            data-device-id="{{device.deviceIdentifier}}" data-device-type="{{device.type}}"
-            type="text/x-handlebars-template"></script>
-    <script id="operations-log" src="{{@unit.publicUri}}/templates/operations-log.hbs"
             data-device-id="{{device.deviceIdentifier}}" data-device-type="{{device.type}}"
             type="text/x-handlebars-template"></script>
 {{/zone}}

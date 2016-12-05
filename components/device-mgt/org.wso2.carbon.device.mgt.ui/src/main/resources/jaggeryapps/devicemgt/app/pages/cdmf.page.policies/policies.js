@@ -6,12 +6,12 @@
  * in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied. See the License for the
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
  */
@@ -37,27 +37,23 @@ function onRequest(context) {
         var policyCount = policyListToView.length;
         if (policyCount == 0) {
             page["policyListingStatusMsg"] = "No policy is available to be displayed.";
-            page["saveNewPrioritiesButtonEnabled"] = false;
             page["noPolicy"] = true;
-        } else if (policyCount == 1) {
-            page["saveNewPrioritiesButtonEnabled"] = false;
-            page["noPolicy"] = false;
-            page["isUpdated"] = response["updated"];
         } else {
-            page["saveNewPrioritiesButtonEnabled"] = true;
             page["noPolicy"] = false;
             page["isUpdated"] = response["updated"];
         }
     } else {
         // here, response["status"] == "error"
-        page["policyListToView"] = [];
-        page["policyListingStatusMsg"] = "An unexpected error occurred @ backend. Please try again later.";
-        page["saveNewPrioritiesButtonEnabled"] = false;
+        page["policyListingStatusMsg"] = "An unexpected error occurred. Please try again later.";
         page["noPolicy"] = true;
     }
 
-    if (userModule.isAuthorized("/permission/admin/device-mgt/policies/manage")) {
-        page.managePermitted = true;
+    if (userModule.isAuthorized("/permission/admin/device-mgt/policies/remove")) {
+        page["removePermitted"] = true;
     }
+    if (userModule.isAuthorized("/permission/admin/device-mgt/policies/update")) {
+        page["editPermitted"] = true;
+    }
+    page.permissions = userModule.getUIPermissions();
     return page;
 }

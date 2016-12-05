@@ -29,7 +29,9 @@ var carbonServer = new carbonModule.server.Server({
 application.put("carbonServer", carbonServer);
 
 var permissions = {
-    "/permission/admin/device-mgt/devices": ["ui.execute"],
+    "/permission/admin/device-mgt/devices/enroll": ["ui.execute"],
+    "/permission/admin/device-mgt/devices/disenroll": ["ui.execute"],
+    "/permission/admin/device-mgt/devices/owning-device": ["ui.execute"],
     "/permission/admin/device-mgt/groups": ["ui.execute"],
     "/permission/admin/device-mgt/notifications": ["ui.execute"],
     "/permission/admin/device-mgt/policies": ["ui.execute"],

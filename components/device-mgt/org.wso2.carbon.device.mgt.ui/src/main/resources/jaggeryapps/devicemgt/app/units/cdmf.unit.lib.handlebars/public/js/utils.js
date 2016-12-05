@@ -33,12 +33,26 @@
             callback(template);
         }
     };
+    
+    $.isResourceExists = function (location, callback) {
+        $.ajax({
+            url: location,
+            type: 'HEAD',
+            success: function () {
+                callback(true);
+            },
+            error: function () {
+                callback(false);
+            }
+        });
+    };
+    
     $.registerPartial = function (name, location, callback) {
-            $.get(location, function (data) {
-                Handlebars.registerPartial( name, data);
-                console.log("Partial " + name + " has been registered");
-                callback();
-            });
+        $.get(location, function (data) {
+            Handlebars.registerPartial(name, data);
+            console.log("Partial " + name + " has been registered");
+            callback();
+        });
     };
 })();
 

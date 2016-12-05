@@ -76,7 +76,7 @@ public class PolicyFilterImpl implements PolicyFilter {
                 continue;
             } else {
                 for (DeviceGroupWrapper deviceGroupWrapper : wrappers) {
-                    if (groupMap.containsKey(deviceGroupWrapper.getId()) && policyMap.containsKey(policy.getId())) {
+                    if (groupMap.containsKey(deviceGroupWrapper.getId()) && !policyMap.containsKey(policy.getId())) {
                         temp.add(policy);
                         policyMap.put(policy.getId(), policy);
                     }
@@ -140,6 +140,9 @@ public class PolicyFilterImpl implements PolicyFilter {
     @Override
     public List<Policy> filterOwnershipTypeBasedPolicies(String ownershipType, List<Policy> policies) {
 
+        if (ownershipType == null) {
+            return policies;
+        }
         if (log.isDebugEnabled()) {
             log.debug("No of policies went in to filterOwnershipTypeBasedPolicies : " + policies.size());
             log.debug("Ownership type : " + ownershipType);
@@ -150,7 +153,7 @@ public class PolicyFilterImpl implements PolicyFilter {
 
         List<Policy> temp = new ArrayList<Policy>();
         for (Policy policy : policies) {
-            if (ownershipType.equalsIgnoreCase(policy.getOwnershipType()) ||
+            if (policy.getOwnershipType() == null || ownershipType.equalsIgnoreCase(policy.getOwnershipType()) ||
                     PolicyManagementConstants.ANY.equalsIgnoreCase(policy.getOwnershipType())) {
                 temp.add(policy);
             }

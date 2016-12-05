@@ -23,6 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.DeviceManager;
 import org.wso2.carbon.device.mgt.common.ProvisioningConfig;
+import org.wso2.carbon.device.mgt.common.TaskOperation;
 import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManager;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.ConfigurationEntry;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.PlatformConfiguration;
@@ -31,7 +32,9 @@ import org.wso2.carbon.device.mgt.common.spi.DeviceManagementService;
 import org.wso2.carbon.device.mgt.extensions.device.type.deployer.config.DeviceTypeConfiguration;
 import org.wso2.carbon.device.mgt.extensions.device.type.deployer.config.Property;
 import org.wso2.carbon.device.mgt.extensions.device.type.deployer.config.PushNotificationProvider;
+import org.wso2.carbon.device.mgt.extensions.device.type.deployer.config.TaskConfiguration;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,6 +51,7 @@ public class DeviceTypeManagerService implements DeviceManagementService {
     private PushNotificationConfig pushNotificationConfig;
     private ProvisioningConfig provisioningConfig;
     private String type;
+    private List<TaskOperation> taskOperations;
 
     public DeviceTypeManagerService(DeviceTypeConfigIdentifier deviceTypeConfigIdentifier,
                                     DeviceTypeConfiguration deviceTypeConfiguration) {
@@ -55,11 +59,34 @@ public class DeviceTypeManagerService implements DeviceManagementService {
         this.deviceManager = new DeviceTypeManager(deviceTypeConfigIdentifier, deviceTypeConfiguration);
         this.setType(deviceTypeConfiguration.getName());
         this.populatePushNotificationConfig(deviceTypeConfiguration.getPushNotificationProvider());
+        this.setTask(deviceTypeConfiguration);
     }
 
     @Override
     public String getType() {
         return type;
+    }
+
+    @Override
+    public List<TaskOperation> getTasksForPlatform(){
+        return taskOperations;
+    }
+
+    private void setTask(DeviceTypeConfiguration deviceTypeConfiguration) {
+        //Read the config file and take the list of operations there in the config
+        TaskConfiguration taskConfiguration = deviceTypeConfiguration.getTaskConfiguration();
+        if (taskConfiguration != null) {
+            List<TaskConfiguration.Operation> ops = taskConfiguration.getOperations();
+            if (ops != null && !ops.isEmpty()) {
+                taskOperations = new ArrayList<>();
+                for (TaskConfiguration.Operation op : ops) {
+                    TaskOperation taskOperation = new TaskOperation();
+                    taskOperation.setTaskName(op.getOperationName());
+                    taskOperation.setRecurrentTimes(op.getRecurrency());
+                    taskOperations.add(taskOperation);
+                }
+            }
+        }
     }
 
     @Override

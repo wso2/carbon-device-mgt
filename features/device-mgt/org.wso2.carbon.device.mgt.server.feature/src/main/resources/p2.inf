@@ -4,3 +4,5 @@ org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../featur
 org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.wso2.carbon.device.mgt.server_${feature.version}/conf/remote-appmanager-config.xml,target:${installFolder}/../../conf/etc/remote-appmanager-config.xml,overwrite:true);\
 org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.wso2.carbon.device.mgt.server_${feature.version}/dbscripts/cdm,target:${installFolder}/../../../dbscripts/cdm,overwrite:true);\
 org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.wso2.carbon.device.mgt.server_${feature.version}/rxts/license.rxt,target:${installFolder}/../../../repository/resources/rxts/license.rxt,overwrite:true);\
+org.eclipse.equinox.p2.touchpoint.natives.mkdir(path:${installFolder}/../../../repository/resources/email-templates);\
+org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.wso2.carbon.device.mgt.server_${feature.version}/email/templates,target:${installFolder}/../../../repository/resources/email-templates,overwrite:true);\

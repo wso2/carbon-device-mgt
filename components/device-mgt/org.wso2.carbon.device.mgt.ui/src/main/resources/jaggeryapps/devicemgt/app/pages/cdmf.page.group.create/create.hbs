@@ -36,9 +36,11 @@
             <div class="form-login-box">
                 <label class="wr-input-label">Group Name</label>
 
-                <div class="wr-input-control">
+                <div class="form-group wr-input-control">
                     <input type="text right" id="name" placeholder="Group Name" data-regex="{{groupNameJSRegEx}}"
-                           data-errormsg="{{groupNameRegExViolationErrorMsg}}">
+                           data-errormsg="{{groupNameRegExViolationErrorMsg}}" class="form-control">
+                    <span class="groupNameError hidden glyphicon glyphicon-remove form-control-feedback"></span>
+                    <label class="error groupNameEmpty hidden" for="summary"></label>
                 </div>
 
                 <label class="wr-input-label">Description</label>

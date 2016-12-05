@@ -21,8 +21,11 @@ package org.wso2.carbon.device.mgt.common.spi;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.DeviceManager;
 import org.wso2.carbon.device.mgt.common.ProvisioningConfig;
+import org.wso2.carbon.device.mgt.common.TaskOperation;
 import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManager;
 import org.wso2.carbon.device.mgt.common.push.notification.PushNotificationConfig;
+
+import java.util.List;
 
 /**
  * Composite interface that acts as the SPI exposing all device management as well as application management
@@ -33,6 +36,8 @@ public interface DeviceManagementService {
     void init() throws DeviceManagementException;
 
     String getType();
+
+    List<TaskOperation> getTasksForPlatform();//getTasksConfiguraitons
 
     DeviceManager getDeviceManager();
 

@@ -40,6 +40,7 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;/sequence>
  *       &lt;attribute name="context" type="{http://www.w3.org/2001/XMLSchema}string" />
  *       &lt;attribute name="method" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="type" type="{http://www.w3.org/2001/XMLSchema}string" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -62,6 +63,32 @@ public class Operation {
     protected String context;
     @XmlAttribute(name = "method")
     protected String method;
+    @XmlAttribute(name = "type")
+    protected String type;
+
+    /**
+     * Gets the value of the Content Type property.
+     *
+     * @return
+     *     possible object is
+     *     {@link String }
+     *
+     */
+    public String getType() {
+        return type;
+    }
+
+    /**
+     * Sets the value of the Content Type property.
+     *
+     * @param type
+     *     allowed object is
+     *     {@link String }
+     *
+     */
+    public void setType(String type) {
+        this.type = type;
+    }
 
     /**
      * Gets the value of the queryParameters property.

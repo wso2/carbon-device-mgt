@@ -265,7 +265,7 @@ function loadDevices(searchType, searchParam) {
         {
             targets: 1,
             data: 'name',
-            class: 'fade-edge',
+            class: '',
             render: function (name, type, row, meta) {
                 var model = getPropertyValue(row.properties, 'DEVICE_MODEL');
                 var vendor = getPropertyValue(row.properties, 'VENDOR');
@@ -279,12 +279,12 @@ function loadDevices(searchType, searchParam) {
         {
             targets: 2,
             data: 'user',
-            class: 'fade-edge remove-padding-top',
+            class: 'remove-padding-top',
         },
         {
             targets: 3,
             data: 'status',
-            class: 'fade-edge remove-padding-top',
+            class: 'remove-padding-top',
             render: function (status, type, row, meta) {
                 var html;
                 switch (status) {
@@ -307,7 +307,7 @@ function loadDevices(searchType, searchParam) {
         {
             targets: 4,
             data: 'deviceType',
-            class: 'fade-edge remove-padding-top',
+            class: 'remove-padding-top',
             render: function (status, type, row, meta) {
                 return getDeviceTypeLabel(row.deviceType);
             }
@@ -315,7 +315,7 @@ function loadDevices(searchType, searchParam) {
         {
             targets: 5,
             data: 'ownership',
-            class: 'fade-edge remove-padding-top',
+            class: 'remove-padding-top',
             render: function (status, type, row, meta) {
                 if (getDeviceTypeCategory(row.deviceType) == 'mobile') {
                     return row.ownership;

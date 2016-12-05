@@ -48,6 +48,7 @@ var operationModule = function () {
                    feature["operation"] = features[i].code;
                    feature["name"] = features[i].name;
                    feature["description"] = features[i].description;
+                   feature["contentType"] = features[i].contentType;
                    feature["deviceType"] = deviceType;
                    feature["params"] = [];
                    var metaData = features[i].metadataEntries;
@@ -80,6 +81,10 @@ var operationModule = function () {
                 } else if (iconPath) {
                     var iconPath = utility.getOperationIcon(deviceType, iconIdentifier);
                     operations[op]["icon"] = iconPath;
+                }
+                var formParams = features[iconIdentifier].formParams;
+                if (formParams) {
+                    operations[op]["uiParams"] = formParams;
                 }
             }
         }

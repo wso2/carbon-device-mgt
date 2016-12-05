@@ -41,7 +41,7 @@ public class PolicyEvaluationServiceImpl implements PolicyEvaluationPoint {
     }
 
     @Override
-    public List<ProfileFeature> getEffectiveFeatures(List<Policy> policyList, DeviceIdentifier deviceIdentifier)
+    public List<ProfileFeature> getEffectiveFeatures(DeviceIdentifier deviceIdentifier)
             throws PolicyEvaluationException {
 
         List<ProfileFeature> effectiveFeatures = evaluation.getEffectivePolicy(deviceIdentifier).

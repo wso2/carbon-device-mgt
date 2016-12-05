@@ -51,7 +51,7 @@ public interface PolicyManagerService {
 
     Policy getEffectivePolicy(DeviceIdentifier deviceIdentifier) throws PolicyManagementException;
 
-    List<ProfileFeature> getEffectiveFeatures(List<Policy> policyList,DeviceIdentifier deviceIdentifier) throws FeatureManagementException;
+    List<ProfileFeature> getEffectiveFeatures(DeviceIdentifier deviceIdentifier) throws FeatureManagementException;
 
     List<Policy> getPolicies(String deviceType) throws PolicyManagementException;
 

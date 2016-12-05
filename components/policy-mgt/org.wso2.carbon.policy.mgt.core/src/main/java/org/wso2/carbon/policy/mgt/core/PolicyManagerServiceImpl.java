@@ -135,12 +135,12 @@ public class PolicyManagerServiceImpl implements PolicyManagerService {
     }
 
     @Override
-    public List<ProfileFeature> getEffectiveFeatures(List<Policy> policyList,DeviceIdentifier deviceIdentifier) throws
+    public List<ProfileFeature> getEffectiveFeatures(DeviceIdentifier deviceIdentifier) throws
             FeatureManagementException {
         try {
             PolicyEvaluationPoint policyEvaluationPoint = PolicyManagementDataHolder.getInstance().getPolicyEvaluationPoint();
             if (policyEvaluationPoint != null) {
-                return policyEvaluationPoint.getEffectiveFeatures(policyList, deviceIdentifier);
+                return policyEvaluationPoint.getEffectiveFeatures(deviceIdentifier);
             } else {
                 throw new FeatureManagementException("Error occurred while getting the policy evaluation point " +
                         deviceIdentifier.getId() + " - " + deviceIdentifier.getType());

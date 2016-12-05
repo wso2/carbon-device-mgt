@@ -40,7 +40,7 @@ public class MergedEvaluationPoint implements PolicyEvaluationPoint {
     private static final String policyEvaluationPoint = "Merged";
 
     @Override
-    public List<ProfileFeature> getEffectiveFeatures(List<Policy> policyList, DeviceIdentifier deviceIdentifier)
+    public List<ProfileFeature> getEffectiveFeatures(DeviceIdentifier deviceIdentifier)
             throws PolicyEvaluationException {
         return this.getEffectivePolicy(deviceIdentifier).getProfile().getProfileFeaturesList();
     }

@@ -42,7 +42,7 @@ public class ResourceDirectoryClient extends CoapClient {
         if (this.isServerConnected()) {
 
             String endpoint = api.getContext().split("/")[1];
-            URI apiURI = URI.create(api.getUrl());
+            URI apiURI = URI.create("http://localhost:9763");
             String payload = "";
 
             //add uri templates

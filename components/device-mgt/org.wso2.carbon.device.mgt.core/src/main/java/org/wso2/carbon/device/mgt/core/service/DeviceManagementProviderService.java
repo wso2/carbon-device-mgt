@@ -27,6 +27,7 @@ import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementExcept
 import java.util.HashMap;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Proxy class for all Device Management related operations that take the corresponding plugin type in
@@ -274,5 +275,7 @@ public interface DeviceManagementProviderService {
     List<Activity> getActivitiesUpdatedAfter(long timestamp, int limit, int offset) throws OperationManagementException;
 
     int getActivityCountUpdatedAfter(long timestamp) throws OperationManagementException;
+
+    Map<String, List<TaskOperation>> getTaskList();
 
 }

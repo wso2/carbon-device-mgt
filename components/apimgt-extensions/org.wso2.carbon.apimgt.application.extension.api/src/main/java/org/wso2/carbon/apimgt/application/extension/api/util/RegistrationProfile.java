@@ -41,6 +41,8 @@ public class RegistrationProfile {
     private boolean isMappingAnExistingOAuthApp;
     private String consumerKey;
     private String consumerSecret;
+    @XmlElement(required = false)
+    private String validityPeriod;
 
     public String getApplicationName() {
         return applicationName;
@@ -88,5 +90,13 @@ public class RegistrationProfile {
 
     public void setConsumerSecret(String consumerSecret) {
         this.consumerSecret = consumerSecret;
+    }
+
+    public String getValidityPeriod() {
+        return validityPeriod;
+    }
+
+    public void setValidityPeriod(String validityPeriod) {
+        this.validityPeriod = validityPeriod;
     }
 }

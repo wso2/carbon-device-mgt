@@ -1,5 +1,7 @@
 {{#zone "content"}}
     {{#if isAuthorized }}
+        <span id="logged-in-user" class="hidden" data-username="{{user.username}}" data-domain="{{user.domain}}"
+              data-tenant-id="{{user.tenantId}}"></span>
         <div class="row">
             <div class="col-md-12">
 
@@ -35,10 +37,10 @@
                         <b>"View policy list"</b> to complete the process and go back to the policy list.
                         <hr>
                         <button class="wr-btn wizard-stepper" data-current="policy-message"
-                                data-direct="/emm/policies/">
+                                data-direct="{{@app.context}}/policies/">
                             View policy list
                         </button>
-                        <a href="/emm/policies/add-policy" class="cu-btn-inner">
+                        <a href="{{@app.context}}/policies/add" class="cu-btn-inner">
                         <span class="fw-stack">
                             <i class="fw fw-ring fw-stack-2x"></i>
                             <i class="fw fw-add fw-stack-1x"></i>
@@ -61,7 +63,7 @@
                                 <div id="policy-naming-main-error-msg" class="alert alert-danger hidden" role="alert">
                                     <i class="icon fw fw-error"></i><span></span>
                                 </div>
-                                <div>
+                                <div class="clearfix">
                                     <label class="wr-input-label">
                                         Set a name * to your policy<br>
                                         ( should be 1-to-30 characters long )
@@ -121,60 +123,73 @@
                                     <i class="icon fw fw-error"></i><span></span>
                                 </div>
                                 <div>
-                                    <label class="wr-input-label">
-                                        Set device ownership type
-                                    </label>
                                     <div class="wr-input-control">
-                                        <div class="cus-col-50">
-                                            <select id="ownership-input" class="form-control">
-                                                <option value="ANY" selected>ANY</option>
-                                                <option value="BYOD">BYOD (Bring Your Own Device)</option>
-                                                <option value="COPE">COPE (Corporate-Owned, Personally Enabled)</option>
-                                            </select>
-                                        </div>
-                                        <br class="c-both"/>
+                                        {{#if isAuthorizedViewRoles}}
+                                            <label class="wr-input-control radio light">
+                                                <input id="user-roles-radio-btn" type="radio"
+                                                       name="select-users-radio-btn"
+                                                       class="select-users-radio" checked/>
+                                                <span class="helper">Set user role(s)</span>
+                                            </label>
+                                        {{/if}}
+                                        {{#if isAuthorizedViewUsers}}
+                                            <label class="wr-input-control radio light" rel="assetfilter">
+                                                <input id="users-radio-btn" type="radio" name="select-users-radio-btn"
+                                                       class="select-users-radio"/>
+                                                <span class="helper">Set user(s)</span>
+                                            </label>
+                                        {{/if}}
                                     </div>
-                                    <div class="wr-input-control">
-                                        <label class="wr-input-control radio light">
-                                            <input id="user-roles-radio-btn" type="radio" name="select-users-radio-btn"
-                                                   class="select-users-radio" checked/>
-                                            <span class="helper">Set user role(s)</span>
-                                        </label>
-                                        <label class="wr-input-control radio light" rel="assetfilter">
-                                            <input id="users-radio-btn" type="radio" name="select-users-radio-btn"
-                                                   class="select-users-radio"/>
-                                            <span class="helper">Set user(s)</span>
-                                        </label>
-                                    </div>
-                                    <div id="user-roles-select-field" class="select-users">
-                                        <div class="wr-input-control">
-                                            <div class="cus-col-50">
-                                                <select id="user-roles-input" class="form-control select2"
-                                                        multiple="multiple">
-                                                    <option value="ANY" selected>ANY</option>
-                                                    {{#each roles}}
-                                                        <option>{{this}}</option>
-                                                    {{/each}}
-                                                </select>
+                                    {{#if isAuthorizedViewRoles}}
+                                        <div id="user-roles-select-field" class="select-users">
+                                            <div class="wr-input-control">
+                                                <div class="cus-col-50">
+                                                    <!--suppress HtmlFormInputWithoutLabel -->
+                                                    <select id="user-roles-input" class="form-control select2"
+                                                            multiple="multiple">
+                                                        <option value="ANY" selected>ANY</option>
+                                                        {{#each roles}}
+                                                            <option>{{this}}</option>
+                                                        {{/each}}
+                                                    </select>
+                                                </div>
+                                                <br class="c-both"/>
                                             </div>
-                                            <br class="c-both"/>
                                         </div>
-                                    </div>
-                                    <div id="users-select-field" class="select-users">
-                                        <div class="wr-input-control">
-                                            <div class="cus-col-50">
-                                                <select id="users-input" class="form-control select2"
-                                                        multiple="multiple">
-                                                    <option value="ANY" selected>ANY</option>
-                                                    {{#each users}}
-                                                        <option>{{username}}</option>
-                                                    {{/each}}
-                                                </select>
+                                    {{/if}}
+                                    {{#if isAuthorizedViewUsers}}
+                                        <div id="users-select-field" class="select-users">
+                                            <div class="wr-input-control">
+                                                <div class="cus-col-50">
+                                                    <!--suppress HtmlFormInputWithoutLabel -->
+                                                    <select id="users-input" class="form-control select2"
+                                                            multiple="multiple">
+                                                    </select>
+                                                </div>
+                                                <br class="c-both"/>
                                             </div>
-                                            <br class="c-both"/>
                                         </div>
-                                    </div>
-                                    <br>
+                                    {{/if}}
+                                    {{#if isAuthorizedViewGroups}}
+                                        <label class="wr-input-label">
+                                            Select Groups
+                                        </label>
+                                        <div id="groups-select-field" class="select-users">
+                                            <div class="wr-input-control">
+                                                <div class="cus-col-50">
+                                                    <!--suppress HtmlFormInputWithoutLabel -->
+                                                    <select id="groups-input" class="form-control select2"
+                                                            multiple="multiple">
+                                                        <option value="NONE" selected>NONE</option>
+                                                        {{#each groups}}
+                                                            <option>{{this.name}}</option>
+                                                        {{/each}}
+                                                    </select>
+                                                </div>
+                                                <br class="c-both"/>
+                                            </div>
+                                        </div>
+                                    {{/if}}
                                     <label class="wr-input-label" title="">
                                         Set an action upon non-compliance
                                     </label>
@@ -218,13 +233,17 @@
                                     <i class="icon fw fw-error"></i><span></span>
                                 </div>
                                 <div class="wr-advance-operations">
-                                    <div class="wr-advance-operations-init">
-                                        <br>
-
-                                        <i class="fw fw-settings fw-spin fw-2x"></i>
-                                        Loading platform features . . .
-                                        <br>
-                                        <br>
+                                    <div class='wr-advance-operations-init'>
+                                        <br/>
+                                        <i class='fw fw-settings fw-spin fw-2x'></i>
+                                        Loading Platform Features . . .
+                                        <br/>
+                                        <br/>
+                                    </div>
+                                    <div id="device-type-policy-operations" class="hidden">
+                                    </div>
+                                    <div id="generic-policy-operations" class="hidden">
+                                        {{unit "cdmf.unit.device.type.generic.policy-wizard"}}
                                     </div>
                                 </div>
                                 <div class="wr-input-control wr-btn-grp">
@@ -252,15 +271,5 @@
     {{/if}}
 {{/zone}}
 {{#zone "bottomJs"}}
-    <!--suppress HtmlUnknownTarget -->
-    <script id="hidden-operations-ios" src="{{@unit.publicUri}}/templates/hidden-operations-ios.hbs"
-            type="text/x-handlebars-template"></script>
-    <!--suppress HtmlUnknownTarget -->
-    <script id="hidden-operations-android" src="{{@unit.publicUri}}/templates/hidden-operations-android.hbs"
-            type="text/x-handlebars-template"></script>
-    <!--suppress HtmlUnknownTarget -->
-    <script id="hidden-operations-windows" src="{{@unit.publicUri}}/templates/hidden-operations-windows.hbs"
-            type="text/x-handlebars-template"></script>
-    {{js "js/edit.js"}}
+    {{js "js/policy-edit.js"}}
 {{/zone}}
-

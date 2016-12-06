@@ -22,30 +22,20 @@
 {{/zone}}
 
 {{#zone "navMenu-items"}}
-    {{#if permissions.VIEW_DASHBOARD}}
-        <li>
-            <a href="{{@app.context}}">
-                <i class="fw fw-dashboard"></i>
-                Admin Dashboard
-            </a>
-        </li>
-    {{/if}}
-    {{#if permissions.LIST_DEVICES_ADMIN}}
+    {{#if permissions.LIST_OWN_DEVICES}}
         <li>
             <a href="{{@app.context}}/devices">
                 <i class="fw fw-mobile"></i>
                 Device Management
             </a>
         </li>
-    {{else}}
-        {{#if permissions.LIST_OWN_DEVICES}}
-            <li>
-                <a href="{{@app.context}}/devices">
-                    <i class="fw fw-mobile"></i>
-                    Device Management
-                </a>
-            </li>
-        {{/if}}
+    {{/if}}
+    {{#if permissions.VIEW_DASHBOARD}}
+        <li>
+            <a href="/portal/t/{{currentUser.domain}}/dashboards/device-statistics-dashboard/">
+                <i class="fw fw-bar-chart"></i>Device Statistics
+            </a>
+        </li>
     {{/if}}
     {{#if permissions.LIST_GROUPS}}
         <li>

@@ -79,4 +79,30 @@ var groupModule = {};
         );
     };
 
+    groupModule.getGroups = function () {
+        var permissions = userModule.getUIPermissions();
+        if (permissions.LIST_ALL_GROUPS) {
+            endPoint = deviceServiceEndpoint + "/admin/groups";
+        } else if (permissions.LIST_GROUPS) {
+            endPoint = deviceServiceEndpoint + "/groups";
+        } else {
+            log.error("Access denied for user: " + carbonUser.username);
+            return -1;
+        }
+        return serviceInvokers.XMLHttp.get(
+            endPoint, function (responsePayload) {
+                var data = JSON.parse(responsePayload.responseText);
+                if(data) {
+                    return data.deviceGroups;
+                } else {
+                    return [];
+                }
+            },
+            function (responsePayload) {
+                log.error(responsePayload);
+                return -1;
+            }
+        );
+    };
+
 }(groupModule));

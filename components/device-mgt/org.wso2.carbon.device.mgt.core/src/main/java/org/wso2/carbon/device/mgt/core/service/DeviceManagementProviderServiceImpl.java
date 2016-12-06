@@ -21,6 +21,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.CarbonConstants;
 import org.wso2.carbon.context.CarbonContext;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
@@ -32,6 +33,7 @@ import org.wso2.carbon.device.mgt.common.FeatureManager;
 import org.wso2.carbon.device.mgt.common.InvalidDeviceException;
 import org.wso2.carbon.device.mgt.common.PaginationRequest;
 import org.wso2.carbon.device.mgt.common.PaginationResult;
+import org.wso2.carbon.device.mgt.common.TaskOperation;
 import org.wso2.carbon.device.mgt.common.TransactionManagementException;
 import org.wso2.carbon.device.mgt.common.app.mgt.Application;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.PlatformConfiguration;
@@ -1214,6 +1216,27 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     }
 
     @Override
+    public Map<String, List<TaskOperation>> getTaskList() {
+        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
+        Map<DeviceTypeIdentifier, DeviceManagementService> deviceManagementServiceMap =
+                pluginRepository.getAllDeviceManagementServices(tenantId);
+        DeviceManagementService dms;
+        String deviceType;
+        List<TaskOperation> taskOperations;
+        Map<String, List<TaskOperation>> deviceTypeSpecificTasks = new HashMap<>();
+
+        for(DeviceTypeIdentifier dti : deviceManagementServiceMap.keySet()){
+            dms = deviceManagementServiceMap.get(dti);
+            taskOperations = dms.getTasksForPlatform();
+            if (taskOperations != null) {
+                deviceType = dms.getType();
+                deviceTypeSpecificTasks.put(deviceType, taskOperations);
+            }
+        }
+        return deviceTypeSpecificTasks;
+    }
+
+    @Override
     public List<Device> getDevicesOfUser(String username) throws DeviceManagementException {
         List<Device> devices = new ArrayList<>();
         List<Device> userDevices;
@@ -1903,6 +1926,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             defaultGroup = new DeviceGroup(groupName);
             // Setting system level user (wso2.system.user) as the owner
             defaultGroup.setOwner(CarbonConstants.REGISTRY_SYSTEM_USERNAME);
+            defaultGroup.setDescription("Default system group for devices with " + groupName + " ownership.");
             try {
                 service.createGroup(defaultGroup, DeviceGroupConstants.Roles.DEFAULT_ADMIN_ROLE,
                         DeviceGroupConstants.Permissions.DEFAULT_ADMIN_PERMISSIONS);

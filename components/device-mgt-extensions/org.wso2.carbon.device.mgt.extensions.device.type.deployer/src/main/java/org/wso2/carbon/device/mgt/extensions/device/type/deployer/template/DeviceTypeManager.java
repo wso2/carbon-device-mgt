@@ -30,11 +30,8 @@ import org.wso2.carbon.device.mgt.common.configuration.mgt.PlatformConfiguration
 import org.wso2.carbon.device.mgt.common.license.mgt.License;
 import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManagementException;
 import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManager;
-import org.wso2.carbon.device.mgt.extensions.device.type.deployer.config.DeviceDetails;
-import org.wso2.carbon.device.mgt.extensions.device.type.deployer.config.DeviceTypeConfiguration;
-import org.wso2.carbon.device.mgt.extensions.device.type.deployer.config.Table;
+import org.wso2.carbon.device.mgt.extensions.device.type.deployer.config.*;
 import org.wso2.carbon.device.mgt.extensions.device.type.deployer.util.DeviceTypePluginConstants;
-import org.wso2.carbon.device.mgt.extensions.device.type.deployer.config.Feature;
 import org.wso2.carbon.device.mgt.extensions.device.type.deployer.exception.DeviceTypeDeployerFileException;
 import org.wso2.carbon.device.mgt.extensions.device.type.deployer.exception.DeviceTypeMgtPluginException;
 import org.wso2.carbon.device.mgt.extensions.device.type.deployer.template.dao.DeviceDAODefinition;
@@ -65,18 +62,26 @@ public class DeviceTypeManager implements DeviceManager {
     private DeviceTypePluginDAOManager deviceTypePluginDAOManager;
     private LicenseManager licenseManager;
     private boolean propertiesExist;
+    private boolean requiredDeviceTypeAuthorization;
 
     private FeatureManager featureManager;
+
     public DeviceTypeManager(DeviceTypeConfigIdentifier deviceTypeConfigIdentifier,
-                                    DeviceTypeConfiguration deviceTypeConfiguration) {
+                             DeviceTypeConfiguration deviceTypeConfiguration) {
         deviceType = deviceTypeConfigIdentifier.getDeviceType();
-        if (deviceTypeConfiguration.getFeatures() != null && deviceTypeConfiguration.getFeatures().getFeature() != null ) {
+        if (deviceTypeConfiguration.getFeatures() != null && deviceTypeConfiguration.getFeatures().
+                getFeature() != null) {
             List<Feature> features = deviceTypeConfiguration.getFeatures().getFeature();
             if (features != null) {
                 featureManager = new ConfigurationBasedFeatureManager(features);
             }
         }
-
+        if (deviceTypeConfiguration.getDeviceAuthorizationConfig() != null) {
+            requiredDeviceTypeAuthorization = deviceTypeConfiguration.getDeviceAuthorizationConfig().
+                    isAuthorizationRequired();
+        } else {
+            requiredDeviceTypeAuthorization = true;
+        }
         //add license to registry.
         this.licenseManager = new RegistryBasedLicenseManager();
         try {
@@ -120,11 +125,11 @@ public class DeviceTypeManager implements DeviceManager {
                     if (setupOption != null) {
                         if (log.isDebugEnabled()) {
                             log.debug("-Dsetup is enabled. Device management repository schema initialization is about " +
-                                              "to begin");
+                                    "to begin");
                         }
                         try {
                             DeviceTypeUtils.setupDeviceManagementSchema(datasourceName, deviceType,
-                                                                        deviceDAODefinition.getDeviceTableName());
+                                    deviceDAODefinition.getDeviceTableName());
                         } catch (DeviceTypeMgtPluginException e) {
                             log.error("Exception occurred while initializing device management database schema", e);
                         }
@@ -346,7 +351,7 @@ public class DeviceTypeManager implements DeviceManager {
 
     @Override
     public boolean requireDeviceAuthorization() {
-        return true;
+        return requiredDeviceTypeAuthorization;
     }
 
     @Override
@@ -370,7 +375,7 @@ public class DeviceTypeManager implements DeviceManager {
                     deviceTypePluginDAOManager.getDeviceTypeDAOHandler().rollbackTransaction();
                 } catch (DeviceTypeMgtPluginException e1) {
                     log.warn("Error occurred while roll back the update device info transaction : '" +
-                                     device.toString() + "'", e1);
+                            device.toString() + "'", e1);
                 }
                 throw new DeviceManagementException(
                         "Error occurred while updating the " + deviceType + " device: '" +

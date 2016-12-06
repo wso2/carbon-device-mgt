@@ -304,7 +304,7 @@ function loadUsers() {
             }
         },
         {
-            class: "fade-edge",
+            class: "",
             data: null,
             render: function (data, type, row, meta) {
                 if (!data.firstname && !data.lastname) {
@@ -315,14 +315,14 @@ function loadUsers() {
             }
         },
         {
-            class: "fade-edge remove-padding-top",
+            class: "remove-padding-top",
             data: 'filter',
             render: function (filter, type, row, meta) {
                 return '<i class="fw-user"></i>' + filter;
             }
         },
         {
-            class: "fade-edge remove-padding-top",
+            class: "remove-padding-top",
             data: null,
             render: function (data, type, row, meta) {
                 if (!data.emailAddress) {

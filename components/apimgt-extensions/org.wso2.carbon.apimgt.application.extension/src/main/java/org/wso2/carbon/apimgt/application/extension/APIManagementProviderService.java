@@ -34,11 +34,14 @@ public interface APIManagementProviderService {
      * @param tags               tags of the apis that application needs to be subscribed.
      * @param keyType            of the application.
      * @param username           to whom the application is created
+     * @param isAllowedAllDomains application is allowed to all the tenants
+     * @param validityTime       validity period of the application
      * @return consumerkey and secrete of the created application.
      * @throws APIManagerException
      */
     ApiApplicationKey generateAndRetrieveApplicationKeys(String apiApplicationName, String tags[],
-                                                         String keyType, String username, boolean isAllowedAllDomains)
+                                                         String keyType, String username, boolean isAllowedAllDomains,
+                                                         String validityTime)
             throws APIManagerException;
 
     /**

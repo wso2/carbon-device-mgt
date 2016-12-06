@@ -135,17 +135,17 @@ function loadGroups() {
         {
             targets: 1,
             data: 'name',
-            class: 'fade-edge'
+            class: ''
         },
         {
             targets: 2,
             data: 'owner',
-            class: 'fade-edge remove-padding-top',
+            class: 'remove-padding-top',
         },
         {
             targets: 3,
             data: 'description',
-            class: 'fade-edge remove-padding-top',
+            class: 'remove-padding-top',
         },
         {
             targets: 4,

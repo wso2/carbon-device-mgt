@@ -283,23 +283,29 @@
                                 <div id="policy-platform-main-error-msg" class="alert alert-danger hidden" role="alert">
                                     <i class="icon fw fw-error"></i><span></span>
                                 </div>
+                                {{#unless types}}
+                                <h3><i class="icon fw fw-warning"></i> No compatible device types have been installed.
+                                    Install device types to add policies.</h3>
+                                {{/unless}}
                                 <div class="row wr-tile-buttons-list">
                                     <div class="wr-input-control">
                                         <ul class="tile-buttons row">
-                                            {{#each types}}
-                                                <li class="col-xs-12 col-sm-12 col-md-4 col-lg-4"
-                                                    style="margin-top: 5px; margin-bottom: 5px;">
-                                                    <a href="javascript:void(0)"
-                                                       class="{{name}}-platform wizard-stepper"
-                                                       data-current="policy-platform"
-                                                       data-next="policy-profile"
-                                                       data-platform="{{name}}"
-                                                       data-validate="false">
-                                                        <img src="{{icon}}" width="50px" height="50px"><br><br>
-                                                        <b>{{label}}</b>
-                                                    </a>
-                                                </li>
-                                            {{/each}}
+                                            {{#if types}}
+                                                {{#each types}}
+                                                    <li class="col-xs-12 col-sm-12 col-md-4 col-lg-4"
+                                                        style="margin-top: 5px; margin-bottom: 5px;">
+                                                        <a href="javascript:void(0)"
+                                                           class="{{name}}-platform wizard-stepper"
+                                                           data-current="policy-platform"
+                                                           data-next="policy-profile"
+                                                           data-platform="{{name}}"
+                                                           data-validate="false">
+                                                            <img src="{{icon}}" width="50px" height="50px"><br><br>
+                                                            <b>{{label}}</b>
+                                                        </a>
+                                                    </li>
+                                                {{/each}}
+                                            {{/if}}
                                         </ul>
                                     </div>
                                 </div>

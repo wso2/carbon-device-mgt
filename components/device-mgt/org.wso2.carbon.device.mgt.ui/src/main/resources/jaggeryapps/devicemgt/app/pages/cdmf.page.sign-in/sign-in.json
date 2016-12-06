@@ -1,5 +1,6 @@
 {
     "version": "1.0.0",
+    "layout": "uuf.layout.sign-in",
     "uri": "/login",
-    "extends": "uuf.page.sign-in"
+    "isAnonymous": true
 }

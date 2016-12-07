@@ -20,6 +20,7 @@ package org.wso2.carbon.certificate.mgt.cert.jaxrs.api.util;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.certificate.mgt.core.scep.SCEPManager;
 import org.wso2.carbon.certificate.mgt.core.service.CertificateManagementService;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.core.search.mgt.SearchManagerService;
@@ -47,6 +48,22 @@ public class CertificateMgtAPIUtils {
         }
 
         return certificateManagementService;
+    }
+
+
+    public static SCEPManager getSCEPManagerService() {
+
+        PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        SCEPManager scepManagerService = (SCEPManager)
+                ctx.getOSGiService(SCEPManager.class, null);
+
+        if (scepManagerService == null) {
+            String msg = "SCEPManagerImpl Management service not initialized.";
+            log.error(msg);
+            throw new IllegalStateException(msg);
+        }
+
+        return scepManagerService;
     }
 
 

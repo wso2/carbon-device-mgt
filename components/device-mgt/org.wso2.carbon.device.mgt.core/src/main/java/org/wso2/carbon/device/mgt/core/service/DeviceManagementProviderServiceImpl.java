@@ -828,7 +828,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                 if (log.isDebugEnabled()) {
                     log.debug(msg);
                 }
-                throw new DeviceManagementException(msg);
+                return null;
             }
             DeviceInfo info = deviceInfoDAO.getDeviceInformation(device.getId());
             DeviceLocation location = deviceInfoDAO.getDeviceLocation(device.getId());

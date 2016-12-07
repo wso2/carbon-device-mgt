@@ -220,6 +220,12 @@ public interface DeviceManagementProviderService {
 
     boolean setActive(DeviceIdentifier deviceId, boolean status) throws DeviceManagementException;
 
+    /**
+     * Returns the device of specified id.
+     * @param deviceId device Id
+     * @return Device returns null when device is not avaialble.
+     * @throws DeviceManagementException
+     */
     Device getDevice(DeviceIdentifier deviceId) throws DeviceManagementException;
 
     Device getDevice(DeviceIdentifier deviceId, Date since) throws DeviceManagementException;

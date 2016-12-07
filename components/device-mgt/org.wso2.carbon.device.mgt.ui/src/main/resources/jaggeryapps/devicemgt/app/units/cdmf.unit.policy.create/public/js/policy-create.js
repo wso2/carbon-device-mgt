@@ -139,45 +139,34 @@ stepForwardFrom["policy-platform"] = function (actionButton) {
     $("#policy-profile-page-wizard-title").text("ADD " + policy["platform"] + " POLICY");
 
     var deviceType = policy["platform"];
-    var policyOperationsTemplateSrc = context + '/public/cdmf.unit.device.type.' + deviceType +
-        '.policy-wizard/templates/' + deviceType + '-policy-operations.hbs';
-    var policyOperationsScriptSrc = context + '/public/cdmf.unit.device.type.' + deviceType +
-        '.policy-wizard/js/' + deviceType + '-policy-operations.js';
-    var policyOperationsStylesSrc = context + '/public/cdmf.unit.device.type.' + deviceType +
-        '.policy-wizard/css/' + deviceType + '-policy-operations.css';
+    var policyOperationsTemplateSrc = $(actionButton).data("template");
+    var policyOperationsScriptSrc = $(actionButton).data("script");
+    var policyOperationsStylesSrc = $(actionButton).data("style");
     var policyOperationsTemplateCacheKey = deviceType + '-policy-operations';
 
-    $.isResourceExists(policyOperationsTemplateSrc, function (status) {
-        if (status) {
-            $.template(policyOperationsTemplateCacheKey, policyOperationsTemplateSrc, function (template) {
-                var content = template();
-                $("#device-type-policy-operations").html(content).removeClass("hidden");
-                $(".policy-platform").addClass("hidden");
-            });
-
-            $.isResourceExists(policyOperationsScriptSrc, function (status) {
-                if (status) {
-                    var script = document.createElement('script');
-                    script.type = 'text/javascript';
-                    script.src = policyOperationsScriptSrc;
-                    $(".wr-advance-operations").prepend(script);
-                }
-            });
-
-            $.isResourceExists(policyOperationsStylesSrc, function (status) {
-                if (status) {
-                    var style = document.createElement('link');
-                    style.type = 'text/css';
-                    style.rel = 'stylesheet';
-                    style.href = policyOperationsStylesSrc;
-                    $(".wr-advance-operations").prepend(style);
-                }
-            });
-        } else {
-            $("#generic-policy-operations").removeClass("hidden");
-        }
-        $(".wr-advance-operations-init").addClass("hidden");
-    });
+    if (policyOperationsTemplateSrc) {
+        $.template(policyOperationsTemplateCacheKey, context + policyOperationsTemplateSrc, function (template) {
+            var content = template();
+            $("#device-type-policy-operations").html(content).removeClass("hidden");
+            $(".policy-platform").addClass("hidden");
+        });
+    } else {
+        $("#generic-policy-operations").removeClass("hidden");
+    }
+    if (policyOperationsScriptSrc) {
+        var script = document.createElement('script');
+        script.type = 'text/javascript';
+        script.src = context + policyOperationsScriptSrc;
+        $(".wr-advance-operations").prepend(script);
+    }
+    if (policyOperationsStylesSrc) {
+        var style = document.createElement('link');
+        style.type = 'text/css';
+        style.rel = 'stylesheet';
+        style.href = context + policyOperationsStylesSrc;
+        $(".wr-advance-operations").prepend(style);
+    }
+    $(".wr-advance-operations-init").addClass("hidden");
 };
 
 /**

@@ -29,7 +29,7 @@ import javax.ws.rs.core.Response;
                 extensions = {
                         @Extension(properties = {
                                 @ExtensionProperty(name = "name", value = "Certificate Management"),
-                                @ExtensionProperty(name = "context", value = "api/certificate-mgt/v1.0/admin/certificates"),
+                                @ExtensionProperty(name = "context", value = "/api/certificate-mgt/v1.0/admin/certificates"),
                         })
                 }
         ),

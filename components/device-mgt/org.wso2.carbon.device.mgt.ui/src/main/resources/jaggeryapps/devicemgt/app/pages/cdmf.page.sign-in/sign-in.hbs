@@ -31,7 +31,7 @@
             {{/if}}
 
             <div class="panel-body">
-                <form id="signInForm" method="POST" action="{{@app.context}}/uuf/login">
+                <form id="signInForm" method="POST" action="{{loginActionUrl}}">
                     <div class="form-group">
                         <label for="username">Username *</label>
                         <input type="text" name="username" class="form-control" placeholder="Enter your username"
@@ -42,6 +42,9 @@
                         <input type="password" name="password" class="form-control" placeholder="Enter your password"
                                required="required" />
                     </div>
+                    {{#if sessionDataKey}}
+                        <input type="hidden" name="sessionDataKey" value="{{sessionDataKey}}" />
+                    {{/if}}
                     {{#if referer}}
                         <input type="hidden" name="referer" value="{{referer}}" />
                     {{/if}}

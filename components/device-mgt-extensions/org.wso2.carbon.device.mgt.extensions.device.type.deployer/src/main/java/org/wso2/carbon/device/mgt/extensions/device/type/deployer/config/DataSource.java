@@ -34,8 +34,8 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="jndiConfig" type="{}jndiConfig"/>
- *         &lt;element name="tableConfig" type="{}tableConfig"/>
+ *         &lt;element name="JndiConfig" type="{}JndiConfig"/>
+ *         &lt;element name="TableConfig" type="{}TableConfig"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -51,9 +51,10 @@ import javax.xml.bind.annotation.XmlType;
 })
 public class DataSource {
 
-    @XmlElement(required = true)
+    @XmlElement(name = "JndiConfig", required = true)
     protected JndiConfig jndiConfig;
-    @XmlElement(required = true)
+
+    @XmlElement(name = "TableConfig", required = true)
     protected TableConfig tableConfig;
 
     /**

@@ -49,10 +49,6 @@
                     <warName>api#scep-mgt#v1.0</warName>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-scr-plugin</artifactId>
-            </plugin>
         </plugins>
     </build>
 

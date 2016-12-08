@@ -44,5 +44,9 @@ var validatePolicyProfile = function () {
  * @returns {Array} profile payloads
  */
 var generateGenericPayload = function () {
-    return window.queryEditor.getValue();
+    return [{
+        "featureCode": "CONFIG",
+        "deviceTypeId": policy["platformId"],
+        "content": {"policyDefinition": window.queryEditor.getValue()}
+    }];
 };

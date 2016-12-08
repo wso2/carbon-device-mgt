@@ -25,9 +25,9 @@ import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
 import org.wso2.carbon.device.mgt.common.InvalidDeviceException;
+import org.wso2.carbon.device.mgt.common.MonitoringOperation;
 import org.wso2.carbon.device.mgt.common.PaginationRequest;
 import org.wso2.carbon.device.mgt.common.PaginationResult;
-import org.wso2.carbon.device.mgt.common.TaskOperation;
 import org.wso2.carbon.device.mgt.common.TransactionManagementException;
 import org.wso2.carbon.device.mgt.common.authorization.DeviceAccessAuthorizationException;
 import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroupConstants;
@@ -61,9 +61,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * This class implements all the functionality exposed as part of the OperationManager. Any transaction initiated
@@ -83,6 +81,7 @@ public class OperationManagerImpl implements OperationManager {
     private DeviceDAO deviceDAO;
     private EnrollmentDAO enrollmentDAO;
     private NotificationStrategy notificationStrategy;
+    private String deviceType;
 
     public OperationManagerImpl() {
         commandOperationDAO = OperationManagementDAOFactory.getCommandOperationDAO();
@@ -95,6 +94,11 @@ public class OperationManagerImpl implements OperationManager {
         enrollmentDAO = DeviceManagementDAOFactory.getEnrollmentDAO();
     }
 
+    public OperationManagerImpl(String deviceType) {
+        this();
+        this.deviceType = deviceType;
+    }
+
     public NotificationStrategy getNotificationStrategy() {
         return notificationStrategy;
     }
@@ -103,8 +107,8 @@ public class OperationManagerImpl implements OperationManager {
         this.notificationStrategy = notificationStrategy;
     }
 
-    public OperationManagerImpl(NotificationStrategy notificationStrategy) {
-        this();
+    public OperationManagerImpl(String deviceType, NotificationStrategy notificationStrategy) {
+        this(deviceType);
         this.notificationStrategy = notificationStrategy;
     }
 
@@ -243,7 +247,7 @@ public class OperationManagerImpl implements OperationManager {
         List<String> unAuthorizedDeviceList = new ArrayList<>();
         DeviceIDHolder deviceIDHolder = new DeviceIDHolder();
         try {
-            if (operation != null && isAuthenticationSkippedOperation(operation, deviceIds)) {
+            if (operation != null && isAuthenticationSkippedOperation(operation)) {
                 authorizedDeviceList = deviceIds;
             } else {
                 boolean isAuthorized;
@@ -885,11 +889,11 @@ public class OperationManagerImpl implements OperationManager {
         return CarbonContext.getThreadLocalCarbonContext().getUsername();
     }
 
-    private boolean isAuthenticationSkippedOperation(Operation operation, List<DeviceIdentifier> deviceIds) {
+    private boolean isAuthenticationSkippedOperation(Operation operation) {
 
         //This is to check weather operations are coming from the task related to retrieving device information.
-        DeviceTaskManager taskManager = new DeviceTaskManagerImpl();
-        if (taskManager.isTaskOperation(operation.getCode(), deviceIds)) {
+        DeviceTaskManager taskManager = new DeviceTaskManagerImpl(deviceType);
+        if (taskManager.isTaskOperation(operation.getCode())) {
             return true;
         }
 
@@ -1034,28 +1038,30 @@ public class OperationManagerImpl implements OperationManager {
     }
 
     private boolean isTaskScheduledOperation(Operation operation, List<DeviceIdentifier> deviceIds) {
-        List<TaskOperation> taskOperations = new ArrayList<>();
-        Map<String, List<TaskOperation>> deviceTypeSpecificTasks = new HashMap<>();
         DeviceManagementProviderService deviceManagementProviderService = DeviceManagementDataHolder.getInstance().
                 getDeviceManagementProvider();
 
-        deviceTypeSpecificTasks = deviceManagementProviderService.getTaskList();//Get task list from each device type
+        List<MonitoringOperation> monitoringOperations = deviceManagementProviderService.getMonitoringOperationList(deviceType);//Get task list from each device type
 
-        for(DeviceIdentifier deviceIdentifier : deviceIds){
-            String deviceType = deviceIdentifier.getType();
-            for(String dti : deviceTypeSpecificTasks.keySet()){
-                if (dti.equals(deviceType)) {
-                    taskOperations = deviceTypeSpecificTasks.get(dti);
-                    for(TaskOperation op : taskOperations){
-                    if (operation.getCode().equals(op.getTaskName())) {
-                        return true;
-                    }
-                    }
-                }
+        for(MonitoringOperation op : monitoringOperations){
+            if (operation.getCode().equals(op.getTaskName())) {
+                return true;
             }
-
-
         }
+
+//        for(String dti : taskOperation){
+//            if (dti.equals(deviceType)) {
+//                monitoringOperations = deviceTypeSpecificTasks.get(dti);
+//
+//            }
+//        }
+//
+//        for(DeviceIdentifier deviceIdentifier : deviceIds){
+//            String deviceType = deviceIdentifier.getType();
+//
+//
+//
+//        }
 
 //        TaskConfiguration taskConfiguration = DeviceConfigurationManager.getInstance().getDeviceManagementConfig().
 //                getTaskConfiguration();

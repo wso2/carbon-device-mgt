@@ -53,6 +53,7 @@ import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderServiceImpl;
 import org.wso2.carbon.device.mgt.core.service.GroupManagementProviderService;
 import org.wso2.carbon.device.mgt.core.service.GroupManagementProviderServiceImpl;
+import org.wso2.carbon.device.mgt.core.task.DeviceTaskManagerService;
 import org.wso2.carbon.device.mgt.core.util.DeviceManagementSchemaInitializer;
 import org.wso2.carbon.email.sender.core.service.EmailSenderService;
 import org.wso2.carbon.ndatasource.core.DataSourceService;
@@ -402,4 +403,18 @@ public class DeviceManagementServiceComponent {
         DeviceManagementDataHolder.getInstance().setEmailSenderService(null);
     }
 
+
+    protected void setDeviceTaskManagerService(DeviceTaskManagerService emailSenderService) {
+        if (log.isDebugEnabled()) {
+        }
+        DeviceManagementDataHolder.getInstance().setDeviceTaskManagerService(emailSenderService);
+    }
+
+    protected void unsetDeviceTaskManagerService(DeviceTaskManagerService emailSenderService) {
+        if (log.isDebugEnabled()) {
+        }
+        DeviceManagementDataHolder.getInstance().setDeviceTaskManagerService(null);
+    }
 }
+
+

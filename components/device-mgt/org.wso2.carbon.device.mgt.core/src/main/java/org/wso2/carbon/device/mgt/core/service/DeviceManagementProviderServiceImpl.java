@@ -31,9 +31,10 @@ import org.wso2.carbon.device.mgt.common.DeviceTypeIdentifier;
 import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
 import org.wso2.carbon.device.mgt.common.FeatureManager;
 import org.wso2.carbon.device.mgt.common.InvalidDeviceException;
+import org.wso2.carbon.device.mgt.common.MonitoringOperation;
+import org.wso2.carbon.device.mgt.common.OperationMonitoringTaskConfig;
 import org.wso2.carbon.device.mgt.common.PaginationRequest;
 import org.wso2.carbon.device.mgt.common.PaginationResult;
-import org.wso2.carbon.device.mgt.common.TaskOperation;
 import org.wso2.carbon.device.mgt.common.TransactionManagementException;
 import org.wso2.carbon.device.mgt.common.app.mgt.Application;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.PlatformConfiguration;
@@ -1217,24 +1218,37 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     }
 
     @Override
-    public Map<String, List<TaskOperation>> getTaskList() {
+    public List<MonitoringOperation> getMonitoringOperationList(String deviceType) {
         int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
-        Map<DeviceTypeIdentifier, DeviceManagementService> deviceManagementServiceMap =
-                pluginRepository.getAllDeviceManagementServices(tenantId);
-        DeviceManagementService dms;
-        String deviceType;
-        List<TaskOperation> taskOperations;
-        Map<String, List<TaskOperation>> deviceTypeSpecificTasks = new HashMap<>();
+//        Map<DeviceTypeIdentifier, DeviceManagementService> deviceManagementServiceMap =
+//                pluginRepository.getAllDeviceManagementServices(tenantId);
+        DeviceManagementService dms = pluginRepository.getDeviceManagementService(deviceType, tenantId);
+      // ;
+       // OperationMonitoringTaskConfig operationMonitoringTaskConfig;
+        //Map<String, List<MonitoringOperation>> deviceTypeSpecificMonitoringOperations = new HashMap<>();
 
-        for(DeviceTypeIdentifier dti : deviceManagementServiceMap.keySet()){
-            dms = deviceManagementServiceMap.get(dti);
-            taskOperations = dms.getTasksForPlatform();
-            if (taskOperations != null) {
-                deviceType = dms.getType();
-                deviceTypeSpecificTasks.put(deviceType, taskOperations);
-            }
-        }
-        return deviceTypeSpecificTasks;
+//        for(DeviceTypeIdentifier dti : deviceManagementServiceMap.keySet()){
+//            dms = deviceManagementServiceMap.get(dti);
+//
+//        }
+        OperationMonitoringTaskConfig operationMonitoringTaskConfig = dms.getOperationMonitoringConfig();
+        return operationMonitoringTaskConfig.getMonitoringOperation();
+    }
+
+    @Override
+    public int getDeviceMonitoringFrequency(String deviceType) {
+        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
+        DeviceManagementService dms = pluginRepository.getDeviceManagementService(deviceType, tenantId);
+        OperationMonitoringTaskConfig operationMonitoringTaskConfig = dms.getOperationMonitoringConfig();
+        return operationMonitoringTaskConfig.getFrequency();
+    }
+
+    @Override
+    public boolean isDeviceMonitoringEnabled(String deviceType) {
+        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
+        DeviceManagementService dms = pluginRepository.getDeviceManagementService(deviceType, tenantId);
+        OperationMonitoringTaskConfig operationMonitoringTaskConfig = dms.getOperationMonitoringConfig();
+        return operationMonitoringTaskConfig.isEnabled();
     }
 
     @Override

@@ -102,6 +102,8 @@
         </tableConfig>
     </DataSource>
     <TaskConfiguration>
+        <Enable>true</Enable>
+        <Frequency>600000</Frequency>
         <Operations>
             <Operation>
                 <Name>DEVICE_INFO</Name>

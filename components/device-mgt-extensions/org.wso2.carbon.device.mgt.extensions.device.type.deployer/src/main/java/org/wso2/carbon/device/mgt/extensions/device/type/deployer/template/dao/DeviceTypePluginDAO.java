@@ -67,6 +67,7 @@ public class DeviceTypePluginDAO {
 
             if (resultSet.next()) {
                 device = new Device();
+                device.setDeviceIdentifier(deviceId);
                 if (log.isDebugEnabled()) {
                     log.debug(deviceId + " data has been fetched from " + deviceDAODefinition.getDeviceTableName() +
                             " database.");

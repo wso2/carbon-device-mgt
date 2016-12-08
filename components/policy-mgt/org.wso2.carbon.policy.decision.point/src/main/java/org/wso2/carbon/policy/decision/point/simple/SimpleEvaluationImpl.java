@@ -16,14 +16,14 @@
 * under the License.
 */
 
-package org.wso2.carbon.simple.policy.decision.point;
+package org.wso2.carbon.policy.decision.point.simple;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
+import org.wso2.carbon.policy.decision.point.internal.PolicyDecisionPointDataHolder;
 import org.wso2.carbon.policy.mgt.common.*;
 import org.wso2.carbon.policy.mgt.core.PolicyManagerService;
-import org.wso2.carbon.simple.policy.decision.point.internal.PolicyDecisionPointDataHolder;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -32,13 +32,8 @@ import java.util.List;
 public class SimpleEvaluationImpl implements SimpleEvaluation {
 
     private static final Log log = LogFactory.getLog(SimpleEvaluationImpl.class);
-    //TODO : to revove the stale reference
     private PolicyManagerService policyManagerService;
     private List<Policy> policyList = new ArrayList<Policy>();
-
-//    public SimpleEvaluationImpl() {
-//        policyManagerService = PolicyDecisionPointDataHolder.getInstance().getPolicyManagerService();
-//    }
 
     @Override
     public Policy getEffectivePolicy(DeviceIdentifier deviceIdentifier) throws PolicyEvaluationException {
@@ -73,7 +68,6 @@ public class SimpleEvaluationImpl implements SimpleEvaluation {
         }
         return policy;
     }
-
 
     @Override
     public void sortPolicies() throws PolicyEvaluationException {

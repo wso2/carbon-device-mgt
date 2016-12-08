@@ -533,6 +533,7 @@ var module = {};
                      if (ssoSession.sessionIndex) {
                         module.loadTenant(ssoSession.loggedInUser);
                         var carbonUser = (require("carbon")).server.tenantUser(ssoSession.loggedInUser);
+			module.loadTenant(ssoSession.loggedInUser);
                         utils.setCurrentUser(carbonUser.username, carbonUser.domain, carbonUser.tenantId);
                         var scriptArgument = {input: {samlToken: ssoSession.samlToken}, user: module.getCurrentUser()};
                         handleEvent(OPERATION_LOGIN, EVENT_SUCCESS, scriptArgument);

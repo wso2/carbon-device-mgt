@@ -35,3 +35,14 @@ window.queryEditor = CodeMirror.fromTextArea(document.getElementById('policy-def
 var validatePolicyProfile = function () {
     return true;
 };
+
+/**
+ * Generates policy profile feature list which will be saved with the profile.
+ *
+ * This function will be invoked from the relevant cdmf unit at the time of policy creation.
+ *
+ * @returns {Array} profile payloads
+ */
+var generateGenericPayload = function () {
+    return window.queryEditor.getValue();
+};

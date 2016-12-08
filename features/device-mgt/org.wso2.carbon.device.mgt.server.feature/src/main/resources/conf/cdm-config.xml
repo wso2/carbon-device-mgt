@@ -48,10 +48,10 @@
             <Platform>windows</Platform>
         </Platforms>
     </PolicyConfiguration>
-    <TaskConfiguration>
-        <Enable>true</Enable>
-        <Frequency>600000</Frequency>
-    </TaskConfiguration>
+    <!--<TaskConfiguration>-->
+        <!--<Enable>true</Enable>-->
+        <!--<Frequency>600000</Frequency>-->
+    <!--</TaskConfiguration>-->
     <!-- Default Page size configuration for paginated DM APIs-->
     <PaginationConfiguration>
         <DeviceListPageSize>20</DeviceListPageSize>

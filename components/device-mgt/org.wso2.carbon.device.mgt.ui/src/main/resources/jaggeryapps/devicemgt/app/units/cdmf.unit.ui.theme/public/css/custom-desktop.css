@@ -6527,3 +6527,40 @@ select > option:hover {
 .table.list-table:not(.grid-view) tbody{
   margin: 0px !important;
 }
+
+#user-grid td i {
+  padding-right: 5px;
+}
+
+
+/**
+ *
+ * Temporary responsive fix for table listing action button width issue
+ * Todo : Move responsive style to theme.less file
+ *
+**/
+@media (max-width: 1199px) and (min-width: 992px){
+  .table .fw-stack{
+    font-size: 12px;
+  }
+}
+
+@media (min-width: 1200px){
+  table tbody tr {
+    width: 18% !important;
+  }
+  .table .fw-stack{
+    font-size: 1.2vw;
+  }
+}
+
+@media (min-width: 1500px){
+  table tbody tr {
+    width: 14% !important;
+  }
+  .table .fw-stack{
+    font-size: 0.8vw;
+  }
+}
+
+/** End **/

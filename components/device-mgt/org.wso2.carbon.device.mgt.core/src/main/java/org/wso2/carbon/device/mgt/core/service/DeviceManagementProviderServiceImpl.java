@@ -825,9 +825,10 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             DeviceManagementDAOFactory.openConnection();
             device = deviceDAO.getDevice(deviceId, this.getTenantId());
             if (device == null) {
+                String msg = "No device is found upon the type '" + deviceId.getType() + "' and id '" +
+                        deviceId.getId() + "'";
                 if (log.isDebugEnabled()) {
-                    log.debug("No device is found upon the type '" + deviceId.getType() + "' and id '" +
-                            deviceId.getId() + "'");
+                    log.debug(msg);
                 }
                 return null;
             }

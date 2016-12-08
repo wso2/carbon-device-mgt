@@ -520,7 +520,7 @@ var module = {};
                       response.sendError(500, msg);
                       return;
                   }
-                }
+                
                 /**
                  * @type {{sessionId: string, loggedInUser: string, sessionIndex: string, samlToken:
                  *     string}}

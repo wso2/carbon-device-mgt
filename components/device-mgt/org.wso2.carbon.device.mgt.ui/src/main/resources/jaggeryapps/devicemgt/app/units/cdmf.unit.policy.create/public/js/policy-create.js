@@ -18,7 +18,6 @@
 var stepForwardFrom = {};
 var stepBackFrom = {};
 var policy = {};
-var configuredOperations = [];
 var validateInline = {};
 var clearInline = {};
 var validateStep = {};
@@ -173,7 +172,11 @@ stepForwardFrom["policy-platform"] = function (actionButton) {
  * Forward action of policy profile page. Generates policy profile payload.
  */
 stepForwardFrom["policy-profile"] = function () {
-    policy["profile"] = operationModule.generateProfile(policy["platform"], configuredOperations);
+    /*
+     generatePolicyProfile() function should be implemented in plugin side and should include the logic to build the
+     policy profile object.
+     */
+    policy["profile"] = generatePolicyProfile();
     // updating next-page wizard title with selected platform
     $("#policy-criteria-page-wizard-title").text("ADD " + policy["platform"] + " POLICY");
 };
@@ -182,8 +185,11 @@ stepForwardFrom["policy-profile"] = function () {
  * Backward action of policy profile page. Moves back to platform selection step.
  */
 stepBackFrom["policy-profile"] = function () {
-    // reinitialize configuredOperations
-    configuredOperations = [];
+    /*
+     resetPolicyProfile() function should be implemented in plugin side and should include the logic to reset the policy
+     profile object.
+     */
+    resetPolicyProfile();
 };
 
 /**
@@ -359,18 +365,12 @@ stepForwardFrom["policy-naming"] = function () {
 };
 
 var savePolicy = function (policy, isActive, serviceURL) {
-    var profilePayloads = [];
-    // traverses key by key in policy["profile"]
-    var key;
-    for (key in policy["profile"]) {
-        if (policy["profile"].hasOwnProperty(key)) {
-            profilePayloads.push({
-                "featureCode": key,
-                "deviceType": policy["platform"],
-                "content": policy["profile"][key]
-            });
-        }
-    }
+    /*
+     generateProfileFeaturesList() should be implemented in the plugin side and should include logic to build the
+     profilePayloads array which contains objects, {featureCode:"value", deviceType:"value", content:"value"}.
+     policy["profile"] object will be available for the method which returns from the generatePolicyProfile() function.
+     */
+    var profilePayloads = generateProfileFeaturesList();
 
     $.each(profilePayloads, function (i, item) {
         $.each(item.content, function (key, value) {

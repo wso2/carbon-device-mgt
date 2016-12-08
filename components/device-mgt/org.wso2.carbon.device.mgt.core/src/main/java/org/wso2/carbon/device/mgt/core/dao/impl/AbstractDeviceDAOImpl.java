@@ -82,16 +82,17 @@ public abstract class AbstractDeviceDAOImpl implements DeviceDAO {
         int rows;
         try {
             conn = this.getConnection();
-            String sql = "UPDATE DM_DEVICE SET DESCRIPTION = ?, LAST_UPDATED_TIMESTAMP = ? " +
+            String sql = "UPDATE DM_DEVICE SET NAME = ?, DESCRIPTION = ?, LAST_UPDATED_TIMESTAMP = ? " +
                     "WHERE DEVICE_TYPE_ID = (SELECT ID FROM DM_DEVICE_TYPE WHERE NAME = ? AND PROVIDER_TENANT_ID = ?) " +
                     "AND DEVICE_IDENTIFICATION = ? AND TENANT_ID = ?";
             stmt = conn.prepareStatement(sql, new String[] {"id"});
-            stmt.setString(1, device.getDescription());
-            stmt.setTimestamp(2, new Timestamp(new Date().getTime()));
-            stmt.setString(3, device.getType());
-            stmt.setInt(4, tenantId);
-            stmt.setString(5, device.getDeviceIdentifier());
-            stmt.setInt(6, tenantId);
+            stmt.setString(1, device.getName());
+            stmt.setString(2, device.getDescription());
+            stmt.setTimestamp(3, new Timestamp(new Date().getTime()));
+            stmt.setString(4, device.getType());
+            stmt.setInt(5, tenantId);
+            stmt.setString(6, device.getDeviceIdentifier());
+            stmt.setInt(7, tenantId);
             rows = stmt.executeUpdate();
             return (rows > 0);
         } catch (SQLException e) {

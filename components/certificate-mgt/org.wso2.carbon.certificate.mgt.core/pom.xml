@@ -51,8 +51,7 @@
                         <Bundle-Version>${carbon.device.mgt.version}</Bundle-Version>
                         <Bundle-Description>Device Management Core Bundle</Bundle-Description>
                         <Private-Package>
-                            org.wso2.carbon.certificate.mgt.core.internal,
-                            org.wso2.carbon.certificate.mgt.core.util
+                            org.wso2.carbon.certificate.mgt.core.internal
                         </Private-Package>
                         <Import-Package>
                             org.osgi.framework,
@@ -60,7 +59,7 @@
                             org.apache.commons.logging,
                             javax.security.auth.x500,
                             javax.xml.*,
-			                javax.xml.parsers;version="${javax.xml.parsers.import.pkg.version}";resolution:=optional,
+			    javax.xml.parsers;version="${javax.xml.parsers.import.pkg.version}";resolution:=optional,
                             org.apache.commons.codec.binary,
                             org.bouncycastle.asn1,
                             org.bouncycastle.asn1.x500,
@@ -98,7 +97,6 @@
                         </Import-Package>
                         <Export-Package>
                             !org.wso2.carbon.certificate.mgt.core.internal.*,
-                            !org.wso2.carbon.certificate.mgt.core.util,
                             org.wso2.carbon.certificate.mgt.core.*
                         </Export-Package>
                     </instructions>

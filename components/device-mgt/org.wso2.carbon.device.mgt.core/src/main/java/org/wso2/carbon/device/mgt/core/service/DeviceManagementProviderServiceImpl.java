@@ -274,7 +274,9 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             Device currentDevice = deviceDAO.getDevice(deviceIdentifier, tenantId);
             device.setId(currentDevice.getId());
             device.getEnrolmentInfo().setId(currentDevice.getEnrolmentInfo().getId());
-            device.setName(currentDevice.getName());
+            if (device.getName() == null) {
+                device.setName(currentDevice.getName());
+            }
             deviceDAO.updateDevice(device, tenantId);
             enrollmentDAO.updateEnrollment(device.getEnrolmentInfo());
             DeviceManagementDAOFactory.commitTransaction();
@@ -365,7 +367,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             }
         } catch (DeviceManagementDAOException e) {
             throw new DeviceManagementException("Error occurred while obtaining the enrollment information device for" +
-                                                        "id '" + deviceId.getId() + "'", e);
+                    "id '" + deviceId.getId() + "'", e);
         } catch (SQLException e) {
             throw new DeviceManagementException("Error occurred while opening a connection to the data source", e);
         } finally {
@@ -875,7 +877,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             if (device == null) {
                 if (log.isDebugEnabled()) {
                     log.debug("No device is found upon the type '" + deviceId.getType() + "' and id '" +
-                              deviceId.getId() + "'");
+                            deviceId.getId() + "'");
                 }
                 return null;
             }
@@ -888,7 +890,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             device.setApplications(applications);
         } catch (DeviceManagementDAOException e) {
             throw new DeviceManagementException("Error occurred while obtaining the device for id " +
-                                                "'" + deviceId.getId() + "'", e);
+                    "'" + deviceId.getId() + "'", e);
         } catch (SQLException e) {
             throw new DeviceManagementException("Error occurred while opening a connection to the data source", e);
         } catch (DeviceDetailsMgtDAOException e) {
@@ -902,7 +904,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         if (deviceManager == null) {
             if (log.isDebugEnabled()) {
                 log.debug("Device Manager associated with the device type '" + deviceId.getType() + "' is null. " +
-                          "Therefore, not attempting method 'getDevice'");
+                        "Therefore, not attempting method 'getDevice'");
             }
             return device;
         }
@@ -1225,7 +1227,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         List<TaskOperation> taskOperations;
         Map<String, List<TaskOperation>> deviceTypeSpecificTasks = new HashMap<>();
 
-        for(DeviceTypeIdentifier dti : deviceManagementServiceMap.keySet()){
+        for (DeviceTypeIdentifier dti : deviceManagementServiceMap.keySet()) {
             dms = deviceManagementServiceMap.get(dti);
             taskOperations = dms.getTasksForPlatform();
             if (taskOperations != null) {
@@ -1846,7 +1848,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             }
         } catch (DeviceManagementDAOException e) {
             throw new DeviceManagementException("Error occurred while obtaining the enrollment information device for" +
-                                                        "id '" + deviceId.getId() + "' and user : " + user, e);
+                    "id '" + deviceId.getId() + "' and user : " + user, e);
         } catch (SQLException e) {
             throw new DeviceManagementException("Error occurred while opening a connection to the data source", e);
         } finally {
@@ -1914,8 +1916,8 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     /**
      * Checks for the default group existence and create group based on device ownership
      *
-     * @param service          {@link GroupManagementProviderService} instance.
-     * @param groupName        of the group to create.
+     * @param service   {@link GroupManagementProviderService} instance.
+     * @param groupName of the group to create.
      * @return Group with details.
      * @throws GroupManagementException
      */

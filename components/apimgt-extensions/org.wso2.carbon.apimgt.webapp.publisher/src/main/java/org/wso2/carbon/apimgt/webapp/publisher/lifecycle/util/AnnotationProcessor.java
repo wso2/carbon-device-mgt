@@ -16,10 +16,12 @@
 
 package org.wso2.carbon.apimgt.webapp.publisher.lifecycle.util;
 
+import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.SwaggerDefinition;
 import org.apache.catalina.core.StandardContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.apimgt.api.model.Scope;
 import org.wso2.carbon.apimgt.webapp.publisher.APIPublisherUtil;
 import org.wso2.carbon.apimgt.webapp.publisher.config.APIResource;
 import org.wso2.carbon.apimgt.webapp.publisher.config.APIResourceConfiguration;
@@ -37,9 +39,7 @@ import java.net.URI;
 import java.net.URL;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class AnnotationProcessor {
 
@@ -58,9 +58,13 @@ public class AnnotationProcessor {
     private static final String SWAGGER_ANNOTATIONS_EXTENSIONS = "extensions";
     private static final String SWAGGER_ANNOTATIONS_PROPERTIES = "properties";
     private static final String SWAGGER_ANNOTATIONS_PROPERTIES_NAME = "name";
+    private static final String SWAGGER_ANNOTATIONS_PROPERTIES_DESCRIPTION = "description";
+    private static final String SWAGGER_ANNOTATIONS_PROPERTIES_KEY = "key";
+    private static final String SWAGGER_ANNOTATIONS_PROPERTIES_PERMISSIONS = "permissions";
     private static final String SWAGGER_ANNOTATIONS_PROPERTIES_VERSION = "version";
     private static final String SWAGGER_ANNOTATIONS_PROPERTIES_CONTEXT = "context";
     private static final String SWAGGER_ANNOTATIONS_PROPERTIES_VALUE = "value";
+    private static final String ANNOTATIONS_SCOPES = "scopes";
 
 
     private StandardContext context;
@@ -75,6 +79,10 @@ public class AnnotationProcessor {
     private Class<io.swagger.annotations.Tag> tagClass;
     private Class<io.swagger.annotations.Extension> extensionClass;
     private Class<io.swagger.annotations.ExtensionProperty> extensionPropertyClass;
+    private Class<io.swagger.annotations.ApiOperation> apiOperation;
+    private Class<org.wso2.carbon.apimgt.annotations.api.Scope> scopeClass;
+    private Class<org.wso2.carbon.apimgt.annotations.api.Scopes> scopesClass;
+    private Map<String, Scope> apiScopes;
 
     public AnnotationProcessor(final StandardContext context) {
         servletContext = context.getServletContext();
@@ -91,7 +99,13 @@ public class AnnotationProcessor {
             extensionClass = (Class<io.swagger.annotations.Extension>)classLoader
                     .loadClass((io.swagger.annotations.Extension.class.getName()));
             extensionPropertyClass = (Class<io.swagger.annotations.ExtensionProperty>)classLoader
-                    .loadClass((io.swagger.annotations.ExtensionProperty.class.getName()));
+                    .loadClass(io.swagger.annotations.ExtensionProperty.class.getName());
+            scopeClass = (Class<org.wso2.carbon.apimgt.annotations.api.Scope>) classLoader
+                    .loadClass(org.wso2.carbon.apimgt.annotations.api.Scope.class.getName());
+            scopesClass = (Class<org.wso2.carbon.apimgt.annotations.api.Scopes>) classLoader
+                    .loadClass(org.wso2.carbon.apimgt.annotations.api.Scopes.class.getName());
+            apiOperation = (Class<io.swagger.annotations.ApiOperation>)classLoader
+                    .loadClass((io.swagger.annotations.ApiOperation.class.getName()));
         } catch (ClassNotFoundException e) {
             log.error("An error has occurred while loading classes ", e);
         }
@@ -127,6 +141,7 @@ public class AnnotationProcessor {
                                         }
                                         try {
                                             apiResourceConfig = processAPIAnnotation(swaggerDefinition);
+                                            apiScopes = processAPIScopes(swaggerDefinition);
                                             if(apiResourceConfig != null){
                                                 String rootContext = servletContext.getContextPath();
                                                 pathClazzMethods = pathClazz.getMethods();
@@ -158,7 +173,7 @@ public class AnnotationProcessor {
                                 } catch (ClassNotFoundException e1) {
                                     String msg = "Failed to load service class " + className + " for publishing APIs." +
                                             " This API will not be published.";
-                                    log.error(msg);
+                                    log.error(msg, e1);
                                 } catch (RuntimeException e) {
                                     log.error("Unexpected error has been occurred while publishing "+ className
                                             +"hence, this API will not be published.");
@@ -172,6 +187,37 @@ public class AnnotationProcessor {
             }
         }
         return apiResourceConfigs;
+    }
+
+    private Map<String,Scope> processAPIScopes(Annotation annotation) throws Throwable {
+        Map<String, Scope> scopes = new HashMap<>();
+
+        InvocationHandler methodHandler = Proxy.getInvocationHandler(annotation);
+        Annotation[] annotatedScopes = (Annotation[]) methodHandler.invoke(annotation, scopesClass
+                .getMethod(ANNOTATIONS_SCOPES, null), null);
+
+        Scope scope;
+        String permissions[];
+        StringBuilder aggregatedPermissions = new StringBuilder();
+        for(int i=0; i<annotatedScopes.length; i++){
+            methodHandler = Proxy.getInvocationHandler(annotatedScopes[i]);
+            scope = new Scope();
+            scope.setName(invokeMethod(scopeClass
+                    .getMethod(SWAGGER_ANNOTATIONS_PROPERTIES_NAME), annotatedScopes[i], STRING));
+            scope.setDescription(invokeMethod(scopeClass
+                    .getMethod(SWAGGER_ANNOTATIONS_PROPERTIES_DESCRIPTION), annotatedScopes[i], STRING));
+            scope.setKey(invokeMethod(scopeClass
+                    .getMethod(SWAGGER_ANNOTATIONS_PROPERTIES_KEY), annotatedScopes[i], STRING));
+            permissions = (String[])methodHandler.invoke(annotatedScopes[i], scopeClass
+                    .getMethod(SWAGGER_ANNOTATIONS_PROPERTIES_PERMISSIONS, null),null);
+            for (String permission : permissions) {
+                aggregatedPermissions.append(permission);
+                aggregatedPermissions.append(" ");
+            }
+            scope.setRoles(aggregatedPermissions.toString());
+            scopes.put(scope.getKey(), scope);
+        }
+        return scopes;
     }
 
     /**
@@ -210,6 +256,9 @@ public class AnnotationProcessor {
                         Method[] producesClassMethods = producesClass.getMethods();
                         Annotation producesAnno = method.getAnnotation(producesClass);
                         resource.setProduces(invokeMethod(producesClassMethods[0], producesAnno, STRING_ARR));
+                    }
+                    if (annotations[i].annotationType().getName().equals(ApiOperation.class.getName())) {
+                        resource.setScope(this.getScope(annotations[i]));
                     }
                 }
                 resourceList.add(resource);
@@ -374,5 +423,25 @@ public class AnnotationProcessor {
         {
             throw new RuntimeException(e);
         }
+    }
+
+    private Scope getScope(Annotation currentMethod) throws Throwable {
+        InvocationHandler methodHandler = Proxy.getInvocationHandler(currentMethod);
+        Annotation[] extensions = (Annotation[]) methodHandler.invoke(currentMethod,
+                apiOperation.getMethod(SWAGGER_ANNOTATIONS_EXTENSIONS, null), null);
+        methodHandler = Proxy.getInvocationHandler(extensions[0]);
+        Annotation[] properties =  (Annotation[])methodHandler.invoke(extensions[0], extensionClass
+                .getMethod(SWAGGER_ANNOTATIONS_PROPERTIES,null), null);
+
+        for (Annotation property : properties) {
+            methodHandler = Proxy.getInvocationHandler(property);
+            String scopeKey = (String) methodHandler.invoke(property, extensionPropertyClass
+                    .getMethod(SWAGGER_ANNOTATIONS_PROPERTIES_VALUE, null),null);
+            if (scopeKey.isEmpty()) {
+                return null;
+            }
+            return apiScopes.get(scopeKey);
+        }
+        return null;
     }
 }

@@ -27,6 +27,7 @@ public class Constants {
 	public static final String USER_CLAIM_FIRST_NAME = "http://wso2.org/claims/givenname";
 	public static final String USER_CLAIM_LAST_NAME = "http://wso2.org/claims/lastname";
 	public static final String PRIMARY_USER_STORE = "PRIMARY";
+	public static final String SCOPE = "scope";
 
 	public final class ErrorMessages {
 		private ErrorMessages () { throw new AssertionError(); }

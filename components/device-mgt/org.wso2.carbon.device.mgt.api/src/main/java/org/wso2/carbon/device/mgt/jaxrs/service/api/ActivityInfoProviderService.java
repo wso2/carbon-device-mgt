@@ -18,22 +18,13 @@
  */
 package org.wso2.carbon.device.mgt.jaxrs.service.api;
 
-import io.swagger.annotations.SwaggerDefinition;
-import io.swagger.annotations.Info;
-import io.swagger.annotations.ExtensionProperty;
-import io.swagger.annotations.Extension;
-import io.swagger.annotations.Tag;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.AuthorizationScope;
-import io.swagger.annotations.Authorization;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
-import io.swagger.annotations.ResponseHeader;
+import io.swagger.annotations.*;
+import org.wso2.carbon.apimgt.annotations.api.Scope;
+import org.wso2.carbon.apimgt.annotations.api.Scopes;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Activity;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ActivityList;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
+import org.wso2.carbon.device.mgt.jaxrs.util.Constants;
 
 import javax.validation.constraints.Size;
 import javax.ws.rs.*;
@@ -61,6 +52,16 @@ import javax.ws.rs.core.Response;
 @Path("/activities")
 @Api(value = "Activity Info Provider", description = "Activity related information manipulation. For example" +
         " operation details and responses from devices.")
+@Scopes(
+        scopes = {
+        @Scope(
+                name = "Get activities",
+                description = "Get activities",
+                key = "cdmf:get-activity",
+                permissions = {"/device-mgt/devices/owning-device/view"}
+                )
+        }
+)
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public interface ActivityInfoProviderService {
@@ -74,12 +75,10 @@ public interface ActivityInfoProviderService {
             notes = "Retrieve the details of a specific activity/operation, such as the meta information of " +
                     "an operation, including the responses from the devices.",
             tags = "Activity Info Provider",
-            authorizations = {
-                    @Authorization(
-                            value="permission",
-                            scopes = { @AuthorizationScope(scope = "/device-mgt/devices/owning-device/view"
-                                    , description = "View Activities") }
-                    )
+            extensions = {
+                @Extension(properties = {
+                        @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:get-activity")
+                })
             }
     )
     @ApiResponses(value = {
@@ -149,12 +148,10 @@ public interface ActivityInfoProviderService {
             notes = "Get the details of the operations/activities executed by the server on the devices registered" +
                     " with WSO2 EMM, during a defined time period.",
             tags = "Activity Info Provider",
-            authorizations = {
-                    @Authorization(
-                            value="permission",
-                            scopes = { @AuthorizationScope(scope = "/device-mgt/devices/owning-device/view"
-                                    , description = "View Activities") }
-                    )
+            extensions = {
+                    @Extension(properties = {
+                            @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:get-activity")
+                    })
             }
     )
     @ApiResponses(value = {

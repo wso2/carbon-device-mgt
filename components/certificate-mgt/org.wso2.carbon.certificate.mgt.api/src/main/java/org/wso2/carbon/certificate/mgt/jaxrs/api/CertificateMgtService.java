@@ -1,18 +1,9 @@
 package org.wso2.carbon.certificate.mgt.jaxrs.api;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
-import io.swagger.annotations.Authorization;
-import io.swagger.annotations.AuthorizationScope;
-import io.swagger.annotations.Extension;
-import io.swagger.annotations.ExtensionProperty;
-import io.swagger.annotations.Info;
-import io.swagger.annotations.SwaggerDefinition;
-import io.swagger.annotations.Tag;
+import io.swagger.annotations.*;
+
 import org.wso2.carbon.apimgt.annotations.api.Scope;
+import org.wso2.carbon.apimgt.annotations.api.Scopes;
 import org.wso2.carbon.certificate.mgt.jaxrs.beans.ErrorResponse;
 
 import javax.ws.rs.Consumes;
@@ -45,7 +36,18 @@ import javax.ws.rs.core.Response;
                                                             "related operations.")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+@Scopes(scopes = {
+        @Scope(
+                name = "Sign CSR",
+                description = "Sign CSR",
+                key = "cdmf:sign-csr",
+                permissions = {"/certificate-mgt/sign-csr"}
+        )
+}
+)
 public interface CertificateMgtService {
+
+     String SCOPE = "scope";
 
     /**
      * Sign the client's certificate signing request and save it in the database.
@@ -64,12 +66,10 @@ public interface CertificateMgtService {
             value = "Process a given CSR and return signed certificates.",
             notes = "This will return a signed certificate upon a given CSR.",
             tags = "Device Management",
-            authorizations = {
-                    @Authorization(
-                            value="permission",
-                            scopes = { @AuthorizationScope(scope = "/device-mgt/certificates/manage",
-                                    description = "Sign CSR") }
-                    )
+            extensions = {
+                    @Extension(properties = {
+                            @ExtensionProperty(name = SCOPE, value = "cdmf:sign-csr")
+                    })
             }
     )
     @ApiResponses(
@@ -87,7 +87,6 @@ public interface CertificateMgtService {
                             message = "Internal Server Error. \n Error occurred while retrieving signed certificate.",
                             response = ErrorResponse.class)
             })
-    @Scope(key = "certificate:sign-csr", name = "Sign CSR", description = "")
     Response getSignedCertFromCSR(
             @ApiParam(
                     name = "If-Modified-Since",

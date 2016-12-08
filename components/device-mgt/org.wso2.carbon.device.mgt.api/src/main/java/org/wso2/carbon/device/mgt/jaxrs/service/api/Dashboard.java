@@ -19,20 +19,11 @@
 
 package org.wso2.carbon.device.mgt.jaxrs.service.api;
 
-import io.swagger.annotations.SwaggerDefinition;
-import io.swagger.annotations.Info;
-import io.swagger.annotations.ExtensionProperty;
-import io.swagger.annotations.Extension;
-import io.swagger.annotations.Tag;
-import io.swagger.annotations.Api;
-import org.wso2.carbon.apimgt.annotations.api.Permission;
+import io.swagger.annotations.*;
 
-import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 
 /**
  * Device Analytics Dashboard related REST-APIs. This can be used to obtain device related analytics.
@@ -68,70 +59,70 @@ public interface Dashboard {
     String PAGINATION_ENABLED = "pagination-enabled";
     String START_INDEX = "start";
     String RESULT_COUNT = "length";
-
-    @GET
-    @Path("device-count-overview")
-    @Permission(name = "View Dashboard", permission = "/device-mgt/dashboard/view")
-    Response getOverviewDeviceCounts();
-
-    @GET
-    @Path("device-counts-by-potential-vulnerabilities")
-    @Permission(name = "View Dashboard", permission = "/device-mgt/dashboard/view")
-    Response getDeviceCountsByPotentialVulnerabilities();
-
-    @GET
-    @Path("non-compliant-device-counts-by-features")
-    @Permission(name = "View Dashboard", permission = "/device-mgt/dashboard/view")
-    Response getNonCompliantDeviceCountsByFeatures(@QueryParam(START_INDEX) int startIndex,
-                                                   @QueryParam(RESULT_COUNT) int resultCount);
-
-    @GET
-    @Path("device-counts-by-groups")
-    @Permission(name = "View Dashboard", permission = "/device-mgt/dashboard/view")
-    Response getDeviceCountsByGroups(@QueryParam(CONNECTIVITY_STATUS) String connectivityStatus,
-                                     @QueryParam(POTENTIAL_VULNERABILITY) String potentialVulnerability,
-                                     @QueryParam(PLATFORM) String platform,
-                                     @QueryParam(OWNERSHIP) String ownership);
-
-    @GET
-    @Path("feature-non-compliant-device-counts-by-groups")
-    @Permission(name = "View Dashboard", permission = "/device-mgt/dashboard/view")
-    Response getFeatureNonCompliantDeviceCountsByGroups(@QueryParam(NON_COMPLIANT_FEATURE_CODE) String nonCompliantFeatureCode,
-                                                        @QueryParam(PLATFORM) String platform,
-                                                        @QueryParam(OWNERSHIP) String ownership);
-    @GET
-    @Path("filtered-device-count-over-total")
-    @Permission(name = "View Dashboard", permission = "/device-mgt/dashboard/view")
-    Response getFilteredDeviceCountOverTotal(@QueryParam(CONNECTIVITY_STATUS) String connectivityStatus,
-                                             @QueryParam(POTENTIAL_VULNERABILITY) String potentialVulnerability,
-                                             @QueryParam(PLATFORM) String platform,
-                                             @QueryParam(OWNERSHIP) String ownership);
-
-    @GET
-    @Path("feature-non-compliant-device-count-over-total")
-    @Permission(name = "View Dashboard", permission = "/device-mgt/dashboard/view")
-    Response getFeatureNonCompliantDeviceCountOverTotal(@QueryParam(NON_COMPLIANT_FEATURE_CODE) String nonCompliantFeatureCode,
-                                                        @QueryParam(PLATFORM) String platform,
-                                                        @QueryParam(OWNERSHIP) String ownership);
-
-    @GET
-    @Path("devices-with-details")
-    @Permission(name = "View Dashboard", permission = "/device-mgt/dashboard/view")
-    Response getDevicesWithDetails(@QueryParam(CONNECTIVITY_STATUS) String connectivityStatus,
-                                   @QueryParam(POTENTIAL_VULNERABILITY) String potentialVulnerability,
-                                   @QueryParam(PLATFORM) String platform,
-                                   @QueryParam(OWNERSHIP) String ownership,
-                                   @QueryParam(PAGINATION_ENABLED) String paginationEnabled,
-                                   @QueryParam(START_INDEX) int startIndex,
-                                   @QueryParam(RESULT_COUNT) int resultCount);
-
-    @GET
-    @Path("feature-non-compliant-devices-with-details")
-    @Permission(name = "View Dashboard", permission = "/device-mgt/dashboard/view")
-    Response getFeatureNonCompliantDevicesWithDetails(@QueryParam(NON_COMPLIANT_FEATURE_CODE) String nonCompliantFeatureCode,
-                                                      @QueryParam(PLATFORM) String platform,
-                                                      @QueryParam(OWNERSHIP) String ownership,
-                                                      @QueryParam(PAGINATION_ENABLED) String paginationEnabled,
-                                                      @QueryParam(START_INDEX) int startIndex,
-                                                      @QueryParam(RESULT_COUNT) int resultCount);
+//
+//    @GET
+//    @Path("device-count-overview")
+//    @Permission(name = "View Dashboard", permission = "/device-mgt/dashboard/view")
+//    Response getOverviewDeviceCounts();
+//
+//    @GET
+//    @Path("device-counts-by-potential-vulnerabilities")
+//    @Permission(name = "View Dashboard", permission = "/device-mgt/dashboard/view")
+//    Response getDeviceCountsByPotentialVulnerabilities();
+//
+//    @GET
+//    @Path("non-compliant-device-counts-by-features")
+//    @Permission(name = "View Dashboard", permission = "/device-mgt/dashboard/view")
+//    Response getNonCompliantDeviceCountsByFeatures(@QueryParam(START_INDEX) int startIndex,
+//                                                   @QueryParam(RESULT_COUNT) int resultCount);
+//
+//    @GET
+//    @Path("device-counts-by-groups")
+//    @Permission(name = "View Dashboard", permission = "/device-mgt/dashboard/view")
+//    Response getDeviceCountsByGroups(@QueryParam(CONNECTIVITY_STATUS) String connectivityStatus,
+//                                     @QueryParam(POTENTIAL_VULNERABILITY) String potentialVulnerability,
+//                                     @QueryParam(PLATFORM) String platform,
+//                                     @QueryParam(OWNERSHIP) String ownership);
+//
+//    @GET
+//    @Path("feature-non-compliant-device-counts-by-groups")
+//    @Permission(name = "View Dashboard", permission = "/device-mgt/dashboard/view")
+//    Response getFeatureNonCompliantDeviceCountsByGroups(@QueryParam(NON_COMPLIANT_FEATURE_CODE) String nonCompliantFeatureCode,
+//                                                        @QueryParam(PLATFORM) String platform,
+//                                                        @QueryParam(OWNERSHIP) String ownership);
+//    @GET
+//    @Path("filtered-device-count-over-total")
+//    @Permission(name = "View Dashboard", permission = "/device-mgt/dashboard/view")
+//    Response getFilteredDeviceCountOverTotal(@QueryParam(CONNECTIVITY_STATUS) String connectivityStatus,
+//                                             @QueryParam(POTENTIAL_VULNERABILITY) String potentialVulnerability,
+//                                             @QueryParam(PLATFORM) String platform,
+//                                             @QueryParam(OWNERSHIP) String ownership);
+//
+//    @GET
+//    @Path("feature-non-compliant-device-count-over-total")
+//    @Permission(name = "View Dashboard", permission = "/device-mgt/dashboard/view")
+//    Response getFeatureNonCompliantDeviceCountOverTotal(@QueryParam(NON_COMPLIANT_FEATURE_CODE) String nonCompliantFeatureCode,
+//                                                        @QueryParam(PLATFORM) String platform,
+//                                                        @QueryParam(OWNERSHIP) String ownership);
+//
+//    @GET
+//    @Path("devices-with-details")
+//    @Permission(name = "View Dashboard", permission = "/device-mgt/dashboard/view")
+//    Response getDevicesWithDetails(@QueryParam(CONNECTIVITY_STATUS) String connectivityStatus,
+//                                   @QueryParam(POTENTIAL_VULNERABILITY) String potentialVulnerability,
+//                                   @QueryParam(PLATFORM) String platform,
+//                                   @QueryParam(OWNERSHIP) String ownership,
+//                                   @QueryParam(PAGINATION_ENABLED) String paginationEnabled,
+//                                   @QueryParam(START_INDEX) int startIndex,
+//                                   @QueryParam(RESULT_COUNT) int resultCount);
+//
+//    @GET
+//    @Path("feature-non-compliant-devices-with-details")
+//    @Permission(name = "View Dashboard", permission = "/device-mgt/dashboard/view")
+//    Response getFeatureNonCompliantDevicesWithDetails(@QueryParam(NON_COMPLIANT_FEATURE_CODE) String nonCompliantFeatureCode,
+//                                                      @QueryParam(PLATFORM) String platform,
+//                                                      @QueryParam(OWNERSHIP) String ownership,
+//                                                      @QueryParam(PAGINATION_ENABLED) String paginationEnabled,
+//                                                      @QueryParam(START_INDEX) int startIndex,
+//                                                      @QueryParam(RESULT_COUNT) int resultCount);
 }

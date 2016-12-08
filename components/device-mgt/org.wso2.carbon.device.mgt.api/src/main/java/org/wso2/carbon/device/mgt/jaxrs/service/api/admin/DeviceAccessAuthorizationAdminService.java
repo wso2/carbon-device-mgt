@@ -22,7 +22,6 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import org.wso2.carbon.apimgt.annotations.api.Permission;
 import org.wso2.carbon.device.mgt.common.authorization.DeviceAuthorizationResult;
 import org.wso2.carbon.device.mgt.jaxrs.beans.AuthorizationRequest;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;

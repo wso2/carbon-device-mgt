@@ -23,6 +23,7 @@ import io.swagger.models.Swagger;
 import org.apache.catalina.core.StandardContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.apimgt.api.model.Scope;
 import org.wso2.carbon.device.mgt.common.permission.mgt.Permission;
 
 import javax.servlet.ServletContext;
@@ -38,10 +39,7 @@ import java.net.URI;
 import java.net.URL;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.StringTokenizer;
+import java.util.*;
 
 public class AnnotationProcessor {
 
@@ -56,11 +54,14 @@ public class AnnotationProcessor {
     private static final String STRING_ARR = "string_arr";
     private static final String STRING = "string";
 
-    private static final String SWAGGER_ANNOTATIONS_AUTHORIZATIONS = "authorizations";
-    private static final String SWAGGER_ANNOTATIONS_PERMISSION = "permission";
-    private static final String SWAGGER_ANNOTATIONS_SCOPES = "scopes";
-    private static final String SWAGGER_ANNOTATIONS_SCOPE = "scope";
-    private static final String SWAGGER_ANNOTATIONS_DESCRIPTION = "description";
+    private static final String SWAGGER_ANNOTATIONS_PROPERTIES = "properties";
+    private static final String SWAGGER_ANNOTATIONS_EXTENSIONS = "extensions";
+    private static final String SWAGGER_ANNOTATIONS_PROPERTIES_VALUE = "value";
+    private static final String SWAGGER_ANNOTATIONS_PROPERTIES_NAME = "name";
+    private static final String SWAGGER_ANNOTATIONS_PROPERTIES_DESCRIPTION = "description";
+    private static final String SWAGGER_ANNOTATIONS_PROPERTIES_KEY = "key";
+    private static final String SWAGGER_ANNOTATIONS_PROPERTIES_PERMISSIONS = "permissions";
+    private static final String ANNOTATIONS_SCOPES = "scopes";
 
     private StandardContext context;
     private Method[] pathClazzMethods;
@@ -74,6 +75,11 @@ public class AnnotationProcessor {
     private Class<io.swagger.annotations.ApiOperation> apiOperation;
     private Class<io.swagger.annotations.Authorization> authorizationClass;
     private Class<io.swagger.annotations.AuthorizationScope> authorizationScopeClass;
+    private Class<io.swagger.annotations.Extension> extensionClass;
+    private Class<io.swagger.annotations.ExtensionProperty> extensionPropertyClass;
+    private Class<org.wso2.carbon.apimgt.annotations.api.Scope> scopeClass;
+    private Class<org.wso2.carbon.apimgt.annotations.api.Scopes> scopesClass;
+    private Map<String, Scope> apiScopes;
 
 
     public AnnotationProcessor(final StandardContext context) {
@@ -90,6 +96,15 @@ public class AnnotationProcessor {
                     .loadClass((io.swagger.annotations.Authorization.class.getName()));
             authorizationScopeClass = (Class<io.swagger.annotations.AuthorizationScope>)classLoader
                     .loadClass((io.swagger.annotations.AuthorizationScope.class.getName()));
+            extensionClass = (Class<io.swagger.annotations.Extension>)classLoader
+                    .loadClass((io.swagger.annotations.Extension.class.getName()));
+            extensionPropertyClass = (Class<io.swagger.annotations.ExtensionProperty>)classLoader
+                    .loadClass(io.swagger.annotations.ExtensionProperty.class.getName());
+            scopeClass = (Class<org.wso2.carbon.apimgt.annotations.api.Scope>) classLoader
+                    .loadClass(org.wso2.carbon.apimgt.annotations.api.Scope.class.getName());
+            scopesClass = (Class<org.wso2.carbon.apimgt.annotations.api.Scopes>) classLoader
+                    .loadClass(org.wso2.carbon.apimgt.annotations.api.Scopes.class.getName());
+
         } catch (ClassNotFoundException e) {
             log.error("An error has occurred while loading classes ", e);
         }
@@ -135,6 +150,7 @@ public class AnnotationProcessor {
                                 try {
                                     clazz = classLoader.loadClass(className);
                                     Annotation apiAnno = clazz.getAnnotation(apiClazz);
+                                    apiScopes = processAPIScopes(apiAnno);
                                     List<Permission> resourceList;
                                     if (apiAnno != null) {
                                         if (log.isDebugEnabled()) {
@@ -165,7 +181,9 @@ public class AnnotationProcessor {
                                         }
                                     }
                                 } catch (ClassNotFoundException e) {
-                                    log.error("Error when passing the api annotation for device type apis.");
+                                    log.error("Error when passing the api annotation for device type apis.", e);
+                                } catch (Throwable e) {
+                                    log.error("Error when passing the scopes annotation for device type apis.", e);
                                 }
                                 return apiPermissions;
                             }
@@ -342,28 +360,53 @@ public class AnnotationProcessor {
 
     private void setPermission(Annotation currentMethod, Permission permission) throws Throwable {
         InvocationHandler methodHandler = Proxy.getInvocationHandler(currentMethod);
-        Annotation[] authorizations = (Annotation[]) methodHandler.invoke(currentMethod
-                , apiOperation.getMethod(SWAGGER_ANNOTATIONS_AUTHORIZATIONS,null),null);
-        for(int i=0; i<authorizations.length; i++){
-            methodHandler = Proxy.getInvocationHandler(authorizations[i]);
-            String value =(String)methodHandler.invoke(authorizations[i], authorizationClass.getMethod("value", null)
-                    ,null);
-            if(SWAGGER_ANNOTATIONS_PERMISSION.equals(value)){
-                Annotation[] scopes =(Annotation[])methodHandler.invoke(authorizations[i], authorizationClass
-                        .getMethod(SWAGGER_ANNOTATIONS_SCOPES, null),null);
-                String[] scopesList = new String[scopes.length];
-                String[] descriptions = new String[scopes.length];
-                for(int j=0; j<scopes.length; j++){
-                    methodHandler = Proxy.getInvocationHandler(scopes[j]);
-                    scopesList[j] = (String)methodHandler.invoke(authorizations[j], authorizationScopeClass
-                            .getMethod(SWAGGER_ANNOTATIONS_SCOPE, null),null);
-                    descriptions[j] = (String)methodHandler.invoke(authorizations[j], authorizationScopeClass
-                            .getMethod(SWAGGER_ANNOTATIONS_DESCRIPTION, null),null);
-                }
-                //todo currently permission tree supports only adding one permission per API point.
-                permission.setName(descriptions[0]);
-                permission.setPath(scopesList[0]);
+        Annotation[] extensions = (Annotation[]) methodHandler.invoke(currentMethod,
+                apiOperation.getMethod(SWAGGER_ANNOTATIONS_EXTENSIONS, null), null);
+        methodHandler = Proxy.getInvocationHandler(extensions[0]);
+        Annotation[] properties =  (Annotation[])methodHandler.invoke(extensions[0], extensionClass
+                .getMethod(SWAGGER_ANNOTATIONS_PROPERTIES,null), null);
+        Scope scope;
+        for (Annotation property : properties) {
+            methodHandler = Proxy.getInvocationHandler(property);
+            String scopeKey = (String) methodHandler.invoke(property, extensionPropertyClass
+                    .getMethod(SWAGGER_ANNOTATIONS_PROPERTIES_VALUE, null),null);
+            if (!scopeKey.isEmpty()) {
+                scope = apiScopes.get(scopeKey);
+                permission.setName(scope.getName());
+                //TODO: currently permission tree supports only adding one permission per API point.
+                permission.setPath(scope.getRoles().split(" ")[0]);
             }
         }
+    }
+
+    private Map<String,Scope> processAPIScopes(Annotation annotation) throws Throwable {
+        Map<String, Scope> scopes = new HashMap<>();
+
+        InvocationHandler methodHandler = Proxy.getInvocationHandler(annotation);
+        Annotation[] annotatedScopes = (Annotation[]) methodHandler.invoke(annotation, scopesClass
+                .getMethod(ANNOTATIONS_SCOPES, null), null);
+
+        Scope scope;
+        String permissions[];
+        StringBuilder aggregatedPermissions = new StringBuilder();
+        for(int i=0; i<annotatedScopes.length; i++){
+            methodHandler = Proxy.getInvocationHandler(annotatedScopes[i]);
+            scope = new Scope();
+            scope.setName(invokeMethod(scopeClass
+                    .getMethod(SWAGGER_ANNOTATIONS_PROPERTIES_NAME), annotatedScopes[i], STRING));
+            scope.setDescription(invokeMethod(scopeClass
+                    .getMethod(SWAGGER_ANNOTATIONS_PROPERTIES_DESCRIPTION), annotatedScopes[i], STRING));
+            scope.setKey(invokeMethod(scopeClass
+                    .getMethod(SWAGGER_ANNOTATIONS_PROPERTIES_KEY), annotatedScopes[i], STRING));
+            permissions = (String[])methodHandler.invoke(annotatedScopes[i], scopeClass
+                    .getMethod(SWAGGER_ANNOTATIONS_PROPERTIES_PERMISSIONS, null),null);
+            for (String permission : permissions) {
+                aggregatedPermissions.append(permission);
+                aggregatedPermissions.append(" ");
+            }
+            scope.setRoles(aggregatedPermissions.toString());
+            scopes.put(scope.getKey(), scope);
+        }
+        return scopes;
     }
 }

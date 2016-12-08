@@ -219,6 +219,17 @@ public interface DeviceDAO {
     List<Device> getDevicesOfUser(String username, int tenantId) throws DeviceManagementDAOException;
 
     /**
+     * This method is used to retrieve the devices of given user of given device type.
+     * @param username user name.
+     * @param type device type.
+     * @param tenantId tenant id.
+     * @return
+     * @throws DeviceManagementDAOException
+     */
+    List<Device> getDevicesOfUser(String username, String type, int tenantId) throws DeviceManagementDAOException;
+
+
+    /**
      * This method is used to retrieve devices of a given user as a paginated result.
      *
      * @param request  PaginationRequest object holding the data for pagination and search data.

@@ -27,6 +27,7 @@
     </ManagementRepository>
     <PushNotificationProviders>
         <Provider>org.wso2.carbon.device.mgt.extensions.push.notification.provider.gcm.GCMBasedPushNotificationProvider</Provider>
+        <!--<Provider>org.wso2.carbon.device.mgt.mobile.impl.ios.apns.APNSBasedPushNotificationProvider</Provider>-->
         <!--<Provider>org.wso2.carbon.device.mgt.extensions.push.notification.provider.mqtt.MQTTBasedPushNotificationProvider</Provider>-->
         <!--<Provider>org.wso2.carbon.device.mgt.extensions.push.notification.provider.xmpp.XMPPBasedPushNotificationProvider</Provider>-->
     </PushNotificationProviders>

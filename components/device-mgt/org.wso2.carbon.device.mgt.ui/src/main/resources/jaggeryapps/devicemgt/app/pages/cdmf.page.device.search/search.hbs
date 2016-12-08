@@ -1,13 +1,10 @@
 <!--
  Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
-
  WSO2 Inc. licenses this file to you under the Apache License,
  Version 2.0 (the "License"); you may not use this file except
  in compliance with the License.
  You may obtain a copy of the License at
-
  http://www.apache.org/licenses/LICENSE-2.0
-
  Unless required by applicable law or agreed to in writing,
  software distributed under the License is distributed on an
  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
@@ -15,6 +12,8 @@
  specific language governing permissions and limitations
  under the License.
 -->
+{{unit "cdmf.unit.ui.modal"}}
+{{unit "cdmf.unit.data-tables-extended"}}
 {{#zone "breadcrumbs"}}
     <li>
         <a href="{{@app.context}}/">
@@ -96,6 +95,21 @@
                 </div>
             </div>
             <!-- /content -->
+            <div id="group-error-content" class="hide">
+                <div class="modal-content">
+                    <div class="row">
+                        <div class="col-md-7 col-centered center-container">
+                            <h4 id="error-msg">Unexpected error occurred!</h4>
+                            <br/>
+                            <div class="buttons">
+                                <a href="#" id="group-unexpected-error-link" class="btn-operations">
+                                    Ok
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <!-- loading -->
             <div id="loading-content" class="col-centered hidden">
                 <i class="fw fw-settings fw-spin fw-2x"></i>
@@ -143,4 +157,3 @@
     <script id="device-listing" src="{{@page.publicUri}}/templates/device-listing.hbs"
             type="text/x-handlebars-template"></script>
 {{/zone}}
-

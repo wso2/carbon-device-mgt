@@ -85,7 +85,7 @@ $("a#invite-user-link").click(function () {
                 modalDialog.footer('<div class="buttons"> <a href="#" id="invite-user-success-link" ' +
                     'class="btn-operations">Ok </a> </div>');
                 $("a#invite-user-success-link").click(function () {
-                    modalPopup.hide();
+                    modalDialog.hide();
                 });
             },
             function () {
@@ -95,14 +95,14 @@ $("a#invite-user-link").click(function () {
                 modalDialog.footer('<div class="buttons"> <a href="#" id="invite-user-error-link" ' +
                     'class="btn-operations">Ok </a> </div>');
                 $("a#invite-user-error-link").click(function () {
-                    modalPopup.hide();
+                    modalDialog.hide();
                 });
             }
         );
     });
 
     $("a#invite-user-cancel-link").click(function () {
-        modalPopup.hide();
+        modalDialog.hide();
     });
 });
 

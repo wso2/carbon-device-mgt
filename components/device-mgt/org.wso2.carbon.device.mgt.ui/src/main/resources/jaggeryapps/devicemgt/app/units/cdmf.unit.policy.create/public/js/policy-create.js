@@ -21,6 +21,7 @@ var policy = {};
 var validateInline = {};
 var clearInline = {};
 var validateStep = {};
+var hasPolicyProfileScript = false;
 
 var enableInlineError = function (inputField, errorMsg, errorSign) {
     var fieldIdentifier = "#" + inputField;
@@ -157,6 +158,9 @@ stepForwardFrom["policy-platform"] = function (actionButton) {
         script.type = 'text/javascript';
         script.src = context + policyOperationsScriptSrc;
         $(".wr-advance-operations").prepend(script);
+        hasPolicyProfileScript = true;
+    } else {
+        hasPolicyProfileScript = false;
     }
     if (policyOperationsStylesSrc) {
         var style = document.createElement('link');
@@ -172,11 +176,14 @@ stepForwardFrom["policy-platform"] = function (actionButton) {
  * Forward action of policy profile page. Generates policy profile payload.
  */
 stepForwardFrom["policy-profile"] = function () {
-    /*
-     generatePolicyProfile() function should be implemented in plugin side and should include the logic to build the
-     policy profile object.
-     */
-    policy["profile"] = generatePolicyProfile();
+    policy["profile"] = [];
+    if (hasPolicyProfileScript) {
+        /*
+         generatePolicyProfile() function should be implemented in plugin side and should include the logic to build the
+         policy profile object.
+         */
+        policy["profile"] = generatePolicyProfile();
+    }
     // updating next-page wizard title with selected platform
     $("#policy-criteria-page-wizard-title").text("ADD " + policy["platform"] + " POLICY");
 };
@@ -185,11 +192,13 @@ stepForwardFrom["policy-profile"] = function () {
  * Backward action of policy profile page. Moves back to platform selection step.
  */
 stepBackFrom["policy-profile"] = function () {
-    /*
-     resetPolicyProfile() function should be implemented in plugin side and should include the logic to reset the policy
-     profile object.
-     */
-    resetPolicyProfile();
+    if (hasPolicyProfileScript) {
+        /*
+         resetPolicyProfile() function should be implemented in plugin side and should include the logic to reset the policy
+         profile object.
+         */
+        resetPolicyProfile();
+    }
 };
 
 /**
@@ -365,21 +374,26 @@ stepForwardFrom["policy-naming"] = function () {
 };
 
 var savePolicy = function (policy, isActive, serviceURL) {
-    /*
-     generateProfileFeaturesList() should be implemented in the plugin side and should include logic to build the
-     profilePayloads array which contains objects, {featureCode:"value", deviceType:"value", content:"value"}.
-     policy["profile"] object will be available for the method which returns from the generatePolicyProfile() function.
-     */
-    var profilePayloads = generateProfileFeaturesList();
+    var profilePayloads;
+    if (hasPolicyProfileScript) {
+        /*
+         generateProfileFeaturesList() should be implemented in the plugin side and should include logic to build the
+         profilePayloads array which contains objects, {featureCode:"value", deviceType:"value", content:"value"}.
+         policy["profile"] object will be available for the method which returns from the generatePolicyProfile() function.
+         */
+        profilePayloads = generateProfileFeaturesList();
 
-    $.each(profilePayloads, function (i, item) {
-        $.each(item.content, function (key, value) {
-            //cannot add a true check since it will catch value = false as well
-            if (value === null || value === undefined || value === "") {
-                item.content[key] = null;
-            }
+        $.each(profilePayloads, function (i, item) {
+            $.each(item.content, function (key, value) {
+                //cannot add a true check since it will catch value = false as well
+                if (value === null || value === undefined || value === "") {
+                    item.content[key] = null;
+                }
+            });
         });
-    });
+    } else {
+        profilePayloads = generateGenericPayload();
+    }
 
     var payload = {
         "policyName": policy["policyName"],

@@ -22,7 +22,7 @@ function onRequest(context) {
         loginActionUrl = "/commonauth";
     }
 
-    if(authFailure){
+    if (authFailure) {
         viewModel.message = "Login failed! Please recheck the username and password and try again.";
     }
 

@@ -76,6 +76,7 @@ public class AuthenticationHandler implements Handler {
             CoreUtils.debugLog(log, "Authentication handler invoked by: ", ctxPath);
             Map<?, ?> headers = (Map<?, ?>) messageContext.getProperty(MessageContext.TRANSPORT_HEADERS);
             try {
+                RESTResponse response = null;
                 if (headers.containsKey(AuthConstants.MDM_SIGNATURE)) {
 
                     String mdmSignature = headers.get(AuthConstants.MDM_SIGNATURE).toString();
@@ -84,7 +85,7 @@ public class AuthenticationHandler implements Handler {
                     String accessToken = getAccessToken();
                     URI certVerifyUrl = new URI(AuthConstants.HTTPS + "://" + CoreUtils.getHost() + ":" + CoreUtils
                             .getHttpsPort() + "/api/certificate-mgt/v1.0/admin/certificates/verify/ios");
-                    Map<String, String> certVerifyHeaders = new HashMap<String, String>();
+                    Map<String, String> certVerifyHeaders = new HashMap<>();
                     certVerifyHeaders.put("Authorization", "Bearer " + accessToken);
                     certVerifyHeaders.put("Content-Type", "application/json");
                     String certVerifyContent = "{\n" +
@@ -93,16 +94,9 @@ public class AuthenticationHandler implements Handler {
                             "\"serial\":\"\"\n" +
                             "}";
 
-                    RESTResponse response = restInvoker.invokePOST(certVerifyUrl, certVerifyHeaders, null,
+                    response = restInvoker.invokePOST(certVerifyUrl, certVerifyHeaders, null,
                             null, certVerifyContent);
                     CoreUtils.debugLog(log, "Verify response:", response.getContent());
-
-                    if (!response.getContent().contains("invalid")) {
-                        return InvocationResponse.CONTINUE;
-                    }
-                    log.warn("Unauthorized request for api: " + ctxPath);
-                    setFaultCodeAndThrowAxisFault(messageContext, new Exception("Unauthorized!"));
-                    return InvocationResponse.SUSPEND;
 
                 } else if (headers.containsKey(AuthConstants.PROXY_MUTUAL_AUTH_HEADER)) {
                     String subjectDN = headers.get(AuthConstants.PROXY_MUTUAL_AUTH_HEADER).toString();
@@ -110,7 +104,7 @@ public class AuthenticationHandler implements Handler {
                     String accessToken = getAccessToken();
                     URI certVerifyUrl = new URI(AuthConstants.HTTPS + "://" + CoreUtils.getHost() + ":" + CoreUtils
                             .getHttpsPort() + "/api/certificate-mgt/v1.0/admin/certificates/verify/android");
-                    Map<String, String> certVerifyHeaders = new HashMap<String, String>();
+                    Map<String, String> certVerifyHeaders = new HashMap<>();
                     certVerifyHeaders.put("Authorization", "Bearer " + accessToken);
                     certVerifyHeaders.put("Content-Type", "application/json");
                     String certVerifyContent = "{\n" +
@@ -119,15 +113,9 @@ public class AuthenticationHandler implements Handler {
                             "\"serial\":\"" + AuthConstants.PROXY_MUTUAL_AUTH_HEADER + "\"\n" +
                             "}";
 
-                    RESTResponse response = restInvoker.invokePOST(certVerifyUrl, certVerifyHeaders, null,
+                    response = restInvoker.invokePOST(certVerifyUrl, certVerifyHeaders, null,
                             null, certVerifyContent);
                     CoreUtils.debugLog(log, "Verify response:", response.getContent());
-                    if (!response.getContent().contains("invalid")) {
-                        return InvocationResponse.CONTINUE;
-                    }
-                    log.warn("Unauthorized request for api: " + ctxPath);
-                    setFaultCodeAndThrowAxisFault(messageContext, new Exception("Unauthorized!"));
-                    return InvocationResponse.SUSPEND;
 
                 } else if (headers.containsKey(AuthConstants.ENCODED_PEM)) {
                     String encodedPem = headers.get(AuthConstants.ENCODED_PEM).toString();
@@ -136,7 +124,7 @@ public class AuthenticationHandler implements Handler {
                     String accessToken = getAccessToken();
                     URI certVerifyUrl = new URI(AuthConstants.HTTPS + "://" + CoreUtils.getHost() + ":" + CoreUtils
                             .getHttpsPort() + "/api/certificate-mgt/v1.0/admin/certificates/verify/ios");
-                    Map<String, String> certVerifyHeaders = new HashMap<String, String>();
+                    Map<String, String> certVerifyHeaders = new HashMap<>();
                     certVerifyHeaders.put("Authorization", "Bearer " + accessToken);
                     certVerifyHeaders.put("Content-Type", "application/json");
                     String certVerifyContent = "{\n" +
@@ -145,21 +133,22 @@ public class AuthenticationHandler implements Handler {
                             "\"serial\":\"\"\n" +
                             "}";
 
-                    RESTResponse response = restInvoker.invokePOST(certVerifyUrl, certVerifyHeaders, null,
+                    response = restInvoker.invokePOST(certVerifyUrl, certVerifyHeaders, null,
                             null, certVerifyContent);
                     CoreUtils.debugLog(log, "Verify response:", response.getContent());
 
-                    if (!response.getContent().contains("invalid")) {
-                        return InvocationResponse.CONTINUE;
-                    }
-                    log.warn("Unauthorized request for api: " + ctxPath);
-                    setFaultCodeAndThrowAxisFault(messageContext, new Exception("Unauthorized!"));
-                    return InvocationResponse.SUSPEND;
                 } else {
                     log.warn("Unauthorized request for api: " + ctxPath);
                     setFaultCodeAndThrowAxisFault(messageContext, new Exception("SSL required"));
                     return InvocationResponse.SUSPEND;
                 }
+
+                if (response != null && !response.getContent().contains("invalid")) {
+                    return InvocationResponse.CONTINUE;
+                }
+                log.warn("Unauthorized request for api: " + ctxPath);
+                setFaultCodeAndThrowAxisFault(messageContext, new Exception("Unauthorized!"));
+                return InvocationResponse.SUSPEND;
             } catch (Exception e) {
                 log.error("Error while processing certificate.", e);
                 setFaultCodeAndThrowAxisFault(messageContext, e);

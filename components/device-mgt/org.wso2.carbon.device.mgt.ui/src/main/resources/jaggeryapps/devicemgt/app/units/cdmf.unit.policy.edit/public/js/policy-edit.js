@@ -20,7 +20,6 @@ var validateStep = {};
 var skipStep = {};
 var stepForwardFrom = {};
 var stepBackFrom = {};
-var configuredOperations = [];
 var policy = {};
 var currentlyEffected = {};
 
@@ -200,9 +199,11 @@ skipStep["policy-platform"] = function (policyPayloadObj) {
                         script.type = 'text/javascript';
                         script.src = policyOperationsScriptSrc;
                         $(".wr-advance-operations").prepend(script);
-                        var configuredOperations = operationModule.populateProfile(policy["platform"],
-                            policyPayloadObj["profile"]["profileFeaturesList"]);
-                        polulateProfileOperations(configuredOperations);
+                        /*
+                         This method should be implemented in the relevant plugin side and should include the logic to
+                         populate the policy profile in the plugin specific UI.
+                         */
+                        polulateProfileOperations(policyPayloadObj["profile"]["profileFeaturesList"]);
                     }
                 });
             });
@@ -227,7 +228,11 @@ skipStep["policy-platform"] = function (policyPayloadObj) {
  * Forward action of policy profile page. Generates policy profile payload.
  */
 stepForwardFrom["policy-profile"] = function () {
-    policy["profile"] = operationModule.generateProfile(policy["platform"], configuredOperations);
+    /*
+     generatePolicyProfile() function should be implemented in plugin side and should include the logic to build the
+     policy profile object.
+     */
+    policy["profile"] = generatePolicyProfile();
     // updating next-page wizard title with selected platform
     $("#policy-criteria-page-wizard-title").text("EDIT " + policy["platform"] + " POLICY - " + policy["name"]);
 };
@@ -415,19 +420,12 @@ var getParameterByName = function (name) {
 };
 
 var updatePolicy = function (policy, state) {
-    var profilePayloads = [];
-    // traverses key by key in policy["profile"]
-    var key;
-    for (key in policy["profile"]) {
-
-        if (policy["profile"].hasOwnProperty(key)) {
-            profilePayloads.push({
-                "featureCode": key,
-                "deviceType": policy["platform"],
-                "content": policy["profile"][key]
-            });
-        }
-    }
+    /*
+     generateProfileFeaturesList() should be implemented in the plugin side and should include logic to build the
+     profilePayloads array which contains objects, {featureCode:"value", deviceType:"value", content:"value"}.
+     policy["profile"] object will be available for the method which returns from the generatePolicyProfile() function.
+     */
+    var profilePayloads = generateProfileFeaturesList();
 
     $.each(profilePayloads, function (i, item) {
         $.each(item.content, function (key, value) {

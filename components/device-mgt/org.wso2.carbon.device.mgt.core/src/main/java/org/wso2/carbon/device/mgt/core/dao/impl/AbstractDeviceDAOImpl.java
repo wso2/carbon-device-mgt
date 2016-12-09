@@ -82,16 +82,17 @@ public abstract class AbstractDeviceDAOImpl implements DeviceDAO {
         int rows;
         try {
             conn = this.getConnection();
-            String sql = "UPDATE DM_DEVICE SET DESCRIPTION = ?, LAST_UPDATED_TIMESTAMP = ? " +
+            String sql = "UPDATE DM_DEVICE SET NAME = ?, DESCRIPTION = ?, LAST_UPDATED_TIMESTAMP = ? " +
                     "WHERE DEVICE_TYPE_ID = (SELECT ID FROM DM_DEVICE_TYPE WHERE NAME = ? AND PROVIDER_TENANT_ID = ?) " +
                     "AND DEVICE_IDENTIFICATION = ? AND TENANT_ID = ?";
             stmt = conn.prepareStatement(sql, new String[] {"id"});
-            stmt.setString(1, device.getDescription());
-            stmt.setTimestamp(2, new Timestamp(new Date().getTime()));
-            stmt.setString(3, device.getType());
-            stmt.setInt(4, tenantId);
-            stmt.setString(5, device.getDeviceIdentifier());
-            stmt.setInt(6, tenantId);
+            stmt.setString(1, device.getName());
+            stmt.setString(2, device.getDescription());
+            stmt.setTimestamp(3, new Timestamp(new Date().getTime()));
+            stmt.setString(4, device.getType());
+            stmt.setInt(5, tenantId);
+            stmt.setString(6, device.getDeviceIdentifier());
+            stmt.setInt(7, tenantId);
             rows = stmt.executeUpdate();
             return (rows > 0);
         } catch (SQLException e) {
@@ -353,6 +354,40 @@ public abstract class AbstractDeviceDAOImpl implements DeviceDAO {
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, tenantId);
             stmt.setString(2, username);
+            rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                Device device = DeviceManagementDAOUtil.loadDevice(rs);
+                devices.add(device);
+            }
+        } catch (SQLException e) {
+            throw new DeviceManagementDAOException("Error occurred while fetching the list of devices belongs to '" +
+                    username + "'", e);
+        } finally {
+            DeviceManagementDAOUtil.cleanupResources(stmt, rs);
+        }
+        return devices;
+    }
+
+
+    @Override
+    public List<Device> getDevicesOfUser(String username, String type, int tenantId) throws DeviceManagementDAOException {
+        Connection conn;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        List<Device> devices = new ArrayList<>();
+        try {
+            conn = this.getConnection();
+            String sql = "SELECT e1.OWNER, e1.OWNERSHIP, e1.ENROLMENT_ID, e1.DEVICE_ID, e1.STATUS, e1.DATE_OF_LAST_UPDATE," +
+                    " e1.DATE_OF_ENROLMENT, d.DESCRIPTION, d.NAME AS DEVICE_NAME, d.DEVICE_IDENTIFICATION, t.NAME " +
+                    "AS DEVICE_TYPE FROM DM_DEVICE d, (SELECT e.OWNER, e.OWNERSHIP, e.ID AS ENROLMENT_ID, " +
+                    "e.DEVICE_ID, e.STATUS, e.DATE_OF_LAST_UPDATE, e.DATE_OF_ENROLMENT FROM DM_ENROLMENT e WHERE " +
+                    "e.TENANT_ID = ? AND e.OWNER = ?) e1, DM_DEVICE_TYPE t WHERE d.ID = e1.DEVICE_ID " +
+                    "AND t.ID = d.DEVICE_TYPE_ID AND t.NAME= ?";
+            stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, tenantId);
+            stmt.setString(2, username);
+            stmt.setString(3, type);
             rs = stmt.executeQuery();
 
             while (rs.next()) {

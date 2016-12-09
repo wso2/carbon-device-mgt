@@ -21,7 +21,7 @@ package org.wso2.carbon.device.mgt.common;
 /**
  *
  */
-public class TaskOperation {
+public class MonitoringOperation {
 
     private String taskName;
     private int recurrentTimes;
@@ -41,6 +41,7 @@ public class TaskOperation {
     public void setRecurrentTimes(int recurrentTimes) {
         this.recurrentTimes = recurrentTimes;
     }
+
 
 }
 

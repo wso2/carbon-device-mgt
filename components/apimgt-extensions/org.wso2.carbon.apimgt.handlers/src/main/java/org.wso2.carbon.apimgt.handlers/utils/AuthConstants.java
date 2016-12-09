@@ -21,7 +21,6 @@ public class AuthConstants {
     public static final String SEC_FAULT = "SECURITY_VALIDATION_FAILURE";
     public static final String HTTPS = "https";
     public static final String WSSE = "wsse";
-    public static final String SSL_CERT_X509 = "ssl.client.auth.cert.X509";
     public static final String AUTH_CONFIGURATION_FILE_NAME = "api-filter-config.xml";
     public static final String API_FILTER_CONFIG_ELEMENT = "apiFilterConfig";
     public static final String API_LIST_PROPERTY = "apiList";
@@ -30,6 +29,6 @@ public class AuthConstants {
     public static final String USERNAME = "username";
     public static final String PASSWORD = "password";
     public static final String MDM_SIGNATURE = "mdm-signature";
-    public static final String IOS = "ios";
-    public static final String ANDROID = "android";
+    public static final String PROXY_MUTUAL_AUTH_HEADER = "proxy-mutual-auth-header";
+    public static final String ENCODED_PEM = "encoded-pem";
 }

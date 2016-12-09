@@ -30,6 +30,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.ws.security.WSConstants;
 import org.apache.ws.security.WSSecurityException;
 import org.apache.ws.security.util.Base64;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.wso2.carbon.apimgt.handlers.invoker.RESTInvoker;
 import org.wso2.carbon.apimgt.handlers.invoker.RESTResponse;
@@ -37,7 +38,9 @@ import org.wso2.carbon.apimgt.handlers.utils.AuthConstants;
 import org.wso2.carbon.apimgt.handlers.utils.CoreUtils;
 
 import javax.xml.namespace.QName;
+import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -68,52 +71,17 @@ public class AuthenticationHandler implements Handler {
      * @throws AxisFault
      */
     public InvocationResponse invoke(MessageContext messageContext) throws AxisFault {
-        boolean validateRequest = messageContext.getTo() != null;
-
-        if (validateRequest && isSecuredAPI(messageContext)) {
+        if (isSecuredAPI(messageContext)) {
             String ctxPath = messageContext.getTo().getAddress().trim();
             CoreUtils.debugLog(log, "Authentication handler invoked by: ", ctxPath);
             Map<?, ?> headers = (Map<?, ?>) messageContext.getProperty(MessageContext.TRANSPORT_HEADERS);
+            try {
+                if (headers.containsKey(AuthConstants.MDM_SIGNATURE)) {
 
-            if (headers.containsKey(AuthConstants.MDM_SIGNATURE)) {
-                String mdmSignature = headers.get(AuthConstants.MDM_SIGNATURE).toString();
-
-                try {
+                    String mdmSignature = headers.get(AuthConstants.MDM_SIGNATURE).toString();
                     CoreUtils.debugLog(log, "Verify Cert:\n", mdmSignature);
 
-                    URI dcrUrl = new URI(AuthConstants.HTTPS + "://" + CoreUtils.getHost() + ":" + CoreUtils
-                            .getHttpsPort() + "/dynamic-client-web/register");
-                    String dcrContent = "{\n" +
-                            "\"owner\":\"" + CoreUtils.getUsername() + "\",\n" +
-                            "\"clientName\":\"emm\",\n" +
-                            "\"grantType\":\"refresh_token password client_credentials\",\n" +
-                            "\"tokenScope\":\"default\"\n" +
-                            "}";
-                    Map<String, String> drcHeaders = new HashMap<String, String>();
-                    drcHeaders.put("Content-Type", "application/json");
-
-                    RESTResponse response = restInvoker.invokePOST(dcrUrl, drcHeaders, null,
-                            null, dcrContent);
-                    CoreUtils.debugLog(log, "DCR response:", response.getContent());
-                    JSONObject jsonResponse = new JSONObject(response.getContent());
-                    String clientId = jsonResponse.getString("client_id");
-                    String clientSecret = jsonResponse.getString("client_secret");
-
-                    URI tokenUrl = new URI(AuthConstants.HTTPS + "://" + CoreUtils.getHost() + ":" + CoreUtils
-                            .getHttpsPort() + "/oauth2/token");
-                    String tokenContent = "grant_type=password&username=" + CoreUtils.getUsername() + "&password=" +
-                            CoreUtils.getPassword() + "&scope=activity-view";
-                    String tokenBasicAuth = "Basic " + Base64.encode((clientId + ":" + clientSecret).getBytes());
-                    Map<String, String> tokenHeaders = new HashMap<String, String>();
-                    tokenHeaders.put("Authorization", tokenBasicAuth);
-                    tokenHeaders.put("Content-Type", "application/x-www-form-urlencoded");
-
-                    response = restInvoker.invokePOST(tokenUrl, tokenHeaders, null,
-                            null, tokenContent);
-                    CoreUtils.debugLog(log, "Token response:", response.getContent());
-                    jsonResponse = new JSONObject(response.getContent());
-                    String accessToken = jsonResponse.getString("access_token");
-
+                    String accessToken = getAccessToken();
                     URI certVerifyUrl = new URI(AuthConstants.HTTPS + "://" + CoreUtils.getHost() + ":" + CoreUtils
                             .getHttpsPort() + "/api/certificate-mgt/v1.0/admin/certificates/verify/ios");
                     Map<String, String> certVerifyHeaders = new HashMap<String, String>();
@@ -125,7 +93,7 @@ public class AuthenticationHandler implements Handler {
                             "\"serial\":\"\"\n" +
                             "}";
 
-                    response = restInvoker.invokePOST(certVerifyUrl, certVerifyHeaders, null,
+                    RESTResponse response = restInvoker.invokePOST(certVerifyUrl, certVerifyHeaders, null,
                             null, certVerifyContent);
                     CoreUtils.debugLog(log, "Verify response:", response.getContent());
 
@@ -136,14 +104,65 @@ public class AuthenticationHandler implements Handler {
                     setFaultCodeAndThrowAxisFault(messageContext, new Exception("Unauthorized!"));
                     return InvocationResponse.SUSPEND;
 
-                } catch (Exception e) {
-                    log.error("Error while processing certificate.", e);
-                    setFaultCodeAndThrowAxisFault(messageContext, e);
+                } else if (headers.containsKey(AuthConstants.PROXY_MUTUAL_AUTH_HEADER)) {
+                    String subjectDN = headers.get(AuthConstants.PROXY_MUTUAL_AUTH_HEADER).toString();
+                    CoreUtils.debugLog(log, "Verify subject DN: ", subjectDN);
+                    String accessToken = getAccessToken();
+                    URI certVerifyUrl = new URI(AuthConstants.HTTPS + "://" + CoreUtils.getHost() + ":" + CoreUtils
+                            .getHttpsPort() + "/api/certificate-mgt/v1.0/admin/certificates/verify/android");
+                    Map<String, String> certVerifyHeaders = new HashMap<String, String>();
+                    certVerifyHeaders.put("Authorization", "Bearer " + accessToken);
+                    certVerifyHeaders.put("Content-Type", "application/json");
+                    String certVerifyContent = "{\n" +
+                            "\"pem\":\"" + subjectDN + "\",\n" +
+                            "\"tenantId\": \"-1234\",\n" +
+                            "\"serial\":\"" + AuthConstants.PROXY_MUTUAL_AUTH_HEADER + "\"\n" +
+                            "}";
+
+                    RESTResponse response = restInvoker.invokePOST(certVerifyUrl, certVerifyHeaders, null,
+                            null, certVerifyContent);
+                    CoreUtils.debugLog(log, "Verify response:", response.getContent());
+                    if (!response.getContent().contains("invalid")) {
+                        return InvocationResponse.CONTINUE;
+                    }
+                    log.warn("Unauthorized request for api: " + ctxPath);
+                    setFaultCodeAndThrowAxisFault(messageContext, new Exception("Unauthorized!"));
+                    return InvocationResponse.SUSPEND;
+
+                } else if (headers.containsKey(AuthConstants.ENCODED_PEM)) {
+                    String encodedPem = headers.get(AuthConstants.ENCODED_PEM).toString();
+                    CoreUtils.debugLog(log, "Verify Cert:\n", encodedPem);
+
+                    String accessToken = getAccessToken();
+                    URI certVerifyUrl = new URI(AuthConstants.HTTPS + "://" + CoreUtils.getHost() + ":" + CoreUtils
+                            .getHttpsPort() + "/api/certificate-mgt/v1.0/admin/certificates/verify/ios");
+                    Map<String, String> certVerifyHeaders = new HashMap<String, String>();
+                    certVerifyHeaders.put("Authorization", "Bearer " + accessToken);
+                    certVerifyHeaders.put("Content-Type", "application/json");
+                    String certVerifyContent = "{\n" +
+                            "\"pem\":\"" + encodedPem + "\",\n" +
+                            "\"tenantId\": \"-1234\",\n" +
+                            "\"serial\":\"\"\n" +
+                            "}";
+
+                    RESTResponse response = restInvoker.invokePOST(certVerifyUrl, certVerifyHeaders, null,
+                            null, certVerifyContent);
+                    CoreUtils.debugLog(log, "Verify response:", response.getContent());
+
+                    if (!response.getContent().contains("invalid")) {
+                        return InvocationResponse.CONTINUE;
+                    }
+                    log.warn("Unauthorized request for api: " + ctxPath);
+                    setFaultCodeAndThrowAxisFault(messageContext, new Exception("Unauthorized!"));
+                    return InvocationResponse.SUSPEND;
+                } else {
+                    log.warn("Unauthorized request for api: " + ctxPath);
+                    setFaultCodeAndThrowAxisFault(messageContext, new Exception("SSL required"));
                     return InvocationResponse.SUSPEND;
                 }
-            } else {
-                log.warn("Unauthorized request for api: " + ctxPath);
-                setFaultCodeAndThrowAxisFault(messageContext, new Exception("SSL required"));
+            } catch (Exception e) {
+                log.error("Error while processing certificate.", e);
+                setFaultCodeAndThrowAxisFault(messageContext, e);
                 return InvocationResponse.SUSPEND;
             }
         } else {
@@ -159,7 +178,7 @@ public class AuthenticationHandler implements Handler {
      * @return boolean
      */
     private boolean isSecuredAPI(MessageContext messageContext) {
-        if (messageContext.getTransportIn() != null &&
+        if (messageContext.getTo() != null && messageContext.getTransportIn() != null &&
                 messageContext.getTransportIn().getName().toLowerCase().equals(AuthConstants.HTTPS)) {
             for (String path : apiList) {
                 if (messageContext.getTo().getAddress().trim().contains(path)) {
@@ -170,6 +189,55 @@ public class AuthenticationHandler implements Handler {
         return false;
     }
 
+    /**
+     * Get access token to call admin certificate management service for cert validation.
+     *
+     * @return accessToken String
+     * @throws URISyntaxException
+     * @throws IOException
+     */
+    private String getAccessToken() throws URISyntaxException, IOException, JSONException {
+        URI dcrUrl = new URI(AuthConstants.HTTPS + "://" + CoreUtils.getHost() + ":" + CoreUtils
+                .getHttpsPort() + "/dynamic-client-web/register");
+        String dcrContent = "{\n" +
+                "\"owner\":\"" + CoreUtils.getUsername() + "\",\n" +
+                "\"clientName\":\"emm\",\n" +
+                "\"grantType\":\"refresh_token password client_credentials\",\n" +
+                "\"tokenScope\":\"default\"\n" +
+                "}";
+        Map<String, String> drcHeaders = new HashMap<String, String>();
+        drcHeaders.put("Content-Type", "application/json");
+
+        RESTResponse response = restInvoker.invokePOST(dcrUrl, drcHeaders, null,
+                null, dcrContent);
+        CoreUtils.debugLog(log, "DCR response:", response.getContent());
+        JSONObject jsonResponse = new JSONObject(response.getContent());
+        String clientId = jsonResponse.getString("client_id");
+        String clientSecret = jsonResponse.getString("client_secret");
+
+        URI tokenUrl = new URI(AuthConstants.HTTPS + "://" + CoreUtils.getHost() + ":" + CoreUtils
+                .getHttpsPort() + "/oauth2/token");
+        String tokenContent = "grant_type=password&username=" + CoreUtils.getUsername() + "&password=" +
+                CoreUtils.getPassword() + "&scope=activity-view";
+        String tokenBasicAuth = "Basic " + Base64.encode((clientId + ":" + clientSecret).getBytes());
+        Map<String, String> tokenHeaders = new HashMap<String, String>();
+        tokenHeaders.put("Authorization", tokenBasicAuth);
+        tokenHeaders.put("Content-Type", "application/x-www-form-urlencoded");
+
+        response = restInvoker.invokePOST(tokenUrl, tokenHeaders, null,
+                null, tokenContent);
+        CoreUtils.debugLog(log, "Token response:", response.getContent());
+        jsonResponse = new JSONObject(response.getContent());
+        String accessToken = jsonResponse.getString("access_token");
+        return accessToken;
+    }
+
+    /**
+     * Thow error message to client
+     * @param msgContext
+     * @param e Exception
+     * @throws AxisFault
+     */
     private void setFaultCodeAndThrowAxisFault(MessageContext msgContext, Exception e) throws AxisFault {
 
         msgContext.setProperty(AuthConstants.SEC_FAULT, Boolean.TRUE);

@@ -1,5 +1,4 @@
 function onRequest(context) {
-    var devicemgtProps = require("/app/modules/conf-reader/main.js")["conf"];
     var authModuleConfigs = context.app.conf["authModule"];
     var sessionDataKey = request.getParameter("sessionDataKey");
 
@@ -19,7 +18,7 @@ function onRequest(context) {
     var viewModel = {};
     var loginActionUrl = context.app.context + "/uuf/login";
     if (sessionDataKey) {
-        loginActionUrl = devicemgtProps["httpsURL"] + "/commonauth";
+        loginActionUrl =  "/commonauth";
     }
 
     viewModel.sessionDataKey = sessionDataKey;

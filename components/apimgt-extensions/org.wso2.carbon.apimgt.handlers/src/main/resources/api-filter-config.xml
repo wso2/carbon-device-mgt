@@ -18,5 +18,7 @@
         <property name="httpsPort" value="9443"/>
         <property name="username" value="admin"/>
         <property name="password" value="admin"/>
+        <property name="ios-verify-endpoint" value="/api/certificate-mgt/v1.0/admin/certificates/verify/ios"/>
+        <property name="android-verify-endpoint" value="/api/certificate-mgt/v1.0/admin/certificates/verify/android"/>
     </bean>
 </beans>

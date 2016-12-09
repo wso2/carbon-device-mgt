@@ -37,6 +37,8 @@ public class CoreUtils {
     private static int httpsPort = 9443;
     private static String username = "admin";
     private static String password = "admin";
+    private static String iosVerifyEndpoint = "/api/certificate-mgt/v1.0/admin/certificates/verify/ios";
+    private static String androidVerifyEndpoint = "/api/certificate-mgt/v1.0/admin/certificates/verify/android";
 
     /**
      * Reading configurations from api-filter-config.xml file
@@ -88,6 +90,12 @@ public class CoreUtils {
                         } else if (AuthConstants.PASSWORD.equals(beanName)) {
                             String value = beanProp.getAttributeValue(new QName(null, "value"));
                             password = value;
+                        } else if (AuthConstants.IOS_VERIFY_ENDPOINT.equals(beanName)) {
+                            String value = beanProp.getAttributeValue(new QName(null, "value"));
+                            iosVerifyEndpoint = value;
+                        } else if (AuthConstants.ANDROID_VERIFY_ENDPOINT.equals(beanName)) {
+                            String value = beanProp.getAttributeValue(new QName(null, "value"));
+                            androidVerifyEndpoint = value;
                         }
                     }
                 }
@@ -136,5 +144,13 @@ public class CoreUtils {
 
     public static String getPassword() {
         return password;
+    }
+
+    public static String getIosVerifyEndpoint() {
+        return iosVerifyEndpoint;
+    }
+
+    public static String getAndroidVerifyEndpoint() {
+        return androidVerifyEndpoint;
     }
 }

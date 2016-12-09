@@ -84,7 +84,7 @@ public class AuthenticationHandler implements Handler {
 
                     String accessToken = getAccessToken();
                     URI certVerifyUrl = new URI(AuthConstants.HTTPS + "://" + CoreUtils.getHost() + ":" + CoreUtils
-                            .getHttpsPort() + "/api/certificate-mgt/v1.0/admin/certificates/verify/ios");
+                            .getHttpsPort() + CoreUtils.getIosVerifyEndpoint());
                     Map<String, String> certVerifyHeaders = new HashMap<>();
                     certVerifyHeaders.put("Authorization", "Bearer " + accessToken);
                     certVerifyHeaders.put("Content-Type", "application/json");
@@ -103,7 +103,7 @@ public class AuthenticationHandler implements Handler {
                     CoreUtils.debugLog(log, "Verify subject DN: ", subjectDN);
                     String accessToken = getAccessToken();
                     URI certVerifyUrl = new URI(AuthConstants.HTTPS + "://" + CoreUtils.getHost() + ":" + CoreUtils
-                            .getHttpsPort() + "/api/certificate-mgt/v1.0/admin/certificates/verify/android");
+                            .getHttpsPort() + CoreUtils.getAndroidVerifyEndpoint());
                     Map<String, String> certVerifyHeaders = new HashMap<>();
                     certVerifyHeaders.put("Authorization", "Bearer " + accessToken);
                     certVerifyHeaders.put("Content-Type", "application/json");
@@ -123,7 +123,7 @@ public class AuthenticationHandler implements Handler {
 
                     String accessToken = getAccessToken();
                     URI certVerifyUrl = new URI(AuthConstants.HTTPS + "://" + CoreUtils.getHost() + ":" + CoreUtils
-                            .getHttpsPort() + "/api/certificate-mgt/v1.0/admin/certificates/verify/ios");
+                            .getHttpsPort() + CoreUtils.getAndroidVerifyEndpoint());
                     Map<String, String> certVerifyHeaders = new HashMap<>();
                     certVerifyHeaders.put("Authorization", "Bearer " + accessToken);
                     certVerifyHeaders.put("Content-Type", "application/json");

@@ -38,6 +38,7 @@
         <module>org.wso2.carbon.apimgt.application.extension</module>
         <module>org.wso2.carbon.apimgt.application.extension.api</module>
         <module>org.wso2.carbon.apimgt.annotations</module>
+        <module>org.wso2.carbon.apimgt.handlers</module>
     </modules>
 
     <build>

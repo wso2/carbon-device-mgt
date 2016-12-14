@@ -1908,6 +1908,10 @@
 
         <!-- apache pdfbox version -->
         <slf4j.simple.version>1.6.1</slf4j.simple.version>
+
+        <!-- api-mgt handler version properties -->
+        <org.apache.synapse.version>2.1.7-wso2v7</org.apache.synapse.version>
+        <org.apache.ws.security.wso2.version>1.5.11.wso2v15</org.apache.ws.security.wso2.version>
     </properties>
 
 </project>

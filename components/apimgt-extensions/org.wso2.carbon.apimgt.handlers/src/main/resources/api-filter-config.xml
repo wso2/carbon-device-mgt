@@ -1,0 +1,24 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans   http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="restClientConfiguration">
+        <property name="maxTotalConnections" value="200"/>
+        <property name="maxConnectionsPerRoute" value="200"/>
+    </bean>
+
+    <bean id="apiFilterConfig">
+        <property name="apiList">
+            <set>
+                <value>/services/echo</value>
+                <value>/abc</value>
+            </set>
+        </property>
+        <property name="host" value="localhost"/>
+        <property name="httpsPort" value="9443"/>
+        <property name="username" value="admin"/>
+        <property name="password" value="admin"/>
+        <property name="ios-verify-endpoint" value="/api/certificate-mgt/v1.0/admin/certificates/verify/ios"/>
+        <property name="android-verify-endpoint" value="/api/certificate-mgt/v1.0/admin/certificates/verify/android"/>
+    </bean>
+</beans>

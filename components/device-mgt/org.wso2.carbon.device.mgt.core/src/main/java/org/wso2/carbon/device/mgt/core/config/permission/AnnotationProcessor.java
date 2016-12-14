@@ -150,7 +150,10 @@ public class AnnotationProcessor {
                                 try {
                                     clazz = classLoader.loadClass(className);
                                     Annotation apiAnno = clazz.getAnnotation(apiClazz);
-                                    apiScopes = processAPIScopes(apiAnno);
+                                    Annotation scopesAnno = clazz.getAnnotation(scopesClass);
+                                    if (scopesAnno != null) {
+                                        apiScopes = processAPIScopes(scopesAnno);
+                                    }
                                     List<Permission> resourceList;
                                     if (apiAnno != null) {
                                         if (log.isDebugEnabled()) {

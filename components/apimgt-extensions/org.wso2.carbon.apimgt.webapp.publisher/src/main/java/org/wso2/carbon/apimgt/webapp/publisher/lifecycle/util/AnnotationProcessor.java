@@ -134,6 +134,7 @@ public class AnnotationProcessor {
                                 try {
                                     clazz = classLoader.loadClass(className);
                                     Annotation swaggerDefinition = clazz.getAnnotation(apiClazz);
+                                    Annotation Scopes = clazz.getAnnotation(scopesClass);
                                     List<APIResource> resourceList;
                                     if (swaggerDefinition != null) {
                                         if (log.isDebugEnabled()) {
@@ -141,7 +142,9 @@ public class AnnotationProcessor {
                                         }
                                         try {
                                             apiResourceConfig = processAPIAnnotation(swaggerDefinition);
-                                            apiScopes = processAPIScopes(swaggerDefinition);
+                                            if (Scopes != null) {
+                                                apiScopes = processAPIScopes(Scopes);
+                                            }
                                             if(apiResourceConfig != null){
                                                 String rootContext = servletContext.getContextPath();
                                                 pathClazzMethods = pathClazz.getMethods();
@@ -214,7 +217,7 @@ public class AnnotationProcessor {
                 aggregatedPermissions.append(permission);
                 aggregatedPermissions.append(" ");
             }
-            scope.setRoles(aggregatedPermissions.toString());
+            scope.setRoles(aggregatedPermissions.toString().trim());
             scopes.put(scope.getKey(), scope);
         }
         return scopes;

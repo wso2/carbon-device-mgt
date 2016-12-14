@@ -19,9 +19,12 @@
 package org.wso2.carbon.device.mgt.jaxrs.service.api.admin;
 
 import io.swagger.annotations.*;
+import org.wso2.carbon.apimgt.annotations.api.*;
+import org.wso2.carbon.apimgt.annotations.api.Scope;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Activity;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ApplicationWrapper;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
+import org.wso2.carbon.device.mgt.jaxrs.util.Constants;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -49,6 +52,16 @@ import javax.ws.rs.core.Response;
 @Api(value = "Application Management Administrative Service", description = "This an  API intended to be used by " +
         "'internal' components to log in as an admin user and do a selected number of operations. " +
         "Further, this is strictly restricted to admin users only ")
+@Scopes(
+        scopes = {
+                @Scope(
+                        name = "Manage application",
+                        description = "",
+                        key = "cdmf:manage-application",
+                        permissions = {"/device-mgt/applications/manage"}
+                )
+        }
+)
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public interface ApplicationManagementAdminService {
@@ -63,12 +76,10 @@ public interface ApplicationManagementAdminService {
             notes = "This is an internal API that can be used to install an application on a device.",
             response = Activity.class,
             tags = "Application Management Administrative Service",
-            authorizations = {
-                    @Authorization(
-                            value="permission",
-                            scopes = { @AuthorizationScope(scope = "/device-mgt/applications/manage", description
-                                    = "Install/Uninstall applications") }
-                    )
+            extensions = {
+                    @Extension(properties = {
+                            @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:manage-application")
+                    })
             }
     )
     @ApiResponses(value = {
@@ -109,12 +120,10 @@ public interface ApplicationManagementAdminService {
             notes = "This is an internal API that can be used to uninstall an application.",
             response = Activity.class,
             tags = "Application Management Administrative Service",
-            authorizations = {
-                    @Authorization(
-                            value="permission",
-                            scopes = { @AuthorizationScope(scope = "/device-mgt/applications/manage", description
-                                    = "Install/Uninstall applications") }
-                    )
+            extensions = {
+                    @Extension(properties = {
+                            @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:manage-application")
+                    })
             }
     )
     @ApiResponses(value = {

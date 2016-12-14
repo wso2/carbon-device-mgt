@@ -31,8 +31,11 @@ import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import io.swagger.annotations.ResponseHeader;
+import org.wso2.carbon.apimgt.annotations.api.Scope;
+import org.wso2.carbon.apimgt.annotations.api.Scopes;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
+import org.wso2.carbon.device.mgt.jaxrs.util.Constants;
 
 import javax.validation.constraints.Size;
 import javax.ws.rs.*;
@@ -60,6 +63,16 @@ import javax.ws.rs.core.Response;
         "Further, this is strictly restricted to admin users only ")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+@Scopes(
+        scopes = {
+                @Scope(
+                        name = "Manage device",
+                        description = "",
+                        key = "cdmf:manage-own-device",
+                        permissions = {"/device-mgt/devices/owning-device/view"}
+                )
+        }
+)
 public interface DeviceManagementAdminService {
 
     @GET
@@ -71,12 +84,10 @@ public interface DeviceManagementAdminService {
             response = Device.class,
             responseContainer = "List",
             tags = "Device Management Administrative Service",
-            authorizations = {
-                    @Authorization(
-                            value="permission",
-                            scopes = { @AuthorizationScope(scope = "/device-mgt/devices/owning-device/view", description
-                                    = "View Devices") }
-                    )
+            extensions = {
+                    @Extension(properties = {
+                            @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:manage-own-device")
+                    })
             }
     )
     @ApiResponses(value = {

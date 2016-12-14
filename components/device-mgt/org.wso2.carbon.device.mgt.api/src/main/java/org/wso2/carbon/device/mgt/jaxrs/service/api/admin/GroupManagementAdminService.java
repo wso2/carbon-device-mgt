@@ -33,8 +33,11 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import io.swagger.annotations.ResponseHeader;
 import org.apache.axis2.transport.http.HTTPConstants;
+import org.wso2.carbon.apimgt.annotations.api.Scope;
+import org.wso2.carbon.apimgt.annotations.api.Scopes;
 import org.wso2.carbon.device.mgt.jaxrs.beans.DeviceGroupList;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
+import org.wso2.carbon.device.mgt.jaxrs.util.Constants;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -61,6 +64,16 @@ import javax.ws.rs.core.Response;
 @Api(value = "Group Management Administrative Service", description = "This an  API intended to be used by " +
         "'internal' components to log in as an admin user and do a selected number of operations. " +
         "Further, this is strictly restricted to admin users only ")
+@Scopes(
+        scopes = {
+                @Scope(
+                        name = "View groups",
+                        description = "",
+                        key = "cdmf:view-groups",
+                        permissions = {"/device-mgt/admin/groups/view"}
+                )
+        }
+)
 public interface GroupManagementAdminService {
 
     @GET
@@ -70,12 +83,10 @@ public interface GroupManagementAdminService {
             value = "Get the list of groups.",
             notes = "Returns all groups enrolled with the system.",
             tags = "Device Group Management",
-            authorizations = {
-                    @Authorization(
-                            value="permission",
-                            scopes = { @AuthorizationScope(scope = "/device-mgt/admin/groups/view", description
-                                    = "View Groups") }
-                    )
+            extensions = {
+                    @Extension(properties = {
+                            @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:view-groups")
+                    })
             }
     )
     @ApiResponses(value = {

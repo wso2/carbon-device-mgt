@@ -1812,7 +1812,7 @@
 
         <!-- Carbon Identity -->
         <carbon.identity.framework.version>5.2.2</carbon.identity.framework.version>
-        <identity.inbound.auth.oauth.version>5.2.7</identity.inbound.auth.oauth.version>
+        <identity.inbound.auth.oauth.version>5.1.1</identity.inbound.auth.oauth.version>
         <identity.inbound.auth.saml.version>5.1.1</identity.inbound.auth.saml.version>
 
         <!-- Carbon Multi-tenancy -->
@@ -1837,7 +1837,7 @@
 	    <commons-lang.wso2.osgi.version.range>[2.6.0,3.0.0)</commons-lang.wso2.osgi.version.range>
 
         <!-- Carbon API Management -->
-        <carbon.api.mgt.version>6.1.2-SNAPSHOT</carbon.api.mgt.version>
+        <carbon.api.mgt.version>6.0.6-SNAPSHOT</carbon.api.mgt.version>
         <carbon.api.mgt.version.range>(5.0.0,7.0.0]</carbon.api.mgt.version.range>
 
         <!-- Carbon Analytics Commons -->

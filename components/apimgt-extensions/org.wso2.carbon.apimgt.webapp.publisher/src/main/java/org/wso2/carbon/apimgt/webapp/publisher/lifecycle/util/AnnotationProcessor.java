@@ -411,7 +411,7 @@ public class AnnotationProcessor {
      * @param servletContext
      * @return null if cannot determin /WEB-INF/classes
      */
-    public static URL findWebInfClassesPath(ServletContext servletContext)
+    private static URL findWebInfClassesPath(ServletContext servletContext)
     {
         String path = servletContext.getRealPath("/WEB-INF/classes");
         if (path == null) return null;

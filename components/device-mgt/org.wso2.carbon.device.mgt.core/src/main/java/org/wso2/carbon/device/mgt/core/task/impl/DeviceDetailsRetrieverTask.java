@@ -31,15 +31,15 @@ public class DeviceDetailsRetrieverTask implements Task {
 
     private static Log log = LogFactory.getLog(DeviceDetailsRetrieverTask.class);
 //    private DeviceTaskManager deviceTaskManager = new DeviceTaskManagerImpl();
+    private String deviceType;
 
     @Override
     public void setProperties(Map<String, String> map) {
-
+        deviceType = map.get("DEVICE_TYPE");
     }
 
     @Override
     public void init() {
-
     }
 
     @Override
@@ -49,7 +49,7 @@ public class DeviceDetailsRetrieverTask implements Task {
             log.debug("Device details retrieving task started to run.");
         }
 
-        DeviceTaskManager deviceTaskManager = new DeviceTaskManagerImpl();
+        DeviceTaskManager deviceTaskManager = new DeviceTaskManagerImpl(deviceType);
 
         try {
             deviceTaskManager.addOperations();

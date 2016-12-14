@@ -22,14 +22,18 @@ package org.wso2.carbon.device.mgt.core.internal;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osgi.service.component.ComponentContext;
-import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
+import org.wso2.carbon.device.mgt.common.OperationMonitoringTaskConfig;
 import org.wso2.carbon.device.mgt.core.device.details.mgt.DeviceInformationManager;
 import org.wso2.carbon.device.mgt.core.device.details.mgt.impl.DeviceInformationManagerImpl;
 import org.wso2.carbon.device.mgt.core.search.mgt.SearchManagerService;
 import org.wso2.carbon.device.mgt.core.search.mgt.impl.SearchManagerServiceImpl;
+import org.wso2.carbon.device.mgt.core.task.DeviceMgtTaskException;
 import org.wso2.carbon.device.mgt.core.task.DeviceTaskManagerService;
 import org.wso2.carbon.device.mgt.core.task.impl.DeviceTaskManagerServiceImpl;
 import org.wso2.carbon.ntask.core.service.TaskService;
+
+import java.util.ArrayList;
+import java.util.Map;
 
 /**
  * @scr.component name="org.wso2.carbon.device.task.manager" immediate="true"
@@ -45,6 +49,8 @@ public class DeviceTaskManagerServiceComponent {
 
     private static Log log = LogFactory.getLog(DeviceManagementServiceComponent.class);
 
+
+
     @SuppressWarnings("unused")
     protected void activate(ComponentContext componentContext) {
         try {
@@ -52,13 +58,14 @@ public class DeviceTaskManagerServiceComponent {
                 log.debug("Initializing device details retrieving task manager bundle.");
             }
             // This will start the device details retrieving task.
-            boolean taskEnable =
-                    DeviceConfigurationManager.getInstance().getDeviceManagementConfig().getTaskConfiguration().
-                            isEnabled();
-            if (taskEnable) {
-                DeviceTaskManagerService taskManagerService = new DeviceTaskManagerServiceImpl();
-                taskManagerService.startTask();
-            }
+//            DeviceTaskManagerService deviceTaskManagerService = new DeviceTaskManagerServiceImpl();
+//            DeviceManagementDataHolder.getInstance().setDeviceTaskManagerService(
+//                    deviceTaskManagerService);
+//            componentContext.getBundleContext().registerService(DeviceTaskManagerService.class,
+//                    deviceTaskManagerService, null);
+
+            getDeviceOperationMonitoringConfig(componentContext);
+
             componentContext.getBundleContext().registerService(DeviceInformationManager.class,
                     new DeviceInformationManagerImpl(), null);
 
@@ -67,6 +74,26 @@ public class DeviceTaskManagerServiceComponent {
         } catch (Throwable e) {
             log.error("Error occurred while initializing device details retrieving task manager service.", e);
         }
+    }
+
+    private void getDeviceOperationMonitoringConfig(ComponentContext componentContext) throws DeviceMgtTaskException {
+
+        DeviceTaskManagerService deviceTaskManagerService = new DeviceTaskManagerServiceImpl();
+
+        DeviceManagementDataHolder.getInstance().setDeviceTaskManagerService(
+                deviceTaskManagerService);
+
+        componentContext.getBundleContext().registerService(DeviceTaskManagerService.class,
+                deviceTaskManagerService, null);
+
+        Map<String, OperationMonitoringTaskConfig> deviceConfigMap = DeviceMonitoringOperationDataHolder
+                .getInstance().getOperationMonitoringConfigFromMap();
+
+        for (String platformType : new ArrayList<String>(deviceConfigMap.keySet())) {
+            deviceTaskManagerService.startTask(platformType, deviceConfigMap.get(platformType));
+            deviceConfigMap.remove(platformType);
+        }
+
     }
 
     @SuppressWarnings("unused")

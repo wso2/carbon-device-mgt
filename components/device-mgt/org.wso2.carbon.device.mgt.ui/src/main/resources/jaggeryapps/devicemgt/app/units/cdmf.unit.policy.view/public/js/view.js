@@ -86,9 +86,11 @@ var displayPolicy = function (policyPayloadObj) {
                         script.type = 'text/javascript';
                         script.src = policyOperationsScriptSrc;
                         $(".wr-advance-operations").prepend(script);
-                        var previouslyConfiguredOperations = operationModule.populateProfile(policy["platform"],
-                            policyPayloadObj["profile"]["profileFeaturesList"]);
-                        polulateProfileOperations(previouslyConfiguredOperations);
+                        /*
+                        This method should be implemented in the relevant plugin side and should include the logic to
+                        populate the policy profile in the plugin specific UI.
+                         */
+                        polulateProfileOperations(policyPayloadObj["profile"]["profileFeaturesList"]);
                     }
                 });
             });

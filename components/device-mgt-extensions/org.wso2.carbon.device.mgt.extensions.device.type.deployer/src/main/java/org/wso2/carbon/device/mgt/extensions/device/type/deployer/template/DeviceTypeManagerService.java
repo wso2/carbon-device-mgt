@@ -22,8 +22,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.DeviceManager;
+import org.wso2.carbon.device.mgt.common.MonitoringOperation;
+import org.wso2.carbon.device.mgt.common.OperationMonitoringTaskConfig;
 import org.wso2.carbon.device.mgt.common.ProvisioningConfig;
-import org.wso2.carbon.device.mgt.common.TaskOperation;
 import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManager;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.ConfigurationEntry;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.PlatformConfiguration;
@@ -51,7 +52,8 @@ public class DeviceTypeManagerService implements DeviceManagementService {
     private PushNotificationConfig pushNotificationConfig;
     private ProvisioningConfig provisioningConfig;
     private String type;
-    private List<TaskOperation> taskOperations;
+    private OperationMonitoringTaskConfig operationMonitoringConfigs;
+    private List<MonitoringOperation> monitoringOperations;
 
     public DeviceTypeManagerService(DeviceTypeConfigIdentifier deviceTypeConfigIdentifier,
                                     DeviceTypeConfiguration deviceTypeConfiguration) {
@@ -59,7 +61,8 @@ public class DeviceTypeManagerService implements DeviceManagementService {
         this.deviceManager = new DeviceTypeManager(deviceTypeConfigIdentifier, deviceTypeConfiguration);
         this.setType(deviceTypeConfiguration.getName());
         this.populatePushNotificationConfig(deviceTypeConfiguration.getPushNotificationProvider());
-        this.setTask(deviceTypeConfiguration);
+        this.operationMonitoringConfigs = new OperationMonitoringTaskConfig();
+        this.setOperationMonitoringConfig(deviceTypeConfiguration);
     }
 
     @Override
@@ -68,24 +71,27 @@ public class DeviceTypeManagerService implements DeviceManagementService {
     }
 
     @Override
-    public List<TaskOperation> getTasksForPlatform(){
-        return taskOperations;
+    public OperationMonitoringTaskConfig getOperationMonitoringConfig(){
+        return operationMonitoringConfigs;
     }
 
-    private void setTask(DeviceTypeConfiguration deviceTypeConfiguration) {
+    private void setOperationMonitoringConfig(DeviceTypeConfiguration deviceTypeConfiguration) {
         //Read the config file and take the list of operations there in the config
         TaskConfiguration taskConfiguration = deviceTypeConfiguration.getTaskConfiguration();
         if (taskConfiguration != null) {
+            operationMonitoringConfigs.setEnabled(taskConfiguration.isEnabled());
+            operationMonitoringConfigs.setFrequency(taskConfiguration.getFrequency());
             List<TaskConfiguration.Operation> ops = taskConfiguration.getOperations();
             if (ops != null && !ops.isEmpty()) {
-                taskOperations = new ArrayList<>();
+                monitoringOperations = new ArrayList<>();
                 for (TaskConfiguration.Operation op : ops) {
-                    TaskOperation taskOperation = new TaskOperation();
-                    taskOperation.setTaskName(op.getOperationName());
-                    taskOperation.setRecurrentTimes(op.getRecurrency());
-                    taskOperations.add(taskOperation);
+                    MonitoringOperation monitoringOperation = new MonitoringOperation();
+                    monitoringOperation.setTaskName(op.getOperationName());
+                    monitoringOperation.setRecurrentTimes(op.getRecurrency());
+                    monitoringOperations.add(monitoringOperation);
                 }
             }
+            operationMonitoringConfigs.setMonitoringOperation(monitoringOperations);
         }
     }
 

@@ -19,6 +19,7 @@
 package org.wso2.carbon.device.mgt.core.internal;
 
 import org.wso2.carbon.apimgt.impl.APIManagerConfiguration;
+import org.wso2.carbon.device.mgt.common.OperationMonitoringTaskConfig;
 import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManager;
 import org.wso2.carbon.device.mgt.common.authorization.DeviceAccessAuthorizationService;
 import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManager;
@@ -28,6 +29,7 @@ import org.wso2.carbon.device.mgt.core.config.license.LicenseConfig;
 import org.wso2.carbon.device.mgt.core.push.notification.mgt.PushNotificationProviderRepository;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.device.mgt.core.service.GroupManagementProviderService;
+import org.wso2.carbon.device.mgt.core.task.DeviceTaskManagerService;
 import org.wso2.carbon.email.sender.core.service.EmailSenderService;
 import org.wso2.carbon.ntask.core.service.TaskService;
 import org.wso2.carbon.registry.core.service.RegistryService;
@@ -36,6 +38,7 @@ import org.wso2.carbon.user.core.tenant.TenantManager;
 import org.wso2.carbon.utils.ConfigurationContextService;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class DeviceManagementDataHolder {
 
@@ -56,6 +59,18 @@ public class DeviceManagementDataHolder {
     private TaskService taskService;
     private EmailSenderService emailSenderService;
     private PushNotificationProviderRepository pushNotificationProviderRepository;
+    private DeviceTaskManagerService deviceTaskManagerService;
+
+    private Map<String, OperationMonitoringTaskConfig> map = new HashMap<>();
+
+
+    public void addToMap(OperationMonitoringTaskConfig taskConfig) {
+        this.map.put("aa", taskConfig);
+    }
+
+    public Map<String, OperationMonitoringTaskConfig> getMap(){
+        return this.map;
+    }
 
     private APIManagerConfiguration apiManagerConfiguration;
 
@@ -210,4 +225,11 @@ public class DeviceManagementDataHolder {
         return pushNotificationProviderRepository;
     }
 
+    public DeviceTaskManagerService getDeviceTaskManagerService() {
+        return deviceTaskManagerService;
+    }
+
+    public void setDeviceTaskManagerService(DeviceTaskManagerService deviceTaskManagerService) {
+        this.deviceTaskManagerService = deviceTaskManagerService;
+    }
 }

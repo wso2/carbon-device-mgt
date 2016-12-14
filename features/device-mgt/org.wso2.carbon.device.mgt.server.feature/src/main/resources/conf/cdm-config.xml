@@ -27,6 +27,7 @@
     </ManagementRepository>
     <PushNotificationProviders>
         <Provider>org.wso2.carbon.device.mgt.extensions.push.notification.provider.gcm.GCMBasedPushNotificationProvider</Provider>
+        <!--<Provider>org.wso2.carbon.device.mgt.mobile.impl.ios.apns.APNSBasedPushNotificationProvider</Provider>-->
         <!--<Provider>org.wso2.carbon.device.mgt.extensions.push.notification.provider.mqtt.MQTTBasedPushNotificationProvider</Provider>-->
         <!--<Provider>org.wso2.carbon.device.mgt.extensions.push.notification.provider.xmpp.XMPPBasedPushNotificationProvider</Provider>-->
     </PushNotificationProviders>
@@ -48,10 +49,10 @@
             <Platform>windows</Platform>
         </Platforms>
     </PolicyConfiguration>
-    <TaskConfiguration>
-        <Enable>true</Enable>
-        <Frequency>600000</Frequency>
-    </TaskConfiguration>
+    <!--<TaskConfiguration>-->
+        <!--<Enable>true</Enable>-->
+        <!--<Frequency>600000</Frequency>-->
+    <!--</TaskConfiguration>-->
     <!-- Default Page size configuration for paginated DM APIs-->
     <PaginationConfiguration>
         <DeviceListPageSize>20</DeviceListPageSize>

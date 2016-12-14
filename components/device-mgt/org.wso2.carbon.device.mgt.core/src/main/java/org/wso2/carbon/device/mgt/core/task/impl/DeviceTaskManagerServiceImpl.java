@@ -22,9 +22,9 @@ package org.wso2.carbon.device.mgt.core.task.impl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
+import org.wso2.carbon.device.mgt.common.OperationMonitoringTaskConfig;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 import org.wso2.carbon.device.mgt.core.task.DeviceMgtTaskException;
-import org.wso2.carbon.device.mgt.core.task.DeviceTaskManager;
 import org.wso2.carbon.device.mgt.core.task.DeviceTaskManagerService;
 import org.wso2.carbon.ntask.common.TaskException;
 import org.wso2.carbon.ntask.core.TaskInfo;
@@ -36,23 +36,21 @@ import java.util.Map;
 
 public class DeviceTaskManagerServiceImpl implements DeviceTaskManagerService {
 
-    public static final String TASK_TYPE = "DEVICE_DETAILS";
-    public static final String TASK_NAME = "DEVICE_DETAILS_TASK";
+    public static final String TASK_TYPE = "DEVICE_MONITORING";
     public static final String TENANT_ID = "TENANT_ID";
     private static String TASK_CLASS = "org.wso2.carbon.device.mgt.core.task.impl.DeviceDetailsRetrieverTask";
 
 
-    private DeviceTaskManager deviceTaskManager;
+//    private DeviceTaskManager deviceTaskManager;
 
     private static Log log = LogFactory.getLog(DeviceTaskManagerServiceImpl.class);
 
     @Override
-    public void startTask() throws DeviceMgtTaskException {
+    public void startTask(String deviceType, OperationMonitoringTaskConfig operationMonitoringTaskConfig) throws DeviceMgtTaskException {
 
-        deviceTaskManager = new DeviceTaskManagerImpl();
-        if (!deviceTaskManager.isTaskEnabled()) {
-            throw new DeviceMgtTaskException("Task cannot be started, Please enable the task in cdm-config.xml file.");
-        }
+//        String TASK_NAME = deviceType;
+
+        log.info("Task adding for " + deviceType);
 
         int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
 
@@ -62,23 +60,27 @@ public class DeviceTaskManagerServiceImpl implements DeviceTaskManagerService {
 
             if (log.isDebugEnabled()) {
                 log.debug("Device details retrieving task is started for the tenant id " + tenantId);
-                log.debug("Device details retrieving task is at frequency of : " + deviceTaskManager.getTaskFrequency());
+//                log.debug("Device details retrieving task is at frequency of : " + deviceTaskManager
+//                        .getTaskFrequency());
+                log.debug("Device details retrieving task is at frequency of : " + operationMonitoringTaskConfig
+                        .getFrequency());
             }
 
             TaskManager taskManager = taskService.getTaskManager(TASK_TYPE);
 
             TaskInfo.TriggerInfo triggerInfo = new TaskInfo.TriggerInfo();
-            triggerInfo.setIntervalMillis(deviceTaskManager.getTaskFrequency());
+//            triggerInfo.setIntervalMillis(deviceTaskManager.getTaskFrequency());
+            triggerInfo.setIntervalMillis(operationMonitoringTaskConfig.getFrequency());
             triggerInfo.setRepeatCount(-1);
 
             Map<String, String> properties = new HashMap<>();
             properties.put(TENANT_ID, String.valueOf(tenantId));
+            properties.put("DEVICE_TYPE", deviceType);
 
 
-            if (!taskManager.isTaskScheduled(TASK_NAME)) {
+            if (!taskManager.isTaskScheduled(deviceType)) {
 
-                TaskInfo taskInfo = new TaskInfo(TASK_NAME, TASK_CLASS,
-                        properties, triggerInfo);
+                TaskInfo taskInfo = new TaskInfo(deviceType, TASK_CLASS, properties, triggerInfo);
 
                 taskManager.registerTask(taskInfo);
                 taskManager.rescheduleTask(taskInfo.getName());
@@ -94,13 +96,15 @@ public class DeviceTaskManagerServiceImpl implements DeviceTaskManagerService {
     }
 
     @Override
-    public void stopTask() throws DeviceMgtTaskException {
+    public void stopTask(String deviceType, OperationMonitoringTaskConfig operationMonitoringTaskConfig) throws DeviceMgtTaskException {
+
+//        String TASK_NAME = deviceType;
 
         try {
             TaskService taskService = DeviceManagementDataHolder.getInstance().getTaskService();
             if (taskService.isServerInit()) {
                 TaskManager taskManager = taskService.getTaskManager(TASK_TYPE);
-                taskManager.deleteTask(TASK_NAME);
+                taskManager.deleteTask(deviceType);
             }
         } catch (TaskException e) {
             int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
@@ -110,29 +114,27 @@ public class DeviceTaskManagerServiceImpl implements DeviceTaskManagerService {
     }
 
     @Override
-    public void updateTask(int frequency) throws DeviceMgtTaskException {
+    public void updateTask(String deviceType, OperationMonitoringTaskConfig operationMonitoringTaskConfig) throws DeviceMgtTaskException {
 
-        if (!deviceTaskManager.isTaskEnabled()) {
-            throw new DeviceMgtTaskException("Task cannot be updated, Please enable the task in cdm-config.xml file.");
-        }
+//        String TASK_NAME = deviceType;
 
         int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
-        deviceTaskManager = new DeviceTaskManagerImpl();
+//        deviceTaskManager = new DeviceTaskManagerImpl();
         try {
             TaskService taskService = DeviceManagementDataHolder.getInstance().getTaskService();
             TaskManager taskManager = taskService.getTaskManager(TASK_TYPE);
 
-            if (taskManager.isTaskScheduled(TASK_NAME)) {
+            if (taskManager.isTaskScheduled(deviceType)) {
 
-                taskManager.deleteTask(TASK_NAME);
+                taskManager.deleteTask(deviceType);
                 TaskInfo.TriggerInfo triggerInfo = new TaskInfo.TriggerInfo();
-                triggerInfo.setIntervalMillis(frequency);
+                triggerInfo.setIntervalMillis(operationMonitoringTaskConfig.getFrequency());
                 triggerInfo.setRepeatCount(-1);
 
                 Map<String, String> properties = new HashMap<>();
                 properties.put(TENANT_ID, String.valueOf(tenantId));
 
-                TaskInfo taskInfo = new TaskInfo(TASK_NAME, TASK_CLASS, properties,
+                TaskInfo taskInfo = new TaskInfo(deviceType, TASK_CLASS, properties,
                         triggerInfo);
 
                 taskManager.registerTask(taskInfo);

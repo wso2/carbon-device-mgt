@@ -25,10 +25,6 @@ window.queryEditor = CodeMirror.fromTextArea(document.getElementById('policy-def
     autofocus: true
 });
 
-setTimeout(function() {
-    window.queryEditor.refresh();
-}, 100);
-
 var validatePolicyProfile = function () {
     return true;
 };
@@ -46,4 +42,19 @@ var generateGenericPayload = function () {
         "deviceType": policy["platform"],
         "content": {"policyDefinition": window.queryEditor.getValue()}
     }];
+};
+
+/**
+ * Populates policy configuration to the ui elements.
+ *
+ * This method will be invoked from the relevant cdmf unit when the edit page gets loaded.
+ *
+ * @param profileFeatureList saved feature list
+ */
+var populateGenericProfileOperations = function (profileFeatureList) {
+    var content = JSON.parse(profileFeatureList[0]["content"]);
+    window.queryEditor.setValue(content.policyDefinition);
+    setTimeout(function() {
+        window.queryEditor.refresh();
+    }, 100);
 };

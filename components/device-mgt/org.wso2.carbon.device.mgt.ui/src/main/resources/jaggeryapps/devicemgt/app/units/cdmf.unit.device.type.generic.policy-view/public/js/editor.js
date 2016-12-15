@@ -20,30 +20,23 @@ window.queryEditor = CodeMirror.fromTextArea(document.getElementById('policy-def
     mode: "application/json",
     indentWithTabs: true,
     smartIndent: true,
+    readOnly: true,
     lineNumbers: true,
     matchBrackets: true,
     autofocus: true
 });
 
-setTimeout(function() {
-    window.queryEditor.refresh();
-}, 100);
-
-var validatePolicyProfile = function () {
-    return true;
-};
-
 /**
- * Generates policy profile feature list which will be saved with the profile.
+ * Populates policy configuration to the ui elements.
  *
- * This function will be invoked from the relevant cdmf unit at the time of policy creation.
+ * This method will be invoked from the relevant cdmf unit when the edit page gets loaded.
  *
- * @returns {Array} profile payloads
+ * @param profileFeatureList saved feature list
  */
-var generateGenericPayload = function () {
-    return [{
-        "featureCode": "CONFIG",
-        "deviceType": policy["platform"],
-        "content": {"policyDefinition": window.queryEditor.getValue()}
-    }];
+var populateGenericProfileOperations = function (profileFeatureList) {
+    var content = JSON.parse(profileFeatureList[0]["content"]);
+    window.queryEditor.setValue(content.policyDefinition);
+    setTimeout(function() {
+        window.queryEditor.refresh();
+    }, 100);
 };

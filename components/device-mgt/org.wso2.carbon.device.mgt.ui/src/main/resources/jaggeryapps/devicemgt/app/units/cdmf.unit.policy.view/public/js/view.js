@@ -17,6 +17,7 @@
  */
 
 var policy = {};
+var hasPolicyProfileScript = false;
 
 var displayPolicy = function (policyPayloadObj) {
     policy["name"] = policyPayloadObj["policyName"];
@@ -82,6 +83,7 @@ var displayPolicy = function (policyPayloadObj) {
                 $(".policy-platform").addClass("hidden");
                 $.isResourceExists(policyOperationsScriptSrc, function (status) {
                     if (status) {
+                        hasPolicyProfileScript = true;
                         var script = document.createElement('script');
                         script.type = 'text/javascript';
                         script.src = policyOperationsScriptSrc;
@@ -109,6 +111,10 @@ var displayPolicy = function (policyPayloadObj) {
         }
         $(".wr-advance-operations-init").addClass("hidden");
     });
+
+    if(!hasPolicyProfileScript) {
+        populateGenericProfileOperations(policyPayloadObj["profile"]["profileFeaturesList"]);
+    }
 };
 
 /**

@@ -146,24 +146,44 @@ public class CertificateManagementAdminServiceImpl implements CertificateManagem
     }
 
     @POST
-    @Path("/verify/ios")
-    public Response verifyIOSCertificate(@ApiParam(name = "certificate", value = "Mdm-Signature of the " +
-            "certificate that needs to be verified", required = true) EnrollmentCertificate certificate) {
+    @Path("/verify/{deviceType}")
+    public Response verifyCertificate(@ApiParam(name = "certificate", value = "Mdm-Signature of the " +
+            "certificate that needs to be verified", required = true) EnrollmentCertificate certificate,
+                                      @PathParam("deviceType") String deviceType) {
         try {
-            CertificateManagementService certMgtService = CertificateMgtAPIUtils.getCertificateManagementService();
-            X509Certificate cert = certMgtService.extractCertificateFromSignature(certificate.getPem());
-            String challengeToken = certMgtService.extractChallengeToken(cert);
+            if (deviceType.toLowerCase().equals("ios")) {
+                CertificateManagementService certMgtService = CertificateMgtAPIUtils.getCertificateManagementService();
+                X509Certificate cert = certMgtService.extractCertificateFromSignature(certificate.getPem());
+                String challengeToken = certMgtService.extractChallengeToken(cert);
 
-            if (challengeToken != null) {
-                challengeToken = challengeToken.substring(challengeToken.indexOf("(") + 1).trim();
+                if (challengeToken != null) {
+                    challengeToken = challengeToken.substring(challengeToken.indexOf("(") + 1).trim();
 
-                SCEPManager scepManager = CertificateMgtAPIUtils.getSCEPManagerService();
-                DeviceIdentifier deviceIdentifier = new DeviceIdentifier();
-                deviceIdentifier.setId(challengeToken);
-                deviceIdentifier.setType(DeviceManagementConstants.MobileDeviceTypes.MOBILE_DEVICE_TYPE_IOS);
-                TenantedDeviceWrapper tenantedDeviceWrapper = scepManager.getValidatedDevice(deviceIdentifier);
+                    SCEPManager scepManager = CertificateMgtAPIUtils.getSCEPManagerService();
+                    DeviceIdentifier deviceIdentifier = new DeviceIdentifier();
+                    deviceIdentifier.setId(challengeToken);
+                    deviceIdentifier.setType(DeviceManagementConstants.MobileDeviceTypes.MOBILE_DEVICE_TYPE_IOS);
+                    TenantedDeviceWrapper tenantedDeviceWrapper = scepManager.getValidatedDevice(deviceIdentifier);
 
-                if (tenantedDeviceWrapper != null) {
+                    if (tenantedDeviceWrapper != null) {
+                        return Response.status(Response.Status.OK).entity("valid").build();
+                    }
+                }
+            }
+            if (deviceType.toLowerCase().equals("android")) {
+                CertificateResponse certificateResponse = null;
+                CertificateManagementService certMgtService = CertificateMgtAPIUtils.getCertificateManagementService();
+                if (certificate.getSerial().toLowerCase().contains(PROXY_AUTH_MUTUAL_HEADER)) {
+                    certificateResponse = certMgtService.verifySubjectDN(certificate.getPem());
+                } else {
+                    X509Certificate clientCertificate = certMgtService.pemToX509Certificate(certificate.getPem());
+                    if (clientCertificate != null) {
+                        certificateResponse = certMgtService.verifyPEMSignature(clientCertificate);
+                    }
+                }
+
+                if (certificateResponse != null && certificateResponse.getCommonName() != null && !certificateResponse
+                        .getCommonName().isEmpty()) {
                     return Response.status(Response.Status.OK).entity("valid").build();
                 }
             }
@@ -172,35 +192,6 @@ public class CertificateManagementAdminServiceImpl implements CertificateManagem
             log.error(msg, e);
             return Response.serverError().entity(
                     new ErrorResponse.ErrorResponseBuilder().setCode(500l).setMessage(msg).build()).build();
-        } catch (KeystoreException e) {
-            String msg = "Error occurred while converting PEM file to X509Certificate.";
-            log.error(msg, e);
-            return Response.serverError().entity(
-                    new ErrorResponse.ErrorResponseBuilder().setCode(500l).setMessage(msg).build()).build();
-        }
-        return Response.status(Response.Status.OK).entity("invalid").build();
-    }
-
-    @POST
-    @Path("/verify/android")
-    public Response verifyAndroidCertificate(@ApiParam(name = "certificate", value = "Base64 encoded .pem file of the " +
-            "certificate that needs to be verified", required = true) EnrollmentCertificate certificate) {
-        CertificateResponse certificateResponse = null;
-        try {
-            CertificateManagementService certMgtService = CertificateMgtAPIUtils.getCertificateManagementService();
-            if (certificate.getSerial().toLowerCase().contains(PROXY_AUTH_MUTUAL_HEADER)) {
-                certificateResponse = certMgtService.verifySubjectDN(certificate.getPem());
-            } else {
-                X509Certificate clientCertificate = certMgtService.pemToX509Certificate(certificate.getPem());
-                if (clientCertificate != null) {
-                    certificateResponse = certMgtService.verifyPEMSignature(clientCertificate);
-                }
-            }
-
-            if (certificateResponse != null && certificateResponse.getCommonName() != null && !certificateResponse
-                    .getCommonName().isEmpty()) {
-                return Response.status(Response.Status.OK).entity("valid").build();
-            }
         } catch (KeystoreException e) {
             String msg = "Error occurred while converting PEM file to X509Certificate.";
             log.error(msg, e);

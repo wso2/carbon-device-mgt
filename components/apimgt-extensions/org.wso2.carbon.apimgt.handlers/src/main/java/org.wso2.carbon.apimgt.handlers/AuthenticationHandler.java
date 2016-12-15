@@ -57,8 +57,10 @@ public class AuthenticationHandler implements Handler {
      * Setting up configurations at the constructor
      */
     public AuthenticationHandler() {
+        /* The following log only prints at server startup and doesn't trigger upon every request.
+        This is added to notify developers through the log inspection for any future support analysis */
         log.info("Engaging API Security Handler");
-        apiList = CoreUtils.readApiFilterList();
+        apiList = CoreUtils.readApiFilterConfigs();
         restInvoker = new RESTInvoker();
         this.handlerDesc = EMPTY_HANDLER_METADATA;
     }
@@ -76,7 +78,7 @@ public class AuthenticationHandler implements Handler {
             CoreUtils.debugLog(log, "Authentication handler invoked by: ", ctxPath);
             Map<?, ?> headers = (Map<?, ?>) messageContext.getProperty(MessageContext.TRANSPORT_HEADERS);
             try {
-                RESTResponse response = null;
+                RESTResponse response;
                 if (headers.containsKey(AuthConstants.MDM_SIGNATURE)) {
 
                     String mdmSignature = headers.get(AuthConstants.MDM_SIGNATURE).toString();
@@ -84,7 +86,7 @@ public class AuthenticationHandler implements Handler {
 
                     String accessToken = getAccessToken();
                     URI certVerifyUrl = new URI(AuthConstants.HTTPS + "://" + CoreUtils.getHost() + ":" + CoreUtils
-                            .getHttpsPort() + CoreUtils.getIosVerifyEndpoint());
+                            .getHttpsPort() + CoreUtils.getCertVerifyEndpoint() + "/ios");
                     Map<String, String> certVerifyHeaders = new HashMap<>();
                     certVerifyHeaders.put("Authorization", "Bearer " + accessToken);
                     certVerifyHeaders.put("Content-Type", "application/json");
@@ -103,7 +105,7 @@ public class AuthenticationHandler implements Handler {
                     CoreUtils.debugLog(log, "Verify subject DN: ", subjectDN);
                     String accessToken = getAccessToken();
                     URI certVerifyUrl = new URI(AuthConstants.HTTPS + "://" + CoreUtils.getHost() + ":" + CoreUtils
-                            .getHttpsPort() + CoreUtils.getAndroidVerifyEndpoint());
+                            .getHttpsPort() + CoreUtils.getCertVerifyEndpoint() + "/android");
                     Map<String, String> certVerifyHeaders = new HashMap<>();
                     certVerifyHeaders.put("Authorization", "Bearer " + accessToken);
                     certVerifyHeaders.put("Content-Type", "application/json");
@@ -123,7 +125,7 @@ public class AuthenticationHandler implements Handler {
 
                     String accessToken = getAccessToken();
                     URI certVerifyUrl = new URI(AuthConstants.HTTPS + "://" + CoreUtils.getHost() + ":" + CoreUtils
-                            .getHttpsPort() + CoreUtils.getAndroidVerifyEndpoint());
+                            .getHttpsPort() + CoreUtils.getCertVerifyEndpoint() + "/android");
                     Map<String, String> certVerifyHeaders = new HashMap<>();
                     certVerifyHeaders.put("Authorization", "Bearer " + accessToken);
                     certVerifyHeaders.put("Content-Type", "application/json");

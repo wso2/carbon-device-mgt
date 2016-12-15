@@ -28,8 +28,7 @@ public class AuthConstants {
     public static final String HTTPS_PORT = "httpsPort";
     public static final String USERNAME = "username";
     public static final String PASSWORD = "password";
-    public static final String IOS_VERIFY_ENDPOINT = "ios-verify-endpoint";
-    public static final String ANDROID_VERIFY_ENDPOINT = "android-verify-endpoint";
+    public static final String CERT_VERIFY_ENDPOINT = "cert-verify-endpoint";
     public static final String MDM_SIGNATURE = "mdm-signature";
     public static final String PROXY_MUTUAL_AUTH_HEADER = "proxy-mutual-auth-header";
     public static final String ENCODED_PEM = "encoded-pem";

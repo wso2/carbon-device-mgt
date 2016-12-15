@@ -37,15 +37,14 @@ public class CoreUtils {
     private static int httpsPort = 9443;
     private static String username = "admin";
     private static String password = "admin";
-    private static String iosVerifyEndpoint = "/api/certificate-mgt/v1.0/admin/certificates/verify/ios";
-    private static String androidVerifyEndpoint = "/api/certificate-mgt/v1.0/admin/certificates/verify/android";
+    private static String certVerifyEndpoint = "/api/certificate-mgt/v1.0/admin/certificates/verify";
 
     /**
      * Reading configurations from api-filter-config.xml file
      *
      * @return ArrayList of api contexts
      */
-    public static ArrayList<String> readApiFilterList() {
+    public static ArrayList<String> readApiFilterConfigs() {
         ArrayList<String> apiList = new ArrayList<String>();
         String carbonConfigDirPath = CarbonUtils.getCarbonConfigDirPath();
         String apiFilterConfigPath = carbonConfigDirPath + File.separator +
@@ -90,12 +89,9 @@ public class CoreUtils {
                         } else if (AuthConstants.PASSWORD.equals(beanName)) {
                             String value = beanProp.getAttributeValue(new QName(null, "value"));
                             password = value;
-                        } else if (AuthConstants.IOS_VERIFY_ENDPOINT.equals(beanName)) {
+                        } else if (AuthConstants.CERT_VERIFY_ENDPOINT.equals(beanName)) {
                             String value = beanProp.getAttributeValue(new QName(null, "value"));
-                            iosVerifyEndpoint = value;
-                        } else if (AuthConstants.ANDROID_VERIFY_ENDPOINT.equals(beanName)) {
-                            String value = beanProp.getAttributeValue(new QName(null, "value"));
-                            androidVerifyEndpoint = value;
+                            certVerifyEndpoint = value;
                         }
                     }
                 }
@@ -146,11 +142,8 @@ public class CoreUtils {
         return password;
     }
 
-    public static String getIosVerifyEndpoint() {
-        return iosVerifyEndpoint;
+    public static String getCertVerifyEndpoint() {
+        return certVerifyEndpoint;
     }
 
-    public static String getAndroidVerifyEndpoint() {
-        return androidVerifyEndpoint;
-    }
 }

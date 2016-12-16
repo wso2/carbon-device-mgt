@@ -143,6 +143,28 @@ public class RoleManagementServiceImpl implements RoleManagementService {
         }
     }
 
+    private UIPermissionNode getAllRolePermissions(String roleName) {
+        try {
+            final UserRealm userRealm = DeviceMgtAPIUtils.getUserRealm();
+            if (!userRealm.getUserStoreManager().isExistingRole(roleName)) {
+                throw new IllegalArgumentException("No role exists with the name '" + roleName + "'");
+            }
+            org.wso2.carbon.user.core.UserRealm userRealmCore = null;
+            if (userRealm instanceof org.wso2.carbon.user.core.UserRealm) {
+                userRealmCore = (org.wso2.carbon.user.core.UserRealm) userRealm;
+            }
+            final UserRealmProxy userRealmProxy = new UserRealmProxy(userRealmCore);
+            final UIPermissionNode rolePermissions =
+                    userRealmProxy.getRolePermissions(roleName, MultitenantConstants.SUPER_TENANT_ID);
+            return rolePermissions;
+        } catch (UserAdminException e) {
+            log.error("Error occurred while retrieving the permissions of user role : '" + roleName + "'", e);
+        } catch (UserStoreException e) {
+            log.error("Error occurred while retrieving the permissions of user role : '" + roleName + "'", e);
+        }
+        return null;
+    }
+
     private UIPermissionNode getUIPermissionNode(String roleName, UserRealm userRealm)
             throws UserAdminException {
         org.wso2.carbon.user.core.UserRealm userRealmCore = null;
@@ -223,6 +245,19 @@ public class RoleManagementServiceImpl implements RoleManagementService {
             list.add(permissionNode.getResourcePath());
             if (permissionNode.getNodeList() != null && permissionNode.getNodeList().length > 0) {
                 iteratePermissions(permissionNode, list);
+            }
+        }
+        return list;
+    }
+
+
+    private List<String> getAuthorizedPermissions(UIPermissionNode uiPermissionNode, List<String> list) {
+        for (UIPermissionNode permissionNode : uiPermissionNode.getNodeList()) {
+            if (permissionNode.isSelected()) {
+                list.add(permissionNode.getResourcePath());
+            }
+            if (permissionNode.getNodeList() != null && permissionNode.getNodeList().length > 0) {
+                getAuthorizedPermissions(permissionNode, list);
             }
         }
         return list;
@@ -377,6 +412,17 @@ public class RoleManagementServiceImpl implements RoleManagementService {
             }
 
             if (roleInfo.getPermissions() != null) {
+                // Get all role permissions
+                final UIPermissionNode rolePermissions = this.getAllRolePermissions(roleName);
+                List<String> permissions = new ArrayList<String>();
+                this.getAuthorizedPermissions(rolePermissions, permissions);
+                for (String permission : roleInfo.getPermissions()) {
+                    permissions.add(permission);
+                }
+                String [] allapplicablePerms = new String[permissions.size()];
+                allapplicablePerms = permissions.toArray(allapplicablePerms);
+                roleInfo.setPermissions(allapplicablePerms);
+
                 // Delete all authorizations for the current role before authorizing the permission tree
                 authorizationManager.clearRoleAuthorization(roleName);
                 if (roleInfo.getPermissions().length > 0) {

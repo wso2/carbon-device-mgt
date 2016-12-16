@@ -143,26 +143,15 @@ public class RoleManagementServiceImpl implements RoleManagementService {
         }
     }
 
-    private UIPermissionNode getAllRolePermissions(String roleName) {
-        try {
-            final UserRealm userRealm = DeviceMgtAPIUtils.getUserRealm();
-            if (!userRealm.getUserStoreManager().isExistingRole(roleName)) {
-                throw new IllegalArgumentException("No role exists with the name '" + roleName + "'");
-            }
-            org.wso2.carbon.user.core.UserRealm userRealmCore = null;
-            if (userRealm instanceof org.wso2.carbon.user.core.UserRealm) {
-                userRealmCore = (org.wso2.carbon.user.core.UserRealm) userRealm;
-            }
-            final UserRealmProxy userRealmProxy = new UserRealmProxy(userRealmCore);
-            final UIPermissionNode rolePermissions =
-                    userRealmProxy.getRolePermissions(roleName, MultitenantConstants.SUPER_TENANT_ID);
-            return rolePermissions;
-        } catch (UserAdminException e) {
-            log.error("Error occurred while retrieving the permissions of user role : '" + roleName + "'", e);
-        } catch (UserStoreException e) {
-            log.error("Error occurred while retrieving the permissions of user role : '" + roleName + "'", e);
+    private UIPermissionNode getAllRolePermissions(String roleName, UserRealm userRealm) throws UserAdminException {
+        org.wso2.carbon.user.core.UserRealm userRealmCore = null;
+        if (userRealm instanceof org.wso2.carbon.user.core.UserRealm) {
+            userRealmCore = (org.wso2.carbon.user.core.UserRealm) userRealm;
         }
-        return null;
+        final UserRealmProxy userRealmProxy = new UserRealmProxy(userRealmCore);
+        final UIPermissionNode rolePermissions =
+                userRealmProxy.getRolePermissions(roleName, MultitenantConstants.SUPER_TENANT_ID);
+        return rolePermissions;
     }
 
     private UIPermissionNode getUIPermissionNode(String roleName, UserRealm userRealm)
@@ -413,15 +402,15 @@ public class RoleManagementServiceImpl implements RoleManagementService {
 
             if (roleInfo.getPermissions() != null) {
                 // Get all role permissions
-                final UIPermissionNode rolePermissions = this.getAllRolePermissions(roleName);
+                final UIPermissionNode rolePermissions = this.getAllRolePermissions(roleName, userRealm);
                 List<String> permissions = new ArrayList<String>();
                 this.getAuthorizedPermissions(rolePermissions, permissions);
                 for (String permission : roleInfo.getPermissions()) {
                     permissions.add(permission);
                 }
-                String [] allapplicablePerms = new String[permissions.size()];
-                allapplicablePerms = permissions.toArray(allapplicablePerms);
-                roleInfo.setPermissions(allapplicablePerms);
+                String [] allApplicablePerms = new String[permissions.size()];
+                allApplicablePerms = permissions.toArray(allApplicablePerms);
+                roleInfo.setPermissions(allApplicablePerms);
 
                 // Delete all authorizations for the current role before authorizing the permission tree
                 authorizationManager.clearRoleAuthorization(roleName);
@@ -437,6 +426,11 @@ public class RoleManagementServiceImpl implements RoleManagementService {
                                                                       "successfully been updated").build();
         } catch (UserStoreException e) {
             String msg = "Error occurred while updating role '" + roleName + "'";
+            log.error(msg, e);
+            return Response.serverError().entity(
+                    new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
+        } catch (UserAdminException e) {
+            String msg = "Error occurred while updating permissions of the role '" + roleName + "'";
             log.error(msg, e);
             return Response.serverError().entity(
                     new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();

@@ -49,6 +49,7 @@
 
     function loadOperationsLog(update) {
         var operationsLogTable = "#operations-log-table";
+
         if (update) {
             operationTable = $(operationsLogTable).DataTable();
             $("#operations-spinner").removeClass("hidden");
@@ -135,9 +136,13 @@
     function loadPolicyCompliance() {
         var policyCompliance = $("#policy-view");
         var policyComplianceTemplate = policyCompliance.attr("src");
+        console.log("deviceId:"+deviceId);
+        console.log("deviceType:"+deviceType);
         var deviceId = policyCompliance.data("device-id");
         var deviceType = policyCompliance.data("device-type");
         var activePolicy = null;
+        console.log("deviceId:"+deviceId);
+        console.log("deviceType:"+deviceType);
 
         $.template(
             "policy-view",
@@ -163,6 +168,8 @@
                                                 var viewModel = {};
                                                 viewModel["policy"] = activePolicy;
                                                 viewModel["deviceType"] = deviceType;
+                                                viewModel["deviceId"] = deviceId;
+                                                viewModel["appContext"] = context;
                                                 data = JSON.parse(data);
                                                 var content;
                                                 if (data["complianceData"]) {

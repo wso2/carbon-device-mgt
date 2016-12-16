@@ -17,9 +17,11 @@
  */
 
 function onRequest(context) {
-//    var log = new Log("policy-view-edit-unit backend js");
 
-//    var userModule = require("/app/modules/business-controllers/user.js")["userModule"];
-//    context.roles = userModule.getRoles();
-    return context;
+    var utility = require("/app/modules/utility.js")["utility"];
+    var deviceType = context.uriParams.deviceType;
+    var deviceId = context.uriParams.deviceId;
+
+    return {"deviceTypePolicyView": utility.getTenantedDeviceUnitName(deviceType, deviceId,"policy-view")};
+
 }

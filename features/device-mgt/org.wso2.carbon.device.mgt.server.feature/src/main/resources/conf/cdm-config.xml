@@ -46,7 +46,7 @@
         <!--Set the policy evaluation point name-->
         <!--Simple ->  Simple policy evaluation point-->
         <!--Merged ->  Merged policy evaluation point -->
-        <PolicyEvaluationPoint>Merged</PolicyEvaluationPoint>
+        <PolicyEvaluationPoint>Simple</PolicyEvaluationPoint>
         <Platforms>
             <Platform>android</Platform>
             <Platform>ios</Platform>

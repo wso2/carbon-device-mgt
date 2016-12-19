@@ -43,7 +43,7 @@
             <minRetriesToMarkUnreachable>8</minRetriesToMarkUnreachable>
             <minRetriesToMarkInactive>20</minRetriesToMarkInactive>
             <!--<PolicyEvaluationPoint>Simple</PolicyEvaluationPoint>-->
-            <PolicyEvaluationPoint>Merged</PolicyEvaluationPoint>
+            <PolicyEvaluationPoint>Simple</PolicyEvaluationPoint>
         </PolicyConfiguration>
     </ManagementRepository>
 </DeviceMgtConfiguration>

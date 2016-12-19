@@ -38,32 +38,40 @@ var displayPolicy = function (policyPayloadObj) {
     }
 
     $("#policy-status").html(policyStatus);
-    console.log(policyPayloadObj);
 
-    // if (policyPayloadObj.users.length > 0) {
-    //     $("#policy-users").text(policyPayloadObj.users.toString().split(",").join(", "));
-    // } else {
-    //     $("#users-row").addClass("hidden");
-    // }
-    // if (policyPayloadObj.deviceGroups.length > 0) {
-    //     debugger;
-    //     var deviceGroups = policyPayloadObj.deviceGroups;
-    //     var assignedGroups = [];
-    //     for (var index in deviceGroups) {
-    //         if (deviceGroups.hasOwnProperty(index)) {
-    //             assignedGroups.push(deviceGroups[index].name);
-    //         }
-    //     }
-    //     $("#policy-groups").text(assignedGroups.toString().split(",").join(", "));
-    // } else {
-    //     $("#policy-groups").text("NONE");
-    // }
+    if (policyPayloadObj.users == null) {
+        $("#policy-users").text("NONE");
+    }
+    else if (policyPayloadObj.users.length > 0) {
+        $("#policy-users").text(policyPayloadObj.users.toString().split(",").join(", "));
+    } else {
+        $("#users-row").addClass("hidden");
+    }
 
-    // if (policyPayloadObj.roles.length > 0) {
-    //     $("#policy-roles").text(policyPayloadObj.roles.toString().split(",").join(", "));
-    // } else {
-    //     $("#roles-row").addClass("hidden");
-    // }
+    if (policyPayloadObj.deviceGroups == null) {
+        $("#policy-groups").text("NONE");
+    } else if (policyPayloadObj.deviceGroups.length > 0) {
+        debugger;
+        var deviceGroups = policyPayloadObj.deviceGroups;
+        var assignedGroups = [];
+        for (var index in deviceGroups) {
+            if (deviceGroups.hasOwnProperty(index)) {
+                assignedGroups.push(deviceGroups[index].name);
+            }
+        }
+        $("#policy-groups").text(assignedGroups.toString().split(",").join(", "));
+    } else {
+        $("#policy-groups").text("NONE");
+    }
+
+    if (policyPayloadObj.roles == null) {
+        $("#policy-roles").text("NONE");
+    }
+    else if (policyPayloadObj.roles.length > 0) {
+        $("#policy-roles").text(policyPayloadObj.roles.toString().split(",").join(", "));
+    } else {
+        $("#roles-row").addClass("hidden");
+    }
 
     var deviceType = policy["platform"];
     var policyOperationsTemplateSrc = context + '/public/cdmf.unit.device.type.' + deviceType +

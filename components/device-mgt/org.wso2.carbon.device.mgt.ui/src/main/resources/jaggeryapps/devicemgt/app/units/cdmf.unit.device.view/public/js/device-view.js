@@ -16,7 +16,6 @@
  * under the License.
  */
 
-(function () {
     var deviceId = $(".device-id");
     var deviceIdentifier = deviceId.data("deviceid");
     var deviceType = deviceId.data("type");
@@ -136,13 +135,9 @@
     function loadPolicyCompliance() {
         var policyCompliance = $("#policy-view");
         var policyComplianceTemplate = policyCompliance.attr("src");
-        console.log("deviceId:"+deviceId);
-        console.log("deviceType:"+deviceType);
         var deviceId = policyCompliance.data("device-id");
         var deviceType = policyCompliance.data("device-type");
         var activePolicy = null;
-        console.log("deviceId:"+deviceId);
-        console.log("deviceType:"+deviceType);
 
         $.template(
             "policy-view",
@@ -213,5 +208,3 @@
             }
         );
     }
-
-}());

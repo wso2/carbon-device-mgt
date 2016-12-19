@@ -22,9 +22,9 @@ var stepForwardFrom = {};
 var stepBackFrom = {};
 var policy = {};
 var currentlyEffected = {};
-
 var validateInline = {};
 var clearInline = {};
+var hasPolicyProfileScript = false;
 
 var enableInlineError = function (inputField, errorMsg, errorSign) {
     var fieldIdentifier = "#" + inputField;
@@ -195,6 +195,7 @@ skipStep["policy-platform"] = function (policyPayloadObj) {
                 $(".policy-platform").addClass("hidden");
                 $.isResourceExists(policyOperationsScriptSrc, function (status) {
                     if (status) {
+                        hasPolicyProfileScript = true;
                         var script = document.createElement('script');
                         script.type = 'text/javascript';
                         script.src = policyOperationsScriptSrc;
@@ -222,17 +223,23 @@ skipStep["policy-platform"] = function (policyPayloadObj) {
         }
         $(".wr-advance-operations-init").addClass("hidden");
     });
+
+    if(!hasPolicyProfileScript) {
+        populateGenericProfileOperations(policyPayloadObj["profile"]["profileFeaturesList"]);
+    }
 };
 
 /**
  * Forward action of policy profile page. Generates policy profile payload.
  */
 stepForwardFrom["policy-profile"] = function () {
-    /*
-     generatePolicyProfile() function should be implemented in plugin side and should include the logic to build the
-     policy profile object.
-     */
-    policy["profile"] = generatePolicyProfile();
+    if (hasPolicyProfileScript) {
+        /*
+         generatePolicyProfile() function should be implemented in plugin side and should include the logic to build the
+         policy profile object.
+         */
+        policy["profile"] = generatePolicyProfile();
+    }
     // updating next-page wizard title with selected platform
     $("#policy-criteria-page-wizard-title").text("EDIT " + policy["platform"] + " POLICY - " + policy["name"]);
 };
@@ -420,20 +427,26 @@ var getParameterByName = function (name) {
 };
 
 var updatePolicy = function (policy, state) {
-    /*
-     generateProfileFeaturesList() should be implemented in the plugin side and should include logic to build the
-     profilePayloads array which contains objects, {featureCode:"value", deviceType:"value", content:"value"}.
-     policy["profile"] object will be available for the method which returns from the generatePolicyProfile() function.
-     */
-    var profilePayloads = generateProfileFeaturesList();
+    var profilePayloads;
+    if (hasPolicyProfileScript) {
+        /*
+         generateProfileFeaturesList() should be implemented in the plugin side and should include logic to build the
+         profilePayloads array which contains objects, {featureCode:"value", deviceType:"value", content:"value"}.
+         policy["profile"] object will be available for the method which returns from the generatePolicyProfile() function.
+         */
+        profilePayloads = generateProfileFeaturesList();
 
-    $.each(profilePayloads, function (i, item) {
-        $.each(item.content, function (key, value) {
-            if (value === null || value === undefined || value === "") {
-                item.content[key] = null;
-            }
+        $.each(profilePayloads, function (i, item) {
+            $.each(item.content, function (key, value) {
+                //cannot add a true check since it will catch value = false as well
+                if (value === null || value === undefined || value === "") {
+                    item.content[key] = null;
+                }
+            });
         });
-    });
+    } else {
+        profilePayloads = generateGenericPayload();
+    }
 
     var payload = {
         "policyName": policy["policyName"],

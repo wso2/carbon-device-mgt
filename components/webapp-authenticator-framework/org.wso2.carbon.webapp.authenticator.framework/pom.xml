@@ -79,9 +79,9 @@
                             org.wso2.carbon.apimgt.impl.dto,
                             org.wso2.carbon.context,
                             org.wso2.carbon.core.util,
-                            org.wso2.carbon.identity.base,
-                            org.wso2.carbon.identity.core.util,
-                            org.wso2.carbon.identity.oauth2.*,
+                            org.wso2.carbon.identity.base; version="${carbon.identity.imp.pkg.version}",
+                            org.wso2.carbon.identity.core.util; version="${carbon.identity.imp.pkg.version}",
+                            org.wso2.carbon.identity.oauth2.*; version="${carbon.identity-inbound-auth-oauth.imp.pkg.version}",
                             org.wso2.carbon.tomcat.ext.valves,
                             org.wso2.carbon.user.api,
                             org.wso2.carbon.user.core.service,
@@ -166,15 +166,15 @@
             <artifactId>axiom</artifactId>
         </dependency-->
         <dependency>
-            <groupId>org.wso2.carbon.identity</groupId>
+            <groupId>org.wso2.carbon.identity.framework</groupId>
             <artifactId>org.wso2.carbon.identity.base</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon.identity</groupId>
+            <groupId>org.wso2.carbon.identity.framework</groupId>
             <artifactId>org.wso2.carbon.identity.core</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon.identity</groupId>
+            <groupId>org.wso2.carbon.identity.inbound.auth.oauth2</groupId>
             <artifactId>org.wso2.carbon.identity.oauth</artifactId>
         </dependency>
         <dependency>

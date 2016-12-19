@@ -24,16 +24,17 @@ import io.swagger.annotations.ExtensionProperty;
 import io.swagger.annotations.Extension;
 import io.swagger.annotations.Tag;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.AuthorizationScope;
-import io.swagger.annotations.Authorization;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import io.swagger.annotations.ResponseHeader;
+import org.wso2.carbon.apimgt.annotations.api.Scope;
+import org.wso2.carbon.apimgt.annotations.api.Scopes;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
 import org.wso2.carbon.device.mgt.jaxrs.beans.PolicyWrapper;
 import org.wso2.carbon.device.mgt.jaxrs.beans.PriorityUpdatedPolicyWrapper;
+import org.wso2.carbon.device.mgt.jaxrs.util.Constants;
 import org.wso2.carbon.policy.mgt.common.Policy;
 
 import javax.validation.Valid;
@@ -62,6 +63,64 @@ import java.util.List;
                 @Tag(name = "device_management", description = "")
         }
 )
+@Scopes(
+        scopes = {
+                @Scope(
+                        name = "Adding a Policy",
+                        description = "Adding a Policy",
+                        key = "cdmf:policies:manage",
+                        permissions = {"/device-mgt/policies/manage"}
+                ),
+                @Scope(
+                        name = "Getting Details of Policies",
+                        description = "Getting Details of Policies",
+                        key = "cdmf:policies:get-details",
+                        permissions = {"/device-mgt/policies/get-details"}
+                ),
+                @Scope(
+                        name = "Getting Details of a Policy",
+                        description = "Getting Details of a Policy",
+                        key = "cdmf:policies:get-policy-details",
+                        permissions = {"/device-mgt/policies/get-policy-details"}
+                ),
+                @Scope(
+                        name = "Updating a Policy",
+                        description = "Updating a Policy",
+                        key = "cdmf:policies:update",
+                        permissions = {"/device-mgt/policies/update"}
+                ),
+                @Scope(
+                        name = "Removing Multiple Policies",
+                        description = "Removing Multiple Policies",
+                        key = "cdmf:policies:remove",
+                        permissions = {"/device-mgt/policies/remove"}
+                ),
+                @Scope(
+                        name = "Activating Policies",
+                        description = "Activating Policies",
+                        key = "cdmf:policies:activate",
+                        permissions = {"/device-mgt/policies/activate"}
+                ),
+                @Scope(
+                        name = "Deactivating Policies",
+                        description = "Deactivating Policies",
+                        key = "cdmf:policies:deactivate",
+                        permissions = {"/device-mgt/policies/deactivate"}
+                ),
+                @Scope(
+                        name = "Applying Changes on Policies",
+                        description = "Applying Changes on Policies",
+                        key = "cdmf:policies:changes",
+                        permissions = {"/device-mgt/policies/changes"}
+                ),
+                @Scope(
+                        name = "Updating the Policy Priorities",
+                        description = "Updating the Policy Priorities",
+                        key = "cdmf:policies:priorities",
+                        permissions = {"/device-mgt/policies/priorities"}
+                )
+        }
+)
 @Api(value = "Device Policy Management", description = "This API includes the functionality around device policy management")
 @Path("/policies")
 @Produces(MediaType.APPLICATION_JSON)
@@ -77,12 +136,10 @@ public interface PolicyManagementService {
             notes = "Add a policy using this REST API command. When adding a policy you will have the option of saving the policy or saving and publishing the policy." +
                     "Using this REST API you are able to save a created Policy and this policy will be in the inactive state.",
             tags = "Device Policy Management",
-            authorizations = {
-                    @Authorization(
-                            value="permission",
-                            scopes = { @AuthorizationScope(scope = "/device-mgt/policies/manage",
-                                    description = "Manage policies") }
-                    )
+            extensions = {
+                @Extension(properties = {
+                        @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:policies:manage")
+                })
             }
     )
     @ApiResponses(
@@ -147,12 +204,10 @@ public interface PolicyManagementService {
             notes = "Retrieve the details of all the policies in WSO2 EMM.",
             response = Policy.class,
             tags = "Device Policy Management",
-            authorizations = {
-                    @Authorization(
-                            value="permission",
-                            scopes = { @AuthorizationScope(scope = "/device-mgt/policies/view",
-                                    description = "View policies") }
-                    )
+            extensions = {
+                @Extension(properties = {
+                        @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:policies:get-details")
+                })
             }
     )
     @ApiResponses(
@@ -224,12 +279,10 @@ public interface PolicyManagementService {
             notes = "Retrieve the details of a policy that is in WSO2 EMM.",
             response = Policy.class,
             tags = "Device Policy Management",
-            authorizations = {
-                    @Authorization(
-                            value="permission",
-                            scopes = { @AuthorizationScope(scope = "/device-mgt/policies/view",
-                                    description = "View policies") }
-                    )
+            extensions = {
+                @Extension(properties = {
+                        @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:policies:get-policy-details")
+                })
             }
     )
     @ApiResponses(
@@ -294,12 +347,10 @@ public interface PolicyManagementService {
             value = "Updating a Policy",
             notes = "Make changes to an existing policy by updating the policy using this resource.",
             tags = "Device Policy Management",
-            authorizations = {
-                    @Authorization(
-                            value="permission",
-                            scopes = { @AuthorizationScope(scope = "/device-mgt/policies/manage",
-                                    description = "Manage policies") }
-                    )
+            extensions = {
+                @Extension(properties = {
+                        @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:policies:update")
+                })
             }
     )
     @ApiResponses(
@@ -364,12 +415,10 @@ public interface PolicyManagementService {
             value = "Removing Multiple Policies",
             notes = "Delete one or more than one policy using this API.",
             tags = "Device Policy Management",
-            authorizations = {
-                    @Authorization(
-                            value="permission",
-                            scopes = { @AuthorizationScope(scope = "/device-mgt/policies/manage",
-                                    description = "Manage policies") }
-                    )
+            extensions = {
+                @Extension(properties = {
+                        @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:policies:remove")
+                })
             }
     )
     @ApiResponses(
@@ -412,12 +461,10 @@ public interface PolicyManagementService {
             value = "Activating Policies",
             notes = "Publish a policy using this API to bring a policy that is in the inactive state to the active state.",
             tags = "Device Policy Management",
-            authorizations = {
-                    @Authorization(
-                            value="permission",
-                            scopes = { @AuthorizationScope(scope = "/device-mgt/policies/manage",
-                                    description = "Manage policies") }
-                    )
+            extensions = {
+                @Extension(properties = {
+                        @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:policies:activate")
+                })
             }
     )
     @ApiResponses(
@@ -455,12 +502,10 @@ public interface PolicyManagementService {
             value = "Deactivating Policies",
             notes = "Unpublish a policy using this API to bring a policy that is in the active state to the inactive state.",
             tags = "Device Policy Management",
-            authorizations = {
-                    @Authorization(
-                            value="permission",
-                            scopes = { @AuthorizationScope(scope = "/device-mgt/policies/manage",
-                                    description = "Manage policies") }
-                    )
+            extensions = {
+                @Extension(properties = {
+                        @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:policies:deactivate")
+                })
             }
     )
     @ApiResponses(
@@ -503,12 +548,10 @@ public interface PolicyManagementService {
                     " devices will not receive these changes immediately. Once all the required changes are made" +
                     " you need to apply the changes to push the policy changes to the existing devices.",
             tags = "Device Policy Management",
-            authorizations = {
-                    @Authorization(
-                            value="permission",
-                            scopes = { @AuthorizationScope(scope = "/device-mgt/policies/manage",
-                                    description = "Manage policies") }
-                    )
+            extensions = {
+                @Extension(properties = {
+                        @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:policies:changes")
+                })
             }
     )
     @ApiResponses(
@@ -533,13 +576,11 @@ public interface PolicyManagementService {
             value = "Updating the Policy Priorities",
             notes = "Make changes to the existing policy priority order by updating the priority order using this API.",
             tags = "Device Policy Management",
-            authorizations = {
-                    @Authorization(
-                            value="permission",
-                            scopes = { @AuthorizationScope(scope = "/device-mgt/policies/manage",
-                                    description = "Manage policies") }
-                    )
-            }
+            extensions = {
+            @Extension(properties = {
+                    @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:policies:priorities")
+            })
+    }
     )
     @ApiResponses(
             value = {

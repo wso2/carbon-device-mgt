@@ -1,6 +1,16 @@
 package org.wso2.carbon.certificate.mgt.cert.jaxrs.api;
 
-import io.swagger.annotations.*;
+import io.swagger.annotations.SwaggerDefinition;
+import io.swagger.annotations.Info;
+import io.swagger.annotations.ExtensionProperty;
+import io.swagger.annotations.Extension;
+import io.swagger.annotations.Tag;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.ResponseHeader;
 import org.wso2.carbon.apimgt.annotations.api.Scope;
 import org.wso2.carbon.apimgt.annotations.api.Scopes;
 import org.wso2.carbon.certificate.mgt.cert.jaxrs.api.beans.CertificateList;
@@ -31,16 +41,28 @@ import javax.ws.rs.core.Response;
 @Path("/admin/certificates")
 @Scopes(scopes = {
         @Scope(
-                name = "Manage certificates",
-                description = "",
-                key = "cdmf:manage-certificate",
-                permissions = {"/device-mgt/certificates/manage"}
+                name = "Adding a new SSL certificate",
+                description = "Adding a new SSL certificate",
+                key = "cdmf:admin:certificates:add",
+                permissions = {"/device-mgt/admin/certificates/add"}
         ),
         @Scope(
-                name = "View certificate",
-                description = "",
-                key = "cdmf:view-certificate",
-                permissions = {"/device-mgt/certificates/view"}
+                name = "Getting Details of an SSL Certificate",
+                description = "Getting Details of an SSL Certificate",
+                key = "cdmf:admin:certificates:details",
+                permissions = {"/device-mgt/admin/certificates/details"}
+        ),
+        @Scope(
+                name = "Getting Details of Certificates",
+                description = "Getting Details of Certificates",
+                key = "cdmf:admin:certificates:view",
+                permissions = {"/device-mgt/admin/certificates/view"}
+        ),
+        @Scope(
+                name = "Deleting an SSL Certificate",
+                description = "Deleting an SSL Certificate",
+                key = "cdmf:admin:certificates:delete",
+                permissions = {"/device-mgt/admin/certificates/delete"}
         )
 }
 )
@@ -67,7 +89,7 @@ public interface CertificateManagementAdminService {
             tags = "Certificate Management",
             extensions = {
                     @Extension(properties = {
-                            @ExtensionProperty(name = SCOPE, value = "cdmf:manage-certificate")
+                            @ExtensionProperty(name = SCOPE, value = "cdmf:admin:certificates:add")
                     })
             }
     )
@@ -136,7 +158,7 @@ public interface CertificateManagementAdminService {
             tags = "Certificate Management",
             extensions = {
                     @Extension(properties = {
-                            @ExtensionProperty(name = SCOPE, value = "cdmf:view-certificate")
+                            @ExtensionProperty(name = SCOPE, value = "cdmf:admin:certificates:details")
                     })
             }
     )
@@ -207,7 +229,7 @@ public interface CertificateManagementAdminService {
             tags = "Certificate Management",
             extensions = {
                     @Extension(properties = {
-                            @ExtensionProperty(name = SCOPE, value = "cdmf:view-certificate")
+                            @ExtensionProperty(name = SCOPE, value = "cdmf:admin:certificates:view")
                     })
             }
     )
@@ -286,7 +308,7 @@ public interface CertificateManagementAdminService {
             tags = "Certificate Management",
             extensions = {
                     @Extension(properties = {
-                            @ExtensionProperty(name = SCOPE, value = "cdmf:manage-certificate")
+                            @ExtensionProperty(name = SCOPE, value = "cdmf:admin:certificates:delete")
                     })
             }
     )

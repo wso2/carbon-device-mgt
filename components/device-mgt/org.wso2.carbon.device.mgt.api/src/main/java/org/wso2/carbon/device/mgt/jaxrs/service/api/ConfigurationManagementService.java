@@ -24,8 +24,6 @@ import io.swagger.annotations.ExtensionProperty;
 import io.swagger.annotations.Extension;
 import io.swagger.annotations.Tag;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.AuthorizationScope;
-import io.swagger.annotations.Authorization;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
@@ -68,13 +66,13 @@ import javax.ws.rs.core.Response;
         @Scope(
                 name = "View configurations",
                 description = "",
-                key = "cdmf:view-configuration",
+                key = "cdmf:configuration:view",
                 permissions = {"/device-mgt/platform-configurations/view"}
         ),
         @Scope(
                 name = "Manage configurations",
                 description = "",
-                key = "cdmf:manage-configuration",
+                key = "cdmf:configuration:manage",
                 permissions = {"/device-mgt/platform-configurations/manage"}
         )
 }
@@ -92,7 +90,7 @@ public interface ConfigurationManagementService {
             tags = "Configuration Management",
             extensions = {
                     @Extension(properties = {
-                            @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:view-configuration")
+                            @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:configuration:view")
                     })
             }
     )
@@ -151,7 +149,7 @@ public interface ConfigurationManagementService {
             tags = "Configuration Management",
             extensions = {
                     @Extension(properties = {
-                            @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:manage-configuration")
+                            @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:configuration:manage")
                     })
             }
     )

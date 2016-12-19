@@ -131,7 +131,7 @@ public class APIManagementProviderServiceImpl implements APIManagementProviderSe
      * {@inheritDoc}
      */
     @Override
-    public ApiApplicationKey generateAndRetrieveApplicationKeys(String apiApplicationName, String tags[],
+    public synchronized ApiApplicationKey generateAndRetrieveApplicationKeys(String apiApplicationName, String tags[],
                                                                 String keyType, String username,
                                                                 boolean isAllowedAllDomains, String validityTime)
             throws APIManagerException {

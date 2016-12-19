@@ -36,7 +36,10 @@ function validateEmail(email) {
  */
 function sendInvites(){
     var emailObj = $('.modal-content #choose_usr_email').select2('data'),
-        emailArr = [];
+        emailArr = [],
+        deviceEmailObj = {};
+
+    console.log(deviceTypeView);
 
     if(emailObj.length <= 0){
         console.log('no values to print');
@@ -47,6 +50,12 @@ function sendInvites(){
         emailArr.push(el.text);
     })
 
+    deviceEmailObj = {
+        "deviceType" : deviceTypeView,
+        "emailList" : emailArr
+    }
+
+
     hidePopup();
-    console.log(emailArr);
+    console.log(deviceEmailObj);
 }

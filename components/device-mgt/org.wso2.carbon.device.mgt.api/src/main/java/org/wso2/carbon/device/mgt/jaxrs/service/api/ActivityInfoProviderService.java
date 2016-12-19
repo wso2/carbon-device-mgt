@@ -18,7 +18,17 @@
  */
 package org.wso2.carbon.device.mgt.jaxrs.service.api;
 
-import io.swagger.annotations.*;
+import io.swagger.annotations.SwaggerDefinition;
+import io.swagger.annotations.Info;
+import io.swagger.annotations.ExtensionProperty;
+import io.swagger.annotations.Extension;
+import io.swagger.annotations.Tag;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.ResponseHeader;
 import org.wso2.carbon.apimgt.annotations.api.Scope;
 import org.wso2.carbon.apimgt.annotations.api.Scopes;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Activity;
@@ -55,9 +65,9 @@ import javax.ws.rs.core.Response;
 @Scopes(
         scopes = {
         @Scope(
-                name = "Get activities",
-                description = "Get activities",
-                key = "cdmf:get-activity",
+                name = "Getting Details of an Activity",
+                description = "Getting Details of an Activity",
+                key = "cdmf:activities:details",
                 permissions = {"/device-mgt/devices/owning-device/view"}
                 )
         }
@@ -77,7 +87,7 @@ public interface ActivityInfoProviderService {
             tags = "Activity Info Provider",
             extensions = {
                 @Extension(properties = {
-                        @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:get-activity")
+                        @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:activities:details")
                 })
             }
     )
@@ -150,7 +160,7 @@ public interface ActivityInfoProviderService {
             tags = "Activity Info Provider",
             extensions = {
                     @Extension(properties = {
-                            @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:get-activity")
+                            @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:activities:details")
                     })
             }
     )

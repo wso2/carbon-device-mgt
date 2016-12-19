@@ -33,8 +33,10 @@
             "identityProviderUrl" : "https://localhost:9443/samlsso",
             "acs": "https://localhost:9443/devicemgt/uuf/sso/acs",
             "identityAlias": "wso2carbon",
-            "responseSigningEnabled" : "true",
-            "useTenantKey": false
+            "responseSigningEnabled" : true,
+            "validateAssertionValidityPeriod": true,
+            "validateAudienceRestriction": true,
+            "assertionSigningEnabled": true
         }
     },
     "errorPages": {

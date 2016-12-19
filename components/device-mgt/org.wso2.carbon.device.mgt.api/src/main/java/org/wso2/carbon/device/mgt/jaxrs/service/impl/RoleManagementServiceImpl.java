@@ -143,6 +143,17 @@ public class RoleManagementServiceImpl implements RoleManagementService {
         }
     }
 
+    private UIPermissionNode getAllRolePermissions(String roleName, UserRealm userRealm) throws UserAdminException {
+        org.wso2.carbon.user.core.UserRealm userRealmCore = null;
+        if (userRealm instanceof org.wso2.carbon.user.core.UserRealm) {
+            userRealmCore = (org.wso2.carbon.user.core.UserRealm) userRealm;
+        }
+        final UserRealmProxy userRealmProxy = new UserRealmProxy(userRealmCore);
+        final UIPermissionNode rolePermissions =
+                userRealmProxy.getRolePermissions(roleName, MultitenantConstants.SUPER_TENANT_ID);
+        return rolePermissions;
+    }
+
     private UIPermissionNode getUIPermissionNode(String roleName, UserRealm userRealm)
             throws UserAdminException {
         org.wso2.carbon.user.core.UserRealm userRealmCore = null;
@@ -223,6 +234,19 @@ public class RoleManagementServiceImpl implements RoleManagementService {
             list.add(permissionNode.getResourcePath());
             if (permissionNode.getNodeList() != null && permissionNode.getNodeList().length > 0) {
                 iteratePermissions(permissionNode, list);
+            }
+        }
+        return list;
+    }
+
+
+    private List<String> getAuthorizedPermissions(UIPermissionNode uiPermissionNode, List<String> list) {
+        for (UIPermissionNode permissionNode : uiPermissionNode.getNodeList()) {
+            if (permissionNode.isSelected()) {
+                list.add(permissionNode.getResourcePath());
+            }
+            if (permissionNode.getNodeList() != null && permissionNode.getNodeList().length > 0) {
+                getAuthorizedPermissions(permissionNode, list);
             }
         }
         return list;
@@ -377,6 +401,17 @@ public class RoleManagementServiceImpl implements RoleManagementService {
             }
 
             if (roleInfo.getPermissions() != null) {
+                // Get all role permissions
+                final UIPermissionNode rolePermissions = this.getAllRolePermissions(roleName, userRealm);
+                List<String> permissions = new ArrayList<String>();
+                this.getAuthorizedPermissions(rolePermissions, permissions);
+                for (String permission : roleInfo.getPermissions()) {
+                    permissions.add(permission);
+                }
+                String [] allApplicablePerms = new String[permissions.size()];
+                allApplicablePerms = permissions.toArray(allApplicablePerms);
+                roleInfo.setPermissions(allApplicablePerms);
+
                 // Delete all authorizations for the current role before authorizing the permission tree
                 authorizationManager.clearRoleAuthorization(roleName);
                 if (roleInfo.getPermissions().length > 0) {
@@ -391,6 +426,11 @@ public class RoleManagementServiceImpl implements RoleManagementService {
                                                                       "successfully been updated").build();
         } catch (UserStoreException e) {
             String msg = "Error occurred while updating role '" + roleName + "'";
+            log.error(msg, e);
+            return Response.serverError().entity(
+                    new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
+        } catch (UserAdminException e) {
+            String msg = "Error occurred while updating permissions of the role '" + roleName + "'";
             log.error(msg, e);
             return Response.serverError().entity(
                     new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();

@@ -1,7 +1,7 @@
 function onRequest(context) {
-    var devicemgtProps = require("/app/modules/conf-reader/main.js")["conf"];
     var authModuleConfigs = context.app.conf["authModule"];
     var sessionDataKey = request.getParameter("sessionDataKey");
+    var authFailure = request.getParameter("authFailure");
 
     //if sso enabled and sessionDataKey is empty redirect
     var ssoConfigs = authModuleConfigs["sso"];
@@ -19,7 +19,11 @@ function onRequest(context) {
     var viewModel = {};
     var loginActionUrl = context.app.context + "/uuf/login";
     if (sessionDataKey) {
-        loginActionUrl = devicemgtProps["httpsURL"] + "/commonauth";
+        loginActionUrl = "/commonauth";
+    }
+
+    if (authFailure) {
+        viewModel.message = "Login failed! Please recheck the username and password and try again.";
     }
 
     viewModel.sessionDataKey = sessionDataKey;

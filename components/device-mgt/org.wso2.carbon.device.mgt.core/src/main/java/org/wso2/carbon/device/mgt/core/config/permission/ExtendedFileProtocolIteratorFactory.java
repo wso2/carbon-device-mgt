@@ -21,7 +21,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
-public class ExtendedFileProtocolIteratorFactory implements DirectoryIteratorFactory {
+final class ExtendedFileProtocolIteratorFactory implements DirectoryIteratorFactory {
 
     @Override
     public StreamIterator create(URL url, Filter filter) throws IOException {

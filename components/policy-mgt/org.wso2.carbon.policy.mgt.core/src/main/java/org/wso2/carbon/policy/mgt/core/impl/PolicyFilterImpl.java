@@ -70,7 +70,10 @@ public class PolicyFilterImpl implements PolicyFilter {
         Map<Integer, Policy> policyMap = new HashMap<>();
         for (Policy policy : policies) {
             List<DeviceGroupWrapper> wrappers = policy.getDeviceGroups();
-            if (PolicyManagementConstants.ANY.equalsIgnoreCase(wrappers.get(0).getName())) {
+            if (wrappers.isEmpty()) {
+                temp.add(policy);
+                continue;
+            } else if (PolicyManagementConstants.ANY.equalsIgnoreCase(wrappers.get(0).getName())) {
                 temp.add(policy);
                 policyMap.put(policy.getId(), policy);
                 continue;

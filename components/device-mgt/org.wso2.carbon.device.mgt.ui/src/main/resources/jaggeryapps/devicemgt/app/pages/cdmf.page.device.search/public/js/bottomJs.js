@@ -1,13 +1,10 @@
 /*
  Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
-
  WSO2 Inc. licenses this file to you under the Apache License,
  Version 2.0 (the "License"); you may not use this file except
  in compliance with the License.
  You may obtain a copy of the License at
-
  http://www.apache.org/licenses/LICENSE-2.0
-
  Unless required by applicable law or agreed to in writing,
  software distributed under the License is distributed on an
  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
@@ -46,17 +43,23 @@ var dynamicForm = '<div class="dynamic-search-param row"><div class="row"><a cla
                   '</a></div><div class="form-group wr-input-control col-md-2"><label class="wr-input-label ">State</label>' +
                   '<select class="state no-tag form-control select2-custom"><option>AND</option><option>OR</option></select></div><div ' +
                   'class="form-group wr-input-control col-md-4"><label class="wr-input-label ">Key</label><select class=' +
-                  '"txt-key form-control select2-custom"><option>deviceModel</option><option>vendor</option><option>osVersion' +
-                  '</option><option>batteryLevel</option><option>internalTotalMemory</option> <option>' +
-                  'internalAvailableMemory</option> <option>externalTotalMemory</option> <option>externalAvailableMemory' +
-                  '</option> <option>connectionType</option> <option>ssid</option> <option>cpuUsage</option> <option>' +
-                  'totalRAMMemory</option> <option>availableRAMMemory</option> <option>pluggedIn</option></select></div>' +
+                  '"txt-key form-control select2-custom"><option value = "deviceModel">Device Model' +
+                  '</option><option value = "vendor">Vendor</option><option value = "osVersion">OS Version' +
+                  '</option><option value = "batteryLevel">Battery Level</option><option value =' +
+                  ' "internalTotalMemory">Internal Total Memory</option> <option value ="internalAvailableMemory">' +
+                  'Internal Available Memory</option> <option value = "externalTotalMemory">externalTotalMemory</option>' +
+                  ' <option value = "externalAvailableMemory">External Available Memory' +
+                  '</option> <option value = "connectionType">Connection Type</option> <option value =' +
+                  ' "ssid">SSID</option><option value = "cpuUsage">CPU Usage</option><option value = "totalRAMMemory">' +
+                  'Total RAM Memory</option> <option value = "availableRAMMemory">Available RAM Memory</option>' +
+                  '<option value = "pluggedIn">Plugged In</option></select></div>' +
                   '<div class="form-group wr-input-control col-md-2">' +
-                  '<label class="wr-input-label ">Operator</label><select class="form-control select2-custom no-tag operator">' +
-                  '<option>=</option><option> !=</option><option> <</option>' +
-                  '<option> =<</option><option> ></option><option> >=</option></select></div><div class="form-group ' +
-                  'wr-input-control col-md-4"><label class="wr-input-label' +
-                  ' ">Value</label><input type="text" class="form-control txt-value"/></div></div>';
+                  '<label class="wr-input-label ">Operator</label><select id = "operators" class="form-control' +
+                  ' select2-custom no-tag operator"><option>=</option><option> !=</option><option> %</option>' +
+                  '</select></div><div class="form-group ' + 'wr-input-control col-md-4"><label class="wr-input-label">Value</label>' +
+                  '<input type="text" class="form-control txt-value"/></div></div>';
+
+var nonNumericKeyValuePair = ["deviceModel", "vendor", "osVersion", "connectionType", "ssid", "pluggedIn"];
 
 $(document).ready(function () {
     var isInit = true;
@@ -64,14 +67,49 @@ $(document).ready(function () {
         $("#customSearchParam").prepend(dynamicForm);
         $(".close-button-div").unbind("click");
         $(".close-button-div").bind("click", removeCustomParam);
-        $(".txt-key").select2({tags: true});
         $(".no-tag").select2({tags: false});
+        $(".txt-key").select2({tags: true}).on('change', function() {
+            // Based on the selected key, relevant operations are changed
+            var operationsForSelectedKey = getOperators($(this).val());
+            $("#operators").empty();
+            $("#operators").append(operationsForSelectedKey);
+            $("#operators").select2("val", "=");
+        });
     });
+
+    /** Function to get operators based on the key Value
+     *
+     * @param keyValue
+     */
+    function getOperators(keyValue) {
+        if (nonNumericKeyValuePair.indexOf(keyValue) < 0) {
+            return '<option> =</option><option> !=</option><option> <</option><option> =<</option><option>' +
+                ' ></option><option> >=</option>';
+        } else {
+            return '<option> =</option><option> !=</option><option><option> %</option>';
+        }
+    }
+
+    /** To validate the key and value before sending that to back-end
+     *
+     * @param key Key of the search
+     * @param value value given for the search
+     */
+    function isValidKeyAndValue(key, value) {
+        if (nonNumericKeyValuePair.indexOf(key) < 0) {
+            if (!isNaN(parseFloat(value)) && isFinite(value)){
+                return true;
+            }
+        } else {
+            return true;
+        }
+    }
 
     $("#device-search-btn").click(function () {
         var location = $("#location").val();
         var payload_obj = {};
         var conditions = [];
+        var hasError = false;
         if (location) {
             var conditionObject = {};
             conditionObject.key = "LOCATION";
@@ -83,93 +121,104 @@ $(document).ready(function () {
 
         $("#customSearchParam .dynamic-search-param").each(function () {
             var value = $(this).find(".txt-value").val();
-            var key = $(this).find(".txt-key").val()
-            if (value && key) {
-                var conditionObject = {};
-                conditionObject.key = key;
-                conditionObject.value = value;
-                conditionObject.operator = $(this).find(".operator").val();
-                conditionObject.state = $(this).find(".state").val();
-                conditions.push(conditionObject)
+            var key = $(this).find(".txt-key").val();
+            if (!hasError && value && key ) {
+                if (isValidKeyAndValue(key, value)) {
+                    var conditionObject = {};
+                    conditionObject.key = key;
+                    conditionObject.value = value;
+                    conditionObject.operator = $(this).find(".operator").val();
+                    conditionObject.state = $(this).find(".state").val();
+                    conditions.push(conditionObject);
+                } else {
+                    hasError = true;
+                    $("#advance-search-result").addClass("hidden");
+                    $("#advance-search-form").removeClass(" hidden");
+                    $('#device-listing-status').removeClass('hidden');
+                    $('#device-listing-status-msg').text('Error in user input values. ' + key + " requires a" +
+                        " numerical value as the search value");
+                }
             }
         });
-        payload_obj.conditions = conditions;
-        var deviceSearchAPI = "/api/device-mgt/v1.0/devices/search-devices";
-        $("#advance-search-form").addClass(" hidden");
-        $("#loading-content").removeClass('hidden');
-        var deviceListing = $("#device-listing");
-        var deviceListingSrc = deviceListing.attr("src");
-        $.template("device-listing", deviceListingSrc, function (template) {
 
-            var successCallback = function (data) {
-                if (!data) {
-                    $("#loading-content").addClass('hidden');
-                    $("#advance-search-result").addClass("hidden");
-                    $("#advance-search-form").removeClass(" hidden");
-                    $('#device-listing-status').removeClass('hidden');
-                    $('#device-listing-status-msg').text('No Device are available to be displayed.');
-                    return;
-                }
-                data = JSON.parse(data);
-                if (data.devices.length == 0) {
-                    $("#loading-content").addClass('hidden');
-                    $("#advance-search-result").addClass("hidden");
-                    $("#advance-search-form").removeClass(" hidden");
-                    $('#device-listing-status').removeClass('hidden');
-                    $('#device-listing-status-msg').text('No Device are available to be displayed.');
-                    return;
-                }
-                var viewModel = {};
-                var devices = [];
-                if (data.devices.length > 0) {
-                    for (i = 0; i < data.devices.length; i++) {
-                        var tempDevice = data.devices[i];
-                        var device = {};
-                        device.type = tempDevice.type;
-                        device.name = tempDevice.name;
-                        device.deviceIdentifier = tempDevice.deviceIdentifier;
-                        var properties = {} ;
-                        var enrolmentInfo = {};
-                        properties.VENDOR = tempDevice.deviceInfo.vendor;
-                        properties.DEVICE_MODEL = tempDevice.deviceInfo.deviceModel;
-                        enrolmentInfo.status = "ACTIVE";
-                        enrolmentInfo.owner = "N/A";
-                        enrolmentInfo.ownership = "N/A";
-                        device.enrolmentInfo = enrolmentInfo;
-                        device.properties = properties;
-                       devices.push(device);
+        // Sent the search conditions to back-end only, if all the values compliant with there key values
+        if (hasError) {
+            hasError = false;
+        } else {
+            payload_obj.conditions = conditions;
+            var deviceSearchAPI = "/api/device-mgt/v1.0/devices/search-devices";
+            $("#advance-search-form").addClass(" hidden");
+            $("#loading-content").removeClass('hidden');
+            var deviceListing = $("#device-listing");
+            var deviceListingSrc = deviceListing.attr("src");
+            $.template("device-listing", deviceListingSrc, function (template) {
+                var successCallback = function (data) {
+                    if (!data) {
+                        $("#loading-content").addClass('hidden');
+                        $("#advance-search-result").addClass("hidden");
+                        $("#advance-search-form").removeClass(" hidden");
+                        $('#device-listing-status').removeClass('hidden');
+                        $('#device-listing-status-msg').text('No Device are available to be displayed.');
+                        return;
                     }
-                    viewModel.devices = devices;
-                    $('#advance-search-result').removeClass('hidden');
-                    $("#view-search-param").removeClass('hidden');
-                    $("#back-to-search").removeClass('hidden');
-                    $('#device-grid').removeClass('hidden');
-                    $('#ast-container').removeClass('hidden');
-                    $('#user-listing-status-msg').text("");
-                    var content = template(viewModel);
-                    $("#ast-container").html(content);
-                } else {
-                    $('#device-listing-status').removeClass('hidden');
-                    $('#device-listing-status-msg').text('No Device are available to be displayed.');
-                }
-                $("#loading-content").addClass('hidden');
-                if (isInit) {
-                    $('#device-grid').datatables_extended();
-                    isInit = false;
-                }
-                $(".icon .text").res_text(0.2);
-            };
-            invokerUtil.post(deviceSearchAPI,
-                             payload_obj,
-                             successCallback,
-                             function (message) {
-                                 $("#loading-content").addClass('hidden');
-                                 $("#advance-search-result").addClass("hidden");
-                                 $("#advance-search-form").removeClass(" hidden");
-                                 $('#device-listing-status').removeClass('hidden');
-                                 $('#device-listing-status-msg').text('Server is unable to perform the search please enroll at least one device or check the search query');
-                             }
-            );
-        });
+                    data = JSON.parse(data);
+                    if (data.devices.length == 0) {
+                        $("#loading-content").addClass('hidden');
+                        $("#advance-search-result").addClass("hidden");
+                        $("#advance-search-form").removeClass(" hidden");
+                        $('#device-listing-status').removeClass('hidden');
+                        $('#device-listing-status-msg').text('No Device are available to be displayed.');
+                        return;
+                    }
+                    var viewModel = {};
+                    var devices = [];
+                    if (data.devices.length > 0) {
+                        for (i = 0; i < data.devices.length; i++) {
+                            var tempDevice = data.devices[i];
+                            var device = {};
+                            device.type = tempDevice.type;
+                            device.name = tempDevice.name;
+                            device.deviceIdentifier = tempDevice.deviceIdentifier;
+                            var properties = {};
+                            var enrolmentInfo = {};
+                            properties.VENDOR = tempDevice.deviceInfo.vendor;
+                            properties.DEVICE_MODEL = tempDevice.deviceInfo.deviceModel;
+                            device.enrolmentInfo = tempDevice.enrolmentInfo;
+                            device.properties = properties;
+                            devices.push(device);
+                        }
+                        viewModel.devices = devices;
+                        $('#advance-search-result').removeClass('hidden');
+                        $("#view-search-param").removeClass('hidden');
+                        $("#back-to-search").removeClass('hidden');
+                        $('#device-grid').removeClass('hidden');
+                        $('#ast-container').removeClass('hidden');
+                        $('#user-listing-status-msg').text("");
+                        var content = template(viewModel);
+                        $("#ast-container").html(content);
+                    } else {
+                        $('#device-listing-status').removeClass('hidden');
+                        $('#device-listing-status-msg').text('No Device are available to be displayed.');
+                    }
+                    $("#loading-content").addClass('hidden');
+                    if (isInit) {
+                        $('#device-grid').datatables_extended();
+                        isInit = false;
+                    }
+                    $(".icon .text").res_text(0.2);
+                };
+                invokerUtil.post(deviceSearchAPI,
+                    payload_obj,
+                    successCallback,
+                    function (message) {
+                        $("#loading-content").addClass('hidden');
+                        $("#advance-search-result").addClass("hidden");
+                        $("#advance-search-form").removeClass(" hidden");
+                        $('#device-listing-status').removeClass('hidden');
+                        $('#device-listing-status-msg').text('Server is unable to perform the search please enroll at least one device or check the search query');
+                    }
+                );
+            });
+        }
     });
 });

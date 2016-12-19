@@ -39,8 +39,8 @@
                     </div>
                     <div class="form-group">
                         <label for="password">Password *</label>
-                        <input type="password" name="password" class="form-control" placeholder="Enter your password"
-                               required="required" />
+                        <input type="password" name="password" class="form-control" autocomplete="off"
+                               placeholder="Enter your password" required="required" />
                     </div>
                     {{#if sessionDataKey}}
                         <input type="hidden" name="sessionDataKey" value="{{sessionDataKey}}" />

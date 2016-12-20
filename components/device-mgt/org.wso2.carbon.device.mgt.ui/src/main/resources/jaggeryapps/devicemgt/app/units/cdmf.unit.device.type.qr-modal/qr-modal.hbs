@@ -1,0 +1,64 @@
+{{!
+  Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+
+  WSO2 Inc. licenses this file to you under the Apache License,
+  Version 2.0 (the "License"); you may not use this file except
+  in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing,
+  software distributed under the License is distributed on an
+  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  KIND, either express or implied. See the License for the
+  specific language governing permissions and limitations
+  under the License.
+}}
+{{#zone "content"}}
+    <div id="qr-code-modal" data-enrollment-url="{{@unit.params.enrollmentURL}}" class="hidden">
+        <div class="modal-header">
+            <h4 class="pull-left modal-title">
+                <span class="fw-stack">
+                    <i class="fw fw-mobile fw-stack-2x"></i>
+                    <span class="fw-stack fw-move-right fw-move-bottom">
+                      <i class="fw fw-ring fw-stack-2x"></i>
+                      <i class="fw fw-circle fw-stack-2x fw-stroke text-info"></i>
+                      <i class="fw fw-add fw-stack-1x fw-inverse"></i>
+                   </span>
+                </span>
+                  Add your {{@unit.params.deviceTypeName}} device to {{@app.conf.appName}}
+            </h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fw fw-cancel"></i></button>
+        </div>
+        <hr>
+        <div class="modal-body add-margin-top-2x add-margin-bottom-2x">
+            <div class="panel-body col-centered text-center">
+                <h5>
+                    Please scan the following QR code using your {{@unit.params.deviceTypeName}} device.
+                </h5>
+                <br>
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <div class="qr-code"></div>
+                    </div>
+                </div>
+                <br>
+                <h5>
+                    Not having a QR code scanner in your device?
+                    <br><br>
+                    Try following link
+                    <br><br>
+                    <a href="{{@unit.params.enrollmentURL}}" target="_blank"><b>{{@unit.params.enrollmentURL}}</b></a>
+                    <br><br>
+                    on your device's Internet browser instead.
+                </h5>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <div class="buttons">
+                <a href="javascript:hidePopup()" class="btn-operations btn-default">Ok</a>
+            </div>
+        </div>
+    </div>
+{{/zone}}

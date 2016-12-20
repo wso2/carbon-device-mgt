@@ -1,0 +1,81 @@
+#*
+   Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+
+   WSO2 Inc. licenses this file to you under the Apache License,
+   Version 2.0 (the "License"); you may not use this file except
+   in compliance with the License.
+   you may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.
+*#
+<EmailConfig>
+    <Subject>You have successfully been registered in WSO2 IoT</Subject>
+    <Body>
+    <![CDATA[
+    <html>
+    <head>
+        <title>WSO2 IoT Server</title>
+    </head>
+    <body style="color: #666666; background-color:#cdcdcd; padding: 0px; margin: 0px;">
+    <div style="background-color:#cdcdcd; font-size: 1em; font-family: Arial, Helvetica; line-height: 170%; color: #666666; padding: 20px 0px; margin: 0px;">
+        <div style="width: 86%; max-width: 650px; padding: 2%; background-color: #ffffff; margin: auto; border-radius: 14px;">
+            <div style="background-color: #49c8f5; line-height: 0px; border-top-left-radius: 10px; border-top-right-radius: 10px; padding: 0px 10px 0px 0px;">
+                <div style="display: inline-block; line-height: 0px;">
+                    <img src="http://b.content.wso2.com/sites/all/2015-june-theme/navigation/wso2-nav-logo.png"
+                         alt="WSO2" style="margin: 0px 20px 0px 25px; width: 100%; max-width: 251px;"/>
+                </div>
+            </div>
+            <div style="background-color: #ffffff; line-height: 170%; color: #666666; padding: 20px 25px;">
+                <p style="font-size: 1em; font-family: Arial, Helvetica; line-height: 170%; color: #666666; margin: 5px 0px 20px;">
+                    Hi $first-name,
+                </p>
+
+                <p style="font-size: 1em; font-family: Arial, Helvetica; line-height: 170%; color: #666666; margin: 5px 0px;">
+                    You have been registered in WSO2 IoT and invited to enrol your device.
+                    Click <a href="$base-url-https/devicemgt/device/enroll">here</a> to begin device enrolment.</p>
+
+                <p style="font-size: 1em; font-family: Arial, Helvetica; line-height: 170%; color: #666666; margin: 5px 0px;">
+                    Use following credentials to log in to WSO2 IoT Device Management application.
+                </p>
+
+                <p style="font-size: 1em; font-family: Arial, Helvetica; line-height: 170%; color: #666666; margin: 5px 0px;">
+                    <b>Username:</b> $username
+                    <br/>
+                    <b>Password:</b> $password
+                </p>
+
+                <p style="font-size: 1em; font-family: Arial, Helvetica; line-height: 170%; color: #666666; margin: 5px 0px;">
+                    Should you need assistance, please contact your administrator.
+                </p>
+
+                <p style="font-size: 1em; font-family: Arial, Helvetica; line-height: 170%; color: #666666; margin: 20px 0px 5px;">
+                    Regards,
+                </p>
+
+                <p style="font-size: 1em; font-family: Arial, Helvetica; line-height: 170%; color: #666666; margin: 5px 0px;">
+                    WSO2 IoT Administrator
+                </p>
+            </div>
+            <div style="background-color: #333333; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;">
+                <table cellpadding="0" cellspacing="0" border="0" width="100%">
+                    <tr>
+                        <td style="padding: 0px 20px 0px 0px;"><img
+                                src="http://b.content.wso2.com/newsletter/images/wso2-logo-cloud-footer.png" alt="WSO2"
+                                style="margin: 15px 0px 15px 25px; width: 100%; max-width: 258px;"/></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    </body>
+    </html>
+    ]]>
+    </Body>
+</EmailConfig>

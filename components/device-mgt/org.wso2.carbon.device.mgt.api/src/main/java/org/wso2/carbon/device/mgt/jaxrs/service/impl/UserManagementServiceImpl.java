@@ -23,9 +23,15 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.eclipse.wst.common.uriresolver.internal.util.URIEncoder;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
+import org.wso2.carbon.device.mgt.core.DeviceManagementConstants;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.device.mgt.core.service.EmailMetaInfo;
-import org.wso2.carbon.device.mgt.jaxrs.beans.*;
+import org.wso2.carbon.device.mgt.jaxrs.beans.BasicUserInfo;
+import org.wso2.carbon.device.mgt.jaxrs.beans.BasicUserInfoList;
+import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
+import org.wso2.carbon.device.mgt.jaxrs.beans.OldPasswordResetWrapper;
+import org.wso2.carbon.device.mgt.jaxrs.beans.RoleList;
+import org.wso2.carbon.device.mgt.jaxrs.beans.UserInfo;
 import org.wso2.carbon.device.mgt.jaxrs.service.api.UserManagementService;
 import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.RequestValidationUtil;
 import org.wso2.carbon.device.mgt.jaxrs.util.Constants;
@@ -34,14 +40,28 @@ import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
 import org.wso2.carbon.user.api.UserStoreException;
 import org.wso2.carbon.user.api.UserStoreManager;
 
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.SecureRandom;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
 @Path("/users")
 @Produces(MediaType.APPLICATION_JSON)
@@ -462,7 +482,8 @@ public class UserManagementServiceImpl implements UserManagementService {
                 props.setProperty("username", username);
 
                 EmailMetaInfo metaInfo = new EmailMetaInfo(recipient, props);
-                dms.sendEnrolmentInvitation(metaInfo);
+                dms.sendEnrolmentInvitation(DeviceManagementConstants.EmailAttributes.USER_ENROLLMENT_TEMPLATE,
+                                            metaInfo);
             }
         } catch (DeviceManagementException e) {
             String msg = "Error occurred while inviting user to enrol their device";

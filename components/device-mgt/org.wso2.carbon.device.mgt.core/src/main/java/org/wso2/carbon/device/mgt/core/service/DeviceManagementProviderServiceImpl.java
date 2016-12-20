@@ -50,6 +50,7 @@ import org.wso2.carbon.device.mgt.common.operation.mgt.Activity;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
 import org.wso2.carbon.device.mgt.common.spi.DeviceManagementService;
+import org.wso2.carbon.device.mgt.core.DeviceManagementConstants;
 import org.wso2.carbon.device.mgt.core.DeviceManagementPluginRepository;
 import org.wso2.carbon.device.mgt.core.dao.ApplicationDAO;
 import org.wso2.carbon.device.mgt.core.dao.DeviceDAO;
@@ -752,7 +753,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     }
 
     @Override
-    public void sendEnrolmentInvitation(EmailMetaInfo metaInfo) throws DeviceManagementException {
+    public void sendEnrolmentInvitation(String templateName, EmailMetaInfo metaInfo) throws DeviceManagementException {
         Map<String, TypedValue<Class<?>, Object>> params = new HashMap<>();
         params.put(org.wso2.carbon.device.mgt.core.DeviceManagementConstants.EmailAttributes.FIRST_NAME,
                 new TypedValue<Class<?>, Object>(String.class, metaInfo.getProperty("first-name")));
@@ -762,8 +763,8 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                 new TypedValue<Class<?>, Object>(String.class, DeviceManagerUtil.getServerBaseHttpUrl()));
         try {
             EmailContext ctx =
-                    new EmailContext.EmailContextBuilder(new ContentProviderInfo("user-enrollment", params),
-                            metaInfo.getRecipients()).build();
+                    new EmailContext.EmailContextBuilder(new ContentProviderInfo(templateName, params),
+                                                         metaInfo.getRecipients()).build();
             DeviceManagementDataHolder.getInstance().getEmailSenderService().sendEmail(ctx);
         } catch (EmailSendingFailedException e) {
             throw new DeviceManagementException("Error occurred while sending enrollment invitation", e);
@@ -787,7 +788,10 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                 new TypedValue<Class<?>, Object>(String.class, DeviceManagerUtil.getServerBaseHttpUrl()));
         try {
             EmailContext ctx =
-                    new EmailContext.EmailContextBuilder(new ContentProviderInfo("user-registration", params),
+                    new EmailContext.EmailContextBuilder(
+                            new ContentProviderInfo(
+                                    DeviceManagementConstants.EmailAttributes.USER_REGISTRATION_TEMPLATE,
+                                    params),
                             metaInfo.getRecipients()).build();
             DeviceManagementDataHolder.getInstance().getEmailSenderService().sendEmail(ctx);
         } catch (EmailSendingFailedException e) {

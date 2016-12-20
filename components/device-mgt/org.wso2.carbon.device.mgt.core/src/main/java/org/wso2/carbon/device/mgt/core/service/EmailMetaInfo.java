@@ -18,13 +18,28 @@
  */
 package org.wso2.carbon.device.mgt.core.service;
 
+import io.swagger.annotations.ApiModelProperty;
+
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
 
-public class EmailMetaInfo {
+public class EmailMetaInfo implements Serializable {
+    private static final long serialVersionUID = 1998101711L;
 
+    @ApiModelProperty(
+            name = "recipients",
+            value = "Set of recipients.",
+            required = true
+    )
     private Set<String> recipients;
+
+    @ApiModelProperty(
+            name = "properties",
+            value = "Map of properties.",
+            required = true
+    )
     private Properties properties;
 
     public EmailMetaInfo(final Set<String> recipients, final Properties properties) {

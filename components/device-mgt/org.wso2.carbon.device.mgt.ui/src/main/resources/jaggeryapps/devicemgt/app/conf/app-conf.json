@@ -3,6 +3,7 @@
     "cachingEnabled": false,
     "debuggingEnabled": false,
     "permissionRoot": "/",
+    "portalURL": "https://${server.ip}:9445",
     "loginPage": "cdmf.page.sign-in",
     "adminServicesUrl": "https://${server.ip}:${server.https_port}/admin/services/",
     "authModule": {
@@ -32,8 +33,10 @@
             "identityProviderUrl" : "https://localhost:9443/samlsso",
             "acs": "https://localhost:9443/devicemgt/uuf/sso/acs",
             "identityAlias": "wso2carbon",
-            "responseSigningEnabled" : "true",
-            "useTenantKey": false
+            "responseSigningEnabled" : true,
+            "validateAssertionValidityPeriod": true,
+            "validateAudienceRestriction": true,
+            "assertionSigningEnabled": true
         }
     },
     "errorPages": {

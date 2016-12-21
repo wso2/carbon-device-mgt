@@ -51,7 +51,10 @@
         var operationsLogTable = "#operations-log-table";
         if (update) {
             operationTable = $(operationsLogTable).DataTable();
-            operationTable.ajax.reload(false);
+            $("#operations-spinner").removeClass("hidden");
+            operationTable.ajax.reload(function ( json ) {
+                $("#operations-spinner").addClass("hidden");
+            }, false);
             return;
         }
         operationTable = $(operationsLogTable).datatables_extended({
@@ -142,53 +145,54 @@
             function (template) {
                 var getEffectivePolicyURL = "/api/device-mgt/v1.0/devices/" + deviceType + "/" + deviceId + "/effective-policy";
                 var getDeviceComplianceURL = "/api/device-mgt/v1.0/devices/" + deviceType + "/" + deviceId + "/compliance-data";
-
                 invokerUtil.get(
                     getEffectivePolicyURL,
                     // success-callback
                     function (data, textStatus, jqXHR) {
-                        if (jqXHR.status == 200 && data) {
-                            data = JSON.parse(data);
+                        if (jqXHR.status == 200) {
                             $("#policy-spinner").addClass("hidden");
-                            if (data["active"] == true) {
-                                activePolicy = data;
-                                invokerUtil.get(
-                                    getDeviceComplianceURL,
-                                    // success-callback
-                                    function (data, textStatus, jqXHR) {
-                                        if (jqXHR.status == 200 && data) {
-                                            var viewModel = {};
-                                            viewModel["policy"] = activePolicy;
-                                            viewModel["deviceType"] = deviceType;
-                                            data = JSON.parse(data);
-                                            var content;
-                                            if (data["complianceData"]) {
-                                                if (data["complianceData"]["complianceFeatures"] &&
-                                                    data["complianceData"]["complianceFeatures"].length > 0) {
-                                                    viewModel["compliance"] = "NON-COMPLIANT";
-                                                    viewModel["complianceFeatures"] = data["complianceData"]["complianceFeatures"];
-                                                    content = template(viewModel);
-                                                    $("#policy-list-container").html(content);
+                            if(data){
+                                data = JSON.parse(data);
+                                if (data["active"] == true) {
+                                    activePolicy = data;
+                                    invokerUtil.get(
+                                        getDeviceComplianceURL,
+                                        // success-callback
+                                        function (data, textStatus, jqXHR) {
+                                            if (jqXHR.status == 200 && data) {
+                                                var viewModel = {};
+                                                viewModel["policy"] = activePolicy;
+                                                viewModel["deviceType"] = deviceType;
+                                                data = JSON.parse(data);
+                                                var content;
+                                                if (data["complianceData"]) {
+                                                    if (data["complianceData"]["complianceFeatures"] &&
+                                                        data["complianceData"]["complianceFeatures"].length > 0) {
+                                                        viewModel["compliance"] = "NON-COMPLIANT";
+                                                        viewModel["complianceFeatures"] = data["complianceData"]["complianceFeatures"];
+                                                        content = template(viewModel);
+                                                        $("#policy-list-container").html(content);
+                                                    } else {
+                                                        viewModel["compliance"] = "COMPLIANT";
+                                                        content = template(viewModel);
+                                                        $("#policy-list-container").html(content);
+                                                        $("#policy-compliance-table").addClass("hidden");
+                                                    }
                                                 } else {
-                                                    viewModel["compliance"] = "COMPLIANT";
-                                                    content = template(viewModel);
-                                                    $("#policy-list-container").html(content);
-                                                    $("#policy-compliance-table").addClass("hidden");
+                                                    $("#policy-list-container").
+                                                    html("<div class='panel-body'><br><p class='fw-warning'> This device " +
+                                                        "has no policy applied.<p></div>");
                                                 }
-                                            } else {
-                                                $("#policy-list-container").
-                                                html("<div class='panel-body'><br><p class='fw-warning'> This device " +
-                                                    "has no policy applied.<p></div>");
                                             }
+                                        },
+                                        // error-callback
+                                        function () {
+                                            $("#policy-list-container").
+                                            html("<div class='panel-body'><br><p class='fw-warning'> Loading policy compliance related data " +
+                                                "was not successful. please try refreshing data in a while.<p></div>");
                                         }
-                                    },
-                                    // error-callback
-                                    function () {
-                                        $("#policy-list-container").
-                                        html("<div class='panel-body'><br><p class='fw-warning'> Loading policy compliance related data " +
-                                            "was not successful. please try refreshing data in a while.<p></div>");
-                                    }
-                                );
+                                    );
+                                }
                             }
                         }
                     },

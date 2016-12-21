@@ -526,61 +526,61 @@ public class CertificateGenerator {
         }
     }
 
-    private PrivateKey getSignerKey(String signerPrivateKeyPath) throws KeystoreException {
-
-        File file = new File(signerPrivateKeyPath);
-        FileInputStream fis;
-
-        try {
-            fis = new FileInputStream(file);
-            DataInputStream dis = new DataInputStream(fis);
-            byte[] keyBytes = new byte[(int) file.length()];
-            dis.readFully(keyBytes);
-            dis.close();
-
-            String temp = new String(keyBytes);
-            String privateKeyPEM = temp.replace(
-                    CertificateManagementConstants.RSA_PRIVATE_KEY_BEGIN_TEXT, CertificateManagementConstants.EMPTY_TEXT);
-            privateKeyPEM = privateKeyPEM
-                    .replace(CertificateManagementConstants.RSA_PRIVATE_KEY_END_TEXT, CertificateManagementConstants.EMPTY_TEXT);
-
-            byte[] decoded = Base64.decodeBase64(privateKeyPEM);
-            PKCS8EncodedKeySpec encodedKeySpec = new PKCS8EncodedKeySpec(decoded);
-            KeyFactory keyFactory = KeyFactory.getInstance(CertificateManagementConstants.RSA);
-
-            return keyFactory.generatePrivate(encodedKeySpec);
-        } catch (FileNotFoundException e) {
-            String errorMsg = "Private key file not found in getSignerKey";
-            throw new KeystoreException(errorMsg, e);
-        } catch (IOException e) {
-            String errorMsg = "Input output issue in getSignerKey";
-            throw new KeystoreException(errorMsg, e);
-        } catch (NoSuchAlgorithmException e) {
-            String errorMsg = "Algorithm not not found in getSignerKey";
-            throw new KeystoreException(errorMsg, e);
-        } catch (InvalidKeySpecException e) {
-            String errorMsg = "Invalid key found in getSignerKey";
-            throw new KeystoreException(errorMsg, e);
-        }
-    }
-
-    private X509Certificate getSigner(String signerCertificatePath) throws KeystoreException {
-
-        X509Certificate certificate;
-        try {
-            CertificateFactory certificateFactory = CertificateFactory.getInstance(CertificateManagementConstants.X_509);
-            certificate = (X509Certificate) certificateFactory.generateCertificate(
-                    new FileInputStream(signerCertificatePath));
-
-            return certificate;
-        } catch (CertificateException e) {
-            String errorMsg = "Certificate related issue occurred in getSigner";
-            throw new KeystoreException(errorMsg, e);
-        } catch (FileNotFoundException e) {
-            String errorMsg = "Signer certificate path not found in getSigner";
-            throw new KeystoreException(errorMsg, e);
-        }
-    }
+//    private PrivateKey getSignerKey(String signerPrivateKeyPath) throws KeystoreException {
+//
+//        File file = new File(signerPrivateKeyPath);
+//        FileInputStream fis;
+//
+//        try {
+//            fis = new FileInputStream(file);
+//            DataInputStream dis = new DataInputStream(fis);
+//            byte[] keyBytes = new byte[(int) file.length()];
+//            dis.readFully(keyBytes);
+//            dis.close();
+//
+//            String temp = new String(keyBytes);
+//            String privateKeyPEM = temp.replace(
+//                    CertificateManagementConstants.RSA_PRIVATE_KEY_BEGIN_TEXT, CertificateManagementConstants.EMPTY_TEXT);
+//            privateKeyPEM = privateKeyPEM
+//                    .replace(CertificateManagementConstants.RSA_PRIVATE_KEY_END_TEXT, CertificateManagementConstants.EMPTY_TEXT);
+//
+//            byte[] decoded = Base64.decodeBase64(privateKeyPEM);
+//            PKCS8EncodedKeySpec encodedKeySpec = new PKCS8EncodedKeySpec(decoded);
+//            KeyFactory keyFactory = KeyFactory.getInstance(CertificateManagementConstants.RSA);
+//
+//            return keyFactory.generatePrivate(encodedKeySpec);
+//        } catch (FileNotFoundException e) {
+//            String errorMsg = "Private key file not found in getSignerKey";
+//            throw new KeystoreException(errorMsg, e);
+//        } catch (IOException e) {
+//            String errorMsg = "Input output issue in getSignerKey";
+//            throw new KeystoreException(errorMsg, e);
+//        } catch (NoSuchAlgorithmException e) {
+//            String errorMsg = "Algorithm not not found in getSignerKey";
+//            throw new KeystoreException(errorMsg, e);
+//        } catch (InvalidKeySpecException e) {
+//            String errorMsg = "Invalid key found in getSignerKey";
+//            throw new KeystoreException(errorMsg, e);
+//        }
+//    }
+//
+//    private X509Certificate getSigner(String signerCertificatePath) throws KeystoreException {
+//
+//        X509Certificate certificate;
+//        try {
+//            CertificateFactory certificateFactory = CertificateFactory.getInstance(CertificateManagementConstants.X_509);
+//            certificate = (X509Certificate) certificateFactory.generateCertificate(
+//                    new FileInputStream(signerCertificatePath));
+//
+//            return certificate;
+//        } catch (CertificateException e) {
+//            String errorMsg = "Certificate related issue occurred in getSigner";
+//            throw new KeystoreException(errorMsg, e);
+//        } catch (FileNotFoundException e) {
+//            String errorMsg = "Signer certificate path not found in getSigner";
+//            throw new KeystoreException(errorMsg, e);
+//        }
+//    }
 
     public SCEPResponse getCACert() throws KeystoreException {
 
@@ -657,28 +657,28 @@ public class CertificateGenerator {
         return null;
     }
 
-    private ASN1Primitive toASN1Primitive(byte[] data) {
-
-        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(data);
-        ASN1InputStream inputStream = new ASN1InputStream(byteArrayInputStream);
-
-        try {
-            return inputStream.readObject();
-        } catch (IOException e) {
-            String errorMsg = "IOException occurred when converting binary array to ASN1Primitive";
-            log.error(errorMsg, e);
-        } finally {
-            try {
-                byteArrayInputStream.close();
-                inputStream.close();
-            } catch (IOException e) {
-                String errorMsg = "IOException occurred when closing streams";
-                log.error(errorMsg, e);
-            }
-        }
-
-        return null;
-    }
+//    private ASN1Primitive toASN1Primitive(byte[] data) {
+//
+//        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(data);
+//        ASN1InputStream inputStream = new ASN1InputStream(byteArrayInputStream);
+//
+//        try {
+//            return inputStream.readObject();
+//        } catch (IOException e) {
+//            String errorMsg = "IOException occurred when converting binary array to ASN1Primitive";
+//            log.error(errorMsg, e);
+//        } finally {
+//            try {
+//                byteArrayInputStream.close();
+//                inputStream.close();
+//            } catch (IOException e) {
+//                String errorMsg = "IOException occurred when closing streams";
+//                log.error(errorMsg, e);
+//            }
+//        }
+//
+//        return null;
+//    }
 
     /**
      * This method is used to retrieve signed certificate from certificate signing request.

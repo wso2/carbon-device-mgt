@@ -30,7 +30,7 @@ import javax.xml.bind.annotation.XmlType;
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="jndiConfig">
+ * &lt;complexType name="JndiConfig">
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
@@ -44,12 +44,12 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "jndiConfig", propOrder = {
+@XmlType(name = "JndiConfig", propOrder = {
     "name"
 })
 public class JndiConfig {
 
-    @XmlElement(required = true)
+    @XmlElement(name = "Name", required = true)
     protected String name;
 
     /**

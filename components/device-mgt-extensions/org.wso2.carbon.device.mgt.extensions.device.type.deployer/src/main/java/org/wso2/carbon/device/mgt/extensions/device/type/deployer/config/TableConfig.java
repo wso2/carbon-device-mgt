@@ -46,7 +46,7 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "tableConfig", propOrder = {
+@XmlType(name = "TableConfig", propOrder = {
     "table"
 })
 public class TableConfig {

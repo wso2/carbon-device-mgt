@@ -66,7 +66,7 @@ $(document).ready(function () {
     $.hasPermission = function (permission) {
         return permissionSet[permission];
     };
-    
+
     deviceListing = $("#device-listing");
     currentUser = deviceListing.data("current-user");
 
@@ -246,7 +246,7 @@ function loadDevices(searchType, searchParam) {
                     return true;
                 }
                 // In JS Boolean("false") returns TRUE => http://stackoverflow.com/a/264037/1560536
-                return (analyticsEnabled == "true");
+                return (groupingEnabled == "true");
             }
         }
         return true;
@@ -351,7 +351,7 @@ function loadDevices(searchType, searchParam) {
                             '<span class="hidden-xs hidden-on-grid-view">Analytics</span>';
                     }
 
-                    if (!groupName || !groupId) {
+                    if ((!groupName || !groupId) && groupingEnabled(row.deviceType)) {
                         html +=
                             '<a href="#" data-click-event="remove-form" class="btn padding-reduce-on-grid-view group-device-link" '
                             +

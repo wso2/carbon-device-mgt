@@ -30,10 +30,8 @@ import java.util.List;
 @XmlRootElement(name = "TaskConfiguration")
 public class TaskConfiguration {
 
-
     private boolean enabled;
     private int frequency;
-    private String taskClazz;
     private List<Operation> operations;
 
     @XmlElement(name = "Enable", required = true)
@@ -52,15 +50,6 @@ public class TaskConfiguration {
 
     public void setFrequency(int frequency) {
         this.frequency = frequency;
-    }
-
-    @XmlElement(name = "TaskClass", required = true)
-    public String getTaskClazz() {
-        return taskClazz;
-    }
-
-    public void setTaskClazz(String taskClazz) {
-        this.taskClazz = taskClazz;
     }
 
     @XmlElementWrapper(name="Operations")

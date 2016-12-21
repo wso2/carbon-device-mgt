@@ -142,12 +142,13 @@ function loadCertificates(searchParam) {
                 }
 
                 if (viewModel.certificates.length > 0) {
+                    $('#certificate-table').removeClass('hidden');
                     $('#ast-container').removeClass('hidden');
                     $('#certificate-listing-status-msg').text("");
                     var content = template(viewModel);
                     $("#ast-container").html(content);
                 } else {
-                    $('#ast-container').addClass('hidden');
+                    $('#certificate-table').addClass('hidden');
                     $('#certificate-listing-status-msg').text('No certificate is available to be displayed.');
                     $('#certificate-listing-status').removeClass('hidden');
                 }

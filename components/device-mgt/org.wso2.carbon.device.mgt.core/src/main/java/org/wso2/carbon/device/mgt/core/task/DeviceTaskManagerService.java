@@ -19,26 +19,33 @@
 
 package org.wso2.carbon.device.mgt.core.task;
 
+import org.wso2.carbon.device.mgt.common.OperationMonitoringTaskConfig;
+
 public interface DeviceTaskManagerService {
 
     /**
-     * This method will stop the task.
+     * This method will start the task.
+     * @param operationMonitoringTaskConfig - OperationMonitoringTaskConfig
      * @throws DeviceMgtTaskException
      */
-    void startTask() throws DeviceMgtTaskException;
+    void startTask(String deviceType, OperationMonitoringTaskConfig operationMonitoringTaskConfig)
+            throws DeviceMgtTaskException;
 
     /**
-     * This method will start the task.
+     * This method will stop the task.
+     * @param operationMonitoringTaskConfig - OperationMonitoringTaskConfig
      * @throws DeviceMgtTaskException
      */
-    void stopTask() throws DeviceMgtTaskException;
+    void stopTask(String deviceType, OperationMonitoringTaskConfig operationMonitoringTaskConfig)
+            throws DeviceMgtTaskException;
 
     /**
      * This will update the task frequency which it runs.
-     * @param frequency - integer
+     * @param operationMonitoringTaskConfig - OperationMonitoringTaskConfig
      * @throws DeviceMgtTaskException
      */
-    void updateTask(int frequency) throws DeviceMgtTaskException;
+    void updateTask(String deviceType, OperationMonitoringTaskConfig operationMonitoringTaskConfig)
+            throws DeviceMgtTaskException;
 
 
 }

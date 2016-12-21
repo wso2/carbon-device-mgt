@@ -17,17 +17,24 @@
  */
 package org.wso2.carbon.device.mgt.core.service;
 
-import org.wso2.carbon.device.mgt.common.*;
+import org.wso2.carbon.device.mgt.common.Device;
+import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
+import org.wso2.carbon.device.mgt.common.DeviceManagementException;
+import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
+import org.wso2.carbon.device.mgt.common.FeatureManager;
+import org.wso2.carbon.device.mgt.common.InvalidDeviceException;
+import org.wso2.carbon.device.mgt.common.MonitoringOperation;
+import org.wso2.carbon.device.mgt.common.PaginationRequest;
+import org.wso2.carbon.device.mgt.common.PaginationResult;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.PlatformConfiguration;
 import org.wso2.carbon.device.mgt.common.license.mgt.License;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Activity;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
 
-import java.util.HashMap;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Proxy class for all Device Management related operations that take the corresponding plugin type in
@@ -119,6 +126,15 @@ public interface DeviceManagementProviderService {
      *                                   device list
      */
     List<Device> getDevicesOfUser(String userName) throws DeviceManagementException;
+
+    /**
+     * This method returns the list of device owned by a user of given device type.
+     * @param userName user name.
+     * @param deviceType device type name
+     * @return
+     * @throws DeviceManagementException
+     */
+    List<Device> getDevicesOfUser(String userName, String deviceType) throws DeviceManagementException;
 
     /**
      * Method to get the list of devices owned by users of a particular user-role.
@@ -220,6 +236,12 @@ public interface DeviceManagementProviderService {
 
     boolean setActive(DeviceIdentifier deviceId, boolean status) throws DeviceManagementException;
 
+    /**
+     * Returns the device of specified id.
+     * @param deviceId device Id
+     * @return Device returns null when device is not avaialble.
+     * @throws DeviceManagementException
+     */
     Device getDevice(DeviceIdentifier deviceId) throws DeviceManagementException;
 
     Device getDevice(DeviceIdentifier deviceId, Date since) throws DeviceManagementException;
@@ -276,6 +298,10 @@ public interface DeviceManagementProviderService {
 
     int getActivityCountUpdatedAfter(long timestamp) throws OperationManagementException;
 
-    Map<String, List<TaskOperation>> getTaskList();
+    List<MonitoringOperation> getMonitoringOperationList(String deviceType);
+
+    int getDeviceMonitoringFrequency(String deviceType);
+
+    boolean isDeviceMonitoringEnabled(String deviceType);
 
 }

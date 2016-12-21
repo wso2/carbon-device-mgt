@@ -65,7 +65,9 @@ function onRequest(context) {
                                              "type": data[i],
                                              "category": deviceType.category,
                                              "label": deviceType.label,
-                                             "thumb": utility.getDeviceThumb(data[i])
+                                             "thumb": utility.getDeviceThumb(data[i]),
+                                             "analyticsEnabled": deviceType.analyticsEnabled,
+                                             "groupingEnabled": deviceType.groupingEnabled
                                          });
                     }
                 }

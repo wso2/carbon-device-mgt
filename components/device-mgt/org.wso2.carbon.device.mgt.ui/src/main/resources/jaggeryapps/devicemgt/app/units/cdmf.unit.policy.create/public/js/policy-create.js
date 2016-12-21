@@ -18,10 +18,10 @@
 var stepForwardFrom = {};
 var stepBackFrom = {};
 var policy = {};
-var configuredOperations = [];
 var validateInline = {};
 var clearInline = {};
 var validateStep = {};
+var hasPolicyProfileScript = false;
 
 var enableInlineError = function (inputField, errorMsg, errorSign) {
     var fieldIdentifier = "#" + inputField;
@@ -139,52 +139,51 @@ stepForwardFrom["policy-platform"] = function (actionButton) {
     $("#policy-profile-page-wizard-title").text("ADD " + policy["platform"] + " POLICY");
 
     var deviceType = policy["platform"];
-    var policyOperationsTemplateSrc = context + '/public/cdmf.unit.device.type.' + deviceType +
-        '.policy-wizard/templates/' + deviceType + '-policy-operations.hbs';
-    var policyOperationsScriptSrc = context + '/public/cdmf.unit.device.type.' + deviceType +
-        '.policy-wizard/js/' + deviceType + '-policy-operations.js';
-    var policyOperationsStylesSrc = context + '/public/cdmf.unit.device.type.' + deviceType +
-        '.policy-wizard/css/' + deviceType + '-policy-operations.css';
+    var policyOperationsTemplateSrc = $(actionButton).data("template");
+    var policyOperationsScriptSrc = $(actionButton).data("script");
+    var policyOperationsStylesSrc = $(actionButton).data("style");
     var policyOperationsTemplateCacheKey = deviceType + '-policy-operations';
 
-    $.isResourceExists(policyOperationsTemplateSrc, function (status) {
-        if (status) {
-            $.template(policyOperationsTemplateCacheKey, policyOperationsTemplateSrc, function (template) {
-                var content = template();
-                $("#device-type-policy-operations").html(content).removeClass("hidden");
-                $(".policy-platform").addClass("hidden");
-            });
-
-            $.isResourceExists(policyOperationsScriptSrc, function (status) {
-                if (status) {
-                    var script = document.createElement('script');
-                    script.type = 'text/javascript';
-                    script.src = policyOperationsScriptSrc;
-                    $(".wr-advance-operations").prepend(script);
-                }
-            });
-
-            $.isResourceExists(policyOperationsStylesSrc, function (status) {
-                if (status) {
-                    var style = document.createElement('link');
-                    style.type = 'text/css';
-                    style.rel = 'stylesheet';
-                    style.href = policyOperationsStylesSrc;
-                    $(".wr-advance-operations").prepend(style);
-                }
-            });
-        } else {
-            $("#generic-policy-operations").removeClass("hidden");
-        }
-        $(".wr-advance-operations-init").addClass("hidden");
-    });
+    if (policyOperationsTemplateSrc) {
+        $.template(policyOperationsTemplateCacheKey, context + policyOperationsTemplateSrc, function (template) {
+            var content = template();
+            $("#device-type-policy-operations").html(content).removeClass("hidden");
+            $(".policy-platform").addClass("hidden");
+        });
+    } else {
+        $("#generic-policy-operations").removeClass("hidden");
+    }
+    if (policyOperationsScriptSrc) {
+        var script = document.createElement('script');
+        script.type = 'text/javascript';
+        script.src = context + policyOperationsScriptSrc;
+        $(".wr-advance-operations").prepend(script);
+        hasPolicyProfileScript = true;
+    } else {
+        hasPolicyProfileScript = false;
+    }
+    if (policyOperationsStylesSrc) {
+        var style = document.createElement('link');
+        style.type = 'text/css';
+        style.rel = 'stylesheet';
+        style.href = context + policyOperationsStylesSrc;
+        $(".wr-advance-operations").prepend(style);
+    }
+    $(".wr-advance-operations-init").addClass("hidden");
 };
 
 /**
  * Forward action of policy profile page. Generates policy profile payload.
  */
 stepForwardFrom["policy-profile"] = function () {
-    policy["profile"] = operationModule.generateProfile(policy["platform"], configuredOperations);
+    policy["profile"] = [];
+    if (hasPolicyProfileScript) {
+        /*
+         generatePolicyProfile() function should be implemented in plugin side and should include the logic to build the
+         policy profile object.
+         */
+        policy["profile"] = generatePolicyProfile();
+    }
     // updating next-page wizard title with selected platform
     $("#policy-criteria-page-wizard-title").text("ADD " + policy["platform"] + " POLICY");
 };
@@ -193,8 +192,13 @@ stepForwardFrom["policy-profile"] = function () {
  * Backward action of policy profile page. Moves back to platform selection step.
  */
 stepBackFrom["policy-profile"] = function () {
-    // reinitialize configuredOperations
-    configuredOperations = [];
+    if (hasPolicyProfileScript) {
+        /*
+         resetPolicyProfile() function should be implemented in plugin side and should include the logic to reset the policy
+         profile object.
+         */
+        resetPolicyProfile();
+    }
 };
 
 /**
@@ -370,27 +374,26 @@ stepForwardFrom["policy-naming"] = function () {
 };
 
 var savePolicy = function (policy, isActive, serviceURL) {
-    var profilePayloads = [];
-    // traverses key by key in policy["profile"]
-    var key;
-    for (key in policy["profile"]) {
-        if (policy["profile"].hasOwnProperty(key)) {
-            profilePayloads.push({
-                "featureCode": key,
-                "deviceType": policy["platform"],
-                "content": policy["profile"][key]
-            });
-        }
-    }
+    var profilePayloads;
+    if (hasPolicyProfileScript) {
+        /*
+         generateProfileFeaturesList() should be implemented in the plugin side and should include logic to build the
+         profilePayloads array which contains objects, {featureCode:"value", deviceType:"value", content:"value"}.
+         policy["profile"] object will be available for the method which returns from the generatePolicyProfile() function.
+         */
+        profilePayloads = generateProfileFeaturesList();
 
-    $.each(profilePayloads, function (i, item) {
-        $.each(item.content, function (key, value) {
-            //cannot add a true check since it will catch value = false as well
-            if (value === null || value === undefined || value === "") {
-                item.content[key] = null;
-            }
+        $.each(profilePayloads, function (i, item) {
+            $.each(item.content, function (key, value) {
+                //cannot add a true check since it will catch value = false as well
+                if (value === null || value === undefined || value === "") {
+                    item.content[key] = null;
+                }
+            });
         });
-    });
+    } else {
+        profilePayloads = generateGenericPayload();
+    }
 
     var payload = {
         "policyName": policy["policyName"],

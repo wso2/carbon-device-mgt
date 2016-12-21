@@ -17,21 +17,26 @@
  */
 
 window.queryEditor = CodeMirror.fromTextArea(document.getElementById('policy-definition-input'), {
-    mode: MIME_TYPE_SIDDHI_QL,
+    mode: "application/json",
     indentWithTabs: true,
     smartIndent: true,
+    readOnly: true,
     lineNumbers: true,
     matchBrackets: true,
-    autofocus: true,
-    extraKeys: {
-        "Shift-2": function (cm) {
-            insertStr(cm, cm.getCursor(), '@');
-            CodeMirror.showHint(cm, getAnnotationHints);
-        },
-        "Ctrl-Space": "autocomplete"
-    }
+    autofocus: true
 });
 
-var validatePolicyProfile = function () {
-    return true;
+/**
+ * Populates policy configuration to the ui elements.
+ *
+ * This method will be invoked from the relevant cdmf unit when the edit page gets loaded.
+ *
+ * @param profileFeatureList saved feature list
+ */
+var populateGenericProfileOperations = function (profileFeatureList) {
+    var content = JSON.parse(profileFeatureList[0]["content"]);
+    window.queryEditor.setValue(content.policyDefinition);
+    setTimeout(function() {
+        window.queryEditor.refresh();
+    }, 100);
 };

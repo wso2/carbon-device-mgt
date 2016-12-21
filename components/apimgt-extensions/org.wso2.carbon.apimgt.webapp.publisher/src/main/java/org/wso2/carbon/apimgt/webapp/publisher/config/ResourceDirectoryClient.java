@@ -29,7 +29,7 @@ import java.net.URI;
 
 public class ResourceDirectoryClient extends CoapClient {
 
-    private static final Log log = LogFactory.getLog(APIPublisherStartupHandler.class);
+    private static final Log log = LogFactory.getLog(ResourceDirectoryClient.class);
     private final static String LOCAL_HOST = "localhost";
     private final static String RESOURCE_DIRECTORY = "rd";
 

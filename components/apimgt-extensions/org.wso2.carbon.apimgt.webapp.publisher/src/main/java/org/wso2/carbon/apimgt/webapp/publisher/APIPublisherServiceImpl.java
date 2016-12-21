@@ -98,7 +98,7 @@ public class APIPublisherServiceImpl implements APIPublisherService {
                 }
                 provider.saveSwagger20Definition(api.getId(), createSwaggerDefinition(api));
 
-                /*register api using the client*/
+                //register api using the client
                 if(!api.getContext().split("/")[1].equals("api")) //remove device mgt API from registering into CoAP server
                     client.registerAPI(api,tenantDomain);
 

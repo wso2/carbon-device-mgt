@@ -96,7 +96,7 @@ function loadGroups() {
         serviceURL = "/api/device-mgt/v1.0/admin/groups";
     } else if ($.hasPermission("LIST_GROUPS")) {
         //Get authenticated users groups
-        serviceURL = "/api/device-mgt/v1.0/groups/user/" + currentUser;
+        serviceURL = "/api/device-mgt/v1.0/groups";
     } else {
         $("#loading-content").remove();
         $('#device-table').addClass('hidden');

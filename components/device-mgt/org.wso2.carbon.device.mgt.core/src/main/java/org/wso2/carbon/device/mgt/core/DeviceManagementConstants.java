@@ -78,6 +78,7 @@ public final class DeviceManagementConstants {
 
         public static final String USER_REGISTRATION_TEMPLATE = "user-registration";
         public static final String USER_ENROLLMENT_TEMPLATE = "user-enrollment";
+        public static final String DEFAULT_ENROLLMENT_TEMPLATE = "default-enrollment-invitation";
     }
 
     public static final class OperationAttributes {

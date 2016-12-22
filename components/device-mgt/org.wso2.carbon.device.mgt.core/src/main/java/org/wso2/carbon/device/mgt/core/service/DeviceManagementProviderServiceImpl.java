@@ -74,10 +74,12 @@ import org.wso2.carbon.user.api.UserStoreException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
 public class DeviceManagementProviderServiceImpl implements DeviceManagementProviderService,
@@ -755,8 +757,12 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     @Override
     public void sendEnrolmentInvitation(String templateName, EmailMetaInfo metaInfo) throws DeviceManagementException {
         Map<String, TypedValue<Class<?>, Object>> params = new HashMap<>();
-        params.put(org.wso2.carbon.device.mgt.core.DeviceManagementConstants.EmailAttributes.FIRST_NAME,
-                new TypedValue<Class<?>, Object>(String.class, metaInfo.getProperty("first-name")));
+        Properties props = metaInfo.getProperties();
+        Enumeration e = props.propertyNames();
+        while (e.hasMoreElements()) {
+            String key = (String) e.nextElement();
+            params.put(key, new TypedValue<Class<?>, Object>(String.class, props.getProperty(key)));
+        }
         params.put(org.wso2.carbon.device.mgt.core.DeviceManagementConstants.EmailAttributes.SERVER_BASE_URL_HTTPS,
                 new TypedValue<Class<?>, Object>(String.class, DeviceManagerUtil.getServerBaseHttpsUrl()));
         params.put(org.wso2.carbon.device.mgt.core.DeviceManagementConstants.EmailAttributes.SERVER_BASE_URL_HTTP,
@@ -766,8 +772,8 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                     new EmailContext.EmailContextBuilder(new ContentProviderInfo(templateName, params),
                                                          metaInfo.getRecipients()).build();
             DeviceManagementDataHolder.getInstance().getEmailSenderService().sendEmail(ctx);
-        } catch (EmailSendingFailedException e) {
-            throw new DeviceManagementException("Error occurred while sending enrollment invitation", e);
+        } catch (EmailSendingFailedException ex) {
+            throw new DeviceManagementException("Error occurred while sending enrollment invitation", ex);
         }
     }
 

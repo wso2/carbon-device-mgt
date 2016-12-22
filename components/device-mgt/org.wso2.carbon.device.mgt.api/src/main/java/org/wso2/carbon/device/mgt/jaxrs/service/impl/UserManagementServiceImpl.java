@@ -28,6 +28,7 @@ import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.device.mgt.core.service.EmailMetaInfo;
 import org.wso2.carbon.device.mgt.jaxrs.beans.BasicUserInfo;
 import org.wso2.carbon.device.mgt.jaxrs.beans.BasicUserInfoList;
+import org.wso2.carbon.device.mgt.jaxrs.beans.EnrollmentInvitation;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
 import org.wso2.carbon.device.mgt.jaxrs.beans.OldPasswordResetWrapper;
 import org.wso2.carbon.device.mgt.jaxrs.beans.RoleList;
@@ -39,6 +40,7 @@ import org.wso2.carbon.device.mgt.jaxrs.util.CredentialManagementResponseBuilder
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
 import org.wso2.carbon.user.api.UserStoreException;
 import org.wso2.carbon.user.api.UserStoreManager;
+import org.wso2.carbon.utils.CarbonUtils;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -52,6 +54,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -59,9 +62,11 @@ import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 @Path("/users")
 @Produces(MediaType.APPLICATION_JSON)
@@ -466,7 +471,7 @@ public class UserManagementServiceImpl implements UserManagementService {
      * @param usernames Username list of the users to be invited
      */
     @POST
-    @Path("send-invitation")
+    @Path("/send-invitation")
     @Produces({MediaType.APPLICATION_JSON})
     public Response inviteExistingUsersToEnrollDevice(List<String> usernames) {
         if (log.isDebugEnabled()) {
@@ -497,6 +502,40 @@ public class UserManagementServiceImpl implements UserManagementService {
         return Response.status(Response.Status.OK).entity("Invitation mails have been sent.").build();
     }
 
+    @POST
+    @Path("/enrollment-invite")
+    @Override
+    public Response inviteToEnrollDevice(EnrollmentInvitation enrollmentInvitation) {
+        if (log.isDebugEnabled()) {
+            log.debug("Sending enrollment invitation mail to existing user.");
+        }
+        DeviceManagementProviderService dms = DeviceMgtAPIUtils.getDeviceManagementService();
+        try {
+            Set<String> recipients = new HashSet<>();
+            for (String recipient : enrollmentInvitation.getRecipients()) {
+                recipients.add(recipient);
+            }
+            Properties props = new Properties();
+            String username = DeviceMgtAPIUtils.getAuthenticatedUser();
+            String firstName = getClaimValue(username, Constants.USER_CLAIM_FIRST_NAME);
+            if (firstName == null) {
+                firstName = username;
+            }
+            props.setProperty("first-name", firstName);
+            props.setProperty("device-type", enrollmentInvitation.getDeviceType());
+            EmailMetaInfo metaInfo = new EmailMetaInfo(recipients, props);
+            dms.sendEnrolmentInvitation(getEnrollmentTemplateName(enrollmentInvitation.getDeviceType()), metaInfo);
+        } catch (DeviceManagementException e) {
+            String msg = "Error occurred while inviting user to enrol their device";
+            log.error(msg, e);
+        } catch (UserStoreException e) {
+            String msg = "Error occurred while getting claim values to invite user";
+            log.error(msg, e);
+            return Response.serverError().entity(
+                    new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
+        }
+        return Response.status(Response.Status.OK).entity("Invitation mails have been sent.").build();
+    }
 
     private Map<String, String> buildDefaultUserClaims(String firstName, String lastName, String emailAddress) {
         Map<String, String> defaultUserClaims = new HashMap<>();
@@ -541,6 +580,21 @@ public class UserManagementServiceImpl implements UserManagementService {
     private String getClaimValue(String username, String claimUri) throws UserStoreException {
         UserStoreManager userStoreManager = DeviceMgtAPIUtils.getUserStoreManager();
         return userStoreManager.getUserClaimValue(username, claimUri, null);
+    }
+
+    private String getEnrollmentTemplateName(String deviceType) {
+        String templateName = deviceType + "-enrollment-invitation";
+        File template = new File(CarbonUtils.getCarbonHome() + File.separator + "repository" + File.separator
+                                 + "resources" + File.separator + "email-templates" + File.separator + templateName
+                                 + ".vm");
+        if (template.exists()) {
+            return templateName;
+        } else {
+            if (log.isDebugEnabled()) {
+                log.debug("The template that is expected to use is not available. Therefore, using default template.");
+            }
+        }
+        return DeviceManagementConstants.EmailAttributes.DEFAULT_ENROLLMENT_TEMPLATE;
     }
 
 }

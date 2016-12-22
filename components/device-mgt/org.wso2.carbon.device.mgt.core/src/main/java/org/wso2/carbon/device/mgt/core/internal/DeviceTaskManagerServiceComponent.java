@@ -58,11 +58,11 @@ public class DeviceTaskManagerServiceComponent {
                 log.debug("Initializing device details retrieving task manager bundle.");
             }
             // This will start the device details retrieving task.
-//            DeviceTaskManagerService deviceTaskManagerService = new DeviceTaskManagerServiceImpl();
-//            DeviceManagementDataHolder.getInstance().setDeviceTaskManagerService(
-//                    deviceTaskManagerService);
-//            componentContext.getBundleContext().registerService(DeviceTaskManagerService.class,
-//                    deviceTaskManagerService, null);
+            //            DeviceTaskManagerService deviceTaskManagerService = new DeviceTaskManagerServiceImpl();
+            //            DeviceManagementDataHolder.getInstance().setDeviceTaskManagerService(
+            //                    deviceTaskManagerService);
+            //            componentContext.getBundleContext().registerService(DeviceTaskManagerService.class,
+            //                    deviceTaskManagerService, null);
 
             getDeviceOperationMonitoringConfig(componentContext);
 
@@ -76,12 +76,12 @@ public class DeviceTaskManagerServiceComponent {
         }
     }
 
-    private void getDeviceOperationMonitoringConfig(ComponentContext componentContext) throws DeviceMgtTaskException {
+    private void getDeviceOperationMonitoringConfig(ComponentContext componentContext)
+            throws DeviceMgtTaskException {
 
         DeviceTaskManagerService deviceTaskManagerService = new DeviceTaskManagerServiceImpl();
 
-        DeviceManagementDataHolder.getInstance().setDeviceTaskManagerService(
-                deviceTaskManagerService);
+        DeviceManagementDataHolder.getInstance().setDeviceTaskManagerService(deviceTaskManagerService);
 
         componentContext.getBundleContext().registerService(DeviceTaskManagerService.class,
                 deviceTaskManagerService, null);
@@ -89,11 +89,10 @@ public class DeviceTaskManagerServiceComponent {
         Map<String, OperationMonitoringTaskConfig> deviceConfigMap = DeviceMonitoringOperationDataHolder
                 .getInstance().getOperationMonitoringConfigFromMap();
 
-        for (String platformType : new ArrayList<String>(deviceConfigMap.keySet())) {
+        for (String platformType : new ArrayList<>(deviceConfigMap.keySet())) {
             deviceTaskManagerService.startTask(platformType, deviceConfigMap.get(platformType));
             deviceConfigMap.remove(platformType);
         }
-
     }
 
     @SuppressWarnings("unused")

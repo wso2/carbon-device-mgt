@@ -52,6 +52,6 @@ public class OperationMonitoringTaskConfig {
 
     public void setMonitoringOperation(List<MonitoringOperation> monitoringOperation) {
         this.monitoringOperation = monitoringOperation;
-    }
 
+    }
 }

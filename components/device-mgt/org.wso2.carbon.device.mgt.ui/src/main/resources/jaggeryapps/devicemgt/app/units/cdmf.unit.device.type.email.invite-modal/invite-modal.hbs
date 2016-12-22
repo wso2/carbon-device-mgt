@@ -15,54 +15,27 @@
   specific language governing permissions and limitations
   under the License.
 }}
+{{unit "cdmf.unit.ui.modal"}}
 
 {{#zone "content"}}
-<div id="invite-by-email-modal" class="hidden">
-    <div class="modal-header">
-        <h4 class="pull-left modal-title">
-                <span class="fw-stack add-margin-right-1x">
-                    <i class="fw fw-user fw-stack-2x"></i>
-                    <span class="fw-stack fw-move-right fw-move-bottom">
-                      <i class="fw fw-ring fw-stack-2x"></i>
-                      <i class="fw fw-circle fw-stack-2x fw-stroke text-info"></i>
-                      <i class="fw fw-add fw-stack-1x fw-inverse"></i>
-                   </span>
-                </span>
-            Send Invites
-        </h4>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fw fw-cancel"></i></button>
-    </div>
-    <hr>
-    <div class="modal-body add-margin-top-2x add-margin-bottom-2x">
-        <div class="panel-body col-centered text-center">
-            <h5>
-
-            </h5>
-            <br>
-            <div class="panel panel-default">
-                <div class="panel-body">
-                    <div id="user-create-form" class="col-centered col-lg-8 wr-content">
-                        <div class="text-left">
-                            <div class="wr-input-control">
-                                <select multiple="true" name="choose_usr_email[]" id="choose_usr_email" class="form-control">
-                                </select>
-                            </div>
+    <div id="invite-by-email-modal" class="hidden">
+        <div id="invite-by-email-body" class="panel panel-default">
+            <div class="panel-body">
+                <div id="user-create-form" class="col-centered col-lg-8 wr-content">
+                    <div class="text-left">
+                        <div class="wr-input-control">
+                            <select multiple="true" name="choose_usr_email[]" id="choose_usr_email"
+                                    class="form-control">
+                            </select>
                         </div>
                     </div>
-                    <p>Please add one or more email addresses seperated by a <b>comma ( , )</b> to send an email invitation which includes</br>
-                        instructions on how to download the respective device agent.</p>
                 </div>
+                <p>Please add one or more email addresses separated by a <b>comma ( , )</b> to send an email invitation
+                   which includes</br>
+                   instructions on how to download the respective device agent.</p>
             </div>
-            </br>
-            </br>
         </div>
     </div>
-    <div class="modal-footer">
-        <div class="buttons">
-            <a href="javascript:sendInvites()" class="btn-operations btn-default">Send Invite(s)</a>
-        </div>
-    </div>
-</div>
 {{/zone}}
 
 {{#zone "topCss"}}

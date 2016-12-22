@@ -195,7 +195,7 @@
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.devicemgt</groupId>
-                <artifactId>org.wso2.carbon.simple.policy.decision.point</artifactId>
+                <artifactId>org.wso2.carbon.policy.decision.point</artifactId>
                 <version>${carbon.device.mgt.version}</version>
             </dependency>
             <dependency>
@@ -1910,7 +1910,7 @@
 
         <!-- Carbon Identity -->
         <carbon.identity.framework.version>5.6.89</carbon.identity.framework.version>
-        <identity.inbound.auth.oauth.version>5.2.7</identity.inbound.auth.oauth.version>
+        <identity.inbound.auth.oauth.version>5.2.33</identity.inbound.auth.oauth.version>
         <identity.inbound.auth.saml.version>5.2.14</identity.inbound.auth.saml.version>
 
         <!-- Carbon Identity import version ranges -->

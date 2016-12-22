@@ -18,6 +18,8 @@
 
 package org.wso2.carbon.policy.mgt.core.internal;
 
+import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
+import org.wso2.carbon.device.mgt.core.config.policy.PolicyConfiguration;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.ntask.core.service.TaskService;
 import org.wso2.carbon.policy.mgt.common.PolicyEvaluationPoint;
@@ -36,6 +38,7 @@ public class PolicyManagementDataHolder {
     private RealmService realmService;
     private TenantManager tenantManager;
     private PolicyEvaluationPoint policyEvaluationPoint;
+    private Map<String, PolicyEvaluationPoint> policyEvaluationPoints = new HashMap<>();
     private PolicyInformationPoint policyInformationPoint;
     private DeviceManagementProviderService deviceManagementService;
     private MonitoringManager monitoringManager;
@@ -88,12 +91,20 @@ public class PolicyManagementDataHolder {
     }
 
     public PolicyEvaluationPoint getPolicyEvaluationPoint() {
-        return policyEvaluationPoint;
+        PolicyConfiguration policyConfiguration = DeviceConfigurationManager.getInstance().
+                getDeviceManagementConfig().getPolicyConfiguration();
+        String policyEvaluationPointName = policyConfiguration.getPolicyEvaluationPointName();
+        return policyEvaluationPoints.get(policyEvaluationPointName);
     }
 
-    public void setPolicyEvaluationPoint(PolicyEvaluationPoint policyEvaluationPoint) {
-        this.policyEvaluationPoint = policyEvaluationPoint;
+    public void setPolicyEvaluationPoint(String name, PolicyEvaluationPoint policyEvaluationPoint) {
+        policyEvaluationPoints.put(name,policyEvaluationPoint);
     }
+
+    public void removePolicyEvaluationPoint(PolicyEvaluationPoint policyEvaluationPoint) {
+        policyEvaluationPoints.remove(policyEvaluationPoint.getName());
+    }
+
 
     public PolicyInformationPoint getPolicyInformationPoint() {
         return policyInformationPoint;

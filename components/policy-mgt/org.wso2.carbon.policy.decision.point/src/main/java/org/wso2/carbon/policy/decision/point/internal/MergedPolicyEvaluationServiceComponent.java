@@ -16,18 +16,18 @@
 * under the License.
 */
 
-package org.wso2.carbon.simple.policy.decision.point.internal;
+package org.wso2.carbon.policy.decision.point.internal;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osgi.service.component.ComponentContext;
+import org.wso2.carbon.policy.decision.point.merged.MergedEvaluationPoint;
 import org.wso2.carbon.policy.mgt.common.PolicyEvaluationPoint;
 import org.wso2.carbon.policy.mgt.core.PolicyManagerService;
-import org.wso2.carbon.simple.policy.decision.point.PolicyEvaluationServiceImpl;
 import org.wso2.carbon.user.core.service.RealmService;
 
 /**
- * @scr.component name="org.wso2.carbon.simple.policy.decision.PolicyEvaluationServiceComponent" immediate="true"
+ * @scr.component name="org.wso2.carbon.policy.decision.MergedPolicyEvaluationServiceComponent" immediate="true"
  * @scr.reference name="user.realmservice.default"
  * interface="org.wso2.carbon.user.core.service.RealmService"
  * cardinality="1..1"
@@ -42,26 +42,26 @@ import org.wso2.carbon.user.core.service.RealmService;
  * unbind="unsetPolicyManagerService"
  */
 
-public class PolicyEvaluationServiceComponent {
+public class MergedPolicyEvaluationServiceComponent {
 
-    private static Log log = LogFactory.getLog(PolicyEvaluationServiceComponent.class);
+    private static Log log = LogFactory.getLog(MergedPolicyEvaluationServiceComponent.class);
 
     protected void activate(ComponentContext componentContext) {
         if (log.isDebugEnabled()) {
-            log.debug("Activating the simple policy evaluation bundle.");
+            log.debug("Activating the policy evaluation bundle.");
         }
 
         try {
             componentContext.getBundleContext().registerService(PolicyEvaluationPoint.class.getName(),
-                    new PolicyEvaluationServiceImpl(), null);
+                    new MergedEvaluationPoint(), null);
         } catch (Throwable t) {
-            log.error("Error occurred while initializing the simple policy evaluation bundle");
+            log.error("Error occurred while initializing the policy evaluation bundle");
         }
     }
 
     protected void deactivate(ComponentContext componentContext) {
         if (log.isDebugEnabled()) {
-            log.debug("De-activating the simple policy evaluation bundle.");
+            log.debug("De-activating the policy evaluation bundle.");
         }
     }
 
@@ -90,14 +90,12 @@ public class PolicyEvaluationServiceComponent {
         PolicyDecisionPointDataHolder.getInstance().setRealmService(null);
     }
 
-
     protected void setPolicyManagerService(PolicyManagerService policyManagerService) {
         if (log.isDebugEnabled()) {
             log.debug("Unsetting PolicyManagerService Service");
         }
         PolicyDecisionPointDataHolder.getInstance().setPolicyManagerService(policyManagerService);
     }
-
 
     protected void unsetPolicyManagerService(PolicyManagerService policyManagerService) {
         if (log.isDebugEnabled()) {
@@ -106,4 +104,9 @@ public class PolicyEvaluationServiceComponent {
         PolicyDecisionPointDataHolder.getInstance().setPolicyManagerService(null);
     }
 
+//    protected String getName() {
+//        return MergedPolicyEvaluationServiceComponent.class.getName();
+//    }
+
 }
+

@@ -16,7 +16,7 @@
 * under the License.
 */
 
-package org.wso2.carbon.simple.policy.decision.point.internal;
+package org.wso2.carbon.policy.decision.point.internal;
 
 import org.wso2.carbon.policy.mgt.core.PolicyManagerService;
 import org.wso2.carbon.user.core.service.RealmService;

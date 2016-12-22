@@ -258,8 +258,9 @@ function loadDevices(searchType, searchParam) {
             data: 'name',
             class: 'remove-padding icon-only content-fill',
             render: function (data, type, row, meta) {
-                return '<div class="thumbnail icon"><img class="square-element text fw " src="' + getDeviceTypeThumb(
-                        row.deviceType) + '"/></div>';
+                return '<a href="device/' + row.deviceType + '?id=' + row.deviceIdentifier
+                       + '"><div class="thumbnail icon"><img class="square-element text fw " '
+                       + 'src="' + getDeviceTypeThumb(row.deviceType) + '"/></div></a>';
             }
         },
         {
@@ -333,12 +334,7 @@ function loadDevices(searchType, searchParam) {
                 var deviceIdentifier = row.deviceIdentifier;
                 var html = '<span></span>';
                 if (status != 'REMOVED') {
-                    html =
-                        '<a href="device/' + deviceType + '?id=' + deviceIdentifier + '" data-click-event="remove-form"'
-                        +
-                        ' class="btn padding-reduce-on-grid-view"><span class="fw-stack"><i class="fw fw-ring fw-stack-2x"></i>'
-                        +
-                        '<i class="fw fw-view fw-stack-1x"></i></span><span class="hidden-xs hidden-on-grid-view">View</span></a>';
+                    html = '';
 
                     if (analyticsEnabled(row.deviceType)) {
                         html +=

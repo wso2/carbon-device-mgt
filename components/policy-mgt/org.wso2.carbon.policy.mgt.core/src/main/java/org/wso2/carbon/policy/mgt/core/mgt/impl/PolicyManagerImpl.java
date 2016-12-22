@@ -880,9 +880,7 @@ public class PolicyManagerImpl implements PolicyManager {
 
             Policy policySaved = policyDAO.getAppliedPolicy(deviceId, device.getEnrolmentInfo().getId());
             if (policySaved != null && policySaved.getId() != 0) {
-//                if (policy.getId() != policySaved.getId()) {
-                    policyDAO.updateEffectivePolicyToDevice(deviceId, device.getEnrolmentInfo().getId(), policy);
-//                }
+                policyDAO.updateEffectivePolicyToDevice(deviceId, device.getEnrolmentInfo().getId(), policy);
             } else {
                 policyDAO.addEffectivePolicyToDevice(deviceId, device.getEnrolmentInfo().getId(), policy);
             }
@@ -912,17 +910,17 @@ public class PolicyManagerImpl implements PolicyManager {
 
             Policy policySaved = policyDAO.getAppliedPolicy(deviceId, device.getEnrolmentInfo().getId());
             if (policySaved != null) {
-                 policyDAO.deleteEffectivePolicyToDevice(deviceId, device.getEnrolmentInfo().getId());
+                policyDAO.deleteEffectivePolicyToDevice(deviceId, device.getEnrolmentInfo().getId());
             }
             PolicyManagementDAOFactory.commitTransaction();
         } catch (PolicyManagerDAOException e) {
             PolicyManagementDAOFactory.rollbackTransaction();
             throw new PolicyManagementException("Error occurred while removing the applied policy to device (" +
-                                                deviceId + ")", e);
+                    deviceId + ")", e);
         } catch (DeviceManagementException e) {
             PolicyManagementDAOFactory.rollbackTransaction();
             throw new PolicyManagementException("Error occurred while getting the device details (" +
-                                                deviceIdentifier.getId() + ")", e);
+                    deviceIdentifier.getId() + ")", e);
         } finally {
             PolicyManagementDAOFactory.closeConnection();
         }

@@ -1361,6 +1361,11 @@ public class PolicyDAOImpl implements PolicyDAO {
             stmt.setInt(1, policyId);
             stmt.executeUpdate();
 
+            String deleteGroup = "DELETE FROM DM_DEVICE_GROUP_POLICY WHERE POLICY_ID = ?";
+            stmt = conn.prepareStatement(deleteGroup);
+            stmt.setInt(1, policyId);
+            stmt.executeUpdate();
+
             if (log.isDebugEnabled()) {
                 log.debug("Policy (" + policyId + ") related configs deleted from database.");
             }

@@ -16,7 +16,7 @@
 * under the License.
 */
 
-package org.wso2.carbon.simple.policy.decision.point;
+package org.wso2.carbon.policy.decision.point.simple;
 
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.policy.mgt.common.Policy;
@@ -29,6 +29,7 @@ import java.util.List;
 public class PolicyEvaluationServiceImpl implements PolicyEvaluationPoint {
 
     private SimpleEvaluationImpl evaluation;
+    private static final String policyEvaluationPoint = "Simple";
 
     public PolicyEvaluationServiceImpl() {
         evaluation = new SimpleEvaluationImpl();
@@ -40,23 +41,16 @@ public class PolicyEvaluationServiceImpl implements PolicyEvaluationPoint {
     }
 
     @Override
-    public List<ProfileFeature> getEffectiveFeatures(DeviceIdentifier deviceIdentifier) throws PolicyEvaluationException {
+    public List<ProfileFeature> getEffectiveFeatures(DeviceIdentifier deviceIdentifier)
+            throws PolicyEvaluationException {
 
         List<ProfileFeature> effectiveFeatures = evaluation.getEffectivePolicy(deviceIdentifier).
                 getProfile().getProfileFeaturesList();
-
-/*        PolicyOperation policyOperation = new PolicyOperation();
-
-        List<ProfileOperation> profileOperationList = new ArrayList<ProfileOperation>();
-        for (ProfileFeature feature : effectiveFeatures) {
-            ProfileOperation operation = new ProfileOperation();
-
-            operation.setCode(feature.getFeatureCode());
-            operation.setPayLoad(feature.getContent());
-            profileOperationList.add(operation);
-        }
-        policyOperation.setProfileOperations(profileOperationList);
-        policyOperation.setCode(PolicyManagementConstants.POLICY_BUNDLE);*/
         return effectiveFeatures;
+    }
+
+    @Override
+    public String getName() {
+        return policyEvaluationPoint;
     }
 }

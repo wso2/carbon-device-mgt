@@ -258,9 +258,10 @@ function loadDevices(searchType, searchParam) {
             data: 'name',
             class: 'remove-padding icon-only content-fill',
             render: function (data, type, row, meta) {
-                return '<a href="device/' + row.deviceType + '?id=' + row.deviceIdentifier
-                       + '"><div class="thumbnail icon"><img class="square-element text fw " '
-                       + 'src="' + getDeviceTypeThumb(row.deviceType) + '"/></div></a>';
+                return '<a href="' + context + '/device/' + row.deviceType + '?id=' + row.deviceIdentifier
+                       + '"><div class="thumbnail icon"><img class="square-element text fw " src="'
+                       + getDeviceTypeThumb(
+                        row.deviceType) + '"/></div></a>';
             }
         },
         {
@@ -337,14 +338,11 @@ function loadDevices(searchType, searchParam) {
                     html = '';
 
                     if (analyticsEnabled(row.deviceType)) {
-                        html +=
-                            '<a href="device/' + deviceType + '/analytics?deviceId=' + deviceIdentifier + '&deviceName='
-                            + row.name + '" ' +
-                            'data-click-event="remove-form" class="btn padding-reduce-on-grid-view"><span class="fw-stack">'
-                            +
-                            '<i class="fw fw-ring fw-stack-2x"></i><i class="fw fw-statistics fw-stack-1x"></i></span>'
-                            +
-                            '<span class="hidden-xs hidden-on-grid-view">Analytics</span>';
+                        html += '<a href="' + context + '/device/' + deviceType + '/analytics?deviceId=' +
+                                deviceIdentifier + '&deviceName=' + row.name + '" ' + 'data-click-event="remove-form"' +
+                                ' class="btn padding-reduce-on-grid-view"><span class="fw-stack">' +
+                                '<i class="fw fw-ring fw-stack-2x"></i><i class="fw fw-statistics fw-stack-1x"></i></span>' +
+                                '<span class="hidden-xs hidden-on-grid-view">Analytics</span>';
                     }
 
                     if ((!groupName || !groupId) && groupingEnabled(row.deviceType)) {

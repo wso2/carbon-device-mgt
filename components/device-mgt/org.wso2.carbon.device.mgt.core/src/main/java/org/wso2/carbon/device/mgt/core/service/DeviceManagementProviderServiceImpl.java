@@ -1222,17 +1222,9 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     @Override
     public List<MonitoringOperation> getMonitoringOperationList(String deviceType) {
         int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
-//        Map<DeviceTypeIdentifier, DeviceManagementService> deviceManagementServiceMap =
-//                pluginRepository.getAllDeviceManagementServices(tenantId);
-        DeviceManagementService dms = pluginRepository.getDeviceManagementService(deviceType, tenantId);
-      // ;
-       // OperationMonitoringTaskConfig operationMonitoringTaskConfig;
-        //Map<String, List<MonitoringOperation>> deviceTypeSpecificMonitoringOperations = new HashMap<>();
 
-//        for(DeviceTypeIdentifier dti : deviceManagementServiceMap.keySet()){
-//            dms = deviceManagementServiceMap.get(dti);
-//
-//        }
+        DeviceManagementService dms = pluginRepository.getDeviceManagementService(deviceType, tenantId);
+
         OperationMonitoringTaskConfig operationMonitoringTaskConfig = dms.getOperationMonitoringConfig();
         return operationMonitoringTaskConfig.getMonitoringOperation();
     }

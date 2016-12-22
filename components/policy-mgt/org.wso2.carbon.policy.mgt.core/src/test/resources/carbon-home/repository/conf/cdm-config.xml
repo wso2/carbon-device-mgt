@@ -42,6 +42,8 @@
             <maxRetries>5</maxRetries>
             <minRetriesToMarkUnreachable>8</minRetriesToMarkUnreachable>
             <minRetriesToMarkInactive>20</minRetriesToMarkInactive>
+            <!--<PolicyEvaluationPoint>Simple</PolicyEvaluationPoint>-->
+            <PolicyEvaluationPoint>Simple</PolicyEvaluationPoint>
         </PolicyConfiguration>
     </ManagementRepository>
 </DeviceMgtConfiguration>

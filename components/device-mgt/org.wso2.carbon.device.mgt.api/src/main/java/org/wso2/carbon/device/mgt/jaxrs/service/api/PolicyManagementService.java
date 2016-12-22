@@ -31,6 +31,7 @@ import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import io.swagger.annotations.ResponseHeader;
+import org.wso2.carbon.apimgt.annotations.api.Permission;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
 import org.wso2.carbon.device.mgt.jaxrs.beans.PolicyWrapper;
 import org.wso2.carbon.device.mgt.jaxrs.beans.PriorityUpdatedPolicyWrapper;
@@ -562,5 +563,9 @@ public interface PolicyManagementService {
                     required = true)
                     List<PriorityUpdatedPolicyWrapper> priorityUpdatedPolicies);
 
+    @GET
+    @Path("/effective-policy/{deviceType}/{deviceId}")
+    @Permission(name = "Get Effective Policy of Devices", permission = "/device-mgt/policies/view")
+    Response getEffectivePolicy(@PathParam("deviceId") String deviceId, @PathParam("deviceType") String deviceType);
 
 }

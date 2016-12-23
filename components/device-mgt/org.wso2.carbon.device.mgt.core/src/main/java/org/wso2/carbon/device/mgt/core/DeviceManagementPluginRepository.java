@@ -195,7 +195,6 @@ public class DeviceManagementPluginRepository implements DeviceManagerStartupLis
                 } else {
                     deviceTaskManagerService.startTask(deviceManagementService.getType(),
                             operationMonitoringTaskConfig);
-                    // TODO: In here a race condition can arise. Need to handle it.
                 }
             }
         } catch (DeviceMgtTaskException e) {

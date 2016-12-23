@@ -62,13 +62,9 @@
                             org.osgi.framework,
                             org.osgi.service.component,
                             org.wso2.carbon.context,
-                            org.wso2.carbon.identity.application.common,
-                            org.wso2.carbon.identity.application.common.model,
-                            org.wso2.carbon.identity.application.mgt,
-                            org.wso2.carbon.identity.application.mgt.stub,
-                            org.wso2.carbon.identity.base,
-                            org.wso2.carbon.identity.oauth,
-                            org.wso2.carbon.identity.oauth.dto,
+                            org.wso2.carbon.identity.application.*; version="${carbon.identity.imp.pkg.version}",
+                            org.wso2.carbon.identity.base; version="${carbon.identity.imp.pkg.version}",
+                            org.wso2.carbon.identity.oauth.*; version="${carbon.identity-inbound-auth-oauth.imp.pkg.version}",
                             org.wso2.carbon.identity.sso.saml.admin,
                             org.wso2.carbon.identity.sso.saml.dto,
                             org.wso2.carbon.registry.api,
@@ -98,15 +94,15 @@
             <artifactId>org.wso2.carbon.utils</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon.identity</groupId>
+            <groupId>org.wso2.carbon.identity.framework</groupId>
             <artifactId>org.wso2.carbon.identity.application.mgt</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon.identity</groupId>
+            <groupId>org.wso2.carbon.identity.inbound.auth.oauth2</groupId>
             <artifactId>org.wso2.carbon.identity.oauth</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon.identity</groupId>
+            <groupId>org.wso2.carbon.identity.inbound.auth.saml2</groupId>
             <artifactId>org.wso2.carbon.identity.sso.saml</artifactId>
         </dependency>
         <dependency>

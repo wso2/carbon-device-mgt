@@ -6547,7 +6547,7 @@ select > option:hover {
 
 @media (min-width: 1200px){
     table tbody tr {
-        width: 14% !important;
+        width: 18% !important;
     }
     .table .fw-stack{
         font-size: 1.2vw;
@@ -6556,7 +6556,7 @@ select > option:hover {
 
 @media (min-width: 1500px){
     table tbody tr {
-        width: 10% !important;
+        width: 14% !important;
     }
     .table .fw-stack{
         font-size: 0.8vw;

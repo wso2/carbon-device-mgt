@@ -50,7 +50,7 @@ public class APIPublisherUtil {
     private static final String PARAM_PROVIDER_TENANT_DOMAIN = "providerTenantDomain";
 
 
-    public static API getAPI(APIConfig config) throws APIManagementException {
+    public static API PARAM_MANAGED_API_IS_SECURED(APIConfig config) throws APIManagementException {
 
         APIProvider provider = config.getProvider();
         String apiVersion = config.getVersion();
@@ -75,7 +75,7 @@ public class APIPublisherUtil {
 
         api.setUrl(config.getEndpoint());
         api.addAvailableTiers(provider.getTiers());
-        api.setEndpointSecured(true);
+        api.setEndpointSecured(false);
         api.setStatus(APIStatus.CREATED);
         api.setTransports(config.getTransports());
         api.setApiLevelPolicy(config.getPolicy());
@@ -261,18 +261,7 @@ public class APIPublisherUtil {
         }
         apiConfig.setOwner(owner);
 
-        String isSecuredParam = servletContext.getInitParameter(PARAM_MANAGED_API_IS_SECURED);
-        boolean isSecured;
-        if (isSecuredParam == null || isSecuredParam.isEmpty()) {
-            if (log.isDebugEnabled()) {
-                log.debug("'managed-api-isSecured' attribute is not configured. Therefore, using the default, " +
-                        "which is 'true'");
-            }
-            isSecured = false;
-        } else {
-            isSecured = Boolean.parseBoolean(isSecuredParam);
-        }
-        apiConfig.setSecured(isSecured);
+        apiConfig.setSecured(false);
 
         String transports = servletContext.getInitParameter(PARAM_MANAGED_API_TRANSPORTS);
         if (transports == null || transports.isEmpty()) {

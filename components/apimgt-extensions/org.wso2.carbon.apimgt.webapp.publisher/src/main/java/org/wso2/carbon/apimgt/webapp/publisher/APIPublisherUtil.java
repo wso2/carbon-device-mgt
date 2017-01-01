@@ -50,7 +50,7 @@ public class APIPublisherUtil {
     private static final String PARAM_PROVIDER_TENANT_DOMAIN = "providerTenantDomain";
 
 
-    public static API PARAM_MANAGED_API_IS_SECURED(APIConfig config) throws APIManagementException {
+    public static API getAPI(APIConfig config) throws APIManagementException {
 
         APIProvider provider = config.getProvider();
         String apiVersion = config.getVersion();

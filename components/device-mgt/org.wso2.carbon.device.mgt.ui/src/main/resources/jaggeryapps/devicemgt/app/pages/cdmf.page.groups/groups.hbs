@@ -118,16 +118,16 @@
                         </div>
                         <div id="user-names">
                             <h4>
-                                Select user roles to manage group sharing
+                                Select user role(s)
                                 <br><br>
-                                <div style="max-height: 200px; overflow: scroll" id="rolesListing">
+                                <div style="max-height: 200px; overflow: auto" id="rolesListing">
                                 </div>
                             </h4>
                         </div>
                     </div>
                     <div class="modal-footer">
                         <div class="buttons">
-                            {{#if permissions.CREATE_GROUP_ROLES}}
+                            {{#if permissions.ADD_ROLE}}
                                 <a href="{{@app.context}}/role/add" class="btn-operations">
                                     New Role
                                 </a>
@@ -186,9 +186,9 @@
                     <div class="content">
                         <div class="row">
                             <div class="col-lg-5 col-md-6 col-centered">
-                                <h3>Group was successfully updated.</h3>
+                                <h3>Group successfully updated.</h3>
                                 <br />
-                                Do you need to Add / Remove users to the chosen roles?
+                                Do you want to manage users?
                                 <div class="buttons">
                                     <a href="{{@app.context}}/users" id="share-group-add-users-yes-link"
                                        class="btn-operations">
@@ -211,7 +211,7 @@
                             <div class="col-lg-5 col-md-6 col-centered">
                                 <h3>New Role was successfully created.</h3>
                                 <br />
-                                Do you need to Add / Remove users to the chosen roles?
+                                Do you need to Add / Remove users from the chosen roles?
                                 <div class="buttons">
                                     <a href="{{@app.context}}/users" id="share-group-add-users-yes-link"
                                        class="btn-operations">

@@ -91,11 +91,20 @@ public class PolicyManagerServiceImpl implements PolicyManagerService {
     @Override
     public Policy getEffectivePolicy(DeviceIdentifier deviceIdentifier) throws PolicyManagementException {
         try {
-            Policy policy = PolicyManagementDataHolder.getInstance().getPolicyEvaluationPoint().
-                    getEffectivePolicy(deviceIdentifier);
+            PolicyEvaluationPoint policyEvaluationPoint = PolicyManagementDataHolder.getInstance().getPolicyEvaluationPoint();
+            Policy policy;
 
-            if (policy == null) {
-                return null;
+            if (policyEvaluationPoint != null) {
+                policy = policyEvaluationPoint.
+                        getEffectivePolicy(deviceIdentifier);
+                if (policy == null) {
+                    policyAdministratorPoint.removePolicyUsed(deviceIdentifier);
+                    return null;
+                }
+                this.getPAP().setPolicyUsed(deviceIdentifier, policy);
+            } else {
+                throw new PolicyEvaluationException("Error occurred while getting the policy evaluation point " +
+                        deviceIdentifier.getId() + " - " + deviceIdentifier.getType());
             }
             List<DeviceIdentifier> deviceIdentifiers = new ArrayList<DeviceIdentifier>();
             deviceIdentifiers.add(deviceIdentifier);
@@ -129,8 +138,13 @@ public class PolicyManagerServiceImpl implements PolicyManagerService {
     public List<ProfileFeature> getEffectiveFeatures(DeviceIdentifier deviceIdentifier) throws
             FeatureManagementException {
         try {
-            return PolicyManagementDataHolder.getInstance().
-                    getPolicyEvaluationPoint().getEffectiveFeatures(deviceIdentifier);
+            PolicyEvaluationPoint policyEvaluationPoint = PolicyManagementDataHolder.getInstance().getPolicyEvaluationPoint();
+            if (policyEvaluationPoint != null) {
+                return policyEvaluationPoint.getEffectiveFeatures(deviceIdentifier);
+            } else {
+                throw new FeatureManagementException("Error occurred while getting the policy evaluation point " +
+                        deviceIdentifier.getId() + " - " + deviceIdentifier.getType());
+            }
         } catch (PolicyEvaluationException e) {
             String msg = "Error occurred while getting the effective features from the PEP service " +
                     deviceIdentifier.getId() + " - " + deviceIdentifier.getType();

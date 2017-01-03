@@ -81,7 +81,7 @@ public interface DeviceManagementProviderService {
      */
     PaginationResult getAllDevices(PaginationRequest request) throws DeviceManagementException;
 
-    void sendEnrolmentInvitation(EmailMetaInfo metaInfo) throws DeviceManagementException;
+    void sendEnrolmentInvitation(String templateName, EmailMetaInfo metaInfo) throws DeviceManagementException;
 
     void sendRegistrationEmail(EmailMetaInfo metaInfo) throws DeviceManagementException;
 

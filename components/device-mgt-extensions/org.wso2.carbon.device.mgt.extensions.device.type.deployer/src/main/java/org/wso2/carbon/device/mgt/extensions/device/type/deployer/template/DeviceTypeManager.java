@@ -20,6 +20,7 @@ package org.wso2.carbon.device.mgt.extensions.device.type.deployer.template;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
@@ -41,6 +42,7 @@ import org.wso2.carbon.device.mgt.extensions.device.type.deployer.template.util.
 import org.wso2.carbon.device.mgt.extensions.license.mgt.registry.RegistryBasedLicenseManager;
 import org.wso2.carbon.registry.api.RegistryException;
 import org.wso2.carbon.registry.api.Resource;
+import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -118,25 +120,34 @@ public class DeviceTypeManager implements DeviceManager {
                     throw new DeviceTypeDeployerFileException("Could not find definition for table: " + tableName);
                 }
                 propertiesExist = true;
-                DeviceDAODefinition deviceDAODefinition = new DeviceDAODefinition(deviceDefinitionTable);
-                String datasourceName = deviceTypeConfiguration.getDataSource().getJndiConfig().getName();
-                if (datasourceName != null && !datasourceName.isEmpty()) {
-                    String setupOption = System.getProperty("setup");
-                    if (setupOption != null) {
-                        if (log.isDebugEnabled()) {
-                            log.debug("-Dsetup is enabled. Device management repository schema initialization is about " +
-                                    "to begin");
+
+                try {
+                    PrivilegedCarbonContext.startTenantFlow();
+                    PrivilegedCarbonContext.getThreadLocalCarbonContext()
+                            .setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME, true);
+
+                    DeviceDAODefinition deviceDAODefinition = new DeviceDAODefinition(deviceDefinitionTable);
+                    String datasourceName = deviceTypeConfiguration.getDataSource().getJndiConfig().getName();
+                    if (datasourceName != null && !datasourceName.isEmpty()) {
+                        String setupOption = System.getProperty("setup");
+                        if (setupOption != null) {
+                            if (log.isDebugEnabled()) {
+                                log.debug("-Dsetup is enabled. Device management repository schema initialization is about " +
+                                        "to begin");
+                            }
+                            try {
+                                DeviceTypeUtils.setupDeviceManagementSchema(datasourceName, deviceType,
+                                        deviceDAODefinition.getDeviceTableName());
+                            } catch (DeviceTypeMgtPluginException e) {
+                                log.error("Exception occurred while initializing device management database schema", e);
+                            }
                         }
-                        try {
-                            DeviceTypeUtils.setupDeviceManagementSchema(datasourceName, deviceType,
-                                    deviceDAODefinition.getDeviceTableName());
-                        } catch (DeviceTypeMgtPluginException e) {
-                            log.error("Exception occurred while initializing device management database schema", e);
-                        }
+                        deviceTypePluginDAOManager = new DeviceTypePluginDAOManager(datasourceName, deviceDAODefinition);
+                    } else {
+                        throw new DeviceTypeDeployerFileException("Invalid datasource name.");
                     }
-                    deviceTypePluginDAOManager = new DeviceTypePluginDAOManager(datasourceName, deviceDAODefinition);
-                } else {
-                    throw new DeviceTypeDeployerFileException("Invalid datasource name.");
+                } finally {
+                    PrivilegedCarbonContext.endTenantFlow();
                 }
             }
         }

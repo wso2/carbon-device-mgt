@@ -5,24 +5,50 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.Authorization;
+import io.swagger.annotations.AuthorizationScope;
+import io.swagger.annotations.Extension;
+import io.swagger.annotations.ExtensionProperty;
+import io.swagger.annotations.Info;
 import io.swagger.annotations.ResponseHeader;
+import io.swagger.annotations.SwaggerDefinition;
+import io.swagger.annotations.Tag;
 import org.wso2.carbon.device.mgt.analytics.dashboard.bean.DeviceCountByGroup;
 import org.wso2.carbon.device.mgt.jaxrs.beans.DashboardGadgetDataWrapper;
 import org.wso2.carbon.device.mgt.jaxrs.beans.DashboardPaginationGadgetDataWrapper;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
 
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 /**
  * Device Analytics Dashboard related REST-APIs. This can be used to obtain device related analytics.
  */
+@SwaggerDefinition(
+        info = @Info(
+                version = "1.0.0",
+                title = "",
+                extensions = {
+                        @Extension(properties = {
+                                @ExtensionProperty(name = "name", value = "DeviceAnalyticsDashboard"),
+                                @ExtensionProperty(name = "context", value = "/api/device-mgt/v1.0/dashboard"),
+                        })
+                }
+        ),
+        tags = {
+                @Tag(name = "device_management", description = "Device Analytics Dashboard related APIs.")
+        }
+)
 @Path("/dashboard")
 @Api(value = "Device Analytics Dashboard",
         description = "Device Analytics Dashboard related information APIs are described here.")
 @Produces(MediaType.APPLICATION_JSON)
-@SuppressWarnings("NonJaxWsWebServices")
+@Consumes(MediaType.APPLICATION_JSON)
 public interface Dashboard {
 
     String CONNECTIVITY_STATUS = "connectivity-status";
@@ -40,10 +66,17 @@ public interface Dashboard {
     @ApiOperation(
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
-            value = "Get the details of registered devices in WSO2 EMM.",
+            value = "Get the details of registered devices in WSO2 IoT.",
             notes = "Get the details of active, inactive, removed and total number of registered devices in"
-                    + " WSO2 EMM.",
-            tags = "Dashboard")
+                    + " WSO2 IoT.",
+            tags = "Dashboard",
+            authorizations = {
+                    @Authorization(
+                            value = "permission",
+                            scopes = {@AuthorizationScope(scope = "/device-mgt/dashboard/view",
+                                    description = "View Dashboard")}
+                    )
+            })
     @ApiResponses(value = {
             @ApiResponse(
                     code = 200,
@@ -92,8 +125,15 @@ public interface Dashboard {
     @ApiOperation(
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
-            value = "Get the number of unmonitored and non-compliant devices in WSO2 EMM.",
-            tags = "Dashboard")
+            value = "Get the number of unmonitored and non-compliant devices in WSO2 IoT.",
+            tags = "Dashboard",
+            authorizations = {
+                    @Authorization(
+                            value = "permission",
+                            scopes = {@AuthorizationScope(scope = "/device-mgt/dashboard/view",
+                                    description = "View Dashboard")}
+                    )
+            })
     @ApiResponses(value = {
             @ApiResponse(
                     code = 200,
@@ -144,7 +184,14 @@ public interface Dashboard {
             httpMethod = "GET",
             value = "Get the number of devices that have not complied to a policy that was enforced on a "
                     + "device.",
-            tags = "Dashboard")
+            tags = "Dashboard",
+            authorizations = {
+                    @Authorization(
+                            value = "permission",
+                            scopes = {@AuthorizationScope(scope = "/device-mgt/dashboard/view",
+                                    description = "View Dashboard")}
+                    )
+            })
     @ApiResponses(value = {
             @ApiResponse(
                     code = 200,
@@ -208,7 +255,14 @@ public interface Dashboard {
             httpMethod = "GET",
             value = "Get the number of devices for a given device type, such as connectivity status, "
                     + "potential vulnerability, platform, and ownership.\n",
-            tags = "Dashboard")
+            tags = "Dashboard",
+            authorizations = {
+                    @Authorization(
+                            value = "permission",
+                            scopes = {@AuthorizationScope(scope = "/device-mgt/dashboard/view",
+                                    description = "View Dashboard")}
+                    )
+            })
     @ApiResponses(value = {
             @ApiResponse(
                     code = 200,
@@ -254,11 +308,11 @@ public interface Dashboard {
             @ApiParam(
                     name = "connectivity-status",
                     value = "Provide the connectivity status of the device. The following values can be assigned:\n"
-                            + "active: The devices that are registered with WSO2 EMM and are actively "
+                            + "active: The devices that are registered with WSO2 IoT and are actively "
                             + "communicating with the server.\n"
-                            + "inactive: The devices that are registered with WSO2 EMM but unable to "
+                            + "inactive: The devices that are registered with WSO2 IoT but unable to "
                             + "actively communicate with the server.\n"
-                            + "removed: The devices that have unregistered from WSO2 EMM",
+                            + "removed: The devices that have unregistered from WSO2 IoT",
                     required = true)
             @QueryParam(CONNECTIVITY_STATUS) String connectivityStatus,
             @ApiParam(
@@ -266,7 +320,7 @@ public interface Dashboard {
                     value = "Provide details of the potential vulnerabilities of the device. The following "
                             + "values can be assigned:\n"
                             + "non-compliant: Devices that have not complied to the policies enforced on the "
-                            + "device by WSO2 EMM.\n"
+                            + "device by WSO2 IoT.\n"
                             + "unmonitored: Devices that have no policy assigned to them.",
                     required = true)
             @QueryParam(POTENTIAL_VULNERABILITY) String potentialVulnerability,
@@ -291,7 +345,14 @@ public interface Dashboard {
             httpMethod = "GET",
             value = "Get the number of devices that have not complied to a given policy based on a particular"
                     + " device type.",
-            tags = "Dashboard")
+            tags = "Dashboard",
+            authorizations = {
+                    @Authorization(
+                            value = "permission",
+                            scopes = {@AuthorizationScope(scope = "/device-mgt/dashboard/view",
+                                    description = "View Dashboard")}
+                    )
+            })
     @ApiResponses(value = {
             @ApiResponse(
                     code = 200,
@@ -359,12 +420,19 @@ public interface Dashboard {
     @ApiOperation(
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
-            value = "Get the number of devices that are registered with WSO2 EMM filtered by one of the "
+            value = "Get the number of devices that are registered with WSO2 IoT filtered by one of the "
                     + "following attributes:\n"
                     + "Connectivity status of the device, such as active, inactive or removed.\n"
                     + "The device ownership type, such as BYOD or COPE.\n" + "The device platform.\n"
                     + "The potential vulnerabilities faced by the devices.",
-            tags = "Dashboard")
+            tags = "Dashboard",
+            authorizations = {
+                    @Authorization(
+                            value = "permission",
+                            scopes = {@AuthorizationScope(scope = "/device-mgt/dashboard/view",
+                                    description = "View Dashboard")}
+                    )
+            })
     @ApiResponses(value = {
             @ApiResponse(
                     code = 200,
@@ -411,12 +479,12 @@ public interface Dashboard {
                     name = "connectivity-status",
                     value = "Provide the connectivity status of the device. You can assign any of the values "
                             + "given below:\n"
-                            + "Total: All the devices that have registered with WSO2 EMM.\n"
-                            + "active: The devices that are registered with WSO2 EMM and are actively "
+                            + "Total: All the devices that have registered with WSO2 IoT.\n"
+                            + "active: The devices that are registered with WSO2 IoT and are actively "
                             + "communicating with the server.\n"
-                            + "inactive: The devices that are registered with WSO2 EMM but unable to actively"
+                            + "inactive: The devices that are registered with WSO2 IoT but unable to actively"
                             + " communicate with the server.\n"
-                            + "removed: The devices that have unregistered from WSO2 EMM.",
+                            + "removed: The devices that have unregistered from WSO2 IoT.",
                     required = true)
             @QueryParam(CONNECTIVITY_STATUS) String connectivityStatus,
             @ApiParam(
@@ -424,7 +492,7 @@ public interface Dashboard {
                     value = "Provide details of the potential vulnerabilities of the device. You can assign"
                             + " any of the values given below:\n"
                             + "non-compliant: Devices that have not complied to the policies enforced on the "
-                            + "device by WSO2 EMM.\n"
+                            + "device by WSO2 IoT.\n"
                             + "unmonitored: Devices that have no policy assigned to them.",
                     required = true)
             @QueryParam(POTENTIAL_VULNERABILITY) String potentialVulnerability,
@@ -449,8 +517,15 @@ public interface Dashboard {
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
             value = "Get the number of devices that have not complied to a given policy over the total"
-                    + " number of devices registered with WSO2 EMM.\n",
-            tags = "Dashboard")
+                    + " number of devices registered with WSO2 IoT.\n",
+            tags = "Dashboard",
+            authorizations = {
+                    @Authorization(
+                            value = "permission",
+                            scopes = {@AuthorizationScope(scope = "/device-mgt/dashboard/view",
+                                    description = "View Dashboard")}
+                    )
+            })
     @ApiResponses(value = {
             @ApiResponse(
                     code = 200,
@@ -519,7 +594,14 @@ public interface Dashboard {
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
             value = "Get device details of devices based on a particular device type.",
-            tags = "Dashboard")
+            tags = "Dashboard",
+            authorizations = {
+                    @Authorization(
+                            value = "permission",
+                            scopes = {@AuthorizationScope(scope = "/device-mgt/dashboard/view",
+                                    description = "View Dashboard")}
+                    )
+            })
     @ApiResponses(value = {
             @ApiResponse(
                     code = 200,
@@ -565,19 +647,19 @@ public interface Dashboard {
             @ApiParam(
                     name = "connectivity-status",
                     value = "Provide the connectivity status of the device. This can be one of the following:\n"
-                            + "Total: All the devices that have registered with WSO2 EMM.\n"
-                            + "active: The devices that are registered with WSO2 EMM and are actively "
+                            + "Total: All the devices that have registered with WSO2 IoT.\n"
+                            + "active: The devices that are registered with WSO2 IoT and are actively "
                             + "communicating with the server.\n"
-                            + "inactive: The devices that are registered with WSO2 EMM but unable to actively"
+                            + "inactive: The devices that are registered with WSO2 IoT but unable to actively"
                             + " communicate with the server.\n"
-                            + "removed: The devices that have unregistered from WSO2 EMM.",
+                            + "removed: The devices that have unregistered from WSO2 IoT.",
                     required = true)
             @QueryParam(CONNECTIVITY_STATUS) String connectivityStatus,
             @ApiParam(
                     name = "potential-vulnerability",
                     value = "Provide details of the potential vulnerabilities of the device. This can be:\n"
                             + "non-compliant: Devices that have not complied to the policies enforced on "
-                            + "the device by WSO2 EMM.\n"
+                            + "the device by WSO2 IoT.\n"
                             + "unmonitored: Devices that have no policy assigned to them. ",
                     required = true)
             @QueryParam(POTENTIAL_VULNERABILITY) String potentialVulnerability,
@@ -615,7 +697,14 @@ public interface Dashboard {
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
             value = "Get device details of non-compliant devices which do not comply to a given policy.",
-            tags = "Dashboard")
+            tags = "Dashboard",
+            authorizations = {
+                    @Authorization(
+                            value = "permission",
+                            scopes = {@AuthorizationScope(scope = "/device-mgt/dashboard/view",
+                                    description = "View Dashboard")}
+                    )
+            })
     @ApiResponses(value = {
             @ApiResponse(
                     code = 200,

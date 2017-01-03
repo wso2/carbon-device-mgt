@@ -562,5 +562,8 @@ public interface PolicyManagementService {
                     required = true)
                     List<PriorityUpdatedPolicyWrapper> priorityUpdatedPolicies);
 
+    @GET
+    @Path("/effective-policy/{deviceType}/{deviceId}")
+    Response getEffectivePolicy(@PathParam("deviceId") String deviceId, @PathParam("deviceType") String deviceType);
 
 }

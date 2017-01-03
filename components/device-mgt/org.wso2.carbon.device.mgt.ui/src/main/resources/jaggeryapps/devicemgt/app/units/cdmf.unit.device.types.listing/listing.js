@@ -29,6 +29,9 @@ function onRequest(context) {
     if (typesListResponse["status"] == "success") {
         var deviceTypes = typesListResponse.content.deviceTypes;
         if (deviceTypes) {
+            if (deviceTypes.length > 0){
+                viewModel.hasDeviceTypes = true;
+            }
             var deviceTypesList = [], virtualDeviceTypesList = [];
             for (var i = 0; i < deviceTypes.length; i++) {
                 var deviceType = deviceTypes[i];

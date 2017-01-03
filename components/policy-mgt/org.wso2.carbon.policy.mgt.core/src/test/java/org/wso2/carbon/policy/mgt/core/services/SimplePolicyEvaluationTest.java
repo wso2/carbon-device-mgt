@@ -29,7 +29,8 @@ import org.wso2.carbon.policy.mgt.core.PolicyManagerServiceImpl;
 import java.util.Collections;
 import java.util.List;
 
-public class SimplePolicyEvaluationTest implements PolicyEvaluationPoint {
+public class
+SimplePolicyEvaluationTest implements PolicyEvaluationPoint {
 
     private static final Log log = LogFactory.getLog(SimplePolicyEvaluationTest.class);
 
@@ -74,6 +75,11 @@ public class SimplePolicyEvaluationTest implements PolicyEvaluationPoint {
     @Override
     public List<ProfileFeature> getEffectiveFeatures(DeviceIdentifier deviceIdentifier) throws PolicyEvaluationException {
         return null;
+    }
+
+    @Override
+    public String getName() {
+        return "SimplePolicy";
     }
 
     public void sortPolicies(List<Policy> policyList) throws PolicyEvaluationException {

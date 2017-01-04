@@ -30,8 +30,8 @@
     "adminUser":"admin@carbon.super",
     "adminUserTenantId":"-1234",
     "adminRole":"admin",
-    "usernameLength":30,
     "userValidationConfig" : {
+        "usernameLength":30,
         "usernameJSRegEx" : "^[\\S]{3,30}$",
         "usernameRegExViolationErrorMsg" : "Provided username is invalid.",
         "usernameHelpMsg" : "Should be in minimum 3 characters long and do not include any whitespaces.",

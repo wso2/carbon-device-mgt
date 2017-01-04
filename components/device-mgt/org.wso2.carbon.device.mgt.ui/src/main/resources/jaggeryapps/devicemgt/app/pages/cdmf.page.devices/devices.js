@@ -20,15 +20,19 @@ function onRequest(context) {
     var constants = require("/app/modules/constants.js");
     var userModule = require("/app/modules/business-controllers/user.js")["userModule"];
     var deviceModule = require("/app/modules/business-controllers/device.js")["deviceModule"];
-
-    var groupName = request.getParameter("groupName");
+    var groupModule = require("/app/modules/business-controllers/group.js")["groupModule"];
+    
     var groupId = request.getParameter("groupId");
 
     var viewModel = {};
     var title = "Devices";
-    if (groupName) {
-        title = groupName + " " + title;
-        viewModel.groupName = groupName;
+    if (groupId) {
+        var group = groupModule.getGroup(groupId);
+        if (group) {
+            title = group.name + " " + title;
+            viewModel.roles = groupModule.getRolesOfGroup(groupId);
+            viewModel.group = group;
+        }
     }
     viewModel.title = title;
     var currentUser = session.get(constants.USER_SESSION_KEY);
@@ -42,7 +46,6 @@ function onRequest(context) {
         viewModel.currentUser = currentUser;
         var deviceCount = 0;
         if (groupId) {
-            var groupModule = require("/app/modules/business-controllers/group.js")["groupModule"];
             deviceCount = groupModule.getGroupDeviceCount(groupId);
         } else {
             deviceCount = deviceModule.getDevicesCount();

@@ -51,7 +51,7 @@ function InitiateViewOption(url) {
 var deviceCheckbox = "#ast-container .ctrl-wr-asset .itm-select input[type='checkbox']";
 var assetContainer = "#ast-container";
 
-var deviceListing, currentUser, groupName, groupId;
+var deviceListing, currentUser, groupId;
 
 /*
  * DOM ready functions.
@@ -69,8 +69,7 @@ $(document).ready(function () {
 
     deviceListing = $("#device-listing");
     currentUser = deviceListing.data("current-user");
-
-    groupName = getParameterByName("groupName");
+    
     groupId = getParameterByName("groupId");
 
     /* Adding selected class for selected devices */
@@ -161,7 +160,7 @@ function toTitleCase(str) {
 
 function loadDevices(searchType, searchParam) {
     var serviceURL;
-    if (groupName && groupId && $.hasPermission("LIST_OWN_DEVICES")) {
+    if (groupId && $.hasPermission("LIST_OWN_DEVICES")) {
         serviceURL = "/api/device-mgt/v1.0/groups/id/" + groupId + "/devices";
     } else if ($.hasPermission("LIST_DEVICES")) {
         serviceURL = "/api/device-mgt/v1.0/devices";
@@ -345,7 +344,7 @@ function loadDevices(searchType, searchParam) {
                                 '<span class="hidden-xs hidden-on-grid-view">Analytics</span>';
                     }
 
-                    if ((!groupName || !groupId) && groupingEnabled(row.deviceType)) {
+                    if (!groupId && groupingEnabled(row.deviceType)) {
                         html +=
                                 '<a href="#" data-click-event="remove-form" class="btn padding-reduce-on-grid-view group-device-link" '
                                 +
@@ -614,18 +613,28 @@ function attachDeviceEvents() {
 
             invokerUtil.get(serviceURL, function (data) {
                 var groups = JSON.parse(data);
-                var html = '<br />';
+                var html = '';
+                var hasGroups = false;
                 for (var i = 0; i < groups.deviceGroups.length; i++) {
                     if (groups.deviceGroups[i].owner != "wso2.system.user") {
                         html += '<div class="wr-input-control"><label class="wr-input-control checkbox">' +
                                 '<input class="groupCheckBoxes" type="checkbox" data-groupid="' + groups.deviceGroups[i].id + '" />' +
                                 '<span class="helper" title="' + groups.deviceGroups[i].name + '">' + groups.deviceGroups[i].name +
                                 '</span></label></div>';
+                        hasGroups = true;
                     }
                 }
+                if (hasGroups) {
+                    html = '<br/><h4>Please select device group(s)</h4><br/>' + html;
+                    markAlreadyAssignedGroups(deviceId, deviceType);
+                    $("a#group-device-yes-link").show();
+                    $("a#group-add-link").hide();
+                } else {
+                    $("a#group-device-yes-link").hide();
+                    $("a#group-add-link").show();
+                    html += '<br/><h4>You don\'t have any existing device groups. Please add new device group first.</h4>'
+                }
                 $('#user-groups').html(html);
-                markAlreadyAssignedGroups(deviceId, deviceType);
-                $("a#group-device-yes-link").show();
                 $("a#group-device-yes-link").click(function () {
                     var deviceIdentifier = {"id": deviceId, "type": deviceType};
                     var deviceGroupIds = [];
@@ -683,7 +692,7 @@ function attachDeviceEvents() {
         showPopup();
 
         $("a#remove-device-yes-link").click(function () {
-            if (groupId && groupName) {
+            if (groupId) {
                 var deviceIdentifiers = [{"id": deviceId, "type": deviceType}];
                 serviceURL = "/api/device-mgt/v1.0/groups/id/" + groupId + "/devices/remove";
                 invokerUtil.post(serviceURL, deviceIdentifiers, function (message) {

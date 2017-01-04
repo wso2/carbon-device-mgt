@@ -105,4 +105,33 @@ var groupModule = {};
         );
     };
 
+    groupModule.getGroup = function (groupId) {
+        return serviceInvokers.XMLHttp.get(
+                deviceServiceEndpoint + "/groups/id/" + groupId, function (responsePayload) {
+                    return JSON.parse(responsePayload.responseText);
+                },
+                function (responsePayload) {
+                    log.error(responsePayload);
+                    return -1;
+                }
+        );
+    };
+    
+    groupModule.getRolesOfGroup = function (groupId) {
+        return serviceInvokers.XMLHttp.get(
+                deviceServiceEndpoint + "/groups/id/" + groupId + "/roles", function (responsePayload) {
+                    var data = JSON.parse(responsePayload.responseText);
+                    if(data) {
+                        return data.roles;
+                    } else {
+                        return [];
+                    }
+                },
+                function (responsePayload) {
+                    log.error(responsePayload);
+                    return -1;
+                }
+        );
+    };
+
 }(groupModule));

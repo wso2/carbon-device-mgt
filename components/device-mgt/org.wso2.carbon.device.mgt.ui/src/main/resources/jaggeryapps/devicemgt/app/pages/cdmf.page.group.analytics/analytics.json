@@ -1,5 +1,5 @@
 {
   "version": "1.0.0",
-  "uri": "/group/{name}/{id}/analytics",
+  "uri": "/group/{id}/analytics",
   "layout": "cdmf.layout.default"
 }

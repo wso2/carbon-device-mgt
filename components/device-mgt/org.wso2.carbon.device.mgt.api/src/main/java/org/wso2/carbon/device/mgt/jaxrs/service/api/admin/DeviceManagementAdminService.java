@@ -24,8 +24,6 @@ import io.swagger.annotations.ExtensionProperty;
 import io.swagger.annotations.Extension;
 import io.swagger.annotations.Tag;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.AuthorizationScope;
-import io.swagger.annotations.Authorization;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
@@ -66,10 +64,10 @@ import javax.ws.rs.core.Response;
 @Scopes(
         scopes = {
                 @Scope(
-                        name = "Manage device",
-                        description = "",
-                        key = "cdmf:manage-own-device",
-                        permissions = {"/device-mgt/devices/owning-device/view"}
+                        name = "Getting Details of a Device",
+                        description = "Getting Details of a Device",
+                        key = "cdmf:admin:devices:view",
+                        permissions = {"/device-mgt/devices/admin/devices/view"}
                 )
         }
 )
@@ -86,7 +84,7 @@ public interface DeviceManagementAdminService {
             tags = "Device Management Administrative Service",
             extensions = {
                     @Extension(properties = {
-                            @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:manage-own-device")
+                            @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:admin:devices:view")
                     })
             }
     )

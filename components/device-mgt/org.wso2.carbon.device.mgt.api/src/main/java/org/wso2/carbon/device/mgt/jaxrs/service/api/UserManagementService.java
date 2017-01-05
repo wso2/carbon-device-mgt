@@ -18,7 +18,14 @@
  */
 package org.wso2.carbon.device.mgt.jaxrs.service.api;
 
+import io.swagger.annotations.SwaggerDefinition;
+import io.swagger.annotations.Info;
+import io.swagger.annotations.ExtensionProperty;
+import io.swagger.annotations.Extension;
+import io.swagger.annotations.Tag;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.AuthorizationScope;
+import io.swagger.annotations.Authorization;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
@@ -70,6 +77,76 @@ import java.util.List;
                 @Tag(name = "device_management", description = "")
         }
 )
+@Scopes(
+        scopes = {
+                @org.wso2.carbon.apimgt.annotations.api.Scope(
+                        name = "Adding a User",
+                        description = "Adding a User",
+                        key = "cdmf:users:add",
+                        permissions = {"/device-mgt/users/add"}
+                ),
+                @org.wso2.carbon.apimgt.annotations.api.Scope(
+                        name = "Getting Details of a User",
+                        description = "Getting Details of a User",
+                        key = "cdmf:users:details",
+                        permissions = {"/device-mgt/users/details"}
+                ),
+                @org.wso2.carbon.apimgt.annotations.api.Scope(
+                        name = "Updating Details of a User",
+                        description = "Updating Details of a User",
+                        key = "cdmf:users:update",
+                        permissions = {"/device-mgt/policies/update"}
+                ),
+                @org.wso2.carbon.apimgt.annotations.api.Scope(
+                        name = "Deleting a User",
+                        description = "Deleting a User",
+                        key = "cdmf:users:delete",
+                        permissions = {"/device-mgt/policies/delete"}
+                ),
+                @org.wso2.carbon.apimgt.annotations.api.Scope(
+                        name = "Getting the Role Details of a User",
+                        description = "Getting the Role Details of a User",
+                        key = "cdmf:users:roles",
+                        permissions = {"/device-mgt/policies/roles"}
+                ),
+                @org.wso2.carbon.apimgt.annotations.api.Scope(
+                        name = "Getting Details of Users",
+                        description = "Getting Details of Users",
+                        key = "cdmf:users:user-details",
+                        permissions = {"/device-mgt/policies/user-details"}
+                ),
+                @org.wso2.carbon.apimgt.annotations.api.Scope(
+                        name = "Getting the User Count",
+                        description = "Getting the User Count",
+                        key = "cdmf:users:count",
+                        permissions = {"/device-mgt/policies/count"}
+                ),
+                @org.wso2.carbon.apimgt.annotations.api.Scope(
+                        name = "Getting the User existence status",
+                        description = "Getting the User existence status",
+                        key = "cdmf:users:is-exist",
+                        permissions = {"/device-mgt/policies/is-exist"}
+                ),
+                @org.wso2.carbon.apimgt.annotations.api.Scope(
+                        name = "Searching for a User Name",
+                        description = "Searching for a User Name",
+                        key = "cdmf:users:search",
+                        permissions = {"/device-mgt/policies/search"}
+                ),
+                @org.wso2.carbon.apimgt.annotations.api.Scope(
+                        name = "Changing the User Password",
+                        description = "Adding a User",
+                        key = "cdmf:users:credentials",
+                        permissions = {"/device-mgt/policies/credentials"}
+                ),
+                @org.wso2.carbon.apimgt.annotations.api.Scope(
+                        name = "Sending Enrollment Invitations to Users",
+                        description = "Sending Enrollment Invitations to Users",
+                        key = "cdmf:users:send-invitation",
+                        permissions = {"/device-mgt/policies/send-invitation"}
+                )
+        }
+)
 @Path("/users")
 @Api(value = "User Management", description = "User management related operations can be found here.")
 @Produces(MediaType.APPLICATION_JSON)
@@ -84,12 +161,10 @@ public interface UserManagementService {
             value = "Adding a User",
             notes = "WSO2 IoTS supports user management. Add a new user to the WSO2 IoTS user management system via this REST API",
             tags = "User Management",
-            authorizations = {
-                    @Authorization(
-                            value="permission",
-                            scopes = { @AuthorizationScope(scope = "/device-mgt/users/manage",
-                                    description = "Manage Users") }
-                    )
+            extensions = {
+                @Extension(properties = {
+                        @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:users:add")
+                })
             }
     )
     @ApiResponses(
@@ -146,12 +221,10 @@ public interface UserManagementService {
             notes = "Get the details of a user registered with WSO2 IoTS using the REST API.",
             response = BasicUserInfo.class,
             tags = "User Management",
-            authorizations = {
-                    @Authorization(
-                            value="permission",
-                            scopes = { @AuthorizationScope(scope = "/device-mgt/users/view",
-                                    description = "View Users") }
-                    )
+            extensions = {
+                @Extension(properties = {
+                        @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:users:details")
+                })
             }
     )
     @ApiResponses(value = {
@@ -219,12 +292,10 @@ public interface UserManagementService {
             notes = "There will be situations where you will want to update the user details. In such "
                     + "situation you can update the user details using this REST API.",
             tags = "User Management",
-            authorizations = {
-                    @Authorization(
-                            value="permission",
-                            scopes = { @AuthorizationScope(scope = "/device-mgt/users/manage",
-                                    description = "Manage Users") }
-                    )
+            extensions = {
+                @Extension(properties = {
+                        @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:users:update")
+                })
             }
     )
     @ApiResponses(value = {
@@ -286,12 +357,10 @@ public interface UserManagementService {
             value = "Deleting a User",
             notes = "When an employee leaves the organization, you can remove the user details from WSO2 IoTS using this REST API.",
             tags = "User Management",
-            authorizations = {
-                    @Authorization(
-                            value="permission",
-                            scopes = { @AuthorizationScope(scope = "/device-mgt/users/manage",
-                                    description = "Manage Users") }
-                    )
+            extensions = {
+                @Extension(properties = {
+                        @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:users:delete")
+                })
             }
     )
     @ApiResponses(value = {
@@ -331,12 +400,10 @@ public interface UserManagementService {
             value = "Getting the Role Details of a User",
             notes = "A user can be assigned to one or more role in IoTS. Using this REST API you can get the role/roles a user is assigned to.",
             tags = "User Management",
-            authorizations = {
-                    @Authorization(
-                            value="permission",
-                            scopes = { @AuthorizationScope(scope = "/device-mgt/users/view",
-                                    description = "View Users") }
-                    )
+            extensions = {
+                @Extension(properties = {
+                        @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:users:roles")
+                })
             }
     )
     @ApiResponses(value = {
@@ -395,12 +462,10 @@ public interface UserManagementService {
             notes = "You are able to manage users in WSO2 IoTS by adding, updating and removing users. If you wish to get the list of users registered with WSO2 IoTS, you can do so "
                     + "using this REST API",
             tags = "User Management",
-            authorizations = {
-                    @Authorization(
-                            value="permission",
-                            scopes = { @AuthorizationScope(scope = "/device-mgt/users/view",
-                                    description = "View Users") }
-                    )
+            extensions = {
+                @Extension(properties = {
+                        @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:users:user-details")
+                })
             }
     )
     @ApiResponses(value = {
@@ -468,11 +533,10 @@ public interface UserManagementService {
             value = "Getting the User Count",
             notes = "Get the number of users in WSO2 IoTS via this REST API.",
             tags = "User Management",
-            authorizations = {
-                    @Authorization(
-                            value="permission",
-                            scopes = { @AuthorizationScope(scope = "/device-mgt/users/view", description = "View Users") }
-                    )
+            extensions = {
+                    @Extension(properties = {
+                            @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:users:count")
+                    })
             }
     )
     @ApiResponses(value = {
@@ -504,12 +568,10 @@ public interface UserManagementService {
             value = "Getting the User existence status",
             notes = "Check if the user exists in the user store.",
             tags = "User Management",
-            authorizations = {
-                    @Authorization(
-                            value="permission",
-                            scopes = { @AuthorizationScope(scope = "/device-mgt/users/view",
-                                    description = "View Users") }
-                    )
+            extensions = {
+                @Extension(properties = {
+                        @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:users:is-exist")
+                })
             }
     )
     @ApiResponses(value = {
@@ -549,11 +611,10 @@ public interface UserManagementService {
                     + "You will be given a list of users having the user name in the exact order of the "
                     + "characters you provided.",
             tags = "User Management",
-            authorizations = {
-                    @Authorization(
-                            value="permission",
-                            scopes = { @AuthorizationScope(scope = "/device-mgt/users/view", description = "View Users") }
-                    )
+            extensions = {
+                @Extension(properties = {
+                        @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:users:search")
+                })
             }
     )
     @ApiResponses(value = {
@@ -627,11 +688,10 @@ public interface UserManagementService {
             value = "Changing the User Password",
             notes = "A user is able to change the password to secure their WSO2 IoTS profile via this REST API.",
             tags = "User Management",
-            authorizations = {
-                    @Authorization(
-                            value="permission",
-                            scopes = { @AuthorizationScope(scope = "/login", description = "Reset user password") }
-                    )
+            extensions = {
+                @Extension(properties = {
+                        @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:users:credentials")
+                })
             }
     )
     @ApiResponses(value = {
@@ -673,11 +733,10 @@ public interface UserManagementService {
             notes = "Send the users a mail inviting them to enroll their devices using the REST API given below.\n" +
                     "Before running the REST API command to send the enrollment invitations to users make sure to configure WSO2 IoTS as explained in step 4, under the WSO2 IoTS general server configurations documentation.",
             tags = "User Management",
-            authorizations = {
-                    @Authorization(
-                            value="permission",
-                            scopes = { @AuthorizationScope(scope = "/device-mgt/users/manage", description = "Manage Users") }
-                    )
+            extensions = {
+                @Extension(properties = {
+                        @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:users:send-invitation")
+                })
             }
     )
     @ApiResponses(value = {

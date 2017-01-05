@@ -40,7 +40,7 @@ function onRequest() {
     }
     var userStores = userModule.getSecondaryUserStores();
     page["userStores"] = userStores;
-    page["charLimit"] = devicemgtProps["usernameLength"];
+    page["charLimit"] = devicemgtProps["userValidationConfig"]["usernameLength"];
     page["usernameJSRegEx"] = devicemgtProps["userValidationConfig"]["usernameJSRegEx"];
     page["usernameHelpMsg"] = devicemgtProps["userValidationConfig"]["usernameHelpMsg"];
     page["usernameRegExViolationErrorMsg"] = devicemgtProps["userValidationConfig"]["usernameRegExViolationErrorMsg"];

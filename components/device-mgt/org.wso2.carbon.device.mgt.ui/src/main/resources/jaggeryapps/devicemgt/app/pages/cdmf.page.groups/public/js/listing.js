@@ -16,17 +16,40 @@
  * under the License.
  */
 
+/**
+ * Following function would execute
+ * when a user clicks on the list item
+ * initial mode and with out select mode.
+ */
+function InitiateViewOption(url) {
+    if ($(".select-enable-btn").text() == "Select") {
+        $(location).attr('href', url);
+    }
+}
+
+(function () {
+    var cache = {};
+    var validateAndReturn = function (value) {
+        return (value == undefined || value == null) ? "Unspecified" : value;
+    };
+    Handlebars.registerHelper("deviceMap", function (device) {
+        device.owner = validateAndReturn(device.owner);
+        device.ownership = validateAndReturn(device.ownership);
+        var arr = device.properties;
+        if (arr) {
+            device.properties = arr.reduce(function (total, current) {
+                total[current.name] = validateAndReturn(current.value);
+                return total;
+            }, {});
+        }
+    });
+})();
+
 /*
  * Setting-up global variables.
  */
 var groupCheckbox = "#ast-container .ctrl-wr-asset .itm-select input[type='checkbox']";
 var assetContainer = "#ast-container";
-
-function InitiateViewOption() {
-    if ($(".select-enable-btn").text() == "Select") {
-        $(location).attr('href', $(this).data("url"));
-    }
-}
 
 /*
  * On Select All Groups button click function.
@@ -118,9 +141,9 @@ function loadGroups() {
         });
         var json = {
             "recordsTotal": data.count,
+            "recordsFiltered": data.count,
             "data": objects
-        }
-
+        };
         return JSON.stringify(json);
     };
 
@@ -129,7 +152,14 @@ function loadGroups() {
         data: 'id',
         class: 'remove-padding icon-only content-fill',
         render: function (data, type, row, meta) {
-            return '<div class="thumbnail icon"><img class="square-element text fw " src="public/cdmf.page.groups/images/group-icon.png"/></div>';
+            if ($.hasPermission("VIEW_GROUP_DEVICES")) {
+                return '<a href="devices?groupId=' + row.groupId + '&groupName=' + row.name
+                       + '"><div class="thumbnail icon"><img class="square-element text fw " '
+                       + 'src="public/cdmf.page.groups/images/group-icon.png"/></div></a>';
+            } else {
+                return '<div class="thumbnail icon"><img class="square-element text fw " ' +
+                       'src="public/cdmf.page.groups/images/group-icon.png"/></div>';
+            }
         }
     },
         {
@@ -154,13 +184,7 @@ function loadGroups() {
             render: function (id, type, row, meta) {
                 var html = '';
                 if ($.hasPermission("VIEW_GROUP_DEVICES")) {
-                    html = '<a href="devices?groupId=' + row.groupId + '&groupName=' + row.name
-                           + '" data-click-event="remove-form" class="btn padding-reduce-on-grid-view">' +
-                           '<span class="fw-stack"><i class="fw fw-ring fw-stack-2x"></i><i class="fw fw-view fw-stack-1x"></i></span>'
-                           +
-                           '<span class="hidden-xs hidden-on-grid-view">View Devices</span></a>';
-
-                    html += '<a href="group/' + row.name + '/' + row.groupId
+                    html += '<a href="group/' + row.groupId
                             + '/analytics" data-click-event="remove-form" class="btn padding-reduce-on-grid-view">' +
                             '<span class="fw-stack"><i class="fw fw-ring fw-stack-2x"></i><i class="fw fw-statistics fw-stack-1x"></i></span>'
                             +
@@ -224,21 +248,23 @@ function loadGroups() {
         });
     };
 
-
     $('#group-grid').datatables_extended_serverside_paging(
-        null,
-        serviceURL,
-        dataFilter,
-        columns,
-        fnCreatedRow,
-        function (oSettings) {
-            $(".icon .text").res_text(0.2);
-            attachEvents();
-        },
-        {
-            "placeholder": "Search By Group Name",
-            "searchKey": "name"
-        });
+            null,
+            serviceURL,
+            dataFilter,
+            columns,
+            fnCreatedRow,
+            function (oSettings) {
+                $(".icon .text").res_text(0.2);
+                attachEvents();
+                var thisTable = $(this).closest('.dataTables_wrapper').find('.dataTable').dataTable();
+                thisTable.removeClass("table-selectable");
+            },
+            {
+                "placeholder": "Search By Group Name",
+                "searchKey": "name"
+            }
+    );
     $(groupCheckbox).click(function () {
         addGroupSelectedClass(this);
     });
@@ -257,6 +283,11 @@ function openCollapsedNav() {
  * DOM ready functions.
  */
 $(document).ready(function () {
+    /* Adding selected class for selected devices */
+    $(groupCheckbox).each(function () {
+        addGroupSelectedClass(this);
+    });
+
     var permissionSet = {};
 
     //This method is used to setup permission for device listing
@@ -277,11 +308,6 @@ $(document).ready(function () {
 
     loadGroups();
     //$('#device-grid').datatables_extended();
-
-    /* Adding selected class for selected devices */
-    $(groupCheckbox).each(function () {
-        addGroupSelectedClass(this);
-    });
 
     /* for device list sorting drop down */
     $(".ctrl-filter-type-switcher").popover(

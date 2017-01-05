@@ -121,9 +121,9 @@ if (uriMatcher.match("/{context}/api/user/authenticate")) {
         } else {
             userRoles = String(addUserFormData.userRoles).split(",");
         }
-        if (username.length < devicemgtProps.usernameLength) {
-            log.error("Username Must be between 1 and " + devicemgtProps.usernameLength + " characters long");
-            result = "Username Must be between 1 and " + devicemgtProps.usernameLength + " characters long";
+        if (username.length < devicemgtProps.userValidationConfig.usernameLength) {
+            log.error("Username Must be between 1 and " + devicemgtProps.userValidationConfig.usernameLength + " characters long");
+            result = "Username Must be between 1 and " + devicemgtProps.userValidationConfig.usernameLength + " characters long";
         } else {
             try {
                 result = userModule.addUser(username, firstname, lastname, emailAddress, userRoles);

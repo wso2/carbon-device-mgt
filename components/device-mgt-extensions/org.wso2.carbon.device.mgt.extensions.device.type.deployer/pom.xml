@@ -95,6 +95,7 @@
                         <Import-Package>
                             javax.naming,
                             javax.sql,
+                            javax.xml,
                             javax.xml.bind,
                             javax.xml.bind.annotation,
                             javax.xml.parsers; version="${javax.xml.parsers.import.pkg.version}",

@@ -288,7 +288,7 @@ public class APIPublisherUtil {
                 log.debug("'managed-api-transports' attribute is not configured. Therefore using the default, " +
                         "which is 'https'");
             }
-            transports = "https";
+            transports = "https,http";
         }
         apiConfig.setTransports(transports);
 

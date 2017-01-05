@@ -37,6 +37,7 @@ import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroup;
 import org.wso2.carbon.device.mgt.jaxrs.beans.DeviceGroupList;
 import org.wso2.carbon.device.mgt.jaxrs.beans.DeviceList;
+import org.wso2.carbon.device.mgt.jaxrs.beans.DeviceToGroupsAssignment;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
 import org.wso2.carbon.device.mgt.jaxrs.beans.RoleList;
 
@@ -773,5 +774,116 @@ public interface GroupManagementService {
                                             value = "Device identifiers of the devices which needed to be removed.",
                                             required = true)
                                     @Valid List<DeviceIdentifier> deviceIdentifiers);
+
+    @Path("/device/assign")
+    @POST
+    @ApiOperation(
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = HTTPConstants.HEADER_POST,
+            value = "Assign devices to groups",
+            notes = "Add existing device to device groups.",
+            tags = "Device Group Management",
+            authorizations = {
+                    @Authorization(
+                            value = "permission",
+                            scopes = {@AuthorizationScope(scope = "/device-mgt/groups/devices/add",
+                                    description = "Add devices")}
+                    )
+            }
+    )
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK. \n Successfully assign the device to groups.",
+                    responseHeaders = {
+                            @ResponseHeader(
+                                    name = "Content-Type",
+                                    description = "The content type of the body"),
+                            @ResponseHeader(
+                                    name = "ETag",
+                                    description = "Entity Tag of the response resource.\n" +
+                                                  "Used by caches, or in conditional requests."),
+                            @ResponseHeader(
+                                    name = "Last-Modified",
+                                    description = "Date and time the resource has been modified the last time.\n" +
+                                                  "Used by caches, or in conditional requests."),
+                    }),
+            @ApiResponse(
+                    code = 304,
+                    message = "Not Modified. \n Empty body because the client has already the latest version of " +
+                              "the requested resource."),
+            @ApiResponse(
+                    code = 404,
+                    message = "No groups found.",
+                    response = ErrorResponse.class),
+            @ApiResponse(
+                    code = 406,
+                    message = "Not Acceptable.\n The requested media type is not supported."),
+            @ApiResponse(
+                    code = 500,
+                    message = "Internal Server Error. \n Server error occurred while adding devices to the group.",
+                    response = ErrorResponse.class)
+    })
+    Response updateDeviceAssigningToGroups(
+            @ApiParam(
+                    name = "deviceToGroupsAssignment",
+                    value = "Device to groups assignment",
+                    required = true)
+            @Valid DeviceToGroupsAssignment deviceToGroupsAssignment);
+
+    @Path("/device")
+    @GET
+    @ApiOperation(
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = HTTPConstants.HEADER_GET,
+            value = "List of groups that have the device",
+            notes = "List of groups that have the device.",
+            tags = "Device Group Management",
+            authorizations = {
+                    @Authorization(
+                            value = "permission",
+                            scopes = {@AuthorizationScope(scope = "/device-mgt/groups/devices/view",
+                                    description = "Add devices")}
+                    )
+            }
+    )
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK.",
+                    responseHeaders = {
+                            @ResponseHeader(
+                                    name = "Content-Type",
+                                    description = "The content type of the body"),
+                            @ResponseHeader(
+                                    name = "ETag",
+                                    description = "Entity Tag of the response resource.\n" +
+                                                  "Used by caches, or in conditional requests."),
+                            @ResponseHeader(
+                                    name = "Last-Modified",
+                                    description = "Date and time the resource has been modified the last time.\n" +
+                                                  "Used by caches, or in conditional requests."),
+                    }),
+            @ApiResponse(
+                    code = 304,
+                    message = "Not Modified. \n Empty body because the client has already the latest version of " +
+                              "the requested resource."),
+            @ApiResponse(
+                    code = 404,
+                    message = "No groups found.",
+                    response = ErrorResponse.class),
+            @ApiResponse(
+                    code = 406,
+                    message = "Not Acceptable.\n The requested media type is not supported."),
+            @ApiResponse(
+                    code = 500,
+                    message = "Internal Server Error. \n Server error occurred.",
+                    response = ErrorResponse.class)
+    })
+    Response getGroups(
+            @ApiParam(
+                    name = "deviceId",
+                    value = "Id of the device.")
+            @QueryParam("deviceId") String deviceId,
+            @ApiParam(
+                    name = "deviceType",
+                    value = "Type of the device.")
+            @QueryParam("deviceType") String deviceType);
 
 }

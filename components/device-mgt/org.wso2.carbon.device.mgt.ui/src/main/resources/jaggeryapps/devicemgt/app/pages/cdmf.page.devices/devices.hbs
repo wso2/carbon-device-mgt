@@ -26,7 +26,7 @@
             <i class="icon fw fw-home"></i>
         </a>
     </li>
-    {{#if groupName}}
+    {{#if group}}
         <li>
             <a href="{{@app.context}}/groups">
                 Groups
@@ -34,7 +34,7 @@
         </li>
         <li>
             <a href="#">
-                {{groupName}}
+                {{group.name}}
             </a>
         </li>
     {{else}}
@@ -47,7 +47,7 @@
 {{/zone}}
 
 {{#zone "navbarActions"}}
-    {{#if groupName}}
+    {{#if group}}
         <li>
             <a href="{{@app.context}}/devices" class="cu-btn">
             <span class="icon fw-stack">
@@ -55,6 +55,15 @@
                 <i class="fw fw-ring fw-stack-2x"></i>
             </span>
                 Assign from My Devices
+            </a>
+        </li>
+        <li>
+            <a href="{{@app.context}}/group/{{group.id}}/analytics" class="cu-btn">
+            <span class="icon fw-stack">
+                <i class="fw fw-statistics fw-stack-1x"></i>
+                <i class="fw fw-ring fw-stack-2x"></i>
+            </span>
+                View Analytics
             </a>
         </li>
     {{else}}
@@ -73,6 +82,55 @@
 {{/zone}}
 
 {{#zone "content"}}
+    {{#if group}}
+        <h1 class="page-sub-title">
+            {{group.name}} group
+        </h1>
+        <div class="row no-gutter add-padding-5x add-margin-top-5x" style="border: 1px solid #e4e4e4;">
+            <div class="media">
+                <div id="device_overview">
+                    <div class="media-left col-lg-1">
+                        <div class="icon">
+                            <img src="/devicemgt/public/cdmf.page.groups/images/group-icon.png" style="background-color: #11375b; height: 152px;">
+                        </div>
+                    </div>
+                    <div class="media-body asset-desc add-padding-left-5x">
+                        <div style="background: #11375B; color: #fff; padding: 10px; margin-bottom: 5px">
+                            Overview
+                        </div>
+                        <table class="table table-responsive table-striped" id="members" style="margin-bottom: 0px;">
+                            <tbody>
+                            <tr role="row" class="even">
+                                <td class="sorting_1" style="padding:10px 15px; width: 15%;">Owner</td>
+                                <td style="padding:10px 15px;">{{group.owner}}</td>
+                            </tr>
+                            <tr role="row" class="odd">
+                                <td class="sorting_1" style="padding:10px 15px; width: 15%;">Shared with roles</td>
+                                <td style="padding:10px 15px;">
+                                    {{#each roles}}
+                                        {{this}}<br/>
+                                    {{/each}}
+                                </td>
+                            </tr>
+                            <tr role="row" class="even">
+                                <td class="sorting_1" style="padding:10px 15px;width: 15%;">Device Count</td>
+                                <td style="padding:10px 15px;">{{deviceCount}}</td>
+                            </tr>
+                            <tr role="row" class="odd">
+                                <td class="sorting_1" style="padding:10px 15px;width: 15%;">Description</td>
+                                <td style="padding:10px 15px;">{{group.description}}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br/>
+        <h1 class="page-sub-title add-margin-top-5x">
+            Devices in {{group.name}} group
+        </h1>
+    {{/if}}
     <div class="wr-device-list row">
         <div class="wr-hidden-operations wr-advance-operations"></div>
         <div class="col-md-12 wr-page-content">
@@ -82,7 +140,6 @@
                 {{#if deviceCount}}
                     <div id="loading-content" class="col-centered">
                         <i class="fw fw-settings fw-spin fw-2x"></i>
-
                         Loading devices . . .
                         <br>
                     </div>
@@ -157,7 +214,7 @@
                             </h3>
                             <h3 class="text-muted">
                                 You don't have any device
-                                {{#if groupName}}
+                                {{#if group}}
                                     assigned to this group
                                 {{else}}
                                     enrolled
@@ -165,7 +222,7 @@
                                 at the moment.
                             </h3>
                             <h3>
-                                {{#if groupName}}
+                                {{#if group}}
                                     <!--suppress HtmlUnknownTarget -->
                                     <a href="{{@app.context}}/devices" class="btn-operations btn-default">
                                             <span class="fw-stack">
@@ -208,20 +265,16 @@
                         <div id="notification-error-msg" class="alert alert-danger hidden" role="alert">
                             <i class="icon fw fw-error"></i><span></span>
                         </div>
-                        <div>
-                            <h4>
-                                Please select group
-                                <br>
-                                <div id="user-groups">Loading...</div>
-                            </h4>
-                        </div>
+                        <div id="user-groups">Loading...</div>
                     </div>
                     <div class="modal-footer">
                         <div class="buttons">
-                            <a href="#" id="group-device-yes-link" class="btn-operations">
-                                Assign
+                            <a href="{{@app.context}}/group/add" id="group-add-link" class="btn-operations">
+                                Add device group
                             </a>
-
+                            <a href="#" id="group-device-yes-link" class="btn-operations">
+                                Update assignment
+                            </a>
                             <a href="#" id="group-device-cancel-link" class="btn-operations btn-default">
                                 Cancel
                             </a>
@@ -233,17 +286,7 @@
                     <div class="modal-content">
                         <div class="row">
                             <div class="col-md-3 col-centered">
-                                <h3>Device was successfully associated with group.</h3>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="group-deassociate-device-200-content" class="hide">
-                    <div class="modal-content">
-                        <div class="row">
-                            <div class="col-md-3 col-centered">
-                                <h3>Device was successfully removed from group.</h3>
+                                <h3>Device associations updated.</h3>
                             </div>
                         </div>
                     </div>

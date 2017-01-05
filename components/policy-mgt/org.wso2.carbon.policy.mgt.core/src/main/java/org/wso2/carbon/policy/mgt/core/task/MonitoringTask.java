@@ -135,8 +135,11 @@ public class MonitoringTask implements Task {
      */
 
     private boolean isPlatformExist(String deviceType) {
-        PolicyConfiguration policyConfiguration =
-                DeviceConfigurationManager.getInstance().getDeviceManagementConfig().getPolicyConfiguration();
-        return (policyConfiguration.getPlatforms().contains(deviceType));
+        PolicyMonitoringManager policyMonitoringManager = PolicyManagementDataHolder.getInstance()
+                .getDeviceManagementService().getPolicyMonitoringManager(deviceType);
+        if (policyMonitoringManager != null) {
+            return true;
+        }
+        return false;
     }
 }

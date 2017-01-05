@@ -154,7 +154,7 @@ public class DeviceTypeManagerService implements DeviceManagementService {
 
     @Override
     public PolicyMonitoringManager getPolicyMonitoringManager() {
-        return null;
+        return policyMonitoringManager;
     }
 
     private void setProvisioningConfig(String tenantDomain, DeviceTypeConfiguration deviceTypeConfiguration) {

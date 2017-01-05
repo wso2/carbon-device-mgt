@@ -48,6 +48,10 @@ public class NotificationContext {
         return properties;
     }
 
+    public void setProperties(Map<String, String> propertiesMap) {
+        properties = propertiesMap;
+    }
+
     public Operation getOperation() {
         return operation;
     }

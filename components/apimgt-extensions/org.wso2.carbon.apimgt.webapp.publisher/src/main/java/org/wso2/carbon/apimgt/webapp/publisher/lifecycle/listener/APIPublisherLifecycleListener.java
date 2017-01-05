@@ -32,6 +32,8 @@ import org.wso2.carbon.apimgt.webapp.publisher.config.APIResourceConfiguration;
 import org.wso2.carbon.apimgt.webapp.publisher.config.WebappPublisherConfig;
 import org.wso2.carbon.apimgt.webapp.publisher.internal.APIPublisherDataHolder;
 import org.wso2.carbon.apimgt.webapp.publisher.lifecycle.util.AnnotationProcessor;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
+import org.wso2.carbon.user.api.UserStoreException;
 
 import javax.servlet.ServletContext;
 import java.io.IOException;
@@ -106,6 +108,9 @@ public class APIPublisherLifecycleListener implements LifecycleListener {
                     log.error("Error encountered while discovering annotated classes", e);
                 } catch (ClassNotFoundException e) {
                     log.error("Error while scanning class for annotations", e);
+                } catch (UserStoreException e) {
+                    log.error("Error while retrieving tenant admin user for the tenant domain"
+                                      + PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantDomain(), e);
                 }
             }
         }

@@ -47,7 +47,7 @@ public class DeviceTypeManagementServiceComponent {
         if (log.isDebugEnabled()) {
             log.debug("Activating DeviceType Deployer Service Component");
         }
-        ctx.getBundleContext().registerService(AppDeploymentHandler.class.getName(), new DeviceTypeCAppDeployer(), null);
+//        ctx.getBundleContext().registerService(AppDeploymentHandler.class.getName(), new DeviceTypeCAppDeployer(), null);
         DeviceTypeManagementDataHolder.getInstance().setBundleContext(ctx.getBundleContext());
     }
 

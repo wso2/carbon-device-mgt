@@ -44,7 +44,7 @@ import java.util.List;
 public class DeviceTypeCAppDeployer implements AppDeploymentHandler {
 
 
-    private static Log log = LogFactory.getLog(DeviceTypePluginDeployer.class);
+    private static Log log = LogFactory.getLog(DeviceTypeCAppDeployer.class);
     private List<Artifact> deviceTypePlugins = new ArrayList<Artifact>();
     private List<Artifact> deviceTypeUIs = new ArrayList<Artifact>();
 

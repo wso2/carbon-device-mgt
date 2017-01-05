@@ -119,7 +119,7 @@
 							org.apache.axis2.engine
                         </Import-Package>
                         <Axis2Deployer>DeviceTypeDeployer</Axis2Deployer>
-						<WSO2-Application-Deployer>Device Type Capp Deployer</WSO2-Application-Deployer>
+						<!--<WSO2-Application-Deployer>Device Type Capp Deployer</WSO2-Application-Deployer>-->
                     </instructions>
                 </configuration>
             </plugin>

@@ -66,6 +66,10 @@
             <groupId>org.wso2.carbon.devicemgt</groupId>
             <artifactId>org.wso2.carbon.device.mgt.extensions</artifactId>
         </dependency>
+		<dependency>
+			<groupId>org.wso2.carbon</groupId>
+			<artifactId>org.wso2.carbon.application.deployer</artifactId>
+		</dependency>
     </dependencies>
 
     <build>
@@ -108,9 +112,13 @@
                             org.wso2.carbon.registry.core,
                             org.wso2.carbon.registry.core.*,
                             org.wso2.carbon.utils.*,
-                            javax.xml.namespace
+                            javax.xml.namespace,
+							org.apache.commons.io,
+							org.wso2.carbon.application.deployer.*,
+							org.apache.axis2.engine
                         </Import-Package>
                         <Axis2Deployer>DeviceTypeDeployer</Axis2Deployer>
+						<WSO2-Application-Deployer>Device Type Capp Deployer</WSO2-Application-Deployer>
                     </instructions>
                 </configuration>
             </plugin>

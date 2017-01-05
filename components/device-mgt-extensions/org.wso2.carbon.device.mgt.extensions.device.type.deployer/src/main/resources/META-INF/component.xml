@@ -17,7 +17,11 @@
         <deployer>
             <directory>devicetypes</directory>
             <extension>xml</extension>
-            <class>org.wso2.carbon.device.mgt.extensions.device.type.deployer.DeviceTypeDeployer</class>
+            <class>org.wso2.carbon.device.mgt.extensions.device.type.deployer.DeviceTypePluginDeployer</class>
         </deployer>
+		<deployer>
+			<directory>devicetypes-ui</directory>
+			<class>org.wso2.carbon.device.mgt.extensions.device.type.deployer.DeviceTypeUIDeployer</class>
+		</deployer>
     </deployers>
 </component>

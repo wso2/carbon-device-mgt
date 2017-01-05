@@ -18,18 +18,9 @@
  */
 package org.wso2.carbon.device.mgt.jaxrs.service.api.admin;
 
-import io.swagger.annotations.SwaggerDefinition;
-import io.swagger.annotations.Info;
-import io.swagger.annotations.ExtensionProperty;
-import io.swagger.annotations.Extension;
-import io.swagger.annotations.Tag;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.*;
+import org.wso2.carbon.apimgt.annotations.api.*;
 import org.wso2.carbon.apimgt.annotations.api.Scope;
-import org.wso2.carbon.apimgt.annotations.api.Scopes;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Activity;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ApplicationWrapper;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
@@ -64,16 +55,10 @@ import javax.ws.rs.core.Response;
 @Scopes(
         scopes = {
                 @Scope(
-                        name = "Installing an Application (Internal API)",
-                        description = "Installing an Application (Internal API)",
-                        key = "cdmf:applications:install",
-                        permissions = {"/device-mgt/applications/install"}
-                ),
-                @Scope(
-                        name = "Uninstalling an Application (Internal API)",
-                        description = "Uninstalling an Application (Internal API)",
-                        key = "cdmf:applications:uninstall",
-                        permissions = {"/device-mgt/applications/uninstall"}
+                        name = "Manage application",
+                        description = "",
+                        key = "cdmf:manage-application",
+                        permissions = {"/device-mgt/applications/manage"}
                 )
         }
 )
@@ -93,7 +78,7 @@ public interface ApplicationManagementAdminService {
             tags = "Application Management Administrative Service",
             extensions = {
                     @Extension(properties = {
-                            @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:applications:install")
+                            @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:manage-application")
                     })
             }
     )
@@ -137,7 +122,7 @@ public interface ApplicationManagementAdminService {
             tags = "Application Management Administrative Service",
             extensions = {
                     @Extension(properties = {
-                            @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:applications:uninstall")
+                            @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:manage-application")
                     })
             }
     )

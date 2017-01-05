@@ -25,6 +25,8 @@ import io.swagger.annotations.ExtensionProperty;
 import io.swagger.annotations.Extension;
 import io.swagger.annotations.Tag;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.AuthorizationScope;
+import io.swagger.annotations.Authorization;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
@@ -67,14 +69,8 @@ import javax.ws.rs.core.Response;
                 @Scope(
                         name = "View groups",
                         description = "",
-                        key = "cdmf:admin-groups:view",
+                        key = "cdmf:view-groups",
                         permissions = {"/device-mgt/admin/groups/view"}
-                ),
-                @Scope(
-                        name = "Count groups",
-                        description = "",
-                        key = "cdmf:admin-groups:count",
-                        permissions = {"/device-mgt/admin/groups/count"}
                 )
         }
 )
@@ -89,7 +85,7 @@ public interface GroupManagementAdminService {
             tags = "Device Group Management",
             extensions = {
                     @Extension(properties = {
-                            @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:admin-groups:view")
+                            @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:view-groups")
                     })
             }
     )
@@ -150,10 +146,12 @@ public interface GroupManagementAdminService {
             value = "Get the count of groups belongs to current user.",
             notes = "Returns count of all permitted groups enrolled with the system.",
             tags = "Device Group Management",
-            extensions = {
-                    @Extension(properties = {
-                            @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:admin-groups:count")
-                    })
+            authorizations = {
+                    @Authorization(
+                            value="permission",
+                            scopes = { @AuthorizationScope(scope = "/device-mgt/admin/groups/view", description
+                                    = "View Groups") }
+                    )
             }
     )
     @ApiResponses(value = {

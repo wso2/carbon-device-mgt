@@ -24,6 +24,8 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.Authorization;
+import io.swagger.annotations.AuthorizationScope;
 import io.swagger.annotations.Extension;
 import io.swagger.annotations.ExtensionProperty;
 import io.swagger.annotations.Info;
@@ -31,15 +33,12 @@ import io.swagger.annotations.ResponseHeader;
 import io.swagger.annotations.SwaggerDefinition;
 import io.swagger.annotations.Tag;
 import org.apache.axis2.transport.http.HTTPConstants;
-import org.wso2.carbon.apimgt.annotations.api.Scope;
-import org.wso2.carbon.apimgt.annotations.api.Scopes;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroup;
 import org.wso2.carbon.device.mgt.jaxrs.beans.DeviceGroupList;
 import org.wso2.carbon.device.mgt.jaxrs.beans.DeviceList;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
 import org.wso2.carbon.device.mgt.jaxrs.beans.RoleList;
-import org.wso2.carbon.device.mgt.jaxrs.util.Constants;
 
 import javax.validation.Valid;
 import javax.ws.rs.Consumes;
@@ -75,82 +74,6 @@ import java.util.List;
                                                                "details.")
         }
 )
-@Scopes(
-        scopes = {
-                @Scope(
-                        name = "Get the list of groups belongs to current user.",
-                        description = "Get the list of groups belongs to current user.",
-                        key = "cdmf:groups:groups",
-                        permissions = {"/device-mgt/groups/groups"}
-                ),
-                @Scope(
-                        name = "Get the count of groups belongs to current user.",
-                        description = "Get the count of groups belongs to current user.",
-                        key = "cdmf:groups:count",
-                        permissions = {"/device-mgt/groups/count"}
-                ),
-                @Scope(
-                        name = "Add new device group to the system.",
-                        description = "Add new device group to the system.",
-                        key = "cdmf:groups:add",
-                        permissions = {"/device-mgt/groups/add"}
-                ),
-                @Scope(
-                        name = "View group specified",
-                        description = "View group specified",
-                        key = "cdmf:groups:groups-view",
-                        permissions = {"/device-mgt/groups/groups-view"}
-                ),
-                @Scope(
-                        name = "Update a group",
-                        description = "Update a group",
-                        key = "cdmf:groups:update",
-                        permissions = {"/device-mgt/groups/update"}
-                ),
-                @Scope(
-                        name = "Delete a group",
-                        description = "Delete a group",
-                        key = "cdmf:groups:remove",
-                        permissions = {"/device-mgt/groups/remove"}
-                ),
-                @Scope(
-                        name = "Manage group sharing with a user",
-                        description = "Manage group sharing with a user",
-                        key = "cdmf:groups:share",
-                        permissions = {"/device-mgt/groups/share"}
-                ),
-                @Scope(
-                        name = "View list of roles of a device group",
-                        description = "View list of roles of a device group",
-                        key = "cdmf:groups:roles",
-                        permissions = {"/device-mgt/groups/roles"}
-                ),
-                @Scope(
-                        name = "View list of devices in the device group",
-                        description = "View list of devices in the device group",
-                        key = "cdmf:groups:devices",
-                        permissions = {"/device-mgt/groups/devices"}
-                ),
-                @Scope(
-                        name = "View list of device count in the device group",
-                        description = "View list of device count in the device group",
-                        key = "cdmf:groups:devices-count",
-                        permissions = {"/device-mgt/groups/devices/devices-count"}
-                ),
-                @Scope(
-                        name = "Add devices to group",
-                        description = "Add devices to group",
-                        key = "cdmf:groups:devices-add",
-                        permissions = {"/device-mgt/groups/devices/devices-add"}
-                ),
-                @Scope(
-                        name = "Remove devices from group",
-                        description = "Remove devices from group",
-                        key = "cdmf:groups:devices-remove",
-                        permissions = {"/device-mgt/groups/devices/devices-remove"}
-                )
-        }
-)
 @Path("/groups")
 @Api(value = "Device Group Management", description = "This API carries all device group management related " +
                                                       "operations such as get all the available groups, etc.")
@@ -165,10 +88,12 @@ public interface GroupManagementService {
             value = "Get the list of groups belongs to current user.",
             notes = "Returns all permitted groups enrolled with the system.",
             tags = "Device Group Management",
-            extensions = {
-                @Extension(properties = {
-                        @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:groups:groups")
-                })
+            authorizations = {
+                    @Authorization(
+                            value="permission",
+                            scopes = { @AuthorizationScope(scope = "/device-mgt/groups/view",
+                                    description = "View Groups") }
+                    )
             }
     )
     @ApiResponses(value = {
@@ -228,12 +153,13 @@ public interface GroupManagementService {
             value = "Get the count of groups belongs to current user.",
             notes = "Returns count of all permitted groups enrolled with the system.",
             tags = "Device Group Management",
-            extensions = {
-                @Extension(properties = {
-                        @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:groups:count")
-                })
+            authorizations = {
+                    @Authorization(
+                            value="permission",
+                            scopes = { @AuthorizationScope(scope = "/device-mgt/groups/view",
+                                    description = "View Groups") }
+                    )
             }
-
     )
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK. \n Successfully fetched the device group count.",
@@ -276,10 +202,12 @@ public interface GroupManagementService {
             value = "Add new device group to the system.",
             notes = "Add device group with current user as the owner.",
             tags = "Device Group Management",
-            extensions = {
-                @Extension(properties = {
-                        @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:groups:add")
-                })
+            authorizations = {
+                    @Authorization(
+                            value="permission",
+                            scopes = { @AuthorizationScope(scope = "/device-mgt/groups/add",
+                                    description = "Add Group") }
+                    )
             }
     )
     @ApiResponses(
@@ -342,10 +270,12 @@ public interface GroupManagementService {
             value = "View group specified.",
             notes = "Returns details of group enrolled with the system.",
             tags = "Device Group Management",
-            extensions = {
-                @Extension(properties = {
-                        @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:groups:groups-view")
-                })
+            authorizations = {
+                    @Authorization(
+                            value="permission",
+                            scopes = { @AuthorizationScope(scope = "/device-mgt/groups/view",
+                                    description = "View Groups") }
+                    )
             }
     )
     @ApiResponses(value = {
@@ -395,10 +325,12 @@ public interface GroupManagementService {
             notes = "If you wish to make changes to an existing group, that can be done by updating the group using " +
                     "this resource.",
             tags = "Device Group Management",
-            extensions = {
-                @Extension(properties = {
-                        @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:groups:update")
-                })
+            authorizations = {
+                    @Authorization(
+                            value="permission",
+                            scopes = { @AuthorizationScope(scope = "/device-mgt/groups/update",
+                                    description = "Update Group") }
+                    )
             }
     )
     @ApiResponses(value = {
@@ -452,10 +384,12 @@ public interface GroupManagementService {
             notes = "If you wish to remove an existing group, that can be done by updating the group using " +
                     "this resource.",
             tags = "Device Group Management",
-            extensions = {
-                @Extension(properties = {
-                        @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:groups:remove")
-                })
+            authorizations = {
+                    @Authorization(
+                            value="permission",
+                            scopes = { @AuthorizationScope(scope = "/device-mgt/groups/remove",
+                                    description = "Remove Group") }
+                    )
             }
     )
     @ApiResponses(value = {
@@ -504,10 +438,12 @@ public interface GroupManagementService {
             notes = "If you wish to share /un share an existing group with a user under defined sharing roles, " +
                     "that can be done using this resource.",
             tags = "Device Group Management",
-            extensions = {
-                @Extension(properties = {
-                        @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:groups:share")
-                })
+            authorizations = {
+                    @Authorization(
+                            value="permission",
+                            scopes = { @AuthorizationScope(scope = "/device-mgt/groups/share",
+                                    description = "Share Group") }
+                    )
             }
     )
     @ApiResponses(value = {
@@ -560,10 +496,12 @@ public interface GroupManagementService {
             value = "View list of roles of a device group.",
             notes = "Returns details of roles which particular group has been shared with.",
             tags = "Device Group Management",
-            extensions = {
-                @Extension(properties = {
-                        @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:groups:roles")
-                })
+            authorizations = {
+                    @Authorization(
+                            value="permission",
+                            scopes = { @AuthorizationScope(scope = "/device-mgt/groups/roles/view",
+                                    description = "View roles") }
+                    )
             }
     )
     @ApiResponses(value = {
@@ -612,10 +550,12 @@ public interface GroupManagementService {
             value = "View list of devices in the device group.",
             notes = "Returns list of devices in the device group.",
             tags = "Device Group Management",
-            extensions = {
-                @Extension(properties = {
-                        @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:groups:devices")
-                })
+            authorizations = {
+                    @Authorization(
+                            value="permission",
+                            scopes = { @AuthorizationScope(scope = "/device-mgt/groups/devices/view",
+                                    description = "View devices") }
+                    )
             }
     )
     @ApiResponses(value = {
@@ -672,10 +612,12 @@ public interface GroupManagementService {
             value = "View list of device count in the device group.",
             notes = "Returns device count in the device group.",
             tags = "Device Group Management",
-            extensions = {
-                @Extension(properties = {
-                        @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:groups:devices-count")
-                })
+            authorizations = {
+                    @Authorization(
+                            value="permission",
+                            scopes = { @AuthorizationScope(scope = "/device-mgt/groups/devices/view",
+                                    description = "View devices") }
+                    )
             }
     )
     @ApiResponses(value = {
@@ -724,10 +666,12 @@ public interface GroupManagementService {
             value = "Add devices to group.",
             notes = "Add existing devices to the device group.",
             tags = "Device Group Management",
-            extensions = {
-                @Extension(properties = {
-                        @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:groups:devices-add")
-                })
+            authorizations = {
+                    @Authorization(
+                            value="permission",
+                            scopes = { @AuthorizationScope(scope = "/device-mgt/groups/devices/add",
+                                    description = "Add devices") }
+                    )
             }
     )
     @ApiResponses(value = {
@@ -780,10 +724,12 @@ public interface GroupManagementService {
             value = "Remove devices from group.",
             notes = "Remove existing devices from the device group.",
             tags = "Device Group Management",
-            extensions = {
-                @Extension(properties = {
-                        @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:groups:devices-remove")
-                })
+            authorizations = {
+                    @Authorization(
+                            value="permission",
+                            scopes = { @AuthorizationScope(scope = "/device-mgt/groups/devices/remove",
+                                    description = "Remove devices") }
+                    )
             }
     )
     @ApiResponses(value = {

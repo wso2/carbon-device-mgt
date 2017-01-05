@@ -24,13 +24,13 @@ import io.swagger.annotations.ExtensionProperty;
 import io.swagger.annotations.Extension;
 import io.swagger.annotations.Tag;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.AuthorizationScope;
+import io.swagger.annotations.Authorization;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import io.swagger.annotations.ResponseHeader;
-import org.wso2.carbon.apimgt.annotations.api.Scope;
-import org.wso2.carbon.apimgt.annotations.api.Scopes;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.Feature;
 import org.wso2.carbon.device.mgt.common.app.mgt.Application;
@@ -38,7 +38,6 @@ import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.search.SearchContext;
 import org.wso2.carbon.device.mgt.jaxrs.beans.DeviceList;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
-import org.wso2.carbon.device.mgt.jaxrs.util.Constants;
 import org.wso2.carbon.policy.mgt.common.Policy;
 import org.wso2.carbon.policy.mgt.common.monitor.ComplianceData;
 
@@ -65,64 +64,6 @@ import javax.ws.rs.core.Response;
                 @Tag(name = "device_management", description = "")
         }
 )
-@Scopes(
-        scopes = {
-                @Scope(
-                        name = "Getting Details of Registered Devices",
-                        description = "Getting Details of Registered Devices",
-                        key = "cdmf:devices:view",
-                        permissions = {"/device-mgt/devices/owning-device/view"}
-                ),
-                @Scope(
-                        name = "Getting Details of a Device",
-                        description = "Getting Details of a Device",
-                        key = "cdmf:devices:details",
-                        permissions = {"/device-mgt/devices/owning-device/details"}
-                ),
-                @Scope(
-                        name = "Delete the device specified by device id",
-                        description = "Delete the device specified by device id",
-                        key = "cdmf:devices:delete",
-                        permissions = {"/device-mgt/devices/owning-device/delete"}
-                ),
-                @Scope(
-                        name = "Getting Feature Details of a Device",
-                        description = "Getting Feature Details of a Device",
-                        key = "cdmf:devices:features",
-                        permissions = {"/device-mgt/devices/owning-device/features"}
-                ),
-                @Scope(
-                        name = "Advanced Search for Devices",
-                        description = "Advanced Search for Devices",
-                        key = "cdmf:devices:search",
-                        permissions = {"/device-mgt/devices/owning-device/view"}
-                ),
-                @Scope(
-                        name = "Getting Installed Application Details of a Device",
-                        description = "Getting Installed Application Details of a Device",
-                        key = "cdmf:devices:applications",
-                        permissions = {"/device-mgt/devices/owning-device/applications"}
-                ),
-                @Scope(
-                        name = "Getting Device Operation Details",
-                        description = "Getting Device Operation Details",
-                        key = "cdmf:devices:operations",
-                        permissions = {"/device-mgt/devices/owning-device/operations"}
-                ),
-                @Scope(
-                        name = "Get the details of the policy that is enforced on a device.",
-                        description = "Get the details of the policy that is enforced on a device.",
-                        key = "cdmf:devices:effective-policy",
-                        permissions = {"/device-mgt/devices/owning-device/effective-policy"}
-                ),
-                @Scope(
-                        name = "Getting Policy Compliance Details of a Device",
-                        description = "Getting Policy Compliance Details of a Device",
-                        key = "cdmf:devices:compliance-data",
-                        permissions = {"/device-mgt/devices/owning-device/compliance-data"}
-                )
-        }
-)
 @Path("/devices")
 @Api(value = "Device Management", description = "This API carries all device management related operations " +
         "such as get all the available devices, etc.")
@@ -137,11 +78,13 @@ public interface DeviceManagementService {
             value = "Getting Details of Registered Devices",
             notes = "Provides details of all the devices enrolled with WSO2 EMM.",
             tags = "Device Management",
-            extensions = {
-            @Extension(properties = {
-                    @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:devices:view")
-            })
-    }
+            authorizations = {
+                    @Authorization(
+                            value="permission",
+                            scopes = { @AuthorizationScope(scope = "/device-mgt/devices/owning-device/view"
+                                    , description = "View Devices") }
+                    )
+            }
     )
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK. \n Successfully fetched the list of devices.",
@@ -262,10 +205,12 @@ public interface DeviceManagementService {
             value = "Getting Details of a Device",
             notes = "Get the details of a device by specifying the device type and device identifier.",
             tags = "Device Management",
-            extensions = {
-                @Extension(properties = {
-                        @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:devices:details")
-                })
+            authorizations = {
+                    @Authorization(
+                            value="permission",
+                            scopes = { @AuthorizationScope(scope = "/device-mgt/devices/owning-device/view",
+                                    description = "View Devices") }
+                    )
             }
     )
     @ApiResponses(
@@ -337,13 +282,15 @@ public interface DeviceManagementService {
     @ApiOperation(
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "DELETE",
-            value = "Delete the device specified by device id",
+            value = "Delete the device speccified by device id",
             notes = "Returns the status of the deleted device operation.",
             tags = "Device Management",
-            extensions = {
-                @Extension(properties = {
-                        @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:devices:delete")
-                })
+            authorizations = {
+                    @Authorization(
+                            value="permission",
+                            scopes = { @AuthorizationScope(scope = "/device-mgt/devices/owning-device/view",
+                                    description = "View Devices") }
+                    )
             }
     )
     @ApiResponses(
@@ -412,11 +359,13 @@ public interface DeviceManagementService {
                     "Using this REST API you can get the features that can be carried out on a preferred device type," +
                     " such as iOS, Android or Windows.",
             tags = "Device Management",
-            extensions = {
-            @Extension(properties = {
-                    @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:devices:features")
-            })
-    }
+            authorizations = {
+                    @Authorization(
+                            value="permission",
+                            scopes = { @AuthorizationScope(scope = "/device-mgt/devices/owning-device/view",
+                                    description = "View Devices") }
+                    )
+            }
     )
     @ApiResponses(
             value = {
@@ -501,10 +450,12 @@ public interface DeviceManagementService {
             value = "Advanced Search for Devices",
             notes = "Search for devices by filtering the search result through the specified search terms.",
             tags = "Device Management",
-            extensions = {
-                @Extension(properties = {
-                        @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:devices:search")
-                })
+            authorizations = {
+                    @Authorization(
+                            value="permission",
+                            scopes = { @AuthorizationScope(scope = "/device-mgt/devices/owning-device/view",
+                                    description = "View Devices") }
+                    )
             }
     )
     @ApiResponses(
@@ -578,12 +529,13 @@ public interface DeviceManagementService {
             value = "Getting Installed Application Details of a Device",
             notes = "Get the list of applications subscribed to by a device.",
             tags = "Device Management",
-            extensions = {
-            @Extension(properties = {
-                    @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:devices:applications")
-            })
-
-    }
+            authorizations = {
+                    @Authorization(
+                            value="permission",
+                            scopes = { @AuthorizationScope(scope = "/device-mgt/devices/owning-device/view",
+                                    description = "View Devices") }
+                    )
+            }
     )
     @ApiResponses(
             value = {
@@ -681,11 +633,13 @@ public interface DeviceManagementService {
             value = "Getting Device Operation Details",
             notes = "Get the details of operations carried out on a selected device.",
             tags = "Device Management",
-            extensions = {
-            @Extension(properties = {
-                    @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:devices:operations")
-            })
-    }
+            authorizations = {
+                    @Authorization(
+                            value="permission",
+                            scopes = { @AuthorizationScope(scope = "/device-mgt/devices/owning-device/view",
+                                    description = "View Devices") }
+                    )
+            }
     )
     @ApiResponses(
             value = {
@@ -792,11 +746,13 @@ public interface DeviceManagementService {
                     "WSO2 EMM filters the policies based on the device platform (device type)," +
                     "the device ownership type, the user role or name and finally, the policy that matches these filters will be enforced on the device.",
             tags = "Device Management",
-            extensions = {
-            @Extension(properties = {
-                    @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:devices:effective-policy")
-            })
-    }
+            authorizations = {
+                    @Authorization(
+                            value="permission",
+                            scopes = { @AuthorizationScope(scope = "/device-mgt/devices/owning-device/view",
+                                    description = "View Devices") }
+                    )
+            }
     )
     @ApiResponses(
             value = {
@@ -881,10 +837,12 @@ public interface DeviceManagementService {
             notes = "A policy is enforced on the devices that register with WSO2 EMM. " +
                     "The server checks if the settings in the device comply with the policy that is enforced on the device using this REST API.",
             tags = "Device Management",
-            extensions = {
-                @Extension(properties = {
-                        @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:devices:compliance-data")
-                })
+            authorizations = {
+                    @Authorization(
+                            value="permission",
+                            scopes = { @AuthorizationScope(scope = "/device-mgt/devices/owning-device/view",
+                                    description = "View Devices") }
+                    )
             }
     )
     @ApiResponses(

@@ -1,16 +1,6 @@
 package org.wso2.carbon.certificate.mgt.cert.jaxrs.api;
 
-import io.swagger.annotations.SwaggerDefinition;
-import io.swagger.annotations.Info;
-import io.swagger.annotations.ExtensionProperty;
-import io.swagger.annotations.Extension;
-import io.swagger.annotations.Tag;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
-import io.swagger.annotations.ResponseHeader;
+import io.swagger.annotations.*;
 import org.wso2.carbon.apimgt.annotations.api.Scope;
 import org.wso2.carbon.apimgt.annotations.api.Scopes;
 import org.wso2.carbon.certificate.mgt.cert.jaxrs.api.beans.CertificateList;
@@ -41,28 +31,16 @@ import javax.ws.rs.core.Response;
 @Path("/admin/certificates")
 @Scopes(scopes = {
         @Scope(
-                name = "Adding a new SSL certificate",
-                description = "Adding a new SSL certificate",
-                key = "cdmf:admin:certificates:add",
-                permissions = {"/device-mgt/admin/certificates/add"}
+                name = "Manage certificates",
+                description = "",
+                key = "cdmf:manage-certificate",
+                permissions = {"/device-mgt/certificates/manage"}
         ),
         @Scope(
-                name = "Getting Details of an SSL Certificate",
-                description = "Getting Details of an SSL Certificate",
-                key = "cdmf:admin:certificates:details",
-                permissions = {"/device-mgt/admin/certificates/details"}
-        ),
-        @Scope(
-                name = "Getting Details of Certificates",
-                description = "Getting Details of Certificates",
-                key = "cdmf:admin:certificates:view",
-                permissions = {"/device-mgt/admin/certificates/view"}
-        ),
-        @Scope(
-                name = "Deleting an SSL Certificate",
-                description = "Deleting an SSL Certificate",
-                key = "cdmf:admin:certificates:delete",
-                permissions = {"/device-mgt/admin/certificates/delete"}
+                name = "View certificate",
+                description = "",
+                key = "cdmf:view-certificate",
+                permissions = {"/device-mgt/certificates/view"}
         )
 }
 )
@@ -89,7 +67,7 @@ public interface CertificateManagementAdminService {
             tags = "Certificate Management",
             extensions = {
                     @Extension(properties = {
-                            @ExtensionProperty(name = SCOPE, value = "cdmf:admin:certificates:add")
+                            @ExtensionProperty(name = SCOPE, value = "cdmf:manage-certificate")
                     })
             }
     )
@@ -158,7 +136,7 @@ public interface CertificateManagementAdminService {
             tags = "Certificate Management",
             extensions = {
                     @Extension(properties = {
-                            @ExtensionProperty(name = SCOPE, value = "cdmf:admin:certificates:details")
+                            @ExtensionProperty(name = SCOPE, value = "cdmf:view-certificate")
                     })
             }
     )
@@ -229,7 +207,7 @@ public interface CertificateManagementAdminService {
             tags = "Certificate Management",
             extensions = {
                     @Extension(properties = {
-                            @ExtensionProperty(name = SCOPE, value = "cdmf:admin:certificates:view")
+                            @ExtensionProperty(name = SCOPE, value = "cdmf:view-certificate")
                     })
             }
     )
@@ -308,7 +286,7 @@ public interface CertificateManagementAdminService {
             tags = "Certificate Management",
             extensions = {
                     @Extension(properties = {
-                            @ExtensionProperty(name = SCOPE, value = "cdmf:admin:certificates:delete")
+                            @ExtensionProperty(name = SCOPE, value = "cdmf:manage-certificate")
                     })
             }
     )

@@ -60,7 +60,7 @@ import javax.ws.rs.core.Response;
                         name = "View Users",
                         description = "View Users",
                         key = "cdmf:admin-users:view",
-                        permissions = {"/device-mgt/admin/users/view"}
+                        permissions = {"/device-mgt/users/manage"}
                 )
         }
 )

@@ -77,19 +77,19 @@ import javax.ws.rs.core.Response;
                         name = "Getting Details of a Device",
                         description = "Getting Details of a Device",
                         key = "cdmf:devices:details",
-                        permissions = {"/device-mgt/devices/owning-device/details"}
+                        permissions = {"/device-mgt/devices/owning-device/view"}
                 ),
                 @Scope(
                         name = "Delete the device specified by device id",
                         description = "Delete the device specified by device id",
                         key = "cdmf:devices:delete",
-                        permissions = {"/device-mgt/devices/owning-device/delete"}
+                        permissions = {"/device-mgt/devices/owning-device/view"}
                 ),
                 @Scope(
                         name = "Getting Feature Details of a Device",
                         description = "Getting Feature Details of a Device",
                         key = "cdmf:devices:features",
-                        permissions = {"/device-mgt/devices/owning-device/features"}
+                        permissions = {"/device-mgt/devices/owning-device/view"}
                 ),
                 @Scope(
                         name = "Advanced Search for Devices",
@@ -101,25 +101,25 @@ import javax.ws.rs.core.Response;
                         name = "Getting Installed Application Details of a Device",
                         description = "Getting Installed Application Details of a Device",
                         key = "cdmf:devices:applications",
-                        permissions = {"/device-mgt/devices/owning-device/applications"}
+                        permissions = {"/device-mgt/devices/owning-device/view"}
                 ),
                 @Scope(
                         name = "Getting Device Operation Details",
                         description = "Getting Device Operation Details",
                         key = "cdmf:devices:operations",
-                        permissions = {"/device-mgt/devices/owning-device/operations"}
+                        permissions = {"/device-mgt/devices/owning-device/view"}
                 ),
                 @Scope(
                         name = "Get the details of the policy that is enforced on a device.",
                         description = "Get the details of the policy that is enforced on a device.",
                         key = "cdmf:devices:effective-policy",
-                        permissions = {"/device-mgt/devices/owning-device/effective-policy"}
+                        permissions = {"/device-mgt/devices/owning-device/view"}
                 ),
                 @Scope(
                         name = "Getting Policy Compliance Details of a Device",
                         description = "Getting Policy Compliance Details of a Device",
                         key = "cdmf:devices:compliance-data",
-                        permissions = {"/device-mgt/devices/owning-device/compliance-data"}
+                        permissions = {"/device-mgt/devices/owning-device/view"}
                 )
         }
 )

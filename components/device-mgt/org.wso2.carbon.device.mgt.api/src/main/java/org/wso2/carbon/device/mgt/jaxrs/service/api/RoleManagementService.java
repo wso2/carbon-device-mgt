@@ -69,43 +69,43 @@ import java.util.List;
                         name = "Getting Permission Details of a Role",
                         description = "Getting Permission Details of a Role",
                         key = "cdmf:roles:permissions",
-                        permissions = {"/device-mgt/roles/permissions"}
+                        permissions = {"/device-mgt/roles/view"}
                 ),
                 @Scope(
                         name = "Getting the List of Roles",
                         description = "Getting the List of Roles",
                         key = "cdmf:roles:details",
-                        permissions = {"/device-mgt/roles/details"}
+                        permissions = {"/device-mgt/roles/view"}
                 ),
                 @Scope(
                         name = "Adding a Role",
                         description = "Adding a Role",
                         key = "cdmf:roles:add",
-                        permissions = {"/device-mgt/roles/add"}
+                        permissions = {"/device-mgt/roles/manage"}
                 ),
                 @Scope(
                         name = "Adding a combined Role",
                         description = "Adding a combined Role",
                         key = "cdmf:roles:create-combined-role",
-                        permissions = {"/device-mgt/roles/create-combined-role"}
+                        permissions = {"/device-mgt/roles/manage"}
                 ),
                 @Scope(
                         name = "Updating Role Details",
                         description = "Updating Role Details",
                         key = "cdmf:roles:update",
-                        permissions = {"/device-mgt/roles/update"}
+                        permissions = {"/device-mgt/roles/manage"}
                 ),
                 @Scope(
                         name = "Deleting a Role",
                         description = "Deleting a Role",
                         key = "cdmf:roles:delete",
-                        permissions = {"/device-mgt/roles/delete"}
+                        permissions = {"/device-mgt/roles/manage"}
                 ),
                 @Scope(
                         name = "Adding Users to a Role",
                         description = "Adding Users to a Role",
                         key = "cdmf:roles:add-users",
-                        permissions = {"/device-mgt/roles/add-users"}
+                        permissions = {"/device-mgt/roles/manage"}
                 )
         }
 )

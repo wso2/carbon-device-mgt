@@ -64,12 +64,18 @@ import javax.ws.rs.core.Response;
         " operation details and responses from devices.")
 @Scopes(
         scopes = {
-        @Scope(
-                name = "Getting Details of an Activity",
-                description = "Getting Details of an Activity",
-                key = "cdmf:activities:details",
-                permissions = {"/device-mgt/devices/owning-device/view"}
-                )
+            @Scope(
+                    name = "Getting Details of an Activity",
+                    description = "Getting Details of an Activity",
+                    key = "cdmf:activities:id",
+                    permissions = {"/device-mgt/devices/owning-device/view"}
+            ),
+            @Scope(
+                    name = "Getting Activity Details",
+                    description = "Getting Activity Details",
+                    key = "cdmf:activities:details",
+                    permissions = {"/device-mgt/devices/owning-device/view"}
+            )
         }
 )
 @Produces(MediaType.APPLICATION_JSON)
@@ -87,7 +93,7 @@ public interface ActivityInfoProviderService {
             tags = "Activity Info Provider",
             extensions = {
                 @Extension(properties = {
-                        @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:activities:details")
+                        @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:activities:id")
                 })
             }
     )

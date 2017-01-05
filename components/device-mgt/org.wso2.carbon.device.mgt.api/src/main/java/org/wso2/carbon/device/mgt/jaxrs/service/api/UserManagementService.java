@@ -18,22 +18,39 @@
  */
 package org.wso2.carbon.device.mgt.jaxrs.service.api;
 
-import io.swagger.annotations.SwaggerDefinition;
-import io.swagger.annotations.Info;
-import io.swagger.annotations.ExtensionProperty;
-import io.swagger.annotations.Extension;
-import io.swagger.annotations.Tag;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.AuthorizationScope;
-import io.swagger.annotations.Authorization;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.Authorization;
+import io.swagger.annotations.AuthorizationScope;
+import io.swagger.annotations.Extension;
+import io.swagger.annotations.ExtensionProperty;
+import io.swagger.annotations.Info;
 import io.swagger.annotations.ResponseHeader;
-import org.wso2.carbon.device.mgt.jaxrs.beans.*;
+import io.swagger.annotations.SwaggerDefinition;
+import io.swagger.annotations.Tag;
+import org.apache.axis2.transport.http.HTTPConstants;
+import org.wso2.carbon.device.mgt.jaxrs.beans.BasicUserInfo;
+import org.wso2.carbon.device.mgt.jaxrs.beans.BasicUserInfoList;
+import org.wso2.carbon.device.mgt.jaxrs.beans.EnrollmentInvitation;
+import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
+import org.wso2.carbon.device.mgt.jaxrs.beans.OldPasswordResetWrapper;
+import org.wso2.carbon.device.mgt.jaxrs.beans.RoleList;
+import org.wso2.carbon.device.mgt.jaxrs.beans.UserInfo;
 
-import javax.ws.rs.*;
+import javax.validation.Valid;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
@@ -65,7 +82,7 @@ public interface UserManagementService {
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "POST",
             value = "Adding a User",
-            notes = "WSO2 EMM supports user management. Add a new user to the WSO2 EMM user management system via this REST API",
+            notes = "WSO2 IoTS supports user management. Add a new user to the WSO2 IoTS user management system via this REST API",
             tags = "User Management",
             authorizations = {
                     @Authorization(
@@ -126,7 +143,7 @@ public interface UserManagementService {
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
             value = "Getting Details of a User",
-            notes = "Get the details of a user registered with WSO2 EMM using the REST API.",
+            notes = "Get the details of a user registered with WSO2 IoTS using the REST API.",
             response = BasicUserInfo.class,
             tags = "User Management",
             authorizations = {
@@ -267,7 +284,7 @@ public interface UserManagementService {
     @ApiOperation(
             httpMethod = "DELETE",
             value = "Deleting a User",
-            notes = "When an employee leaves the organization, you can remove the user details from WSO2 EMM using this REST API.",
+            notes = "When an employee leaves the organization, you can remove the user details from WSO2 IoTS using this REST API.",
             tags = "User Management",
             authorizations = {
                     @Authorization(
@@ -280,7 +297,7 @@ public interface UserManagementService {
     @ApiResponses(value = {
             @ApiResponse(
                     code = 200,
-                    message = "OK. \n Successfully removed the user from WSO2 EMM."),
+                    message = "OK. \n Successfully removed the user from WSO2 IoTS."),
             @ApiResponse(
                     code = 404,
                     message = "Not Found. \n The specified resource does not exist.",
@@ -312,7 +329,7 @@ public interface UserManagementService {
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
             value = "Getting the Role Details of a User",
-            notes = "A user can be assigned to one or more role in EMM. Using this REST API you can get the role/roles a user is assigned to.",
+            notes = "A user can be assigned to one or more role in IoTS. Using this REST API you can get the role/roles a user is assigned to.",
             tags = "User Management",
             authorizations = {
                     @Authorization(
@@ -375,7 +392,7 @@ public interface UserManagementService {
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
             value = "Getting Details of Users",
-            notes = "You are able to manage users in WSO2 EMM by adding, updating and removing users. If you wish to get the list of users registered with WSO2 EMM, you can do so "
+            notes = "You are able to manage users in WSO2 IoTS by adding, updating and removing users. If you wish to get the list of users registered with WSO2 IoTS, you can do so "
                     + "using this REST API",
             tags = "User Management",
             authorizations = {
@@ -389,7 +406,7 @@ public interface UserManagementService {
     @ApiResponses(value = {
             @ApiResponse(
                     code = 200,
-                    message = "OK. \n Successfully fetched the list of users registered with WSO2 EMM.",
+                    message = "OK. \n Successfully fetched the list of users registered with WSO2 IoTS.",
                     response = BasicUserInfoList.class,
                     responseHeaders = {
                             @ResponseHeader(
@@ -414,7 +431,7 @@ public interface UserManagementService {
                     response = ErrorResponse.class),
             @ApiResponse(
                     code = 500,
-                    message = "Internal Server Error. \n Server error occurred while fetching the list of WSO2 EMM users.",
+                    message = "Internal Server Error. \n Server error occurred while fetching the list of WSO2 IoTS users.",
                     response = ErrorResponse.class)
     })
     Response getUsers(
@@ -449,7 +466,7 @@ public interface UserManagementService {
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
             value = "Getting the User Count",
-            notes = "Get the number of users in WSO2 EMM via this REST API.",
+            notes = "Get the number of users in WSO2 IoTS via this REST API.",
             tags = "User Management",
             authorizations = {
                     @Authorization(
@@ -474,7 +491,7 @@ public interface UserManagementService {
                     response = ErrorResponse.class),
             @ApiResponse(
                     code = 500,
-                    message = "Internal Server Error. \n Server error occurred while fetching the total number of users in WSO2 EMM.",
+                    message = "Internal Server Error. \n Server error occurred while fetching the total number of users in WSO2 IoTS.",
                     response = ErrorResponse.class)
     })
     Response getUserCount();
@@ -608,7 +625,7 @@ public interface UserManagementService {
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "PUT",
             value = "Changing the User Password",
-            notes = "A user is able to change the password to secure their WSO2 EMM profile via this REST API.",
+            notes = "A user is able to change the password to secure their WSO2 IoTS profile via this REST API.",
             tags = "User Management",
             authorizations = {
                     @Authorization(
@@ -653,8 +670,8 @@ public interface UserManagementService {
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "POST",
             value = "Sending Enrollment Invitations to Users",
-            notes = "Send the users a mail inviting them to download the EMM mobile application on their devices using the REST API given below.\n" +
-                    "Before running the REST API command to send the enrollment invitations to users make sure to configure WSO2 EMM as explained in step 4, under the WSO2 EMM general server configurations documentation.",
+            notes = "Send the users a mail inviting them to enroll their devices using the REST API given below.\n" +
+                    "Before running the REST API command to send the enrollment invitations to users make sure to configure WSO2 IoTS as explained in step 4, under the WSO2 IoTS general server configurations documentation.",
             tags = "User Management",
             authorizations = {
                     @Authorization(
@@ -691,4 +708,47 @@ public interface UserManagementService {
                     value = "List of users",
                     required = true) List<String> usernames);
 
+    @POST
+    @Path("/enrollment-invite")
+    @ApiOperation(
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = HTTPConstants.HEADER_POST,
+            value = "Sending Enrollment Invitations to email address",
+            notes = "Send the a mail inviting recipients to enroll devices.",
+            tags = "User Management",
+            authorizations = {
+                    @Authorization(
+                            value = "permission",
+                            scopes = {@AuthorizationScope(scope = "/device-mgt/users/invite", description = "Invite Users")}
+                    )
+            }
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    code = 200,
+                    message = "OK. \n Successfully sent the invitation mail."),
+            @ApiResponse(
+                    code = 400,
+                    message = "Bad Request. \n Invalid request or validation error.",
+                    response = ErrorResponse.class),
+            @ApiResponse(
+                    code = 404,
+                    message = "Not Found. \n The specified resource does not exist.\n",
+                    response = ErrorResponse.class),
+            @ApiResponse(
+                    code = 415,
+                    message = "Unsupported media type. \n The format of the requested entity was not supported.\n",
+                    response = ErrorResponse.class),
+            @ApiResponse(
+                    code = 500,
+                    message = "Internal Server Error. \n " +
+                              "Server error occurred while updating the user credentials.",
+                    response = ErrorResponse.class)
+    })
+    Response inviteToEnrollDevice(
+            @ApiParam(
+                    name = "enrollmentInvitation",
+                    value = "List of email address of recipients",
+                    required = true)
+            @Valid EnrollmentInvitation enrollmentInvitation);
 }

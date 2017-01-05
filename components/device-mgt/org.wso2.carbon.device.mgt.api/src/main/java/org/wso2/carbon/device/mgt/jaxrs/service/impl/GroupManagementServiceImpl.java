@@ -21,6 +21,7 @@ package org.wso2.carbon.device.mgt.jaxrs.service.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.CarbonConstants;
 import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.common.Device;
@@ -35,12 +36,14 @@ import org.wso2.carbon.device.mgt.common.group.mgt.RoleDoesNotExistException;
 import org.wso2.carbon.device.mgt.core.service.GroupManagementProviderService;
 import org.wso2.carbon.device.mgt.jaxrs.beans.DeviceGroupList;
 import org.wso2.carbon.device.mgt.jaxrs.beans.DeviceList;
+import org.wso2.carbon.device.mgt.jaxrs.beans.DeviceToGroupsAssignment;
 import org.wso2.carbon.device.mgt.jaxrs.beans.RoleList;
 import org.wso2.carbon.device.mgt.jaxrs.service.api.GroupManagementService;
 import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.RequestValidationUtil;
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
 
 import javax.ws.rs.core.Response;
+import java.util.ArrayList;
 import java.util.List;
 
 public class GroupManagementServiceImpl implements GroupManagementService {
@@ -243,7 +246,8 @@ public class GroupManagementServiceImpl implements GroupManagementService {
         }
     }
 
-    @Override public Response removeDevicesFromGroup(int groupId, List<DeviceIdentifier> deviceIdentifiers) {
+    @Override
+    public Response removeDevicesFromGroup(int groupId, List<DeviceIdentifier> deviceIdentifiers) {
         try {
             DeviceMgtAPIUtils.getGroupManagementProviderService().removeDevice(groupId, deviceIdentifiers);
             return Response.status(Response.Status.OK).build();
@@ -253,6 +257,47 @@ public class GroupManagementServiceImpl implements GroupManagementService {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         } catch (DeviceNotFoundException e) {
             return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
+        }
+    }
+
+    @Override
+    public Response updateDeviceAssigningToGroups(DeviceToGroupsAssignment deviceToGroupsAssignment) {
+        try {
+            List<DeviceIdentifier> deviceIdentifiers = new ArrayList<>();
+            deviceIdentifiers.add(deviceToGroupsAssignment.getDeviceIdentifier());
+            GroupManagementProviderService service = DeviceMgtAPIUtils.getGroupManagementProviderService();
+            List<DeviceGroup> deviceGroups = service.getGroups(deviceToGroupsAssignment.getDeviceIdentifier());
+            for (DeviceGroup group : deviceGroups) {
+                Integer groupId = group.getGroupId();
+                if (deviceToGroupsAssignment.getDeviceGroupIds().contains(groupId)) {
+                    deviceToGroupsAssignment.getDeviceGroupIds().remove(groupId);
+                } else if (!CarbonConstants.REGISTRY_SYSTEM_USERNAME.equals(group.getOwner())) {
+                    DeviceMgtAPIUtils.getGroupManagementProviderService().removeDevice(groupId, deviceIdentifiers);
+                }
+            }
+            for (int groupId : deviceToGroupsAssignment.getDeviceGroupIds()) {
+                DeviceMgtAPIUtils.getGroupManagementProviderService().addDevices(groupId, deviceIdentifiers);
+            }
+            return Response.status(Response.Status.OK).build();
+        } catch (GroupManagementException e) {
+            String msg = "Error occurred while assigning device to groups.";
+            log.error(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+        } catch (DeviceNotFoundException e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
+        }
+    }
+
+    @Override
+    public Response getGroups(String deviceId, String deviceType) {
+        try {
+            DeviceIdentifier deviceIdentifier = new DeviceIdentifier(deviceId, deviceType);
+            List<DeviceGroup> deviceGroups = DeviceMgtAPIUtils.getGroupManagementProviderService().getGroups(deviceIdentifier);
+            return Response.status(Response.Status.OK).entity(deviceGroups).build();
+        } catch (GroupManagementException e) {
+            String msg = "Error occurred while removing devices from group.";
+            log.error(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         }
     }
 

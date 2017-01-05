@@ -16,7 +16,6 @@
  * under the License.
  */
 
-(function () {
     var deviceId = $(".device-id");
     var deviceIdentifier = deviceId.data("deviceid");
     var deviceType = deviceId.data("type");
@@ -49,6 +48,7 @@
 
     function loadOperationsLog(update) {
         var operationsLogTable = "#operations-log-table";
+
         if (update) {
             operationTable = $(operationsLogTable).DataTable();
             $("#operations-spinner").removeClass("hidden");
@@ -163,6 +163,8 @@
                                                 var viewModel = {};
                                                 viewModel["policy"] = activePolicy;
                                                 viewModel["deviceType"] = deviceType;
+                                                viewModel["deviceId"] = deviceId;
+                                                viewModel["appContext"] = context;
                                                 data = JSON.parse(data);
                                                 var content;
                                                 if (data["complianceData"]) {
@@ -206,5 +208,3 @@
             }
         );
     }
-
-}());

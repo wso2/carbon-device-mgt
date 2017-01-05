@@ -45,6 +45,7 @@ import org.wso2.carbon.policy.mgt.common.PolicyManagementException;
 import org.wso2.carbon.policy.mgt.common.monitor.ComplianceData;
 import org.wso2.carbon.policy.mgt.common.monitor.PolicyComplianceException;
 import org.wso2.carbon.policy.mgt.core.PolicyManagerService;
+import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 
 import javax.validation.constraints.Size;
 import javax.ws.rs.*;
@@ -113,15 +114,16 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
             }
 
             // this is the user who initiates the request
-            String authorizedUser = CarbonContext.getThreadLocalCarbonContext().getUsername();
+            String authorizedUser = MultitenantUtils.getTenantAwareUsername(CarbonContext.getThreadLocalCarbonContext().getUsername());
 
             // check whether the user is device-mgt admin
             if (deviceAccessAuthorizationService.isDeviceAdminUser()) {
                 if (user != null && !user.isEmpty()) {
-                    request.setOwner(user);
+                    request.setOwner(MultitenantUtils.getTenantAwareUsername(user));
                 }
             } else {
                 if (user != null && !user.isEmpty()) {
+                    user = MultitenantUtils.getTenantAwareUsername(user);
                     if (user.equals(authorizedUser)) {
                         request.setOwner(user);
                     } else {

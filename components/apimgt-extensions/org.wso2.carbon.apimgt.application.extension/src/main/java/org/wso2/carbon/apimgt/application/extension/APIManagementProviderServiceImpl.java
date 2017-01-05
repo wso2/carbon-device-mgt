@@ -75,16 +75,9 @@ public class APIManagementProviderServiceImpl implements APIManagementProviderSe
                             "Api application creation failed for " + applicationName + " to the user " + username);
                 }
 
-                APIKey retrievedApiApplicationKey = null;
-                for (APIKey apiKey : application.getKeys()) {
-                    String applicationKeyType = apiKey.getType();
-                    if (applicationKeyType != null && applicationKeyType.equals(keyType)) {
-                        retrievedApiApplicationKey = apiKey;
-                        break;
-                    }
-                }
-                if (retrievedApiApplicationKey != null) {
-                    if (retrievedApiApplicationKey.getConsumerKey().equals(clientId)) {
+                OAuthApplicationInfo oAuthApp = application.getOAuthApp(keyType);
+                if (oAuthApp != null) {
+                    if (oAuthApp.getClientId().equals(clientId)) {
                         if (tags != null && tags.length > 0) {
                             createApplicationAndSubscribeToAPIs(applicationName, tags, username);
                         }
@@ -131,7 +124,7 @@ public class APIManagementProviderServiceImpl implements APIManagementProviderSe
      * {@inheritDoc}
      */
     @Override
-    public ApiApplicationKey generateAndRetrieveApplicationKeys(String apiApplicationName, String tags[],
+    public synchronized ApiApplicationKey generateAndRetrieveApplicationKeys(String apiApplicationName, String tags[],
                                                                 String keyType, String username,
                                                                 boolean isAllowedAllDomains, String validityTime)
             throws APIManagerException {
@@ -152,18 +145,11 @@ public class APIManagementProviderServiceImpl implements APIManagementProviderSe
                         "Api application creation failed for " + apiApplicationName + " to the user " + username);
             }
 
-            APIKey retrievedApiApplicationKey = null;
-            for (APIKey apiKey : application.getKeys()) {
-                String applicationKeyType = apiKey.getType();
-                if (applicationKeyType != null && applicationKeyType.equals(keyType)) {
-                    retrievedApiApplicationKey = apiKey;
-                    break;
-                }
-            }
-            if (retrievedApiApplicationKey != null) {
+            OAuthApplicationInfo oAuthApp = application.getOAuthApp(keyType);
+            if (oAuthApp != null) {
                 ApiApplicationKey apiApplicationKey = new ApiApplicationKey();
-                apiApplicationKey.setConsumerKey(retrievedApiApplicationKey.getConsumerKey());
-                apiApplicationKey.setConsumerSecret(retrievedApiApplicationKey.getConsumerSecret());
+                apiApplicationKey.setConsumerKey(oAuthApp.getClientId());
+                apiApplicationKey.setConsumerSecret(oAuthApp.getClientSecret());
                 return apiApplicationKey;
             }
             String[] allowedDomains = new String[1];

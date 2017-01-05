@@ -25,6 +25,7 @@ import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.InvalidDeviceException;
 import org.wso2.carbon.device.mgt.common.MonitoringOperation;
+import org.wso2.carbon.device.mgt.common.OperationMonitoringTaskConfig;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
@@ -46,30 +47,26 @@ public class DeviceTaskManagerImpl implements DeviceTaskManager {
     private static Log log = LogFactory.getLog(DeviceTaskManagerImpl.class);
     private String deviceType;
     private static Map<Integer, Map<String, Long>> map = new HashMap<>();
+    private OperationMonitoringTaskConfig operationMonitoringTaskConfig;
+
+    public DeviceTaskManagerImpl(String deviceType,
+                                 OperationMonitoringTaskConfig operationMonitoringTaskConfig) {
+        this.operationMonitoringTaskConfig = operationMonitoringTaskConfig;
+        this.deviceType = deviceType;
+    }
 
     public DeviceTaskManagerImpl(String deviceType) {
         this.deviceType = deviceType;
     }
 
     //get device type specific operations
-    public List<MonitoringOperation> getOperationList() throws DeviceMgtTaskException {
-
-        DeviceManagementProviderService deviceManagementProviderService = DeviceManagementDataHolder
-                .getInstance().
-                        getDeviceManagementProvider();
-
-        return deviceManagementProviderService.getMonitoringOperationList(
-                deviceType);//Get task list from each device type
+    private List<MonitoringOperation> getOperationList() throws DeviceMgtTaskException {
+        return operationMonitoringTaskConfig.getMonitoringOperation();
     }
 
     @Override
     public int getTaskFrequency() throws DeviceMgtTaskException {
-        DeviceManagementProviderService deviceManagementProviderService = DeviceManagementDataHolder
-                .getInstance().
-                        getDeviceManagementProvider();
-
-        return deviceManagementProviderService.getDeviceMonitoringFrequency(deviceType);
-
+        return operationMonitoringTaskConfig.getFrequency();
     }
 
 //    @Override
@@ -80,11 +77,7 @@ public class DeviceTaskManagerImpl implements DeviceTaskManager {
 
     @Override
     public boolean isTaskEnabled() throws DeviceMgtTaskException {
-        DeviceManagementProviderService deviceManagementProviderService = DeviceManagementDataHolder
-                .getInstance().
-                        getDeviceManagementProvider();
-
-        return deviceManagementProviderService.isDeviceMonitoringEnabled(deviceType);
+        return operationMonitoringTaskConfig.isEnabled();
     }
 
 
@@ -149,13 +142,22 @@ public class DeviceTaskManagerImpl implements DeviceTaskManager {
         return opNames;
     }
 
+    private List<MonitoringOperation> getOperationListforTask() throws DeviceMgtTaskException {
+
+        DeviceManagementProviderService deviceManagementProviderService = DeviceManagementDataHolder
+                .getInstance().
+                        getDeviceManagementProvider();
+
+        return deviceManagementProviderService.getMonitoringOperationList(
+                deviceType);//Get task list from each device type
+    }
 
 
     @Override
     public boolean isTaskOperation(String opName) {
 
         try {
-            List<MonitoringOperation> monitoringOperations = this.getOperationList();
+            List<MonitoringOperation> monitoringOperations = this.getOperationListforTask();
             for (MonitoringOperation taop : monitoringOperations) {
                 if (taop.getTaskName().equalsIgnoreCase(opName)) {
                     return true;

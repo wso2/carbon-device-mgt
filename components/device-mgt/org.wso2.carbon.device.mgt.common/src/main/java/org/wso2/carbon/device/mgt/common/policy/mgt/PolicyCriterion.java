@@ -17,7 +17,7 @@
  */
 
 
-package org.wso2.carbon.policy.mgt.common;
+package org.wso2.carbon.device.mgt.common.policy.mgt;
 
 import java.util.Map;
 import java.util.Properties;

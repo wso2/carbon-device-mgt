@@ -21,7 +21,7 @@ package org.wso2.carbon.device.mgt.jaxrs.beans;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
-import org.wso2.carbon.policy.mgt.common.DeviceGroupWrapper;
+import org.wso2.carbon.device.mgt.common.policy.mgt.DeviceGroupWrapper;
 
 import javax.validation.constraints.Size;
 import java.util.List;

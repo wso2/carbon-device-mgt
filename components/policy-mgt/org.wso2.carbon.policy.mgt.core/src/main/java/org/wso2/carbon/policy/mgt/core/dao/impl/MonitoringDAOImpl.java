@@ -22,13 +22,12 @@ package org.wso2.carbon.policy.mgt.core.dao.impl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
-import org.wso2.carbon.policy.mgt.common.monitor.ComplianceData;
-import org.wso2.carbon.policy.mgt.common.monitor.ComplianceFeature;
+import org.wso2.carbon.device.mgt.common.policy.mgt.monitor.NonComplianceData;
+import org.wso2.carbon.device.mgt.common.policy.mgt.monitor.ComplianceFeature;
 import org.wso2.carbon.policy.mgt.common.monitor.PolicyDeviceWrapper;
 import org.wso2.carbon.policy.mgt.core.dao.MonitoringDAO;
 import org.wso2.carbon.policy.mgt.core.dao.MonitoringDAOException;
 import org.wso2.carbon.policy.mgt.core.dao.PolicyManagementDAOFactory;
-import org.wso2.carbon.policy.mgt.core.dao.PolicyManagerDAOException;
 import org.wso2.carbon.policy.mgt.core.dao.util.PolicyManagementDAOUtil;
 import org.wso2.carbon.policy.mgt.core.util.PolicyManagerUtil;
 
@@ -237,12 +236,12 @@ public class MonitoringDAOImpl implements MonitoringDAO {
     }
 
     @Override
-    public ComplianceData getCompliance(int deviceId, int enrolmentId) throws MonitoringDAOException {
+    public NonComplianceData getCompliance(int deviceId, int enrolmentId) throws MonitoringDAOException {
 
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet resultSet = null;
-        ComplianceData complianceData = new ComplianceData();
+        NonComplianceData complianceData = new NonComplianceData();
         int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
 
         try {
@@ -275,11 +274,11 @@ public class MonitoringDAOImpl implements MonitoringDAO {
     }
 
     @Override
-    public List<ComplianceData> getCompliance(List<Integer> deviceIds) throws MonitoringDAOException {
+    public List<NonComplianceData> getCompliance(List<Integer> deviceIds) throws MonitoringDAOException {
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet resultSet = null;
-        List<ComplianceData> complianceDataList = new ArrayList<>();
+        List<NonComplianceData> complianceDataList = new ArrayList<>();
         int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
         try {
             conn = this.getConnection();
@@ -290,7 +289,7 @@ public class MonitoringDAOImpl implements MonitoringDAO {
 
             resultSet = stmt.executeQuery();
             while (resultSet.next()) {
-                ComplianceData complianceData = new ComplianceData();
+                NonComplianceData complianceData = new NonComplianceData();
                 complianceData.setId(resultSet.getInt("ID"));
                 complianceData.setDeviceId(resultSet.getInt("DEVICE_ID"));
                 complianceData.setEnrolmentId(resultSet.getInt("ENROLMENT_ID"));
@@ -312,11 +311,11 @@ public class MonitoringDAOImpl implements MonitoringDAO {
     }
 
     @Override
-    public List<ComplianceData> getCompliance() throws MonitoringDAOException {
+    public List<NonComplianceData> getCompliance() throws MonitoringDAOException {
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet resultSet = null;
-        List<ComplianceData> complianceDataList = new ArrayList<>();
+        List<NonComplianceData> complianceDataList = new ArrayList<>();
         int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
         try {
             conn = this.getConnection();
@@ -326,7 +325,7 @@ public class MonitoringDAOImpl implements MonitoringDAO {
 
             resultSet = stmt.executeQuery();
             while (resultSet.next()) {
-                ComplianceData complianceData = new ComplianceData();
+                NonComplianceData complianceData = new NonComplianceData();
                 complianceData.setId(resultSet.getInt("ID"));
                 complianceData.setDeviceId(resultSet.getInt("DEVICE_ID"));
                 complianceData.setEnrolmentId(resultSet.getInt("ENROLMENT_ID"));

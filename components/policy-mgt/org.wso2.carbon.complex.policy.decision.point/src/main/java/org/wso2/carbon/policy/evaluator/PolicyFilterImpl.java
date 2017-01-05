@@ -18,7 +18,7 @@
 
 package org.wso2.carbon.policy.evaluator;
 
-import org.wso2.carbon.policy.mgt.common.Policy;
+import org.wso2.carbon.device.mgt.common.policy.mgt.Policy;
 
 import java.util.ArrayList;
 import java.util.List;

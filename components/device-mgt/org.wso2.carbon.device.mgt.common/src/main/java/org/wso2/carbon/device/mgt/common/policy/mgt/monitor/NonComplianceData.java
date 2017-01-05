@@ -17,14 +17,14 @@
  */
 
 
-package org.wso2.carbon.policy.mgt.common.monitor;
+package org.wso2.carbon.device.mgt.common.policy.mgt.monitor;
 
-import org.wso2.carbon.policy.mgt.common.Policy;
+import org.wso2.carbon.device.mgt.common.policy.mgt.Policy;
 
 import java.sql.Timestamp;
 import java.util.List;
 
-public class ComplianceData {
+public class NonComplianceData {
 
     private int id;
     private int deviceId;

@@ -17,23 +17,15 @@
  */
 
 
-package org.wso2.carbon.policy.mgt.common.spi;
+package org.wso2.carbon.device.mgt.common.policy.mgt;
 
-import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
-import org.wso2.carbon.policy.mgt.common.monitor.ComplianceData;
-import org.wso2.carbon.policy.mgt.common.monitor.ComplianceFeature;
-import org.wso2.carbon.policy.mgt.common.monitor.PolicyComplianceException;
-import org.wso2.carbon.policy.mgt.common.Policy;
+import org.wso2.carbon.device.mgt.common.policy.mgt.monitor.NonComplianceData;
+import org.wso2.carbon.device.mgt.common.policy.mgt.monitor.PolicyComplianceException;
 
-import java.util.List;
 
-public interface  PolicyMonitoringService {
+public interface PolicyMonitoringManager {
 
-    void notifyDevices(List<Device> devices) throws PolicyComplianceException;
-
-    ComplianceData checkPolicyCompliance(DeviceIdentifier deviceIdentifier, Policy policy, Object response)
+    NonComplianceData checkPolicyCompliance(DeviceIdentifier deviceIdentifier, Policy policy, Object response)
             throws PolicyComplianceException;
-
-    String getType();
 }

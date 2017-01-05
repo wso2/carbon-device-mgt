@@ -19,7 +19,7 @@
 package org.wso2.carbon.policy.mgt.core.util;
 
 import org.wso2.carbon.device.mgt.common.Feature;
-import org.wso2.carbon.policy.mgt.common.ProfileFeature;
+import org.wso2.carbon.device.mgt.common.policy.mgt.ProfileFeature;
 
 import java.util.ArrayList;
 import java.util.List;

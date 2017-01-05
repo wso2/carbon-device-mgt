@@ -403,6 +403,7 @@ public class AnnotationProcessor {
                     .getMethod(SWAGGER_ANNOTATIONS_PROPERTIES_KEY), annotatedScopes[i], STRING));
             permissions = (String[])methodHandler.invoke(annotatedScopes[i], scopeClass
                     .getMethod(SWAGGER_ANNOTATIONS_PROPERTIES_PERMISSIONS, null),null);
+            aggregatedPermissions.setLength(0);
             for (String permission : permissions) {
                 aggregatedPermissions.append(permission);
                 aggregatedPermissions.append(" ");

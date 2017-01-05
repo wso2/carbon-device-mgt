@@ -57,7 +57,7 @@ import javax.ws.rs.core.Response;
         @Scope(
                 name = "Get activities",
                 description = "Get activities",
-                key = "cdmf:get-activity",
+                key = "perm:get-activity",
                 permissions = {"/device-mgt/devices/owning-device/view"}
                 )
         }
@@ -77,7 +77,7 @@ public interface ActivityInfoProviderService {
             tags = "Activity Info Provider",
             extensions = {
                 @Extension(properties = {
-                        @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:get-activity")
+                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:get-activity")
                 })
             }
     )
@@ -150,7 +150,7 @@ public interface ActivityInfoProviderService {
             tags = "Activity Info Provider",
             extensions = {
                     @Extension(properties = {
-                            @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:get-activity")
+                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:get-activity")
                     })
             }
     )

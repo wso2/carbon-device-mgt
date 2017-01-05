@@ -68,13 +68,13 @@ import javax.ws.rs.core.Response;
         @Scope(
                 name = "View configurations",
                 description = "",
-                key = "cdmf:view-configuration",
+                key = "perm:view-configuration",
                 permissions = {"/device-mgt/platform-configurations/view"}
         ),
         @Scope(
                 name = "Manage configurations",
                 description = "",
-                key = "cdmf:manage-configuration",
+                key = "perm:manage-configuration",
                 permissions = {"/device-mgt/platform-configurations/manage"}
         )
 }
@@ -92,7 +92,7 @@ public interface ConfigurationManagementService {
             tags = "Configuration Management",
             extensions = {
                     @Extension(properties = {
-                            @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:view-configuration")
+                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:view-configuration")
                     })
             }
     )
@@ -151,7 +151,7 @@ public interface ConfigurationManagementService {
             tags = "Configuration Management",
             extensions = {
                     @Extension(properties = {
-                            @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:manage-configuration")
+                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:manage-configuration")
                     })
             }
     )

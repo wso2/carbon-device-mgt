@@ -13,10 +13,13 @@ import io.swagger.annotations.Info;
 import io.swagger.annotations.ResponseHeader;
 import io.swagger.annotations.SwaggerDefinition;
 import io.swagger.annotations.Tag;
+import org.wso2.carbon.apimgt.annotations.api.Scope;
+import org.wso2.carbon.apimgt.annotations.api.Scopes;
 import org.wso2.carbon.device.mgt.analytics.dashboard.bean.DeviceCountByGroup;
 import org.wso2.carbon.device.mgt.jaxrs.beans.DashboardGadgetDataWrapper;
 import org.wso2.carbon.device.mgt.jaxrs.beans.DashboardPaginationGadgetDataWrapper;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
+import org.wso2.carbon.device.mgt.jaxrs.util.Constants;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -42,6 +45,70 @@ import javax.ws.rs.core.Response;
         ),
         tags = {
                 @Tag(name = "device_management", description = "Device Analytics Dashboard related APIs.")
+        }
+)
+@Scopes(
+        scopes = {
+                @Scope(
+                        name = "Device Count Overview",
+                        description = "Device Count Overview",
+                        key = "perm:dashboard:count-overview",
+                        permissions = {"/device-mgt/dashboard/view"}
+                ),
+                @Scope(
+                        name = "Device Counts by Potential Vulnerabilities",
+                        description = "Device Counts by Potential Vulnerabilities",
+                        key = "perm:dashboard:vulnerabilities",
+                        permissions = {"/device-mgt/dashboard/view"}
+                ),
+                @Scope(
+                        name = "Get the number of devices that have not complied to a policy",
+                        description = "Get the number of devices that have not complied to a policy",
+                        key = "perm:dashboard:non-compliant",
+                        permissions = {"/device-mgt/dashboard/view"}
+                ),
+                @Scope(
+                        name = "Get the number of devices for a given device type, such as connectivity status, "
+                                + "potential vulnerability, platform, and ownership",
+                        description = "Get the number of devices for a given device type, such as connectivity status, "
+                                + "potential vulnerability, platform, and ownership",
+                        key = "perm:dashboard:by-groups",
+                        permissions = {"/device-mgt/dashboard/view"}
+                ),
+                @Scope(
+                        name = "Get the number of devices that have not complied to a given policy based on a particular",
+                        description = "Get the number of devices that have not complied to a given policy based on a particular",
+                        key = "perm:dashboard:device-counts",
+                        permissions = {"/device-mgt/dashboard/view"}
+                ),
+                @Scope(
+                        name = "Get the number of devices that have not complied to a given policy based on a particular"
+                                + " device type.",
+                        description = "Get the number of devices that have not complied to a given policy based on a " +
+                                "particular device type.",
+                        key = "perm:dashboard:filtered-count",
+                        permissions = {"/device-mgt/dashboard/view"}
+                ),
+                @Scope(
+                        name = "Get the number of devices that have not complied to a given policy over the total"
+                                + " number of devices registered with WSO2 EMM.\n",
+                        description = "Get the number of devices that have not complied to a given policy over the total"
+                                + " number of devices registered with WSO2 EMM.\n",
+                        key = "perm:dashboard:non-compliant-count",
+                        permissions = {"/device-mgt/dashboard/view"}
+                ),
+                @Scope(
+                        name = "Get device details of devices based on a particular device type.",
+                        description = "Get device details of devices based on a particular device type.",
+                        key = "perm:dashboard:details",
+                        permissions = {"/device-mgt/dashboard/view"}
+                ),
+                @Scope(
+                        name = "Get device details of non-compliant devices which do not comply to a given policy.",
+                        description = "Get device details of non-compliant devices which do not comply to a given policy.",
+                        key = "perm:dashboard:feature-non-compliant",
+                        permissions = {"/device-mgt/dashboard/view"}
+                )
         }
 )
 @Path("/dashboard")
@@ -70,13 +137,12 @@ public interface Dashboard {
             notes = "Get the details of active, inactive, removed and total number of registered devices in"
                     + " WSO2 IoT.",
             tags = "Dashboard",
-            authorizations = {
-                    @Authorization(
-                            value = "permission",
-                            scopes = {@AuthorizationScope(scope = "/device-mgt/dashboard/view",
-                                    description = "View Dashboard")}
-                    )
-            })
+            extensions = {
+                    @Extension(properties = {
+                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:dashboard:count-overview")
+                    })
+            }
+    )
     @ApiResponses(value = {
             @ApiResponse(
                     code = 200,
@@ -127,13 +193,12 @@ public interface Dashboard {
             httpMethod = "GET",
             value = "Get the number of unmonitored and non-compliant devices in WSO2 IoT.",
             tags = "Dashboard",
-            authorizations = {
-                    @Authorization(
-                            value = "permission",
-                            scopes = {@AuthorizationScope(scope = "/device-mgt/dashboard/view",
-                                    description = "View Dashboard")}
-                    )
-            })
+            extensions = {
+                    @Extension(properties = {
+                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:dashboard:vulnerabilities")
+                    })
+            }
+    )
     @ApiResponses(value = {
             @ApiResponse(
                     code = 200,
@@ -185,13 +250,12 @@ public interface Dashboard {
             value = "Get the number of devices that have not complied to a policy that was enforced on a "
                     + "device.",
             tags = "Dashboard",
-            authorizations = {
-                    @Authorization(
-                            value = "permission",
-                            scopes = {@AuthorizationScope(scope = "/device-mgt/dashboard/view",
-                                    description = "View Dashboard")}
-                    )
-            })
+            extensions = {
+                    @Extension(properties = {
+                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:dashboard:non-compliant")
+                    })
+            }
+    )
     @ApiResponses(value = {
             @ApiResponse(
                     code = 200,
@@ -256,13 +320,12 @@ public interface Dashboard {
             value = "Get the number of devices for a given device type, such as connectivity status, "
                     + "potential vulnerability, platform, and ownership.\n",
             tags = "Dashboard",
-            authorizations = {
-                    @Authorization(
-                            value = "permission",
-                            scopes = {@AuthorizationScope(scope = "/device-mgt/dashboard/view",
-                                    description = "View Dashboard")}
-                    )
-            })
+            extensions = {
+                    @Extension(properties = {
+                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:dashboard:by-groups")
+                    })
+            }
+    )
     @ApiResponses(value = {
             @ApiResponse(
                     code = 200,
@@ -346,13 +409,12 @@ public interface Dashboard {
             value = "Get the number of devices that have not complied to a given policy based on a particular"
                     + " device type.",
             tags = "Dashboard",
-            authorizations = {
-                    @Authorization(
-                            value = "permission",
-                            scopes = {@AuthorizationScope(scope = "/device-mgt/dashboard/view",
-                                    description = "View Dashboard")}
-                    )
-            })
+            extensions = {
+                    @Extension(properties = {
+                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:dashboard:device-counts")
+                    })
+            }
+    )
     @ApiResponses(value = {
             @ApiResponse(
                     code = 200,
@@ -426,13 +488,12 @@ public interface Dashboard {
                     + "The device ownership type, such as BYOD or COPE.\n" + "The device platform.\n"
                     + "The potential vulnerabilities faced by the devices.",
             tags = "Dashboard",
-            authorizations = {
-                    @Authorization(
-                            value = "permission",
-                            scopes = {@AuthorizationScope(scope = "/device-mgt/dashboard/view",
-                                    description = "View Dashboard")}
-                    )
-            })
+            extensions = {
+                    @Extension(properties = {
+                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:dashboard:filtered-count")
+                    })
+            }
+    )
     @ApiResponses(value = {
             @ApiResponse(
                     code = 200,
@@ -519,13 +580,12 @@ public interface Dashboard {
             value = "Get the number of devices that have not complied to a given policy over the total"
                     + " number of devices registered with WSO2 IoT.\n",
             tags = "Dashboard",
-            authorizations = {
-                    @Authorization(
-                            value = "permission",
-                            scopes = {@AuthorizationScope(scope = "/device-mgt/dashboard/view",
-                                    description = "View Dashboard")}
-                    )
-            })
+            extensions = {
+                    @Extension(properties = {
+                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:dashboard:non-compliant-count")
+                    })
+            }
+    )
     @ApiResponses(value = {
             @ApiResponse(
                     code = 200,
@@ -595,13 +655,12 @@ public interface Dashboard {
             httpMethod = "GET",
             value = "Get device details of devices based on a particular device type.",
             tags = "Dashboard",
-            authorizations = {
-                    @Authorization(
-                            value = "permission",
-                            scopes = {@AuthorizationScope(scope = "/device-mgt/dashboard/view",
-                                    description = "View Dashboard")}
-                    )
-            })
+            extensions = {
+                    @Extension(properties = {
+                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:dashboard:details")
+                    })
+            }
+    )
     @ApiResponses(value = {
             @ApiResponse(
                     code = 200,
@@ -698,13 +757,12 @@ public interface Dashboard {
             httpMethod = "GET",
             value = "Get device details of non-compliant devices which do not comply to a given policy.",
             tags = "Dashboard",
-            authorizations = {
-                    @Authorization(
-                            value = "permission",
-                            scopes = {@AuthorizationScope(scope = "/device-mgt/dashboard/view",
-                                    description = "View Dashboard")}
-                    )
-            })
+            extensions = {
+                    @Extension(properties = {
+                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:dashboard:feature-non-compliant")
+                    })
+            }
+    )
     @ApiResponses(value = {
             @ApiResponse(
                     code = 200,

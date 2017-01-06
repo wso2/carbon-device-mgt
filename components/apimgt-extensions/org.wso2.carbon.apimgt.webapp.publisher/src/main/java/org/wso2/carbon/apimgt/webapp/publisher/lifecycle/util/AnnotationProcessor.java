@@ -51,7 +51,7 @@ public class AnnotationProcessor {
     private static final String PACKAGE_ORG_APACHE = "org.apache";
     private static final String PACKAGE_ORG_CODEHAUS = "org.codehaus";
     private static final String PACKAGE_ORG_SPRINGFRAMEWORK = "org.springframework";
-    private static final String WILD_CARD = "/*";
+    public static final String WILD_CARD = "/*";
 
     private static final String SWAGGER_ANNOTATIONS_INFO = "info";
     private static final String SWAGGER_ANNOTATIONS_TAGS = "tags";

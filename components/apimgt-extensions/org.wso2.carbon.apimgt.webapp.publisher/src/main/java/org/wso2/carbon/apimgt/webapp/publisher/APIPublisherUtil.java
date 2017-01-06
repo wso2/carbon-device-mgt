@@ -269,18 +269,7 @@ public class APIPublisherUtil {
         }
         apiConfig.setOwner(owner);
 
-        String isSecuredParam = servletContext.getInitParameter(PARAM_MANAGED_API_IS_SECURED);
-        boolean isSecured;
-        if (isSecuredParam == null || isSecuredParam.isEmpty()) {
-            if (log.isDebugEnabled()) {
-                log.debug("'managed-api-isSecured' attribute is not configured. Therefore, using the default, " +
-                        "which is 'true'");
-            }
-            isSecured = false;
-        } else {
-            isSecured = Boolean.parseBoolean(isSecuredParam);
-        }
-        apiConfig.setSecured(isSecured);
+        apiConfig.setSecured(false);
 
         String transports = servletContext.getInitParameter(PARAM_MANAGED_API_TRANSPORTS);
         if (transports == null || transports.isEmpty()) {

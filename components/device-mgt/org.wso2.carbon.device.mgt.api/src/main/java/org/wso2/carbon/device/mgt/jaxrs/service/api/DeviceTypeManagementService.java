@@ -24,15 +24,16 @@ import io.swagger.annotations.ExtensionProperty;
 import io.swagger.annotations.Extension;
 import io.swagger.annotations.Tag;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.AuthorizationScope;
-import io.swagger.annotations.Authorization;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import io.swagger.annotations.ResponseHeader;
+import org.wso2.carbon.apimgt.annotations.api.Scope;
+import org.wso2.carbon.apimgt.annotations.api.Scopes;
 import org.wso2.carbon.device.mgt.jaxrs.beans.DeviceTypeList;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
+import org.wso2.carbon.device.mgt.jaxrs.util.Constants;
 
 import javax.validation.constraints.Size;
 import javax.ws.rs.*;
@@ -54,6 +55,22 @@ import javax.ws.rs.core.Response;
                 @Tag(name = "device_management", description = "")
         }
 )
+@Scopes(
+        scopes = {
+                @Scope(
+                        name = "Getting the Supported Device Platforms",
+                        description = "Getting the Supported Device Platforms",
+                        key = "perm:device-types:types",
+                        permissions = {"/device-mgt/devices/owning-device/view"}
+                ),
+                @Scope(
+                        name = "Get Feature Details of a Device Type",
+                        description = "Get Feature Details of a Device Type",
+                        key = "perm:device-types:features",
+                        permissions = {"/device-mgt/devices/owning-device/view"}
+                )
+        }
+)
 @Path("/device-types")
 @Api(value = "Device Type Management", description = "This API corresponds to all tasks related to device " +
         "type management")
@@ -68,12 +85,10 @@ public interface DeviceTypeManagementService {
             value = "Getting the Supported Device Platforms",
             notes = "Get the list of device platforms supported by WSO2 EMM.",
             tags = "Device Type Management",
-            authorizations = {
-                @Authorization(
-                        value="permission",
-                        scopes = { @AuthorizationScope(scope = "/device-mgt/devices/owning-device/view",
-                                description = "View Device Types") }
-                )
+            extensions = {
+                    @Extension(properties = {
+                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:device-types:types")
+                    })
             }
     )
     @ApiResponses(
@@ -123,6 +138,7 @@ public interface DeviceTypeManagementService {
                     String ifModifiedSince);
 
     @GET
+    @Path("/{type}/features")
     @ApiOperation(
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
@@ -131,12 +147,10 @@ public interface DeviceTypeManagementService {
                     "Using this REST API you can get the features that can be carried out on a preferred device type," +
                     " such as iOS, Android or Windows.",
             tags = "Device Type Management",
-            authorizations = {
-                    @Authorization(
-                            value="permission",
-                            scopes = { @AuthorizationScope(scope = "/device-mgt/devices/owning-device/view",
-                                    description = "View Device Types") }
-                    )
+            extensions = {
+                @Extension(properties = {
+                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:device-types:features")
+                })
             }
     )
     @ApiResponses(

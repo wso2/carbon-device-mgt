@@ -24,16 +24,17 @@ import io.swagger.annotations.ExtensionProperty;
 import io.swagger.annotations.Extension;
 import io.swagger.annotations.Tag;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.AuthorizationScope;
-import io.swagger.annotations.Authorization;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import io.swagger.annotations.ResponseHeader;
+import org.wso2.carbon.apimgt.annotations.api.Scope;
+import org.wso2.carbon.apimgt.annotations.api.Scopes;
 import org.wso2.carbon.device.mgt.common.notification.mgt.Notification;
 import org.wso2.carbon.device.mgt.jaxrs.NotificationList;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
+import org.wso2.carbon.device.mgt.jaxrs.util.Constants;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Size;
@@ -60,6 +61,22 @@ import javax.ws.rs.core.Response;
                 @Tag(name = "device_management", description = "")
         }
 )
+@Scopes(
+        scopes = {
+                @Scope(
+                        name = "Getting All Device Notification Details",
+                        description = "Getting All Device Notification Details",
+                        key = "perm:notifications:view",
+                        permissions = {"/device-mgt/notifications/view"}
+                ),
+                @Scope(
+                        name = "Updating the Device Notification Status",
+                        description = "Updating the Device Notification Status",
+                        key = "perm:notifications:mark-checked",
+                        permissions = {"/device-mgt/notifications/view"}
+                )
+        }
+)
 @Api(value = "Device Notification Management", description = "Device notification related operations can be found here.")
 @Path("/notifications")
 @Produces(MediaType.APPLICATION_JSON)
@@ -73,12 +90,10 @@ public interface NotificationManagementService {
             value = "Getting All Device Notification Details",
             notes = "Get the details of all the notifications that were pushed to the devices registered with WSO2 EMM using this REST API.",
             tags = "Device Notification Management",
-            authorizations = {
-                    @Authorization(
-                            value="permission",
-                            scopes = { @AuthorizationScope(scope = "/device-mgt/notifications/view",
-                                    description = "View notifications") }
-                    )
+            extensions = {
+                @Extension(properties = {
+                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:notifications:view")
+                })
             }
     )
     @ApiResponses(
@@ -164,12 +179,10 @@ public interface NotificationManagementService {
             notes = "When a user has read the the device notification the device notification status must "
                     + "change from NEW to CHECKED. This API is used to update device notification status.",
             tags = "Device Notification Management",
-            authorizations = {
-                    @Authorization(
-                            value="permission",
-                            scopes = { @AuthorizationScope(scope = "/device-mgt/notifications/view",
-                                    description = "View notifications") }
-                    )
+            extensions = {
+                @Extension(properties = {
+                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:notifications:mark-checked")
+                })
             }
     )
     @ApiResponses(

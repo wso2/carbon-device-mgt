@@ -337,4 +337,49 @@ public interface CertificateManagementAdminService {
                     defaultValue = "12438035315552875930")
             @PathParam("serialNumber") String serialNumber);
 
+    /**
+     * Verify IOS Certificate for the API security filter
+     *
+     * @param certificate to be verified as a String
+     * @return Status of the certificate verification.
+     */
+    @POST
+    @Path("/verify/{deviceType}")
+    @ApiOperation(
+            consumes = MediaType.APPLICATION_JSON,
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "POST",
+            value = "Verify SSL certificate",
+            notes = "Verify Certificate for the API security filter.\n",
+            tags = "Certificate Management",
+            authorizations = {
+                    @Authorization(
+                            value="permission",
+                            scopes = { @AuthorizationScope(scope = "/device-mgt/certificates/manage",
+                                    description = "Manage certificates") }
+                    )
+            }
+    )
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            code = 200,
+                            message = "Return the status of the certificate verification.",
+                            responseHeaders = {
+                                    @ResponseHeader(
+                                            name = "Content-Type",
+                                            description = "The content type of the body")}),
+                    @ApiResponse(
+                            code = 400,
+                            message = "Bad Request. \n Invalid request or validation error.",
+                            response = ErrorResponse.class)
+            })
+    Response verifyCertificate(
+            @ApiParam(
+                    name = "certificate",
+                    value = "The properties to verify certificate. It includes the following: \n" +
+                            "serial: The unique ID of the certificate. (optional) \n" +
+                            "pem: mdm-signature of the certificate",
+                    required = true) EnrollmentCertificate certificate,
+            @PathParam("deviceType") String deviceType);
 }

@@ -68,55 +68,55 @@ import java.util.List;
                 @Scope(
                         name = "Adding a Policy",
                         description = "Adding a Policy",
-                        key = "cdmf:policies:manage",
+                        key = "perm:policies:manage",
                         permissions = {"/device-mgt/policies/manage"}
                 ),
                 @Scope(
                         name = "Getting Details of Policies",
                         description = "Getting Details of Policies",
-                        key = "cdmf:policies:get-details",
+                        key = "perm:policies:get-details",
                         permissions = {"/device-mgt/policies/view"}
                 ),
                 @Scope(
                         name = "Getting Details of a Policy",
                         description = "Getting Details of a Policy",
-                        key = "cdmf:policies:get-policy-details",
+                        key = "perm:policies:get-policy-details",
                         permissions = {"/device-mgt/policies/view"}
                 ),
                 @Scope(
                         name = "Updating a Policy",
                         description = "Updating a Policy",
-                        key = "cdmf:policies:update",
+                        key = "perm:policies:update",
                         permissions = {"/device-mgt/policies/manage"}
                 ),
                 @Scope(
                         name = "Removing Multiple Policies",
                         description = "Removing Multiple Policies",
-                        key = "cdmf:policies:remove",
+                        key = "perm:policies:remove",
                         permissions = {"/device-mgt/policies/manage"}
                 ),
                 @Scope(
                         name = "Activating Policies",
                         description = "Activating Policies",
-                        key = "cdmf:policies:activate",
+                        key = "perm:policies:activate",
                         permissions = {"/device-mgt/policies/manage"}
                 ),
                 @Scope(
                         name = "Deactivating Policies",
                         description = "Deactivating Policies",
-                        key = "cdmf:policies:deactivate",
+                        key = "perm:policies:deactivate",
                         permissions = {"/device-mgt/policies/manage"}
                 ),
                 @Scope(
                         name = "Applying Changes on Policies",
                         description = "Applying Changes on Policies",
-                        key = "cdmf:policies:changes",
+                        key = "perm:policies:changes",
                         permissions = {"/device-mgt/policies/manage"}
                 ),
                 @Scope(
                         name = "Updating the Policy Priorities",
                         description = "Updating the Policy Priorities",
-                        key = "cdmf:policies:priorities",
+                        key = "perm:policies:priorities",
                         permissions = {"/device-mgt/policies/manage"}
                 )
         }
@@ -138,7 +138,7 @@ public interface PolicyManagementService {
             tags = "Device Policy Management",
             extensions = {
                 @Extension(properties = {
-                        @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:policies:manage")
+                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:policies:manage")
                 })
             }
     )
@@ -206,7 +206,7 @@ public interface PolicyManagementService {
             tags = "Device Policy Management",
             extensions = {
                 @Extension(properties = {
-                        @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:policies:get-details")
+                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:policies:get-details")
                 })
             }
     )
@@ -281,7 +281,7 @@ public interface PolicyManagementService {
             tags = "Device Policy Management",
             extensions = {
                 @Extension(properties = {
-                        @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:policies:get-policy-details")
+                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:policies:get-policy-details")
                 })
             }
     )
@@ -349,7 +349,7 @@ public interface PolicyManagementService {
             tags = "Device Policy Management",
             extensions = {
                 @Extension(properties = {
-                        @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:policies:update")
+                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:policies:update")
                 })
             }
     )
@@ -417,7 +417,7 @@ public interface PolicyManagementService {
             tags = "Device Policy Management",
             extensions = {
                 @Extension(properties = {
-                        @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:policies:remove")
+                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:policies:remove")
                 })
             }
     )
@@ -463,7 +463,7 @@ public interface PolicyManagementService {
             tags = "Device Policy Management",
             extensions = {
                 @Extension(properties = {
-                        @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:policies:activate")
+                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:policies:activate")
                 })
             }
     )
@@ -504,7 +504,7 @@ public interface PolicyManagementService {
             tags = "Device Policy Management",
             extensions = {
                 @Extension(properties = {
-                        @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:policies:deactivate")
+                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:policies:deactivate")
                 })
             }
     )
@@ -550,7 +550,7 @@ public interface PolicyManagementService {
             tags = "Device Policy Management",
             extensions = {
                 @Extension(properties = {
-                        @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:policies:changes")
+                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:policies:changes")
                 })
             }
     )
@@ -578,7 +578,7 @@ public interface PolicyManagementService {
             tags = "Device Policy Management",
             extensions = {
             @Extension(properties = {
-                    @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:policies:priorities")
+                    @ExtensionProperty(name = Constants.SCOPE, value = "perm:policies:priorities")
             })
     }
     )

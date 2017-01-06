@@ -62,49 +62,49 @@ import java.util.List;
                 @Scope(
                         name = "Getting the List of Roles",
                         description = "Getting the List of Roles",
-                        key = "cdmf:roles:view",
+                        key = "perm:roles:view",
                         permissions = {"/device-mgt/roles/view"}
                 ),
                 @Scope(
                         name = "Getting Permission Details of a Role",
                         description = "Getting Permission Details of a Role",
-                        key = "cdmf:roles:permissions",
+                        key = "perm:roles:permissions",
                         permissions = {"/device-mgt/roles/view"}
                 ),
                 @Scope(
                         name = "Getting the List of Roles",
                         description = "Getting the List of Roles",
-                        key = "cdmf:roles:details",
+                        key = "perm:roles:details",
                         permissions = {"/device-mgt/roles/view"}
                 ),
                 @Scope(
                         name = "Adding a Role",
                         description = "Adding a Role",
-                        key = "cdmf:roles:add",
+                        key = "perm:roles:add",
                         permissions = {"/device-mgt/roles/manage"}
                 ),
                 @Scope(
                         name = "Adding a combined Role",
                         description = "Adding a combined Role",
-                        key = "cdmf:roles:create-combined-role",
+                        key = "perm:roles:create-combined-role",
                         permissions = {"/device-mgt/roles/manage"}
                 ),
                 @Scope(
                         name = "Updating Role Details",
                         description = "Updating Role Details",
-                        key = "cdmf:roles:update",
+                        key = "perm:roles:update",
                         permissions = {"/device-mgt/roles/manage"}
                 ),
                 @Scope(
                         name = "Deleting a Role",
                         description = "Deleting a Role",
-                        key = "cdmf:roles:delete",
+                        key = "perm:roles:delete",
                         permissions = {"/device-mgt/roles/manage"}
                 ),
                 @Scope(
                         name = "Adding Users to a Role",
                         description = "Adding Users to a Role",
-                        key = "cdmf:roles:add-users",
+                        key = "perm:roles:add-users",
                         permissions = {"/device-mgt/roles/manage"}
                 )
         }
@@ -125,7 +125,7 @@ public interface RoleManagementService {
             tags = "Role Management",
             extensions = {
                 @Extension(properties = {
-                        @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:roles:view")
+                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:roles:view")
                 })
             }
     )
@@ -205,7 +205,7 @@ public interface RoleManagementService {
             tags = "Role Management",
             extensions = {
                 @Extension(properties = {
-                        @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:roles:permissions")
+                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:roles:permissions")
                 })
             }
     )
@@ -280,7 +280,7 @@ public interface RoleManagementService {
             tags = "Role Management",
             extensions = {
                 @Extension(properties = {
-                        @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:roles:details")
+                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:roles:details")
                 })
             }
     )
@@ -354,7 +354,7 @@ public interface RoleManagementService {
             tags = "Role Management",
             extensions = {
                 @Extension(properties = {
-                        @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:roles:add")
+                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:roles:add")
                 })
             }
     )
@@ -414,7 +414,7 @@ public interface RoleManagementService {
             tags = "Role Management",
             extensions = {
                 @Extension(properties = {
-                        @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:roles:create-combined-role")
+                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:roles:create-combined-role")
                 })
             }
     )
@@ -477,7 +477,7 @@ public interface RoleManagementService {
             tags = "Role Management",
             extensions = {
                 @Extension(properties = {
-                        @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:roles:update")
+                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:roles:update")
                 })
             }
     )
@@ -543,7 +543,7 @@ public interface RoleManagementService {
             tags = "Role Management",
             extensions = {
                 @Extension(properties = {
-                        @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:roles:delete")
+                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:roles:delete")
                 })
             }
     )
@@ -593,7 +593,7 @@ public interface RoleManagementService {
             tags = "Role Management",
             extensions = {
                 @Extension(properties = {
-                        @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:roles:add-users")
+                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:roles:add-users")
                 })
             }
     )

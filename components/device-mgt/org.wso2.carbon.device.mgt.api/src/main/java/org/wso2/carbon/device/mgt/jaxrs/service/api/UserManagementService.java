@@ -78,67 +78,67 @@ import java.util.List;
                 @Scope(
                         name = "Adding a User",
                         description = "Adding a User",
-                        key = "cdmf:users:add",
+                        key = "perm:users:add",
                         permissions = {"/device-mgt/users/manage"}
                 ),
                 @Scope(
                         name = "Getting Details of a User",
                         description = "Getting Details of a User",
-                        key = "cdmf:users:details",
+                        key = "perm:users:details",
                         permissions = {"/device-mgt/users/view"}
                 ),
                 @Scope(
                         name = "Updating Details of a User",
                         description = "Updating Details of a User",
-                        key = "cdmf:users:update",
+                        key = "perm:users:update",
                         permissions = {"/device-mgt/users/manage"}
                 ),
                 @Scope(
                         name = "Deleting a User",
                         description = "Deleting a User",
-                        key = "cdmf:users:delete",
+                        key = "perm:users:delete",
                         permissions = {"/device-mgt/users/manage"}
                 ),
                 @Scope(
                         name = "Getting the Role Details of a User",
                         description = "Getting the Role Details of a User",
-                        key = "cdmf:users:roles",
+                        key = "perm:users:roles",
                         permissions = {"/device-mgt/users/view"}
                 ),
                 @Scope(
                         name = "Getting Details of Users",
                         description = "Getting Details of Users",
-                        key = "cdmf:users:user-details",
+                        key = "perm:users:user-details",
                         permissions = {"/device-mgt/users/view"}
                 ),
                 @Scope(
                         name = "Getting the User Count",
                         description = "Getting the User Count",
-                        key = "cdmf:users:count",
+                        key = "perm:users:count",
                         permissions = {"/device-mgt/users/view"}
                 ),
                 @Scope(
                         name = "Getting the User existence status",
                         description = "Getting the User existence status",
-                        key = "cdmf:users:is-exist",
+                        key = "perm:users:is-exist",
                         permissions = {"/device-mgt/users/view"}
                 ),
                 @Scope(
                         name = "Searching for a User Name",
                         description = "Searching for a User Name",
-                        key = "cdmf:users:search",
+                        key = "perm:users:search",
                         permissions = {"/device-mgt/users/view"}
                 ),
                 @Scope(
                         name = "Changing the User Password",
                         description = "Adding a User",
-                        key = "cdmf:users:credentials",
+                        key = "perm:users:credentials",
                         permissions = {"/login"}
                 ),
                 @Scope(
                         name = "Sending Enrollment Invitations to Users",
                         description = "Sending Enrollment Invitations to Users",
-                        key = "cdmf:users:send-invitation",
+                        key = "perm:users:send-invitation",
                         permissions = {"/device-mgt/users/manage"}
                 )
         }
@@ -159,7 +159,7 @@ public interface UserManagementService {
             tags = "User Management",
             extensions = {
                 @Extension(properties = {
-                        @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:users:add")
+                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:users:add")
                 })
             }
     )
@@ -219,7 +219,7 @@ public interface UserManagementService {
             tags = "User Management",
             extensions = {
                 @Extension(properties = {
-                        @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:users:details")
+                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:users:details")
                 })
             }
     )
@@ -290,7 +290,7 @@ public interface UserManagementService {
             tags = "User Management",
             extensions = {
                 @Extension(properties = {
-                        @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:users:update")
+                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:users:update")
                 })
             }
     )
@@ -355,7 +355,7 @@ public interface UserManagementService {
             tags = "User Management",
             extensions = {
                 @Extension(properties = {
-                        @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:users:delete")
+                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:users:delete")
                 })
             }
     )
@@ -398,7 +398,7 @@ public interface UserManagementService {
             tags = "User Management",
             extensions = {
                 @Extension(properties = {
-                        @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:users:roles")
+                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:users:roles")
                 })
             }
     )
@@ -460,7 +460,7 @@ public interface UserManagementService {
             tags = "User Management",
             extensions = {
                 @Extension(properties = {
-                        @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:users:user-details")
+                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:users:user-details")
                 })
             }
     )
@@ -531,7 +531,7 @@ public interface UserManagementService {
             tags = "User Management",
             extensions = {
                     @Extension(properties = {
-                            @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:users:count")
+                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:users:count")
                     })
             }
     )
@@ -566,7 +566,7 @@ public interface UserManagementService {
             tags = "User Management",
             extensions = {
                 @Extension(properties = {
-                        @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:users:is-exist")
+                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:users:is-exist")
                 })
             }
     )
@@ -609,7 +609,7 @@ public interface UserManagementService {
             tags = "User Management",
             extensions = {
                 @Extension(properties = {
-                        @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:users:search")
+                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:users:search")
                 })
             }
     )
@@ -686,7 +686,7 @@ public interface UserManagementService {
             tags = "User Management",
             extensions = {
                 @Extension(properties = {
-                        @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:users:credentials")
+                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:users:credentials")
                 })
             }
     )
@@ -731,7 +731,7 @@ public interface UserManagementService {
             tags = "User Management",
             extensions = {
                 @Extension(properties = {
-                        @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:users:send-invitation")
+                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:users:send-invitation")
                 })
             }
     )

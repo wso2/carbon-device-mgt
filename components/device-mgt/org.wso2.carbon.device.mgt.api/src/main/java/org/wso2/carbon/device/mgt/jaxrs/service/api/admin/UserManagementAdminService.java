@@ -59,7 +59,7 @@ import javax.ws.rs.core.Response;
                 @Scope(
                         name = "View Users",
                         description = "View Users",
-                        key = "cdmf:admin-users:view",
+                        key = "perm:admin-users:view",
                         permissions = {"/device-mgt/users/manage"}
                 )
         }
@@ -84,7 +84,7 @@ public interface UserManagementAdminService {
             tags = "User Management Administrative Service",
             extensions = {
                 @Extension(properties = {
-                        @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:admin-users:view")
+                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:admin-users:view")
                 })
             }
     )

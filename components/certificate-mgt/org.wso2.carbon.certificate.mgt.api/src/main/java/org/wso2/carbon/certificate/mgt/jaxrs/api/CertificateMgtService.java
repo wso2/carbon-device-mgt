@@ -40,7 +40,7 @@ import javax.ws.rs.core.Response;
         @Scope(
                 name = "Sign CSR",
                 description = "Sign CSR",
-                key = "cdmf:sign-csr",
+                key = "perm:sign-csr",
                 permissions = {"/device-mgt/certificates/manage"}
         )
 }
@@ -68,7 +68,7 @@ public interface CertificateMgtService {
             tags = "Device Management",
             extensions = {
                     @Extension(properties = {
-                            @ExtensionProperty(name = SCOPE, value = "cdmf:sign-csr")
+                            @ExtensionProperty(name = SCOPE, value = "perm:sign-csr")
                     })
             }
     )

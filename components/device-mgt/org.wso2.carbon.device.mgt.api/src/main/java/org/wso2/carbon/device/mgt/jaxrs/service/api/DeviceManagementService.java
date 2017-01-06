@@ -70,55 +70,55 @@ import javax.ws.rs.core.Response;
                 @Scope(
                         name = "Getting Details of Registered Devices",
                         description = "Getting Details of Registered Devices",
-                        key = "cdmf:devices:view",
+                        key = "perm:devices:view",
                         permissions = {"/device-mgt/devices/owning-device/view"}
                 ),
                 @Scope(
                         name = "Getting Details of a Device",
                         description = "Getting Details of a Device",
-                        key = "cdmf:devices:details",
+                        key = "perm:devices:details",
                         permissions = {"/device-mgt/devices/owning-device/view"}
                 ),
                 @Scope(
                         name = "Delete the device specified by device id",
                         description = "Delete the device specified by device id",
-                        key = "cdmf:devices:delete",
+                        key = "perm:devices:delete",
                         permissions = {"/device-mgt/devices/owning-device/view"}
                 ),
                 @Scope(
                         name = "Getting Feature Details of a Device",
                         description = "Getting Feature Details of a Device",
-                        key = "cdmf:devices:features",
+                        key = "perm:devices:features",
                         permissions = {"/device-mgt/devices/owning-device/view"}
                 ),
                 @Scope(
                         name = "Advanced Search for Devices",
                         description = "Advanced Search for Devices",
-                        key = "cdmf:devices:search",
+                        key = "perm:devices:search",
                         permissions = {"/device-mgt/devices/owning-device/view"}
                 ),
                 @Scope(
                         name = "Getting Installed Application Details of a Device",
                         description = "Getting Installed Application Details of a Device",
-                        key = "cdmf:devices:applications",
+                        key = "perm:devices:applications",
                         permissions = {"/device-mgt/devices/owning-device/view"}
                 ),
                 @Scope(
                         name = "Getting Device Operation Details",
                         description = "Getting Device Operation Details",
-                        key = "cdmf:devices:operations",
+                        key = "perm:devices:operations",
                         permissions = {"/device-mgt/devices/owning-device/view"}
                 ),
                 @Scope(
                         name = "Get the details of the policy that is enforced on a device.",
                         description = "Get the details of the policy that is enforced on a device.",
-                        key = "cdmf:devices:effective-policy",
+                        key = "perm:devices:effective-policy",
                         permissions = {"/device-mgt/devices/owning-device/view"}
                 ),
                 @Scope(
                         name = "Getting Policy Compliance Details of a Device",
                         description = "Getting Policy Compliance Details of a Device",
-                        key = "cdmf:devices:compliance-data",
+                        key = "perm:devices:compliance-data",
                         permissions = {"/device-mgt/devices/owning-device/view"}
                 )
         }
@@ -139,7 +139,7 @@ public interface DeviceManagementService {
             tags = "Device Management",
             extensions = {
             @Extension(properties = {
-                    @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:devices:view")
+                    @ExtensionProperty(name = Constants.SCOPE, value = "perm:devices:view")
             })
     }
     )
@@ -264,7 +264,7 @@ public interface DeviceManagementService {
             tags = "Device Management",
             extensions = {
                 @Extension(properties = {
-                        @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:devices:details")
+                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:devices:details")
                 })
             }
     )
@@ -342,7 +342,7 @@ public interface DeviceManagementService {
             tags = "Device Management",
             extensions = {
                 @Extension(properties = {
-                        @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:devices:delete")
+                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:devices:delete")
                 })
             }
     )
@@ -414,7 +414,7 @@ public interface DeviceManagementService {
             tags = "Device Management",
             extensions = {
             @Extension(properties = {
-                    @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:devices:features")
+                    @ExtensionProperty(name = Constants.SCOPE, value = "perm:devices:features")
             })
     }
     )
@@ -503,7 +503,7 @@ public interface DeviceManagementService {
             tags = "Device Management",
             extensions = {
                 @Extension(properties = {
-                        @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:devices:search")
+                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:devices:search")
                 })
             }
     )
@@ -580,7 +580,7 @@ public interface DeviceManagementService {
             tags = "Device Management",
             extensions = {
             @Extension(properties = {
-                    @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:devices:applications")
+                    @ExtensionProperty(name = Constants.SCOPE, value = "perm:devices:applications")
             })
 
     }
@@ -683,7 +683,7 @@ public interface DeviceManagementService {
             tags = "Device Management",
             extensions = {
             @Extension(properties = {
-                    @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:devices:operations")
+                    @ExtensionProperty(name = Constants.SCOPE, value = "perm:devices:operations")
             })
     }
     )
@@ -794,7 +794,7 @@ public interface DeviceManagementService {
             tags = "Device Management",
             extensions = {
             @Extension(properties = {
-                    @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:devices:effective-policy")
+                    @ExtensionProperty(name = Constants.SCOPE, value = "perm:devices:effective-policy")
             })
     }
     )
@@ -883,7 +883,7 @@ public interface DeviceManagementService {
             tags = "Device Management",
             extensions = {
                 @Extension(properties = {
-                        @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:devices:compliance-data")
+                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:devices:compliance-data")
                 })
             }
     )

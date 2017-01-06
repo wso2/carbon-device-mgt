@@ -66,13 +66,13 @@ import javax.ws.rs.core.Response;
                 @Scope(
                         name = "Getting All Device Notification Details",
                         description = "Getting All Device Notification Details",
-                        key = "cdmf:notifications:view",
+                        key = "perm:notifications:view",
                         permissions = {"/device-mgt/notifications/view"}
                 ),
                 @Scope(
                         name = "Updating the Device Notification Status",
                         description = "Updating the Device Notification Status",
-                        key = "cdmf:notifications:mark-checked",
+                        key = "perm:notifications:mark-checked",
                         permissions = {"/device-mgt/notifications/view"}
                 )
         }
@@ -92,7 +92,7 @@ public interface NotificationManagementService {
             tags = "Device Notification Management",
             extensions = {
                 @Extension(properties = {
-                        @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:notifications:view")
+                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:notifications:view")
                 })
             }
     )
@@ -181,7 +181,7 @@ public interface NotificationManagementService {
             tags = "Device Notification Management",
             extensions = {
                 @Extension(properties = {
-                        @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:notifications:mark-checked")
+                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:notifications:mark-checked")
                 })
             }
     )

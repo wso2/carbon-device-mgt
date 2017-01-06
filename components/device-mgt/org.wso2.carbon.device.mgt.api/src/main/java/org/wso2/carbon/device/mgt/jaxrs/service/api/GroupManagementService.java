@@ -81,85 +81,85 @@ import java.util.List;
                 @Scope(
                         name = "Get the list of groups belongs to current user.",
                         description = "Get the list of groups belongs to current user.",
-                        key = "cdmf:groups:groups",
+                        key = "perm:groups:groups",
                         permissions = {"/device-mgt/groups/view"}
                 ),
                 @Scope(
                         name = "Get the count of groups belongs to current user.",
                         description = "Get the count of groups belongs to current user.",
-                        key = "cdmf:groups:count",
+                        key = "perm:groups:count",
                         permissions = {"/device-mgt/groups/view"}
                 ),
                 @Scope(
                         name = "Add new device group to the system.",
                         description = "Add new device group to the system.",
-                        key = "cdmf:groups:add",
+                        key = "perm:groups:add",
                         permissions = {"/device-mgt/groups/add"}
                 ),
                 @Scope(
                         name = "View group specified",
                         description = "View group specified",
-                        key = "cdmf:groups:groups-view",
+                        key = "perm:groups:groups-view",
                         permissions = {"/device-mgt/groups/view"}
                 ),
                 @Scope(
                         name = "Update a group",
                         description = "Update a group",
-                        key = "cdmf:groups:update",
+                        key = "perm:groups:update",
                         permissions = {"/device-mgt/groups/update"}
                 ),
                 @Scope(
                         name = "Delete a group",
                         description = "Delete a group",
-                        key = "cdmf:groups:remove",
+                        key = "perm:groups:remove",
                         permissions = {"/device-mgt/groups/remove"}
                 ),
                 @Scope(
                         name = "Manage group sharing with a user",
                         description = "Manage group sharing with a user",
-                        key = "cdmf:groups:share",
+                        key = "perm:groups:share",
                         permissions = {"/device-mgt/groups/share"}
                 ),
                 @Scope(
                         name = "View list of roles of a device group",
                         description = "View list of roles of a device group",
-                        key = "cdmf:groups:roles",
+                        key = "perm:groups:roles",
                         permissions = {"/device-mgt/groups/roles/view"}
                 ),
                 @Scope(
                         name = "View list of devices in the device group",
                         description = "View list of devices in the device group",
-                        key = "cdmf:groups:devices",
+                        key = "perm:groups:devices",
                         permissions = {"/device-mgt/groups/devices/view"}
                 ),
                 @Scope(
                         name = "View list of device count in the device group",
                         description = "View list of device count in the device group",
-                        key = "cdmf:groups:devices-count",
+                        key = "perm:groups:devices-count",
                         permissions = {"/device-mgt/groups/devices/view"}
                 ),
                 @Scope(
                         name = "Add devices to group",
                         description = "Add devices to group",
-                        key = "cdmf:groups:devices-add",
+                        key = "perm:groups:devices-add",
                         permissions = {"/device-mgt/groups/devices/add"}
                 ),
                 @Scope(
                         name = "Remove devices from group",
                         description = "Remove devices from group",
-                        key = "cdmf:groups:devices-remove",
+                        key = "perm:groups:devices-remove",
                         permissions = {"/device-mgt/groups/devices/remove"}
                 ),
                 @Scope(
                         name = "Assign devices to groups",
                         description = "Assign devices to groups",
-                        key = "cdmf:groups:assign",
+                        key = "perm:groups:assign",
                         permissions = {"/device-mgt/groups/devices/add"}
                 ),
                 @Scope(
                         name = "List of groups that have the device",
                         description = "List of groups that have the device",
-                        key = "cdmf:groups:device",
+                        key = "perm:groups:device",
                         permissions = {"/device-mgt/groups/devices/view"}
                 )
         }
@@ -180,7 +180,7 @@ public interface GroupManagementService {
             tags = "Device Group Management",
             extensions = {
                 @Extension(properties = {
-                        @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:groups:groups")
+                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:groups:groups")
                 })
             }
     )
@@ -243,7 +243,7 @@ public interface GroupManagementService {
             tags = "Device Group Management",
             extensions = {
                 @Extension(properties = {
-                        @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:groups:count")
+                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:groups:count")
                 })
             }
 
@@ -291,7 +291,7 @@ public interface GroupManagementService {
             tags = "Device Group Management",
             extensions = {
                 @Extension(properties = {
-                        @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:groups:add")
+                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:groups:add")
                 })
             }
     )
@@ -357,7 +357,7 @@ public interface GroupManagementService {
             tags = "Device Group Management",
             extensions = {
                 @Extension(properties = {
-                        @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:groups:groups-view")
+                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:groups:groups-view")
                 })
             }
     )
@@ -410,7 +410,7 @@ public interface GroupManagementService {
             tags = "Device Group Management",
             extensions = {
                 @Extension(properties = {
-                        @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:groups:update")
+                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:groups:update")
                 })
             }
     )
@@ -467,7 +467,7 @@ public interface GroupManagementService {
             tags = "Device Group Management",
             extensions = {
                 @Extension(properties = {
-                        @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:groups:remove")
+                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:groups:remove")
                 })
             }
     )
@@ -519,7 +519,7 @@ public interface GroupManagementService {
             tags = "Device Group Management",
             extensions = {
                 @Extension(properties = {
-                        @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:groups:share")
+                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:groups:share")
                 })
             }
     )
@@ -575,7 +575,7 @@ public interface GroupManagementService {
             tags = "Device Group Management",
             extensions = {
                 @Extension(properties = {
-                        @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:groups:roles")
+                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:groups:roles")
                 })
             }
     )
@@ -627,7 +627,7 @@ public interface GroupManagementService {
             tags = "Device Group Management",
             extensions = {
                 @Extension(properties = {
-                        @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:groups:devices")
+                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:groups:devices")
                 })
             }
     )
@@ -687,7 +687,7 @@ public interface GroupManagementService {
             tags = "Device Group Management",
             extensions = {
                 @Extension(properties = {
-                        @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:groups:devices-count")
+                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:groups:devices-count")
                 })
             }
     )
@@ -739,7 +739,7 @@ public interface GroupManagementService {
             tags = "Device Group Management",
             extensions = {
                 @Extension(properties = {
-                        @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:groups:devices-add")
+                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:groups:devices-add")
                 })
             }
     )
@@ -795,7 +795,7 @@ public interface GroupManagementService {
             tags = "Device Group Management",
             extensions = {
                 @Extension(properties = {
-                        @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:groups:devices-remove")
+                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:groups:devices-remove")
                 })
             }
     )
@@ -851,7 +851,7 @@ public interface GroupManagementService {
             tags = "Device Group Management",
             extensions = {
                     @Extension(properties = {
-                            @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:groups:assign")
+                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:groups:assign")
                     })
             }
     )
@@ -903,7 +903,7 @@ public interface GroupManagementService {
             tags = "Device Group Management",
             extensions = {
                     @Extension(properties = {
-                            @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:groups:device")
+                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:groups:device")
                     })
             }
     )

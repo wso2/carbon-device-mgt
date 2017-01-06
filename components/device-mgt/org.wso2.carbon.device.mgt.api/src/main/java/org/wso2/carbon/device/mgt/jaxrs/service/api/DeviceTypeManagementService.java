@@ -60,13 +60,13 @@ import javax.ws.rs.core.Response;
                 @Scope(
                         name = "Getting the Supported Device Platforms",
                         description = "Getting the Supported Device Platforms",
-                        key = "cdmf:device-types:types",
+                        key = "perm:device-types:types",
                         permissions = {"/device-mgt/devices/owning-device/view"}
                 ),
                 @Scope(
                         name = "Get Feature Details of a Device Type",
                         description = "Get Feature Details of a Device Type",
-                        key = "cdmf:device-types:features",
+                        key = "perm:device-types:features",
                         permissions = {"/device-mgt/devices/owning-device/view"}
                 )
         }
@@ -87,7 +87,7 @@ public interface DeviceTypeManagementService {
             tags = "Device Type Management",
             extensions = {
                     @Extension(properties = {
-                            @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:device-types:types")
+                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:device-types:types")
                     })
             }
     )
@@ -149,7 +149,7 @@ public interface DeviceTypeManagementService {
             tags = "Device Type Management",
             extensions = {
                 @Extension(properties = {
-                        @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:device-types:features")
+                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:device-types:features")
                 })
             }
     )

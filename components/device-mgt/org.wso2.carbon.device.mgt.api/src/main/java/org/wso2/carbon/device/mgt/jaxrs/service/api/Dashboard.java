@@ -52,19 +52,19 @@ import javax.ws.rs.core.Response;
                 @Scope(
                         name = "Device Count Overview",
                         description = "Device Count Overview",
-                        key = "cdmf:dashboard:count-overview",
+                        key = "perm:dashboard:count-overview",
                         permissions = {"/device-mgt/dashboard/view"}
                 ),
                 @Scope(
                         name = "Device Counts by Potential Vulnerabilities",
                         description = "Device Counts by Potential Vulnerabilities",
-                        key = "cdmf:dashboard:vulnerabilities",
+                        key = "perm:dashboard:vulnerabilities",
                         permissions = {"/device-mgt/dashboard/view"}
                 ),
                 @Scope(
                         name = "Get the number of devices that have not complied to a policy",
                         description = "Get the number of devices that have not complied to a policy",
-                        key = "cdmf:dashboard:non-compliant",
+                        key = "perm:dashboard:non-compliant",
                         permissions = {"/device-mgt/dashboard/view"}
                 ),
                 @Scope(
@@ -72,13 +72,13 @@ import javax.ws.rs.core.Response;
                                 + "potential vulnerability, platform, and ownership",
                         description = "Get the number of devices for a given device type, such as connectivity status, "
                                 + "potential vulnerability, platform, and ownership",
-                        key = "cdmf:dashboard:by-groups",
+                        key = "perm:dashboard:by-groups",
                         permissions = {"/device-mgt/dashboard/view"}
                 ),
                 @Scope(
                         name = "Get the number of devices that have not complied to a given policy based on a particular",
                         description = "Get the number of devices that have not complied to a given policy based on a particular",
-                        key = "cdmf:dashboard:device-counts",
+                        key = "perm:dashboard:device-counts",
                         permissions = {"/device-mgt/dashboard/view"}
                 ),
                 @Scope(
@@ -86,7 +86,7 @@ import javax.ws.rs.core.Response;
                                 + " device type.",
                         description = "Get the number of devices that have not complied to a given policy based on a " +
                                 "particular device type.",
-                        key = "cdmf:dashboard:filtered-count",
+                        key = "perm:dashboard:filtered-count",
                         permissions = {"/device-mgt/dashboard/view"}
                 ),
                 @Scope(
@@ -94,19 +94,19 @@ import javax.ws.rs.core.Response;
                                 + " number of devices registered with WSO2 EMM.\n",
                         description = "Get the number of devices that have not complied to a given policy over the total"
                                 + " number of devices registered with WSO2 EMM.\n",
-                        key = "cdmf:dashboard:non-compliant-count",
+                        key = "perm:dashboard:non-compliant-count",
                         permissions = {"/device-mgt/dashboard/view"}
                 ),
                 @Scope(
                         name = "Get device details of devices based on a particular device type.",
                         description = "Get device details of devices based on a particular device type.",
-                        key = "cdmf:dashboard:details",
+                        key = "perm:dashboard:details",
                         permissions = {"/device-mgt/dashboard/view"}
                 ),
                 @Scope(
                         name = "Get device details of non-compliant devices which do not comply to a given policy.",
                         description = "Get device details of non-compliant devices which do not comply to a given policy.",
-                        key = "cdmf:dashboard:feature-non-compliant",
+                        key = "perm:dashboard:feature-non-compliant",
                         permissions = {"/device-mgt/dashboard/view"}
                 )
         }
@@ -139,7 +139,7 @@ public interface Dashboard {
             tags = "Dashboard",
             extensions = {
                     @Extension(properties = {
-                            @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:dashboard:count-overview")
+                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:dashboard:count-overview")
                     })
             }
     )
@@ -195,7 +195,7 @@ public interface Dashboard {
             tags = "Dashboard",
             extensions = {
                     @Extension(properties = {
-                            @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:dashboard:vulnerabilities")
+                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:dashboard:vulnerabilities")
                     })
             }
     )
@@ -252,7 +252,7 @@ public interface Dashboard {
             tags = "Dashboard",
             extensions = {
                     @Extension(properties = {
-                            @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:dashboard:non-compliant")
+                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:dashboard:non-compliant")
                     })
             }
     )
@@ -322,7 +322,7 @@ public interface Dashboard {
             tags = "Dashboard",
             extensions = {
                     @Extension(properties = {
-                            @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:dashboard:by-groups")
+                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:dashboard:by-groups")
                     })
             }
     )
@@ -411,7 +411,7 @@ public interface Dashboard {
             tags = "Dashboard",
             extensions = {
                     @Extension(properties = {
-                            @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:dashboard:device-counts")
+                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:dashboard:device-counts")
                     })
             }
     )
@@ -490,7 +490,7 @@ public interface Dashboard {
             tags = "Dashboard",
             extensions = {
                     @Extension(properties = {
-                            @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:dashboard:filtered-count")
+                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:dashboard:filtered-count")
                     })
             }
     )
@@ -582,7 +582,7 @@ public interface Dashboard {
             tags = "Dashboard",
             extensions = {
                     @Extension(properties = {
-                            @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:dashboard:non-compliant-count")
+                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:dashboard:non-compliant-count")
                     })
             }
     )
@@ -657,7 +657,7 @@ public interface Dashboard {
             tags = "Dashboard",
             extensions = {
                     @Extension(properties = {
-                            @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:dashboard:details")
+                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:dashboard:details")
                     })
             }
     )
@@ -759,7 +759,7 @@ public interface Dashboard {
             tags = "Dashboard",
             extensions = {
                     @Extension(properties = {
-                            @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:dashboard:feature-non-compliant")
+                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:dashboard:feature-non-compliant")
                     })
             }
     )

@@ -66,7 +66,7 @@ import javax.ws.rs.core.Response;
                 @Scope(
                         name = "Getting Details of a Device",
                         description = "Getting Details of a Device",
-                        key = "cdmf:admin:devices:view",
+                        key = "perm:admin:devices:view",
                         permissions = {"/device-mgt/devices/owning-device/view"}
                 )
         }
@@ -84,7 +84,7 @@ public interface DeviceManagementAdminService {
             tags = "Device Management Administrative Service",
             extensions = {
                     @Extension(properties = {
-                            @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:admin:devices:view")
+                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:admin:devices:view")
                     })
             }
     )

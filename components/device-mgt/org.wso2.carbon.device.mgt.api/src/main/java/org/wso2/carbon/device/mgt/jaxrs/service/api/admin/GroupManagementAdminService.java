@@ -67,13 +67,13 @@ import javax.ws.rs.core.Response;
                 @Scope(
                         name = "View groups",
                         description = "",
-                        key = "cdmf:admin-groups:view",
+                        key = "perm:admin-groups:view",
                         permissions = {"/device-mgt/admin/groups/view"}
                 ),
                 @Scope(
                         name = "Count groups",
                         description = "",
-                        key = "cdmf:admin-groups:count",
+                        key = "perm:admin-groups:count",
                         permissions = {"/device-mgt/admin/groups/view"}
                 )
         }
@@ -89,7 +89,7 @@ public interface GroupManagementAdminService {
             tags = "Device Group Management",
             extensions = {
                     @Extension(properties = {
-                            @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:admin-groups:view")
+                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:admin-groups:view")
                     })
             }
     )
@@ -152,7 +152,7 @@ public interface GroupManagementAdminService {
             tags = "Device Group Management",
             extensions = {
                     @Extension(properties = {
-                            @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:admin-groups:count")
+                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:admin-groups:count")
                     })
             }
     )

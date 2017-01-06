@@ -66,13 +66,13 @@ import javax.ws.rs.core.Response;
                 @Scope(
                         name = "Installing an Application (Internal API)",
                         description = "Installing an Application (Internal API)",
-                        key = "cdmf:applications:install",
+                        key = "perm:applications:install",
                         permissions = {"/device-mgt/applications/manage"}
                 ),
                 @Scope(
                         name = "Uninstalling an Application (Internal API)",
                         description = "Uninstalling an Application (Internal API)",
-                        key = "cdmf:applications:uninstall",
+                        key = "perm:applications:uninstall",
                         permissions = {"/device-mgt/applications/manage"}
                 )
         }
@@ -93,7 +93,7 @@ public interface ApplicationManagementAdminService {
             tags = "Application Management Administrative Service",
             extensions = {
                     @Extension(properties = {
-                            @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:applications:install")
+                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:applications:install")
                     })
             }
     )
@@ -137,7 +137,7 @@ public interface ApplicationManagementAdminService {
             tags = "Application Management Administrative Service",
             extensions = {
                     @Extension(properties = {
-                            @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:applications:uninstall")
+                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:applications:uninstall")
                     })
             }
     )

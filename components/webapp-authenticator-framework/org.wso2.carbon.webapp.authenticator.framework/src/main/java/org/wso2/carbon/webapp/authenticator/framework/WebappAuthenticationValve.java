@@ -123,7 +123,7 @@ public class WebappAuthenticationValve extends CarbonTomcatValve {
                 StringTokenizer tokenizer = new StringTokenizer(param, ",");
                 nonSecuredEndpoints.put(contextPath, "true");
                 while (tokenizer.hasMoreTokens()) {
-                    skippedEndPoint = contextPath + tokenizer.nextToken();
+                    skippedEndPoint = tokenizer.nextToken();
                     skippedEndPoint = skippedEndPoint.replace("\n", "").replace("\r", "").trim();
                     if(!skippedEndPoint.endsWith("/")) {
                         skippedEndPoint = skippedEndPoint + "/";

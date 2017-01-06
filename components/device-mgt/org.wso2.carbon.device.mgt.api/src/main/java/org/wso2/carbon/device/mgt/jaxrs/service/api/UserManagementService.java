@@ -30,15 +30,10 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import io.swagger.annotations.Authorization;
-import io.swagger.annotations.AuthorizationScope;
-import io.swagger.annotations.Extension;
-import io.swagger.annotations.ExtensionProperty;
-import io.swagger.annotations.Info;
 import io.swagger.annotations.ResponseHeader;
-import io.swagger.annotations.SwaggerDefinition;
-import io.swagger.annotations.Tag;
 import org.apache.axis2.transport.http.HTTPConstants;
+import org.wso2.carbon.apimgt.annotations.api.Scopes;
+import org.wso2.carbon.apimgt.annotations.api.Scope;
 import org.wso2.carbon.device.mgt.jaxrs.beans.BasicUserInfo;
 import org.wso2.carbon.device.mgt.jaxrs.beans.BasicUserInfoList;
 import org.wso2.carbon.device.mgt.jaxrs.beans.EnrollmentInvitation;
@@ -46,6 +41,7 @@ import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
 import org.wso2.carbon.device.mgt.jaxrs.beans.OldPasswordResetWrapper;
 import org.wso2.carbon.device.mgt.jaxrs.beans.RoleList;
 import org.wso2.carbon.device.mgt.jaxrs.beans.UserInfo;
+import org.wso2.carbon.device.mgt.jaxrs.util.Constants;
 
 import javax.validation.Valid;
 import javax.ws.rs.Consumes;
@@ -79,71 +75,71 @@ import java.util.List;
 )
 @Scopes(
         scopes = {
-                @org.wso2.carbon.apimgt.annotations.api.Scope(
+                @Scope(
                         name = "Adding a User",
                         description = "Adding a User",
                         key = "cdmf:users:add",
-                        permissions = {"/device-mgt/users/add"}
+                        permissions = {"/device-mgt/users/manage"}
                 ),
-                @org.wso2.carbon.apimgt.annotations.api.Scope(
+                @Scope(
                         name = "Getting Details of a User",
                         description = "Getting Details of a User",
                         key = "cdmf:users:details",
-                        permissions = {"/device-mgt/users/details"}
+                        permissions = {"/device-mgt/users/view"}
                 ),
-                @org.wso2.carbon.apimgt.annotations.api.Scope(
+                @Scope(
                         name = "Updating Details of a User",
                         description = "Updating Details of a User",
                         key = "cdmf:users:update",
-                        permissions = {"/device-mgt/policies/update"}
+                        permissions = {"/device-mgt/users/manage"}
                 ),
-                @org.wso2.carbon.apimgt.annotations.api.Scope(
+                @Scope(
                         name = "Deleting a User",
                         description = "Deleting a User",
                         key = "cdmf:users:delete",
-                        permissions = {"/device-mgt/policies/delete"}
+                        permissions = {"/device-mgt/users/manage"}
                 ),
-                @org.wso2.carbon.apimgt.annotations.api.Scope(
+                @Scope(
                         name = "Getting the Role Details of a User",
                         description = "Getting the Role Details of a User",
                         key = "cdmf:users:roles",
-                        permissions = {"/device-mgt/policies/roles"}
+                        permissions = {"/device-mgt/users/view"}
                 ),
-                @org.wso2.carbon.apimgt.annotations.api.Scope(
+                @Scope(
                         name = "Getting Details of Users",
                         description = "Getting Details of Users",
                         key = "cdmf:users:user-details",
-                        permissions = {"/device-mgt/policies/user-details"}
+                        permissions = {"/device-mgt/users/view"}
                 ),
-                @org.wso2.carbon.apimgt.annotations.api.Scope(
+                @Scope(
                         name = "Getting the User Count",
                         description = "Getting the User Count",
                         key = "cdmf:users:count",
-                        permissions = {"/device-mgt/policies/count"}
+                        permissions = {"/device-mgt/users/view"}
                 ),
-                @org.wso2.carbon.apimgt.annotations.api.Scope(
+                @Scope(
                         name = "Getting the User existence status",
                         description = "Getting the User existence status",
                         key = "cdmf:users:is-exist",
-                        permissions = {"/device-mgt/policies/is-exist"}
+                        permissions = {"/device-mgt/users/view"}
                 ),
-                @org.wso2.carbon.apimgt.annotations.api.Scope(
+                @Scope(
                         name = "Searching for a User Name",
                         description = "Searching for a User Name",
                         key = "cdmf:users:search",
-                        permissions = {"/device-mgt/policies/search"}
+                        permissions = {"/device-mgt/users/view"}
                 ),
-                @org.wso2.carbon.apimgt.annotations.api.Scope(
+                @Scope(
                         name = "Changing the User Password",
                         description = "Adding a User",
                         key = "cdmf:users:credentials",
-                        permissions = {"/device-mgt/policies/credentials"}
+                        permissions = {"/login"}
                 ),
-                @org.wso2.carbon.apimgt.annotations.api.Scope(
+                @Scope(
                         name = "Sending Enrollment Invitations to Users",
                         description = "Sending Enrollment Invitations to Users",
                         key = "cdmf:users:send-invitation",
-                        permissions = {"/device-mgt/policies/send-invitation"}
+                        permissions = {"/device-mgt/users/manage"}
                 )
         }
 )

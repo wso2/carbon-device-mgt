@@ -74,7 +74,7 @@ import javax.ws.rs.core.Response;
                         name = "Count groups",
                         description = "",
                         key = "cdmf:admin-groups:count",
-                        permissions = {"/device-mgt/admin/groups/count"}
+                        permissions = {"/device-mgt/admin/groups/view"}
                 )
         }
 )

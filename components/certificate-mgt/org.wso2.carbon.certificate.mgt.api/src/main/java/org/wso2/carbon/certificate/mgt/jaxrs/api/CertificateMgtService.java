@@ -41,7 +41,7 @@ import javax.ws.rs.core.Response;
                 name = "Sign CSR",
                 description = "Sign CSR",
                 key = "cdmf:sign-csr",
-                permissions = {"/certificate-mgt/sign-csr"}
+                permissions = {"/device-mgt/certificates/manage"}
         )
 }
 )

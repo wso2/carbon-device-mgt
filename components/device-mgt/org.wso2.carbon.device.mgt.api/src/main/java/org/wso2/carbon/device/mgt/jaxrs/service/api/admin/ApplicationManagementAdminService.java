@@ -67,13 +67,13 @@ import javax.ws.rs.core.Response;
                         name = "Installing an Application (Internal API)",
                         description = "Installing an Application (Internal API)",
                         key = "cdmf:applications:install",
-                        permissions = {"/device-mgt/applications/install"}
+                        permissions = {"/device-mgt/applications/manage"}
                 ),
                 @Scope(
                         name = "Uninstalling an Application (Internal API)",
                         description = "Uninstalling an Application (Internal API)",
                         key = "cdmf:applications:uninstall",
-                        permissions = {"/device-mgt/applications/uninstall"}
+                        permissions = {"/device-mgt/applications/manage"}
                 )
         }
 )

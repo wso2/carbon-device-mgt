@@ -82,13 +82,13 @@ import java.util.List;
                         name = "Get the list of groups belongs to current user.",
                         description = "Get the list of groups belongs to current user.",
                         key = "cdmf:groups:groups",
-                        permissions = {"/device-mgt/groups/groups"}
+                        permissions = {"/device-mgt/groups/view"}
                 ),
                 @Scope(
                         name = "Get the count of groups belongs to current user.",
                         description = "Get the count of groups belongs to current user.",
                         key = "cdmf:groups:count",
-                        permissions = {"/device-mgt/groups/count"}
+                        permissions = {"/device-mgt/groups/view"}
                 ),
                 @Scope(
                         name = "Add new device group to the system.",
@@ -100,7 +100,7 @@ import java.util.List;
                         name = "View group specified",
                         description = "View group specified",
                         key = "cdmf:groups:groups-view",
-                        permissions = {"/device-mgt/groups/groups-view"}
+                        permissions = {"/device-mgt/groups/view"}
                 ),
                 @Scope(
                         name = "Update a group",
@@ -124,31 +124,43 @@ import java.util.List;
                         name = "View list of roles of a device group",
                         description = "View list of roles of a device group",
                         key = "cdmf:groups:roles",
-                        permissions = {"/device-mgt/groups/roles"}
+                        permissions = {"/device-mgt/groups/roles/view"}
                 ),
                 @Scope(
                         name = "View list of devices in the device group",
                         description = "View list of devices in the device group",
                         key = "cdmf:groups:devices",
-                        permissions = {"/device-mgt/groups/devices"}
+                        permissions = {"/device-mgt/groups/devices/view"}
                 ),
                 @Scope(
                         name = "View list of device count in the device group",
                         description = "View list of device count in the device group",
                         key = "cdmf:groups:devices-count",
-                        permissions = {"/device-mgt/groups/devices/devices-count"}
+                        permissions = {"/device-mgt/groups/devices/view"}
                 ),
                 @Scope(
                         name = "Add devices to group",
                         description = "Add devices to group",
                         key = "cdmf:groups:devices-add",
-                        permissions = {"/device-mgt/groups/devices/devices-add"}
+                        permissions = {"/device-mgt/groups/devices/add"}
                 ),
                 @Scope(
                         name = "Remove devices from group",
                         description = "Remove devices from group",
                         key = "cdmf:groups:devices-remove",
-                        permissions = {"/device-mgt/groups/devices/devices-remove"}
+                        permissions = {"/device-mgt/groups/devices/remove"}
+                ),
+                @Scope(
+                        name = "Assign devices to groups",
+                        description = "Assign devices to groups",
+                        key = "cdmf:groups:assign",
+                        permissions = {"/device-mgt/groups/devices/add"}
+                ),
+                @Scope(
+                        name = "List of groups that have the device",
+                        description = "List of groups that have the device",
+                        key = "cdmf:groups:device",
+                        permissions = {"/device-mgt/groups/devices/view"}
                 )
         }
 )
@@ -837,12 +849,10 @@ public interface GroupManagementService {
             value = "Assign devices to groups",
             notes = "Add existing device to device groups.",
             tags = "Device Group Management",
-            authorizations = {
-                    @Authorization(
-                            value = "permission",
-                            scopes = {@AuthorizationScope(scope = "/device-mgt/groups/devices/add",
-                                    description = "Add devices")}
-                    )
+            extensions = {
+                    @Extension(properties = {
+                            @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:groups:assign")
+                    })
             }
     )
     @ApiResponses(value = {
@@ -891,12 +901,10 @@ public interface GroupManagementService {
             value = "List of groups that have the device",
             notes = "List of groups that have the device.",
             tags = "Device Group Management",
-            authorizations = {
-                    @Authorization(
-                            value = "permission",
-                            scopes = {@AuthorizationScope(scope = "/device-mgt/groups/devices/view",
-                                    description = "Add devices")}
-                    )
+            extensions = {
+                    @Extension(properties = {
+                            @ExtensionProperty(name = Constants.SCOPE, value = "cdmf:groups:device")
+                    })
             }
     )
     @ApiResponses(value = {

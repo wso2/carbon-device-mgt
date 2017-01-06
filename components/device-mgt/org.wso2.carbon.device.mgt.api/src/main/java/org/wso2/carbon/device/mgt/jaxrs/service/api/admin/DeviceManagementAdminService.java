@@ -67,7 +67,7 @@ import javax.ws.rs.core.Response;
                         name = "Getting Details of a Device",
                         description = "Getting Details of a Device",
                         key = "cdmf:admin:devices:view",
-                        permissions = {"/device-mgt/devices/admin/devices/view"}
+                        permissions = {"/device-mgt/devices/owning-device/view"}
                 )
         }
 )

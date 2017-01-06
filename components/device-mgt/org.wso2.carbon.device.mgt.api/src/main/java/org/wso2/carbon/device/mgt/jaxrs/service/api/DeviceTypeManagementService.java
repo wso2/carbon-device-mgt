@@ -61,13 +61,13 @@ import javax.ws.rs.core.Response;
                         name = "Getting the Supported Device Platforms",
                         description = "Getting the Supported Device Platforms",
                         key = "cdmf:device-types:types",
-                        permissions = {"/device-mgt/device-types/types"}
+                        permissions = {"/device-mgt/devices/owning-device/view"}
                 ),
                 @Scope(
                         name = "Get Feature Details of a Device Type",
                         description = "Get Feature Details of a Device Type",
                         key = "cdmf:device-types:features",
-                        permissions = {"/device-mgt/device-types/features"}
+                        permissions = {"/device-mgt/devices/owning-device/view"}
                 )
         }
 )

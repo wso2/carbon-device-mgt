@@ -73,7 +73,7 @@ import javax.ws.rs.core.Response;
                         name = "Updating the Device Notification Status",
                         description = "Updating the Device Notification Status",
                         key = "cdmf:notifications:mark-checked",
-                        permissions = {"/device-mgt/notifications/mark-checked"}
+                        permissions = {"/device-mgt/notifications/view"}
                 )
         }
 )

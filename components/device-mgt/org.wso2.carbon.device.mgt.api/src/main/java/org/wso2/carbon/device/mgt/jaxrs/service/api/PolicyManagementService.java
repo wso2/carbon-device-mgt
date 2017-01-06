@@ -75,49 +75,49 @@ import java.util.List;
                         name = "Getting Details of Policies",
                         description = "Getting Details of Policies",
                         key = "cdmf:policies:get-details",
-                        permissions = {"/device-mgt/policies/get-details"}
+                        permissions = {"/device-mgt/policies/view"}
                 ),
                 @Scope(
                         name = "Getting Details of a Policy",
                         description = "Getting Details of a Policy",
                         key = "cdmf:policies:get-policy-details",
-                        permissions = {"/device-mgt/policies/get-policy-details"}
+                        permissions = {"/device-mgt/policies/view"}
                 ),
                 @Scope(
                         name = "Updating a Policy",
                         description = "Updating a Policy",
                         key = "cdmf:policies:update",
-                        permissions = {"/device-mgt/policies/update"}
+                        permissions = {"/device-mgt/policies/manage"}
                 ),
                 @Scope(
                         name = "Removing Multiple Policies",
                         description = "Removing Multiple Policies",
                         key = "cdmf:policies:remove",
-                        permissions = {"/device-mgt/policies/remove"}
+                        permissions = {"/device-mgt/policies/manage"}
                 ),
                 @Scope(
                         name = "Activating Policies",
                         description = "Activating Policies",
                         key = "cdmf:policies:activate",
-                        permissions = {"/device-mgt/policies/activate"}
+                        permissions = {"/device-mgt/policies/manage"}
                 ),
                 @Scope(
                         name = "Deactivating Policies",
                         description = "Deactivating Policies",
                         key = "cdmf:policies:deactivate",
-                        permissions = {"/device-mgt/policies/deactivate"}
+                        permissions = {"/device-mgt/policies/manage"}
                 ),
                 @Scope(
                         name = "Applying Changes on Policies",
                         description = "Applying Changes on Policies",
                         key = "cdmf:policies:changes",
-                        permissions = {"/device-mgt/policies/changes"}
+                        permissions = {"/device-mgt/policies/manage"}
                 ),
                 @Scope(
                         name = "Updating the Policy Priorities",
                         description = "Updating the Policy Priorities",
                         key = "cdmf:policies:priorities",
-                        permissions = {"/device-mgt/policies/priorities"}
+                        permissions = {"/device-mgt/policies/manage"}
                 )
         }
 )

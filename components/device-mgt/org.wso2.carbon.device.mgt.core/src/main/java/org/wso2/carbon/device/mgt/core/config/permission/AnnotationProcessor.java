@@ -63,6 +63,8 @@ public class AnnotationProcessor {
     private static final String SWAGGER_ANNOTATIONS_PROPERTIES_PERMISSIONS = "permissions";
     private static final String ANNOTATIONS_SCOPES = "scopes";
 
+    private static final String PERMISSION_PREFIX = "/permission/admin";
+
     private StandardContext context;
     private Method[] pathClazzMethods;
     private Class<Path> pathClazz;
@@ -391,8 +393,9 @@ public class AnnotationProcessor {
 
         Scope scope;
         String permissions[];
-        StringBuilder aggregatedPermissions = new StringBuilder();
+        StringBuilder aggregatedPermissions;
         for(int i=0; i<annotatedScopes.length; i++){
+            aggregatedPermissions = new StringBuilder();
             methodHandler = Proxy.getInvocationHandler(annotatedScopes[i]);
             scope = new Scope();
             scope.setName(invokeMethod(scopeClass
@@ -403,8 +406,8 @@ public class AnnotationProcessor {
                     .getMethod(SWAGGER_ANNOTATIONS_PROPERTIES_KEY), annotatedScopes[i], STRING));
             permissions = (String[])methodHandler.invoke(annotatedScopes[i], scopeClass
                     .getMethod(SWAGGER_ANNOTATIONS_PROPERTIES_PERMISSIONS, null),null);
-            aggregatedPermissions.setLength(0);
             for (String permission : permissions) {
+                aggregatedPermissions.append(PERMISSION_PREFIX);
                 aggregatedPermissions.append(permission);
                 aggregatedPermissions.append(" ");
             }

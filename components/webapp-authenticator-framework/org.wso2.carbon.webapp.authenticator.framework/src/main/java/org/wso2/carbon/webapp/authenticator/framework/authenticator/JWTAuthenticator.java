@@ -90,6 +90,9 @@ public class JWTAuthenticator implements WebappAuthenticator {
         if (requestUri == null || "".equals(requestUri)) {
             authenticationInfo.setStatus(Status.CONTINUE);
         }
+        if (requestUri == null) {
+            requestUri = "";
+        }
         StringTokenizer tokenizer = new StringTokenizer(requestUri, "/");
         String context = tokenizer.nextToken();
         if (context == null || "".equals(context)) {

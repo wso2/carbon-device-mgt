@@ -33,7 +33,7 @@ function onRequest(context) {
         viewModel["roles"] = response["content"];
     }
 
-    viewModel["charLimit"] = mdmProps["usernameLength"];
+    viewModel["charLimit"] = mdmProps["userValidationConfig"]["usernameLength"];
     viewModel["usernameJSRegEx"] = mdmProps["userValidationConfig"]["usernameJSRegEx"];
     viewModel["usernameHelpText"] = mdmProps["userValidationConfig"]["usernameHelpMsg"];
     viewModel["usernameRegExViolationErrorMsg"] = mdmProps["userValidationConfig"]["usernameRegExViolationErrorMsg"];

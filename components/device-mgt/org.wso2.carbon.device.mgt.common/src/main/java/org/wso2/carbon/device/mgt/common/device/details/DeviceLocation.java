@@ -137,7 +137,7 @@ public class DeviceLocation implements Serializable {
     }
 
     public Date getUpdatedTime() {
-        if(updatedTime.equals(null)){
+        if(updatedTime == null ){
             updatedTime = new Date();
         }
         return updatedTime;

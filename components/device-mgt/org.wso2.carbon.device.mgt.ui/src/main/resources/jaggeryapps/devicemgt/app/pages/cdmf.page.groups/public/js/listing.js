@@ -23,6 +23,7 @@
  */
 function InitiateViewOption(url) {
     if ($(".select-enable-btn").text() == "Select") {
+        url = $(this).parent().data("url");
         $(location).attr('href', url);
     }
 }
@@ -147,35 +148,30 @@ function loadGroups() {
         return JSON.stringify(json);
     };
 
-    var columns = [{
-        targets: 0,
-        data: 'id',
-        class: 'remove-padding icon-only content-fill',
-        render: function (data, type, row, meta) {
-            if ($.hasPermission("VIEW_GROUP_DEVICES")) {
-                return '<a href="devices?groupId=' + row.groupId + '&groupName=' + row.name
-                       + '"><div class="thumbnail icon"><img class="square-element text fw " '
-                       + 'src="public/cdmf.page.groups/images/group-icon.png"/></div></a>';
-            } else {
+    var columns = [
+        {
+            targets: 0,
+            data: 'id',
+            class: 'remove-padding icon-only content-fill viewEnabledIcon',
+            render: function (data, type, row, meta) {
                 return '<div class="thumbnail icon"><img class="square-element text fw " ' +
                        'src="public/cdmf.page.groups/images/group-icon.png"/></div>';
             }
-        }
-    },
+        },
         {
             targets: 1,
             data: 'name',
-            class: ''
+            class: 'viewEnabledIcon'
         },
         {
             targets: 2,
             data: 'owner',
-            class: 'remove-padding-top',
+            class: 'remove-padding-top viewEnabledIcon'
         },
         {
             targets: 3,
             data: 'description',
-            class: 'remove-padding-top',
+            class: 'remove-padding-top viewEnabledIcon'
         },
         {
             targets: 4,
@@ -226,7 +222,9 @@ function loadGroups() {
 
     var fnCreatedRow = function (row, data) {
         $(row).attr('data-type', 'selectable');
-        $(row).attr('data-groupid', data.id);
+        if ($.hasPermission("VIEW_GROUP_DEVICES")) {
+            $(row).attr('data-url', 'devices?groupId=' + data.groupId + '&groupName=' + data.name);
+        }
         $.each($('td', row), function (colIndex) {
             switch (colIndex) {
                 case 1:

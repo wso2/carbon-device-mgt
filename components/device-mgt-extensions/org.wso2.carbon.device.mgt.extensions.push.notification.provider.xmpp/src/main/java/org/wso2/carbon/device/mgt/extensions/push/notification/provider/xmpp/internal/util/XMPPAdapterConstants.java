@@ -30,6 +30,7 @@ public final class XMPPAdapterConstants {
     public static final String SUBJECT_PROPERTY_KEY = "subject";
     public static final String MESSAGE_TYPE_PROPERTY_KEY = "messageType";
     public static final String CHAT_PROPERTY_KEY = "chat";
+    public static final String XMPP_ADAPTER_PROPERTY_SUBDOMAIN = "subDomain";
     public static final String XMPP_ADAPTER_PROPERTY_HOST = "host";
     public static final String XMPP_ADAPTER_PROPERTY_PORT = "port";
     public static final String XMPP_ADAPTER_PROPERTY_USERNAME = "username";

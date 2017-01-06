@@ -19,20 +19,20 @@
 package org.wso2.carbon.device.mgt.jaxrs.beans;
 
 import io.swagger.annotations.ApiModel;
-import org.wso2.carbon.policy.mgt.common.monitor.ComplianceData;
+import org.wso2.carbon.device.mgt.common.policy.mgt.monitor.NonComplianceData;
 
 @ApiModel(value = "DeviceCompliance", description = "Device's policy compliance status")
 public class DeviceCompliance {
 
     private String deviceID;
-    private ComplianceData complianceData;
+    private NonComplianceData complianceData;
     private Long code;
 
-    public ComplianceData getComplianceData() {
+    public NonComplianceData getComplianceData() {
         return complianceData;
     }
 
-    public void setComplianceData(ComplianceData complianceData) {
+    public void setComplianceData(NonComplianceData complianceData) {
         this.complianceData = complianceData;
     }
 

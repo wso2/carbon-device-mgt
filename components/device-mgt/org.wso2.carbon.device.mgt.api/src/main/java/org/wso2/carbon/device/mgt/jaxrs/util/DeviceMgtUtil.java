@@ -23,7 +23,7 @@ import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorListItem;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ProfileFeature;
 import org.wso2.carbon.device.mgt.jaxrs.exception.BadRequestException;
-import org.wso2.carbon.policy.mgt.common.Profile;
+import org.wso2.carbon.device.mgt.common.policy.mgt.Profile;
 
 import javax.validation.ConstraintViolation;
 import java.util.ArrayList;
@@ -38,9 +38,8 @@ public class DeviceMgtUtil {
         profile.setCreatedDate(mdmProfile.getCreatedDate());
         profile.setDeviceType(mdmProfile.getDeviceType());
 
-        List<org.wso2.carbon.policy.mgt.common.ProfileFeature> profileFeatures =
-                new ArrayList<org.wso2.carbon.policy.
-                        mgt.common.ProfileFeature>(mdmProfile.getProfileFeaturesList().size());
+        List<org.wso2.carbon.device.mgt.common.policy.mgt.ProfileFeature> profileFeatures =
+                new ArrayList<org.wso2.carbon.device.mgt.common.policy.mgt.ProfileFeature>(mdmProfile.getProfileFeaturesList().size());
         for (ProfileFeature mdmProfileFeature : mdmProfile.getProfileFeaturesList()) {
             profileFeatures.add(convertProfileFeature(mdmProfileFeature));
         }
@@ -51,11 +50,11 @@ public class DeviceMgtUtil {
         return profile;
     }
 
-    public static org.wso2.carbon.policy.mgt.common.ProfileFeature convertProfileFeature(ProfileFeature
+    public static org.wso2.carbon.device.mgt.common.policy.mgt.ProfileFeature convertProfileFeature(ProfileFeature
                                                                                                  mdmProfileFeature) {
 
-        org.wso2.carbon.policy.mgt.common.ProfileFeature profileFeature =
-                new org.wso2.carbon.policy.mgt.common.ProfileFeature();
+        org.wso2.carbon.device.mgt.common.policy.mgt.ProfileFeature profileFeature =
+                new org.wso2.carbon.device.mgt.common.policy.mgt.ProfileFeature();
         profileFeature.setProfileId(mdmProfileFeature.getProfileId());
         profileFeature.setContent(mdmProfileFeature.getPayLoad());
         profileFeature.setDeviceType(mdmProfileFeature.getDeviceTypeId());

@@ -28,12 +28,14 @@ import org.wso2.carbon.device.mgt.common.ProvisioningConfig;
 import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManager;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.ConfigurationEntry;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.PlatformConfiguration;
+import org.wso2.carbon.device.mgt.common.policy.mgt.PolicyMonitoringManager;
 import org.wso2.carbon.device.mgt.common.push.notification.PushNotificationConfig;
 import org.wso2.carbon.device.mgt.common.spi.DeviceManagementService;
 import org.wso2.carbon.device.mgt.extensions.device.type.deployer.config.DeviceTypeConfiguration;
 import org.wso2.carbon.device.mgt.extensions.device.type.deployer.config.Property;
 import org.wso2.carbon.device.mgt.extensions.device.type.deployer.config.PushNotificationProvider;
 import org.wso2.carbon.device.mgt.extensions.device.type.deployer.config.TaskConfiguration;
+import org.wso2.carbon.device.mgt.extensions.device.type.deployer.template.policy.mgt.DefaultPolicyMonitoringManager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -54,6 +56,7 @@ public class DeviceTypeManagerService implements DeviceManagementService {
     private String type;
     private OperationMonitoringTaskConfig operationMonitoringConfigs;
     private List<MonitoringOperation> monitoringOperations;
+    private PolicyMonitoringManager policyMonitoringManager;
 
     public DeviceTypeManagerService(DeviceTypeConfigIdentifier deviceTypeConfigIdentifier,
                                     DeviceTypeConfiguration deviceTypeConfiguration) {
@@ -63,6 +66,10 @@ public class DeviceTypeManagerService implements DeviceManagementService {
         this.populatePushNotificationConfig(deviceTypeConfiguration.getPushNotificationProvider());
         this.operationMonitoringConfigs = new OperationMonitoringTaskConfig();
         this.setOperationMonitoringConfig(deviceTypeConfiguration);
+        if (deviceTypeConfiguration.getPolicyMonitoring() != null && deviceTypeConfiguration.getPolicyMonitoring()
+                .isEnabled()) {
+            this.policyMonitoringManager = new DefaultPolicyMonitoringManager();
+        }
     }
 
     @Override
@@ -143,6 +150,11 @@ public class DeviceTypeManagerService implements DeviceManagementService {
     @Override
     public PushNotificationConfig getPushNotificationConfig() {
         return pushNotificationConfig;
+    }
+
+    @Override
+    public PolicyMonitoringManager getPolicyMonitoringManager() {
+        return policyMonitoringManager;
     }
 
     private void setProvisioningConfig(String tenantDomain, DeviceTypeConfiguration deviceTypeConfiguration) {

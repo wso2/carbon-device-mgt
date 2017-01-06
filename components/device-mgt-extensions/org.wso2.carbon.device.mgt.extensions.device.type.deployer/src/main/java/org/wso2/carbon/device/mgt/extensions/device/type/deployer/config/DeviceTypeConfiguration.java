@@ -41,6 +41,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  *         &lt;element name="PushNotificationProvider" type="{}PushNotificationProvider"/>
  *         &lt;element name="License" type="{}License"/>
  *         &lt;element name="DataSource" type="{}DataSource"/>
+ *         &lt;element name="PolicyMonitoring" type="{}PolicyMonitoring"/>
  *         &lt;element name="DeviceAuthorizationConfig" type="{}DeviceAuthorizationConfig"/>
  *       &lt;/sequence>
  *       &lt;attribute name="name" type="{http://www.w3.org/2001/XMLSchema}string" />
@@ -71,6 +72,8 @@ public class DeviceTypeConfiguration {
     protected DeviceAuthorizationConfig deviceAuthorizationConfig;
     @XmlAttribute(name = "name")
     protected String name;
+    @XmlElement(name = "PolicyMonitoring", required = true)
+    protected PolicyMonitoring policyMonitoring;
 
     /**
      * Gets the value of the taskConfiguration property.
@@ -114,6 +117,26 @@ public class DeviceTypeConfiguration {
      */
     public void setDeviceDetails(DeviceDetails value) {
         this.deviceDetails = value;
+    }
+
+    /**
+     * Gets the value of the policyMonitoring property.
+     *
+     * @return possible object is
+     * {@link DeviceDetails }
+     */
+    public PolicyMonitoring getPolicyMonitoring() {
+        return policyMonitoring;
+    }
+
+    /**
+     * Sets the value of the policyMonitoring property.
+     *
+     * @param value allowed object is
+     *              {@link DeviceDetails }
+     */
+    public void setDeviceDetails(PolicyMonitoring value) {
+        this.policyMonitoring = value;
     }
 
     /**

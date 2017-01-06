@@ -19,7 +19,7 @@
 package org.wso2.carbon.policy.mgt.core.enforcement;
 
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
-import org.wso2.carbon.policy.mgt.common.Policy;
+import org.wso2.carbon.device.mgt.common.policy.mgt.Policy;
 
 import java.util.List;
 

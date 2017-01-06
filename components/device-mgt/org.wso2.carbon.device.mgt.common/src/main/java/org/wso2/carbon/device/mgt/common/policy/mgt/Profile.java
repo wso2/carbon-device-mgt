@@ -16,11 +16,10 @@
 * under the License.
 */
 
-package org.wso2.carbon.policy.mgt.common;
+package org.wso2.carbon.device.mgt.common.policy.mgt;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;

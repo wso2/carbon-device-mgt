@@ -143,7 +143,8 @@
                             org.wso2.carbon.event.output.adapter.core,
                             org.wso2.carbon.event.output.adapter.core.exception,
                             org.osgi.framework,
-                            org.wso2.carbon.core
+                            org.wso2.carbon.core,
+							org.wso2.carbon.device.mgt.common.*
                         </Import-Package>
                     </instructions>
                 </configuration>

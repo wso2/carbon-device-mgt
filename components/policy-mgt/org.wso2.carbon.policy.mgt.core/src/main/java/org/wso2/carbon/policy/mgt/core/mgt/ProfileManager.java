@@ -19,7 +19,7 @@
 
 package org.wso2.carbon.policy.mgt.core.mgt;
 
-import org.wso2.carbon.policy.mgt.common.Profile;
+import org.wso2.carbon.device.mgt.common.policy.mgt.Profile;
 import org.wso2.carbon.policy.mgt.common.ProfileManagementException;
 
 import java.util.List;

@@ -19,8 +19,7 @@
 
 package org.wso2.carbon.policy.mgt.core.dao;
 
-import org.wso2.carbon.device.mgt.core.dto.DeviceType;
-import org.wso2.carbon.policy.mgt.common.Profile;
+import org.wso2.carbon.device.mgt.common.policy.mgt.Profile;
 
 import java.util.List;
 

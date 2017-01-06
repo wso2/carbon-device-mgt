@@ -21,30 +21,24 @@ package org.wso2.carbon.policy.mgt.core.services;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
-import org.wso2.carbon.policy.mgt.common.Policy;
-import org.wso2.carbon.policy.mgt.common.ProfileFeature;
-import org.wso2.carbon.policy.mgt.common.monitor.ComplianceData;
-import org.wso2.carbon.policy.mgt.common.monitor.ComplianceFeature;
-import org.wso2.carbon.policy.mgt.common.monitor.PolicyComplianceException;
-import org.wso2.carbon.policy.mgt.common.spi.PolicyMonitoringService;
+import org.wso2.carbon.device.mgt.common.policy.mgt.Policy;
+import org.wso2.carbon.device.mgt.common.policy.mgt.PolicyMonitoringManager;
+import org.wso2.carbon.device.mgt.common.policy.mgt.ProfileFeature;
+import org.wso2.carbon.device.mgt.common.policy.mgt.monitor.NonComplianceData;
+import org.wso2.carbon.device.mgt.common.policy.mgt.monitor.ComplianceFeature;
+import org.wso2.carbon.device.mgt.common.policy.mgt.monitor.PolicyComplianceException;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class PolicyMonitoringServiceTest implements PolicyMonitoringService {
+public class PolicyMonitoringManagerTest implements PolicyMonitoringManager {
 
-    private static final Log log = LogFactory.getLog(PolicyMonitoringServiceTest.class);
+    private static final Log log = LogFactory.getLog(PolicyMonitoringManagerTest.class);
 
-    @Override
-    public void notifyDevices(List<Device> devices) throws PolicyComplianceException {
-
-        log.debug("Device notifying is called by the task.");
-    }
 
     @Override
-    public ComplianceData checkPolicyCompliance(DeviceIdentifier deviceIdentifier, Policy policy, Object response)
+    public NonComplianceData checkPolicyCompliance(DeviceIdentifier deviceIdentifier, Policy policy, Object response)
             throws PolicyComplianceException {
 
         log.debug("Check compliance is called.");
@@ -55,7 +49,7 @@ public class PolicyMonitoringServiceTest implements PolicyMonitoringService {
         log.debug(deviceIdentifier.getId());
         log.debug(deviceIdentifier.getType());
 
-        ComplianceData data = new ComplianceData();
+        NonComplianceData data = new NonComplianceData();
 
         List<ComplianceFeature> complianceFeatures = new ArrayList<>();
 
@@ -75,10 +69,5 @@ public class PolicyMonitoringServiceTest implements PolicyMonitoringService {
         data.setStatus(false);
 
         return data;
-    }
-
-    @Override
-    public String getType() {
-        return "android";
     }
 }

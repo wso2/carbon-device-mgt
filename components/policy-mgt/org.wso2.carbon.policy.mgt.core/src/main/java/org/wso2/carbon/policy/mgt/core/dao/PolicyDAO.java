@@ -20,9 +20,9 @@ package org.wso2.carbon.policy.mgt.core.dao;
 
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.policy.mgt.common.Criterion;
-import org.wso2.carbon.policy.mgt.common.DeviceGroupWrapper;
-import org.wso2.carbon.policy.mgt.common.Policy;
-import org.wso2.carbon.policy.mgt.common.PolicyCriterion;
+import org.wso2.carbon.device.mgt.common.policy.mgt.DeviceGroupWrapper;
+import org.wso2.carbon.device.mgt.common.policy.mgt.Policy;
+import org.wso2.carbon.device.mgt.common.policy.mgt.PolicyCriterion;
 
 import java.util.HashMap;
 import java.util.List;

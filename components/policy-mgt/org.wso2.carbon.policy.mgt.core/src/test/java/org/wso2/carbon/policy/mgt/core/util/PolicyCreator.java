@@ -18,9 +18,9 @@
 
 package org.wso2.carbon.policy.mgt.core.util;
 
-import org.wso2.carbon.policy.mgt.common.Policy;
-import org.wso2.carbon.policy.mgt.common.PolicyCriterion;
-import org.wso2.carbon.policy.mgt.common.Profile;
+import org.wso2.carbon.device.mgt.common.policy.mgt.Policy;
+import org.wso2.carbon.device.mgt.common.policy.mgt.PolicyCriterion;
+import org.wso2.carbon.device.mgt.common.policy.mgt.Profile;
 
 import java.util.ArrayList;
 import java.util.List;

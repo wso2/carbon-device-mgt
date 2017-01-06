@@ -24,6 +24,7 @@ import org.wso2.carbon.certificate.mgt.core.scep.SCEPManager;
 import org.wso2.carbon.certificate.mgt.core.service.CertificateManagementService;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.core.search.mgt.SearchManagerService;
+import org.wso2.carbon.identity.jwt.client.extension.service.JWTClientManagerService;
 
 import javax.ws.rs.core.MediaType;
 
@@ -48,6 +49,21 @@ public class CertificateMgtAPIUtils {
         }
 
         return certificateManagementService;
+    }
+
+
+    public static JWTClientManagerService getJwtClientManagerService() {
+        PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        JWTClientManagerService jwtClientManagerService = (JWTClientManagerService)
+                ctx.getOSGiService(JWTClientManagerService.class, null);
+
+        if (jwtClientManagerService == null) {
+            String msg = "JWTClientManagerService Management service not initialized.";
+            log.error(msg);
+            throw new IllegalStateException(msg);
+        }
+
+        return jwtClientManagerService;
     }
 
 

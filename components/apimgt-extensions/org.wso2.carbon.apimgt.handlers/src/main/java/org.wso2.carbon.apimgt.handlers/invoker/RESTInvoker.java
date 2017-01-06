@@ -61,64 +61,64 @@ public class RESTInvoker {
         configureHttpClient();
     }
 
-    private void parseConfiguration() {
-        String carbonConfigDirPath = CarbonUtils.getCarbonConfigDirPath();
-        String apiFilterConfigPath = carbonConfigDirPath + File.separator +
-                AuthConstants.AUTH_CONFIGURATION_FILE_NAME;
-        File configFile = new File(apiFilterConfigPath);
-
-        try {
-            String configContent = FileUtils.readFileToString(configFile);
-            OMElement configElement = AXIOMUtil.stringToOM(configContent);
-            Iterator beans = configElement.getChildrenWithName(
-                    new QName("http://www.springframework.org/schema/beans", "bean"));
-
-            while (beans.hasNext()) {
-                OMElement bean = (OMElement) beans.next();
-                String beanId = bean.getAttributeValue(new QName(null, "id"));
-                if (beanId.equals(RESTConstants.REST_CLIENT_CONFIG_ELEMENT)) {
-                    Iterator beanProps = bean.getChildrenWithName(
-                            new QName("http://www.springframework.org/schema/beans", "property"));
-
-                    while (beanProps.hasNext()) {
-                        OMElement beanProp = (OMElement) beanProps.next();
-                        String beanName = beanProp.getAttributeValue(new QName(null, "name"));
-                        if (RESTConstants.REST_CLIENT_MAX_TOTAL_CONNECTIONS.equals(beanName)) {
-                            String value = beanProp.getAttributeValue(new QName(null, "value"));
-                            if (value != null && !value.trim().equals("")) {
-                                maxTotalConnections = Integer.parseInt(value);
-                            }
-                            CoreUtils.debugLog(log, "Max total http connections ", maxTotalConnections);
-                        } else if (RESTConstants.REST_CLIENT_MAX_CONNECTIONS_PER_ROUTE.equals(beanName)) {
-                            String value = beanProp.getAttributeValue(new QName(null, "value"));
-                            if (value != null && !value.trim().equals("")) {
-                                maxTotalConnectionsPerRoute = Integer.parseInt(value);
-                            }
-                            CoreUtils.debugLog(log, "Max total client connections per route ", maxTotalConnectionsPerRoute);
-                        } else if (RESTConstants.REST_CLEINT_CONNECTION_TIMEOUT.equals(beanName)) {
-                            String value = beanProp.getAttributeValue(new QName(null, "value"));
-                            if (value != null && !value.trim().equals("")) {
-                                connectionTimeout = Integer.parseInt(value);
-                            }
-                        } else if (RESTConstants.REST_CLEINT_SOCKET_TIMEOUT.equals(beanName)) {
-                            String value = beanProp.getAttributeValue(new QName(null, "value"));
-                            if (value != null && !value.trim().equals("")) {
-                                socketTimeout = Integer.parseInt(value);
-                            }
-                        }
-                    }
-                }
-            }
-        } catch (XMLStreamException e) {
-            log.error("Error in processing http connection settings, using default settings", e);
-        } catch (IOException e) {
-            log.error("Error in processing http connection settings, using default settings", e);
-        }
-    }
+//    private void parseConfiguration() {
+//        String carbonConfigDirPath = CarbonUtils.getCarbonConfigDirPath();
+//        String apiFilterConfigPath = carbonConfigDirPath + File.separator +
+//                AuthConstants.AUTH_CONFIGURATION_FILE_NAME;
+//        File configFile = new File(apiFilterConfigPath);
+//
+//        try {
+//            String configContent = FileUtils.readFileToString(configFile);
+//            OMElement configElement = AXIOMUtil.stringToOM(configContent);
+//            Iterator beans = configElement.getChildrenWithName(
+//                    new QName("http://www.springframework.org/schema/beans", "bean"));
+//
+//            while (beans.hasNext()) {
+//                OMElement bean = (OMElement) beans.next();
+//                String beanId = bean.getAttributeValue(new QName(null, "id"));
+//                if (beanId.equals(RESTConstants.REST_CLIENT_CONFIG_ELEMENT)) {
+//                    Iterator beanProps = bean.getChildrenWithName(
+//                            new QName("http://www.springframework.org/schema/beans", "property"));
+//
+//                    while (beanProps.hasNext()) {
+//                        OMElement beanProp = (OMElement) beanProps.next();
+//                        String beanName = beanProp.getAttributeValue(new QName(null, "name"));
+//                        if (RESTConstants.REST_CLIENT_MAX_TOTAL_CONNECTIONS.equals(beanName)) {
+//                            String value = beanProp.getAttributeValue(new QName(null, "value"));
+//                            if (value != null && !value.trim().equals("")) {
+//                                maxTotalConnections = Integer.parseInt(value);
+//                            }
+//                            CoreUtils.debugLog(log, "Max total http connections ", maxTotalConnections);
+//                        } else if (RESTConstants.REST_CLIENT_MAX_CONNECTIONS_PER_ROUTE.equals(beanName)) {
+//                            String value = beanProp.getAttributeValue(new QName(null, "value"));
+//                            if (value != null && !value.trim().equals("")) {
+//                                maxTotalConnectionsPerRoute = Integer.parseInt(value);
+//                            }
+//                            CoreUtils.debugLog(log, "Max total client connections per route ", maxTotalConnectionsPerRoute);
+//                        } else if (RESTConstants.REST_CLEINT_CONNECTION_TIMEOUT.equals(beanName)) {
+//                            String value = beanProp.getAttributeValue(new QName(null, "value"));
+//                            if (value != null && !value.trim().equals("")) {
+//                                connectionTimeout = Integer.parseInt(value);
+//                            }
+//                        } else if (RESTConstants.REST_CLEINT_SOCKET_TIMEOUT.equals(beanName)) {
+//                            String value = beanProp.getAttributeValue(new QName(null, "value"));
+//                            if (value != null && !value.trim().equals("")) {
+//                                socketTimeout = Integer.parseInt(value);
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//        } catch (XMLStreamException e) {
+//            log.error("Error in processing http connection settings, using default settings", e);
+//        } catch (IOException e) {
+//            log.error("Error in processing http connection settings, using default settings", e);
+//        }
+//    }
 
     private void configureHttpClient() {
 
-        parseConfiguration();
+//        parseConfiguration();
 
         RequestConfig defaultRequestConfig = RequestConfig.custom()
                 .setExpectContinueEnabled(true)
@@ -134,10 +134,17 @@ public class RESTInvoker {
                 .setDefaultRequestConfig(defaultRequestConfig)
                 .build();
 
-        CoreUtils.debugLog(log, "REST client initialized with ",
-                "maxTotalConnection = ", maxTotalConnections,
-                "maxConnectionsPerRoute = ", maxTotalConnectionsPerRoute,
-                "connectionTimeout = ", connectionTimeout);
+        if(log.isDebugEnabled()){
+            log.debug("REST client initialized with " +
+                    "maxTotalConnection = " + maxTotalConnections +
+                    "maxConnectionsPerRoute = " + maxTotalConnectionsPerRoute +
+                    "connectionTimeout = " + connectionTimeout);
+        }
+//
+//        CoreUtils.debugLog(log, "REST client initialized with ",
+//                "maxTotalConnection = ", maxTotalConnections,
+//                "maxConnectionsPerRoute = ", maxTotalConnectionsPerRoute,
+//                "connectionTimeout = ", connectionTimeout);
     }
 
     public void closeHttpClient() {
@@ -176,8 +183,8 @@ public class RESTInvoker {
             headers = response.getAllHeaders();
             httpStatus = response.getStatusLine().getStatusCode();
             contentType = response.getEntity().getContentType().getValue();
-            if (log.isTraceEnabled()) {
-                log.trace("Invoked GET " + uri.toString() + " - Response message: " + output);
+            if (log.isDebugEnabled()) {
+                log.debug("Invoked GET " + uri.toString() + " - Response message: " + output);
             }
             EntityUtils.consume(response.getEntity());
         } finally {
@@ -215,8 +222,8 @@ public class RESTInvoker {
             headers = response.getAllHeaders();
             httpStatus = response.getStatusLine().getStatusCode();
             contentType = response.getEntity().getContentType().getValue();
-            if (log.isTraceEnabled()) {
-                log.trace("Invoked POST " + uri.toString() +
+            if (log.isDebugEnabled()) {
+                log.debug("Invoked POST " + uri.toString() +
                         " - Input payload: " + payload + " - Response message: " + output);
             }
             EntityUtils.consume(response.getEntity());
@@ -265,8 +272,8 @@ public class RESTInvoker {
             headers = response.getAllHeaders();
             httpStatus = response.getStatusLine().getStatusCode();
             contentType = response.getEntity().getContentType().getValue();
-            if (log.isTraceEnabled()) {
-                log.trace("Invoked PUT " + uri.toString() + " - Response message: " + output);
+            if (log.isDebugEnabled()) {
+                log.debug("Invoked PUT " + uri.toString() + " - Response message: " + output);
             }
             EntityUtils.consume(response.getEntity());
         } finally {
@@ -311,8 +318,8 @@ public class RESTInvoker {
             headers = response.getAllHeaders();
             httpStatus = response.getStatusLine().getStatusCode();
             contentType = response.getEntity().getContentType().getValue();
-            if (log.isTraceEnabled()) {
-                log.trace("Invoked DELETE " + uri.toString() + " - Response message: " + output);
+            if (log.isDebugEnabled()) {
+                log.debug("Invoked DELETE " + uri.toString() + " - Response message: " + output);
             }
             EntityUtils.consume(response.getEntity());
         } finally {

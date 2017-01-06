@@ -1,0 +1,2 @@
+instructions.configure = \
+org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.wso2.carbon.apimgt.handler.server_${feature.version}/conf/iot-api-config.xml,target:${installFolder}/../../conf/iot-api-config.xml,overwrite:true);\

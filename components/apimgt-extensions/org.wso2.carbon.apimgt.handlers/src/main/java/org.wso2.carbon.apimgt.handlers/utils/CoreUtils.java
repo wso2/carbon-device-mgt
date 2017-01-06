@@ -40,95 +40,95 @@ public class CoreUtils {
     private static String iosVerifyEndpoint = "/api/certificate-mgt/v1.0/admin/certificates/verify/ios";
     private static String androidVerifyEndpoint = "/api/certificate-mgt/v1.0/admin/certificates/verify/android";
 
-    /**
-     * Reading configurations from api-filter-config.xml file
-     *
-     * @return ArrayList of api contexts
-     */
-    public static ArrayList<String> readApiFilterList() {
-        ArrayList<String> apiList = new ArrayList<String>();
-        String carbonConfigDirPath = CarbonUtils.getCarbonConfigDirPath();
-        String apiFilterConfigPath = carbonConfigDirPath + File.separator +
-                AuthConstants.AUTH_CONFIGURATION_FILE_NAME;
-        File configFile = new File(apiFilterConfigPath);
-
-        try {
-            String configContent = FileUtils.readFileToString(configFile);
-            OMElement configElement = AXIOMUtil.stringToOM(configContent);
-            Iterator beans = configElement.getChildrenWithName(
-                    new QName("http://www.springframework.org/schema/beans", "bean"));
-
-            while (beans.hasNext()) {
-                OMElement bean = (OMElement) beans.next();
-                String beanId = bean.getAttributeValue(new QName(null, "id"));
-                if (beanId.equals(AuthConstants.API_FILTER_CONFIG_ELEMENT)) {
-                    Iterator beanProps = bean.getChildrenWithName(
-                            new QName("http://www.springframework.org/schema/beans", "property"));
-
-                    while (beanProps.hasNext()) {
-                        OMElement beanProp = (OMElement) beanProps.next();
-                        String beanName = beanProp.getAttributeValue(new QName(null, "name"));
-                        if (AuthConstants.API_LIST_PROPERTY.equals(beanName)) {
-                            Iterator apiListSet = ((OMElement) beanProp.getChildrenWithLocalName("set").next())
-                                    .getChildrenWithLocalName("value");
-                            while (apiListSet.hasNext()) {
-                                String apiContext = ((OMElement) apiListSet.next()).getText();
-                                apiList.add(apiContext);
-                                CoreUtils.debugLog(log, "Adding security to api: ", apiContext);
-                            }
-                        } else if (AuthConstants.HOST.equals(beanName)) {
-                            String value = beanProp.getAttributeValue(new QName(null, "value"));
-                            host = value;
-                        } else if (AuthConstants.HTTPS_PORT.equals(beanName)) {
-                            String value = beanProp.getAttributeValue(new QName(null, "value"));
-                            if (value != null && !value.trim().equals("")) {
-                                httpsPort = Integer.parseInt(value);
-                            }
-                        } else if (AuthConstants.USERNAME.equals(beanName)) {
-                            String value = beanProp.getAttributeValue(new QName(null, "value"));
-                            username = value;
-                        } else if (AuthConstants.PASSWORD.equals(beanName)) {
-                            String value = beanProp.getAttributeValue(new QName(null, "value"));
-                            password = value;
-                        } else if (AuthConstants.IOS_VERIFY_ENDPOINT.equals(beanName)) {
-                            String value = beanProp.getAttributeValue(new QName(null, "value"));
-                            iosVerifyEndpoint = value;
-                        } else if (AuthConstants.ANDROID_VERIFY_ENDPOINT.equals(beanName)) {
-                            String value = beanProp.getAttributeValue(new QName(null, "value"));
-                            androidVerifyEndpoint = value;
-                        }
-                    }
-                }
-            }
-        } catch (IOException e) {
-            log.error("Error in reading api filter settings", e);
-        } catch (XMLStreamException e) {
-            log.error("Error in reading api filter settings", e);
-        }
-        return apiList;
-    }
-
-    /**
-     * Universal debug log function
-     *
-     * @param logger Log object specific to the class
-     * @param message initial debug log message
-     * @param vars optional strings to be appended for the log
-     */
-    public static void debugLog(Log logger, String message, Object ... vars) {
-        if(logger.isDebugEnabled()) {
-            if (vars.length < 1) {
-                logger.debug(message);
-                return;
-            }
-            StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.append(message);
-            for (Object var : vars) {
-                stringBuilder.append(var.toString());
-            }
-            logger.debug(stringBuilder.toString());
-        }
-    }
+//    /**
+//     * Reading configurations from api-filter-config.xml file
+//     *
+//     * @return ArrayList of api contexts
+//     */
+//    public static ArrayList<String> readApiFilterList() {
+//        ArrayList<String> apiList = new ArrayList<String>();
+//        String carbonConfigDirPath = CarbonUtils.getCarbonConfigDirPath();
+//        String apiFilterConfigPath = carbonConfigDirPath + File.separator +
+//                AuthConstants.AUTH_CONFIGURATION_FILE_NAME;
+//        File configFile = new File(apiFilterConfigPath);
+//
+//        try {
+//            String configContent = FileUtils.readFileToString(configFile);
+//            OMElement configElement = AXIOMUtil.stringToOM(configContent);
+//            Iterator beans = configElement.getChildrenWithName(
+//                    new QName("http://www.springframework.org/schema/beans", "bean"));
+//
+//            while (beans.hasNext()) {
+//                OMElement bean = (OMElement) beans.next();
+//                String beanId = bean.getAttributeValue(new QName(null, "id"));
+//                if (beanId.equals(AuthConstants.API_FILTER_CONFIG_ELEMENT)) {
+//                    Iterator beanProps = bean.getChildrenWithName(
+//                            new QName("http://www.springframework.org/schema/beans", "property"));
+//
+//                    while (beanProps.hasNext()) {
+//                        OMElement beanProp = (OMElement) beanProps.next();
+//                        String beanName = beanProp.getAttributeValue(new QName(null, "name"));
+//                        if (AuthConstants.API_LIST_PROPERTY.equals(beanName)) {
+//                            Iterator apiListSet = ((OMElement) beanProp.getChildrenWithLocalName("set").next())
+//                                    .getChildrenWithLocalName("value");
+//                            while (apiListSet.hasNext()) {
+//                                String apiContext = ((OMElement) apiListSet.next()).getText();
+//                                apiList.add(apiContext);
+//                                CoreUtils.debugLog(log, "Adding security to api: ", apiContext);
+//                            }
+//                        } else if (AuthConstants.HOST.equals(beanName)) {
+//                            String value = beanProp.getAttributeValue(new QName(null, "value"));
+//                            host = value;
+//                        } else if (AuthConstants.HTTPS_PORT.equals(beanName)) {
+//                            String value = beanProp.getAttributeValue(new QName(null, "value"));
+//                            if (value != null && !value.trim().equals("")) {
+//                                httpsPort = Integer.parseInt(value);
+//                            }
+//                        } else if (AuthConstants.USERNAME.equals(beanName)) {
+//                            String value = beanProp.getAttributeValue(new QName(null, "value"));
+//                            username = value;
+//                        } else if (AuthConstants.PASSWORD.equals(beanName)) {
+//                            String value = beanProp.getAttributeValue(new QName(null, "value"));
+//                            password = value;
+//                        } else if (AuthConstants.IOS_VERIFY_ENDPOINT.equals(beanName)) {
+//                            String value = beanProp.getAttributeValue(new QName(null, "value"));
+//                            iosVerifyEndpoint = value;
+//                        } else if (AuthConstants.ANDROID_VERIFY_ENDPOINT.equals(beanName)) {
+//                            String value = beanProp.getAttributeValue(new QName(null, "value"));
+//                            androidVerifyEndpoint = value;
+//                        }
+//                    }
+//                }
+//            }
+//        } catch (IOException e) {
+//            log.error("Error in reading api filter settings", e);
+//        } catch (XMLStreamException e) {
+//            log.error("Error in reading api filter settings", e);
+//        }
+//        return apiList;
+//    }
+//
+//    /**
+//     * Universal debug log function
+//     *
+//     * @param logger Log object specific to the class
+//     * @param message initial debug log message
+//     * @param vars optional strings to be appended for the log
+//     */
+//    public static void debugLog(Log logger, String message, Object ... vars) {
+//        if(logger.isDebugEnabled()) {
+//            if (vars.length < 1) {
+//                logger.debug(message);
+//                return;
+//            }
+//            StringBuilder stringBuilder = new StringBuilder();
+//            stringBuilder.append(message);
+//            for (Object var : vars) {
+//                stringBuilder.append(var.toString());
+//            }
+//            logger.debug(stringBuilder.toString());
+//        }
+//    }
 
     public static String getHost() {
         return host;

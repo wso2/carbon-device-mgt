@@ -17,7 +17,7 @@
  */
 
 
-package org.wso2.carbon.policy.mgt.common.monitor;
+package org.wso2.carbon.device.mgt.common.policy.mgt.monitor;
 
 public class PolicyComplianceException extends Exception {
 

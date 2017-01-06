@@ -40,10 +40,10 @@ import org.wso2.carbon.device.mgt.jaxrs.beans.OperationList;
 import org.wso2.carbon.device.mgt.jaxrs.service.api.DeviceManagementService;
 import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.RequestValidationUtil;
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
-import org.wso2.carbon.policy.mgt.common.Policy;
+import org.wso2.carbon.device.mgt.common.policy.mgt.Policy;
 import org.wso2.carbon.policy.mgt.common.PolicyManagementException;
-import org.wso2.carbon.policy.mgt.common.monitor.ComplianceData;
-import org.wso2.carbon.policy.mgt.common.monitor.PolicyComplianceException;
+import org.wso2.carbon.device.mgt.common.policy.mgt.monitor.NonComplianceData;
+import org.wso2.carbon.device.mgt.common.policy.mgt.monitor.PolicyComplianceException;
 import org.wso2.carbon.policy.mgt.core.PolicyManagerService;
 import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 
@@ -442,7 +442,7 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
         RequestValidationUtil.validateDeviceIdentifier(type, id);
         PolicyManagerService policyManagementService = DeviceMgtAPIUtils.getPolicyManagementService();
         Policy policy;
-        ComplianceData complianceData = null;
+        NonComplianceData complianceData = null;
         DeviceCompliance deviceCompliance = new DeviceCompliance();
 
         try {

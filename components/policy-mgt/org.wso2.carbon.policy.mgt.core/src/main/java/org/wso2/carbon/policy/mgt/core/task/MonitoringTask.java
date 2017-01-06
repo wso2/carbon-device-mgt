@@ -23,12 +23,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
+import org.wso2.carbon.device.mgt.common.policy.mgt.PolicyMonitoringManager;
 import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
 import org.wso2.carbon.device.mgt.core.config.policy.PolicyConfiguration;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.ntask.core.Task;
-import org.wso2.carbon.policy.mgt.common.monitor.PolicyComplianceException;
-import org.wso2.carbon.policy.mgt.common.spi.PolicyMonitoringService;
+import org.wso2.carbon.device.mgt.common.policy.mgt.monitor.PolicyComplianceException;
 import org.wso2.carbon.policy.mgt.core.internal.PolicyManagementDataHolder;
 import org.wso2.carbon.policy.mgt.core.mgt.MonitoringManager;
 
@@ -80,8 +80,9 @@ public class MonitoringTask implements Task {
                     if (log.isDebugEnabled()) {
                         log.debug("Running task for device type : " + deviceType);
                     }
-                    PolicyMonitoringService monitoringService =
-                            PolicyManagementDataHolder.getInstance().getPolicyMonitoringService(deviceType);
+                    PolicyMonitoringManager monitoringService =
+                            PolicyManagementDataHolder.getInstance().getDeviceManagementService()
+                                    .getPolicyMonitoringManager(deviceType);
                     List<Device> devices = deviceManagementProviderService.getAllDevices(deviceType);
                     if (monitoringService != null && !devices.isEmpty()) {
                         List<Device> notifiableDevices = new ArrayList<>();
@@ -110,7 +111,6 @@ public class MonitoringTask implements Task {
                         }
                         if (!notifiableDevices.isEmpty()) {
                             monitoringManager.addMonitoringOperation(notifiableDevices);
-                            monitoringService.notifyDevices(notifiableDevices);
                         }
                     }
                 }
@@ -135,8 +135,11 @@ public class MonitoringTask implements Task {
      */
 
     private boolean isPlatformExist(String deviceType) {
-        PolicyConfiguration policyConfiguration =
-                DeviceConfigurationManager.getInstance().getDeviceManagementConfig().getPolicyConfiguration();
-        return (policyConfiguration.getPlatforms().contains(deviceType));
+        PolicyMonitoringManager policyMonitoringManager = PolicyManagementDataHolder.getInstance()
+                .getDeviceManagementService().getPolicyMonitoringManager(deviceType);
+        if (policyMonitoringManager != null) {
+            return true;
+        }
+        return false;
     }
 }

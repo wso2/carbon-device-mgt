@@ -21,6 +21,7 @@ package org.wso2.carbon.policy.decision.point.simple;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
+import org.wso2.carbon.device.mgt.common.policy.mgt.Policy;
 import org.wso2.carbon.policy.decision.point.internal.PolicyDecisionPointDataHolder;
 import org.wso2.carbon.policy.mgt.common.*;
 import org.wso2.carbon.policy.mgt.core.PolicyManagerService;

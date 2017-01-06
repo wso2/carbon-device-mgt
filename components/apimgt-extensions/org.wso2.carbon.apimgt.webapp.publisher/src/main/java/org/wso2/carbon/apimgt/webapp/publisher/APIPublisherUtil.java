@@ -29,7 +29,10 @@ import org.wso2.carbon.apimgt.webapp.publisher.config.APIResource;
 import org.wso2.carbon.apimgt.webapp.publisher.config.APIResourceConfiguration;
 import org.wso2.carbon.apimgt.webapp.publisher.config.WebappPublisherConfig;
 import org.wso2.carbon.base.MultitenantConstants;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.core.util.Utils;
+import org.wso2.carbon.user.api.UserStoreException;
+import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 
 import javax.servlet.ServletContext;
 import java.util.*;
@@ -42,7 +45,6 @@ public class APIPublisherUtil {
     private static final String DEFAULT_API_VERSION = "1.0.0";
     private static final String API_CONFIG_DEFAULT_VERSION = "1.0.0";
     private static final String PARAM_MANAGED_API_ENDPOINT = "managed-api-endpoint";
-    private static final String PARAM_MANAGED_API_OWNER = "managed-api-owner";
     private static final String PARAM_MANAGED_API_TRANSPORTS = "managed-api-transports";
     private static final String PARAM_MANAGED_API_POLICY = "managed-api-policy";
     private static final String PARAM_MANAGED_API_IS_SECURED = "managed-api-isSecured";
@@ -193,7 +195,8 @@ public class APIPublisherUtil {
      * @param apiDef
      * @return
      */
-    public static APIConfig buildApiConfig(ServletContext servletContext, APIResourceConfiguration apiDef) {
+    public static APIConfig buildApiConfig(ServletContext servletContext, APIResourceConfiguration apiDef)
+            throws UserStoreException {
         APIConfig apiConfig = new APIConfig();
 
         String name = apiDef.getName();
@@ -233,7 +236,8 @@ public class APIPublisherUtil {
             apiConfig.setTags(tags);
         }
 
-        String tenantDomain = servletContext.getInitParameter(PARAM_PROVIDER_TENANT_DOMAIN);
+        String tenantDomain = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantDomain();
+        servletContext.setAttribute(PARAM_PROVIDER_TENANT_DOMAIN, tenantDomain);
         tenantDomain = (tenantDomain != null && !tenantDomain.isEmpty()) ? tenantDomain :
                 MultitenantConstants.SUPER_TENANT_DOMAIN_NAME;
         apiConfig.setTenantDomain(tenantDomain);
@@ -253,7 +257,11 @@ public class APIPublisherUtil {
         }
         apiConfig.setEndpoint(endpoint);
 
-        String owner = servletContext.getInitParameter(PARAM_MANAGED_API_OWNER);
+        String owner = PrivilegedCarbonContext.getThreadLocalCarbonContext().getUserRealm().getRealmConfiguration()
+                .getAdminUserName();
+        if (!MultitenantConstants.SUPER_TENANT_DOMAIN_NAME.equals(tenantDomain)) {
+            owner = owner + "@" + tenantDomain;
+        }
         if (owner == null || owner.isEmpty()) {
             if (log.isDebugEnabled()) {
                 log.debug("'managed-api-owner' attribute is not configured");
@@ -275,6 +283,9 @@ public class APIPublisherUtil {
 
         String sharingValueParam = servletContext.getInitParameter(PARAM_SHARED_WITH_ALL_TENANTS);
         boolean isSharedWithAllTenants = Boolean.parseBoolean(sharingValueParam);
+        if (isSharedWithAllTenants && !MultitenantConstants.SUPER_TENANT_DOMAIN_NAME.equals(tenantDomain)) {
+            isSharedWithAllTenants = false;
+        }
         apiConfig.setSharedWithAllTenants(isSharedWithAllTenants);
 
         Set<URITemplate> uriTemplates = new LinkedHashSet<>();

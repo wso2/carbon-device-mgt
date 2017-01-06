@@ -85,7 +85,7 @@ public class MQTTNotificationStrategy implements NotificationStrategy {
         } else {
             String topic = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantDomain(true) + "/"
                     + ctx.getDeviceId().getType() + "/" + ctx.getDeviceId().getId() + "/" + operation.getType()
-                    + "/" + operation.getCode();
+                    .toString().toLowerCase() + "/" + operation.getCode();
             dynamicProperties.put("topic", topic);
             if (operation.getPayLoad() == null) {
                 operation.setPayLoad("");

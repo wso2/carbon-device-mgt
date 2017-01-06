@@ -36,7 +36,7 @@ import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.FilteringUtil;
 import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.RequestValidationUtil;
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtUtil;
-import org.wso2.carbon.policy.mgt.common.Policy;
+import org.wso2.carbon.device.mgt.common.policy.mgt.Policy;
 import org.wso2.carbon.policy.mgt.common.PolicyAdministratorPoint;
 import org.wso2.carbon.policy.mgt.common.PolicyManagementException;
 import org.wso2.carbon.policy.mgt.core.PolicyManagerService;
@@ -168,7 +168,7 @@ public class PolicyManagementServiceImpl implements PolicyManagementService {
     @Override
     public Response getPolicy(@PathParam("id") int id, @HeaderParam("If-Modified-Since") String ifModifiedSince) {
         PolicyManagerService policyManagementService = DeviceMgtAPIUtils.getPolicyManagementService();
-        final org.wso2.carbon.policy.mgt.common.Policy policy;
+        final Policy policy;
         try {
             PolicyAdministratorPoint policyAdministratorPoint = policyManagementService.getPAP();
             policy = policyAdministratorPoint.getPolicy(id);
@@ -378,7 +378,7 @@ public class PolicyManagementServiceImpl implements PolicyManagementService {
     @Override
     public Response getEffectivePolicy(@PathParam("deviceId") String deviceId, @PathParam("deviceType") String deviceType) {
         PolicyManagerService policyManagementService = DeviceMgtAPIUtils.getPolicyManagementService();
-        final org.wso2.carbon.policy.mgt.common.Policy policy;
+        final Policy policy;
         try {
             DeviceIdentifier deviceIdentifier = new DeviceIdentifier();
             deviceIdentifier.setId(deviceId);

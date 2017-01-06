@@ -22,8 +22,8 @@ package org.wso2.carbon.policy.mgt.core.mgt;
 
 import org.wso2.carbon.device.mgt.common.Feature;
 import org.wso2.carbon.policy.mgt.common.FeatureManagementException;
-import org.wso2.carbon.policy.mgt.common.Profile;
-import org.wso2.carbon.policy.mgt.common.ProfileFeature;
+import org.wso2.carbon.device.mgt.common.policy.mgt.Profile;
+import org.wso2.carbon.device.mgt.common.policy.mgt.ProfileFeature;
 
 import java.util.List;
 

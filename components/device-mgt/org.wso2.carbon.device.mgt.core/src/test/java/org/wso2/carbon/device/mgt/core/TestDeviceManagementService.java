@@ -22,6 +22,7 @@ import org.wso2.carbon.device.mgt.common.DeviceManager;
 import org.wso2.carbon.device.mgt.common.OperationMonitoringTaskConfig;
 import org.wso2.carbon.device.mgt.common.ProvisioningConfig;
 import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManager;
+import org.wso2.carbon.device.mgt.common.policy.mgt.PolicyMonitoringManager;
 import org.wso2.carbon.device.mgt.common.push.notification.PushNotificationConfig;
 import org.wso2.carbon.device.mgt.common.spi.DeviceManagementService;
 
@@ -66,6 +67,11 @@ public class TestDeviceManagementService implements DeviceManagementService {
 
     @Override
     public PushNotificationConfig getPushNotificationConfig() {
+        return null;
+    }
+
+    @Override
+    public PolicyMonitoringManager getPolicyMonitoringManager() {
         return null;
     }
 

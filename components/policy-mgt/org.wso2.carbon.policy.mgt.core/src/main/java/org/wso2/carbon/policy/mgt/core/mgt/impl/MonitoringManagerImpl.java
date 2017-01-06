@@ -26,15 +26,18 @@ import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.InvalidDeviceException;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
+import org.wso2.carbon.device.mgt.common.policy.mgt.PolicyMonitoringManager;
+import org.wso2.carbon.device.mgt.common.policy.mgt.monitor.ComplianceFeature;
+import org.wso2.carbon.device.mgt.common.policy.mgt.monitor.NonComplianceData;
+import org.wso2.carbon.device.mgt.common.policy.mgt.monitor.PolicyComplianceException;
 import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
 import org.wso2.carbon.device.mgt.core.config.policy.PolicyConfiguration;
 import org.wso2.carbon.device.mgt.core.operation.mgt.CommandOperation;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
-import org.wso2.carbon.policy.mgt.common.Policy;
+import org.wso2.carbon.device.mgt.common.policy.mgt.Policy;
 import org.wso2.carbon.policy.mgt.common.PolicyManagementException;
-import org.wso2.carbon.policy.mgt.common.ProfileFeature;
+import org.wso2.carbon.device.mgt.common.policy.mgt.ProfileFeature;
 import org.wso2.carbon.policy.mgt.common.monitor.*;
-import org.wso2.carbon.policy.mgt.common.spi.PolicyMonitoringService;
 import org.wso2.carbon.policy.mgt.core.dao.*;
 import org.wso2.carbon.policy.mgt.core.impl.ComplianceDecisionPointImpl;
 import org.wso2.carbon.policy.mgt.core.internal.PolicyManagementDataHolder;
@@ -80,15 +83,15 @@ public class MonitoringManagerImpl implements MonitoringManager {
             Device device = service.getDevice(deviceIdentifier);
             Policy policy = manager.getAppliedPolicyToDevice(deviceIdentifier);
             if (policy != null) {
-                PolicyMonitoringService monitoringService = PolicyManagementDataHolder.getInstance().
-                        getPolicyMonitoringService(deviceIdentifier.getType());
+                PolicyMonitoringManager monitoringService = PolicyManagementDataHolder.getInstance().
+                        getDeviceManagementService().getPolicyMonitoringManager(deviceIdentifier.getType());
 
-                ComplianceData complianceData;
+                NonComplianceData complianceData;
                 // This was retrieved from database because compliance id must be present for other dao operations to
                 // run.
                 try {
                     PolicyManagementDAOFactory.openConnection();
-                    ComplianceData cmd = monitoringDAO.getCompliance(device.getId(), device.getEnrolmentInfo().getId());
+                    NonComplianceData cmd = monitoringDAO.getCompliance(device.getId(), device.getEnrolmentInfo().getId());
                     complianceData = monitoringService.checkPolicyCompliance(deviceIdentifier,
                                                                              policy, deviceResponse);
 
@@ -177,7 +180,7 @@ public class MonitoringManagerImpl implements MonitoringManager {
                     PolicyManagementDataHolder.getInstance().getDeviceManagementService();
             Device device = service.getDevice(deviceIdentifier);
             PolicyManagementDAOFactory.openConnection();
-            ComplianceData complianceData = monitoringDAO.getCompliance(device.getId(), device.getEnrolmentInfo()
+            NonComplianceData complianceData = monitoringDAO.getCompliance(device.getId(), device.getEnrolmentInfo()
                                                                                               .getId());
             if (complianceData == null || !complianceData.isStatus()) {
                 return false;
@@ -198,9 +201,9 @@ public class MonitoringManagerImpl implements MonitoringManager {
     }
 
     @Override
-    public ComplianceData getDevicePolicyCompliance(DeviceIdentifier deviceIdentifier) throws
+    public NonComplianceData getDevicePolicyCompliance(DeviceIdentifier deviceIdentifier) throws
                                                                                        PolicyComplianceException {
-        ComplianceData complianceData;
+        NonComplianceData complianceData;
         try {
             PolicyManagementDAOFactory.openConnection();
             DeviceManagementProviderService service =
@@ -231,18 +234,18 @@ public class MonitoringManagerImpl implements MonitoringManager {
 
         //int tenantId = PolicyManagerUtil.getTenantId();
         Map<Integer, Device> deviceIds = new HashMap<>();
-        List<ComplianceData> complianceDatas = new ArrayList<>();
+        List<NonComplianceData> complianceDatas = new ArrayList<>();
         HashMap<Integer, Integer> devicePolicyIdMap = new HashMap<>();
 
         try {
             PolicyManagementDAOFactory.openConnection();
             //TODO: Return a map from getCompliance to reduce O(n^2) -> O(n)
-            List<ComplianceData> cd = monitoringDAO.getCompliance();
+            List<NonComplianceData> cd = monitoringDAO.getCompliance();
 
             for (Device device : devices) {
                 deviceIds.put(device.getId(), device);
 
-                for (ComplianceData data : cd) {
+                for (NonComplianceData data : cd) {
                     if (device.getId() == data.getDeviceId() && device.getEnrolmentInfo().getId() == data
                             .getEnrolmentId()) {
                         complianceDatas.add(data);
@@ -276,11 +279,11 @@ public class MonitoringManagerImpl implements MonitoringManager {
 
         List<PolicyDeviceWrapper> firstTimeDevices = new ArrayList<>();
 
-        Map<Integer, ComplianceData> tempMap = new HashMap<>();
+        Map<Integer, NonComplianceData> tempMap = new HashMap<>();
 
         try {
             if (complianceDatas != null || !complianceDatas.isEmpty()) {
-                for (ComplianceData complianceData : complianceDatas) {
+                for (NonComplianceData complianceData : complianceDatas) {
 
                     tempMap.put(complianceData.getDeviceId(), complianceData);
 

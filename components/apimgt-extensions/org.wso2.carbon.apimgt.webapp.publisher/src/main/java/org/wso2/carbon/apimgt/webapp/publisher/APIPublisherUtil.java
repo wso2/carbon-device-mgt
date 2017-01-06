@@ -75,7 +75,7 @@ public class APIPublisherUtil {
 
         api.setUrl(config.getEndpoint());
         api.addAvailableTiers(provider.getTiers());
-        api.setEndpointSecured(true);
+        api.setEndpointSecured(false);
         api.setStatus(APIStatus.CREATED);
         api.setTransports(config.getTransports());
         api.setApiLevelPolicy(config.getPolicy());

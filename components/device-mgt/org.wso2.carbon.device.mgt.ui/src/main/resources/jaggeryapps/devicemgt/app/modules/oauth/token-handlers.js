@@ -138,7 +138,7 @@ var handlers = function () {
                 "client credentials to session context. No username of logged in user is found as " +
                     "input - setUpEncodedTenantBasedClientAppCredentials(x)");
         } else {
-            if (devicemgtProps["apimgt-gateway"]) {
+            if (devicemgtProps["gatewayEnabled"]) {
 				var tenantBasedClientAppCredentials = tokenUtil.getTenantBasedClientAppCredentials(username);
 				if (!tenantBasedClientAppCredentials) {
 					throw new Error("{/app/modules/oauth/token-handlers.js} Could not set up encoded tenant " +
@@ -176,7 +176,7 @@ var handlers = function () {
                 "client credentials to session context. No username of logged in user is found as " +
                 "input - setUpEncodedTenantBasedWebSocketClientAppCredentials(x)");
         } else {
-            if (devicemgtProps["apimgt-gateway"]) {
+            if (devicemgtProps["gatewayEnabled"]) {
                 var tenantBasedWebSocketClientAppCredentials
                     = tokenUtil.getTenantBasedWebSocketClientAppCredentials(username);
                 if (!tenantBasedWebSocketClientAppCredentials) {

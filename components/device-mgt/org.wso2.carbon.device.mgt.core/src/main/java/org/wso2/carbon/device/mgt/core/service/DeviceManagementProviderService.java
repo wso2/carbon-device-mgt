@@ -31,6 +31,7 @@ import org.wso2.carbon.device.mgt.common.license.mgt.License;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Activity;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
+import org.wso2.carbon.device.mgt.common.policy.mgt.PolicyMonitoringManager;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -303,5 +304,7 @@ public interface DeviceManagementProviderService {
     int getDeviceMonitoringFrequency(String deviceType);
 
     boolean isDeviceMonitoringEnabled(String deviceType);
+
+    PolicyMonitoringManager getPolicyMonitoringManager(String deviceType);
 
 }

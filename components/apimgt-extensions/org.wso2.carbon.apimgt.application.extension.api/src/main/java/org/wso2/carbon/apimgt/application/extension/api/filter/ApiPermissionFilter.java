@@ -119,7 +119,7 @@ public class ApiPermissionFilter implements Filter {
                                 .getThreadLocalCarbonContext().getTenantId());
             return userRealm.getAuthorizationManager().isUserAuthorized(username, permission, action);
         } catch (UserStoreException e) {
-            String errorMsg = String.format("Unable to authorize the user : %s", username, e);
+            String errorMsg = String.format("Unable to authorize the user : %s", username);
             log.error(errorMsg, e);
             return false;
         }

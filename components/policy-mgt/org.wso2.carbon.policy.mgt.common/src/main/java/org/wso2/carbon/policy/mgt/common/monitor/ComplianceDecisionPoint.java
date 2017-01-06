@@ -22,7 +22,9 @@ package org.wso2.carbon.policy.mgt.common.monitor;
 
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
-import org.wso2.carbon.policy.mgt.common.Policy;
+import org.wso2.carbon.device.mgt.common.policy.mgt.monitor.NonComplianceData;
+import org.wso2.carbon.device.mgt.common.policy.mgt.monitor.PolicyComplianceException;
+import org.wso2.carbon.device.mgt.common.policy.mgt.Policy;
 
 import java.util.List;
 
@@ -38,7 +40,7 @@ public interface ComplianceDecisionPoint {
 
     void setDeviceAsReachable(DeviceIdentifier deviceIdentifier) throws PolicyComplianceException;
 
-    void reEnforcePolicy(DeviceIdentifier deviceIdentifier, ComplianceData complianceData) throws
+    void reEnforcePolicy(DeviceIdentifier deviceIdentifier, NonComplianceData complianceData) throws
             PolicyComplianceException;
 
     void markDeviceAsNoneCompliance(DeviceIdentifier deviceIdentifier) throws PolicyComplianceException;
@@ -49,7 +51,7 @@ public interface ComplianceDecisionPoint {
 
     void activateDevice(DeviceIdentifier deviceIdentifier) throws PolicyComplianceException;
 
-    void validateDevicePolicyCompliance(DeviceIdentifier deviceIdentifier, ComplianceData complianceData) throws
+    void validateDevicePolicyCompliance(DeviceIdentifier deviceIdentifier, NonComplianceData complianceData) throws
             PolicyComplianceException;
 
 

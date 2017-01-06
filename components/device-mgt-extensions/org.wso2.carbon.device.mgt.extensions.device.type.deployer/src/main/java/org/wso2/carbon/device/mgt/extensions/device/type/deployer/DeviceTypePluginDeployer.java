@@ -44,12 +44,12 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * This is the device deployer that will read and deploy the device type files from "deployment/server/devicetypes"
+ * This is the device deployer that will read and deploy the device type plugin files from "deployment/server/devicetypes"
  * directory.
  */
-public class DeviceTypeDeployer extends AbstractDeployer {
+public class DeviceTypePluginDeployer extends AbstractDeployer {
 
-    private static Log log = LogFactory.getLog(DeviceTypeDeployer.class);
+    private static Log log = LogFactory.getLog(DeviceTypePluginDeployer.class);
     private ConfigurationContext configurationContext;
     protected Map<String, ServiceRegistration> deviceTypeServiceRegistrations = new ConcurrentHashMap();
     protected Map<String, DeviceTypeConfigIdentifier> deviceTypeConfigurationDataMap = new ConcurrentHashMap();

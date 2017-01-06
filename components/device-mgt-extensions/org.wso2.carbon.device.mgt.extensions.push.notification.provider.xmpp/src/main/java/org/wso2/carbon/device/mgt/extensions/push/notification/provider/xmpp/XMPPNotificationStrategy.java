@@ -39,8 +39,13 @@ public class XMPPNotificationStrategy implements NotificationStrategy {
     private static final String XMPP_CLIENT_JID = "xmpp.client.jid";
     private static final String XMPP_CLIENT_SUBJECT = "xmpp.client.subject";
     public static final String XMPP_CLIENT_MESSAGE_TYPE = "xmpp.client.messageType";
+    private static final String DYNAMIC_PROPERTY_JID = "jid";
+    private static final String DYNAMIC_PROPERTY_SUBJECT = "subject";
+    private static final String DYNAMIC_PROPERTY_MSGTYPE = "messageType";
     private String xmppAdapterName;
     private static final Log log = LogFactory.getLog(XMPPNotificationStrategy.class);
+    private String subDomain;
+
 
     public XMPPNotificationStrategy(PushNotificationConfig config) {
 
@@ -61,6 +66,7 @@ public class XMPPNotificationStrategy implements NotificationStrategy {
         xmppAdapterProperties.put(XMPPAdapterConstants.XMPP_ADAPTER_PROPERTY_JID, config.getProperty(
                 XMPPAdapterConstants.XMPP_ADAPTER_PROPERTY_JID));
         outputEventAdapterConfiguration.setStaticProperties(xmppAdapterProperties);
+        subDomain = config.getProperty(XMPPAdapterConstants.XMPP_ADAPTER_PROPERTY_SUBDOMAIN);
         try {
             XMPPDataHolder.getInstance().getOutputEventAdapterService().create(outputEventAdapterConfiguration);
         } catch (OutputEventAdapterException e) {
@@ -77,9 +83,15 @@ public class XMPPNotificationStrategy implements NotificationStrategy {
     public void execute(NotificationContext ctx) throws PushNotificationExecutionFailedException {
         Map<String, String> dynamicProperties = new HashMap<>();
         Properties properties = ctx.getOperation().getProperties();
-        dynamicProperties.put("jid", properties.getProperty(XMPP_CLIENT_JID));
-        dynamicProperties.put("subject", properties.getProperty(XMPP_CLIENT_SUBJECT));
-        dynamicProperties.put("messageType", properties.getProperty(XMPP_CLIENT_MESSAGE_TYPE));
+        if (properties != null & properties.size() > 0) {
+            dynamicProperties.put(DYNAMIC_PROPERTY_JID, properties.getProperty(XMPP_CLIENT_JID));
+            dynamicProperties.put(DYNAMIC_PROPERTY_SUBJECT, properties.getProperty(XMPP_CLIENT_SUBJECT));
+            dynamicProperties.put(DYNAMIC_PROPERTY_MSGTYPE, properties.getProperty(XMPP_CLIENT_MESSAGE_TYPE));
+        } else {
+            dynamicProperties.put(DYNAMIC_PROPERTY_JID, ctx.getDeviceId().getId() + subDomain);
+            dynamicProperties.put(DYNAMIC_PROPERTY_SUBJECT, ctx.getOperation().getType().toString());
+            dynamicProperties.put(DYNAMIC_PROPERTY_MSGTYPE, XMPPAdapterConstants.CHAT_PROPERTY_KEY);
+        }
         XMPPDataHolder.getInstance().getOutputEventAdapterService().publish(xmppAdapterName, dynamicProperties,
                                                                             ctx.getOperation().getPayLoad());
     }

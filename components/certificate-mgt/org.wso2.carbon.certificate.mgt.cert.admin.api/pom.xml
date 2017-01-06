@@ -150,6 +150,11 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <groupId>org.wso2.carbon.devicemgt</groupId>
+            <artifactId>org.wso2.carbon.identity.jwt.client.extension</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>io.swagger</groupId>
             <artifactId>swagger-annotations</artifactId>
         </dependency>

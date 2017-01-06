@@ -17,7 +17,8 @@
 ~ under the License.
 -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <groupId>org.wso2.carbon.devicemgt</groupId>
         <artifactId>webapp-authenticator-framework</artifactId>
@@ -81,7 +82,8 @@
                             org.wso2.carbon.core.util,
                             org.wso2.carbon.identity.base; version="${carbon.identity.imp.pkg.version}",
                             org.wso2.carbon.identity.core.util; version="${carbon.identity.imp.pkg.version}",
-                            org.wso2.carbon.identity.oauth2.*; version="${carbon.identity-inbound-auth-oauth.imp.pkg.version}",
+                            org.wso2.carbon.identity.oauth2.*;
+                            version="${carbon.identity-inbound-auth-oauth.imp.pkg.version}",
                             org.wso2.carbon.tomcat.ext.valves,
                             org.wso2.carbon.user.api,
                             org.wso2.carbon.user.core.service,
@@ -111,7 +113,7 @@
                             org.apache.http.impl.conn,
                             javax.xml.soap; version="${javax.xml.soap.imp.pkg.version}",
                             javax.xml.stream,
-			    org.apache.axiom.*; version="${axiom.osgi.version.range}",
+                            org.apache.axiom.*; version="${axiom.osgi.version.range}",
                             org.wso2.carbon.registry.core.*,
                             org.wso2.carbon.registry.common.*;version="${carbon.registry.imp.pkg.version.range}",
                             org.wso2.carbon.registry.indexing.*; version="${carbon.registry.imp.pkg.version.range}",

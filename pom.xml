@@ -314,6 +314,12 @@
                 <artifactId>org.wso2.carbon.apimgt.application.extension.api</artifactId>
                 <version>${carbon.device.mgt.version}</version>
             </dependency>
+
+            <dependency>
+                <groupId>org.wso2.carbon.devicemgt</groupId>
+                <artifactId>org.wso2.carbon.apimgt.handlers</artifactId>
+                <version>${carbon.device.mgt.version}</version>
+            </dependency>
             <!-- Device Management dependencies -->
 
             <!-- Governance dependencies -->
@@ -1647,6 +1653,17 @@
                 <artifactId>jersey-core</artifactId>
                 <version>${jersey.version}</version>
             </dependency>
+
+            <dependency>
+                <groupId>org.apache.synapse</groupId>
+                <artifactId>synapse-core</artifactId>
+                <version>${org.apache.synapse.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.ws.security.wso2</groupId>
+                <artifactId>wss4j</artifactId>
+                <version>${org.apache.ws.security.wso2.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -2038,6 +2055,10 @@
 
         <!-- apache pdfbox version -->
         <slf4j.simple.version>1.6.1</slf4j.simple.version>
+
+        <!-- api-mgt handler version properties -->
+        <org.apache.synapse.version>2.1.7-wso2v7</org.apache.synapse.version>
+        <org.apache.ws.security.wso2.version>1.5.11.wso2v15</org.apache.ws.security.wso2.version>
     </properties>
 
 </project>

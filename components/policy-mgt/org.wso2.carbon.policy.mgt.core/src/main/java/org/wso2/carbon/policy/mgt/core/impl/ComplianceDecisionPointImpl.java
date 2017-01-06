@@ -27,12 +27,12 @@ import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementExcept
 import org.wso2.carbon.device.mgt.core.operation.mgt.PolicyOperation;
 import org.wso2.carbon.device.mgt.core.operation.mgt.ProfileOperation;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
-import org.wso2.carbon.policy.mgt.common.Policy;
-import org.wso2.carbon.policy.mgt.common.ProfileFeature;
-import org.wso2.carbon.policy.mgt.common.monitor.ComplianceData;
+import org.wso2.carbon.device.mgt.common.policy.mgt.Policy;
+import org.wso2.carbon.device.mgt.common.policy.mgt.ProfileFeature;
+import org.wso2.carbon.device.mgt.common.policy.mgt.monitor.NonComplianceData;
 import org.wso2.carbon.policy.mgt.common.monitor.ComplianceDecisionPoint;
-import org.wso2.carbon.policy.mgt.common.monitor.ComplianceFeature;
-import org.wso2.carbon.policy.mgt.common.monitor.PolicyComplianceException;
+import org.wso2.carbon.device.mgt.common.policy.mgt.monitor.ComplianceFeature;
+import org.wso2.carbon.device.mgt.common.policy.mgt.monitor.PolicyComplianceException;
 import org.wso2.carbon.policy.mgt.core.internal.PolicyManagementDataHolder;
 import org.wso2.carbon.policy.mgt.core.util.PolicyManagementConstants;
 
@@ -120,7 +120,7 @@ public class ComplianceDecisionPointImpl implements ComplianceDecisionPoint {
     }
 
     @Override
-    public void reEnforcePolicy(DeviceIdentifier deviceIdentifier, ComplianceData complianceData) throws
+    public void reEnforcePolicy(DeviceIdentifier deviceIdentifier, NonComplianceData complianceData) throws
             PolicyComplianceException {
 
         try {
@@ -261,7 +261,7 @@ public class ComplianceDecisionPointImpl implements ComplianceDecisionPoint {
     }
 
     @Override
-    public void validateDevicePolicyCompliance(DeviceIdentifier deviceIdentifier, ComplianceData complianceData) throws
+    public void validateDevicePolicyCompliance(DeviceIdentifier deviceIdentifier, NonComplianceData complianceData) throws
             PolicyComplianceException {
 
         Policy policy = complianceData.getPolicy();

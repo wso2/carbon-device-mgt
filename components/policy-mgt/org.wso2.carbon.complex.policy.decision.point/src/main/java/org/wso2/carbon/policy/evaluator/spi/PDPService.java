@@ -21,7 +21,7 @@ package org.wso2.carbon.policy.evaluator.spi;
 
 import org.wso2.carbon.policy.evaluator.FeatureRules;
 import org.wso2.carbon.policy.mgt.common.Feature;
-import org.wso2.carbon.policy.mgt.common.Policy;
+import org.wso2.carbon.device.mgt.common.policy.mgt.Policy;
 
 import java.util.List;
 

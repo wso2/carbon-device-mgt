@@ -18,9 +18,8 @@
 
 package org.wso2.carbon.policy.mgt.core.util;
 
-import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 import org.wso2.carbon.device.mgt.common.Feature;
-import org.wso2.carbon.policy.mgt.common.Profile;
+import org.wso2.carbon.device.mgt.common.policy.mgt.Profile;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 
 import java.util.List;

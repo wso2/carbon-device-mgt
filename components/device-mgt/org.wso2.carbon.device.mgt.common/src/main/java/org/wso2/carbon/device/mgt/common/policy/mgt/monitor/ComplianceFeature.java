@@ -17,9 +17,9 @@
  */
 
 
-package org.wso2.carbon.policy.mgt.common.monitor;
+package org.wso2.carbon.device.mgt.common.policy.mgt.monitor;
 
-import org.wso2.carbon.policy.mgt.common.ProfileFeature;
+import org.wso2.carbon.device.mgt.common.policy.mgt.ProfileFeature;
 
 public class ComplianceFeature {
 

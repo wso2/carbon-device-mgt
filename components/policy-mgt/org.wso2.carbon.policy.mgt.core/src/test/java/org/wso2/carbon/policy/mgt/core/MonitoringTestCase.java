@@ -32,15 +32,15 @@ import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 import org.wso2.carbon.device.mgt.core.operation.mgt.OperationManagerImpl;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderServiceImpl;
-import org.wso2.carbon.policy.mgt.common.Policy;
+import org.wso2.carbon.device.mgt.common.policy.mgt.Policy;
 import org.wso2.carbon.policy.mgt.common.PolicyManagementException;
-import org.wso2.carbon.policy.mgt.common.monitor.PolicyComplianceException;
+import org.wso2.carbon.device.mgt.common.policy.mgt.monitor.PolicyComplianceException;
 import org.wso2.carbon.policy.mgt.core.internal.PolicyManagementDataHolder;
 import org.wso2.carbon.policy.mgt.core.mgt.MonitoringManager;
 import org.wso2.carbon.policy.mgt.core.mgt.PolicyManager;
 import org.wso2.carbon.policy.mgt.core.mgt.impl.MonitoringManagerImpl;
 import org.wso2.carbon.policy.mgt.core.mgt.impl.PolicyManagerImpl;
-import org.wso2.carbon.policy.mgt.core.services.PolicyMonitoringServiceTest;
+import org.wso2.carbon.policy.mgt.core.services.PolicyMonitoringManagerTest;
 
 import java.util.List;
 
@@ -154,9 +154,10 @@ public class MonitoringTestCase extends BasePolicyManagementDAOTest {
             PolicyComplianceException {
 
 
-        PolicyMonitoringServiceTest monitoringServiceTest = new PolicyMonitoringServiceTest();
-        PolicyManagementDataHolder.getInstance().setPolicyMonitoringService(monitoringServiceTest.getType(),
-                monitoringServiceTest);
+        PolicyMonitoringManagerTest monitoringServiceTest = new PolicyMonitoringManagerTest();
+        TestDeviceManagementProviderService deviceManagementProviderService = new TestDeviceManagementProviderService();
+        deviceManagementProviderService.setPolicyMonitoringManager(monitoringServiceTest);
+        PolicyManagementDataHolder.getInstance().setDeviceManagementService(deviceManagementProviderService);
 
         DeviceManagementProviderService adminService = new DeviceManagementProviderServiceImpl();
 
@@ -169,8 +170,6 @@ public class MonitoringTestCase extends BasePolicyManagementDAOTest {
             log.debug(device.getType());
             log.debug(device.getName());
         }
-
-        monitoringServiceTest.notifyDevices(devices);
 
         PolicyManager manager = new PolicyManagerImpl();
         Policy policy = null;
@@ -189,14 +188,14 @@ public class MonitoringTestCase extends BasePolicyManagementDAOTest {
     public void checkCompliance() throws DeviceManagementException, PolicyComplianceException,
             PolicyManagementException {
 
-        PolicyMonitoringServiceTest monitoringServiceTest = new PolicyMonitoringServiceTest();
-        PolicyManagementDataHolder.getInstance().setPolicyMonitoringService(monitoringServiceTest.getType(),
-                monitoringServiceTest);
+        PolicyMonitoringManagerTest monitoringServiceTest = new PolicyMonitoringManagerTest();
+        TestDeviceManagementProviderService deviceManagementProviderService = new TestDeviceManagementProviderService();
+        deviceManagementProviderService.setPolicyMonitoringManager(monitoringServiceTest);
+        PolicyManagementDataHolder.getInstance().setDeviceManagementService(deviceManagementProviderService);
+
         DeviceManagementProviderService adminService = new DeviceManagementProviderServiceImpl();
 
-
         List<Device> devices = adminService.getAllDevices();
-
 
         DeviceIdentifier deviceIdentifier = new DeviceIdentifier();
         deviceIdentifier.setId(devices.get(0).getDeviceIdentifier());

@@ -155,7 +155,7 @@ function loadDevices(searchType, searchParam) {
         serviceURL = "/api/device-mgt/v1.0/devices";
     } else if (permissionsUtil.hasPermission("LIST_OWN_DEVICES")) {
         //Get authenticated users devices
-        serviceURL = "/api/device-mgt/v1.0/users/devices?username=" + currentUser;
+        serviceURL = "/api/device-mgt/v1.0/devices?username=" + currentUser;
     } else {
         $("#loading-content").remove();
         $('#device-table').addClass('hidden');

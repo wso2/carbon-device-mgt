@@ -21,7 +21,7 @@ package org.wso2.carbon.policy.mgt.core.cache.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.policy.mgt.common.Policy;
+import org.wso2.carbon.device.mgt.common.policy.mgt.Policy;
 import org.wso2.carbon.policy.mgt.common.PolicyManagementException;
 import org.wso2.carbon.policy.mgt.core.cache.PolicyCacheManager;
 import org.wso2.carbon.policy.mgt.core.mgt.PolicyManager;

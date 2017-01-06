@@ -38,8 +38,8 @@ import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.search.SearchContext;
 import org.wso2.carbon.device.mgt.jaxrs.beans.DeviceList;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
-import org.wso2.carbon.policy.mgt.common.Policy;
-import org.wso2.carbon.policy.mgt.common.monitor.ComplianceData;
+import org.wso2.carbon.device.mgt.common.policy.mgt.Policy;
+import org.wso2.carbon.device.mgt.common.policy.mgt.monitor.NonComplianceData;
 
 import javax.validation.constraints.Size;
 import javax.ws.rs.*;
@@ -850,7 +850,7 @@ public interface DeviceManagementService {
                     @ApiResponse(
                             code = 200,
                             message = "OK",
-                            response = ComplianceData.class),
+                            response = NonComplianceData.class),
                     @ApiResponse(
                             code = 400,
                             message = "Bad Request. \n Invalid request or validation error.",

@@ -36,13 +36,5 @@
 
     <APIS>
         <ContextPath>/services/echo</ContextPath>
-        <ContextPath>/abc</ContextPath>
-        <ContextPath>/ca</ContextPath>
-        <ContextPath>/authenticate</ContextPath>
-        <ContextPath>/enroll</ContextPath>
-        <ContextPath>/enrolled</ContextPath>
-        <ContextPath>/license</ContextPath>
-        <ContextPath>/checkin</ContextPath>
-        <ContextPath>/server</ContextPath>
     </APIS>
 </ServerConfiguration>

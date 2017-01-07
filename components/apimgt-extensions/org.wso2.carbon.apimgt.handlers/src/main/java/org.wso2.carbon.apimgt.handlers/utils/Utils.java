@@ -46,6 +46,9 @@ import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Contains util methods for synapse gateway authentication handler
+ */
 public class Utils {
 
     private static final Log log = LogFactory.getLog(Utils.class);

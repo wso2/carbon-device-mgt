@@ -39,6 +39,9 @@ import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Synapse gateway handler for API authentication
+ */
 public class AuthenticationHandler extends AbstractHandler {
     private static final Log log = LogFactory.getLog(AuthenticationHandler.class);
     private static HandlerDescription EMPTY_HANDLER_METADATA = new HandlerDescription("API Security Handler");

@@ -28,6 +28,7 @@ import org.wso2.carbon.apimgt.impl.utils.APIUtil;
 import org.wso2.carbon.apimgt.webapp.publisher.config.APIResource;
 import org.wso2.carbon.apimgt.webapp.publisher.config.APIResourceConfiguration;
 import org.wso2.carbon.apimgt.webapp.publisher.config.WebappPublisherConfig;
+import org.wso2.carbon.apimgt.webapp.publisher.lifecycle.util.AnnotationProcessor;
 import org.wso2.carbon.base.MultitenantConstants;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.core.util.Utils;
@@ -50,6 +51,9 @@ public class APIPublisherUtil {
     private static final String PARAM_MANAGED_API_IS_SECURED = "managed-api-isSecured";
     private static final String PARAM_SHARED_WITH_ALL_TENANTS = "isSharedWithAllTenants";
     private static final String PARAM_PROVIDER_TENANT_DOMAIN = "providerTenantDomain";
+
+    private static final String NON_SECURED_RESOURCES = "nonSecuredEndPoints";
+    private static final String AUTH_TYPE_NON_SECURED = "None";
 
 
     public static API getAPI(APIConfig config) throws APIManagementException {
@@ -77,7 +81,7 @@ public class APIPublisherUtil {
 
         api.setUrl(config.getEndpoint());
         api.addAvailableTiers(provider.getTiers());
-        api.setEndpointSecured(true);
+        api.setEndpointSecured(false);
         api.setStatus(APIStatus.CREATED);
         api.setTransports(config.getTransports());
         api.setApiLevelPolicy(config.getPolicy());
@@ -269,18 +273,7 @@ public class APIPublisherUtil {
         }
         apiConfig.setOwner(owner);
 
-        String isSecuredParam = servletContext.getInitParameter(PARAM_MANAGED_API_IS_SECURED);
-        boolean isSecured;
-        if (isSecuredParam == null || isSecuredParam.isEmpty()) {
-            if (log.isDebugEnabled()) {
-                log.debug("'managed-api-isSecured' attribute is not configured. Therefore, using the default, " +
-                        "which is 'true'");
-            }
-            isSecured = false;
-        } else {
-            isSecured = Boolean.parseBoolean(isSecuredParam);
-        }
-        apiConfig.setSecured(isSecured);
+        apiConfig.setSecured(false);
 
         String transports = servletContext.getInitParameter(PARAM_MANAGED_API_TRANSPORTS);
         if (transports == null || transports.isEmpty()) {
@@ -324,4 +317,29 @@ public class APIPublisherUtil {
         return apiConfig;
     }
 
+
+    public static void setResourceAuthTypes(ServletContext servletContext, APIConfig apiConfig) {
+        List<String> resourcesList = null;
+        String nonSecuredResources = servletContext.getInitParameter(NON_SECURED_RESOURCES);
+        if(null != nonSecuredResources){
+            resourcesList = Arrays.asList(nonSecuredResources.split(","));
+        }
+        Set<URITemplate> templates = apiConfig.getUriTemplates();
+        if(null != resourcesList) {
+            for (URITemplate template : templates) {
+                String fullPaath = "";
+                if( template.getUriTemplate() != AnnotationProcessor.WILD_CARD ) {
+                    fullPaath = apiConfig.getContext() + template.getUriTemplate();
+                }
+                else{
+                    fullPaath = apiConfig.getContext();
+                }
+                for(String context : resourcesList) {
+                    if (context.trim().equals(fullPaath)) {
+                        template.setAuthType(AUTH_TYPE_NON_SECURED);
+                    }
+                }
+            }
+        }
+    }
 }

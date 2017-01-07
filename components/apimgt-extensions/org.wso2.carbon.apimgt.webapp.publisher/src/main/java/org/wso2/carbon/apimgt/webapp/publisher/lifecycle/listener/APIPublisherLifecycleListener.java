@@ -69,6 +69,7 @@ public class APIPublisherLifecycleListener implements LifecycleListener {
                             annotatedSwaggerAPIClasses);
                     for (APIResourceConfiguration apiDefinition : apiDefinitions) {
                         APIConfig apiConfig = APIPublisherUtil.buildApiConfig(servletContext, apiDefinition);
+                        APIPublisherUtil.setResourceAuthTypes(servletContext,apiConfig);
                         try {
                             int tenantId = APIPublisherDataHolder.getInstance().getTenantManager().
                                     getTenantId(apiConfig.getTenantDomain());

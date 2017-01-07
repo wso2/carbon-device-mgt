@@ -31,8 +31,11 @@ import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import io.swagger.annotations.ResponseHeader;
+import org.wso2.carbon.apimgt.annotations.api.Scope;
+import org.wso2.carbon.apimgt.annotations.api.Scopes;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.PlatformConfiguration;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
+import org.wso2.carbon.device.mgt.jaxrs.util.Constants;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -61,6 +64,21 @@ import javax.ws.rs.core.Response;
         "through this API.")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+@Scopes(scopes = {
+        @Scope(
+                name = "View configurations",
+                description = "",
+                key = "perm:view-configuration",
+                permissions = {"/device-mgt/platform-configurations/view"}
+        ),
+        @Scope(
+                name = "Manage configurations",
+                description = "",
+                key = "perm:manage-configuration",
+                permissions = {"/device-mgt/platform-configurations/manage"}
+        )
+}
+)
 public interface ConfigurationManagementService {
 
     @GET
@@ -72,11 +90,10 @@ public interface ConfigurationManagementService {
                     "General platform configurations include the settings on how often the device need to be monitored. " +
                     "Using this REST API you can get the general platform level configurations.",
             tags = "Configuration Management",
-            authorizations = {
-                    @Authorization(
-                            value="permission",
-                            scopes = { @AuthorizationScope(scope = "/device-mgt/platform-configurations/view", description = "View Configurations") }
-                    )
+            extensions = {
+                    @Extension(properties = {
+                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:view-configuration")
+                    })
             }
     )
     @ApiResponses(
@@ -132,11 +149,10 @@ public interface ConfigurationManagementService {
                     "General platform configurations include the settings on how often the the device need to be monitored." +
                     "Using this REST API you can update the general platform level configurations.",
             tags = "Configuration Management",
-            authorizations = {
-                    @Authorization(
-                            value="permission",
-                            scopes = { @AuthorizationScope(scope = "/device-mgt/platform-configurations/manage", description = "Manage configurations") }
-                    )
+            extensions = {
+                    @Extension(properties = {
+                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:manage-configuration")
+                    })
             }
     )
     @ApiResponses(

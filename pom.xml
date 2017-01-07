@@ -23,7 +23,7 @@
     <groupId>org.wso2.carbon.devicemgt</groupId>
     <artifactId>carbon-devicemgt</artifactId>
     <packaging>pom</packaging>
-    <version>2.0.6-SNAPSHOT</version>
+    <version>2.0.7-SNAPSHOT</version>
     <name>WSO2 Carbon - Device Management - Parent</name>
     <url>http://wso2.org</url>
     <description>WSO2 Connected Device Manager Components</description>
@@ -312,6 +312,12 @@
             <dependency>
                 <groupId>org.wso2.carbon.devicemgt</groupId>
                 <artifactId>org.wso2.carbon.apimgt.application.extension.api</artifactId>
+                <version>${carbon.device.mgt.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.wso2.carbon.devicemgt</groupId>
+                <artifactId>org.wso2.carbon.apimgt.handlers</artifactId>
                 <version>${carbon.device.mgt.version}</version>
             </dependency>
             <!-- Device Management dependencies -->
@@ -1647,6 +1653,17 @@
                 <artifactId>jersey-core</artifactId>
                 <version>${jersey.version}</version>
             </dependency>
+
+            <dependency>
+                <groupId>org.apache.synapse</groupId>
+                <artifactId>synapse-core</artifactId>
+                <version>${org.apache.synapse.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.ws.security.wso2</groupId>
+                <artifactId>wss4j</artifactId>
+                <version>${org.apache.ws.security.wso2.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -1870,7 +1887,7 @@
     <properties>
         <servelet.jsp.version>2.2.1</servelet.jsp.version>
         <testng.version>6.1.1</testng.version>
-        <carbon.kernel.version>4.4.10</carbon.kernel.version>
+        <carbon.kernel.version>4.4.11</carbon.kernel.version>
         <carbon.kernel.449.version>4.4.9</carbon.kernel.449.version>
         <carbon.kernel.version.range>[4.4.0, 5.0.0)</carbon.kernel.version.range>
         <carbon.p2.plugin.version>1.5.4</carbon.p2.plugin.version>
@@ -1914,12 +1931,12 @@
         <carbon.deployment.version>4.7.2</carbon.deployment.version>
 
         <!-- Carbon Identity -->
-        <carbon.identity.framework.version>5.6.89</carbon.identity.framework.version>
-        <identity.inbound.auth.oauth.version>5.2.33</identity.inbound.auth.oauth.version>
-        <identity.inbound.auth.saml.version>5.2.14</identity.inbound.auth.saml.version>
+        <carbon.identity.framework.version>5.7.0</carbon.identity.framework.version>
+        <identity.inbound.auth.oauth.version>5.3.1</identity.inbound.auth.oauth.version>
+        <identity.inbound.auth.saml.version>5.3.0</identity.inbound.auth.saml.version>
 
         <!-- Carbon Identity import version ranges -->
-        <carbon.identity.imp.pkg.version>[5.6.0, 6.0.0)</carbon.identity.imp.pkg.version>
+        <carbon.identity.imp.pkg.version>[5.7.0, 6.0.0)</carbon.identity.imp.pkg.version>
         <carbon.identity-inbound-auth-oauth.imp.pkg.version>[5.2.0, 6.0.0)</carbon.identity-inbound-auth-oauth.imp.pkg.version>
         <carbon.identity-user-ws.imp.pkg.version>[5.1.0, 6.0.0)</carbon.identity-user-ws.imp.pkg.version>
 
@@ -1935,7 +1952,7 @@
         <axiom.wso2.version>1.2.11.wso2v10</axiom.wso2.version>
 
         <!-- Carbon Device Management -->
-        <carbon.device.mgt.version>2.0.6-SNAPSHOT</carbon.device.mgt.version>
+        <carbon.device.mgt.version>2.0.7-SNAPSHOT</carbon.device.mgt.version>
 
         <!-- Carbon Commons -->
         <carbon.commons.version>4.4.8</carbon.commons.version>
@@ -1945,7 +1962,7 @@
 	    <commons-lang.wso2.osgi.version.range>[2.6.0,3.0.0)</commons-lang.wso2.osgi.version.range>
 
         <!-- Carbon API Management -->
-        <carbon.api.mgt.version>6.1.2</carbon.api.mgt.version>
+        <carbon.api.mgt.version>6.1.35</carbon.api.mgt.version>
         <carbon.api.mgt.version.range>(6.0.0,7.0.0]</carbon.api.mgt.version.range>
 
         <!-- Carbon Analytics Commons -->
@@ -2038,6 +2055,10 @@
 
         <!-- apache pdfbox version -->
         <slf4j.simple.version>1.6.1</slf4j.simple.version>
+
+        <!-- api-mgt handler version properties -->
+        <org.apache.synapse.version>2.1.7-wso2v7</org.apache.synapse.version>
+        <org.apache.ws.security.wso2.version>1.5.11.wso2v15</org.apache.ws.security.wso2.version>
     </properties>
 
 </project>

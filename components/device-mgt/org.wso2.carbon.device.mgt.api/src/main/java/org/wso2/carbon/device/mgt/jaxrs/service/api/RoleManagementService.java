@@ -24,16 +24,17 @@ import io.swagger.annotations.ExtensionProperty;
 import io.swagger.annotations.Extension;
 import io.swagger.annotations.Tag;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.AuthorizationScope;
-import io.swagger.annotations.Authorization;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import io.swagger.annotations.ResponseHeader;
+import org.wso2.carbon.apimgt.annotations.api.Scope;
+import org.wso2.carbon.apimgt.annotations.api.Scopes;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
 import org.wso2.carbon.device.mgt.jaxrs.beans.RoleInfo;
 import org.wso2.carbon.device.mgt.jaxrs.beans.RoleList;
+import org.wso2.carbon.device.mgt.jaxrs.util.Constants;
 import org.wso2.carbon.user.mgt.common.UIPermissionNode;
 
 import javax.ws.rs.*;
@@ -56,6 +57,58 @@ import java.util.List;
                 @Tag(name = "device_management", description = "")
         }
 )
+@Scopes(
+        scopes = {
+                @Scope(
+                        name = "Getting the List of Roles",
+                        description = "Getting the List of Roles",
+                        key = "perm:roles:view",
+                        permissions = {"/device-mgt/roles/view"}
+                ),
+                @Scope(
+                        name = "Getting Permission Details of a Role",
+                        description = "Getting Permission Details of a Role",
+                        key = "perm:roles:permissions",
+                        permissions = {"/device-mgt/roles/view"}
+                ),
+                @Scope(
+                        name = "Getting the List of Roles",
+                        description = "Getting the List of Roles",
+                        key = "perm:roles:details",
+                        permissions = {"/device-mgt/roles/view"}
+                ),
+                @Scope(
+                        name = "Adding a Role",
+                        description = "Adding a Role",
+                        key = "perm:roles:add",
+                        permissions = {"/device-mgt/roles/manage"}
+                ),
+                @Scope(
+                        name = "Adding a combined Role",
+                        description = "Adding a combined Role",
+                        key = "perm:roles:create-combined-role",
+                        permissions = {"/device-mgt/roles/manage"}
+                ),
+                @Scope(
+                        name = "Updating Role Details",
+                        description = "Updating Role Details",
+                        key = "perm:roles:update",
+                        permissions = {"/device-mgt/roles/manage"}
+                ),
+                @Scope(
+                        name = "Deleting a Role",
+                        description = "Deleting a Role",
+                        key = "perm:roles:delete",
+                        permissions = {"/device-mgt/roles/manage"}
+                ),
+                @Scope(
+                        name = "Adding Users to a Role",
+                        description = "Adding Users to a Role",
+                        key = "perm:roles:add-users",
+                        permissions = {"/device-mgt/roles/manage"}
+                )
+        }
+)
 @Path("/roles")
 @Api(value = "Role Management", description = "Role management related operations can be found here.")
 @Produces(MediaType.APPLICATION_JSON)
@@ -70,11 +123,10 @@ public interface RoleManagementService {
             notes = "WSO2 EMM supports role-based access control (RBAC) and role management. Using this API you can the list of roles that are in WSO2 EMM.\n" +
                     "Note: Internal roles, roles created for service-providers, and application related roles will not be given in the output.",
             tags = "Role Management",
-            authorizations = {
-                    @Authorization(
-                            value="permission",
-                            scopes = { @AuthorizationScope(scope = "/device-mgt/roles/view", description = "View Roles") }
-                    )
+            extensions = {
+                @Extension(properties = {
+                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:roles:view")
+                })
             }
     )
     @ApiResponses(
@@ -151,11 +203,10 @@ public interface RoleManagementService {
             response = UIPermissionNode.class,
             responseContainer = "List",
             tags = "Role Management",
-            authorizations = {
-                    @Authorization(
-                            value="permission",
-                            scopes = { @AuthorizationScope(scope = "/device-mgt/roles/view", description = "View Roles") }
-                    )
+            extensions = {
+                @Extension(properties = {
+                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:roles:permissions")
+                })
             }
     )
     @ApiResponses(
@@ -227,12 +278,10 @@ public interface RoleManagementService {
             notes = "Get the permissions associated with a role and role specific details using this REST API.",
             response = RoleInfo.class,
             tags = "Role Management",
-            authorizations = {
-                    @Authorization(
-                            value="permission",
-                            scopes = { @AuthorizationScope(scope = "/device-mgt/roles/view",
-                                    description = "View Roles") }
-                    )
+            extensions = {
+                @Extension(properties = {
+                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:roles:details")
+                })
             }
     )
     @ApiResponses(
@@ -303,12 +352,10 @@ public interface RoleManagementService {
             value = "Adding a Role",
             notes = "WSO2 EMM supports role-based access control (RBAC) and role management. Add a new role to WSO2 EMM using this REST API.",
             tags = "Role Management",
-            authorizations = {
-                    @Authorization(
-                            value="permission",
-                            scopes = { @AuthorizationScope(scope = "/device-mgt/roles/manage",
-                                    description = "Manage Roles") }
-                    )
+            extensions = {
+                @Extension(properties = {
+                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:roles:add")
+                })
             }
     )
     @ApiResponses(value = {
@@ -365,12 +412,10 @@ public interface RoleManagementService {
             value = "Adding a combined Role",
             notes = "WSO2 EMM supports role-based access control (RBAC) and role management. Add a new combined role to WSO2 EMM using this REST API.",
             tags = "Role Management",
-            authorizations = {
-                    @Authorization(
-                            value="permission",
-                            scopes = { @AuthorizationScope(scope = "/device-mgt/roles/manage",
-                                                           description = "Manage Roles") }
-                    )
+            extensions = {
+                @Extension(properties = {
+                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:roles:create-combined-role")
+                })
             }
     )
     @ApiResponses(value = {
@@ -430,12 +475,10 @@ public interface RoleManagementService {
             notes = "There will be situations where you need to update the role details, such as the permissions" +
                     " or the role name. Update the role details using this REST API.",
             tags = "Role Management",
-            authorizations = {
-                    @Authorization(
-                            value="permission",
-                            scopes = { @AuthorizationScope(scope = "/device-mgt/roles/manage",
-                                    description = "Manage Roles") }
-                    )
+            extensions = {
+                @Extension(properties = {
+                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:roles:update")
+                })
             }
     )
     @ApiResponses(value = {
@@ -498,12 +541,10 @@ public interface RoleManagementService {
             notes = "Roles become obsolete over time due to various reasons. In a situation where your Organization identifies that a specific role is no longer required, you " +
                     "can delete a role using this REST API.",
             tags = "Role Management",
-            authorizations = {
-                    @Authorization(
-                            value="permission",
-                            scopes = { @AuthorizationScope(scope = "/device-mgt/roles/manage",
-                                    description = "Manage Roles") }
-                    )
+            extensions = {
+                @Extension(properties = {
+                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:roles:delete")
+                })
             }
     )
     @ApiResponses(value = {
@@ -550,12 +591,10 @@ public interface RoleManagementService {
                     "be cumbersome. Therefore, you can define all the new employees that belong to the engineering " +
                     "role using this API.",
             tags = "Role Management",
-            authorizations = {
-                    @Authorization(
-                            value="permission",
-                            scopes = { @AuthorizationScope(scope = "/device-mgt/roles/manage",
-                                    description = "Manage Roles") }
-                    )
+            extensions = {
+                @Extension(properties = {
+                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:roles:add-users")
+                })
             }
     )
     @ApiResponses(

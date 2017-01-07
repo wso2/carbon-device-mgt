@@ -40,7 +40,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Synapse gateway handler for API authentication
+ * Synapse gateway handler for API authentication.
  */
 public class AuthenticationHandler extends AbstractHandler {
     private static final Log log = LogFactory.getLog(AuthenticationHandler.class);
@@ -60,6 +60,11 @@ public class AuthenticationHandler extends AbstractHandler {
         this.iotServerConfiguration = Utils.initConfig();
     }
 
+    /**
+     * Handling the message and checking the security.
+     * @param messageContext
+     * @return
+     */
     @Override
     public boolean handleRequest(org.apache.synapse.MessageContext messageContext) {
         org.apache.axis2.context.MessageContext axisMC = ((Axis2MessageContext) messageContext).getAxis2MessageContext();

@@ -25,6 +25,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlValue;
 import java.util.List;
 
+/**
+ * This class initialize the iot-api-config.xml and hold the values, in order to be read from the relevant classes. This
+ * get initialized at the start of the server when apis get loaded.
+ */
 @XmlRootElement(name = "ServerConfiguration")
 public class IOTServerConfiguration {
 

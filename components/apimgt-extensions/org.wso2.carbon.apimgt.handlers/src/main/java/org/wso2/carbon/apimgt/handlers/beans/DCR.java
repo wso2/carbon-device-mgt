@@ -19,11 +19,18 @@
 
 package org.wso2.carbon.apimgt.handlers.beans;
 
+/**
+ * This class holds the DCR endpoints data to create an application.
+ */
 public class DCR {
 
+    // Owner of the application
     private String owner;
+    // Client name
     private String clientName;
+    // Oauth  Grant type
     private String grantType;
+    // Scope of the token
     private String tokenScope;
 
     public String getOwner() {

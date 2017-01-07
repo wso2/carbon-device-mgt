@@ -56,6 +56,10 @@ public class Utils {
     private static String clientId;
     private static String clientSecret;
 
+    /**
+     * This method initializes the iot-api-config.xml file.
+     * @return
+     */
     public static IOTServerConfiguration initConfig() {
         try {
 
@@ -74,6 +78,12 @@ public class Utils {
         }
     }
 
+    /**
+     * This class build the iot-api-config.xml file.
+     * @param file
+     * @return
+     * @throws APIMCertificateMGTException
+     */
     public static Document convertToDocument(File file) throws APIMCertificateMGTException {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setNamespaceAware(true);
@@ -87,6 +97,12 @@ public class Utils {
         }
     }
 
+    /**
+     * This class get the access token from the key manager.
+     * @param iotServerConfiguration
+     * @return
+     * @throws APIMCertificateMGTException
+     */
     public static String getAccessToken(IOTServerConfiguration iotServerConfiguration)
             throws APIMCertificateMGTException {
         try {
@@ -120,6 +136,11 @@ public class Utils {
         }
     }
 
+    /**
+     * This method register an application to get the client key and secret.
+     * @param iotServerConfiguration
+     * @throws APIMCertificateMGTException
+     */
     private static void getClientSecretes(IOTServerConfiguration iotServerConfiguration)
             throws APIMCertificateMGTException {
         try {

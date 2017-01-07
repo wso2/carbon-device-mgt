@@ -17,10 +17,7 @@
  */
 package org.wso2.carbon.apimgt.handlers.invoker;
 
-import org.apache.axiom.om.OMElement;
-import org.apache.axiom.om.util.AXIOMUtil;
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -32,17 +29,10 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.util.EntityUtils;
-import org.wso2.carbon.apimgt.handlers.utils.AuthConstants;
-import org.wso2.carbon.apimgt.handlers.utils.CoreUtils;
-import org.wso2.carbon.utils.CarbonUtils;
 
-import javax.xml.namespace.QName;
-import javax.xml.stream.XMLStreamException;
-import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
-import java.util.Iterator;
 import java.util.Map;
 
 public class RESTInvoker {
@@ -61,64 +51,7 @@ public class RESTInvoker {
         configureHttpClient();
     }
 
-//    private void parseConfiguration() {
-//        String carbonConfigDirPath = CarbonUtils.getCarbonConfigDirPath();
-//        String apiFilterConfigPath = carbonConfigDirPath + File.separator +
-//                AuthConstants.AUTH_CONFIGURATION_FILE_NAME;
-//        File configFile = new File(apiFilterConfigPath);
-//
-//        try {
-//            String configContent = FileUtils.readFileToString(configFile);
-//            OMElement configElement = AXIOMUtil.stringToOM(configContent);
-//            Iterator beans = configElement.getChildrenWithName(
-//                    new QName("http://www.springframework.org/schema/beans", "bean"));
-//
-//            while (beans.hasNext()) {
-//                OMElement bean = (OMElement) beans.next();
-//                String beanId = bean.getAttributeValue(new QName(null, "id"));
-//                if (beanId.equals(RESTConstants.REST_CLIENT_CONFIG_ELEMENT)) {
-//                    Iterator beanProps = bean.getChildrenWithName(
-//                            new QName("http://www.springframework.org/schema/beans", "property"));
-//
-//                    while (beanProps.hasNext()) {
-//                        OMElement beanProp = (OMElement) beanProps.next();
-//                        String beanName = beanProp.getAttributeValue(new QName(null, "name"));
-//                        if (RESTConstants.REST_CLIENT_MAX_TOTAL_CONNECTIONS.equals(beanName)) {
-//                            String value = beanProp.getAttributeValue(new QName(null, "value"));
-//                            if (value != null && !value.trim().equals("")) {
-//                                maxTotalConnections = Integer.parseInt(value);
-//                            }
-//                            CoreUtils.debugLog(log, "Max total http connections ", maxTotalConnections);
-//                        } else if (RESTConstants.REST_CLIENT_MAX_CONNECTIONS_PER_ROUTE.equals(beanName)) {
-//                            String value = beanProp.getAttributeValue(new QName(null, "value"));
-//                            if (value != null && !value.trim().equals("")) {
-//                                maxTotalConnectionsPerRoute = Integer.parseInt(value);
-//                            }
-//                            CoreUtils.debugLog(log, "Max total client connections per route ", maxTotalConnectionsPerRoute);
-//                        } else if (RESTConstants.REST_CLEINT_CONNECTION_TIMEOUT.equals(beanName)) {
-//                            String value = beanProp.getAttributeValue(new QName(null, "value"));
-//                            if (value != null && !value.trim().equals("")) {
-//                                connectionTimeout = Integer.parseInt(value);
-//                            }
-//                        } else if (RESTConstants.REST_CLEINT_SOCKET_TIMEOUT.equals(beanName)) {
-//                            String value = beanProp.getAttributeValue(new QName(null, "value"));
-//                            if (value != null && !value.trim().equals("")) {
-//                                socketTimeout = Integer.parseInt(value);
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//        } catch (XMLStreamException e) {
-//            log.error("Error in processing http connection settings, using default settings", e);
-//        } catch (IOException e) {
-//            log.error("Error in processing http connection settings, using default settings", e);
-//        }
-//    }
-
     private void configureHttpClient() {
-
-//        parseConfiguration();
 
         RequestConfig defaultRequestConfig = RequestConfig.custom()
                 .setExpectContinueEnabled(true)
@@ -140,11 +73,7 @@ public class RESTInvoker {
                     "maxConnectionsPerRoute = " + maxTotalConnectionsPerRoute +
                     "connectionTimeout = " + connectionTimeout);
         }
-//
-//        CoreUtils.debugLog(log, "REST client initialized with ",
-//                "maxTotalConnection = ", maxTotalConnections,
-//                "maxConnectionsPerRoute = ", maxTotalConnectionsPerRoute,
-//                "connectionTimeout = ", connectionTimeout);
+
     }
 
     public void closeHttpClient() {

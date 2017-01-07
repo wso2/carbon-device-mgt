@@ -19,6 +19,9 @@
 
 package org.wso2.carbon.apimgt.handlers.beans;
 
+/**
+ * This class holds the data returned from the backend after the certificate was authenticated.
+ */
 public class ValidationResponce {
 
     private String JWTToken; // X-JWT-Assertion

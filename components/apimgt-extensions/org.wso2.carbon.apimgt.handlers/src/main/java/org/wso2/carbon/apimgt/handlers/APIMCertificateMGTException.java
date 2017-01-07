@@ -19,6 +19,9 @@
 
 package org.wso2.carbon.apimgt.handlers;
 
+/**
+ * Error handling class for the apimgt handler.
+ */
 public class APIMCertificateMGTException extends Exception{
 
     private static final long serialVersionUID = -37676242646464497L;

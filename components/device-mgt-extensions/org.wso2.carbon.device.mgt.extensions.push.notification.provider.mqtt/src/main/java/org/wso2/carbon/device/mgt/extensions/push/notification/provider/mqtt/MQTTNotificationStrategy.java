@@ -50,12 +50,14 @@ public class MQTTNotificationStrategy implements NotificationStrategy {
         adapterConfig.setMessageFormat(MessageType.TEXT);
 
         Map<String, String> configProperties = new HashMap<String, String>();
-        configProperties.put(MQTTAdapterConstants.MQTT_ADAPTER_PROPERTY_BROKER_URL,
-                config.getProperty(MQTTAdapterConstants.MQTT_ADAPTER_PROPERTY_BROKER_URL));
+        String brokerUrl = config.getProperty(MQTTAdapterConstants.MQTT_ADAPTER_PROPERTY_BROKER_URL);
+        if (brokerUrl != null && !brokerUrl.isEmpty()) {
+            configProperties.put(MQTTAdapterConstants.MQTT_ADAPTER_PROPERTY_BROKER_URL, brokerUrl);
+        }
         configProperties.put(MQTTAdapterConstants.MQTT_ADAPTER_PROPERTY_USERNAME,
                 config.getProperty(MQTTAdapterConstants.MQTT_ADAPTER_PROPERTY_USERNAME));
-        configProperties.put(MQTTAdapterConstants.MQTT_ADAPTER_PROPERTY_DCR_URL,
-                config.getProperty(MQTTAdapterConstants.MQTT_ADAPTER_PROPERTY_DCR_URL));
+        configProperties.put(MQTTAdapterConstants.MQTT_ADAPTER_PROPERTY_PASSWORD,
+                             config.getProperty(MQTTAdapterConstants.MQTT_ADAPTER_PROPERTY_PASSWORD));
         configProperties.put(MQTTAdapterConstants.MQTT_ADAPTER_PROPERTY_CLEAR_SESSION,
                 config.getProperty(MQTTAdapterConstants.MQTT_ADAPTER_PROPERTY_CLEAR_SESSION));
         configProperties.put(MQTTAdapterConstants.MQTT_ADAPTER_PROPERTY_SCOPES,

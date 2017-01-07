@@ -71,10 +71,10 @@
         <FileBasedProperties>true</FileBasedProperties>
         <!--if file based properties is set to false then the configuration will be picked from platform configuration-->
         <ConfigProperties>
-            <Property Name="mqtt.adapter.name">sample.mqtt.adapter</Property>
+            <Property Name="mqttAdapterName">sample.mqtt.adapter</Property>
             <Property Name="url">tcp://localhost:1883</Property>
             <Property Name="username">admin</Property>
-            <Property Name="dcrUrl">https://localhost:9443/dynamic-client-web/register</Property>
+            <Property Name="password">admin</Property>
             <Property Name="qos">0</Property>
             <Property Name="scopes"/>
             <Property Name="clearSession">true</Property>

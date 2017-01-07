@@ -35,9 +35,9 @@
         "usernameJSRegEx" : "^[\\S]{3,30}$",
         "usernameRegExViolationErrorMsg" : "Provided username is invalid.",
         "usernameHelpMsg" : "Should be in minimum 3 characters long and do not include any whitespaces.",
-        "firstnameJSRegEx" : "^[\\S]{3,30}$",
+        "firstnameJSRegEx" : "^.{3,30}$",
         "firstnameRegExViolationErrorMsg" : "Provided first name is invalid.",
-        "lastnameJSRegEx" : "^[\\S]{3,30}$",
+        "lastnameJSRegEx" : "^.{3,30}$",
         "lastnameRegExViolationErrorMsg" : "Provided last name is invalid.",
         "emailJSRegEx" : "/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/",
         "emailRegExViolationErrorMsg" : "Provided email is invalid."

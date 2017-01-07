@@ -167,7 +167,7 @@ public class AuthenticationHandler extends AbstractHandler {
         } catch (URISyntaxException e) {
             log.error("Error while processing certificate.", e);
             return false;
-        } catch (APIMCertificateMGTExcepton e) {
+        } catch (APIMCertificateMGTException e) {
             log.error("Error while processing certificate.", e);
             return false;
         }

@@ -26,7 +26,7 @@ import org.apache.ws.security.util.Base64;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.w3c.dom.Document;
-import org.wso2.carbon.apimgt.handlers.APIMCertificateMGTExcepton;
+import org.wso2.carbon.apimgt.handlers.APIMCertificateMGTException;
 import org.wso2.carbon.apimgt.handlers.beans.DCR;
 import org.wso2.carbon.apimgt.handlers.config.IOTServerConfiguration;
 import org.wso2.carbon.apimgt.handlers.invoker.RESTInvoker;
@@ -65,13 +65,13 @@ public class Utils {
             Unmarshaller unmarshaller = fileContext.createUnmarshaller();
             return (IOTServerConfiguration) unmarshaller.unmarshal(doc);
 
-        } catch (JAXBException | APIMCertificateMGTExcepton e) {
+        } catch (JAXBException | APIMCertificateMGTException e) {
             log.error("Error occurred while initializing Data Source config", e);
             return null;
         }
     }
 
-    public static Document convertToDocument(File file) throws APIMCertificateMGTExcepton {
+    public static Document convertToDocument(File file) throws APIMCertificateMGTException {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setNamespaceAware(true);
         try {
@@ -79,13 +79,13 @@ public class Utils {
             factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
             return docBuilder.parse(file);
         } catch (Exception e) {
-            throw new APIMCertificateMGTExcepton("Error occurred while parsing file, while converting " +
+            throw new APIMCertificateMGTException("Error occurred while parsing file, while converting " +
                     "to a org.w3c.dom.Document", e);
         }
     }
 
     public static String getAccessToken(IOTServerConfiguration iotServerConfiguration)
-            throws APIMCertificateMGTExcepton {
+            throws APIMCertificateMGTException {
         try {
             if (clientId == null || clientSecret == null) {
                 getClientSecretes(iotServerConfiguration);
@@ -109,16 +109,16 @@ public class Utils {
             return accessToken;
 
         } catch (URISyntaxException e) {
-            throw new APIMCertificateMGTExcepton("Error occurred while trying to call oauth token endpoint", e);
+            throw new APIMCertificateMGTException("Error occurred while trying to call oauth token endpoint", e);
         } catch (JSONException e) {
-            throw new APIMCertificateMGTExcepton("Error occurred while converting the json to object", e);
+            throw new APIMCertificateMGTException("Error occurred while converting the json to object", e);
         } catch (IOException e) {
-            throw new APIMCertificateMGTExcepton("Error occurred while trying to call oauth token endpoint", e);
+            throw new APIMCertificateMGTException("Error occurred while trying to call oauth token endpoint", e);
         }
     }
 
     private static void getClientSecretes(IOTServerConfiguration iotServerConfiguration)
-            throws APIMCertificateMGTExcepton {
+            throws APIMCertificateMGTException {
         try {
             DCR dcr = new DCR();
             dcr.setOwner(iotServerConfiguration.getUsername());
@@ -141,11 +141,11 @@ public class Utils {
             clientId = jsonResponse.getString("client_id");
             clientSecret = jsonResponse.getString("client_secret");
         } catch (JSONException e) {
-            throw new APIMCertificateMGTExcepton("Error occurred while converting the json to object", e);
+            throw new APIMCertificateMGTException("Error occurred while converting the json to object", e);
         } catch (IOException e) {
-            throw new APIMCertificateMGTExcepton("Error occurred while trying to call DCR endpoint", e);
+            throw new APIMCertificateMGTException("Error occurred while trying to call DCR endpoint", e);
         } catch (URISyntaxException e) {
-            throw new APIMCertificateMGTExcepton("Error occurred while trying to call DCR endpoint", e);
+            throw new APIMCertificateMGTException("Error occurred while trying to call DCR endpoint", e);
         }
 
     }

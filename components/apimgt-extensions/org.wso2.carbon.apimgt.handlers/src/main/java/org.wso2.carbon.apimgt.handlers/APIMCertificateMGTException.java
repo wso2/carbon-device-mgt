@@ -19,7 +19,7 @@
 
 package org.wso2.carbon.apimgt.handlers;
 
-public class APIMCertificateMGTExcepton extends Exception{
+public class APIMCertificateMGTException extends Exception{
 
     private static final long serialVersionUID = -37676242646464497L;
 
@@ -33,26 +33,26 @@ public class APIMCertificateMGTExcepton extends Exception{
         this.errorMessage = errorMessage;
     }
 
-    public APIMCertificateMGTExcepton(String msg, Exception nestedEx) {
+    public APIMCertificateMGTException(String msg, Exception nestedEx) {
         super(msg, nestedEx);
         setErrorMessage(msg);
     }
 
-    public APIMCertificateMGTExcepton(String message, Throwable cause) {
+    public APIMCertificateMGTException(String message, Throwable cause) {
         super(message, cause);
         setErrorMessage(message);
     }
 
-    public APIMCertificateMGTExcepton(String msg) {
+    public APIMCertificateMGTException(String msg) {
         super(msg);
         setErrorMessage(msg);
     }
 
-    public APIMCertificateMGTExcepton() {
+    public APIMCertificateMGTException() {
         super();
     }
 
-    public APIMCertificateMGTExcepton(Throwable cause) {
+    public APIMCertificateMGTException(Throwable cause) {
         super(cause);
     }
 }

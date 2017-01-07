@@ -19,10 +19,16 @@
 
 package org.wso2.carbon.apimgt.handlers.beans;
 
+/**
+ * This class keeps the certificate data.
+ */
 public class Certificate {
 
+    // public key of the certificate
     private String pem;
+    // Tenant id
     private int tenantId;
+    // Serial of the certificate.
     private String serial;
 
     public String getPem() {

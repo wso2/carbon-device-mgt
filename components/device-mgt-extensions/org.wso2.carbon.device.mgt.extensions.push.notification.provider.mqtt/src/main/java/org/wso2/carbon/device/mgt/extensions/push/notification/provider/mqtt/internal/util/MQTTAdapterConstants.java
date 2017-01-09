@@ -27,10 +27,10 @@ public final class MQTTAdapterConstants {
     public static final String MQTT_ADAPTER_TYPE = "oauth-mqtt";
     public static final String MQTT_ADAPTER_PROPERTY_BROKER_URL = "url";
     public static final String MQTT_ADAPTER_PROPERTY_USERNAME = "username";
-    public static final String MQTT_ADAPTER_PROPERTY_DCR_URL = "dcrUrl";
+    public static final String MQTT_ADAPTER_PROPERTY_PASSWORD = "password";
     public static final String MQTT_ADAPTER_PROPERTY_SCOPES = "scopes";
     public static final String MQTT_ADAPTER_PROPERTY_CLEAR_SESSION = "cleanSession";
     public static final String MQTT_ADAPTER_PROPERTY_MESSAGE_QOS = "qos";
-    public static final String MQTT_ADAPTER_PROPERTY_NAME = "mqtt.adapter.name";
+    public static final String MQTT_ADAPTER_PROPERTY_NAME = "mqttAdapterName";
 
 }

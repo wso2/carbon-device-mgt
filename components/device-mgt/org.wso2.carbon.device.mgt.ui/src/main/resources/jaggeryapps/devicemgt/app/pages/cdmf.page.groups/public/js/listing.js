@@ -391,14 +391,7 @@ function attachEvents() {
         listAllRoles(groupId);
         var shareGroupNextLink = $("a#share-group-next-link");
         shareGroupNextLink.click(function () {
-            var roles = [];
-            $('.modal .roleCheckBoxes').each(
-                function () {
-                    if ($(this).is(':checked')) {
-                        roles.push($(this).data('role-name'));
-                    }
-                }
-            );
+            var roles = $("#roles").val();
             updateGroupShare(groupId, roles);
         });
 
@@ -505,15 +498,11 @@ function markAlreadySavedUsersRoles(groupId) {
         data = JSON.parse(data);
         if (xhr.status == 200) {
             if (data.roles.length > 0) {
+                var selectedValues = [];
                 for (var i = 0; i < data.roles.length; i++) {
-                    $('.roleCheckBoxes').each(
-                        function () {
-                            if (data.roles[i] == $(this).data('role-name')) {
-                                $(this).attr('checked', true);
-                            }
-                        }
-                    );
+                    selectedValues.push(data.roles[i]);
                 }
+                $("#roles").val(selectedValues).trigger("change");
             } else {
                 return;
             }
@@ -533,22 +522,16 @@ function listAllRoles(groupId) {
         data = JSON.parse(data);
         if (xhr.status == 200) {
             if (data.roles.length > 0) {
-                var html = "<br/>";
+                var html = '<select id="roles" class="form-control select2" multiple="multiple">';
                 for (var i = 0; i < data.roles.length; i++) {
-                    html += '<div class="wr-input-control"><label class="wr-input-control checkbox">' +
-                            '<input class="roleCheckBoxes" type="checkbox" data-role-name="' + data.roles[i] + '" />' +
-                            '<span class="helper" title="' + data.roles[i] + '">' + data.roles[i] +
-                            '</span></label></div>';
-                    $('.roleCheckBoxes').each(
-                        function () {
-                            if (data.roles[i] == $(this).data('role-name')) {
-                                $(this).attr('checked', true);
-                            }
-                        }
-                    );
+                    html += '<option value="' + data.roles[i] + '">' + data.roles[i] + '</option>';
                 }
+                html += '</select>';
                 $("#rolesListing").html(html);
                 markAlreadySavedUsersRoles(groupId);
+                $("select.select2[multiple=multiple]").select2({
+                                                                   tags: false
+                                                               });
             } else {
                 $("#rolesListing").html("No roles available");
             }

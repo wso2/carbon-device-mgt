@@ -48,6 +48,10 @@
             <groupId>javax.servlet.jsp</groupId>
             <artifactId>javax.servlet.jsp-api</artifactId>
         </dependency>
+		<dependency>
+			<groupId>org.wso2.carbon.store</groupId>
+			<artifactId>org.wso2.store.sso.common</artifactId>
+		</dependency>
     </dependencies>
 
     <build>
@@ -76,6 +80,7 @@
                             </includedFeatures>
                             <bundles>
                                 <bundleDef>javax.servlet.jsp:javax.servlet.jsp-api</bundleDef>
+								<bundleDef>org.wso2.carbon.store:org.wso2.store.sso.common:${carbon.store.sso.common.version}</bundleDef>
                             </bundles>
                         </configuration>
                     </execution>

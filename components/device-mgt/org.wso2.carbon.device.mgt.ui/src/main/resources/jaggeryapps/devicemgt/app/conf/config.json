@@ -5,7 +5,7 @@
     "httpsWebURL" : "%https.ip%",
     "wssURL" : "https://localhost:9445",
     "wsURL" : "%http.ip%",
-    "portalURL": "https://${server.ip}:9445",
+    "portalURL": "https://%server.ip%:9445",
     "dashboardServerURL" : "%https.ip%",
     "androidEnrollmentDir": "/android-web-agent/enrollment",
     "windowsEnrollmentDir": "/windows-web-agent/enrollment",

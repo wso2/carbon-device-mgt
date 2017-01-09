@@ -33,6 +33,9 @@ var conf = function () {
                 } else if ((typeof value === "string") && value.indexOf("%date-year%") > -1) {
                     var year = new Date().getFullYear();
                     return value.replace("%date-year%", year);
+                } else if ((typeof value === "string") && value.indexOf("%server.ip%") > -1) {
+                    var getProperty = require("process").getProperty;
+                    return value.replace("%server.ip%", getProperty("carbon.local.ip"));
                 }
                 return value;
             }

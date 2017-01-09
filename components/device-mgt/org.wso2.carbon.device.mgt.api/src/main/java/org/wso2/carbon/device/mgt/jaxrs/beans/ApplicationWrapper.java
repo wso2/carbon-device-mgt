@@ -29,14 +29,29 @@ import java.util.List;
         "role or devices the application is associated with.")
 public class ApplicationWrapper {
 
-    @ApiModelProperty(name = "userNameList", value = "List of user names.", required = true)
+    @ApiModelProperty(
+            name = "userNameList",
+            value = "List of user names.",
+            required = true)
     private List<String> userNameList;
-    @ApiModelProperty(name = "roleNameList", value = "List of role names.", required = true)
+
+    @ApiModelProperty(
+            name = "roleNameList",
+            value = "List of role names.",
+            required = true)
     private List<String> roleNameList;
-    @ApiModelProperty(name = "deviceIdentifiers", value = "List of device identifiers.", required = true,
+
+    @ApiModelProperty(
+            name = "deviceIdentifiers",
+            value = "List of device identifiers.",
+            required = true,
             dataType = "List[org.wso2.carbon.device.mgt.common.DeviceIdentifier]")
     private List<DeviceIdentifier> deviceIdentifiers;
-    @ApiModelProperty(name = "application", value = "Details of the mobile application.", required = true)
+
+    @ApiModelProperty(
+            name = "application",
+            value = "Details of the mobile application.",
+            required = true)
     private MobileApp application;
 
     public MobileApp getApplication() {

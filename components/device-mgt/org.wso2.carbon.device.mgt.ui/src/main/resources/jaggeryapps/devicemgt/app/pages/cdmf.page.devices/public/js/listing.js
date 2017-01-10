@@ -730,7 +730,7 @@ function attachDeviceEvents() {
         var deviceId = $(this).data("deviceid");
         var deviceType = $(this).data("devicetype");
         var deviceName = $(this).data("devicename");
-        var serviceURL = "/api/device-mgt/v1.0/devices/type/" + deviceType + "/id/" + deviceId;
+        var serviceURL = "/api/device-mgt/v1.0/devices/type/" + deviceType + "/id/" + deviceId + "/rename";
 
         $(modalPopupContent).html($('#edit-device-modal-content').html());
         $('#edit-device-name').val(deviceName);
@@ -738,7 +738,9 @@ function attachDeviceEvents() {
 
         $("a#edit-device-yes-link").click(function () {
             var newDeviceName = $('#edit-device-name').val();
-            invokerUtil.put(serviceURL, {"name": newDeviceName}, function (message) {
+            var request = {};
+            request['name'] = newDeviceName;
+            invokerUtil.put(serviceURL, request, function (message) {
                 $(modalPopupContent).html($('#edit-device-200-content').html());
                 setTimeout(function () {
                     hidePopup();

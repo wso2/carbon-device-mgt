@@ -18,8 +18,11 @@
  */
 package org.wso2.carbon.device.mgt.jaxrs.service.impl;
 
+import io.swagger.annotations.ApiParam;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.device.mgt.common.*;
 import org.wso2.carbon.device.mgt.common.app.mgt.Application;
@@ -30,6 +33,7 @@ import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
 import org.wso2.carbon.device.mgt.common.search.SearchContext;
 import org.wso2.carbon.device.mgt.core.app.mgt.ApplicationManagementProviderService;
+import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 import org.wso2.carbon.device.mgt.core.search.mgt.SearchManagerService;
 import org.wso2.carbon.device.mgt.core.search.mgt.SearchMgtException;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
@@ -233,6 +237,28 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
             String msg = "Error occurred while deleting device(s)";
             log.error(msg, e);
             return Response.serverError().entity(new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
+        }
+    }
+
+    @POST
+    @Override
+    @Path("/type/{device-type}/id/{device-id}/rename")
+    public Response renameDevice(Device device, @PathParam("device-type") String deviceType,
+                                 @PathParam("device-id") String deviceId) {
+        DeviceManagementProviderService deviceManagementProviderService = DeviceMgtAPIUtils.getDeviceManagementService();
+        try {
+            Device persistedDevice = deviceManagementProviderService.getDevice(new DeviceIdentifier
+                    (deviceId, deviceType));
+            persistedDevice.setName(device.getName());
+            boolean response = deviceManagementProviderService.modifyEnrollment(persistedDevice);
+            return Response.status(Response.Status.CREATED).entity(response).build();
+
+        } catch (DeviceManagementException e) {
+            log.error("Error encountered while updating device of type : " + deviceType + " and " +
+                    "ID : " + deviceId);
+            return Response.status(Response.Status.BAD_REQUEST).entity(
+                    new ErrorResponse.ErrorResponseBuilder().setMessage("Error while updating " +
+                            "device of type " + deviceType + " and ID : " + deviceId).build()).build();
         }
     }
 

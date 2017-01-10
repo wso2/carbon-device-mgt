@@ -119,10 +119,9 @@
                         <div id="user-names">
                             <h4>
                                 Select user role(s)
-                                <br><br>
-                                <div style="max-height: 200px; overflow: auto" id="rolesListing">
-                                </div>
                             </h4>
+                            <div class="wr-input-control" id="rolesListing">
+                            </div>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -401,4 +400,20 @@
     {{#if groupCount}}
         {{js "js/listing.js"}}
     {{/if}}
+{{/zone}}
+
+{{#zone "topCss"}}
+    <style>
+        .select2-dropdown {
+            z-index: 999999999;
+        }
+
+        .wr-input-control {
+            color: black;
+        }
+
+        .select2-selection__choice {
+            font-size: medium;
+        }
+    </style>
 {{/zone}}

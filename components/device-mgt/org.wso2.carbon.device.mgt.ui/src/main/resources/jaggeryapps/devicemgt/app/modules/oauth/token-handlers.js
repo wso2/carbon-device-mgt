@@ -90,9 +90,15 @@ var handlers = function () {
                         "missing - setupTokenPairByPasswordGrantType(x, y)");
             } else {
                 var tokenData;
+                var arrayOfScopes = devicemgtProps["scopes"];
+                var stringOfScopes = "";
+                arrayOfScopes.forEach(function (entry) {
+                    stringOfScopes += entry + " ";
+                });
+
                 // accessTokenPair will include current access token as well as current refresh token
                 tokenData = tokenUtil.
-                    getTokenPairAndScopesBySAMLGrantType(samlToken, encodedClientAppCredentials, "PRODUCTION");
+                    getTokenPairAndScopesBySAMLGrantType(samlToken, encodedClientAppCredentials, stringOfScopes);
                 if (!tokenData) {
                     throw new Error("{/app/modules/oauth/token-handlers.js} Could not set up token " +
                         "pair by password grant type. Error in token " +

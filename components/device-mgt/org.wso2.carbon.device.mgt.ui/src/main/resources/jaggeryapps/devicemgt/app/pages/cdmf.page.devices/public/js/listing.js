@@ -740,7 +740,7 @@ function attachDeviceEvents() {
             var newDeviceName = $('#edit-device-name').val();
             var request = {};
             request['name'] = newDeviceName;
-            invokerUtil.put(serviceURL, request, function (message) {
+            invokerUtil.post(serviceURL, request, function (message) {
                 $(modalPopupContent).html($('#edit-device-200-content').html());
                 setTimeout(function () {
                     hidePopup();

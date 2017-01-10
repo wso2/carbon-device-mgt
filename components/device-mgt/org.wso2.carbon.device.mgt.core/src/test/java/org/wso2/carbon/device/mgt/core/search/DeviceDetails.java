@@ -17,7 +17,7 @@
  */
 
 
-package org.wso2.carbon.device.mgt.core.Search;
+package org.wso2.carbon.device.mgt.core.search;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

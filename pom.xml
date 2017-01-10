@@ -1581,7 +1581,7 @@
             <dependency>
                 <groupId>io.swagger</groupId>
                 <artifactId>swagger-annotations</artifactId>
-                <version>${swagger.version}</version>
+                <version>${swagger.annotations.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.swagger</groupId>
@@ -1664,6 +1664,11 @@
                 <artifactId>wss4j</artifactId>
                 <version>${org.apache.ws.security.wso2.version}</version>
             </dependency>
+			<dependency>
+				<groupId>org.wso2.carbon.store</groupId>
+				<artifactId>org.wso2.store.sso.common</artifactId>
+				<version>${carbon.store.sso.common.version}</version>
+			</dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -2059,6 +2064,9 @@
         <!-- api-mgt handler version properties -->
         <org.apache.synapse.version>2.1.7-wso2v7</org.apache.synapse.version>
         <org.apache.ws.security.wso2.version>1.5.11.wso2v15</org.apache.ws.security.wso2.version>
+
+		<!--carbon store version-->
+		<carbon.store.sso.common.version>1.4.4</carbon.store.sso.common.version>
     </properties>
 
 </project>

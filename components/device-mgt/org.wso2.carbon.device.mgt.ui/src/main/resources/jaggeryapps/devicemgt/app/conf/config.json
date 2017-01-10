@@ -2,7 +2,6 @@
     "appContext": "/devicemgt/",
     "httpsURL" : "%https.ip%",
     "httpURL" : "%http.ip%",
-    "httpsWebURL" : "%https.ip%",
     "wssURL" : "https://localhost:9445",
     "wsURL" : "%http.ip%",
     "portalURL": "https://%server.ip%:9445",

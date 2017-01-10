@@ -502,25 +502,34 @@ var module = {};
                 // This is a logout response.
                 module.logout(response);
             } else {
-                  // This is a login response.
-                  var ssoConfigs = getSsoConfigurations();
-                  var CarbonUtils = Packages.org.wso2.carbon.utils.CarbonUtils;
-                  var keyStorePassword = CarbonUtils.getServerConfiguration().getFirstProperty("Security.TrustStore.Password");
-                  var keyStoreName = CarbonUtils.getServerConfiguration().getFirstProperty("Security.TrustStore.Location");
-                  var identityAlias = ssoConfigs[constants.APP_CONF_AUTH_MODULE_SSO_IDENTITY_ALIAS];
-                  var keyStoreParams = {
-                      KEY_STORE_NAME: keyStoreName,
-                      KEY_STORE_PASSWORD: keyStorePassword,
-                      IDP_ALIAS: identityAlias
-                  };
+                // This is a login response.
+                var ssoConfigs = getSsoConfigurations();
+                var CarbonUtils = Packages.org.wso2.carbon.utils.CarbonUtils;
+                var keyStorePassword = CarbonUtils.getServerConfiguration().getFirstProperty("Security.TrustStore.Password");
+                var keyStoreName = CarbonUtils.getServerConfiguration().getFirstProperty("Security.TrustStore.Location");
+                var identityAlias = ssoConfigs[constants.APP_CONF_AUTH_MODULE_SSO_IDENTITY_ALIAS];
+                var keyStoreParams = {
+                    KEY_STORE_NAME: keyStoreName,
+                    KEY_STORE_PASSWORD: keyStorePassword,
+                    IDP_ALIAS: identityAlias
+                };
+                var rsEnabled = ssoConfigs[constants.APP_CONF_AUTH_MODULE_SSO_RESPONSE_SIGNING_ENABLED];
+                if (utils.parseBoolean(rsEnabled)) {
+                    if (!ssoClient.validateSignature(samlResponseObj, keyStoreParams)) {
+                        var msg = "Invalid signature found in the SAML response.";
+                        log.error(msg);
+                        response.sendError(500, msg);
+                        return;
+                    }
+                }
 
-                  if (!ssoClient.validateSamlResponse(samlResponseObj, ssoConfigs, keyStoreParams)) {
-                      var msg = "Invalid signature found in the SAML response.";
-                      log.error(msg);
-                      response.sendError(500, msg);
-                      return;
-                  }
-
+                if (!ssoClient.validateSamlResponse(samlResponseObj, ssoConfigs, keyStoreParams)) {
+                    var msg = "Invalid SAML response found.";
+                    log.error(msg);
+                    response.sendError(500, msg);
+                    return;
+                }
+                
                 /**
                  * @type {{sessionId: string, loggedInUser: string, sessionIndex: string, samlToken:
                  *     string}}
@@ -531,10 +540,9 @@ var module = {};
                     var ssoSessions = getSsoSessions();
                     ssoSessions[ssoSession.sessionId] = ssoSession;
                      if (ssoSession.sessionIndex) {
-                        module.loadTenant(ssoSession.loggedInUser);
                         var carbonUser = (require("carbon")).server.tenantUser(ssoSession.loggedInUser);
-                        module.loadTenant(ssoSession.loggedInUser);
                         utils.setCurrentUser(carbonUser.username, carbonUser.domain, carbonUser.tenantId);
+                        module.loadTenant(ssoSession.loggedInUser);
                         var scriptArgument = {input: {samlToken: ssoSession.samlToken}, user: module.getCurrentUser()};
                         handleEvent(OPERATION_LOGIN, EVENT_SUCCESS, scriptArgument);
                     }

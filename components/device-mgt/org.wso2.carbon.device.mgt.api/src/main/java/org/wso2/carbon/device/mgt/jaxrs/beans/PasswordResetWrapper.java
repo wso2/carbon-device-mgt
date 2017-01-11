@@ -27,8 +27,11 @@ public class PasswordResetWrapper {
 	/*
 		Base64 encoded password
 	*/
-	@ApiModelProperty(name = "newPassword", value = "New password of the user.", required = true,
-			example = "JiM&100%pW")
+	@ApiModelProperty(
+			name = "newPassword",
+			value = "New password of the user.",
+			required = true,
+            example = "JiM&100%pW")
 	private String newPassword;
 
 	public String getNewPassword() {

@@ -68,10 +68,10 @@ $("a#invite-user-link").click(function () {
         modalDialog.showAsError();
     } else {
         modalDialog.header("");
-        modalDialog.content("An invitation mail will be sent to the selected user(s) to initiate an enrolment process." +
-            " Do you wish to continue ?");
-        modalDialog.footer('<div class="buttons"> <a href="#" id="invite-user-yes-link" class="btn-operations">yes</a>' +
-            '<a href="#" id="invite-user-cancel-link" class="btn-operations btn-default">No</a> </div>');
+        modalDialog.content("An invitation mail will be sent to the selected user(s) to initiate an enrolment " +
+            "process. Do you wish to continue ?");
+        modalDialog.footer('<div class="buttons"><a href="#" id="invite-user-yes-link" class="btn-operations">yes</a>' +
+            '<a href="#" id="invite-user-cancel-link" class="btn-operations btn-default">No</a></div>');
         modalDialog.show();
 
     }
@@ -82,18 +82,18 @@ $("a#invite-user-link").click(function () {
             usernameList,
             function () {
                 modalDialog.header("User invitation email for enrollment was successfully sent.");
-                modalDialog.footer('<div class="buttons"> <a href="#" id="invite-user-success-link" ' +
-                    'class="btn-operations">Ok </a> </div>');
+                modalDialog.footer('<div class="buttons"><a href="#" id="invite-user-success-link" ' +
+                    'class="btn-operations">Ok </a></div>');
                 $("a#invite-user-success-link").click(function () {
                     modalDialog.hide();
                 });
             },
             function () {
-                modalDialog.header('<span class="fw-stack"> <i class="fw fw-ring fw-stack-2x"></i> <i class="fw ' +
-                    'fw-error fw-stack-1x"></i> </span> Unexpected Error !');
+                modalDialog.header('<span class="fw-stack"><i class="fw fw-ring fw-stack-2x"></i> <i class="fw ' +
+                    'fw-error fw-stack-1x"></i></span> Unexpected Error !');
                 modalDialog.content('An unexpected error occurred. Try again later.');
-                modalDialog.footer('<div class="buttons"> <a href="#" id="invite-user-error-link" ' +
-                    'class="btn-operations">Ok </a> </div>');
+                modalDialog.footer('<div class="buttons"><a href="#" id="invite-user-error-link" ' +
+                    'class="btn-operations">Ok </a></div>');
                 $("a#invite-user-error-link").click(function () {
                     modalDialog.hide();
                 });

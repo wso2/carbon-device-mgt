@@ -39,7 +39,7 @@ import java.util.List;
 
 public class SearchDevice extends BaseDeviceManagementTest {
 
-    private static final Log log = LogFactory.getLog(DeviceDetails.class);
+    private static final Log log = LogFactory.getLog(SearchDevice.class);
 
     @BeforeClass
     @Override

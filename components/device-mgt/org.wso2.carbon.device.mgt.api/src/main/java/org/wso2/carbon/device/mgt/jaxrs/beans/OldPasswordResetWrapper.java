@@ -25,9 +25,12 @@ import io.swagger.annotations.ApiModelProperty;
 public class OldPasswordResetWrapper extends PasswordResetWrapper{
 
 	/*
-			Base64 encoded password
-		 */
-    @ApiModelProperty(name = "oldPassword", value = "Old password of the user.", required = true )
+	    Base64 encoded password
+	*/
+    @ApiModelProperty(
+			name = "oldPassword",
+			value = "Old password of the user.",
+			required = true )
 	private String oldPassword;
 
 	public String getOldPassword() {

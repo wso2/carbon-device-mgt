@@ -33,6 +33,11 @@ function onRequest(context) {
     var response = policyModule.getAllPolicies();
     if (response["status"] == "success") {
         var policyListToView = response["content"];
+        for(var index in policyListToView) {
+            if(policyListToView.hasOwnProperty(index)) {
+                policyListToView[index]["icon"] = utility.getDeviceThumb(policyListToView[index]["platform"]);
+            }
+        }
         page["policyListToView"] = policyListToView;
         var policyCount = policyListToView.length;
         if (policyCount == 0) {

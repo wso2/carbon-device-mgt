@@ -17,10 +17,27 @@
  */
 
 function onRequest(context) {
-//    var log = new Log("policy-view-edit-unit backend js");
-
-//    var userModule = require("/app/modules/business-controllers/user.js")["userModule"];
-//    context.roles = userModule.getRoles();
-    context.isAuthorized = userModule.isAuthorized("/permission/admin/device-mgt/policies/view");
-    return context;
+    var utility = require("/app/modules/utility.js").utility;
+    var page = {};
+    var deviceType = request.getParameter("deviceType");
+    var policyViewSrc = "/app/units/" + utility.getTenantedDeviceUnitName(deviceType, "policy-view");
+    if (new File(policyViewSrc).isExists()) {
+        var policyOperationsTemplateSrc = policyViewSrc + "/public/templates/" + deviceType + "-policy-view.hbs";
+        if (new File(policyOperationsTemplateSrc).isExists()) {
+            page.template = "/public/cdmf.unit.device.type." + deviceType + ".policy-view/templates/" + deviceType +
+                "-policy-view.hbs";
+        }
+        var policyOperationsScriptSrc = policyViewSrc + "/public/js/" + deviceType + "-policy-view.js";
+        if (new File(policyOperationsScriptSrc).isExists()) {
+            page.script = "/public/cdmf.unit.device.type." + deviceType + ".policy-view/js/" + deviceType +
+                "-policy-view.js";
+        }
+        var policyOperationsStylesSrc = policyViewSrc + "/public/css/" + deviceType + "-policy-view.css";
+        if (new File(policyOperationsStylesSrc).isExists()) {
+            page.style = "/public/cdmf.unit.device.type." + deviceType + ".policy-view/css/" + deviceType +
+                "-policy-view.css";
+        }
+    }
+    page.isAuthorized = userModule.isAuthorized("/permission/admin/device-mgt/policies/view");
+    return page;
 }

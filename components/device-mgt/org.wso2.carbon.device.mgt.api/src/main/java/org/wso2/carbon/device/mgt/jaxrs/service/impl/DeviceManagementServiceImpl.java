@@ -18,22 +18,27 @@
  */
 package org.wso2.carbon.device.mgt.jaxrs.service.impl;
 
-import io.swagger.annotations.ApiParam;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.wso2.carbon.context.CarbonContext;
-import org.wso2.carbon.device.mgt.common.*;
+import org.wso2.carbon.device.mgt.common.Device;
+import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
+import org.wso2.carbon.device.mgt.common.DeviceManagementException;
+import org.wso2.carbon.device.mgt.common.Feature;
+import org.wso2.carbon.device.mgt.common.FeatureManager;
+import org.wso2.carbon.device.mgt.common.PaginationRequest;
+import org.wso2.carbon.device.mgt.common.PaginationResult;
 import org.wso2.carbon.device.mgt.common.app.mgt.Application;
 import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManagementException;
 import org.wso2.carbon.device.mgt.common.authorization.DeviceAccessAuthorizationException;
 import org.wso2.carbon.device.mgt.common.authorization.DeviceAccessAuthorizationService;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
+import org.wso2.carbon.device.mgt.common.policy.mgt.Policy;
+import org.wso2.carbon.device.mgt.common.policy.mgt.monitor.NonComplianceData;
+import org.wso2.carbon.device.mgt.common.policy.mgt.monitor.PolicyComplianceException;
 import org.wso2.carbon.device.mgt.common.search.SearchContext;
 import org.wso2.carbon.device.mgt.core.app.mgt.ApplicationManagementProviderService;
-import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 import org.wso2.carbon.device.mgt.core.search.mgt.SearchManagerService;
 import org.wso2.carbon.device.mgt.core.search.mgt.SearchMgtException;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
@@ -44,15 +49,20 @@ import org.wso2.carbon.device.mgt.jaxrs.beans.OperationList;
 import org.wso2.carbon.device.mgt.jaxrs.service.api.DeviceManagementService;
 import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.RequestValidationUtil;
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
-import org.wso2.carbon.device.mgt.common.policy.mgt.Policy;
 import org.wso2.carbon.policy.mgt.common.PolicyManagementException;
-import org.wso2.carbon.device.mgt.common.policy.mgt.monitor.NonComplianceData;
-import org.wso2.carbon.device.mgt.common.policy.mgt.monitor.PolicyComplianceException;
 import org.wso2.carbon.policy.mgt.core.PolicyManagerService;
 import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 
 import javax.validation.constraints.Size;
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.text.ParseException;
@@ -229,14 +239,25 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
     @Override
     @Path("/type/{device-type}/id/{device-id}")
     public Response deleteDevice(@PathParam("device-type") String deviceType, @PathParam("device-id") String deviceId) {
-
-        log.info("Deleting " + deviceType + " " + deviceId + "is not supported");
+        DeviceManagementProviderService deviceManagementProviderService =
+                DeviceMgtAPIUtils.getDeviceManagementService();
         try {
-            return Response.status(Response.Status.BAD_REQUEST).entity("{Deleting device(s) is not supported}").build();
-        } catch (Exception e) {
-            String msg = "Error occurred while deleting device(s)";
-            log.error(msg, e);
-            return Response.serverError().entity(new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
+            DeviceIdentifier deviceIdentifier = new DeviceIdentifier(deviceId, deviceType);
+            Device persistedDevice = deviceManagementProviderService.getDevice(deviceIdentifier);
+            if (persistedDevice == null) {
+                return Response.status(Response.Status.NOT_FOUND).build();
+            }
+
+            boolean response = deviceManagementProviderService.disenrollDevice(deviceIdentifier);
+            return Response.status(Response.Status.OK).entity(response).build();
+
+        } catch (DeviceManagementException e) {
+            String msg = "Error encountered while deleting device of type : " + deviceType + " and " +
+                    "ID : " + deviceId;
+            log.error(msg);
+            return Response.status(Response.Status.BAD_REQUEST).entity(
+                    new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()
+            ).build();
         }
     }
 

@@ -331,77 +331,6 @@ public interface DeviceManagementService {
             @HeaderParam("If-Modified-Since")
             String ifModifiedSince);
 
-    //device delete request would looks like follows
-    //DELETE devices/type/virtual_firealarm/id/us06ww93auzp
-    @DELETE
-    @Path("/type/{device-type}/id/{device-id}")
-    @ApiOperation(
-            produces = MediaType.APPLICATION_JSON,
-            httpMethod = "DELETE",
-            value = "Delete the device specified by device id",
-            notes = "Returns the status of the deleted device operation.",
-            tags = "Device Management",
-            extensions = {
-                @Extension(properties = {
-                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:devices:delete")
-                })
-            }
-    )
-    @ApiResponses(
-            value = {
-                    @ApiResponse(
-                            code = 200,
-                            message = "OK. \n Successfully fetched information of the device.",
-                            response = Device.class,
-                            responseHeaders = {
-                                    @ResponseHeader(
-                                            name = "Content-Type",
-                                            description = "The content type of the body"),
-                                    @ResponseHeader(
-                                            name = "ETag",
-                                            description = "Entity Tag of the response resource.\n" +
-                                                    "Used by caches, or in conditional requests."),
-                                    @ResponseHeader(
-                                            name = "Last-Modified",
-                                            description = "Date and time the resource has been modified the last time.\n" +
-                                                    "Used by caches, or in conditional requests."),
-                            }),
-                    @ApiResponse(
-                            code = 304,
-                            message = "Not Modified. Empty body because the client already has the latest " +
-                                    "version of the requested resource."),
-                    @ApiResponse(
-                            code = 400,
-                            message = "Bad Request. \n Invalid request or validation error.",
-                            response = ErrorResponse.class),
-                    @ApiResponse(
-                            code = 404,
-                            message = "Not Found. \n No device is found under the provided type and id.",
-                            response = ErrorResponse.class),
-                    @ApiResponse(
-                            code = 500,
-                            message = "Internal Server Error. \n " +
-                                    "Server error occurred while retrieving information requested device.",
-                            response = ErrorResponse.class)
-            })
-    //TODO need to introduce delete permission
-    Response deleteDevice(
-            @ApiParam(
-                    name = "device-type",
-                    value = "The device type, such as ios, android or windows.",
-                    required = true)
-            @PathParam("device-type")
-            @Size(max = 45)
-            String deviceType,
-            @ApiParam(
-                    name = "device-id",
-                    value = "The device identifier of the device.",
-                    required = true)
-            @PathParam("device-id")
-            @Size(max = 45)
-            String deviceId);
-
-
     //device rename request would looks like follows
     //POST devices/type/virtual_firealarm/id/us06ww93auzp/rename
     @POST
@@ -477,6 +406,75 @@ public interface DeviceManagementService {
             @Size(max = 45)
                     String deviceId);
 
+    //device remove request would looks like follows
+    //DELETE devices/type/virtual_firealarm/id/us06ww93auzp
+    @DELETE
+    @Path("/type/{device-type}/id/{device-id}")
+    @ApiOperation(
+            produces = MediaType.APPLICATION_JSON,
+            consumes = MediaType.APPLICATION_JSON,
+            httpMethod = "DELETE",
+            value = "Remove the device specified by device id",
+            notes = "Returns the status of the deleted device operation.",
+            tags = "Device Management",
+            extensions = {
+                    @Extension(properties = {
+                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:devices:delete")
+                    })
+            }
+    )
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            code = 200,
+                            message = "OK. \n Successfully deleted the device.",
+                            response = Device.class,
+                            responseHeaders = {
+                                    @ResponseHeader(
+                                            name = "Content-Type",
+                                            description = "The content type of the body"),
+                                    @ResponseHeader(
+                                            name = "ETag",
+                                            description = "Entity Tag of the response resource.\n" +
+                                                    "Used by caches, or in conditional requests."),
+                                    @ResponseHeader(
+                                            name = "Last-Modified",
+                                            description = "Date and time the resource has been modified the last time.\n" +
+                                                    "Used by caches, or in conditional requests."),
+                            }),
+                    @ApiResponse(
+                            code = 304,
+                            message = "Not Modified. Empty body because the client already has the latest " +
+                                    "version of the requested resource."),
+                    @ApiResponse(
+                            code = 400,
+                            message = "Bad Request. \n Invalid request or validation error.",
+                            response = ErrorResponse.class),
+                    @ApiResponse(
+                            code = 404,
+                            message = "Not Found. \n No device is found under the provided type and id.",
+                            response = ErrorResponse.class),
+                    @ApiResponse(
+                            code = 500,
+                            message = "Internal Server Error. \n " +
+                                    "Server error occurred while retrieving information requested device.",
+                            response = ErrorResponse.class)
+            })
+    Response deleteDevice(
+            @ApiParam(
+                    name = "device-type",
+                    value = "The device type, such as ios, android or windows.",
+                    required = true)
+            @PathParam("device-type")
+            @Size(max = 45)
+                    String deviceType,
+            @ApiParam(
+                    name = "device-id",
+                    value = "The device identifier of the device.",
+                    required = true)
+            @PathParam("device-id")
+            @Size(max = 45)
+                    String deviceId);
 
     @GET
     @Path("/{type}/{id}/features")

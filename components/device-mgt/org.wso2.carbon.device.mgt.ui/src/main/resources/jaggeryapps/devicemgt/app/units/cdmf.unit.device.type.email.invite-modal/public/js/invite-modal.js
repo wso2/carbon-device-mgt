@@ -9,7 +9,7 @@ function toggleEmailInvite(){
     modalDialog.header('<h4 class="pull-left modal-title"><span class="fw-stack add-margin-right-1x">' +
                        '<i class="fw fw-user fw-stack-2x"></i>' +
                        '<span class="fw-stack fw-move-right fw-move-bottom">' +
-                       '<i class="fw fw-ring fw-stack-2x"></i>' +
+                       '<i class="fw fw-circle-outline fw-stack-2x"></i>' +
                        '<i class="fw fw-circle fw-stack-2x fw-stroke text-info"></i>' +
                        '<i class="fw fw-add fw-stack-1x fw-inverse"></i></span></span>Send Invites</h4>');
     modalDialog.content($("#invite-by-email-body").html());
@@ -73,7 +73,7 @@ function sendInvites(){
                 });
             },
             function () {
-                modalDialog.header('<span class="fw-stack"> <i class="fw fw-ring fw-stack-2x"></i> <i class="fw ' +
+                modalDialog.header('<span class="fw-stack"> <i class="fw fw-circle-outline fw-stack-2x"></i> <i class="fw ' +
                                    'fw-error fw-stack-1x"></i> </span> Unexpected Error !');
                 modalDialog.content('An unexpected error occurred. Try again later.');
                 modalDialog.footer('<div class="buttons"> <a href="#" id="invite-user-error-link" ' +

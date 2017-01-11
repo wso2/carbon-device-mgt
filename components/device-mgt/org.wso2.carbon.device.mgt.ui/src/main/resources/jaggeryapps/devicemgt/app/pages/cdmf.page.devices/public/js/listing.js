@@ -338,7 +338,7 @@ function loadDevices(searchType, searchParam) {
                                 'data-deviceid="' + deviceIdentifier + '" data-devicetype="' + deviceType
                                 + '" data-devicename="' +
                                 row.name + '"><span class="fw-stack"><i class="fw fw-circle-outline fw-stack-2x"></i>' +
-                                '<i class="fw fw-grouping fw-stack-1x"></i></span>' +
+                                '<i class="fw fw-group fw-stack-1x"></i></span>' +
                                 '<span class="hidden-xs hidden-on-grid-view">Group</span></a>';
                     }
 

@@ -4556,7 +4556,7 @@ a.wr-side-panel-toggle-btn.selected {
     color: #526A84;
 }
 .wr-advance-operations .wr-hidden-operations-nav a.selected span span > i.fw.fw-circle.fw-stack-2x{
-    color: #fff;
+    color: #526A84;
 }
 .wr-advance-operations .wr-hidden-operations-nav a.selected span span > i.fw.fw-circle.fw-stack-2x.fw-stroke.fw-inverse{
     color: #526A84;
@@ -6505,6 +6505,10 @@ select > option:hover {
 
 .label-bold{
     font-weight:400;
+}
+
+.header .fw:before {
+  color: #000;
 }
 
 /* Adding style for required fields */

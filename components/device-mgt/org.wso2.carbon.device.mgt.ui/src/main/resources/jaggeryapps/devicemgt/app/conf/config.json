@@ -1,8 +1,7 @@
 {
     "appContext": "/devicemgt/",
-    "httpsURL" : "%https.ip%",
-    "httpURL" : "%http.ip%",
-    "httpsWebURL" : "%https.ip%",
+    "httpsURL" : "https://localhost:8243",
+    "httpURL" : "http://localhost:8280",
     "wssURL" : "https://localhost:9445",
     "wsURL" : "%http.ip%",
     "portalURL": "https://%server.ip%:9445",
@@ -13,7 +12,7 @@
     "iOSConfigRoot" : "%https.ip%/ios-enrollment/",
     "iOSAPIRoot" : "%https.ip%/ios/",
     "adminService": "%https.ip%",
-    "gatewayEnabled": false,
+    "gatewayEnabled": true,
     "oauthProvider": {
         "appRegistration": {
             "appType": "webapp",
@@ -90,6 +89,7 @@
         "perm:devices:operations",
         "perm:devices:search",
         "perm:devices:details",
+        "perm:devices:update",
         "perm:devices:view",
         "perm:view-configuration",
         "perm:manage-configuration",

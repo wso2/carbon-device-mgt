@@ -144,7 +144,7 @@ function loadRoles() {
                     'data-click-event="edit-form" ' +
                     'class="btn padding-reduce-on-grid-view edit-role-link">' +
                     '<span class="fw-stack">' +
-                    '<i class="fw fw-ring fw-stack-2x"></i>' +
+                    '<i class="fw fw-circle-outline fw-stack-2x"></i>' +
                     '<i class="fw fw-bookmark fw-stack-1x"></i>' +
                     '<span class="fw-stack fw-move-right fw-move-bottom">' +
                     '<i class="fw fw-circle fw-stack-2x fw-stroke fw-inverse"></i>' +
@@ -158,7 +158,7 @@ function loadRoles() {
                     'data-click-event="edit-form" ' +
                     'class="btn padding-reduce-on-grid-view edit-permission-link">' +
                     '<span class="fw-stack">' +
-                    '<i class="fw fw-ring fw-stack-2x"></i>' +
+                    '<i class="fw fw-circle-outline fw-stack-2x"></i>' +
                     '<i class="fw fw-security-policy fw-stack-1x"></i>' +
                     '<span class="fw-stack fw-move-right fw-move-bottom">' +
                     '<i class="fw fw-circle fw-stack-2x fw-stroke fw-inverse"></i>' +
@@ -171,7 +171,7 @@ function loadRoles() {
                     'data-click-event="remove-form" ' +
                     'class="btn padding-reduce-on-grid-view remove-role-link">' +
                     '<span class="fw-stack">' +
-                    '<i class="fw fw-ring fw-stack-2x"></i>' +
+                    '<i class="fw fw-circle-outline fw-stack-2x"></i>' +
                     '<i class="fw fw-delete fw-stack-1x"></i>' +
                     '</span>' +
                     '<span class="hidden-xs hidden-on-grid-view">Remove</span>' +

@@ -1811,7 +1811,7 @@ a.btn:hover, .btn:hover {
   margin-right: -1px;
 }
 
-.remove-icon-ring-on-hover:hover .fw-ring {
+.remove-icon-ring-on-hover:hover .fw-circle-outline {
   display: none;
 }
 
@@ -5138,7 +5138,7 @@ a.cu-btn-inner.inverse:hover {
     font-size: 14px;
 }
 
-.multi-view .content .panel-body .well fieldset legend a:hover .icon.fw-stack .fw-ring {
+.multi-view .content .panel-body .well fieldset legend a:hover .icon.fw-stack .fw-circle-outline {
     display: none;
 }
 

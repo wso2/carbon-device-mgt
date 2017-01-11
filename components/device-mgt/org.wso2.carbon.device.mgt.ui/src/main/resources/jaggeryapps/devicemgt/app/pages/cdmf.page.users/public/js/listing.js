@@ -89,7 +89,7 @@ $("a#invite-user-link").click(function () {
                 });
             },
             function () {
-                modalDialog.header('<span class="fw-stack"> <i class="fw fw-ring fw-stack-2x"></i> <i class="fw ' +
+                modalDialog.header('<span class="fw-stack"> <i class="fw fw-circle-outline fw-stack-2x"></i> <i class="fw ' +
                     'fw-error fw-stack-1x"></i> </span> Unexpected Error !');
                 modalDialog.content('An unexpected error occurred. Try again later.');
                 modalDialog.footer('<div class="buttons"> <a href="#" id="invite-user-error-link" ' +
@@ -124,7 +124,7 @@ function getSelectedUsernames() {
  * on User Listing page in WSO2 MDM Console.
  */
 function resetPassword(username) {
-    modalDialog.header('<span class="fw-stack"> <i class="fw fw-ring fw-stack-2x"></i> <i class="fw fw-key ' +
+    modalDialog.header('<span class="fw-stack"> <i class="fw fw-circle-outline fw-stack-2x"></i> <i class="fw fw-key ' +
         'fw-stack-1x"></i> </span> Reset Password');
     modalDialog.content($("#modal-content-reset-password").html());
     modalDialog.footer('<div class="buttons"> <a href="#" id="reset-password-yes-link" class="btn-operations"> Save ' +
@@ -341,7 +341,7 @@ function loadUsers() {
                     'data-click-event="edit-form" ' +
                     'class="btn padding-reduce-on-grid-view edit-user-link"> ' +
                     '<span class="fw-stack"> ' +
-                    '<i class="fw fw-ring fw-stack-2x"></i>' +
+                    '<i class="fw fw-circle-outline fw-stack-2x"></i>' +
                     '<i class="fw fw-edit fw-stack-1x"></i>' +
                     '</span><span class="hidden-xs hidden-on-grid-view">Edit</span></a>';
 
@@ -350,7 +350,7 @@ function loadUsers() {
                     'onclick="javascript:resetPassword(\'' + data.filter + '\')" ' +
                     'class="btn padding-reduce-on-grid-view remove-user-link">' +
                     '<span class="fw-stack">' +
-                    '<i class="fw fw-ring fw-stack-2x"></i>' +
+                    '<i class="fw fw-circle-outline fw-stack-2x"></i>' +
                     '<i class="fw fw-key fw-stack-1x"></i>' +
                     '</span><span class="hidden-xs hidden-on-grid-view">Reset Password</span></a>';
 
@@ -359,7 +359,7 @@ function loadUsers() {
                     'onclick="javascript:removeUser(\'' + data.filter + '\')" ' +
                     'class="btn padding-reduce-on-grid-view remove-user-link">' +
                     '<span class="fw-stack">' +
-                    '<i class="fw fw-ring fw-stack-2x"></i>' +
+                    '<i class="fw fw-circle-outline fw-stack-2x"></i>' +
                     '<i class="fw fw-delete fw-stack-1x"></i>' +
                     '</span><span class="hidden-xs hidden-on-grid-view">Remove</span></a>';
 

@@ -71,7 +71,8 @@ public class AnnotationProcessor {
     private static final String SWAGGER_ANNOTATIONS_PROPERTIES_PERMISSIONS = "permissions";
     private static final String ANNOTATIONS_SCOPES = "scopes";
     private static final String ANNOTATIONS_SCOPE = "scope";
-
+    private static final String DEFAULT_PERM_NAME = "default";
+    private static final String DEFAULT_PERM = "/device-mgt";
     private static final String PERMISSION_PREFIX = "/permission/admin";
 
     private StandardContext context;
@@ -392,9 +393,15 @@ public class AnnotationProcessor {
                             .getMethod(SWAGGER_ANNOTATIONS_PROPERTIES_VALUE, null), null);
                     if (!scopeKey.isEmpty()) {
                         scope = apiScopes.get(scopeKey);
-                        permission.setName(scope.getName());
-                        //TODO: currently permission tree supports only adding one permission per API point.
-                        permission.setPath(scope.getRoles().split(" ")[0]);
+                        if (scope != null) {
+                            permission.setName(scope.getName());
+                            //TODO: currently permission tree supports only adding one permission per API point.
+                            permission.setPath(scope.getRoles().split(" ")[0]);
+                        } else {
+                            log.warn("No Scope mapping is done for scope key: " + scopeKey);
+                            permission.setName(DEFAULT_PERM_NAME);
+                            permission.setPath(DEFAULT_PERM);
+                        }
                     }
                 }
             }

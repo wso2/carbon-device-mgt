@@ -74,6 +74,7 @@ public class AnnotationProcessor {
     private static final String SWAGGER_ANNOTATIONS_PROPERTIES_VALUE = "value";
     private static final String ANNOTATIONS_SCOPES = "scopes";
     private static final String ANNOTATIONS_SCOPE = "scope";
+    private static final String DEFAULT_SCOPE_NAME = "default admin scope";
     private static final String DEFAULT_SCOPE_KEY = "perm:admin";
     private static final String DEFAULT_SCOPE_PERMISSION = "/permision/device-mgt";
 
@@ -280,8 +281,11 @@ public class AnnotationProcessor {
                         if (scope != null) {
                             resource.setScope(scope);
                         } else {
-                            log.error("Scope is not defined for '" + makeContextURLReady(resourceRootContext) +
+                            log.warn("Scope is not defined for '" + makeContextURLReady(resourceRootContext) +
                                     makeContextURLReady(subCtx) + "' endpoint, hence assigning the default scope");
+                            scope = new Scope();
+                            scope.setName(DEFAULT_SCOPE_NAME);
+                            scope.setDescription(DEFAULT_SCOPE_NAME);
                             scope.setKey(DEFAULT_SCOPE_KEY);
                             scope.setRoles(DEFAULT_SCOPE_PERMISSION);
                             resource.setScope(scope);

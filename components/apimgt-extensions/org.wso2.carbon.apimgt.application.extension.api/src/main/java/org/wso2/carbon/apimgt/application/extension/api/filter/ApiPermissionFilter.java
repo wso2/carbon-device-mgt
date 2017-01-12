@@ -56,6 +56,9 @@ public class ApiPermissionFilter implements Filter {
                 PermissionConfiguration permissionConfiguration = (PermissionConfiguration)
                         unmarshaller.unmarshal(permissionStream);
                 permissions = permissionConfiguration.getPermissions();
+                for (Permission permission : permissions) {
+                    APIUtil.putPermission(PERMISSION_PREFIX + permission.getPath());
+                }
             } catch (JAXBException e) {
                 log.error("invalid permissions.xml", e);
             }

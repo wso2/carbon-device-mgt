@@ -64,6 +64,12 @@ import javax.ws.rs.core.Response;
                 description = "Deleting an SSL Certificate",
                 key = "perm:admin:certificates:delete",
                 permissions = {"/device-mgt/admin/certificates/delete"}
+        ),
+        @Scope(
+                name = "Verify SSL certificate",
+                description = "Verify SSL certificate",
+                key = "perm:admin:certificates:verify",
+                permissions = {"/device-mgt/admin/certificates/verify"}
         )
 }
 )
@@ -428,7 +434,12 @@ public interface CertificateManagementAdminService {
             httpMethod = "POST",
             value = "Verify Android SSL certificate",
             notes = "Verify Android Certificate for the API security filter.\n",
-            tags = "Certificate Management")
+            tags = "Certificate Management",
+            extensions = {
+                    @Extension(properties = {
+                            @ExtensionProperty(name = SCOPE, value = "perm:admin:certificates:add")
+                    })
+            })
     @ApiResponses(
             value = {
                     @ApiResponse(

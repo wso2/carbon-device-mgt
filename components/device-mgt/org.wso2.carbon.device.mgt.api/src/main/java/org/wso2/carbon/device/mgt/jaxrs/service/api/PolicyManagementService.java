@@ -18,27 +18,36 @@
  */
 package org.wso2.carbon.device.mgt.jaxrs.service.api;
 
-import io.swagger.annotations.SwaggerDefinition;
-import io.swagger.annotations.Info;
-import io.swagger.annotations.ExtensionProperty;
-import io.swagger.annotations.Extension;
-import io.swagger.annotations.Tag;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.Extension;
+import io.swagger.annotations.ExtensionProperty;
+import io.swagger.annotations.Info;
 import io.swagger.annotations.ResponseHeader;
+import io.swagger.annotations.SwaggerDefinition;
+import io.swagger.annotations.Tag;
 import org.wso2.carbon.apimgt.annotations.api.Scope;
 import org.wso2.carbon.apimgt.annotations.api.Scopes;
+import org.wso2.carbon.device.mgt.common.policy.mgt.Policy;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
 import org.wso2.carbon.device.mgt.jaxrs.beans.PolicyWrapper;
 import org.wso2.carbon.device.mgt.jaxrs.beans.PriorityUpdatedPolicyWrapper;
 import org.wso2.carbon.device.mgt.jaxrs.util.Constants;
-import org.wso2.carbon.device.mgt.common.policy.mgt.Policy;
 
 import javax.validation.Valid;
-import javax.ws.rs.*;
+import javax.validation.constraints.Size;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
@@ -118,6 +127,12 @@ import java.util.List;
                         description = "Updating the Policy Priorities",
                         key = "perm:policies:priorities",
                         permissions = {"/device-mgt/policies/manage"}
+                ),
+                @Scope(
+                        name = "Fetching the Effective Policy",
+                        description = "Fetching the Effective Policy",
+                        key = "perm:policies:effective-policy",
+                        permissions = {"/device-mgt/policies/view"}
                 )
         }
 )
@@ -605,6 +620,69 @@ public interface PolicyManagementService {
 
     @GET
     @Path("/effective-policy/{deviceType}/{deviceId}")
-    Response getEffectivePolicy(@PathParam("deviceId") String deviceId, @PathParam("deviceType") String deviceType);
-
+    @ApiOperation(
+            consumes = MediaType.APPLICATION_JSON,
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "GET",
+            value = "Getting the Effective Policy",
+            notes = "Retrieve the effective policy of a device using this API.",
+            tags = "Device Policy Management",
+            extensions = {
+                    @Extension(properties = {
+                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:policies:effective-policy")
+                    })
+            }
+    )
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            code = 200,
+                            message = "OK. \n Successfully fetched the policy.",
+                            response = Policy.class,
+                            responseHeaders = {
+                                    @ResponseHeader(
+                                            name = "Content-Type",
+                                            description = "The content type of the body"),
+                                    @ResponseHeader(
+                                            name = "ETag",
+                                            description = "Entity Tag of the response resource.\n" +
+                                                    "Used by caches, or in conditional requests."),
+                                    @ResponseHeader(
+                                            name = "Last-Modified",
+                                            description = "Date and time the resource was last modified.\n" +
+                                                    "Used by caches, or in conditional requests."),
+                            }
+                    ),
+                    @ApiResponse(
+                            code = 304,
+                            message = "Not Modified. \n Empty body because the client already has the latest version of the requested resource.\n"),
+                    @ApiResponse(
+                            code = 404,
+                            message = "Not Found. \n A specified policy was not found.",
+                            response = ErrorResponse.class),
+                    @ApiResponse(
+                            code = 406,
+                            message = "Not Acceptable.\n The requested media type is not supported."),
+                    @ApiResponse(
+                            code = 500,
+                            message = "Internal Server Error. \n Server error occurred while fetching the " +
+                                    "policy.",
+                            response = ErrorResponse.class)
+            })
+    Response getEffectivePolicy(
+            @ApiParam(
+                    name = "deviceType",
+                    value = "The device type, such as ios, android or windows.",
+                    required = true,
+                    allowableValues = "android, ios, windows")
+            @PathParam("deviceType")
+            @Size(max = 45)
+                    String deviceType,
+            @ApiParam(
+                    name = "deviceId",
+                    value = "The device identifier of the device you want ot get details.",
+                    required = true)
+            @PathParam("deviceId")
+            @Size(max = 45)
+                    String deviceId);
 }

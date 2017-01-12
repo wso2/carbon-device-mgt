@@ -80,6 +80,12 @@ import javax.ws.rs.core.Response;
                         permissions = {"/device-mgt/devices/owning-device/view"}
                 ),
                 @Scope(
+                        name = "Update the device specified by device id",
+                        description = "Update the device specified by device id",
+                        key = "perm:devices:update",
+                        permissions = {"/device-mgt/devices/owning-device/view"}
+                ),
+                @Scope(
                         name = "Delete the device specified by device id",
                         description = "Delete the device specified by device id",
                         key = "perm:devices:delete",

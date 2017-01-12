@@ -376,7 +376,7 @@ public class PolicyManagementServiceImpl implements PolicyManagementService {
     @GET
     @Path("/effective-policy/{deviceType}/{deviceId}")
     @Override
-    public Response getEffectivePolicy(@PathParam("deviceId") String deviceId, @PathParam("deviceType") String deviceType) {
+    public Response getEffectivePolicy(@PathParam("deviceType") String deviceType, @PathParam("deviceId") String deviceId) {
         PolicyManagerService policyManagementService = DeviceMgtAPIUtils.getPolicyManagementService();
         final Policy policy;
         try {

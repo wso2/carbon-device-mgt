@@ -140,6 +140,7 @@
         "perm:admin:certificates:details",
         "perm:admin:certificates:view",
         "perm:admin:certificates:add",
+        "perm:admin:certificates:verify",
         "perm:admin"
     ],
     "isOAuthEnabled" : true,

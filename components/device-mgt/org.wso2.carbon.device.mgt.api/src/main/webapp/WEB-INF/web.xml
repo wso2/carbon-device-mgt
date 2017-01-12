@@ -41,29 +41,9 @@
     </session-config>
 
     <context-param>
-        <param-name>isAdminService</param-name>
-        <param-value>false</param-value>
-    </context-param>
-    <context-param>
         <param-name>doAuthentication</param-name>
         <param-value>true</param-value>
     </context-param>
-    <!--context-param>
-        <param-name>managed-api-enabled</param-name>
-        <param-value>true</param-value>
-    </context-param>
-    <context-param>
-        <param-name>managed-api-owner</param-name>
-        <param-value>admin</param-value>
-    </context-param>
-    <context-param>
-        <param-name>managed-api-version</param-name>
-        <param-value>1.0.0</param-value>
-    </context-param>
-    <context-param>
-        <param-name>managed-api-isSecured</param-name>
-        <param-value>true</param-value>
-    </context-param-->
 
     <!--publish to apim-->
     <context-param>

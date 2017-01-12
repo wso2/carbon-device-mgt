@@ -253,7 +253,12 @@ public class AnnotationProcessor {
                         this.setPermission(annotations[i], permission);
                     }
                 }
-                permissions.add(permission);
+                if (permission.getName() == null || permission.getPath() == null) {
+                    log.warn("Permission not assigned to the resource url - " + permission.getMethod() + ":"
+                                     + permission.getUrl());
+                } else {
+                    permissions.add(permission);
+                }
             }
         }
         return permissions;

@@ -70,6 +70,7 @@ public class AnnotationProcessor {
     private static final String SWAGGER_ANNOTATIONS_PROPERTIES_KEY = "key";
     private static final String SWAGGER_ANNOTATIONS_PROPERTIES_PERMISSIONS = "permissions";
     private static final String ANNOTATIONS_SCOPES = "scopes";
+    private static final String ANNOTATIONS_SCOPE = "scope";
 
     private static final String PERMISSION_PREFIX = "/permission/admin";
 
@@ -375,19 +376,27 @@ public class AnnotationProcessor {
         InvocationHandler methodHandler = Proxy.getInvocationHandler(currentMethod);
         Annotation[] extensions = (Annotation[]) methodHandler.invoke(currentMethod,
                 apiOperation.getMethod(SWAGGER_ANNOTATIONS_EXTENSIONS, null), null);
-        methodHandler = Proxy.getInvocationHandler(extensions[0]);
-        Annotation[] properties =  (Annotation[])methodHandler.invoke(extensions[0], extensionClass
-                .getMethod(SWAGGER_ANNOTATIONS_PROPERTIES,null), null);
-        Scope scope;
-        for (Annotation property : properties) {
-            methodHandler = Proxy.getInvocationHandler(property);
-            String scopeKey = (String) methodHandler.invoke(property, extensionPropertyClass
-                    .getMethod(SWAGGER_ANNOTATIONS_PROPERTIES_VALUE, null),null);
-            if (!scopeKey.isEmpty()) {
-                scope = apiScopes.get(scopeKey);
-                permission.setName(scope.getName());
-                //TODO: currently permission tree supports only adding one permission per API point.
-                permission.setPath(scope.getRoles().split(" ")[0]);
+        if (extensions != null) {
+            methodHandler = Proxy.getInvocationHandler(extensions[0]);
+            Annotation[] properties = (Annotation[]) methodHandler.invoke(extensions[0], extensionClass
+                    .getMethod(SWAGGER_ANNOTATIONS_PROPERTIES, null), null);
+            Scope scope;
+            String scopeKey;
+            String propertyName;
+            for (Annotation property : properties) {
+                methodHandler = Proxy.getInvocationHandler(property);
+                propertyName = (String) methodHandler.invoke(property, extensionPropertyClass
+                        .getMethod(SWAGGER_ANNOTATIONS_PROPERTIES_NAME, null), null);
+                if (ANNOTATIONS_SCOPE.equals(propertyName)) {
+                     scopeKey = (String) methodHandler.invoke(property, extensionPropertyClass
+                            .getMethod(SWAGGER_ANNOTATIONS_PROPERTIES_VALUE, null), null);
+                    if (!scopeKey.isEmpty()) {
+                        scope = apiScopes.get(scopeKey);
+                        permission.setName(scope.getName());
+                        //TODO: currently permission tree supports only adding one permission per API point.
+                        permission.setPath(scope.getRoles().split(" ")[0]);
+                    }
+                }
             }
         }
     }

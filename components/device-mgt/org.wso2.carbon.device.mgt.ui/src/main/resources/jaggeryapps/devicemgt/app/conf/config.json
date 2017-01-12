@@ -139,7 +139,8 @@
         "perm:admin:certificates:delete",
         "perm:admin:certificates:details",
         "perm:admin:certificates:view",
-        "perm:admin:certificates:add"
+        "perm:admin:certificates:add",
+        "perm:admin"
     ],
     "isOAuthEnabled" : true,
     "backendRestEndpoints" : {

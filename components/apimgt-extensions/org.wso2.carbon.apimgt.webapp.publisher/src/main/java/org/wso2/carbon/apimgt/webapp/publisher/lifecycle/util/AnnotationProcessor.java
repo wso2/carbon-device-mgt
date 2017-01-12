@@ -73,6 +73,9 @@ public class AnnotationProcessor {
     private static final String SWAGGER_ANNOTATIONS_PROPERTIES_CONTEXT = "context";
     private static final String SWAGGER_ANNOTATIONS_PROPERTIES_VALUE = "value";
     private static final String ANNOTATIONS_SCOPES = "scopes";
+    private static final String ANNOTATIONS_SCOPE = "scope";
+    private static final String DEFAULT_SCOPE_KEY = "perm:admin";
+    private static final String DEFAULT_SCOPE_PERMISSION = "/permision/device-mgt";
 
     private static final String PERMISSION_PREFIX = "/permission/admin";
 
@@ -273,7 +276,16 @@ public class AnnotationProcessor {
                         resource.setProduces(invokeMethod(producesClassMethods[0], producesAnno, STRING_ARR));
                     }
                     if (annotations[i].annotationType().getName().equals(ApiOperation.class.getName())) {
-                        resource.setScope(this.getScope(annotations[i]));
+                        Scope scope = this.getScope(annotations[i]);
+                        if (scope != null) {
+                            resource.setScope(scope);
+                        } else {
+                            log.error("Scope is not defined for '" + makeContextURLReady(resourceRootContext) +
+                                    makeContextURLReady(subCtx) + "' endpoint, hence assigning the default scope");
+                            scope.setKey(DEFAULT_SCOPE_KEY);
+                            scope.setRoles(DEFAULT_SCOPE_PERMISSION);
+                            resource.setScope(scope);
+                        }
                     }
                 }
                 resourceList.add(resource);
@@ -444,18 +456,25 @@ public class AnnotationProcessor {
         InvocationHandler methodHandler = Proxy.getInvocationHandler(currentMethod);
         Annotation[] extensions = (Annotation[]) methodHandler.invoke(currentMethod,
                 apiOperation.getMethod(SWAGGER_ANNOTATIONS_EXTENSIONS, null), null);
-        methodHandler = Proxy.getInvocationHandler(extensions[0]);
-        Annotation[] properties =  (Annotation[])methodHandler.invoke(extensions[0], extensionClass
-                .getMethod(SWAGGER_ANNOTATIONS_PROPERTIES,null), null);
-
-        for (Annotation property : properties) {
-            methodHandler = Proxy.getInvocationHandler(property);
-            String scopeKey = (String) methodHandler.invoke(property, extensionPropertyClass
-                    .getMethod(SWAGGER_ANNOTATIONS_PROPERTIES_VALUE, null),null);
-            if (scopeKey.isEmpty()) {
-                return null;
+        if (extensions != null) {
+            methodHandler = Proxy.getInvocationHandler(extensions[0]);
+            Annotation[] properties = (Annotation[]) methodHandler.invoke(extensions[0], extensionClass
+                    .getMethod(SWAGGER_ANNOTATIONS_PROPERTIES, null), null);
+            String scopeKey;
+            String propertyName;
+            for (Annotation property : properties) {
+                methodHandler = Proxy.getInvocationHandler(property);
+                propertyName = (String) methodHandler.invoke(property, extensionPropertyClass
+                        .getMethod(SWAGGER_ANNOTATIONS_PROPERTIES_NAME, null), null);
+                if (ANNOTATIONS_SCOPE.equals(propertyName)) {
+                    scopeKey = (String) methodHandler.invoke(property, extensionPropertyClass
+                            .getMethod(SWAGGER_ANNOTATIONS_PROPERTIES_VALUE, null), null);
+                    if (scopeKey.isEmpty()) {
+                        return null;
+                    }
+                    return apiScopes.get(scopeKey);
+                }
             }
-            return apiScopes.get(scopeKey);
         }
         return null;
     }

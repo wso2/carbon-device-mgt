@@ -280,8 +280,9 @@ public class AnnotationProcessor {
                         if (scope != null) {
                             resource.setScope(scope);
                         } else {
-                            log.error("Scope is not defined for '" + makeContextURLReady(resourceRootContext) +
+                            log.warn("Scope is not defined for '" + makeContextURLReady(resourceRootContext) +
                                     makeContextURLReady(subCtx) + "' endpoint, hence assigning the default scope");
+                            scope = new Scope();
                             scope.setKey(DEFAULT_SCOPE_KEY);
                             scope.setRoles(DEFAULT_SCOPE_PERMISSION);
                             resource.setScope(scope);

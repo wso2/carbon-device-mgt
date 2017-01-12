@@ -69,7 +69,7 @@ import javax.ws.rs.core.Response;
                 name = "Verifying an SSL Certificate",
                 description = "Verifying an SSL Certificate",
                 key = "perm:admin:certificates:verify",
-                permissions = {"/device-mgt/admin/certificates/verify"}
+                permissions = {"/device-mgt/admin/certificates/details"}
         )
 }
 )

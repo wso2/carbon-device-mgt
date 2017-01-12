@@ -1811,7 +1811,7 @@ a.btn:hover, .btn:hover {
   margin-right: -1px;
 }
 
-.remove-icon-ring-on-hover:hover .fw-ring {
+.remove-icon-ring-on-hover:hover .fw-circle-outline {
   display: none;
 }
 
@@ -4556,7 +4556,7 @@ a.wr-side-panel-toggle-btn.selected {
     color: #526A84;
 }
 .wr-advance-operations .wr-hidden-operations-nav a.selected span span > i.fw.fw-circle.fw-stack-2x{
-    color: #fff;
+    color: #526A84;
 }
 .wr-advance-operations .wr-hidden-operations-nav a.selected span span > i.fw.fw-circle.fw-stack-2x.fw-stroke.fw-inverse{
     color: #526A84;
@@ -5138,7 +5138,7 @@ a.cu-btn-inner.inverse:hover {
     font-size: 14px;
 }
 
-.multi-view .content .panel-body .well fieldset legend a:hover .icon.fw-stack .fw-ring {
+.multi-view .content .panel-body .well fieldset legend a:hover .icon.fw-stack .fw-circle-outline {
     display: none;
 }
 
@@ -6505,6 +6505,10 @@ select > option:hover {
 
 .label-bold{
     font-weight:400;
+}
+
+.header .fw:before {
+  color: #000;
 }
 
 /* Adding style for required fields */

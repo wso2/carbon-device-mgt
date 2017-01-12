@@ -179,52 +179,47 @@ skipStep["policy-platform"] = function (policyPayloadObj) {
     $("#policy-profile-page-wizard-title").text("EDIT " + policy["platform"] + " POLICY - " + policy["name"]);
 
     var deviceType = policy["platform"];
-    var policyOperationsTemplateSrc = context + '/public/cdmf.unit.device.type.' + deviceType +
-        '.policy-edit/templates/' + deviceType + '-policy-edit.hbs';
-    var policyOperationsScriptSrc = context + '/public/cdmf.unit.device.type.' + deviceType +
-        '.policy-edit/js/' + deviceType + '-policy-edit.js';
-    var policyOperationsStylesSrc = context + '/public/cdmf.unit.device.type.' + deviceType +
-        '.policy-edit/css/' + deviceType + '-policy-edit.css';
-    var policyOperationsTemplateCacheKey = deviceType + '-policy-operations';
+    var policyOperations = $("#policy-operations");
+    var policyEditTemplateSrc = $(policyOperations).data("template");
+    var policyEditScriptSrc = $(policyOperations).data("script");
+    var policyEditStylesSrc = $(policyOperations).data("style");
+    var policyEditTemplateCacheKey = deviceType + '-policy-edit';
 
-    $.isResourceExists(policyOperationsTemplateSrc, function (status) {
-        if (status) {
-            $.template(policyOperationsTemplateCacheKey, policyOperationsTemplateSrc, function (template) {
-                var content = template();
-                $("#device-type-policy-operations").html(content).removeClass("hidden");
-                $(".policy-platform").addClass("hidden");
-                $.isResourceExists(policyOperationsScriptSrc, function (status) {
-                    if (status) {
-                        hasPolicyProfileScript = true;
-                        var script = document.createElement('script');
-                        script.type = 'text/javascript';
-                        script.src = policyOperationsScriptSrc;
-                        $(".wr-advance-operations").prepend(script);
-                        /*
-                         This method should be implemented in the relevant plugin side and should include the logic to
-                         populate the policy profile in the plugin specific UI.
-                         */
-                        polulateProfileOperations(policyPayloadObj["profile"]["profileFeaturesList"]);
-                    }
-                });
-            });
-
-            $.isResourceExists(policyOperationsStylesSrc, function (status) {
-                if (status) {
-                    var style = document.createElement('link');
-                    style.type = 'text/css';
-                    style.rel = 'stylesheet';
-                    style.href = policyOperationsStylesSrc;
-                    $(".wr-advance-operations").prepend(style);
-                }
-            });
+    if (policyEditTemplateSrc) {
+        if (policyEditScriptSrc) {
+            var script = document.createElement('script');
+            script.type = 'text/javascript';
+            script.src = context + policyEditScriptSrc;
+            $(".wr-advance-operations").prepend(script);
+            hasPolicyProfileScript = true;
         } else {
-            $("#generic-policy-operations").removeClass("hidden");
+            hasPolicyProfileScript = false;
         }
-        $(".wr-advance-operations-init").addClass("hidden");
-    });
+        $.template(policyEditTemplateCacheKey, context + policyEditTemplateSrc, function (template) {
+            var content = template();
+            $("#device-type-policy-operations").html(content).removeClass("hidden");
+            $(".policy-platform").addClass("hidden");
+            if (hasPolicyProfileScript) {
+                /*
+                 This method should be implemented in the relevant plugin side and should include the logic to
+                 populate the policy profile in the plugin specific UI.
+                 */
+                polulateProfileOperations(policyPayloadObj["profile"]["profileFeaturesList"]);
+            }
+        });
+    } else {
+        $("#generic-policy-operations").removeClass("hidden");
+    }
+    if (policyEditStylesSrc) {
+        var style = document.createElement('link');
+        style.type = 'text/css';
+        style.rel = 'stylesheet';
+        style.href = context + policyEditStylesSrc;
+        $(".wr-advance-operations").prepend(style);
+    }
+    $(".wr-advance-operations-init").addClass("hidden");
 
-    if(!hasPolicyProfileScript) {
+    if (!hasPolicyProfileScript) {
         populateGenericProfileOperations(policyPayloadObj["profile"]["profileFeaturesList"]);
     }
 };

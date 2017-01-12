@@ -89,6 +89,7 @@
         "perm:devices:operations",
         "perm:devices:search",
         "perm:devices:details",
+        "perm:devices:update",
         "perm:devices:view",
         "perm:view-configuration",
         "perm:manage-configuration",

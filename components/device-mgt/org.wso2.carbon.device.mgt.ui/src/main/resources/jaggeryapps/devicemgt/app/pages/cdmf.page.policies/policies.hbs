@@ -49,7 +49,7 @@
                 <a href="{{@app.context}}/policy/add" class="cu-btn">
                     <span class="icon fw-stack">
                         <i class="fw fw-add fw-stack-1x"></i>
-                        <i class="fw fw-ring fw-stack-2x"></i>
+                        <i class="fw fw-circle-outline fw-stack-2x"></i>
                     </span>
                     Add New Policy
                 </a>
@@ -63,7 +63,7 @@
                 <a href="{{@app.context}}/policy/priority" class="cu-btn">
                     <span class="icon fw-stack">
                         <i class="fw fw-throttling-policy fw-stack-1x"></i>
-                        <i class="fw fw-ring fw-stack-2x"></i>
+                        <i class="fw fw-circle-outline fw-stack-2x"></i>
                     </span>
                     Policy Priority
                 </a>
@@ -74,7 +74,7 @@
         <a href="#" class="cu-btn" id="appbar-btn-apply-changes">
             <span class="icon fw-stack">
                 <i class="fw fw-check fw-stack-1x"></i>
-                <i class="fw fw-ring fw-stack-2x"></i>
+                <i class="fw fw-circle-outline fw-stack-2x"></i>
             </span>
             Apply Changes To Devices
         </a>
@@ -97,7 +97,7 @@
                         <!--suppress HtmlUnknownTarget -->
                         <a href="{{@app.context}}/policy/add" class="btn-operations btn-default">
                             <span class="fw-stack">
-                                <i class="fw fw-ring fw-stack-2x"></i>
+                                <i class="fw fw-circle-outline fw-stack-2x"></i>
                                 <i class="fw fw-add fw-stack-1x"></i>
                             </span>
                             Add New Policy
@@ -146,7 +146,7 @@
                                 <a href="#" data-click-event="remove-form" class="btn square-element policy-remove-link"
                                    data-toggle="modal" data-target="#modalDemo">
                                             <span class="icon fw-stack">
-                                                <i class="fw fw-ring fw-stack-2x"></i>
+                                                <i class="fw fw-circle-outline fw-stack-2x"></i>
                                                 <i class="fw fw-delete fw-stack-1x"></i>
                                             </span>
                                     Remove
@@ -157,7 +157,7 @@
                             <a href="#" data-click-event="remove-form" class="btn square-element policy-publish-link"
                                data-toggle="modal" data-target="#modalDemo">
                                         <span class="icon fw-stack">
-                                            <i class="fw fw-ring fw-stack-2x"></i>
+                                            <i class="fw fw-circle-outline fw-stack-2x"></i>
                                             <i class="glyphicon glyphicon-floppy-saved"></i>
                                         </span>
                                 Publish
@@ -167,7 +167,7 @@
                             <a href="#" data-click-event="remove-form" class="btn square-element policy-unpublish-link"
                                data-toggle="modal" data-target="#modalDemo">
                                         <span class="icon fw-stack">
-                                            <i class="fw fw-ring fw-stack-2x"></i>
+                                            <i class="fw fw-circle-outline fw-stack-2x"></i>
                                             <i class="glyphicon glyphicon-floppy-remove"></i>
                                         </span>
                                 Unpublish
@@ -182,9 +182,9 @@
             {{#each policyListToView}}
                 <tr data-type="selectable" data-id="{{id}}" data-status="{{status}}">
                     <td class="remove-padding icon-only content-fill viewEnabledIcon"
-                        data-url="{{@app.context}}/policy/view?id={{id}}" data-id="{{id}}">
-                        <div class="thumbnail icon" style="padding-top: 30px; padding-bottom: 30px;">
-                            <i class="fw fw-{{deviceTypeIcon}}" style="font-size: 59px"></i>
+                        data-url="{{@app.context}}/policy/view?id={{id}}&deviceType={{platform}}" data-id="{{id}}">
+                        <div class="thumbnail icon">
+                            <img src="{{icon}}">
                         </div>
                     </td>
                     <td
@@ -239,12 +239,12 @@
                     </td>
                     <td class="text-right content-fill text-left-on-grid-view no-wrap">
                         <!--suppress HtmlUnknownTarget -->
-                        <a href="{{@app.context}}/policy/edit?id={{id}}"
+                        <a href="{{@app.context}}/policy/edit?id={{id}}&deviceType={{platform}}"
                            data-id="{{id}}"
                            data-click-event="remove-form"
                            class="btn padding-reduce-on-grid-view policy-update-link">
                                 <span class="fw-stack">
-                                    <i class="fw fw-ring fw-stack-2x"></i>
+                                    <i class="fw fw-circle-outline fw-stack-2x"></i>
                                     <i class="fw fw-edit fw-stack-1x"></i>
                                 </span>
                             <span class="hidden-xs hidden-on-grid-view">Re-Configure</span>

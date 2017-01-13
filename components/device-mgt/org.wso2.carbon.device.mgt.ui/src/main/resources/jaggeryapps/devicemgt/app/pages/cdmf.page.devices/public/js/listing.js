@@ -277,7 +277,7 @@ function loadDevices(searchType, searchParam) {
                 var html;
                 switch (status) {
                     case 'ACTIVE' :
-                        html = '<span><i class="fw fw-ok icon-success"></i> Active</span>';
+                        html = '<span><i class="fw fw-success icon-success"></i> Active</span>';
                         break;
                     case 'INACTIVE' :
                         html = '<span><i class="fw fw-warning icon-warning"></i> Inactive</span>';

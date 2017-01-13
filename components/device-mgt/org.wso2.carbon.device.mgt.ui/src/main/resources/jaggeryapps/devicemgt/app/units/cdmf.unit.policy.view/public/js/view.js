@@ -32,7 +32,7 @@ var displayPolicy = function (policyPayloadObj) {
     if (policyPayloadObj["active"] == true && policyPayloadObj["updated"] == true) {
         policyStatus = '<i class="fw fw-warning icon-success"></i> Active/Updated</span>';
     } else if (policyPayloadObj["active"] == true && policyPayloadObj["updated"] == false) {
-        policyStatus = '<i class="fw fw-ok icon-success"></i> Active</span>';
+        policyStatus = '<i class="fw fw-success icon-success"></i> Active</span>';
     } else if (policyPayloadObj["active"] == false && policyPayloadObj["updated"] == true) {
         policyStatus = '<i class="fw fw-warning icon-warning"></i> Inactive/Updated</span>';
     } else if (policyPayloadObj["active"] == false && policyPayloadObj["updated"] == false) {

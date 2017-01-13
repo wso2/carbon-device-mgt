@@ -66,10 +66,10 @@ import javax.ws.rs.core.Response;
                 permissions = {"/device-mgt/admin/certificates/delete"}
         ),
         @Scope(
-                name = "Verifying an SSL Certificate",
-                description = "Verifying an SSL Certificate",
+                name = "Verify SSL certificate",
+                description = "Verify SSL certificate",
                 key = "perm:admin:certificates:verify",
-                permissions = {"/device-mgt/admin/certificates/details"}
+                permissions = {"/device-mgt/admin/certificates/verify"}
         )
 }
 )

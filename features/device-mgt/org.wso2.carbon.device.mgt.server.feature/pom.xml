@@ -122,6 +122,9 @@
                                 <bundleDef>
                                     org.wso2.carbon.devicemgt:org.wso2.carbon.device.mgt.common:${carbon.device.mgt.version}
                                 </bundleDef>
+								<bundleDef>
+									org.wso2.carbon.devicemgt:org.wso2.carbon.device.mgt.url.printer:${carbon.device.mgt.version}
+								</bundleDef>
                                 <!--<bundleDef>-->
                                     <!--org.wso2.carbon.commons:org.wso2.carbon.email.verification-->
                                 <!--</bundleDef>-->

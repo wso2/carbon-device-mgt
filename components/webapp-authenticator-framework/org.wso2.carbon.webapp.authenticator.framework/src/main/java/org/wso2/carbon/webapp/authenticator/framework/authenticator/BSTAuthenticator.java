@@ -66,7 +66,7 @@ public class BSTAuthenticator implements WebappAuthenticator {
                     "are not provided");
         }
 
-        String url = this.properties.getProperty("TokenValidationEndpointUrl");
+        String url = Utils.replaceSystemProperty(this.properties.getProperty("TokenValidationEndpointUrl"));
         if ((url == null) || (url.isEmpty())) {
             throw new IllegalArgumentException("OAuth token validation endpoint url is not provided");
         }

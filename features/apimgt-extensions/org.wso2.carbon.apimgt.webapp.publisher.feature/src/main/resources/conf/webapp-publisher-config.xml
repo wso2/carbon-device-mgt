@@ -24,7 +24,7 @@
 <WebappPublisherConfigs>
 
     <!-- This host is used to define the host address which is used to publish APIs -->
-    <Host>https://localhost:${carbon.https.port}</Host>
+    <Host>https://${iot.core.host}:${iot.core.https.port}</Host>
 
     <!-- If it is true, the APIs of this instance will be published to the defined host -->
     <PublishAPI>true</PublishAPI>

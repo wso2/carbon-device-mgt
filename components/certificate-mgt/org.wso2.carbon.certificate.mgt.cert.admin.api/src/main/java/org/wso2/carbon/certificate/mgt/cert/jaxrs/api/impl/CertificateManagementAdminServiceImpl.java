@@ -27,7 +27,9 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Path("/admin/certificates")
 public class CertificateManagementAdminServiceImpl implements CertificateManagementAdminService {
@@ -230,10 +232,20 @@ public class CertificateManagementAdminServiceImpl implements CertificateManagem
                     deviceIdentifier.setId(challengeToken);
                     deviceIdentifier.setType(DeviceManagementConstants.MobileDeviceTypes.MOBILE_DEVICE_TYPE_IOS);
                     TenantedDeviceWrapper tenantedDeviceWrapper = scepManager.getValidatedDevice(deviceIdentifier);
+//
+//                    var claims = {"http://wso2.org/claims/enduserTenantId": adminUserTenantId,
+//                            "http://wso2.org/claims/enduser": adminUsername};
+
+                    Map<String, String> claims = new HashMap<>();
+
+                    claims.put("http://wso2.org/claims/enduserTenantId", String.valueOf(tenantedDeviceWrapper.getTenantId()));
+                    claims.put("http://wso2.org/claims/enduser", tenantedDeviceWrapper.getDevice().getEnrolmentInfo().getOwner());
+                    claims.put("http://wso2.org/claims/deviceIdentifier", tenantedDeviceWrapper.getDevice().getDeviceIdentifier());
+                    claims.put("http://wso2.org/claims/deviceIdType", tenantedDeviceWrapper.getDevice().getType());
 
                     JWTClientManagerService jwtClientManagerService = CertificateMgtAPIUtils.getJwtClientManagerService();
                     String jwdToken = jwtClientManagerService.getJWTClient().getJwtToken(
-                            tenantedDeviceWrapper.getDevice().getEnrolmentInfo().getOwner());
+                            tenantedDeviceWrapper.getDevice().getEnrolmentInfo().getOwner(), claims);
 
                     ValidationResponce validationResponce = new ValidationResponce();
                     validationResponce.setDeviceId(challengeToken);

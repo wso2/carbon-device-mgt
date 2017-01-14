@@ -30,6 +30,7 @@ function onRequest(context) {
     var page = {};
     var policyModule = require("/app/modules/business-controllers/policy.js")["policyModule"];
     var userModule = require("/app/modules/business-controllers/user.js")["userModule"];
+    var utility = require("/app/modules/utility.js")["utility"];
     var response = policyModule.getAllPolicies();
     if (response["status"] == "success") {
         var policyListToView = response["content"];

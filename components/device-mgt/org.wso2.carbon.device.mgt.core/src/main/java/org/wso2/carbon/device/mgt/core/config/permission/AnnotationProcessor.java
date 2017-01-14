@@ -70,7 +70,9 @@ public class AnnotationProcessor {
     private static final String SWAGGER_ANNOTATIONS_PROPERTIES_KEY = "key";
     private static final String SWAGGER_ANNOTATIONS_PROPERTIES_PERMISSIONS = "permissions";
     private static final String ANNOTATIONS_SCOPES = "scopes";
-
+    private static final String ANNOTATIONS_SCOPE = "scope";
+    private static final String DEFAULT_PERM_NAME = "default";
+    private static final String DEFAULT_PERM = "/device-mgt";
     private static final String PERMISSION_PREFIX = "/permission/admin";
 
     private StandardContext context;
@@ -251,7 +253,12 @@ public class AnnotationProcessor {
                         this.setPermission(annotations[i], permission);
                     }
                 }
-                permissions.add(permission);
+                if (permission.getName() == null || permission.getPath() == null) {
+                    log.warn("Permission not assigned to the resource url - " + permission.getMethod() + ":"
+                                     + permission.getUrl());
+                } else {
+                    permissions.add(permission);
+                }
             }
         }
         return permissions;
@@ -375,19 +382,33 @@ public class AnnotationProcessor {
         InvocationHandler methodHandler = Proxy.getInvocationHandler(currentMethod);
         Annotation[] extensions = (Annotation[]) methodHandler.invoke(currentMethod,
                 apiOperation.getMethod(SWAGGER_ANNOTATIONS_EXTENSIONS, null), null);
-        methodHandler = Proxy.getInvocationHandler(extensions[0]);
-        Annotation[] properties =  (Annotation[])methodHandler.invoke(extensions[0], extensionClass
-                .getMethod(SWAGGER_ANNOTATIONS_PROPERTIES,null), null);
-        Scope scope;
-        for (Annotation property : properties) {
-            methodHandler = Proxy.getInvocationHandler(property);
-            String scopeKey = (String) methodHandler.invoke(property, extensionPropertyClass
-                    .getMethod(SWAGGER_ANNOTATIONS_PROPERTIES_VALUE, null),null);
-            if (!scopeKey.isEmpty()) {
-                scope = apiScopes.get(scopeKey);
-                permission.setName(scope.getName());
-                //TODO: currently permission tree supports only adding one permission per API point.
-                permission.setPath(scope.getRoles().split(" ")[0]);
+        if (extensions != null) {
+            methodHandler = Proxy.getInvocationHandler(extensions[0]);
+            Annotation[] properties = (Annotation[]) methodHandler.invoke(extensions[0], extensionClass
+                    .getMethod(SWAGGER_ANNOTATIONS_PROPERTIES, null), null);
+            Scope scope;
+            String scopeKey;
+            String propertyName;
+            for (Annotation property : properties) {
+                methodHandler = Proxy.getInvocationHandler(property);
+                propertyName = (String) methodHandler.invoke(property, extensionPropertyClass
+                        .getMethod(SWAGGER_ANNOTATIONS_PROPERTIES_NAME, null), null);
+                if (ANNOTATIONS_SCOPE.equals(propertyName)) {
+                     scopeKey = (String) methodHandler.invoke(property, extensionPropertyClass
+                            .getMethod(SWAGGER_ANNOTATIONS_PROPERTIES_VALUE, null), null);
+                    if (!scopeKey.isEmpty()) {
+                        scope = apiScopes.get(scopeKey);
+                        if (scope != null) {
+                            permission.setName(scope.getName());
+                            //TODO: currently permission tree supports only adding one permission per API point.
+                            permission.setPath(scope.getRoles().split(" ")[0]);
+                        } else {
+                            log.warn("No Scope mapping is done for scope key: " + scopeKey);
+                            permission.setName(DEFAULT_PERM_NAME);
+                            permission.setPath(DEFAULT_PERM);
+                        }
+                    }
+                }
             }
         }
     }

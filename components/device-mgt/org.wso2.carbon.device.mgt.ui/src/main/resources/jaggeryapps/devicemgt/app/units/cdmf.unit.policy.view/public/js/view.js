@@ -32,7 +32,7 @@ var displayPolicy = function (policyPayloadObj) {
     if (policyPayloadObj["active"] == true && policyPayloadObj["updated"] == true) {
         policyStatus = '<i class="fw fw-warning icon-success"></i> Active/Updated</span>';
     } else if (policyPayloadObj["active"] == true && policyPayloadObj["updated"] == false) {
-        policyStatus = '<i class="fw fw-ok icon-success"></i> Active</span>';
+        policyStatus = '<i class="fw fw-success icon-success"></i> Active</span>';
     } else if (policyPayloadObj["active"] == false && policyPayloadObj["updated"] == true) {
         policyStatus = '<i class="fw fw-warning icon-warning"></i> Inactive/Updated</span>';
     } else if (policyPayloadObj["active"] == false && policyPayloadObj["updated"] == false) {
@@ -67,52 +67,47 @@ var displayPolicy = function (policyPayloadObj) {
     }
 
     var deviceType = policy["platform"];
-    var policyOperationsTemplateSrc = context + '/public/cdmf.unit.device.type.' + deviceType +
-        '.policy-view/templates/' + deviceType + '-policy-view.hbs';
-    var policyOperationsScriptSrc = context + '/public/cdmf.unit.device.type.' + deviceType +
-        '.policy-view/js/' + deviceType + '-policy-view.js';
-    var policyOperationsStylesSrc = context + '/public/cdmf.unit.device.type.' + deviceType +
-        '.policy-view/css/' + deviceType + '-policy-view.css';
-    var policyOperationsTemplateCacheKey = deviceType + '-policy-operations';
+    var policyOperations = $("#policy-operations");
+    var policyViewTemplateSrc = $(policyOperations).data("template");
+    var policyViewScriptSrc = $(policyOperations).data("script");
+    var policyViewStylesSrc = $(policyOperations).data("style");
+    var policyViewTemplateCacheKey = deviceType + '-policy-view';
 
-    $.isResourceExists(policyOperationsTemplateSrc, function (status) {
-        if (status) {
-            $.template(policyOperationsTemplateCacheKey, policyOperationsTemplateSrc, function (template) {
-                var content = template();
-                $("#device-type-policy-operations").html(content).removeClass("hidden");
-                $(".policy-platform").addClass("hidden");
-                $.isResourceExists(policyOperationsScriptSrc, function (status) {
-                    if (status) {
-                        hasPolicyProfileScript = true;
-                        var script = document.createElement('script');
-                        script.type = 'text/javascript';
-                        script.src = policyOperationsScriptSrc;
-                        $(".wr-advance-operations").prepend(script);
-                        /*
-                        This method should be implemented in the relevant plugin side and should include the logic to
-                        populate the policy profile in the plugin specific UI.
-                         */
-                        polulateProfileOperations(policyPayloadObj["profile"]["profileFeaturesList"]);
-                    }
-                });
-            });
-
-            $.isResourceExists(policyOperationsStylesSrc, function (status) {
-                if (status) {
-                    var style = document.createElement('link');
-                    style.type = 'text/css';
-                    style.rel = 'stylesheet';
-                    style.href = policyOperationsStylesSrc;
-                    $(".wr-advance-operations").prepend(style);
-                }
-            });
+    if (policyViewTemplateSrc) {
+        if (policyViewScriptSrc) {
+            var script = document.createElement('script');
+            script.type = 'text/javascript';
+            script.src = context + policyViewScriptSrc;
+            $(".wr-advance-operations").prepend(script);
+            hasPolicyProfileScript = true;
         } else {
-            $("#generic-policy-operations").removeClass("hidden");
+            hasPolicyProfileScript = false;
         }
-        $(".wr-advance-operations-init").addClass("hidden");
-    });
+        $.template(policyViewTemplateCacheKey, context + policyViewTemplateSrc, function (template) {
+            var content = template();
+            $("#device-type-policy-operations").html(content).removeClass("hidden");
+            $(".policy-platform").addClass("hidden");
+            if (hasPolicyProfileScript) {
+                /*
+                 This method should be implemented in the relevant plugin side and should include the logic to
+                 populate the policy profile in the plugin specific UI.
+                 */
+                polulateProfileOperations(policyPayloadObj["profile"]["profileFeaturesList"]);
+            }
+        });
+    } else {
+        $("#generic-policy-operations").removeClass("hidden");
+    }
+    if (policyViewStylesSrc) {
+        var style = document.createElement('link');
+        style.type = 'text/css';
+        style.rel = 'stylesheet';
+        style.href = context + policyViewStylesSrc;
+        $(".wr-advance-operations").prepend(style);
+    }
+    $(".wr-advance-operations-init").addClass("hidden");
 
-    if(!hasPolicyProfileScript) {
+    if (!hasPolicyProfileScript) {
         populateGenericProfileOperations(policyPayloadObj["profile"]["profileFeaturesList"]);
     }
 };

@@ -38,6 +38,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.StringTokenizer;
 
 /**
  * Synapse gateway handler for API authentication.
@@ -47,6 +48,12 @@ public class AuthenticationHandler extends AbstractHandler {
     private static HandlerDescription EMPTY_HANDLER_METADATA = new HandlerDescription("API Security Handler");
     private HandlerDescription handlerDesc;
     private RESTInvoker restInvoker;
+
+    private static final String X_JWT_ASSERTION  = "X-JWT-Assertion";
+    private static final String JWTTOKEN = "JWTToken";
+    private static final String AUTHORIZATION = "Authorization";
+    private static final String BEARER = "Bearer ";
+    private static final String CONTENT_TYPE = "Content-Type";
 
     private IOTServerConfiguration iotServerConfiguration;
 
@@ -62,6 +69,7 @@ public class AuthenticationHandler extends AbstractHandler {
 
     /**
      * Handling the message and checking the security.
+     *
      * @param messageContext
      * @return
      */
@@ -84,14 +92,9 @@ public class AuthenticationHandler extends AbstractHandler {
                 if (log.isDebugEnabled()) {
                     log.debug("Verify Cert:\n" + mdmSignature);
                 }
-                String accessToken = Utils.getAccessToken(iotServerConfiguration);
-
                 String deviceType = this.getDeviceType(messageContext.getTo().getAddress().trim());
                 URI certVerifyUrl = new URI(iotServerConfiguration.getVerificationEndpoint() + deviceType);
-
-                Map<String, String> certVerifyHeaders = new HashMap<>();
-                certVerifyHeaders.put("Authorization", "Bearer " + accessToken);
-                certVerifyHeaders.put("Content-Type", "application/json");
+                Map<String, String> certVerifyHeaders = this.setHeaders();
 
                 Certificate certificate = new Certificate();
                 certificate.setPem(mdmSignature);
@@ -104,14 +107,15 @@ public class AuthenticationHandler extends AbstractHandler {
                         null, certVerifyContent);
 
                 String str = response.getContent();
-                if (str.contains("JWTToken")) {
-                    ValidationResponce validationResponce = gson.fromJson(str, ValidationResponce.class);
-                    // TODO: send the JWT token with user details.
-                    // headers.put("X-JWT-Assertion", validationResponce.getJWTToken());
-                }
                 if (log.isDebugEnabled()) {
                     log.debug("Verify response:" + response.getContent());
                     log.debug("Response String : " + str);
+                }
+                if (response.getHttpStatus() == 200 && str.contains(JWTTOKEN)) {
+                    ValidationResponce validationResponce = gson.fromJson(str, ValidationResponce.class);
+                    headers.put(X_JWT_ASSERTION, validationResponce.getJWTToken());
+                } else {
+                    return false;
                 }
 
             } else if (headers.containsKey(AuthConstants.PROXY_MUTUAL_AUTH_HEADER)) {
@@ -120,12 +124,10 @@ public class AuthenticationHandler extends AbstractHandler {
                 if (log.isDebugEnabled()) {
                     log.debug("Verify subject DN: " + subjectDN);
                 }
-                String accessToken = Utils.getAccessToken(iotServerConfiguration);
+
                 String deviceType = this.getDeviceType(messageContext.getTo().getAddress().trim());
                 URI certVerifyUrl = new URI(iotServerConfiguration.getVerificationEndpoint() + deviceType);
-                Map<String, String> certVerifyHeaders = new HashMap<>();
-                certVerifyHeaders.put("Authorization", "Bearer " + accessToken);
-                certVerifyHeaders.put("Content-Type", "application/json");
+                Map<String, String> certVerifyHeaders = this.setHeaders();
                 Certificate certificate = new Certificate();
                 certificate.setPem(subjectDN);
                 certificate.setTenantId(tenantId);
@@ -143,11 +145,9 @@ public class AuthenticationHandler extends AbstractHandler {
                 if (log.isDebugEnabled()) {
                     log.debug("Verify Cert:\n" + encodedPem);
                 }
-                String accessToken = Utils.getAccessToken(iotServerConfiguration);
-                URI certVerifyUrl = new URI(iotServerConfiguration.getVerificationEndpoint() + "android");
-                Map<String, String> certVerifyHeaders = new HashMap<>();
-                certVerifyHeaders.put("Authorization", "Bearer " + accessToken);
-                certVerifyHeaders.put("Content-Type", "application/json");
+                String deviceType = this.getDeviceType(messageContext.getTo().getAddress().trim());
+                URI certVerifyUrl = new URI(iotServerConfiguration.getVerificationEndpoint() + deviceType);
+                Map<String, String> certVerifyHeaders = this.setHeaders();
 
                 Certificate certificate = new Certificate();
                 certificate.setPem(encodedPem);
@@ -188,13 +188,21 @@ public class AuthenticationHandler extends AbstractHandler {
     }
 
 
-    // TODO : take this from the url.
     private String getDeviceType(String url) {
-        if (url.contains("ios")) {
-            return "ios";
-        } else if (url.contains("android")) {
-            return "android";
-        } else return null;
+        StringTokenizer parts = new StringTokenizer(url, "/");
+        while (parts.hasMoreElements()) {
+            if (parts.nextElement().equals("api")) {
+                return (String) parts.nextElement();
+            }
+        }
+        return null;
+    }
 
+    private Map<String, String> setHeaders() throws APIMCertificateMGTException {
+        Map<String, String> map = new HashMap<>();
+        String accessToken = Utils.getAccessToken(iotServerConfiguration);
+        map.put(AUTHORIZATION, BEARER + accessToken);
+        map.put(CONTENT_TYPE, "application/json");
+        return map;
     }
 }

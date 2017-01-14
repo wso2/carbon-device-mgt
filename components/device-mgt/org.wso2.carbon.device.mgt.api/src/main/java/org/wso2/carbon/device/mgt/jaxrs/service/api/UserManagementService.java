@@ -771,11 +771,10 @@ public interface UserManagementService {
             value = "Sending Enrollment Invitations to email address",
             notes = "Send the a mail inviting recipients to enroll devices.",
             tags = "User Management",
-            authorizations = {
-                    @Authorization(
-                            value = "permission",
-                            scopes = {@AuthorizationScope(scope = "/device-mgt/users/invite", description = "Invite Users")}
-                    )
+            extensions = {
+                    @Extension(properties = {
+                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:users:send-invitation")
+                    })
             }
     )
     @ApiResponses(value = {

@@ -35,6 +35,8 @@ import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 import org.wso2.carbon.webapp.authenticator.framework.AuthenticationException;
 
 import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Utils {
 
@@ -84,6 +86,20 @@ public class Utils {
         } finally {
             PrivilegedCarbonContext.endTenantFlow();
         }
+    }
+
+    public static String replaceSystemProperty(String urlWithPlaceholders)  {
+        String regex = "\\$\\{(.*?)\\}";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matchPattern = pattern.matcher(urlWithPlaceholders);
+        while (matchPattern.find()) {
+            String sysPropertyName = matchPattern.group(1);
+            String sysPropertyValue = System.getProperty(sysPropertyName);
+            if (sysPropertyValue != null && !sysPropertyName.isEmpty()) {
+                urlWithPlaceholders = urlWithPlaceholders.replaceAll("\\$\\{(" + sysPropertyName + ")\\}", sysPropertyValue);
+            }
+        }
+        return urlWithPlaceholders;
     }
 
 }

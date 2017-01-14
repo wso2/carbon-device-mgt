@@ -182,9 +182,9 @@
             {{#each policyListToView}}
                 <tr data-type="selectable" data-id="{{id}}" data-status="{{status}}">
                     <td class="remove-padding icon-only content-fill viewEnabledIcon"
-                        data-url="{{@app.context}}/policy/view?id={{id}}" data-id="{{id}}">
-                        <div class="thumbnail icon" style="padding-top: 30px; padding-bottom: 30px;">
-                            <i class="fw fw-{{deviceTypeIcon}}" style="font-size: 59px"></i>
+                        data-url="{{@app.context}}/policy/view?id={{id}}&deviceType={{platform}}" data-id="{{id}}">
+                        <div class="thumbnail icon">
+                            <img src="{{icon}}">
                         </div>
                     </td>
                     <td
@@ -196,7 +196,7 @@
                             <span><i class="fw fw-warning icon-success"></i> Active/Updated</span>
                         {{/equal}}
                         {{#equal status "Active"}}
-                            <span><i class="fw fw-ok icon-success"></i> Active</span>
+                            <span><i class="fw fw-success icon-success"></i> Active</span>
                         {{/equal}}
                         {{#equal status "Inactive/Updated"}}
                             <span><i class="fw fw-warning icon-warning"></i> Inactive/Updated</span>
@@ -239,7 +239,7 @@
                     </td>
                     <td class="text-right content-fill text-left-on-grid-view no-wrap">
                         <!--suppress HtmlUnknownTarget -->
-                        <a href="{{@app.context}}/policy/edit?id={{id}}"
+                        <a href="{{@app.context}}/policy/edit?id={{id}}&deviceType={{platform}}"
                            data-id="{{id}}"
                            data-click-event="remove-form"
                            class="btn padding-reduce-on-grid-view policy-update-link">

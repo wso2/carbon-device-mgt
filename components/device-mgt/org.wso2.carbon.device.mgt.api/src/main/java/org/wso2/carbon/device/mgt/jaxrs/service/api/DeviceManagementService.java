@@ -29,7 +29,6 @@ import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import io.swagger.annotations.ResponseHeader;
-import org.json.JSONObject;
 import org.wso2.carbon.apimgt.annotations.api.Scope;
 import org.wso2.carbon.apimgt.annotations.api.Scopes;
 import org.wso2.carbon.device.mgt.common.Device;
@@ -78,6 +77,12 @@ import javax.ws.rs.core.Response;
                         name = "Getting Details of a Device",
                         description = "Getting Details of a Device",
                         key = "perm:devices:details",
+                        permissions = {"/device-mgt/devices/owning-device/view"}
+                ),
+                @Scope(
+                        name = "Update the device specified by device id",
+                        description = "Update the device specified by device id",
+                        key = "perm:devices:update",
                         permissions = {"/device-mgt/devices/owning-device/view"}
                 ),
                 @Scope(

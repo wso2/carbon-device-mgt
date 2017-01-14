@@ -81,7 +81,7 @@
                         var html;
                         switch (status) {
                             case "COMPLETED" :
-                                html = "<span><i class='fw fw-ok icon-success'></i> Completed</span>";
+                                html = "<span><i class='fw fw-success icon-success'></i> Completed</span>";
                                 break;
                             case "PENDING" :
                                 html = "<span><i class='fw fw-warning icon-warning'></i> Pending</span>";
@@ -90,10 +90,10 @@
                                 html = "<span><i class='fw fw-error icon-danger'></i> Error</span>";
                                 break;
                             case "IN_PROGRESS" :
-                                html = "<span><i class='fw fw-ok icon-warning'></i> In Progress</span>";
+                                html = "<span><i class='fw fw-success icon-warning'></i> In Progress</span>";
                                 break;
                             case "REPEATED" :
-                                html = "<span><i class='fw fw-ok icon-warning'></i> Repeated</span>";
+                                html = "<span><i class='fw fw-success icon-warning'></i> Repeated</span>";
                                 break;
                         }
                         return html;

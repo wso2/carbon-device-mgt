@@ -17,8 +17,8 @@
  */
 
 function onRequest(context) {
-    var log = new Log("policy-view-edit-unit backend js");
-
+    var deviceType = request.getParameter("deviceType");
+    var utility = require("/app/modules/utility.js").utility;
     var userModule = require("/app/modules/business-controllers/user.js")["userModule"];
     var groupModule = require("/app/modules/business-controllers/group.js")["groupModule"];
 
@@ -31,11 +31,29 @@ function onRequest(context) {
     if (usersResult.status == "success") {
         context.users = usersResult.content;
     }
-
     context["groups"] = groupModule.getGroups();
-
     var user = userModule.getCarbonUser();
     context["user"] = {username: user.username, domain: user.domain, tenantId: user.tenantId};
+
+    context["policyOperations"] = {};
+    var policyEditSrc = "/app/units/" + utility.getTenantedDeviceUnitName(deviceType, "policy-edit");
+    if (new File(policyEditSrc).isExists()) {
+        var policyOperationsTemplateSrc = policyEditSrc + "/public/templates/" + deviceType + "-policy-edit.hbs";
+        if (new File(policyOperationsTemplateSrc).isExists()) {
+            context["policyOperations"].template = "/public/cdmf.unit.device.type." + deviceType +
+                ".policy-edit/templates/" + deviceType + "-policy-edit.hbs";
+        }
+        var policyOperationsScriptSrc = policyEditSrc + "/public/js/" + deviceType + "-policy-edit.js";
+        if (new File(policyOperationsScriptSrc).isExists()) {
+            context["policyOperations"].script = "/public/cdmf.unit.device.type." + deviceType + ".policy-edit/js/" +
+                deviceType + "-policy-edit.js";
+        }
+        var policyOperationsStylesSrc = policyEditSrc + "/public/css/" + deviceType + "-policy-edit.css";
+        if (new File(policyOperationsStylesSrc).isExists()) {
+            context["policyOperations"].style = "/public/cdmf.unit.device.type." + deviceType + ".policy-edit/css/" +
+                deviceType + "-policy-edit.css";
+        }
+    }
 
     context.isAuthorized = userModule.isAuthorized("/permission/admin/device-mgt/policies/manage");
     context.isAuthorizedViewUsers = userModule.isAuthorized("/permission/admin/device-mgt/roles/view");

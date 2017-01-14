@@ -1,7 +1,7 @@
 {
     "appContext": "/devicemgt/",
-    "httpsURL" : "https://localhost:8243",
-    "httpURL" : "http://localhost:8280",
+    "httpsURL" : "https://%server.ip%:8243",
+    "httpURL" : "http://%server.ip%:8280",
     "wssURL" : "https://localhost:9445",
     "wsURL" : "%http.ip%",
     "portalURL": "https://%server.ip%:9445",
@@ -139,7 +139,9 @@
         "perm:admin:certificates:delete",
         "perm:admin:certificates:details",
         "perm:admin:certificates:view",
-        "perm:admin:certificates:add"
+        "perm:admin:certificates:add",
+        "perm:admin:certificates:verify",
+        "perm:admin"
     ],
     "isOAuthEnabled" : true,
     "backendRestEndpoints" : {

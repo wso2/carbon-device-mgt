@@ -303,7 +303,7 @@ var utils = function () {
 
                 // calling oauth provider token service endpoint
                 var requestURL = deviceMgtProps["oauthProvider"]["tokenServiceURL"];
-                var requestPayload = "grant_type=urn:ietf:params:oauth:grant-type:saml2-bearer&" +
+                var requestPayload = "grant_type=urn:ietf:params:oauth:grant-type:saml2-carbon&" +
                     "assertion=" + encodeURIComponent(encodedAssertion) + "&scope=" + scopes;
 
                 var xhr = new XMLHttpRequest();

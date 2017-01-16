@@ -30,6 +30,8 @@ import org.wso2.carbon.apimgt.application.extension.exception.APIManagerExceptio
 import org.wso2.carbon.apimgt.application.extension.util.APIManagerUtil;
 import org.wso2.carbon.apimgt.impl.APIConstants;
 import org.wso2.carbon.apimgt.impl.APIManagerFactory;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
+import org.wso2.carbon.user.api.UserStoreException;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 
@@ -276,6 +278,23 @@ public class APIManagementProviderServiceImpl implements APIManagementProviderSe
             Set<API> userVisibleAPIs = null;
             for (String tag : tags) {
                 Set<API> tagAPIs = apiConsumer.getAPIsWithTag(tag, APIManagerUtil.getTenantDomain());
+                if (tagAPIs == null || tagAPIs.size() == 0) {
+                    try {
+                        PrivilegedCarbonContext.startTenantFlow();
+                        PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(
+                                MultitenantConstants.SUPER_TENANT_DOMAIN_NAME, true);
+                        PrivilegedCarbonContext.getThreadLocalCarbonContext().setUsername(
+                                PrivilegedCarbonContext.getThreadLocalCarbonContext().getUserRealm()
+                                        .getRealmConfiguration().getAdminUserName());
+                        APIConsumer anonymousConsumer = APIManagerFactory.getInstance().getAPIConsumer(username);
+                        tagAPIs = anonymousConsumer.getAPIsWithTag(tag, MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
+
+                    } catch (UserStoreException e) {
+                        log.error("failed to initialized super tenant flow", e);
+                    } finally {
+                        PrivilegedCarbonContext.endTenantFlow();
+                    }
+                }
                 if (userVisibleAPIs == null) {
                     userVisibleAPIs = tagAPIs;
                 } else {

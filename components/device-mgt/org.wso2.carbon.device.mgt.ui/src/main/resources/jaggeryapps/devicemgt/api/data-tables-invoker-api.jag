@@ -38,6 +38,12 @@ if (uriMatcher.match("/{context}/api/data-tables/invoker")) {
     //noinspection JSUnresolvedFunction getAllParameters
     var allParams = request.getAllParameters();
 
+    var apiPrefix = "/api/device-mgt";
+    if(url.substring(0, apiPrefix.length) != apiPrefix) {
+        response.sendError(400, 'Bad Request');
+        exit(0);
+    }
+
     for (var allParamsKey in allParams) {
         if (allParams.hasOwnProperty(allParamsKey)) {
             if (allParamsKey == "limit" || allParamsKey == "offset") {

@@ -1,0 +1,173 @@
+<!-- ~ Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+	~ ~ WSO2 Inc. licenses this file to you under the Apache License, ~ Version
+	2.0 (the "License"); you may not use this file except ~ in compliance with
+	the License. ~ You may obtain a copy of the License at ~ ~ http://www.apache.org/licenses/LICENSE-2.0
+	~ ~ Unless required by applicable law or agreed to in writing, ~ software
+	distributed under the License is distributed on an ~ "AS IS" BASIS, WITHOUT
+	WARRANTIES OR CONDITIONS OF ANY ~ KIND, either express or implied. See the
+	License for the ~ specific language governing permissions and limitations
+	~ under the License. -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+	<parent>
+		<artifactId>apimgt-extensions</artifactId>
+		<groupId>org.wso2.carbon.devicemgt</groupId>
+		<version>2.0.8-SNAPSHOT</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
+
+	<modelVersion>4.0.0</modelVersion>
+	<artifactId>org.wso2.carbon.apimgt.publisher.client</artifactId>
+	<packaging>bundle</packaging>
+	<name>org.wso2.carbon.apimgt.publisher.client</name>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>io.swagger</groupId>
+				<artifactId>swagger-codegen-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<inputSpec>${project.basedir}/src/main/resources/publisher-api.yaml</inputSpec>
+							<language>java</language>
+							<configOptions>
+								<apiPackage>${project.artifactId}.api</apiPackage>
+								<modelPackage>${project.artifactId}.model</modelPackage>
+								<invokerPackage>${project.artifactId}.invoker</invokerPackage>
+							</configOptions>
+							<library>feign</library>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>copy</id>
+						<phase>process-resources</phase>
+						<configuration>
+							<tasks>
+								<delete file="${project.build.directory}/generated-sources/swagger/build.gradle"/>
+								<delete file="${project.build.directory}/generated-sources/swagger/build.sbt"/>
+								<delete file="${project.build.directory}/generated-sources/swagger/git_push.sh"/>
+								<delete file="${project.build.directory}/generated-sources/swagger/gradlew.bat"/>
+								<delete file="${project.build.directory}/generated-sources/swagger/gradlew"/>
+								<delete file="${project.build.directory}/generated-sources/swagger/gradle.properties"/>
+								<delete file="${project.build.directory}/generated-sources/swagger/settings.gradle"/>
+								<delete dir="${project.build.directory}/generated-sources/swagger/gradle"/>
+							</tasks>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>maven-bundle-plugin</artifactId>
+				<extensions>true</extensions>
+				<configuration>
+					<instructions>
+						<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+						<Bundle-Name>${project.artifactId}</Bundle-Name>
+						<Bundle-Version>${project.version}</Bundle-Version>
+						<Bundle-Description>APIM publisher client</Bundle-Description>
+						<Export-Package>
+							org.wso2.carbon.apimgt.publisher.client.model,
+							org.wso2.carbon.apimgt.publisher.client.api,
+							org.wso2.carbon.apimgt.publisher.client.invoker
+						</Export-Package>
+						<Import-Package>
+							org.osgi.framework,
+							org.osgi.service.component,
+							org.wso2.carbon.logging,
+							io.swagger,
+							junit,
+							javax.ws.rs,
+							feign,
+							feign.jackson,
+							feign.codec,
+							feign.auth,
+							feign.gson,
+							feign.slf4j,
+							com.google.gson,
+							com.fasterxml.jackson.core,
+							com.fasterxml.jackson.annotation,
+							com.fasterxml.jackson.databind,
+							com.fasterxml.jackson.datatype.joda, i
+							o.swagger.annotations,
+							javax.net.ssl,
+							org.apache.oltu.oauth2.client.*,
+							org.apache.oltu.oauth2.common.*,
+							org.junit;resolution:=optional
+						</Import-Package>
+						<Embed-Dependency>
+						</Embed-Dependency>
+					</instructions>
+				</configuration>
+			</plugin>
+
+		</plugins>
+	</build>
+
+	<dependencies>
+		<!-- dependencies are needed for the client being generated -->
+		<dependency>
+			<groupId>io.swagger</groupId>
+			<artifactId>swagger-annotations</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.github.openfeign</groupId>
+			<artifactId>feign-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.github.openfeign</groupId>
+			<artifactId>feign-jaxrs</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.github.openfeign</groupId>
+			<artifactId>feign-gson</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.wso2.orbit.com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-annotations</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.wso2.orbit.com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.datatype</groupId>
+			<artifactId>jackson-datatype-joda</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.wso2.orbit.joda-time</groupId>
+			<artifactId>joda-time</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.oltu.oauth2</groupId>
+			<artifactId>org.apache.oltu.oauth2.client</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.github.openfeign</groupId>
+			<artifactId>feign-jackson</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.github.openfeign</groupId>
+			<artifactId>feign-slf4j</artifactId>
+		</dependency>
+	</dependencies>
+
+</project>

@@ -23,6 +23,8 @@ import org.osgi.framework.BundleContext;
 import org.osgi.service.component.ComponentContext;;
 import org.wso2.carbon.apimgt.application.extension.APIManagementProviderService;
 import org.wso2.carbon.apimgt.application.extension.APIManagementProviderServiceImpl;
+import org.wso2.carbon.apimgt.application.extension.APIManagementRestProviderServiceImpl;
+import org.wso2.carbon.apimgt.integration.client.service.IntegrationClientService;
 import org.wso2.carbon.registry.core.service.TenantRegistryLoader;
 import org.wso2.carbon.registry.indexing.service.TenantIndexingLoader;
 import org.wso2.carbon.user.core.service.RealmService;
@@ -48,6 +50,11 @@ import org.wso2.carbon.user.core.service.RealmService;
  * policy="dynamic"
  * bind="setRealmService"
  * unbind="unsetRealmService"
+ * interface="org.wso2.carbon.apimgt.integration.client.service.IntegrationClientService"
+ * cardinality="1..1"
+ * policy="dynamic"
+ * bind="setIntegrationClientService"
+ * unbind="unsetIntegrationClientService"
  */
 public class APIApplicationManagerExtensionServiceComponent {
 
@@ -57,7 +64,7 @@ public class APIApplicationManagerExtensionServiceComponent {
         if (log.isDebugEnabled()) {
             log.debug("Initializing device extension bundle");
         }
-        APIManagementProviderService apiManagementProviderService = new APIManagementProviderServiceImpl();
+        APIManagementProviderService apiManagementProviderService = new APIManagementRestProviderServiceImpl();
         APIApplicationManagerExtensionDataHolder.getInstance().setAPIManagementProviderService(apiManagementProviderService);
         BundleContext bundleContext = componentContext.getBundleContext();
         bundleContext.registerService(APIManagementProviderService.class.getName(), apiManagementProviderService, null);
@@ -84,6 +91,17 @@ public class APIApplicationManagerExtensionServiceComponent {
 
     protected void unsetIndexLoader(TenantIndexingLoader indexLoader) {
         APIApplicationManagerExtensionDataHolder.getInstance().setIndexLoaderService(null);
+    }
+
+    protected void setIntegrationClientService(IntegrationClientService integrationClientService) {
+        if (integrationClientService != null && log.isDebugEnabled()) {
+            log.debug("integrationClientService initialized");
+        }
+        APIApplicationManagerExtensionDataHolder.getInstance().setIntegrationClientService(integrationClientService);
+    }
+
+    protected void unsetIntegrationClientService(IntegrationClientService integrationClientService) {
+        APIApplicationManagerExtensionDataHolder.getInstance().setIntegrationClientService(null);
     }
 
     /**

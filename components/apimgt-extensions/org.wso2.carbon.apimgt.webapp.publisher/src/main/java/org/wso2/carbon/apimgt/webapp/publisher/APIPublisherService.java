@@ -41,19 +41,4 @@ public interface APIPublisherService {
      */
     void publishAPI(API api) throws APIManagementException, FaultGatewaysException;
 
-    /**
-     * This method removes an API that's already published within the underlying API-Management infrastructure.
-     *
-     * @param id An instance of the bean that carries API identification related metadata
-     * @throws APIManagementException Is thrown if some unexpected event occurs while removing the API
-     */
-    void removeAPI(APIIdentifier id) throws APIManagementException;
-
-    /**
-     * This method registers a collection of APIs within the underlying API-Management infrastructure.
-     *
-     * @param apis A list of the beans that passes metadata related to the APIs being published
-     * @throws APIManagementException Is thrown if some unexpected event occurs while publishing the APIs
-     */
-    void publishAPIs(List<API> apis) throws APIManagementException, FaultGatewaysException;
 }

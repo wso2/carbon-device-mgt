@@ -20,15 +20,15 @@
 var modalDialog = (function () {
     var publicMethoads = {};
     publicMethoads.header = function (headerText) {
-        $("#modal-title-text").html(headerText);
+        $("#basic-modal-view #modal-title-text").html(headerText);
 
     };
     publicMethoads.content = function (contentText) {
-        $("#modal-content-text").html(contentText);
+        $("#basic-modal-view #modal-content-text").html(contentText);
 
     };
     publicMethoads.footer = function (footerContent) {
-        $("#modal-footer-content").html(footerContent);
+        $("#basic-modal-view #modal-footer-content").html(footerContent);
 
     };
     publicMethoads.footerButtons = function (buttonList) {
@@ -37,7 +37,7 @@ var modalDialog = (function () {
             footerContent = footerContent + '<div class="buttons"><a href="#" id="' + btn.id +
                 '" class="btn-operations">' + btn.text + '</a></div>';
         }
-        $("#modal-footer-content").html(footerContent);
+        $("#basic-modal-view #modal-footer-content").html(footerContent);
     };
     publicMethoads.show = function () {
 
@@ -62,11 +62,21 @@ var modalDialog = (function () {
     publicMethoads.hide = function () {
         $("#basic-modal-view").addClass('hidden');
         $("#basic-modal-view").modal('hide');
-        $("#modal-title-text").html("");
-        $("#modal-content-text").html("");
-        $("#modal-footer-content").html("");
-        $('body').removeClass('modal-open').css('padding-right', '0px');
         $('.modal-backdrop').remove();
     };
+
+    $("#basic-modal-view").on('hidden.bs.modal', function () {
+        $('#basic-modal-view .modal-dialog').html('<div class="modal-content"><div class="modal-header">' +
+            '<h3 class="pull-left modal-title"><span class="fw-stack error-msg-icon hidden">' +
+            '<i class="fw fw-circle-outline fw-stack-2x"></i><i class="fw fw-error fw-stack-1x"></i></span>' +
+            '<span class="fw-stack warning-msg-icon hidden"><i class="fw fw-circle-outline fw-stack-2x"></i>' +
+            '<i class="fw fw-warning fw-stack-1x"></i></span><span id="modal-title-text"></span></h3>' +
+            '<button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fw fw-cancel"></i>' +
+            '</button></div><div class="modal-body add-margin-top-2x add-margin-bottom-2x">' +
+            '<div id="modal-content-text"></div></div>' +
+            '<div class="modal-footer" id="modal-footer-content"></div></div>');
+        $('body').removeClass('modal-open').css('padding-right', '0px');
+    });
+
     return publicMethoads;
 }(modalDialog));

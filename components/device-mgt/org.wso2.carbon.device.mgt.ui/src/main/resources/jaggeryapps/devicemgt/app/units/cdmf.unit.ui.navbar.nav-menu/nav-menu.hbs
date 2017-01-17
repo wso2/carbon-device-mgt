@@ -45,33 +45,33 @@
             </a>
         </li>
     {{/if}}
-    <li><a><i class="fw fw-user"></i>User Management</a>
-        <ul>
-            {{#if permissions.LIST_USERS}}
-                <li><a href="{{@app.context}}/users"><i class="fw fw-user"></i>Users</a></li>
-            {{/if}}
+    {{#if userMgtEnabled}}
+        <li><a><i class="fw fw-user"></i>User Management</a>
+            <ul>
+                {{#if permissions.LIST_USERS}}
+                    <li><a href="{{@app.context}}/users"><i class="fw fw-user"></i>Users</a></li>
+                {{/if}}
 
-            {{#if permissions.LIST_ROLES}}
-                <li><a href="{{@app.context}}/roles"><i class="fw fw-bookmark"></i>Roles</a></li>
-            {{/if}}
-        </ul>
-    </li>
+                {{#if permissions.LIST_ROLES}}
+                    <li><a href="{{@app.context}}/roles"><i class="fw fw-bookmark"></i>Roles</a></li>
+                {{/if}}
+            </ul>
+        </li>
+    {{/if}}
     {{#if permissions.LIST_POLICIES}}
         <li><a href="{{@app.context}}/policies"><i class="fw fw-policy"></i>Policy Management</a></li>
     {{/if}}
-    <li><a><i class="fw fw-settings"></i>Configuration Management</a>
-        <ul>
-            {{#if permissions.TENANT_CONFIGURATION}}
+    {{#if permissions.TENANT_CONFIGURATION}}
+        <li><a><i class="fw fw-settings"></i>Configuration Management</a>
+            <ul>
                 <li><a href="{{@app.context}}/platform-configuration"><i class="fw fw-service"></i>Platform Configurations</a>
                 </li>
-            {{/if}}
-            <!-- todo change the permission and get the related permission -->
-            {{#if permissions.TENANT_CONFIGURATION}}
+                <!-- todo change the permission and get the related permission -->
                 <li><a href="{{@app.context}}/certificates"><i class="fw fw-security-policy"></i>Certificate Configurations</a>
                 </li>
-            {{/if}}
-        </ul>
-    </li>
+            </ul>
+        </li>
+    {{/if}}
 {{/zone}}
 
 {{#zone "navbarCollapsableRightItems"}}

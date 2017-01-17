@@ -128,15 +128,16 @@ function loadNewNotifications() {
 }
 
 /**
- * Toggle function for
- * notification listing sidebar.
+ * Sidebar function
  * @return {Null}
  */
-$.sidebar_toggle = function (action, target, container) {
+$.sidebar_toggle = function(action, target, container) {
     var elem = '[data-toggle=sidebar]',
         button,
-        containerOffsetLeft,
-        containerOffsetRight,
+        container,
+        conrainerOffsetLeft,
+        conrainerOffsetRight,
+        target,
         targetOffsetLeft,
         targetOffsetRight,
         targetWidth,
@@ -145,104 +146,177 @@ $.sidebar_toggle = function (action, target, container) {
         pushType,
         buttonParent;
 
-    var sidebar_window = {
-        update: function (target, container, button) {
-            containerOffsetLeft = $(container).data('offset-left') ? $(container).data('offset-left') : 0;
-            containerOffsetRight = $(container).data('offset-right') ? $(container).data('offset-right') : 0;
-            targetOffsetLeft = $(target).data('offset-left') ? $(target).data('offset-left') : 0;
-            targetOffsetRight = $(target).data('offset-right') ? $(target).data('offset-right') : 0;
-            targetWidth = $(target).data('width');
-            targetSide = $(target).data("side");
-            pushType = $(container).parent().is('body') == true ? 'padding' : 'margin';
+    /**
+     * Dynamically adjust the height of sidebar to fill parent
+     */
+    function sidebarHeightAdjust(){
+        $('.sidebar-wrapper').each(function(){
+            var elemOffsetBottom = $(this).data('offset-bottom'),
+                scrollBottom = ($(document).height() - $(window).height()),
+                offesetBottom = 0,
+                getBottomOffset = elemOffsetBottom - (scrollBottom - ($(window).scrollTop()-elemOffsetBottom) - elemOffsetBottom);
 
-            if (button !== undefined) {
+            if(getBottomOffset > 0){
+                offesetBottom = getBottomOffset;
+            }
+
+            $(this).height(($(window).height() - ($(this).offset().top - $(window).scrollTop())) - offesetBottom);
+
+            if((typeof $.fn.nanoScroller == 'function') && ($('.nano-content', this).length > 0)){
+                $(".nano-content").parent()[0].nanoscroller.reset();
+            }
+        });
+    };
+
+    var sidebar_window = {
+        update: function(target, container, button){
+            conrainerOffsetLeft = $(container).data('offset-left') ? $(container).data('offset-left') : 0,
+                conrainerOffsetRight = $(container).data('offset-right') ? $(container).data('offset-right') : 0,
+                targetTop = $(target).data('top') ? $(target).data('top') : 0,
+                targetOffsetLeft = $(target).data('offset-left') ? $(target).data('offset-left') : 0,
+                targetOffsetRight = $(target).data('offset-right') ? $(target).data('offset-right') : 0,
+                targetWidth = $(target).data('width'),
+                targetSide = $(target).data("side"),
+                pushType = $(container).parent().is('body') == true ? 'padding' : 'padding'; //TODO: Remove if works everywhere
+
+            $(container).addClass('sidebar-target');
+
+            if(button !== undefined){
                 relationship = button.attr('rel') ? button.attr('rel') : '';
                 buttonParent = $(button).parent();
             }
-        },
 
-        show: function () {
-            if ($(target).data('sidebar-fixed') == true) {
+            $(target).css('top', targetTop);
+
+            sidebarHeightAdjust();
+        },
+        show: function(){
+            if($(target).data('sidebar-fixed') == true) {
+                $(target).css('top',$(target).data('fixed-offset') + 'px');
                 $(target).height($(window).height() - $(target).data('fixed-offset'));
             }
+
+            $(target).off('webkitTransitionEnd otransitionend oTransitionEnd msTransitionEnd transitionend');
             $(target).trigger('show.sidebar');
-            if (targetWidth !== undefined) {
+
+            if(targetWidth !== undefined) {
                 $(target).css('width', targetWidth);
             }
+
             $(target).addClass('toggled');
-            if (button !== undefined) {
-                if (relationship !== '') {
+
+            if(button !== undefined){
+                if(relationship !== ''){
                     // Removing active class from all relative buttons
-                    $(elem + '[rel=' + relationship + ']:not([data-handle=close])').removeClass("active");
-                    $(elem + '[rel=' + relationship + ']:not([data-handle=close])').attr('aria-expanded', 'false');
+                    $(elem+'[rel='+relationship+']:not([data-handle=close])').removeClass("active");
+                    $(elem+'[rel='+relationship+']:not([data-handle=close])').attr('aria-expanded', 'false');
                 }
+
                 // Adding active class to button
-                if (button.attr('data-handle') !== 'close') {
+                if(button.attr('data-handle') !== 'close'){
                     button.addClass("active");
                     button.attr('aria-expanded', 'true');
                 }
-                if (buttonParent.is('li')) {
-                    if (relationship !== '') {
-                        $(elem + '[rel=' + relationship + ']:not([data-handle=close])').parent().removeClass("active");
-                        $(elem + '[rel=' + relationship + ']:not([data-handle=close])').parent().
-                        attr('aria-expanded', 'false');
+
+                if(buttonParent.is('li')) {
+                    if(relationship !== ''){
+                        $(elem+'[rel='+relationship+']:not([data-handle=close])').parent().removeClass("active");
+                        $(elem+'[rel='+relationship+']:not([data-handle=close])').parent().attr('aria-expanded', 'false');
                     }
                     buttonParent.addClass("active");
                     buttonParent.attr('aria-expanded', 'true');
                 }
             }
+
             // Sidebar open function
-            if (targetSide == 'left') {
-                if ((button !== undefined) && (button.attr('data-container-divide'))) {
-                    $(container).css(pushType + '-' + targetSide, targetWidth + targetOffsetLeft);
+            if (targetSide == 'left'){
+                if ($(target).attr('data-container-divide')){
+                    $(container).css(pushType+'-'+targetSide, targetWidth + targetOffsetLeft);
+                    $(target).css(targetSide, targetOffsetLeft);
                 }
-                $(target).css(targetSide, targetOffsetLeft);
-            } else if (targetSide == 'right') {
-                if ((button !== undefined) && (button.attr('data-container-divide'))) {
-                    $(container).css(pushType + '-' + targetSide, targetWidth + targetOffsetRight);
+                else if ($(target).attr('data-container-push')){
+                    $(container).css(targetSide,  Math.abs(targetWidth + targetOffsetLeft));
+                    $(target).css(targetSide, -Math.abs(targetWidth + targetOffsetLeft));
                 }
-                $(target).css(targetSide, targetOffsetRight);
+                else {
+                    $(target).css(targetSide, Math.abs(targetOffsetLeft));
+                }
             }
+            else if (targetSide == 'right'){
+                if ($(target).attr('data-container-divide')){
+                    $(container).css(pushType+'-'+targetSide, targetWidth + targetOffsetRight);
+                    $(target).css(targetSide, targetOffsetRight);
+                }
+                else if ($(target).attr('data-container-push')){
+                    $(container).css(targetSide, Math.abs(targetWidth + targetOffsetRight));
+                    $(target).css(targetSide,  -Math.abs(targetWidth + targetOffsetRight));
+                }
+                else {
+                    $(target).css(targetSide, Math.abs(targetOffsetRight));
+                }
+            }
+
             $(target).trigger('shown.sidebar');
         },
-
-        hide: function () {
+        hide: function(){
             $(target).trigger('hide.sidebar');
             $(target).removeClass('toggled');
-            if (button !== undefined) {
-                if (relationship !== '') {
+
+            if(button !== undefined){
+                if(relationship !== ''){
                     // Removing active class from all relative buttons
-                    $(elem + '[rel=' + relationship + ']:not([data-handle=close])').removeClass("active");
-                    $(elem + '[rel=' + relationship + ']:not([data-handle=close])').attr('aria-expanded', 'false');
+                    $(elem+'[rel='+relationship+']:not([data-handle=close])').removeClass("active");
+                    $(elem+'[rel='+relationship+']:not([data-handle=close])').attr('aria-expanded', 'false');
                 }
                 // Removing active class from button
-                if (button.attr('data-handle') !== 'close') {
+                if(button.attr('data-handle') !== 'close'){
                     button.removeClass("active");
                     button.attr('aria-expanded', 'false');
                 }
-                if ($(button).parent().is('li')) {
-                    if (relationship !== '') {
-                        $(elem + '[rel=' + relationship + ']:not([data-handle=close])').parent().removeClass("active");
-                        $(elem + '[rel=' + relationship + ']:not([data-handle=close])').parent().
-                        attr('aria-expanded', 'false');
+
+                if($(button).parent().is('li')){
+                    if(relationship !== ''){
+                        $(elem+'[rel='+relationship+']:not([data-handle=close])').parent().removeClass("active");
+                        $(elem+'[rel='+relationship+']:not([data-handle=close])').parent().attr('aria-expanded', 'false');
                     }
                 }
             }
+
             // Sidebar close function
-            if (targetSide == 'left') {
-                if ((button !== undefined) && (button.attr('data-container-divide'))) {
-                    $(container).css(pushType + '-' + targetSide, targetOffsetLeft);
+            if (targetSide == 'left'){
+                if($(target).attr('data-container-divide')){
+                    $(container).css(pushType+'-'+targetSide, targetOffsetLeft);
+                    $(target).css(targetSide, -Math.abs(targetWidth + targetOffsetRight));
                 }
-                $(target).css(targetSide, -Math.abs(targetWidth + targetOffsetLeft));
-            } else if (targetSide == 'right') {
-                if ((button !== undefined) && (button.attr('data-container-divide'))) {
-                    $(container).css(pushType + '-' + targetSide, targetOffsetRight);
+                else if($(target).attr('data-container-push')){
+                    $(container).css(targetSide, targetOffsetLeft);
+                    $(target).css(targetSide, -Math.abs(targetWidth + targetOffsetLeft));
                 }
-                $(target).css(targetSide, -Math.abs(targetWidth + targetOffsetRight));
+                else {
+                    $(target).css(targetSide, -Math.abs(targetWidth + targetOffsetLeft));
+                }
             }
+            else if (targetSide == 'right'){
+                if($(target).attr('data-container-divide')){
+                    $(container).css(pushType+'-'+targetSide, targetOffsetRight);
+                    $(target).css(targetSide, -Math.abs(targetWidth + targetOffsetRight));
+                }
+                else if($(target).attr('data-container-push')){
+                    $(container).css(targetSide, targetOffsetRight);
+                    $(target).css(targetSide, -Math.abs(targetWidth + targetOffsetRight));
+                }
+                else {
+                    $(target).css(targetSide, -Math.abs(targetWidth + targetOffsetRight));
+                }
+            }
+
             $(target).trigger('hidden.sidebar');
+            $(target).on('webkitTransitionEnd otransitionend oTransitionEnd msTransitionEnd transitionend', function(e) {
+                $(container).removeClass('sidebar-target');
+            });
         }
     };
+
     if (action === 'show') {
         sidebar_window.update(target, container);
         sidebar_window.show();
@@ -251,26 +325,51 @@ $.sidebar_toggle = function (action, target, container) {
         sidebar_window.update(target, container);
         sidebar_window.hide();
     }
+
     // binding click function
-    var body = 'body';
-    $(body).off('click', elem);
-    $(body).on('click', elem, function (e) {
+    $('body').off('click', elem);
+    $('body').on('click', elem, function(e) {
         e.preventDefault();
+
         button = $(this);
-        container = button.data('container');
         target = button.data('target');
+        container = $(target).data('container');
         sidebar_window.update(target, container, button);
+
         /**
          * Sidebar function on data container divide
          * @return {Null}
          */
-        if (button.attr('aria-expanded') == 'false') {
+        if(button.attr('aria-expanded') == 'false'){
             sidebar_window.show();
-        } else if (button.attr('aria-expanded') == 'true') {
+        }
+        else if (button.attr('aria-expanded') == 'true') {
             sidebar_window.hide();
         }
+
     });
+
+    $(window)
+        .load(sidebarHeightAdjust)
+        .resize(sidebarHeightAdjust)
+        .scroll(sidebarHeightAdjust);
+
 };
+
+var sideWrapper = $('.sidebar-wrapper');
+
+$(document).on('affix.bs.affix','.sidebar-wrapper',function(){
+    sideWrapper.css('top',$('.navbar-wrapper').height());
+    sideWrapper.data('top',$('.navbar-wrapper').height());
+    sideWrapper.data('fixed-offset', $('.navbar-wrapper').height());
+});
+
+$(document).on('affix-top.bs.affix','.sidebar-wrapper',function(){
+    sideWrapper.css('top',$('.navbar-wrapper').height() + $('.header').height());
+    sideWrapper.data('top',$('.navbar-wrapper').height() + $('.header').height());
+    sideWrapper.data('fixed-offset', $('.navbar-wrapper').height() + $('.header').height());
+});
+
 
 $.fn.collapse_nav_sub = function () {
     var navSelector = 'ul.nav';
@@ -324,7 +423,6 @@ $.fn.collapse_nav_sub = function () {
 
 $(document).ready(function () {
     loadNotificationsPanel();
-    $.sidebar_toggle();
 
     $("#right-sidebar").on("click", ".new-notification", function () {
         var notificationId = $(this).data("id");

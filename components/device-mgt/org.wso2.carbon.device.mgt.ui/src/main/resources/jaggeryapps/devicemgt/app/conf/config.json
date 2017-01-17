@@ -3,7 +3,6 @@
     "httpsURL" : "https://%server.ip%:8243",
     "httpURL" : "http://%server.ip%:8280",
     "wssURL" : "https://localhost:9445",
-    "wsURL" : "%http.ip%",
     "portalURL": "https://%server.ip%:9445",
     "dashboardServerURL" : "%https.ip%",
     "androidEnrollmentDir": "/android-web-agent/enrollment",
@@ -19,12 +18,12 @@
             "clientName": "emm",
             "owner": "admin@carbon.super",
             "dynamicClientAppRegistrationServiceURL": "%https.ip%/dynamic-client-web/register",
-            "apiManagerClientAppRegistrationServiceURL": "%https.ip%/api-application-registration/register/tenants",
+            "apiManagerClientAppRegistrationServiceURL": "https://%server.ip%:8243/api-application-registration/register/tenants",
             "grantType": "password refresh_token urn:ietf:params:oauth:grant-type:saml2-carbon urn:ietf:params:oauth:grant-type:jwt-bearer",
             "tokenScope": "admin",
             "callbackUrl": "%https.ip%/api/device-mgt/v1.0"
         },
-        "tokenServiceURL": "%https.ip%/oauth2/token"
+        "tokenServiceURL": "https://%server.ip%:8243/token"
     },
     "adminUser":"admin@carbon.super",
     "adminUserTenantId":"-1234",

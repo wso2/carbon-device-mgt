@@ -122,6 +122,14 @@ function toTitleCase(str) {
 
 var deviceTypeCount, compiledDeviceTypesCount = 0;
 
+function htmlspecialchars(text){
+    return jQuery('<div/>').text(text).html();
+}
+
+function htmlspecialchars(text){
+    return jQuery('<div/>').text(text).html();
+}
+
 function loadDevices(searchType, searchParam){
     var deviceListing = $("#device-listing");
     var deviceListingSrc = deviceListing.attr("src");
@@ -134,10 +142,10 @@ function loadDevices(searchType, searchParam){
             var viewModel = {};
             viewModel.thumb = deviceTypesList[i].thumb;
             viewModel.appContext = clientJsAppContext;
-            viewModel.deviceTypeName = deviceTypesList[i].deviceTypeName;
-            viewModel.deviceTypeId = deviceTypesList[i].deviceTypeId;
-            viewModel.deviceCategory = deviceTypesList[i].deviceCategory;
-            viewModel.deviceTypeLabel = deviceTypesList[i].deviceTypeLabel;
+            viewModel.deviceTypeName = htmlspecialchars(deviceTypesList[i].deviceTypeName);
+            viewModel.deviceTypeId = htmlspecialchars(deviceTypesList[i].deviceTypeId);
+            viewModel.deviceCategory = htmlspecialchars(deviceTypesList[i].deviceCategory);
+            viewModel.deviceTypeLabel = htmlspecialchars(deviceTypesList[i].deviceTypeLabel);
             compileTemplate(viewModel, deviceListingSrc);
         }
     } else {

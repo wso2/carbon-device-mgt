@@ -1,10 +1,9 @@
 {
     "appContext": "/devicemgt/",
-    "httpsURL" : "https://%server.ip%:8243",
-    "httpURL" : "http://%server.ip%:8280",
-    "wssURL" : "https://localhost:9445",
-    "wsURL" : "%http.ip%",
-    "portalURL": "https://%server.ip%:9445",
+    "httpsURL" : "https://%iot.gateway.host%:%iot.gateway.https.port%",
+    "httpURL" : "http://%iot.gateway.host%:%iot.gateway.http.port",
+    "wssURL" : "https://%iot.analytics.host%:%iot.analytics.https.host%",
+    "portalURL": "https://%iot.analytics.host%:%iot.analytics.https.port%",
     "dashboardServerURL" : "%https.ip%",
     "androidEnrollmentDir": "/android-web-agent/enrollment",
     "windowsEnrollmentDir": "/windows-web-agent/enrollment",
@@ -19,12 +18,12 @@
             "clientName": "emm",
             "owner": "admin@carbon.super",
             "dynamicClientAppRegistrationServiceURL": "%https.ip%/dynamic-client-web/register",
-            "apiManagerClientAppRegistrationServiceURL": "%https.ip%/api-application-registration/register/tenants",
+            "apiManagerClientAppRegistrationServiceURL": "https://%iot.gateway.host%:%iot.gateway.https.port%/api-application-registration/register/tenants",
             "grantType": "password refresh_token urn:ietf:params:oauth:grant-type:saml2-bearer urn:ietf:params:oauth:grant-type:jwt-bearer",
             "tokenScope": "admin",
             "callbackUrl": "%https.ip%/api/device-mgt/v1.0"
         },
-        "tokenServiceURL": "%https.ip%/oauth2/token"
+        "tokenServiceURL": "https://%iot.gateway.host%:%iot.gateway.https.port%/token"
     },
     "adminUser":"admin@carbon.super",
     "adminUserTenantId":"-1234",

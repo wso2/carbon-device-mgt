@@ -153,5 +153,24 @@ utility = function () {
         return scopesList;
     };
 
+
+    /**
+     * Escapes special characters such as <,>,',",...etc
+     * This will prevent XSS attacks upon JSON.
+     * @param text
+     * @returns {*}
+     */
+    publicMethods.encodeJson = function (text) {
+        return text
+            .replace(/\\u003c/g, "&lt;")
+            .replace(/</g, "&lt;")
+            .replace(/\\u003e/g, "&gt;")
+            .replace(/>/g, "&gt;")
+            .replace(/\\u0027/g, "&#39;")
+            .replace(/'/g, "&#39;")
+            .replace(/\\"/g, "&quot;")
+            .replace(/\\u0022/g, "&quot;")
+    };
+
     return publicMethods;
 }();

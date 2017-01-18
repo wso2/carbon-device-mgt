@@ -112,6 +112,10 @@ function toTitleCase(str) {
     });
 }
 
+function htmlspecialchars(text){
+    return jQuery('<div/>').text(text).html();
+}
+
 function loadGroups() {
     var groupListing = $("#group-listing");
     var currentUser = groupListing.data("currentUser");
@@ -134,10 +138,10 @@ function loadGroups() {
         var objects = [];
         $(data.deviceGroups).each(function (index) {
             objects.push({
-                             groupId: data.deviceGroups[index].id,
-                             name: data.deviceGroups[index].name,
-                             description: data.deviceGroups[index].description,
-                             owner: data.deviceGroups[index].owner
+                             groupId: htmlspecialchars(data.deviceGroups[index].id),
+                             name: htmlspecialchars(data.deviceGroups[index].name),
+                             description: htmlspecialchars(data.deviceGroups[index].description),
+                             owner: htmlspecialchars(data.deviceGroups[index].owner)
                          })
         });
         var json = {

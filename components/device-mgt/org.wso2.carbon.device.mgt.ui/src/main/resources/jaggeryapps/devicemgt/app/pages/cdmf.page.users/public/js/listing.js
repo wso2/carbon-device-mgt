@@ -258,6 +258,10 @@ function InitiateViewOption() {
     }
 }
 
+function htmlspecialchars(text){
+    return jQuery('<div/>').text(text).html();
+}
+
 function loadUsers() {
     var loadingContentView = "#loading-content";
     $(loadingContentView).show();
@@ -269,11 +273,11 @@ function loadUsers() {
 
         $(data.users).each(function (index) {
             objects.push({
-                filter: data.users[index].username,
-                firstname: data.users[index].firstname ? data.users[index].firstname : "",
-                lastname: data.users[index].lastname ? data.users[index].lastname : "",
-                emailAddress: data.users[index].emailAddress ? data.users[index].emailAddress : "",
-                DT_RowId: "user-" + data.users[index].username
+                filter: htmlspecialchars(data.users[index].username),
+                firstname: htmlspecialchars(data.users[index].firstname) ? htmlspecialchars(data.users[index].firstname) : "",
+                lastname: htmlspecialchars(data.users[index].lastname) ? htmlspecialchars(data.users[index].lastname) : "",
+                emailAddress: htmlspecialchars(data.users[index].emailAddress) ? htmlspecialchars(data.users[index].emailAddress) : "",
+                DT_RowId: "user-" + htmlspecialchars(data.users[index].username)
             })
         });
 

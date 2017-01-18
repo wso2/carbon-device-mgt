@@ -109,9 +109,6 @@ function getSelectedPolicies() {
     return policyList;
 }
 
-function htmlspecialchars(text){
-    return jQuery('<div/>').text(text).html();
-}
 
 $(document).ready(function () {
 

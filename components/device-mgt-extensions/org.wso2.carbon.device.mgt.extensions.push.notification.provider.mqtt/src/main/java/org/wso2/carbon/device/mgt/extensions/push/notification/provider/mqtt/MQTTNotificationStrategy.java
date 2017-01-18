@@ -22,17 +22,21 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
+import org.wso2.carbon.device.mgt.common.policy.mgt.Profile;
 import org.wso2.carbon.device.mgt.common.push.notification.NotificationContext;
 import org.wso2.carbon.device.mgt.common.push.notification.NotificationStrategy;
 import org.wso2.carbon.device.mgt.common.push.notification.PushNotificationConfig;
 import org.wso2.carbon.device.mgt.common.push.notification.PushNotificationExecutionFailedException;
+import org.wso2.carbon.device.mgt.core.operation.mgt.ProfileOperation;
 import org.wso2.carbon.device.mgt.extensions.push.notification.provider.mqtt.internal.MQTTDataHolder;
 import org.wso2.carbon.device.mgt.extensions.push.notification.provider.mqtt.internal.util.MQTTAdapterConstants;
 import org.wso2.carbon.event.output.adapter.core.MessageType;
 import org.wso2.carbon.event.output.adapter.core.OutputEventAdapterConfiguration;
 import org.wso2.carbon.event.output.adapter.core.exception.OutputEventAdapterException;
+import org.wso2.carbon.device.mgt.core.operation.mgt.PolicyOperation;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -57,7 +61,7 @@ public class MQTTNotificationStrategy implements NotificationStrategy {
         configProperties.put(MQTTAdapterConstants.MQTT_ADAPTER_PROPERTY_USERNAME,
                 config.getProperty(MQTTAdapterConstants.MQTT_ADAPTER_PROPERTY_USERNAME));
         configProperties.put(MQTTAdapterConstants.MQTT_ADAPTER_PROPERTY_PASSWORD,
-                             config.getProperty(MQTTAdapterConstants.MQTT_ADAPTER_PROPERTY_PASSWORD));
+                config.getProperty(MQTTAdapterConstants.MQTT_ADAPTER_PROPERTY_PASSWORD));
         configProperties.put(MQTTAdapterConstants.MQTT_ADAPTER_PROPERTY_CLEAR_SESSION,
                 config.getProperty(MQTTAdapterConstants.MQTT_ADAPTER_PROPERTY_CLEAR_SESSION));
         configProperties.put(MQTTAdapterConstants.MQTT_ADAPTER_PROPERTY_SCOPES,
@@ -79,23 +83,48 @@ public class MQTTNotificationStrategy implements NotificationStrategy {
 
     @Override
     public void execute(NotificationContext ctx) throws PushNotificationExecutionFailedException {
-        Map<String, String> dynamicProperties = new HashMap<>();
+
         Operation operation = ctx.getOperation();
         Properties properties = operation.getProperties();
         if (properties != null && properties.get(MQTT_ADAPTER_TOPIC) != null) {
+            Map<String, String> dynamicProperties = new HashMap<>();
             dynamicProperties.put("topic", (String) properties.get(MQTT_ADAPTER_TOPIC));
+            MQTTDataHolder.getInstance().getOutputEventAdapterService().publish(mqttAdapterName, dynamicProperties,
+                    operation.getPayLoad());
         } else {
-            String topic = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantDomain(true) + "/"
-                    + ctx.getDeviceId().getType() + "/" + ctx.getDeviceId().getId() + "/" + operation.getType()
-                    .toString().toLowerCase() + "/" + operation.getCode();
-            dynamicProperties.put("topic", topic);
-            if (operation.getPayLoad() == null) {
-                operation.setPayLoad("");
+            if (PolicyOperation.POLICY_OPERATION_CODE.equals(operation.getCode())) {
+                PolicyOperation policyOperation = (PolicyOperation) operation;
+                List<ProfileOperation> profileOperations = policyOperation.getProfileOperations();
+                String tenantDomain = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantDomain(true);
+                String deviceType = ctx.getDeviceId().getType();
+                String deviceId = ctx.getDeviceId().getId();
+                for (ProfileOperation profileOperation : profileOperations) {
+                    Map<String, String> dynamicProperties = new HashMap<>();
+                    String topic = tenantDomain + "/"
+                            + deviceType + "/" + deviceId + "/" + profileOperation.getType()
+                            .toString().toLowerCase() + "/" + profileOperation.getCode().toLowerCase();
+                    dynamicProperties.put("topic", topic);
+                    MQTTDataHolder.getInstance().getOutputEventAdapterService().publish(mqttAdapterName, dynamicProperties,
+                            profileOperation.getPayLoad());
+                }
+
+            } else {
+                Map<String, String> dynamicProperties = new HashMap<>();
+                String topic = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantDomain(true) + "/"
+                        + ctx.getDeviceId().getType() + "/" + ctx.getDeviceId().getId() + "/" + operation.getType()
+                        .toString().toLowerCase() + "/" + operation.getCode();
+                dynamicProperties.put("topic", topic);
+                if (operation.getPayLoad() == null) {
+                    operation.setPayLoad("");
+                }
+                MQTTDataHolder.getInstance().getOutputEventAdapterService().publish(mqttAdapterName, dynamicProperties,
+                        operation.getPayLoad());
+
             }
+
         }
 
-        MQTTDataHolder.getInstance().getOutputEventAdapterService().publish(mqttAdapterName, dynamicProperties,
-                                                                            operation.getPayLoad());
+
     }
 
     @Override
@@ -109,3 +138,4 @@ public class MQTTNotificationStrategy implements NotificationStrategy {
     }
 
 }
+

@@ -86,6 +86,10 @@ function InitiateViewOption() {
     // $(location).attr('href', $(this).data("url"));
 }
 
+function htmlspecialchars(text){
+    return jQuery('<div/>').text(text).html();
+}
+
 function loadRoles() {
     var loadingContent = $("#loading-content");
     loadingContent.show();
@@ -98,8 +102,8 @@ function loadRoles() {
         $(data.roles).each(function (index) {
             objects.push(
                 {
-                    name: data.roles[index],
-                    DT_RowId: "role-" + data.roles[index]
+                    name: htmlspecialchars(data.roles[index]),
+                    DT_RowId: "role-" + htmlspecialchars(data.roles[index])
                 }
             )
         });

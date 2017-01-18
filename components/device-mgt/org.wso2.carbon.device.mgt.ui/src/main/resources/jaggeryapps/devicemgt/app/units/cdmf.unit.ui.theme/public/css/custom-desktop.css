@@ -6545,6 +6545,9 @@ select > option:hover {
   padding-right: 5px;
 }
 
+.btn-operations:hover, .btn-operations:focus, .btn-operations:active {
+    color : #C7C7C7;
+}
 
 /**
  *

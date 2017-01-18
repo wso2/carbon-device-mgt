@@ -144,6 +144,7 @@
                             org.wso2.carbon.event.output.adapter.core,
                             org.wso2.carbon.event.output.adapter.core.exception,
                             org.osgi.framework,
+                            org.wso2.carbon.device.mgt.core.operation.mgt,
                             org.wso2.carbon.core
                         </Import-Package>
                     </instructions>

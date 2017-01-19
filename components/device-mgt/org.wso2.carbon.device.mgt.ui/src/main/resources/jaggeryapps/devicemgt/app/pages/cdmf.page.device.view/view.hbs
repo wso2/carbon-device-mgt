@@ -38,6 +38,45 @@
     </li>
 {{/zone}}
 
+{{#zone "navbarActions"}}
+    <li>
+        <a href="{{@app.context}}/device/enroll" class="cu-btn">
+            <span class="icon fw-stack">
+                <i class="fw fw-statistics fw-stack-1x"></i>
+                <i class="fw fw-circle-outline fw-stack-2x"></i>
+            </span>
+            View Analytics
+        </a>
+    </li>
+    <li>
+        <a href="{{@app.context}}/device/enroll" class="cu-btn">
+            <span class="icon fw-stack">
+                <i class="fw fw-group fw-stack-1x"></i>
+                <i class="fw fw-circle-outline fw-stack-2x"></i>
+            </span>
+            Device Grouping
+        </a>
+    </li>
+    <li>
+        <a href="{{@app.context}}/device/enroll" class="cu-btn">
+            <span class="icon fw-stack">
+                <i class="fw fw-edit fw-stack-1x"></i>
+                <i class="fw fw-circle-outline fw-stack-2x"></i>
+            </span>
+            Edit
+        </a>
+    </li>
+    <li>
+        <a href="{{@app.context}}/device/enroll" class="cu-btn">
+            <span class="icon fw-stack">
+                <i class="fw fw-delete fw-stack-1x"></i>
+                <i class="fw fw-circle-outline fw-stack-2x"></i>
+            </span>
+            Delete
+        </a>
+    </li>
+{{/zone}}
+
 {{#zone "content"}}
     {{unit deviceViewUnitName}}
     {{unit "cdmf.unit.lib.data-table"}}

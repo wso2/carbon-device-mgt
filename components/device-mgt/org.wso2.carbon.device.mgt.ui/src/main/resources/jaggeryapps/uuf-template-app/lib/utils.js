@@ -360,7 +360,8 @@ var utils = {};
         if (updateCache) {
             appConfFile.open("r");
             var content = appConfFile.readAll();
-            var getProperty = require("process").getProperty;
+            var process = require("process");
+            var getProperty = process.getProperty;
             content = content.replace(/\$\{server\.ip}/g, getProperty("carbon.local.ip"));
             content = content.replace(/\$\{server\.http_port}/g, getProperty("carbon.http.port"));
             content = content.replace(/\$\{server\.https_port}/g, getProperty("carbon.https.port"));

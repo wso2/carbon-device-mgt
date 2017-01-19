@@ -365,6 +365,23 @@ var utils = {};
             content = content.replace(/\$\{server\.http_port}/g, getProperty("carbon.http.port"));
             content = content.replace(/\$\{server\.https_port}/g, getProperty("carbon.https.port"));
 
+            //parsing system params
+            var paramPattern = new RegExp("%(.*?)%", "g");
+            var out = content;
+            while ((matches = paramPattern.exec(content)) !== null) {
+                // This is necessary to avoid infinite loops with zero-width matches
+                if (matches.index === paramPattern.lastIndex) {
+                    paramPattern.lastIndex++;
+                }
+                if (matches.length == 2) {
+                    var property = process.getProperty(matches[1]);
+                    if (property) {
+                        out = out.replace(new RegExp("%" + matches[1] + "%", "g"), property);
+                    }
+                }
+            }
+            content = out;
+            
             var appConf = parse(content);
             application.put(constants.CACHE_KEY_APP_CONF, appConf);
             application.put(constants.CACHE_KEY_APP_CONF_FILE_LMD,

@@ -69,7 +69,18 @@ deviceModule = function () {
             throw constants["ERRORS"]["USER_NOT_FOUND"];
         }
         var userName = carbonUser.username + "@" + carbonUser.domain;
-        var locationDataSet = batchProvider.getData(userName, deviceId, deviceType);
+
+        var locationDataSet = [];
+        switch(deviceType) {
+            case 'android':
+                locationDataSet = batchProvider.getData(userName, deviceId, deviceType);
+                break;
+            case 'android_sense':
+                locationDataSet = batchProvider.getData(userName, deviceId, deviceType);
+                break;
+
+        }
+
 
         var locationData = [];
         var locationTimeData = [];

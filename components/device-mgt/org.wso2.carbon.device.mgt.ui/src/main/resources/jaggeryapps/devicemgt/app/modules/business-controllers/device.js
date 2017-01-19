@@ -89,7 +89,11 @@ deviceModule = function () {
             var gpsReadingTimes = {};
             gpsReading.lat = locationDataSet[i].latitude;
             gpsReading.lng = locationDataSet[i].longitude;
-            gpsReadingTimes.time = locationDataSet[i].timeStamp;
+            if (deviceType == "android") {
+                gpsReadingTimes.time = locationDataSet[i].timeStamp;
+            } else {
+                gpsReadingTimes.time = locationDataSet[i].meta_timestamp;
+            }
             locationData.push(gpsReading);
             locationTimeData.push(gpsReadingTimes);
         }

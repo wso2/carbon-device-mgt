@@ -23,9 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.common.search.Condition;
-import org.wso2.carbon.device.mgt.core.search.mgt.Constants;
-import org.wso2.carbon.device.mgt.core.search.mgt.InvalidOperatorException;
-import org.wso2.carbon.device.mgt.core.search.mgt.QueryBuilder;
+import org.wso2.carbon.device.mgt.core.search.mgt.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -41,7 +39,7 @@ public class QueryBuilderImpl implements QueryBuilder {
     private boolean isDeviceAdminUser;
 
     @Override
-    public Map<String, List<String>> buildQueries(List<Condition> conditions) throws InvalidOperatorException {
+    public Map<String, List<QueryHolder>> buildQueries(List<Condition> conditions) throws InvalidOperatorException {
         List<Condition> andColumns = new ArrayList<>();
         List<Condition> orColumns = new ArrayList<>();
         List<Condition> otherANDColumns = new ArrayList<>();
@@ -82,10 +80,27 @@ public class QueryBuilderImpl implements QueryBuilder {
             }
         }
 
-        Map<String, List<String>> queries = new HashMap<>();
+        Map<String, List<QueryHolder>> queries = new HashMap<>();
         if ((!andColumns.isEmpty()) || (!orColumns.isEmpty())) {
-            queries.put(Constants.GENERAL, Utils.convertStringToList(this.getGenericQueryPart() + this.processAND(andColumns) +
-                    this.processOR(orColumns)));
+            // Size is taken as the sum of both columns and for tenant id.
+            ValueType valueTypeArray[] = new ValueType[andColumns.size() + orColumns.size() + 1];
+
+//            String query =Utils.convertStringToList(
+
+            // passing the integer value to the x so that array is correctly passed.
+            Integer intArr[] = new Integer[1];
+            intArr[0] = 1;
+            //int x = 1;
+            String query = this.getGenericQueryPart(valueTypeArray) +
+                    this.processAND(andColumns, valueTypeArray,  intArr) +
+                    this.processOR(orColumns, valueTypeArray,  intArr);
+            List<QueryHolder> queryHolders = new ArrayList<>();
+            QueryHolder queryHolder = new QueryHolder();
+            queryHolder.setQuery(query);
+            queryHolder.setTypes(valueTypeArray);
+            queryHolders.add(queryHolder);
+
+            queries.put(Constants.GENERAL, queryHolders);
         }
         if (!otherANDColumns.isEmpty()) {
             queries.put(Constants.PROP_AND, this.processANDProperties(otherANDColumns));
@@ -108,124 +123,262 @@ public class QueryBuilderImpl implements QueryBuilder {
     }
 
     @Override
-    public String processAND(List<Condition> conditions) throws InvalidOperatorException {
+    public String processAND(List<Condition> conditions, ValueType[] valueType, Integer intArr[]) throws InvalidOperatorException {
         String querySuffix = "";
-        for (Condition con : conditions) {
-            if (Utils.checkDeviceDetailsColumns(con.getKey())) {
-                if (con.operator.equals(WILDCARD_OPERATOR)){
-                    querySuffix = querySuffix + " OR DD." + Utils.getDeviceDetailsColumnNames().get(con.getKey())
-                            + " LIKE \'%" + con.getValue() + "%\'";
-                } else {
-                    querySuffix = querySuffix + " AND DD." + Utils.getDeviceDetailsColumnNames().get(con.getKey()) + con
-                            .getOperator() + Utils.getConvertedValue(con.getKey(), con.getValue());
+        try {
+            // TODO: find upto what address location of the array has filled.
+            int x = intArr[0];
+            for (Condition con : conditions) {
+                if (Utils.checkDeviceDetailsColumns(con.getKey())) {
+                    if (con.operator.equals(WILDCARD_OPERATOR)) {
+                        querySuffix = querySuffix + " OR DD." + Utils.getDeviceDetailsColumnNames().get(con.getKey())
+                                + " LIKE  ? ";
+                        ValueType type = new ValueType();
+                        type.setColumnType(ValueType.columnType.STRING);
+                        type.setStringValue("%"+con.getValue()+"%");
+                        valueType[x] = type;
+                        x++;
+                    } else {
+                        querySuffix = querySuffix + " AND DD." + Utils.getDeviceDetailsColumnNames().get(con.getKey()) + con
+                                .getOperator() + " ? ";
+                        ValueType type = new ValueType();
+                        if (Utils.checkColumnType(con.getKey())) {
+                            type.setColumnType(ValueType.columnType.STRING);
+                            type.setStringValue(Utils.getConvertedValue(con.getKey(), con.getValue()));
+                        } else {
+                            type.setColumnType(ValueType.columnType.INTEGER);
+                            type.setIntValue(Integer.parseInt(Utils.getConvertedValue(con.getKey(), con.getValue())));
+                        }
+                        valueType[x] = type;
+                        x++;
+                    }
+                } else if (Utils.checkDeviceLocationColumns(con.getKey().toLowerCase())) {
+                    querySuffix = querySuffix + " AND DL." + Utils.getDeviceLocationColumnNames().get(con.getKey().toLowerCase()) +
+                            con.getOperator() + " ? ";
+                    ValueType type = new ValueType();
+                    type.setColumnType(ValueType.columnType.STRING);
+                    type.setStringValue(con.getValue());
+                    valueType[x] = type;
+                    x++;
                 }
-            } else if (Utils.checkDeviceLocationColumns(con.getKey().toLowerCase())) {
-                querySuffix = querySuffix + " AND DL." + Utils.getDeviceLocationColumnNames().get(con.getKey().toLowerCase()) +
-                        con.getOperator() + con.getValue();
             }
+            intArr[0] = x;
+        } catch (Exception e) {
+            throw new InvalidOperatorException("Error occurred while building the sql", e);
         }
         return querySuffix;
     }
 
     @Override
-    public String processOR(List<Condition> conditions) throws InvalidOperatorException {
+    public String processOR(List<Condition> conditions, ValueType[] valueType, Integer intArr[]) throws InvalidOperatorException {
         String querySuffix = "";
-        for (Condition con : conditions) {
-            if (Utils.checkDeviceDetailsColumns(con.getKey())) {
-                if (con.operator.equals(WILDCARD_OPERATOR)) {
-                    querySuffix = querySuffix + " OR DD." + Utils.getDeviceDetailsColumnNames().get(con.getKey())
-                            + " LIKE \'%" + con.getValue() + "%\'";
-                } else {
-                    querySuffix = querySuffix + " OR DD." + Utils.getDeviceDetailsColumnNames().get(con.getKey()) + con
-                            .getOperator() + Utils.getConvertedValue(con.getKey(), con.getValue());
+        // TODO: find upto what address location of the array has filled.
+        try {
+            int x = intArr[0];
+            for (Condition con : conditions) {
+                if (Utils.checkDeviceDetailsColumns(con.getKey())) {
+                    if (con.operator.equals(WILDCARD_OPERATOR)) {
+                        querySuffix = querySuffix + " OR DD." + Utils.getDeviceDetailsColumnNames().get(con.getKey())
+                                + " LIKE  ? ";
+                        ValueType type = new ValueType();
+                        type.setColumnType(ValueType.columnType.STRING);
+                        type.setStringValue("%"+con.getValue()+"%");
+                        valueType[x] = type;
+                        x++;
+                    } else {
+                        querySuffix = querySuffix + " OR DD." + Utils.getDeviceDetailsColumnNames().get(con.getKey()) + con
+                                .getOperator() + " ? ";
+
+                        ValueType type = new ValueType();
+                        if (Utils.checkColumnType(con.getKey())) {
+                            type.setColumnType(ValueType.columnType.STRING);
+                            type.setStringValue(Utils.getConvertedValue(con.getKey(), con.getValue()));
+                        } else {
+                            type.setColumnType(ValueType.columnType.INTEGER);
+                            type.setIntValue(Integer.parseInt(Utils.getConvertedValue(con.getKey(), con.getValue())));
+                        }
+                        valueType[x] = type;
+                        x++;
+                    }
+                } else if (Utils.checkDeviceLocationColumns(con.getKey().toLowerCase())) {
+                    querySuffix =
+                            querySuffix + " OR DL." + Utils.getDeviceLocationColumnNames().get(con.getKey().toLowerCase())
+                                    + con.getOperator() + " ? ";
+                    ValueType type = new ValueType();
+                    type.setColumnType(ValueType.columnType.STRING);
+                    type.setStringValue(con.getValue());
+                    valueType[x] = type;
+                    x++;
                 }
-            } else if (Utils.checkDeviceLocationColumns(con.getKey().toLowerCase())) {
-                querySuffix =
-                        querySuffix + " OR DL." + Utils.getDeviceLocationColumnNames().get(con.getKey().toLowerCase())
-                                + con.getOperator() + con.getValue();
             }
+            intArr[0] = x;
+        } catch (Exception e) {
+            throw new InvalidOperatorException("Error occurred while building the sql", e);
         }
         return querySuffix;
     }
 
     @Override
-    public List<String> processLocation(Condition condition) throws InvalidOperatorException {
-        List<String> queryList = new ArrayList<>();
-        queryList.add(this.buildLocationQuery(condition.getValue()));
-        return queryList;
+    public List<QueryHolder> processLocation(Condition condition) throws InvalidOperatorException {
+        List<QueryHolder> queryHolders = new ArrayList<>();
+        queryHolders.add(this.buildLocationQuery(condition.getValue()));
+        return queryHolders;
     }
 
     @Override
-    public List<String> processANDProperties(List<Condition> conditions) throws InvalidOperatorException {
+    public List<QueryHolder> processANDProperties(List<Condition> conditions) throws InvalidOperatorException {
         return this.getQueryList(conditions);
     }
 
     @Override
-    public List<String> processORProperties(List<Condition> conditions) throws InvalidOperatorException {
+    public List<QueryHolder> processORProperties(List<Condition> conditions) throws InvalidOperatorException {
         return this.getQueryList(conditions);
     }
 
     @Override
-    public String processUpdatedDevices(long epochTime) throws InvalidOperatorException {
-        return this.getGenericQueryPart() + " AND ( DD.UPDATE_TIMESTAMP > " + epochTime +
-                " OR DL.UPDATE_TIMESTAMP > " + epochTime + " )";
-    }
+    public QueryHolder processUpdatedDevices(long epochTime) throws InvalidOperatorException {
+        try {
+            ValueType valueTypeArray[] = new ValueType[3];
+            String query = this.getGenericQueryPart(valueTypeArray) + " AND ( DD.UPDATE_TIMESTAMP > ?  " +
+                    "OR DL.UPDATE_TIMESTAMP >  ? )";
 
-    private List<String> getQueryList(List<Condition> conditions) {
-        List<String> queryList = new ArrayList<>();
-        for (Condition con : conditions) {
+            ValueType val1 = new ValueType();
+            val1.setColumnType(ValueType.columnType.LONG);
+            val1.setLongValue(epochTime);
+            valueTypeArray[1] = val1;
 
-            String querySuffix = this.getPropertyQueryPart() + " AND DI.KEY_FIELD = " + "\'" + con.getKey() + "\'" +
-                    " AND DI.VALUE_FIELD " + con.getOperator() + "\'" + con.getValue() + "\'";
-            queryList.add(querySuffix);
+            ValueType val2 = new ValueType();
+            val2.setColumnType(ValueType.columnType.LONG);
+            val2.setLongValue(epochTime);
+            valueTypeArray[2] = val2;
+
+            QueryHolder queryHolder = new QueryHolder();
+            queryHolder.setQuery(query);
+            queryHolder.setTypes(valueTypeArray);
+
+            return queryHolder;
+        } catch (Exception e) {
+            throw new InvalidOperatorException("Error occurred while building the for the updated devices.", e);
         }
-        return queryList;
     }
 
-    private String buildLocationQuery(String location) {
+    private List<QueryHolder> getQueryList(List<Condition> conditions) throws InvalidOperatorException {
+        try {
+            List<QueryHolder> queryHolders = new ArrayList<>();
+            for (Condition con : conditions) {
 
-        String query = this.getGenericQueryPart();
-        query = query + " AND (DL.STREET1 LIKE \'%" + location + "%\'";
-        query = query + " OR DL.STREET2 LIKE \'%" + location + "%\'";
-        query = query + " OR DL.CITY LIKE \'%" + location + "%\'";
-        query = query + " OR DL.STATE LIKE \'%" + location + "%\'";
-        query = query + " OR DL.COUNTRY LIKE \'%" + location + "%\'";
-        query = query + " OR DL.ZIP LIKE \'%" + location + "%\')";
-        return query;
+                QueryHolder query = new QueryHolder();
+                ValueType valueTypeArray[] = new ValueType[3];
+
+                String querySuffix = this.getPropertyQueryPart(valueTypeArray) + " AND DI.KEY_FIELD = " + " ? " +
+                        " AND DI.VALUE_FIELD " + con.getOperator() + " ? ";
+                ValueType key = new ValueType();
+                key.setColumnType(ValueType.columnType.STRING);
+                key.setStringValue(con.getKey());
+                valueTypeArray[1] = key;
+
+                ValueType value = new ValueType();
+                value.setColumnType(ValueType.columnType.STRING);
+                value.setStringValue(con.getValue());
+                valueTypeArray[2] = value;
+
+                query.setQuery(querySuffix);
+                query.setTypes(valueTypeArray);
+
+                queryHolders.add(query);
+            }
+            return queryHolders;
+        } catch (Exception e) {
+            throw new InvalidOperatorException("Error occurred while building the sql", e);
+        }
     }
 
-    private String getGenericQueryPart() {
-        return "SELECT D.ID, D.DESCRIPTION, D.NAME,  \n" +
-                "D.DEVICE_TYPE_ID, D.DEVICE_IDENTIFICATION,  DT.ID AS DEVICE_TYPE_ID, \n" +
-                "DT.NAME AS DEVICE_TYPE_NAME, DD.DEVICE_ID, DD.DEVICE_MODEL, DD.VENDOR, \n" +
-                "DD.OS_VERSION, DD.OS_BUILD_DATE, DD.BATTERY_LEVEL, DD.INTERNAL_TOTAL_MEMORY, DD.INTERNAL_AVAILABLE_MEMORY,\n" +
-                "DD.EXTERNAL_TOTAL_MEMORY, DD.EXTERNAL_AVAILABLE_MEMORY, DD.CONNECTION_TYPE, \n" +
-                "DD.SSID, DD.CPU_USAGE, DD.TOTAL_RAM_MEMORY, DD.AVAILABLE_RAM_MEMORY, \n" +
-                "DD.PLUGGED_IN, DD.UPDATE_TIMESTAMP, DL.LATITUDE, DL.LONGITUDE, DL.STREET1, DL.STREET2, DL.CITY, DL.ZIP, \n" +
-                "DL.STATE, DL.COUNTRY, DL.UPDATE_TIMESTAMP AS DL_UPDATED_TIMESTAMP, DE.OWNER, DE.OWNERSHIP, DE.STATUS " +
-                "AS DE_STATUS FROM DM_DEVICE_DETAIL AS DD INNER JOIN DM_DEVICE AS D ON  D.ID=DD.DEVICE_ID\n" +
-                "LEFT JOIN DM_DEVICE_LOCATION AS DL ON DL.DEVICE_ID=D.ID \n" +
-                "INNER JOIN DM_DEVICE_TYPE AS DT ON DT.ID=D.DEVICE_TYPE_ID\n" +
-                "INNER JOIN DM_ENROLMENT AS DE ON D.ID=DE.DEVICE_ID\n" +
-                "WHERE D.TENANT_ID = " + PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
+    private QueryHolder buildLocationQuery(String location) throws InvalidOperatorException {
+        try {
+            ValueType valueTypeArray[] = new ValueType[7];
+            String query = this.getGenericQueryPart(valueTypeArray);
+            query = query + " AND (DL.STREET1 LIKE ? ";
+            query = query + " OR DL.STREET2 LIKE ? ";
+            query = query + " OR DL.CITY LIKE ? ";
+            query = query + " OR DL.STATE LIKE ? ";
+            query = query + " OR DL.COUNTRY LIKE ? ";
+            query = query + " OR DL.ZIP LIKE ? )";
+
+            ValueType value = new ValueType();
+            value.setColumnType(ValueType.columnType.STRING);
+            value.setStringValue("%" + location + "%");
+
+            // Same location is passed to each place
+            valueTypeArray[1] = value;
+            valueTypeArray[2] = value;
+            valueTypeArray[3] = value;
+            valueTypeArray[4] = value;
+            valueTypeArray[5] = value;
+            valueTypeArray[6] = value;
+
+            QueryHolder queryHolder = new QueryHolder();
+            queryHolder.setQuery(query);
+            queryHolder.setTypes(valueTypeArray);
+
+            return queryHolder;
+        } catch (Exception e) {
+            throw new InvalidOperatorException("Error occurred while building the sql for location.", e);
+        }
     }
 
-    private String getPropertyQueryPart() {
-        return "SELECT D.ID, D.DESCRIPTION, D.NAME,  \n" +
-                "D.DEVICE_TYPE_ID, D.DEVICE_IDENTIFICATION,  DT.ID AS DEVICE_TYPE_ID, \n" +
-                "DT.NAME AS DEVICE_TYPE_NAME, DD.DEVICE_ID, DD.DEVICE_MODEL, DD.VENDOR, \n" +
-                "DD.OS_VERSION, DD.OS_BUILD_DATE, DD.BATTERY_LEVEL, DD.INTERNAL_TOTAL_MEMORY, DD.INTERNAL_AVAILABLE_MEMORY,\n" +
-                "DD.EXTERNAL_TOTAL_MEMORY, DD.EXTERNAL_AVAILABLE_MEMORY, DD.CONNECTION_TYPE, \n" +
-                "DD.SSID, DD.CPU_USAGE, DD.TOTAL_RAM_MEMORY, DD.AVAILABLE_RAM_MEMORY, \n" +
-                "DD.PLUGGED_IN, DD.UPDATE_TIMESTAMP, DL.LATITUDE, DL.LONGITUDE, DL.STREET1, DL.STREET2, DL.CITY, DL.ZIP, \n" +
-                "DL.STATE, DL.COUNTRY, DL.UPDATE_TIMESTAMP AS DL_UPDATED_TIMESTAMP, DI.KEY_FIELD, DI.VALUE_FIELD, \n" +
-                "DE.OWNER, DE.OWNERSHIP, DE.STATUS AS DE_STATUS " +
-                "FROM DM_DEVICE_DETAIL AS DD INNER JOIN DM_DEVICE AS D ON  D.ID=DD.DEVICE_ID\n" +
-                "LEFT JOIN DM_DEVICE_LOCATION AS DL ON DL.DEVICE_ID=D.ID  \n" +
-                "INNER JOIN DM_DEVICE_TYPE AS DT ON DT.ID=D.DEVICE_TYPE_ID\n" +
-                "INNER JOIN DM_ENROLMENT AS DE ON D.ID=DE.DEVICE_ID\n" +
-                "LEFT JOIN DM_DEVICE_INFO AS DI ON DI.DEVICE_ID=D.ID\n" +
-                "WHERE D.TENANT_ID = " +
-                PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
+    private String getGenericQueryPart(ValueType[] valueTypeArray) throws InvalidOperatorException {
+        try {
+            String query = "SELECT D.ID, D.DESCRIPTION, D.NAME,  \n" +
+                    "D.DEVICE_TYPE_ID, D.DEVICE_IDENTIFICATION,  DT.ID AS DEVICE_TYPE_ID, \n" +
+                    "DT.NAME AS DEVICE_TYPE_NAME, DD.DEVICE_ID, DD.DEVICE_MODEL, DD.VENDOR, \n" +
+                    "DD.OS_VERSION, DD.OS_BUILD_DATE, DD.BATTERY_LEVEL, DD.INTERNAL_TOTAL_MEMORY, DD.INTERNAL_AVAILABLE_MEMORY,\n" +
+                    "DD.EXTERNAL_TOTAL_MEMORY, DD.EXTERNAL_AVAILABLE_MEMORY, DD.CONNECTION_TYPE, \n" +
+                    "DD.SSID, DD.CPU_USAGE, DD.TOTAL_RAM_MEMORY, DD.AVAILABLE_RAM_MEMORY, \n" +
+                    "DD.PLUGGED_IN, DD.UPDATE_TIMESTAMP, DL.LATITUDE, DL.LONGITUDE, DL.STREET1, DL.STREET2, DL.CITY, DL.ZIP, \n" +
+                    "DL.STATE, DL.COUNTRY, DL.UPDATE_TIMESTAMP AS DL_UPDATED_TIMESTAMP, DE.OWNER, DE.OWNERSHIP, DE.STATUS " +
+                    "AS DE_STATUS FROM DM_DEVICE_DETAIL AS DD INNER JOIN DM_DEVICE AS D ON  D.ID=DD.DEVICE_ID\n" +
+                    "LEFT JOIN DM_DEVICE_LOCATION AS DL ON DL.DEVICE_ID=D.ID \n" +
+                    "INNER JOIN DM_DEVICE_TYPE AS DT ON DT.ID=D.DEVICE_TYPE_ID\n" +
+                    "INNER JOIN DM_ENROLMENT AS DE ON D.ID=DE.DEVICE_ID\n" +
+                    "WHERE D.TENANT_ID = ? ";
+
+            ValueType type = new ValueType();
+            type.setIntValue(PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId());
+            type.setColumnType(ValueType.columnType.INTEGER);
+            valueTypeArray[0] = type;
+            return query;
+
+        } catch (Exception e) {
+            throw new InvalidOperatorException("Error occurred while building the sql", e);
+        }
+    }
+
+    private String getPropertyQueryPart(ValueType[] valueTypeArray) throws InvalidOperatorException {
+        try {
+            String query = "SELECT D.ID, D.DESCRIPTION, D.NAME,  \n" +
+                    "D.DEVICE_TYPE_ID, D.DEVICE_IDENTIFICATION,  DT.ID AS DEVICE_TYPE_ID, \n" +
+                    "DT.NAME AS DEVICE_TYPE_NAME, DD.DEVICE_ID, DD.DEVICE_MODEL, DD.VENDOR, \n" +
+                    "DD.OS_VERSION, DD.OS_BUILD_DATE, DD.BATTERY_LEVEL, DD.INTERNAL_TOTAL_MEMORY, DD.INTERNAL_AVAILABLE_MEMORY,\n" +
+                    "DD.EXTERNAL_TOTAL_MEMORY, DD.EXTERNAL_AVAILABLE_MEMORY, DD.CONNECTION_TYPE, \n" +
+                    "DD.SSID, DD.CPU_USAGE, DD.TOTAL_RAM_MEMORY, DD.AVAILABLE_RAM_MEMORY, \n" +
+                    "DD.PLUGGED_IN, DD.UPDATE_TIMESTAMP, DL.LATITUDE, DL.LONGITUDE, DL.STREET1, DL.STREET2, DL.CITY, DL.ZIP, \n" +
+                    "DL.STATE, DL.COUNTRY, DL.UPDATE_TIMESTAMP AS DL_UPDATED_TIMESTAMP, DI.KEY_FIELD, DI.VALUE_FIELD, \n" +
+                    "DE.OWNER, DE.OWNERSHIP, DE.STATUS AS DE_STATUS " +
+                    "FROM DM_DEVICE_DETAIL AS DD INNER JOIN DM_DEVICE AS D ON  D.ID=DD.DEVICE_ID\n" +
+                    "LEFT JOIN DM_DEVICE_LOCATION AS DL ON DL.DEVICE_ID=D.ID  \n" +
+                    "INNER JOIN DM_DEVICE_TYPE AS DT ON DT.ID=D.DEVICE_TYPE_ID\n" +
+                    "INNER JOIN DM_ENROLMENT AS DE ON D.ID=DE.DEVICE_ID\n" +
+                    "LEFT JOIN DM_DEVICE_INFO AS DI ON DI.DEVICE_ID=D.ID\n" +
+                    "WHERE D.TENANT_ID = ? ";
+
+            ValueType type = new ValueType();
+            type.setIntValue(PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId());
+            type.setColumnType(ValueType.columnType.INTEGER);
+            valueTypeArray[0] = type;
+            return query;
+
+        } catch (Exception e) {
+            throw new InvalidOperatorException("Error occurred while building the sql", e);
+        }
     }
 }

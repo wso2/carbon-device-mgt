@@ -47,7 +47,7 @@ var dynamicForm = '<div class="dynamic-search-param row"><div class="row"><a cla
                   '</option><option value = "vendor">Vendor</option><option value = "osVersion">OS Version' +
                   '</option><option value = "batteryLevel">Battery Level</option><option value =' +
                   ' "internalTotalMemory">Internal Total Memory</option> <option value ="internalAvailableMemory">' +
-                  'Internal Available Memory</option> <option value = "externalTotalMemory">externalTotalMemory</option>' +
+                  'Internal Available Memory</option> <option value = "externalTotalMemory">External Total Memory</option>' +
                   ' <option value = "externalAvailableMemory">External Available Memory' +
                   '</option> <option value = "connectionType">Connection Type</option> <option value =' +
                   ' "ssid">SSID</option><option value = "cpuUsage">CPU Usage</option><option value = "totalRAMMemory">' +
@@ -83,7 +83,7 @@ $(document).ready(function () {
      */
     function getOperators(keyValue) {
         if (nonNumericKeyValuePair.indexOf(keyValue) < 0) {
-            return '<option> =</option><option> !=</option><option> <</option><option> =<</option><option>' +
+            return '<option> =</option><option> !=</option><option> <</option><option> <=</option><option>' +
                 ' ></option><option> >=</option>';
         } else {
             return '<option> =</option><option> !=</option><option><option> %</option>';

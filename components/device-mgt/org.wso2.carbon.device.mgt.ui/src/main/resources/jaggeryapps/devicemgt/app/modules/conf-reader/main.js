@@ -22,6 +22,7 @@ var conf = function () {
         conf = require("/app/conf/config.json");
         var pinch = require("/app/modules/conf-reader/pinch.min.js")["pinch"];
         var server = require("carbon")["server"];
+        var process = require("process");
         pinch(conf, /^/,
             function (path, key, value) {
                 if ((typeof value === "string") && value.indexOf("%https.ip%") > -1) {

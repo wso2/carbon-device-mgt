@@ -21,7 +21,22 @@ batchProviders = function () {
     var JS_MAX_VALUE = "9007199254740992";
     var JS_MIN_VALUE = "-9007199254740992";
 
-    var tableName = "ORG_WSO2_GEO_FUSEDSPATIALEVENT";
+    var TABLENAME_ANDROID = "ORG_WSO2_GEO_FUSEDSPATIALEVENT";
+    var TABLENAME_ANDROID_SENSE = "ORG_WSO2_IOT_ANDROID_LOCATION";
+
+    var tableName = function (deviceType) {
+        switch (deviceType) {
+            case "android" :
+                return TABLENAME_ANDROID;
+                break;
+            case "android_sense" :
+                return TABLENAME_ANDROID_SENSE;
+                break;
+            default:
+                return null;
+
+        }
+    };
 
     var typeMap = {
         "bool": "string",
@@ -59,8 +74,12 @@ batchProviders = function () {
      * @param providerConfig
      */
     operations.getSchema = function (loggedInUser) {
+        var tablename = tableName(deviceType);
+        if (tablename == null) {
+            return [];
+        }
         var schema = [];
-        var result = connector.getTableSchema(loggedInUser, tableName).getMessage();
+        var result = connector.getTableSchema(loggedInUser, tablename).getMessage();
         result = JSON.parse(result);
 
         var columns = result.columns;
@@ -87,6 +106,10 @@ batchProviders = function () {
         var luceneQuery = "";
         var limit = 100;
         var result;
+        var tablename = tableName(deviceType);
+        if (tablename == null) {
+            return [];
+        }
         //if there's a filter present, we should perform a Lucene search instead of reading the table
         if (luceneQuery) {
             luceneQuery = 'id:"' + deviceId + '" AND type:"' + deviceType + '"';
@@ -95,11 +118,11 @@ batchProviders = function () {
                 "start": 0,
                 "count": limit
             };
-            result = connector.search(loggedInUser, tableName, stringify(filter)).getMessage();
+            result = connector.search(loggedInUser, tablename, stringify(filter)).getMessage();
         } else {
             var from = JS_MIN_VALUE;
             var to = JS_MAX_VALUE;
-            result = connector.getRecordsByRange(loggedInUser, tableName, from, to, 0, limit, null).getMessage();
+            result = connector.getRecordsByRange(loggedInUser, tablename, from, to, 0, limit, null).getMessage();
 
         }
         result = JSON.parse(result);

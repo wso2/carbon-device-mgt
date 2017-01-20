@@ -69,7 +69,18 @@ deviceModule = function () {
             throw constants["ERRORS"]["USER_NOT_FOUND"];
         }
         var userName = carbonUser.username + "@" + carbonUser.domain;
-        var locationDataSet = batchProvider.getData(userName, deviceId, deviceType);
+
+        var locationDataSet = [];
+        switch(deviceType) {
+            case 'android':
+                locationDataSet = batchProvider.getData(userName, deviceId, deviceType);
+                break;
+            case 'android_sense':
+                locationDataSet = batchProvider.getData(userName, deviceId, deviceType);
+                break;
+
+        }
+
 
         var locationData = [];
         var locationTimeData = [];
@@ -78,7 +89,11 @@ deviceModule = function () {
             var gpsReadingTimes = {};
             gpsReading.lat = locationDataSet[i].latitude;
             gpsReading.lng = locationDataSet[i].longitude;
-            gpsReadingTimes.time = locationDataSet[i].timeStamp;
+            if (deviceType == "android") {
+                gpsReadingTimes.time = locationDataSet[i].timeStamp;
+            } else {
+                gpsReadingTimes.time = locationDataSet[i].meta_timestamp;
+            }
             locationData.push(gpsReading);
             locationTimeData.push(gpsReadingTimes);
         }

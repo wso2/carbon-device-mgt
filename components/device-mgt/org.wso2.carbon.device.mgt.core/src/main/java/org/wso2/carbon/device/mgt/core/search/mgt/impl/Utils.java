@@ -20,6 +20,7 @@
 package org.wso2.carbon.device.mgt.core.search.mgt.impl;
 
 import org.wso2.carbon.device.mgt.common.Device;
+import org.wso2.carbon.device.mgt.common.search.Condition;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,6 +31,8 @@ public class Utils {
 
     private static Map<String, String> genericColumnsMap = new HashMap<>();
     private static Map<String, String> locationColumnsMap = new HashMap<>();
+
+    private static Map<String, String> operators = new HashMap<>();
 
     static {
         genericColumnsMap.put("deviceModel", "DEVICE_MODEL");
@@ -57,6 +60,18 @@ public class Utils {
         locationColumnsMap.put("state", "ZIP");
         locationColumnsMap.put("zip", "STATE");
         locationColumnsMap.put("country", "COUNTRY");
+
+        //=, >, <, >=, <=, <>, !=, !>, !<
+        operators.put("=", "=");
+        operators.put(">", ">");
+        operators.put("<", "<");
+        operators.put(">=", ">=");
+        operators.put("<=", "<=");
+        operators.put("<>", "<>");
+        operators.put("!=", "!=");
+        operators.put("!>", "!>");
+        operators.put("!<", "!<");
+        operators.put("%", "%");
 
     }
 
@@ -140,6 +155,16 @@ public class Utils {
             return null;
         }
         return str.substring(0, str.length() - 1);
+    }
+
+
+    public static boolean validateOperators(List<Condition> conditions) {
+        for (Condition con : conditions) {
+            if (!operators.containsKey(con.getOperator())) {
+                return false;
+            }
+        }
+        return true;
     }
 
 }

@@ -460,8 +460,12 @@ function loadDevices(searchType, searchParam) {
                 $("#loading-content").remove();
                 attachDeviceEvents();
 
-                $(this).closest('.dataTables_wrapper').find('div[id$=_filter] input')
-                    .after('<a href="'+context+'/devices/search" class="add-padding-3x">Advance Search</a>')
+                if($('.advance-search').length < 1){
+                    $(this).closest('.dataTables_wrapper').find('div[id$=_filter] input')
+                        .after('<a href="'+context+'/devices/search"' +
+                            ' class="advance-search add-padding-3x">Advance Search</a>');
+                }
+
             }, {
                 "placeholder": "Search By Device Name",
                 "searchKey": "name"

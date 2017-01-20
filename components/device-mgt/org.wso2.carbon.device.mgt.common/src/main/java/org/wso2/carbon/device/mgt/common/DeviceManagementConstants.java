@@ -91,11 +91,4 @@ public final class DeviceManagementConstants {
         public static final String DB_TYPE_POSTGRESQL = "PostgreSQL";
     }
 
-    public static final class Users {
-        private Users() {
-            throw new AssertionError();
-        }
-        public static final String DEFAULT_DEVICE_USER = "Internal/devicemgt-user";
-        public static final String DEFAULT_DEVICE_ADMIN = "Internal/devicemgt-admin";
-    }
 }

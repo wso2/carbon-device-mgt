@@ -77,6 +77,9 @@ public class UserManagementServiceImpl implements UserManagementService {
     private static final String API_BASE_PATH = "/users";
     private static final Log log = LogFactory.getLog(UserManagementServiceImpl.class);
 
+    private static final String DEFAULT_DEVICE_USER = "Internal/devicemgt-user";
+    private static final String DEFAULT_DEVICE_ADMIN = "Internal/devicemgt-admin";
+
     @POST
     @Override
     public Response addUser(UserInfo userInfo) {
@@ -100,8 +103,14 @@ public class UserManagementServiceImpl implements UserManagementService {
                     this.buildDefaultUserClaims(userInfo.getFirstname(), userInfo.getLastname(),
                             userInfo.getEmailAddress());
             // calling addUser method of carbon user api
+            List<String> tmpRoles = new ArrayList<>();
+            tmpRoles.add(DEFAULT_DEVICE_USER);
+            tmpRoles.addAll(Arrays.asList(userInfo.getRoles()));
+            String[] roles = new String[tmpRoles.size()];
+            tmpRoles.toArray(roles);
+
             userStoreManager.addUser(userInfo.getUsername(), initialUserPassword,
-                    userInfo.getRoles(), defaultUserClaims, null);
+                                     roles, defaultUserClaims, null);
             // Outputting debug message upon successful addition of user
             if (log.isDebugEnabled()) {
                 log.debug("User '" + userInfo.getUsername() + "' has successfully been added.");
@@ -211,7 +220,9 @@ public class UserManagementServiceImpl implements UserManagementService {
                 log.debug("User credential of username: " + username + " has been changed");
             }
             List<String> currentRoles = this.getFilteredRoles(userStoreManager, username);
-            List<String> newRoles = Arrays.asList(userInfo.getRoles());
+            List<String> newRoles = new ArrayList<>();
+            newRoles.add(DEFAULT_DEVICE_USER);
+            newRoles.addAll(Arrays.asList(userInfo.getRoles()));
 
             List<String> rolesToAdd = new ArrayList<>(newRoles);
             List<String> rolesToDelete = new ArrayList<>();

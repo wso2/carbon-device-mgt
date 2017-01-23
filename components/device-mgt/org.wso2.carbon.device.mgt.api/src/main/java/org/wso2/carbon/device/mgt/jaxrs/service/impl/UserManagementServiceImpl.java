@@ -220,9 +220,7 @@ public class UserManagementServiceImpl implements UserManagementService {
                 log.debug("User credential of username: " + username + " has been changed");
             }
             List<String> currentRoles = this.getFilteredRoles(userStoreManager, username);
-            List<String> newRoles = new ArrayList<>();
-            newRoles.add(DEFAULT_DEVICE_USER);
-            newRoles.addAll(Arrays.asList(userInfo.getRoles()));
+            List<String> newRoles = Arrays.asList(userInfo.getRoles());
 
             List<String> rolesToAdd = new ArrayList<>(newRoles);
             List<String> rolesToDelete = new ArrayList<>();

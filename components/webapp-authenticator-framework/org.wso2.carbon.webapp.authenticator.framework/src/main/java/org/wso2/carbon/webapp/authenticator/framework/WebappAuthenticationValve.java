@@ -41,7 +41,7 @@ public class WebappAuthenticationValve extends CarbonTomcatValve {
     @Override
     public void invoke(Request request, Response response, CompositeValve compositeValve) {
 
-        if (this.isContextSkipped(request) || (!this.isAdminService(request) && this.skipAuthentication(request))) {
+        if (this.isContextSkipped(request) ||  this.skipAuthentication(request)) {
             this.getNext().invoke(request, response, compositeValve);
             return;
         }
@@ -72,11 +72,6 @@ public class WebappAuthenticationValve extends CarbonTomcatValve {
         } else {
             this.processRequest(request, response, compositeValve, authenticationInfo);
         }
-    }
-
-    private boolean isAdminService(Request request) {
-        String param = request.getContext().findParameter("isAdminService");
-        return (param != null && Boolean.parseBoolean(param));
     }
 
     private boolean skipAuthentication(Request request) {
@@ -123,7 +118,7 @@ public class WebappAuthenticationValve extends CarbonTomcatValve {
                 StringTokenizer tokenizer = new StringTokenizer(param, ",");
                 nonSecuredEndpoints.put(contextPath, "true");
                 while (tokenizer.hasMoreTokens()) {
-                    skippedEndPoint = contextPath + tokenizer.nextToken();
+                    skippedEndPoint = tokenizer.nextToken();
                     skippedEndPoint = skippedEndPoint.replace("\n", "").replace("\r", "").trim();
                     if(!skippedEndPoint.endsWith("/")) {
                         skippedEndPoint = skippedEndPoint + "/";

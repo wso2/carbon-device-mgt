@@ -24,8 +24,6 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import io.swagger.annotations.Authorization;
-import io.swagger.annotations.AuthorizationScope;
 import io.swagger.annotations.Extension;
 import io.swagger.annotations.ExtensionProperty;
 import io.swagger.annotations.Info;
@@ -33,12 +31,16 @@ import io.swagger.annotations.ResponseHeader;
 import io.swagger.annotations.SwaggerDefinition;
 import io.swagger.annotations.Tag;
 import org.apache.axis2.transport.http.HTTPConstants;
+import org.wso2.carbon.apimgt.annotations.api.Scope;
+import org.wso2.carbon.apimgt.annotations.api.Scopes;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroup;
 import org.wso2.carbon.device.mgt.jaxrs.beans.DeviceGroupList;
 import org.wso2.carbon.device.mgt.jaxrs.beans.DeviceList;
+import org.wso2.carbon.device.mgt.jaxrs.beans.DeviceToGroupsAssignment;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
 import org.wso2.carbon.device.mgt.jaxrs.beans.RoleList;
+import org.wso2.carbon.device.mgt.jaxrs.util.Constants;
 
 import javax.validation.Valid;
 import javax.ws.rs.Consumes;
@@ -74,6 +76,94 @@ import java.util.List;
                                                                "details.")
         }
 )
+@Scopes(
+        scopes = {
+                @Scope(
+                        name = "Get the list of groups belongs to current user.",
+                        description = "Get the list of groups belongs to current user.",
+                        key = "perm:groups:groups",
+                        permissions = {"/device-mgt/groups/view"}
+                ),
+                @Scope(
+                        name = "Get the count of groups belongs to current user.",
+                        description = "Get the count of groups belongs to current user.",
+                        key = "perm:groups:count",
+                        permissions = {"/device-mgt/groups/view"}
+                ),
+                @Scope(
+                        name = "Add new device group to the system.",
+                        description = "Add new device group to the system.",
+                        key = "perm:groups:add",
+                        permissions = {"/device-mgt/groups/add"}
+                ),
+                @Scope(
+                        name = "View group specified",
+                        description = "View group specified",
+                        key = "perm:groups:groups-view",
+                        permissions = {"/device-mgt/groups/view"}
+                ),
+                @Scope(
+                        name = "Update a group",
+                        description = "Update a group",
+                        key = "perm:groups:update",
+                        permissions = {"/device-mgt/groups/update"}
+                ),
+                @Scope(
+                        name = "Delete a group",
+                        description = "Delete a group",
+                        key = "perm:groups:remove",
+                        permissions = {"/device-mgt/groups/remove"}
+                ),
+                @Scope(
+                        name = "Manage group sharing with a user",
+                        description = "Manage group sharing with a user",
+                        key = "perm:groups:share",
+                        permissions = {"/device-mgt/groups/share"}
+                ),
+                @Scope(
+                        name = "View list of roles of a device group",
+                        description = "View list of roles of a device group",
+                        key = "perm:groups:roles",
+                        permissions = {"/device-mgt/groups/roles/view"}
+                ),
+                @Scope(
+                        name = "View list of devices in the device group",
+                        description = "View list of devices in the device group",
+                        key = "perm:groups:devices",
+                        permissions = {"/device-mgt/groups/devices/view"}
+                ),
+                @Scope(
+                        name = "View list of device count in the device group",
+                        description = "View list of device count in the device group",
+                        key = "perm:groups:devices-count",
+                        permissions = {"/device-mgt/groups/devices/view"}
+                ),
+                @Scope(
+                        name = "Add devices to group",
+                        description = "Add devices to group",
+                        key = "perm:groups:devices-add",
+                        permissions = {"/device-mgt/groups/devices/add"}
+                ),
+                @Scope(
+                        name = "Remove devices from group",
+                        description = "Remove devices from group",
+                        key = "perm:groups:devices-remove",
+                        permissions = {"/device-mgt/groups/devices/remove"}
+                ),
+                @Scope(
+                        name = "Assign devices to groups",
+                        description = "Assign devices to groups",
+                        key = "perm:groups:assign",
+                        permissions = {"/device-mgt/groups/devices/add"}
+                ),
+                @Scope(
+                        name = "List of groups that have the device",
+                        description = "List of groups that have the device",
+                        key = "perm:groups:device",
+                        permissions = {"/device-mgt/groups/devices/view"}
+                )
+        }
+)
 @Path("/groups")
 @Api(value = "Device Group Management", description = "This API carries all device group management related " +
                                                       "operations such as get all the available groups, etc.")
@@ -88,12 +178,10 @@ public interface GroupManagementService {
             value = "Get the list of groups belongs to current user.",
             notes = "Returns all permitted groups enrolled with the system.",
             tags = "Device Group Management",
-            authorizations = {
-                    @Authorization(
-                            value="permission",
-                            scopes = { @AuthorizationScope(scope = "/device-mgt/groups/view",
-                                    description = "View Groups") }
-                    )
+            extensions = {
+                @Extension(properties = {
+                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:groups:groups")
+                })
             }
     )
     @ApiResponses(value = {
@@ -153,13 +241,12 @@ public interface GroupManagementService {
             value = "Get the count of groups belongs to current user.",
             notes = "Returns count of all permitted groups enrolled with the system.",
             tags = "Device Group Management",
-            authorizations = {
-                    @Authorization(
-                            value="permission",
-                            scopes = { @AuthorizationScope(scope = "/device-mgt/groups/view",
-                                    description = "View Groups") }
-                    )
+            extensions = {
+                @Extension(properties = {
+                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:groups:count")
+                })
             }
+
     )
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK. \n Successfully fetched the device group count.",
@@ -202,12 +289,10 @@ public interface GroupManagementService {
             value = "Add new device group to the system.",
             notes = "Add device group with current user as the owner.",
             tags = "Device Group Management",
-            authorizations = {
-                    @Authorization(
-                            value="permission",
-                            scopes = { @AuthorizationScope(scope = "/device-mgt/groups/add",
-                                    description = "Add Group") }
-                    )
+            extensions = {
+                @Extension(properties = {
+                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:groups:add")
+                })
             }
     )
     @ApiResponses(
@@ -270,12 +355,10 @@ public interface GroupManagementService {
             value = "View group specified.",
             notes = "Returns details of group enrolled with the system.",
             tags = "Device Group Management",
-            authorizations = {
-                    @Authorization(
-                            value="permission",
-                            scopes = { @AuthorizationScope(scope = "/device-mgt/groups/view",
-                                    description = "View Groups") }
-                    )
+            extensions = {
+                @Extension(properties = {
+                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:groups:groups-view")
+                })
             }
     )
     @ApiResponses(value = {
@@ -325,12 +408,10 @@ public interface GroupManagementService {
             notes = "If you wish to make changes to an existing group, that can be done by updating the group using " +
                     "this resource.",
             tags = "Device Group Management",
-            authorizations = {
-                    @Authorization(
-                            value="permission",
-                            scopes = { @AuthorizationScope(scope = "/device-mgt/groups/update",
-                                    description = "Update Group") }
-                    )
+            extensions = {
+                @Extension(properties = {
+                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:groups:update")
+                })
             }
     )
     @ApiResponses(value = {
@@ -384,12 +465,10 @@ public interface GroupManagementService {
             notes = "If you wish to remove an existing group, that can be done by updating the group using " +
                     "this resource.",
             tags = "Device Group Management",
-            authorizations = {
-                    @Authorization(
-                            value="permission",
-                            scopes = { @AuthorizationScope(scope = "/device-mgt/groups/remove",
-                                    description = "Remove Group") }
-                    )
+            extensions = {
+                @Extension(properties = {
+                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:groups:remove")
+                })
             }
     )
     @ApiResponses(value = {
@@ -438,12 +517,10 @@ public interface GroupManagementService {
             notes = "If you wish to share /un share an existing group with a user under defined sharing roles, " +
                     "that can be done using this resource.",
             tags = "Device Group Management",
-            authorizations = {
-                    @Authorization(
-                            value="permission",
-                            scopes = { @AuthorizationScope(scope = "/device-mgt/groups/share",
-                                    description = "Share Group") }
-                    )
+            extensions = {
+                @Extension(properties = {
+                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:groups:share")
+                })
             }
     )
     @ApiResponses(value = {
@@ -496,12 +573,10 @@ public interface GroupManagementService {
             value = "View list of roles of a device group.",
             notes = "Returns details of roles which particular group has been shared with.",
             tags = "Device Group Management",
-            authorizations = {
-                    @Authorization(
-                            value="permission",
-                            scopes = { @AuthorizationScope(scope = "/device-mgt/groups/roles/view",
-                                    description = "View roles") }
-                    )
+            extensions = {
+                @Extension(properties = {
+                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:groups:roles")
+                })
             }
     )
     @ApiResponses(value = {
@@ -550,12 +625,10 @@ public interface GroupManagementService {
             value = "View list of devices in the device group.",
             notes = "Returns list of devices in the device group.",
             tags = "Device Group Management",
-            authorizations = {
-                    @Authorization(
-                            value="permission",
-                            scopes = { @AuthorizationScope(scope = "/device-mgt/groups/devices/view",
-                                    description = "View devices") }
-                    )
+            extensions = {
+                @Extension(properties = {
+                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:groups:devices")
+                })
             }
     )
     @ApiResponses(value = {
@@ -612,12 +685,10 @@ public interface GroupManagementService {
             value = "View list of device count in the device group.",
             notes = "Returns device count in the device group.",
             tags = "Device Group Management",
-            authorizations = {
-                    @Authorization(
-                            value="permission",
-                            scopes = { @AuthorizationScope(scope = "/device-mgt/groups/devices/view",
-                                    description = "View devices") }
-                    )
+            extensions = {
+                @Extension(properties = {
+                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:groups:devices-count")
+                })
             }
     )
     @ApiResponses(value = {
@@ -666,12 +737,10 @@ public interface GroupManagementService {
             value = "Add devices to group.",
             notes = "Add existing devices to the device group.",
             tags = "Device Group Management",
-            authorizations = {
-                    @Authorization(
-                            value="permission",
-                            scopes = { @AuthorizationScope(scope = "/device-mgt/groups/devices/add",
-                                    description = "Add devices") }
-                    )
+            extensions = {
+                @Extension(properties = {
+                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:groups:devices-add")
+                })
             }
     )
     @ApiResponses(value = {
@@ -724,12 +793,10 @@ public interface GroupManagementService {
             value = "Remove devices from group.",
             notes = "Remove existing devices from the device group.",
             tags = "Device Group Management",
-            authorizations = {
-                    @Authorization(
-                            value="permission",
-                            scopes = { @AuthorizationScope(scope = "/device-mgt/groups/devices/remove",
-                                    description = "Remove devices") }
-                    )
+            extensions = {
+                @Extension(properties = {
+                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:groups:devices-remove")
+                })
             }
     )
     @ApiResponses(value = {
@@ -773,5 +840,112 @@ public interface GroupManagementService {
                                             value = "Device identifiers of the devices which needed to be removed.",
                                             required = true)
                                     @Valid List<DeviceIdentifier> deviceIdentifiers);
+
+    @Path("/device/assign")
+    @POST
+    @ApiOperation(
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = HTTPConstants.HEADER_POST,
+            value = "Assign devices to groups",
+            notes = "Add existing device to device groups.",
+            tags = "Device Group Management",
+            extensions = {
+                    @Extension(properties = {
+                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:groups:assign")
+                    })
+            }
+    )
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK. \n Successfully assign the device to groups.",
+                    responseHeaders = {
+                            @ResponseHeader(
+                                    name = "Content-Type",
+                                    description = "The content type of the body"),
+                            @ResponseHeader(
+                                    name = "ETag",
+                                    description = "Entity Tag of the response resource.\n" +
+                                                  "Used by caches, or in conditional requests."),
+                            @ResponseHeader(
+                                    name = "Last-Modified",
+                                    description = "Date and time the resource has been modified the last time.\n" +
+                                                  "Used by caches, or in conditional requests."),
+                    }),
+            @ApiResponse(
+                    code = 304,
+                    message = "Not Modified. \n Empty body because the client has already the latest version of " +
+                              "the requested resource."),
+            @ApiResponse(
+                    code = 404,
+                    message = "No groups found.",
+                    response = ErrorResponse.class),
+            @ApiResponse(
+                    code = 406,
+                    message = "Not Acceptable.\n The requested media type is not supported."),
+            @ApiResponse(
+                    code = 500,
+                    message = "Internal Server Error. \n Server error occurred while adding devices to the group.",
+                    response = ErrorResponse.class)
+    })
+    Response updateDeviceAssigningToGroups(
+            @ApiParam(
+                    name = "deviceToGroupsAssignment",
+                    value = "Device to groups assignment",
+                    required = true)
+            @Valid DeviceToGroupsAssignment deviceToGroupsAssignment);
+
+    @Path("/device")
+    @GET
+    @ApiOperation(
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = HTTPConstants.HEADER_GET,
+            value = "List of groups that have the device",
+            notes = "List of groups that have the device.",
+            tags = "Device Group Management",
+            extensions = {
+                    @Extension(properties = {
+                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:groups:device")
+                    })
+            }
+    )
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK.",
+                    responseHeaders = {
+                            @ResponseHeader(
+                                    name = "Content-Type",
+                                    description = "The content type of the body"),
+                            @ResponseHeader(
+                                    name = "ETag",
+                                    description = "Entity Tag of the response resource.\n" +
+                                                  "Used by caches, or in conditional requests."),
+                            @ResponseHeader(
+                                    name = "Last-Modified",
+                                    description = "Date and time the resource has been modified the last time.\n" +
+                                                  "Used by caches, or in conditional requests."),
+                    }),
+            @ApiResponse(
+                    code = 304,
+                    message = "Not Modified. \n Empty body because the client has already the latest version of " +
+                              "the requested resource."),
+            @ApiResponse(
+                    code = 404,
+                    message = "No groups found.",
+                    response = ErrorResponse.class),
+            @ApiResponse(
+                    code = 406,
+                    message = "Not Acceptable.\n The requested media type is not supported."),
+            @ApiResponse(
+                    code = 500,
+                    message = "Internal Server Error. \n Server error occurred.",
+                    response = ErrorResponse.class)
+    })
+    Response getGroups(
+            @ApiParam(
+                    name = "deviceId",
+                    value = "Id of the device.")
+            @QueryParam("deviceId") String deviceId,
+            @ApiParam(
+                    name = "deviceType",
+                    value = "Type of the device.")
+            @QueryParam("deviceType") String deviceType);
 
 }

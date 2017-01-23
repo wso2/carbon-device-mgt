@@ -21,6 +21,9 @@ package org.wso2.carbon.device.mgt.extensions.device.type.deployer.internal;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osgi.service.component.ComponentContext;
+import org.wso2.carbon.application.deployer.handler.AppDeploymentHandler;
+import org.wso2.carbon.device.mgt.extensions.device.type.deployer.DeviceTypeCAppDeployer;
+import org.wso2.carbon.ndatasource.core.DataSourceService;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.utils.ConfigurationContextService;
 
@@ -36,6 +39,12 @@ import org.wso2.carbon.utils.ConfigurationContextService;
  * @scr.reference name="registry.service"
  * interface="org.wso2.carbon.registry.core.service.RegistryService" cardinality="0..1"
  * policy="dynamic" bind="setRegistryService" unbind="unsetRegistryService"
+ * @scr.reference name="org.wso2.carbon.ndatasource"
+ * interface="org.wso2.carbon.ndatasource.core.DataSourceService"
+ * cardinality="1..1"
+ * policy="dynamic"
+ * bind="setDataSourceService"
+ * unbind="unsetDataSourceService"
  */
 public class DeviceTypeManagementServiceComponent {
 
@@ -45,6 +54,7 @@ public class DeviceTypeManagementServiceComponent {
         if (log.isDebugEnabled()) {
             log.debug("Activating DeviceType Deployer Service Component");
         }
+//        ctx.getBundleContext().registerService(AppDeploymentHandler.class.getName(), new DeviceTypeCAppDeployer(), null);
         DeviceTypeManagementDataHolder.getInstance().setBundleContext(ctx.getBundleContext());
     }
 
@@ -79,5 +89,17 @@ public class DeviceTypeManagementServiceComponent {
 
     protected void unsetRegistryService(RegistryService registryService) {
         DeviceTypeManagementDataHolder.getInstance().setRegistryService(null);
+    }
+
+    protected void setDataSourceService(DataSourceService dataSourceService) {
+        /* This is to avoid mobile device management component getting initialized before the underlying datasources
+        are registered */
+        if (log.isDebugEnabled()) {
+            log.debug("Data source service set to android mobile service component");
+        }
+    }
+
+    protected void unsetDataSourceService(DataSourceService dataSourceService) {
+        //do nothing
     }
 }

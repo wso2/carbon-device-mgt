@@ -26,7 +26,7 @@
             <i class="icon fw fw-home"></i>
         </a>
     </li>
-    {{#if groupName}}
+    {{#if group}}
         <li>
             <a href="{{@app.context}}/groups">
                 Groups
@@ -34,7 +34,7 @@
         </li>
         <li>
             <a href="#">
-                {{groupName}}
+                {{group.name}}
             </a>
         </li>
     {{else}}
@@ -47,14 +47,23 @@
 {{/zone}}
 
 {{#zone "navbarActions"}}
-    {{#if groupName}}
+    {{#if group}}
         <li>
             <a href="{{@app.context}}/devices" class="cu-btn">
             <span class="icon fw-stack">
                 <i class="fw fw-add fw-stack-1x"></i>
-                <i class="fw fw-ring fw-stack-2x"></i>
+                <i class="fw fw-circle-outline fw-stack-2x"></i>
             </span>
                 Assign from My Devices
+            </a>
+        </li>
+        <li>
+            <a href="{{@app.context}}/group/{{group.id}}/analytics" class="cu-btn">
+            <span class="icon fw-stack">
+                <i class="fw fw-statistics fw-stack-1x"></i>
+                <i class="fw fw-circle-outline fw-stack-2x"></i>
+            </span>
+                View Analytics
             </a>
         </li>
     {{else}}
@@ -63,7 +72,7 @@
                 <a href="{{@app.context}}/device/enroll" class="cu-btn">
             <span class="icon fw-stack">
                 <i class="fw fw-add fw-stack-1x"></i>
-                <i class="fw fw-ring fw-stack-2x"></i>
+                <i class="fw fw-circle-outline fw-stack-2x"></i>
             </span>
                     Enroll Device
                 </a>
@@ -73,6 +82,55 @@
 {{/zone}}
 
 {{#zone "content"}}
+    {{#if group}}
+        <h1 class="page-sub-title">
+            {{group.name}} group
+        </h1>
+        <div class="row no-gutter add-padding-5x add-margin-top-5x" style="border: 1px solid #e4e4e4;">
+            <div class="media">
+                <div id="device_overview">
+                    <div class="media-left col-lg-2">
+                        <div class="icon">
+                            <img src="/devicemgt/public/cdmf.page.groups/images/group-icon.png" style="background-color: #11375b; height: 152px;">
+                        </div>
+                    </div>
+                    <div class="media-body asset-desc add-padding-left-5x">
+                        <div style="background: #11375B; color: #fff; padding: 10px; margin-bottom: 5px">
+                            Overview
+                        </div>
+                        <table class="table table-responsive table-striped" id="members" style="margin-bottom: 0px;">
+                            <tbody>
+                            <tr role="row" class="even">
+                                <td class="sorting_1" style="padding:10px 15px; width: 15%;">Owner</td>
+                                <td id="group_owner" style="padding:10px 15px;">{{group.owner}}</td>
+                            </tr>
+                            <tr role="row" class="odd">
+                                <td class="sorting_1" style="padding:10px 15px; width: 15%;">Shared with roles</td>
+                                <td style="padding:10px 15px;">
+                                    {{#each roles}}
+                                        {{this}}<br/>
+                                    {{/each}}
+                                </td>
+                            </tr>
+                            <tr role="row" class="even">
+                                <td class="sorting_1" style="padding:10px 15px;width: 15%;">Device Count</td>
+                                <td style="padding:10px 15px;">{{deviceCount}}</td>
+                            </tr>
+                            <tr role="row" class="odd">
+                                <td class="sorting_1" style="padding:10px 15px;width: 15%;">Description</td>
+                                <td style="padding:10px 15px;">{{group.description}}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br/>
+        <h1 class="page-sub-title add-margin-top-5x">
+            Devices in {{group.name}} group
+        </h1>
+    {{/if}}
     <div class="wr-device-list row">
         <div class="wr-hidden-operations wr-advance-operations"></div>
         <div class="col-md-12 wr-page-content">
@@ -82,7 +140,6 @@
                 {{#if deviceCount}}
                     <div id="loading-content" class="col-centered">
                         <i class="fw fw-settings fw-spin fw-2x"></i>
-
                         Loading devices . . .
                         <br>
                     </div>
@@ -118,19 +175,42 @@
                                 <th data-for="By Ownership" class="select-filter"></th>
                                 <th class="no-sort"></th>
                             </tr>
-                            <!--TODO: Enable bulk action row after gain compatibility with iot operation bar-->
-                            <!--<tr class="bulk-action-row">-->
-                            <!--<th colspan="7">-->
-                            <!--<div id="operation-bar" class="hidden">-->
-                            <!--{{!unit "mdm.unit.device.operation-bar"}}-->
-                            <!--</div>-->
-                            <!--<div id="operation-guide" class="bs-callout bs-callout-info">-->
-                            <!--<h4>Enabling Device Operations</h4>-->
-                            <!--<p>To enable device operations, select the desired platform from above-->
-                            <!--filter.</p>-->
-                            <!--</div>-->
-                            <!--</th>-->
-                            <!--</tr>-->
+                            <tr class="bulk-action-row">
+                                <th colspan="7">
+                                    <ul class="tiles">
+                                        {{#unless group}}
+                                            <li>
+                                                <a href="#" style="width: 100px;height: 80px;;"
+                                                   data-click-event="remove-form"
+                                                   class="btn square-element add-devices-to-group-link"
+                                                   data-toggle="modal" data-target="#modalDemo">
+                                                    <span class="icon fw-stack">
+                                                        <i class="fw fw-circle-outline fw-stack-2x"></i>
+                                                            <i class="fw fw-group fw-stack-1x"></i>
+                                                    </span>
+                                                    Add to Group
+                                                </a>
+                                            </li>
+                                        {{/unless}}
+                                        <li>
+                                            <a href="#" style="width: 100px;height: 80px;"
+                                               data-click-event="remove-form"
+                                               class="btn square-element remove-device-link"
+                                               data-toggle="modal" data-target="#modalDemo">
+                                                <span class="icon fw-stack">
+                                                    <i class="fw fw-circle-outline fw-stack-2x"></i>
+                                                    <i class="fw fw-delete fw-stack-1x"></i>
+                                                </span>
+                                                {{#if group}}
+                                                    Remove from group
+                                                {{else}}
+                                                    Remove Device
+                                                {{/if}}
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </th>
+                            </tr>
                             </thead>
                             <tbody id="ast-container">
 
@@ -157,7 +237,7 @@
                             </h3>
                             <h3 class="text-muted">
                                 You don't have any device
-                                {{#if groupName}}
+                                {{#if group}}
                                     assigned to this group
                                 {{else}}
                                     enrolled
@@ -165,11 +245,11 @@
                                 at the moment.
                             </h3>
                             <h3>
-                                {{#if groupName}}
+                                {{#if group}}
                                     <!--suppress HtmlUnknownTarget -->
                                     <a href="{{@app.context}}/devices" class="btn-operations btn-default">
                                             <span class="fw-stack">
-                                                <i class="fw fw-ring fw-stack-2x"></i>
+                                                <i class="fw fw-circle-outline fw-stack-2x"></i>
                                                 <i class="fw fw-add fw-stack-1x"></i>
                                             </span>
                                         Assign from My Devices
@@ -179,7 +259,7 @@
                                     <!--suppress HtmlUnknownTarget -->
                                         <a href="{{@app.context}}/device/enroll" class="btn-operations btn-default">
                                             <span class="fw-stack">
-                                                <i class="fw fw-ring fw-stack-2x"></i>
+                                                <i class="fw fw-circle-outline fw-stack-2x"></i>
                                                 <i class="fw fw-add fw-stack-1x"></i>
                                             </span>
                                             Enroll New Device
@@ -196,8 +276,8 @@
                         <h3 class="pull-left modal-title">
                             <span>
                                 <span class="fw-stack">
-                                    <i class="fw fw-ring fw-stack-2x"></i>
-                                    <i class="fw fw-grouping fw-stack-1x"></i>
+                                    <i class="fw fw-circle-outline fw-stack-2x"></i>
+                                    <i class="fw fw-group fw-stack-1x"></i>
                                 </span> Device Grouping
                             </span>
                         </h3>
@@ -208,20 +288,19 @@
                         <div id="notification-error-msg" class="alert alert-danger hidden" role="alert">
                             <i class="icon fw fw-error"></i><span></span>
                         </div>
-                        <div>
-                            <h4>
-                                Please select group
-                                <br>
-                                <div id="user-groups">Loading...</div>
-                            </h4>
-                        </div>
+                        <div id="user-groups">Loading...</div>
                     </div>
                     <div class="modal-footer">
                         <div class="buttons">
-                            <a href="#" id="group-device-yes-link" class="btn-operations">
-                                Assign
+                            <a href="{{@app.context}}/group/add" id="group-add-link" class="btn-operations">
+                                Add device group
                             </a>
-
+                            <a href="#" id="group-device-add-link" class="btn-operations">
+                                Add devices to group
+                            </a>
+                            <a href="#" id="group-device-update-link" class="btn-operations">
+                                Update assignment
+                            </a>
                             <a href="#" id="group-device-cancel-link" class="btn-operations btn-default">
                                 Cancel
                             </a>
@@ -233,17 +312,7 @@
                     <div class="modal-content">
                         <div class="row">
                             <div class="col-md-3 col-centered">
-                                <h3>Device was successfully associated with group.</h3>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="group-deassociate-device-200-content" class="hide">
-                    <div class="modal-content">
-                        <div class="row">
-                            <div class="col-md-3 col-centered">
-                                <h3>Device was successfully removed from group.</h3>
+                                <h3>Device associations updated.</h3>
                             </div>
                         </div>
                     </div>
@@ -252,7 +321,11 @@
                 <div id="remove-device-modal-content" class="hide">
                     <div class="modal-header">
                         <h3 class="pull-left modal-title">
-                            Do you really want to remove this device from your Devices List?
+                            {{#if group}}
+                                Do you really want to remove this device(s) from '{{group.name}}' group?
+                            {{else}}
+                                Do you really want to remove this device(s) from your Devices?
+                            {{/if}}
                         </h3>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i
                                 class="fw fw-cancel"></i>
@@ -277,26 +350,11 @@
                 <div id="remove-device-200-content" class="hide">
                     <div class="modal-header">
                         <h3 class="pull-left modal-title">
-                            Device was successfully removed.
-                        </h3>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i
-                                class="fw fw-cancel"></i>
-                        </button>
-                    </div>
-                    <div class="modal-body add-margin-top-2x add-margin-bottom-2x">
-
-                    </div>
-                    <div class="modal-footer">
-                        <div class="buttons">
-                            <a href="javascript:hidePopup()" class="btn-operations">Ok</a>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="remove-device-from-group-200-content" class="hide">
-                    <div class="modal-header">
-                        <h3 class="pull-left modal-title">
-                            Device was successfully removed from group.
+                            {{#if group}}
+                                Successfully removed from '{{group.name}}' group.
+                            {{else}}
+                                Successfully removed.
+                            {{/if}}
                         </h3>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i
                                 class="fw fw-cancel"></i>
@@ -432,6 +490,24 @@
                                     </div>
                                 </div>
                             </div>
+
+                            <div id="no-device-selected" class="hide">
+                                <div class="modal-content">
+                                    <div class="row">
+                                        <div class="col-lg-5 col-md-6 col-centered">
+                                            <h3>Please select one ore more devices in order to perform this
+                                                operation.</h3>
+                                            <br/>
+                                            <div class="buttons">
+                                                <a href="#" id="no-device-selected-link" class="btn-operations">
+                                                    Ok
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
                 </div>
@@ -444,4 +520,20 @@
     <script id="device-listing" data-current-user="{{@user.username}}" data-device-types="{{deviceTypes}}"
             type="text/x-handlebars-template"></script>
     {{js "js/listing.js"}}
+{{/zone}}
+
+{{#zone "topCss"}}
+    <style>
+        .select2-dropdown {
+            z-index: 999999999;
+        }
+
+        .wr-input-control {
+            color: black;
+        }
+
+        .select2-selection__choice {
+            font-size: medium;
+        }
+    </style>
 {{/zone}}

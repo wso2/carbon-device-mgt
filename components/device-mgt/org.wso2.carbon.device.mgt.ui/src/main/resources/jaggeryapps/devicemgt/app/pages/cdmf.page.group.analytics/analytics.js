@@ -19,8 +19,8 @@
 function onRequest(context) {
     var utility = require("/app/modules/utility.js").utility;
     var groupModule = require("/app/modules/business-controllers/group.js")["groupModule"];
-    var groupName = context.uriParams.name;
     var groupId = context.uriParams.id;
+    var group = groupModule.getGroup(groupId);
     var devices = [];
     var deviceResponse = groupModule.getGroupDevices(groupId).responseText;
 
@@ -29,8 +29,9 @@ function onRequest(context) {
         devices = deviceResponseObj.devices;
     }
     var page = {
-        "groupName": groupName,
-        "title": groupName + " Analytics"
+        "groupId": groupId,
+        "groupName": group.name,
+        "title": group.name + " Analytics"
     };
     if (devices) {
         var deviceTypes = [];

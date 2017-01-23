@@ -22,13 +22,13 @@
     <parent>
         <artifactId>apimgt-extensions</artifactId>
         <groupId>org.wso2.carbon.devicemgt</groupId>
-        <version>2.0.4-SNAPSHOT</version>
+        <version>2.0.9-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>org.wso2.carbon.apimgt.annotations</artifactId>
-    <version>2.0.4-SNAPSHOT</version>
+    <version>2.0.9-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <name>WSO2 Carbon - API Management Annotations</name>
     <description>WSO2 Carbon - API Management Custom Annotation Module</description>
@@ -79,7 +79,7 @@
                             javax.servlet,
                             javax.xml.*,
 			    javax.xml.parsers;version="${javax.xml.parsers.import.pkg.version}";resolution:=optional,
-                            org.apache.commons.lang,
+                            org.apache.commons.lang
                         </Import-Package>
                         <Embed-Dependency>
                             scribe;scope=compile|runtime;inline=false;

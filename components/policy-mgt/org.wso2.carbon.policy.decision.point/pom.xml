@@ -1,0 +1,77 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <parent>
+        <groupId>org.wso2.carbon.devicemgt</groupId>
+        <artifactId>policy-mgt</artifactId>
+        <version>2.0.9-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.wso2.carbon.devicemgt</groupId>
+    <artifactId>org.wso2.carbon.policy.decision.point</artifactId>
+    <version>2.0.9-SNAPSHOT</version>
+    <packaging>bundle</packaging>
+    <name>WSO2 Carbon - Policy Decision Point</name>
+    <description>WSO2 Carbon - Policy Decision Point</description>
+    <url>http://wso2.org</url>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-scr-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <version>1.4.0</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+                        <Bundle-Name>${project.artifactId}</Bundle-Name>
+                        <Bundle-Version>${carbon.device.mgt.version}</Bundle-Version>
+                        <Bundle-Description>Policy Decision Point Bundle</Bundle-Description>
+                        <Private-Package>org.wso2.carbon.policy.decision.point.internal</Private-Package>
+                        <Import-Package>
+                            org.wso2.carbon.context.*;
+                            org.osgi.framework,
+                            org.osgi.service.component,
+                            org.apache.commons.logging,
+                            org.wso2.carbon.policy.mgt.common.*,
+                            org.wso2.carbon.policy.mgt.core.*,
+                            org.wso2.carbon.user.core.*,
+                            org.wso2.carbon.device.mgt.common.*
+                        </Import-Package>
+                        <Export-Package>
+                            org.wso2.carbon.policy.decision.point.*
+                        </Export-Package>
+                    </instructions>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+    <dependencies>
+        <dependency>
+            <groupId>org.eclipse.osgi</groupId>
+            <artifactId>org.eclipse.osgi</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.equinox</groupId>
+            <artifactId>org.eclipse.equinox.common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.logging</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.devicemgt</groupId>
+            <artifactId>org.wso2.carbon.policy.mgt.common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.devicemgt</groupId>
+            <artifactId>org.wso2.carbon.policy.mgt.core</artifactId>
+        </dependency>
+    </dependencies>
+</project>

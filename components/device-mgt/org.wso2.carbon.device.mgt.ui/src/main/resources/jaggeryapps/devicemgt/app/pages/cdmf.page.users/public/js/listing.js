@@ -68,10 +68,10 @@ $("a#invite-user-link").click(function () {
         modalDialog.showAsError();
     } else {
         modalDialog.header("");
-        modalDialog.content("An invitation mail will be sent to the selected user(s) to initiate an enrolment process." +
-            " Do you wish to continue ?");
-        modalDialog.footer('<div class="buttons"> <a href="#" id="invite-user-yes-link" class="btn-operations">yes</a>' +
-            '<a href="#" id="invite-user-cancel-link" class="btn-operations btn-default">No</a> </div>');
+        modalDialog.content("An invitation mail will be sent to the selected user(s) to initiate an enrolment " +
+            "process. Do you wish to continue ?");
+        modalDialog.footer('<div class="buttons"><a href="#" id="invite-user-yes-link" class="btn-operations">yes</a>' +
+            '<a href="#" id="invite-user-cancel-link" class="btn-operations btn-default">No</a></div>');
         modalDialog.show();
 
     }
@@ -82,18 +82,18 @@ $("a#invite-user-link").click(function () {
             usernameList,
             function () {
                 modalDialog.header("User invitation email for enrollment was successfully sent.");
-                modalDialog.footer('<div class="buttons"> <a href="#" id="invite-user-success-link" ' +
-                    'class="btn-operations">Ok </a> </div>');
+                modalDialog.footer('<div class="buttons"><a href="#" id="invite-user-success-link" ' +
+                    'class="btn-operations">Ok </a></div>');
                 $("a#invite-user-success-link").click(function () {
                     modalDialog.hide();
                 });
             },
             function () {
-                modalDialog.header('<span class="fw-stack"> <i class="fw fw-ring fw-stack-2x"></i> <i class="fw ' +
+                modalDialog.header('<span class="fw-stack"> <i class="fw fw-circle-outline fw-stack-2x"></i> <i class="fw ' +
                     'fw-error fw-stack-1x"></i> </span> Unexpected Error !');
                 modalDialog.content('An unexpected error occurred. Try again later.');
-                modalDialog.footer('<div class="buttons"> <a href="#" id="invite-user-error-link" ' +
-                    'class="btn-operations">Ok </a> </div>');
+                modalDialog.footer('<div class="buttons"><a href="#" id="invite-user-error-link" ' +
+                    'class="btn-operations">Ok </a></div>');
                 $("a#invite-user-error-link").click(function () {
                     modalDialog.hide();
                 });
@@ -124,7 +124,7 @@ function getSelectedUsernames() {
  * on User Listing page in WSO2 MDM Console.
  */
 function resetPassword(username) {
-    modalDialog.header('<span class="fw-stack"> <i class="fw fw-ring fw-stack-2x"></i> <i class="fw fw-key ' +
+    modalDialog.header('<span class="fw-stack"> <i class="fw fw-circle-outline fw-stack-2x"></i> <i class="fw fw-key ' +
         'fw-stack-1x"></i> </span> Reset Password');
     modalDialog.content($("#modal-content-reset-password").html());
     modalDialog.footer('<div class="buttons"> <a href="#" id="reset-password-yes-link" class="btn-operations"> Save ' +
@@ -258,6 +258,10 @@ function InitiateViewOption() {
     }
 }
 
+function htmlspecialchars(text){
+    return jQuery('<div/>').text(text).html();
+}
+
 function loadUsers() {
     var loadingContentView = "#loading-content";
     $(loadingContentView).show();
@@ -269,11 +273,11 @@ function loadUsers() {
 
         $(data.users).each(function (index) {
             objects.push({
-                filter: data.users[index].username,
-                firstname: data.users[index].firstname ? data.users[index].firstname : "",
-                lastname: data.users[index].lastname ? data.users[index].lastname : "",
-                emailAddress: data.users[index].emailAddress ? data.users[index].emailAddress : "",
-                DT_RowId: "user-" + data.users[index].username
+                filter: htmlspecialchars(data.users[index].username),
+                firstname: htmlspecialchars(data.users[index].firstname) ? htmlspecialchars(data.users[index].firstname) : "",
+                lastname: htmlspecialchars(data.users[index].lastname) ? htmlspecialchars(data.users[index].lastname) : "",
+                emailAddress: htmlspecialchars(data.users[index].emailAddress) ? htmlspecialchars(data.users[index].emailAddress) : "",
+                DT_RowId: "user-" + htmlspecialchars(data.users[index].username)
             })
         });
 
@@ -341,7 +345,7 @@ function loadUsers() {
                     'data-click-event="edit-form" ' +
                     'class="btn padding-reduce-on-grid-view edit-user-link"> ' +
                     '<span class="fw-stack"> ' +
-                    '<i class="fw fw-ring fw-stack-2x"></i>' +
+                    '<i class="fw fw-circle-outline fw-stack-2x"></i>' +
                     '<i class="fw fw-edit fw-stack-1x"></i>' +
                     '</span><span class="hidden-xs hidden-on-grid-view">Edit</span></a>';
 
@@ -350,7 +354,7 @@ function loadUsers() {
                     'onclick="javascript:resetPassword(\'' + data.filter + '\')" ' +
                     'class="btn padding-reduce-on-grid-view remove-user-link">' +
                     '<span class="fw-stack">' +
-                    '<i class="fw fw-ring fw-stack-2x"></i>' +
+                    '<i class="fw fw-circle-outline fw-stack-2x"></i>' +
                     '<i class="fw fw-key fw-stack-1x"></i>' +
                     '</span><span class="hidden-xs hidden-on-grid-view">Reset Password</span></a>';
 
@@ -359,7 +363,7 @@ function loadUsers() {
                     'onclick="javascript:removeUser(\'' + data.filter + '\')" ' +
                     'class="btn padding-reduce-on-grid-view remove-user-link">' +
                     '<span class="fw-stack">' +
-                    '<i class="fw fw-ring fw-stack-2x"></i>' +
+                    '<i class="fw fw-circle-outline fw-stack-2x"></i>' +
                     '<i class="fw fw-delete fw-stack-1x"></i>' +
                     '</span><span class="hidden-xs hidden-on-grid-view">Remove</span></a>';
 

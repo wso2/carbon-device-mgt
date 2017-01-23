@@ -19,11 +19,10 @@
 
 package org.wso2.carbon.policy.mgt.core.dao;
 
-import org.wso2.carbon.policy.mgt.common.monitor.ComplianceData;
-import org.wso2.carbon.policy.mgt.common.monitor.ComplianceFeature;
+import org.wso2.carbon.device.mgt.common.policy.mgt.monitor.NonComplianceData;
+import org.wso2.carbon.device.mgt.common.policy.mgt.monitor.ComplianceFeature;
 import org.wso2.carbon.policy.mgt.common.monitor.PolicyDeviceWrapper;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -50,11 +49,11 @@ public interface MonitoringDAO {
             complianceFeatures)
             throws MonitoringDAOException;
 
-    ComplianceData getCompliance(int deviceId, int enrolmentId) throws MonitoringDAOException;
+    NonComplianceData getCompliance(int deviceId, int enrolmentId) throws MonitoringDAOException;
 
-    List<ComplianceData> getCompliance(List<Integer> deviceIds) throws MonitoringDAOException;
+    List<NonComplianceData> getCompliance(List<Integer> deviceIds) throws MonitoringDAOException;
 
-    List<ComplianceData> getCompliance() throws MonitoringDAOException;
+    List<NonComplianceData> getCompliance() throws MonitoringDAOException;
 
     List<ComplianceFeature> getNoneComplianceFeatures(int policyComplianceStatusId) throws MonitoringDAOException;
 

@@ -18,11 +18,12 @@
 
 package org.wso2.carbon.policy.mgt.core.internal;
 
+import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
+import org.wso2.carbon.device.mgt.core.config.policy.PolicyConfiguration;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.ntask.core.service.TaskService;
 import org.wso2.carbon.policy.mgt.common.PolicyEvaluationPoint;
 import org.wso2.carbon.policy.mgt.common.PolicyInformationPoint;
-import org.wso2.carbon.policy.mgt.common.spi.PolicyMonitoringService;
 import org.wso2.carbon.policy.mgt.core.mgt.MonitoringManager;
 import org.wso2.carbon.policy.mgt.core.mgt.PolicyManager;
 import org.wso2.carbon.user.core.service.RealmService;
@@ -36,11 +37,11 @@ public class PolicyManagementDataHolder {
     private RealmService realmService;
     private TenantManager tenantManager;
     private PolicyEvaluationPoint policyEvaluationPoint;
+    private Map<String, PolicyEvaluationPoint> policyEvaluationPoints = new HashMap<>();
     private PolicyInformationPoint policyInformationPoint;
     private DeviceManagementProviderService deviceManagementService;
     private MonitoringManager monitoringManager;
     private PolicyManager policyManager;
-    private Map<String, PolicyMonitoringService> policyMonitoringServiceMap = new HashMap<>();
     private TaskService taskService;
 
     private static PolicyManagementDataHolder thisInstance = new PolicyManagementDataHolder();
@@ -88,12 +89,20 @@ public class PolicyManagementDataHolder {
     }
 
     public PolicyEvaluationPoint getPolicyEvaluationPoint() {
-        return policyEvaluationPoint;
+        PolicyConfiguration policyConfiguration = DeviceConfigurationManager.getInstance().
+                getDeviceManagementConfig().getPolicyConfiguration();
+        String policyEvaluationPointName = policyConfiguration.getPolicyEvaluationPointName();
+        return policyEvaluationPoints.get(policyEvaluationPointName);
     }
 
-    public void setPolicyEvaluationPoint(PolicyEvaluationPoint policyEvaluationPoint) {
-        this.policyEvaluationPoint = policyEvaluationPoint;
+    public void setPolicyEvaluationPoint(String name, PolicyEvaluationPoint policyEvaluationPoint) {
+        policyEvaluationPoints.put(name,policyEvaluationPoint);
     }
+
+    public void removePolicyEvaluationPoint(PolicyEvaluationPoint policyEvaluationPoint) {
+        policyEvaluationPoints.remove(policyEvaluationPoint.getName());
+    }
+
 
     public PolicyInformationPoint getPolicyInformationPoint() {
         return policyInformationPoint;
@@ -109,18 +118,6 @@ public class PolicyManagementDataHolder {
 
     public void setDeviceManagementService(DeviceManagementProviderService deviceManagementService) {
         this.deviceManagementService = deviceManagementService;
-    }
-
-    public PolicyMonitoringService getPolicyMonitoringService(String deviceType) {
-        return policyMonitoringServiceMap.get(deviceType);
-    }
-
-    public void setPolicyMonitoringService(String deviceType, PolicyMonitoringService policyMonitoringService) {
-        this.policyMonitoringServiceMap.put(deviceType, policyMonitoringService);
-    }
-
-    public void unsetPolicyMonitoringService(String deviceType) {
-        this.policyMonitoringServiceMap.remove(deviceType);
     }
 
     public TaskService getTaskService() {

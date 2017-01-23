@@ -27,14 +27,11 @@ import org.testng.annotations.Test;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
-import org.wso2.carbon.device.mgt.common.authorization.DeviceAccessAuthorizationService;
-import org.wso2.carbon.device.mgt.core.authorization.DeviceAccessAuthorizationServiceImpl;
-import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
+import org.wso2.carbon.device.mgt.common.policy.mgt.Policy;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderServiceImpl;
 import org.wso2.carbon.ntask.common.TaskException;
 import org.wso2.carbon.policy.mgt.common.*;
-import org.wso2.carbon.policy.mgt.core.enforcement.DelegationTask;
 import org.wso2.carbon.policy.mgt.core.internal.PolicyManagementDataHolder;
 import org.wso2.carbon.policy.mgt.core.services.SimplePolicyEvaluationTest;
 
@@ -51,7 +48,7 @@ public class PolicyEvaluationTestCase extends BasePolicyManagementDAOTest {
     @Override
     public void init() throws Exception {
         PolicyEvaluationPoint evaluationPoint = new SimplePolicyEvaluationTest();
-        PolicyManagementDataHolder.getInstance().setPolicyEvaluationPoint(evaluationPoint);
+        PolicyManagementDataHolder.getInstance().setPolicyEvaluationPoint(evaluationPoint.getName(), evaluationPoint);
     }
 
     @Test
@@ -93,7 +90,7 @@ public class PolicyEvaluationTestCase extends BasePolicyManagementDAOTest {
     }
 
     @Test(dependsOnMethods = ("activatePolicies"))
-    public void getEffectivePolicy() throws DeviceManagementException, PolicyEvaluationException {
+    public void getEffectivePolicy(DeviceIdentifier identifier) throws DeviceManagementException, PolicyEvaluationException {
 
         log.debug("Getting effective policy for device started ..........");
 
@@ -103,7 +100,6 @@ public class PolicyEvaluationTestCase extends BasePolicyManagementDAOTest {
         PolicyEvaluationPoint evaluationPoint = PolicyManagementDataHolder.getInstance().getPolicyEvaluationPoint();
 
         for (Device device : devices) {
-            DeviceIdentifier identifier = new DeviceIdentifier();
             identifier.setType(device.getType());
             identifier.setId(device.getDeviceIdentifier());
             Policy policy = evaluationPoint.getEffectivePolicy(identifier);

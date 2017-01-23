@@ -22,6 +22,8 @@ package org.wso2.carbon.policy.mgt.core.services;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
+import org.wso2.carbon.device.mgt.common.policy.mgt.Policy;
+import org.wso2.carbon.device.mgt.common.policy.mgt.ProfileFeature;
 import org.wso2.carbon.policy.mgt.common.*;
 import org.wso2.carbon.policy.mgt.core.PolicyManagerService;
 import org.wso2.carbon.policy.mgt.core.PolicyManagerServiceImpl;
@@ -29,7 +31,8 @@ import org.wso2.carbon.policy.mgt.core.PolicyManagerServiceImpl;
 import java.util.Collections;
 import java.util.List;
 
-public class SimplePolicyEvaluationTest implements PolicyEvaluationPoint {
+public class
+SimplePolicyEvaluationTest implements PolicyEvaluationPoint {
 
     private static final Log log = LogFactory.getLog(SimplePolicyEvaluationTest.class);
 
@@ -74,6 +77,11 @@ public class SimplePolicyEvaluationTest implements PolicyEvaluationPoint {
     @Override
     public List<ProfileFeature> getEffectiveFeatures(DeviceIdentifier deviceIdentifier) throws PolicyEvaluationException {
         return null;
+    }
+
+    @Override
+    public String getName() {
+        return "SimplePolicy";
     }
 
     public void sortPolicies(List<Policy> policyList) throws PolicyEvaluationException {

@@ -24,8 +24,11 @@ import io.swagger.jaxrs.config.ReaderListener;
 import io.swagger.models.Swagger;
 import io.swagger.models.auth.OAuth2Definition;
 import io.swagger.models.auth.SecuritySchemeDefinition;
+import org.wso2.carbon.device.mgt.jaxrs.beans.Scope;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @SwaggerDefinition(
@@ -54,6 +57,7 @@ public class SecurityDefinitionConfigurator implements ReaderListener {
         schemes.put(TOKEN_AUTH_SCHEME, tokenScheme);
 
         swagger.setSecurityDefinitions(schemes);
+       //TODO: Have to add wso2-scopes to swagger definition from here
     }
 
 }

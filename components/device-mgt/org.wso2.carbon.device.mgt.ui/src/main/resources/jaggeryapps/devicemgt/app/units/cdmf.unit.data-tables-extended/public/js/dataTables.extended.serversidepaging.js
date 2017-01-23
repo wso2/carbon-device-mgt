@@ -273,6 +273,7 @@ $.fn.datatables_extended_serverside_paging = function (settings, url, dataFilter
                         thisTable.removeClass("table-selectable");
                         $(button).addClass("active").html('Select');
                         $(button).parent().next().children().addClass("disabled");
+                        $('.DTTT_selected.selected').removeClass(rowSelectedClass);
                         // EMM related function
                         $(document).on('click', '.viewEnabledIcon', InitiateViewOption);
                         //--- End of EMM related codes

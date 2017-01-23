@@ -109,6 +109,7 @@ function getSelectedPolicies() {
     return policyList;
 }
 
+
 $(document).ready(function () {
 
     /**

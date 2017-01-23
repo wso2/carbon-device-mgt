@@ -28,6 +28,7 @@ var handlers = function () {
     var tokenUtil = require("/app/modules/oauth/token-handler-utils.js")["utils"];
     var constants = require("/app/modules/constants.js");
     var devicemgtProps = require("/app/modules/conf-reader/main.js")["conf"];
+    var utility = require("/app/modules/utility.js")["utility"];
 
     var publicMethods = {};
     var privateMethods = {};
@@ -49,6 +50,7 @@ var handlers = function () {
                 var tokenData;
                 // tokenPair will include current access token as well as current refresh token
                 var arrayOfScopes = devicemgtProps["scopes"];
+                arrayOfScopes = arrayOfScopes.concat(utility.getDeviceTypesScopesList());
                 var stringOfScopes = "";
                 arrayOfScopes.forEach(function (entry) {
                     stringOfScopes += entry + " ";
@@ -78,25 +80,32 @@ var handlers = function () {
     publicMethods["setupTokenPairBySamlGrantType"] = function (username, samlToken) {
         if (!username || !samlToken) {
             throw new Error("{/app/modules/oauth/token-handlers.js} Could not set up access token pair by " +
-                "saml grant type. Either username of logged in user, samlToken or both are missing " +
-                    "as input - setupTokenPairByPasswordGrantType(x, y)");
+                            "saml grant type. Either username of logged in user, samlToken or both are missing " +
+                            "as input - setupTokenPairBySamlGrantType(x, y)");
         } else {
             privateMethods.setUpEncodedTenantBasedClientAppCredentials(username);
             privateMethods.setUpEncodedTenantBasedWebSocketClientAppCredentials(username);
             var encodedClientAppCredentials = session.get(constants["ENCODED_TENANT_BASED_CLIENT_APP_CREDENTIALS"]);
             if (!encodedClientAppCredentials) {
                 throw new Error("{/app/modules/oauth/token-handlers.js} Could not set up access token pair " +
-                    "by saml grant type. Encoded client credentials are " +
-                        "missing - setupTokenPairByPasswordGrantType(x, y)");
+                                "by saml grant type. Encoded client credentials are " +
+                                "missing - setupTokenPairBySamlGrantType(x, y)");
             } else {
                 var tokenData;
+                var arrayOfScopes = devicemgtProps["scopes"];
+                arrayOfScopes = arrayOfScopes.concat(utility.getDeviceTypesScopesList());
+                var stringOfScopes = "";
+                arrayOfScopes.forEach(function (entry) {
+                    stringOfScopes += entry + " ";
+                });
+
                 // accessTokenPair will include current access token as well as current refresh token
                 tokenData = tokenUtil.
-                    getTokenPairAndScopesBySAMLGrantType(samlToken, encodedClientAppCredentials, "PRODUCTION");
+                getTokenPairAndScopesBySAMLGrantType(samlToken, encodedClientAppCredentials, stringOfScopes);
                 if (!tokenData) {
                     throw new Error("{/app/modules/oauth/token-handlers.js} Could not set up token " +
-                        "pair by password grant type. Error in token " +
-                            "retrieval - setupTokenPairByPasswordGrantType(x, y)");
+                                    "pair by password grant type. Error in token " +
+                                    "retrieval - setupTokenPairBySamlGrantType(x, y)");
                 } else {
                     var tokenPair = {};
                     tokenPair["accessToken"] = tokenData["accessToken"];
@@ -138,7 +147,7 @@ var handlers = function () {
                 "client credentials to session context. No username of logged in user is found as " +
                     "input - setUpEncodedTenantBasedClientAppCredentials(x)");
         } else {
-            if (devicemgtProps["apimgt-gateway"]) {
+            if (devicemgtProps["gatewayEnabled"]) {
 				var tenantBasedClientAppCredentials = tokenUtil.getTenantBasedClientAppCredentials(username);
 				if (!tenantBasedClientAppCredentials) {
 					throw new Error("{/app/modules/oauth/token-handlers.js} Could not set up encoded tenant " +
@@ -176,7 +185,7 @@ var handlers = function () {
                 "client credentials to session context. No username of logged in user is found as " +
                 "input - setUpEncodedTenantBasedWebSocketClientAppCredentials(x)");
         } else {
-            if (devicemgtProps["apimgt-gateway"]) {
+            if (devicemgtProps["gatewayEnabled"]) {
                 var tenantBasedWebSocketClientAppCredentials
                     = tokenUtil.getTenantBasedWebSocketClientAppCredentials(username);
                 if (!tenantBasedWebSocketClientAppCredentials) {

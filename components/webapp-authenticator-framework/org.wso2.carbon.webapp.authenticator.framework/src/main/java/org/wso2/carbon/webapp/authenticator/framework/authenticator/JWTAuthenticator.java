@@ -62,7 +62,7 @@ public class JWTAuthenticator implements WebappAuthenticator {
     private static final String DEFAULT_TRUST_STORE_LOCATION = "Security.TrustStore.Location";
     private static final String DEFAULT_TRUST_STORE_PASSWORD = "Security.TrustStore.Password";
 
-    private static final Map<String, PublicKey> publicKeyHolder = new HashMap<>();
+    private static final Map<IssuerAlias, PublicKey> publicKeyHolder = new HashMap<>();
     private Properties properties;
 
     private static void loadTenantRegistry(int tenantId) throws RegistryException {
@@ -90,6 +90,9 @@ public class JWTAuthenticator implements WebappAuthenticator {
         if (requestUri == null || "".equals(requestUri)) {
             authenticationInfo.setStatus(Status.CONTINUE);
         }
+        if (requestUri == null) {
+            requestUri = "";
+        }
         StringTokenizer tokenizer = new StringTokenizer(requestUri, "/");
         String context = tokenizer.nextToken();
         if (context == null || "".equals(context)) {
@@ -103,46 +106,37 @@ public class JWTAuthenticator implements WebappAuthenticator {
             String username = jwsObject.getJWTClaimsSet().getStringClaim(SIGNED_JWT_AUTH_USERNAME);
             String tenantDomain = MultitenantUtils.getTenantDomain(username);
             int tenantId = Integer.parseInt(jwsObject.getJWTClaimsSet().getStringClaim(SIGNED_JWT_AUTH_TENANT_ID));
+            String issuer = jwsObject.getJWTClaimsSet().getIssuer();
             PrivilegedCarbonContext.startTenantFlow();
             PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(tenantDomain);
             PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(tenantId);
-            PublicKey publicKey =  publicKeyHolder.get(tenantDomain);
+            IssuerAlias issuerAlias = new IssuerAlias(issuer, tenantDomain);
+            PublicKey publicKey =  publicKeyHolder.get(issuerAlias);
             if (publicKey == null) {
                 loadTenantRegistry(tenantId);
                 KeyStoreManager keyStoreManager = KeyStoreManager.getInstance(tenantId);
                 if (MultitenantConstants.SUPER_TENANT_DOMAIN_NAME.equals(tenantDomain)) {
-                    String defaultPublicKey = properties.getProperty("DefaultPublicKey");
-                    if (defaultPublicKey != null && !defaultPublicKey.isEmpty()) {
-                        boolean isDefaultPublicKey = Boolean.parseBoolean(defaultPublicKey);
-                        if (isDefaultPublicKey) {
-                            publicKey = keyStoreManager.getDefaultPublicKey();
-                        } else {
-                            String alias = properties.getProperty("KeyAlias");
-                            if (alias != null && !alias.isEmpty()) {
-                                ServerConfiguration serverConfig = CarbonUtils.getServerConfiguration();
-                                KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
-                                String trustStorePath = serverConfig.getFirstProperty(DEFAULT_TRUST_STORE_LOCATION);
-                                String trustStorePassword = serverConfig.getFirstProperty(
-                                        DEFAULT_TRUST_STORE_PASSWORD);
-                                keyStore.load(new FileInputStream(trustStorePath), trustStorePassword.toCharArray());
-                                publicKey = keyStore.getCertificate(alias).getPublicKey();
-                            } else {
-                                authenticationInfo.setStatus(Status.FAILURE);
-                                return  authenticationInfo;
-                            }
-                        }
-
+                    String alias = properties.getProperty(issuer);
+                    if (alias != null && !alias.isEmpty()) {
+                        ServerConfiguration serverConfig = CarbonUtils.getServerConfiguration();
+                        KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
+                        String trustStorePath = serverConfig.getFirstProperty(DEFAULT_TRUST_STORE_LOCATION);
+                        String trustStorePassword = serverConfig.getFirstProperty(
+                                DEFAULT_TRUST_STORE_PASSWORD);
+                        keyStore.load(new FileInputStream(trustStorePath), trustStorePassword.toCharArray());
+                        publicKey = keyStore.getCertificate(alias).getPublicKey();
                     } else {
-                        publicKey = keyStoreManager.getDefaultPublicKey();
+                        authenticationInfo.setStatus(Status.FAILURE);
+                        return  authenticationInfo;
                     }
-
                 } else {
                     String ksName = tenantDomain.trim().replace('.', '-');
                     String jksName = ksName + ".jks";
                     publicKey = keyStoreManager.getKeyStore(jksName).getCertificate(tenantDomain).getPublicKey();
                 }
                 if (publicKey != null) {
-                    publicKeyHolder.put(tenantDomain, publicKey);
+                    issuerAlias = new IssuerAlias(tenantDomain);
+                    publicKeyHolder.put(issuerAlias, publicKey);
                 }
             }
 
@@ -201,5 +195,35 @@ public class JWTAuthenticator implements WebappAuthenticator {
             return null;
         }
         return this.properties.getProperty(name);
+    }
+
+    private class IssuerAlias {
+
+        private String issuer;
+        private String tenantDomain;
+        private final String DEFAULT_ISSUER = "default";
+
+        public  IssuerAlias(String tenantDomain) {
+            this.issuer = DEFAULT_ISSUER;
+            this.tenantDomain = tenantDomain;
+        }
+
+        public  IssuerAlias(String issuer, String tenantDomain) {
+            this.issuer = issuer;
+            this.tenantDomain = tenantDomain;
+        }
+
+        @Override
+        public int hashCode() {
+            int result = this.issuer.hashCode();
+            result = 31 * result + ("@" + this.tenantDomain).hashCode();
+            return result;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            return (obj instanceof IssuerAlias) && issuer.equals(
+                    ((IssuerAlias) obj).issuer) && tenantDomain == ((IssuerAlias) obj).tenantDomain;
+        }
     }
 }

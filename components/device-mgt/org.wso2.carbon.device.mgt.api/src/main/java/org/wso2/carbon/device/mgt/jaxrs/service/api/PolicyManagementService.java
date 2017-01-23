@@ -18,26 +18,36 @@
  */
 package org.wso2.carbon.device.mgt.jaxrs.service.api;
 
-import io.swagger.annotations.SwaggerDefinition;
-import io.swagger.annotations.Info;
-import io.swagger.annotations.ExtensionProperty;
-import io.swagger.annotations.Extension;
-import io.swagger.annotations.Tag;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.AuthorizationScope;
-import io.swagger.annotations.Authorization;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.Extension;
+import io.swagger.annotations.ExtensionProperty;
+import io.swagger.annotations.Info;
 import io.swagger.annotations.ResponseHeader;
+import io.swagger.annotations.SwaggerDefinition;
+import io.swagger.annotations.Tag;
+import org.wso2.carbon.apimgt.annotations.api.Scope;
+import org.wso2.carbon.apimgt.annotations.api.Scopes;
+import org.wso2.carbon.device.mgt.common.policy.mgt.Policy;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
 import org.wso2.carbon.device.mgt.jaxrs.beans.PolicyWrapper;
 import org.wso2.carbon.device.mgt.jaxrs.beans.PriorityUpdatedPolicyWrapper;
-import org.wso2.carbon.policy.mgt.common.Policy;
+import org.wso2.carbon.device.mgt.jaxrs.util.Constants;
 
 import javax.validation.Valid;
-import javax.ws.rs.*;
+import javax.validation.constraints.Size;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
@@ -62,6 +72,70 @@ import java.util.List;
                 @Tag(name = "device_management", description = "")
         }
 )
+@Scopes(
+        scopes = {
+                @Scope(
+                        name = "Adding a Policy",
+                        description = "Adding a Policy",
+                        key = "perm:policies:manage",
+                        permissions = {"/device-mgt/policies/manage"}
+                ),
+                @Scope(
+                        name = "Getting Details of Policies",
+                        description = "Getting Details of Policies",
+                        key = "perm:policies:get-details",
+                        permissions = {"/device-mgt/policies/view"}
+                ),
+                @Scope(
+                        name = "Getting Details of a Policy",
+                        description = "Getting Details of a Policy",
+                        key = "perm:policies:get-policy-details",
+                        permissions = {"/device-mgt/policies/view"}
+                ),
+                @Scope(
+                        name = "Updating a Policy",
+                        description = "Updating a Policy",
+                        key = "perm:policies:update",
+                        permissions = {"/device-mgt/policies/manage"}
+                ),
+                @Scope(
+                        name = "Removing Multiple Policies",
+                        description = "Removing Multiple Policies",
+                        key = "perm:policies:remove",
+                        permissions = {"/device-mgt/policies/manage"}
+                ),
+                @Scope(
+                        name = "Activating Policies",
+                        description = "Activating Policies",
+                        key = "perm:policies:activate",
+                        permissions = {"/device-mgt/policies/manage"}
+                ),
+                @Scope(
+                        name = "Deactivating Policies",
+                        description = "Deactivating Policies",
+                        key = "perm:policies:deactivate",
+                        permissions = {"/device-mgt/policies/manage"}
+                ),
+                @Scope(
+                        name = "Applying Changes on Policies",
+                        description = "Applying Changes on Policies",
+                        key = "perm:policies:changes",
+                        permissions = {"/device-mgt/policies/manage"}
+                ),
+                @Scope(
+                        name = "Updating the Policy Priorities",
+                        description = "Updating the Policy Priorities",
+                        key = "perm:policies:priorities",
+                        permissions = {"/device-mgt/policies/manage"}
+                ),
+                @Scope(
+                        name = "Fetching the Effective Policy",
+                        description = "Fetching the Effective Policy",
+                        key = "perm:policies:effective-policy",
+                        permissions = {"/device-mgt/policies/view"}
+                )
+        }
+)
 @Api(value = "Device Policy Management", description = "This API includes the functionality around device policy management")
 @Path("/policies")
 @Produces(MediaType.APPLICATION_JSON)
@@ -77,12 +151,10 @@ public interface PolicyManagementService {
             notes = "Add a policy using this REST API command. When adding a policy you will have the option of saving the policy or saving and publishing the policy." +
                     "Using this REST API you are able to save a created Policy and this policy will be in the inactive state.",
             tags = "Device Policy Management",
-            authorizations = {
-                    @Authorization(
-                            value="permission",
-                            scopes = { @AuthorizationScope(scope = "/device-mgt/policies/manage",
-                                    description = "Manage policies") }
-                    )
+            extensions = {
+                @Extension(properties = {
+                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:policies:manage")
+                })
             }
     )
     @ApiResponses(
@@ -147,12 +219,10 @@ public interface PolicyManagementService {
             notes = "Retrieve the details of all the policies in WSO2 EMM.",
             response = Policy.class,
             tags = "Device Policy Management",
-            authorizations = {
-                    @Authorization(
-                            value="permission",
-                            scopes = { @AuthorizationScope(scope = "/device-mgt/policies/view",
-                                    description = "View policies") }
-                    )
+            extensions = {
+                @Extension(properties = {
+                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:policies:get-details")
+                })
             }
     )
     @ApiResponses(
@@ -224,12 +294,10 @@ public interface PolicyManagementService {
             notes = "Retrieve the details of a policy that is in WSO2 EMM.",
             response = Policy.class,
             tags = "Device Policy Management",
-            authorizations = {
-                    @Authorization(
-                            value="permission",
-                            scopes = { @AuthorizationScope(scope = "/device-mgt/policies/view",
-                                    description = "View policies") }
-                    )
+            extensions = {
+                @Extension(properties = {
+                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:policies:get-policy-details")
+                })
             }
     )
     @ApiResponses(
@@ -294,12 +362,10 @@ public interface PolicyManagementService {
             value = "Updating a Policy",
             notes = "Make changes to an existing policy by updating the policy using this resource.",
             tags = "Device Policy Management",
-            authorizations = {
-                    @Authorization(
-                            value="permission",
-                            scopes = { @AuthorizationScope(scope = "/device-mgt/policies/manage",
-                                    description = "Manage policies") }
-                    )
+            extensions = {
+                @Extension(properties = {
+                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:policies:update")
+                })
             }
     )
     @ApiResponses(
@@ -364,12 +430,10 @@ public interface PolicyManagementService {
             value = "Removing Multiple Policies",
             notes = "Delete one or more than one policy using this API.",
             tags = "Device Policy Management",
-            authorizations = {
-                    @Authorization(
-                            value="permission",
-                            scopes = { @AuthorizationScope(scope = "/device-mgt/policies/manage",
-                                    description = "Manage policies") }
-                    )
+            extensions = {
+                @Extension(properties = {
+                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:policies:remove")
+                })
             }
     )
     @ApiResponses(
@@ -412,12 +476,10 @@ public interface PolicyManagementService {
             value = "Activating Policies",
             notes = "Publish a policy using this API to bring a policy that is in the inactive state to the active state.",
             tags = "Device Policy Management",
-            authorizations = {
-                    @Authorization(
-                            value="permission",
-                            scopes = { @AuthorizationScope(scope = "/device-mgt/policies/manage",
-                                    description = "Manage policies") }
-                    )
+            extensions = {
+                @Extension(properties = {
+                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:policies:activate")
+                })
             }
     )
     @ApiResponses(
@@ -455,12 +517,10 @@ public interface PolicyManagementService {
             value = "Deactivating Policies",
             notes = "Unpublish a policy using this API to bring a policy that is in the active state to the inactive state.",
             tags = "Device Policy Management",
-            authorizations = {
-                    @Authorization(
-                            value="permission",
-                            scopes = { @AuthorizationScope(scope = "/device-mgt/policies/manage",
-                                    description = "Manage policies") }
-                    )
+            extensions = {
+                @Extension(properties = {
+                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:policies:deactivate")
+                })
             }
     )
     @ApiResponses(
@@ -503,12 +563,10 @@ public interface PolicyManagementService {
                     " devices will not receive these changes immediately. Once all the required changes are made" +
                     " you need to apply the changes to push the policy changes to the existing devices.",
             tags = "Device Policy Management",
-            authorizations = {
-                    @Authorization(
-                            value="permission",
-                            scopes = { @AuthorizationScope(scope = "/device-mgt/policies/manage",
-                                    description = "Manage policies") }
-                    )
+            extensions = {
+                @Extension(properties = {
+                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:policies:changes")
+                })
             }
     )
     @ApiResponses(
@@ -533,13 +591,11 @@ public interface PolicyManagementService {
             value = "Updating the Policy Priorities",
             notes = "Make changes to the existing policy priority order by updating the priority order using this API.",
             tags = "Device Policy Management",
-            authorizations = {
-                    @Authorization(
-                            value="permission",
-                            scopes = { @AuthorizationScope(scope = "/device-mgt/policies/manage",
-                                    description = "Manage policies") }
-                    )
-            }
+            extensions = {
+            @Extension(properties = {
+                    @ExtensionProperty(name = Constants.SCOPE, value = "perm:policies:priorities")
+            })
+    }
     )
     @ApiResponses(
             value = {
@@ -562,5 +618,71 @@ public interface PolicyManagementService {
                     required = true)
                     List<PriorityUpdatedPolicyWrapper> priorityUpdatedPolicies);
 
-
+    @GET
+    @Path("/effective-policy/{deviceType}/{deviceId}")
+    @ApiOperation(
+            consumes = MediaType.APPLICATION_JSON,
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "GET",
+            value = "Getting the Effective Policy",
+            notes = "Retrieve the effective policy of a device using this API.",
+            tags = "Device Policy Management",
+            extensions = {
+                    @Extension(properties = {
+                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:policies:effective-policy")
+                    })
+            }
+    )
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            code = 200,
+                            message = "OK. \n Successfully fetched the policy.",
+                            response = Policy.class,
+                            responseHeaders = {
+                                    @ResponseHeader(
+                                            name = "Content-Type",
+                                            description = "The content type of the body"),
+                                    @ResponseHeader(
+                                            name = "ETag",
+                                            description = "Entity Tag of the response resource.\n" +
+                                                    "Used by caches, or in conditional requests."),
+                                    @ResponseHeader(
+                                            name = "Last-Modified",
+                                            description = "Date and time the resource was last modified.\n" +
+                                                    "Used by caches, or in conditional requests."),
+                            }
+                    ),
+                    @ApiResponse(
+                            code = 304,
+                            message = "Not Modified. \n Empty body because the client already has the latest version of the requested resource.\n"),
+                    @ApiResponse(
+                            code = 404,
+                            message = "Not Found. \n A specified policy was not found.",
+                            response = ErrorResponse.class),
+                    @ApiResponse(
+                            code = 406,
+                            message = "Not Acceptable.\n The requested media type is not supported."),
+                    @ApiResponse(
+                            code = 500,
+                            message = "Internal Server Error. \n Server error occurred while fetching the " +
+                                    "policy.",
+                            response = ErrorResponse.class)
+            })
+    Response getEffectivePolicy(
+            @ApiParam(
+                    name = "deviceType",
+                    value = "The device type, such as ios, android or windows.",
+                    required = true,
+                    allowableValues = "android, ios, windows")
+            @PathParam("deviceType")
+            @Size(max = 45)
+                    String deviceType,
+            @ApiParam(
+                    name = "deviceId",
+                    value = "The device identifier of the device you want ot get details.",
+                    required = true)
+            @PathParam("deviceId")
+            @Size(max = 45)
+                    String deviceId);
 }

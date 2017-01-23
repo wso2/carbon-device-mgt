@@ -24,14 +24,15 @@ import io.swagger.annotations.ExtensionProperty;
 import io.swagger.annotations.Extension;
 import io.swagger.annotations.Tag;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.AuthorizationScope;
-import io.swagger.annotations.Authorization;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import org.wso2.carbon.apimgt.annotations.api.Scope;
+import org.wso2.carbon.apimgt.annotations.api.Scopes;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
 import org.wso2.carbon.device.mgt.jaxrs.beans.PasswordResetWrapper;
+import org.wso2.carbon.device.mgt.jaxrs.util.Constants;
 
 import javax.validation.constraints.Size;
 import javax.ws.rs.*;
@@ -53,6 +54,16 @@ import javax.ws.rs.core.Response;
                 @Tag(name = "device_management", description = "")
         }
 )
+@Scopes(
+        scopes = {
+                @Scope(
+                        name = "View Users",
+                        description = "View Users",
+                        key = "perm:admin-users:view",
+                        permissions = {"/device-mgt/users/manage"}
+                )
+        }
+)
 @Path("/admin/users")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
@@ -61,7 +72,7 @@ import javax.ws.rs.core.Response;
         "Further, this is strictly restricted to admin users only ")
 public interface UserManagementAdminService {
 
-    @PUT
+    @POST
     @Path("/{username}/credentials")
     @ApiOperation(
             consumes = MediaType.APPLICATION_JSON,
@@ -71,12 +82,10 @@ public interface UserManagementAdminService {
             notes = "The EMM administrator is able to change the password of the users in " +
                     "the system and block them from logging into their EMM profile using this REST API.",
             tags = "User Management Administrative Service",
-            authorizations = {
-                    @Authorization(
-                            value="permission",
-                            scopes = { @AuthorizationScope(scope = "/device-mgt/users/manage", description
-                                    = "View Users") }
-                    )
+            extensions = {
+                @Extension(properties = {
+                        @ExtensionProperty(name = Constants.SCOPE, value = "perm:admin-users:view")
+                })
             }
     )
     @ApiResponses(value = {

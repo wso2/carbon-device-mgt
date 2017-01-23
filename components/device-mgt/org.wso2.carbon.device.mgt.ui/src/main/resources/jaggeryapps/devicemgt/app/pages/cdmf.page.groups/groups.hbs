@@ -41,7 +41,7 @@
             <a href="{{@app.context}}/group/add" class="cu-btn">
             <span class="icon fw-stack">
                 <i class="fw fw-add fw-stack-1x"></i>
-                <i class="fw fw-ring fw-stack-2x"></i>
+                <i class="fw fw-circle-outline fw-stack-2x"></i>
             </span>
                 Add Group
             </a>
@@ -80,7 +80,7 @@
                     <div id="ast-container" class="ast-container list-view">
                         <div class="ctrl-info-panel col-centered text-center wr-login">
                             <h3 class="text-muted">
-                                <i class="fw fw-grouping fw-3x"></i>
+                                <i class="fw fw-group fw-3x"></i>
                             </h3>
                             <h3 class="text-muted">You don't have any group registered at the moment</h3>
                             {{#if permissions.ADD_GROUP}}
@@ -88,7 +88,7 @@
                                     <!--suppress HtmlUnknownTarget -->
                                     <a href="{{@app.context}}/group/add" class="btn-operations btn-default">
                                         <span class="fw-stack">
-                                            <i class="fw fw-ring fw-stack-2x"></i>
+                                            <i class="fw fw-circle-outline fw-stack-2x"></i>
                                             <i class="fw fw-add fw-stack-1x"></i>
                                         </span>
                                         Add New Group
@@ -104,7 +104,7 @@
                         <h3 class="pull-left modal-title">
                             <span>
                                 <span class="fw-stack">
-                                    <i class="fw fw-ring fw-stack-2x"></i>
+                                    <i class="fw fw-circle-outline fw-stack-2x"></i>
                                     <i class="fw fw-share fw-stack-1x"></i>
                                 </span> Group Sharing
                             </span>
@@ -118,16 +118,15 @@
                         </div>
                         <div id="user-names">
                             <h4>
-                                Select user roles to manage group sharing
-                                <br><br>
-                                <div style="max-height: 200px; overflow: scroll" id="rolesListing">
-                                </div>
+                                Select user role(s)
                             </h4>
+                            <div class="wr-input-control" id="rolesListing">
+                            </div>
                         </div>
                     </div>
                     <div class="modal-footer">
                         <div class="buttons">
-                            {{#if permissions.CREATE_GROUP_ROLES}}
+                            {{#if permissions.ADD_ROLE}}
                                 <a href="{{@app.context}}/role/add" class="btn-operations">
                                     New Role
                                 </a>
@@ -147,7 +146,7 @@
                         <h3 class="pull-left modal-title">
                             <span>
                                 <span class="fw-stack">
-                                    <i class="fw fw-ring fw-stack-2x"></i>
+                                    <i class="fw fw-circle-outline fw-stack-2x"></i>
                                     <i class="fw fw-bookmark fw-stack-1x"></i>
                                 </span> Group Sharing Role
                             </span>
@@ -186,9 +185,9 @@
                     <div class="content">
                         <div class="row">
                             <div class="col-lg-5 col-md-6 col-centered">
-                                <h3>Group was successfully updated.</h3>
+                                <h3>Group successfully updated.</h3>
                                 <br />
-                                Do you need to Add / Remove users to the chosen roles?
+                                Do you want to manage users?
                                 <div class="buttons">
                                     <a href="{{@app.context}}/users" id="share-group-add-users-yes-link"
                                        class="btn-operations">
@@ -211,7 +210,7 @@
                             <div class="col-lg-5 col-md-6 col-centered">
                                 <h3>New Role was successfully created.</h3>
                                 <br />
-                                Do you need to Add / Remove users to the chosen roles?
+                                Do you need to Add / Remove users from the chosen roles?
                                 <div class="buttons">
                                     <a href="{{@app.context}}/users" id="share-group-add-users-yes-link"
                                        class="btn-operations">
@@ -264,7 +263,7 @@
                         <h3 class="pull-left modal-title">
                             <span>
                                 <span class="fw-stack">
-                                    <i class="fw fw-ring fw-stack-2x"></i>
+                                    <i class="fw fw-circle-outline fw-stack-2x"></i>
                                     <i class="fw fw-edit fw-stack-1x"></i>
                                 </span> Update Group
                             </span>
@@ -401,4 +400,20 @@
     {{#if groupCount}}
         {{js "js/listing.js"}}
     {{/if}}
+{{/zone}}
+
+{{#zone "topCss"}}
+    <style>
+        .select2-dropdown {
+            z-index: 999999999;
+        }
+
+        .wr-input-control {
+            color: black;
+        }
+
+        .select2-selection__choice {
+            font-size: medium;
+        }
+    </style>
 {{/zone}}

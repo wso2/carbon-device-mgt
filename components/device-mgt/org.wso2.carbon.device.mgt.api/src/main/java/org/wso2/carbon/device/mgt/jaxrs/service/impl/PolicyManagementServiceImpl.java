@@ -36,7 +36,7 @@ import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.FilteringUtil;
 import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.RequestValidationUtil;
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtUtil;
-import org.wso2.carbon.policy.mgt.common.Policy;
+import org.wso2.carbon.device.mgt.common.policy.mgt.Policy;
 import org.wso2.carbon.policy.mgt.common.PolicyAdministratorPoint;
 import org.wso2.carbon.policy.mgt.common.PolicyManagementException;
 import org.wso2.carbon.policy.mgt.core.PolicyManagerService;
@@ -168,7 +168,7 @@ public class PolicyManagementServiceImpl implements PolicyManagementService {
     @Override
     public Response getPolicy(@PathParam("id") int id, @HeaderParam("If-Modified-Since") String ifModifiedSince) {
         PolicyManagerService policyManagementService = DeviceMgtAPIUtils.getPolicyManagementService();
-        final org.wso2.carbon.policy.mgt.common.Policy policy;
+        final Policy policy;
         try {
             PolicyAdministratorPoint policyAdministratorPoint = policyManagementService.getPAP();
             policy = policyAdministratorPoint.getPolicy(id);
@@ -371,6 +371,31 @@ public class PolicyManagementServiceImpl implements PolicyManagementService {
                     new ErrorResponse.ErrorResponseBuilder().setCode(400l).setMessage("Policy priorities did "
                             + "not update. Bad Request.").build()).build();
         }
+    }
+
+    @GET
+    @Path("/effective-policy/{deviceType}/{deviceId}")
+    @Override
+    public Response getEffectivePolicy(@PathParam("deviceType") String deviceType, @PathParam("deviceId") String deviceId) {
+        PolicyManagerService policyManagementService = DeviceMgtAPIUtils.getPolicyManagementService();
+        final Policy policy;
+        try {
+            DeviceIdentifier deviceIdentifier = new DeviceIdentifier();
+            deviceIdentifier.setId(deviceId);
+            deviceIdentifier.setType(deviceType);
+            policy = policyManagementService.getAppliedPolicyToDevice(deviceIdentifier);
+            if (policy == null) {
+                return Response.status(Response.Status.NOT_FOUND).entity(
+                        new ErrorResponse.ErrorResponseBuilder().setMessage(
+                                "No policy found for device ID '" + deviceId + "'"+ deviceId).build()).build();
+            }
+        } catch (PolicyManagementException e) {
+            String msg = "Error occurred while retrieving policy corresponding to the id '" + deviceType + "'"+ deviceId;
+            log.error(msg, e);
+            return Response.serverError().entity(
+                    new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
+        }
+        return Response.status(Response.Status.OK).entity(policy).build();
     }
 
 }

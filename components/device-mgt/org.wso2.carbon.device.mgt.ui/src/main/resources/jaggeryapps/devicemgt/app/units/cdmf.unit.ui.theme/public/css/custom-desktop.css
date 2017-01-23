@@ -804,7 +804,7 @@ header .dropdown[aria-expanded=true], header .dropdown:hover {
 .navbar .container-fluid > .navbar-header .icon,
 .navbar .container > .navbar-collapse .icon,
 .navbar .container > .navbar-header .icon {
-  margin-bottom: 4px;
+  margin-bottom: 0px !important;
 }
 
 .navbar-nav {
@@ -1106,6 +1106,14 @@ header .dropdown[aria-expanded=true], header .dropdown:hover {
 .sidebar-wrapper[data-side=right].toggled {
   left: auto;
   right: 0;
+}
+
+.sidebar-wrapper-animation-fix{
+  -webkit-transition: left 0.5s ease, right 0.5s ease !important;
+  -moz-transition: left 0.5s ease, right 0.5s ease !important;
+  -ms-transition: left 0.5s ease, right 0.5s ease !important;
+  -o-transition: left 0.5s ease, right 0.5s ease !important;
+  transition: left 0.5s ease, right 0.5s ease !important;
 }
 
 ul.sidebar-messages {
@@ -1811,7 +1819,7 @@ a.btn:hover, .btn:hover {
   margin-right: -1px;
 }
 
-.remove-icon-ring-on-hover:hover .fw-ring {
+.remove-icon-ring-on-hover:hover .fw-circle-outline {
   display: none;
 }
 
@@ -4556,7 +4564,7 @@ a.wr-side-panel-toggle-btn.selected {
     color: #526A84;
 }
 .wr-advance-operations .wr-hidden-operations-nav a.selected span span > i.fw.fw-circle.fw-stack-2x{
-    color: #fff;
+    color: #526A84;
 }
 .wr-advance-operations .wr-hidden-operations-nav a.selected span span > i.fw.fw-circle.fw-stack-2x.fw-stroke.fw-inverse{
     color: #526A84;
@@ -5138,7 +5146,7 @@ a.cu-btn-inner.inverse:hover {
     font-size: 14px;
 }
 
-.multi-view .content .panel-body .well fieldset legend a:hover .icon.fw-stack .fw-ring {
+.multi-view .content .panel-body .well fieldset legend a:hover .icon.fw-stack .fw-circle-outline {
     display: none;
 }
 
@@ -6393,6 +6401,7 @@ ul.tiles .icon {
      background: #f4f4f4;
      border:1px solid #ddd;
      margin-bottom:10px;
+     padding: 15px;
  }
  .media .list-group-item a, .media .list-group-item a{
      background:#f4f4f4;
@@ -6507,6 +6516,10 @@ select > option:hover {
     font-weight:400;
 }
 
+.header .fw:before {
+  color: #000;
+}
+
 /* Adding style for required fields */
 .required:before {
   content: "*";
@@ -6532,6 +6545,9 @@ select > option:hover {
   padding-right: 5px;
 }
 
+.btn-operations:hover, .btn-operations:focus, .btn-operations:active {
+    color : #C7C7C7;
+}
 
 /**
  *
@@ -6546,21 +6562,21 @@ select > option:hover {
 }
 
 @media (min-width: 1200px){
-  table tbody tr {
-    width: 18% !important;
-  }
-  .table .fw-stack{
-    font-size: 1.2vw;
-  }
+    table tbody tr {
+        width: 14% !important;
+    }
+    .table .fw-stack{
+        font-size: 1.2vw;
+    }
 }
 
 @media (min-width: 1500px){
-  table tbody tr {
-    width: 14% !important;
-  }
-  .table .fw-stack{
-    font-size: 0.8vw;
-  }
+    table tbody tr {
+        width: 10% !important;
+    }
+    .table .fw-stack{
+        font-size: 0.8vw;
+    }
 }
 
 /** End **/

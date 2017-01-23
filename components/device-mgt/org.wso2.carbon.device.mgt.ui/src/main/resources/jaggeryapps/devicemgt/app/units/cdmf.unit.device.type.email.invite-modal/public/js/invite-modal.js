@@ -6,7 +6,17 @@
  * Opens a modal popup with input to enter multiple email addresses to send invites
  */
 function toggleEmailInvite(){
-    $(".modal-content").html($("#invite-by-email-modal").html());
+    modalDialog.header('<h4 class="pull-left modal-title"><span class="fw-stack add-margin-right-1x">' +
+                       '<i class="fw fw-user fw-stack-2x"></i>' +
+                       '<span class="fw-stack fw-move-right fw-move-bottom">' +
+                       '<i class="fw fw-circle-outline fw-stack-2x"></i>' +
+                       '<i class="fw fw-circle fw-stack-2x fw-stroke text-info"></i>' +
+                       '<i class="fw fw-add fw-stack-1x fw-inverse"></i></span></span>Send Invites</h4>');
+    modalDialog.content($("#invite-by-email-body").html());
+    modalDialog.footer('<div class="buttons">' +
+                       '<a href="javascript:sendInvites()" class="btn-operations btn-default">Send Invite(s)</a>' +
+                       '</div>');
+    modalDialog.show();
     //$('.modal-content .select2-container').remove();
     $('.modal-content #choose_usr_email').select2({
         tags: true,
@@ -22,7 +32,6 @@ function toggleEmailInvite(){
             return null;
         }
     });
-    showPopup();
 }
 
 function validateEmail(email) {
@@ -36,10 +45,7 @@ function validateEmail(email) {
  */
 function sendInvites(){
     var emailObj = $('.modal-content #choose_usr_email').select2('data'),
-        emailArr = [],
-        deviceEmailObj = {};
-
-    console.log(deviceTypeView);
+            emailArr = [];
 
     if(emailObj.length <= 0){
         console.log('no values to print');
@@ -48,14 +54,33 @@ function sendInvites(){
 
     emailObj.forEach(function(el){
         emailArr.push(el.text);
-    })
+    });
 
-    deviceEmailObj = {
+    var deviceEmailObj = {
         "deviceType" : deviceTypeView,
-        "emailList" : emailArr
-    }
-
-
-    hidePopup();
-    console.log(deviceEmailObj);
+        "recipients": emailArr
+    };
+    invokerUtil.post(
+            "/api/device-mgt/v1.0/users/enrollment-invite",
+            deviceEmailObj,
+            function () {
+                modalDialog.header("Invitations sent");
+                modalDialog.content("<h4>Invitation email for enrollment was successfully sent.</h4>");
+                modalDialog.footer('<div class="buttons"> <a href="#" id="invite-user-success-link" ' +
+                                   'class="btn-operations">Ok </a> </div>');
+                $("a#invite-user-success-link").click(function () {
+                    modalDialog.hide();
+                });
+            },
+            function () {
+                modalDialog.header('<span class="fw-stack"> <i class="fw fw-circle-outline fw-stack-2x"></i> <i class="fw ' +
+                                   'fw-error fw-stack-1x"></i> </span> Unexpected Error !');
+                modalDialog.content('An unexpected error occurred. Try again later.');
+                modalDialog.footer('<div class="buttons"> <a href="#" id="invite-user-error-link" ' +
+                                   'class="btn-operations">Ok </a> </div>');
+                $("a#invite-user-error-link").click(function () {
+                    modalDialog.hide();
+                });
+            }
+    );
 }

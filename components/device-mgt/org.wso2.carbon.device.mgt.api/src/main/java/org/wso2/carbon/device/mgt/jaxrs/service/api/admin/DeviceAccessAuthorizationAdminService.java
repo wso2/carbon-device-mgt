@@ -22,10 +22,17 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import org.wso2.carbon.apimgt.annotations.api.Permission;
+import io.swagger.annotations.Extension;
+import io.swagger.annotations.ExtensionProperty;
+import io.swagger.annotations.Info;
+import io.swagger.annotations.SwaggerDefinition;
+import io.swagger.annotations.Tag;
+import org.wso2.carbon.apimgt.annotations.api.Scope;
+import org.wso2.carbon.apimgt.annotations.api.Scopes;
 import org.wso2.carbon.device.mgt.common.authorization.DeviceAuthorizationResult;
 import org.wso2.carbon.device.mgt.jaxrs.beans.AuthorizationRequest;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
+import org.wso2.carbon.device.mgt.jaxrs.util.Constants;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -38,6 +45,32 @@ import javax.ws.rs.core.Response;
 @Api(value = "Device Authorization Administrative Service", description = "This an  API intended to be used by " +
         "'internal' components to log in as an admin user and validate whether the user/device are trusted entity." +
         "Further, this is strictly restricted to admin users only ")
+
+@SwaggerDefinition(
+        info = @Info(
+                version = "1.0.0",
+                title = "",
+                extensions = {
+                        @Extension(properties = {
+                                @ExtensionProperty(name = "name", value = "DeviceAccessAuthorizationAdminService"),
+                                @ExtensionProperty(name = "context", value = "/api/device-mgt/v1.0/admin/authorization"),
+                        })
+                }
+        ),
+        tags = {
+                @Tag(name = "device_management", description = "")
+        }
+)
+@Scopes(
+        scopes = {
+                @Scope(
+                        name = "Verify device authorization",
+                        description = "Verify device authorization",
+                        key = "perm:authorization:verify",
+                        permissions = {"/device-mgt/authorization/verify"}
+                )
+        }
+)
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 /**
@@ -53,7 +86,13 @@ public interface DeviceAccessAuthorizationAdminService {
             value = "Check for device access authorization\n",
             notes = "This is an internal API that can be used to check for authorization.",
             response = DeviceAuthorizationResult.class,
-            tags = "Authorization Administrative Service")
+            tags = "Authorization Administrative Service",
+            extensions = {
+                    @Extension(properties = {
+                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:authorization:verify")
+                    })
+            })
+
     @ApiResponses(value = {
             @ApiResponse(
                     code = 200,

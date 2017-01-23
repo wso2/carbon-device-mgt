@@ -37,14 +37,14 @@
     </Permission>
     <Permission>
         <name>Register application</name>
-        <path>/device-mgt/user/api/application</path>
+        <path>/device-mgt/api/application</path>
         <url>/register</url>
         <method>POST</method>
         <scope>application_user</scope>
     </Permission>
     <Permission>
         <name>Delete application</name>
-        <path>/device-mgt/user/api/application</path>
+        <path>/device-mgt/api/application</path>
         <url>/unregister</url>
         <method>DELETE</method>
         <scope>application_user</scope>

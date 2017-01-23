@@ -121,12 +121,12 @@ $(document).ready(function(){
                            $("#add-user-btn").prop('disabled', false);
                            if (data == 200) {
                                $('.wr-validation-summary strong').html(
-                                       "<i class=\"icon fw fw-ok\"></i> Successfully Submitted.");
+                                       "<i class=\"icon fw fw-success\"></i> Successfully Submitted.");
                                $('.wr-validation-summary').removeClass("alert-danger");
                                $('.wr-validation-summary').addClass("alert-success");
                            } else if (data == 201) {
                                $('.wr-validation-summary strong').html(
-                                       "<i class=\"icon fw fw-ok\"></i> User created succssfully. You will be " +
+                                       "<i class=\"icon fw fw-success\"></i> User created succssfully. You will be " +
                                        "redirected to login page.");
                                $('.wr-validation-summary').removeClass("alert-danger");
                                $('.wr-validation-summary').addClass("alert-success");

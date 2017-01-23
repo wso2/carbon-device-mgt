@@ -90,4 +90,5 @@ public final class DeviceManagementConstants {
         public static final String DB_TYPE_H2 = "H2";
         public static final String DB_TYPE_POSTGRESQL = "PostgreSQL";
     }
+
 }

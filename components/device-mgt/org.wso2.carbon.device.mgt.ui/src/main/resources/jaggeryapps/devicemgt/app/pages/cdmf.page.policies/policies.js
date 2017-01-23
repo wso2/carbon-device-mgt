@@ -30,9 +30,15 @@ function onRequest(context) {
     var page = {};
     var policyModule = require("/app/modules/business-controllers/policy.js")["policyModule"];
     var userModule = require("/app/modules/business-controllers/user.js")["userModule"];
+    var utility = require("/app/modules/utility.js")["utility"];
     var response = policyModule.getAllPolicies();
     if (response["status"] == "success") {
         var policyListToView = response["content"];
+        for(var index in policyListToView) {
+            if(policyListToView.hasOwnProperty(index)) {
+                policyListToView[index]["icon"] = utility.getDeviceThumb(policyListToView[index]["platform"]);
+            }
+        }
         page["policyListToView"] = policyListToView;
         var policyCount = policyListToView.length;
         if (policyCount == 0) {

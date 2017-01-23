@@ -404,10 +404,15 @@ public class RoleManagementServiceImpl implements RoleManagementService {
                 // Get all role permissions
                 final UIPermissionNode rolePermissions = this.getAllRolePermissions(roleName, userRealm);
                 List<String> permissions = new ArrayList<String>();
+                final UIPermissionNode emmRolePermissions = (UIPermissionNode)this.getRolePermissions(roleName);
+                List<String> emmConsolePermissions = new ArrayList<String>();
+                this.getAuthorizedPermissions(emmRolePermissions, emmConsolePermissions);
+                emmConsolePermissions.removeAll(new ArrayList<String>(Arrays.asList(roleInfo.getPermissions())));
                 this.getAuthorizedPermissions(rolePermissions, permissions);
                 for (String permission : roleInfo.getPermissions()) {
                     permissions.add(permission);
                 }
+                permissions.removeAll(emmConsolePermissions);
                 String [] allApplicablePerms = new String[permissions.size()];
                 allApplicablePerms = permissions.toArray(allApplicablePerms);
                 roleInfo.setPermissions(allApplicablePerms);

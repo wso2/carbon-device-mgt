@@ -49,7 +49,9 @@ import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManagementException;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Activity;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
+import org.wso2.carbon.device.mgt.common.policy.mgt.PolicyMonitoringManager;
 import org.wso2.carbon.device.mgt.common.spi.DeviceManagementService;
+import org.wso2.carbon.device.mgt.core.DeviceManagementConstants;
 import org.wso2.carbon.device.mgt.core.DeviceManagementPluginRepository;
 import org.wso2.carbon.device.mgt.core.dao.ApplicationDAO;
 import org.wso2.carbon.device.mgt.core.dao.DeviceDAO;
@@ -73,10 +75,12 @@ import org.wso2.carbon.user.api.UserStoreException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
 public class DeviceManagementProviderServiceImpl implements DeviceManagementProviderService,
@@ -752,21 +756,25 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     }
 
     @Override
-    public void sendEnrolmentInvitation(EmailMetaInfo metaInfo) throws DeviceManagementException {
+    public void sendEnrolmentInvitation(String templateName, EmailMetaInfo metaInfo) throws DeviceManagementException {
         Map<String, TypedValue<Class<?>, Object>> params = new HashMap<>();
-        params.put(org.wso2.carbon.device.mgt.core.DeviceManagementConstants.EmailAttributes.FIRST_NAME,
-                new TypedValue<Class<?>, Object>(String.class, metaInfo.getProperty("first-name")));
+        Properties props = metaInfo.getProperties();
+        Enumeration e = props.propertyNames();
+        while (e.hasMoreElements()) {
+            String key = (String) e.nextElement();
+            params.put(key, new TypedValue<Class<?>, Object>(String.class, props.getProperty(key)));
+        }
         params.put(org.wso2.carbon.device.mgt.core.DeviceManagementConstants.EmailAttributes.SERVER_BASE_URL_HTTPS,
                 new TypedValue<Class<?>, Object>(String.class, DeviceManagerUtil.getServerBaseHttpsUrl()));
         params.put(org.wso2.carbon.device.mgt.core.DeviceManagementConstants.EmailAttributes.SERVER_BASE_URL_HTTP,
                 new TypedValue<Class<?>, Object>(String.class, DeviceManagerUtil.getServerBaseHttpUrl()));
         try {
             EmailContext ctx =
-                    new EmailContext.EmailContextBuilder(new ContentProviderInfo("user-enrollment", params),
-                            metaInfo.getRecipients()).build();
+                    new EmailContext.EmailContextBuilder(new ContentProviderInfo(templateName, params),
+                                                         metaInfo.getRecipients()).build();
             DeviceManagementDataHolder.getInstance().getEmailSenderService().sendEmail(ctx);
-        } catch (EmailSendingFailedException e) {
-            throw new DeviceManagementException("Error occurred while sending enrollment invitation", e);
+        } catch (EmailSendingFailedException ex) {
+            throw new DeviceManagementException("Error occurred while sending enrollment invitation", ex);
         }
     }
 
@@ -787,7 +795,10 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                 new TypedValue<Class<?>, Object>(String.class, DeviceManagerUtil.getServerBaseHttpUrl()));
         try {
             EmailContext ctx =
-                    new EmailContext.EmailContextBuilder(new ContentProviderInfo("user-registration", params),
+                    new EmailContext.EmailContextBuilder(
+                            new ContentProviderInfo(
+                                    DeviceManagementConstants.EmailAttributes.USER_REGISTRATION_TEMPLATE,
+                                    params),
                             metaInfo.getRecipients()).build();
             DeviceManagementDataHolder.getInstance().getEmailSenderService().sendEmail(ctx);
         } catch (EmailSendingFailedException e) {
@@ -1222,17 +1233,9 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     @Override
     public List<MonitoringOperation> getMonitoringOperationList(String deviceType) {
         int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
-//        Map<DeviceTypeIdentifier, DeviceManagementService> deviceManagementServiceMap =
-//                pluginRepository.getAllDeviceManagementServices(tenantId);
-        DeviceManagementService dms = pluginRepository.getDeviceManagementService(deviceType, tenantId);
-      // ;
-       // OperationMonitoringTaskConfig operationMonitoringTaskConfig;
-        //Map<String, List<MonitoringOperation>> deviceTypeSpecificMonitoringOperations = new HashMap<>();
 
-//        for(DeviceTypeIdentifier dti : deviceManagementServiceMap.keySet()){
-//            dms = deviceManagementServiceMap.get(dti);
-//
-//        }
+        DeviceManagementService dms = pluginRepository.getDeviceManagementService(deviceType, tenantId);
+
         OperationMonitoringTaskConfig operationMonitoringTaskConfig = dms.getOperationMonitoringConfig();
         return operationMonitoringTaskConfig.getMonitoringOperation();
     }
@@ -1251,6 +1254,13 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         DeviceManagementService dms = pluginRepository.getDeviceManagementService(deviceType, tenantId);
         OperationMonitoringTaskConfig operationMonitoringTaskConfig = dms.getOperationMonitoringConfig();
         return operationMonitoringTaskConfig.isEnabled();
+    }
+
+    @Override
+    public PolicyMonitoringManager getPolicyMonitoringManager(String deviceType) {
+        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
+        DeviceManagementService dms = pluginRepository.getDeviceManagementService(deviceType, tenantId);
+        return dms.getPolicyMonitoringManager();
     }
 
     @Override

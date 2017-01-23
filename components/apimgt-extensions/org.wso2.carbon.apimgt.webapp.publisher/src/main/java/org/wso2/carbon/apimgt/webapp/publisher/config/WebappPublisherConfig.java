@@ -42,6 +42,7 @@ public class WebappPublisherConfig {
     private boolean isPublished;
     private boolean isEnabledUpdateApi;
     private Profiles profiles;
+    private static boolean isInitialized = false;
 
     private static WebappPublisherConfig config;
 
@@ -52,9 +53,13 @@ public class WebappPublisherConfig {
     }
 
     public static WebappPublisherConfig getInstance() {
-        if (config == null) {
-            throw new InvalidConfigurationStateException("Webapp Authenticator Configuration is not " +
-                    "initialized properly");
+        if (!isInitialized) {
+            try {
+                init();
+            } catch (WebappPublisherConfigurationFailedException e) {
+                throw new InvalidConfigurationStateException("Webapp Authenticator Configuration is not " +
+                        "initialized properly");
+            }
         }
         return config;
     }
@@ -95,7 +100,10 @@ public class WebappPublisherConfig {
         this.profiles = profiles;
     }
 
-    public static void init() throws WebappPublisherConfigurationFailedException {
+    public synchronized static void init() throws WebappPublisherConfigurationFailedException {
+        if (isInitialized) {
+            return;
+        }
         try {
             File emailSenderConfig = new File(WEBAPP_PUBLISHER_CONFIG_PATH);
             Document doc = WebappPublisherUtil.convertToDocument(emailSenderConfig);
@@ -105,6 +113,7 @@ public class WebappPublisherConfig {
             Unmarshaller unmarshaller = ctx.createUnmarshaller();
             //unmarshaller.setSchema(getSchema());
             config = (WebappPublisherConfig) unmarshaller.unmarshal(doc);
+            isInitialized = true;
         } catch (JAXBException e) {
             throw new WebappPublisherConfigurationFailedException("Error occurred while un-marshalling Webapp " +
                     "Publisher Config", e);

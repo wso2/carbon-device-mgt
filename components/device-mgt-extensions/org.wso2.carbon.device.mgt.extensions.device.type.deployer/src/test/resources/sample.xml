@@ -71,21 +71,42 @@
         <FileBasedProperties>true</FileBasedProperties>
         <!--if file based properties is set to false then the configuration will be picked from platform configuration-->
         <ConfigProperties>
-            <Property Name="mqtt.adapter.name">sample.mqtt.adapter</Property>
+            <Property Name="mqttAdapterName">sample.mqtt.adapter</Property>
             <Property Name="url">tcp://localhost:1883</Property>
             <Property Name="username">admin</Property>
-            <Property Name="dcrUrl">https://localhost:9443/dynamic-client-web/register</Property>
+            <Property Name="password">admin</Property>
             <Property Name="qos">0</Property>
             <Property Name="scopes"/>
             <Property Name="clearSession">true</Property>
         </ConfigProperties>
     </PushNotificationProvider>
 
+	<PolicyMonitoring enabled="true"/>
+
     <License>
         <Language>en_US</Language>
         <Version>1.0.0</Version>
         <Text>This is license text</Text>
     </License>
+
+	<TaskConfiguration>
+		<Enable>true</Enable>
+		<Frequency>600000</Frequency>
+		<Operations>
+			<Operation>
+				<Name>DEVICE_INFO</Name>
+				<RecurrentTimes>1</RecurrentTimes>
+			</Operation>
+			<Operation>
+				<Name>APPLICATION_LIST</Name>
+				<RecurrentTimes>5</RecurrentTimes>
+			</Operation>
+			<Operation>
+				<Name>DEVICE_LOCATION</Name>
+				<RecurrentTimes>1</RecurrentTimes>
+			</Operation>
+		</Operations>
+	</TaskConfiguration>
 
     <DataSource>
         <jndiConfig>
@@ -101,22 +122,5 @@
             </Table>
         </tableConfig>
     </DataSource>
-    <TaskConfiguration>
-        <Enable>true</Enable>
-        <Frequency>600000</Frequency>
-        <Operations>
-            <Operation>
-                <Name>DEVICE_INFO</Name>
-                <RecurrentTimes>1</RecurrentTimes>
-            </Operation>
-            <Operation>
-                <Name>APPLICATION_LIST</Name>
-                <RecurrentTimes>5</RecurrentTimes>
-            </Operation>
-            <Operation>
-                <Name>DEVICE_LOCATION</Name>
-                <RecurrentTimes>1</RecurrentTimes>
-            </Operation>
-        </Operations>
-    </TaskConfiguration>
+
 </DeviceTypeConfiguration>

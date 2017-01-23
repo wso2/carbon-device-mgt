@@ -26,7 +26,6 @@ import org.wso2.carbon.device.mgt.core.config.policy.PolicyConfiguration;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.ntask.core.service.TaskService;
 import org.wso2.carbon.policy.mgt.common.PolicyEvaluationPoint;
-import org.wso2.carbon.policy.mgt.common.spi.PolicyMonitoringService;
 import org.wso2.carbon.policy.mgt.core.PolicyManagerService;
 import org.wso2.carbon.policy.mgt.core.PolicyManagerServiceImpl;
 import org.wso2.carbon.policy.mgt.core.config.PolicyConfigurationManager;
@@ -46,9 +45,9 @@ import org.wso2.carbon.user.core.service.RealmService;
  * policy="dynamic"
  * bind="setRealmService"
  * unbind="unsetRealmService"
- * @scr.reference name="org.wso2.carbon.devicemgt.simple.policy.evaluation.manager"
+ * @scr.reference name="org.wso2.carbon.devicemgt.policy.evaluation.manager"
  * interface="org.wso2.carbon.policy.mgt.common.PolicyEvaluationPoint"
- * cardinality="1..1"
+ * cardinality="1..n"
  * policy="dynamic"
  * bind="setPEPService"
  * unbind="unsetPEPService"
@@ -58,12 +57,6 @@ import org.wso2.carbon.user.core.service.RealmService;
  * policy="dynamic"
  * bind="setDeviceManagementService"
  * unbind="unsetDeviceManagementService"
- * @scr.reference name="org.wso2.carbon.policy.mgt.common.policy.monitor"
- * interface="org.wso2.carbon.policy.mgt.common.spi.PolicyMonitoringService"
- * cardinality="0..n"
- * policy="dynamic"
- * bind="setPolicyMonitoringService"
- * unbind="unsetPolicyMonitoringService"
  * @scr.reference name="ntask.component"
  * interface="org.wso2.carbon.ntask.core.service.TaskService"
  * cardinality="1..1"
@@ -159,14 +152,14 @@ public class PolicyManagementServiceComponent {
         if (log.isDebugEnabled()) {
             log.debug("Setting Policy Information Service");
         }
-        PolicyManagementDataHolder.getInstance().setPolicyEvaluationPoint(pepService);
+        PolicyManagementDataHolder.getInstance().setPolicyEvaluationPoint(pepService.getName(), pepService);
     }
 
     protected void unsetPEPService(PolicyEvaluationPoint pepService) {
         if (log.isDebugEnabled()) {
             log.debug("Removing Policy Information Service");
         }
-        PolicyManagementDataHolder.getInstance().setPolicyEvaluationPoint(null);
+        PolicyManagementDataHolder.getInstance().removePolicyEvaluationPoint(pepService);
     }
 
     protected void setDeviceManagementService(DeviceManagementProviderService deviceManagerService) {
@@ -181,24 +174,6 @@ public class PolicyManagementServiceComponent {
             log.debug("Removing Device Management Service");
         }
         PolicyManagementDataHolder.getInstance().setDeviceManagementService(null);
-    }
-
-
-    protected void setPolicyMonitoringService(PolicyMonitoringService policyMonitoringService) {
-        if (log.isDebugEnabled()) {
-            log.debug("Setting Policy Monitoring Service for " + policyMonitoringService.getType());
-        }
-        // TODO: FIX THE device type by taking from properties
-        PolicyManagementDataHolder.getInstance().setPolicyMonitoringService(policyMonitoringService.getType(),
-                policyMonitoringService);
-    }
-
-    protected void unsetPolicyMonitoringService(PolicyMonitoringService policyMonitoringService) {
-        if (log.isDebugEnabled()) {
-            log.debug("Removing the Policy Monitoring Service for " + policyMonitoringService.getType());
-        }
-        // TODO: FIX THE device type by taking from properties
-        PolicyManagementDataHolder.getInstance().unsetPolicyMonitoringService(policyMonitoringService.getType());
     }
 
     protected void setTaskService(TaskService taskService) {

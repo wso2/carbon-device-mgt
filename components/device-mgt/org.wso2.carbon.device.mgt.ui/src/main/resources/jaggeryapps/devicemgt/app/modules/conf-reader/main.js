@@ -22,6 +22,7 @@ var conf = function () {
         conf = require("/app/conf/config.json");
         var pinch = require("/app/modules/conf-reader/pinch.min.js")["pinch"];
         var server = require("carbon")["server"];
+        var process = require("process");
         pinch(conf, /^/,
             function (path, key, value) {
                 if ((typeof value === "string") && value.indexOf("%https.ip%") > -1) {
@@ -33,8 +34,26 @@ var conf = function () {
                 } else if ((typeof value === "string") && value.indexOf("%date-year%") > -1) {
                     var year = new Date().getFullYear();
                     return value.replace("%date-year%", year);
+                } else if ((typeof value === "string") && value.indexOf("%server.ip%") > -1) {
+                    var getProperty = require("process").getProperty;
+                    return value.replace("%server.ip%", getProperty("carbon.local.ip"));
+                } else {
+                    var paramPattern = new RegExp("%(.*?)%", "g");
+                    var out = value;
+                    while ((matches = paramPattern.exec(value)) !== null) {
+                        // This is necessary to avoid infinite loops with zero-width matches
+                        if (matches.index === paramPattern.lastIndex) {
+                            paramPattern.lastIndex++;
+                        }
+                        if (matches.length == 2) {
+                            var property = process.getProperty(matches[1]);
+                            if (property) {
+                                out = out.replace(new RegExp("%" + matches[1] + "%", "g"), property);
+                            }
+                        }
+                    }
+                    return out;
                 }
-                return value;
             }
         );
         application.put("CONF", conf);

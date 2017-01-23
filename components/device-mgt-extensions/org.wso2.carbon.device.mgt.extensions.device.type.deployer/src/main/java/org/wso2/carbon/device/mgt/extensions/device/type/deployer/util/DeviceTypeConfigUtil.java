@@ -21,8 +21,10 @@ package org.wso2.carbon.device.mgt.extensions.device.type.deployer.util;
 import org.w3c.dom.Document;
 import org.wso2.carbon.device.mgt.extensions.device.type.deployer.config.exception.DeviceTypeConfigurationException;
 
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 
 /**
@@ -34,8 +36,12 @@ public class DeviceTypeConfigUtil {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setNamespaceAware(true);
         try {
+            factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
             DocumentBuilder docBuilder = factory.newDocumentBuilder();
             return docBuilder.parse(file);
+        } catch (ParserConfigurationException e) {
+            e.printStackTrace();
+            return null;
         } catch (Exception e) {
             throw new DeviceTypeConfigurationException("Error occurred while parsing file, while converting " +
                     "to a org.w3c.dom.Document", e);

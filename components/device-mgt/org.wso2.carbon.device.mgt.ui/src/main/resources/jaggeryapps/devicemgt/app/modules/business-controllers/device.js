@@ -24,6 +24,7 @@ deviceModule = function () {
     var constants = require('/app/modules/constants.js');
     var devicemgtProps = require("/app/modules/conf-reader/main.js")["conf"];
     var serviceInvokers = require("/app/modules/oauth/token-protected-service-invokers.js")["invokers"];
+    var batchProvider = require("/app/modules/batch-provider-api.js")["batchProviders"];
 
     var publicMethods = {};
     var privateMethods = {};
@@ -67,6 +68,36 @@ deviceModule = function () {
             log.error("User object was not found in the session");
             throw constants["ERRORS"]["USER_NOT_FOUND"];
         }
+        var userName = carbonUser.username + "@" + carbonUser.domain;
+
+        var locationDataSet = [];
+        switch(deviceType) {
+            case 'android':
+                locationDataSet = batchProvider.getData(userName, deviceId, deviceType);
+                break;
+            case 'android_sense':
+                locationDataSet = batchProvider.getData(userName, deviceId, deviceType);
+                break;
+
+        }
+
+
+        var locationData = [];
+        var locationTimeData = [];
+        for (var i = 0 ; i < locationDataSet.length; i++) {
+            var gpsReading = {};
+            var gpsReadingTimes = {};
+            gpsReading.lat = locationDataSet[i].latitude;
+            gpsReading.lng = locationDataSet[i].longitude;
+            if (deviceType == "android") {
+                gpsReadingTimes.time = locationDataSet[i].timeStamp;
+            } else {
+                gpsReadingTimes.time = locationDataSet[i].meta_timestamp;
+            }
+            locationData.push(gpsReading);
+            locationTimeData.push(gpsReadingTimes);
+        }
+
         var utility = require('/app/modules/utility.js')["utility"];
         try {
             utility.startTenantFlow(carbonUser);
@@ -144,6 +175,10 @@ deviceModule = function () {
                         if (device["deviceInfo"]) {
                             filteredDeviceData["latestDeviceInfo"] = device["deviceInfo"];
                         }
+                        var locationHistory = {};
+                        locationHistory.locations = locationData;
+                        locationHistory.times = locationTimeData;
+                        filteredDeviceData["locationHistory"] = locationHistory;
                         response["content"] = filteredDeviceData;
                         response["status"] = "success";
                         return response;

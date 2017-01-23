@@ -17,8 +17,9 @@
  */
 
 package org.wso2.carbon.policy.mgt.common;
-import org.wso2.carbon.device.mgt.common.Feature;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
+import org.wso2.carbon.device.mgt.common.policy.mgt.Policy;
+import org.wso2.carbon.device.mgt.common.policy.mgt.Profile;
 
 import java.util.List;
 

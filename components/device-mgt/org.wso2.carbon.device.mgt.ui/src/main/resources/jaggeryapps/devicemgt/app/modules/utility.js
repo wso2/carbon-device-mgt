@@ -125,5 +125,52 @@ utility = function () {
         return null;
     };
 
+    publicMethods.getDeviceTypesScopesList = function () {
+        var dirs = new File("/app/units/").listFiles();
+        var scopesList = [];
+        for (var i = 0; i < dirs.length; i++) {
+            var unitName = dirs[i].getName();
+            if (unitName.match(/^cdmf\.unit\.device\.type\..*\.type-view$/g)) {
+                var deviceTypeConfigFile = new File("/app/units/" + unitName + "/private/config.json");
+                if (deviceTypeConfigFile.isExists()) {
+                    try {
+                        deviceTypeConfigFile.open("r");
+                        var config = deviceTypeConfigFile.readAll();
+                        config = config.replace("%https.ip%", server.address("https"));
+                        config = config.replace("%http.ip%", server.address("http"));
+                        var deviceTypeConfig = parse(config);
+                        if (deviceTypeConfig.deviceType && deviceTypeConfig.deviceType.scopes) {
+                            scopesList = scopesList.concat(deviceTypeConfig.deviceType.scopes);
+                        }
+                    } catch (err) {
+                        log.error("Error while reading device config file for `" + deviceType + "`: " + err);
+                    } finally {
+                        deviceTypeConfigFile.close();
+                    }
+                }
+            }
+        }
+        return scopesList;
+    };
+
+
+    /**
+     * Escapes special characters such as <,>,',",...etc
+     * This will prevent XSS attacks upon JSON.
+     * @param text
+     * @returns {*}
+     */
+    publicMethods.encodeJson = function (text) {
+        return text
+            .replace(/\\u003c/g, "&lt;")
+            .replace(/</g, "&lt;")
+            .replace(/\\u003e/g, "&gt;")
+            .replace(/>/g, "&gt;")
+            .replace(/\\u0027/g, "&#39;")
+            .replace(/'/g, "&#39;")
+            .replace(/\\"/g, "&quot;")
+            .replace(/\\u0022/g, "&quot;")
+    };
+
     return publicMethods;
 }();

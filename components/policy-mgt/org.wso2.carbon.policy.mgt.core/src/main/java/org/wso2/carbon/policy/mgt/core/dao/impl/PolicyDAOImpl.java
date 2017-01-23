@@ -23,9 +23,9 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.policy.mgt.common.Criterion;
-import org.wso2.carbon.policy.mgt.common.DeviceGroupWrapper;
-import org.wso2.carbon.policy.mgt.common.Policy;
-import org.wso2.carbon.policy.mgt.common.PolicyCriterion;
+import org.wso2.carbon.device.mgt.common.policy.mgt.DeviceGroupWrapper;
+import org.wso2.carbon.device.mgt.common.policy.mgt.Policy;
+import org.wso2.carbon.device.mgt.common.policy.mgt.PolicyCriterion;
 import org.wso2.carbon.policy.mgt.core.dao.PolicyDAO;
 import org.wso2.carbon.policy.mgt.core.dao.PolicyManagementDAOFactory;
 import org.wso2.carbon.policy.mgt.core.dao.PolicyManagerDAOException;
@@ -1358,6 +1358,11 @@ public class PolicyDAOImpl implements PolicyDAO {
 
             String deleteCriteria = "DELETE FROM DM_POLICY_CRITERIA WHERE POLICY_ID = ?";
             stmt = conn.prepareStatement(deleteCriteria);
+            stmt.setInt(1, policyId);
+            stmt.executeUpdate();
+
+            String deleteGroup = "DELETE FROM DM_DEVICE_GROUP_POLICY WHERE POLICY_ID = ?";
+            stmt = conn.prepareStatement(deleteGroup);
             stmt.setInt(1, policyId);
             stmt.executeUpdate();
 

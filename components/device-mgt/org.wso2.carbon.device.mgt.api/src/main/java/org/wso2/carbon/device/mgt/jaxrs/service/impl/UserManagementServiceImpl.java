@@ -104,8 +104,11 @@ public class UserManagementServiceImpl implements UserManagementService {
                             userInfo.getEmailAddress());
             // calling addUser method of carbon user api
             List<String> tmpRoles = new ArrayList<>();
+            String[] userInfoRoles = userInfo.getRoles();
             tmpRoles.add(DEFAULT_DEVICE_USER);
-            tmpRoles.addAll(Arrays.asList(userInfo.getRoles()));
+            if (userInfoRoles != null) {
+                tmpRoles.addAll(Arrays.asList(userInfoRoles));
+            }
             String[] roles = new String[tmpRoles.size()];
             tmpRoles.toArray(roles);
 

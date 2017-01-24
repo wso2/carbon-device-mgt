@@ -24,6 +24,7 @@ var uriMatcher = new URIMatcher(String(uri));
 
 var devicemgtProps = require("/app/modules/conf-reader/main.js")["conf"];
 var serviceInvokers = require("/app/modules/oauth/token-protected-service-invokers.js")["invokers"];
+var utility = require("/app/modules/utility.js")["utility"];
 
 function appendQueryParam (url, queryParam , value) {
     if (url.indexOf("?") > 0) {
@@ -60,7 +61,7 @@ if (uriMatcher.match("/{context}/api/data-tables/invoker")) {
             // response callback
             function (backendResponse) {
                 response["status"] = backendResponse["status"];
-                response["content"] =  backendResponse["responseText"];
+                response["content"] =  utility.encodeJson(backendResponse["responseText"]);
             }
     );
 }

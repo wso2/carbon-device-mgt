@@ -62,27 +62,32 @@ public class ProcessorImpl implements Processor {
     @Override
     public List<Device> execute(SearchContext searchContext) throws SearchMgtException {
 
+        if(!Utils.validateOperators(searchContext.getConditions())){
+            throw new SearchMgtException("Invalid validator is provided.");
+        }
+
         QueryBuilder queryBuilder = new QueryBuilderImpl();
         List<Device> generalDevices = new ArrayList<>();
         List<List<Device>> allANDDevices = new ArrayList<>();
         List<List<Device>> allORDevices = new ArrayList<>();
         List<Device> locationDevices = new ArrayList<>();
         try {
-            Map<String, List<String>> queries = queryBuilder.buildQueries(searchContext.getConditions());
             DeviceManagementDAOFactory.openConnection();
+            Map<String, List<QueryHolder>> queries = queryBuilder.buildQueries(searchContext.getConditions());
+
 
             if (queries.containsKey(Constants.GENERAL)) {
                 generalDevices = searchDeviceDetailsTable(queries.get(Constants.GENERAL).get(0));
             }
             if (queries.containsKey(Constants.PROP_AND)) {
-                for (String query : queries.get(Constants.PROP_AND)) {
-                    List<Device> andDevices = searchDeviceDetailsTable(query);
+                for (QueryHolder queryHolder : queries.get(Constants.PROP_AND)) {
+                    List<Device> andDevices = searchDeviceDetailsTable(queryHolder);
                     allANDDevices.add(andDevices);
                 }
             }
             if (queries.containsKey(Constants.PROP_OR)) {
-                for (String query : queries.get(Constants.PROP_OR)) {
-                    List<Device> orDevices = searchDeviceDetailsTable(query);
+                for (QueryHolder queryHolder : queries.get(Constants.PROP_OR)) {
+                    List<Device> orDevices = searchDeviceDetailsTable(queryHolder);
                     allORDevices.add(orDevices);
                 }
             }
@@ -141,12 +146,12 @@ public class ProcessorImpl implements Processor {
     @Override
     public List<Device> getUpdatedDevices(long epochTime) throws SearchMgtException {
 
-        if((1 + (int)Math.floor(Math.log10(epochTime))) <=10 ) {
+        if ((1 + (int) Math.floor(Math.log10(epochTime))) <= 10) {
             epochTime = epochTime * 1000;
         }
         QueryBuilder queryBuilder = new QueryBuilderImpl();
         try {
-            String query =  queryBuilder.processUpdatedDevices(epochTime);
+            QueryHolder query = queryBuilder.processUpdatedDevices(epochTime);
             DeviceManagementDAOFactory.openConnection();
             return searchDeviceDetailsTable(query);
         } catch (InvalidOperatorException e) {
@@ -218,7 +223,7 @@ public class ProcessorImpl implements Processor {
         for (List<Device> devices : deLists) {
             Map<Integer, Device> deviceMap = new HashMap<>();
 
-            for (Device device: devices) {
+            for (Device device : devices) {
                 deviceMap.put(device.getId(), device);
             }
             maps.add(deviceMap);
@@ -241,9 +246,9 @@ public class ProcessorImpl implements Processor {
         }
     }
 
-    private List<Device> searchDeviceDetailsTable(String query) throws SearchDAOException {
+    private List<Device> searchDeviceDetailsTable(QueryHolder queryHolder) throws SearchDAOException {
         if (log.isDebugEnabled()) {
-            log.debug("Query : " + query);
+            log.debug("Query : " + queryHolder.getQuery());
         }
         Connection conn;
         PreparedStatement stmt = null;
@@ -252,7 +257,26 @@ public class ProcessorImpl implements Processor {
         Map<Integer, Integer> devs = new HashMap<>();
         try {
             conn = this.getConnection();
-            stmt = conn.prepareStatement(query);
+            stmt = conn.prepareStatement(queryHolder.getQuery());
+
+            int x = 1;
+            ValueType[] types = queryHolder.getTypes();
+            for (ValueType type : types) {
+                if (type.getColumnType().equals(ValueType.columnType.STRING)) {
+                    stmt.setString(x, type.getStringValue());
+                    x++;
+                } else if (type.getColumnType().equals(ValueType.columnType.INTEGER)) {
+                    stmt.setInt(x, type.getIntValue());
+                    x++;
+                } else if (type.getColumnType().equals(ValueType.columnType.LONG)){
+                    stmt.setLong(x, type.getLongValue());
+                    x++;
+                } else  if(type.getColumnType().equals(ValueType.columnType.DOUBLE)){
+                    stmt.setDouble(x, type.getDoubleValue());
+                    x++;
+                }
+            }
+
             rs = stmt.executeQuery();
             while (rs.next()) {
                 if (!devs.containsKey(rs.getInt("ID"))) {
@@ -362,8 +386,8 @@ public class ProcessorImpl implements Processor {
             }
         } catch (SQLException e) {
             throw new SearchDAOException("Error occurred while retrieving the device properties.", e);
-        }  finally {
-            DeviceManagementDAOUtil.cleanupResources(stmt,rs);
+        } finally {
+            DeviceManagementDAOUtil.cleanupResources(stmt, rs);
         }
         return devices;
     }

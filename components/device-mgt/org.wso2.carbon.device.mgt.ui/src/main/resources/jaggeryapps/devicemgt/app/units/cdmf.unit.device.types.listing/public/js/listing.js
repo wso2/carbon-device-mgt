@@ -41,22 +41,22 @@ $(document).ready(function () {
 
     /* for device list sorting drop down */
     $(".ctrl-filter-type-switcher").popover({
-                                                html : true,
-                                                content : function () {
-                                                    return $("#content-filter-types").html();
-                                                }
-                                            });
+        html: true,
+        content: function () {
+            return $("#content-filter-types").html();
+        }
+    });
 
-    $(".ast-container").on("click", ".claim-btn", function(e){
+    $(".ast-container").on("click", ".claim-btn", function (e) {
         e.stopPropagation();
         var deviceId = $(this).data("deviceid");
         var deviceListing = $("#device-listing");
         var currentUser = deviceListing.data("current-user");
         var serviceURL = "/temp-controller-agent/enrollment/claim?username=" + currentUser;
         var deviceIdentifier = {id: deviceId, type: "TemperatureController"};
-        invokerUtil.put(serviceURL, deviceIdentifier, function(message){
+        invokerUtil.put(serviceURL, deviceIdentifier, function (message) {
             console.log(message);
-        }, function(message){
+        }, function (message) {
             console.log(message);
         });
     });
@@ -68,15 +68,15 @@ $(document).ready(function () {
  * @param button: Select All Device button
  */
 function selectAllDevices(button) {
-    if(!$(button).data('select')){
-        $(deviceCheckbox).each(function(index){
+    if (!$(button).data('select')) {
+        $(deviceCheckbox).each(function (index) {
             $(this).prop('checked', true);
             addDeviceSelectedClass(this);
         });
         $(button).data('select', true);
         $(button).html('Deselect All Devices');
-    }else{
-        $(deviceCheckbox).each(function(index){
+    } else {
+        $(deviceCheckbox).each(function (index) {
             $(this).prop('checked', false);
             addDeviceSelectedClass(this);
         });
@@ -92,7 +92,7 @@ function selectAllDevices(button) {
  * @param selection: Selection button
  */
 function changeDeviceView(view, selection) {
-    $(".view-toggle").each(function() {
+    $(".view-toggle").each(function () {
         $(this).removeClass("selected");
     });
     $(selection).addClass("selected");
@@ -117,27 +117,33 @@ function addDeviceSelectedClass(checkbox) {
 }
 
 function toTitleCase(str) {
-    return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+    return str.replace(/\w\S*/g, function (txt) {
+        return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+    });
 }
 
 var deviceTypeCount, compiledDeviceTypesCount = 0;
 
-function loadDevices(searchType, searchParam){
+function htmlspecialchars(text) {
+    return jQuery('<div/>').text(text).html();
+}
+
+function loadDevices(searchType, searchParam) {
     var deviceListing = $("#device-listing");
     var deviceListingSrc = deviceListing.attr("src");
     var currentUser = deviceListing.data("currentUser");
 
     $('#ast-container').html("");
     deviceTypeCount = deviceTypesList.length;
-    if(deviceTypesList.length > 0){
+    if (deviceTypesList.length > 0) {
         for (var i = 0; i < deviceTypesList.length; i++) {
             var viewModel = {};
             viewModel.thumb = deviceTypesList[i].thumb;
             viewModel.appContext = clientJsAppContext;
-            viewModel.deviceTypeName = deviceTypesList[i].deviceTypeName;
-            viewModel.deviceTypeId = deviceTypesList[i].deviceTypeId;
-            viewModel.deviceCategory = deviceTypesList[i].deviceCategory;
-            viewModel.deviceTypeLabel = deviceTypesList[i].deviceTypeLabel;
+            viewModel.deviceTypeName = htmlspecialchars(deviceTypesList[i].deviceTypeName);
+            viewModel.deviceTypeId = htmlspecialchars(deviceTypesList[i].deviceTypeId);
+            viewModel.deviceCategory = htmlspecialchars(deviceTypesList[i].deviceCategory);
+            viewModel.deviceTypeLabel = htmlspecialchars(deviceTypesList[i].deviceTypeLabel);
             compileTemplate(viewModel, deviceListingSrc);
         }
     } else {
@@ -155,12 +161,12 @@ function loadDevices(searchType, searchParam){
 
 }
 
-function compileTemplate(viewModel, templateSrc){
+function compileTemplate(viewModel, templateSrc) {
     $.template("device-listing", templateSrc, function (template) {
         $("#ast-container").html($("#ast-container").html() + template(viewModel));
         compiledDeviceTypesCount++;
-        if(deviceTypeCount == compiledDeviceTypesCount){
-            $('#device-type-grid').datatables_extended({"bFilter": false, "order": [[ 1, "asc" ]]});
+        if (deviceTypeCount == compiledDeviceTypesCount) {
+            $('#device-type-grid').datatables_extended({"bFilter": false, "order": [[1, "asc"]]});
         }
     });
 }
@@ -171,15 +177,14 @@ function compileTemplate(viewModel, templateSrc){
 var deviceCheckbox = "#ast-container .ctrl-wr-asset .itm-select input[type='checkbox']";
 var assetContainer = "#ast-container";
 
-function openCollapsedNav(){
+function openCollapsedNav() {
     $('.wr-hidden-nav-toggle-btn').addClass('active');
-    $('#hiddenNav').slideToggle('slideDown', function(){
-        if($(this).css('display') == 'none'){
+    $('#hiddenNav').slideToggle('slideDown', function () {
+        if ($(this).css('display') == 'none') {
             $('.wr-hidden-nav-toggle-btn').removeClass('active');
         }
     });
 }
-
 
 
 /*
@@ -196,22 +201,22 @@ $(document).ready(function () {
 
     /* for device list sorting drop down */
     $(".ctrl-filter-type-switcher").popover({
-                                                html : true,
-                                                content : function () {
-                                                    return $("#content-filter-types").html();
-                                                }
-                                            });
+        html: true,
+        content: function () {
+            return $("#content-filter-types").html();
+        }
+    });
 
-    $(".ast-container").on("click", ".claim-btn", function(e){
+    $(".ast-container").on("click", ".claim-btn", function (e) {
         e.stopPropagation();
         var deviceId = $(this).data("deviceid");
         var deviceListing = $("#device-listing");
         var currentUser = deviceListing.data("current-user");
         var serviceURL = "/temp-controller-agent/enrollment/claim?username=" + currentUser;
         var deviceIdentifier = {id: deviceId, type: "TemperatureController"};
-        invokerUtil.put(serviceURL, deviceIdentifier, function(message){
+        invokerUtil.put(serviceURL, deviceIdentifier, function (message) {
             console.log(message);
-        }, function(message){
+        }, function (message) {
             console.log(message);
         });
     });
@@ -222,20 +227,20 @@ $(document).ready(function () {
     $("[data-toggle=popover]").popover();
 
     $(".ctrl-filter-type-switcher").popover({
-                                                html : true,
-                                                content: function() {
-                                                    return $('#content-filter-types').html();
-                                                }
-                                            });
+        html: true,
+        content: function () {
+            return $('#content-filter-types').html();
+        }
+    });
 
     $('#nav').affix({
-                        offset: {
-                            top: $('header').height()
-                        }
-                    });
+        offset: {
+            top: $('header').height()
+        }
+    });
 
-    $(document).on("click", "tr.clickable-row", function(){
-        window.document.location =  $(this).data('href');
+    $(document).on("click", "tr.clickable-row", function () {
+        window.document.location = $(this).data('href');
     })
 
 });

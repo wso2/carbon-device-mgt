@@ -375,15 +375,15 @@ function loadDevices(searchType, searchParam) {
 
     var fnCreatedRow = function (row, data, dataIndex) {
         $(row).attr('data-type', 'selectable');
-        $(row).attr('data-deviceid', data.deviceIdentifier);
-        $(row).attr('data-devicetype', data.deviceType);
-        $(row).attr('data-url', context + '/device/' + data.deviceType + '?id=' + data.deviceIdentifier);
-        var model = getPropertyValue(data.properties, 'DEVICE_MODEL');
-        var vendor = getPropertyValue(data.properties, 'VENDOR');
-        var owner = data.user;
-        var status = data.status;
-        var ownership = data.ownership;
-        var deviceType = data.deviceType;
+        $(row).attr('data-deviceid', htmlspecialchars(data.deviceIdentifier));
+        $(row).attr('data-devicetype', htmlspecialchars(data.deviceType));
+        $(row).attr('data-url', context + '/device/' + htmlspecialchars(data.deviceType) + '?id=' + htmlspecialchars(data.deviceIdentifier));
+        var model = htmlspecialchars(getPropertyValue(data.properties, 'DEVICE_MODEL'));
+        var vendor = htmlspecialchars(getPropertyValue(data.properties, 'VENDOR'));
+        var owner = htmlspecialchars(data.user);
+        var status = htmlspecialchars(data.status);
+        var ownership = htmlspecialchars(data.ownership);
+        var deviceType = htmlspecialchars(data.deviceType);
         var category = getDeviceTypeCategory(deviceType);
         $.each($('td', row), function (colIndex) {
             switch (colIndex) {
@@ -416,6 +416,10 @@ function loadDevices(searchType, searchParam) {
             }
         });
     };
+
+    function htmlspecialchars(text){
+        return jQuery('<div/>').text(text).html();
+    }
 
     var dataFilter = function (data) {
         data = JSON.parse(data);
@@ -455,6 +459,13 @@ function loadDevices(searchType, searchParam) {
                 $('#device-grid').removeClass('hidden');
                 $("#loading-content").remove();
                 attachDeviceEvents();
+
+                if($('.advance-search').length < 1){
+                    $(this).closest('.dataTables_wrapper').find('div[id$=_filter] input')
+                        .after('<a href="'+context+'/devices/search"' +
+                            ' class="advance-search add-padding-3x">Advance Search</a>');
+                }
+
             }, {
                 "placeholder": "Search By Device Name",
                 "searchKey": "name"

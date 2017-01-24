@@ -29,7 +29,8 @@ var carbonServer = new carbonModule.server.Server({
 application.put("carbonServer", carbonServer);
 
 var permissions = {
-    "/permission/admin/Login": ["ui.execute"]
+    "/permission/admin/Login": ["ui.execute"],
+    "/permission/admin/manage/api/subscribe": ["ui.execute"]
 };
 
 var adminPermissions = {

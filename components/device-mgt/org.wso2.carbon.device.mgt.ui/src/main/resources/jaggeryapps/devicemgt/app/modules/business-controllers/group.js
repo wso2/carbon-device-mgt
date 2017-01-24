@@ -39,7 +39,11 @@ var groupModule = {};
         } else if (permissions.LIST_GROUPS) {
             endPoint = deviceServiceEndpoint + "/groups/count";
         } else {
-            log.error("Access denied for user: " + carbonUser.username);
+            if (!user) {
+                log.error("User object was not found in the session");
+                throw constants["ERRORS"]["USER_NOT_FOUND"];
+            }
+            log.error("Access denied for user: " + user.username);
             return -1;
         }
         return serviceInvokers.XMLHttp.get(
@@ -116,7 +120,7 @@ var groupModule = {};
                 }
         );
     };
-    
+
     groupModule.getRolesOfGroup = function (groupId) {
         return serviceInvokers.XMLHttp.get(
                 deviceServiceEndpoint + "/groups/id/" + groupId + "/roles", function (responsePayload) {

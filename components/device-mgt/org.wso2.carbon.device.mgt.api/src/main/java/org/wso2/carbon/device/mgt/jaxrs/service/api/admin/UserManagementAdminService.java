@@ -72,7 +72,7 @@ import javax.ws.rs.core.Response;
         "Further, this is strictly restricted to admin users only ")
 public interface UserManagementAdminService {
 
-    @PUT
+    @POST
     @Path("/{username}/credentials")
     @ApiOperation(
             consumes = MediaType.APPLICATION_JSON,

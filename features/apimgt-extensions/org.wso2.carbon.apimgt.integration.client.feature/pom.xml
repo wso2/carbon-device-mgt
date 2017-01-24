@@ -28,6 +28,7 @@
 
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>org.wso2.carbon.apimgt.integration.client.feature</artifactId>
+	<version>2.0.8-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>WSO2 Carbon - APIM Integration Client Feature</name>
 	<url>http://wso2.org</url>
@@ -35,7 +36,7 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>org.wso2.carbon</groupId>
+			<groupId>org.wso2.carbon.devicemgt</groupId>
 			<artifactId>org.wso2.carbon.apimgt.integration.client</artifactId>
 		</dependency>
 	</dependencies>
@@ -79,7 +80,7 @@
 							<goal>p2-feature-gen</goal>
 						</goals>
 						<configuration>
-							<id>org.wso2.carbon.apimgt.client</id>
+							<id>org.wso2.carbon.apimgt.integration.client</id>
 							<propertiesFile>../../../features/etc/feature.properties</propertiesFile>
 							<adviceFile>
 								<properties>
@@ -88,18 +89,6 @@
 								</properties>
 							</adviceFile>
 							<bundles>
-								<bundleDef>
-									javax.ws.rs:jsr311-api:${jsr311.version}
-								</bundleDef>
-								<bundleDef>
-									io.swagger:swagger-annotations:${swagger.annotations.version}
-								</bundleDef>
-								<bundleDef>
-									io.github.openfeign:feign-slf4j:${io.github.openfeign.version}
-								</bundleDef>
-								<bundleDef>
-									io.github.openfeign:feign-jaxrs:${io.github.openfeign.version}
-								</bundleDef>
 								<bundleDef>
 									io.github.openfeign:feign-jackson:${io.github.openfeign.version}
 								</bundleDef>
@@ -110,19 +99,7 @@
 									io.github.openfeign:feign-gson:${io.github.openfeign.version}
 								</bundleDef>
 								<bundleDef>
-									org.wso2.carbon:org.wso2.carbon.apimgt.integration.client:${project.version}
-								</bundleDef>
-								<bundleDef>
-									org.wso2.carbon:org.wso2.carbon.apimgt.publisher.client:${project.version}
-								</bundleDef>
-								<bundleDef>
-									org.wso2.carbon:org.wso2.carbon.apimgt.store.client:${project.version}
-								</bundleDef>
-								<bundleDef>
-									org.apache.oltu.oauth2:org.apache.oltu.oauth2.client:${oltu.client.version}
-								</bundleDef>
-								<bundleDef>
-									com.fasterxml.jackson.datatype:jackson-datatype-joda:${jackson.datatype.joda.version}
+									org.wso2.carbon.devicemgt:org.wso2.carbon.apimgt.integration.client:${project.version}
 								</bundleDef>
 							</bundles>
 							<importFeatures>

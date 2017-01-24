@@ -34,8 +34,6 @@
     <url>http://wso2.org</url>
 
     <modules>
-		<module>org.wso2.carbon.apimgt.publisher.client</module>
-		<module>org.wso2.carbon.apimgt.store.client</module>
 		<module>org.wso2.carbon.apimgt.integration.client</module>
         <module>org.wso2.carbon.apimgt.webapp.publisher</module>
         <module>org.wso2.carbon.apimgt.application.extension</module>

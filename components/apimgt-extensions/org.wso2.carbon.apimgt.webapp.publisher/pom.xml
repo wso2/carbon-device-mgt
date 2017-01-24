@@ -48,14 +48,6 @@
             <artifactId>testng</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon.apimgt</groupId>
-            <artifactId>org.wso2.carbon.apimgt.api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon.apimgt</groupId>
-            <artifactId>org.wso2.carbon.apimgt.impl</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.wso2.tomcat</groupId>
             <artifactId>tomcat</artifactId>
         </dependency>
@@ -111,6 +103,10 @@
             <groupId>org.wso2.carbon.devicemgt</groupId>
             <artifactId>org.wso2.carbon.device.mgt.common</artifactId>
         </dependency>
+		<dependency>
+			<groupId>org.wso2.carbon.devicemgt</groupId>
+			<artifactId>org.wso2.carbon.apimgt.integration.client</artifactId>
+		</dependency>
     </dependencies>
 
 
@@ -147,22 +143,30 @@
                             com.google.gson.*,
                             org.apache.catalina,
                             org.apache.catalina.core,
-                            org.wso2.carbon.apimgt.api,
-                            org.wso2.carbon.apimgt.api.model,
-                            org.wso2.carbon.apimgt.impl,
                             org.apache.axis2.*;version="${axis2.osgi.version.range}",
                             org.wso2.carbon.core,
                             org.apache.commons.lang,
                             org.wso2.carbon.utils,
                             org.wso2.carbon.apimgt.annotations.*,
                             org.wso2.carbon.governance.lcm.util.*,
-                            org.wso2.carbon.registry.core.*
+                            org.wso2.carbon.registry.core.*,
+							io.swagger.annotations,
+							javax.net.ssl,
+							org.scannotation,
+							org.scannotation.archiveiterator,
+							org.w3c.dom,
+							org.wso2.carbon.apimgt.integration.client.*,
+							org.wso2.carbon.context,
+							org.wso2.carbon.core.util,
+							org.wso2.carbon.user.api,
+							org.wso2.carbon.user.core.*,
+							org.wso2.carbon.utils.multitenancy
                         </Import-Package>
                         <Embed-Dependency>
                             javax.ws.rs-api,
                             scribe;scope=compile|runtime;inline=false;
                         </Embed-Dependency>
-                        <DynamicImport-Package>*</DynamicImport-Package>
+						<DynamicImport-Package>*</DynamicImport-Package>
                     </instructions>
                 </configuration>
             </plugin>

@@ -22,7 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.ComponentContext;
-import org.wso2.carbon.apimgt.impl.APIManagerConfigurationService;
+import org.wso2.carbon.apimgt.integration.client.service.IntegrationClientService;
 import org.wso2.carbon.apimgt.webapp.publisher.APIPublisherService;
 import org.wso2.carbon.apimgt.webapp.publisher.APIPublisherServiceImpl;
 import org.wso2.carbon.apimgt.webapp.publisher.APIPublisherStartupHandler;
@@ -30,16 +30,9 @@ import org.wso2.carbon.apimgt.webapp.publisher.config.WebappPublisherConfig;
 import org.wso2.carbon.core.ServerStartupObserver;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.user.core.service.RealmService;
-import org.wso2.carbon.utils.ConfigurationContextService;
 
 /**
  * @scr.component name="org.wso2.carbon.apimgt.webapp.publisher" immediate="true"
- * @scr.reference name="config.context.service"
- * interface="org.wso2.carbon.utils.ConfigurationContextService"
- * cardinality="0..1"
- * policy="dynamic"
- * bind="setConfigurationContextService"
- * unbind="unsetConfigurationContextService"
  * @scr.reference name="user.realmservice.default"
  * interface="org.wso2.carbon.user.core.service.RealmService"
  * cardinality="1..1"
@@ -52,6 +45,11 @@ import org.wso2.carbon.utils.ConfigurationContextService;
  * policy="dynamic"
  * bind="setRegistryService"
  * unbind="unsetRegistryService"
+ * interface="org.wso2.carbon.apimgt.integration.client.service.IntegrationClientService"
+ * cardinality="1..1"
+ * policy="dynamic"
+ * bind="setIntegrationClientService"
+ * unbind="unsetIntegrationClientService"
  */
 public class APIPublisherServiceComponent {
 
@@ -97,28 +95,6 @@ public class APIPublisherServiceComponent {
         bundleContext.registerService(ServerStartupObserver.class, new APIPublisherStartupHandler(), null);
     }
 
-    protected void setAPIManagerConfigurationService(APIManagerConfigurationService service) {
-        //do nothing
-    }
-
-    protected void unsetAPIManagerConfigurationService(APIManagerConfigurationService service) {
-        //do nothing
-    }
-
-    protected void setConfigurationContextService(ConfigurationContextService configurationContextService) {
-        if (log.isDebugEnabled()) {
-            log.debug("Setting ConfigurationContextService");
-        }
-        APIPublisherDataHolder.getInstance().setConfigurationContextService(configurationContextService);
-    }
-
-    protected void unsetConfigurationContextService(ConfigurationContextService configurationContextService) {
-        if (log.isDebugEnabled()) {
-            log.debug("Un-setting ConfigurationContextService");
-        }
-        APIPublisherDataHolder.getInstance().setConfigurationContextService(null);
-    }
-
     protected void setRealmService(RealmService realmService) {
         if (log.isDebugEnabled()) {
             log.debug("Setting Realm Service");
@@ -142,5 +118,16 @@ public class APIPublisherServiceComponent {
 
     protected void unsetRegistryService(RegistryService registryService) {
         APIPublisherDataHolder.getInstance().setRegistryService(null);
+    }
+
+    protected void setIntegrationClientService(IntegrationClientService integrationClientService) {
+        if (integrationClientService != null && log.isDebugEnabled()) {
+            log.debug("integrationClientService initialized");
+        }
+        APIPublisherDataHolder.getInstance().setIntegrationClientService(integrationClientService);
+    }
+
+    protected void unsetIntegrationClientService(IntegrationClientService integrationClientService) {
+        APIPublisherDataHolder.getInstance().setIntegrationClientService(null);
     }
 }

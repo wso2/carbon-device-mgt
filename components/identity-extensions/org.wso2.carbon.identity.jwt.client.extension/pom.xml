@@ -106,6 +106,10 @@
             <groupId>org.wso2.orbit.org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
         </dependency>
+		<dependency>
+			<groupId>commons-codec.wso2</groupId>
+			<artifactId>commons-codec</artifactId>
+		</dependency>
     </dependencies>
 
     <build>
@@ -144,7 +148,7 @@
                             com.nimbusds.jwt.*;version="${nimbus.orbit.version.range}",
                             com.nimbusds.jose.*;version="${nimbus.orbit.version.range}",
                             javax.net.ssl,
-                            org.apache.commons.codec.binary,
+                            org.apache.commons.codec.binary;version="${commons-codec.wso2.osgi.version.range}",
                             org.apache.http;version="${httpclient.version.range}",
                             org.apache.http.client;version="${httpclient.version.range}",
                             org.apache.http.message;version="${httpclient.version.range}",

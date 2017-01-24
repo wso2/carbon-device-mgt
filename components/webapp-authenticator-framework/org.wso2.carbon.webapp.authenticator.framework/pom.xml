@@ -73,10 +73,6 @@
                             org.osgi.service.component,
                             org.osgi.framework,
                             org.w3c.dom,
-                            org.wso2.carbon.apimgt.api,
-                            org.wso2.carbon.apimgt.core.authenticate,
-                            org.wso2.carbon.apimgt.core.gateway,
-                            org.wso2.carbon.apimgt.impl.dto,
                             org.wso2.carbon.context,
                             org.wso2.carbon.core.util,
                             org.wso2.carbon.identity.base; version="${carbon.identity.imp.pkg.version}",
@@ -94,14 +90,13 @@
                             javax.servlet.http,
                             javax.xml,
                             org.apache.axis2.transport.http,
-                            org.wso2.carbon.apimgt.impl,
                             org.wso2.carbon.certificate.mgt.core.*,
                             org.wso2.carbon.device.mgt.core.permission.mgt,
                             org.wso2.carbon.device.mgt.common,
                             org.wso2.carbon.device.mgt.common.permission.mgt,
                             org.apache.axis2,
                             org.apache.axis2.client,
-                            org.apache.commons.codec.binary,
+                            org.apache.commons.codec.binary;version="${commons-codec.wso2.osgi.version.range}",
                             org.apache.commons.httpclient,
                             org.wso2.carbon.core.security,
                             org.apache.axis2.context,
@@ -145,14 +140,6 @@
         <dependency>
             <groupId>org.wso2.tomcat</groupId>
             <artifactId>tomcat-servlet-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon.apimgt</groupId>
-            <artifactId>org.wso2.carbon.apimgt.core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon.apimgt</groupId>
-            <artifactId>org.wso2.carbon.apimgt.impl</artifactId>
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon</groupId>
@@ -226,6 +213,10 @@
             <groupId>org.wso2.orbit.org.owasp.encoder</groupId>
             <artifactId>encoder</artifactId>
         </dependency>
+		<dependency>
+			<groupId>commons-codec.wso2</groupId>
+			<artifactId>commons-codec</artifactId>
+		</dependency>
     </dependencies>
 
 </project>

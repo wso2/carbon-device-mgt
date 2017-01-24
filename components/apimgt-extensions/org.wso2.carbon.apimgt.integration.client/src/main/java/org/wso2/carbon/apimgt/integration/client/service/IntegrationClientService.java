@@ -18,8 +18,8 @@
 package org.wso2.carbon.apimgt.integration.client.service;
 
 
-import org.wso2.carbon.apimgt.integration.client.PublisherClient;
-import org.wso2.carbon.apimgt.integration.client.StoreClient;
+import org.wso2.carbon.apimgt.integration.client.publisher.PublisherClient;
+import org.wso2.carbon.apimgt.integration.client.store.StoreClient;
 
 /**
  * This is a service that can be called upon to access store and publisher.

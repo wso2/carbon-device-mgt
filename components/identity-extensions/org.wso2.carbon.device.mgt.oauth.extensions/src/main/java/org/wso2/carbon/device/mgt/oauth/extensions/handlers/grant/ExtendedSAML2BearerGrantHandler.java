@@ -38,8 +38,8 @@ import org.opensaml.xml.security.x509.X509Credential;
 import org.opensaml.xml.signature.SignatureValidator;
 import org.opensaml.xml.validation.ValidationException;
 import org.w3c.dom.NodeList;
+import org.wso2.carbon.apimgt.keymgt.issuers.ScopesIssuingHandler;
 import org.wso2.carbon.base.MultitenantConstants;
-import org.wso2.carbon.device.mgt.oauth.extensions.OAuthExtUtils;
 import org.wso2.carbon.identity.application.authentication.framework.model.AuthenticatedUser;
 import org.wso2.carbon.identity.application.common.model.FederatedAuthenticatorConfig;
 import org.wso2.carbon.identity.application.common.model.IdentityProvider;
@@ -101,7 +101,7 @@ public class ExtendedSAML2BearerGrantHandler extends AbstractAuthorizationGrantH
 
     @Override
     public boolean validateScope(OAuthTokenReqMessageContext tokReqMsgCtx) {
-        return OAuthExtUtils.setScopes(tokReqMsgCtx);
+        return ScopesIssuingHandler.getInstance().setScopes(tokReqMsgCtx);
     }
 
     /**

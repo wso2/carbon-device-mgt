@@ -18,17 +18,11 @@
  */
 package org.wso2.carbon.apimgt.webapp.publisher;
 
-import org.wso2.carbon.apimgt.api.APIManagementException;
-import org.wso2.carbon.apimgt.api.APIProvider;
-import org.wso2.carbon.apimgt.api.model.URITemplate;
-import org.wso2.carbon.apimgt.impl.APIConstants;
-import org.wso2.carbon.apimgt.impl.APIManagerFactory;
-import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
+import org.wso2.carbon.apimgt.webapp.publisher.dto.ApiScope;
+import org.wso2.carbon.apimgt.webapp.publisher.dto.ApiUriTemplate;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -53,26 +47,16 @@ public class APIConfig {
     private String name;
     private String owner;
     private String context;
-    private String contextTemplate;
     private String endpoint;
     private String version;
     private String policy;
     private String transports;
-    private APIProvider provider;
     private boolean isSecured;
-    private Set<URITemplate> uriTemplates;
-    private List<String> tenants;
+    private Set<ApiUriTemplate> uriTemplates;
     private boolean isSharedWithAllTenants;
     private String tenantDomain;
     private String[] tags;
-
-    public void init() throws APIManagementException {
-        try {
-            this.provider = APIManagerFactory.getInstance().getAPIProvider(owner);
-        } catch (APIManagementException e) {
-            throw new APIManagementException("Error occurred while initializing API provider", e);
-        }
-    }
+    private Set<ApiScope> scopes;
 
     @XmlElement(name = "Policy", required = true)
     public String getPolicy() {
@@ -82,20 +66,6 @@ public class APIConfig {
     @SuppressWarnings("unused")
     public void setPolicy(String policy) {
         this.policy = policy;
-    }
-
-    @XmlElement(name = "ContextTemplate", required = true)
-    public String getContextTemplate() {
-        return contextTemplate;
-    }
-
-    public void setContextTemplate(String contextTemplate) {
-        this.contextTemplate = contextTemplate;
-    }
-
-    @XmlTransient
-    public APIProvider getProvider() {
-        return provider;
     }
 
     @XmlElement(name = "Name", required = true)
@@ -168,12 +138,12 @@ public class APIConfig {
     }
 
     @XmlElement(name = "UriTemplates", required = false)
-    public Set<URITemplate> getUriTemplates() {
+    public Set<ApiUriTemplate> getUriTemplates() {
         return uriTemplates;
     }
 
     @SuppressWarnings("unused")
-    public void setUriTemplates(Set<URITemplate> uriTemplates) {
+    public void setUriTemplates(Set<ApiUriTemplate> uriTemplates) {
         this.uriTemplates = uriTemplates;
     }
 
@@ -205,5 +175,13 @@ public class APIConfig {
     @SuppressWarnings("unused")
     public void setTags(String[] tags) {
         this.tags = tags;
+    }
+
+    public Set<ApiScope> getScopes() {
+        return scopes;
+    }
+
+    public void setScopes(Set<ApiScope> scopes) {
+        this.scopes = scopes;
     }
 }

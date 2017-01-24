@@ -21,16 +21,8 @@ package org.wso2.carbon.device.mgt.oauth.extensions.internal;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osgi.service.component.ComponentContext;
-import org.wso2.carbon.apimgt.api.APIManagementException;
-import org.wso2.carbon.apimgt.impl.APIConstants;
-import org.wso2.carbon.apimgt.impl.APIManagerConfiguration;
 import org.wso2.carbon.identity.oauth2.OAuth2TokenValidationService;
 import org.wso2.carbon.user.core.service.RealmService;
-import org.wso2.carbon.utils.CarbonUtils;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @scr.component name="org.wso2.carbon.device.mgt.oauth.extensions" immediate="true"
@@ -59,36 +51,6 @@ public class OAuthExtensionServiceComponent {
     protected void activate(ComponentContext componentContext) {
         if (log.isDebugEnabled()) {
             log.debug("Starting OAuthExtensionBundle");
-        }
-        try {
-
-            APIManagerConfiguration configuration = new APIManagerConfiguration();
-            String filePath = new StringBuilder().
-                    append(CarbonUtils.getCarbonHome()).
-                    append(File.separator).
-                    append(REPOSITORY).
-                    append(File.separator).
-                    append(CONFIGURATION).
-                    append(File.separator).
-                    append(APIM_CONF_FILE).toString();
-
-            configuration.load(filePath);
-            // loading white listed scopes
-            List<String> whiteList;
-
-            // Read scope whitelist from Configuration.
-            whiteList = configuration.getProperty(APIConstants.WHITELISTED_SCOPES);
-
-            // If whitelist is null, default scopes will be put.
-            if (whiteList == null) {
-                whiteList = new ArrayList<String>();
-                whiteList.add(APIConstants.OPEN_ID_SCOPE_NAME);
-                whiteList.add(APIConstants.DEVICE_SCOPE_PATTERN);
-            }
-
-            OAuthExtensionsDataHolder.getInstance().setWhitelistedScopes(whiteList);
-        } catch (APIManagementException e) {
-            log.error("Error occurred while loading DeviceMgtConfig configurations", e);
         }
     }
 

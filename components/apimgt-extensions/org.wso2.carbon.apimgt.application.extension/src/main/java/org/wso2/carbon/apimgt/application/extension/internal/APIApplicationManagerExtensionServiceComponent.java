@@ -23,7 +23,6 @@ import org.osgi.framework.BundleContext;
 import org.osgi.service.component.ComponentContext;;
 import org.wso2.carbon.apimgt.application.extension.APIManagementProviderService;
 import org.wso2.carbon.apimgt.application.extension.APIManagementProviderServiceImpl;
-import org.wso2.carbon.apimgt.application.extension.APIManagementRestProviderServiceImpl;
 import org.wso2.carbon.apimgt.integration.client.service.IntegrationClientService;
 import org.wso2.carbon.registry.core.service.TenantRegistryLoader;
 import org.wso2.carbon.registry.indexing.service.TenantIndexingLoader;
@@ -64,7 +63,7 @@ public class APIApplicationManagerExtensionServiceComponent {
         if (log.isDebugEnabled()) {
             log.debug("Initializing device extension bundle");
         }
-        APIManagementProviderService apiManagementProviderService = new APIManagementRestProviderServiceImpl();
+        APIManagementProviderService apiManagementProviderService = new APIManagementProviderServiceImpl();
         APIApplicationManagerExtensionDataHolder.getInstance().setAPIManagementProviderService(apiManagementProviderService);
         BundleContext bundleContext = componentContext.getBundleContext();
         bundleContext.registerService(APIManagementProviderService.class.getName(), apiManagementProviderService, null);

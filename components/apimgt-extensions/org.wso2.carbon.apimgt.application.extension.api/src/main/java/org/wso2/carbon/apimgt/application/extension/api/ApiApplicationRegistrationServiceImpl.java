@@ -96,7 +96,7 @@ public class ApiApplicationRegistrationServiceImpl implements ApiApplicationRegi
                 return Response.status(Response.Status.NOT_ACCEPTABLE).entity("APIs(Tags) are not allowed to this user."
                 ).build();
             }
-            String username = APIUtil.getAuthenticatedUser() + "@" + APIUtil.getTenantDomainOftheUser();
+            String username = APIUtil.getAuthenticatedUser();
             APIManagementProviderService apiManagementProviderService = APIUtil.getAPIManagementProviderService();
             String validityPeriod;
             if (registrationProfile.getValidityPeriod() == null) {

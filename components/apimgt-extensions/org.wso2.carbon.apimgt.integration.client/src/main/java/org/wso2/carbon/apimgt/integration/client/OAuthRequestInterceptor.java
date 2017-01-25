@@ -28,6 +28,7 @@ import org.wso2.carbon.apimgt.integration.client.model.ClientProfile;
 import org.wso2.carbon.apimgt.integration.client.model.DCRClient;
 import org.wso2.carbon.apimgt.integration.client.model.OAuthApplication;
 import org.wso2.carbon.apimgt.integration.client.util.PropertyUtils;
+import org.wso2.carbon.base.MultitenantConstants;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.identity.jwt.client.extension.JWTClient;
 import org.wso2.carbon.identity.jwt.client.extension.dto.AccessTokenInfo;
@@ -50,7 +51,7 @@ public class OAuthRequestInterceptor implements RequestInterceptor {
     private static final long DEFAULT_REFRESH_TIME_OFFSET_IN_MILLIS = 100000;
     private DCRClient dcrClient;
     private static OAuthApplication oAuthApplication;
-    private static Map<String, AccessTokenInfo> tenantTokenMap = new HashMap<>();
+    private static Map<String, AccessTokenInfo> tenantUserTokenMap = new HashMap<>();
 
     /**
      * Creates an interceptor that authenticates all requests.
@@ -77,34 +78,33 @@ public class OAuthRequestInterceptor implements RequestInterceptor {
             clientProfile.setSaasApp(true);
             oAuthApplication = dcrClient.register(clientProfile);
         }
-        String tenantDomain = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantDomain();
-        AccessTokenInfo tenantBasedAccessTokenInfo = tenantTokenMap.get(tenantDomain);
+        try {
+            String tenantDomain = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantDomain();
+            String username = PrivilegedCarbonContext.getThreadLocalCarbonContext().getUsername();
+            if (!tenantDomain.equals(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME)) {
+                username = username + "@" + tenantDomain;
+            }
+            AccessTokenInfo tenantBasedAccessTokenInfo = tenantUserTokenMap.get(username);
+            if ((tenantBasedAccessTokenInfo == null ||
+                    ((System.currentTimeMillis() + DEFAULT_REFRESH_TIME_OFFSET_IN_MILLIS) >
+                            tenantBasedAccessTokenInfo.getExpiresIn()))) {
 
-        if ((tenantBasedAccessTokenInfo == null ||
-                ((System.currentTimeMillis() + DEFAULT_REFRESH_TIME_OFFSET_IN_MILLIS) >
-                        tenantBasedAccessTokenInfo.getExpiresIn()))) {
-            try {
                 JWTClient jwtClient = APIIntegrationClientDataHolder.getInstance().getJwtClientManagerService()
                         .getJWTClient();
-                String username = PrivilegedCarbonContext.getThreadLocalCarbonContext().getUserRealm()
-                        .getRealmConfiguration().getAdminUserName() + "@" + tenantDomain;
-
                 tenantBasedAccessTokenInfo = jwtClient.getAccessToken(oAuthApplication.getClientId(),
                                                                       oAuthApplication.getClientSecret(), username,
                                                                       REQUIRED_SCOPE);
                 tenantBasedAccessTokenInfo.setExpiresIn(
                         System.currentTimeMillis() + (tenantBasedAccessTokenInfo.getExpiresIn() * 1000));
-                tenantTokenMap.put(tenantDomain, tenantBasedAccessTokenInfo);
-            } catch (JWTClientException e) {
-                throw new APIMClientOAuthException("failed to retrieve oauth token using jwt", e);
-            } catch (UserStoreException e) {
-                throw new APIMClientOAuthException("failed to retrieve tenant admin username", e);
-            }
+                tenantUserTokenMap.put(username, tenantBasedAccessTokenInfo);
 
-        }
-        if (tenantBasedAccessTokenInfo.getAccessToken() != null) {
-            String headerValue = "Bearer " + tenantBasedAccessTokenInfo.getAccessToken();
-            template.header("Authorization", headerValue);
+            }
+            if (tenantBasedAccessTokenInfo.getAccessToken() != null) {
+                String headerValue = "Bearer " + tenantBasedAccessTokenInfo.getAccessToken();
+                template.header("Authorization", headerValue);
+            }
+        } catch (JWTClientException e) {
+            throw new APIMClientOAuthException("failed to retrieve oauth token using jwt", e);
         }
     }
 

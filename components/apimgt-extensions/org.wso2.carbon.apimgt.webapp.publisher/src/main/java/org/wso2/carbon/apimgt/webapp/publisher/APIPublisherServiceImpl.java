@@ -53,7 +53,7 @@ public class APIPublisherServiceImpl implements APIPublisherService {
             API api = getAPI(apiConfig);
             APIList apiList = publisherClient.getApi().apisGet(100, 0, "name:" + api.getName(), CONTENT_TYPE, null);
 
-            if (apiList == null || apiList.getList() == null || apiList.getList().size() == 0) {
+            if (!isExist(api, apiList)) {
                 api = publisherClient.getApi().apisPost(api, CONTENT_TYPE);
                 if (CREATED_STATUS.equals(api.getStatus())) {
                     publisherClient.getApi().apisChangeLifecyclePost(PUBLISH_ACTION, api.getId(), null, null, null);
@@ -61,9 +61,8 @@ public class APIPublisherServiceImpl implements APIPublisherService {
             } else {
                 if (WebappPublisherConfig.getInstance().isEnabledUpdateApi()) {
                     for (APIInfo apiInfo : apiList.getList()) {
-                        if (api.getVersion().equals(apiInfo.getVersion())) {
-                            api = publisherClient.getApi().apisApiIdPut(apiInfo.getId(), api, CONTENT_TYPE, null,
-                                                                        null);
+                        if (api.getName().equals(apiInfo.getName()) && api.getVersion().equals(apiInfo.getVersion())) {
+                            api = publisherClient.getApi().apisApiIdPut(apiInfo.getId(), api, CONTENT_TYPE, null, null);
                             if (CREATED_STATUS.equals(api.getStatus())) {
                                 publisherClient.getApi().apisChangeLifecyclePost(PUBLISH_ACTION, api.getId(), null, null,
                                                                                  null);
@@ -80,6 +79,18 @@ public class APIPublisherServiceImpl implements APIPublisherService {
         }
     }
 
+    private boolean isExist(API api, APIList apiList) {
+        if (apiList == null || apiList.getList() == null || apiList.getList().size() == 0) {
+            return false;
+        }
+        for (APIInfo existingApi : apiList.getList()) {
+            if (existingApi.getName().equals(api.getName()) && existingApi.getVersion().equals(api.getVersion())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private API getAPI(APIConfig config) {
 
         API api = new API();
@@ -88,11 +99,6 @@ public class APIPublisherServiceImpl implements APIPublisherService {
 
         String context = config.getContext();
         context = context.startsWith("/") ? context : ("/" + context);
-        String providerDomain = config.getTenantDomain();
-        if (!MultitenantConstants.SUPER_TENANT_DOMAIN_NAME.equalsIgnoreCase(providerDomain)) {
-            //Create tenant aware context for API
-            context = "/t/" + providerDomain + context;
-        }
         api.setContext(context);
         api.setVersion(config.getVersion());
         api.setProvider(config.getOwner());

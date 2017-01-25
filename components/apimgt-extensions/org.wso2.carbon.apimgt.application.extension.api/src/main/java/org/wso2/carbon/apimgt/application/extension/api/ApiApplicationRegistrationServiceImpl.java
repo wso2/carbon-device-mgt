@@ -60,7 +60,6 @@ public class ApiApplicationRegistrationServiceImpl implements ApiApplicationRegi
             }
             String username = PrivilegedCarbonContext.getThreadLocalCarbonContext().getUserRealm()
                     .getRealmConfiguration().getAdminUserName();
-            username = username + "@" + APIUtil.getTenantDomainOftheUser();
             PrivilegedCarbonContext.getThreadLocalCarbonContext().setUsername(username);
             APIManagementProviderService apiManagementProviderService = APIUtil.getAPIManagementProviderService();
             ApiApplicationKey apiApplicationKey = apiManagementProviderService.generateAndRetrieveApplicationKeys(

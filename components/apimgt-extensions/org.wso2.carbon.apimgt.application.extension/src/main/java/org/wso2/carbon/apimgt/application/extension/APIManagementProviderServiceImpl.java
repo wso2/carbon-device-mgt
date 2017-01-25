@@ -99,14 +99,27 @@ public class APIManagementProviderServiceImpl implements APIManagementProviderSe
                 }
 
                 if (apiList.getList() != null && apiList.getList().size() > 0) {
-                    for (APIInfo apiInfo :apiList.getList()) {
+                    for (APIInfo apiInfo : apiList.getList()) {
                         Subscription subscription = new Subscription();
                         subscription.setApiIdentifier(apiInfo.getId());
                         subscription.setApplicationId(application.getApplicationId());
                         subscription.tier(ApiApplicationConstants.DEFAULT_TIER);
-                        storeClient.getIndividualSubscription().subscriptionsPost(subscription, CONTENT_TYPE);
+                        SubscriptionList subscriptionList = storeClient.getSubscriptions().subscriptionsGet
+                                (apiInfo.getId(), application.getApplicationId(), "", 0, 100, CONTENT_TYPE, null);
+                        boolean subscriptionExist = false;
+                        if (subscriptionList.getList() != null && subscriptionList.getList().size() > 0) {
+                            for (Subscription subs : subscriptionList.getList()) {
+                                if (subs.getApiIdentifier().equals(apiInfo.getId()) && subs.getApplicationId().equals(
+                                        application.getApplicationId())) {
+                                    subscriptionExist = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (!subscriptionExist) {
+                            storeClient.getIndividualSubscription().subscriptionsPost(subscription, CONTENT_TYPE);
+                        }
                     }
-
                 }
             }
         }

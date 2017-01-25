@@ -36,17 +36,18 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.wso2.carbon.device.mgt.analytics.dashboard.util.APIUtil.getAuthenticatedUser;
+
 public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceDAO {
 
     @Override
-    public DeviceCountByGroup getTotalDeviceCount() throws SQLException {
+    public DeviceCountByGroup getTotalDeviceCount(String userName) throws SQLException {
         int totalDeviceCount;
         try {
-            totalDeviceCount = this.getFilteredDeviceCount(null);
+            totalDeviceCount = this.getFilteredDeviceCount(null, userName);
         } catch (InvalidPotentialVulnerabilityValueException e) {
             throw new AssertionError(e);
         }
-
         DeviceCountByGroup deviceCountByGroup = new DeviceCountByGroup();
         deviceCountByGroup.setGroup("total");
         deviceCountByGroup.setDisplayNameForGroup("Total");
@@ -56,20 +57,17 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
     }
 
     @Override
-    public DeviceCountByGroup getDeviceCount(ExtendedFilterSet extendedFilterSet)
+    public DeviceCountByGroup getDeviceCount(ExtendedFilterSet extendedFilterSet, String userName)
                                                   throws InvalidPotentialVulnerabilityValueException, SQLException {
-
-        int filteredDeviceCount = this.getFilteredDeviceCount(extendedFilterSet);
-
+        int filteredDeviceCount = this.getFilteredDeviceCount(extendedFilterSet, userName);
         DeviceCountByGroup deviceCountByGroup = new DeviceCountByGroup();
         deviceCountByGroup.setGroup("filtered");
         deviceCountByGroup.setDisplayNameForGroup("Filtered");
         deviceCountByGroup.setDeviceCount(filteredDeviceCount);
-
         return deviceCountByGroup;
     }
 
-    private int getFilteredDeviceCount(ExtendedFilterSet extendedFilterSet)
+    private int getFilteredDeviceCount(ExtendedFilterSet extendedFilterSet, String userName)
                                        throws InvalidPotentialVulnerabilityValueException, SQLException {
 
         Map<String, Object> filters = this.extractDatabaseFiltersFromBean(extendedFilterSet);
@@ -118,7 +116,7 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
 
     @Override
     public DeviceCountByGroup getFeatureNonCompliantDeviceCount(String featureCode,
-                            BasicFilterSet basicFilterSet) throws InvalidFeatureCodeValueException, SQLException {
+                            BasicFilterSet basicFilterSet, String userName) throws InvalidFeatureCodeValueException, SQLException {
 
         if (featureCode == null || featureCode.isEmpty()) {
             throw new InvalidFeatureCodeValueException("Feature code should not be either null or empty.");
@@ -176,7 +174,7 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
     }
 
     @Override
-    public List<DeviceCountByGroup> getDeviceCountsByConnectivityStatuses() throws SQLException {
+    public List<DeviceCountByGroup> getDeviceCountsByConnectivityStatuses(String userName) throws SQLException {
         Connection con;
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -208,7 +206,7 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
     }
 
     @Override
-    public List<DeviceCountByGroup> getDeviceCountsByPotentialVulnerabilities() throws SQLException {
+    public List<DeviceCountByGroup> getDeviceCountsByPotentialVulnerabilities(String userName) throws SQLException {
         // getting non-compliant device count
         DeviceCountByGroup nonCompliantDeviceCount = new DeviceCountByGroup();
         nonCompliantDeviceCount.setGroup(GadgetDataServiceDAOConstants.PotentialVulnerability.NON_COMPLIANT);
@@ -230,10 +228,10 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
 
     private int getNonCompliantDeviceCount() throws SQLException {
         ExtendedFilterSet extendedFilterSet = new ExtendedFilterSet();
-        extendedFilterSet.setPotentialVulnerability(GadgetDataServiceDAOConstants.
-            PotentialVulnerability.NON_COMPLIANT);
+        extendedFilterSet.setPotentialVulnerability(GadgetDataServiceDAOConstants.PotentialVulnerability.NON_COMPLIANT);
         try {
-            return this.getFilteredDeviceCount(extendedFilterSet);
+            String userName = getAuthenticatedUser();
+            return this.getFilteredDeviceCount(extendedFilterSet, userName);
         } catch (InvalidPotentialVulnerabilityValueException e) {
             throw new AssertionError(e);
         }
@@ -244,14 +242,15 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
         extendedFilterSet.setPotentialVulnerability(GadgetDataServiceDAOConstants.
             PotentialVulnerability.UNMONITORED);
         try {
-            return this.getFilteredDeviceCount(extendedFilterSet);
+            String userName = getAuthenticatedUser();
+            return this.getFilteredDeviceCount(extendedFilterSet, userName);
         } catch (InvalidPotentialVulnerabilityValueException e) {
             throw new AssertionError(e);
         }
     }
 
     @Override
-    public List<DeviceCountByGroup> getDeviceCountsByPlatforms(ExtendedFilterSet extendedFilterSet)
+    public List<DeviceCountByGroup> getDeviceCountsByPlatforms(ExtendedFilterSet extendedFilterSet, String userName)
                                                   throws InvalidPotentialVulnerabilityValueException, SQLException {
 
         Map<String, Object> filters = this.extractDatabaseFiltersFromBean(extendedFilterSet);
@@ -307,7 +306,7 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
     @Override
     public List<DeviceCountByGroup>
                          getFeatureNonCompliantDeviceCountsByPlatforms(String featureCode,
-                                BasicFilterSet basicFilterSet) throws InvalidFeatureCodeValueException, SQLException {
+                                BasicFilterSet basicFilterSet, String userName) throws InvalidFeatureCodeValueException, SQLException {
 
         if (featureCode == null || featureCode.isEmpty()) {
             throw new InvalidFeatureCodeValueException("Feature code should not be either null or empty.");
@@ -366,7 +365,7 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
     }
 
     @Override
-    public List<DeviceCountByGroup> getDeviceCountsByOwnershipTypes(ExtendedFilterSet extendedFilterSet)
+    public List<DeviceCountByGroup> getDeviceCountsByOwnershipTypes(ExtendedFilterSet extendedFilterSet, String userName)
                                                     throws InvalidPotentialVulnerabilityValueException, SQLException {
 
         Map<String, Object> filters = this.extractDatabaseFiltersFromBean(extendedFilterSet);
@@ -423,7 +422,7 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
     @Override
     public List<DeviceCountByGroup>
                   getFeatureNonCompliantDeviceCountsByOwnershipTypes(String featureCode,
-                               BasicFilterSet basicFilterSet) throws InvalidFeatureCodeValueException, SQLException {
+                               BasicFilterSet basicFilterSet, String userName) throws InvalidFeatureCodeValueException, SQLException {
 
         if (featureCode == null || featureCode.isEmpty()) {
             throw new InvalidFeatureCodeValueException("Feature code should not be either null or empty.");
@@ -482,7 +481,7 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
     }
 
     @Override
-    public List<DeviceWithDetails> getDevicesWithDetails(ExtendedFilterSet extendedFilterSet)
+    public List<DeviceWithDetails> getDevicesWithDetails(ExtendedFilterSet extendedFilterSet, String userName)
                                                     throws InvalidPotentialVulnerabilityValueException, SQLException {
 
         Map<String, Object> filters = this.extractDatabaseFiltersFromBean(extendedFilterSet);
@@ -539,7 +538,7 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
 
     @Override
     public List<DeviceWithDetails> getFeatureNonCompliantDevicesWithDetails(String featureCode,
-                               BasicFilterSet basicFilterSet) throws InvalidFeatureCodeValueException, SQLException {
+                               BasicFilterSet basicFilterSet, String userName) throws InvalidFeatureCodeValueException, SQLException {
 
         if (featureCode == null || featureCode.isEmpty()) {
             throw new InvalidFeatureCodeValueException("Feature code should not be either null or empty.");

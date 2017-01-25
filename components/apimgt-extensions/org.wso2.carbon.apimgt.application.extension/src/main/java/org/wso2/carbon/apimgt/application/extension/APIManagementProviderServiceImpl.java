@@ -112,7 +112,7 @@ public class APIManagementProviderServiceImpl implements APIManagementProviderSe
                         boolean subscriptionExist = false;
                         if (subscriptionList.getList() != null && subscriptionList.getList().size() > 0) {
                             for (Subscription subs : subscriptionList.getList()) {
-                                if (subs.getApiIdentifier().equals(apiInfo.getId()) && subs.getApplicationId().equals(
+                                if (subs.getApiIdentifier().equals(id) && subs.getApplicationId().equals(
                                         application.getApplicationId())) {
                                     subscriptionExist = true;
                                     break;

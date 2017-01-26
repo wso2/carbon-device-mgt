@@ -21,7 +21,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.ComponentContext;
-import org.wso2.carbon.apimgt.impl.APIManagerConfigurationService;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManagementException;
 import org.wso2.carbon.device.mgt.common.authorization.DeviceAccessAuthorizationService;
@@ -84,12 +83,6 @@ import java.util.List;
  * policy="dynamic"
  * bind="setRegistryService"
  * unbind="unsetRegistryService"
- * @scr.reference name="api.manager.config.service"
- * interface="org.wso2.carbon.apimgt.impl.APIManagerConfigurationService"
- * cardinality="1..1"
- * policy="dynamic"
- * bind="setAPIManagerConfigurationService"
- * unbind="unsetAPIManagerConfigurationService"
  * @scr.reference name="org.wso2.carbon.ndatasource"
  * interface="org.wso2.carbon.ndatasource.core.DataSourceService"
  * cardinality="1..1"
@@ -353,14 +346,6 @@ public class DeviceManagementServiceComponent {
             log.debug("Un setting Registry Service");
         }
         DeviceManagementDataHolder.getInstance().setRegistryService(null);
-    }
-
-    protected void setAPIManagerConfigurationService(APIManagerConfigurationService service) {
-        //do nothing
-    }
-
-    protected void unsetAPIManagerConfigurationService(APIManagerConfigurationService service) {
-        //do nothing
     }
 
     protected void setDataSourceService(DataSourceService dataSourceService) {

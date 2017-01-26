@@ -35,7 +35,7 @@ import javax.ws.rs.core.Response;
                 }
         ),
         tags = {
-                @Tag(name = "devicemgt_admin", description = "")
+                @Tag(name = "device_management", description = "")
         }
 )
 @Api(value = "Certificate Management", description = "This API includes all the certificate management related operations")

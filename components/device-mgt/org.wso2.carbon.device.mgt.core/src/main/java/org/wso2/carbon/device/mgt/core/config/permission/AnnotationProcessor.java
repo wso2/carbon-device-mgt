@@ -19,11 +19,9 @@
 package org.wso2.carbon.device.mgt.core.config.permission;
 
 import io.swagger.annotations.SwaggerDefinition;
-import io.swagger.models.Swagger;
 import org.apache.catalina.core.StandardContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.apimgt.api.model.Scope;
 import org.wso2.carbon.device.mgt.common.permission.mgt.Permission;
 
 import javax.servlet.ServletContext;
@@ -80,7 +78,6 @@ public class AnnotationProcessor {
     private Class<Path> pathClazz;
     private ClassLoader classLoader;
     private ServletContext servletContext;
-    private Swagger swagger;
     private Class<SwaggerDefinition> apiClazz;
     private Class<Consumes> consumesClass;
     private Class<Produces> producesClass;

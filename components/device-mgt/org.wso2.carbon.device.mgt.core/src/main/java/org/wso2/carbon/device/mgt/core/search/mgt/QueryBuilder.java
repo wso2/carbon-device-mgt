@@ -26,18 +26,18 @@ import java.util.Map;
 
 public interface QueryBuilder {
 
-    Map<String, List<String>> buildQueries(List<Condition> conditions) throws InvalidOperatorException;
+    Map<String, List<QueryHolder>> buildQueries(List<Condition> conditions) throws InvalidOperatorException;
 
-    String processAND(List<Condition> conditions) throws InvalidOperatorException;
+    String processAND(List<Condition> conditions, ValueType[] valueType, Integer intArr[]) throws InvalidOperatorException;
 
-    String processOR(List<Condition> conditions) throws InvalidOperatorException;
+    String processOR(List<Condition> conditions, ValueType[] valueType, Integer intArr[]) throws InvalidOperatorException;
 
-    List<String>  processLocation(Condition condition) throws InvalidOperatorException;
+    List<QueryHolder>  processLocation(Condition condition) throws InvalidOperatorException;
 
-    List<String> processANDProperties(List<Condition> conditions) throws InvalidOperatorException;
+    List<QueryHolder> processANDProperties(List<Condition> conditions) throws InvalidOperatorException;
 
-    List<String> processORProperties(List<Condition> conditions) throws InvalidOperatorException;
+    List<QueryHolder> processORProperties(List<Condition> conditions) throws InvalidOperatorException;
 
-    String processUpdatedDevices(long epochTime) throws InvalidOperatorException;
+    QueryHolder processUpdatedDevices(long epochTime) throws InvalidOperatorException;
 
 }

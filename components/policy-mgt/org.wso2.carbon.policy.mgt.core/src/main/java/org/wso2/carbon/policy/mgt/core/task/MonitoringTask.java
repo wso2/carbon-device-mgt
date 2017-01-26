@@ -21,16 +21,17 @@ package org.wso2.carbon.policy.mgt.core.task;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
 import org.wso2.carbon.device.mgt.common.policy.mgt.PolicyMonitoringManager;
-import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
-import org.wso2.carbon.device.mgt.core.config.policy.PolicyConfiguration;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.ntask.core.Task;
 import org.wso2.carbon.device.mgt.common.policy.mgt.monitor.PolicyComplianceException;
 import org.wso2.carbon.policy.mgt.core.internal.PolicyManagementDataHolder;
 import org.wso2.carbon.policy.mgt.core.mgt.MonitoringManager;
+import org.wso2.carbon.user.api.Tenant;
+import org.wso2.carbon.user.api.UserStoreException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,69 +60,88 @@ public class MonitoringTask implements Task {
             log.debug("Monitoring task started to run.");
         }
 
-        MonitoringManager monitoringManager = PolicyManagementDataHolder.getInstance().getMonitoringManager();
-        List<String> deviceTypes = new ArrayList<>();
-        List<String> configDeviceTypes = new ArrayList<>();
         try {
-            deviceTypes = monitoringManager.getDeviceTypes();
-            for (String deviceType : deviceTypes) {
-                if (isPlatformExist(deviceType)) {
-                    configDeviceTypes.add(deviceType);
-                }
-            }
-        } catch (PolicyComplianceException e) {
-            log.error("Error occurred while getting the device types.");
-        }
-        if (!deviceTypes.isEmpty()) {
-            try {
-                DeviceManagementProviderService deviceManagementProviderService =
-                        PolicyManagementDataHolder.getInstance().getDeviceManagementService();
-                for (String deviceType : configDeviceTypes) {
-                    if (log.isDebugEnabled()) {
-                        log.debug("Running task for device type : " + deviceType);
-                    }
-                    PolicyMonitoringManager monitoringService =
-                            PolicyManagementDataHolder.getInstance().getDeviceManagementService()
-                                    .getPolicyMonitoringManager(deviceType);
-                    List<Device> devices = deviceManagementProviderService.getAllDevices(deviceType);
-                    if (monitoringService != null && !devices.isEmpty()) {
-                        List<Device> notifiableDevices = new ArrayList<>();
-                        if (log.isDebugEnabled()) {
-                            log.debug("Removing inactive and blocked devices from the list for the device type : " +
-                                    deviceType);
-                        }
-                        for (Device device : devices) {
+            Tenant tenants[] = PolicyManagementDataHolder.getInstance().
+                    getRealmService().getTenantManager().getAllTenants();
 
-                            EnrolmentInfo.Status status = device.getEnrolmentInfo().getStatus();
-                            if (status.equals(EnrolmentInfo.Status.BLOCKED) ||
-                                    status.equals(EnrolmentInfo.Status.REMOVED) ||
-                                    status.equals(EnrolmentInfo.Status.UNCLAIMED) ||
-                                    status.equals(EnrolmentInfo.Status.DISENROLLMENT_REQUESTED) ||
-                                    status.equals(EnrolmentInfo.Status.SUSPENDED)) {
-                                continue;
-                            } else {
-                                notifiableDevices.add(device);
+            for (Tenant tenant : tenants) {
+
+                try {
+                    PrivilegedCarbonContext.startTenantFlow();
+                    PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(tenant.getDomain());
+                    PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(tenant.getId());
+
+                    MonitoringManager monitoringManager = PolicyManagementDataHolder.getInstance().getMonitoringManager();
+                    List<String> deviceTypes = new ArrayList<>();
+                    List<String> configDeviceTypes = new ArrayList<>();
+                    try {
+                        deviceTypes = monitoringManager.getDeviceTypes();
+                        for (String deviceType : deviceTypes) {
+                            if (isPlatformExist(deviceType)) {
+                                configDeviceTypes.add(deviceType);
                             }
                         }
-                        if (log.isDebugEnabled()) {
-                            log.debug("Following devices selected to send the notification for " + deviceType);
-                            for (Device device : notifiableDevices) {
-                                log.debug(device.getDeviceIdentifier());
-                            }
-                        }
-                        if (!notifiableDevices.isEmpty()) {
-                            monitoringManager.addMonitoringOperation(notifiableDevices);
-                        }
+                    } catch (PolicyComplianceException e) {
+                        log.error("Error occurred while getting the device types.");
                     }
+                    if (!deviceTypes.isEmpty()) {
+                        try {
+                            DeviceManagementProviderService deviceManagementProviderService =
+                                    PolicyManagementDataHolder.getInstance().getDeviceManagementService();
+                            for (String deviceType : configDeviceTypes) {
+                                if (log.isDebugEnabled()) {
+                                    log.debug("Running task for device type : " + deviceType);
+                                }
+                                PolicyMonitoringManager monitoringService =
+                                        PolicyManagementDataHolder.getInstance().getDeviceManagementService()
+                                                .getPolicyMonitoringManager(deviceType);
+                                List<Device> devices = deviceManagementProviderService.getAllDevices(deviceType);
+                                if (monitoringService != null && !devices.isEmpty()) {
+                                    List<Device> notifiableDevices = new ArrayList<>();
+                                    if (log.isDebugEnabled()) {
+                                        log.debug("Removing inactive and blocked devices from the list for the device type : " +
+                                                deviceType);
+                                    }
+                                    for (Device device : devices) {
+
+                                        EnrolmentInfo.Status status = device.getEnrolmentInfo().getStatus();
+                                        if (status.equals(EnrolmentInfo.Status.BLOCKED) ||
+                                                status.equals(EnrolmentInfo.Status.REMOVED) ||
+                                                status.equals(EnrolmentInfo.Status.UNCLAIMED) ||
+                                                status.equals(EnrolmentInfo.Status.DISENROLLMENT_REQUESTED) ||
+                                                status.equals(EnrolmentInfo.Status.SUSPENDED)) {
+                                            continue;
+                                        } else {
+                                            notifiableDevices.add(device);
+                                        }
+                                    }
+                                    if (log.isDebugEnabled()) {
+                                        log.debug("Following devices selected to send the notification for " + deviceType);
+                                        for (Device device : notifiableDevices) {
+                                            log.debug(device.getDeviceIdentifier());
+                                        }
+                                    }
+                                    if (!notifiableDevices.isEmpty()) {
+                                        monitoringManager.addMonitoringOperation(notifiableDevices);
+                                    }
+                                }
+                            }
+                            if (log.isDebugEnabled()) {
+                                log.debug("Monitoring task running completed.");
+                            }
+                        } catch (Exception e) {
+                            log.error("Error occurred while trying to run a task.", e);
+                        }
+                    } else {
+                        log.info("No device types registered currently. So did not run the monitoring task.");
+                    }
+                } finally {
+                    PrivilegedCarbonContext.endTenantFlow();
                 }
-                if (log.isDebugEnabled()) {
-                    log.debug("Monitoring task running completed.");
-                }
-            } catch (Exception e) {
-                log.error("Error occurred while trying to run a task.", e);
             }
-        } else {
-            log.info("No device types registered currently. So did not run the monitoring task.");
+
+        } catch (UserStoreException e) {
+            log.error("Error occurred while trying to get the available tenants", e);
         }
 
     }

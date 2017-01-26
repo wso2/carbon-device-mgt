@@ -37,10 +37,6 @@ public class RegistrationProfile {
     private String tags[];
     @XmlElement(required = true)
     private boolean isAllowedToAllDomains;
-    @XmlElement(required = true)
-    private boolean isMappingAnExistingOAuthApp;
-    private String consumerKey;
-    private String consumerSecret;
     @XmlElement(required = false)
     private String validityPeriod;
 
@@ -66,30 +62,6 @@ public class RegistrationProfile {
 
     public void setIsAllowedToAllDomains(boolean isAllowedToAllDomains) {
         this.isAllowedToAllDomains = isAllowedToAllDomains;
-    }
-
-    public boolean isMappingAnExistingOAuthApp() {
-        return isMappingAnExistingOAuthApp;
-    }
-
-    public void setIsMappingAnExistingOAuthApp(boolean isMappingAnExistingOAuthApp) {
-        this.isMappingAnExistingOAuthApp = isMappingAnExistingOAuthApp;
-    }
-
-    public String getConsumerKey() {
-        return consumerKey;
-    }
-
-    public void setConsumerKey(String consumerKey) {
-        this.consumerKey = consumerKey;
-    }
-
-    public String getConsumerSecret() {
-        return consumerSecret;
-    }
-
-    public void setConsumerSecret(String consumerSecret) {
-        this.consumerSecret = consumerSecret;
     }
 
     public String getValidityPeriod() {

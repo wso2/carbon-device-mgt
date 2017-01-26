@@ -18,8 +18,8 @@
  */
 package org.wso2.carbon.apimgt.webapp.publisher.internal;
 
-
-import org.wso2.carbon.apimgt.api.model.API;
+import org.wso2.carbon.apimgt.integration.client.service.IntegrationClientService;
+import org.wso2.carbon.apimgt.webapp.publisher.APIConfig;
 import org.wso2.carbon.apimgt.webapp.publisher.APIPublisherService;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.user.core.service.RealmService;
@@ -36,7 +36,8 @@ public class APIPublisherDataHolder {
     private TenantManager tenantManager;
     private RegistryService registryService;
     private boolean isServerStarted;
-    private Stack<API> unpublishedApis = new Stack<>();
+    private Stack<APIConfig> unpublishedApis = new Stack<>();
+    private IntegrationClientService integrationClientService;
 
     private static APIPublisherDataHolder thisInstance = new APIPublisherDataHolder();
 
@@ -108,11 +109,20 @@ public class APIPublisherDataHolder {
         isServerStarted = serverStarted;
     }
 
-    public Stack<API> getUnpublishedApis() {
+    public Stack<APIConfig> getUnpublishedApis() {
         return unpublishedApis;
     }
 
-    public void setUnpublishedApis(Stack<API> unpublishedApis) {
+    public void setUnpublishedApis(Stack<APIConfig> unpublishedApis) {
         this.unpublishedApis = unpublishedApis;
+    }
+
+    public IntegrationClientService getIntegrationClientService() {
+        return integrationClientService;
+    }
+
+    public void setIntegrationClientService(
+            IntegrationClientService integrationClientService) {
+        this.integrationClientService = integrationClientService;
     }
 }

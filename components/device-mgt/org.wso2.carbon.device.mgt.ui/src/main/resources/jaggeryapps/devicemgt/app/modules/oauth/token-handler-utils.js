@@ -108,7 +108,8 @@ var utils = function () {
 					var jwtToken = publicMethods.getJwtToken(adminUsername, claims);
 
                     // register a tenant based client app at API Manager
-                    var applicationName = "webapp_" + tenantDomain;
+                    var applicationName =  deviceMgtProps["oauthProvider"]["appRegistration"]
+							["clientName"] + "_" + tenantDomain;
                     var requestURL = deviceMgtProps["oauthProvider"]["appRegistration"]
                         ["apiManagerClientAppRegistrationServiceURL"] +
                             "?tenantDomain=" + tenantDomain + "&applicationName=" + applicationName;
@@ -303,8 +304,8 @@ var utils = function () {
 
                 // calling oauth provider token service endpoint
                 var requestURL = deviceMgtProps["oauthProvider"]["tokenServiceURL"];
-                var requestPayload = "grant_type=urn:ietf:params:oauth:grant-type:saml2-carbon&" +
-                    "assertion=" + encodeURIComponent(encodedAssertion) + "&scope=" + scopes;
+                var requestPayload = "grant_type=" + deviceMgtProps["oauthProvider"]["appRegistration"]["samlGrantTypeName"]
+					+ "&" + "assertion=" + encodeURIComponent(encodedAssertion) + "&scope=" + scopes;
 
                 var xhr = new XMLHttpRequest();
                 xhr.open("POST", requestURL, false);

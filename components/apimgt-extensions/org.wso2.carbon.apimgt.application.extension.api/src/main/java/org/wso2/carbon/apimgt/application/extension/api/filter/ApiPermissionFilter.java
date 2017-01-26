@@ -23,6 +23,7 @@ import org.wso2.carbon.apimgt.application.extension.api.util.APIUtil;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.user.api.UserRealm;
 import org.wso2.carbon.user.api.UserStoreException;
+import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
@@ -120,7 +121,8 @@ public class ApiPermissionFilter implements Filter {
         try {
             UserRealm userRealm = APIUtil.getRealmService().getTenantUserRealm(PrivilegedCarbonContext
                                 .getThreadLocalCarbonContext().getTenantId());
-            return userRealm.getAuthorizationManager().isUserAuthorized(username, permission, action);
+            String tenantAwareUsername = MultitenantUtils.getTenantAwareUsername(username);
+            return userRealm.getAuthorizationManager().isUserAuthorized(tenantAwareUsername, permission, action);
         } catch (UserStoreException e) {
             String errorMsg = String.format("Unable to authorize the user : %s", username);
             log.error(errorMsg, e);

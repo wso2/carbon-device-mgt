@@ -25,14 +25,9 @@ import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.oauth.extensions.internal.OAuthExtensionsDataHolder;
 import org.wso2.carbon.identity.application.common.model.User;
 import org.wso2.carbon.identity.core.util.IdentityTenantUtil;
-import org.wso2.carbon.identity.oauth.cache.CacheEntry;
-import org.wso2.carbon.identity.oauth.cache.OAuthCache;
-import org.wso2.carbon.identity.oauth.cache.OAuthCacheKey;
-import org.wso2.carbon.identity.oauth.config.OAuthServerConfiguration;
 import org.wso2.carbon.identity.oauth2.IdentityOAuth2Exception;
 import org.wso2.carbon.identity.oauth2.dao.TokenMgtDAO;
 import org.wso2.carbon.identity.oauth2.model.AccessTokenDO;
-import org.wso2.carbon.identity.oauth2.model.ResourceScopeCacheEntry;
 import org.wso2.carbon.identity.oauth2.validators.OAuth2ScopeValidator;
 import org.wso2.carbon.user.api.AuthorizationManager;
 import org.wso2.carbon.user.api.UserStoreException;
@@ -45,14 +40,14 @@ import java.util.List;
 import java.util.Set;
 
 @SuppressWarnings("unused")
-public class ExtendedJDBCScopeValidator extends OAuth2ScopeValidator {
+public class PermissionBasedScopeValidator extends OAuth2ScopeValidator {
 
-    private static final Log log = LogFactory.getLog(ExtendedJDBCScopeValidator.class);
+    private static final Log log = LogFactory.getLog(PermissionBasedScopeValidator.class);
     private static final String UI_EXECUTE = "ui.execute";
 
 
     @Override
-    public boolean validateScope(AccessTokenDO accessTokenDO, String resource) throws IdentityOAuth2Exception {
+    public boolean validateScope(AccessTokenDO accessTokenDO, String resourceScope) throws IdentityOAuth2Exception {
         //Get the list of scopes associated with the access token
         String[] scopes = accessTokenDO.getScope();
 
@@ -61,43 +56,7 @@ public class ExtendedJDBCScopeValidator extends OAuth2ScopeValidator {
             return true;
         }
 
-        String resourceScope = null;
         TokenMgtDAO tokenMgtDAO = new TokenMgtDAO();
-
-        boolean cacheHit = false;
-        // Check the cache, if caching is enabled.
-        if (OAuthServerConfiguration.getInstance().isCacheEnabled()) {
-            OAuthCache oauthCache = OAuthCache.getInstance();
-            OAuthCacheKey cacheKey = new OAuthCacheKey(resource);
-            CacheEntry result = oauthCache.getValueFromCache(cacheKey);
-
-            //Cache hit
-            if (result instanceof ResourceScopeCacheEntry) {
-                resourceScope = ((ResourceScopeCacheEntry) result).getScope();
-                cacheHit = true;
-            }
-        }
-
-        if (!cacheHit) {
-            resourceScope = tokenMgtDAO.findScopeOfResource(resource);
-
-            if (OAuthServerConfiguration.getInstance().isCacheEnabled()) {
-                OAuthCache oauthCache = OAuthCache.getInstance();
-                OAuthCacheKey cacheKey = new OAuthCacheKey(resource);
-                ResourceScopeCacheEntry cacheEntry = new ResourceScopeCacheEntry(resourceScope);
-                //Store resourceScope in cache even if it is null (to avoid database calls when accessing resources for
-                //which scopes haven't been defined).
-                oauthCache.addToCache(cacheKey, cacheEntry);
-            }
-        }
-
-        //Return TRUE if - There does not exist a scope definition for the resource
-        if (resourceScope == null) {
-            if(log.isDebugEnabled()){
-                log.debug("Resource '" + resource + "' is not protected with a scope");
-            }
-            return true;
-        }
 
         List<String> scopeList = new ArrayList<>(Arrays.asList(scopes));
 

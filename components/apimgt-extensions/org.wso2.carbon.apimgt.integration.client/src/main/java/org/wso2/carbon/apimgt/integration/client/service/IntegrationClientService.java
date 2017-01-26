@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2017, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -15,18 +15,27 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.wso2.carbon.apimgt.integration.client.service;
 
-package org.wso2.carbon.device.mgt.oauth.extensions.handlers.grant;
 
-import org.wso2.carbon.device.mgt.oauth.extensions.OAuthExtUtils;
-import org.wso2.carbon.identity.oauth2.token.OAuthTokenReqMessageContext;
+import org.wso2.carbon.apimgt.integration.client.publisher.PublisherClient;
+import org.wso2.carbon.apimgt.integration.client.store.StoreClient;
 
-@SuppressWarnings("unused")
-public class ExtendedPasswordGrantHandler extends org.wso2.carbon.apimgt.keymgt.handlers.ExtendedPasswordGrantHandler {
+/**
+ * This is a service that can be called upon to access store and publisher.
+ */
+public interface IntegrationClientService {
 
-    @Override
-    public boolean validateScope(OAuthTokenReqMessageContext tokReqMsgCtx) {
-        return OAuthExtUtils.setScopes(tokReqMsgCtx);
-    }
+    /**
+     *
+     * @return API Store Client.
+     */
+    StoreClient getStoreClient();
+
+    /**
+     *
+     * @return API Publisher Client.
+     */
+    PublisherClient getPublisherClient();
 
 }

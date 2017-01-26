@@ -18,7 +18,7 @@
 
 package org.wso2.carbon.device.mgt.jaxrs.util;
 
-import org.wso2.carbon.apimgt.api.model.Scope;
+import org.wso2.carbon.device.mgt.core.config.permission.Scope;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorListItem;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ProfileFeature;

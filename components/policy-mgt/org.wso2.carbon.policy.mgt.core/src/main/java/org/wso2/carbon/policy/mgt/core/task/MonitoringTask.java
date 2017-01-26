@@ -25,9 +25,6 @@ import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
 import org.wso2.carbon.device.mgt.common.policy.mgt.PolicyMonitoringManager;
-import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
-import org.wso2.carbon.device.mgt.core.config.policy.PolicyConfiguration;
-import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.ntask.core.Task;
 import org.wso2.carbon.device.mgt.common.policy.mgt.monitor.PolicyComplianceException;
@@ -64,7 +61,7 @@ public class MonitoringTask implements Task {
         }
 
         try {
-            Tenant tenants[] = DeviceManagementDataHolder.getInstance().
+            Tenant tenants[] = PolicyManagementDataHolder.getInstance().
                     getRealmService().getTenantManager().getAllTenants();
 
             for (Tenant tenant : tenants) {

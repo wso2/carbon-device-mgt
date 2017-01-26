@@ -404,13 +404,13 @@ public class DeviceManagementServiceComponent {
     }
 
 
-    protected void setDeviceTaskManagerService(DeviceTaskManagerService emailSenderService) {
+    protected void setDeviceTaskManagerService(DeviceTaskManagerService deviceTaskManagerService) {
         if (log.isDebugEnabled()) {
         }
-        DeviceManagementDataHolder.getInstance().setDeviceTaskManagerService(emailSenderService);
+        DeviceManagementDataHolder.getInstance().setDeviceTaskManagerService(deviceTaskManagerService);
     }
 
-    protected void unsetDeviceTaskManagerService(DeviceTaskManagerService emailSenderService) {
+    protected void unsetDeviceTaskManagerService(DeviceTaskManagerService deviceTaskManagerService) {
         if (log.isDebugEnabled()) {
         }
         DeviceManagementDataHolder.getInstance().setDeviceTaskManagerService(null);

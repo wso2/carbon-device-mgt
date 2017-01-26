@@ -24,7 +24,10 @@ import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.apimgt.api.APIManagementException;
 import org.wso2.carbon.apimgt.impl.APIConstants;
 import org.wso2.carbon.apimgt.impl.APIManagerConfiguration;
+import org.wso2.carbon.device.mgt.oauth.extensions.validators.ExtendedJDBCScopeValidator;
 import org.wso2.carbon.identity.oauth2.OAuth2TokenValidationService;
+import org.wso2.carbon.identity.oauth2.validators.JDBCScopeValidator;
+import org.wso2.carbon.identity.oauth2.validators.OAuth2ScopeValidator;
 import org.wso2.carbon.user.core.service.RealmService;
 import org.wso2.carbon.utils.CarbonUtils;
 
@@ -46,6 +49,12 @@ import java.util.List;
  * policy="dynamic"
  * bind="setOAuth2ValidationService"
  * unbind="unsetOAuth2ValidationService"
+ * * @scr.reference name="scope.validator.service"
+ * interface="org.wso2.carbon.identity.oauth2.validators.OAuth2ScopeValidator"
+ * cardinality="0..n"
+ * policy="dynamic"
+ * bind="addScopeValidator"
+ * unbind="removeScopeValidator"
  */
 public class OAuthExtensionServiceComponent {
 
@@ -53,6 +62,8 @@ public class OAuthExtensionServiceComponent {
     private static final String REPOSITORY = "repository";
     private static final String CONFIGURATION = "conf";
     private static final String APIM_CONF_FILE = "api-manager.xml";
+    private static final String PERMISSION_SCOPE_PREFIX = "perm";
+    private static final String DEFAULT_PREFIX = "default";
 
 
     @SuppressWarnings("unused")
@@ -87,6 +98,13 @@ public class OAuthExtensionServiceComponent {
             }
 
             OAuthExtensionsDataHolder.getInstance().setWhitelistedScopes(whiteList);
+
+            ExtendedJDBCScopeValidator permissionBasedScopeValidator = new ExtendedJDBCScopeValidator();
+            JDBCScopeValidator roleBasedScopeValidator = new JDBCScopeValidator();
+            OAuthExtensionsDataHolder.getInstance().addScopeValidator(permissionBasedScopeValidator,
+                    PERMISSION_SCOPE_PREFIX);
+            OAuthExtensionsDataHolder.getInstance().addScopeValidator(roleBasedScopeValidator,
+                    DEFAULT_PREFIX);
         } catch (APIManagementException e) {
             log.error("Error occurred while loading DeviceMgtConfig configurations", e);
         }
@@ -145,6 +163,22 @@ public class OAuthExtensionServiceComponent {
             log.debug("Unsetting OAuth2TokenValidation Service");
         }
         OAuthExtensionsDataHolder.getInstance().setoAuth2TokenValidationService(null);
+    }
+
+    /**
+     * Add scope validator to the map.
+     * @param scopesValidator
+     */
+    protected void addScopeValidator(OAuth2ScopeValidator scopesValidator) {
+        OAuthExtensionsDataHolder.getInstance().addScopeValidator(scopesValidator, DEFAULT_PREFIX);
+    }
+
+    /**
+     * unset scope validator.
+     * @param scopesValidator
+     */
+    protected void removeScopeValidator(OAuth2ScopeValidator scopesValidator) {
+        OAuthExtensionsDataHolder.getInstance().removeScopeValidator();
     }
 
 

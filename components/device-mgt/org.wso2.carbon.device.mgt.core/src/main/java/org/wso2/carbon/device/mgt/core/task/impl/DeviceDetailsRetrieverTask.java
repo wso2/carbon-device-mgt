@@ -22,17 +22,21 @@ package org.wso2.carbon.device.mgt.core.task.impl;
 import com.google.gson.Gson;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.common.OperationMonitoringTaskConfig;
+import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 import org.wso2.carbon.device.mgt.core.task.DeviceMgtTaskException;
 import org.wso2.carbon.device.mgt.core.task.DeviceTaskManager;
 import org.wso2.carbon.ntask.core.Task;
+import org.wso2.carbon.user.api.Tenant;
+import org.wso2.carbon.user.api.UserStoreException;
 
 import java.util.Map;
 
 public class DeviceDetailsRetrieverTask implements Task {
 
     private static Log log = LogFactory.getLog(DeviceDetailsRetrieverTask.class);
-//    private DeviceTaskManager deviceTaskManager = new DeviceTaskManagerImpl();
+    //    private DeviceTaskManager deviceTaskManager = new DeviceTaskManagerImpl();
     private String deviceType;
     private String oppConfig;
     private OperationMonitoringTaskConfig operationMonitoringTaskConfig;
@@ -58,16 +62,31 @@ public class DeviceDetailsRetrieverTask implements Task {
         if (log.isDebugEnabled()) {
             log.debug("Device details retrieving task started to run.");
         }
-
-        DeviceTaskManager deviceTaskManager = new DeviceTaskManagerImpl(deviceType,
-                operationMonitoringTaskConfig);
-        //pass the configurations also from here, monitoring tasks
         try {
-            deviceTaskManager.addOperations();
-        } catch (DeviceMgtTaskException e) {
-            log.error(
-                    "Error occurred while trying to add the operations to device to retrieve device details.",
-                    e);
+            Tenant tenants[] = DeviceManagementDataHolder.getInstance().
+                    getRealmService().getTenantManager().getAllTenants();
+
+            for (Tenant tenant : tenants) {
+
+                try {
+                    PrivilegedCarbonContext.startTenantFlow();
+                    PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(tenant.getDomain());
+                    PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(tenant.getId());
+                    DeviceTaskManager deviceTaskManager = new DeviceTaskManagerImpl(deviceType,
+                            operationMonitoringTaskConfig);
+                    //pass the configurations also from here, monitoring tasks
+                    try {
+                        deviceTaskManager.addOperations();
+                    } catch (DeviceMgtTaskException e) {
+                        log.error("Error occurred while trying to add the operations to " +
+                                "device to retrieve device details.", e);
+                    }
+                } finally {
+                    PrivilegedCarbonContext.endTenantFlow();
+                }
+            }
+        } catch (UserStoreException e) {
+            log.error("Error occurred while trying to get the available tenants", e);
         }
 
     }

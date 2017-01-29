@@ -66,8 +66,8 @@ public class MSSQLGadgetDataServiceDAOImpl extends AbstractGadgetDataServiceDAO 
                     "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
             stmt = con.prepareStatement(sql);
             stmt.setInt(1, tenantId);
-            /*stmt.setInt(2, startIndex);
-            stmt.setInt(3, resultCount);*/
+            stmt.setInt(2, startIndex);
+            stmt.setInt(3, resultCount);
 
             // executing query
             rs = stmt.executeQuery();

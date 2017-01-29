@@ -62,6 +62,7 @@
                         </Private-Package>
                         <Export-Package>
                             org.wso2.carbon.device.mgt.analytics.dashboard,
+                            org.wso2.carbon.device.mgt.analytics.dashboard.util,
                             org.wso2.carbon.device.mgt.analytics.dashboard.exception,
                             org.wso2.carbon.device.mgt.analytics.dashboard.bean
                         </Export-Package>

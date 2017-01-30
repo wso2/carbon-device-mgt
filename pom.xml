@@ -1377,6 +1377,11 @@
                 <version>${servlet-api.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.wso2.carbon.commons</groupId>
+                <artifactId>org.wso2.carbon.tenant.common</artifactId>
+                <version>${carbon.tenant.common.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.wso2.carbon.analytics-common</groupId>
                 <artifactId>org.wso2.carbon.event.output.adapter.core</artifactId>
                 <version>${carbon.analytics.common.version}</version>
@@ -1763,6 +1768,8 @@
 
         <!-- Carbon Deployment -->
         <carbon.deployment.version>4.7.2</carbon.deployment.version>
+
+        <carbon.tenant.common.version>4.4.8</carbon.tenant.common.version>
 
         <!-- Carbon Identity -->
         <carbon.identity.framework.version>5.7.0</carbon.identity.framework.version>

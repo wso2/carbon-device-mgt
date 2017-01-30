@@ -55,7 +55,6 @@
 							feign.codec,
 							feign.auth,
 							feign.gson,
-							javax.ws.rs,
 							javax.xml.bind,
 							javax.xml.bind.annotation,
 							javax.xml.parsers;resolution:=optional,

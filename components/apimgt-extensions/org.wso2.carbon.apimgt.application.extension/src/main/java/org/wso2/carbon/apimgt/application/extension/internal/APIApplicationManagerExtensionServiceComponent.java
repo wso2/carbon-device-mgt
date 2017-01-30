@@ -49,6 +49,7 @@ import org.wso2.carbon.user.core.service.RealmService;
  * policy="dynamic"
  * bind="setRealmService"
  * unbind="unsetRealmService"
+ * @scr.reference name="integration.client.service"
  * interface="org.wso2.carbon.apimgt.integration.client.service.IntegrationClientService"
  * cardinality="1..1"
  * policy="dynamic"

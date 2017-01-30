@@ -73,7 +73,7 @@ public class BasicAuthAuthenticator implements WebappAuthenticator {
             boolean authenticated = userStore.authenticate(username, credentials.getPassword());
             if (authenticated) {
                 authenticationInfo.setStatus(Status.CONTINUE);
-                authenticationInfo.setUsername(credentials.getUsername());
+                authenticationInfo.setUsername(username);
                 authenticationInfo.setTenantDomain(Utils.getTenantDomain(tenantId));
                 authenticationInfo.setTenantId(tenantId);
             } else {

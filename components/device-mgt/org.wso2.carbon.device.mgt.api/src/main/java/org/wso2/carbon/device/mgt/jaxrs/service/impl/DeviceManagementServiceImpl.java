@@ -18,6 +18,7 @@
  */
 package org.wso2.carbon.device.mgt.jaxrs.service.impl;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.CarbonContext;
@@ -84,6 +85,7 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
             @QueryParam("name") String name,
             @QueryParam("type") String type,
             @QueryParam("user") String user,
+            @QueryParam("role") String role,
             @QueryParam("ownership") String ownership,
             @QueryParam("status") String status,
             @QueryParam("groupId") int groupId,
@@ -92,6 +94,12 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
             @QueryParam("offset") int offset,
             @QueryParam("limit") int limit) {
         try {
+            if (!StringUtils.isEmpty(name) && !StringUtils.isEmpty(role)) {
+                return Response.status(Response.Status.BAD_REQUEST).entity(
+                        new ErrorResponse.ErrorResponseBuilder().setMessage("Request contains both name and role " +
+                                                                                    "parameters. Only one is allowed " +
+                                                                                    "at once.").build()).build();
+            }
 //            RequestValidationUtil.validateSelectionCriteria(type, user, roleName, ownership, status);
             RequestValidationUtil.validatePaginationParameters(offset, limit);
             DeviceManagementProviderService dms = DeviceMgtAPIUtils.getDeviceManagementService();
@@ -125,6 +133,9 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
             }
             if (groupId != 0 ) {
                 request.setGroupId(groupId);
+            }
+            if (role != null && !role.isEmpty()) {
+                request.setOwnerRole(role);
             }
 
             // this is the user who initiates the request

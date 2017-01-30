@@ -205,10 +205,6 @@ public interface GroupManagementService {
                     message = "Not Modified. \n Empty body because the client has already the latest version of " +
                               "the requested resource."),
             @ApiResponse(
-                    code = 404,
-                    message = "No groups found.",
-                    response = ErrorResponse.class),
-            @ApiResponse(
                     code = 406,
                     message = "Not Acceptable.\n The requested media type is not supported."),
             @ApiResponse(
@@ -219,19 +215,25 @@ public interface GroupManagementService {
     Response getGroups(@ApiParam(
                                name = "name",
                                value = "Name of the group.")
-                       @QueryParam("name") String name,
+                       @QueryParam("name")
+                               String name,
                        @ApiParam(
                                name = "owner",
                                value = "Owner of the group.")
-                       @QueryParam("owner") String owner,
+                       @QueryParam("owner")
+                               String owner,
                        @ApiParam(
                                name = "offset",
-                               value = "Starting point within the complete list of items qualified.")
-                       @QueryParam("offset") int offset,
+                               value = "The starting pagination index for the complete list of qualified items.",
+                               defaultValue = "0")
+                       @QueryParam("offset")
+                               int offset,
                        @ApiParam(
                                name = "limit",
-                               value = "Maximum size of resource array to return.")
-                       @QueryParam("limit") int limit);
+                               value = "Provide how many device details you require from the starting pagination index/offset.",
+                               defaultValue = "5")
+                       @QueryParam("limit")
+                               int limit);
 
     @Path("/count")
     @GET
@@ -268,10 +270,6 @@ public interface GroupManagementService {
                     code = 304,
                     message = "Not Modified. \n Empty body because the client has already the latest version of " +
                               "the requested resource."),
-            @ApiResponse(
-                    code = 404,
-                    message = "No groups found.",
-                    response = ErrorResponse.class),
             @ApiResponse(
                     code = 406,
                     message = "Not Acceptable.\n The requested media type is not supported."),
@@ -383,7 +381,7 @@ public interface GroupManagementService {
                               "the requested resource."),
             @ApiResponse(
                     code = 404,
-                    message = "No groups found.",
+                    message = "Group found.",
                     response = ErrorResponse.class),
             @ApiResponse(
                     code = 406,
@@ -435,7 +433,7 @@ public interface GroupManagementService {
                               "the requested resource."),
             @ApiResponse(
                     code = 404,
-                    message = "No groups found.",
+                    message = "Group not found.",
                     response = ErrorResponse.class),
             @ApiResponse(
                     code = 406,
@@ -492,7 +490,7 @@ public interface GroupManagementService {
                               "the requested resource."),
             @ApiResponse(
                     code = 404,
-                    message = "No groups found.",
+                    message = "Group not found.",
                     response = ErrorResponse.class),
             @ApiResponse(
                     code = 406,
@@ -544,7 +542,7 @@ public interface GroupManagementService {
                               "the requested resource."),
             @ApiResponse(
                     code = 404,
-                    message = "No groups found.",
+                    message = "Group not found.",
                     response = ErrorResponse.class),
             @ApiResponse(
                     code = 406,
@@ -601,7 +599,7 @@ public interface GroupManagementService {
                             "the requested resource."),
             @ApiResponse(
                     code = 404,
-                    message = "No groups found.",
+                    message = "Group not found.",
                     response = ErrorResponse.class),
             @ApiResponse(
                     code = 406,
@@ -653,7 +651,7 @@ public interface GroupManagementService {
                               "the requested resource."),
             @ApiResponse(
                     code = 404,
-                    message = "No groups found.",
+                    message = "Group not found.",
                     response = ErrorResponse.class),
             @ApiResponse(
                     code = 406,
@@ -667,15 +665,20 @@ public interface GroupManagementService {
                                        name = "groupId",
                                        value = "ID of the group.",
                                        required = true)
-                               @PathParam("groupId") int groupId,
+                               @PathParam("groupId")
+                                       int groupId,
                                @ApiParam(
                                        name = "offset",
-                                       value = "Starting point within the complete list of items qualified.")
-                               @QueryParam("offset") int offset,
+                                       value = "The starting pagination index for the complete list of qualified items.",
+                                       defaultValue = "0")
+                               @QueryParam("offset")
+                                       int offset,
                                @ApiParam(
                                        name = "limit",
-                                       value = "Maximum size of resource array to return.")
-                               @QueryParam("limit") int limit);
+                                       value = "Provide how many device details you require from the starting pagination index/offset.",
+                                       defaultValue = "5")
+                               @QueryParam("limit")
+                                       int limit);
 
     @Path("/id/{groupId}/devices/count")
     @GET
@@ -927,10 +930,6 @@ public interface GroupManagementService {
                     message = "Not Modified. \n Empty body because the client has already the latest version of " +
                               "the requested resource."),
             @ApiResponse(
-                    code = 404,
-                    message = "No groups found.",
-                    response = ErrorResponse.class),
-            @ApiResponse(
                     code = 406,
                     message = "Not Acceptable.\n The requested media type is not supported."),
             @ApiResponse(
@@ -941,11 +940,15 @@ public interface GroupManagementService {
     Response getGroups(
             @ApiParam(
                     name = "deviceId",
-                    value = "Id of the device.")
-            @QueryParam("deviceId") String deviceId,
+                    value = "Id of the device.",
+                    required = true)
+            @QueryParam("deviceId")
+                    String deviceId,
             @ApiParam(
                     name = "deviceType",
-                    value = "Type of the device.")
-            @QueryParam("deviceType") String deviceType);
+                    value = "Type of the device.",
+                    required = true)
+            @QueryParam("deviceType")
+                    String deviceType);
 
 }

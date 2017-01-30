@@ -114,10 +114,6 @@ public interface GroupManagementAdminService {
                     message = "Not Modified. \n Empty body because the client has already the latest version of " +
                               "the requested resource."),
             @ApiResponse(
-                    code = 404,
-                    message = "No groups found.",
-                    response = ErrorResponse.class),
-            @ApiResponse(
                     code = 406,
                     message = "Not Acceptable.\n The requested media type is not supported."),
             @ApiResponse(
@@ -128,19 +124,25 @@ public interface GroupManagementAdminService {
     Response getGroups(@ApiParam(
                                name = "name",
                                value = "Name of the group.")
-                       @QueryParam("name") String name,
+                       @QueryParam("name")
+                               String name,
                        @ApiParam(
                                name = "owner",
                                value = "Owner of the group.")
-                       @QueryParam("owner") String owner,
+                       @QueryParam("owner")
+                               String owner,
                        @ApiParam(
                                name = "offset",
-                               value = "Starting point within the complete list of items qualified.")
-                       @QueryParam("offset") int offset,
+                               value = "The starting pagination index for the complete list of qualified items.",
+                               defaultValue = "0")
+                       @QueryParam("offset")
+                               int offset,
                        @ApiParam(
                                name = "limit",
-                               value = "Maximum size of resource array to return.")
-                       @QueryParam("limit") int limit);
+                               value = "Provide how many device details you require from the starting pagination index/offset.",
+                               defaultValue = "5")
+                       @QueryParam("limit")
+                               int limit);
 
     @Path("/count")
     @GET

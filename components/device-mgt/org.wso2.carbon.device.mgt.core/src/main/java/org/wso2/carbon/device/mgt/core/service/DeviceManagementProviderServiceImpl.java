@@ -623,7 +623,6 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             DeviceManagementDAOFactory.openConnection();
             allDevices = deviceDAO.getDevices(request, tenantId);
             count = deviceDAO.getDeviceCount(request, tenantId);
-
         } catch (DeviceManagementDAOException e) {
             throw new DeviceManagementException("Error occurred while retrieving device list pertaining to " +
                     "the current tenant", e);

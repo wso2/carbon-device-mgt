@@ -88,7 +88,7 @@ public class ScopeValidationHandler extends OAuth2ScopeValidator {
         }
 
         // validate scope via relevant scope validator that matches with the prefix
-        return scopeValidator.validateScope(accessTokenDO, resourceScope);
+        return scopeValidator.validateScope(accessTokenDO, resource);
     }
 
     private String getResourceScope(String resource) {

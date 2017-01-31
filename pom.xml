@@ -1798,7 +1798,7 @@
 	    <commons-lang.wso2.osgi.version.range>[2.6.0,3.0.0)</commons-lang.wso2.osgi.version.range>
 
         <!-- Carbon API Management -->
-        <carbon.api.mgt.version>6.1.60</carbon.api.mgt.version>
+        <carbon.api.mgt.version>6.1.64</carbon.api.mgt.version>
         <carbon.api.mgt.version.range>(6.0.0,7.0.0]</carbon.api.mgt.version.range>
 
         <!-- Carbon Analytics Commons -->

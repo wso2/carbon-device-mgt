@@ -33,6 +33,7 @@ public class PaginationRequest {
     private String deviceType;
     private String deviceName;
     private String ownership;
+    private String ownerRole;
     private Date since;
 
     public PaginationRequest(int start, int rowCount) {
@@ -112,4 +113,11 @@ public class PaginationRequest {
         this.since = since;
     }
 
+    public String getOwnerRole() {
+        return ownerRole;
+    }
+
+    public void setOwnerRole(String ownerRole) {
+        this.ownerRole = ownerRole;
+    }
 }

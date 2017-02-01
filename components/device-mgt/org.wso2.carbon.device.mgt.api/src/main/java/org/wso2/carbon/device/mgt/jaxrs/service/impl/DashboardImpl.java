@@ -38,6 +38,8 @@ import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.wso2.carbon.device.mgt.analytics.dashboard.util.APIUtil.getAuthenticatedUser;
+
 /**
  * This class consists of dashboard related REST APIs
  * to be consumed by individual client gadgets such as
@@ -82,7 +84,8 @@ public class DashboardImpl implements Dashboard {
         // getting total device count
         DeviceCountByGroup totalDeviceCount;
         try {
-            totalDeviceCount = gadgetDataService.getTotalDeviceCount();
+            String userName = getAuthenticatedUser();
+            totalDeviceCount = gadgetDataService.getTotalDeviceCount(userName);
         } catch (DataAccessLayerException e) {
             log.error("An internal error occurred while trying to execute relevant data service function " +
                 "@ Dashboard API layer to retrieve total device count.", e);
@@ -100,7 +103,8 @@ public class DashboardImpl implements Dashboard {
         // getting device counts by connectivity statuses
         List<DeviceCountByGroup> deviceCountsByConnectivityStatuses;
         try {
-            deviceCountsByConnectivityStatuses = gadgetDataService.getDeviceCountsByConnectivityStatuses();
+            String userName = getAuthenticatedUser();
+            deviceCountsByConnectivityStatuses = gadgetDataService.getDeviceCountsByConnectivityStatuses(userName);
         } catch (DataAccessLayerException e) {
             log.error("An internal error occurred while trying to execute relevant data service function " +
                 "@ Dashboard API layer to retrieve device counts by connectivity statuses.", e);
@@ -128,7 +132,8 @@ public class DashboardImpl implements Dashboard {
 
         List<DeviceCountByGroup> deviceCountsByPotentialVulnerabilities;
         try {
-            deviceCountsByPotentialVulnerabilities = gadgetDataService.getDeviceCountsByPotentialVulnerabilities();
+            String userName = getAuthenticatedUser();
+            deviceCountsByPotentialVulnerabilities = gadgetDataService.getDeviceCountsByPotentialVulnerabilities(userName);
         } catch (DataAccessLayerException e) {
             log.error("An internal error occurred while trying to execute relevant data service function " +
                 "@ Dashboard API layer to retrieve device counts by potential vulnerabilities.", e);
@@ -158,8 +163,9 @@ public class DashboardImpl implements Dashboard {
 
         PaginationResult paginationResult;
         try {
+            String userName = getAuthenticatedUser();
             paginationResult = gadgetDataService.
-                getNonCompliantDeviceCountsByFeatures(startIndex, resultCount);
+                getNonCompliantDeviceCountsByFeatures(startIndex, resultCount, userName);
         } catch (InvalidStartIndexValueException e) {
             log.error("Bad request and error occurred @ Gadget Data Service layer due to " +
                 "invalid (query) parameter value. This was while trying to execute relevant data service " +
@@ -210,7 +216,8 @@ public class DashboardImpl implements Dashboard {
         // creating device-Counts-by-platforms Data Wrapper
         List<DeviceCountByGroup> deviceCountsByPlatforms;
         try {
-            deviceCountsByPlatforms = gadgetDataService.getDeviceCountsByPlatforms(filterSet);
+            String userName = getAuthenticatedUser();
+            deviceCountsByPlatforms = gadgetDataService.getDeviceCountsByPlatforms(filterSet, userName);
         } catch (InvalidPotentialVulnerabilityValueException e) {
             log.error("Bad request and error occurred @ Gadget Data Service layer due to " +
                 "invalid (query) parameter value. This was while trying to execute relevant data service " +
@@ -232,7 +239,8 @@ public class DashboardImpl implements Dashboard {
         // creating device-Counts-by-ownership-types Data Wrapper
         List<DeviceCountByGroup> deviceCountsByOwnerships;
         try {
-            deviceCountsByOwnerships = gadgetDataService.getDeviceCountsByOwnershipTypes(filterSet);
+            String userName = getAuthenticatedUser();
+            deviceCountsByOwnerships = gadgetDataService.getDeviceCountsByOwnershipTypes(filterSet, userName);
         } catch (InvalidPotentialVulnerabilityValueException e) {
             log.error("Bad request and error occurred @ Gadget Data Service layer due to " +
                 "invalid (query) parameter value. This was while trying to execute relevant data service " +
@@ -274,8 +282,9 @@ public class DashboardImpl implements Dashboard {
         // creating feature-non-compliant-device-Counts-by-platforms Data Wrapper
         List<DeviceCountByGroup> featureNonCompliantDeviceCountsByPlatforms;
         try {
+            String userName = getAuthenticatedUser();
             featureNonCompliantDeviceCountsByPlatforms = gadgetDataService.
-                getFeatureNonCompliantDeviceCountsByPlatforms(nonCompliantFeatureCode, filterSet);
+                getFeatureNonCompliantDeviceCountsByPlatforms(nonCompliantFeatureCode, filterSet, userName);
         } catch (InvalidFeatureCodeValueException e) {
             log.error("Bad request and error occurred @ Gadget Data Service layer due to " +
                 "invalid (query) parameter value. This was while trying to execute relevant data service " +
@@ -299,8 +308,9 @@ public class DashboardImpl implements Dashboard {
         // creating feature-non-compliant-device-Counts-by-ownership-types Data Wrapper
         List<DeviceCountByGroup> featureNonCompliantDeviceCountsByOwnerships;
         try {
+            String userName = getAuthenticatedUser();
             featureNonCompliantDeviceCountsByOwnerships = gadgetDataService.
-                getFeatureNonCompliantDeviceCountsByOwnershipTypes(nonCompliantFeatureCode, filterSet);
+                getFeatureNonCompliantDeviceCountsByOwnershipTypes(nonCompliantFeatureCode, filterSet, userName);
         } catch (InvalidFeatureCodeValueException e) {
             log.error("Bad request and error occurred @ Gadget Data Service layer due to " +
                 "invalid (query) parameter value. This was while trying to execute relevant data service function " +
@@ -348,7 +358,8 @@ public class DashboardImpl implements Dashboard {
         // creating filteredDeviceCount Data Wrapper
         DeviceCountByGroup filteredDeviceCount;
         try {
-            filteredDeviceCount = gadgetDataService.getDeviceCount(filterSet);
+            String userName = getAuthenticatedUser();
+            filteredDeviceCount = gadgetDataService.getDeviceCount(filterSet, userName);
         } catch (InvalidPotentialVulnerabilityValueException e) {
             log.error("Bad request and error occurred @ Gadget Data Service layer due to " +
                 "invalid (query) parameter value. This was while trying to execute relevant data service " +
@@ -365,7 +376,8 @@ public class DashboardImpl implements Dashboard {
         // creating TotalDeviceCount Data Wrapper
         DeviceCountByGroup totalDeviceCount;
         try {
-            totalDeviceCount = gadgetDataService.getTotalDeviceCount();
+            String userName = getAuthenticatedUser();
+            totalDeviceCount = gadgetDataService.getTotalDeviceCount(userName);
         } catch (DataAccessLayerException e) {
             log.error("An internal error occurred while trying to execute relevant data service function " +
                 "@ Dashboard API layer to retrieve the total device count over filtered.", e);
@@ -405,8 +417,9 @@ public class DashboardImpl implements Dashboard {
         // creating featureNonCompliantDeviceCount Data Wrapper
         DeviceCountByGroup featureNonCompliantDeviceCount;
         try {
+            String userName = getAuthenticatedUser();
             featureNonCompliantDeviceCount = gadgetDataService.
-                getFeatureNonCompliantDeviceCount(nonCompliantFeatureCode, filterSet);
+                getFeatureNonCompliantDeviceCount(nonCompliantFeatureCode, filterSet, userName);
         } catch (InvalidFeatureCodeValueException e) {
             log.error("Bad request and error occurred @ Gadget Data Service layer due to " +
                 "invalid (query) parameter value. This was while trying to execute relevant data service function " +
@@ -423,7 +436,8 @@ public class DashboardImpl implements Dashboard {
         // creating TotalDeviceCount Data Wrapper
         DeviceCountByGroup totalDeviceCount;
         try {
-            totalDeviceCount = gadgetDataService.getTotalDeviceCount();
+            String userName = getAuthenticatedUser();
+            totalDeviceCount = gadgetDataService.getTotalDeviceCount(userName);
         } catch (DataAccessLayerException e) {
             log.error("An internal error occurred while trying to execute relevant data service function " +
                 "@ Dashboard API layer to retrieve the total device count over filtered feature non-compliant.", e);
@@ -477,8 +491,9 @@ public class DashboardImpl implements Dashboard {
 
             PaginationResult paginationResult;
             try {
+                String userName = getAuthenticatedUser();
                 paginationResult = gadgetDataService.
-                    getDevicesWithDetails(filterSet, startIndex, resultCount);
+                    getDevicesWithDetails(filterSet, startIndex, resultCount, userName);
             } catch (InvalidPotentialVulnerabilityValueException e) {
                 log.error("Bad request and error occurred @ Gadget Data Service layer due to " +
                     "invalid (query) parameter value. This was while trying to execute relevant data service " +
@@ -530,7 +545,8 @@ public class DashboardImpl implements Dashboard {
 
             List<DeviceWithDetails> devicesWithDetails;
             try {
-                devicesWithDetails = gadgetDataService.getDevicesWithDetails(filterSet);
+                String userName = getAuthenticatedUser();
+                devicesWithDetails = gadgetDataService.getDevicesWithDetails(filterSet, userName);
             } catch (InvalidPotentialVulnerabilityValueException e) {
                 log.error("Bad request and error occurred @ Gadget Data Service layer due to " +
                     "invalid (query) parameter value. This was while trying to execute relevant data service " +
@@ -591,9 +607,10 @@ public class DashboardImpl implements Dashboard {
 
             PaginationResult paginationResult;
             try {
+                String userName = getAuthenticatedUser();
                 paginationResult = gadgetDataService.
                     getFeatureNonCompliantDevicesWithDetails(nonCompliantFeatureCode,
-                        filterSet, startIndex, resultCount);
+                        filterSet, startIndex, resultCount, userName);
             } catch (InvalidFeatureCodeValueException e) {
                 log.error("Bad request and error occurred @ Gadget Data Service layer due to " +
                     "invalid (query) parameter value. This was while trying to execute relevant data service " +
@@ -648,8 +665,9 @@ public class DashboardImpl implements Dashboard {
 
             List<DeviceWithDetails> featureNonCompliantDevicesWithDetails;
             try {
+                String userName = getAuthenticatedUser();
                 featureNonCompliantDevicesWithDetails = gadgetDataService.
-                    getFeatureNonCompliantDevicesWithDetails(nonCompliantFeatureCode, filterSet);
+                    getFeatureNonCompliantDevicesWithDetails(nonCompliantFeatureCode, filterSet, userName);
             } catch (InvalidFeatureCodeValueException e) {
                 log.error("Bad request and error occurred @ Gadget Data Service layer due to " +
                     "invalid (query) parameter value. This was while trying to execute relevant data service " +

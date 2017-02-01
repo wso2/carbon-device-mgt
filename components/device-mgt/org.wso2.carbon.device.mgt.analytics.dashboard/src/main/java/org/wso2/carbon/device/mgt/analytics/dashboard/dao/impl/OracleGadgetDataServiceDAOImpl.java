@@ -40,7 +40,7 @@ import java.util.Map;
 public class OracleGadgetDataServiceDAOImpl extends AbstractGadgetDataServiceDAO {
 
     @Override
-    public PaginationResult getNonCompliantDeviceCountsByFeatures(int startIndex, int resultCount)
+    public PaginationResult getNonCompliantDeviceCountsByFeatures(int startIndex, int resultCount, String userName)
                             throws InvalidStartIndexValueException, InvalidResultCountValueException, SQLException {
 
         if (startIndex < GadgetDataServiceDAOConstants.Pagination.MIN_START_INDEX) {
@@ -105,7 +105,7 @@ public class OracleGadgetDataServiceDAOImpl extends AbstractGadgetDataServiceDAO
     }
 
     @Override
-    public PaginationResult getDevicesWithDetails(ExtendedFilterSet extendedFilterSet, int startIndex, int resultCount)
+    public PaginationResult getDevicesWithDetails(ExtendedFilterSet extendedFilterSet, int startIndex, int resultCount, String userName)
                             throws InvalidPotentialVulnerabilityValueException, InvalidStartIndexValueException,
                             InvalidResultCountValueException, SQLException {
 
@@ -197,7 +197,7 @@ public class OracleGadgetDataServiceDAOImpl extends AbstractGadgetDataServiceDAO
 
     @Override
     public PaginationResult getFeatureNonCompliantDevicesWithDetails(String featureCode, BasicFilterSet basicFilterSet,
-                            int startIndex, int resultCount) throws InvalidFeatureCodeValueException,
+                            int startIndex, int resultCount, String userName) throws InvalidFeatureCodeValueException,
                             InvalidStartIndexValueException, InvalidResultCountValueException, SQLException {
 
         if (featureCode == null || featureCode.isEmpty()) {

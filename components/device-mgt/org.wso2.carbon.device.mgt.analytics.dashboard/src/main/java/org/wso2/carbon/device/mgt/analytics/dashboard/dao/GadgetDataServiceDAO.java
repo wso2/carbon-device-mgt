@@ -30,45 +30,45 @@ import java.util.List;
 
 public interface GadgetDataServiceDAO {
 
-    DeviceCountByGroup getDeviceCount(ExtendedFilterSet extendedFilterSet)
+    DeviceCountByGroup getDeviceCount(ExtendedFilterSet extendedFilterSet, String userName)
                                            throws InvalidPotentialVulnerabilityValueException, SQLException;
 
-    DeviceCountByGroup getFeatureNonCompliantDeviceCount(String featureCode, BasicFilterSet basicFilterSet)
+    DeviceCountByGroup getFeatureNonCompliantDeviceCount(String featureCode, BasicFilterSet basicFilterSet, String userName)
                                            throws InvalidFeatureCodeValueException, SQLException;
 
-    DeviceCountByGroup getTotalDeviceCount() throws SQLException;
+    DeviceCountByGroup getTotalDeviceCount(String userName) throws SQLException;
 
-    List<DeviceCountByGroup> getDeviceCountsByConnectivityStatuses() throws SQLException;
+    List<DeviceCountByGroup> getDeviceCountsByConnectivityStatuses(String userName) throws SQLException;
 
-    List<DeviceCountByGroup> getDeviceCountsByPotentialVulnerabilities() throws SQLException;
+    List<DeviceCountByGroup> getDeviceCountsByPotentialVulnerabilities(String userName) throws SQLException;
 
-    PaginationResult getNonCompliantDeviceCountsByFeatures(int startIndex, int resultCount) throws
+    PaginationResult getNonCompliantDeviceCountsByFeatures(int startIndex, int resultCount, String userName) throws
                                   InvalidStartIndexValueException, InvalidResultCountValueException, SQLException;
 
-    List<DeviceCountByGroup> getDeviceCountsByPlatforms(ExtendedFilterSet extendedFilterSet)
+    List<DeviceCountByGroup> getDeviceCountsByPlatforms(ExtendedFilterSet extendedFilterSet, String userName)
                                            throws InvalidPotentialVulnerabilityValueException, SQLException;
 
     List<DeviceCountByGroup> getFeatureNonCompliantDeviceCountsByPlatforms(String featureCode,
-                                  BasicFilterSet basicFilterSet) throws InvalidFeatureCodeValueException, SQLException;
+                                  BasicFilterSet basicFilterSet, String userName) throws InvalidFeatureCodeValueException, SQLException;
 
-    List<DeviceCountByGroup> getDeviceCountsByOwnershipTypes(ExtendedFilterSet extendedFilterSet)
+    List<DeviceCountByGroup> getDeviceCountsByOwnershipTypes(ExtendedFilterSet extendedFilterSet, String userName)
                                            throws InvalidPotentialVulnerabilityValueException, SQLException;
 
     List<DeviceCountByGroup> getFeatureNonCompliantDeviceCountsByOwnershipTypes(String featureCode,
-                                  BasicFilterSet basicFilterSet) throws InvalidFeatureCodeValueException, SQLException;
+                                  BasicFilterSet basicFilterSet, String userName) throws InvalidFeatureCodeValueException, SQLException;
 
-    PaginationResult getDevicesWithDetails(ExtendedFilterSet extendedFilterSet, int startIndex, int resultCount)
+    PaginationResult getDevicesWithDetails(ExtendedFilterSet extendedFilterSet, int startIndex, int resultCount, String userName)
                                   throws InvalidPotentialVulnerabilityValueException,
                                   InvalidStartIndexValueException, InvalidResultCountValueException, SQLException;
 
     PaginationResult getFeatureNonCompliantDevicesWithDetails(String featureCode, BasicFilterSet basicFilterSet,
-                                  int startIndex, int resultCount) throws InvalidFeatureCodeValueException,
+                                  int startIndex, int resultCount, String userName) throws InvalidFeatureCodeValueException,
                                   InvalidStartIndexValueException, InvalidResultCountValueException, SQLException;
 
-    List<DeviceWithDetails> getDevicesWithDetails(ExtendedFilterSet extendedFilterSet)
+    List<DeviceWithDetails> getDevicesWithDetails(ExtendedFilterSet extendedFilterSet, String userName)
                                   throws InvalidPotentialVulnerabilityValueException, SQLException;
 
     List<DeviceWithDetails> getFeatureNonCompliantDevicesWithDetails(String featureCode,
-                                  BasicFilterSet basicFilterSet) throws InvalidFeatureCodeValueException, SQLException;
+                                  BasicFilterSet basicFilterSet, String userName) throws InvalidFeatureCodeValueException, SQLException;
 
 }

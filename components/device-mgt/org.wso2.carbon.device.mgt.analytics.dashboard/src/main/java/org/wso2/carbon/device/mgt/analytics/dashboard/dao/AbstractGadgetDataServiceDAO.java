@@ -18,13 +18,16 @@
 
 package org.wso2.carbon.device.mgt.analytics.dashboard.dao;
 
-import org.wso2.carbon.context.PrivilegedCarbonContext;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.analytics.dashboard.bean.BasicFilterSet;
 import org.wso2.carbon.device.mgt.analytics.dashboard.bean.DeviceWithDetails;
 import org.wso2.carbon.device.mgt.analytics.dashboard.bean.DeviceCountByGroup;
 import org.wso2.carbon.device.mgt.analytics.dashboard.bean.ExtendedFilterSet;
 import org.wso2.carbon.device.mgt.analytics.dashboard.exception.InvalidFeatureCodeValueException;
 import org.wso2.carbon.device.mgt.analytics.dashboard.exception.InvalidPotentialVulnerabilityValueException;
+import org.wso2.carbon.device.mgt.analytics.dashboard.util.APIUtil;
+import org.wso2.carbon.device.mgt.common.authorization.DeviceAccessAuthorizationException;
 import org.wso2.carbon.device.mgt.core.dao.util.DeviceManagementDAOUtil;
 
 import java.sql.Connection;
@@ -36,40 +39,39 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.wso2.carbon.device.mgt.analytics.dashboard.util.APIUtil.getAuthenticatedUser;
+import static org.wso2.carbon.device.mgt.analytics.dashboard.util.APIUtil.getAuthenticatedUserTenantDomainId;
+
 public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceDAO {
 
+    private static final Log log = LogFactory.getLog(AbstractGadgetDataServiceDAO.class);
     @Override
-    public DeviceCountByGroup getTotalDeviceCount() throws SQLException {
+    public DeviceCountByGroup getTotalDeviceCount(String userName) throws SQLException {
         int totalDeviceCount;
         try {
-            totalDeviceCount = this.getFilteredDeviceCount(null);
+            totalDeviceCount = this.getFilteredDeviceCount(null, userName);
         } catch (InvalidPotentialVulnerabilityValueException e) {
             throw new AssertionError(e);
         }
-
         DeviceCountByGroup deviceCountByGroup = new DeviceCountByGroup();
         deviceCountByGroup.setGroup("total");
         deviceCountByGroup.setDisplayNameForGroup("Total");
         deviceCountByGroup.setDeviceCount(totalDeviceCount);
-
         return deviceCountByGroup;
     }
 
     @Override
-    public DeviceCountByGroup getDeviceCount(ExtendedFilterSet extendedFilterSet)
+    public DeviceCountByGroup getDeviceCount(ExtendedFilterSet extendedFilterSet, String userName)
                                                   throws InvalidPotentialVulnerabilityValueException, SQLException {
-
-        int filteredDeviceCount = this.getFilteredDeviceCount(extendedFilterSet);
-
+        int filteredDeviceCount = this.getFilteredDeviceCount(extendedFilterSet, userName);
         DeviceCountByGroup deviceCountByGroup = new DeviceCountByGroup();
         deviceCountByGroup.setGroup("filtered");
         deviceCountByGroup.setDisplayNameForGroup("Filtered");
         deviceCountByGroup.setDeviceCount(filteredDeviceCount);
-
         return deviceCountByGroup;
     }
 
-    private int getFilteredDeviceCount(ExtendedFilterSet extendedFilterSet)
+    private int getFilteredDeviceCount(ExtendedFilterSet extendedFilterSet, String userName)
                                        throws InvalidPotentialVulnerabilityValueException, SQLException {
 
         Map<String, Object> filters = this.extractDatabaseFiltersFromBean(extendedFilterSet);
@@ -77,24 +79,37 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
         Connection con;
         PreparedStatement stmt = null;
         ResultSet rs = null;
-        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
+        int tenantId = getAuthenticatedUserTenantDomainId();
         int filteredDeviceCount = 0;
         try {
+            String sql;
             con = this.getConnection();
-            String sql = "SELECT COUNT(DEVICE_ID) AS DEVICE_COUNT FROM " +
-                GadgetDataServiceDAOConstants.DatabaseView.DEVICES_VIEW_1 + " WHERE TENANT_ID = ?";
+            if (APIUtil.isDeviceAdminUser()) {
+                sql = "SELECT COUNT(DEVICE_ID) AS DEVICE_COUNT FROM " +
+                        GadgetDataServiceDAOConstants.DatabaseView.DEVICES_VIEW_1 + " POLICY__INFO WHERE TENANT_ID = ?";
+            } else {
+                sql = "SELECT COUNT(POLICY__INFO.DEVICE_ID) AS DEVICE_COUNT FROM "
+                        + GadgetDataServiceDAOConstants.DatabaseView.DEVICES_VIEW_1 + " POLICY__INFO INNER JOIN" +
+                        " DM_ENROLMENT ENR_DB ON ENR_DB.DEVICE_ID = POLICY__INFO.DEVICE_ID AND " +
+                        " POLICY__INFO.TENANT_ID = ? AND ENR_DB.OWNER = ? ";
+            }
             // appending filters to support advanced filtering options
             // [1] appending filter columns
             if (filters != null && filters.size() > 0) {
                 for (String column : filters.keySet()) {
-                    sql = sql + " AND " + column + " = ?";
+                    sql = sql + " AND POLICY__INFO." + column + " = ? ";
                 }
             }
-            stmt = con.prepareStatement(sql);
             // [2] appending filter column values, if exist
+            stmt = con.prepareStatement(sql);
             stmt.setInt(1, tenantId);
+            int index = 2;
+            if (!APIUtil.isDeviceAdminUser()) {
+                stmt.setString(2, userName);
+                index = 3;
+            }
             if (filters != null && filters.values().size() > 0) {
-                int i = 2;
+                int i = index;
                 for (Object value : filters.values()) {
                     if (value instanceof Integer) {
                         stmt.setInt(i, (Integer) value);
@@ -110,6 +125,9 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
             while (rs.next()) {
                 filteredDeviceCount = rs.getInt("DEVICE_COUNT");
             }
+        } catch (DeviceAccessAuthorizationException e) {
+            String msg = "Error occurred while checking device access authorization";
+            log.error(msg, e);
         } finally {
             DeviceManagementDAOUtil.cleanupResources(stmt, rs);
         }
@@ -118,7 +136,7 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
 
     @Override
     public DeviceCountByGroup getFeatureNonCompliantDeviceCount(String featureCode,
-                            BasicFilterSet basicFilterSet) throws InvalidFeatureCodeValueException, SQLException {
+                            BasicFilterSet basicFilterSet, String userName) throws InvalidFeatureCodeValueException, SQLException {
 
         if (featureCode == null || featureCode.isEmpty()) {
             throw new InvalidFeatureCodeValueException("Feature code should not be either null or empty.");
@@ -129,25 +147,39 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
         Connection con;
         PreparedStatement stmt = null;
         ResultSet rs = null;
-        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
+        int tenantId = getAuthenticatedUserTenantDomainId();
         int filteredDeviceCount = 0;
         try {
+            String sql;
             con = this.getConnection();
-            String sql = "SELECT COUNT(DEVICE_ID) AS DEVICE_COUNT FROM " +
-                GadgetDataServiceDAOConstants.DatabaseView.DEVICES_VIEW_2 + " WHERE TENANT_ID = ? AND FEATURE_CODE = ?";
+            if (APIUtil.isDeviceAdminUser()) {
+                sql = "SELECT COUNT(DEVICE_ID) AS DEVICE_COUNT FROM " +
+                        GadgetDataServiceDAOConstants.DatabaseView.DEVICES_VIEW_2 + " FEATURE_INFO WHERE TENANT_ID =" +
+                        " ? AND FEATURE_CODE = ?";
+            } else {
+                sql = "SELECT COUNT(FEATURE_INFO.DEVICE_ID) AS DEVICE_COUNT FROM " +
+                        GadgetDataServiceDAOConstants.DatabaseView.DEVICES_VIEW_2 + " FEATURE_INFO INNER JOIN " +
+                        "DM_ENROLMENT ENR_DB ON ENR_DB.DEVICE_ID = FEATURE_INFO.DEVICE_ID AND " +
+                        "FEATURE_INFO.TENANT_ID = ? AND FEATURE_INFO.FEATURE_CODE = ? AND ENR_DB.OWNER =  ? ";
+            }
             // appending filters to support advanced filtering options
             // [1] appending filter columns
             if (filters != null && filters.size() > 0) {
                 for (String column : filters.keySet()) {
-                    sql = sql + " AND " + column + " = ?";
+                    sql = sql + " AND FEATURE_INFO." + column + " = ?";
                 }
             }
             stmt = con.prepareStatement(sql);
             // [2] appending filter column values, if exist
             stmt.setInt(1, tenantId);
             stmt.setString(2, featureCode);
+            int index = 3;
+            if (!APIUtil.isDeviceAdminUser()) {
+                stmt.setString(3, userName);
+                index = 4;
+            }
             if (filters != null && filters.values().size() > 0) {
-                int i = 3;
+                int i = index;
                 for (Object value : filters.values()) {
                     if (value instanceof Integer) {
                         stmt.setInt(i, (Integer) value);
@@ -163,6 +195,9 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
             while (rs.next()) {
                 filteredDeviceCount = rs.getInt("DEVICE_COUNT");
             }
+        } catch (DeviceAccessAuthorizationException e) {
+            String msg = "Error occurred while checking device access authorization";
+            log.error(msg, e);
         } finally {
             DeviceManagementDAOUtil.cleanupResources(stmt, rs);
         }
@@ -176,20 +211,32 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
     }
 
     @Override
-    public List<DeviceCountByGroup> getDeviceCountsByConnectivityStatuses() throws SQLException {
+    public List<DeviceCountByGroup> getDeviceCountsByConnectivityStatuses(String userName) throws SQLException {
         Connection con;
         PreparedStatement stmt = null;
         ResultSet rs = null;
-        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
+        int tenantId = getAuthenticatedUserTenantDomainId();
         List<DeviceCountByGroup> deviceCountsByConnectivityStatuses = new ArrayList<>();
         try {
+            String sql;
             con = this.getConnection();
-            String sql = "SELECT CONNECTIVITY_STATUS, COUNT(DEVICE_ID) AS DEVICE_COUNT FROM " +
-                GadgetDataServiceDAOConstants.DatabaseView.DEVICES_VIEW_1 +
-                    " WHERE TENANT_ID = ? GROUP BY CONNECTIVITY_STATUS";
+            if (APIUtil.isDeviceAdminUser()) {
+                sql = "SELECT CONNECTIVITY_STATUS, COUNT(DEVICE_ID) AS DEVICE_COUNT FROM " +
+                        GadgetDataServiceDAOConstants.DatabaseView.DEVICES_VIEW_1 +
+                        " WHERE TENANT_ID = ? GROUP BY CONNECTIVITY_STATUS";
+            } else {
+                sql = "SELECT POLICY__INFO.CONNECTIVITY_STATUS AS CONNECTIVITY_STATUS, " +
+                        "COUNT(POLICY__INFO.DEVICE_ID) AS DEVICE_COUNT FROM "
+                        + GadgetDataServiceDAOConstants.DatabaseView.DEVICES_VIEW_1 + " POLICY__INFO " +
+                        "INNER JOIN DM_ENROLMENT ENR_DB ON ENR_DB.DEVICE_ID = POLICY__INFO.DEVICE_ID  " +
+                        " AND POLICY__INFO.TENANT_ID = ? AND ENR_DB.OWNER = ? GROUP BY POLICY__INFO.CONNECTIVITY_STATUS";
+            }
             stmt = con.prepareStatement(sql);
             // [2] appending filter column values, if exist
             stmt.setInt(1, tenantId);
+            if(!APIUtil.isDeviceAdminUser()){
+                stmt.setString(2, userName);
+            }
             // executing query
             rs = stmt.executeQuery();
             // fetching query results
@@ -201,6 +248,9 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
                 deviceCountByConnectivityStatus.setDeviceCount(rs.getInt("DEVICE_COUNT"));
                 deviceCountsByConnectivityStatuses.add(deviceCountByConnectivityStatus);
             }
+        } catch (DeviceAccessAuthorizationException e) {
+            String msg = "Error occurred while checking device access authorization";
+            log.error(msg, e);
         } finally {
             DeviceManagementDAOUtil.cleanupResources(stmt, rs);
         }
@@ -208,7 +258,7 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
     }
 
     @Override
-    public List<DeviceCountByGroup> getDeviceCountsByPotentialVulnerabilities() throws SQLException {
+    public List<DeviceCountByGroup> getDeviceCountsByPotentialVulnerabilities(String userName) throws SQLException {
         // getting non-compliant device count
         DeviceCountByGroup nonCompliantDeviceCount = new DeviceCountByGroup();
         nonCompliantDeviceCount.setGroup(GadgetDataServiceDAOConstants.PotentialVulnerability.NON_COMPLIANT);
@@ -230,10 +280,10 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
 
     private int getNonCompliantDeviceCount() throws SQLException {
         ExtendedFilterSet extendedFilterSet = new ExtendedFilterSet();
-        extendedFilterSet.setPotentialVulnerability(GadgetDataServiceDAOConstants.
-            PotentialVulnerability.NON_COMPLIANT);
+        extendedFilterSet.setPotentialVulnerability(GadgetDataServiceDAOConstants.PotentialVulnerability.NON_COMPLIANT);
         try {
-            return this.getFilteredDeviceCount(extendedFilterSet);
+            String userName = getAuthenticatedUser();
+            return this.getFilteredDeviceCount(extendedFilterSet, userName);
         } catch (InvalidPotentialVulnerabilityValueException e) {
             throw new AssertionError(e);
         }
@@ -244,14 +294,15 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
         extendedFilterSet.setPotentialVulnerability(GadgetDataServiceDAOConstants.
             PotentialVulnerability.UNMONITORED);
         try {
-            return this.getFilteredDeviceCount(extendedFilterSet);
+            String userName = getAuthenticatedUser();
+            return this.getFilteredDeviceCount(extendedFilterSet, userName);
         } catch (InvalidPotentialVulnerabilityValueException e) {
             throw new AssertionError(e);
         }
     }
 
     @Override
-    public List<DeviceCountByGroup> getDeviceCountsByPlatforms(ExtendedFilterSet extendedFilterSet)
+    public List<DeviceCountByGroup> getDeviceCountsByPlatforms(ExtendedFilterSet extendedFilterSet, String userName)
                                                   throws InvalidPotentialVulnerabilityValueException, SQLException {
 
         Map<String, Object> filters = this.extractDatabaseFiltersFromBean(extendedFilterSet);
@@ -259,7 +310,7 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
         Connection con;
         PreparedStatement stmt = null;
         ResultSet rs = null;
-        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
+        int tenantId = getAuthenticatedUserTenantDomainId();
         List<DeviceCountByGroup> filteredDeviceCountsByPlatforms = new ArrayList<>();
         try {
             con = this.getConnection();
@@ -268,16 +319,30 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
             // [1] appending filter columns, if exist
             if (filters != null && filters.size() > 0) {
                 for (String column : filters.keySet()) {
-                    advancedSqlFiltering = advancedSqlFiltering + "AND " + column + " = ? ";
+                    advancedSqlFiltering = advancedSqlFiltering + " AND POLICY__INFO." + column + " = ? ";
                 }
             }
-            sql = "SELECT PLATFORM, COUNT(DEVICE_ID) AS DEVICE_COUNT FROM " + GadgetDataServiceDAOConstants.
-                DatabaseView.DEVICES_VIEW_1 + " WHERE TENANT_ID = ? " + advancedSqlFiltering + "GROUP BY PLATFORM";
+            if (APIUtil.isDeviceAdminUser()) {
+                sql = "SELECT PLATFORM, COUNT(DEVICE_ID) AS DEVICE_COUNT FROM " + GadgetDataServiceDAOConstants.
+                        DatabaseView.DEVICES_VIEW_1 + " POLICY__INFO WHERE TENANT_ID = ? " + advancedSqlFiltering +
+                        " GROUP BY PLATFORM";
+            } else {
+                sql = "SELECT POLICY__INFO.PLATFORM, COUNT(POLICY__INFO.DEVICE_ID) AS DEVICE_COUNT FROM " +
+                        GadgetDataServiceDAOConstants.DatabaseView.DEVICES_VIEW_1 + " POLICY__INFO INNER JOIN " +
+                        "DM_ENROLMENT ENR_DB ON ENR_DB.DEVICE_ID = POLICY__INFO.DEVICE_ID AND " +
+                        "POLICY__INFO.TENANT_ID = ? AND ENR_DB.OWNER =  ? " + advancedSqlFiltering + " GROUP BY " +
+                        "POLICY__INFO.PLATFORM";
+            }
             stmt = con.prepareStatement(sql);
             // [2] appending filter column values, if exist
             stmt.setInt(1, tenantId);
+            int index = 2;
+            if (!APIUtil.isDeviceAdminUser()) {
+                stmt.setString(2, userName);
+                index = 3;
+            }
             if (filters != null && filters.values().size() > 0) {
-                int i = 2;
+                int i = index;
                 for (Object value : filters.values()) {
                     if (value instanceof Integer) {
                         stmt.setInt(i, (Integer) value);
@@ -298,6 +363,9 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
                 filteredDeviceCountByPlatform.setDeviceCount(rs.getInt("DEVICE_COUNT"));
                 filteredDeviceCountsByPlatforms.add(filteredDeviceCountByPlatform);
             }
+        } catch (DeviceAccessAuthorizationException e) {
+            String msg = "Error occurred while checking device access authorization";
+            log.error(msg, e);
         } finally {
             DeviceManagementDAOUtil.cleanupResources(stmt, rs);
         }
@@ -307,7 +375,7 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
     @Override
     public List<DeviceCountByGroup>
                          getFeatureNonCompliantDeviceCountsByPlatforms(String featureCode,
-                                BasicFilterSet basicFilterSet) throws InvalidFeatureCodeValueException, SQLException {
+                                BasicFilterSet basicFilterSet, String userName) throws InvalidFeatureCodeValueException, SQLException {
 
         if (featureCode == null || featureCode.isEmpty()) {
             throw new InvalidFeatureCodeValueException("Feature code should not be either null or empty.");
@@ -318,7 +386,7 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
         Connection con;
         PreparedStatement stmt = null;
         ResultSet rs = null;
-        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
+        int tenantId = getAuthenticatedUserTenantDomainId();
         List<DeviceCountByGroup> filteredDeviceCountsByPlatforms = new ArrayList<>();
         try {
             con = this.getConnection();
@@ -327,18 +395,32 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
             // [1] appending filter columns, if exist
             if (filters != null && filters.size() > 0) {
                 for (String column : filters.keySet()) {
-                    advancedSqlFiltering = advancedSqlFiltering + "AND " + column + " = ? ";
+                    advancedSqlFiltering = advancedSqlFiltering + " AND FEATURE_INFO." + column + " = ? ";
                 }
             }
-            sql = "SELECT PLATFORM, COUNT(DEVICE_ID) AS DEVICE_COUNT FROM " + GadgetDataServiceDAOConstants.
-                DatabaseView.DEVICES_VIEW_2 + " WHERE TENANT_ID = ? AND FEATURE_CODE = ? " +
-                    advancedSqlFiltering + "GROUP BY PLATFORM";
+            if (APIUtil.isDeviceAdminUser()) {
+                sql = "SELECT PLATFORM, COUNT(DEVICE_ID) AS DEVICE_COUNT FROM " + GadgetDataServiceDAOConstants.
+                        DatabaseView.DEVICES_VIEW_2 + " FEATURE_INFO WHERE TENANT_ID = ? AND FEATURE_CODE = ? " +
+                        advancedSqlFiltering + " GROUP BY PLATFORM";
+            } else {
+                sql = "SELECT FEATURE_INFO.PLATFORM, COUNT(FEATURE_INFO.DEVICE_ID) AS DEVICE_COUNT FROM " +
+                        GadgetDataServiceDAOConstants.DatabaseView.DEVICES_VIEW_2 + " FEATURE_INFO INNER JOIN " +
+                        "DM_ENROLMENT ENR_DB ON ENR_DB.DEVICE_ID = FEATURE_INFO.DEVICE_ID " +
+                        " AND FEATURE_INFO.TENANT_ID = ? AND FEATURE_INFO.FEATURE_CODE = ? AND ENR_DB.OWNER =  ? " +
+                        advancedSqlFiltering + " GROUP BY FEATURE_INFO.PLATFORM";
+            }
+
             stmt = con.prepareStatement(sql);
             // [2] appending filter column values, if exist
             stmt.setInt(1, tenantId);
             stmt.setString(2, featureCode);
+            int index = 3;
+            if (!APIUtil.isDeviceAdminUser()) {
+                stmt.setString(3, userName);
+                index = 4;
+            }
             if (filters != null && filters.values().size() > 0) {
-                int i = 3;
+                int i = index;
                 for (Object value : filters.values()) {
                     if (value instanceof Integer) {
                         stmt.setInt(i, (Integer) value);
@@ -359,6 +441,9 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
                 filteredDeviceCountByPlatform.setDeviceCount(rs.getInt("DEVICE_COUNT"));
                 filteredDeviceCountsByPlatforms.add(filteredDeviceCountByPlatform);
             }
+        } catch (DeviceAccessAuthorizationException e) {
+            String msg = "Error occurred while checking device access authorization";
+            log.error(msg, e);
         } finally {
             DeviceManagementDAOUtil.cleanupResources(stmt, rs);
         }
@@ -366,7 +451,7 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
     }
 
     @Override
-    public List<DeviceCountByGroup> getDeviceCountsByOwnershipTypes(ExtendedFilterSet extendedFilterSet)
+    public List<DeviceCountByGroup> getDeviceCountsByOwnershipTypes(ExtendedFilterSet extendedFilterSet, String userName)
                                                     throws InvalidPotentialVulnerabilityValueException, SQLException {
 
         Map<String, Object> filters = this.extractDatabaseFiltersFromBean(extendedFilterSet);
@@ -374,7 +459,7 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
         Connection con;
         PreparedStatement stmt = null;
         ResultSet rs = null;
-        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
+        int tenantId = getAuthenticatedUserTenantDomainId();
         List<DeviceCountByGroup> filteredDeviceCountsByOwnershipTypes = new ArrayList<>();
         try {
             con = this.getConnection();
@@ -383,17 +468,29 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
             // [1] appending filter columns, if exist
             if (filters != null && filters.size() > 0) {
                 for (String column : filters.keySet()) {
-                    advancedSqlFiltering = advancedSqlFiltering + "AND " + column + " = ? ";
+                    advancedSqlFiltering = advancedSqlFiltering + " AND  POLICY__INFO." + column + " = ? ";
                 }
             }
-            sql = "SELECT OWNERSHIP, COUNT(DEVICE_ID) AS DEVICE_COUNT FROM " + GadgetDataServiceDAOConstants.
-                DatabaseView.DEVICES_VIEW_1 + " WHERE TENANT_ID = ? " +
-                    advancedSqlFiltering + "GROUP BY OWNERSHIP";
+            if(APIUtil.isDeviceAdminUser()){
+                sql = "SELECT OWNERSHIP, COUNT(DEVICE_ID) AS DEVICE_COUNT FROM " + GadgetDataServiceDAOConstants.
+                        DatabaseView.DEVICES_VIEW_1 + " POLICY__INFO WHERE TENANT_ID = ? " +
+                        advancedSqlFiltering + "GROUP BY OWNERSHIP";
+            }else{
+                sql = "SELECT POLICY__INFO.OWNERSHIP, COUNT(POLICY__INFO.DEVICE_ID) AS DEVICE_COUNT FROM " +
+                        GadgetDataServiceDAOConstants.DatabaseView.DEVICES_VIEW_1 + " POLICY__INFO INNER JOIN " +
+                        "DM_ENROLMENT ENR_DB ON ENR_DB.DEVICE_ID = POLICY__INFO.DEVICE_ID AND POLICY__INFO.TENANT_ID" +
+                        " = ? AND ENR_DB.OWNER = ? " + advancedSqlFiltering + " GROUP BY POLICY__INFO.OWNERSHIP";
+            }
             stmt = con.prepareStatement(sql);
             // [2] appending filter column values, if exist
             stmt.setInt(1, tenantId);
+            int index = 2;
+            if(!APIUtil.isDeviceAdminUser()){
+                stmt.setString(2, userName);
+                index = 3;
+            }
             if (filters != null && filters.values().size() > 0) {
-                int i = 2;
+                int i = index;
                 for (Object value : filters.values()) {
                     if (value instanceof Integer) {
                         stmt.setInt(i, (Integer) value);
@@ -414,6 +511,9 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
                 filteredDeviceCountByOwnershipType.setDeviceCount(rs.getInt("DEVICE_COUNT"));
                 filteredDeviceCountsByOwnershipTypes.add(filteredDeviceCountByOwnershipType);
             }
+        } catch (DeviceAccessAuthorizationException e) {
+            String msg = "Error occurred while checking device access authorization";
+            log.error(msg, e);
         } finally {
             DeviceManagementDAOUtil.cleanupResources(stmt, rs);
         }
@@ -423,7 +523,7 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
     @Override
     public List<DeviceCountByGroup>
                   getFeatureNonCompliantDeviceCountsByOwnershipTypes(String featureCode,
-                               BasicFilterSet basicFilterSet) throws InvalidFeatureCodeValueException, SQLException {
+                               BasicFilterSet basicFilterSet, String userName) throws InvalidFeatureCodeValueException, SQLException {
 
         if (featureCode == null || featureCode.isEmpty()) {
             throw new InvalidFeatureCodeValueException("Feature code should not be either null or empty.");
@@ -434,7 +534,7 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
         Connection con;
         PreparedStatement stmt = null;
         ResultSet rs = null;
-        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
+        int tenantId = getAuthenticatedUserTenantDomainId();
         List<DeviceCountByGroup> filteredDeviceCountsByOwnershipTypes = new ArrayList<>();
         try {
             con = this.getConnection();
@@ -443,18 +543,31 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
             // [1] appending filter columns, if exist
             if (filters != null && filters.size() > 0) {
                 for (String column : filters.keySet()) {
-                    advancedSqlFiltering = advancedSqlFiltering + "AND " + column + " = ? ";
+                    advancedSqlFiltering = advancedSqlFiltering + " AND FEATURE_INFO." + column + " = ? ";
                 }
             }
-            sql = "SELECT OWNERSHIP, COUNT(DEVICE_ID) AS DEVICE_COUNT FROM " + GadgetDataServiceDAOConstants.
-                DatabaseView.DEVICES_VIEW_2 + " WHERE TENANT_ID = ? AND FEATURE_CODE = ? " +
-                    advancedSqlFiltering + "GROUP BY OWNERSHIP";
+            if(APIUtil.isDeviceAdminUser()){
+                sql = "SELECT OWNERSHIP, COUNT(DEVICE_ID) AS DEVICE_COUNT FROM " + GadgetDataServiceDAOConstants.
+                        DatabaseView.DEVICES_VIEW_2 + " FEATURE_INFO WHERE TENANT_ID = ? AND FEATURE_CODE = ? " +
+                        advancedSqlFiltering + "GROUP BY OWNERSHIP";
+            }else{
+                sql = "SELECT FEATURE_INFO.OWNERSHIP, COUNT(FEATURE_INFO.DEVICE_ID) AS DEVICE_COUNT FROM " +
+                        GadgetDataServiceDAOConstants.DatabaseView.DEVICES_VIEW_2 + " FEATURE_INFO INNER JOIN " +
+                        "DM_ENROLMENT ENR_DB ON ENR_DB.DEVICE_ID = FEATURE_INFO.DEVICE_ID AND FEATURE_INFO.TENANT_ID " +
+                        "= ? AND FEATURE_INFO.FEATURE_CODE = ? AND ENR_DB.OWNER = ? " + advancedSqlFiltering
+                        + " GROUP BY FEATURE_INFO.OWNERSHIP";
+            }
             stmt = con.prepareStatement(sql);
             // [2] appending filter column values, if exist
             stmt.setInt(1, tenantId);
             stmt.setString(2, featureCode);
+            int index = 3;
+            if(!APIUtil.isDeviceAdminUser()){
+                stmt.setString(3, userName);
+                index = 4;
+            }
             if (filters != null && filters.values().size() > 0) {
-                int i = 3;
+                int i = index;
                 for (Object value : filters.values()) {
                     if (value instanceof Integer) {
                         stmt.setInt(i, (Integer) value);
@@ -475,6 +588,9 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
                 filteredDeviceCountByOwnershipType.setDeviceCount(rs.getInt("DEVICE_COUNT"));
                 filteredDeviceCountsByOwnershipTypes.add(filteredDeviceCountByOwnershipType);
             }
+        } catch (DeviceAccessAuthorizationException e) {
+            String msg = "Error occurred while checking device access authorization";
+            log.error(msg, e);
         } finally {
             DeviceManagementDAOUtil.cleanupResources(stmt, rs);
         }
@@ -482,7 +598,7 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
     }
 
     @Override
-    public List<DeviceWithDetails> getDevicesWithDetails(ExtendedFilterSet extendedFilterSet)
+    public List<DeviceWithDetails> getDevicesWithDetails(ExtendedFilterSet extendedFilterSet, String userName)
                                                     throws InvalidPotentialVulnerabilityValueException, SQLException {
 
         Map<String, Object> filters = this.extractDatabaseFiltersFromBean(extendedFilterSet);
@@ -490,25 +606,38 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
         Connection con;
         PreparedStatement stmt = null;
         ResultSet rs = null;
-        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
+        int tenantId = getAuthenticatedUserTenantDomainId();
         List<DeviceWithDetails> filteredDevicesWithDetails = new ArrayList<>();
         try {
             con = this.getConnection();
             String sql;
-            sql = "SELECT DEVICE_ID, DEVICE_IDENTIFICATION, PLATFORM, OWNERSHIP, CONNECTIVITY_STATUS FROM " +
-                GadgetDataServiceDAOConstants.DatabaseView.DEVICES_VIEW_1 + " WHERE TENANT_ID = ?";
+            if(APIUtil.isDeviceAdminUser()){
+                sql = "SELECT DEVICE_ID, DEVICE_IDENTIFICATION, PLATFORM, OWNERSHIP, CONNECTIVITY_STATUS FROM " +
+                        GadgetDataServiceDAOConstants.DatabaseView.DEVICES_VIEW_1 + " POLICY__INFO WHERE TENANT_ID = ?";
+            }else{
+                sql = "SELECT POLICY__INFO.DEVICE_ID, POLICY__INFO.DEVICE_IDENTIFICATION, POLICY__INFO.PLATFORM," +
+                        " POLICY__INFO.OWNERSHIP, POLICY__INFO.CONNECTIVITY_STATUS FROM "+
+                        GadgetDataServiceDAOConstants.DatabaseView.DEVICES_VIEW_1+" POLICY__INFO INNER JOIN " +
+                        "DM_ENROLMENT ENR_DB ON ENR_DB.DEVICE_ID = POLICY__INFO.DEVICE_ID AND " +
+                        "POLICY__INFO.TENANT_ID = ? AND ENR_DB.OWNER =  ?";
+            }
             // appending filters to support advanced filtering options
             // [1] appending filter columns, if exist
             if (filters != null && filters.size() > 0) {
                 for (String column : filters.keySet()) {
-                    sql = sql + " AND " + column + " = ?";
+                    sql = sql + " AND POLICY__INFO." + column + " = ?";
                 }
             }
             stmt = con.prepareStatement(sql);
             // [2] appending filter column values, if exist
             stmt.setInt(1, tenantId);
+            int index = 2;
+            if(!APIUtil.isDeviceAdminUser()){
+                stmt.setString(2, userName);
+                index = 3;
+            }
             if (filters != null && filters.values().size() > 0) {
-                int i = 2;
+                int i = index;
                 for (Object value : filters.values()) {
                     if (value instanceof Integer) {
                         stmt.setInt(i, (Integer) value);
@@ -531,6 +660,9 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
                 filteredDeviceWithDetails.setConnectivityStatus(rs.getString("CONNECTIVITY_STATUS"));
                 filteredDevicesWithDetails.add(filteredDeviceWithDetails);
             }
+        } catch (DeviceAccessAuthorizationException e) {
+            String msg = "Error occurred while checking device access authorization";
+            log.error(msg, e);
         } finally {
             DeviceManagementDAOUtil.cleanupResources(stmt, rs);
         }
@@ -539,7 +671,7 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
 
     @Override
     public List<DeviceWithDetails> getFeatureNonCompliantDevicesWithDetails(String featureCode,
-                               BasicFilterSet basicFilterSet) throws InvalidFeatureCodeValueException, SQLException {
+                               BasicFilterSet basicFilterSet, String userName) throws InvalidFeatureCodeValueException, SQLException {
 
         if (featureCode == null || featureCode.isEmpty()) {
             throw new InvalidFeatureCodeValueException("Feature code should not be either null or empty.");
@@ -550,27 +682,40 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
         Connection con;
         PreparedStatement stmt = null;
         ResultSet rs = null;
-        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
+        int tenantId = getAuthenticatedUserTenantDomainId();
         List<DeviceWithDetails> filteredDevicesWithDetails = new ArrayList<>();
         try {
             con = this.getConnection();
             String sql;
-            sql = "SELECT DEVICE_ID, DEVICE_IDENTIFICATION, PLATFORM, OWNERSHIP, CONNECTIVITY_STATUS FROM " +
-                GadgetDataServiceDAOConstants.DatabaseView.DEVICES_VIEW_2 +
-                    " WHERE TENANT_ID = ? AND FEATURE_CODE = ?";
+            if(APIUtil.isDeviceAdminUser()){
+                sql = "SELECT DEVICE_ID, DEVICE_IDENTIFICATION, PLATFORM, OWNERSHIP, CONNECTIVITY_STATUS FROM " +
+                        GadgetDataServiceDAOConstants.DatabaseView.DEVICES_VIEW_2 +
+                        " WHERE TENANT_ID = ? AND FEATURE_CODE = ?";
+            }else{
+                sql = "SELECT FEATURE_INFO.DEVICE_ID, FEATURE_INFO.DEVICE_IDENTIFICATION, FEATURE_INFO.PLATFORM, " +
+                        "FEATURE_INFO.OWNERSHIP, FEATURE_INFO.CONNECTIVITY_STATUS FROM "+
+                        GadgetDataServiceDAOConstants.DatabaseView.DEVICES_VIEW_2+" FEATURE_INFO INNER JOIN " +
+                        "DM_ENROLMENT ENR_DB ON ENR_DB.DEVICE_ID = FEATURE_INFO.DEVICE_ID AND FEATURE_INFO.TENANT_ID" +
+                        " = ? AND FEATURE_INFO.FEATURE_CODE = ? AND ENR_DB.OWNER = ? ";
+            }
             // appending filters to support advanced filtering options
             // [1] appending filter columns, if exist
             if (filters != null && filters.size() > 0) {
                 for (String column : filters.keySet()) {
-                    sql = sql + " AND " + column + " = ?";
+                    sql = sql + " AND FEATURE_INFO." + column + " = ?";
                 }
             }
             stmt = con.prepareStatement(sql);
             // [2] appending filter column values, if exist
             stmt.setInt(1, tenantId);
             stmt.setString(2, featureCode);
+            int index = 3;
+            if(!APIUtil.isDeviceAdminUser()){
+                stmt.setString(3, userName);
+                index = 4;
+            }
             if (filters != null && filters.values().size() > 0) {
-                int i = 3;
+                int i = index;
                 for (Object value : filters.values()) {
                     if (value instanceof Integer) {
                         stmt.setInt(i, (Integer) value);
@@ -593,6 +738,9 @@ public abstract class AbstractGadgetDataServiceDAO implements GadgetDataServiceD
                 filteredDeviceWithDetails.setConnectivityStatus(rs.getString("CONNECTIVITY_STATUS"));
                 filteredDevicesWithDetails.add(filteredDeviceWithDetails);
             }
+        } catch (DeviceAccessAuthorizationException e) {
+            String msg = "Error occurred while checking device access authorization";
+            log.error(msg, e);
         } finally {
             DeviceManagementDAOUtil.cleanupResources(stmt, rs);
         }

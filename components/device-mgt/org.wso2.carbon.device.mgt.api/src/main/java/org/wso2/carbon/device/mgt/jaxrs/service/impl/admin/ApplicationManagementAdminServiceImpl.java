@@ -65,9 +65,10 @@ public class ApplicationManagementAdminServiceImpl implements ApplicationManagem
 
             if (applicationWrapper.getDeviceIdentifiers() != null) {
                 for (DeviceIdentifier deviceIdentifier : applicationWrapper.getDeviceIdentifiers()) {
-                    if (Platform.ANDROID.toString().equals(deviceIdentifier.getType())) {
+                    String deviceType = deviceIdentifier.getType().toUpperCase();
+                    if (Platform.ANDROID.toString().equals(deviceType)) {
                         operation = MDMAndroidOperationUtil.createInstallAppOperation(mobileApp);
-                    } else if (Platform.IOS.toString().equals(deviceIdentifier.getType())) {
+                    } else if (Platform.IOS.toString().equals(deviceType)) {
                         operation = MDMIOSOperationUtil.createInstallAppOperation(mobileApp);
                     }
                 }
@@ -114,9 +115,10 @@ public class ApplicationManagementAdminServiceImpl implements ApplicationManagem
 
             if (applicationWrapper.getDeviceIdentifiers() != null) {
                 for (DeviceIdentifier deviceIdentifier : applicationWrapper.getDeviceIdentifiers()) {
-                    if (Platform.ANDROID.toString().equals(deviceIdentifier.getType())) {
+                    String deviceType = deviceIdentifier.getType().toUpperCase();
+                    if (Platform.ANDROID.toString().equals(deviceType)) {
                         operation = MDMAndroidOperationUtil.createAppUninstallOperation(mobileApp);
-                    } else if (deviceIdentifier.getType().equals(Platform.IOS.toString())) {
+                    } else if (deviceType.equals(Platform.IOS.toString())) {
                         operation = MDMIOSOperationUtil.createAppUninstallOperation(mobileApp);
                     }
                 }

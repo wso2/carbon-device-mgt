@@ -206,6 +206,13 @@ public interface DeviceManagementService {
             @QueryParam("user")
                     String user,
             @ApiParam(
+                    name = "role",
+                    value = "A role of device owners. Ex : store-admin",
+                    required = false)
+            @QueryParam("role")
+            @Size(max = 45)
+                    String role,
+            @ApiParam(
                     name = "ownership",
                     allowableValues = "BYOD, COPE",
                     value = "Provide the ownership status of the device. The following values can be assigned:\n" +

@@ -174,7 +174,7 @@ var userModule = function () {
         }
         try {
             utility.startTenantFlow(carbonUser);
-            var url = devicemgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"] + "/users?offset=0&limit=1";
+            var url = devicemgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"] + "/users/count";
             return serviceInvokers.XMLHttp.get(
                 url, function (responsePayload) {
                     return parse(responsePayload["responseText"])["count"];

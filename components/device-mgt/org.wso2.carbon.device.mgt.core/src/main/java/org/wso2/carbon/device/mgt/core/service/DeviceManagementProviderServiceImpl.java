@@ -638,7 +638,6 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             count += devicesForRoles.size();
             devices = processDevices(devices, devicesForRoles);
         }
-
         paginationResult.setData(devices);
         paginationResult.setRecordsFiltered(count);
         paginationResult.setRecordsTotal(count);

@@ -672,9 +672,8 @@ public interface PolicyManagementService {
     Response getEffectivePolicy(
             @ApiParam(
                     name = "deviceType",
-                    value = "The device type, such as ios, android or windows.",
-                    required = true,
-                    allowableValues = "android, ios, windows")
+                    value = "The device type name, such as ios, android, windows or fire-alarm.",
+                    required = true)
             @PathParam("deviceType")
             @Size(max = 45)
                     String deviceType,

@@ -221,6 +221,7 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
     }
 
     @GET
+    @Override
     @Path("/user-devices")
     public Response getDeviceByUser(@QueryParam("offset") int offset,
                                     @QueryParam("limit") int limit) {

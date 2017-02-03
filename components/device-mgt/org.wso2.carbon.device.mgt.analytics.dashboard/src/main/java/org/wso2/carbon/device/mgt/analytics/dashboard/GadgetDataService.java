@@ -47,7 +47,7 @@ public interface GadgetDataService {
      *                                  executing SQL query and retrieving data.
      */
     @SuppressWarnings("unused")
-    DeviceCountByGroup getDeviceCount(ExtendedFilterSet extendedFilterSet)
+    DeviceCountByGroup getDeviceCount(ExtendedFilterSet extendedFilterSet, String userName)
                        throws InvalidPotentialVulnerabilityValueException, DataAccessLayerException;
 
     /**
@@ -64,7 +64,7 @@ public interface GadgetDataService {
      *                                  executing SQL query and retrieving data.
      */
     @SuppressWarnings("unused")
-    DeviceCountByGroup getFeatureNonCompliantDeviceCount(String featureCode, BasicFilterSet basicFilterSet)
+    DeviceCountByGroup getFeatureNonCompliantDeviceCount(String featureCode, BasicFilterSet basicFilterSet, String userName)
                        throws InvalidFeatureCodeValueException, DataAccessLayerException;
 
     /**
@@ -74,7 +74,7 @@ public interface GadgetDataService {
      *                                  executing SQL query and retrieving data.
      */
     @SuppressWarnings("unused")
-    DeviceCountByGroup getTotalDeviceCount() throws DataAccessLayerException;
+    DeviceCountByGroup getTotalDeviceCount(String userName) throws DataAccessLayerException;
 
     /**
      * This method is used to get device counts classified by connectivity statuses.
@@ -83,7 +83,7 @@ public interface GadgetDataService {
      *                                  executing SQL query and retrieving data.
      */
     @SuppressWarnings("unused")
-    List<DeviceCountByGroup> getDeviceCountsByConnectivityStatuses() throws DataAccessLayerException;
+    List<DeviceCountByGroup> getDeviceCountsByConnectivityStatuses(String userName) throws DataAccessLayerException;
 
     /**
      * This method is used to get device counts classified by potential vulnerabilities.
@@ -92,7 +92,7 @@ public interface GadgetDataService {
      *                                  executing SQL query and retrieving data.
      */
     @SuppressWarnings("unused")
-    List<DeviceCountByGroup> getDeviceCountsByPotentialVulnerabilities() throws DataAccessLayerException;
+    List<DeviceCountByGroup> getDeviceCountsByPotentialVulnerabilities(String userName) throws DataAccessLayerException;
 
     /**
      * This method is used to get non-compliant device counts classified by individual features.
@@ -105,7 +105,7 @@ public interface GadgetDataService {
      *                                  executing SQL query and retrieving data.
      */
     @SuppressWarnings("unused")
-    PaginationResult getNonCompliantDeviceCountsByFeatures(int startIndex, int resultCount) throws
+    PaginationResult getNonCompliantDeviceCountsByFeatures(int startIndex, int resultCount, String userName) throws
                      InvalidStartIndexValueException, InvalidResultCountValueException, DataAccessLayerException;
 
     /**
@@ -122,7 +122,7 @@ public interface GadgetDataService {
      *                                  executing SQL query and retrieving data.
      */
     @SuppressWarnings("unused")
-    List<DeviceCountByGroup> getDeviceCountsByPlatforms(ExtendedFilterSet extendedFilterSet)
+    List<DeviceCountByGroup> getDeviceCountsByPlatforms(ExtendedFilterSet extendedFilterSet, String userName)
                              throws InvalidPotentialVulnerabilityValueException, DataAccessLayerException;
 
     /**
@@ -139,7 +139,7 @@ public interface GadgetDataService {
      */
     @SuppressWarnings("unused")
     List<DeviceCountByGroup> getFeatureNonCompliantDeviceCountsByPlatforms(String featureCode,
-                             BasicFilterSet basicFilterSet) throws InvalidFeatureCodeValueException,
+                             BasicFilterSet basicFilterSet, String userName) throws InvalidFeatureCodeValueException,
                              DataAccessLayerException;
 
     /**
@@ -156,7 +156,7 @@ public interface GadgetDataService {
      *                                  executing SQL query and retrieving data.
      */
     @SuppressWarnings("unused")
-    List<DeviceCountByGroup> getDeviceCountsByOwnershipTypes(ExtendedFilterSet extendedFilterSet)
+    List<DeviceCountByGroup> getDeviceCountsByOwnershipTypes(ExtendedFilterSet extendedFilterSet, String userName)
                              throws InvalidPotentialVulnerabilityValueException, DataAccessLayerException;
 
     /**
@@ -174,7 +174,7 @@ public interface GadgetDataService {
      */
     @SuppressWarnings("unused")
     List<DeviceCountByGroup> getFeatureNonCompliantDeviceCountsByOwnershipTypes(String featureCode,
-                             BasicFilterSet basicFilterSet) throws InvalidFeatureCodeValueException,
+                             BasicFilterSet basicFilterSet, String userName) throws InvalidFeatureCodeValueException,
                              DataAccessLayerException;
 
     /**
@@ -196,7 +196,7 @@ public interface GadgetDataService {
      * @throws InvalidResultCountValueException This can occur if resultCount value is lesser than its minimum (5).
      */
     @SuppressWarnings("unused")
-    PaginationResult getDevicesWithDetails(ExtendedFilterSet extendedFilterSet, int startIndex, int resultCount)
+    PaginationResult getDevicesWithDetails(ExtendedFilterSet extendedFilterSet, int startIndex, int resultCount, String userName)
                      throws InvalidPotentialVulnerabilityValueException, DataAccessLayerException,
                      InvalidStartIndexValueException, InvalidResultCountValueException;
 
@@ -220,7 +220,7 @@ public interface GadgetDataService {
      */
     @SuppressWarnings("unused")
     PaginationResult getFeatureNonCompliantDevicesWithDetails(String featureCode, BasicFilterSet basicFilterSet,
-                     int startIndex, int resultCount) throws InvalidFeatureCodeValueException,
+                     int startIndex, int resultCount, String userName) throws InvalidFeatureCodeValueException,
                      DataAccessLayerException, InvalidStartIndexValueException,
                      InvalidResultCountValueException;
 
@@ -238,7 +238,7 @@ public interface GadgetDataService {
      *                                  executing SQL query and retrieving data.
      */
     @SuppressWarnings("unused")
-    List<DeviceWithDetails> getDevicesWithDetails(ExtendedFilterSet extendedFilterSet)
+    List<DeviceWithDetails> getDevicesWithDetails(ExtendedFilterSet extendedFilterSet, String userName)
                             throws InvalidPotentialVulnerabilityValueException, DataAccessLayerException;
 
     /**
@@ -255,7 +255,7 @@ public interface GadgetDataService {
      */
     @SuppressWarnings("unused")
     List<DeviceWithDetails> getFeatureNonCompliantDevicesWithDetails(String featureCode,
-                            BasicFilterSet basicFilterSet) throws InvalidFeatureCodeValueException,
+                            BasicFilterSet basicFilterSet, String userName) throws InvalidFeatureCodeValueException,
                             DataAccessLayerException;
 
 }

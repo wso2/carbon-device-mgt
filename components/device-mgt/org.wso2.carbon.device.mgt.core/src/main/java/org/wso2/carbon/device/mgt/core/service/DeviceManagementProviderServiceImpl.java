@@ -17,6 +17,7 @@
  */
 package org.wso2.carbon.device.mgt.core.service;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.CarbonConstants;
@@ -607,12 +608,17 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
     @Override
     public PaginationResult getAllDevices(PaginationRequest request) throws DeviceManagementException {
+        List<Device> devicesForRoles = null;
         PaginationResult paginationResult = new PaginationResult();
         List<Device> devices = new ArrayList<>();
         List<Device> allDevices = new ArrayList<>();
         int count = 0;
         int tenantId = this.getTenantId();
         request = DeviceManagerUtil.validateDeviceListPageSize(request);
+        if (!StringUtils.isEmpty(request.getOwnerRole())) {
+            devicesForRoles = DeviceManagementDataHolder.getInstance().getDeviceManagementProvider()
+                    .getAllDevicesOfRole(request.getOwnerRole());
+        }
         try {
             DeviceManagementDAOFactory.openConnection();
             allDevices = deviceDAO.getDevices(request, tenantId);
@@ -625,6 +631,20 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         } finally {
             DeviceManagementDAOFactory.closeConnection();
         }
+
+        devices = processDevices(devices, allDevices);
+
+        if (devicesForRoles != null) {
+            count += devicesForRoles.size();
+            devices = processDevices(devices, devicesForRoles);
+        }
+        paginationResult.setData(devices);
+        paginationResult.setRecordsFiltered(count);
+        paginationResult.setRecordsTotal(count);
+        return paginationResult;
+    }
+
+    private List<Device> processDevices(List<Device> devices, List<Device> allDevices) throws DeviceManagementException {
         for (Device device : allDevices) {
             DeviceInfo info = null;
             try {
@@ -637,7 +657,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                 device.setDeviceInfo(info);
             } catch (DeviceDetailsMgtDAOException e) {
                 log.error("Error occurred while retrieving advance info of '" + device.getType() +
-                        "' that carries the id '" + device.getDeviceIdentifier() + "'");
+                                  "' that carries the id '" + device.getDeviceIdentifier() + "'");
             } catch (SQLException e) {
                 log.error("Error occurred while opening a connection to the data source", e);
             } finally {
@@ -651,7 +671,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                 device.setApplications(applications);
             } catch (DeviceManagementDAOException e) {
                 log.error("Error occurred while retrieving the application list of '" + device.getType() + "', " +
-                        "which carries the id '" + device.getId() + "'", e);
+                                  "which carries the id '" + device.getId() + "'", e);
             } catch (SQLException e) {
                 log.error("Error occurred while opening a connection to the data source", e);
             } finally {
@@ -662,7 +682,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             if (deviceManager == null) {
                 if (log.isDebugEnabled()) {
                     log.debug("Device Manager associated with the device type '" + device.getType() + "' is null. " +
-                            "Therefore, not attempting method 'isEnrolled'");
+                                      "Therefore, not attempting method 'isEnrolled'");
                 }
                 devices.add(device);
                 continue;
@@ -675,12 +695,8 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             }
             devices.add(device);
         }
-        paginationResult.setData(devices);
-        paginationResult.setRecordsFiltered(count);
-        paginationResult.setRecordsTotal(count);
-        return paginationResult;
+        return devices;
     }
-
     @Override
     public List<Device> getAllDevices(String deviceType) throws DeviceManagementException {
         List<Device> devices = new ArrayList<>();

@@ -39,6 +39,7 @@ import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.InputValidationExcepti
 import org.wso2.carbon.policy.mgt.common.PolicyMonitoringTaskException;
 import org.wso2.carbon.policy.mgt.core.PolicyManagerService;
 import org.wso2.carbon.policy.mgt.core.task.TaskScheduleService;
+import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.user.api.AuthorizationManager;
 import org.wso2.carbon.user.api.UserRealm;
 import org.wso2.carbon.user.api.UserStoreException;
@@ -153,6 +154,18 @@ public class DeviceMgtAPIUtils {
             throw new IllegalStateException(msg);
         }
         return realmService;
+    }
+
+    public static RegistryService getRegistryService() {
+        RegistryService registryService;
+        PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        registryService = (RegistryService) ctx.getOSGiService(RegistryService.class, null);
+        if (registryService == null) {
+            String msg = "registry service has not initialized.";
+            log.error(msg);
+            throw new IllegalStateException(msg);
+        }
+        return registryService;
     }
 
     /**

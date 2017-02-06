@@ -1979,10 +1979,10 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         int tenantId = this.getTenantId();
         switch (newStatus) {
             case ACTIVE:
-                updateEnrollment(deviceId, enrolmentInfo, tenantId);
+                isDeviceUpdated = updateEnrollment(deviceId, enrolmentInfo, tenantId);
                 break;
             case INACTIVE:
-                updateEnrollment(deviceId, enrolmentInfo, tenantId);
+                isDeviceUpdated = updateEnrollment(deviceId, enrolmentInfo, tenantId);
                 break;
             case REMOVED:
                 isDeviceUpdated = disenrollDevice(deviceIdentifier);
@@ -1995,12 +1995,16 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
     private boolean updateEnrollment(int deviceId, EnrolmentInfo enrolmentInfo, int tenantId)
             throws DeviceManagementException {
+        boolean isUpdatedEnrollment = false;
         boolean isAutoCommit = true;
         try {
             DeviceManagementDAOFactory.openConnection();
             isAutoCommit = DeviceManagementDAOFactory.getConnection().getAutoCommit();
             DeviceManagementDAOFactory.getConnection().setAutoCommit(true);
-            enrollmentDAO.updateEnrollment(deviceId, enrolmentInfo, tenantId);
+            int updatedRows = enrollmentDAO.updateEnrollment(deviceId, enrolmentInfo, tenantId);
+            if (updatedRows > 0) {
+                isUpdatedEnrollment = true;
+            }
         } catch (SQLException e) {
             throw new DeviceManagementException("Error occurred while opening a connection to the data source", e);
         } catch (DeviceManagementDAOException e) {
@@ -2014,7 +2018,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             }
             DeviceManagementDAOFactory.closeConnection();
         }
-        return true;
+        return isUpdatedEnrollment;
     }
 
 

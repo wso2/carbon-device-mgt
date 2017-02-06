@@ -18,8 +18,6 @@
 
 function onRequest(context) {
     var log = new Log("detail.js");
-    var userModule = require("/app/modules/business-controllers/user.js")["userModule"];
-    var permissions = userModule.getUIPermissions();
     var device = context.unit.params.device;
-    return {"device": device, "permissions":permissions};
+    return {"device": device};
 }

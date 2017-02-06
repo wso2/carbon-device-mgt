@@ -565,6 +565,76 @@ var module = {};
         }
     };
 
+
+	/**
+	 * saml token validation Service.
+	 * @param request {Object} HTTP request
+	 * @param response {Object} HTTP response
+	 */
+	module.ssoLogin = function (samlToken) {
+		var samlResponse = samlToken;
+		var ssoClient = require("sso").client;
+		var samlResponseObj;
+
+		if (samlResponse) {
+			try {
+				samlResponseObj = ssoClient.getSamlObject(samlResponse);
+			} catch (e) {
+				log.error(e.message, e);
+				return;
+			}
+
+			// This is a login response.
+			var ssoConfigs = getSsoConfigurations();
+			var CarbonUtils = Packages.org.wso2.carbon.utils.CarbonUtils;
+			var keyStorePassword = CarbonUtils.getServerConfiguration().getFirstProperty("Security.TrustStore.Password");
+			var keyStoreName = CarbonUtils.getServerConfiguration().getFirstProperty("Security.TrustStore.Location");
+			var identityAlias = ssoConfigs[constants.APP_CONF_AUTH_MODULE_SSO_IDENTITY_ALIAS];
+			var keyStoreParams = {
+				KEY_STORE_NAME: keyStoreName,
+				KEY_STORE_PASSWORD: keyStorePassword,
+				IDP_ALIAS: identityAlias
+			};
+			var rsEnabled = ssoConfigs[constants.APP_CONF_AUTH_MODULE_SSO_RESPONSE_SIGNING_ENABLED];
+			if (utils.parseBoolean(rsEnabled)) {
+				if (!ssoClient.validateSignature(samlResponseObj, keyStoreParams)) {
+					var msg = "Invalid signature found in the SAML response.";
+					log.error(msg);
+					return;
+				}
+			}
+
+			if (!ssoClient.validateSamlResponse(samlResponseObj, ssoConfigs, keyStoreParams)) {
+				var msg = "Invalid SAML response found.";
+				log.error(msg);
+				return;
+			}
+
+			/**
+			 * @type {{sessionId: string, loggedInUser: string, sessionIndex: string, samlToken:
+			 *     string}}
+			 */
+			var ssoSession = ssoClient.decodeSAMLLoginResponse(samlResponseObj, samlResponse,
+				session.getId());
+			if (ssoSession.sessionId) {
+				var ssoSessions = getSsoSessions();
+				ssoSessions[ssoSession.sessionId] = ssoSession;
+				if (ssoSession.sessionIndex) {
+					var carbonUser = (require("carbon")).server.tenantUser(ssoSession.loggedInUser);
+					utils.setCurrentUser(carbonUser.username, carbonUser.domain, carbonUser.tenantId);
+					module.loadTenant(ssoSession.loggedInUser);
+					var user = {user: module.getCurrentUser()};
+					return user;
+				}
+			} else {
+				var msg = "Cannot decode SAML login response.";
+				log.error(msg);
+				return;
+			}
+
+		}
+	};
+
     /**
      * Load current user tenant
      * @param username logged user name

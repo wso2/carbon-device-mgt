@@ -1,5 +1,6 @@
 {
     "appContext": "/devicemgt/",
+    "isCloud": false,
     "httpsURL" : "https://%iot.gateway.host%:%iot.gateway.https.port%",
     "httpURL" : "http://%iot.gateway.host%:%iot.gateway.http.port",
     "wssURL" : "https://%iot.analytics.host%:%iot.analytics.https.port%",
@@ -19,10 +20,10 @@
             "owner": "admin@carbon.super",
             "dynamicClientAppRegistrationServiceURL": "%https.ip%/dynamic-client-web/register",
             "apiManagerClientAppRegistrationServiceURL": "https://%iot.gateway.host%:%iot.gateway.https.port%/api-application-registration/register/tenants",
-            "grantType": "password refresh_token urn:ietf:params:oauth:grant-type:saml2-carbon urn:ietf:params:oauth:grant-type:jwt-bearer",
+            "grantType": "password refresh_token urn:ietf:params:oauth:grant-type:saml2-bearer urn:ietf:params:oauth:grant-type:jwt-bearer",
             "tokenScope": "admin",
             "callbackUrl": "%https.ip%/api/device-mgt/v1.0",
-            "samlGrantTypeName": "urn:ietf:carbon:signed:grant-type:saml2-bearer"
+            "samlGrantTypeName": "urn:ietf:params:oauth:grant-type:saml2-bearer"
         },
         "tokenServiceURL": "https://%iot.gateway.host%:%iot.gateway.https.port%/token"
     },
@@ -174,7 +175,8 @@
         "perm:ios:remove-profile",
         "perm:ios:get-restrictions",
         "perm:ios:wipe-data",
-        "perm:admin"
+        "perm:admin",
+        "perm:devicetype:deployment"
     ],
     "isOAuthEnabled" : true,
     "backendRestEndpoints" : {

@@ -125,6 +125,13 @@ batchProviders = function () {
             result = connector.getRecordsByRange(loggedInUser, tablename, from, to, 0, limit, null).getMessage();
 
         }
+
+        // error handling ----
+        var resultString = result.toString();
+        if (resultString.contains("Failed to get records from table")) {
+            return null;
+        }
+
         result = JSON.parse(result);
         var data = [];
         for (var i = 0; i < result.length; i++) {

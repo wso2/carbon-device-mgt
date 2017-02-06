@@ -23,19 +23,7 @@
     <groupId>org.wso2.carbon.devicemgt</groupId>
     <artifactId>carbon-devicemgt</artifactId>
     <packaging>pom</packaging>
-    <version>2.0.12-SNAPSHOT</version>
-    <dependencies>
-        <dependency>
-            <groupId>javax.ws.rs</groupId>
-            <artifactId>jsr311-api</artifactId>
-            <version>1.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.json.wso2</groupId>
-            <artifactId>json</artifactId>
-            <version>2.0.0.wso2v1</version>
-        </dependency>
-    </dependencies>
+    <version>2.0.16-SNAPSHOT</version>
     <name>WSO2 Carbon - Device Management - Parent</name>
     <url>http://wso2.org</url>
     <description>WSO2 Connected Device Manager Components</description>
@@ -921,6 +909,11 @@
                 <artifactId>org.wso2.carbon.identity.oauth.stub</artifactId>
                 <version>${identity.inbound.auth.oauth.version}</version>
             </dependency>
+			<dependency>
+				<groupId>org.wso2.carbon.identity</groupId>
+				<artifactId>org.wso2.carbon.identity.oauth2.grant.jwt</artifactId>
+				<version>${carbon.identity.jwt.grant.version}</version>
+			</dependency>
             <dependency>
                 <groupId>org.wso2.carbon.identity.framework</groupId>
                 <artifactId>org.wso2.carbon.identity.application.authentication.framework</artifactId>
@@ -1168,6 +1161,11 @@
                     </exclusion>
                 </exclusions>
             </dependency>
+			<dependency>
+				<groupId>org.wso2.carbon.commons</groupId>
+				<artifactId>org.wso2.carbon.application.mgt.stub</artifactId>
+				<version>${carbon.commons.version}</version>
+			</dependency>
 
             <dependency>
                 <groupId>org.wso2.orbit.org.bouncycastle</groupId>
@@ -1510,11 +1508,6 @@
 				<artifactId>javassist</artifactId>
 				<version>${javassist.version}</version>
 			</dependency>
-            <dependency>
-                <groupId>org.wso2.carbon.commons</groupId>
-                <artifactId>org.wso2.carbon.application.mgt.stub</artifactId>
-                <version>${carbon.application.mgt.stub.version}</version>
-            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -1780,13 +1773,14 @@
 
         <!-- Carbon Deployment -->
         <carbon.deployment.version>4.7.2</carbon.deployment.version>
-        <carbon.application.mgt.stub.version>4.5.4</carbon.application.mgt.stub.version>
 
         <!-- Carbon Identity -->
         <carbon.identity.framework.version>5.7.0</carbon.identity.framework.version>
+		<carbon.identity.framework.version.range>[5.0.0, 6.0.0)</carbon.identity.framework.version.range>
         <identity.inbound.auth.oauth.version>5.3.1</identity.inbound.auth.oauth.version>
         <identity.inbound.auth.saml.version>5.3.0</identity.inbound.auth.saml.version>
-
+		<carbon.identity.jwt.grant.version>1.0.2</carbon.identity.jwt.grant.version>
+		<carbon.identity.jwt.grant.version.range>[1.0.2, 2.0.0)</carbon.identity.jwt.grant.version.range>
         <!-- Carbon Identity import version ranges -->
         <carbon.identity.imp.pkg.version>[5.7.0, 6.0.0)</carbon.identity.imp.pkg.version>
         <carbon.identity-inbound-auth-oauth.imp.pkg.version>[5.2.0, 6.0.0)</carbon.identity-inbound-auth-oauth.imp.pkg.version>
@@ -1804,7 +1798,7 @@
         <axiom.wso2.version>1.2.11.wso2v10</axiom.wso2.version>
 
         <!-- Carbon Device Management -->
-        <carbon.device.mgt.version>2.0.12-SNAPSHOT</carbon.device.mgt.version>
+        <carbon.device.mgt.version>2.0.16-SNAPSHOT</carbon.device.mgt.version>
 
         <!-- Carbon Commons -->
         <carbon.commons.version>4.4.8</carbon.commons.version>
@@ -1815,7 +1809,7 @@
 	    <commons-lang.wso2.osgi.version.range>[2.6.0,3.0.0)</commons-lang.wso2.osgi.version.range>
 
         <!-- Carbon API Management -->
-        <carbon.api.mgt.version>6.1.35</carbon.api.mgt.version>
+        <carbon.api.mgt.version>6.1.64</carbon.api.mgt.version>
         <carbon.api.mgt.version.range>(6.0.0,7.0.0]</carbon.api.mgt.version.range>
 
         <!-- Carbon Analytics Commons -->

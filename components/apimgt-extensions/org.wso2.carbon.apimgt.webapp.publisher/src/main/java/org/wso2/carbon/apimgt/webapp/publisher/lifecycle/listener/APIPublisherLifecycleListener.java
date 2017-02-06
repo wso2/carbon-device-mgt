@@ -109,14 +109,11 @@ public class APIPublisherLifecycleListener implements LifecycleListener {
                 } catch (UserStoreException e) {
                     log.error("Error while retrieving tenant admin user for the tenant domain"
                                       + PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantDomain(), e);
+                } catch (Throwable e) {
+                    // This is done to stop tomcat failure if a webapp failed to publish apis.
+                    log.error("Failed to Publish api from " + servletContext.getContextPath(), e);
                 }
             }
         }
     }
-
-    //TODO : Need to implemented, to merge API Definitions in cases where implementation of an API Lies in two classes
-    private List<APIResourceConfiguration> mergeAPIDefinitions(List<APIResourceConfiguration> inputList) {
-        return null;
-    }
-
 }

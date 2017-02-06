@@ -32,6 +32,7 @@ import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.RequestValidationUtil;
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
 
 import javax.ws.rs.core.Response;
+import java.util.ArrayList;
 import java.util.List;
 
 public class GroupManagementAdminServiceImpl implements GroupManagementAdminService {
@@ -47,14 +48,15 @@ public class GroupManagementAdminServiceImpl implements GroupManagementAdminServ
             request.setOwner(owner);
             PaginationResult deviceGroupsResult = DeviceMgtAPIUtils.getGroupManagementProviderService()
                     .getGroups(request);
-            if (deviceGroupsResult.getData() != null && deviceGroupsResult.getRecordsTotal() > 0) {
-                DeviceGroupList deviceGroupList = new DeviceGroupList();
+            DeviceGroupList deviceGroupList = new DeviceGroupList();
+            if (deviceGroupsResult.getData() != null) {
                 deviceGroupList.setList(deviceGroupsResult.getData());
                 deviceGroupList.setCount(deviceGroupsResult.getRecordsTotal());
-                return Response.status(Response.Status.OK).entity(deviceGroupList).build();
             } else {
-                return Response.status(Response.Status.NOT_FOUND).build();
+                deviceGroupList.setList(new ArrayList<>());
+                deviceGroupList.setCount(0);
             }
+            return Response.status(Response.Status.OK).entity(deviceGroupList).build();
         } catch (GroupManagementException e) {
             String msg = "ErrorResponse occurred while retrieving all groups.";
             log.error(msg, e);

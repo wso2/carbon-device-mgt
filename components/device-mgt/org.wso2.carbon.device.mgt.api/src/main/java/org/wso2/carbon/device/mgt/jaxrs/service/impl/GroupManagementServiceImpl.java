@@ -65,14 +65,15 @@ public class GroupManagementServiceImpl implements GroupManagementService {
             request.setOwner(owner);
             PaginationResult deviceGroupsResult = DeviceMgtAPIUtils.getGroupManagementProviderService()
                     .getGroups(currentUser, request);
+            DeviceGroupList deviceGroupList = new DeviceGroupList();
             if (deviceGroupsResult.getData() != null && deviceGroupsResult.getRecordsTotal() > 0) {
-                DeviceGroupList deviceGroupList = new DeviceGroupList();
                 deviceGroupList.setList(deviceGroupsResult.getData());
                 deviceGroupList.setCount(deviceGroupsResult.getRecordsTotal());
-                return Response.status(Response.Status.OK).entity(deviceGroupList).build();
             } else {
-                return Response.status(Response.Status.NOT_FOUND).build();
+                deviceGroupList.setList(new ArrayList<>());
+                deviceGroupList.setCount(0);
             }
+            return Response.status(Response.Status.OK).entity(deviceGroupList).build();
         } catch (GroupManagementException e) {
             String error = "Error occurred while getting the groups.";
             log.error(error, e);
@@ -184,15 +185,15 @@ public class GroupManagementServiceImpl implements GroupManagementService {
     public Response getRolesOfGroup(int groupId) {
         try {
             List<String> groupRoles = DeviceMgtAPIUtils.getGroupManagementProviderService().getRoles(groupId);
-
-            if(groupRoles != null && groupRoles.size() > 0) {
-                RoleList deviceGroupRolesList = new RoleList();
+            RoleList deviceGroupRolesList = new RoleList();
+            if(groupRoles != null) {
                 deviceGroupRolesList.setList(groupRoles);
                 deviceGroupRolesList.setCount(groupRoles.size());
-                return Response.status(Response.Status.OK).entity(deviceGroupRolesList).build();
             } else {
-                return Response.status(Response.Status.OK).entity(EMPTY_RESULT).build();
+                deviceGroupRolesList.setList(new ArrayList<String>());
+                deviceGroupRolesList.setCount(0);
             }
+            return Response.status(Response.Status.OK).entity(deviceGroupRolesList).build();
         } catch (GroupManagementException e) {
             String msg = "Error occurred while getting roles of the group.";
             log.error(msg, e);
@@ -205,14 +206,15 @@ public class GroupManagementServiceImpl implements GroupManagementService {
         try {
             GroupManagementProviderService service = DeviceMgtAPIUtils.getGroupManagementProviderService();
             List<Device> deviceList = service.getDevices(groupId, offset, limit);
-            if (deviceList != null && deviceList.size() > 0) {
-                DeviceList deviceListWrapper = new DeviceList();
+            int deviceCount = service.getDeviceCount(groupId);
+            DeviceList deviceListWrapper = new DeviceList();
+            if (deviceList != null) {
                 deviceListWrapper.setList(deviceList);
-                deviceListWrapper.setCount(service.getDeviceCount(groupId));
-                return Response.status(Response.Status.OK).entity(deviceListWrapper).build();
             } else {
-                return Response.status(Response.Status.NOT_FOUND).build();
+                deviceListWrapper.setList(new ArrayList<Device>());
             }
+            deviceListWrapper.setCount(deviceCount);
+            return Response.status(Response.Status.OK).entity(deviceListWrapper).build();
         } catch (GroupManagementException e) {
             String msg = "Error occurred while getting devices the group.";
             log.error(msg, e);
@@ -295,7 +297,7 @@ public class GroupManagementServiceImpl implements GroupManagementService {
             List<DeviceGroup> deviceGroups = DeviceMgtAPIUtils.getGroupManagementProviderService().getGroups(deviceIdentifier);
             return Response.status(Response.Status.OK).entity(deviceGroups).build();
         } catch (GroupManagementException e) {
-            String msg = "Error occurred while removing devices from group.";
+            String msg = "Error occurred while getting groups of device.";
             log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         }

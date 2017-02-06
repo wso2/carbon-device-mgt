@@ -6580,3 +6580,11 @@ select > option:hover {
 }
 
 /** End **/
+
+.editable-input select{
+  height: 35px !important;
+}
+.editable-submit, .editable-cancel{
+  padding: 8px 15px !important;
+  line-height: 0px !important;
+}

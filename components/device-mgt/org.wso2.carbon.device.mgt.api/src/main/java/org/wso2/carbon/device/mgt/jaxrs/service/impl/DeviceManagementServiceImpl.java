@@ -539,6 +539,14 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
         }
     }
 
+    /**
+     * Change device status.
+     *
+     * @param type Device type
+     * @param id Device id
+     * @param newsStatus Device new status
+     * @return {@link Response} object
+     */
     @PUT
     @Path("/{type}/{id}/changestatus")
     public Response changeDeviceStatus(@PathParam("type") @Size(max = 45) String type,

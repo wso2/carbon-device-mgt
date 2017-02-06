@@ -84,8 +84,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import static org.wso2.carbon.device.mgt.common.EnrolmentInfo.Status.ACTIVE;
-
 public class DeviceManagementProviderServiceImpl implements DeviceManagementProviderService,
         PluginInitializationListener {
 
@@ -170,7 +168,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         if (deviceManager.isClaimable(deviceIdentifier)) {
             device.getEnrolmentInfo().setStatus(EnrolmentInfo.Status.INACTIVE);
         } else {
-            device.getEnrolmentInfo().setStatus(ACTIVE);
+            device.getEnrolmentInfo().setStatus(EnrolmentInfo.Status.ACTIVE);
         }
         int tenantId = this.getTenantId();
 
@@ -1983,6 +1981,14 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         return false;
     }
 
+    /**
+     * Change device status.
+     *
+     * @param deviceIdentifier {@link DeviceIdentifier} object
+     * @param newStatus        New status of the device
+     * @return Whether status is changed or not
+     * @throws DeviceManagementException on errors while trying to change device status
+     */
     @Override
     public boolean changeDeviceStatus(DeviceIdentifier deviceIdentifier, EnrolmentInfo.Status newStatus)
             throws DeviceManagementException {

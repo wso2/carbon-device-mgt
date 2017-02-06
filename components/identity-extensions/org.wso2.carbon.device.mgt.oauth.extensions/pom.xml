@@ -22,13 +22,13 @@
     <parent>
         <groupId>org.wso2.carbon.devicemgt</groupId>
         <artifactId>identity-extensions</artifactId>
-        <version>2.0.15-SNAPSHOT</version>
+        <version>2.0.16-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>org.wso2.carbon.device.mgt.oauth.extensions</artifactId>
-    <version>2.0.15-SNAPSHOT</version>
+    <version>2.0.16-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <name>WSO2 Carbon - OAuth Extensions</name>
     <url>http://wso2.org</url>
@@ -58,6 +58,10 @@
 			<groupId>org.wso2.carbon.identity.framework</groupId>
 			<artifactId>org.wso2.carbon.user.mgt</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.wso2.carbon.identity</groupId>
+			<artifactId>org.wso2.carbon.identity.oauth2.grant.jwt</artifactId>
+		</dependency>
     </dependencies>
 
     <build>
@@ -83,6 +87,7 @@
                             org.wso2.carbon.device.mgt.oauth.extensions.*
                         </Export-Package>
                         <Import-Package>
+							org.wso2.carbon.identity.oauth2.grant.jwt;version="${carbon.identity.jwt.grant.version.range}",
                             org.apache.commons.logging,
                             org.osgi.service.component,
                             org.wso2.carbon.identity.application.common.model;version="${carbon.identity.framework.version.range}",

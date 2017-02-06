@@ -20,7 +20,7 @@ var modalPopup = ".modal";
 var modalPopupContainer = modalPopup + " .modal-content";
 var modalPopupContent = modalPopup + " .modal-content";
 
-var emmAdminBasePath = "/api/device-mgt/v1.0";
+var backendEndBasePath = "/api/device-mgt/v1.0";
 
 /*
  * set popup maximum height function.
@@ -66,7 +66,7 @@ var updateNotificationCount = function (data, textStatus, jqXHR) {
 
 function loadNotificationsPanel() {
     if ("true" == $("#right-sidebar").attr("is-authorized")) {
-        var serviceURL = emmAdminBasePath + "/notifications?status=NEW";
+        var serviceURL = backendEndBasePath + "/notifications?status=NEW";
         invokerUtil.get(serviceURL, updateNotificationCount, hideNotificationCount);
         loadNewNotifications();
     } else {
@@ -90,7 +90,7 @@ function loadNewNotifications() {
         var currentUser = notifications.data("currentUser");
 
         $.template("notification-listing", notifications.attr("src"), function (template) {
-            var serviceURL = emmAdminBasePath + "/notifications?status=NEW";
+            var serviceURL = backendEndBasePath + "/notifications?status=NEW";
 
             var successCallback = function (data, textStatus, jqXHR) {
                 if (jqXHR.status == 200 && data) {
@@ -453,3 +453,44 @@ $(document).ready(function () {
         });
     }
 });
+
+function statisticLoad(redirectUrl) {
+	var contentType = "application/json";
+
+	var uri = backendEndBasePath + "/admin/devicetype/deploy/device_management/status";
+	var defaultStatusClasses = "fw fw-stack-1x";
+	var content = $("#statistic-response-template").find(".content");
+	var title = content.find("#title");
+	var statusIcon = content.find("#status-icon");
+
+	invokerUtil.get(uri, function (data, textStatus, jqXHR) {
+		if (jqXHR.status == 204) {
+			var urix = backendEndBasePath + "/admin/devicetype/deploy/device_management";
+			var device = {};
+			invokerUtil.post(urix, device, function (data) {
+				title.html("Deploying statistic artifacts. Please wait...");
+				statusIcon.attr("class", defaultStatusClasses + " fw-check");
+				$(modalPopupContent).html(content.html());
+				showPopup();
+				setTimeout(function () {
+					hidePopup();
+					// location.reload(true);
+					location.href = redirectUrl;
+				}, 20000);
+
+			}, function (jqXHR) {
+				title.html("Failed to deploy artifacts, Please contact administrator.");
+				statusIcon.attr("class", defaultStatusClasses + " fw-error");
+				$(modalPopupContent).html(content.html());
+				showPopup();
+			}, contentType);
+		} else {
+			location.href = redirectUrl;
+		}
+	}, function (jqXHR) {
+		title.html("Failed to connect with server, Please contact administrator.");
+		statusIcon.attr("class", defaultStatusClasses + " fw-error");
+		$(modalPopupContent).html(content.html());
+		showPopup();
+	}, contentType);
+}

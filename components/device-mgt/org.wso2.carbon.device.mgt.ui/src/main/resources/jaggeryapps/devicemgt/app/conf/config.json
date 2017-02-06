@@ -175,7 +175,8 @@
         "perm:ios:remove-profile",
         "perm:ios:get-restrictions",
         "perm:ios:wipe-data",
-        "perm:admin"
+        "perm:admin",
+        "perm:devicetype:deployment"
     ],
     "isOAuthEnabled" : true,
     "backendRestEndpoints" : {

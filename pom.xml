@@ -23,7 +23,7 @@
     <groupId>org.wso2.carbon.devicemgt</groupId>
     <artifactId>carbon-devicemgt</artifactId>
     <packaging>pom</packaging>
-    <version>2.0.15-SNAPSHOT</version>
+    <version>2.0.16-SNAPSHOT</version>
     <name>WSO2 Carbon - Device Management - Parent</name>
     <url>http://wso2.org</url>
     <description>WSO2 Connected Device Manager Components</description>
@@ -909,6 +909,11 @@
                 <artifactId>org.wso2.carbon.identity.oauth.stub</artifactId>
                 <version>${identity.inbound.auth.oauth.version}</version>
             </dependency>
+			<dependency>
+				<groupId>org.wso2.carbon.identity</groupId>
+				<artifactId>org.wso2.carbon.identity.oauth2.grant.jwt</artifactId>
+				<version>${carbon.identity.jwt.grant.version}</version>
+			</dependency>
             <dependency>
                 <groupId>org.wso2.carbon.identity.framework</groupId>
                 <artifactId>org.wso2.carbon.identity.application.authentication.framework</artifactId>
@@ -1156,6 +1161,11 @@
                     </exclusion>
                 </exclusions>
             </dependency>
+			<dependency>
+				<groupId>org.wso2.carbon.commons</groupId>
+				<artifactId>org.wso2.carbon.application.mgt.stub</artifactId>
+				<version>${carbon.commons.version}</version>
+			</dependency>
 
             <dependency>
                 <groupId>org.wso2.orbit.org.bouncycastle</groupId>
@@ -1769,7 +1779,8 @@
 		<carbon.identity.framework.version.range>[5.0.0, 6.0.0)</carbon.identity.framework.version.range>
         <identity.inbound.auth.oauth.version>5.3.1</identity.inbound.auth.oauth.version>
         <identity.inbound.auth.saml.version>5.3.0</identity.inbound.auth.saml.version>
-
+		<carbon.identity.jwt.grant.version>1.0.2</carbon.identity.jwt.grant.version>
+		<carbon.identity.jwt.grant.version.range>[1.0.2, 2.0.0)</carbon.identity.jwt.grant.version.range>
         <!-- Carbon Identity import version ranges -->
         <carbon.identity.imp.pkg.version>[5.7.0, 6.0.0)</carbon.identity.imp.pkg.version>
         <carbon.identity-inbound-auth-oauth.imp.pkg.version>[5.2.0, 6.0.0)</carbon.identity-inbound-auth-oauth.imp.pkg.version>
@@ -1787,7 +1798,7 @@
         <axiom.wso2.version>1.2.11.wso2v10</axiom.wso2.version>
 
         <!-- Carbon Device Management -->
-        <carbon.device.mgt.version>2.0.15-SNAPSHOT</carbon.device.mgt.version>
+        <carbon.device.mgt.version>2.0.16-SNAPSHOT</carbon.device.mgt.version>
 
         <!-- Carbon Commons -->
         <carbon.commons.version>4.4.8</carbon.commons.version>

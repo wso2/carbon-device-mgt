@@ -80,6 +80,25 @@ public class JWTClient {
 		return getTokenInfo(params, consumerKey, consumerSecret);
 	}
 
+    public AccessTokenInfo getAccessToken(String encodedAppcredential, String username, String scopes)
+            throws JWTClientException {
+        List<NameValuePair> params = new ArrayList<>();
+        params.add(new BasicNameValuePair(JWTConstants.GRANT_TYPE_PARAM_NAME, jwtConfig.getJwtGrantType()));
+        String assertion = JWTClientUtil.generateSignedJWTAssertion(username, jwtConfig, isDefaultJWTClient);
+        if (assertion == null) {
+            throw new JWTClientException("JWT is not configured properly for user : " + username);
+        }
+        params.add(new BasicNameValuePair(JWTConstants.JWT_PARAM_NAME, assertion));
+        if (scopes != null && !scopes.isEmpty()) {
+            params.add(new BasicNameValuePair(JWTConstants.SCOPE_PARAM_NAME, scopes));
+        }
+        String decodedKey[] = getDecodedKey(encodedAppcredential);
+        if (decodedKey.length != 2) {
+            throw new JWTClientException("Invalid app credential");
+        }
+        return getTokenInfo(params, decodedKey[0], decodedKey[1]);
+    }
+
 	public AccessTokenInfo getAccessToken(String consumerKey, String consumerSecret, String username, String scopes,
 										  Map<String, String> paramsMap)
 			throws JWTClientException {
@@ -137,9 +156,12 @@ public class JWTClient {
 			String accessToken = (String) jsonObject.get(JWTConstants.ACCESS_TOKEN_GRANT_TYPE_PARAM_NAME);
 			if (accessToken != null && !accessToken.isEmpty()) {
 				accessTokenInfo.setAccessToken(accessToken);
-				accessTokenInfo.setRefreshToken((String) jsonObject.get(JWTConstants.REFRESH_TOKEN_GRANT_TYPE_PARAM_NAME));
+				accessTokenInfo.setRefreshToken((String) jsonObject.get(
+                        JWTConstants.REFRESH_TOKEN_GRANT_TYPE_PARAM_NAME));
 				accessTokenInfo.setExpiresIn((Long) jsonObject.get(JWTConstants.OAUTH_EXPIRES_IN));
 				accessTokenInfo.setTokenType((String) jsonObject.get(JWTConstants.OAUTH_TOKEN_TYPE));
+                accessTokenInfo.setScopes((String) jsonObject.get(JWTConstants.OAUTH_TOKEN_SCOPE));
+
 			}
 			return accessTokenInfo;
 		} catch (MalformedURLException e) {
@@ -161,7 +183,11 @@ public class JWTClient {
 		return new String(Base64.encodeBase64((consumerKey + ":" + consumerSecret).getBytes()));
 	}
 
-	public String getJwtToken(String username) throws JWTClientException {
+    private String[] getDecodedKey(String encodedKey) {
+        return (new String(Base64.decodeBase64((encodedKey).getBytes()))).split(":");
+    }
+
+    public String getJwtToken(String username) throws JWTClientException {
 		return JWTClientUtil.generateSignedJWTAssertion(username, jwtConfig, isDefaultJWTClient);
 	}
 

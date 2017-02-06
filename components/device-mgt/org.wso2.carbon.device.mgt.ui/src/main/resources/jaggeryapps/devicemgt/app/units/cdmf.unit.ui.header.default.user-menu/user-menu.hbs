@@ -21,7 +21,7 @@
                 <i class="fw fw-user fw-lg fw-helper fw-helper-inverse fw-helper-circle"></i>
                 <span class="hidden-xs add-padding-left-1x">
                     {{#if isSuperTenant }}
-                        {{@user.username}} "SERVER" <span class="caret"></span>
+                        {{@user.username}}<span class="caret"></span>
                     {{else}}
                         {{@user.username}}@{{@user.domain}} <span class="caret"></span>
                     {{/if}}

@@ -84,6 +84,8 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+import static org.wso2.carbon.device.mgt.common.EnrolmentInfo.Status.ACTIVE;
+
 public class DeviceManagementProviderServiceImpl implements DeviceManagementProviderService,
         PluginInitializationListener {
 
@@ -168,7 +170,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         if (deviceManager.isClaimable(deviceIdentifier)) {
             device.getEnrolmentInfo().setStatus(EnrolmentInfo.Status.INACTIVE);
         } else {
-            device.getEnrolmentInfo().setStatus(EnrolmentInfo.Status.ACTIVE);
+            device.getEnrolmentInfo().setStatus(ACTIVE);
         }
         int tenantId = this.getTenantId();
 
@@ -1980,6 +1982,56 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         }
         return false;
     }
+
+    @Override
+    public boolean changeDeviceStatus(DeviceIdentifier deviceIdentifier, EnrolmentInfo.Status newStatus)
+            throws DeviceManagementException {
+        boolean isDeviceUpdated = false;
+        Device device = getDevice(deviceIdentifier);
+        int deviceId = device.getId();
+        EnrolmentInfo enrolmentInfo = device.getEnrolmentInfo();
+        enrolmentInfo.setStatus(newStatus);
+        int tenantId = this.getTenantId();
+        switch (newStatus) {
+            case ACTIVE:
+                updateEnrollment(deviceId, enrolmentInfo, tenantId);
+                break;
+            case INACTIVE:
+                updateEnrollment(deviceId, enrolmentInfo, tenantId);
+                break;
+            case REMOVED:
+                isDeviceUpdated = disenrollDevice(deviceIdentifier);
+                break;
+            default:
+                throw new DeviceManagementException("Invalid status retrieved. Status : " + newStatus);
+        }
+        return isDeviceUpdated;
+    }
+
+    private boolean updateEnrollment(int deviceId, EnrolmentInfo enrolmentInfo, int tenantId)
+            throws DeviceManagementException {
+        boolean isAutoCommit = true;
+        try {
+            DeviceManagementDAOFactory.openConnection();
+            isAutoCommit = DeviceManagementDAOFactory.getConnection().getAutoCommit();
+            DeviceManagementDAOFactory.getConnection().setAutoCommit(true);
+            enrollmentDAO.updateEnrollment(deviceId, enrolmentInfo, tenantId);
+        } catch (SQLException e) {
+            throw new DeviceManagementException("Error occurred while opening a connection to the data source", e);
+        } catch (DeviceManagementDAOException e) {
+            throw new DeviceManagementException("Error occurred while updating the enrollment information device for" +
+                                                        "id '" + deviceId + "' ." , e);
+        } finally {
+            try {
+                DeviceManagementDAOFactory.getConnection().setAutoCommit(isAutoCommit);
+            } catch (SQLException e) {
+                log.error("Exception occurred while setting auto commit.");
+            }
+            DeviceManagementDAOFactory.closeConnection();
+        }
+        return true;
+    }
+
 
     private int getTenantId() {
         return CarbonContext.getThreadLocalCarbonContext().getTenantId();

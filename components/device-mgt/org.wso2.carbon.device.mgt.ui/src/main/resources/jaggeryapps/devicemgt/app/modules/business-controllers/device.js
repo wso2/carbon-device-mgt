@@ -71,7 +71,7 @@ deviceModule = function () {
         var userName = carbonUser.username + "@" + carbonUser.domain;
 
         var locationDataSet = [];
-        switch(deviceType) {
+        switch (deviceType) {
             case 'android':
                 locationDataSet = batchProvider.getData(userName, deviceId, deviceType);
                 break;
@@ -80,24 +80,24 @@ deviceModule = function () {
                 break;
 
         }
-
-
         var locationData = [];
         var locationTimeData = [];
-        for (var i = 0 ; i < locationDataSet.length; i++) {
-            var gpsReading = {};
-            var gpsReadingTimes = {};
-            gpsReading.lat = locationDataSet[i].latitude;
-            gpsReading.lng = locationDataSet[i].longitude;
-            if (deviceType == "android") {
-                gpsReadingTimes.time = locationDataSet[i].timeStamp;
-            } else {
-                gpsReadingTimes.time = locationDataSet[i].meta_timestamp;
-            }
-            locationData.push(gpsReading);
-            locationTimeData.push(gpsReadingTimes);
-        }
+        if (locationDataSet != null) {
 
+            for (var i = 0; i < locationDataSet.length; i++) {
+                var gpsReading = {};
+                var gpsReadingTimes = {};
+                gpsReading.lat = locationDataSet[i].latitude;
+                gpsReading.lng = locationDataSet[i].longitude;
+                if (deviceType == "android") {
+                    gpsReadingTimes.time = locationDataSet[i].timeStamp;
+                } else {
+                    gpsReadingTimes.time = locationDataSet[i].meta_timestamp;
+                }
+                locationData.push(gpsReading);
+                locationTimeData.push(gpsReadingTimes);
+            }
+        }
         var utility = require('/app/modules/utility.js')["utility"];
         try {
             utility.startTenantFlow(carbonUser);

@@ -307,4 +307,7 @@ public interface DeviceManagementProviderService {
 
     PolicyMonitoringManager getPolicyMonitoringManager(String deviceType);
 
+    boolean changeDeviceStatus(DeviceIdentifier deviceIdentifier, EnrolmentInfo.Status newStatus)
+            throws DeviceManagementException;
+
 }

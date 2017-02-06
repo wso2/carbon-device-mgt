@@ -82,7 +82,7 @@
             <span class="hidden-xs">
                         Configure
                     </span>
-            <span class="caret"></span>
+            <!--<span class="caret"></span>-->
         </a>
 
         <ul class="dropdown-menu dropdown-menu-right float-remove-xs position-static-xs text-center-xs remove-margin-xs slideInDown"
@@ -217,3 +217,47 @@
         </a>
     </li>
 </ul>
+
+<div class="cloud-menu-content hide">
+    <div id="popover-head" class="hide">Navigate to Cloud</div>
+    <div id="popover-content" class="hide">
+        <div class="cloud-apps">
+
+            <a href="https://api.cloud.wso2.com/publisher" target="_self" class="cloud-block add-padding-top-3x">
+                <i class="fw fw-api  fw-3x"></i>
+                <div class="cloud-name">API Cloud</div>
+            </a>
+
+            <a href="https://apps.cloud.wso2.com/appmgt" target="_self" class="cloud-block add-padding-top-3x">
+                <i class="fw fw-application fw-3x"></i>
+                <div class="cloud-name">App Cloud</div>
+            </a>
+
+            <a href="https://devicemgt.cloud.wso2.com/devicemgt" target="_self" class="cloud-block add-padding-top-3x">
+                <i class="fw fw-mobile fw-3x"></i>
+                <div class="cloud-name">Device Cloud</div>
+            </a>
+
+            <div class="clearfix"></div><!-- to make seperate -->
+        </div>
+        <div class="cloud-actions">
+            <h3>Manage your cloud</h3>
+
+            <a href="https://cloudmgt.cloud.wso2.com/cloudmgt/site/pages/organization.jag" target="_self" class="cloud-block-invert add-padding-top-3x">
+                <i class="fw fw-organization  fw-3x"></i>
+                <div class="cloud-name">Organization</div>
+            </a>
+
+            <a href="https://cloudmgt.cloud.wso2.com/cloudmgt/site/pages/user.jag" target="_self" class="cloud-block-invert add-padding-top-3x">
+                <i class="fa fa-users  fa-3x"></i>
+                <div class="cloud-name">Members</div>
+            </a>
+
+        </div>
+    </div>
+</div>
+
+
+{{#zone "bottomJs"}}
+    {{js "/js/user-menu.js"}}
+{{/zone}}

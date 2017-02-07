@@ -217,7 +217,7 @@ header .brand h1 {
 }
 .cloud-apps a {
     text-decoration: none;
-    color: #006690;
+    color: #006690 !important;
     cursor: pointer
 }
 .cloud-apps a:hover {

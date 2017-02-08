@@ -93,7 +93,7 @@ public class APIManagementProviderServiceImpl implements APIManagementProviderSe
                 String tenantDomain = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantDomain();
                 APIList apiList = storeClient.getApis().apisGet(MAX_API_PER_TAG, 0, tenantDomain, "tag:" + tag
                         , CONTENT_TYPE, null);
-                if (apiList.getList() != null && apiList.getList().size() == 0) {
+                if (apiList.getList() == null || apiList.getList().size() == 0) {
                     apiList = storeClient.getApis().apisGet(MAX_API_PER_TAG, 0
                             , MultitenantConstants.SUPER_TENANT_DOMAIN_NAME, "tag:" + tag, CONTENT_TYPE, null);
                 }

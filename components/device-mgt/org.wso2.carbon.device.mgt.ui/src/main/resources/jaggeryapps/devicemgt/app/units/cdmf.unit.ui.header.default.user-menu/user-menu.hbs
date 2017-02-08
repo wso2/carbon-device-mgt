@@ -1,0 +1,123 @@
+{{!
+  Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+
+  WSO2 Inc. licenses this file to you under the Apache License,
+  Version 2.0 (the "License"); you may not use this file except
+  in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing,
+  software distributed under the License is distributed on an
+  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  KIND, either express or implied. See the License for the
+  specific language governing permissions and limitations
+  under the License.
+}}
+    <ul class="nav navbar-right float-remove-xs text-center-xs">
+        <li class="visible-inline-block">
+            <a href="#" class="dropdown" data-toggle="dropdown">
+                <i class="fw fw-user fw-lg fw-helper fw-helper-inverse fw-helper-circle"></i>
+                <span class="hidden-xs add-padding-left-1x">
+                    {{#if isSuperTenant }}
+                        {{@user.username}}<span class="caret"></span>
+                    {{else}}
+                        {{@user.username}}@{{@user.domain}} <span class="caret"></span>
+                    {{/if}}
+                </span>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-right slideInDown"
+                role="menu">
+                <li>
+                    <a href="javascript:void(0)" id="change-password">Change Password</a>
+                </li>
+                <li>
+                    <!--suppress HtmlUnknownTarget -->
+                    <a href="{{@app.context}}/logout">Sign out</a>
+                </li>
+
+                <div id="change-password-window" class="hide">
+                    <input type="hidden" id="user" value=" {{@user.username}} ">
+                    <div class="modal-header">
+                        <h4 class="pull-left modal-title">
+                <span class="fw-stack">
+                    <i class="fw fw-user fw-stack-2x"></i>
+                    <span class="fw-stack fw-move-right fw-move-bottom">
+                      <i class="fw fw-circle-outline fw-stack-2x"></i>
+                      <i class="fw fw-circle fw-stack-2x fw-stroke text-info"></i>
+                      <i class="fw fw-edit fw-stack-1x fw-inverse"></i>
+                   </span>
+                </span>
+                            Change password is not a option
+                        </h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i
+                                class="fw fw-cancel"></i></button>
+                    </div>
+                    <hr>
+                    <div class="modal-body add-margin-top-2x add-margin-bottom-2x">
+                        <div id="change-password-error-msg" class="alert alert-danger hidden" role="alert">
+                            <i class="icon fw fw-error"></i><span></span>
+                        </div>
+                        <h5>
+                            Type your current password *
+                            <br><br>
+                            <div>
+                                <input id="current-password" type="password" autocomplete="off" class="form-control modal-input"/>
+                            </div>
+                            <br><br>
+                            Type a new password *
+                            <br><br>
+                            <div>
+                                <input id="new-password" type="password" autocomplete="off" class="form-control modal-input"
+                                       placeholder="[ Password should be in minimum 5 characters long and should not include any whitespaces ]"/>
+                            </div>
+                            <br><br>
+                            Reconfirm your new password *
+                            <br><br>
+                            <div>
+                                <input id="retyped-new-password" type="password" autocomplete="off" class="form-control modal-input"/>
+                            </div>
+                            <br><br>
+                        </h5>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="buttons">
+                            <a href="#" id="change-password-yes-link" class="btn-operations">Change</a>
+                            <a href="#" id="change-password-cancel-link" class="btn-operations">Cancel</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="change-password-success-content" class="hide">
+                    <div class="modal-header">
+                        <h4 class="pull-left modal-title">
+                <span class="fw-stack fw-move-right fw-move-bottom">
+                    <i class="fw fw-circle fw-stack-2x fw-stroke text-success"></i>
+                    <i class="fw fw-check fw-stack-1x fw-inverse"></i>
+                </span>
+                            Password has been successfully updated
+                        </h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i
+                                class="fw fw-cancel"></i></button>
+                    </div>
+                    <hr>
+                    <div class="modal-body add-margin-top-2x add-margin-bottom-2x">
+                        <h5 class="text-center">
+                            You can now try to login using your new password.
+                        </h5>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="buttons">
+                            <a href="#" id="change-password-success-link" class="btn-operations">Ok</a>
+                        </div>
+                    </div>
+                </div>
+            </ul>
+        </li>
+    </ul>
+
+
+{{#zone "bottomJs"}}
+    {{js "/js/user-menu.js"}}
+{{/zone}}

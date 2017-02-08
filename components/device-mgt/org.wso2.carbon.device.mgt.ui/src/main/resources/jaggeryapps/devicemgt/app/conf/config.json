@@ -1,5 +1,6 @@
 {
     "appContext": "/devicemgt/",
+    "isCloud": false,
     "httpsURL" : "https://%iot.gateway.host%:%iot.gateway.https.port%",
     "httpURL" : "http://%iot.gateway.host%:%iot.gateway.http.port",
     "wssURL" : "https://%iot.analytics.host%:%iot.analytics.https.port%",
@@ -174,7 +175,8 @@
         "perm:ios:remove-profile",
         "perm:ios:get-restrictions",
         "perm:ios:wipe-data",
-        "perm:admin"
+        "perm:admin",
+        "perm:devicetype:deployment"
     ],
     "isOAuthEnabled" : true,
     "backendRestEndpoints" : {

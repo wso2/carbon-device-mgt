@@ -136,9 +136,8 @@ public interface DeviceManagementAdminService {
             String name,
             @ApiParam(
                     name = "type",
-                    value = "The type of the device, such as android, ios or windows.",
-                    required = true,
-                    allowableValues = "android, ios, windows")
+                    value = "The device type name, such as ios, android, windows or fire-alarm.",
+                    required = true)
             @QueryParam("type")
             @Size(min = 2, max = 45)
             String type,

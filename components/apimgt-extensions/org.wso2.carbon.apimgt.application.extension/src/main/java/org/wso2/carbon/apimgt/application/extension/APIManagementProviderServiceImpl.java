@@ -87,6 +87,10 @@ public class APIManagementProviderServiceImpl implements APIManagementProviderSe
             throw new APIManagerException (
                     "Api application creation failed for " + applicationName + " to the user " + username);
         }
+
+        SubscriptionList subscriptionList = storeClient.getSubscriptions().subscriptionsGet
+                (null, application.getApplicationId(), "", 0, 100, CONTENT_TYPE, null);
+        List<Subscription> needToSubscribe = new ArrayList<>();
         // subscribe to apis.
         if (tags != null && tags.length > 0) {
             for (String tag: tags) {
@@ -100,31 +104,31 @@ public class APIManagementProviderServiceImpl implements APIManagementProviderSe
 
                 if (apiList.getList() != null && apiList.getList().size() > 0) {
                     for (APIInfo apiInfo : apiList.getList()) {
-                        Subscription subscription = new Subscription();
-                        //fix for APIMANAGER-5566 admin-AT-tenant1.com-Tenant1API1-1.0.0
-                        String id = apiInfo.getProvider().replace("@", "-AT-")
-                                + "-" + apiInfo.getName()+ "-" + apiInfo.getVersion();
-                        subscription.setApiIdentifier(id);
-                        subscription.setApplicationId(application.getApplicationId());
-                        subscription.tier(ApiApplicationConstants.DEFAULT_TIER);
-                        SubscriptionList subscriptionList = storeClient.getSubscriptions().subscriptionsGet
-                                (id, application.getApplicationId(), "", 0, 100, CONTENT_TYPE, null);
                         boolean subscriptionExist = false;
                         if (subscriptionList.getList() != null && subscriptionList.getList().size() > 0) {
                             for (Subscription subs : subscriptionList.getList()) {
-                                if (subs.getApiIdentifier().equals(id) && subs.getApplicationId().equals(
-                                        application.getApplicationId())) {
+                                if (subs.getApiIdentifier().equals(apiInfo.getId())) {
                                     subscriptionExist = true;
                                     break;
                                 }
                             }
                         }
                         if (!subscriptionExist) {
-                            storeClient.getIndividualSubscription().subscriptionsPost(subscription, CONTENT_TYPE);
+                            Subscription subscription = new Subscription();
+                            //fix for APIMANAGER-5566 admin-AT-tenant1.com-Tenant1API1-1.0.0
+                            String id = apiInfo.getProvider().replace("@", "-AT-")
+                                    + "-" + apiInfo.getName()+ "-" + apiInfo.getVersion();
+                            subscription.setApiIdentifier(id);
+                            subscription.setApplicationId(application.getApplicationId());
+                            subscription.tier(ApiApplicationConstants.DEFAULT_TIER);
+                            needToSubscribe.add(subscription);
                         }
                     }
                 }
             }
+        }
+        if (!needToSubscribe.isEmpty()) {
+            storeClient.getIndividualSubscription().subscriptionsPost(needToSubscribe, CONTENT_TYPE);
         }
         //end of subscription
 

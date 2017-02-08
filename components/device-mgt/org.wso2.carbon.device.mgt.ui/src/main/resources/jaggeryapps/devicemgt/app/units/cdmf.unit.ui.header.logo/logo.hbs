@@ -15,5 +15,11 @@
   specific language governing permissions and limitations
   under the License.
 }}
-{{#zone "productName"}}WSO2 IoT Server{{/zone}}
-{{#zone "productNameResponsive"}}WSO2 IoT Server{{/zone}}
+
+{{#if isCloud}}
+    {{#zone "productName"}}WSO2 Cloud{{/zone}}
+    {{#zone "productNameResponsive"}}WSO2 Cloud{{/zone}}
+{{else}}
+    {{#zone "productName"}}WSO2 IoT Server{{/zone}}
+    {{#zone "productNameResponsive"}}WSO2 IoT Server{{/zone}}
+{{/if}}

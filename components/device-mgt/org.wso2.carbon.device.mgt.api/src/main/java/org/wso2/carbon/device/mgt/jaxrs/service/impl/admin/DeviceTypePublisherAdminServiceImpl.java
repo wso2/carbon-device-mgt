@@ -18,8 +18,6 @@
  */
 package org.wso2.carbon.device.mgt.jaxrs.service.impl.admin;
 
-import org.apache.axiom.om.OMElement;
-import org.apache.axiom.om.OMXMLBuilderFactory;
 import org.apache.axis2.client.Options;
 import org.apache.axis2.java.security.SSLProtocolSocketFactory;
 import org.apache.axis2.transport.http.HTTPConstants;
@@ -36,6 +34,7 @@ import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.core.util.Utils;
 import org.wso2.carbon.device.mgt.jaxrs.service.api.admin.DeviceTypePublisherAdminService;
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
+import org.wso2.carbon.identity.jwt.client.extension.JWTClient;
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.ResourceImpl;
@@ -65,9 +64,14 @@ import java.util.List;
 public class DeviceTypePublisherAdminServiceImpl implements DeviceTypePublisherAdminService {
 
     /**
-     * required soap header for mutualSSL
+     * required soap header for authorization
      */
-    private static final String USER_NAME_HEADER = "UserName";
+    private static final String AUTHORIZATION_HEADER = "Authorization";
+
+    /**
+     * required soap header value for mutualSSL
+     */
+    private static final String AUTHORIZATION_HEADER_VALUE = "Bearer";
 
     private static final String KEY_STORE_TYPE = "JKS";
     /**
@@ -129,22 +133,16 @@ public class DeviceTypePublisherAdminServiceImpl implements DeviceTypePublisherA
             //Call to load the TrustStore.
             loadTrustStore(trustStoreLocation, trustStorePassword);
             //Create the SSL context with the loaded TrustStore/keystore.
-            initMutualSSLConnection();
+            initSSLConnection();
+            JWTClient jwtClient = DeviceMgtAPIUtils.getJWTClientManagerService().getJWTClient();
 
-            //Constructing the soap header that required for mutual SSL
-            String strHeader =
-                    "<m:UserName soapenv:mustUnderstand=\"0\" xmlns:m=\"http://mutualssl.carbon.wso2.org\" " +
-                            "xmlns:soapenv=\"http://www.w3.org/2001/12/soap-envelope\" >'" + tenantAdminUser +
-                            "'</m:UserName>";
-
-            InputStream is = new ByteArrayInputStream(strHeader.getBytes());
-            OMElement header = OMXMLBuilderFactory.createOMBuilder(is).getDocumentElement();
+            String authValue =  AUTHORIZATION_HEADER_VALUE + " " + new String(Base64.encodeBase64(
+                    jwtClient.getJwtToken(tenantAdminUser).getBytes()));
 
             List<Header> list = new ArrayList<Header>();
             Header httpHeader = new Header();
-            httpHeader.setName(USER_NAME_HEADER);
-            byte[] encodedBytes = Base64.encodeBase64(tenantAdminUser.getBytes());
-            httpHeader.setValue(new String(encodedBytes));
+            httpHeader.setName(AUTHORIZATION_HEADER);
+            httpHeader.setValue(authValue);
             list.add(httpHeader);//"https"
 
             File directory = new File(CAR_FILE_LOCATION + File.separator + type);
@@ -153,7 +151,6 @@ public class DeviceTypePublisherAdminServiceImpl implements DeviceTypePublisherA
                 if (uploadedFileItems.length > 0) {
                     CarbonAppUploaderStub carbonAppUploaderStub = new CarbonAppUploaderStub(Utils.replaceSystemProperty(
                             IOT_MGT_URL));
-                    carbonAppUploaderStub._getServiceClient().addHeader(header);
                     Options appUploaderOptions = carbonAppUploaderStub._getServiceClient().getOptions();
                     if (appUploaderOptions == null) {
                         appUploaderOptions = new Options();
@@ -168,7 +165,6 @@ public class DeviceTypePublisherAdminServiceImpl implements DeviceTypePublisherA
 
                     if (!DEVICE_MANAGEMENT_TYPE.equals(type.toLowerCase())) {
                         carbonAppUploaderStub = new CarbonAppUploaderStub(Utils.replaceSystemProperty(DAS_URL));
-                        carbonAppUploaderStub._getServiceClient().addHeader(header);
                         appUploaderOptions = carbonAppUploaderStub._getServiceClient().getOptions();
                         if (appUploaderOptions == null) {
                             appUploaderOptions = new Options();
@@ -297,7 +293,7 @@ public class DeviceTypePublisherAdminServiceImpl implements DeviceTypePublisherA
     /**
      * Initializes the SSL Context
      */
-    private void initMutualSSLConnection() throws NoSuchAlgorithmException, UnrecoverableKeyException,
+    private void initSSLConnection() throws NoSuchAlgorithmException, UnrecoverableKeyException,
                                                   KeyStoreException, KeyManagementException {
         KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(KEY_MANAGER_TYPE);
         keyManagerFactory.init(keyStore, keyStorePassword);

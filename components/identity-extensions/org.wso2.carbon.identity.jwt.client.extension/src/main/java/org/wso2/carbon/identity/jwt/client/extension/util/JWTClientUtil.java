@@ -72,6 +72,10 @@ public class JWTClientUtil {
 	private static final String JWT_CONFIG_FILE_NAME = "jwt.properties";
 	private static final String SUPERTENANT_JWT_CONFIG_LOCATION =
 			CarbonUtils.getEtcCarbonConfigDirPath() + File.separator + JWT_CONFIG_FILE_NAME;
+    /**
+     * This is added for the carbon authenticator.
+     */
+    public static final String SIGNED_JWT_AUTH_USERNAME = "Username";
 
 	/**
 	 * Return a http client instance
@@ -226,10 +230,11 @@ public class JWTClientUtil {
 			claimsSet.setIssueTime(new Date(iat));
 			claimsSet.setExpirationTime(new Date(exp));
 			claimsSet.setIssuer(iss);
-			claimsSet.setSubject(username);
-			claimsSet.setNotBeforeTime(new Date(nbf));
+            claimsSet.setSubject(username);
+            claimsSet.setNotBeforeTime(new Date(nbf));
 			claimsSet.setJWTID(jti);
 			claimsSet.setAudience(aud);
+            claimsSet.setClaim(SIGNED_JWT_AUTH_USERNAME, username);
             if (customClaims != null && !customClaims.isEmpty()) {
                 for (String key : customClaims.keySet()) {
                     claimsSet.setClaim(key, customClaims.get(key));

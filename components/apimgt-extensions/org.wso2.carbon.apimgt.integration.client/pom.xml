@@ -46,6 +46,7 @@
 						<Private-Package>org.wso2.carbon.apimgt.integration.client.internal</Private-Package>
 						<Export-Package>
 							org.wso2.carbon.apimgt.integration.client.*,
+                            org.wso2.carbon.apimgt.integration.client.service.*,
 							!org.wso2.carbon.apimgt.integration.client.internal
 						</Export-Package>
 						<Import-Package>

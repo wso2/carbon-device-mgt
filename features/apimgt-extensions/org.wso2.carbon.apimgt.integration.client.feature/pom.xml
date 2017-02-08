@@ -109,10 +109,4 @@
 		</plugins>
 	</build>
 
-	<properties>
-		<carbon.p2.plugin.version>1.5.4</carbon.p2.plugin.version>
-		<carbon.kernel.version>4.4.10</carbon.kernel.version>
-		<io.github.openfeign.version>9.3.1</io.github.openfeign.version>
-	</properties>
-
 </project>

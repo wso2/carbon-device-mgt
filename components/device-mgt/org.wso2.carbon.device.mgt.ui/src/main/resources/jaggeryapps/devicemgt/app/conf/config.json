@@ -14,7 +14,7 @@
     "apiCloudWalkthroughURL": "https://api.clouddev.wso2.com/publisher?interactiveTutorial=true",
     "profileURL": "https://cloudmgt.clouddev.wso2.com/cloudmgt/site/pages/user-profile.jag",
     "changePasswordURL": "https://cloudmgt.clouddev.wso2.com/cloudmgt/site/pages/change-password.jag",
-    "logoutURL": "https://api.clouddev.wso2.com/publisher/site/pages/logout.jag",
+    "logoutURL": "https://devicemgt.cloud.wso2.com/devicemgt/logout",
     "apiCloudURL": "",
     "appCloudURL": "",
     "deviceCloudURL": "",

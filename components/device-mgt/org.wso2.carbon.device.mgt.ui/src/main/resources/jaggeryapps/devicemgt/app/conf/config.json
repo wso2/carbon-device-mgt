@@ -2,12 +2,12 @@
   "appContext": "/devicemgt/",
   "isCloud": false,
   "cloudConfig": {
-    "upgradeNowURL": "",
-    "monetizationURL": "",
-    "requestExtensionURL": "",
+    "upgradeNowURL": "https://cloudmgt.clouddev.wso2.com/cloudmgt/site/pages/payment-plans.jag?cloud-type=device_cloud",
+    "monetizationURL": "https://cloudmgt.clouddev.wso2.com/cloudmgt/site/pages/monetization-dashboard.jag",
+    "requestExtensionURL": "https://cloudmgt.clouddev.wso2.com/cloudmgt/site/pages/contact-us.jag?cloud-type=device_cloud&amp;request-extension=true",
     "publisherURL": "",
     "storeURL": "",
-    "contactUsURL": "",
+    "contactUsURL": "https://cloudmgt.clouddev.wso2.com/cloudmgt/site/pages/contact-us.jag",
     "apiCloudDocURL": "https://docs.wso2.com/display/APICloud/WSO2+API+Cloud+Documentation",
     "appCloudDocURL": "https://docs.wso2.com/display/AppCloud/WSO2+App+Cloud+Documentation",
     "deviceCloudDocURL": "https://docs.wso2.com/display/DeviceCloud/WSO2+Device+Cloud+Documentation",
@@ -18,8 +18,8 @@
     "apiCloudURL": "",
     "appCloudURL": "",
     "deviceCloudURL": "",
-    "oraganizationURL": "",
-    "membersURL": ""
+    "oraganizationURL": "https://cloudmgt.cloud.wso2.com/cloudmgt/site/pages/organization.jag",
+    "membersURL": "https://cloudmgt.cloud.wso2.com/cloudmgt/site/pages/user.jag"
   },
   "httpsURL": "https://%iot.gateway.host%:%iot.gateway.https.port%",
   "httpURL": "http://%iot.gateway.host%:%iot.gateway.http.port",

@@ -36,6 +36,7 @@ import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.device.mgt.core.service.GroupManagementProviderService;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
 import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.InputValidationException;
+import org.wso2.carbon.identity.jwt.client.extension.service.JWTClientManagerService;
 import org.wso2.carbon.policy.mgt.common.PolicyMonitoringTaskException;
 import org.wso2.carbon.policy.mgt.core.PolicyManagerService;
 import org.wso2.carbon.policy.mgt.core.task.TaskScheduleService;
@@ -166,6 +167,18 @@ public class DeviceMgtAPIUtils {
             throw new IllegalStateException(msg);
         }
         return registryService;
+    }
+
+    public static JWTClientManagerService getJWTClientManagerService() {
+        JWTClientManagerService jwtClientManagerService;
+        PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        jwtClientManagerService = (JWTClientManagerService) ctx.getOSGiService(JWTClientManagerService.class, null);
+        if (jwtClientManagerService == null) {
+            String msg = "jwtClientManagerServicehas not initialized.";
+            log.error(msg);
+            throw new IllegalStateException(msg);
+        }
+        return jwtClientManagerService;
     }
 
     /**

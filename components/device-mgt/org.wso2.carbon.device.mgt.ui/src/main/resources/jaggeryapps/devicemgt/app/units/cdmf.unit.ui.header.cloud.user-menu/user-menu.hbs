@@ -48,7 +48,7 @@
 
             <li>
                 <a title="Upgrade Now"
-                   href="https://cloudmgt.clouddev.wso2.com/cloudmgt/site/pages/payment-plans.jag?cloud-type=device_cloud"
+                   href="{{upgradeNowURL}}"
                    target="_self">
                     <i class="fw fw-export" title="Upgrade Now"></i> Upgrade Now
                 </a>
@@ -56,7 +56,7 @@
 
             <li>
                 <a title="Monetization"
-                   href="https://cloudmgt.clouddev.wso2.com/cloudmgt/site/pages/monetization-dashboard.jag"
+                   href="{{monetizationURL}}"
                    target="_self">
                     <i class="fa fa-money fa-lg" title="Monetization"></i> Monetization
                 </a>
@@ -64,7 +64,7 @@
 
             <li>
                 <a title="Request Extension"
-                   href="https://cloudmgt.clouddev.wso2.com/cloudmgt/site/pages/contact-us.jag?cloud-type=device_cloud&amp;request-extension=true"
+                   href="{{requestExtensionURL}}"
                    target="_blank">
                     <i class="fw fw-mail" title="Request Extension"></i> Request Extension
                 </a>
@@ -82,20 +82,20 @@
             <span class="hidden-xs">
                         App Management
             </span>
-            <!--<span class="caret"></span>-->
+            <span class="caret"></span>
         </a>
 
         <ul class="dropdown-menu dropdown-menu-right float-remove-xs position-static-xs text-center-xs remove-margin-xs slideInDown"
             role="menu">
             <li class="visible-inline-block">
-                <a title="Mobile App Publisher" href="https://devicemgt.clouddev.wso2.com/publisher"
+                <a title="Mobile App Publisher" href="{{publisherURL}}"
                    target="_self">
                     <i class="fw fw-user" title="Mobilr App Publisher"></i> App Publisher
                 </a>
             </li>
 
             <li class="visible-inline-block">
-                <a title="App Store " href="https://devicemgt.clouddev.wso2.com/store"
+                <a title="App Store " href="{{storeURL}}"
                    target="_self">
                     <i class="fw fw-store" title="App Store"></i> App Store
                 </a>
@@ -105,7 +105,7 @@
     </li>
 
     <li class="visible-inline-block">
-        <a href="https://cloudmgt.clouddev.wso2.com/cloudmgt/site/pages/contact-us.jag" target="_self"
+        <a href="{{contactUsURL}}" target="_self"
            title="Support">
 
 
@@ -136,7 +136,7 @@
 
             <li>
                 <a title="API Cloud"
-                   href="https://docs.wso2.com/display/APICloud/WSO2+API+Cloud+Documentation"
+                   href="{{apiCloudDocURL}}"
                    target="_blank">
                     <i class="fw fw-api" title="API Cloud"></i> API Cloud
                 </a>
@@ -144,15 +144,15 @@
 
             <li>
                 <a title="App Cloud"
-                   href="https://docs.wso2.com/display/AppCloud/WSO2+App+Cloud+Documentation"
+                   href="{{appCloudDocURL}}"
                    target="_blank">
                     <i class="fw fw-application" title="App Cloud"></i> App Cloud
                 </a>
             </li>
 
             <li>
-                <a title="App Cloud"
-                   href="https://docs.wso2.com/display/AppCloud/WSO2+Device+Cloud+Documentation"
+                <a title="Device Cloud"
+                   href="{{deviceCloudDocURL}}"
                    target="_blank">
                     <i class="fw fw-application" title="App Cloud"></i> Device Cloud
                 </a>
@@ -160,7 +160,7 @@
 
             <li>
                 <a title="API Cloud Walkthrough"
-                   href="https://api.clouddev.wso2.com/publisher?interactiveTutorial=true"
+                   href="{{apiCloudWalkthroughURL}}"
                    target="_self">
                     <i class="fw fw-document" title="API Cloud Walkthrough"></i> API Cloud Walkthrough
                 </a>
@@ -187,7 +187,7 @@
 
             <li>
                 <a title="Profile"
-                   href="https://cloudmgt.clouddev.wso2.com/cloudmgt/site/pages/user-profile.jag"
+                   href="{{profileURL}}"
                    target="_self">
                     <i class="fw fw-user" title="Profile"></i> Profile
                 </a>
@@ -195,14 +195,14 @@
 
             <li>
                 <a title="Change Password"
-                   href="https://cloudmgt.clouddev.wso2.com/cloudmgt/site/pages/change-password.jag"
+                   href="{{changePasswordURL}}"
                    target="_self">
                     <i class="fw fw-lock" title="Change Password"></i> Change Password
                 </a>
             </li>
 
             <li>
-                <a title="Logout" href="https://api.clouddev.wso2.com/publisher/site/pages/logout.jag"
+                <a title="Logout" href="{{logoutURL}}"
                    target="_self">
                     <i class="fw fw-sign-out" title="Logout"></i> Logout
                 </a>
@@ -229,17 +229,17 @@
     <div id="popover-content" class="hide">
         <div class="cloud-apps">
 
-            <a href="https://api.cloud.wso2.com/publisher" target="_self" class="cloud-block add-padding-top-3x">
+            <a href="{{apiCloudURL}}https://api.cloud.wso2.com/publisher" target="_self" class="cloud-block add-padding-top-3x">
                 <i class="fw fw-api fw-3x"></i>
                 <div class="cloud-name">API Cloud</div>
             </a>
 
-            <a href="https://apps.cloud.wso2.com/appmgt" target="_self" class="cloud-block add-padding-top-3x">
+            <a href="{{appCloudURL}}https://apps.cloud.wso2.com/appmgt" target="_self" class="cloud-block add-padding-top-3x">
                 <i class="fw fw-application fw-3x"></i>
                 <div class="cloud-name">App Cloud</div>
             </a>
 
-            <a href="https://devicemgt.cloud.wso2.com/devicemgt" target="_self" class="cloud-block add-padding-top-3x">
+            <a href="{{deviceCloudURL}}https://devicemgt.cloud.wso2.com/devicemgt" target="_self" class="cloud-block add-padding-top-3x">
                 <i class="fw fw-mobile fw-3x"></i>
                 <div class="cloud-name">Device Cloud</div>
             </a>
@@ -249,12 +249,12 @@
         <div class="cloud-actions">
             <h3>Manage your cloud</h3>
 
-            <a href="https://cloudmgt.cloud.wso2.com/cloudmgt/site/pages/organization.jag" target="_self" class="cloud-block-invert add-padding-top-3x">
+            <a href="{{oraganizationURL}}https://cloudmgt.cloud.wso2.com/cloudmgt/site/pages/organization.jag" target="_self" class="cloud-block-invert add-padding-top-3x">
                 <i class="fw fw-organization  fw-3x"></i>
                 <div class="cloud-name">Organization</div>
             </a>
 
-            <a href="https://cloudmgt.cloud.wso2.com/cloudmgt/site/pages/user.jag" target="_self" class="cloud-block-invert add-padding-top-3x">
+            <a href="{{membersURL}}https://cloudmgt.cloud.wso2.com/cloudmgt/site/pages/user.jag" target="_self" class="cloud-block-invert add-padding-top-3x">
                 <i class="fa fa-users  fa-3x"></i>
                 <div class="cloud-name">Members</div>
             </a>

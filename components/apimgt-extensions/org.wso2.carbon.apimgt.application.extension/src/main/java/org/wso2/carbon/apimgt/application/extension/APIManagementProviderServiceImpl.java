@@ -104,10 +104,12 @@ public class APIManagementProviderServiceImpl implements APIManagementProviderSe
 
                 if (apiList.getList() != null && apiList.getList().size() > 0) {
                     for (APIInfo apiInfo : apiList.getList()) {
+                        String id = apiInfo.getProvider().replace("@", "-AT-")
+                                + "-" + apiInfo.getName()+ "-" + apiInfo.getVersion();
                         boolean subscriptionExist = false;
                         if (subscriptionList.getList() != null && subscriptionList.getList().size() > 0) {
                             for (Subscription subs : subscriptionList.getList()) {
-                                if (subs.getApiIdentifier().equals(apiInfo.getId())) {
+                                if (subs.getApiIdentifier().equals(id)) {
                                     subscriptionExist = true;
                                     break;
                                 }
@@ -116,8 +118,7 @@ public class APIManagementProviderServiceImpl implements APIManagementProviderSe
                         if (!subscriptionExist) {
                             Subscription subscription = new Subscription();
                             //fix for APIMANAGER-5566 admin-AT-tenant1.com-Tenant1API1-1.0.0
-                            String id = apiInfo.getProvider().replace("@", "-AT-")
-                                    + "-" + apiInfo.getName()+ "-" + apiInfo.getVersion();
+
                             subscription.setApiIdentifier(id);
                             subscription.setApplicationId(application.getApplicationId());
                             subscription.tier(ApiApplicationConstants.DEFAULT_TIER);

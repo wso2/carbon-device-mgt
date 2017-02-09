@@ -30,11 +30,11 @@ public class ExtendedAnnotationDB extends AnnotationDB {
     }
 
     public void scanArchives(URL... urls) throws IOException {
-        URL[] arr$ = urls;
-        int len$ = urls.length;
+        URL[] arr = urls;
+        int len = urls.length;
 
-        for(int i$ = 0; i$ < len$; ++i$) {
-            URL url = arr$[i$];
+        for(int i = 0; i < len; ++i) {
+            URL url = arr[i];
             Filter filter = new Filter() {
                 public boolean accepts(String filename) {
                     if(filename.endsWith(".class")) {
@@ -60,16 +60,16 @@ public class ExtendedAnnotationDB extends AnnotationDB {
     }
 
     private boolean ignoreScan(String intf) {
-        String[] arr$;
-        int len$;
-        int i$;
+        String[] arr;
+        int len;
+        int i;
         String ignored;
         if(this.scanPackages != null) {
-            arr$ = this.scanPackages;
-            len$ = arr$.length;
+            arr = this.scanPackages;
+            len = arr.length;
 
-            for(i$ = 0; i$ < len$; ++i$) {
-                ignored = arr$[i$];
+            for(i = 0; i < len; ++i) {
+                ignored = arr[i];
                 if(intf.startsWith(ignored + ".")) {
                     return false;
                 }
@@ -77,11 +77,11 @@ public class ExtendedAnnotationDB extends AnnotationDB {
 
             return true;
         } else {
-            arr$ = this.ignoredPackages;
-            len$ = arr$.length;
+            arr = this.ignoredPackages;
+            len = arr.length;
 
-            for(i$ = 0; i$ < len$; ++i$) {
-                ignored = arr$[i$];
+            for(i = 0; i < len; ++i) {
+                ignored = arr[i];
                 if(intf.startsWith(ignored + ".")) {
                     return true;
                 }

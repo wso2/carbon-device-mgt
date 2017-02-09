@@ -21,7 +21,7 @@ package org.wso2.carbon.apimgt.webapp.publisher;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.apimgt.api.model.API;
+import org.wso2.carbon.apimgt.webapp.publisher.exception.APIManagerPublisherException;
 import org.wso2.carbon.apimgt.webapp.publisher.internal.APIPublisherDataHolder;
 import org.wso2.carbon.core.ServerStartupObserver;
 
@@ -33,8 +33,8 @@ public class APIPublisherStartupHandler implements ServerStartupObserver {
     private static int retryTime = 2000;
     private static final int CONNECTION_RETRY_FACTOR = 2;
     private static final int MAX_RETRY_COUNT = 5;
-    private static Stack<API> failedAPIsStack = new Stack<>();
-    private static Stack<API> currentAPIsStack;
+    private static Stack<APIConfig> failedAPIsStack = new Stack<>();
+    private static Stack<APIConfig> currentAPIsStack;
 
     private APIPublisherService publisher;
 
@@ -64,7 +64,7 @@ public class APIPublisherStartupHandler implements ServerStartupObserver {
                     } catch (InterruptedException te) {
                         //do nothing.
                     }
-                    Stack<API> failedApis;
+                    Stack<APIConfig> failedApis;
                     if (!APIPublisherDataHolder.getInstance().getUnpublishedApis().isEmpty()) {
                         publishAPIs(currentAPIsStack, failedAPIsStack);
                         failedApis = failedAPIsStack;
@@ -77,8 +77,8 @@ public class APIPublisherStartupHandler implements ServerStartupObserver {
                         StringBuilder error = new StringBuilder();
                         error.append("Error occurred while publishing API ['");
                         while (!failedApis.isEmpty()) {
-                            API api = failedApis.pop();
-                            error.append(api.getId().getApiName() + ",");
+                            APIConfig api = failedApis.pop();
+                            error.append(api.getName() + ",");
                         }
                         error.append("']");
                         log.error(error.toString());
@@ -90,12 +90,13 @@ public class APIPublisherStartupHandler implements ServerStartupObserver {
         t.start();
     }
 
-    private void publishAPIs(Stack<API> apis, Stack<API> failedStack) {
+    private void publishAPIs(Stack<APIConfig> apis, Stack<APIConfig> failedStack) {
         while (!apis.isEmpty()) {
-            API api = apis.pop();
+            APIConfig api = apis.pop();
             try {
                 publisher.publishAPI(api);
-            } catch (Exception e) {
+            } catch (APIManagerPublisherException e) {
+                log.error("failed to publish api.", e);
                 failedStack.push(api);
             }
         }

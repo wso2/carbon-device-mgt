@@ -1966,6 +1966,68 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         return false;
     }
 
+    /**
+     * Change device status.
+     *
+     * @param deviceIdentifier {@link DeviceIdentifier} object
+     * @param newStatus        New status of the device
+     * @return Whether status is changed or not
+     * @throws DeviceManagementException on errors while trying to change device status
+     */
+    @Override
+    public boolean changeDeviceStatus(DeviceIdentifier deviceIdentifier, EnrolmentInfo.Status newStatus)
+            throws DeviceManagementException {
+        boolean isDeviceUpdated = false;
+        Device device = getDevice(deviceIdentifier);
+        int deviceId = device.getId();
+        EnrolmentInfo enrolmentInfo = device.getEnrolmentInfo();
+        enrolmentInfo.setStatus(newStatus);
+        int tenantId = this.getTenantId();
+        switch (newStatus) {
+            case ACTIVE:
+                isDeviceUpdated = updateEnrollment(deviceId, enrolmentInfo, tenantId);
+                break;
+            case INACTIVE:
+                isDeviceUpdated = updateEnrollment(deviceId, enrolmentInfo, tenantId);
+                break;
+            case REMOVED:
+                isDeviceUpdated = disenrollDevice(deviceIdentifier);
+                break;
+            default:
+                throw new DeviceManagementException("Invalid status retrieved. Status : " + newStatus);
+        }
+        return isDeviceUpdated;
+    }
+
+    private boolean updateEnrollment(int deviceId, EnrolmentInfo enrolmentInfo, int tenantId)
+            throws DeviceManagementException {
+        boolean isUpdatedEnrollment = false;
+        boolean isAutoCommit = true;
+        try {
+            DeviceManagementDAOFactory.openConnection();
+            isAutoCommit = DeviceManagementDAOFactory.getConnection().getAutoCommit();
+            DeviceManagementDAOFactory.getConnection().setAutoCommit(true);
+            int updatedRows = enrollmentDAO.updateEnrollment(deviceId, enrolmentInfo, tenantId);
+            if (updatedRows > 0) {
+                isUpdatedEnrollment = true;
+            }
+        } catch (SQLException e) {
+            throw new DeviceManagementException("Error occurred while opening a connection to the data source", e);
+        } catch (DeviceManagementDAOException e) {
+            throw new DeviceManagementException("Error occurred while updating the enrollment information device for" +
+                                                        "id '" + deviceId + "' ." , e);
+        } finally {
+            try {
+                DeviceManagementDAOFactory.getConnection().setAutoCommit(isAutoCommit);
+            } catch (SQLException e) {
+                log.error("Exception occurred while setting auto commit.");
+            }
+            DeviceManagementDAOFactory.closeConnection();
+        }
+        return isUpdatedEnrollment;
+    }
+
+
     private int getTenantId() {
         return CarbonContext.getThreadLocalCarbonContext().getTenantId();
     }

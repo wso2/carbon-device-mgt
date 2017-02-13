@@ -1,5 +1,6 @@
 {
     "appContext": "/devicemgt/",
+    "isCloud": false,
     "httpsURL" : "https://%iot.gateway.host%:%iot.gateway.https.port%",
     "httpURL" : "http://%iot.gateway.host%:%iot.gateway.http.port",
     "wssURL" : "https://%iot.analytics.host%:%iot.analytics.https.port%",
@@ -82,6 +83,7 @@
         "perm:get-activity",
         "perm:devices:delete",
         "perm:devices:applications",
+        "perm:devices:change-status",
         "perm:devices:effective-policy",
         "perm:devices:compliance-data",
         "perm:devices:features",

@@ -18,32 +18,42 @@
  */
 package org.wso2.carbon.device.mgt.jaxrs.service.api;
 
-import io.swagger.annotations.SwaggerDefinition;
-import io.swagger.annotations.Info;
-import io.swagger.annotations.ExtensionProperty;
-import io.swagger.annotations.Extension;
-import io.swagger.annotations.Tag;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.Extension;
+import io.swagger.annotations.ExtensionProperty;
+import io.swagger.annotations.Info;
 import io.swagger.annotations.ResponseHeader;
+import io.swagger.annotations.SwaggerDefinition;
+import io.swagger.annotations.Tag;
 import org.wso2.carbon.apimgt.annotations.api.Scope;
 import org.wso2.carbon.apimgt.annotations.api.Scopes;
 import org.wso2.carbon.device.mgt.common.Device;
+import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
 import org.wso2.carbon.device.mgt.common.Feature;
 import org.wso2.carbon.device.mgt.common.app.mgt.Application;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
+import org.wso2.carbon.device.mgt.common.policy.mgt.Policy;
+import org.wso2.carbon.device.mgt.common.policy.mgt.monitor.NonComplianceData;
 import org.wso2.carbon.device.mgt.common.search.SearchContext;
 import org.wso2.carbon.device.mgt.jaxrs.beans.DeviceList;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
 import org.wso2.carbon.device.mgt.jaxrs.util.Constants;
-import org.wso2.carbon.device.mgt.common.policy.mgt.Policy;
-import org.wso2.carbon.device.mgt.common.policy.mgt.monitor.NonComplianceData;
 
 import javax.validation.constraints.Size;
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -126,7 +136,13 @@ import javax.ws.rs.core.Response;
                         description = "Getting Policy Compliance Details of a Device",
                         key = "perm:devices:compliance-data",
                         permissions = {"/device-mgt/devices/owning-device/view"}
-                )
+                ),
+                @Scope(
+                name = "Change device status.",
+                description = "Change device status.",
+                key = "perm:devices:change-status",
+                permissions = {"/device-mgt/devices/change-status"}
+        ),
         }
 )
 @Path("/devices")
@@ -141,7 +157,7 @@ public interface DeviceManagementService {
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
             value = "Getting Details of Registered Devices",
-            notes = "Provides details of all the devices enrolled with WSO2 EMM.",
+            notes = "Provides details of all the devices enrolled with WSO2 IoT Server.",
             tags = "Device Management",
             extensions = {
             @Extension(properties = {
@@ -266,6 +282,71 @@ public interface DeviceManagementService {
             @QueryParam("limit")
             int limit);
 
+    @GET
+    @ApiOperation(
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "GET",
+            value = "Getting Details of Registered Devices owned by authenticated user",
+            notes = "Provides details of devices enrolled by authenticated user.",
+            tags = "Device Management",
+            extensions = {
+                    @Extension(properties = {
+                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:devices:view")
+                    })
+            }
+    )
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK. \n Successfully fetched the list of devices.",
+                    response = DeviceList.class,
+                    responseHeaders = {
+                            @ResponseHeader(
+                                    name = "Content-Type",
+                                    description = "The content type of the body"),
+                            @ResponseHeader(
+                                    name = "ETag",
+                                    description = "Entity Tag of the response resource.\n" +
+                                                  "Used by caches, or in conditional requests."),
+                            @ResponseHeader(
+                                    name = "Last-Modified",
+                                    description = "Date and time the resource was last modified.\n" +
+                                                  "Used by caches, or in conditional requests."),
+                    }),
+            @ApiResponse(
+                    code = 304,
+                    message = "Not Modified. \n Empty body because the client already has the latest version of " +
+                              "the requested resource.\n"),
+            @ApiResponse(
+                    code = 400,
+                    message = "The incoming request has more than one selection criteria defined via the query parameters.",
+                    response = ErrorResponse.class),
+            @ApiResponse(
+                    code = 404,
+                    message = "The search criteria did not match any device registered with the server.",
+                    response = ErrorResponse.class),
+            @ApiResponse(
+                    code = 406,
+                    message = "Not Acceptable.\n The requested media type is not supported."),
+            @ApiResponse(
+                    code = 500,
+                    message = "Internal Server Error. \n Server error occurred while fetching the device list.",
+                    response = ErrorResponse.class)
+    })
+    @Path("/user-devices")
+    Response getDeviceByUser(
+            @ApiParam(
+                    name = "offset",
+                    value = "The starting pagination index for the complete list of qualified items.",
+                    required = false,
+                    defaultValue = "0")
+            @QueryParam("offset")
+                    int offset,
+            @ApiParam(
+                    name = "limit",
+                    value = "Provide how many device details you require from the starting pagination index/offset.",
+                    required = false,
+                    defaultValue = "5")
+            @QueryParam("limit")
+                    int limit);
 
     @GET
     @Path("/{type}/{id}")
@@ -321,9 +402,8 @@ public interface DeviceManagementService {
     Response getDevice(
             @ApiParam(
                     name = "type",
-                    value = "The device type, such as ios, android or windows.",
-                    required = true,
-                    allowableValues = "android, ios, windows")
+                    value = "The device type name, such as ios, android, windows or fire-alarm.",
+                    required = true)
             @PathParam("type")
             @Size(max = 45)
             String type,
@@ -556,9 +636,8 @@ public interface DeviceManagementService {
     Response getFeaturesOfDevice(
             @ApiParam(
                     name = "type",
-                    value = "The device type, such as ios, android or windows.",
-                    required = true,
-                    allowableValues = "android, ios, windows")
+                    value = "The device type name, such as ios, android, windows or fire-alarm.",
+                    required = true)
             @PathParam("type")
             @Size(max = 45)
             String type,
@@ -723,9 +802,8 @@ public interface DeviceManagementService {
     Response getInstalledApplications(
             @ApiParam(
                     name = "type",
-                    value = "The device type, such as ios, android or windows.",
-                    required = true,
-                    allowableValues = "android, ios, windows")
+                    value = "The device type name, such as ios, android, windows or fire-alarm.",
+                    required = true)
             @PathParam("type")
             @Size(max = 45)
             String type,
@@ -825,9 +903,8 @@ public interface DeviceManagementService {
     Response getDeviceOperations(
             @ApiParam(
                     name = "type",
-                    value = "The device type, such as ios, android or windows.",
-                    required = true,
-                    allowableValues = "android, ios, windows")
+                    value = "The device type name, such as ios, android, windows or fire-alarm.",
+                    required = true)
             @PathParam("type")
             @Size(max = 45)
             String type,
@@ -936,9 +1013,8 @@ public interface DeviceManagementService {
     Response getEffectivePolicyOfDevice(
             @ApiParam(
                     name = "type",
-                    value = "The device type, such as ios, android or windows.",
-                    required = true,
-                    allowableValues = "android, ios, windows")
+                    value = "The device type name, such as ios, android, windows or fire-alarm.",
+                    required = true)
             @PathParam("type")
             @Size(max = 45)
             String type,
@@ -1005,4 +1081,79 @@ public interface DeviceManagementService {
             @PathParam("id")
             @Size(max = 45)
             String id);
+
+    @PUT
+    @Path("/{type}/{id}/changestatus")
+    @ApiOperation(
+            produces = MediaType.APPLICATION_JSON,
+            consumes = MediaType.APPLICATION_JSON,
+            httpMethod = "PUT",
+            value = "Change device status by device id.",
+            notes = "Returns the status of the changed device operation.",
+            tags = "Device Management",
+            extensions = {
+                    @Extension(properties = {
+                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:devices:change-status")
+                    })
+            }
+    )
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            code = 200,
+                            message = "OK. \n Successfully changed the device status.",
+                            response = Device.class,
+                            responseHeaders = {
+                                    @ResponseHeader(
+                                            name = "Content-Type",
+                                            description = "The content type of the body"),
+                                    @ResponseHeader(
+                                            name = "ETag",
+                                            description = "Entity Tag of the response resource.\n" +
+                                                    "Used by caches, or in conditional requests."),
+                                    @ResponseHeader(
+                                            name = "Last-Modified",
+                                            description = "Date and time the resource has been modified the last time.\n" +
+                                                    "Used by caches, or in conditional requests."),
+                            }),
+                    @ApiResponse(
+                            code = 304,
+                            message = "Not Modified. Empty body because the client already has the latest " +
+                                    "version of the requested resource."),
+                    @ApiResponse(
+                            code = 400,
+                            message = "Bad Request. \n Invalid request or validation error.",
+                            response = ErrorResponse.class),
+                    @ApiResponse(
+                            code = 404,
+                            message = "Not Found. \n No device is found under the provided type and id.",
+                            response = ErrorResponse.class),
+                    @ApiResponse(
+                            code = 500,
+                            message = "Internal Server Error. \n " +
+                                    "Server error occurred while retrieving information requested device.",
+                            response = ErrorResponse.class)
+            })
+    Response changeDeviceStatus(
+            @ApiParam(
+                    name = "type",
+                    value = "The device type, such as ios, android or windows.",
+                    required = true)
+            @PathParam("type")
+            @Size(max = 45)
+                    String type,
+            @ApiParam(
+                    name = "id",
+                    value = "Device id",
+                    required = true)
+            @PathParam("id")
+            @Size(max = 45)
+                    String id,
+            @ApiParam(
+                    name = "newStatus",
+                    value = "New status of the device.",
+                    required = true)
+            @QueryParam("newStatus")
+                    EnrolmentInfo.Status newStatus);
+
 }

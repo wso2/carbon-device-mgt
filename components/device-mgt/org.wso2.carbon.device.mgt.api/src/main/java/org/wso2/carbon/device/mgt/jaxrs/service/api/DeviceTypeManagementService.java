@@ -192,9 +192,8 @@ public interface DeviceTypeManagementService {
     Response getFeatures(
             @ApiParam(
                     name = "type",
-                    value = "The device type, such as ios, android or windows.",
-                    required = true,
-                    allowableValues = "android, ios, windows")
+                    value = "The device type name, such as ios, android, windows or fire-alarm.",
+                    required = true)
             @PathParam("type")
             @Size(max = 45)
                     String type,

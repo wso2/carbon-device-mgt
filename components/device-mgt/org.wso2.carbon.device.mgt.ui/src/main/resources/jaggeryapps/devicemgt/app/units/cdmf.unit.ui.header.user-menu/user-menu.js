@@ -17,14 +17,8 @@
  */
 
 function onRequest(context) {
-    var constants = require("/app/modules/constants.js");
-    var user = context.user;
-    var isSuperTenant = false;
-    if (user.tenantId == -1234){
-        isSuperTenant = true;
-    }
+    var mdmProps = require("/app/modules/conf-reader/main.js")["conf"];
     var viewModal = {};
-    viewModal.isSuperTenant = isSuperTenant;
-    viewModal.USER_SESSION_KEY = session.get(constants["USER_SESSION_KEY"]);
+    viewModal.isCloud = mdmProps["isCloud"];
     return viewModal;
 }

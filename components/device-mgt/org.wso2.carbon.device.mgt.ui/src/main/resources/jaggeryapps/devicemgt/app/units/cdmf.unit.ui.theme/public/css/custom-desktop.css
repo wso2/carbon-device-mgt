@@ -6551,6 +6551,23 @@ select > option:hover {
 
 /**
  *
+ * Temporary navigation color fix for IoT cloud release
+ *
+ */
+
+header.header-default {
+  background: #181e22 !important;
+  height: 50px;
+}
+
+.navbar-collapse {
+  background: #37474F;
+}
+
+/** End **/
+
+/**
+ *
  * Temporary responsive fix for table listing action button width issue
  * Todo : Move responsive style to theme.less file
  *

@@ -307,4 +307,6 @@ public interface DeviceManagementProviderService {
 
     PolicyMonitoringManager getPolicyMonitoringManager(String deviceType);
 
+    List<Integer> getDeviceEnrolledTenants() throws DeviceManagementException;
+
 }

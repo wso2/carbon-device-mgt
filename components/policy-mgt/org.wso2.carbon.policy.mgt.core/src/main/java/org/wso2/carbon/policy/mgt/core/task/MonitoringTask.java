@@ -32,6 +32,10 @@ import org.wso2.carbon.policy.mgt.core.internal.PolicyManagementDataHolder;
 import org.wso2.carbon.policy.mgt.core.mgt.MonitoringManager;
 import org.wso2.carbon.user.api.Tenant;
 import org.wso2.carbon.user.api.UserStoreException;
+import org.wso2.carbon.device.mgt.common.DeviceManagementException;
+import org.wso2.carbon.device.mgt.common.policy.mgt.monitor.PolicyComplianceException;
+import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
+import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderServiceImpl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,15 +65,22 @@ public class MonitoringTask implements Task {
         }
 
         try {
-            Tenant tenants[] = PolicyManagementDataHolder.getInstance().
-                    getRealmService().getTenantManager().getAllTenants();
+//            Tenant tenants[] = PolicyManagementDataHolder.getInstance().
+//                    getRealmService().getTenantManager().getAllTenants();
 
-            for (Tenant tenant : tenants) {
+           // for (Tenant tenant : tenants) {
 
+
+            DeviceManagementProviderService deviceManagementService = new DeviceManagementProviderServiceImpl();
+            List<Integer> tenants = deviceManagementService.getDeviceEnrolledTenants();
+
+            for (Integer tenant : tenants) {
+                String tenantDomain = DeviceManagementDataHolder.getInstance().
+                        getRealmService().getTenantManager().getDomain(tenant);
                 try {
                     PrivilegedCarbonContext.startTenantFlow();
-                    PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(tenant.getDomain());
-                    PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(tenant.getId());
+                    PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(tenantDomain);
+                    PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(tenant);
 
                     MonitoringManager monitoringManager = PolicyManagementDataHolder.getInstance().getMonitoringManager();
                     List<String> deviceTypes = new ArrayList<>();
@@ -142,6 +153,8 @@ public class MonitoringTask implements Task {
 
         } catch (UserStoreException e) {
             log.error("Error occurred while trying to get the available tenants", e);
+        } catch (DeviceManagementException e) {
+            log.error("Error occurred while trying to get the available tenants from device manager service ", e);
         }
 
     }

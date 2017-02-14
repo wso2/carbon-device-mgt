@@ -71,7 +71,7 @@
                             org.wso2.carbon.device.mgt.core.*,
                             org.wso2.carbon.device.mgt.common.*,
                             org.wso2.carbon.ntask.*,
-                            org.wso2.carbon.caching.*
+                            org.wso2.carbon.caching.*,
                         </Import-Package>
                         <Export-Package>
                             !org.wso2.carbon.policy.mgt.core.internal,

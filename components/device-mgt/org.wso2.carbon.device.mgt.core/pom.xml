@@ -89,7 +89,6 @@
 							org.scannotation.*
                         </Import-Package>
                         <Export-Package>
-                            !org.wso2.carbon.device.mgt.core.internal,
                             org.wso2.carbon.device.mgt.core.*
                         </Export-Package>
                         <Embed-Dependency>

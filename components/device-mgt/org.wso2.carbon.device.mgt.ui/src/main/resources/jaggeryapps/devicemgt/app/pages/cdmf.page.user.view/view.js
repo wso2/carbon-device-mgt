@@ -20,6 +20,7 @@ function onRequest(context) {
     var userModule = require("/app/modules/business-controllers/user.js")["userModule"];
     var username = request.getParameter("username");
     var user = userModule.getUser(username)["content"];
+    var deviceMgtProps = require("/app/modules/conf-reader/main.js")["conf"];
 
     var userName = request.getParameter("username");
 
@@ -45,5 +46,8 @@ function onRequest(context) {
     if (userModule.isAuthorized("/permission/admin/device-mgt/users/view")) {
         canView = true;
     }
-    return {"user": user, "userRoles": userRoles, "devices": devices, "canView": canView};
+
+    var isCloud =  deviceMgtProps.isCloud;
+
+    return {"user": user, "userRoles": userRoles, "devices": devices, "canView": canView, "isCloud" : isCloud};
 }

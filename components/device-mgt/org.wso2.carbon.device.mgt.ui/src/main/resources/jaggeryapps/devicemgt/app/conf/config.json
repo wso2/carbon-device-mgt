@@ -83,6 +83,7 @@
         "perm:get-activity",
         "perm:devices:delete",
         "perm:devices:applications",
+        "perm:devices:change-status",
         "perm:devices:effective-policy",
         "perm:devices:compliance-data",
         "perm:devices:features",

@@ -25,6 +25,7 @@ import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
+import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
 import org.wso2.carbon.device.mgt.common.Feature;
 import org.wso2.carbon.device.mgt.common.FeatureManager;
 import org.wso2.carbon.device.mgt.common.PaginationRequest;
@@ -60,6 +61,7 @@ import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -537,4 +539,36 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
         }
     }
 
+    /**
+     * Change device status.
+     *
+     * @param type Device type
+     * @param id Device id
+     * @param newsStatus Device new status
+     * @return {@link Response} object
+     */
+    @PUT
+    @Path("/{type}/{id}/changestatus")
+    public Response changeDeviceStatus(@PathParam("type") @Size(max = 45) String type,
+                                       @PathParam("id") @Size(max = 45) String id,
+                                       @QueryParam("newStatus") EnrolmentInfo.Status newsStatus) {
+        RequestValidationUtil.validateDeviceIdentifier(type, id);
+        DeviceManagementProviderService deviceManagementProviderService =
+                DeviceMgtAPIUtils.getDeviceManagementService();
+        try {
+            DeviceIdentifier deviceIdentifier = new DeviceIdentifier(id, type);
+            Device persistedDevice = deviceManagementProviderService.getDevice(deviceIdentifier);
+            if (persistedDevice == null) {
+                return Response.status(Response.Status.NOT_FOUND).build();
+            }
+            boolean response = deviceManagementProviderService.changeDeviceStatus(deviceIdentifier, newsStatus);
+            return Response.status(Response.Status.OK).entity(response).build();
+        } catch (DeviceManagementException e) {
+            String msg = "Error occurred while changing device status of type : " + type + " and " +
+                    "device id : " + id;
+            log.error(msg);
+            return Response.status(Response.Status.BAD_REQUEST).entity(
+                    new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
+        }
+    }
 }

@@ -40,6 +40,7 @@ function onRequest() {
     viewModel.userCount = userModule.getUsersCount();
     viewModel.policyCount = policyModule.getPoliciesCount();
     viewModel.roleCount = userModule.getRolesCount();
+    viewModel.isCloud = devicemgtProps.isCloud;
 
     return viewModel;
 }

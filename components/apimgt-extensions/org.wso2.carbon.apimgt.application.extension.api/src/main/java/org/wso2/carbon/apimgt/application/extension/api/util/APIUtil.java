@@ -31,6 +31,7 @@ import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.user.core.service.RealmService;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -95,8 +96,13 @@ public class APIUtil {
         return deviceManagementProviderService;
     }
 
+    public static String[] getDefaultTags() throws DeviceManagementException {
+        String[] allowedApisTags = new String[1];
+        allowedApisTags[0] = DEFAULT_CDMF_API_TAG;
+        return allowedApisTags;
+    }
+
     public static List<String> getAllowedApisTags() throws DeviceManagementException {
-        //Todo get allowed cdmf service tags from config.
         List<String> allowedApisTags = getDeviceManagementProviderService().getAvailableDeviceTypes();
         allowedApisTags.add(DEFAULT_CDMF_API_TAG);
         allowedApisTags.add(DEFAULT_CERT_API_TAG);

@@ -22,6 +22,8 @@ import feign.Param;
 import feign.RequestLine;
 import org.wso2.carbon.apimgt.integration.client.store.model.Subscription;
 
+import java.util.List;
+
 
 @javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaClientCodegen", date = "2017-01-24T00:03:54.991+05:30")
 public interface SubscriptionindividualApi  {
@@ -41,6 +43,21 @@ public interface SubscriptionindividualApi  {
     "Content-Type: {contentType}"
   })
   Subscription subscriptionsPost(Subscription body, @Param("contentType") String contentType);
+
+    /**
+     * Add new subscriptions
+     * Add new subscriptions
+     * @param body Subscription objects that should to be added  (required)
+     * @param contentType Media type of the entity in the body. Default is JSON.  (required)
+     * @return Subscription
+     */
+    @RequestLine("POST /subscriptions/multiple")
+    @Headers({
+                     "Content-type: application/json",
+                     "Accept: application/json",
+                     "Content-Type: {contentType}"
+             })
+    List<Subscription> subscriptionsPost(List<Subscription> body, @Param("contentType") String contentType);
 
   /**
    * Remove subscription 

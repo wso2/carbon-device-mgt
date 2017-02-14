@@ -63,7 +63,7 @@ public class ApiApplicationRegistrationServiceImpl implements ApiApplicationRegi
             PrivilegedCarbonContext.getThreadLocalCarbonContext().setUsername(username);
             APIManagementProviderService apiManagementProviderService = APIUtil.getAPIManagementProviderService();
             ApiApplicationKey apiApplicationKey = apiManagementProviderService.generateAndRetrieveApplicationKeys(
-                    applicationName, APIUtil.getAllowedApisTags().toArray(new String[APIUtil.getAllowedApisTags().size()]),
+                    applicationName, APIUtil.getDefaultTags(),
                     ApiApplicationConstants.DEFAULT_TOKEN_TYPE, username, false,
                     ApiApplicationConstants.DEFAULT_VALIDITY_PERIOD);
             return Response.status(Response.Status.CREATED).entity(apiApplicationKey.toString()).build();

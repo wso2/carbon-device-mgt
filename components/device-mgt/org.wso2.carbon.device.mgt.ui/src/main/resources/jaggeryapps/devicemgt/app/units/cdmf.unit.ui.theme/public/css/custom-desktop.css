@@ -2028,6 +2028,7 @@ input[type=number].form-control {
 
 .thumbnail.icon img {
   width: 100%;
+  padding: 10px;
 }
 
 .table .icon-only{

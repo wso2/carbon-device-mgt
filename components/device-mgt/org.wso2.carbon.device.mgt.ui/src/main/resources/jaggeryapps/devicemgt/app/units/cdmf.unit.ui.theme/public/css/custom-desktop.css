@@ -2028,6 +2028,11 @@ input[type=number].form-control {
 
 .thumbnail.icon img {
   width: 100%;
+  padding: 10px;
+}
+
+.table .icon-only{
+  cursor: pointer;
 }
 
 /* ========================================================================
@@ -6548,6 +6553,27 @@ select > option:hover {
 .btn-operations:hover, .btn-operations:focus, .btn-operations:active {
     color : #C7C7C7;
 }
+
+/**
+ *
+ * Temporary navigation color fix for IoT cloud release
+ *
+ */
+
+header.header-default {
+  background: #181e22 !important;
+  height: 50px;
+}
+
+.navbar-collapse {
+  background: #37474F;
+}
+
+.dropdown-menu > li {
+  width: 100%;
+}
+
+/** End **/
 
 /**
  *

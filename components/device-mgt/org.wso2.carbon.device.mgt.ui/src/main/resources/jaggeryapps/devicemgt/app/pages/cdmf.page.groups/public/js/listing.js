@@ -185,7 +185,8 @@ function loadGroups() {
                 var html = '';
                 if ($.hasPermission("VIEW_GROUP_DEVICES")) {
                     html += '<a href="group/' + row.groupId
-                            + '/analytics" data-click-event="remove-form" class="btn padding-reduce-on-grid-view">' +
+                            + '/analytics" data-click-event="remove-form" class="btn padding-reduce-on-grid-view" ' +
+                            'data-placement="bottom" data-toggle="tooltip" data-original-title="Analytics">' +
                             '<span class="fw-stack"><i class="fw fw-circle-outline fw-stack-2x"></i><i class="fw fw-statistics fw-stack-1x"></i></span>'
                             +
                             '<span class="hidden-xs hidden-on-grid-view">Analytics</span></a>';
@@ -196,7 +197,7 @@ function loadGroups() {
                                 '<a href="#" data-click-event="remove-form" class="btn padding-reduce-on-grid-view share-group-link" data-group-id="'
                                 + row.groupId + '" ' +
                                 'data-group-owner="' + row.owner
-                                + '"><span class="fw-stack"><i class="fw fw-circle-outline fw-stack-2x"></i><i class="fw fw-share fw-stack-1x"></i></span>'
+                                + '" data-placement="bottom" data-toggle="tooltip" data-original-title="Share"><span class="fw-stack"><i class="fw fw-circle-outline fw-stack-2x"></i><i class="fw fw-share fw-stack-1x"></i></span>'
                                 +
                                 '<span class="hidden-xs hidden-on-grid-view">Share</span></a>';
                     }
@@ -206,7 +207,7 @@ function loadGroups() {
                                 + row.name + '" ' +
                                 'data-group-owner="' + row.owner + '" data-group-description="' + row.description
                                 + '" data-group-id="' + row.groupId
-                                + '"><span class="fw-stack"><i class="fw fw-circle-outline fw-stack-2x"></i>' +
+                                + '" data-placement="bottom" data-toggle="tooltip" data-original-title="Edit"><span class="fw-stack"><i class="fw fw-circle-outline fw-stack-2x"></i>' +
                                 '<i class="fw fw-edit fw-stack-1x"></i></span><span class="hidden-xs hidden-on-grid-view">Edit</span></a>';
                     }
                     if ($.hasPermission("REMOVE_GROUP")) {
@@ -214,7 +215,7 @@ function loadGroups() {
                                 '<a href="#" data-click-event="remove-form" class="btn padding-reduce-on-grid-view remove-group-link" data-group-id="'
                                 + row.groupId + '" ' +
                                 'data-group-owner="' + row.owner
-                                + '"><span class="fw-stack"><i class="fw fw-circle-outline fw-stack-2x"></i><i class="fw fw-delete fw-stack-1x"></i>'
+                                + '" data-placement="bottom" data-toggle="tooltip" data-original-title="Delete"><span class="fw-stack"><i class="fw fw-circle-outline fw-stack-2x"></i><i class="fw fw-delete fw-stack-1x"></i>'
                                 +
                                 '</span><span class="hidden-xs hidden-on-grid-view">Delete</span></a>';
                     }

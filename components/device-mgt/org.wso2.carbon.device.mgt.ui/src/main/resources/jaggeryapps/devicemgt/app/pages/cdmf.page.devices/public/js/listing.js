@@ -326,7 +326,7 @@ function loadDevices(searchType, searchParam) {
                     if (analyticsEnabled(row.deviceType)) {
                         html += '<a href="' + context + '/device/' + deviceType + '/analytics?deviceId=' +
                                 deviceIdentifier + '&deviceName=' + row.name + '" ' + 'data-click-event="remove-form"' +
-                                ' class="btn padding-reduce-on-grid-view"><span class="fw-stack">' +
+                                ' class="btn padding-reduce-on-grid-view" data-placement="bottom" data-toggle="tooltip" data-original-title="Analytics"><span class="fw-stack">' +
                                 '<i class="fw fw-circle-outline fw-stack-2x"></i><i class="fw fw-statistics fw-stack-1x"></i></span>' +
                                 '<span class="hidden-xs hidden-on-grid-view">Analytics</span>';
                     }
@@ -337,7 +337,7 @@ function loadDevices(searchType, searchParam) {
                                 +
                                 'data-deviceid="' + deviceIdentifier + '" data-devicetype="' + deviceType
                                 + '" data-devicename="' +
-                                row.name + '"><span class="fw-stack"><i class="fw fw-circle-outline fw-stack-2x"></i>' +
+                                row.name + '" data-placement="bottom" data-toggle="tooltip" data-original-title="Group"><span class="fw-stack"><i class="fw fw-circle-outline fw-stack-2x"></i>' +
                                 '<i class="fw fw-group fw-stack-1x"></i></span>' +
                                 '<span class="hidden-xs hidden-on-grid-view">Group</span></a>';
                     }
@@ -345,7 +345,7 @@ function loadDevices(searchType, searchParam) {
                     html +=
                             '<a href="#" data-click-event="remove-form" class="btn padding-reduce-on-grid-view edit-device-link" '
                             + 'data-deviceid="' + deviceIdentifier + '" data-devicetype="' + deviceType
-                            + '" data-devicename="' + row.name + '">'
+                            + '" data-devicename="' + row.name + '" data-placement="bottom" data-toggle="tooltip" data-original-title="Edit">'
                             + '<span class="fw-stack"><i class="fw fw-circle-outline fw-stack-2x"></i>'
                             + '<i class="fw fw-edit fw-stack-1x"></i></span>'
                             + '<span class="hidden-xs hidden-on-grid-view">Edit</span></a>';
@@ -354,7 +354,7 @@ function loadDevices(searchType, searchParam) {
                         html +=
                                 '<a href="#" data-click-event="remove-form" class="btn padding-reduce-on-grid-view remove-device-link" '
                                 + 'data-deviceid="' + deviceIdentifier + '" data-devicetype="' + deviceType
-                                + '" data-devicename="' + row.name + '">'
+                                + '" data-devicename="' + row.name + '" data-placement="bottom" data-toggle="tooltip" data-original-title="Remove from group">'
                                 + '<span class="fw-stack"><i class="fw fw-circle-outline fw-stack-2x"></i>'
                                 + '<i class="fw fw-delete fw-stack-1x"></i></span>'
                                 + '<span class="hidden-xs hidden-on-grid-view">Remove from group</span>';
@@ -362,7 +362,7 @@ function loadDevices(searchType, searchParam) {
                         html +=
                                 '<a href="#" data-click-event="remove-form" class="btn padding-reduce-on-grid-view remove-device-link" '
                                 + 'data-deviceid="' + deviceIdentifier + '" data-devicetype="' + deviceType
-                                + '" data-devicename="' + row.name + '">'
+                                + '" data-devicename="' + row.name + '" data-placement="bottom" data-toggle="tooltip" data-original-title="Delete">'
                                 + '<span class="fw-stack"><i class="fw fw-circle-outline fw-stack-2x"></i>'
                                 + '<i class="fw fw-delete fw-stack-1x"></i></span>'
                                 + '<span class="hidden-xs hidden-on-grid-view">Delete</span>';

@@ -30,6 +30,8 @@
             </a>
         </li>
     {{/if}}
+
+    {{#unless isCloud}}
     {{#if permissions.VIEW_DASHBOARD}}
         <li>
             <a href="javascript:statisticLoad('/portal/t/{{currentUser.domain}}/dashboards/device-statistics-dashboard/')">
@@ -57,6 +59,9 @@
             </div>
         </li>
     {{/if}}
+    {{/unless}}
+
+
     {{#if permissions.LIST_GROUPS}}
         <li>
             <a href="{{@app.context}}/groups">
@@ -81,6 +86,8 @@
     {{#if permissions.LIST_POLICIES}}
         <li><a href="{{@app.context}}/policies"><i class="fw fw-policy"></i>Policy Management</a></li>
     {{/if}}
+
+    {{#unless isCloud}}
     {{#if permissions.TENANT_CONFIGURATION}}
         <li><a><i class="fw fw-settings"></i>Configuration Management</a>
             <ul>
@@ -92,6 +99,10 @@
             </ul>
         </li>
     {{/if}}
+    {{/unless}}
+
+
+
 {{/zone}}
 
 {{#zone "navbarCollapsableRightItems"}}

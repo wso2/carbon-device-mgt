@@ -45,7 +45,7 @@ $(function () {
 
             var successCallback = function (jqXHR, status, resp) {
                 if (resp.status == 201) {
-                    $('.wr-validation-summary strong').text("Group created. You will be redirected to groups");
+                    $('.wr-validation-summary strong').text("Successfully created the group! You will be redirected to the group management page.");
                     $('.wr-validation-summary').removeClass("hidden");
                     $('.wr-validation-summary strong').removeClass("label-danger");
                     $('.wr-validation-summary strong').addClass("label-success");

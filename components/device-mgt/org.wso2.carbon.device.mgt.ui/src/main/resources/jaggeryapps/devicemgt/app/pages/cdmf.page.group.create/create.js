@@ -25,6 +25,7 @@
 function onRequest(context) {
     var devicemgtProps = require("/app/modules/conf-reader/main.js")["conf"];
     var page = {};
+    page["isCloud"] = devicemgtProps.isCloud;
     page["groupNameJSRegEx"] = devicemgtProps.groupValidationConfig.groupNameJSRegEx;
     page["groupNameRegExViolationErrorMsg"] = devicemgtProps.groupValidationConfig.groupNameRegExViolationErrorMsg;
     page["groupNameHelpMsg"] = devicemgtProps.groupValidationConfig.groupNameHelpMsg;

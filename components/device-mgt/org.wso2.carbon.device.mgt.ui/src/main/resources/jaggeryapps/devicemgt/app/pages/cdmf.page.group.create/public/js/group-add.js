@@ -45,13 +45,8 @@ $(function () {
 
             var successCallback = function (jqXHR, status, resp) {
                 if (resp.status == 201) {
-                    $('.wr-validation-summary strong').text("Successfully created the group! You will be redirected to the group management page.");
-                    $('.wr-validation-summary').removeClass("hidden");
-                    $('.wr-validation-summary strong').removeClass("label-danger");
-                    $('.wr-validation-summary strong').addClass("label-success");
-                    setTimeout(function () {
-                        window.location = "../groups";
-                    }, 1500);
+                    $("#group-create-form").addClass("hidden");
+                    $("#group-created-msg").removeClass("hidden");
                 } else {
                     displayErrors(resp.status);
                 }

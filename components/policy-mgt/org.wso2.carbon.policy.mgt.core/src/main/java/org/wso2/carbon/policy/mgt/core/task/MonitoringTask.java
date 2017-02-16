@@ -30,11 +30,8 @@ import org.wso2.carbon.ntask.core.Task;
 import org.wso2.carbon.device.mgt.common.policy.mgt.monitor.PolicyComplianceException;
 import org.wso2.carbon.policy.mgt.core.internal.PolicyManagementDataHolder;
 import org.wso2.carbon.policy.mgt.core.mgt.MonitoringManager;
-import org.wso2.carbon.user.api.Tenant;
 import org.wso2.carbon.user.api.UserStoreException;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
-import org.wso2.carbon.device.mgt.common.policy.mgt.monitor.PolicyComplianceException;
-import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderServiceImpl;
 
 import java.util.ArrayList;
@@ -65,17 +62,14 @@ public class MonitoringTask implements Task {
         }
 
         try {
-//            Tenant tenants[] = PolicyManagementDataHolder.getInstance().
-//                    getRealmService().getTenantManager().getAllTenants();
 
-           // for (Tenant tenant : tenants) {
-
-
+            PolicyManagementDataHolder.getInstance().
+                    getRealmService().getTenantManager().getAllTenants();
             DeviceManagementProviderService deviceManagementService = new DeviceManagementProviderServiceImpl();
             List<Integer> tenants = deviceManagementService.getDeviceEnrolledTenants();
 
             for (Integer tenant : tenants) {
-                String tenantDomain = DeviceManagementDataHolder.getInstance().
+                String tenantDomain = PolicyManagementDataHolder.getInstance().
                         getRealmService().getTenantManager().getDomain(tenant);
                 try {
                     PrivilegedCarbonContext.startTenantFlow();

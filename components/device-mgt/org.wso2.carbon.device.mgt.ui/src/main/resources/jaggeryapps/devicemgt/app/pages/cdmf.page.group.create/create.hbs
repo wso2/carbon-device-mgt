@@ -21,7 +21,7 @@
 
 {{#zone "content"}}
     <div class="container container-bg  white-bg">
-        <div class="col-md-12 col-lg-6 col-centered wr-content wr-login col-centered sign-panel">
+        <div class="col-md-12 col-lg-6 col-centered wr-content wr-login col-centered sign-panel" id="group-create-form">
 
             <p class="page-sub-title">Add New Group</p>
 
@@ -40,7 +40,7 @@
 		</span>
 
             <hr/>
-            <div class="form-login-box">
+            <div class="form-login-box" >
                 <label class="wr-input-label">Group Name</label>
 
                 <div class="form-group wr-input-control">
@@ -66,6 +66,26 @@
                 </div>
             </div>
         </div>
+
+        <div id="group-created-msg" class="container col-centered wr-content hidden">
+            <div class="wr-form">
+                <p class="page-sub-title">Group was created successfully.</p>
+
+                <br>Please click <b>"Add Another Group"</b>, if you wish to add another group or click
+                <b>"View Group List"</b> to complete the process and go back to the group list.
+                <hr/>
+                <button class="wr-btn" onclick="window.location.href='{{@app.context}}/groups'">View User List
+                </button>
+                <a href="{{@app.context}}/group/add" class="cu-btn-inner">
+                        <span class="fw-stack">
+                            <i class="fw fw-circle-outline fw-stack-2x"></i>
+                            <i class="fw fw-add fw-stack-1x"></i>
+                        </span>
+                    Add Another Group
+                </a>
+            </div>
+        </div>
+
     </div>
 {{/zone}}
 {{#zone "bottomJs"}}

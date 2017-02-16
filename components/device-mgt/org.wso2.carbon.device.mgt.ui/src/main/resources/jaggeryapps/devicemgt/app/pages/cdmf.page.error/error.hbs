@@ -17,22 +17,6 @@
 }}
 {{#zone "title"}}Error | {{@app.conf.appName}}{{/zone}}
 
-{{#zone "breadcrumbs"}}
-    <li>
-        <a href="{{@app.context}}/">
-            <i class="icon fw fw-home"></i>
-        </a>
-    </li>
-{{/zone}}
-
-{{#zone "content"}}
-    <div class="message message-danger">
-        <h4><i class="icon fw fw-error"></i>An Error Occurred!</h4>
-
-        <div style="padding-left: 25px;">
-            <h5><b>HTTP Status : {{@page.params.status}}</b></h5>
-
-            <p style="white-space: pre-wrap;">{{@page.params.message}}</p>
-        </div>
-    </div>
+{{#zone "messageDescription"}}
+    {{@page.params.status}} - {{@page.params.message}}
 {{/zone}}

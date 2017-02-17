@@ -61,14 +61,6 @@ $.fn.datatables_extended_serverside_paging = function (settings, url, dataFilter
             ordering: false,
             filter: false,
             bSortCellsTop: true,
-            fnInitComplete: function(){
-                //loading tooltips
-                if (typeof $.fn.tooltip == 'function') {
-                    $('[data-toggle="tooltip"]').tooltip();
-                } else {
-                    console.warn('Warning : Dependency missing - Bootstrap Tooltip Library');
-                }
-            },
             ajax: {
                 url: context + "/api/data-tables/invoker",
                 data: function (params) {
@@ -111,6 +103,14 @@ $.fn.datatables_extended_serverside_paging = function (settings, url, dataFilter
             fnCreatedRow: fnCreatedRow,
             "fnDrawCallback": fnDrawCallback,
             initComplete: function () {
+
+                //loading tooltips
+                if (typeof $.fn.tooltip == 'function') {
+                    $('[data-toggle="tooltip"]').tooltip();
+                } else {
+                    console.warn('Warning : Dependency missing - Bootstrap Tooltip Library');
+                }
+
                 this.api().columns().every(function () {
 
                     var column = this;

@@ -1,6 +1,6 @@
 {
   "appContext": "/devicemgt/",
-  "isCloud": false,
+  "isCloud": true,
   "cloudConfig": {
     "upgradeNowURL": "https://cloudmgt.clouddev.wso2.com/cloudmgt/site/pages/payment-plans.jag?cloud-type=device_cloud",
     "monetizationURL": "https://cloudmgt.clouddev.wso2.com/cloudmgt/site/pages/monetization-dashboard.jag",

@@ -18,6 +18,7 @@
 
 function onRequest(context) {
     var constants = require("/app/modules/constants.js");
+    var mdmProps = require("/app/modules/conf-reader/main.js")["conf"];
     var user = context.user;
     var isSuperTenant = false;
     if (user.tenantId == -1234){
@@ -26,5 +27,19 @@ function onRequest(context) {
     var viewModal = {};
     viewModal.isSuperTenant = isSuperTenant;
     viewModal.USER_SESSION_KEY = session.get(constants["USER_SESSION_KEY"]);
+    viewModal.isCloud = mdmProps.isCloud;
+    viewModal.contactUsURL = mdmProps.cloudConfig.contactUsURL;
+    viewModal.apiCloudDocURL = mdmProps.cloudConfig.apiCloudDocURL;
+    viewModal.appCloudDocURL = mdmProps.cloudConfig.appCloudDocURL;
+    viewModal.deviceCloudDocURL = mdmProps.cloudConfig.deviceCloudDocURL;
+    viewModal.apiCloudWalkthroughURL = mdmProps.cloudConfig.apiCloudWalkthroughURL;
+    viewModal.profileURL = mdmProps.cloudConfig.profileURL;
+    viewModal.changePasswordURL = mdmProps.cloudConfig.changePasswordURL;
+    viewModal.logoutURL = mdmProps.cloudConfig.logoutURL;
+    viewModal.apiCloudURL = mdmProps.cloudConfig.apiCloudURL;
+    viewModal.appCloudURL = mdmProps.cloudConfig.appCloudURL;
+    viewModal.deviceCloudURL = mdmProps.cloudConfig.deviceCloudURL;
+    viewModal.oraganizationURL = mdmProps.cloudConfig.oraganizationURL;
+    viewModal.membersURL = mdmProps.cloudConfig.membersURL;
     return viewModal;
 }

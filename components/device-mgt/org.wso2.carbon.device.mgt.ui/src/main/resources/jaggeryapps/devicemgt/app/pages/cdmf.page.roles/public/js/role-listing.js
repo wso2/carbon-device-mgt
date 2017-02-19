@@ -179,7 +179,7 @@ function loadRoles() {
                     '<span class="hidden-xs hidden-on-grid-view">Edit Permission</span>' +
                     '</a>';
 
-                    car removeLink = '<a data-role="' + data.name + '" ' +
+                    var removeLink = '<a data-role="' + data.name + '" ' +
                     'data-click-event="remove-form" ' +
                     'class="btn padding-reduce-on-grid-view remove-role-link">' +
                     '<span class="fw-stack">' +
@@ -189,7 +189,7 @@ function loadRoles() {
                     '<span class="hidden-xs hidden-on-grid-view">Remove</span>' +
                     '</a>';
 
-                if (!isCloud){
+                if (!isCloud) {
                     innerhtml = editLink + editPermissionLink + removeLink;
                 }
                 return innerhtml;

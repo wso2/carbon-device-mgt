@@ -6606,3 +6606,7 @@ header.header-default {
 }
 
 /** End **/
+
+.tooltip-overflow-fix{
+  overflow: visible !important;
+}

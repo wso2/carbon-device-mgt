@@ -48,7 +48,7 @@ var groupModule = {};
         }
         return serviceInvokers.XMLHttp.get(
                 endPoint, function (responsePayload) {
-                    return responsePayload["responseText"];
+                   return parse(responsePayload["responseText"]);
                 },
                 function (responsePayload) {
                     log.error(responsePayload["responseText"]);

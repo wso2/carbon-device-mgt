@@ -342,13 +342,13 @@ function loadDevices(searchType, searchParam) {
                                 '<span class="hidden-xs hidden-on-grid-view">Group</span></a>';
                     }
 
-                    html +=
-                            '<a href="#" data-click-event="remove-form" class="btn padding-reduce-on-grid-view edit-device-link" '
-                            + 'data-deviceid="' + deviceIdentifier + '" data-devicetype="' + deviceType
-                            + '" data-devicename="' + row.name + '" data-placement="top" data-toggle="tooltip" data-original-title="Edit">'
-                            + '<span class="fw-stack"><i class="fw fw-circle-outline fw-stack-2x"></i>'
-                            + '<i class="fw fw-edit fw-stack-1x"></i></span>'
-                            + '<span class="hidden-xs hidden-on-grid-view">Edit</span></a>';
+//                     html +=
+//                             '<a href="#" data-click-event="remove-form" class="btn padding-reduce-on-grid-view edit-device-link" '
+//                             + 'data-deviceid="' + deviceIdentifier + '" data-devicetype="' + deviceType
+//                             + '" data-devicename="' + row.name + '" data-placement="top" data-toggle="tooltip" data-original-title="Edit">'
+//                             + '<span class="fw-stack"><i class="fw fw-circle-outline fw-stack-2x"></i>'
+//                             + '<i class="fw fw-edit fw-stack-1x"></i></span>'
+//                             + '<span class="hidden-xs hidden-on-grid-view">Edit</span></a>';
                     var groupOwner = $('#group_owner').text();
                     if (groupId && groupOwner != "wso2.system.user") {
                         html +=
@@ -460,11 +460,12 @@ function loadDevices(searchType, searchParam) {
                 $("#loading-content").remove();
                 attachDeviceEvents();
 
-                if($('.advance-search').length < 1){
+                // Temporary disable
+                /*if($('.advance-search').length < 1){
                     $(this).closest('.dataTables_wrapper').find('div[id$=_filter] input')
                         .after('<a href="'+context+'/devices/search"' +
                             ' class="advance-search add-padding-3x">Advance Search</a>');
-                }
+                }*/
 
             }, {
                 "placeholder": "Search By Device Name",

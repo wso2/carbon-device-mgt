@@ -184,12 +184,11 @@ function loadGroups() {
             render: function (id, type, row, meta) {
                 var html = '';
                 if ($.hasPermission("VIEW_GROUP_DEVICES")) {
-                    html += '<a href="group/' + row.groupId
-                            + '/analytics" data-click-event="remove-form" class="btn padding-reduce-on-grid-view" ' +
-                            'data-placement="top" data-toggle="tooltip" data-original-title="Analytics">' +
+                    /*html += '<a href="group/' + row.groupId
+                            + '/analytics" data-click-event="remove-form" class="btn padding-reduce-on-grid-view">' +
                             '<span class="fw-stack"><i class="fw fw-circle-outline fw-stack-2x"></i><i class="fw fw-statistics fw-stack-1x"></i></span>'
                             +
-                            '<span class="hidden-xs hidden-on-grid-view">Analytics</span></a>';
+                            '<span class="hidden-xs hidden-on-grid-view">Analytics</span></a>';*/
                 }
                 if (row.owner != "wso2.system.user") {
                     // if ($.hasPermission("SHARE_GROUP")) {

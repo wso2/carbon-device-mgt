@@ -6,7 +6,7 @@
  * Opens a modal popup with input to enter multiple email addresses to send invites
  */
 function toggleEmailInvite(){
-    modalDialog.header('<h4 class="pull-left modal-title"><span class="fw-stack add-margin-right-1x">' +
+    modalDialog.header('<h4 class="pull-left modal-title"><span class="fw-stack add-margin-right-2x">' +
                        '<i class="fw fw-user fw-stack-2x"></i>' +
                        '<span class="fw-stack fw-move-right fw-move-bottom">' +
                        '<i class="fw fw-circle-outline fw-stack-2x"></i>' +

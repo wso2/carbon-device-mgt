@@ -33,6 +33,7 @@ function onRequest(context) {
 
     page["currentUser"] = userModule.getCarbonUser().username;
     page["adminUser"] = deviceMgtProps["adminUser"].split("@")[0];
+    page["isCloud"] = deviceMgtProps["isCloud"];
 
     if (userModule.isAuthorized("/permission/admin/device-mgt/users/manage")) {
         page.canManage = true;

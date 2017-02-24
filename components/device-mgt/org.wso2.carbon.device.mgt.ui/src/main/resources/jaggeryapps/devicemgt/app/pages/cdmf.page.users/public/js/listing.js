@@ -337,31 +337,31 @@ function loadUsers() {
             }
         },
         {
-            class: "text-right content-fill text-left-on-grid-view no-wrap",
+            class: "text-right content-fill text-left-on-grid-view no-wrap tooltip-overflow-fix",
             data: null,
             render: function (data, type, row, meta) {
-                var editbtn = '<a data-toggle="tooltip" data-placement="bottom" title="Edit User"href="' + context +
+                var editbtn = '<a data-toggle="tooltip" data-placement="top" title="Edit User"href="' + context +
                     '/user/edit?username=' + encodeURIComponent(data.filter) + '" data-username="' + data.filter + '" ' +
                     'data-click-event="edit-form" ' +
-                    'class="btn padding-reduce-on-grid-view edit-user-link"> ' +
+                    'class="btn padding-reduce-on-grid-view edit-user-link" data-placement="top" data-toggle="tooltip" data-original-title="Edit"> ' +
                     '<span class="fw-stack"> ' +
                     '<i class="fw fw-circle-outline fw-stack-2x"></i>' +
                     '<i class="fw fw-edit fw-stack-1x"></i>' +
                     '</span><span class="hidden-xs hidden-on-grid-view">Edit</span></a>';
 
-                var resetPasswordbtn = '<a data-toggle="tooltip" data-placement="bottom" title="Reset Password" href="#" data-username="' + data.filter + '" data-userid="' + data.filter + '" ' +
+                var resetPasswordbtn = '<a data-toggle="tooltip" data-placement="top" title="Reset Password" href="#" data-username="' + data.filter + '" data-userid="' + data.filter + '" ' +
                     'data-click-event="edit-form" ' +
                     'onclick="javascript:resetPassword(\'' + data.filter + '\')" ' +
-                    'class="btn padding-reduce-on-grid-view remove-user-link">' +
+                    'class="btn padding-reduce-on-grid-view remove-user-link" data-placement="top" data-toggle="tooltip" data-original-title="Reset Password">' +
                     '<span class="fw-stack">' +
                     '<i class="fw fw-circle-outline fw-stack-2x"></i>' +
                     '<i class="fw fw-key fw-stack-1x"></i>' +
                     '</span><span class="hidden-xs hidden-on-grid-view">Reset Password</span></a>';
 
-                var removebtn = '<a data-toggle="tooltip" data-placement="bottom" title="Remove User" href="#" data-username="' + data.filter + '" data-userid="' + data.filter + '" ' +
+                var removebtn = '<a data-toggle="tooltip" data-placement="top" title="Remove User" href="#" data-username="' + data.filter + '" data-userid="' + data.filter + '" ' +
                     'data-click-event="remove-form" ' +
                     'onclick="javascript:removeUser(\'' + data.filter + '\')" ' +
-                    'class="btn padding-reduce-on-grid-view remove-user-link">' +
+                    'class="btn padding-reduce-on-grid-view remove-user-link" data-placement="top" data-toggle="tooltip" data-original-title="Remove">' +
                     '<span class="fw-stack">' +
                     '<i class="fw fw-circle-outline fw-stack-2x"></i>' +
                     '<i class="fw fw-delete fw-stack-1x"></i>' +

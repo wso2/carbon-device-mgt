@@ -35,6 +35,7 @@
 {{/zone}}
 
 {{#zone "navbarActions"}}
+    {{#unless isCloud}}
     <li>
         <!--suppress HtmlUnknownTarget -->
         <a href="{{@app.context}}/role/add" class="cu-btn">
@@ -45,15 +46,21 @@
             Add Role
         </a>
     </li>
+    {{/unless}}
 {{/zone}}
 
 {{#zone "content"}}
     <div id="loading-content" class="col-centered">
+        {{#unless isCloud}}
         {{#if removePermitted}}
             <input type="hidden" id="can-remove" value="true" />
         {{/if}}
         {{#if editPermitted}}
             <input type="hidden" id="can-edit" value="true" />
+        {{/if}}
+        {{/unless}}
+        {{#if isCloud}}
+            <input type="hidden" id="is-cloud" value="true" />
         {{/if}}
         <i class="fw fw-settings fw-spin fw-2x"></i>
         Loading roles . . .

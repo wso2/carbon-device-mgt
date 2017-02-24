@@ -23,17 +23,16 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.common.Device;
-import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
 import org.wso2.carbon.device.mgt.common.policy.mgt.PolicyMonitoringManager;
-import org.wso2.carbon.device.mgt.common.policy.mgt.monitor.PolicyComplianceException;
-import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
-import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderServiceImpl;
 import org.wso2.carbon.ntask.core.Task;
+import org.wso2.carbon.device.mgt.common.policy.mgt.monitor.PolicyComplianceException;
 import org.wso2.carbon.policy.mgt.core.internal.PolicyManagementDataHolder;
 import org.wso2.carbon.policy.mgt.core.mgt.MonitoringManager;
 import org.wso2.carbon.user.api.UserStoreException;
+import org.wso2.carbon.device.mgt.common.DeviceManagementException;
+import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderServiceImpl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,14 +62,14 @@ public class MonitoringTask implements Task {
         }
 
         try {
-//            Tenant tenants[] = PolicyManagementDataHolder.getInstance().
-//                    getRealmService().getTenantManager().getAllTenants();
 
+            PolicyManagementDataHolder.getInstance().
+                    getRealmService().getTenantManager().getAllTenants();
             DeviceManagementProviderService deviceManagementService = new DeviceManagementProviderServiceImpl();
             List<Integer> tenants = deviceManagementService.getDeviceEnrolledTenants();
 
             for (Integer tenant : tenants) {
-                String tenantDomain = DeviceManagementDataHolder.getInstance().
+                String tenantDomain = PolicyManagementDataHolder.getInstance().
                         getRealmService().getTenantManager().getDomain(tenant);
                 try {
                     PrivilegedCarbonContext.startTenantFlow();

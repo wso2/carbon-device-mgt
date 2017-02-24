@@ -23,6 +23,7 @@ import com.google.gson.Gson;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
+import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.OperationMonitoringTaskConfig;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 import org.wso2.carbon.device.mgt.core.task.DeviceMgtTaskException;
@@ -33,6 +34,7 @@ import org.wso2.carbon.user.api.UserStoreException;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import java.util.List;
 
+import java.util.List;
 import java.util.Map;
 
 public class DeviceDetailsRetrieverTask implements Task {

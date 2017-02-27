@@ -27,13 +27,12 @@ import org.wso2.carbon.apimgt.integration.client.internal.APIIntegrationClientDa
 import org.wso2.carbon.apimgt.integration.client.model.ClientProfile;
 import org.wso2.carbon.apimgt.integration.client.model.DCRClient;
 import org.wso2.carbon.apimgt.integration.client.model.OAuthApplication;
-import org.wso2.carbon.apimgt.integration.client.util.PropertyUtils;
+import org.wso2.carbon.apimgt.integration.client.util.Utils;
 import org.wso2.carbon.base.MultitenantConstants;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.identity.jwt.client.extension.JWTClient;
 import org.wso2.carbon.identity.jwt.client.extension.dto.AccessTokenInfo;
 import org.wso2.carbon.identity.jwt.client.extension.exception.JWTClientException;
-import org.wso2.carbon.user.api.UserStoreException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -59,10 +58,10 @@ public class OAuthRequestInterceptor implements RequestInterceptor {
     public OAuthRequestInterceptor() {
         String username = APIMConfigReader.getInstance().getConfig().getUsername();
         String password = APIMConfigReader.getInstance().getConfig().getPassword();
-        dcrClient = Feign.builder().requestInterceptor(
+        dcrClient = Feign.builder().client(Utils.getSSLClient()).requestInterceptor(
                 new BasicAuthRequestInterceptor(username, password))
                 .contract(new JAXRSContract()).encoder(new GsonEncoder()).decoder(new GsonDecoder())
-                .target(DCRClient.class, PropertyUtils.replaceProperties(
+                .target(DCRClient.class, Utils.replaceProperties(
                         APIMConfigReader.getInstance().getConfig().getDcrEndpoint()));
     }
 

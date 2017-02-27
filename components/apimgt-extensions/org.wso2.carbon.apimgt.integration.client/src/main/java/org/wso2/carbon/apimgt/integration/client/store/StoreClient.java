@@ -45,8 +45,9 @@ public class StoreClient {
 
     public StoreClient(RequestInterceptor requestInterceptor) {
 
-        Feign.Builder builder = Feign.builder().requestInterceptor(requestInterceptor)
-                .encoder(new GsonEncoder()).decoder(new GsonDecoder());
+        Feign.Builder builder = Feign.builder().client(
+                org.wso2.carbon.apimgt.integration.client.util.Utils.getSSLClient()).requestInterceptor(
+                requestInterceptor).encoder(new GsonEncoder()).decoder(new GsonDecoder());
         String basePath = Utils.replaceSystemProperty(APIMConfigReader.getInstance().getConfig().getStoreEndpoint());
 
         apis = builder.target(ApisAPIApi.class, basePath);

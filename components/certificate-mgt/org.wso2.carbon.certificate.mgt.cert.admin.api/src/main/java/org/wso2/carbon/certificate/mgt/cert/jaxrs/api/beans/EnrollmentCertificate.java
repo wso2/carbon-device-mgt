@@ -21,15 +21,6 @@ package org.wso2.carbon.certificate.mgt.cert.jaxrs.api.beans;
 public class EnrollmentCertificate {
     String serial;
     String pem;
-    int tenantId;
-
-    public int getTenantId() {
-        return tenantId;
-    }
-
-    public void setTenantId(int tenantId) {
-        this.tenantId = tenantId;
-    }
 
     public String getSerial() {
         return serial;

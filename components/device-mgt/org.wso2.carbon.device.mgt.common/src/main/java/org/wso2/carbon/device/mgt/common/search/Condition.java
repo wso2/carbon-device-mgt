@@ -25,7 +25,7 @@ import io.swagger.annotations.ApiModelProperty;
 @ApiModel(value = "Condition", description = "Contains the advance search parameters.")
 public class Condition {
 
-    @ApiModelProperty(name = "conditions", value = "Provide the operation code. You can assign the following operation " +
+    @ApiModelProperty(name = "key", value = "Provide the operation code. You can assign the following operation " +
                                                    "codes:\n" +
                                                    "DEVICE_MODEL : The model of the device.\n" +
                                                    "VENDOR : The name of the device vendor.\n" +

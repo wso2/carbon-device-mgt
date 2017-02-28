@@ -38,7 +38,7 @@ import java.util.List;
 public class GCMNotificationStrategy implements NotificationStrategy {
 
     private static final String GCM_TOKEN = "GCM_TOKEN";
-    private final static String GCM_ENDPOINT = "https://fcm.googleapis.com/fcm/send";
+    private static final String GCM_ENDPOINT = "https://fcm.googleapis.com/fcm/send";
     private static final String GCM_API_KEY = "gcmAPIKey";
     private static final int TIME_TO_LIVE = 60;
     private static final int HTTP_STATUS_CODE_OK = 200;

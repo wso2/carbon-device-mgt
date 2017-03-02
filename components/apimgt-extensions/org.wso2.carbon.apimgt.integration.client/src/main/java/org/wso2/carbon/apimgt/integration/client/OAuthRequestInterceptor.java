@@ -15,25 +15,27 @@
 package org.wso2.carbon.apimgt.integration.client;
 
 import feign.Feign;
+import feign.Logger;
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
 import feign.auth.BasicAuthRequestInterceptor;
 import feign.gson.GsonDecoder;
 import feign.gson.GsonEncoder;
 import feign.jaxrs.JAXRSContract;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.apimgt.integration.client.configs.APIMConfigReader;
 import org.wso2.carbon.apimgt.integration.client.exception.APIMClientOAuthException;
 import org.wso2.carbon.apimgt.integration.client.internal.APIIntegrationClientDataHolder;
 import org.wso2.carbon.apimgt.integration.client.model.ClientProfile;
 import org.wso2.carbon.apimgt.integration.client.model.DCRClient;
 import org.wso2.carbon.apimgt.integration.client.model.OAuthApplication;
-import org.wso2.carbon.apimgt.integration.client.util.PropertyUtils;
+import org.wso2.carbon.apimgt.integration.client.util.Utils;
 import org.wso2.carbon.base.MultitenantConstants;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.identity.jwt.client.extension.JWTClient;
 import org.wso2.carbon.identity.jwt.client.extension.dto.AccessTokenInfo;
 import org.wso2.carbon.identity.jwt.client.extension.exception.JWTClientException;
-import org.wso2.carbon.user.api.UserStoreException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -48,10 +50,12 @@ public class OAuthRequestInterceptor implements RequestInterceptor {
     private static final String REQUIRED_SCOPE =
             "apim:api_create apim:api_view apim:api_publish apim:subscribe apim:tier_view apim:tier_manage " +
                     "apim:subscription_view apim:subscription_block";
+    private static final String APIM_SUBSCRIBE_SCOPE = "apim:subscribe";
     private static final long DEFAULT_REFRESH_TIME_OFFSET_IN_MILLIS = 100000;
     private DCRClient dcrClient;
     private static OAuthApplication oAuthApplication;
     private static Map<String, AccessTokenInfo> tenantUserTokenMap = new HashMap<>();
+    private static final Log log = LogFactory.getLog(OAuthRequestInterceptor.class);
 
     /**
      * Creates an interceptor that authenticates all requests.
@@ -59,10 +63,10 @@ public class OAuthRequestInterceptor implements RequestInterceptor {
     public OAuthRequestInterceptor() {
         String username = APIMConfigReader.getInstance().getConfig().getUsername();
         String password = APIMConfigReader.getInstance().getConfig().getPassword();
-        dcrClient = Feign.builder().requestInterceptor(
-                new BasicAuthRequestInterceptor(username, password))
+        dcrClient = Feign.builder().client(Utils.getSSLClient()).logger(Utils.getLogger(log)).logLevel(
+                Logger.Level.FULL).requestInterceptor(new BasicAuthRequestInterceptor(username, password))
                 .contract(new JAXRSContract()).encoder(new GsonEncoder()).decoder(new GsonDecoder())
-                .target(DCRClient.class, PropertyUtils.replaceProperties(
+                .target(DCRClient.class, Utils.replaceProperties(
                         APIMConfigReader.getInstance().getConfig().getDcrEndpoint()));
     }
 
@@ -96,7 +100,9 @@ public class OAuthRequestInterceptor implements RequestInterceptor {
                                                                       REQUIRED_SCOPE);
                 tenantBasedAccessTokenInfo.setExpiresIn(
                         System.currentTimeMillis() + (tenantBasedAccessTokenInfo.getExpiresIn() * 1000));
-                tenantUserTokenMap.put(username, tenantBasedAccessTokenInfo);
+                if (tenantBasedAccessTokenInfo.getScopes().contains(APIM_SUBSCRIBE_SCOPE)) {
+                    tenantUserTokenMap.put(username, tenantBasedAccessTokenInfo);
+                }
 
             }
             if (tenantBasedAccessTokenInfo.getAccessToken() != null) {

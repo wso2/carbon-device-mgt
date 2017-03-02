@@ -69,7 +69,8 @@
 							io.swagger.annotations,
 							org.wso2.carbon.core.util,
 							javax.xml,
-							org.wso2.carbon.base
+							org.wso2.carbon.base,
+							javax.net.ssl
 						</Import-Package>
 						<Embed-Dependency>
 							jsr311-api,

@@ -30,7 +30,7 @@
             "enabled": true,
             "issuer" : "devicemgt",
             "appName" : "devicemgt",
-            "identityProviderUrl" : "https://%iot.keymanager.host%:%iot.keymanager.https.port%/samlsso",
+            "identityProviderUrl" : "https://%carbon.local.ip%:%iot.keymanager.https.port%/samlsso",
             "acs": "https://%iot.manager.host%:%iot.manager.https.port%/devicemgt/uuf/sso/acs",
             "identityAlias": "wso2carbon",
             "responseSigningEnabled" : true,

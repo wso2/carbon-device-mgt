@@ -30,11 +30,12 @@ application.put("carbonServer", carbonServer);
 
 var permissions = {
     "/permission/admin/Login": ["ui.execute"],
-    "/permission/admin/manage/api/subscribe": ["ui.execute"]
+    "/permission/admin/device-mgt/device/api/subscribe": ["ui.execute"]
 };
 
 var adminPermissions = {
-    "/permission/admin": ["ui.execute"]
+    "/permission/admin/device-mgt": ["ui.execute"],
+	"/permission/admin/manage/api": ["ui.execute"]
 };
 
 //On Startup, admin user will get both roles: devicemgt-admin and devicemgt-user

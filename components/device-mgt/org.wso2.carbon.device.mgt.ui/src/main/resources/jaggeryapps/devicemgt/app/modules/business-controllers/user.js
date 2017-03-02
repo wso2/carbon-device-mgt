@@ -511,7 +511,7 @@ var userModule = function () {
             permissions["LIST_DEVICES"] = true;
             permissions["LIST_OWN_DEVICES"] = true;
         }
-        if (publicMethods.isAuthorized("/permission/admin/device-mgt/devices/owning-device")) {
+        if (publicMethods.isAuthorized("/permission/admin/device-mgt/devices/owning-device/view")) {
             permissions["LIST_OWN_DEVICES"] = true;
         }
         if (publicMethods.isAuthorized("/permission/admin/device-mgt/admin/groups/view")) {

@@ -16,16 +16,16 @@
  *   under the License.
  *
  */
-package org.wso2.carbon.device.mgt.extensions.push.notification.provider.gcm.internal;
+package org.wso2.carbon.device.mgt.extensions.push.notification.provider.fcm.internal;
 
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 
-public class GCMDataHolder {
+public class FCMDataHolder {
 
     private DeviceManagementProviderService deviceManagementProviderService;
-    private static GCMDataHolder thisInstance = new GCMDataHolder();
+    private static FCMDataHolder thisInstance = new FCMDataHolder();
 
-    public static GCMDataHolder getInstance() {
+    public static FCMDataHolder getInstance() {
         return thisInstance;
     }
 

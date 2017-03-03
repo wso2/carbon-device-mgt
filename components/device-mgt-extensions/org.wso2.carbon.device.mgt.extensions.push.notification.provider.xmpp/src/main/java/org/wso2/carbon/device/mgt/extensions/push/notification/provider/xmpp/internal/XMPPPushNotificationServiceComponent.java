@@ -25,7 +25,7 @@ import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.event.output.adapter.core.OutputEventAdapterService;
 
 /**
- * @scr.component name="org.wso2.carbon.device.mgt.extensions.push.notification.provider.gcm.internal.XMPPPushNotificationServiceComponent" immediate="true"
+ * @scr.component name="org.wso2.carbon.device.mgt.extensions.push.notification.provider.fcm.internal.XMPPPushNotificationServiceComponent" immediate="true"
  * @scr.reference name="carbon.device.mgt.provider"
  * interface="org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService"
  * cardinality="1..1"

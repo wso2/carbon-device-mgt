@@ -107,12 +107,14 @@ public class ApiApplicationRegistrationServiceImpl implements ApiApplicationRegi
                 validityPeriod = registrationProfile.getValidityPeriod();
             }
 
-            String applicationName = "devicetype_app_" + StringUtils.join(registrationProfile.getTags(), "_");
-            ApiApplicationKey apiApplicationKey = apiManagementProviderService.generateAndRetrieveApplicationKeys(
-                    applicationName, registrationProfile.getTags(),
-                    ApiApplicationConstants.DEFAULT_TOKEN_TYPE, username,
-                    registrationProfile.isAllowedToAllDomains(), validityPeriod);
-            return Response.status(Response.Status.CREATED).entity(apiApplicationKey.toString()).build();
+            String applicationName = registrationProfile.getApplicationName();
+            synchronized (ApiApplicationRegistrationServiceImpl.class) {
+                ApiApplicationKey apiApplicationKey = apiManagementProviderService.generateAndRetrieveApplicationKeys(
+                        applicationName, registrationProfile.getTags(),
+                        ApiApplicationConstants.DEFAULT_TOKEN_TYPE, username,
+                        registrationProfile.isAllowedToAllDomains(), validityPeriod);
+                return Response.status(Response.Status.CREATED).entity(apiApplicationKey.toString()).build();
+            }
         } catch (APIManagerException e) {
             String msg = "Error occurred while registering an application with apis '"
                     + StringUtils.join(registrationProfile.getTags(), ",") + "'";

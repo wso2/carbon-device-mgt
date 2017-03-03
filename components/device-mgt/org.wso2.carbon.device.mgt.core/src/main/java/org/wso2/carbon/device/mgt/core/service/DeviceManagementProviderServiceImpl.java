@@ -1280,21 +1280,6 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     }
 
     @Override
-    public List<Integer> getDeviceEnrolledTenants() throws DeviceManagementException {
-        try {
-            DeviceManagementDAOFactory.openConnection();
-            return deviceDAO.getDeviceEnrolledTenants();
-        } catch (DeviceManagementDAOException e) {
-            throw new DeviceManagementException("Error occurred while retrieving the tenants " +
-                    "which have device enrolled.", e);
-        } catch (SQLException e) {
-            throw new DeviceManagementException("Error occurred while opening a connection to the data source", e);
-        } finally {
-            DeviceManagementDAOFactory.closeConnection();
-        }
-    }
-
-    @Override
     public List<Device> getDevicesOfUser(String username) throws DeviceManagementException {
         List<Device> devices = new ArrayList<>();
         List<Device> userDevices;

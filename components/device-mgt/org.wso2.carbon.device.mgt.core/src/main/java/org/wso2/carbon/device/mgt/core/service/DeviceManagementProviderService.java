@@ -307,10 +307,6 @@ public interface DeviceManagementProviderService {
 
     PolicyMonitoringManager getPolicyMonitoringManager(String deviceType);
 
-
-    List<Integer> getDeviceEnrolledTenants() throws DeviceManagementException;
-
-
     /**
      * Change device status.
      *
@@ -321,5 +317,4 @@ public interface DeviceManagementProviderService {
      */
     boolean changeDeviceStatus(DeviceIdentifier deviceIdentifier, EnrolmentInfo.Status newStatus)
             throws DeviceManagementException;
-
 }

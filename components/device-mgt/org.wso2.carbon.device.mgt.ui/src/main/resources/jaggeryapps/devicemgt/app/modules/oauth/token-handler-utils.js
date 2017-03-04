@@ -169,14 +169,16 @@ var utils = function () {
 
                     // register a tenant based  app at API Manager
                     var applicationName = "websocket_webapp_" + tenantDomain;
-                    var requestURL = (deviceMgtProps["oauthProvider"]["appRegistration"]
-                        ["apiManagerClientAppRegistrationServiceURL"]).replace("/tenants","");
+                    var requestURL = deviceMgtProps["oauthProvider"]["appRegistration"]
+                            ["apiManagerClientAppRegistrationServiceURL"] + "?tenantDomain=" + tenantDomain +
+                        "&applicationName=" + applicationName + "&validityPeriod=" +
+                        deviceMgtProps["oauthProvider"]["appRegistration"]["webSocketAppValidityPeriod"];
                     var xhr = new XMLHttpRequest();
                     xhr.open("POST", requestURL, false);
                     xhr.setRequestHeader("Content-Type", "application/json");
                     xhr.setRequestHeader("X-JWT-Assertion", "" + jwtToken);
-                    xhr.send(stringify({applicationName:applicationName, tags:["device_management"],
-                        isAllowedToAllDomains:false, isMappingAnExistingOAuthApp:false, validityPeriod: 3600}));
+                    xhr.send();
+
                     if (xhr["status"] == 201 && xhr["responseText"]) {
                         var responsePayload = parse(xhr["responseText"]);
                         var tenantTenantBasedWebsocketClientAppCredentials = {};

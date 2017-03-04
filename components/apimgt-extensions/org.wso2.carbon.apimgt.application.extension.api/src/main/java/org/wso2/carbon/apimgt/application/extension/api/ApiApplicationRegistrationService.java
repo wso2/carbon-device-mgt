@@ -37,8 +37,9 @@ public interface ApiApplicationRegistrationService {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("register/tenants")
-    Response register(@PathParam("tenantDomain") String tenantDomain,
-                      @QueryParam("applicationName") String applicationName);
+    Response register(@QueryParam("tenantDomain") String tenantDomain,
+                      @QueryParam("applicationName") String applicationName,
+                      @QueryParam("validityPeriod") long validityPeriod);
 
     /**
      * This method is used to register api application

@@ -129,7 +129,7 @@ var handlers = function () {
 			"as input - setupTokenPairBySamlGrantType(x, y)");
 		} else {
 			privateMethods.setUpEncodedTenantBasedClientAppCredentials(username);
-			//privateMethods.setUpEncodedTenantBasedWebSocketClientAppCredentials(username);
+			privateMethods.setUpEncodedTenantBasedWebSocketClientAppCredentials(username);
 			var encodedClientAppCredentials = session.get(constants["ENCODED_TENANT_BASED_CLIENT_APP_CREDENTIALS"]);
 			if (!encodedClientAppCredentials) {
 				throw new Error("{/app/modules/oauth/token-handlers.js} Could not set up access token pair " +

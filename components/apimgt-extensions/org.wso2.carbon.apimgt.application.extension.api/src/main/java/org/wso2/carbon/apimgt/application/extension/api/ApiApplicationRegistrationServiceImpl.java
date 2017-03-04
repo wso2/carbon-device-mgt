@@ -46,7 +46,9 @@ public class ApiApplicationRegistrationServiceImpl implements ApiApplicationRegi
     @Path("register/tenants")
     @POST
     public Response register(@QueryParam("tenantDomain") String tenantDomain,
-                             @QueryParam("applicationName") String applicationName) {
+                             @QueryParam("applicationName") String applicationName,
+                             @QueryParam("validityPeriod") long validityPeriod) {
+        String tokenValidityPeriod = ApiApplicationConstants.DEFAULT_VALIDITY_PERIOD;
         String authenticatedTenantDomain = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantDomain();
         if (!MultitenantConstants.SUPER_TENANT_DOMAIN_NAME.equals(authenticatedTenantDomain)) {
             return Response.status(Response.Status.NOT_ACCEPTABLE).build();
@@ -62,10 +64,14 @@ public class ApiApplicationRegistrationServiceImpl implements ApiApplicationRegi
                     .getRealmConfiguration().getAdminUserName();
             PrivilegedCarbonContext.getThreadLocalCarbonContext().setUsername(username);
             APIManagementProviderService apiManagementProviderService = APIUtil.getAPIManagementProviderService();
+
+            if (validityPeriod > 0) {
+                tokenValidityPeriod = String.valueOf(validityPeriod);
+            }
             ApiApplicationKey apiApplicationKey = apiManagementProviderService.generateAndRetrieveApplicationKeys(
                     applicationName, APIUtil.getDefaultTags(),
                     ApiApplicationConstants.DEFAULT_TOKEN_TYPE, username, false,
-                    ApiApplicationConstants.DEFAULT_VALIDITY_PERIOD);
+                    tokenValidityPeriod);
             return Response.status(Response.Status.CREATED).entity(apiApplicationKey.toString()).build();
         } catch (APIManagerException e) {
             String msg = "Error occurred while registering an application '" + applicationName + "'";

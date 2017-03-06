@@ -41,6 +41,7 @@ public class APIManagementProviderServiceImpl implements APIManagementProviderSe
     private static final Log log = LogFactory.getLog(APIManagementProviderServiceImpl.class);
     private static final String CONTENT_TYPE = "application/json";
     private static final int MAX_API_PER_TAG = 200;
+    private static final String APP_TIER_TYPE = "application";
 
     @Override
     public void removeAPIApplication(String applicationName, String username) throws APIManagerException {
@@ -66,6 +67,24 @@ public class APIManagementProviderServiceImpl implements APIManagementProviderSe
             throws APIManagerException {
         StoreClient storeClient = APIApplicationManagerExtensionDataHolder.getInstance().getIntegrationClientService()
                 .getStoreClient();
+        //This is a fix to avoid race condition and trying to load tenant related tiers before invocation.
+        List<TierList> tierLists = storeClient.getTiers()
+                .tiersTierLevelGet(APP_TIER_TYPE, 100, 0, null, CONTENT_TYPE, null);
+        boolean tierExist = false;
+        for (TierList tierList : tierLists ) {
+            List<Tier> tiers = tierList.getList();
+            for (Tier tier : tiers) {
+                if (ApiApplicationConstants.DEFAULT_TIER.equals(tier.getName())) {
+                    tierExist = true;
+                }
+            }
+        }
+        if (!tierExist) {
+            throw new IllegalStateException("The required Application Tier [ " + ApiApplicationConstants.DEFAULT_TIER +
+                                                    "] does not exit for the tenant" +
+                                                    PrivilegedCarbonContext.getThreadLocalCarbonContext()
+                                                            .getTenantDomain());
+        }
         ApplicationList applicationList = storeClient.getApplications()
                 .applicationsGet("", applicationName, 1, 0, CONTENT_TYPE, null);
         Application application;

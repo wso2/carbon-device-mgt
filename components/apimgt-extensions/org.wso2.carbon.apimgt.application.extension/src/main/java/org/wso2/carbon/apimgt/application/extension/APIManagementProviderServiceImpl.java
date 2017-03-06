@@ -18,6 +18,7 @@
 
 package org.wso2.carbon.apimgt.application.extension;
 
+import feign.FeignException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.apimgt.application.extension.constants.ApiApplicationConstants;
@@ -26,12 +27,14 @@ import org.wso2.carbon.apimgt.application.extension.exception.APIManagerExceptio
 import org.wso2.carbon.apimgt.application.extension.internal.APIApplicationManagerExtensionDataHolder;
 import org.wso2.carbon.apimgt.application.extension.util.APIManagerUtil;
 import org.wso2.carbon.apimgt.integration.client.store.*;
-import org.wso2.carbon.apimgt.integration.client.store.model.*;
+import org.wso2.carbon.apimgt.integration.generated.client.store.model.*;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * This class represents an implementation of APIManagementProviderService.
@@ -42,6 +45,8 @@ public class APIManagementProviderServiceImpl implements APIManagementProviderSe
     private static final String CONTENT_TYPE = "application/json";
     private static final int MAX_API_PER_TAG = 200;
     private static final String APP_TIER_TYPE = "application";
+    private static final Map<String, String> tiersMap = new HashMap<>();
+    private static final int MAX_ATTEMPTS = 10;
 
     @Override
     public void removeAPIApplication(String applicationName, String username) throws APIManagerException {
@@ -68,23 +73,31 @@ public class APIManagementProviderServiceImpl implements APIManagementProviderSe
         StoreClient storeClient = APIApplicationManagerExtensionDataHolder.getInstance().getIntegrationClientService()
                 .getStoreClient();
         //This is a fix to avoid race condition and trying to load tenant related tiers before invocation.
-        List<TierList> tierLists = storeClient.getTiers()
-                .tiersTierLevelGet(APP_TIER_TYPE, 100, 0, null, CONTENT_TYPE, null);
-        boolean tierExist = false;
-        for (TierList tierList : tierLists ) {
-            List<Tier> tiers = tierList.getList();
-            for (Tier tier : tiers) {
-                if (ApiApplicationConstants.DEFAULT_TIER.equals(tier.getName())) {
-                    tierExist = true;
+        String tenantDomain = PrivilegedCarbonContext.getThreadLocalCarbonContext()
+                .getTenantDomain();
+        String tiersLoadedForTenant = tiersMap.get(tenantDomain);
+        if (tiersLoadedForTenant == null) {
+            int tierStatus = 0;
+            int attempts = 0;
+            do {
+                try {
+                    storeClient.getIndividualTier()
+                            .tiersTierLevelTierNameGet(ApiApplicationConstants.DEFAULT_TIER, APP_TIER_TYPE,
+                                                       tenantDomain, CONTENT_TYPE, null, null);
+                    tiersMap.put(tenantDomain, "exist");
+                    tierStatus = 200;
+                } catch (FeignException e) {
+                    tierStatus = e.status();
+                    attempts++;
+                    try {
+                        Thread.sleep(500);
+                    } catch (InterruptedException ex) {
+                        log.warn("Interrupted the waiting for tier availability.");
+                    }
                 }
-            }
+            } while (tierStatus == 500 && attempts < MAX_ATTEMPTS);
         }
-        if (!tierExist) {
-            throw new IllegalStateException("The required Application Tier [ " + ApiApplicationConstants.DEFAULT_TIER +
-                                                    "] does not exit for the tenant" +
-                                                    PrivilegedCarbonContext.getThreadLocalCarbonContext()
-                                                            .getTenantDomain());
-        }
+
         ApplicationList applicationList = storeClient.getApplications()
                 .applicationsGet("", applicationName, 1, 0, CONTENT_TYPE, null);
         Application application;
@@ -113,7 +126,6 @@ public class APIManagementProviderServiceImpl implements APIManagementProviderSe
         // subscribe to apis.
         if (tags != null && tags.length > 0) {
             for (String tag: tags) {
-                String tenantDomain = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantDomain();
                 APIList apiList = storeClient.getApis().apisGet(MAX_API_PER_TAG, 0, tenantDomain, "tag:" + tag
                         , CONTENT_TYPE, null);
                 if (apiList.getList() == null || apiList.getList().size() == 0) {
@@ -148,7 +160,7 @@ public class APIManagementProviderServiceImpl implements APIManagementProviderSe
             }
         }
         if (!needToSubscribe.isEmpty()) {
-            storeClient.getIndividualSubscription().subscriptionsPost(needToSubscribe, CONTENT_TYPE);
+            storeClient.getSubscriptionMultitpleApi().subscriptionsMultiplePost(needToSubscribe, CONTENT_TYPE);
         }
         //end of subscription
 

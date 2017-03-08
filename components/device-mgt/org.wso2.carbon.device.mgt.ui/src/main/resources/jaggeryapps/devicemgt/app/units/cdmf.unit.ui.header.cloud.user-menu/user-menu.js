@@ -40,7 +40,7 @@ function onRequest(context) {
                 viewModal.Main[key].dropDown[sub_key].dropDown == true ||
                 viewModal.Main[key].dropDown[sub_key].dropDown == "true") {
                 viewModal.Main[key].dropDown[sub_key].dropDown = true;
-                temp = true;
+                tempDropDownCheck = true;
             } else {
                 viewModal.Main[key].dropDown[sub_key].dropDown = false;
             }
@@ -65,7 +65,7 @@ function onRequest(context) {
     tempDropDownCheck = false;
     for (var key in viewModal.Expand) {
         for (var sub_key in viewModal.Expand[key]) {
-            if( viewModal.Expand[key][sub_key].dropDown == null ||
+            if (viewModal.Expand[key][sub_key].dropDown == null ||
                 viewModal.Expand[key][sub_key].dropDown == true ||
                 viewModal.Expand[key][sub_key].dropDown == "true") {
                 viewModal.Expand[key][sub_key].dropDown = true;

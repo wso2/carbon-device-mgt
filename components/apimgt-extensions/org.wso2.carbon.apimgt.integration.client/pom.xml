@@ -55,6 +55,9 @@
 							feign.codec,
 							feign.auth,
 							feign.gson,
+							feign.slf4j,
+							org.wso2.carbon.apimgt.integration.generated.client.publisher.api,
+							org.wso2.carbon.apimgt.integration.generated.client.store.api,
 							javax.xml.bind,
 							javax.xml.bind.annotation,
 							javax.xml.parsers;resolution:=optional,
@@ -69,7 +72,7 @@
 							org.wso2.carbon.core.util,
 							javax.xml,
 							org.wso2.carbon.base,
-							javax.net.ssl
+							javax.net.ssl,
 						</Import-Package>
 						<Embed-Dependency>
 							jsr311-api,
@@ -135,6 +138,10 @@
 		<dependency>
 			<groupId>org.wso2.carbon.devicemgt</groupId>
 			<artifactId>org.wso2.carbon.identity.jwt.client.extension</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.wso2.carbon.devicemgt</groupId>
+			<artifactId>org.wso2.carbon.apimgt.integration.generated.client</artifactId>
 		</dependency>
 	</dependencies>
 

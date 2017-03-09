@@ -27,10 +27,15 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
+import java.io.IOException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import feign.Logger;
+import feign.Request;
+import feign.Response;
+import org.apache.commons.logging.Log;
 
 public class Utils {
 

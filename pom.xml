@@ -205,6 +205,11 @@
 				<artifactId>org.wso2.carbon.apimgt.integration.client</artifactId>
 				<version>${carbon.device.mgt.version}</version>
 			</dependency>
+			<dependency>
+				<groupId>org.wso2.carbon.devicemgt</groupId>
+				<artifactId>org.wso2.carbon.apimgt.integration.generated.client</artifactId>
+				<version>${carbon.device.mgt.version}</version>
+			</dependency>
             <dependency>
                 <groupId>org.wso2.carbon.devicemgt</groupId>
                 <artifactId>org.wso2.carbon.apimgt.annotations</artifactId>
@@ -1914,6 +1919,7 @@
 
 		<!--Feign Version-->
 		<io.github.openfeign.version>9.3.1</io.github.openfeign.version>
+		<io.github.openfeign.version.range>[9.3.1,10.0.0)</io.github.openfeign.version.range>
 		<!--Oltu client Version-->
 		<oltu.client.version>1.0.1</oltu.client.version>
 		<jackson.datatype.joda.version>2.1.5</jackson.datatype.joda.version>

@@ -29,7 +29,6 @@ import org.wso2.carbon.device.mgt.common.configuration.mgt.ConfigurationEntry;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.PlatformConfiguration;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.PlatformConfigurationManagementService;
 import org.wso2.carbon.device.mgt.common.notification.mgt.NotificationManagementService;
-import org.wso2.carbon.device.mgt.common.scope.mgt.ScopeManagementService;
 import org.wso2.carbon.device.mgt.core.app.mgt.ApplicationManagementProviderService;
 import org.wso2.carbon.device.mgt.core.device.details.mgt.DeviceInformationManager;
 import org.wso2.carbon.device.mgt.core.search.mgt.SearchManagerService;
@@ -37,6 +36,7 @@ import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.device.mgt.core.service.GroupManagementProviderService;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
 import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.InputValidationException;
+import org.wso2.carbon.identity.jwt.client.extension.service.JWTClientManagerService;
 import org.wso2.carbon.identity.user.store.count.AbstractCountRetrieverFactory;
 import org.wso2.carbon.identity.user.store.count.UserStoreCountRetriever;
 import org.wso2.carbon.identity.user.store.count.exception.UserStoreCounterException;
@@ -45,6 +45,7 @@ import org.wso2.carbon.identity.user.store.count.jdbc.internal.InternalCountRetr
 import org.wso2.carbon.policy.mgt.common.PolicyMonitoringTaskException;
 import org.wso2.carbon.policy.mgt.core.PolicyManagerService;
 import org.wso2.carbon.policy.mgt.core.task.TaskScheduleService;
+import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.user.api.AuthorizationManager;
 import org.wso2.carbon.user.api.RealmConfiguration;
 import org.wso2.carbon.user.api.UserRealm;
@@ -189,6 +190,30 @@ public class DeviceMgtAPIUtils {
         return realmService;
     }
 
+    public static RegistryService getRegistryService() {
+        RegistryService registryService;
+        PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        registryService = (RegistryService) ctx.getOSGiService(RegistryService.class, null);
+        if (registryService == null) {
+            String msg = "registry service has not initialized.";
+            log.error(msg);
+            throw new IllegalStateException(msg);
+        }
+        return registryService;
+    }
+
+    public static JWTClientManagerService getJWTClientManagerService() {
+        JWTClientManagerService jwtClientManagerService;
+        PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        jwtClientManagerService = (JWTClientManagerService) ctx.getOSGiService(JWTClientManagerService.class, null);
+        if (jwtClientManagerService == null) {
+            String msg = "jwtClientManagerServicehas not initialized.";
+            log.error(msg);
+            throw new IllegalStateException(msg);
+        }
+        return jwtClientManagerService;
+    }
+
     /**
      * Getting the current tenant's user realm
      */
@@ -293,16 +318,6 @@ public class DeviceMgtAPIUtils {
             throw new IllegalStateException("Gadget Data Service has not been initialized.");
         }
         return gadgetDataService;
-    }
-
-    public static ScopeManagementService getScopeManagementService() {
-        PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-        ScopeManagementService scopeManagementService =
-                (ScopeManagementService) ctx.getOSGiService(ScopeManagementService.class, null);
-        if (scopeManagementService == null) {
-            throw new IllegalStateException("Scope Management Service has not been initialized.");
-        }
-        return scopeManagementService;
     }
 
     public static int getTenantId(String tenantDomain) throws DeviceManagementException {

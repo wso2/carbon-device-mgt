@@ -317,5 +317,4 @@ public interface DeviceManagementProviderService {
      */
     boolean changeDeviceStatus(DeviceIdentifier deviceIdentifier, EnrolmentInfo.Status newStatus)
             throws DeviceManagementException;
-
 }

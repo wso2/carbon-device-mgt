@@ -31,7 +31,7 @@
             "issuer" : "devicemgt",
             "appName" : "devicemgt",
             "identityProviderUrl" : "https://%iot.keymanager.host%:%iot.keymanager.https.port%/samlsso",
-            "acs": "https://%iot.keymanager.host%:%iot.keymanager.https.port%/devicemgt/uuf/sso/acs",
+            "acs": "https://%iot.manager.host%:%iot.manager.https.port%/devicemgt/uuf/sso/acs",
             "identityAlias": "wso2carbon",
             "responseSigningEnabled" : true,
             "validateAssertionValidityPeriod": true,
@@ -40,7 +40,6 @@
         }
     },
     "errorPages": {
-        "404": "cdmf.page.error-404",
         "default": "uuf.page.error"
     }
 }

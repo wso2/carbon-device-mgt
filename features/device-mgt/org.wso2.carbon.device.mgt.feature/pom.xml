@@ -52,6 +52,10 @@
 			<groupId>org.wso2.carbon.store</groupId>
 			<artifactId>org.wso2.store.sso.common</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.wso2.orbit.org.scannotation</groupId>
+			<artifactId>scannotation</artifactId>
+		</dependency>
     </dependencies>
 
     <build>
@@ -81,7 +85,8 @@
                             <bundles>
                                 <bundleDef>javax.servlet.jsp:javax.servlet.jsp-api</bundleDef>
 								<bundleDef>org.wso2.carbon.store:org.wso2.store.sso.common:${carbon.store.sso.common.version}</bundleDef>
-                            </bundles>
+                            	<bundleDef>org.wso2.orbit.org.scannotation:scannotation:${scannotation.version}</bundleDef>
+							</bundles>
                         </configuration>
                     </execution>
                 </executions>

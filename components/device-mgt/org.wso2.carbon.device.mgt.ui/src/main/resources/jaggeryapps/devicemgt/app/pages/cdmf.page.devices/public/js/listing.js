@@ -315,7 +315,7 @@ function loadDevices(searchType, searchParam) {
         {
             targets: 6,
             data: 'status',
-            class: 'text-right content-fill text-left-on-grid-view no-wrap',
+            class: 'text-right content-fill text-left-on-grid-view no-wrap tooltip-overflow-fix',
             render: function (status, type, row, meta) {
                 var deviceType = row.deviceType;
                 var deviceIdentifier = row.deviceIdentifier;
@@ -326,7 +326,7 @@ function loadDevices(searchType, searchParam) {
                     if (analyticsEnabled(row.deviceType)) {
                         html += '<a href="' + context + '/device/' + deviceType + '/analytics?deviceId=' +
                                 deviceIdentifier + '&deviceName=' + row.name + '" ' + 'data-click-event="remove-form"' +
-                                ' class="btn padding-reduce-on-grid-view"><span class="fw-stack">' +
+                                ' class="btn padding-reduce-on-grid-view" data-placement="top" data-toggle="tooltip" data-original-title="Analytics"><span class="fw-stack">' +
                                 '<i class="fw fw-circle-outline fw-stack-2x"></i><i class="fw fw-statistics fw-stack-1x"></i></span>' +
                                 '<span class="hidden-xs hidden-on-grid-view">Analytics</span>';
                     }
@@ -337,24 +337,24 @@ function loadDevices(searchType, searchParam) {
                                 +
                                 'data-deviceid="' + deviceIdentifier + '" data-devicetype="' + deviceType
                                 + '" data-devicename="' +
-                                row.name + '"><span class="fw-stack"><i class="fw fw-circle-outline fw-stack-2x"></i>' +
+                                row.name + '" data-placement="top" data-toggle="tooltip" data-original-title="Group"><span class="fw-stack"><i class="fw fw-circle-outline fw-stack-2x"></i>' +
                                 '<i class="fw fw-group fw-stack-1x"></i></span>' +
                                 '<span class="hidden-xs hidden-on-grid-view">Group</span></a>';
                     }
 
-                    html +=
-                            '<a href="#" data-click-event="remove-form" class="btn padding-reduce-on-grid-view edit-device-link" '
-                            + 'data-deviceid="' + deviceIdentifier + '" data-devicetype="' + deviceType
-                            + '" data-devicename="' + row.name + '">'
-                            + '<span class="fw-stack"><i class="fw fw-circle-outline fw-stack-2x"></i>'
-                            + '<i class="fw fw-edit fw-stack-1x"></i></span>'
-                            + '<span class="hidden-xs hidden-on-grid-view">Edit</span></a>';
+//                     html +=
+//                             '<a href="#" data-click-event="remove-form" class="btn padding-reduce-on-grid-view edit-device-link" '
+//                             + 'data-deviceid="' + deviceIdentifier + '" data-devicetype="' + deviceType
+//                             + '" data-devicename="' + row.name + '" data-placement="top" data-toggle="tooltip" data-original-title="Edit">'
+//                             + '<span class="fw-stack"><i class="fw fw-circle-outline fw-stack-2x"></i>'
+//                             + '<i class="fw fw-edit fw-stack-1x"></i></span>'
+//                             + '<span class="hidden-xs hidden-on-grid-view">Edit</span></a>';
                     var groupOwner = $('#group_owner').text();
                     if (groupId && groupOwner != "wso2.system.user") {
                         html +=
                                 '<a href="#" data-click-event="remove-form" class="btn padding-reduce-on-grid-view remove-device-link" '
                                 + 'data-deviceid="' + deviceIdentifier + '" data-devicetype="' + deviceType
-                                + '" data-devicename="' + row.name + '">'
+                                + '" data-devicename="' + row.name + '" data-placement="top" data-toggle="tooltip" data-original-title="Remove from group">'
                                 + '<span class="fw-stack"><i class="fw fw-circle-outline fw-stack-2x"></i>'
                                 + '<i class="fw fw-delete fw-stack-1x"></i></span>'
                                 + '<span class="hidden-xs hidden-on-grid-view">Remove from group</span>';
@@ -362,7 +362,7 @@ function loadDevices(searchType, searchParam) {
                         html +=
                                 '<a href="#" data-click-event="remove-form" class="btn padding-reduce-on-grid-view remove-device-link" '
                                 + 'data-deviceid="' + deviceIdentifier + '" data-devicetype="' + deviceType
-                                + '" data-devicename="' + row.name + '">'
+                                + '" data-devicename="' + row.name + '" data-placement="top" data-toggle="tooltip" data-original-title="Delete">'
                                 + '<span class="fw-stack"><i class="fw fw-circle-outline fw-stack-2x"></i>'
                                 + '<i class="fw fw-delete fw-stack-1x"></i></span>'
                                 + '<span class="hidden-xs hidden-on-grid-view">Delete</span>';
@@ -460,11 +460,12 @@ function loadDevices(searchType, searchParam) {
                 $("#loading-content").remove();
                 attachDeviceEvents();
 
-                if($('.advance-search').length < 1){
+                // Temporary disable
+                /*if($('.advance-search').length < 1){
                     $(this).closest('.dataTables_wrapper').find('div[id$=_filter] input')
                         .after('<a href="'+context+'/devices/search"' +
                             ' class="advance-search add-padding-3x">Advance Search</a>');
-                }
+                }*/
 
             }, {
                 "placeholder": "Search By Device Name",

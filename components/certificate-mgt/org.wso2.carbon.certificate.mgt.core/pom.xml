@@ -61,7 +61,7 @@
                             javax.security.auth.x500,
                             javax.xml.*,
 			                javax.xml.parsers;version="${javax.xml.parsers.import.pkg.version}";resolution:=optional,
-                            org.apache.commons.codec.binary,
+                            org.apache.commons.codec.binary;version="${commons-codec.wso2.osgi.version.range}",
                             org.bouncycastle.asn1,
                             org.bouncycastle.asn1.x500,
                             org.bouncycastle.asn1.x509,

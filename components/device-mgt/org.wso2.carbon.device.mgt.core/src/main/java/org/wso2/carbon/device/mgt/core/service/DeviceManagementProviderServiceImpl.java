@@ -315,7 +315,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         return enrolmentInfos;
     }
 
-    @Override
+        @Override
     public boolean disenrollDevice(DeviceIdentifier deviceId) throws DeviceManagementException {
         DeviceManager deviceManager = this.getDeviceManager(deviceId.getType());
         if (deviceManager == null) {

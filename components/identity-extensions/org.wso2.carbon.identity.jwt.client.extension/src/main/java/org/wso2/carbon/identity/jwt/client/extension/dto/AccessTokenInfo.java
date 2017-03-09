@@ -27,6 +27,7 @@ public class AccessTokenInfo {
 	private long expiresIn;
 	private String refreshToken;
 	private String accessToken;
+    private String scopes;
 
 	public String getTokenType() {
 		return tokenType;
@@ -59,4 +60,12 @@ public class AccessTokenInfo {
 	public void setAccessToken(String accessToken) {
 		this.accessToken = accessToken;
 	}
+
+    public String getScopes() {
+        return scopes;
+    }
+
+    public void setScopes(String scopes) {
+        this.scopes = scopes;
+    }
 }

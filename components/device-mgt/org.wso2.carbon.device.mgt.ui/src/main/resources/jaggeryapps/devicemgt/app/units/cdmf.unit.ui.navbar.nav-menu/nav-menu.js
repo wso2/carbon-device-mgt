@@ -52,6 +52,7 @@ function onRequest(context) {
     context["isAuthorizedForNotifications"] = isAuthorizedForNotifications;
     context["currentUser"] = currentUser;
     context["appContext"] = mdmProps["appContext"];
+    context["isCloud"] = mdmProps["isCloud"];
 
     return context;
 }

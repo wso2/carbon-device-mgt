@@ -121,6 +121,51 @@ var handlers = function () {
         }
     };
 
+	publicMethods["setupTokenPairByJWTGrantType"] = function (username, samlToken) {
+		//samlToken is used to validate then if the user is a valid user then token is issued with JWT Grant Type.
+		if (!username || !samlToken) {
+			throw new Error("{/app/modules/oauth/token-handlers.js} Could not set up access token pair by " +
+			"saml grant type. Either username of logged in user, samlToken or both are missing " +
+			"as input - setupTokenPairBySamlGrantType(x, y)");
+		} else {
+			privateMethods.setUpEncodedTenantBasedClientAppCredentials(username);
+			//privateMethods.setUpEncodedTenantBasedWebSocketClientAppCredentials(username);
+			var encodedClientAppCredentials = session.get(constants["ENCODED_TENANT_BASED_CLIENT_APP_CREDENTIALS"]);
+			if (!encodedClientAppCredentials) {
+				throw new Error("{/app/modules/oauth/token-handlers.js} Could not set up access token pair " +
+				"by saml grant type. Encoded client credentials are " +
+				"missing - setupTokenPairBySamlGrantType(x, y)");
+			} else {
+				var tokenData;
+				var arrayOfScopes = devicemgtProps["scopes"];
+				arrayOfScopes = arrayOfScopes.concat(utility.getDeviceTypesScopesList());
+				var stringOfScopes = "";
+				arrayOfScopes.forEach(function (entry) {
+					stringOfScopes += entry + " ";
+				});
+
+				// accessTokenPair will include current access token as well as current refresh token
+				tokenData = tokenUtil.
+					getTokenPairAndScopesByJWTGrantType(samlToken, encodedClientAppCredentials, stringOfScopes);
+				if (!tokenData) {
+					throw new Error("{/app/modules/oauth/token-handlers.js} Could not set up token " +
+					"pair by password grant type. Error in token " +
+					"retrieval - setupTokenPairBySamlGrantType(x, y)");
+				} else {
+					var tokenPair = {};
+					tokenPair["accessToken"] = tokenData["accessToken"];
+					tokenPair["refreshToken"] = tokenData["refreshToken"];
+					// setting up access token pair into session context as a string
+					session.put(constants["TOKEN_PAIR"], stringify(tokenPair));
+
+					var scopes = tokenData.scopes.split(" ");
+					// adding allowed scopes to the session
+					session.put(constants["ALLOWED_SCOPES"], scopes);
+				}
+			}
+		}
+	};
+
     publicMethods["refreshTokenPair"] = function () {
         var currentTokenPair = parse(session.get(constants["TOKEN_PAIR"]));
         // currentTokenPair includes current access token as well as current refresh token

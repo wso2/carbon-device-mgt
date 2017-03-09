@@ -32,6 +32,7 @@ function onRequest(context) {
     }
 
     context["adminRole"] = deviceMgtProps["adminRole"];
+    context["isCloud"] = deviceMgtProps["isCloud"];
 
     return context;
 }

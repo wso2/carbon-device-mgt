@@ -19,9 +19,12 @@
 package org.wso2.carbon.device.mgt.oauth.extensions.internal;
 
 import org.wso2.carbon.identity.oauth2.OAuth2TokenValidationService;
+import org.wso2.carbon.identity.oauth2.validators.OAuth2ScopeValidator;
 import org.wso2.carbon.user.core.service.RealmService;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * This holds the OSGi service references required for oauth extensions bundle.
@@ -31,10 +34,13 @@ public class OAuthExtensionsDataHolder {
     private RealmService realmService;
     private OAuth2TokenValidationService oAuth2TokenValidationService;
     private List<String> whitelistedScopes;
+    private Map<String, OAuth2ScopeValidator> scopeValidators;
 
     private static OAuthExtensionsDataHolder thisInstance = new OAuthExtensionsDataHolder();
 
-    private OAuthExtensionsDataHolder() {}
+    private OAuthExtensionsDataHolder() {
+        scopeValidators = new HashMap<>();
+    }
 
     public static OAuthExtensionsDataHolder getInstance() {
         return thisInstance;
@@ -69,6 +75,22 @@ public class OAuthExtensionsDataHolder {
 
     public void setWhitelistedScopes(List<String> whitelistedScopes) {
         this.whitelistedScopes = whitelistedScopes;
+    }
+
+    public Map<String, OAuth2ScopeValidator> getScopeValidators() {
+        return scopeValidators;
+    }
+
+    public void setScopeValidators(Map<String, OAuth2ScopeValidator> scopeValidators) {
+        this.scopeValidators = scopeValidators;
+    }
+
+    public void addScopeValidator(OAuth2ScopeValidator oAuth2ScopeValidator, String prefix) {
+        scopeValidators.put(prefix, oAuth2ScopeValidator);
+    }
+
+    public void removeScopeValidator() {
+        scopeValidators = null;
     }
 
 }

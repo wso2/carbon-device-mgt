@@ -18,7 +18,7 @@
 
 package org.wso2.carbon.apimgt.webapp.publisher.config;
 
-import org.wso2.carbon.apimgt.api.model.Scope;
+import org.wso2.carbon.apimgt.webapp.publisher.dto.ApiScope;
 
 public class APIResource {
 
@@ -28,7 +28,7 @@ public class APIResource {
     private String UriTemplate;
     private String consumes;
     private String produces;
-    private Scope scope;
+    private ApiScope scope;
 
     public String getAuthType() {
         return AuthType;
@@ -78,11 +78,11 @@ public class APIResource {
         this.produces = produces;
     }
 
-    public Scope getScope() {
+    public ApiScope getScope() {
         return scope;
     }
 
-    public void setScope(Scope scope) {
+    public void setScope(ApiScope scope) {
         this.scope = scope;
     }
 }

@@ -23,12 +23,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.owasp.encoder.Encode;
 import org.w3c.dom.Document;
-import org.wso2.carbon.apimgt.api.APIManagementException;
-import org.wso2.carbon.apimgt.core.authenticate.APITokenValidator;
-import org.wso2.carbon.apimgt.impl.APIConstants;
-import org.wso2.carbon.apimgt.impl.dto.APIKeyValidationInfoDTO;
-import org.wso2.carbon.context.PrivilegedCarbonContext;
-import org.wso2.carbon.webapp.authenticator.framework.Utils.Utils;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.XMLConstants;
@@ -46,33 +40,6 @@ public class AuthenticationFrameworkUtil {
         String msg = "Resource is not matched for HTTP Verb: '" + httpVerb + "', API context: '" + context +
                 "', Version: '" + version + "' and RequestURI: '" + Encode.forHtml(request.getRequestURI()) + "'";
         handleResponse(request, response, HttpServletResponse.SC_FORBIDDEN, msg);
-    }
-
-    public static boolean doAuthenticate(
-            String context, String version, String accessToken, String requiredAuthenticationLevel,
-            String clientDomain) throws APIManagementException, AuthenticationException {
-
-        if (APIConstants.AUTH_NO_AUTHENTICATION.equals(requiredAuthenticationLevel)) {
-            return true;
-        }
-        APITokenValidator tokenValidator = new APITokenValidator();
-        APIKeyValidationInfoDTO apiKeyValidationDTO = tokenValidator.validateKey(context, version, accessToken,
-                requiredAuthenticationLevel);
-        if (apiKeyValidationDTO.isAuthorized()) {
-            String username = apiKeyValidationDTO.getEndUserName();
-            PrivilegedCarbonContext.getThreadLocalCarbonContext().setUsername(username);
-//            try {
-                PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(Utils.getTenantIdOFUser(username));
-//            } catch (IdentityException e) {
-//                throw new AuthenticationException("Error occurred while retrieving the tenant ID of user '" +
-//                        username + "'", e);
-//            }
-            return true;
-        } else {
-            throw new AuthenticationException(apiKeyValidationDTO.getValidationStatus(),
-                    "Access failure for API: " + context + ", version: " +
-                            version + " with key: " + accessToken);
-        }
     }
 
     public static void handleResponse(Request request, Response response, int statusCode, String payload) {

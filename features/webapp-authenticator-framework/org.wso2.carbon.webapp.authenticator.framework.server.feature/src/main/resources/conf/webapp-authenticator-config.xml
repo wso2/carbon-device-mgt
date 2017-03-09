@@ -21,6 +21,7 @@
             <ClassName>org.wso2.carbon.webapp.authenticator.framework.authenticator.JWTAuthenticator</ClassName>
             <Parameters>
 				<!--Issuers list and corresponding cert alias-->
+				<Parameter Name="default">wso2carbon</Parameter>
                 <Parameter Name="wso2.org/products/am">wso2carbon</Parameter>
 				<Parameter Name="wso2.org/products/iot">wso2carbon</Parameter>
 				<Parameter Name="wso2.org/products/analytics">wso2carbon</Parameter>

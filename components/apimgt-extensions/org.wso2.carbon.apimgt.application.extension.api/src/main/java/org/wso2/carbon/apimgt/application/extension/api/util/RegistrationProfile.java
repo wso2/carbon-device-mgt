@@ -30,7 +30,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class RegistrationProfile {
-
     @XmlElement(required = true)
     private String applicationName;
     @XmlElement(required = true)

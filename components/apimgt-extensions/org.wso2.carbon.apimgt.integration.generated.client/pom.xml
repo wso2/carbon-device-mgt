@@ -1,0 +1,205 @@
+<!-- ~ Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+	~ ~ WSO2 Inc. licenses this file to you under the Apache License, ~ Version 
+	2.0 (the "License"); you may not use this file except ~ in compliance with 
+	the License. ~ You may obtain a copy of the License at ~ ~ http://www.apache.org/licenses/LICENSE-2.0 
+	~ ~ Unless required by applicable law or agreed to in writing, ~ software 
+	distributed under the License is distributed on an ~ "AS IS" BASIS, WITHOUT 
+	WARRANTIES OR CONDITIONS OF ANY ~ KIND, either express or implied. See the 
+	License for the ~ specific language governing permissions and limitations 
+	~ under the License. -->
+
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<parent>
+		<artifactId>apimgt-extensions</artifactId>
+		<groupId>org.wso2.carbon.devicemgt</groupId>
+		<version>2.0.20-SNAPSHOT</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
+
+	<modelVersion>4.0.0</modelVersion>
+	<artifactId>org.wso2.carbon.apimgt.integration.generated.client</artifactId>
+	<version>2.0.20-SNAPSHOT</version>
+	<packaging>bundle</packaging>
+	<name>WSO2 Carbon - API Management Integration Generated Client</name>
+	<description>WSO2 Carbon - API Management Integration Client</description>
+	<url>http://wso2.org</url>
+
+	<build>
+		<plugins>
+			<!--swagger yaml is used to generate code-->
+			<plugin>
+				<groupId>io.swagger</groupId>
+				<artifactId>swagger-codegen-maven-plugin</artifactId>
+				<version>2.2.1</version>
+				<executions>
+					<execution>
+						<phase>process-resources</phase>
+						<id>publisher</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<inputSpec>${project.basedir}/src/main/resources/publisher-api.yaml</inputSpec>
+							<language>java</language>
+							<configOptions>
+								<apiPackage>${project.artifactId}.publisher.api</apiPackage>
+								<modelPackage>${project.artifactId}.publisher.model</modelPackage>
+							</configOptions>
+							<library>feign</library>
+						</configuration>
+					</execution>
+					<execution>
+						<phase>process-resources</phase>
+						<id>store</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<inputSpec>${project.basedir}/src/main/resources/store-api.yaml</inputSpec>
+							<language>java</language>
+							<configOptions>
+								<apiPackage>${project.artifactId}.store.api</apiPackage>
+								<modelPackage>${project.artifactId}.store.model</modelPackage>
+							</configOptions>
+							<library>feign</library>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>com.google.code.maven-replacer-plugin</groupId>
+				<artifactId>replacer</artifactId>
+				<version>1.5.2</version>
+				<executions>
+					<!-- Replace java code that is generated from swagger to fix swagger client generation issues. -->
+					<execution>
+						<phase>process-resources</phase>
+						<id>replace-for-swagger-genenerated-code-publisher</id>
+						<goals>
+							<goal>replace</goal>
+						</goals>
+						<configuration>
+							<file>${project.basedir}/target/generated-sources/swagger/src/main/java/org/wso2/carbon/apimgt/integration/generated/client/publisher/model/API.java</file>
+							<replacements>
+								<replacement>
+									<token>CURRENT_TENANT</token>
+									<value>current_tenant</value>
+								</replacement>
+								<replacement>
+									<token>ALL_TENANTS</token>
+									<value>all_tenants</value>
+								</replacement>
+								<replacement>
+									<token>SPECIFIC_TENANTS</token>
+									<value>specific_tenants</value>
+								</replacement>
+							</replacements>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>maven-bundle-plugin</artifactId>
+				<extensions>true</extensions>
+				<configuration>
+					<instructions>
+						<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+						<Bundle-Name>${project.artifactId}</Bundle-Name>
+						<Bundle-Version>${project.version}</Bundle-Version>
+						<Bundle-Description>APIM Integration</Bundle-Description>
+						<Export-Package>
+							org.wso2.carbon.apimgt.integration.generated.client.publisher.api.*,
+							org.wso2.carbon.apimgt.integration.generated.client.publisher.model.*,
+							org.wso2.carbon.apimgt.integration.generated.client.store.api.*,
+							org.wso2.carbon.apimgt.integration.generated.client.store.model.*
+						</Export-Package>
+						<Import-Package>
+							feign;version="${io.github.openfeign.version.range}",
+							feign.jackson;version="${io.github.openfeign.version.range}",
+							feign.codec;version="${io.github.openfeign.version.range}",
+							feign.auth;version="${io.github.openfeign.version.range}",
+							feign.gson;version="${io.github.openfeign.version.range}",
+							feign.slf4j;version="${io.github.openfeign.version.range}",
+							com.google.gson,
+							com.fasterxml.jackson.core;resolution:=optional,
+							com.fasterxml.jackson.annotation,
+							com.fasterxml.jackson.databind;resolution:=optional,
+							io.swagger.annotations,
+							javax.net.ssl,
+							com.fasterxml.jackson.datatype.joda;resolution:=optional,
+							org.apache.oltu.oauth2.client.*;resolution:=optional,
+							org.apache.oltu.oauth2.common.*;resolution:=optional,
+							org.junit;resolution:=optional,
+						</Import-Package>
+						<Embed-Dependency>
+							jsr311-api,
+							feign-jaxrs
+						</Embed-Dependency>
+					</instructions>
+				</configuration>
+			</plugin>
+
+		</plugins>
+	</build>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>javax.ws.rs</groupId>
+			<artifactId>jsr311-api</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>io.swagger</groupId>
+			<artifactId>swagger-annotations</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.github.openfeign</groupId>
+			<artifactId>feign-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.github.openfeign</groupId>
+			<artifactId>feign-jackson</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.github.openfeign</groupId>
+			<artifactId>feign-jaxrs</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.github.openfeign</groupId>
+			<artifactId>feign-gson</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.testng</groupId>
+			<artifactId>testng</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.oltu.oauth2</groupId>
+			<artifactId>org.apache.oltu.oauth2.client</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.github.openfeign</groupId>
+			<artifactId>feign-slf4j</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.wso2.orbit.com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>${jackson-databind.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.datatype</groupId>
+			<artifactId>jackson-datatype-joda</artifactId>
+		</dependency>
+	</dependencies>
+
+</project>

@@ -16,194 +16,83 @@
   under the License.
 }}
 <ul class="nav navbar-right float-remove-xs text-center-xs">
+    {{#each Main}}
+        <li class="visible-inline-block">
+            <a href="{{this.url}}" target="{{this.target}}"
+                {{#if this.dropDownVisible}}
+               class="dropdown" data-toggle="dropdown"
+                {{/if}}
+               title = "
+                {{#if this.isDomain }}
+                   {{@user.domain}}
+               {{else}}
+                   {{@key}}
+               {{/if}}
+            ">
+                <span class="icon fw-stack fw-lg" {{#if this.isSupport}} style="color: #ff8c27;" {{/if}}>
+                    <i class="{{this.icon}} fw-stack-1x" title="
+                    {{#if this.isDomain }}
+                        {{@user.domain}}
+                    {{else}}
+                        {{@key}}
+                    {{/if}}
+                    "></i>
+                </span>
+                <span class="hidden-xs {{#if this.isDomain }} username {{/if}}">
+                    {{#if this.isDomain }}
+                        {{@user.domain}}
+                    {{else}}
+                        {{@key}}
+                    {{/if}}
+                </span>
+                {{#if this.dropDownVisible}}
+                    <span class="caret"></span>
+                {{/if}}
+            </a>
+            {{#if this.dropDownVisible}}
+
+                <ul class="dropdown-menu dropdown-menu-right float-remove-xs position-static-xs text-center-xs remove-margin-xs slideInDown"
+                    role="menu">
+                    {{#each this.dropDown}}
+                        {{#if this.dropDown}}
+                            <li>
+                                <a title="{{@key}}"
+                                   href="{{this.url}}"
+                                   target="{{this.target}}">
+                                    <i class="{{this.icon}}" title="{{@key}}"></i> {{@key}}
+                                </a>
+                            </li>
+                        {{/if}}
+                    {{/each}}
+                </ul>
+            {{/if}}
+        </li>
+    {{/each}}
 
     <li class="visible-inline-block">
-        <a href="#" target="_self" title="{{@user.domain}}">
-                        <span class="icon fw-stack fw-lg">
-                            <i class="fw fw-organization fw-stack-1x" title=" {{@user.domain}}"></i>
-                        </span>
-            <span class="hidden-xs username">
-                {{@user.domain}}
-            </span>
-
-        </a>
-    </li>
-
-    <!--<li class="visible-inline-block">-->
-
-        <!--<a href="#" target="_blank" class="dropdown" data-toggle="dropdown" title="Account">-->
-
-                    <!--<span class="icon fw-stack fw-lg" style="color: red">-->
-                        <!--<i class="fw fw-resource fw-stack-1x" title="Account"></i>-->
-                    <!--</span>-->
-            <!--<span class="hidden-xs" style="color: red">-->
-                        <!--Trial – 14 days to upgrade-->
-                    <!--</span>-->
-
-            <!--<span class="caret"></span>-->
-        <!--</a>-->
-
-        <!--<ul class="dropdown-menu dropdown-menu-right float-remove-xs position-static-xs text-center-xs remove-margin-xs slideInDown"-->
-            <!--role="menu">-->
-
-            <!--<li>-->
-                <!--<a title="Upgrade Now"-->
-                   <!--href="{{upgradeNowURL}}"-->
-                   <!--target="_self">-->
-                    <!--<i class="fw fw-export" title="Upgrade Now"></i> Upgrade Now-->
-                <!--</a>-->
-            <!--</li>-->
-
-            <!--<li>-->
-                <!--<a title="Monetization"-->
-                   <!--href="{{monetizationURL}}"-->
-                   <!--target="_self">-->
-                    <!--<i class="fa fa-money fa-lg" title="Monetization"></i> Monetization-->
-                <!--</a>-->
-            <!--</li>-->
-
-            <!--<li>-->
-                <!--<a title="Request Extension"-->
-                   <!--href="{{requestExtensionURL}}"-->
-                   <!--target="_blank">-->
-                    <!--<i class="fw fw-mail" title="Request Extension"></i> Request Extension-->
-                <!--</a>-->
-            <!--</li>-->
-
-        <!--</ul>-->
-    <!--</li>-->
-
-    <!--<li class="visible-inline-block">-->
-
-        <!--<a href="#" target="null" class="dropdown" data-toggle="dropdown" title="App Management">-->
-                    <!--<span class="icon fw-stack fw-lg">-->
-                        <!--<i class="fw fw-settings fw-stack-1x" title="App Management"></i>-->
-                    <!--</span>-->
-            <!--<span class="hidden-xs">-->
-                        <!--App Management-->
-            <!--</span>-->
-            <!--<span class="caret"></span>-->
-        <!--</a>-->
-
-        <!--<ul class="dropdown-menu dropdown-menu-right float-remove-xs position-static-xs text-center-xs remove-margin-xs slideInDown"-->
-            <!--role="menu">-->
-            <!--<li class="visible-inline-block">-->
-                <!--<a title="Mobile App Publisher" href="{{publisherURL}}"-->
-                   <!--target="_self">-->
-                    <!--<i class="fw fw-user" title="Mobilr App Publisher"></i> App Publisher-->
-                <!--</a>-->
-            <!--</li>-->
-
-            <!--<li class="visible-inline-block">-->
-                <!--<a title="App Store " href="{{storeURL}}"-->
-                   <!--target="_self">-->
-                    <!--<i class="fw fw-store" title="App Store"></i> App Store-->
-                <!--</a>-->
-            <!--</li>-->
-
-        <!--</ul>-->
-    <!--</li>-->
-
-    <li class="visible-inline-block">
-        <a href="{{contactUsURL}}" target="_self"
-           title="Support">
-
-
-                    <span class="icon fw-stack fw-lg" style="color: #ff8c27;">
-                        <i class="fw fw-mail fw-stack-1x" title="Support"></i>
-                    </span>
-            <span class="hidden-xs" style="color: #ff8c27;">
-                        Support
-                    </span>
-
-        </a>
-    </li>
-
-    <li class="visible-inline-block">
-
-        <a href="#" target="null" class="dropdown" data-toggle="dropdown" title="Documentation">
-                    <span class="icon fw-stack fw-lg">
-                        <i class="fw fw-document fw-stack-1x" title="Documentation"></i>
-                    </span>
-            <span class="hidden-xs">
-                        Documentation
-                    </span>
-            <span class="caret"></span>
-        </a>
-
-        <ul class="dropdown-menu dropdown-menu-right float-remove-xs position-static-xs text-center-xs remove-margin-xs slideInDown"
-            role="menu">
-
-            <li>
-                <a title="API Cloud"
-                   href="{{apiCloudDocURL}}"
-                   target="_blank">
-                    <i class="fw fw-api" title="API Cloud"></i> API Cloud
-                </a>
-            </li>
-
-            <li>
-                <a title="App Cloud"
-                   href="{{appCloudDocURL}}"
-                   target="_blank">
-                    <i class="fw fw-application" title="App Cloud"></i> App Cloud
-                </a>
-            </li>
-
-            <li>
-                <a title="Device Cloud"
-                   href="{{deviceCloudDocURL}}"
-                   target="_blank">
-                    <i class="fw fw-application" title="App Cloud"></i> Device Cloud
-                </a>
-            </li>
-
-            <li>
-                <a title="API Cloud Walkthrough"
-                   href="{{apiCloudWalkthroughURL}}"
-                   target="_self">
-                    <i class="fw fw-document" title="API Cloud Walkthrough"></i> API Cloud Walkthrough
-                </a>
-            </li>
-
-        </ul>
-    </li>
-
-    <li class="visible-inline-block">
-        <a href="#" class="dropdown" data-toggle="dropdown" title="user">
+        <a href="{{UserMenu.url}}" class="dropdown" data-toggle="dropdown" title="User">
                     <span class="icon fw-stack fw-lg">
                         <i class="fw fw-circle-outline fw-stack-2x" title="User"></i>
-                        <i class="fw fw-user fw-stack-1x" title="User"></i>
+                        <i class="{{UserMenu.icon}} fw-stack-1x" title="User"></i>
                     </span>
-        <span class="hidden-xs username">
+            <span class="hidden-xs username">
                 {{@user.username}}</span><span class="caret"></span>
         </a>
         <ul class="dropdown-menu dropdown-menu-right float-remove-xs position-static-xs text-center-xs remove-margin-xs slideInDown"
             role="menu">
 
-            <li>
-                <a title="Profile"
-                   href="{{profileURL}}"
-                   target="_self">
-                    <i class="fw fw-user" title="Profile"></i> Profile
-                </a>
-            </li>
+            {{#each UserMenu.dropDown}}
+                {{#if this.dropDown}}
+                    <li>
+                        <a title="{{@key}}"
+                           href="{{this.url}}"
+                           target="{{target}}">
+                            <i class="{{this.icon}}" title="{{@key}}"></i> {{@key}}
+                        </a>
+                    </li>
 
-            <li>
-                <a title="Change Password"
-                   href="{{changePasswordURL}}"
-                   target="_self">
-                    <i class="fw fw-lock" title="Change Password"></i> Change Password
-                </a>
-            </li>
-
-            <li>
-                <a title="Logout" href="{{logoutURL}}"
-                   target="_self">
-                    <i class="fw fw-sign-out" title="Logout"></i> Logout
-                </a>
-            </li>
-
+                {{/if}}
+            {{/each}}
         </ul>
     </li>
     <li class="visible-inline-block cloud-menu">
@@ -219,46 +108,33 @@
     </li>
 </ul>
 
-
 <div class="cloud-menu-content hide">
     <div id="popover-head" class="hide">Navigate to Cloud</div>
     <div id="popover-content" class="hide">
         <div class="cloud-apps">
-
-            <a href="{{apiCloudURL}}" target="_self" class="cloud-block add-padding-top-3x">
-                <i class="fw fw-api fw-3x"></i>
-                <div class="cloud-name">API Cloud</div>
-            </a>
-
-            <a href="{{appCloudURL}}" target="_self" class="cloud-block add-padding-top-3x">
-                <i class="fw fw-application fw-3x"></i>
-                <div class="cloud-name">App Cloud</div>
-            </a>
-
-            <a href="{{deviceCloudURL}}" target="_self" class="cloud-block add-padding-top-3x">
-                <i class="fw fw-mobile fw-3x"></i>
-                <div class="cloud-name">Device Cloud</div>
-            </a>
-
-            <div class="clearfix"></div><!-- to make seperate -->
+            {{#each Expand.Clouds}}
+                {{#if this.dropDown}}
+                    <a href="{{this.url}}" target="_self" class="cloud-block add-padding-top-3x">
+                        <i class="{{this.icon}}"></i>
+                        <div class="cloud-name">{{@key}}</div>
+                    </a>
+                {{/if}}
+            {{/each}}
+            <div class="clearfix"></div>
         </div>
         <div class="cloud-actions">
             <h3>Manage your cloud</h3>
-
-            <a href="{{oraganizationURL}}" target="_self" class="cloud-block-invert add-padding-top-3x">
-                <i class="fw fw-organization  fw-3x"></i>
-                <div class="cloud-name">Organization</div>
-            </a>
-
-            <a href="{{membersURL}}" target="_self" class="cloud-block-invert add-padding-top-3x">
-                <i class="fa fa-users  fa-3x"></i>
-                <div class="cloud-name">Members</div>
-            </a>
-
+            {{#each Expand.Actions}}
+                {{#if this.dropDown}}
+                    <a href="{{this.url}}" target="{{this.target}}" class="cloud-block-invert add-padding-top-3x">
+                        <i class="{{this.icon}}"></i>
+                        <div class="cloud-name">{{@key}}</div>
+                    </a>
+                {{/if}}
+            {{/each}}
         </div>
     </div>
 </div>
-
 
 {{#zone "bottomJs"}}
     {{js "/js/user-menu.js"}}

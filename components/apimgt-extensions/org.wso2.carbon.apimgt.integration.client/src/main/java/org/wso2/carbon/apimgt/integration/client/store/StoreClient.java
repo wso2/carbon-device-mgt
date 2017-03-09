@@ -18,12 +18,14 @@
 package org.wso2.carbon.apimgt.integration.client.store;
 
 import feign.Feign;
+import feign.Logger;
 import feign.RequestInterceptor;
 import feign.gson.GsonDecoder;
 import feign.gson.GsonEncoder;
+import feign.slf4j.Slf4jLogger;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.apimgt.integration.client.configs.APIMConfigReader;
-import org.wso2.carbon.apimgt.integration.client.store.api.*;
+import org.wso2.carbon.apimgt.integration.generated.client.store.api.*;
 import org.wso2.carbon.core.util.Utils;
 
 /**
@@ -32,41 +34,44 @@ import org.wso2.carbon.core.util.Utils;
 public class StoreClient {
 
     private static final org.apache.commons.logging.Log log = LogFactory.getLog(StoreClient.class);
-    private ApisAPIApi apis = null;
-    private APIindividualApi individualApi = null;
+    private APICollectionApi apis = null;
+    private APIIndividualApi individualApi = null;
     private ApplicationCollectionApi applications = null;
-    private ApplicationindividualApi individualApplication = null;
+    private ApplicationIndividualApi individualApplication = null;
     private SubscriptionCollectionApi subscriptions = null;
-    private SubscriptionindividualApi individualSubscription = null;
-    private TierindividualApi individualTier = null;
+    private SubscriptionIndividualApi individualSubscription = null;
+    private SubscriptionMultitpleApi subscriptionMultitpleApi = null;
+    private ThrottlingTierIndividualApi individualTier = null;
     private TagCollectionApi tags = null;
-    private TierCollectionApi tiers = null;
+    private ThrottlingTierCollectionApi tiers = null;
 
 
     public StoreClient(RequestInterceptor requestInterceptor) {
 
         Feign.Builder builder = Feign.builder().client(
-                org.wso2.carbon.apimgt.integration.client.util.Utils.getSSLClient()).requestInterceptor(
-                requestInterceptor).encoder(new GsonEncoder()).decoder(new GsonDecoder());
+                org.wso2.carbon.apimgt.integration.client.util.Utils.getSSLClient()).logger(new Slf4jLogger())
+                .logLevel(Logger.Level.FULL)
+                .requestInterceptor(requestInterceptor).encoder(new GsonEncoder()).decoder(new GsonDecoder());
         String basePath = Utils.replaceSystemProperty(APIMConfigReader.getInstance().getConfig().getStoreEndpoint());
 
-        apis = builder.target(ApisAPIApi.class, basePath);
-        individualApi = builder.target(APIindividualApi.class, basePath);
+        apis = builder.target(APICollectionApi.class, basePath);
+        individualApi = builder.target(APIIndividualApi.class, basePath);
         applications = builder.target(ApplicationCollectionApi.class, basePath);
-        individualApplication = builder.target(ApplicationindividualApi.class, basePath);
+        individualApplication = builder.target(ApplicationIndividualApi.class, basePath);
         subscriptions = builder.target(SubscriptionCollectionApi.class, basePath);
-        individualSubscription = builder.target(SubscriptionindividualApi.class, basePath);
+        individualSubscription = builder.target(SubscriptionIndividualApi.class, basePath);
+        subscriptionMultitpleApi = builder.target(SubscriptionMultitpleApi.class, basePath);
         tags = builder.target(TagCollectionApi.class, basePath);
-        tiers = builder.target(TierCollectionApi.class, basePath);
-        individualTier = builder.target(TierindividualApi.class, basePath);
+        tiers = builder.target(ThrottlingTierCollectionApi.class, basePath);
+        individualTier = builder.target(ThrottlingTierIndividualApi.class, basePath);
 
     }
 
-    public ApisAPIApi getApis() {
+    public APICollectionApi getApis() {
         return apis;
     }
 
-    public APIindividualApi getIndividualApi() {
+    public APIIndividualApi getIndividualApi() {
         return individualApi;
     }
 
@@ -74,7 +79,7 @@ public class StoreClient {
         return applications;
     }
 
-    public ApplicationindividualApi getIndividualApplication() {
+    public ApplicationIndividualApi getIndividualApplication() {
         return individualApplication;
     }
 
@@ -82,11 +87,11 @@ public class StoreClient {
         return subscriptions;
     }
 
-    public SubscriptionindividualApi getIndividualSubscription() {
+    public SubscriptionIndividualApi getIndividualSubscription() {
         return individualSubscription;
     }
 
-    public TierindividualApi getIndividualTier() {
+    public ThrottlingTierIndividualApi getIndividualTier() {
         return individualTier;
     }
 
@@ -94,7 +99,11 @@ public class StoreClient {
         return tags;
     }
 
-    public TierCollectionApi getTiers() {
+    public ThrottlingTierCollectionApi getTiers() {
         return tiers;
+    }
+
+    public SubscriptionMultitpleApi getSubscriptionMultitpleApi() {
+        return subscriptionMultitpleApi;
     }
 }

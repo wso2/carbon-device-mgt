@@ -6360,6 +6360,7 @@ ul.tiles .icon {
 
 #device-location{
   height:450px;
+  width: 100%;
   margin-bottom:0px;
 }
 #device-location .leaflet-popup-content-wrapper{

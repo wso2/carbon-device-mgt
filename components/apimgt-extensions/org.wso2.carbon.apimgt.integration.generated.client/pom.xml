@@ -201,5 +201,7 @@
 			<artifactId>jackson-datatype-joda</artifactId>
 		</dependency>
 	</dependencies>
-
+        <properties>
+             <maven.javadoc.skip>true</maven.javadoc.skip>
+        </properties>
 </project>

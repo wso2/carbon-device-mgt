@@ -18,11 +18,8 @@
  */
 package org.wso2.carbon.device.mgt.extensions.device.type.deployer.config;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.*;
+import java.util.List;
 
 
 /**
@@ -74,6 +71,21 @@ public class DeviceTypeConfiguration {
     protected String name;
     @XmlElement(name = "PolicyMonitoring", required = true)
     protected PolicyMonitoring policyMonitoring;
+    @XmlElementWrapper(name = "InitialOperationConfig")
+    @XmlElement(name = "Operation", required = true)
+    protected List<String> operations;
+
+    public List<String> getOperations() {
+        return operations;
+    }
+
+    public void setOperations(List<String> operations) {
+        this.operations = operations;
+    }
+
+
+
+
 
     /**
      * Gets the value of the taskConfiguration property.

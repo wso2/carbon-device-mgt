@@ -20,11 +20,7 @@ package org.wso2.carbon.device.mgt.extensions.device.type.deployer.template;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.device.mgt.common.DeviceManagementException;
-import org.wso2.carbon.device.mgt.common.DeviceManager;
-import org.wso2.carbon.device.mgt.common.MonitoringOperation;
-import org.wso2.carbon.device.mgt.common.OperationMonitoringTaskConfig;
-import org.wso2.carbon.device.mgt.common.ProvisioningConfig;
+import org.wso2.carbon.device.mgt.common.*;
 import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManager;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.ConfigurationEntry;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.PlatformConfiguration;
@@ -57,6 +53,8 @@ public class DeviceTypeManagerService implements DeviceManagementService {
     private OperationMonitoringTaskConfig operationMonitoringConfigs;
     private List<MonitoringOperation> monitoringOperations;
     private PolicyMonitoringManager policyMonitoringManager;
+    private InitialOperationConfig initialOperationConfig;
+    private List<String> operations;
 
     public DeviceTypeManagerService(DeviceTypeConfigIdentifier deviceTypeConfigIdentifier,
                                     DeviceTypeConfiguration deviceTypeConfiguration) {
@@ -66,6 +64,7 @@ public class DeviceTypeManagerService implements DeviceManagementService {
         this.populatePushNotificationConfig(deviceTypeConfiguration.getPushNotificationProvider());
         this.operationMonitoringConfigs = new OperationMonitoringTaskConfig();
         this.setOperationMonitoringConfig(deviceTypeConfiguration);
+        this.setInitialOperationConfig(deviceTypeConfiguration);
         if (deviceTypeConfiguration.getPolicyMonitoring() != null && deviceTypeConfiguration.getPolicyMonitoring()
                 .isEnabled()) {
             this.policyMonitoringManager = new DefaultPolicyMonitoringManager();
@@ -157,12 +156,26 @@ public class DeviceTypeManagerService implements DeviceManagementService {
         return policyMonitoringManager;
     }
 
+    @Override
+    public InitialOperationConfig getInitialOperationConfig() {
+        return initialOperationConfig;
+    }
+
     private void setProvisioningConfig(String tenantDomain, DeviceTypeConfiguration deviceTypeConfiguration) {
         if (deviceTypeConfiguration.getProvisioningConfig() != null) {
             boolean sharedWithAllTenants = deviceTypeConfiguration.getProvisioningConfig().isSharedWithAllTenants();
             provisioningConfig = new ProvisioningConfig(tenantDomain, sharedWithAllTenants);
         } else {
             provisioningConfig = new ProvisioningConfig(tenantDomain, false);
+        }
+    }
+
+    protected void setInitialOperationConfig(DeviceTypeConfiguration deviceTypeConfiguration) {
+        if (deviceTypeConfiguration.getOperations() != null) {
+            List<String> ops = deviceTypeConfiguration.getOperations();
+            if (ops != null && !ops.isEmpty()) {
+                initialOperationConfig.setOperations(ops);
+            }
         }
     }
 

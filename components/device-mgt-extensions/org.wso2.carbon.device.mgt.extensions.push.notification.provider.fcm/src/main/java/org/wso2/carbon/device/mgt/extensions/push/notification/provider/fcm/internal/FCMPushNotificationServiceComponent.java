@@ -39,9 +39,6 @@ public class FCMPushNotificationServiceComponent {
     @SuppressWarnings("unused")
     protected void activate(ComponentContext componentContext) {
         try {
-            if (log.isDebugEnabled()) {
-                log.debug("Initializing FCM based push notification provider implementation bundle");
-            }
             //Do nothing
             if (log.isDebugEnabled()) {
                 log.debug("FCM based push notification provider implementation bundle has been successfully " +

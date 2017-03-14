@@ -16,7 +16,7 @@
  *   under the License.
  *
  */
-package org.wso2.carbon.device.mgt.extensions.push.notification.provider.gcm.internal;
+package org.wso2.carbon.device.mgt.extensions.push.notification.provider.fcm.internal;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -24,7 +24,7 @@ import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 
 /**
- * @scr.component name="org.wso2.carbon.device.mgt.extensions.push.notification.provider.gcm.internal.GCMPushNotificationServiceComponent" immediate="true"
+ * @scr.component name="org.wso2.carbon.device.mgt.extensions.push.notification.provider.fcm.internal.FCMPushNotificationServiceComponent" immediate="true"
  * @scr.reference name="carbon.device.mgt.provider"
  * interface="org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService"
  * cardinality="1..1"
@@ -32,23 +32,20 @@ import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
  * bind="setDeviceManagementProviderService"
  * unbind="unsetDeviceManagementProviderService"
  */
-public class GCMPushNotificationServiceComponent {
+public class FCMPushNotificationServiceComponent {
 
-    private static final Log log = LogFactory.getLog(GCMPushNotificationServiceComponent.class);
+    private static final Log log = LogFactory.getLog(FCMPushNotificationServiceComponent.class);
 
     @SuppressWarnings("unused")
     protected void activate(ComponentContext componentContext) {
         try {
-            if (log.isDebugEnabled()) {
-                log.debug("Initializing GCM based push notification provider implementation bundle");
-            }
             //Do nothing
             if (log.isDebugEnabled()) {
-                log.debug("GCM based push notification provider implementation bundle has been successfully " +
+                log.debug("FCM based push notification provider implementation bundle has been successfully " +
                         "initialized");
             }
         } catch (Throwable e) {
-            log.error("Error occurred while initializing GCM based push notification provider " +
+            log.error("Error occurred while initializing FCM based push notification provider " +
                     "implementation bundle", e);
         }
     }
@@ -59,12 +56,12 @@ public class GCMPushNotificationServiceComponent {
 
     protected void setDeviceManagementProviderService(
             DeviceManagementProviderService deviceManagementProviderService) {
-        GCMDataHolder.getInstance().setDeviceManagementProviderService(deviceManagementProviderService);
+        FCMDataHolder.getInstance().setDeviceManagementProviderService(deviceManagementProviderService);
     }
 
     protected void unsetDeviceManagementProviderService(
             DeviceManagementProviderService deviceManagementProviderService) {
-        GCMDataHolder.getInstance().setDeviceManagementProviderService(deviceManagementProviderService);
+        FCMDataHolder.getInstance().setDeviceManagementProviderService(deviceManagementProviderService);
     }
 
 }

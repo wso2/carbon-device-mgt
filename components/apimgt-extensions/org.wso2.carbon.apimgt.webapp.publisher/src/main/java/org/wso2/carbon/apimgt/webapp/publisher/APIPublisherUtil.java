@@ -218,7 +218,7 @@ public class APIPublisherUtil {
             JsonObject httpVerb = new JsonObject();
             httpVerb.add("responses", response);
 
-            httpVerb.addProperty("x-auth-type", "Application%20%26%20Application%20User");
+            httpVerb.addProperty("x-auth-type", uriTemplate.getAuthType());
             httpVerb.addProperty("x-throttling-tier", "Unlimited");
             if (uriTemplate.getScope() != null) {
                 httpVerb.addProperty("x-scope", uriTemplate.getScope().getKey());
@@ -289,5 +289,6 @@ public class APIPublisherUtil {
                 }
             }
         }
+        apiConfig.setUriTemplates(templates);
     }
 }

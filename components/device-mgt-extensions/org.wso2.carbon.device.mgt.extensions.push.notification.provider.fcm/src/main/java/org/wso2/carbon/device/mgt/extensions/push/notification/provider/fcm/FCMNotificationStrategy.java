@@ -16,7 +16,7 @@
  *   under the License.
  *
  */
-package org.wso2.carbon.device.mgt.extensions.push.notification.provider.gcm;
+package org.wso2.carbon.device.mgt.extensions.push.notification.provider.fcm;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -27,7 +27,7 @@ import org.wso2.carbon.device.mgt.common.push.notification.NotificationContext;
 import org.wso2.carbon.device.mgt.common.push.notification.NotificationStrategy;
 import org.wso2.carbon.device.mgt.common.push.notification.PushNotificationConfig;
 import org.wso2.carbon.device.mgt.common.push.notification.PushNotificationExecutionFailedException;
-import org.wso2.carbon.device.mgt.extensions.push.notification.provider.gcm.internal.GCMDataHolder;
+import org.wso2.carbon.device.mgt.extensions.push.notification.provider.fcm.internal.FCMDataHolder;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -35,16 +35,16 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
 
-public class GCMNotificationStrategy implements NotificationStrategy {
+public class FCMNotificationStrategy implements NotificationStrategy {
 
-    private static final String GCM_TOKEN = "GCM_TOKEN";
-    private static final String GCM_ENDPOINT = "https://fcm.googleapis.com/fcm/send";
-    private static final String GCM_API_KEY = "gcmAPIKey";
+    private static final String FCM_TOKEN = "FCM_TOKEN";
+    private static final String FCM_ENDPOINT = "https://fcm.googleapis.com/fcm/send";
+    private static final String FCM_API_KEY = "fcmAPIKey";
     private static final int TIME_TO_LIVE = 60;
     private static final int HTTP_STATUS_CODE_OK = 200;
     private PushNotificationConfig config;
 
-    public GCMNotificationStrategy(PushNotificationConfig config) {
+    public FCMNotificationStrategy(PushNotificationConfig config) {
         this.config = config;
     }
 
@@ -57,7 +57,7 @@ public class GCMNotificationStrategy implements NotificationStrategy {
     public void execute(NotificationContext ctx) throws PushNotificationExecutionFailedException {
         try {
             Device device =
-                    GCMDataHolder.getInstance().getDeviceManagementProviderService().getDevice(ctx.getDeviceId());
+                    FCMDataHolder.getInstance().getDeviceManagementProviderService().getDevice(ctx.getDeviceId());
             this.sendWakeUpCall(ctx.getOperation().getCode(), device);
         } catch (DeviceManagementException e) {
             throw new PushNotificationExecutionFailedException("Error occurred while retrieving device information", e);
@@ -79,13 +79,13 @@ public class GCMNotificationStrategy implements NotificationStrategy {
     private void sendWakeUpCall(String message,
                                 Device device) throws IOException, PushNotificationExecutionFailedException {
         OutputStream os = null;
-        byte[] bytes = getGCMRequest(message, getGCMToken(device.getProperties())).getBytes();
+        byte[] bytes = getFCMRequest(message, getFCMToken(device.getProperties())).getBytes();
 
         HttpURLConnection conn = null;
         try {
-            conn = (HttpURLConnection) new URL(GCM_ENDPOINT).openConnection();
+            conn = (HttpURLConnection) new URL(FCM_ENDPOINT).openConnection();
             conn.setRequestProperty("Content-Type", "application/json");
-            conn.setRequestProperty("Authorization", "key=" + config.getProperty(GCM_API_KEY));
+            conn.setRequestProperty("Authorization", "key=" + config.getProperty(FCM_API_KEY));
             conn.setRequestMethod("POST");
             conn.setDoOutput(true);
             os = conn.getOutputStream();
@@ -102,35 +102,35 @@ public class GCMNotificationStrategy implements NotificationStrategy {
         }
     }
 
-    private static String getGCMRequest(String message, String registrationId) {
-        JsonObject gcmRequest = new JsonObject();
-        gcmRequest.addProperty("delay_while_idle", false);
-        gcmRequest.addProperty("time_to_live", TIME_TO_LIVE);
+    private static String getFCMRequest(String message, String registrationId) {
+        JsonObject fcmRequest = new JsonObject();
+        fcmRequest.addProperty("delay_while_idle", false);
+        fcmRequest.addProperty("time_to_live", TIME_TO_LIVE);
 
-        //Add message to GCM request
+        //Add message to FCM request
         JsonObject data = new JsonObject();
         if (message != null && !message.isEmpty()) {
             data.addProperty("data", message);
-            gcmRequest.add("data", data);
+            fcmRequest.add("data", data);
         }
 
         //Set device reg-id
         JsonArray regIds = new JsonArray();
         regIds.add(new JsonPrimitive(registrationId));
 
-        gcmRequest.add("registration_ids", regIds);
-        return gcmRequest.toString();
+        fcmRequest.add("registration_ids", regIds);
+        return fcmRequest.toString();
     }
 
-    private static String getGCMToken(List<Device.Property> properties) {
-        String gcmToken = null;
+    private static String getFCMToken(List<Device.Property> properties) {
+        String fcmToken = null;
         for (Device.Property property : properties) {
-            if (GCM_TOKEN.equals(property.getName())) {
-                gcmToken = property.getValue();
+            if (FCM_TOKEN.equals(property.getName())) {
+                fcmToken = property.getValue();
                 break;
             }
         }
-        return gcmToken;
+        return fcmToken;
     }
 
 }

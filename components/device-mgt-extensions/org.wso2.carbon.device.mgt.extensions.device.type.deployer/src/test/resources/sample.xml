@@ -36,6 +36,8 @@
         </Feature>
     </Features>
 
+	<Claimable enabled="true"/>
+
     <Sensors table-id="SAMPLE_DEVICE_2">
 		<Sensor code="CPU_Temperature">
 			<Name>temperature sensor fitted</Name>

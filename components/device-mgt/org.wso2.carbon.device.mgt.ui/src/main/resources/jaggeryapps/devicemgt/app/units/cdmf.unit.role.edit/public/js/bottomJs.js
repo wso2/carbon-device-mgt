@@ -83,18 +83,18 @@ clearInline["role-name"] = function () {
  */
 validateInline["role-name"] = function () {
     var rolenameinput = $("input#rolename");
-    if (inputIsValid( rolenameinput.data("regex"), rolenameinput.val())) {
+    if (inputIsValid(rolenameinput.data("regex"), rolenameinput.val())) {
         disableInlineError("roleNameField", "rolenameEmpty", "rolenameError");
     } else {
         enableInlineError("roleNameField", "rolenameEmpty", "rolenameError");
     }
 };
 
-function formatRepo (user) {
+function formatRepo(user) {
     if (user.loading) {
         return user.text
     }
-    if (!user.username){
+    if (!user.username) {
         return;
     }
     var markup = '<div class="clearfix">' +
@@ -102,7 +102,7 @@ function formatRepo (user) {
         '<div class="clearfix">' +
         '<div class="col-sm-3">' + user.username + '</div>';
     if (user.firstname) {
-        markup +=  '<div class="col-sm-3"><i class="fa fa-code-fork"></i> ' + user.firstname + '</div>';
+        markup += '<div class="col-sm-3"><i class="fa fa-code-fork"></i> ' + user.firstname + '</div>';
     }
     if (user.emailAddress) {
         markup += '<div class="col-sm-2"><i class="fa fa-star"></i> ' + user.emailAddress + '</div></div>';
@@ -111,14 +111,14 @@ function formatRepo (user) {
     return markup;
 }
 
-function formatRepoSelection (user) {
+function formatRepoSelection(user) {
     return user.username || user.text;
 }
 
 $(document).ready(function () {
     var appContext = $("#app-context").data("app-context");
     $("#users").select2({
-        multiple:true,
+        multiple: true,
         tags: false,
         ajax: {
             url: appContext + "/api/invoker/execute/",
@@ -148,12 +148,13 @@ $(document).ready(function () {
             },
             cache: true
         },
-        escapeMarkup: function (markup) { return markup; }, // let our custom formatter work
+        escapeMarkup: function (markup) {
+            return markup;
+        }, // let our custom formatter work
         minimumInputLength: 1,
         templateResult: formatRepo, // omitted for brevity, see the source of this page
         templateSelection: formatRepoSelection // omitted for brevity, see the source of this page
     });
-
 
 
     /**
@@ -161,10 +162,15 @@ $(document).ready(function () {
      * when a user clicks on "Add Role" button
      * on Add Role page in WSO2 MDM Console.
      */
-    $("button#add-role-btn").click(function() {
+    $("button#add-role-btn").click(function () {
+        var isCloud = $("#role-create-form").data("cloud");
         var rolenameInput = $("input#rolename");
         var roleName = rolenameInput.val();
         var currentRoleName = $("input#rolename").data("currentrole");
+        if (isCloud) {
+
+            currentRoleName = "devicemgt" + currentRoleName;
+        }
         var domain = $("#domain").val();
         var errorMsgWrapper = "#role-create-error-msg";
         var errorMsg = "#role-create-error-msg span";
@@ -182,12 +188,17 @@ $(document).ready(function () {
             $(errorMsgWrapper).removeClass("hidden");
         } else {
             var addRoleFormData = {};
-            addRoleFormData.roleName = roleName;
+            if (isCloud) {
+                addRoleFormData.roleName = "devicemgt" + roleName;
+            } else {
+                addRoleFormData.roleName = roleName;
+            }
             var addRoleAPI = apiBasePath + "/roles/" + encodeURIComponent(currentRoleName);
-            if (domain != "PRIMARY"){
+            if (domain != "PRIMARY") {
                 addRoleFormData.roleName = domain + "/" + roleName;
                 addRoleAPI = addRoleAPI + "?user-store=" + encodeURIComponent(domain);
             }
+
             invokerUtil.put(
                 addRoleAPI,
                 addRoleFormData,
@@ -201,6 +212,7 @@ $(document).ready(function () {
                         $("#role-created-msg").removeClass("hidden");
                     }
                 }, function (data) {
+
                     var payload = JSON.parse(data.responseText);
                     $(errorMsg).text(payload.message);
                     $(errorMsgWrapper).removeClass("hidden");
@@ -209,11 +221,11 @@ $(document).ready(function () {
         }
     });
 
-    $("#rolename").focus(function() {
+    $("#rolename").focus(function () {
         clearInline["role-name"]();
     });
 
-    $("#rolename").blur(function() {
+    $("#rolename").blur(function () {
         validateInline["role-name"]();
     });
 

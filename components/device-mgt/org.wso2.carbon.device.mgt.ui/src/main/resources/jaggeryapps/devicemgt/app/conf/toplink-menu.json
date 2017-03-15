@@ -103,9 +103,9 @@
           "icon": "fw fw-application",
           "target": "_blank"
         },
-        "Device Cloud Walkthrough": {
+        "Device Cloud": {
           "id": "device_cloud",
-          "url": "https://<%= @apimpublisher_host %>/publisher?interactiveTutorial=true",
+          "url": "https://docs.wso2.com/display/DeviceCloud/WSO2+Device+Cloud+Documentation",
           "icon": "fw fw-mobile",
           "target": "_self"
         },

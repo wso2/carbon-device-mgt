@@ -18,12 +18,12 @@
 
 var conf = function () {
     var cloudConf = application.get("CLOUD_CONF");
-    if (!conf) {
+    if (!cloudConf) {
         cloudConf = require("/app/conf/toplink-menu.json");
         var pinch = require("/app/modules/conf-reader/pinch.min.js")["pinch"];
         var server = require("carbon")["server"];
         var process = require("process");
-        pinch(conf, /^/,
+        pinch(cloudConf, /^/,
             function (path, key, value) {
                 if ((typeof value === "string") && value.indexOf("%https.ip%") > -1) {
                     //noinspection JSUnresolvedFunction

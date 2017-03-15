@@ -100,12 +100,13 @@ public class EnrollmentDAOImpl implements EnrollmentDAO {
         int status = -1;
         try {
             conn = this.getConnection();
-            String sql = "UPDATE DM_ENROLMENT SET OWNERSHIP = ?, STATUS = ?, DATE_OF_LAST_UPDATE = ? WHERE ID = ?";
+            String sql = "UPDATE DM_ENROLMENT SET OWNER = ?, OWNERSHIP = ?, STATUS = ?, DATE_OF_LAST_UPDATE = ? WHERE ID = ?";
             stmt = conn.prepareStatement(sql);
-            stmt.setString(1, enrolmentInfo.getOwnership().toString());
-            stmt.setString(2, enrolmentInfo.getStatus().toString());
-            stmt.setTimestamp(3, new Timestamp(new Date().getTime()));
-            stmt.setInt(4, enrolmentInfo.getId());
+            stmt.setString(1, enrolmentInfo.getOwner().toString());
+            stmt.setString(2, enrolmentInfo.getOwnership().toString());
+            stmt.setString(3, enrolmentInfo.getStatus().toString());
+            stmt.setTimestamp(4, new Timestamp(new Date().getTime()));
+            stmt.setInt(5, enrolmentInfo.getId());
             stmt.executeUpdate();
             return status;
         } catch (SQLException e) {

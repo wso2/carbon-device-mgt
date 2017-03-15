@@ -39,14 +39,15 @@
 
 {{#zone "content"}}
     {{#if canManage}}
-    <!-- content/body -->
-    <div class="row">
-        <div class="col-md-12">
-            <!-- content -->
-            <div id="role-create-form" class="container col-centered wr-content">
+        <!-- content/body -->
+        <div class="row">
+            <div class="col-md-12">
+                <!-- content -->
+                <div id="role-create-form" data-cloud={{isCloud}} class="container col-centered wr-content
+                ">
                 <div class="wr-form">
                     <p class="page-sub-title">Add Role</p>
-                    <hr />
+                    <hr/>
                     <div class="row">
                         <div class="col-lg-8">
                             <div class="wr-steps">
@@ -62,10 +63,10 @@
                                         <div class="wiz-lbl hidden-xs"><span>Assign permissions</span></div>
                                     </div>
                                 </div>
-                                <br class="c-both" />
+                                <br class="c-both"/>
                             </div>
-                            <br /><br />
-                            <hr />
+                            <br/><br/>
+                            <hr/>
                             <div id="role-create-error-msg" class="alert alert-danger hidden" role="alert">
                                 <i class="icon fw fw-error"></i><span></span>
                             </div>
@@ -87,57 +88,65 @@
                             <label class="wr-input-label">
                                 ( {{roleNameHelpText}} )
                             </label>
-
+                            {{#if isCloud}}
+                            <div id="roleNameField" class="form-group wr-input-control input-group">
+                                <!--suppress HtmlFormInputWithoutLabel -->
+                                <span class="input-group-addon" id="basic-addon1">devicemgt</span>
+                                <input aria-describedby="basic-addon1" type="text" id="roleName"
+                                       data-regex="{{roleNameJSRegEx}}"
+                                       data-error-msg="{{roleNameRegExViolationErrorMsg}}" class="form-control"/>
+                            {{else}}
                             <div id="roleNameField" class="form-group wr-input-control">
                                 <!--suppress HtmlFormInputWithoutLabel -->
                                 <input type="text" id="roleName" data-regex="{{roleNameJSRegEx}}"
-                                       data-error-msg="{{roleNameRegExViolationErrorMsg}}" class="form-control" />
-                                <span class="roleNameError hidden glyphicon glyphicon-remove form-control-feedback"></span>
-                                <label class="error roleNameEmpty hidden" for="summary">
-                                    Role name is required, should be in minimum 3 characters long and not include any
-                                    whitespaces or "@" character or "/" character.
-                                </label>
-                            </div>
-                            {{#if canViewUsers}}
-                            <label class="wr-input-label">
-                                User list
+                                       data-error-msg="{{roleNameRegExViolationErrorMsg}}" class="form-control"/>
+                            {{/if}}
+                            <span class="roleNameError hidden glyphicon glyphicon-remove form-control-feedback"></span>
+                            <label class="error roleNameEmpty hidden" for="summary">
+                                Role name is required, should be in minimum 3 characters long and not include any
+                                whitespaces or "@" character or "/" character.
                             </label>
+                        </div>
+                            {{#if canViewUsers}}
+                                <label class="wr-input-label">
+                                    User list
+                                </label>
 
-                            <div class="wr-input-control">
-                                <!--suppress HtmlFormInputWithoutLabel -->
-                                <select id="users" class="form-control select2" multiple="multiple"></select>
-                            </div>
+                                <div class="wr-input-control">
+                                    <!--suppress HtmlFormInputWithoutLabel -->
+                                    <select id="users" class="form-control select2" multiple="multiple"></select>
+                                </div>
                             {{/if}}
                         </div>
+                        </div>
+                        <br>
+                        <button id="add-role-btn" class="wr-btn">Add Role</button>
                     </div>
-                    <br>
-                    <button id="add-role-btn" class="wr-btn">Add Role</button>
                 </div>
-            </div>
-            <div id="role-created-msg" class="container col-centered wr-content hidden">
-                <div class="wr-form">
-                    <p class="page-sub-title">Role was added successfully.</p>
-                    <br>Please click <b>"Add Another Role"</b>, if you wish to add another role or click
-                    <b>"View Role List"</b> to complete the process and go back to the role list.
-                    <hr />
-                    <button class="wr-btn" onclick="window.location.href='{{@app.context}}/roles'">
-                        View Role List
-                    </button>
-                    <!--suppress HtmlUnknownTarget -->
-                    <a href="{{@app.context}}/role/add" class="cu-btn-inner">
+                <div id="role-created-msg" class="container col-centered wr-content hidden">
+                    <div class="wr-form">
+                        <p class="page-sub-title">Role was added successfully.</p>
+                        <br>Please click <b>"Add Another Role"</b>, if you wish to add another role or click
+                        <b>"View Role List"</b> to complete the process and go back to the role list.
+                        <hr/>
+                        <button class="wr-btn" onclick="window.location.href='{{@app.context}}/roles'">
+                            View Role List
+                        </button>
+                        <!--suppress HtmlUnknownTarget -->
+                        <a href="{{@app.context}}/role/add" class="cu-btn-inner">
                         <span class="fw-stack">
                             <i class="fw fw-circle-outline fw-stack-2x"></i>
                             <i class="fw fw-add fw-stack-1x"></i>
                         </span>
-                        Add Another Role
-                    </a>
+                            Add Another Role
+                        </a>
+                    </div>
                 </div>
+                <!-- /content -->
+                <div id="app-context" data-app-context="{{@app.context}}" class="hidden"></div>
             </div>
-            <!-- /content -->
-            <div id="app-context" data-app-context="{{@app.context}}" class="hidden"></div>
         </div>
-    </div>
-    <!-- /content/body -->
+        <!-- /content/body -->
     {{else}}
         <h1 class="page-sub-title">
             Permission Denied

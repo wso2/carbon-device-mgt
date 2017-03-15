@@ -29,6 +29,7 @@ function onRequest(context) {
     var roleName = request.getParameter("rolename");
     var response;
     var userStore;
+    context.isCloud = deviceMgtProps.isCloud;
 
     if (roleName) {
         if (roleName.indexOf("/") > -1) {

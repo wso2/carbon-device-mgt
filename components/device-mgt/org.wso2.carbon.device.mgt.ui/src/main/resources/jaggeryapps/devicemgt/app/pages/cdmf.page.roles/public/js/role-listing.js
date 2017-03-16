@@ -37,6 +37,7 @@ var modalPopupContainer = modalPopup + " .modal-content";
 var modalPopupContent = modalPopup + " .modal-content";
 var body = "body";
 var isInit = true;
+var isCloud = false;
 
 
 /**
@@ -72,7 +73,7 @@ function showPopup() {
 function hidePopup() {
     $(modalPopupContent).html('');
     $(modalPopup).modal('hide');
-    $('body').removeClass('modal-open').css('padding-right','0px');
+    $('body').removeClass('modal-open').css('padding-right', '0px');
     $('.modal-backdrop').remove();
 }
 
@@ -86,11 +87,12 @@ function InitiateViewOption() {
     // $(location).attr('href', $(this).data("url"));
 }
 
-function htmlspecialchars(text){
+function htmlspecialchars(text) {
     return jQuery('<div/>').text(text).html();
 }
 
 function loadRoles() {
+    isCloud = $("#role-table").data("cloud");
     var loadingContent = $("#loading-content");
     loadingContent.show();
 
@@ -98,21 +100,40 @@ function loadRoles() {
         data = JSON.parse(data);
 
         var objects = [];
-
+        var count = 0;
         $(data.roles).each(function (index) {
-            objects.push(
-                {
-                    name: htmlspecialchars(data.roles[index]),
-                    DT_RowId: "role-" + htmlspecialchars(data.roles[index])
-                }
-            )
+            if (isCloud && data.roles[index].startsWith("devicemgt")) {
+                count++;
+                objects.push(
+                    {
+                        name: htmlspecialchars(data.roles[index]),
+                        DT_RowId: "role-" + htmlspecialchars(data.roles[index])
+                    }
+                )
+            } else if (!isCloud) {
+                objects.push(
+                    {
+                        name: htmlspecialchars(data.roles[index]),
+                        DT_RowId: "role-" + htmlspecialchars(data.roles[index])
+                    }
+                )
+            }
         });
 
-        var json = {
-            "recordsTotal": data.count,
-            "recordsFiltered": data.count,
-            "data": objects
-        };
+        var json = {};
+        if (isCloud) {
+            json = {
+                "recordsTotal": count,
+                "recordsFiltered": count,
+                "data": objects
+            };
+        } else {
+            json = {
+                "recordsTotal": data.count,
+                "recordsFiltered": data.count,
+                "data": objects
+            };
+        }
 
         return JSON.stringify(json);
     };
@@ -143,13 +164,13 @@ function loadRoles() {
             data: null,
             render: function (data, type, row, meta) {
                 var isCloud = false;
-                if ($('#is-cloud').length > 0){
+                if ($('#is-cloud').length > 0) {
                     isCloud = true;
                 }
 
-                var innerhtml =  '';
+                var innerhtml = '';
 
-                    var editLink = '<a onclick="javascript:loadRoleBasedActionURL(\'edit\', \'' + data.name + '\')" ' +
+                var editLink = '<a onclick="javascript:loadRoleBasedActionURL(\'edit\', \'' + data.name + '\')" ' +
                     'data-role="' + data.name + '" ' +
                     'data-click-event="edit-form" ' +
                     'class="btn padding-reduce-on-grid-view edit-role-link">' +
@@ -179,7 +200,7 @@ function loadRoles() {
                     '<span class="hidden-xs hidden-on-grid-view">Edit Permission</span>' +
                     '</a>';
 
-                    var removeLink = '<a data-role="' + data.name + '" ' +
+                var removeLink = '<a data-role="' + data.name + '" ' +
                     'data-click-event="remove-form" ' +
                     'class="btn padding-reduce-on-grid-view remove-role-link">' +
                     '<span class="fw-stack">' +

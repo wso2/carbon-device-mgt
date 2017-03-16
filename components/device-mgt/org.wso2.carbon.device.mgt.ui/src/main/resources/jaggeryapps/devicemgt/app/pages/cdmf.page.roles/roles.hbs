@@ -36,39 +36,40 @@
 
 {{#zone "navbarActions"}}
     {{#unless isCloud}}
-    <li>
-        <!--suppress HtmlUnknownTarget -->
-        <a href="{{@app.context}}/role/add" class="cu-btn">
+        <li>
+            <!--suppress HtmlUnknownTarget -->
+            <a href="{{@app.context}}/role/add" class="cu-btn">
             <span class="icon fw-stack">
                 <i class="fw fw-add fw-stack-1x"></i>
                 <i class="fw fw-circle-outline fw-stack-2x"></i>
             </span>
-            Add Role
-        </a>
-    </li>
+                Add Role
+            </a>
+        </li>
     {{/unless}}
 {{/zone}}
 
 {{#zone "content"}}
     <div id="loading-content" class="col-centered">
         {{#unless isCloud}}
-        {{#if removePermitted}}
-            <input type="hidden" id="can-remove" value="true" />
-        {{/if}}
-        {{#if editPermitted}}
-            <input type="hidden" id="can-edit" value="true" />
-        {{/if}}
+            {{#if removePermitted}}
+                <input type="hidden" id="can-remove" value="true"/>
+            {{/if}}
+            {{#if editPermitted}}
+                <input type="hidden" id="can-edit" value="true"/>
+            {{/if}}
         {{/unless}}
         {{#if isCloud}}
-            <input type="hidden" id="is-cloud" value="true" />
+            <input type="hidden" id="is-cloud" value="true"/>
         {{/if}}
         <i class="fw fw-settings fw-spin fw-2x"></i>
         Loading roles . . .
         <br>
     </div>
 
-    <div id="role-table" data-role={{adminRole}}>
-        <table class="table table-striped table-hover list-table display responsive nowrap data-table grid-view" id="role-grid">
+    <div id="role-table" data-cloud={{isCloud}} data-role={{adminRole}}>
+        <table class="table table-striped table-hover list-table display responsive nowrap data-table grid-view"
+               id="role-grid">
             <thead>
             <tr class="sort-row">
                 <th>By Role Name</th>

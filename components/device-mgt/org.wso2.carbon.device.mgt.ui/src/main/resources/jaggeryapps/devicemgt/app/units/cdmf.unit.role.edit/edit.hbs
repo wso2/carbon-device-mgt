@@ -19,11 +19,11 @@
 <div class="row">
     <div class="col-md-12">
         <!-- content -->
-        <div id="role-create-form" class="container col-centered wr-content">
+        <div id="role-create-form" data-cloud={{isCloud}} class="container col-centered wr-content">
             <div class="wr-form">
                 <p class="page-sub-title">Edit Role</p>
                 <p>Please note that * sign represents required fields of data.</p>
-                <hr />
+                <hr/>
                 <div class="row">
                     <div class="col-lg-8">
                         <div id="role-create-error-msg" class="alert alert-danger hidden" role="alert">
@@ -42,46 +42,58 @@
                         <label class="wr-input-label" id="roleNameValidationText">
                             ( {{roleNameHelpText}} )
                         </label>
+                        {{#if isCloud}}
+                        <div id="roleNameField" class="form-group wr-input-control input-group">
+                            <!--suppress HtmlFormInputWithoutLabel -->
+                            <span class="input-group-addon" id="basic-addon1">devicemgt</span>
+                            <input aria-describedby="basic-addon1" type="text" id="rolename"
+                                   data-regex="{{roleNameJSRegEx}}"
+                                   data-errormsg="{{roleNameRegExViolationErrorMsg}}" class="form-control"
+                                   data-currentrole="{{role.roleName}}"
+                                   value="{{role.roleName}}"/>
+
+                        {{else}}
                         <div id="roleNameField" class="form-group wr-input-control">
                             <input type="text" id="rolename" data-regex="{{roleNameJSRegEx}}"
                                    data-errormsg="{{roleNameRegExViolationErrorMsg}}" class="form-control"
                                    data-currentrole="{{role.roleName}}"
-                                   value="{{role.roleName}}" />
+                                   value="{{role.roleName}}"/>
+                        {{/if}}
                             <span class=" rolenameError hidden glyphicon glyphicon-remove form-control-feedback"></span>
                             <label class="error rolenameEmpty hidden" for="summary">Role name is required & Should be in
                                 minimum 3 characters long and do not
                                 include any whitespaces. </label>
                         </div>
                     </div>
+                    </div>
+                    <br>
+                    <button id="add-role-btn" class="wr-btn">Update Role</button>
                 </div>
-                <br>
-                <button id="add-role-btn" class="wr-btn">Update Role</button>
             </div>
-        </div>
-        <div id="role-created-msg" class="container col-centered wr-content hidden">
-            <div class="wr-form">
-                <p class="page-sub-title">Role was updated successfully.</p>
-                <br>Please click <b>"View Updated Role"</b>, if you wish to view the updated role or click
-                <b>"View Role List"</b> to complete the process and go back to the role list.
-                <hr />
-                <button class="wr-btn" onclick="window.location.href='{{@app.context}}/roles'">
-                    View Role List
-                </button>
-                <a href="{{@app.context}}/roles/edit-role/{{role.roleName}}"
-                   class="cu-btn-inner">
+            <div id="role-created-msg" class="container col-centered wr-content hidden">
+                <div class="wr-form">
+                    <p class="page-sub-title">Role was updated successfully.</p>
+                    <br>Please click <b>"View Updated Role"</b>, if you wish to view the updated role or click
+                    <b>"View Role List"</b> to complete the process and go back to the role list.
+                    <hr/>
+                    <button class="wr-btn" onclick="window.location.href='{{@app.context}}/roles'">
+                        View Role List
+                    </button>
+                    <a href="{{@app.context}}/roles/edit-role/{{role.roleName}}"
+                       class="cu-btn-inner">
                         <span class="fw-stack">
                             <i class="fw fw-circle-outline fw-stack-2x"></i>
                             <i class="fw fw-add fw-stack-1x"></i>
                         </span>
-                    View Updated Role
-                </a>
+                        View Updated Role
+                    </a>
+                </div>
             </div>
+            <!-- /content -->
+            <div id="app-context" data-app-context="{{@app.context}}" class="hidden"></div>
         </div>
-        <!-- /content -->
-        <div id="app-context" data-app-context="{{@app.context}}" class="hidden"></div>
     </div>
-</div>
-<!-- /content/body -->
-{{#zone "bottomJs"}}
-    {{js "js/bottomJs.js"}}
-{{/zone}}
+    <!-- /content/body -->
+    {{#zone "bottomJs"}}
+        {{js "js/bottomJs.js"}}
+    {{/zone}}

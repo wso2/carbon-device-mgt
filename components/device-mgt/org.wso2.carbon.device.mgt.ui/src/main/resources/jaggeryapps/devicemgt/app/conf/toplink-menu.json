@@ -1,7 +1,7 @@
 {
   "Logo": {
     "name": "Cloud",
-    "url": "https://cloudmgt.cloudlocal.wso2.com:9444/cloudmgt",
+    "url": "https://<%= @cloudmgt_host %>/cloudmgt",
     "target": "_parent"
   },
   "Main": {
@@ -12,13 +12,13 @@
       "target": "_parent",
       "dropDown": {
         "Organization": {
-          "url": "https://cloudmgt.cloudlocal.wso2.com:9444/cloudmgt/site/pages/organization.jag",
+          "url": "https://<%= @cloudmgt_host %>/cloudmgt/site/pages/organization.jag",
           "icon": "fw fw-organization",
           "dropDown": "false",
           "target": "_self"
         },
         "Members": {
-          "url": "https://cloudmgt.cloudlocal.wso2.com:9444/cloudmgt/site/pages/user.jag",
+          "url": "https://<%= @cloudmgt_host %>/cloudmgt/site/pages/user.jag",
           "icon": "fa fa-users",
           "dropDown": "false",
           "target": "_self"
@@ -26,29 +26,29 @@
       }
     },
     "Account": {
-      "url": "https://cloudmgt.cloudlocal.wso2.com:9444/cloudmgt/site/pages/account-summary.jag",
+      "url": "https://<%= @cloudmgt_host %>/cloudmgt/site/pages/account-summary.jag",
       "icon": "fw fw-resource",
       "isAdminOnly": true,
       "target": "_blank",
       "dropDown": {
         "Upgrade Now": {
-          "url": "https://cloudmgt.cloudlocal.wso2.com:9444/cloudmgt/site/pages/payment-plans.jag?cloud-type=api_cloud",
+          "url": "https://<%= @cloudmgt_host %>/cloudmgt/site/pages/payment-plans.jag?cloud-type=api_cloud",
           "icon": "fw fw-export",
           "target": "_self"
         },
         "Monetization": {
-          "url": "https://cloudmgt.cloudlocal.wso2.com:9444/cloudmgt/site/pages/monetization-dashboard.jag",
+          "url": "https://<%= @cloudmgt_host %>/cloudmgt/site/pages/monetization-dashboard.jag",
           "icon": "fa fa-money fa-lg",
           "dropDown": "false",
           "target": "_self"
         },
         "Request Extension": {
-          "url": "https://cloudmgt.cloudlocal.wso2.com:9444/cloudmgt/site/pages/contact-us.jag?cloud-type=api_cloud&request-extension=true",
+          "url": "https://<%= @cloudmgt_host %>/cloudmgt/site/pages/contact-us.jag?cloud-type=api_cloud&request-extension=true",
           "icon": "fw fw-mail",
           "target": "_blank"
         },
         "Usage data": {
-          "url": "https://cloudmgt.cloudlocal.wso2.com:9444/cloudmgt/site/pages/tenant-usage.jag?cloud-type=api_cloud",
+          "url": "https://<%= @cloudmgt_host %>/cloudmgt/site/pages/tenant-usage.jag?cloud-type=api_cloud",
           "icon": "fw fw-bar-chart",
           "target": "_self"
         }
@@ -61,26 +61,26 @@
       "dropDown": {
         "Admin Dashboard": {
           "id": "admin-dashboard",
-          "url": "https://api.cloudlocal.wso2.com:9445/admin-dashboard/",
+          "url": "https://<%= @apimpublisher_host %>/admin-dashboard/",
           "icon": "fw fw-user",
           "target": "_self"
         },
         "Custom URL": {
           "id": "custom-url",
-          "url": "https://cloudmgt.cloudlocal.wso2.com:9444/cloudmgt/site/pages/custom_url.jag",
+          "url": "https://<%= @cloudmgt_host %>/cloudmgt/site/pages/custom_url.jag",
           "icon": "fw fw-uri",
           "target": "_self"
         },
         "API Store Access": {
           "id": "custom-url",
-          "url": "https://cloudmgt.cloudlocal.wso2.com:9444/cloudmgt/site/pages/selfSignup.jag",
+          "url": "https://<%= @cloudmgt_host %>/cloudmgt/site/pages/selfSignup.jag",
           "icon": "fw fw-store",
           "target": "_self"
         }
       }
     },
     "Support": {
-      "url": "https://cloudmgt.cloudlocal.wso2.com:9444/cloudmgt/site/pages/contact-us.jag",
+      "url": "https://<%= @cloudmgt_host %>/cloudmgt/site/pages/contact-us.jag",
       "icon": "fw fw-mail",
       "isAdminOnly": false,
       "target": "_self",
@@ -103,9 +103,15 @@
           "icon": "fw fw-application",
           "target": "_blank"
         },
+        "Device Cloud": {
+          "id": "device_cloud",
+          "url": "https://docs.wso2.com/display/DeviceCloud/WSO2+Device+Cloud+Documentation",
+          "icon": "fw fw-mobile",
+          "target": "_self"
+        },
         "API Cloud Walkthrough": {
           "id": "api_cloud_walkthrough",
-          "url": "https://api.cloudlocal.wso2.com:9445/publisher?interactiveTutorial=true",
+          "url": "https://<%= @apimpublisher_host %>/publisher?interactiveTutorial=true",
           "icon": "fw fw-document",
           "target": "_self"
         }
@@ -117,19 +123,19 @@
     "icon": "fw fw-user",
     "dropDown": {
       "Profile": {
-        "url": "https://cloudmgt.cloudlocal.wso2.com:9444/cloudmgt/site/pages/user-profile.jag",
+        "url": "https://<%= @cloudmgt_host %>/cloudmgt/site/pages/user-profile.jag",
         "icon": "fw fw-user",
         "dropDown": "true",
         "target": "_self"
       },
       "Change Password": {
-        "url": "https://cloudmgt.cloudlocal.wso2.com:9444/cloudmgt/site/pages/change-password.jag",
+        "url": "https://<%= @cloudmgt_host %>/cloudmgt/site/pages/change-password.jag",
         "icon": "fw fw-lock",
         "dropDown": "true",
         "target": "_self"
       },
       "Logout": {
-        "url": "https://api.cloudlocal.wso2.com:9445/publisher/site/pages/logout.jag",
+        "url": "https://<%= @apimpublisher_host %>/publisher/site/pages/logout.jag",
         "icon": "fw fw-sign-out",
         "dropDown": "true",
         "target": "_self"
@@ -140,43 +146,50 @@
     "Clouds": {
       "API Cloud": {
         "id": "api_cloud",
-        "url": "https://api.cloudlocal.wso2.com:9445/publisher",
-        "icon": "fw fw-api  fw-3x",
+        "url": "https://<%= @apimpublisher_host %>/publisher",
+        "icon": "fw fw-api fw-3x",
         "dropDown": "true",
         "target": "_self"
       },
       "Integration Cloud": {
         "id": "integration_cloud",
         "url": "https://milestones.appfactory.wso2.com:9443/appmgt",
-        "icon": "fa fa-cubes  fa-3x",
+        "icon": "fa fa-cubes fw-3x",
         "dropDown": "true",
         "target": "_self"
       },
       "Identity Cloud": {
         "id": "integration_cloud",
         "url": "https://identity.cloudlocal.wso2.com:9443/admin",
-        "icon": "fw fw-security  fa-3x",
+        "icon": "fw fw-security fw-3x",
+        "dropDown": "true",
+        "target": "_self"
+      },
+      "App Cloud": {
+        "id": "app_cloud",
+        "url": "https://<%= @appcloud_host %>/appmgt",
+        "icon": "fw fw-application fw-3x",
         "dropDown": "true",
         "target": "_self"
       },
       "Device Cloud": {
         "id": "device_cloud",
-        "url": "https://device.cloudlocal.wso2.com:9443/devicemgt",
-        "icon": "fw fw-security  fa-3x",
+        "url": "https://<%= @mgt_hostname %>/devicemgt",
+        "icon": "fw fw-mobile fw-3x",
         "dropDown": "true",
         "target": "_self"
       }
     },
     "Actions": {
       "Organization": {
-        "url": "https://cloudmgt.cloudlocal.wso2.com:9444/cloudmgt/site/pages/organization.jag",
+        "url": "https://<%= @cloudmgt_host %>/cloudmgt/site/pages/organization.jag",
         "icon": "fw fw-organization  fw-3x",
         "dropDown": "true",
         "target": "_self"
       },
       "Members": {
-        "url": "https://cloudmgt.cloudlocal.wso2.com:9444/cloudmgt/site/pages/user.jag",
-        "icon": "fa fa-users  fa-3x",
+        "url": "https://<%= @cloudmgt_host %>/cloudmgt/site/pages/user.jag",
+        "icon": "fa fa-users  fw-3x",
         "dropDown": "true",
         "target": "_self"
       }

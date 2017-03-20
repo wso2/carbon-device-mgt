@@ -1,5 +1,5 @@
 {
-    "appName": "CDMF",
+    "appName": "WSO2 IoT Server",
     "cachingEnabled": false,
     "debuggingEnabled": false,
     "permissionRoot": "/",

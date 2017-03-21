@@ -129,7 +129,7 @@ var handlers = function () {
 			"as input - setupTokenPairBySamlGrantType(x, y)");
 		} else {
 			privateMethods.setUpEncodedTenantBasedClientAppCredentials(username);
-			//privateMethods.setUpEncodedTenantBasedWebSocketClientAppCredentials(username);
+			privateMethods.setUpEncodedTenantBasedWebSocketClientAppCredentials(username);
 			var encodedClientAppCredentials = session.get(constants["ENCODED_TENANT_BASED_CLIENT_APP_CREDENTIALS"]);
 			if (!encodedClientAppCredentials) {
 				throw new Error("{/app/modules/oauth/token-handlers.js} Could not set up access token pair " +
@@ -158,13 +158,13 @@ var handlers = function () {
 					// setting up access token pair into session context as a string
 					session.put(constants["TOKEN_PAIR"], stringify(tokenPair));
 
-					var scopes = tokenData.scopes.split(" ");
-					// adding allowed scopes to the session
-					session.put(constants["ALLOWED_SCOPES"], scopes);
-				}
-			}
-		}
-	};
+                    var scopes = tokenData.scopes.split(" ");
+                    // adding allowed scopes to the session
+                    session.put(constants["ALLOWED_SCOPES"], scopes);
+                }
+            }
+        }
+    };
 
     publicMethods["refreshTokenPair"] = function () {
         var currentTokenPair = parse(session.get(constants["TOKEN_PAIR"]));

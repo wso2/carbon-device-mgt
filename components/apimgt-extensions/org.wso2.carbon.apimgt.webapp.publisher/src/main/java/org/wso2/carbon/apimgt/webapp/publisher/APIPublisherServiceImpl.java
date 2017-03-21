@@ -53,6 +53,8 @@ public class APIPublisherServiceImpl implements APIPublisherService {
 
     @Override
     public void publishAPI(final API api) throws APIManagementException, FaultGatewaysException {
+
+        CoAPResourceDirectoryClient client=APIPublisherDataHolder.getInstance().getClient();
         String tenantDomain = MultitenantUtils.getTenantDomain(api.getApiOwner());
         PrivilegedCarbonContext.startTenantFlow();
         PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(tenantDomain, true);
@@ -94,6 +96,11 @@ public class APIPublisherServiceImpl implements APIPublisherService {
                     }
                 }
                 provider.saveSwagger20Definition(api.getId(), createSwaggerDefinition(api));
+
+                //register api using the client
+                if(api.getContext().split("/").length>2 && !api.getContext().split("/")[1].equals("api")) //remove device mgt API from registering into CoAP server
+                    client.registerAPI(api,tenantDomain);
+
             } else {
                 throw new APIManagementException("API provider configured for the given API configuration " +
                         "is null. Thus, the API is not published");

@@ -21,6 +21,7 @@ package org.wso2.carbon.apimgt.webapp.publisher.internal;
 
 import org.wso2.carbon.apimgt.api.model.API;
 import org.wso2.carbon.apimgt.webapp.publisher.APIPublisherService;
+import org.wso2.carbon.apimgt.webapp.publisher.CoAPResourceDirectoryClient;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.user.core.service.RealmService;
 import org.wso2.carbon.user.core.tenant.TenantManager;
@@ -36,6 +37,7 @@ public class APIPublisherDataHolder {
     private TenantManager tenantManager;
     private RegistryService registryService;
     private boolean isServerStarted;
+    private CoAPResourceDirectoryClient client;
     private Stack<API> unpublishedApis = new Stack<>();
 
     private static APIPublisherDataHolder thisInstance = new APIPublisherDataHolder();
@@ -60,6 +62,11 @@ public class APIPublisherDataHolder {
 
     public void setConfigurationContextService(ConfigurationContextService configurationContextService) {
         this.configurationContextService = configurationContextService;
+    }
+
+    //set coapclient for the server
+    public void setClient(CoAPResourceDirectoryClient client) {
+        this.client = client;
     }
 
     public ConfigurationContextService getConfigurationContextService() {
@@ -114,5 +121,9 @@ public class APIPublisherDataHolder {
 
     public void setUnpublishedApis(Stack<API> unpublishedApis) {
         this.unpublishedApis = unpublishedApis;
+    }
+
+    public CoAPResourceDirectoryClient getClient() {
+        return client;
     }
 }

@@ -55,6 +55,19 @@ public class APIPublisherStartupHandler implements ServerStartupObserver {
                     log.debug("Total number of unpublished APIs: "
                             + APIPublisherDataHolder.getInstance().getUnpublishedApis().size());
                 }
+
+                //coap client bound to the server[the server is in the static default port for now]
+                APIPublisherDataHolder.getInstance().setClient(new CoAPResourceDirectoryClient());
+//                if (APIPublisherDataHolder.getInstance().getClient().isServerConnected()) {
+//                    if (log.isDebugEnabled()) {
+//                        log.debug("Client set to the started coap server @ " + APIPublisherDataHolder.getInstance().getClient().getURI());
+//                    }
+//                } else {
+//                    if (log.isDebugEnabled()) {
+//                        log.debug("Coap server not connected");
+//                    }
+//                }
+
                 publisher = APIPublisherDataHolder.getInstance().getApiPublisherService();
                 int retryCount = 0;
                 while (retryCount < MAX_RETRY_COUNT && (!failedAPIsStack.isEmpty() || !currentAPIsStack.isEmpty())) {

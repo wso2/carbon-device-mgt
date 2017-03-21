@@ -595,7 +595,7 @@ var module = {};
             handleEvent(OPERATION_LOGIN, EVENT_FAIL, new Error("Please enter username."));
             return;
         }
-        var password = request.getParameter("password");
+        var password = decodeURIComponent(escape(request.getParameter("password")));
         if (!password || (password.length == 0)) {
             handleEvent(OPERATION_LOGIN, EVENT_FAIL, new Error("Please enter password."));
             return;

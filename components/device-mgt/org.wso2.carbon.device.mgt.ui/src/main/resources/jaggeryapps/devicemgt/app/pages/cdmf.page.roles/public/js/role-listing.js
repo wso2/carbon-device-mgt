@@ -102,38 +102,19 @@ function loadRoles() {
         var objects = [];
         var count = 0;
         $(data.roles).each(function (index) {
-            if (isCloud && data.roles[index].startsWith("devicemgt")) {
-                count++;
-                objects.push(
-                    {
-                        name: htmlspecialchars(data.roles[index]),
-                        DT_RowId: "role-" + htmlspecialchars(data.roles[index])
-                    }
-                )
-            } else if (!isCloud) {
-                objects.push(
-                    {
-                        name: htmlspecialchars(data.roles[index]),
-                        DT_RowId: "role-" + htmlspecialchars(data.roles[index])
-                    }
-                )
-            }
+            objects.push(
+                {
+                    name: htmlspecialchars(data.roles[index]),
+                    DT_RowId: "role-" + htmlspecialchars(data.roles[index])
+                }
+            )
         });
 
-        var json = {};
-        if (isCloud) {
-            json = {
-                "recordsTotal": count,
-                "recordsFiltered": count,
-                "data": objects
-            };
-        } else {
-            json = {
-                "recordsTotal": data.count,
-                "recordsFiltered": data.count,
-                "data": objects
-            };
-        }
+        var json = {
+            "recordsTotal": data.count,
+            "recordsFiltered": data.count,
+            "data": objects
+        };
 
         return JSON.stringify(json);
     };
@@ -225,8 +206,12 @@ function loadRoles() {
     var settings = {
         "sorting": false
     };
+    var roleApiUrl = '/api/device-mgt/v1.0/roles?user-store=all';
+    if (isCloud) {
+        roleApiUrl = '/api/device-mgt/v1.0/roles/filter/devicemgt?user-store=all';
+    }
 
-    $('#role-grid').datatables_extended_serverside_paging(settings, '/api/device-mgt/v1.0/roles?user-store=all', dataFilter, columns, fnCreatedRow, null, options);
+    $('#role-grid').datatables_extended_serverside_paging(settings, roleApiUrl, dataFilter, columns, fnCreatedRow, null, options);
     loadingContent.hide();
 
 }

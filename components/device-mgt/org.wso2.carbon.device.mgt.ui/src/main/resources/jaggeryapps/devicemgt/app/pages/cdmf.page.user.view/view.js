@@ -21,7 +21,7 @@ function onRequest(context) {
     var username = request.getParameter("username");
     var user = userModule.getUser(username)["content"];
     var deviceMgtProps = require("/app/modules/conf-reader/main.js")["conf"];
-
+    var isExsistingUser = false;
     var userName = request.getParameter("username");
 
     var user, userRoles, devices;
@@ -32,6 +32,7 @@ function onRequest(context) {
         if (response["status"] == "success") {
             user = response["content"];
             user.domain = response["userDomain"];
+            isExsistingUser = true;
         }
 
         response = userModule.getRolesByUsername(userName);
@@ -49,5 +50,5 @@ function onRequest(context) {
 
     var isCloud =  deviceMgtProps.isCloud;
 
-    return {"user": user, "userRoles": userRoles, "devices": devices, "canView": canView, "isCloud" : isCloud};
+    return {"exists": isExsistingUser, "user": user, "userRoles": userRoles, "devices": devices, "canView": canView, "isCloud" : isCloud};
 }

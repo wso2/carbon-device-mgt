@@ -88,6 +88,8 @@ public class RoleManagementServiceImpl implements RoleManagementService {
         }
     }
 
+    @GET
+    @Path("/filter/{prefix}")
     @Override
     public Response getFilteredRoles(
             @PathParam("prefix") String prefix,
@@ -109,7 +111,6 @@ public class RoleManagementServiceImpl implements RoleManagementService {
             //Get the total role count that matches the given filter
             List<String> filteredRoles = getRolesFromUserStore(filter, userStore);
             finalRoleList = new ArrayList<String>();
-            targetRoles.setCount(filteredRoles.size());
 
             filteredRoles = FilteringUtil.getFilteredList(getRolesFromUserStore(filter, userStore), offset, limit);
             for (String rolename : filteredRoles){
@@ -117,6 +118,7 @@ public class RoleManagementServiceImpl implements RoleManagementService {
                     finalRoleList.add(rolename);
                 }
             }
+            targetRoles.setCount(finalRoleList.size());
             targetRoles.setList(finalRoleList);
 
             return Response.ok().entity(targetRoles).build();

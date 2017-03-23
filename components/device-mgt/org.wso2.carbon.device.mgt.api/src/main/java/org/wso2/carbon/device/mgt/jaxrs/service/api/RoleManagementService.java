@@ -181,7 +181,7 @@ public interface RoleManagementService {
             @QueryParam("limit") int limit);
 
         @GET
-        @Path("/roles/filter/{prefix}")
+        @Path("/filter/{prefix}")
         @ApiOperation(
                 produces = MediaType.APPLICATION_JSON,
                 httpMethod = "GET",

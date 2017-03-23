@@ -98,7 +98,6 @@ function loadRoles() {
 
     var dataFilter = function (data) {
         data = JSON.parse(data);
-        console.log(data);
         var objects = [];
         var count = 0;
         $(data.roles).each(function (index) {

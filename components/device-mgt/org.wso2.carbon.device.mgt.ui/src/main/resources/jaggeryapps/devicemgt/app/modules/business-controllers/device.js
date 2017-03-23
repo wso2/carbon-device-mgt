@@ -194,24 +194,25 @@ deviceModule = function () {
                         }
                         if (device["deviceInfo"]) {
                             filteredDeviceData["latestDeviceInfo"] = device["deviceInfo"];
-                        }
 
-                        //location related verification and modifications
-                        // adding the location histry for the movement path.
-                        var locationHistory = {};
-                        locationHistory.locations = locationData;
-                        locationHistory.times = locationTimeData;
-                        filteredDeviceData["locationHistory"] = locationHistory;
+                            //location related verification and modifications
+                            // adding the location histry for the movement path.
+                            var locationHistory = {};
+                            locationHistory.locations = locationData;
+                            locationHistory.times = locationTimeData;
+                            filteredDeviceData["locationHistory"] = locationHistory;
 
-                        //checking for the latest location information.
-                        if (filteredDeviceData.latestDeviceInfo.location && locationInfo) {
-                            var infoDate = new Date(filteredDeviceData.latestDeviceInfo.location.updatedTime);
-                            var locationDate = new Date(locationInfo.updatedOn);
-                            if (infoDate < locationDate) {
-                                filteredDeviceData.latestDeviceInfo.location.longitude = locationInfo.longitude;
-                                filteredDeviceData.latestDeviceInfo.location.latitude = locationInfo.latitude;
+                            //checking for the latest location information.
+                            if (filteredDeviceData.latestDeviceInfo.location && locationInfo) {
+                                var infoDate = new Date(filteredDeviceData.latestDeviceInfo.location.updatedTime);
+                                var locationDate = new Date(locationInfo.updatedOn);
+                                if (infoDate < locationDate) {
+                                    filteredDeviceData.latestDeviceInfo.location.longitude = locationInfo.longitude;
+                                    filteredDeviceData.latestDeviceInfo.location.latitude = locationInfo.latitude;
+                                }
                             }
                         }
+
 
                         response["content"] = filteredDeviceData;
                         response["status"] = "success";

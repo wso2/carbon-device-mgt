@@ -67,11 +67,11 @@
         <div class="try-device-container" id="{{deviceTypeName}}">
             <div class="message message-info try-device-message">
                 <p class="try-device-text">
-                    <button id="{{deviceTypeName}}_btn" onclick="location.href='{{@app
-                    .context}}/device/{{deviceTypeName}}/enroll'"
+                    <button id="{{deviceTypeName}}_btn"
+                            onclick="location.href='{{@app.context}}/device/{{deviceTypeName}}/enroll?type=virtual'"
                             class="btn btn-default btn-primary">Try
                     </button>
-                                           our {{deviceTypeLabel}} device
+                    our {{deviceTypeLabel}} device
                 </p>
                 <img class="try-device-image" src="{{thumb}}">
             </div>

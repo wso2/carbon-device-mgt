@@ -87,6 +87,7 @@
         <li><a href="{{@app.context}}/policies"><i class="fw fw-policy"></i>Policy Management</a></li>
     {{/if}}
 
+    {{#unless isCloud}}
     {{#if permissions.TENANT_CONFIGURATION}}
         <li><a><i class="fw fw-settings"></i>Configuration Management</a>
             <ul>
@@ -98,6 +99,9 @@
             </ul>
         </li>
     {{/if}}
+    {{/unless}}
+
+
 
 {{/zone}}
 

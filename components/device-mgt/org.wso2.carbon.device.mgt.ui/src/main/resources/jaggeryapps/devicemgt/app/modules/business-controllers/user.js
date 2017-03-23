@@ -303,6 +303,32 @@ var userModule = function () {
     };
 
     /**
+     * Get User Roles from user store (Internal roles not included).
+     */
+    publicMethods.getFilteredRoles = function (prefix) {
+        var carbonUser = session.get(constants["USER_SESSION_KEY"]);
+        var utility = require("/app/modules/utility.js")["utility"];
+        if (!carbonUser) {
+            log.error("User object was not found in the session");
+            throw constants["ERRORS"]["USER_NOT_FOUND"];
+        }
+        try {
+            utility.startTenantFlow(carbonUser);
+            var url = devicemgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"] +
+                "/roles/filter/" + prefix + "?offset=0&limit=100&user-store=all";
+            var response = privateMethods.callBackend(url, constants["HTTP_GET"]);
+            if (response.status == "success") {
+                response.content = parse(response.content);
+            }
+            return response;
+        } catch (e) {
+            throw e;
+        } finally {
+            utility.endTenantFlow();
+        }
+    };
+
+    /**
      * Get User Roles count from user store (Internal roles not included).
      */
     publicMethods.getRolesCount = function () {
@@ -467,8 +493,8 @@ var userModule = function () {
         try {
             carbonUser = session.get(constants.USER_SESSION_KEY);
         } catch (e) {
-           log.error("User object was not found in the session");
-           carbonUser = null;
+            log.error("User object was not found in the session");
+            carbonUser = null;
         }
         var utility = require('/app/modules/utility.js').utility;
         if (!carbonUser) {

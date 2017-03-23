@@ -39,8 +39,8 @@ utility = function () {
         PrivilegedCarbonContext.startTenantFlow();
         context = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         context.setTenantDomain(carbon.server.tenantDomain({
-                                                               tenantId: userInfo.tenantId
-                                                           }));
+            tenantId: userInfo.tenantId
+        }));
         context.setTenantId(userInfo.tenantId);
         context.setUsername(userInfo.username || null);
     };
@@ -161,15 +161,19 @@ utility = function () {
      * @returns {*}
      */
     publicMethods.encodeJson = function (text) {
-        return text
-            .replace(/\\u003c/g, "&lt;")
-            .replace(/</g, "&lt;")
-            .replace(/\\u003e/g, "&gt;")
-            .replace(/>/g, "&gt;")
-            .replace(/\\u0027/g, "&#39;")
-            .replace(/'/g, "&#39;")
-            .replace(/\\"/g, "&quot;")
-            .replace(/\\u0022/g, "&quot;")
+        if (text) {
+            return text
+                .replace(/\\u003c/g, "&lt;")
+                .replace(/</g, "&lt;")
+                .replace(/\\u003e/g, "&gt;")
+                .replace(/>/g, "&gt;")
+                .replace(/\\u0027/g, "&#39;")
+                .replace(/'/g, "&#39;")
+                .replace(/\\"/g, "&quot;")
+                .replace(/\\u0022/g, "&quot;");
+        } else {
+            return "";
+        }
     };
 
     return publicMethods;

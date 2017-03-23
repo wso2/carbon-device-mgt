@@ -98,7 +98,7 @@ function loadRoles() {
 
     var dataFilter = function (data) {
         data = JSON.parse(data);
-
+        console.log(data);
         var objects = [];
         var count = 0;
         $(data.roles).each(function (index) {
@@ -137,7 +137,7 @@ function loadRoles() {
             class: "",
             data: "name",
             render: function (name, type, row, meta) {
-                return '<h4>' + name + '</h4>';
+                return '<h4>' + name.replace("devicemgt", ""); + '</h4>';
             }
         },
         {

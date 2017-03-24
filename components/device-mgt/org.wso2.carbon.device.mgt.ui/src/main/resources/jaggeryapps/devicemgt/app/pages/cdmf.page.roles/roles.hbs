@@ -50,45 +50,66 @@
 {{/zone}}
 
 {{#zone "content"}}
-    <div id="loading-content" class="col-centered">
-        {{#unless isCloud}}
-            {{#if removePermitted}}
-                <input type="hidden" id="can-remove" value="true"/>
+    {{#if hasRoles}}
+        <div id="loading-content" class="col-centered">
+            {{#unless isCloud}}
+                {{#if removePermitted}}
+                    <input type="hidden" id="can-remove" value="true"/>
+                {{/if}}
+                {{#if editPermitted}}
+                    <input type="hidden" id="can-edit" value="true"/>
+                {{/if}}
+            {{/unless}}
+            {{#if isCloud}}
+                <input type="hidden" id="is-cloud" value="true"/>
             {{/if}}
-            {{#if editPermitted}}
-                <input type="hidden" id="can-edit" value="true"/>
-            {{/if}}
-        {{/unless}}
-        {{#if isCloud}}
-            <input type="hidden" id="is-cloud" value="true"/>
-        {{/if}}
-        <i class="fw fw-settings fw-spin fw-2x"></i>
-        Loading roles . . .
-        <br>
-    </div>
-
-    <div id="role-table" data-cloud={{isCloud}} data-role={{adminRole}}>
-        <table class="table table-striped table-hover list-table display responsive nowrap data-table grid-view"
-               id="role-grid">
-            <thead>
-            <tr class="sort-row">
-                <th>By Role Name</th>
-            </tr>
-            <tr class="bulk-action-row">
-                <th colspan="3"></th>
-            </tr>
-            </thead>
-            <tbody id="ast-container" data-app-context="{{@app.context}}/"></tbody>
-        </table>
-    </div>
-
-    <div id="content-filter-types" style="display: none">
-        <div class="sort-title">Sort By</div>
-        <div class="sort-options">
-            <!--suppress HtmlUnknownTag -->
-            <th>By Role name</th>
+            <i class="fw fw-settings fw-spin fw-2x"></i>
+            Loading roles . . .
+            <br>
         </div>
-    </div>
+
+        <div id="role-table" data-cloud={{isCloud}} data-role={{adminRole}}>
+            <table class="table table-striped table-hover list-table display responsive nowrap data-table grid-view"
+                   id="role-grid">
+                <thead>
+                <tr class="sort-row">
+                    <th>By Role Name</th>
+                </tr>
+                <tr class="bulk-action-row">
+                    <th colspan="3"></th>
+                </tr>
+                </thead>
+                <tbody id="ast-container" data-app-context="{{@app.context}}/"></tbody>
+            </table>
+        </div>
+
+        <div id="content-filter-types" style="display: none">
+            <div class="sort-title">Sort By</div>
+            <div class="sort-options">
+                <!--suppress HtmlUnknownTag -->
+                <th>By Role name</th>
+            </div>
+        </div>
+
+    {{else}}
+
+        <div id="user-created-msg" class="container col-centered wr-content">
+            <div class="wr-form">
+                <p class="page-sub-title">You Haven't created roles yet.</p>
+                <br>Please click <b>"Add A New Role"</b>, if you wish to add a role.
+                <hr/>
+
+                <a href="{{@app.context}}/role/add" class="cu-btn-inner">
+                        <span class="fw-stack">
+                            <i class="fw fw-circle-outline fw-stack-2x"></i>
+                            <i class="fw fw-add fw-stack-1x"></i>
+                        </span>
+                    Add Role
+                </a>
+            </div>
+        </div>
+
+    {{/if}}
 {{/zone}}
 
 {{#zone "bottomJs"}}

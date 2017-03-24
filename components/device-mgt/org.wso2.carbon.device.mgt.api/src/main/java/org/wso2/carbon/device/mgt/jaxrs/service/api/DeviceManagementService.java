@@ -423,6 +423,83 @@ public interface DeviceManagementService {
             @HeaderParam("If-Modified-Since")
             String ifModifiedSince);
 
+
+    @GET
+    @Path("/{type}/{id}/location")
+    @ApiOperation(
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "GET",
+            value = "Getting Location Details of a Device",
+            notes = "Get the location details of a device by specifying the device type and device identifier.",
+            tags = "Device Management",
+            extensions = {
+                    @Extension(properties = {
+                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:devices:details")
+                    })
+            }
+    )
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            code = 200,
+                            message = "OK. \n Successfully fetched the location details of the device.",
+                            response = Device.class,
+                            responseHeaders = {
+                                    @ResponseHeader(
+                                            name = "Content-Type",
+                                            description = "The content type of the body"),
+                                    @ResponseHeader(
+                                            name = "ETag",
+                                            description = "Entity Tag of the response resource.\n" +
+                                                    "Used by caches, or in conditional requests."),
+                                    @ResponseHeader(
+                                            name = "Last-Modified",
+                                            description = "Date and time the resource was last modified.\n" +
+                                                    "Used by caches, or in conditional requests."),
+                            }),
+                    @ApiResponse(
+                            code = 304,
+                            message = "Not Modified. Empty body because the client already has the latest version" +
+                                    " of the requested resource.\n"),
+                    @ApiResponse(
+                            code = 400,
+                            message = "Bad Request. \n Invalid request or validation error.",
+                            response = ErrorResponse.class),
+                    @ApiResponse(
+                            code = 404,
+                            message = "Not Found. \n Location data for the specified device was not found.",
+                            response = ErrorResponse.class),
+                    @ApiResponse(
+                            code = 500,
+                            message = "Internal Server Error. \n " +
+                                    "Server error occurred while retrieving the device details.",
+                            response = ErrorResponse.class)
+            })
+    Response getDeviceLocation(
+            @ApiParam(
+                    name = "type",
+                    value = "The device type name, such as ios, android, windows or fire-alarm.",
+                    required = true)
+            @PathParam("type")
+            @Size(max = 45)
+                    String type,
+            @ApiParam(
+                    name = "id",
+                    value = "The device identifier of the device you want ot get details.",
+                    required = true)
+            @PathParam("id")
+            @Size(max = 45)
+                    String id,
+            @ApiParam(
+                    name = "If-Modified-Since",
+                    value = "Checks if the requested variant was modified, since the specified date-time. \n" +
+                            "Provide the value in the following format: EEE, d MMM yyyy HH:mm:ss Z. \n" +
+                            "Example: Mon, 05 Jan 2014 15:10:00 +0200",
+                    required = false)
+            @HeaderParam("If-Modified-Since")
+                    String ifModifiedSince);
+
+
     //device rename request would looks like follows
     //POST devices/type/virtual_firealarm/id/us06ww93auzp/rename
     @POST
@@ -575,7 +652,7 @@ public interface DeviceManagementService {
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
             value = "Getting Feature Details of a Device",
-            notes = "WSO2 EMM features enable you to carry out many operations based on the device platform. " +
+            notes = "WSO2 IoTS features enable you to carry out many operations based on the device platform. " +
                     "Using this REST API you can get the features that can be carried out on a preferred device type," +
                     " such as iOS, Android or Windows.",
             tags = "Device Management",
@@ -644,7 +721,7 @@ public interface DeviceManagementService {
             @ApiParam(
                     name = "id",
                     value = "The device identifier of the device.\n" +
-                            "INFO: Make sure to add the ID of a device that is already registered with WSO2 EMM.",
+                            "INFO: Make sure to add the ID of a device that is already registered with WSO2 IoTS.",
                     required = true)
             @PathParam("id")
             @Size(max = 45)
@@ -911,7 +988,7 @@ public interface DeviceManagementService {
             @ApiParam(
                     name = "id",
                     value = "The device identifier of the device you wish to get details.\n" +
-                            "INFO: Make sure to add the ID of a device that is already registered with WSO2 EMM.",
+                            "INFO: Make sure to add the ID of a device that is already registered with WSO2 IoTS.",
                     required = true)
             @PathParam("id")
             @Size(max = 45)
@@ -952,8 +1029,8 @@ public interface DeviceManagementService {
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
             value = "Get the details of the policy that is enforced on a device.",
-            notes = "A policy is enforced on all the devices that register with WSO2 EMM." +
-                    "WSO2 EMM filters the policies based on the device platform (device type)," +
+            notes = "A policy is enforced on all the devices that register with WSO2 IoTS." +
+                    "WSO2 IoTS filters the policies based on the device platform (device type)," +
                     "the device ownership type, the user role or name and finally, the policy that matches these filters will be enforced on the device.",
             tags = "Device Management",
             extensions = {
@@ -1041,7 +1118,7 @@ public interface DeviceManagementService {
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
             value = "Getting Policy Compliance Details of a Device",
-            notes = "A policy is enforced on the devices that register with WSO2 EMM. " +
+            notes = "A policy is enforced on the devices that register with WSO2 IoTS. " +
                     "The server checks if the settings in the device comply with the policy that is enforced on the device using this REST API.",
             tags = "Device Management",
             extensions = {

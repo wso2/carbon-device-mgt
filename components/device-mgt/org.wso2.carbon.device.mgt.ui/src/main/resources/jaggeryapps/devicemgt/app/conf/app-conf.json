@@ -1,5 +1,5 @@
 {
-    "appName": "WSO2 IoT Server",
+    "appName": "WSO2 Device Cloud",
     "cachingEnabled": false,
     "debuggingEnabled": false,
     "permissionRoot": "/",

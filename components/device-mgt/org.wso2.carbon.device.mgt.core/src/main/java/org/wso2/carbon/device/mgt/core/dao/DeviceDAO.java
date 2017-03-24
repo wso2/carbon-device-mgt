@@ -420,12 +420,5 @@ public interface DeviceDAO {
      */
     List<EnrolmentInfo> getEnrolmentsByStatus(List<DeviceIdentifier> deviceIds, Status status,
                                               int tenantId) throws DeviceManagementDAOException;
-
-    /**
-     * Retrieving the tenants which are have device enrolled.
-     * @return
-     * @throws DeviceManagementDAOException
-     */
-    List<Integer> getDeviceEnrolledTenants() throws DeviceManagementDAOException;
 }
 

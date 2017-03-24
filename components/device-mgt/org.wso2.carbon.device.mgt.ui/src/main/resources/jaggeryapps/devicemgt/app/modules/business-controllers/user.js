@@ -174,7 +174,7 @@ var userModule = function () {
         }
         try {
             utility.startTenantFlow(carbonUser);
-            var url = devicemgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"] + "/users?offset=0&limit=1";
+            var url = devicemgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"] + "/users/count";
             return serviceInvokers.XMLHttp.get(
                 url, function (responsePayload) {
                     return parse(responsePayload["responseText"])["count"];
@@ -608,6 +608,9 @@ var userModule = function () {
         }
         if (publicMethods.isAuthorized("/permission/admin/device-mgt/platform-configs/view")) {
             permissions["TENANT_CONFIGURATION"] = true;
+        }
+        if (publicMethods.isAuthorized("/permission/admin/device-mgt/devices/change-status")) {
+            permissions["CHANGE_DEVICE_STATUS"] = true;
         }
 
         return permissions;

@@ -62,11 +62,6 @@ public class DeviceManagementDataHolder {
 
     private Map<String, OperationMonitoringTaskConfig> map = new HashMap<>();
 
-
-    public void addToMap(OperationMonitoringTaskConfig taskConfig) {
-        this.map.put("aa", taskConfig);
-    }
-
     public Map<String, OperationMonitoringTaskConfig> getMap(){
         return this.map;
     }

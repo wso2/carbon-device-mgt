@@ -1063,26 +1063,4 @@ public abstract class AbstractDeviceDAOImpl implements DeviceDAO {
         return devices;
     }
 
-    public List<Integer> getDeviceEnrolledTenants() throws DeviceManagementDAOException {
-        Connection conn;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-        List<Integer> tenants = new ArrayList<>();
-        try {
-            conn = this.getConnection();
-            String sql = "SELECT distinct(TENANT_ID) FROM DM_DEVICE";
-            stmt = conn.prepareStatement(sql);
-            rs = stmt.executeQuery();
-            while (rs.next()) {
-                tenants.add(rs.getInt("TENANT_ID"));
-            }
-        } catch (SQLException e) {
-            throw new DeviceManagementDAOException("Error occurred while retrieving tenants which have " +
-                    "device registered.", e);
-        } finally {
-            DeviceManagementDAOUtil.cleanupResources(stmt, rs);
-        }
-        return tenants;
-    }
-
 }

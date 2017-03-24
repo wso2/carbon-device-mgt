@@ -17,10 +17,7 @@
  */
 package org.wso2.carbon.device.mgt.core;
 
-import org.wso2.carbon.device.mgt.common.DeviceManagementException;
-import org.wso2.carbon.device.mgt.common.DeviceManager;
-import org.wso2.carbon.device.mgt.common.OperationMonitoringTaskConfig;
-import org.wso2.carbon.device.mgt.common.ProvisioningConfig;
+import org.wso2.carbon.device.mgt.common.*;
 import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManager;
 import org.wso2.carbon.device.mgt.common.policy.mgt.PolicyMonitoringManager;
 import org.wso2.carbon.device.mgt.common.push.notification.PushNotificationConfig;
@@ -72,6 +69,11 @@ public class TestDeviceManagementService implements DeviceManagementService {
 
     @Override
     public PolicyMonitoringManager getPolicyMonitoringManager() {
+        return null;
+    }
+
+    @Override
+    public InitialOperationConfig getInitialOperationConfig() {
         return null;
     }
 

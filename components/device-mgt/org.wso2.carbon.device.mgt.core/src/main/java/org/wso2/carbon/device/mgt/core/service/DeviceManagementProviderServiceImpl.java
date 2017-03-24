@@ -269,7 +269,9 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             DeviceManagementDAOFactory.beginTransaction();
             Device currentDevice = deviceDAO.getDevice(deviceIdentifier, tenantId);
             device.setId(currentDevice.getId());
-            device.getEnrolmentInfo().setId(currentDevice.getEnrolmentInfo().getId());
+            if (device.getEnrolmentInfo().getId() == 0) {
+                device.getEnrolmentInfo().setId(currentDevice.getEnrolmentInfo().getId());
+            }
             if (device.getName() == null) {
                 device.setName(currentDevice.getName());
             }

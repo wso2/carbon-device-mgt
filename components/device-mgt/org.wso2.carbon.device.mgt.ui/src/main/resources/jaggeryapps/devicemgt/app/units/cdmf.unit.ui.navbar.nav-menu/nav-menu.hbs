@@ -30,13 +30,38 @@
             </a>
         </li>
     {{/if}}
+
+    {{#unless isCloud}}
     {{#if permissions.VIEW_DASHBOARD}}
         <li>
-            <a href="/portal/t/{{currentUser.domain}}/dashboards/device-statistics-dashboard/">
+            <a href="javascript:statisticLoad('/portal/t/{{currentUser.domain}}/dashboards/device-statistics-dashboard/')">
                 <i class="fw fw-bar-chart"></i>Device Statistics
             </a>
+            <div id="statistic-response-template" style="display: none">
+                <div class="content">
+                    <div class="row">
+                        <div class="col-lg-5 col-md-6 col-centered">
+                            <h3>
+                                <span class="fw-stack">
+                                    <i class="fw fw-circle-outline fw-stack-2x"></i>
+                                    <i id="status-icon" class="fw fw-error fw-stack-1x"></i>
+                                </span>
+                                <br>
+                            </h3>
+                            <h4>
+                                <span id="title"></span>
+                                <br>
+                            </h4>
+                            <span id="description"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </li>
     {{/if}}
+    {{/unless}}
+
+
     {{#if permissions.LIST_GROUPS}}
         <li>
             <a href="{{@app.context}}/groups">
@@ -61,6 +86,8 @@
     {{#if permissions.LIST_POLICIES}}
         <li><a href="{{@app.context}}/policies"><i class="fw fw-policy"></i>Policy Management</a></li>
     {{/if}}
+
+    {{#unless isCloud}}
     {{#if permissions.TENANT_CONFIGURATION}}
         <li><a><i class="fw fw-settings"></i>Configuration Management</a>
             <ul>
@@ -72,6 +99,10 @@
             </ul>
         </li>
     {{/if}}
+    {{/unless}}
+
+
+
 {{/zone}}
 
 {{#zone "navbarCollapsableRightItems"}}

@@ -21,16 +21,12 @@ package org.wso2.carbon.device.mgt.oauth.extensions.internal;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osgi.service.component.ComponentContext;
-import org.wso2.carbon.apimgt.api.APIManagementException;
-import org.wso2.carbon.apimgt.impl.APIConstants;
-import org.wso2.carbon.apimgt.impl.APIManagerConfiguration;
-import org.wso2.carbon.identity.oauth2.OAuth2TokenValidationService;
-import org.wso2.carbon.user.core.service.RealmService;
-import org.wso2.carbon.utils.CarbonUtils;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
+import org.wso2.carbon.device.mgt.oauth.extensions.validators.ExtendedJDBCScopeValidator;
+import org.wso2.carbon.identity.oauth2.OAuth2TokenValidationService;
+import org.wso2.carbon.identity.oauth2.validators.JDBCScopeValidator;
+import org.wso2.carbon.identity.oauth2.validators.OAuth2ScopeValidator;
+import org.wso2.carbon.user.core.service.RealmService;
 
 /**
  * @scr.component name="org.wso2.carbon.device.mgt.oauth.extensions" immediate="true"
@@ -46,6 +42,12 @@ import java.util.List;
  * policy="dynamic"
  * bind="setOAuth2ValidationService"
  * unbind="unsetOAuth2ValidationService"
+ * * @scr.reference name="scope.validator.service"
+ * interface="org.wso2.carbon.identity.oauth2.validators.OAuth2ScopeValidator"
+ * cardinality="0..n"
+ * policy="dynamic"
+ * bind="addScopeValidator"
+ * unbind="removeScopeValidator"
  */
 public class OAuthExtensionServiceComponent {
 
@@ -53,6 +55,8 @@ public class OAuthExtensionServiceComponent {
     private static final String REPOSITORY = "repository";
     private static final String CONFIGURATION = "conf";
     private static final String APIM_CONF_FILE = "api-manager.xml";
+    private static final String PERMISSION_SCOPE_PREFIX = "perm";
+    private static final String DEFAULT_PREFIX = "default";
 
 
     @SuppressWarnings("unused")
@@ -60,36 +64,14 @@ public class OAuthExtensionServiceComponent {
         if (log.isDebugEnabled()) {
             log.debug("Starting OAuthExtensionBundle");
         }
-        try {
 
-            APIManagerConfiguration configuration = new APIManagerConfiguration();
-            String filePath = new StringBuilder().
-                    append(CarbonUtils.getCarbonHome()).
-                    append(File.separator).
-                    append(REPOSITORY).
-                    append(File.separator).
-                    append(CONFIGURATION).
-                    append(File.separator).
-                    append(APIM_CONF_FILE).toString();
+        ExtendedJDBCScopeValidator permissionBasedScopeValidator = new ExtendedJDBCScopeValidator();
+        JDBCScopeValidator roleBasedScopeValidator = new JDBCScopeValidator();
+        OAuthExtensionsDataHolder.getInstance().addScopeValidator(permissionBasedScopeValidator,
+                PERMISSION_SCOPE_PREFIX);
+        OAuthExtensionsDataHolder.getInstance().addScopeValidator(roleBasedScopeValidator,
+                DEFAULT_PREFIX);
 
-            configuration.load(filePath);
-            // loading white listed scopes
-            List<String> whiteList;
-
-            // Read scope whitelist from Configuration.
-            whiteList = configuration.getProperty(APIConstants.WHITELISTED_SCOPES);
-
-            // If whitelist is null, default scopes will be put.
-            if (whiteList == null) {
-                whiteList = new ArrayList<String>();
-                whiteList.add(APIConstants.OPEN_ID_SCOPE_NAME);
-                whiteList.add(APIConstants.DEVICE_SCOPE_PATTERN);
-            }
-
-            OAuthExtensionsDataHolder.getInstance().setWhitelistedScopes(whiteList);
-        } catch (APIManagementException e) {
-            log.error("Error occurred while loading DeviceMgtConfig configurations", e);
-        }
     }
 
     @SuppressWarnings("unused")
@@ -145,6 +127,22 @@ public class OAuthExtensionServiceComponent {
             log.debug("Unsetting OAuth2TokenValidation Service");
         }
         OAuthExtensionsDataHolder.getInstance().setoAuth2TokenValidationService(null);
+    }
+
+    /**
+     * Add scope validator to the map.
+     * @param scopesValidator
+     */
+    protected void addScopeValidator(OAuth2ScopeValidator scopesValidator) {
+        OAuthExtensionsDataHolder.getInstance().addScopeValidator(scopesValidator, DEFAULT_PREFIX);
+    }
+
+    /**
+     * unset scope validator.
+     * @param scopesValidator
+     */
+    protected void removeScopeValidator(OAuth2ScopeValidator scopesValidator) {
+        OAuthExtensionsDataHolder.getInstance().removeScopeValidator();
     }
 
 

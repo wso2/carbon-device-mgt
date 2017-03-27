@@ -1,0 +1,147 @@
+<!-- ~ Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+	~ ~ WSO2 Inc. licenses this file to you under the Apache License, ~ Version 
+	2.0 (the "License"); you may not use this file except ~ in compliance with 
+	the License. ~ You may obtain a copy of the License at ~ ~ http://www.apache.org/licenses/LICENSE-2.0 
+	~ ~ Unless required by applicable law or agreed to in writing, ~ software 
+	distributed under the License is distributed on an ~ "AS IS" BASIS, WITHOUT 
+	WARRANTIES OR CONDITIONS OF ANY ~ KIND, either express or implied. See the 
+	License for the ~ specific language governing permissions and limitations 
+	~ under the License. -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<parent>
+		<artifactId>apimgt-extensions</artifactId>
+		<groupId>org.wso2.carbon.devicemgt</groupId>
+		<version>2.0.37-SNAPSHOT</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
+
+	<modelVersion>4.0.0</modelVersion>
+	<artifactId>org.wso2.carbon.apimgt.integration.client</artifactId>
+	<version>2.0.37-SNAPSHOT</version>
+	<packaging>bundle</packaging>
+	<name>WSO2 Carbon - API Management Integration Client</name>
+	<description>WSO2 Carbon - API Management Integration Client</description>
+	<url>http://wso2.org</url>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>maven-scr-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>maven-bundle-plugin</artifactId>
+				<version>1.4.0</version>
+				<extensions>true</extensions>
+				<configuration>
+					<instructions>
+						<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+						<Bundle-Name>${project.artifactId}</Bundle-Name>
+						<Bundle-Version>${project.version}</Bundle-Version>
+						<Bundle-Description>APIM Integration</Bundle-Description>
+						<Private-Package>org.wso2.carbon.apimgt.integration.client.internal</Private-Package>
+						<Export-Package>
+							org.wso2.carbon.apimgt.integration.client.*,
+							!org.wso2.carbon.apimgt.integration.client.internal
+						</Export-Package>
+						<Import-Package>
+							org.osgi.framework,
+							org.osgi.service.component,
+							feign,
+							feign.codec,
+							feign.auth,
+							feign.gson,
+							feign.slf4j,
+							org.wso2.carbon.apimgt.integration.generated.client.publisher.api,
+							org.wso2.carbon.apimgt.integration.generated.client.store.api,
+							javax.xml.bind,
+							javax.xml.bind.annotation,
+							javax.xml.parsers;resolution:=optional,
+							org.apache.commons.logging,
+							org.w3c.dom,
+							org.wso2.carbon.context,
+							org.wso2.carbon.identity.jwt.client.*,
+							org.wso2.carbon.user.api,
+							org.wso2.carbon.utils,
+							com.fasterxml.jackson.annotation,
+							io.swagger.annotations,
+							org.wso2.carbon.core.util,
+							javax.xml,
+							org.wso2.carbon.base,
+							javax.net.ssl,
+						</Import-Package>
+						<Embed-Dependency>
+							jsr311-api,
+							feign-jaxrs
+						</Embed-Dependency>
+					</instructions>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.wso2.carbon</groupId>
+			<artifactId>org.wso2.carbon.logging</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.osgi</groupId>
+			<artifactId>org.eclipse.osgi</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.osgi</groupId>
+			<artifactId>org.eclipse.osgi.services</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>javax.ws.rs</groupId>
+			<artifactId>jsr311-api</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>io.swagger</groupId>
+			<artifactId>swagger-annotations</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.github.openfeign</groupId>
+			<artifactId>feign-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.github.openfeign</groupId>
+			<artifactId>feign-jackson</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.github.openfeign</groupId>
+			<artifactId>feign-jaxrs</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.github.openfeign</groupId>
+			<artifactId>feign-gson</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.testng</groupId>
+			<artifactId>testng</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.wso2.carbon.devicemgt</groupId>
+			<artifactId>org.wso2.carbon.identity.jwt.client.extension</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.wso2.carbon.devicemgt</groupId>
+			<artifactId>org.wso2.carbon.apimgt.integration.generated.client</artifactId>
+		</dependency>
+	</dependencies>
+
+</project>

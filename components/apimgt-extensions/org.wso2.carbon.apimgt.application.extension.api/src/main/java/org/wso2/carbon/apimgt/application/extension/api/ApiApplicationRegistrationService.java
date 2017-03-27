@@ -51,12 +51,4 @@ public interface ApiApplicationRegistrationService {
     @Path("register")
     Response register(RegistrationProfile registrationProfile);
 
-    /**
-     * This method is used to unregister an API application.
-     * @param applicationName name of the application that needs to be unregistered.
-     * @return the response status of request.
-     */
-    @DELETE
-    @Path("unregister")
-    Response unregister(@QueryParam("applicationName") String applicationName);
 }

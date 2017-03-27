@@ -21,10 +21,10 @@ import io.swagger.annotations.SwaggerDefinition;
 import org.apache.catalina.core.StandardContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.apimgt.api.model.Scope;
 import org.wso2.carbon.apimgt.webapp.publisher.APIPublisherUtil;
 import org.wso2.carbon.apimgt.webapp.publisher.config.APIResource;
 import org.wso2.carbon.apimgt.webapp.publisher.config.APIResourceConfiguration;
+import org.wso2.carbon.apimgt.webapp.publisher.dto.ApiScope;
 
 import javax.servlet.ServletContext;
 import javax.ws.rs.Consumes;
@@ -53,7 +53,7 @@ public class AnnotationProcessor {
 
     private static final Log log = LogFactory.getLog(AnnotationProcessor.class);
 
-    private static final String AUTH_TYPE = "Any";
+    private static final String AUTH_TYPE = "Application & Application User";
     private static final String STRING_ARR = "string_arr";
     private static final String STRING = "string";
     private static final String PACKAGE_ORG_APACHE = "org.apache";
@@ -96,7 +96,7 @@ public class AnnotationProcessor {
     private Class<io.swagger.annotations.ApiOperation> apiOperation;
     private Class<org.wso2.carbon.apimgt.annotations.api.Scope> scopeClass;
     private Class<org.wso2.carbon.apimgt.annotations.api.Scopes> scopesClass;
-    private Map<String, Scope> apiScopes;
+    private Map<String, ApiScope> apiScopes;
 
     public AnnotationProcessor(final StandardContext context) {
         servletContext = context.getServletContext();
@@ -206,20 +206,20 @@ public class AnnotationProcessor {
         return apiResourceConfigs;
     }
 
-    private Map<String,Scope> processAPIScopes(Annotation annotation) throws Throwable {
-        Map<String, Scope> scopes = new HashMap<>();
+    private Map<String,ApiScope> processAPIScopes(Annotation annotation) throws Throwable {
+        Map<String, ApiScope> scopes = new HashMap<>();
 
         InvocationHandler methodHandler = Proxy.getInvocationHandler(annotation);
         Annotation[] annotatedScopes = (Annotation[]) methodHandler.invoke(annotation, scopesClass
                 .getMethod(ANNOTATIONS_SCOPES, null), null);
 
-        Scope scope;
+        ApiScope scope;
         String permissions[];
         StringBuilder aggregatedPermissions;
         for(int i=0; i<annotatedScopes.length; i++){
             aggregatedPermissions = new StringBuilder();
             methodHandler = Proxy.getInvocationHandler(annotatedScopes[i]);
-            scope = new Scope();
+            scope = new ApiScope();
             scope.setName(invokeMethod(scopeClass
                     .getMethod(SWAGGER_ANNOTATIONS_PROPERTIES_NAME), annotatedScopes[i], STRING));
             scope.setDescription(invokeMethod(scopeClass
@@ -277,13 +277,13 @@ public class AnnotationProcessor {
                         resource.setProduces(invokeMethod(producesClassMethods[0], producesAnno, STRING_ARR));
                     }
                     if (annotations[i].annotationType().getName().equals(ApiOperation.class.getName())) {
-                        Scope scope = this.getScope(annotations[i]);
+                        ApiScope scope = this.getScope(annotations[i]);
                         if (scope != null) {
                             resource.setScope(scope);
                         } else {
                             log.warn("Scope is not defined for '" + makeContextURLReady(resourceRootContext) +
                                     makeContextURLReady(subCtx) + "' endpoint, hence assigning the default scope");
-                            scope = new Scope();
+                            scope = new ApiScope();
                             scope.setName(DEFAULT_SCOPE_NAME);
                             scope.setDescription(DEFAULT_SCOPE_NAME);
                             scope.setKey(DEFAULT_SCOPE_KEY);
@@ -456,7 +456,7 @@ public class AnnotationProcessor {
         }
     }
 
-    private Scope getScope(Annotation currentMethod) throws Throwable {
+    private ApiScope getScope(Annotation currentMethod) throws Throwable {
         InvocationHandler methodHandler = Proxy.getInvocationHandler(currentMethod);
         Annotation[] extensions = (Annotation[]) methodHandler.invoke(currentMethod,
                 apiOperation.getMethod(SWAGGER_ANNOTATIONS_EXTENSIONS, null), null);

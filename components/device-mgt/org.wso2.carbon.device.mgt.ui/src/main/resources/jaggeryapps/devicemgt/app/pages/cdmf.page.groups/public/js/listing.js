@@ -180,33 +180,33 @@ function loadGroups() {
         {
             targets: 4,
             data: 'id',
-            class: 'text-right content-fill text-left-on-grid-view no-wrap',
+            class: 'text-right content-fill text-left-on-grid-view no-wrap tooltip-overflow-fix',
             render: function (id, type, row, meta) {
                 var html = '';
                 if ($.hasPermission("VIEW_GROUP_DEVICES")) {
-                    html += '<a href="group/' + row.groupId
+                    /*html += '<a href="group/' + row.groupId
                             + '/analytics" data-click-event="remove-form" class="btn padding-reduce-on-grid-view">' +
                             '<span class="fw-stack"><i class="fw fw-circle-outline fw-stack-2x"></i><i class="fw fw-statistics fw-stack-1x"></i></span>'
                             +
-                            '<span class="hidden-xs hidden-on-grid-view">Analytics</span></a>';
+                            '<span class="hidden-xs hidden-on-grid-view">Analytics</span></a>';*/
                 }
                 if (row.owner != "wso2.system.user") {
-                    if ($.hasPermission("SHARE_GROUP")) {
-                        html +=
-                                '<a href="#" data-click-event="remove-form" class="btn padding-reduce-on-grid-view share-group-link" data-group-id="'
-                                + row.groupId + '" ' +
-                                'data-group-owner="' + row.owner
-                                + '"><span class="fw-stack"><i class="fw fw-circle-outline fw-stack-2x"></i><i class="fw fw-share fw-stack-1x"></i></span>'
-                                +
-                                '<span class="hidden-xs hidden-on-grid-view">Share</span></a>';
-                    }
+                    // if ($.hasPermission("SHARE_GROUP")) {
+                    //     html +=
+                    //             '<a href="#" data-click-event="remove-form" class="btn padding-reduce-on-grid-view share-group-link" data-group-id="'
+                    //             + row.groupId + '" ' +
+                    //             'data-group-owner="' + row.owner
+                    //             + '" data-placement="top" data-toggle="tooltip" data-original-title="Share"><span class="fw-stack"><i class="fw fw-circle-outline fw-stack-2x"></i><i class="fw fw-share fw-stack-1x"></i></span>'
+                    //             +
+                    //             '<span class="hidden-xs hidden-on-grid-view">Share</span></a>';
+                    // }
                     if ($.hasPermission("UPDATE_GROUP")) {
                         html +=
                                 '<a href="#" data-click-event="remove-form" class="btn padding-reduce-on-grid-view edit-group-link" data-group-name="'
                                 + row.name + '" ' +
                                 'data-group-owner="' + row.owner + '" data-group-description="' + row.description
                                 + '" data-group-id="' + row.groupId
-                                + '"><span class="fw-stack"><i class="fw fw-circle-outline fw-stack-2x"></i>' +
+                                + '" data-placement="top" data-toggle="tooltip" data-original-title="Edit"><span class="fw-stack"><i class="fw fw-circle-outline fw-stack-2x"></i>' +
                                 '<i class="fw fw-edit fw-stack-1x"></i></span><span class="hidden-xs hidden-on-grid-view">Edit</span></a>';
                     }
                     if ($.hasPermission("REMOVE_GROUP")) {
@@ -214,7 +214,7 @@ function loadGroups() {
                                 '<a href="#" data-click-event="remove-form" class="btn padding-reduce-on-grid-view remove-group-link" data-group-id="'
                                 + row.groupId + '" ' +
                                 'data-group-owner="' + row.owner
-                                + '"><span class="fw-stack"><i class="fw fw-circle-outline fw-stack-2x"></i><i class="fw fw-delete fw-stack-1x"></i>'
+                                + '" data-placement="top" data-toggle="tooltip" data-original-title="Delete"><span class="fw-stack"><i class="fw fw-circle-outline fw-stack-2x"></i><i class="fw fw-delete fw-stack-1x"></i>'
                                 +
                                 '</span><span class="hidden-xs hidden-on-grid-view">Delete</span></a>';
                     }
@@ -285,6 +285,7 @@ function openCollapsedNav() {
  * DOM ready functions.
  */
 $(document).ready(function () {
+
     /* Adding selected class for selected devices */
     $(groupCheckbox).each(function () {
         addGroupSelectedClass(this);

@@ -28,6 +28,7 @@ import org.apache.tomcat.util.buf.CharChunk;
 import org.apache.tomcat.util.buf.MessageBytes;
 import org.wso2.carbon.user.api.UserStoreException;
 import org.wso2.carbon.user.api.UserStoreManager;
+import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 import org.wso2.carbon.webapp.authenticator.framework.AuthenticationException;
 import org.wso2.carbon.webapp.authenticator.framework.AuthenticatorFrameworkDataHolder;
 import org.wso2.carbon.webapp.authenticator.framework.Constants;
@@ -68,10 +69,11 @@ public class BasicAuthAuthenticator implements WebappAuthenticator {
             int tenantId = Utils.getTenantIdOFUser(credentials.getUsername());
             UserStoreManager userStore = AuthenticatorFrameworkDataHolder.getInstance().getRealmService().
                     getTenantUserRealm(tenantId).getUserStoreManager();
-            boolean authenticated = userStore.authenticate(credentials.getUsername(), credentials.getPassword());
+            String username = MultitenantUtils.getTenantAwareUsername(credentials.getUsername());
+            boolean authenticated = userStore.authenticate(username, credentials.getPassword());
             if (authenticated) {
                 authenticationInfo.setStatus(Status.CONTINUE);
-                authenticationInfo.setUsername(credentials.getUsername());
+                authenticationInfo.setUsername(username);
                 authenticationInfo.setTenantDomain(Utils.getTenantDomain(tenantId));
                 authenticationInfo.setTenantId(tenantId);
             } else {

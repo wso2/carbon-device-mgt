@@ -18,6 +18,7 @@
 
 package org.wso2.carbon.apimgt.application.extension.api;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.simple.JSONObject;
@@ -60,11 +61,10 @@ public class ApiApplicationRegistrationServiceImpl implements ApiApplicationRegi
             }
             String username = PrivilegedCarbonContext.getThreadLocalCarbonContext().getUserRealm()
                     .getRealmConfiguration().getAdminUserName();
-            username = username + "@" + APIUtil.getTenantDomainOftheUser();
             PrivilegedCarbonContext.getThreadLocalCarbonContext().setUsername(username);
             APIManagementProviderService apiManagementProviderService = APIUtil.getAPIManagementProviderService();
             ApiApplicationKey apiApplicationKey = apiManagementProviderService.generateAndRetrieveApplicationKeys(
-                    applicationName, APIUtil.getAllowedApisTags().toArray(new String[APIUtil.getAllowedApisTags().size()]),
+                    applicationName, APIUtil.getDefaultTags(),
                     ApiApplicationConstants.DEFAULT_TOKEN_TYPE, username, false,
                     ApiApplicationConstants.DEFAULT_VALIDITY_PERIOD);
             return Response.status(Response.Status.CREATED).entity(apiApplicationKey.toString()).build();
@@ -96,7 +96,9 @@ public class ApiApplicationRegistrationServiceImpl implements ApiApplicationRegi
                 return Response.status(Response.Status.NOT_ACCEPTABLE).entity("APIs(Tags) are not allowed to this user."
                 ).build();
             }
-            String username = APIUtil.getAuthenticatedUser() + "@" + APIUtil.getTenantDomainOftheUser();
+            PrivilegedCarbonContext.getThreadLocalCarbonContext().setUsername(PrivilegedCarbonContext.
+                    getThreadLocalCarbonContext().getUserRealm().getRealmConfiguration().getAdminUserName());
+            String username = APIUtil.getAuthenticatedUser();
             APIManagementProviderService apiManagementProviderService = APIUtil.getAPIManagementProviderService();
             String validityPeriod;
             if (registrationProfile.getValidityPeriod() == null) {
@@ -104,51 +106,29 @@ public class ApiApplicationRegistrationServiceImpl implements ApiApplicationRegi
             } else {
                 validityPeriod = registrationProfile.getValidityPeriod();
             }
-            if (registrationProfile.isMappingAnExistingOAuthApp()) {
-                JSONObject jsonStringObject = new JSONObject();
-                jsonStringObject.put(ApiApplicationConstants.JSONSTRING_USERNAME_TAG, username);
-                jsonStringObject.put(ApiApplicationConstants.JSONSTRING_KEY_TYPE_TAG,
-                                     ApiApplicationConstants.DEFAULT_TOKEN_TYPE);
-                jsonStringObject.put(ApiApplicationConstants.OAUTH_CLIENT_ID, registrationProfile.getConsumerKey());
-                jsonStringObject.put(ApiApplicationConstants.OAUTH_CLIENT_SECRET,
-                                     registrationProfile.getConsumerSecret());
-                jsonStringObject.put(ApiApplicationConstants.JSONSTRING_VALIDITY_PERIOD_TAG, validityPeriod);
-                apiManagementProviderService.registerExistingOAuthApplicationToAPIApplication(
-                        jsonStringObject.toJSONString(), registrationProfile.getApplicationName(),
-                        registrationProfile.getConsumerKey(), username, registrationProfile.isAllowedToAllDomains(),
-                        ApiApplicationConstants.DEFAULT_TOKEN_TYPE, registrationProfile.getTags());
-                return Response.status(Response.Status.ACCEPTED).entity("true").build();
-            } else {
+
+            String applicationName = registrationProfile.getApplicationName();
+            synchronized (ApiApplicationRegistrationServiceImpl.class) {
                 ApiApplicationKey apiApplicationKey = apiManagementProviderService.generateAndRetrieveApplicationKeys(
-                        registrationProfile.getApplicationName(), registrationProfile.getTags(),
+                        applicationName, registrationProfile.getTags(),
                         ApiApplicationConstants.DEFAULT_TOKEN_TYPE, username,
                         registrationProfile.isAllowedToAllDomains(), validityPeriod);
                 return Response.status(Response.Status.CREATED).entity(apiApplicationKey.toString()).build();
             }
         } catch (APIManagerException e) {
-            String msg = "Error occurred while registering an application '"
-                    + registrationProfile.getApplicationName() + "'";
+            String msg = "Error occurred while registering an application with apis '"
+                    + StringUtils.join(registrationProfile.getTags(), ",") + "'";
             log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("false").build();
         } catch (DeviceManagementException e) {
             String msg = "Failed to retrieve the device service";
             log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
-        }
-    }
-
-    @Path("unregister")
-    @DELETE
-    public Response unregister(@QueryParam("applicationName") String applicationName) {
-        try {
-            String username = APIUtil.getAuthenticatedUser() + "@" + APIUtil.getTenantDomainOftheUser();
-            APIManagementProviderService apiManagementProviderService = APIUtil.getAPIManagementProviderService();
-            apiManagementProviderService.removeAPIApplication(applicationName, username);
-            return Response.status(Response.Status.ACCEPTED).build();
-        } catch (APIManagerException e) {
-            String msg = "Error occurred while removing the application '" + applicationName;
+        } catch (UserStoreException e) {
+            String msg = "Failed to access user space.";
             log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         }
     }
+
 }

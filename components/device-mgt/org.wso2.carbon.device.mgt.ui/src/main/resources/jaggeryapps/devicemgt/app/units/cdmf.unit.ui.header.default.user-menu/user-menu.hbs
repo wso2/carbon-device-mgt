@@ -42,14 +42,14 @@
                     <div class="modal-header">
                         <h4 class="pull-left modal-title">
                 <span class="fw-stack">
-                    <i class="fw fw-user fw-stack-2x"></i>
+                    <i class="fw fw-user fw-stack-2x user-icon-black"></i>
                     <span class="fw-stack fw-move-right fw-move-bottom">
                       <i class="fw fw-circle-outline fw-stack-2x"></i>
                       <i class="fw fw-circle fw-stack-2x fw-stroke text-info"></i>
                       <i class="fw fw-edit fw-stack-1x fw-inverse"></i>
                    </span>
                 </span>
-                            Change password is not a option
+                            Change Password
                         </h4>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i
                                 class="fw fw-cancel"></i></button>
@@ -70,10 +70,10 @@
                             <br><br>
                             <div>
                                 <input id="new-password" type="password" autocomplete="off" class="form-control modal-input"
-                                       placeholder="[ Password should be in minimum 5 characters long and should not include any whitespaces ]"/>
+                                       placeholder="[ Your password should be 5 characters or more and should not include any white spaces ]"/>
                             </div>
                             <br><br>
-                            Reconfirm your new password *
+                            Confirm your new password *
                             <br><br>
                             <div>
                                 <input id="retyped-new-password" type="password" autocomplete="off" class="form-control modal-input"/>
@@ -109,7 +109,7 @@
                     </div>
                     <div class="modal-footer">
                         <div class="buttons">
-                            <a href="#" id="change-password-success-link" class="btn-operations">Ok</a>
+                            <a href="{{@app.context}}/uuf/logout" id="change-password-success-link" class="btn-operations">Ok</a>
                         </div>
                     </div>
                 </div>

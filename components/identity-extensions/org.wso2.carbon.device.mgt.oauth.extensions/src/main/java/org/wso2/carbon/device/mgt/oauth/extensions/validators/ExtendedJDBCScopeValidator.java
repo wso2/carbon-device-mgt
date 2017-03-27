@@ -45,7 +45,7 @@ import java.util.List;
 import java.util.Set;
 
 @SuppressWarnings("unused")
-public class ExtendedJDBCScopeValidator extends OAuth2ScopeValidator{
+public class ExtendedJDBCScopeValidator extends OAuth2ScopeValidator {
 
     private static final Log log = LogFactory.getLog(ExtendedJDBCScopeValidator.class);
     private static final String UI_EXECUTE = "ui.execute";

@@ -26,10 +26,10 @@
         </DataSourceConfiguration>
     </ManagementRepository>
     <PushNotificationProviders>
-        <Provider>org.wso2.carbon.device.mgt.extensions.push.notification.provider.gcm.GCMBasedPushNotificationProvider</Provider>
+        <Provider>org.wso2.carbon.device.mgt.extensions.push.notification.provider.fcm.FCMBasedPushNotificationProvider</Provider>
         <!--<Provider>org.wso2.carbon.device.mgt.mobile.impl.ios.apns.APNSBasedPushNotificationProvider</Provider>-->
-        <!--<Provider>org.wso2.carbon.device.mgt.extensions.push.notification.provider.mqtt.MQTTBasedPushNotificationProvider</Provider>-->
-        <!--<Provider>org.wso2.carbon.device.mgt.extensions.push.notification.provider.xmpp.XMPPBasedPushNotificationProvider</Provider>-->
+        <Provider>org.wso2.carbon.device.mgt.extensions.push.notification.provider.mqtt.MQTTBasedPushNotificationProvider</Provider>
+        <Provider>org.wso2.carbon.device.mgt.extensions.push.notification.provider.xmpp.XMPPBasedPushNotificationProvider</Provider>
     </PushNotificationProviders>
     <IdentityConfiguration>
         <ServerUrl>https://localhost:9443</ServerUrl>
@@ -47,11 +47,6 @@
         <!--Simple ->  Simple policy evaluation point-->
         <!--Merged ->  Merged policy evaluation point -->
         <PolicyEvaluationPoint>Simple</PolicyEvaluationPoint>
-        <Platforms>
-            <Platform>android</Platform>
-            <Platform>ios</Platform>
-            <Platform>windows</Platform>
-        </Platforms>
     </PolicyConfiguration>
     <!--<TaskConfiguration>-->
         <!--<Enable>true</Enable>-->

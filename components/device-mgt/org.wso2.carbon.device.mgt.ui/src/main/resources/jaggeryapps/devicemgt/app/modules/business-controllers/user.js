@@ -174,7 +174,7 @@ var userModule = function () {
         }
         try {
             utility.startTenantFlow(carbonUser);
-            var url = devicemgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"] + "/users?offset=0&limit=1";
+            var url = devicemgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"] + "/users/count";
             return serviceInvokers.XMLHttp.get(
                 url, function (responsePayload) {
                     return parse(responsePayload["responseText"])["count"];
@@ -293,6 +293,32 @@ var userModule = function () {
             var response = privateMethods.callBackend(url, constants["HTTP_GET"]);
             if (response.status == "success") {
                 response.content = parse(response.content).roles;
+            }
+            return response;
+        } catch (e) {
+            throw e;
+        } finally {
+            utility.endTenantFlow();
+        }
+    };
+
+    /**
+     * Get User Roles from user store (Internal roles not included).
+     */
+    publicMethods.getFilteredRoles = function (prefix) {
+        var carbonUser = session.get(constants["USER_SESSION_KEY"]);
+        var utility = require("/app/modules/utility.js")["utility"];
+        if (!carbonUser) {
+            log.error("User object was not found in the session");
+            throw constants["ERRORS"]["USER_NOT_FOUND"];
+        }
+        try {
+            utility.startTenantFlow(carbonUser);
+            var url = devicemgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"] +
+                "/roles/filter/" + prefix + "?offset=0&limit=100&user-store=all";
+            var response = privateMethods.callBackend(url, constants["HTTP_GET"]);
+            if (response.status == "success") {
+                response.content = parse(response.content);
             }
             return response;
         } catch (e) {
@@ -463,7 +489,13 @@ var userModule = function () {
     publicMethods.isAuthorized = function (permission) {
         var carbon = require("carbon");
         var carbonServer = application.get("carbonServer");
-        var carbonUser = session.get(constants.USER_SESSION_KEY);
+        var carbonUser;
+        try {
+            carbonUser = session.get(constants.USER_SESSION_KEY);
+        } catch (e) {
+            log.error("User object was not found in the session");
+            carbonUser = null;
+        }
         var utility = require('/app/modules/utility.js').utility;
         if (!carbonUser) {
             log.error("User object was not found in the session");
@@ -505,7 +537,7 @@ var userModule = function () {
             permissions["LIST_DEVICES"] = true;
             permissions["LIST_OWN_DEVICES"] = true;
         }
-        if (publicMethods.isAuthorized("/permission/admin/device-mgt/devices/owning-device")) {
+        if (publicMethods.isAuthorized("/permission/admin/device-mgt/devices/owning-device/view")) {
             permissions["LIST_OWN_DEVICES"] = true;
         }
         if (publicMethods.isAuthorized("/permission/admin/device-mgt/admin/groups/view")) {

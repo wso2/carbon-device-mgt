@@ -26,7 +26,11 @@ var onFail;
         var utility = require("/app/modules/utility.js").utility;
         var apiWrapperUtil = require("/app/modules/oauth/token-handlers.js")["handlers"];
         if (context.input.samlToken) {
-            apiWrapperUtil.setupTokenPairBySamlGrantType(context.user.username + '@' + context.user.domain, context.input.samlToken);
+            //apiWrapperUtil.setupTokenPairBySamlGrantType(context.user.username + '@' + context.user.domain, context.input.samlToken);
+			/**
+			 * Since the user can be verified using the sso.client.js we can use JWT grant type to issue the token for the user.
+			 */
+			apiWrapperUtil.setupTokenPairByJWTGrantType(context.user.username + '@' + context.user.domain, context.input.samlToken);
         } else {
             apiWrapperUtil.setupTokenPairByPasswordGrantType(context.input.username, context.input.password);
         }

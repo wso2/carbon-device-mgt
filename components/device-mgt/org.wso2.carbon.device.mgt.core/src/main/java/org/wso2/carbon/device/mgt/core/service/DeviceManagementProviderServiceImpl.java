@@ -23,20 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.CarbonConstants;
 import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
-import org.wso2.carbon.device.mgt.common.Device;
-import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
-import org.wso2.carbon.device.mgt.common.DeviceManagementException;
-import org.wso2.carbon.device.mgt.common.DeviceManager;
-import org.wso2.carbon.device.mgt.common.DeviceNotFoundException;
-import org.wso2.carbon.device.mgt.common.DeviceTypeIdentifier;
-import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
-import org.wso2.carbon.device.mgt.common.FeatureManager;
-import org.wso2.carbon.device.mgt.common.InvalidDeviceException;
-import org.wso2.carbon.device.mgt.common.MonitoringOperation;
-import org.wso2.carbon.device.mgt.common.OperationMonitoringTaskConfig;
-import org.wso2.carbon.device.mgt.common.PaginationRequest;
-import org.wso2.carbon.device.mgt.common.PaginationResult;
-import org.wso2.carbon.device.mgt.common.TransactionManagementException;
+import org.wso2.carbon.device.mgt.common.*;
 import org.wso2.carbon.device.mgt.common.app.mgt.Application;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.PlatformConfiguration;
 import org.wso2.carbon.device.mgt.common.device.details.DeviceInfo;
@@ -66,6 +53,7 @@ import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementServiceComponent;
 import org.wso2.carbon.device.mgt.core.internal.PluginInitializationListener;
+import org.wso2.carbon.device.mgt.core.operation.mgt.CommandOperation;
 import org.wso2.carbon.device.mgt.core.util.DeviceManagerUtil;
 import org.wso2.carbon.email.sender.core.ContentProviderInfo;
 import org.wso2.carbon.email.sender.core.EmailContext;
@@ -257,6 +245,8 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
         if (status) {
             addDeviceToGroups(deviceIdentifier, device.getEnrolmentInfo().getOwnership());
+            addInitialOperations(deviceIdentifier, device.getType());
+
         }
         return status;
     }
@@ -279,7 +269,9 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             DeviceManagementDAOFactory.beginTransaction();
             Device currentDevice = deviceDAO.getDevice(deviceIdentifier, tenantId);
             device.setId(currentDevice.getId());
-            device.getEnrolmentInfo().setId(currentDevice.getEnrolmentInfo().getId());
+            if (device.getEnrolmentInfo().getId() == 0) {
+                device.getEnrolmentInfo().setId(currentDevice.getEnrolmentInfo().getId());
+            }
             if (device.getName() == null) {
                 device.setName(currentDevice.getName());
             }
@@ -315,7 +307,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         return enrolmentInfos;
     }
 
-    @Override
+        @Override
     public boolean disenrollDevice(DeviceIdentifier deviceId) throws DeviceManagementException {
         DeviceManager deviceManager = this.getDeviceManager(deviceId.getType());
         if (deviceManager == null) {
@@ -2081,6 +2073,37 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                     e);
         } catch (GroupManagementException e) {
             throw new DeviceManagementException("An error occurred when adding the device to the group.", e);
+        }
+    }
+
+    private void addInitialOperations(DeviceIdentifier deviceIdentifier, String deviceType) throws DeviceManagementException {
+        DeviceManagementProviderService deviceManagementProviderService = DeviceManagementDataHolder.getInstance().
+                getDeviceManagementProvider();
+        DeviceManagementService deviceManagementService =
+                pluginRepository.getDeviceManagementService(deviceType, this.getTenantId());
+        InitialOperationConfig init = deviceManagementService.getInitialOperationConfig();
+        List<DeviceIdentifier> deviceIdentifiers = new ArrayList<>();
+        deviceIdentifiers.add(deviceIdentifier);
+        if (init != null) {
+           List<String> initialOperations = init.getOperations();
+
+            for (String str : initialOperations) {
+                CommandOperation operation = new CommandOperation();
+                operation.setEnabled(true);
+                operation.setType(Operation.Type.COMMAND);
+                operation.setCode(str);
+                try {
+                    deviceManagementProviderService.
+                            addOperation(deviceType,
+                                    operation, deviceIdentifiers);
+                } catch (OperationManagementException e) {
+                    throw new DeviceManagementException("Unable to find the device with the id: '" + deviceIdentifier.getId(),
+                            e);
+                } catch (InvalidDeviceException e) {
+                    throw new DeviceManagementException("Unable to find the device with the id: '" + deviceIdentifier.getId(),
+                            e);
+                }
+            }
         }
     }
 

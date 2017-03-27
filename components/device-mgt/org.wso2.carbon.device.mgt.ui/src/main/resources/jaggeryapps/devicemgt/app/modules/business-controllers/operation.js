@@ -51,6 +51,16 @@ var operationModule = function () {
                    feature["contentType"] = features[i].contentType;
                    feature["deviceType"] = deviceType;
                    feature["params"] = [];
+				   var featuresEntry = utility.getDeviceTypeConfig(deviceType)["deviceType"]["features"];
+				   if (featuresEntry) {
+					   var featureEntry = featuresEntry[features[i].code];
+					   if (featureEntry) {
+						   var permissionEntry = featureEntry["permission"];
+						   if (permissionEntry) {
+							   feature["permission"] = permissionEntry
+						   }
+					   }
+				   }
                    var metaData = features[i].metadataEntries;
                    if (metaData) {
                        for (var j = 0; j < metaData.length; j++) {
@@ -71,21 +81,11 @@ var operationModule = function () {
 
     publicMethods.getControlOperations = function (deviceType) {
         var operations = privateMethods.getOperationsFromFeatures(deviceType, "operation");
-        var features = utility.getDeviceTypeConfig(deviceType).deviceType.features;
         for (var op in operations) {
             var iconIdentifier = operations[op].operation;
-            if (features && features[iconIdentifier]) {
-                var icon = features[iconIdentifier].icon;
-                if (icon) {
-                    operations[op]["iconFont"] = icon;
-                } else if (iconPath) {
-                    var iconPath = utility.getOperationIcon(deviceType, iconIdentifier);
-                    operations[op]["icon"] = iconPath;
-                }
-                var formParams = features[iconIdentifier].formParams;
-                if (formParams) {
-                    operations[op]["uiParams"] = formParams;
-                }
+            var icon = utility.getOperationIcon(deviceType, iconIdentifier);
+            if (icon) {
+                operations[op]["icon"] = icon;
             }
         }
         return operations;

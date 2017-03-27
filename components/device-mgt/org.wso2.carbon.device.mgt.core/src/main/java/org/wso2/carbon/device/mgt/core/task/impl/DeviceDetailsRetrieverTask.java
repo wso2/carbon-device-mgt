@@ -54,7 +54,6 @@ public class DeviceDetailsRetrieverTask implements Task {
 
     @Override
     public void execute() {
-
         if (log.isDebugEnabled()) {
             log.debug("Device details retrieving task started to run.");
         }
@@ -73,4 +72,3 @@ public class DeviceDetailsRetrieverTask implements Task {
     }
 
 }
-

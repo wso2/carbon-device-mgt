@@ -18,28 +18,14 @@
  */
 package org.wso2.carbon.apimgt.webapp.publisher;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.reflect.TypeToken;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.apimgt.api.APIManagementException;
-import org.wso2.carbon.apimgt.api.APIProvider;
-import org.wso2.carbon.apimgt.api.FaultGatewaysException;
-import org.wso2.carbon.apimgt.api.model.*;
-import org.wso2.carbon.apimgt.impl.APIManagerFactory;
+import feign.FeignException;
+import org.wso2.carbon.apimgt.integration.generated.client.publisher.model.*;
+import org.wso2.carbon.apimgt.integration.client.publisher.PublisherClient;
 import org.wso2.carbon.apimgt.webapp.publisher.config.WebappPublisherConfig;
+import org.wso2.carbon.apimgt.webapp.publisher.exception.APIManagerPublisherException;
 import org.wso2.carbon.apimgt.webapp.publisher.internal.APIPublisherDataHolder;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
-import org.wso2.carbon.governance.lcm.util.CommonUtil;
-import org.wso2.carbon.registry.core.exceptions.RegistryException;
-import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
-
-import javax.xml.stream.XMLStreamException;
-import java.io.FileNotFoundException;
 import java.util.*;
 
 /**
@@ -47,176 +33,122 @@ import java.util.*;
  * API publishing related operations.
  */
 public class APIPublisherServiceImpl implements APIPublisherService {
-
-    private static final Log log = LogFactory.getLog(APIPublisherServiceImpl.class);
+    private static final String UNLIMITED_TIER = "Unlimited";
+    private static final String API_PUBLISH_ENVIRONMENT = "Production and Sandbox";
+    private static final String CONTENT_TYPE = "application/json";
+    private static final String PUBLISHED_STATUS = "PUBLISHED";
+    private static final String CREATED_STATUS = "CREATED";
     private static final String PUBLISH_ACTION = "Publish";
 
     @Override
-    public void publishAPI(final API api) throws APIManagementException, FaultGatewaysException {
-        String tenantDomain = MultitenantUtils.getTenantDomain(api.getApiOwner());
+    public void publishAPI(APIConfig apiConfig) throws APIManagerPublisherException {
+        String tenantDomain = MultitenantUtils.getTenantDomain(apiConfig.getOwner());
         PrivilegedCarbonContext.startTenantFlow();
         PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(tenantDomain, true);
+        PrivilegedCarbonContext.getThreadLocalCarbonContext().setUsername(apiConfig.getOwner());
         try {
-            int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
-            // Below code snippet is added to load API Lifecycle in tenant mode.
-            RegistryService registryService = APIPublisherDataHolder.getInstance().getRegistryService();
-            CommonUtil.addDefaultLifecyclesIfNotAvailable(registryService.getConfigSystemRegistry(tenantId),
-                    CommonUtil.getRootSystemRegistry(tenantId));
-            APIProvider provider = APIManagerFactory.getInstance().getAPIProvider(api.getApiOwner());
-            MultitenantUtils.getTenantDomain(api.getApiOwner());
-            processHttpVerbs(api);
-            if (provider != null) {
-                if (provider.isDuplicateContextTemplate(api.getContext())) {
-                    throw new APIManagementException(
-                            "Error occurred while adding the API. A duplicate API" +
-                                    " context already exists for " + api.getContext());
+            PublisherClient publisherClient = APIPublisherDataHolder.getInstance().getIntegrationClientService()
+                    .getPublisherClient();
+            API api = getAPI(apiConfig);
+            APIList apiList = publisherClient.getApi().apisGet(100, 0, "name:" + api.getName(), CONTENT_TYPE, null);
+
+            if (!isExist(api, apiList)) {
+                api = publisherClient.getApi().apisPost(api, CONTENT_TYPE);
+                if (CREATED_STATUS.equals(api.getStatus())) {
+                    publisherClient.getApi().apisChangeLifecyclePost(PUBLISH_ACTION, api.getId(), null, null, null);
                 }
-                if (!provider.isAPIAvailable(api.getId())) {
-                    provider.addAPI(api);
-                    provider.changeLifeCycleStatus(api.getId(), PUBLISH_ACTION);
-                    if (log.isDebugEnabled()) {
-                        log.debug("Successfully published API '" + api.getId().getApiName() +
-                                "' with context '" + api.getContext() + "' and version '"
-                                + api.getId().getVersion() + "'");
-                    }
-                } else {
-                    if (WebappPublisherConfig.getInstance().isEnabledUpdateApi()) {
-                        if (provider.getAPI(api.getId()).getStatus() == APIStatus.CREATED) {
-                            provider.changeLifeCycleStatus(api.getId(), PUBLISH_ACTION);
-                        }
-                        api.setStatus(APIStatus.PUBLISHED);
-                        provider.updateAPI(api);
-                        if (log.isDebugEnabled()) {
-                            log.debug("An API already exists with the name '" + api.getId().getApiName() +
-                                    "', context '" + api.getContext() + "' and version '"
-                                    + api.getId().getVersion() + "'. Thus, the API config is updated");
-                        }
-                    }
-                }
-                provider.saveSwagger20Definition(api.getId(), createSwaggerDefinition(api));
             } else {
-                throw new APIManagementException("API provider configured for the given API configuration " +
-                        "is null. Thus, the API is not published");
+                if (WebappPublisherConfig.getInstance().isEnabledUpdateApi()) {
+                    for (APIInfo apiInfo : apiList.getList()) {
+                        if (api.getName().equals(apiInfo.getName()) && api.getVersion().equals(apiInfo.getVersion())) {
+                            api = publisherClient.getApi().apisApiIdPut(apiInfo.getId(), api, CONTENT_TYPE, null, null);
+                            if (CREATED_STATUS.equals(api.getStatus())) {
+                                publisherClient.getApi().apisChangeLifecyclePost(PUBLISH_ACTION, api.getId(), null, null,
+                                                                                 null);
+                            }
+                        }
+
+                    }
+                }
             }
-        } catch (FileNotFoundException e) {
-            throw new APIManagementException("Failed to retrieve life cycle file ", e);
-        } catch (RegistryException e) {
-            throw new APIManagementException("Failed to access the registry ", e);
-        } catch (XMLStreamException e) {
-            throw new APIManagementException("Failed parsing the lifecycle xml.", e);
+        } catch (FeignException e) {
+            throw new APIManagerPublisherException(e);
         } finally {
             PrivilegedCarbonContext.endTenantFlow();
         }
     }
 
-    private String createSwaggerDefinition(API api) {
-        Map<String, JsonObject> httpVerbsMap = new HashMap<>();
-        List<Scope> scopes = new ArrayList<>();
-
-        for (URITemplate uriTemplate : api.getUriTemplates()) {
-            JsonObject response = new JsonObject();
-            response.addProperty("200", "");
-
-            JsonObject responses = new JsonObject();
-            responses.add("responses", response);
-            JsonObject httpVerbs = httpVerbsMap.get(uriTemplate.getUriTemplate());
-            if (httpVerbs == null) {
-                httpVerbs = new JsonObject();
-            }
-            JsonObject httpVerb = new JsonObject();
-            httpVerb.add("responses", response);
-
-            httpVerb.addProperty("x-auth-type", "Application%20%26%20Application%20User");
-            httpVerb.addProperty("x-throttling-tier", "Unlimited");
-            if (uriTemplate.getScope() != null) {
-                httpVerb.addProperty("x-scope", uriTemplate.getScope().getName());
-                scopes.add(uriTemplate.getScope());
-            }
-            httpVerbs.add(uriTemplate.getHTTPVerb().toLowerCase(), httpVerb);
-            httpVerbsMap.put(uriTemplate.getUriTemplate(), httpVerbs);
+    private boolean isExist(API api, APIList apiList) {
+        if (apiList == null || apiList.getList() == null || apiList.getList().size() == 0) {
+            return false;
         }
-
-        Iterator it = httpVerbsMap.entrySet().iterator();
-        JsonObject paths = new JsonObject();
-        while (it.hasNext()) {
-            Map.Entry<String, JsonObject> pair = (Map.Entry) it.next();
-            paths.add(pair.getKey(), pair.getValue());
-            it.remove();
-        }
-
-        JsonObject info = new JsonObject();
-        info.addProperty("title", api.getId().getApiName());
-        info.addProperty("version", api.getId().getVersion());
-
-        JsonObject swaggerDefinition = new JsonObject();
-        swaggerDefinition.add("paths", paths);
-        swaggerDefinition.addProperty("swagger", "2.0");
-        swaggerDefinition.add("info", info);
-
-        // adding scopes to swagger definition
-        if (!api.getScopes().isEmpty()) {
-            Gson gson = new Gson();
-            JsonElement element = gson.toJsonTree(api.getScopes(), new TypeToken<Set<Scope>>() {
-            }.getType());
-            if (element != null) {
-                JsonArray apiScopes = element.getAsJsonArray();
-                JsonObject apim = new JsonObject();
-                apim.add("x-wso2-scopes", apiScopes);
-                JsonObject wso2Security = new JsonObject();
-                wso2Security.add("apim", apim);
-                swaggerDefinition.add("x-wso2-security", wso2Security);
+        for (APIInfo existingApi : apiList.getList()) {
+            if (existingApi.getName().equals(api.getName()) && existingApi.getVersion().equals(api.getVersion())) {
+                return true;
             }
         }
-        if (log.isDebugEnabled()) {
-            log.debug("API swagger definition: " + swaggerDefinition.toString());
-        }
-        return swaggerDefinition.toString();
+        return false;
     }
 
-    /**
-     * Sometimes the httpVerb string attribute is not existing in
-     * the list of httpVerbs attribute of uriTemplate. In such cases when creating the api in the
-     * synapse configuration, it doesn't have http methods correctly assigned for the resources.
-     * Therefore this method takes care of such inconsistency issue.
-     *
-     * @param api The actual API model object
-     */
-    private void processHttpVerbs(API api) {
-        for (URITemplate uriTemplate : api.getUriTemplates()) {
-            String httpVerbString = uriTemplate.getHTTPVerb();
-            if (httpVerbString != null && !httpVerbString.isEmpty()) {
-                uriTemplate.setHttpVerbs(httpVerbString);
-            }
-        }
-    }
+    private API getAPI(APIConfig config) {
 
-    @Override
-    public void removeAPI(APIIdentifier id) throws APIManagementException {
-        if (log.isDebugEnabled()) {
-            log.debug("Removing API '" + id.getApiName() + "'");
-        }
-        APIProvider provider = APIManagerFactory.getInstance().getAPIProvider(id.getProviderName());
-        provider.deleteAPI(id);
-        if (log.isDebugEnabled()) {
-            log.debug("API '" + id.getApiName() + "' has been successfully removed");
-        }
-    }
+        API api = new API();
+        api.setName(config.getName());
+        api.setDescription("");
 
-    @Override
-    public void publishAPIs(List<API> apis) throws APIManagementException, FaultGatewaysException {
-        if (log.isDebugEnabled()) {
-            log.debug("Publishing a batch of APIs");
+        String context = config.getContext();
+        context = context.startsWith("/") ? context : ("/" + context);
+        api.setContext(context);
+        api.setVersion(config.getVersion());
+        api.setProvider(config.getOwner());
+        api.setApiDefinition(APIPublisherUtil.getSwaggerDefinition(config));
+        api.setWsdlUri(null);
+        api.setStatus(PUBLISHED_STATUS);
+        api.setResponseCaching("DISABLED");
+        api.setDestinationStatsEnabled("false");
+        api.isDefaultVersion(true);
+        List<String> transport = new ArrayList<>();
+        transport.add("https");
+        transport.add("http");
+        api.transport(transport);
+        api.setTags(Arrays.asList(config.getTags()));
+        api.addTiersItem(UNLIMITED_TIER);
+        api.setGatewayEnvironments(API_PUBLISH_ENVIRONMENT);
+        if (config.isSharedWithAllTenants()) {
+            api.setSubscriptionAvailability(API.SubscriptionAvailabilityEnum.all_tenants);
+            api.setVisibility(API.VisibilityEnum.PUBLIC);
+        } else {
+            api.setSubscriptionAvailability(API.SubscriptionAvailabilityEnum.current_tenant);
+            api.setVisibility(API.VisibilityEnum.PRIVATE);
         }
-        for (API api : apis) {
-            try {
-                this.publishAPI(api);
-            } catch (APIManagementException e) {
-                log.error("Error occurred while publishing API '" + api.getId().getApiName() + "'", e);
-            }
-        }
-        if (log.isDebugEnabled()) {
-            log.debug("End of publishing the batch of APIs");
-        }
-    }
+        String endpointConfig = "{\"production_endpoints\":{\"url\":\"" + config.getEndpoint() +
+                "\",\"config\":null},\"implementation_status\":\"managed\",\"endpoint_type\":\"http\"}";
 
+
+        api.setEndpointConfig(endpointConfig);
+        APICorsConfiguration apiCorsConfiguration = new APICorsConfiguration();
+        List<String> accessControlAllowOrigins = new ArrayList<>();
+        accessControlAllowOrigins.add("*");
+        apiCorsConfiguration.setAccessControlAllowOrigins(accessControlAllowOrigins);
+
+        List<String> accessControlAllowHeaders = new ArrayList<>();
+        accessControlAllowHeaders.add("authorization");
+        accessControlAllowHeaders.add("Access-Control-Allow-Origin");
+        accessControlAllowHeaders.add("Content-Type");
+        accessControlAllowHeaders.add("SOAPAction");
+        apiCorsConfiguration.setAccessControlAllowHeaders(accessControlAllowHeaders);
+
+        List<String> accessControlAllowMethods = new ArrayList<>();
+        accessControlAllowMethods.add("GET");
+        accessControlAllowMethods.add("PUT");
+        accessControlAllowMethods.add("DELETE");
+        accessControlAllowMethods.add("POST");
+        accessControlAllowMethods.add("PATCH");
+        accessControlAllowMethods.add("OPTIONS");
+        apiCorsConfiguration.setAccessControlAllowMethods(accessControlAllowMethods);
+        apiCorsConfiguration.setAccessControlAllowCredentials(false);
+        apiCorsConfiguration.corsConfigurationEnabled(false);
+        api.setCorsConfiguration(apiCorsConfiguration);
+        return api;
+    }
 }

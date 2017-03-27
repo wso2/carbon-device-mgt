@@ -20,6 +20,7 @@ function onRequest(context) {
     var groupModule = require("/app/modules/business-controllers/group.js")["groupModule"];
     var userModule = require("/app/modules/business-controllers/user.js")["userModule"];
     var constants = require("/app/modules/constants.js");
+    var deviceMgtProps = require("/app/modules/conf-reader/main.js")["conf"];
     var currentUser = session.get(constants.USER_SESSION_KEY);
     var page = {};
     if (currentUser) {
@@ -31,5 +32,6 @@ function onRequest(context) {
             page.groupCount = groupCount;
         }
     }
+    page.isCloud = deviceMgtProps.isCloud;
     return page;
 }

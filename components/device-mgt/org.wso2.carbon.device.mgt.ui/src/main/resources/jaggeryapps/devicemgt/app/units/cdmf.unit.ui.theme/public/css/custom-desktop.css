@@ -2028,6 +2028,11 @@ input[type=number].form-control {
 
 .thumbnail.icon img {
   width: 100%;
+  padding: 10px;
+}
+
+.table .icon-only{
+  cursor: pointer;
 }
 
 /* ========================================================================
@@ -6355,6 +6360,7 @@ ul.tiles .icon {
 
 #device-location{
   height:450px;
+  width: 100%;
   margin-bottom:0px;
 }
 #device-location .leaflet-popup-content-wrapper{
@@ -6551,6 +6557,27 @@ select > option:hover {
 
 /**
  *
+ * Temporary navigation color fix for IoT cloud release
+ *
+ */
+
+header.header-default {
+  background: #181e22 !important;
+  height: 50px;
+}
+
+.navbar-collapse {
+  background: #37474F;
+}
+
+.dropdown-menu > li {
+  width: 100%;
+}
+
+/** End **/
+
+/**
+ *
  * Temporary responsive fix for table listing action button width issue
  * Todo : Move responsive style to theme.less file
  *
@@ -6580,6 +6607,9 @@ select > option:hover {
 }
 
 /** End **/
+
+.tooltip-overflow-fix{
+  overflow: visible !important;
 
 .editable-input select{
   height: 35px !important;

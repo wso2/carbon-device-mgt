@@ -29,7 +29,6 @@ import org.wso2.carbon.device.mgt.common.configuration.mgt.ConfigurationEntry;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.PlatformConfiguration;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.PlatformConfigurationManagementService;
 import org.wso2.carbon.device.mgt.common.notification.mgt.NotificationManagementService;
-import org.wso2.carbon.device.mgt.common.scope.mgt.ScopeManagementService;
 import org.wso2.carbon.device.mgt.core.app.mgt.ApplicationManagementProviderService;
 import org.wso2.carbon.device.mgt.core.device.details.mgt.DeviceInformationManager;
 import org.wso2.carbon.device.mgt.core.search.mgt.SearchManagerService;
@@ -37,13 +36,22 @@ import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.device.mgt.core.service.GroupManagementProviderService;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
 import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.InputValidationException;
+import org.wso2.carbon.identity.jwt.client.extension.service.JWTClientManagerService;
+import org.wso2.carbon.identity.user.store.count.AbstractCountRetrieverFactory;
+import org.wso2.carbon.identity.user.store.count.UserStoreCountRetriever;
+import org.wso2.carbon.identity.user.store.count.exception.UserStoreCounterException;
+import org.wso2.carbon.identity.user.store.count.jdbc.JDBCCountRetrieverFactory;
+import org.wso2.carbon.identity.user.store.count.jdbc.internal.InternalCountRetrieverFactory;
 import org.wso2.carbon.policy.mgt.common.PolicyMonitoringTaskException;
 import org.wso2.carbon.policy.mgt.core.PolicyManagerService;
 import org.wso2.carbon.policy.mgt.core.task.TaskScheduleService;
+import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.user.api.AuthorizationManager;
+import org.wso2.carbon.user.api.RealmConfiguration;
 import org.wso2.carbon.user.api.UserRealm;
 import org.wso2.carbon.user.api.UserStoreException;
 import org.wso2.carbon.user.api.UserStoreManager;
+import org.wso2.carbon.user.core.jdbc.JDBCUserStoreManager;
 import org.wso2.carbon.user.core.service.RealmService;
 
 import javax.ws.rs.core.MediaType;
@@ -105,6 +113,32 @@ public class DeviceMgtAPIUtils {
         return deviceManagementProviderService;
     }
 
+    public static UserStoreCountRetriever getUserStoreCountRetrieverService()
+            throws UserStoreCounterException {
+        PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        List<Object> countRetrieverFactories = ctx.getOSGiServices(AbstractCountRetrieverFactory.class, null);
+        RealmService realmService = (RealmService) ctx.getOSGiService(RealmService.class, null);
+        RealmConfiguration realmConfiguration = realmService.getBootstrapRealmConfiguration();
+        String userStoreType;
+        //Ignoring Sonar warning as getUserStoreClass() returning string name of the class. So cannot use 'instanceof'.
+        if (JDBCUserStoreManager.class.getName().equals(realmConfiguration.getUserStoreClass())) {
+            userStoreType = JDBCCountRetrieverFactory.JDBC;
+        } else {
+            userStoreType = InternalCountRetrieverFactory.INTERNAL;
+        }
+        AbstractCountRetrieverFactory countRetrieverFactory = null;
+        for (Object countRetrieverFactoryObj : countRetrieverFactories) {
+            countRetrieverFactory = (AbstractCountRetrieverFactory) countRetrieverFactoryObj;
+            if (userStoreType.equals(countRetrieverFactory.getCounterType())) {
+                break;
+            }
+        }
+        if (countRetrieverFactory == null) {
+            return null;
+        }
+        return countRetrieverFactory.buildCountRetriever(realmConfiguration);
+    }
+
     public static DeviceAccessAuthorizationService getDeviceAccessAuthorizationService() {
         PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         DeviceAccessAuthorizationService deviceAccessAuthorizationService =
@@ -154,6 +188,30 @@ public class DeviceMgtAPIUtils {
             throw new IllegalStateException(msg);
         }
         return realmService;
+    }
+
+    public static RegistryService getRegistryService() {
+        RegistryService registryService;
+        PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        registryService = (RegistryService) ctx.getOSGiService(RegistryService.class, null);
+        if (registryService == null) {
+            String msg = "registry service has not initialized.";
+            log.error(msg);
+            throw new IllegalStateException(msg);
+        }
+        return registryService;
+    }
+
+    public static JWTClientManagerService getJWTClientManagerService() {
+        JWTClientManagerService jwtClientManagerService;
+        PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        jwtClientManagerService = (JWTClientManagerService) ctx.getOSGiService(JWTClientManagerService.class, null);
+        if (jwtClientManagerService == null) {
+            String msg = "jwtClientManagerServicehas not initialized.";
+            log.error(msg);
+            throw new IllegalStateException(msg);
+        }
+        return jwtClientManagerService;
     }
 
     /**
@@ -260,16 +318,6 @@ public class DeviceMgtAPIUtils {
             throw new IllegalStateException("Gadget Data Service has not been initialized.");
         }
         return gadgetDataService;
-    }
-
-    public static ScopeManagementService getScopeManagementService() {
-        PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-        ScopeManagementService scopeManagementService =
-                (ScopeManagementService) ctx.getOSGiService(ScopeManagementService.class, null);
-        if (scopeManagementService == null) {
-            throw new IllegalStateException("Scope Management Service has not been initialized.");
-        }
-        return scopeManagementService;
     }
 
     public static int getTenantId(String tenantDomain) throws DeviceManagementException {

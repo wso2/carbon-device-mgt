@@ -18,7 +18,6 @@
 
 package org.wso2.carbon.device.mgt.core.internal;
 
-import org.wso2.carbon.apimgt.impl.APIManagerConfiguration;
 import org.wso2.carbon.device.mgt.common.OperationMonitoringTaskConfig;
 import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManager;
 import org.wso2.carbon.device.mgt.common.authorization.DeviceAccessAuthorizationService;
@@ -63,16 +62,9 @@ public class DeviceManagementDataHolder {
 
     private Map<String, OperationMonitoringTaskConfig> map = new HashMap<>();
 
-
-    public void addToMap(OperationMonitoringTaskConfig taskConfig) {
-        this.map.put("aa", taskConfig);
-    }
-
     public Map<String, OperationMonitoringTaskConfig> getMap(){
         return this.map;
     }
-
-    private APIManagerConfiguration apiManagerConfiguration;
 
     private DeviceManagementDataHolder() {}
 

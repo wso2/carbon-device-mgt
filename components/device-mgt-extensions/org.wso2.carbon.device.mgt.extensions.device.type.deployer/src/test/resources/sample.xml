@@ -36,10 +36,12 @@
         </Feature>
     </Features>
 
-    <!-- <Sensors table-id="SAMPLE_DEVICE_2">
+	<Claimable enabled="true"/>
+
+    <Sensors table-id="SAMPLE_DEVICE_2">
 		<Sensor code="CPU_Temperature">
 			<Name>temperature sensor fitted</Name>
-			<StreamDefinition>org.wso2.temperature.stream<StreamDefinition>
+			<StreamDefinition>org.wso2.temperature.stream</StreamDefinition>
 			<Description>this is a sensor</Description>
 			<SensorStaticProperties>
 				<Property name="unit">celcius</Property>
@@ -48,7 +50,7 @@
 		</Sensor>
 		<Sensor code="DHT11_Temperature">
 			<Name>temperature sensor fitted</Name>
-			<StreamDefinition>org.wso2.temperature.stream<StreamDefinition>
+			<StreamDefinition>org.wso2.temperature.stream</StreamDefinition>
 			<Description>this is a sensor</Description>
 			<SensorStaticProperties>
 				<Property name="unit">celcius</Property>
@@ -57,7 +59,7 @@
 				<Property name="model_number"/>
 			</SensorDynamicProperties>
 		</Sensor>
-	</Sensors> -->
+	</Sensors>
 
     <ProvisioningConfig>
         <SharedWithAllTenants>false</SharedWithAllTenants>

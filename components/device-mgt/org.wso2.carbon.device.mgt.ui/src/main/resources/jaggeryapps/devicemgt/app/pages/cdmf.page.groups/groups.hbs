@@ -55,6 +55,7 @@
         <div class="col-md-12 wr-page-content">
             <div>
                 <span id="permission" data-permission="{{permissions.list}}"></span>
+                <span id="isCloud" data-isCloud="{{isCloud}}"></span>
                 {{#if groupCount}}
                     <div class="container-fluid" id="group-listing" data-current-user="{{@user.username}}">
                         <table class="table table-striped table-hover list-table display responsive nowrap data-table table-selectable grid-view"
@@ -82,7 +83,7 @@
                             <h3 class="text-muted">
                                 <i class="fw fw-group fw-3x"></i>
                             </h3>
-                            <h3 class="text-muted">You don't have any group registered at the moment</h3>
+                            <h3 class="text-muted">You don't have any device group. Let's add a new device group!</h3>
                             {{#if permissions.ADD_GROUP}}
                                 <h3>
                                     <!--suppress HtmlUnknownTarget -->
@@ -103,7 +104,7 @@
                     <div class="modal-header">
                         <h3 class="pull-left modal-title">
                             <span>
-                                <span class="fw-stack">
+                                <span class="fw-stack add-margin-right-2x">
                                     <i class="fw fw-circle-outline fw-stack-2x"></i>
                                     <i class="fw fw-share fw-stack-1x"></i>
                                 </span> Group Sharing
@@ -145,7 +146,7 @@
                     <div class="modal-header">
                         <h3 class="pull-left modal-title">
                             <span>
-                                <span class="fw-stack">
+                                <span class="fw-stack add-margin-right-2x">
                                     <i class="fw fw-circle-outline fw-stack-2x"></i>
                                     <i class="fw fw-bookmark fw-stack-1x"></i>
                                 </span> Group Sharing Role
@@ -262,7 +263,7 @@
                     <div class="modal-header">
                         <h3 class="pull-left modal-title">
                             <span>
-                                <span class="fw-stack">
+                                <span class="fw-stack add-margin-right-2x">
                                     <i class="fw fw-circle-outline fw-stack-2x"></i>
                                     <i class="fw fw-edit fw-stack-1x"></i>
                                 </span> Update Group

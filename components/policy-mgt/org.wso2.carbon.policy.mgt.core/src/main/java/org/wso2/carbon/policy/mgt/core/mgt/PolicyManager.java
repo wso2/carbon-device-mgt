@@ -21,6 +21,7 @@ import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.policy.mgt.Policy;
 import org.wso2.carbon.policy.mgt.common.PolicyManagementException;
+import org.wso2.carbon.policy.mgt.core.mgt.bean.UpdatedPolicyDeviceListBean;
 
 import java.util.HashMap;
 import java.util.List;
@@ -67,7 +68,7 @@ public interface PolicyManager {
     void addAppliedPolicyFeaturesToDevice(DeviceIdentifier deviceIdentifier, Policy policy)
             throws PolicyManagementException;
 
-    List<String> applyChangesMadeToPolicies() throws PolicyManagementException;
+    UpdatedPolicyDeviceListBean applyChangesMadeToPolicies() throws PolicyManagementException;
 
     void addAppliedPolicyToDevice(DeviceIdentifier deviceIdentifier, Policy policy) throws PolicyManagementException;
 

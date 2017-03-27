@@ -29,6 +29,7 @@ import org.wso2.carbon.policy.mgt.common.PolicyManagementException;
 import org.wso2.carbon.policy.mgt.core.cache.impl.PolicyCacheManagerImpl;
 import org.wso2.carbon.policy.mgt.core.internal.PolicyManagementDataHolder;
 import org.wso2.carbon.policy.mgt.core.mgt.PolicyManager;
+import org.wso2.carbon.policy.mgt.core.mgt.bean.UpdatedPolicyDeviceListBean;
 import org.wso2.carbon.policy.mgt.core.mgt.impl.PolicyManagerImpl;
 
 import java.util.ArrayList;
@@ -54,7 +55,8 @@ public class DelegationTask implements Task {
 
         try {
             PolicyManager policyManager = new PolicyManagerImpl();
-            List<String> deviceTypes = policyManager.applyChangesMadeToPolicies();
+            UpdatedPolicyDeviceListBean updatedPolicyDeviceList = policyManager.applyChangesMadeToPolicies();
+            List<String> deviceTypes = updatedPolicyDeviceList.getChangedDeviceTypes();
 
             PolicyCacheManagerImpl.getInstance().rePopulateCache();
 
@@ -78,7 +80,8 @@ public class DelegationTask implements Task {
                             // }
                         }
                         if (!toBeNotified.isEmpty()) {
-                            PolicyEnforcementDelegator enforcementDelegator = new PolicyEnforcementDelegatorImpl(toBeNotified);
+                            PolicyEnforcementDelegator enforcementDelegator = new PolicyEnforcementDelegatorImpl
+                                    (toBeNotified, updatedPolicyDeviceList.getUpdatedPolicyIds());
                             enforcementDelegator.delegate();
                         }
                     } catch (DeviceManagementException e) {

@@ -38,6 +38,8 @@ import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.RequestValidationUtil;
 import org.wso2.carbon.device.mgt.jaxrs.util.Constants;
 import org.wso2.carbon.device.mgt.jaxrs.util.CredentialManagementResponseBuilder;
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
+import org.wso2.carbon.identity.user.store.count.UserStoreCountRetriever;
+import org.wso2.carbon.identity.user.store.count.exception.UserStoreCounterException;
 import org.wso2.carbon.user.api.UserStoreException;
 import org.wso2.carbon.user.api.UserStoreManager;
 import org.wso2.carbon.utils.CarbonUtils;
@@ -395,6 +397,30 @@ public class UserManagementServiceImpl implements UserManagementService {
     @Path("/count")
     @Override
     public Response getUserCount() {
+        try {
+            UserStoreCountRetriever userStoreCountRetrieverService = DeviceMgtAPIUtils.getUserStoreCountRetrieverService();
+            if (userStoreCountRetrieverService != null) {
+                long count = userStoreCountRetrieverService.countUsers("");
+                if (count != -1) {
+                    BasicUserInfoList result = new BasicUserInfoList();
+                    result.setCount(count);
+                    return Response.status(Response.Status.OK).entity(result).build();
+                }
+            }
+        } catch (UserStoreCounterException e) {
+            String msg =
+                    "Error occurred while retrieving the count of users that exist within the current tenant";
+            log.error(msg, e);
+        }
+        return getUserCountViaUserStoreManager();
+    }
+
+    /**
+     * This method returns the count of users using UserStoreManager.
+     *
+     * @return user count
+     */
+    private Response getUserCountViaUserStoreManager() {
         if (log.isDebugEnabled()) {
             log.debug("Getting the user count");
         }

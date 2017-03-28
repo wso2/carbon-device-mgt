@@ -81,21 +81,11 @@ var operationModule = function () {
 
     publicMethods.getControlOperations = function (deviceType) {
         var operations = privateMethods.getOperationsFromFeatures(deviceType, "operation");
-        var features = utility.getDeviceTypeConfig(deviceType).deviceType.features;
         for (var op in operations) {
             var iconIdentifier = operations[op].operation;
-            if (features && features[iconIdentifier]) {
-                var icon = features[iconIdentifier].icon;
-                if (icon) {
-                    operations[op]["iconFont"] = icon;
-                } else if (iconPath) {
-                    var iconPath = utility.getOperationIcon(deviceType, iconIdentifier);
-                    operations[op]["icon"] = iconPath;
-                }
-                var formParams = features[iconIdentifier].formParams;
-                if (formParams) {
-                    operations[op]["uiParams"] = formParams;
-                }
+            var icon = utility.getOperationIcon(deviceType, iconIdentifier);
+            if (icon) {
+                operations[op]["icon"] = icon;
             }
         }
         return operations;

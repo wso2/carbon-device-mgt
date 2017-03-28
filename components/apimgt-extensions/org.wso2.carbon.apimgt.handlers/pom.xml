@@ -76,6 +76,7 @@
                         <Bundle-Description>WSO2 Carbon - API Security Handler Component</Bundle-Description>
                         <Import-Package>
                             org.apache.axiom.*,
+                            javax.security.cert.*,
                             javax.xml.parsers;version="${javax.xml.parsers.import.pkg.version}";resolution:=optional,
                             javax.xml.*,
                             org.apache.axis2.*,
@@ -90,7 +91,8 @@
                             org.w3c.dom,
                             org.apache.synapse,
                             org.apache.synapse.core.axis2,
-                            org.apache.synapse.rest
+                            org.apache.synapse.rest,
+                            org.wso2.carbon.certificate.mgt.core.impl
                         </Import-Package>
                     </instructions>
                 </configuration>

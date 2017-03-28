@@ -35,6 +35,7 @@ public class QueryBuilderImpl implements QueryBuilder {
 
     private static final Log log = LogFactory.getLog(QueryBuilderImpl.class);
     private final String WILDCARD_OPERATOR = "%";
+    private final String OR_OPERATOR = "OR";
     private String current_username;
     private boolean isDeviceAdminUser;
 
@@ -131,7 +132,7 @@ public class QueryBuilderImpl implements QueryBuilder {
             for (Condition con : conditions) {
                 if (Utils.checkDeviceDetailsColumns(con.getKey())) {
                     if (con.operator.equals(WILDCARD_OPERATOR)) {
-                        querySuffix = querySuffix + " OR DD." + Utils.getDeviceDetailsColumnNames().get(con.getKey())
+                        querySuffix = querySuffix + " AND DD." + Utils.getDeviceDetailsColumnNames().get(con.getKey())
                                 + " LIKE  ? ";
                         ValueType type = new ValueType();
                         type.setColumnType(ValueType.columnType.STRING);
@@ -214,6 +215,11 @@ public class QueryBuilderImpl implements QueryBuilder {
             intArr[0] = x;
         } catch (Exception e) {
             throw new InvalidOperatorException("Error occurred while building the sql", e);
+        }
+        if (!querySuffix.isEmpty()) {
+            //Replacing the first OR operator as it's unnecessary
+            querySuffix = querySuffix.replaceFirst(OR_OPERATOR, "");
+            querySuffix = " AND (" + querySuffix + ")";
         }
         return querySuffix;
     }

@@ -153,7 +153,9 @@ public class APIManagementProviderServiceImpl implements APIManagementProviderSe
                             subscription.setApiIdentifier(id);
                             subscription.setApplicationId(application.getApplicationId());
                             subscription.tier(ApiApplicationConstants.DEFAULT_TIER);
-                            needToSubscribe.add(subscription);
+                            if (!needToSubscribe.contains(subscription)){
+                                needToSubscribe.add(subscription);
+                            }
                         }
                     }
                 }

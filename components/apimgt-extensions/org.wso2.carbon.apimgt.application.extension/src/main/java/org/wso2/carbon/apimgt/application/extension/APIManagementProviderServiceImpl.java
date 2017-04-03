@@ -76,18 +76,18 @@ public class APIManagementProviderServiceImpl implements APIManagementProviderSe
         String tenantDomain = PrivilegedCarbonContext.getThreadLocalCarbonContext()
                 .getTenantDomain();
         String tiersLoadedForTenant = tiersMap.get(tenantDomain);
+
         if (tiersLoadedForTenant == null) {
-            int tierStatus = 0;
+            boolean tierLoaded = false;
             int attempts = 0;
             do {
                 try {
                     storeClient.getIndividualTier()
                             .tiersTierLevelTierNameGet(ApiApplicationConstants.DEFAULT_TIER, APP_TIER_TYPE,
-                                                       tenantDomain, CONTENT_TYPE, null, null);
+                                    tenantDomain, CONTENT_TYPE, null, null);
                     tiersMap.put(tenantDomain, "exist");
-                    tierStatus = 200;
+                    tierLoaded = true;
                 } catch (FeignException e) {
-                    tierStatus = e.status();
                     attempts++;
                     try {
                         Thread.sleep(500);
@@ -95,7 +95,7 @@ public class APIManagementProviderServiceImpl implements APIManagementProviderSe
                         log.warn("Interrupted the waiting for tier availability.");
                     }
                 }
-            } while (tierStatus == 500 && attempts < MAX_ATTEMPTS);
+            } while ((!tierLoaded) && attempts < MAX_ATTEMPTS);
         }
 
         ApplicationList applicationList = storeClient.getApplications()

@@ -1,7 +1,7 @@
 {{#zone "content"}}
     {{#if isAuthorized}}
         <span id="logged-in-user" class="hidden" data-username="{{user.username}}" data-domain="{{user.domain}}"
-              data-tenant-id="{{user.tenantId}}"></span>
+              data-tenant-id="{{user.tenantId}}" data-iscloud="{{isCloud}}"></span>
         <div class="row">
             <div class="col-md-12">
 
@@ -284,8 +284,8 @@
                                     <i class="icon fw fw-error"></i><span></span>
                                 </div>
                                 {{#unless types}}
-                                <h3><i class="icon fw fw-warning"></i> No compatible device types have been installed.
-                                    Install device types to add policies.</h3>
+                                    <h3><i class="icon fw fw-warning"></i> No compatible device types have been installed.
+                                        Install device types to add policies.</h3>
                                 {{/unless}}
                                 <div class="row wr-tile-buttons-list">
                                     <div class="wr-input-control">

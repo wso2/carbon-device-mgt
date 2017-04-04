@@ -109,6 +109,7 @@ var operationModule = function () {
         "APN_OPERATION_CODE": "APN",
         "CELLULAR_OPERATION_CODE": "CELLULAR",
         "PER_APP_VPN_OPERATION_CODE": "PER_APP_VPN",
+        "APPLICATION_OPERATION_CODE": "APP-RESTRICTION",
         "APP_TO_PER_APP_VPN_MAPPING_OPERATION_CODE": "APP_TO_PER_APP_VPN_MAPPING"
     };
 
@@ -286,6 +287,12 @@ var operationModule = function () {
                     "operation": {
                         "appLayerVPNMappings": operationPayload["appLayerVPNMappings"]
                     }
+                };
+                break;
+            case iosOperationConstants["APPLICATION_OPERATION_CODE"]:
+                payload = {
+                    "restrictionType": operationPayload["restriction-type"],
+                    "restrictedApplications": operationPayload["restricted-applications"]
                 };
                 break;
             case iosOperationConstants["WIFI_OPERATION_CODE"]:
@@ -576,6 +583,14 @@ var operationModule = function () {
                 payload = {
                     "operation": {
                         "appLayerVPNMappings": operationData["appLayerVPNMappings"]
+                    }
+                };
+                break;
+            case iosOperationConstants["APPLICATION_OPERATION_CODE"]:
+                payload = {
+                    "operation": {
+                        "restriction-type": operationData["restrictionType"],
+                        "restricted-applications": operationData["restrictedApplications"]
                     }
                 };
                 break;

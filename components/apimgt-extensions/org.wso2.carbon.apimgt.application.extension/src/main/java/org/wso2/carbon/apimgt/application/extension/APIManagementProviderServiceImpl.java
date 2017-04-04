@@ -46,7 +46,7 @@ public class APIManagementProviderServiceImpl implements APIManagementProviderSe
     private static final int MAX_API_PER_TAG = 200;
     private static final String APP_TIER_TYPE = "application";
     private static final Map<String, String> tiersMap = new HashMap<>();
-    private static final int MAX_ATTEMPTS = 10;
+    private static final int MAX_ATTEMPTS = 20;
 
     @Override
     public void removeAPIApplication(String applicationName, String username) throws APIManagerException {

@@ -53,7 +53,7 @@ public class AnnotationProcessor {
 
     private static final Log log = LogFactory.getLog(AnnotationProcessor.class);
 
-    private static final String AUTH_TYPE = "Application & Application User";
+    private static final String AUTH_TYPE = "Any";
     private static final String STRING_ARR = "string_arr";
     private static final String STRING = "string";
     private static final String PACKAGE_ORG_APACHE = "org.apache";

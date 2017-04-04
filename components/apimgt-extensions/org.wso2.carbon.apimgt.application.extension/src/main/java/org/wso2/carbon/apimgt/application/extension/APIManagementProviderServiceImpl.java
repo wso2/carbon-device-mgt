@@ -90,7 +90,7 @@ public class APIManagementProviderServiceImpl implements APIManagementProviderSe
                 } catch (FeignException e) {
                     attempts++;
                     try {
-                        Thread.sleep(500);
+                        Thread.sleep(1000);
                     } catch (InterruptedException ex) {
                         log.warn("Interrupted the waiting for tier availability.");
                     }

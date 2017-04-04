@@ -16,24 +16,24 @@
  *   under the License.
  *
  */
-package org.wso2.carbon.device.mgt.extensions.push.notification.provider.fcm;
+package org.wso2.carbon.device.mgt.extensions.push.notification.provider.gcm;
 
 import org.wso2.carbon.device.mgt.common.push.notification.NotificationStrategy;
 import org.wso2.carbon.device.mgt.common.push.notification.PushNotificationConfig;
 import org.wso2.carbon.device.mgt.common.push.notification.PushNotificationProvider;
 
-public class FCMBasedPushNotificationProvider implements PushNotificationProvider {
+public class GCMBasedPushNotificationProvider implements PushNotificationProvider {
 
-    private static final String PS_PROVIDER_FCM = "FCM";
+    private static final String PS_PROVIDER_GCM = "GCM";
 
     @Override
     public String getType() {
-        return PS_PROVIDER_FCM;
+        return PS_PROVIDER_GCM;
     }
 
     @Override
     public NotificationStrategy getNotificationStrategy(PushNotificationConfig config) {
-        return new FCMNotificationStrategy(config);
+        return new GCMNotificationStrategy(config);
     }
 
 }

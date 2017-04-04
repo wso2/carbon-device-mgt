@@ -33,14 +33,12 @@ var permissions = {
     "/permission/admin/device-mgt/device/api/subscribe": ["ui.execute"],
 	"/permission/admin/device-mgt/devices/enroll": ["ui.execute"],
 	"/permission/admin/device-mgt/devices/disenroll": ["ui.execute"],
-	"/permission/admin/device-mgt/devices/owning-device/view": ["ui.execute"],
-	"/permission/admin/manage/portal": ["ui.execute"]
+	"/permission/admin/device-mgt/devices/owning-device/view": ["ui.execute"]
 };
 
 var adminPermissions = {
     "/permission/admin/device-mgt": ["ui.execute"],
-	"/permission/admin/manage/api": ["ui.execute"],
-	"/permission/admin/manage/portal": ["ui.execute"]
+	"/permission/admin/manage/api": ["ui.execute"]
 };
 
 //On Startup, admin user will get both roles: devicemgt-admin and devicemgt-user

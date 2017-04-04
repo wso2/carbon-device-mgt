@@ -65,7 +65,6 @@ public class DeviceTypeManager implements DeviceManager {
     private LicenseManager licenseManager;
     private boolean propertiesExist;
     private boolean requiredDeviceTypeAuthorization;
-    private boolean claimable;
 
     private FeatureManager featureManager;
 
@@ -102,13 +101,8 @@ public class DeviceTypeManager implements DeviceManager {
             String msg = "Error occurred while adding default license for " + deviceType + " devices";
             throw new DeviceTypeDeployerFileException(msg, e);
         }
-        claimable = false;
-        if (deviceTypeConfiguration.getClaimable() != null ) {
-            claimable = deviceTypeConfiguration.getClaimable().isEnabled();
-        }
 
         DeviceDetails deviceDetails = deviceTypeConfiguration.getDeviceDetails();
-
         if (deviceDetails != null) {
 
             //Check whether device dao definition exist.
@@ -347,7 +341,7 @@ public class DeviceTypeManager implements DeviceManager {
 
     @Override
     public boolean isClaimable(DeviceIdentifier deviceIdentifier) throws DeviceManagementException {
-        return claimable;
+        return false;
     }
 
     @Override

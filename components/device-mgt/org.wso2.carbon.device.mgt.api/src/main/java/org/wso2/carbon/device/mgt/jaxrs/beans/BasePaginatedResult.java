@@ -30,13 +30,13 @@ public class BasePaginatedResult {
             value = "Number of total resources.",
             example = "1")
     @JsonProperty("count")
-    private long count;
+    private int count;
 
-    public long getCount() {
+    public int getCount() {
         return count;
     }
 
-    public void setCount(long count) {
+    public void setCount(int count) {
         this.count = count;
     }
 }

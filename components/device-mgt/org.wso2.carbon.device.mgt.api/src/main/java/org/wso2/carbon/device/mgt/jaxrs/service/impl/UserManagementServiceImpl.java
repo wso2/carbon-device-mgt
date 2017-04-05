@@ -238,6 +238,7 @@ public class UserManagementServiceImpl implements UserManagementService {
                 }
             }
             rolesToDelete.remove(ROLE_EVERYONE);
+            rolesToAdd.remove(ROLE_EVERYONE);
             userStoreManager.updateRoleListOfUser(username,
                                                   rolesToDelete.toArray(new String[rolesToDelete.size()]),
                                                   rolesToAdd.toArray(new String[rolesToAdd.size()]));

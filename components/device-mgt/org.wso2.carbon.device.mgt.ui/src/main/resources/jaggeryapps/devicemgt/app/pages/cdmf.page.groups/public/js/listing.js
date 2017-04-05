@@ -191,15 +191,15 @@ function loadGroups() {
                             '<span class="hidden-xs hidden-on-grid-view">Analytics</span></a>';*/
                 }
                 if (row.owner != "wso2.system.user") {
-                    // if ($.hasPermission("SHARE_GROUP")) {
-                    //     html +=
-                    //             '<a href="#" data-click-event="remove-form" class="btn padding-reduce-on-grid-view share-group-link" data-group-id="'
-                    //             + row.groupId + '" ' +
-                    //             'data-group-owner="' + row.owner
-                    //             + '" data-placement="top" data-toggle="tooltip" data-original-title="Share"><span class="fw-stack"><i class="fw fw-circle-outline fw-stack-2x"></i><i class="fw fw-share fw-stack-1x"></i></span>'
-                    //             +
-                    //             '<span class="hidden-xs hidden-on-grid-view">Share</span></a>';
-                    // }
+                    if ($.hasPermission("SHARE_GROUP")) {
+                        html +=
+                                '<a href="#" data-click-event="remove-form" class="btn padding-reduce-on-grid-view share-group-link" data-group-id="'
+                                + row.groupId + '" ' +
+                                'data-group-owner="' + row.owner
+                                + '" data-placement="top" data-toggle="tooltip" data-original-title="Share"><span class="fw-stack"><i class="fw fw-circle-outline fw-stack-2x"></i><i class="fw fw-share fw-stack-1x"></i></span>'
+                                +
+                                '<span class="hidden-xs hidden-on-grid-view">Share</span></a>';
+                    }
                     if ($.hasPermission("UPDATE_GROUP")) {
                         html +=
                                 '<a href="#" data-click-event="remove-form" class="btn padding-reduce-on-grid-view edit-group-link" data-group-name="'

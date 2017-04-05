@@ -288,6 +288,9 @@ function loadDevices(searchType, searchParam) {
                     case 'REMOVED' :
                         html = '<span><i class="fw fw-delete icon-danger"></i> Removed</span>';
                         break;
+                    case 'UNREACHABLE' :
+                        html = '<span><i class="fw fw-warning icon-warning"></i> Unreachable</span>';
+                        break;
                 }
                 return html;
             }

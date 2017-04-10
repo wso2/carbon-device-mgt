@@ -146,7 +146,7 @@ stepForwardFrom["policy-platform"] = function (actionButton) {
 
     if (policyOperationsTemplateSrc) {
         $.template(policyOperationsTemplateCacheKey, context + policyOperationsTemplateSrc, function (template) {
-            var content = template();
+            var content = template({"iscloud" : $("#logged-in-user").data("iscloud")});
             $("#device-type-policy-operations").html(content).removeClass("hidden");
             $(".policy-platform").addClass("hidden");
         });

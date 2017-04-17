@@ -40,6 +40,7 @@ import org.wso2.carbon.device.mgt.jaxrs.util.CredentialManagementResponseBuilder
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
 import org.wso2.carbon.identity.user.store.count.UserStoreCountRetriever;
 import org.wso2.carbon.identity.user.store.count.exception.UserStoreCounterException;
+import org.wso2.carbon.user.api.Permission;
 import org.wso2.carbon.user.api.UserStoreException;
 import org.wso2.carbon.user.api.UserStoreManager;
 import org.wso2.carbon.utils.CarbonUtils;
@@ -82,6 +83,16 @@ public class UserManagementServiceImpl implements UserManagementService {
     private static final String DEFAULT_DEVICE_USER = "Internal/devicemgt-user";
     private static final String DEFAULT_DEVICE_ADMIN = "Internal/devicemgt-admin";
 
+    // Permissions that are given for a normal device user.
+    private static final Permission[] PERMISSIONS_FOR_DEVICE_USER = {
+        new Permission("/permission/admin/Login", "ui.execute"),
+        new Permission("/permission/admin/device-mgt/device/api/subscribe", "ui.execute"),
+        new Permission("/permission/admin/device-mgt/devices/enroll", "ui.execute"),
+        new Permission("/permission/admin/device-mgt/devices/disenroll", "ui.execute"),
+        new Permission("/permission/admin/device-mgt/devices/owning-device/view", "ui.execute"),
+        new Permission("/permission/admin/manage/portal", "ui.execute")
+    };
+
     @POST
     @Override
     public Response addUser(UserInfo userInfo) {
@@ -113,6 +124,11 @@ public class UserManagementServiceImpl implements UserManagementService {
             }
             String[] roles = new String[tmpRoles.size()];
             tmpRoles.toArray(roles);
+
+            // If the normal device user role does not exist, create a new role with the minimal permissions
+            if (!userStoreManager.isExistingRole(DEFAULT_DEVICE_USER)) {
+                userStoreManager.addRole(DEFAULT_DEVICE_USER, null, PERMISSIONS_FOR_DEVICE_USER);
+            }
 
             userStoreManager.addUser(userInfo.getUsername(), initialUserPassword,
                                      roles, defaultUserClaims, null);
@@ -258,13 +274,10 @@ public class UserManagementServiceImpl implements UserManagementService {
         }
     }
 
-    private List<String> getFilteredRoles(UserStoreManager userStoreManager, String username) {
+    private List<String> getFilteredRoles(UserStoreManager userStoreManager, String username)
+            throws UserStoreException {
         String[] roleListOfUser = new String[0];
-        try {
-            roleListOfUser = userStoreManager.getRoleListOfUser(username);
-        } catch (UserStoreException e) {
-            e.printStackTrace();
-        }
+        roleListOfUser = userStoreManager.getRoleListOfUser(username);
         List<String> filteredRoles = new ArrayList<>();
         for (String role : roleListOfUser) {
             if (!(role.startsWith("Internal/") || role.startsWith("Authentication/"))) {
@@ -380,7 +393,6 @@ public class UserManagementServiceImpl implements UserManagementService {
             } else {
                 offsetList = new ArrayList<>();
             }
-
             BasicUserInfoList result = new BasicUserInfoList();
             result.setList(offsetList);
             result.setCount(users.length);

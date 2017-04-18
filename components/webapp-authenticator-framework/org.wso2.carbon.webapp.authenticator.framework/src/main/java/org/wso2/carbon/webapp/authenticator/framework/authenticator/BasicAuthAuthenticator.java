@@ -49,6 +49,9 @@ public class BasicAuthAuthenticator implements WebappAuthenticator {
 
     @Override
     public boolean canHandle(Request request) {
+        if (!isAuthenticationSupported(request)) {
+            return false;
+        }
         MessageBytes authorization =
                 request.getCoyoteRequest().getMimeHeaders().getValue(Constants.HTTPHeaders.HEADER_HTTP_AUTHORIZATION);
         if (authorization != null) {
@@ -154,6 +157,11 @@ public class BasicAuthAuthenticator implements WebappAuthenticator {
         public String getPassword() {
             return password;
         }
+    }
+
+    private boolean isAuthenticationSupported(Request request) {
+        String param = request.getContext().findParameter("basicAuth");
+        return (param == null || !Boolean.parseBoolean(param));
     }
 
 }

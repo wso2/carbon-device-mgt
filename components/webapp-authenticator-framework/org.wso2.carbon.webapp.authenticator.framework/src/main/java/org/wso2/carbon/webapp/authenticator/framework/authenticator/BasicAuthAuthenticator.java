@@ -49,7 +49,7 @@ public class BasicAuthAuthenticator implements WebappAuthenticator {
 
     @Override
     public boolean canHandle(Request request) {
-        if (!isSupportsAuthentication(request)) {
+        if (!isAuthenticationSupported(request)) {
             return false;
         }
         MessageBytes authorization =
@@ -159,7 +159,7 @@ public class BasicAuthAuthenticator implements WebappAuthenticator {
         }
     }
 
-    private boolean isSupportsAuthentication(Request request) {
+    private boolean isAuthenticationSupported(Request request) {
         String param = request.getContext().findParameter("basicAuth");
         return (param == null || !Boolean.parseBoolean(param));
     }

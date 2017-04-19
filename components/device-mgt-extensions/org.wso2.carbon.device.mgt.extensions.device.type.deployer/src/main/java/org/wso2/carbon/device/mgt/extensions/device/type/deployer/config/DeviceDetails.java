@@ -21,8 +21,8 @@ package org.wso2.carbon.device.mgt.extensions.device.type.deployer.config;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
-import javax.xml.bind.annotation.XmlValue;
 
 
 /**
@@ -44,38 +44,14 @@ import javax.xml.bind.annotation.XmlValue;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "DeviceDetails", propOrder = {
-    "value"
+    "properties"
 })
 public class DeviceDetails {
 
-    @XmlValue
-    protected String value;
     @XmlAttribute(name = "table-id")
     protected String tableId;
-
-    /**
-     * Gets the value of the value property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getValue() {
-        return value;
-    }
-
-    /**
-     * Sets the value of the value property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setValue(String value) {
-        this.value = value;
-    }
+    @XmlElement(name = "Properties", required = true)
+    protected Properties properties;
 
     /**
      * Gets the value of the tableId property.
@@ -99,6 +75,30 @@ public class DeviceDetails {
      */
     public void setTableId(String value) {
         this.tableId = value;
+    }
+
+    /**
+     * Gets the value of the properties property.
+     *
+     * @return
+     *     possible object is
+     *     {@link Properties }
+     *
+     */
+    public Properties getProperties() {
+        return properties;
+    }
+
+    /**
+     * Sets the value of the properties property.
+     *
+     * @param value
+     *     allowed object is
+     *     {@link Properties }
+     *
+     */
+    public void setProperties(Properties value) {
+        this.properties = value;
     }
 
 }

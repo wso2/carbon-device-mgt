@@ -155,6 +155,11 @@ public class DeviceTypeManager implements DeviceManager {
                 } finally {
                     PrivilegedCarbonContext.endTenantFlow();
                 }
+            } else {
+                if (deviceDetails.getProperties() != null && deviceDetails.getProperties().getProperty() != null
+                        && deviceDetails.getProperties().getProperty().size() > 0 ) {
+                    deviceTypePluginDAOManager = new DeviceTypePluginDAOManager(deviceType, deviceDetails);
+                }
             }
         }
     }

@@ -19,17 +19,25 @@
 
 package org.wso2.carbon.device.mgt.extensions.device.type.deployer.template.dao;
 
+import org.wso2.carbon.device.mgt.extensions.device.type.deployer.config.DeviceDetails;
+
 public class DeviceTypePluginDAOManager {
 
-    private DeviceTypePluginDAO deviceTypePluginDAO;
+    private PluginDAO deviceTypePluginDAO;
     private DeviceTypeDAOHandler deviceTypeDAOHandler;
+    private static String DEFAULT_DATASOURCE_NAME = "jdbc/DM_DS";
 
     public DeviceTypePluginDAOManager(String datasourceName, DeviceDAODefinition deviceDAODefinition) {
         deviceTypeDAOHandler = new DeviceTypeDAOHandler(datasourceName);
-        deviceTypePluginDAO = new DeviceTypePluginDAO(deviceDAODefinition, deviceTypeDAOHandler);
+        deviceTypePluginDAO = new PerDeviceTypePluginDAOImpl(deviceDAODefinition, deviceTypeDAOHandler);
     }
 
-    public DeviceTypePluginDAO getDeviceDAO() {
+    public DeviceTypePluginDAOManager(String deviceType, DeviceDetails deviceDetails) {
+        deviceTypeDAOHandler = new DeviceTypeDAOHandler(DEFAULT_DATASOURCE_NAME);
+        deviceTypePluginDAO = new PropertyBasedPluginDAOImpl(deviceDetails, deviceTypeDAOHandler, deviceType);
+    }
+
+    public PluginDAO getDeviceDAO() {
         return deviceTypePluginDAO;
     }
 

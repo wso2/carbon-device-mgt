@@ -24,14 +24,12 @@ package org.wso2.carbon.apimgt.handlers.beans;
  */
 public class DCR {
 
-    // Owner of the application
+    private String callbackUrl;
     private String owner;
-    // Client name
     private String clientName;
-    // Oauth  Grant type
     private String grantType;
-    // Scope of the token
     private String tokenScope;
+    private boolean isSaasApp;
 
     public String getOwner() {
         return owner;
@@ -63,6 +61,28 @@ public class DCR {
 
     public void setTokenScope(String tokenScope) {
         this.tokenScope = tokenScope;
+    }
+
+    public boolean getIsSaasApp() {
+        return isSaasApp;
+    }
+
+    public void setIsSaasApp(boolean isSaasApp) {
+        this.isSaasApp = isSaasApp;
+    }
+
+    public String getCallbackUrl() {
+        return callbackUrl;
+    }
+
+    public void setCallbackUrl(String callbackUrl) {
+        this.callbackUrl = callbackUrl;
+    }
+
+    public String toJSON() {
+        return "{\"callbackUrl\": \"" + callbackUrl + "\",\"clientName\": \"" + clientName + "\", \"tokenScope\": " +
+                "\"" + tokenScope + "\", \"owner\": \"" + owner + "\"," + "\"grantType\": \"" + grantType +
+                "\", \"saasApp\" :" + isSaasApp + " }\n";
     }
 }
 

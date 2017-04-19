@@ -36,4 +36,14 @@ public class AuthConstants {
     public static final String MDM_SIGNATURE = "mdm-signature";
     public static final String PROXY_MUTUAL_AUTH_HEADER = "proxy-mutual-auth-header";
     public static final String ENCODED_PEM = "encoded-pem";
+    public static final String CALLBACK_URL = "";
+    public static final String CLIENT_NAME = "IOT-API-MANAGER";
+    public static final String GRANT_TYPE = "refresh_token password client_credentials";
+    public static final String TOKEN_SCOPE = "default";
+    public static final String CONTENT_TYPE_HEADER = "Content-Type";
+    public static final String CONTENT_TYPE = "application/json";
+    public static final String AUTHORIZATION_HEADER = "Authorization";
+    public static final String BASIC_AUTH_PREFIX = "Basic ";
+    public static final String CLIENT_ID = "clientId";
+    public static final String CLIENT_SECRET = "clientSecret";
 }

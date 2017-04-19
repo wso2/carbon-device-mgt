@@ -19,7 +19,6 @@
 
 package org.wso2.carbon.apimgt.handlers.utils;
 
-import com.google.gson.Gson;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.ws.security.util.Base64;
@@ -118,8 +117,7 @@ public class Utils {
             tokenHeaders.put("Content-Type", "application/x-www-form-urlencoded");
 
             RESTInvoker restInvoker = new RESTInvoker();
-            RESTResponse response = restInvoker.invokePOST(tokenUrl, tokenHeaders, null,
-                    null, tokenContent);
+            RESTResponse response = restInvoker.invokePOST(tokenUrl, tokenHeaders, null, null, tokenContent);
             if(log.isDebugEnabled()) {
                 log.debug("Token response:" + response.getContent());
             }
@@ -144,31 +142,32 @@ public class Utils {
     private static void getClientSecretes(IOTServerConfiguration iotServerConfiguration)
             throws APIMCertificateMGTException {
         try {
+            String username = iotServerConfiguration.getUsername();
+            String password = iotServerConfiguration.getPassword();
             DCR dcr = new DCR();
             dcr.setOwner(iotServerConfiguration.getUsername());
-            dcr.setClientName("IOT-API-MANAGER");
-            dcr.setGrantType("refresh_token password client_credentials");
-            dcr.setTokenScope("default");
-            Gson gson = new Gson();
-            String dcrContent = gson.toJson(dcr);
-            Map<String, String> drcHeaders = new HashMap<String, String>();
-            drcHeaders.put("Content-Type", "application/json");
+            dcr.setClientName(AuthConstants.CLIENT_NAME);
+            dcr.setGrantType(AuthConstants.GRANT_TYPE);
+            dcr.setTokenScope(AuthConstants.TOKEN_SCOPE);
+            dcr.setCallbackUrl(AuthConstants.CALLBACK_URL);
+            dcr.setIsSaasApp(true);
+            String dcrContent = dcr.toJSON();
+            Map<String, String> dcrHeaders = new HashMap<String, String>();
+            String basicAuth = Base64.encode((username + ":" + password).getBytes());
+            dcrHeaders.put(AuthConstants.CONTENT_TYPE_HEADER, AuthConstants.CONTENT_TYPE);
+            dcrHeaders.put(AuthConstants.AUTHORIZATION_HEADER, AuthConstants.BASIC_AUTH_PREFIX + basicAuth);
             URI dcrUrl = new URI(iotServerConfiguration.getDynamicClientRegistrationEndpoint());
             RESTInvoker restInvoker = new RESTInvoker();
-            RESTResponse response = restInvoker.invokePOST(dcrUrl, drcHeaders, null,
-                    null, dcrContent);
-
+            RESTResponse response = restInvoker.invokePOST(dcrUrl, dcrHeaders, null, null, dcrContent);
             if (log.isDebugEnabled()) {
                 log.debug("DCR response :" + response.getContent());
             }
             JSONObject jsonResponse = new JSONObject(response.getContent());
-            clientId = jsonResponse.getString("client_id");
-            clientSecret = jsonResponse.getString("client_secret");
+            clientId = jsonResponse.getString(AuthConstants.CLIENT_ID);
+            clientSecret = jsonResponse.getString(AuthConstants.CLIENT_SECRET);
         } catch (JSONException e) {
             throw new APIMCertificateMGTException("Error occurred while converting the json to object", e);
-        } catch (IOException e) {
-            throw new APIMCertificateMGTException("Error occurred while trying to call DCR endpoint", e);
-        } catch (URISyntaxException e) {
+        } catch (IOException | URISyntaxException e) {
             throw new APIMCertificateMGTException("Error occurred while trying to call DCR endpoint", e);
         }
 

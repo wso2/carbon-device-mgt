@@ -18,17 +18,18 @@
  */
 package org.wso2.carbon.device.mgt.jaxrs.service.impl;
 
-import io.swagger.annotations.ApiParam;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
+import org.wso2.carbon.device.mgt.common.DeviceManagementConstants;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
 import org.wso2.carbon.device.mgt.common.Feature;
 import org.wso2.carbon.device.mgt.common.FeatureManager;
+import org.wso2.carbon.device.mgt.common.InvalidDeviceException;
 import org.wso2.carbon.device.mgt.common.PaginationRequest;
 import org.wso2.carbon.device.mgt.common.PaginationResult;
 import org.wso2.carbon.device.mgt.common.app.mgt.Application;
@@ -36,6 +37,7 @@ import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManagementException;
 import org.wso2.carbon.device.mgt.common.authorization.DeviceAccessAuthorizationException;
 import org.wso2.carbon.device.mgt.common.authorization.DeviceAccessAuthorizationService;
 import org.wso2.carbon.device.mgt.common.device.details.DeviceLocation;
+import org.wso2.carbon.device.mgt.common.operation.mgt.Activity;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
 import org.wso2.carbon.device.mgt.common.policy.mgt.Policy;
@@ -52,6 +54,7 @@ import org.wso2.carbon.device.mgt.jaxrs.beans.DeviceCompliance;
 import org.wso2.carbon.device.mgt.jaxrs.beans.DeviceList;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
 import org.wso2.carbon.device.mgt.jaxrs.beans.OperationList;
+import org.wso2.carbon.device.mgt.jaxrs.beans.OperationRequest;
 import org.wso2.carbon.device.mgt.jaxrs.service.api.DeviceManagementService;
 import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.RequestValidationUtil;
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
@@ -59,6 +62,7 @@ import org.wso2.carbon.policy.mgt.common.PolicyManagementException;
 import org.wso2.carbon.policy.mgt.core.PolicyManagerService;
 import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 
+import javax.validation.Valid;
 import javax.validation.constraints.Size;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -84,6 +88,126 @@ import java.util.List;
 public class DeviceManagementServiceImpl implements DeviceManagementService {
 
     private static final Log log = LogFactory.getLog(DeviceManagementServiceImpl.class);
+
+    @POST
+    @Override
+    public Response addDevice(Device device) {
+        if (device == null) {
+            String errorMessage = "The payload of the device enrollment is incorrect.";
+            return Response.status(Response.Status.BAD_REQUEST).entity(errorMessage).build();
+        }
+        try {
+            DeviceManagementProviderService dms = DeviceMgtAPIUtils.getDeviceManagementService();
+            device.getEnrolmentInfo().setOwner(DeviceMgtAPIUtils.getAuthenticatedUser());
+            boolean status = dms.enrollDevice(device);
+            return Response.status(Response.Status.OK).entity(status).build();
+        } catch (DeviceManagementException e) {
+            String msg = "Error occurred while enrolling the android, which carries the id '" +
+                    device.getDeviceIdentifier() + "'";
+            log.error(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+        }
+    }
+
+    @GET
+    @Path("/{type}/{id}/status")
+    @Override
+    public Response isEnrolled(@PathParam("type") String type, @PathParam("id") String id) {
+        boolean result;
+        DeviceIdentifier deviceIdentifier = new DeviceIdentifier(id, type);
+        try {
+            result = DeviceMgtAPIUtils.getDeviceManagementService().isEnrolled(deviceIdentifier);
+            if (result) {
+                return Response.status(Response.Status.OK).build();
+            } else {
+                return Response.status(Response.Status.NOT_FOUND).build();
+            }
+        } catch (DeviceManagementException e) {
+            String msg = "Error occurred while checking enrollment status of the device.";
+            log.error(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+        }
+    }
+
+    @PUT
+    @Path("/{type}/{id}")
+    @Override
+    public Response updateDevice(@PathParam("type") String type, @PathParam("id") String id, @Valid Device updateDevice) {
+        Device device;
+        DeviceIdentifier deviceIdentifier = new DeviceIdentifier();
+        deviceIdentifier.setId(id);
+        deviceIdentifier.setType(type);
+        try {
+            device = DeviceMgtAPIUtils.getDeviceManagementService().getDevice(deviceIdentifier);
+        } catch (DeviceManagementException e) {
+            String msg = "Error occurred while getting enrollment details of the Android device that carries the id '" +
+                    id + "'";
+            log.error(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+        }
+
+        if (updateDevice == null) {
+            String errorMessage = "The payload of the device enrollment is incorrect.";
+            log.error(errorMessage);
+            return Response.status(Response.Status.BAD_REQUEST).entity(errorMessage).build();
+        }
+        if (device == null) {
+            String errorMessage = "The device to be modified doesn't exist.";
+            log.error(errorMessage);
+            return Response.status(Response.Status.NOT_FOUND).entity(errorMessage).build();
+        }
+        if (device.getEnrolmentInfo().getStatus() == EnrolmentInfo.Status.ACTIVE ) {
+            DeviceAccessAuthorizationService deviceAccessAuthorizationService =
+                    DeviceMgtAPIUtils.getDeviceAccessAuthorizationService();
+            boolean status = false;
+            try {
+                status = deviceAccessAuthorizationService.isUserAuthorized(new DeviceIdentifier(id, type));
+            } catch (DeviceAccessAuthorizationException e) {
+                String msg = "Error occurred while modifying enrollment of the Android device that carries the id '" +
+                        id + "'";
+                log.error(msg, e);
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+            }
+            if (!status) {
+                return Response.status(Response.Status.UNAUTHORIZED).build();
+            }
+        }
+        if(updateDevice.getEnrolmentInfo() != null) {
+            device.setEnrolmentInfo(device.getEnrolmentInfo());
+        }
+        device.getEnrolmentInfo().setOwner(DeviceMgtAPIUtils.getAuthenticatedUser());
+        if(updateDevice.getDeviceInfo() != null) {
+            device.setDeviceInfo(updateDevice.getDeviceInfo());
+        }
+        device.setDeviceIdentifier(id);
+        if(updateDevice.getDescription() != null) {
+            device.setDescription(updateDevice.getDescription());
+        }
+        if(updateDevice.getName() != null) {
+            device.setName(updateDevice.getName());
+        }
+        if(updateDevice.getFeatures() != null) {
+            device.setFeatures(updateDevice.getFeatures());
+        }
+        if(updateDevice.getProperties() != null) {
+            device.setProperties(updateDevice.getProperties());
+        }
+        boolean result;
+        try {
+            device.setType(type);
+            result = DeviceMgtAPIUtils.getDeviceManagementService().modifyEnrollment(device);
+            if (result) {
+                return Response.status(Response.Status.ACCEPTED).build();
+            } else {
+                return Response.status(Response.Status.NOT_MODIFIED).build();
+            }
+        } catch (DeviceManagementException e) {
+            String msg = "Error occurred while modifying enrollment of the Android device that carries the id '" +
+                    id + "'";
+            log.error(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+        }
+    }
 
     @GET
     @Override
@@ -599,6 +723,122 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
             log.error(msg);
             return Response.status(Response.Status.BAD_REQUEST).entity(
                     new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
+        }
+    }
+
+    @POST
+    @Path("/{type}/operations")
+    public Response addOperation(@PathParam("type") String type, OperationRequest operationRequest) {
+        try {
+            if (operationRequest == null || operationRequest.getDeviceIdentifiers() == null) {
+                String errorMessage = "Device identifier list is empty";
+                log.error(errorMessage);
+                return Response.status(Response.Status.BAD_REQUEST).build();
+            }
+            DeviceIdentifier deviceIdentifier;
+            List<DeviceIdentifier> deviceIdentifiers = new ArrayList<>();
+            for (String deviceId : operationRequest.getDeviceIdentifiers()) {
+                deviceIdentifier = new DeviceIdentifier();
+                deviceIdentifier.setId(deviceId);
+                deviceIdentifier.setType(type);
+                deviceIdentifiers.add(deviceIdentifier);
+            }
+            Activity activity = DeviceMgtAPIUtils.getDeviceManagementService().addOperation(type
+                    , operationRequest.getOperation(), deviceIdentifiers);
+            return Response.status(Response.Status.CREATED).entity(activity).build();
+        } catch (InvalidDeviceException e) {
+            String errorMessage = "Invalid Device Identifiers found.";
+            log.error(errorMessage, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(
+                    new ErrorResponse.ErrorResponseBuilder().setMessage(errorMessage).build()).build();
+        } catch (OperationManagementException e) {
+            String errorMessage = "Issue in retrieving operation management service instance";
+            log.error(errorMessage, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(
+                    new ErrorResponse.ErrorResponseBuilder().setMessage(errorMessage).build()).build();
+        }
+    }
+
+    @GET
+    @Path("/{type}/{id}/pending/operations")
+    public Response getPendingOperations(@PathParam("type") String type, @PathParam("id") String deviceId) {
+        try {
+            List<? extends Operation> operations = DeviceMgtAPIUtils.getDeviceManagementService().getPendingOperations(
+                    new DeviceIdentifier(deviceId, type));
+            OperationList operationsList = new OperationList();
+            operationsList.setList(operations);
+            operationsList.setCount(operations.size());
+            return Response.status(Response.Status.OK).entity(operationsList).build();
+        } catch (OperationManagementException e) {
+            String errorMessage = "Issue in retrieving operation management service instance";
+            log.error(errorMessage, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(
+                    new ErrorResponse.ErrorResponseBuilder().setMessage(errorMessage).build()).build();
+        }
+    }
+
+    @GET
+    @Path("/{type}/{id}/last-pending/operation")
+    public Response getNextPendingOperation(@PathParam("type") String type, @PathParam("id") String deviceId) {
+        try {
+            Operation operation = DeviceMgtAPIUtils.getDeviceManagementService().getNextPendingOperation(
+                    new DeviceIdentifier(deviceId, type));
+            return Response.status(Response.Status.OK).entity(operation).build();
+        } catch (OperationManagementException e) {
+            String errorMessage = "Issue in retrieving operation management service instance";
+            log.error(errorMessage, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(
+                    new ErrorResponse.ErrorResponseBuilder().setMessage(errorMessage).build()).build();
+        }
+    }
+
+    @PUT
+    @Path("/{type}/{id}/operations")
+    public Response updateOperation(@PathParam("type") String type, @PathParam("id") String deviceId, Operation operation) {
+        try {
+            if (operation == null) {
+                String errorMessage = "Device identifier list is empty";
+                log.error(errorMessage);
+                return Response.status(Response.Status.BAD_REQUEST).build();
+            }
+            DeviceMgtAPIUtils.getDeviceManagementService().updateOperation
+                    (new DeviceIdentifier(deviceId, type), operation);
+            return Response.status(Response.Status.ACCEPTED).build();
+        } catch (OperationManagementException e) {
+            String errorMessage = "Issue in retrieving operation management service instance";
+            log.error(errorMessage, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(
+                    new ErrorResponse.ErrorResponseBuilder().setMessage(errorMessage).build()).build();
+        }
+    }
+
+    @GET
+    @Path("/{type}/{id}/status/operations")
+    public Response getOperationsByDeviceAndStatus(@PathParam("type") String type, @PathParam("id") String deviceId,
+                                                   @QueryParam("status")Operation.Status status) {
+        if (status == null) {
+            String errorMessage = "status is empty";
+            log.error(errorMessage);
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+
+        try {
+            List<? extends Operation> operations = DeviceMgtAPIUtils.getDeviceManagementService()
+                    .getOperationsByDeviceAndStatus(new DeviceIdentifier(deviceId, type), status);
+            OperationList operationsList = new OperationList();
+            operationsList.setList(operations);
+            operationsList.setCount(operations.size());
+            return Response.status(Response.Status.OK).entity(operationsList).build();
+        } catch (OperationManagementException e) {
+            String errorMessage = "Issue in retrieving operation management service instance";
+            log.error(errorMessage, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(
+                    new ErrorResponse.ErrorResponseBuilder().setMessage(errorMessage).build()).build();
+        } catch (DeviceManagementException e) {
+            String errorMessage = "Issue in retrieving device management service";
+            log.error(errorMessage, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(
+                    new ErrorResponse.ErrorResponseBuilder().setMessage(errorMessage).build()).build();
         }
     }
 }

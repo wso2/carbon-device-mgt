@@ -24,7 +24,7 @@ public class OperationRequest {
 
     @ApiModelProperty(name = "deviceIdentifiers", value = "list of devices that needs to be verified against the user", required = true)
     List<String> deviceIdentifiers;
-    @ApiModelProperty(name = "permission", value = "if null then checks against the owner else it could be grouping permission", required = false)
+    @ApiModelProperty(name = "operation", value = "operation data", required = false)
     Operation operation;
 
     public List<String> getDeviceIdentifiers() {

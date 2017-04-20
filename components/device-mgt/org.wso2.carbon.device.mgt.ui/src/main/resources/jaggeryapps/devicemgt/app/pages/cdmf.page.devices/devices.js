@@ -60,17 +60,25 @@ function onRequest(context) {
                 if (data) {
                     for (var i = 0; i < data.length; i++) {
                         var config = utility.getDeviceTypeConfig(data[i]);
-                        if (!config) {
-                            continue;
+						var category = "iot";
+						var label =  data[i];
+						var analyticsEnabled = "true";
+						var groupingEnabled = "true";
+                        if (config) {
+							var deviceType = config.deviceType;
+							category = deviceType.category;
+							label = deviceType.label;
+							analyticsEnabled = deviceType.analyticsEnabled;
+							groupingEnabled = deviceType.groupingEnabled;
                         }
-                        var deviceType = config.deviceType;
+
                         deviceTypes.push({
                                              "type": data[i],
-                                             "category": deviceType.category,
-                                             "label": deviceType.label,
+                                             "category": category,
+                                             "label": label,
                                              "thumb": utility.getDeviceThumb(data[i]),
-                                             "analyticsEnabled": deviceType.analyticsEnabled,
-                                             "groupingEnabled": deviceType.groupingEnabled
+                                             "analyticsEnabled": analyticsEnabled,
+                                             "groupingEnabled": groupingEnabled
                                          });
                     }
                 }

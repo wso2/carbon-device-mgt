@@ -134,4 +134,12 @@
         </tableConfig>
     </DataSource>
 
+	<InitialOperationConfig>
+		<Operations>
+			<Operation>DEVICE_INFO</Operation>
+			<Operation>APPLICATION_LIST</Operation>
+			<Operation>DEVICE_LOCATION</Operation>
+		</Operations>
+	</InitialOperationConfig>
+
 </DeviceTypeConfiguration>

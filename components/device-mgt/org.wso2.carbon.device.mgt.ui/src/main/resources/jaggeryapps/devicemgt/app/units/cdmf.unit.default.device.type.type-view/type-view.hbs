@@ -1,0 +1,142 @@
+<div class="col-lg-12  margin-top-double">
+    <h1 class="grey "></h1>
+    <hr>
+</div>
+
+<div class="col-xs-12 col-sm-4 col-md-4 col-lg-4 padding-top">
+    <img src="{{@unit.publicUri}}/images/deviceType.png" class="img-responsive">
+</div>
+
+<div class="col-xs-12 col-sm-8 col-md-8 col-lg-8 padding-top">
+
+</div>
+
+<div class="col-xs-12 col-sm-8 col-md-8 col-lg-8 padding-top">
+    <h3 class="uppercase">Description</h3>
+    <hr>
+    <p class="grey margin-top">Need to get the description from the device</p>
+    <br>
+    <hr>
+    <br>
+    <a href="/api-store/apis/info?name=DeviceManagement&version=1.0.0&provider=admin"
+       class="btn-operations"
+       target="_blank"><i class="fw fw-api add-margin-1x"></i> View API</i>
+    </a>
+    <div id="device-agent-downloading-content" class="hide">
+        <div class="modal-content">
+            <div class="row">
+                <div class="col-md-7 col-centered center-container">
+                    <h3>Device Agent will downloading shortly.</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="device-400-content" class="hide">
+        <div class="modal-content">
+            <div class="row">
+                <div class="col-md-7 col-centered center-container">
+                    <h3>Exception at backend. Try Later.</h3>
+                    <div class="buttons">
+                        <a href="#" id="device-400-link" class="btn-operations">
+                            OK
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="device-401-content" class="hide">
+        <div class="modal-content">
+            <div class="row">
+                <div class="col-md-7 col-centered center-container">
+                    <h3>You have to log in first.</h3><br/>
+                    <div class="buttons">
+                        <a href="#" id="device-401-link" class="blue-button">
+                            Goto Login Page
+                        </a>&nbsp;&nbsp;
+                        <a href="#" onclick="hidePopup();" class="btn-operations">
+                            Cancel
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="device-403-content" class="hide">
+        <div class="modal-content">
+            <div class="row">
+                <div class="col-md-7 col-centered center-container">
+                    <h3>Action not permitted.</h3><br/>
+
+                    <div class="buttons">
+                        <a href="#" id="device-403-link" class="btn-operations">
+                            OK
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="device-409-content" class="hide">
+        <div class="modal-content">
+            <div class="row">
+                <div class="col-md-7 col-centered center-container">
+                    <h3>Device Sketch does not exist.</h3><br/>
+                    <div class="buttons">
+                        <a href="#" id="device-409-link" class="btn-operations">
+                            OK
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="device-unexpected-error-content" class="hide">
+        <div class="modal-content">
+            <div class="row">
+                <div class="col-md-7 col-centered center-container">
+                    <h3>Unexpected error.</h3><br/>
+                    <div class="buttons">
+                        <a href="#" id="device-unexpected-error-link" class="btn-operations">
+                            OK
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br/><br/>
+</div>
+<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 padding-double grey-bg">
+    <h3 class="uppercase">How To Enroll a Device</h3>
+    <hr>
+    <ul class="list-unstyled">
+        <li class="padding-top-double"><span class="circle">01</span>
+            &nbsp;&nbsp;&nbsp;curl -k -X POST https://localhost:8243/api-application-registration/register -H
+            'authorization: Basic Base64(username:password)' -H 'content-type: application/json'
+            -d '{  "applicationName":"testme", "isAllowedToAllDomains":false, "tags":["device_management"]}'
+        </li>
+        <li class="padding-top-double"><span class="circle">02</span>
+            &nbsp;&nbsp;&nbsp;curl -k -d "grant_type=password&username=%username%&password=%password%&scope=perm:devices:add"
+            -H "Authorization: Basic Base64(client_id:client_secret)"
+            -H "Content-Type: application/x-www-form-urlencoded" https://localhost:8243/token
+        </li>
+        <li class="padding-top-double"><span class="circle">03</span>
+            &nbsp;&nbsp;&nbsp;curl -X POST http://localhost:8280/api/device-mgt/v1.0/devices -H 'accept: application/json'
+            -H 'authorization: Bearer %accessToken%'
+            -H 'content-type: application/json' -d '{ "name": "devicename", "type": "{{deviceType}}",
+            "description": "descritption", "deviceIdentifier": "1234", "enrolmentInfo":
+            {"dateOfEnrolment": 0, "dateOfLastUpdate": 0, "ownership": "BYOD", "status": "ACTIVE", "owner": "username"}
+            ,"properties": [{"name": "propertyName","value": "propertyValue"}]}'
+        </li>
+    </ul>
+    <br>
+    <br>
+</div>
+
+{{#zone "topCss"}}
+    {{css "css/styles.css"}}
+{{/zone}}
+
+{{#zone "bottomJs"}}
+{{/zone}}

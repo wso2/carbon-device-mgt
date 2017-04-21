@@ -1513,6 +1513,16 @@
 				<artifactId>javassist</artifactId>
 				<version>${javassist.version}</version>
 			</dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.analytics-common</groupId>
+                <artifactId>org.wso2.carbon.event.receiver.stub</artifactId>
+                <version>${carbon.analytics.common.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.analytics-common</groupId>
+                <artifactId>org.wso2.carbon.event.stream.stub</artifactId>
+                <version>${carbon.analytics.common.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -1820,6 +1830,7 @@
         <!-- Carbon Analytics Commons -->
         <carbon.analytics.common.version>5.1.3</carbon.analytics.common.version>
         <carbon.analytics.common.version.range>[5.1.3,6.0.0)</carbon.analytics.common.version.range>
+
 
         <!-- Carbon Registry -->
         <carbon.registry.version>4.6.0</carbon.registry.version>

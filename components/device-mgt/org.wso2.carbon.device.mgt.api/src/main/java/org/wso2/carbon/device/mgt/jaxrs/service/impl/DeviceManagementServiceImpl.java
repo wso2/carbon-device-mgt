@@ -91,7 +91,7 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
 
     @POST
     @Override
-    public Response addDevice(Device device) {
+    public Response addDevice(@Valid Device device) {
         if (device == null) {
             String errorMessage = "The payload of the device enrollment is incorrect.";
             return Response.status(Response.Status.BAD_REQUEST).entity(errorMessage).build();
@@ -728,7 +728,7 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
 
     @POST
     @Path("/{type}/operations")
-    public Response addOperation(@PathParam("type") String type, OperationRequest operationRequest) {
+    public Response addOperation(@PathParam("type") String type, @Valid OperationRequest operationRequest) {
         try {
             if (operationRequest == null || operationRequest.getDeviceIdentifiers() == null) {
                 String errorMessage = "Device identifier list is empty";
@@ -794,7 +794,7 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
 
     @PUT
     @Path("/{type}/{id}/operations")
-    public Response updateOperation(@PathParam("type") String type, @PathParam("id") String deviceId, Operation operation) {
+    public Response updateOperation(@PathParam("type") String type, @PathParam("id") String deviceId, @Valid Operation operation) {
         try {
             if (operation == null) {
                 String errorMessage = "Device identifier list is empty";

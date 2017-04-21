@@ -297,7 +297,41 @@
             <version>${carbon.identity.framework.version}</version>
             <scope>provided</scope>
         </dependency>
-
+		<dependency>
+			<groupId>org.wso2.carbon.analytics</groupId>
+			<artifactId>org.wso2.carbon.analytics.datasource.commons</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.wso2.carbon.analytics</groupId>
+			<artifactId>org.wso2.carbon.analytics.api</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.wso2.carbon.analytics</groupId>
+			<artifactId>org.wso2.carbon.analytics.dataservice.commons</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.wso2.carbon.analytics-common</groupId>
+			<artifactId>org.wso2.carbon.event.receiver.stub</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.wso2.carbon.analytics-common</groupId>
+			<artifactId>org.wso2.carbon.event.stream.stub</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.wso2.carbon.analytics-common</groupId>
+			<artifactId>org.wso2.carbon.event.publisher.stub</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.wso2.carbon.analytics-common</groupId>
+			<artifactId>org.wso2.carbon.event.stream.persistence.stub</artifactId>
+			<scope>provided</scope>
+		</dependency>
     </dependencies>
 
 </project>

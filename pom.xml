@@ -1396,6 +1396,41 @@
                 <artifactId>org.wso2.carbon.event.output.adapter.core</artifactId>
                 <version>${carbon.analytics.common.version}</version>
             </dependency>
+			<dependency>
+				<groupId>org.wso2.carbon.analytics-common</groupId>
+				<artifactId>org.wso2.carbon.event.receiver.stub</artifactId>
+				<version>${carbon.analytics.common.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.wso2.carbon.analytics</groupId>
+				<artifactId>org.wso2.carbon.analytics.datasource.commons</artifactId>
+				<version>${carbon.analytics.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.wso2.carbon.analytics</groupId>
+				<artifactId>org.wso2.carbon.analytics.dataservice.commons</artifactId>
+				<version>${carbon.analytics.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.wso2.carbon.analytics-common</groupId>
+				<artifactId>org.wso2.carbon.event.stream.stub</artifactId>
+				<version>${carbon.analytics.common.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.wso2.carbon.analytics-common</groupId>
+				<artifactId>org.wso2.carbon.event.publisher.stub</artifactId>
+				<version>${carbon.analytics.common.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.wso2.carbon.analytics</groupId>
+				<artifactId>org.wso2.carbon.analytics.api</artifactId>
+				<version>${carbon.analytics.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.wso2.carbon.analytics-common</groupId>
+				<artifactId>org.wso2.carbon.event.stream.persistence.stub</artifactId>
+				<version>${carbon.analytics.common.version}</version>
+			</dependency>
             <dependency>
                 <groupId>org.wso2.carbon.devicemgt</groupId>
                 <artifactId>org.wso2.carbon.device.mgt.extensions.device.type.deployer</artifactId>
@@ -1820,6 +1855,8 @@
         <!-- Carbon Analytics Commons -->
         <carbon.analytics.common.version>5.1.3</carbon.analytics.common.version>
         <carbon.analytics.common.version.range>[5.1.3,6.0.0)</carbon.analytics.common.version.range>
+		<carbon.analytics.version>1.3.3</carbon.analytics.version>
+		<carbon.analytics.version.range>[1.3.0,2.0.0)</carbon.analytics.version.range>
 
         <!-- Carbon Registry -->
         <carbon.registry.version>4.6.0</carbon.registry.version>

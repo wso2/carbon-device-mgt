@@ -17,5 +17,9 @@
 }}
 
 {{#zone "title"}}
-    {{@unit.params.pageTitle}} | {{@app.conf.appName}}
+    {{#if isCloud}}
+        {{@unit.params.pageTitle}} | WSO2 Device Cloud
+    {{else}}
+        {{@unit.params.pageTitle}} | {{@app.conf.appName}}
+    {{/if}}
 {{/zone}}

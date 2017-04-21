@@ -165,7 +165,7 @@ public abstract class AbstractDeviceDAOImpl implements DeviceDAO {
             stmt.setInt(paramIdx, tenantId);
             rs = stmt.executeQuery();
             if (rs.next()) {
-                device = DeviceManagementDAOUtil.loadMatchingDevice(rs, true);
+                device = DeviceManagementDAOUtil.loadMatchingDevice(rs, false);
             }
         } catch (SQLException e) {
             throw new DeviceManagementDAOException("Error occurred while listing device for type " +

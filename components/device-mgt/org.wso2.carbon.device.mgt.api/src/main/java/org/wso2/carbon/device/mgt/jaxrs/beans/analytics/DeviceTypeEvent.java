@@ -18,6 +18,7 @@
  */
 package org.wso2.carbon.device.mgt.jaxrs.beans.analytics;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
 
 /**
@@ -25,27 +26,28 @@ import io.swagger.annotations.ApiModelProperty;
  */
 public class DeviceTypeEvent {
 
+    private EventAttributeList eventAttributes;
+    private TransportType transport;
+
     @ApiModelProperty(value = "Attributes related to device type event")
-    private EventAttributeList eventAttributeList;
-    @ApiModelProperty(value = "Transport to be used for device to server communication.")
-    private TransportType transportType;
-
-
+    @JsonProperty("eventAttributes")
     public EventAttributeList getEventAttributeList() {
-        return eventAttributeList;
+        return eventAttributes;
     }
 
     public void setEventAttributeList(
-            EventAttributeList eventAttributeList) {
-        this.eventAttributeList = eventAttributeList;
+            EventAttributeList eventAttributes) {
+        this.eventAttributes = eventAttributes;
     }
 
+    @ApiModelProperty(value = "Transport to be used for device to server communication.")
+    @JsonProperty("transport")
     public TransportType getTransportType() {
-        return transportType;
+        return transport;
     }
 
-    public void setTransportType(TransportType transportType) {
-        this.transportType = transportType;
+    public void setTransportType(TransportType transport) {
+        this.transport = transport;
     }
 }
 

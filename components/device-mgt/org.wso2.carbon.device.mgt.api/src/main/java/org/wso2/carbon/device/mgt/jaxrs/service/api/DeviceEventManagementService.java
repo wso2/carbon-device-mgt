@@ -17,6 +17,7 @@ import org.wso2.carbon.device.mgt.jaxrs.beans.DeviceTypeList;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
 import org.wso2.carbon.device.mgt.jaxrs.beans.analytics.DeviceTypeEvent;
 import org.wso2.carbon.device.mgt.jaxrs.beans.analytics.EventAttributeList;
+import org.wso2.carbon.device.mgt.jaxrs.beans.analytics.EventRecords;
 import org.wso2.carbon.device.mgt.jaxrs.beans.analytics.TransportType;
 import org.wso2.carbon.device.mgt.jaxrs.util.Constants;
 
@@ -90,7 +91,6 @@ public interface DeviceEventManagementService {
                     @ApiResponse(
                             code = 200,
                             message = "OK. \n Successfully added the event defintion.",
-                            response = DeviceTypeList.class,
                             responseHeaders = {
                                     @ResponseHeader(
                                             name = "Content-Type",
@@ -144,7 +144,6 @@ public interface DeviceEventManagementService {
                     @ApiResponse(
                             code = 200,
                             message = "OK. \n Successfully deleted the event definition.",
-                            response = DeviceTypeList.class,
                             responseHeaders = {
                                     @ResponseHeader(
                                             name = "Content-Type",
@@ -196,7 +195,7 @@ public interface DeviceEventManagementService {
                     @ApiResponse(
                             code = 200,
                             message = "OK. \n Successfully fetched the event definition.",
-                            response = DeviceTypeList.class,
+                            response = EventRecords.class,
                             responseHeaders = {
                                     @ResponseHeader(
                                             name = "Content-Type",
@@ -258,7 +257,7 @@ public interface DeviceEventManagementService {
                     @ApiResponse(
                             code = 200,
                             message = "OK. \n Successfully fetched the event defintion.",
-                            response = DeviceTypeList.class,
+                            response = EventAttributeList.class,
                             responseHeaders = {
                                     @ResponseHeader(
                                             name = "Content-Type",

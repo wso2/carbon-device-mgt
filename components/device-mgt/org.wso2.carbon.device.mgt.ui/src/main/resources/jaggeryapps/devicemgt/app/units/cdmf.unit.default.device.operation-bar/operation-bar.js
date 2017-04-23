@@ -17,18 +17,13 @@
  */
 
 function onRequest(context) {
-    var utility = require("/app/modules/utility.js").utility;
-    var deviceType = context.uriParams.deviceType;
-    var deviceName = request.getParameter("deviceName");
-    var deviceId = request.getParameter("deviceId");
-	var unitName = utility.getTenantedDeviceUnitName(deviceType, "analytics-view");
-	if (!unitName) {
-		unitName = "cdmf.unit.default.device.type.analytics-view";
-	}
-    return {
-        "deviceAnalyticsViewUnitName": unitName,
-        "deviceType": deviceType,
-        "deviceName": deviceName,
-        "deviceId": deviceId
-    };
+    var log = new Log("operation.js");
+	var deviceType = context.uriParams.deviceType;
+    var operationModule = require("/app/modules/business-controllers/operation.js")["operationModule"];
+	var devicemgtProps = require("/app/modules/conf-reader/main.js")["conf"];
+	var restAPIEndpoint = devicemgtProps["backendRestEndpoints"]["deviceMgt"]
+		+ "/devices/" + deviceType + "/operations";
+    var device = context.unit.params.device;
+	var features = context.unit.params.features;
+    return {"control_operations": features, "device": device, "operationEndpoint": restAPIEndpoint};
 }

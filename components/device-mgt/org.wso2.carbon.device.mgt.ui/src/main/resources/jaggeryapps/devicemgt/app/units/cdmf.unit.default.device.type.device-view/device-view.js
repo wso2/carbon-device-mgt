@@ -15,11 +15,53 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+var serviceInvokers = require("/app/modules/oauth/token-protected-service-invokers.js")["invokers"];
+var devicemgtProps = require("/app/modules/conf-reader/main.js")["conf"];
 
 function onRequest(context) {
 	var log = new Log("device-view.js");
 	var deviceType = context.uriParams.deviceType;
 	var deviceId = request.getParameter("id");
+	var attributes = [];
+	var featureList = [];
+	log.error(featureList);
+	var restAPIEndpoint = devicemgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"]
+		+ "/events/" + deviceType;
+	serviceInvokers.XMLHttp.get(
+		restAPIEndpoint,
+		function (restAPIResponse) {
+			if (restAPIResponse["status"] == 200 && restAPIResponse["responseText"]) {
+				var eventAttributes = parse(restAPIResponse["responseText"]);
+				if (eventAttributes.attributes.length > 0) {
+					for (var i = 0; i < eventAttributes.attributes.length; i++) {
+						var attribute = eventAttributes.attributes[i];
+						if (attribute['name'] == "deviceId") {
+							continue;
+						}
+						attributes.push(attribute['name']);
+					}
+				}
+
+			}
+		}
+	);
+
+	var featureEndpoint = devicemgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"]
+		+ "/device-types/" + deviceType + "/features";
+	var featuresList = serviceInvokers.XMLHttp.get(featureEndpoint, function (responsePayload) {
+			var features = JSON.parse(responsePayload.responseText);
+			var feature;
+			for (var i = 0; i < features.length; i++) {
+				feature = {};
+				feature["operation"] = features[i].code;
+				feature["name"] = features[i].name;
+				feature["description"] = features[i].description;
+			}
+			featureList.push(feature);
+		}, function (responsePayload) {
+			featureList = null;
+		}
+	);
 	var autoCompleteParams = [
 		{"name" : "deviceId", "value" : deviceId}
 	];
@@ -28,7 +70,13 @@ function onRequest(context) {
 		var deviceModule = require("/app/modules/business-controllers/device.js")["deviceModule"];
 		var device = deviceModule.viewDevice(deviceType, deviceId);
 		if (device && device.status != "error") {
-			return {"device": device.content, "autoCompleteParams" : autoCompleteParams, "encodedFeaturePayloads": ""};
+			if (attributes.length === 0 || attributes.length === undefined) {
+				return {"device": device.content, "autoCompleteParams" : autoCompleteParams
+					, "encodedFeaturePayloads": "", "features":featureList};
+			} else {
+				return {"device": device.content, "autoCompleteParams" : autoCompleteParams
+					, "encodedFeaturePayloads": "", "attributes": attributes, "features":featureList};
+			}
 		} else {
 			response.sendError(404, "Device Id " + deviceId + " of type " + deviceType + " cannot be found!");
 			exit();

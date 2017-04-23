@@ -736,17 +736,29 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
                 log.error(errorMessage);
                 return Response.status(Response.Status.BAD_REQUEST).build();
             }
-            DeviceIdentifier deviceIdentifier;
-            List<DeviceIdentifier> deviceIdentifiers = new ArrayList<>();
-            for (String deviceId : operationRequest.getDeviceIdentifiers()) {
-                deviceIdentifier = new DeviceIdentifier();
-                deviceIdentifier.setId(deviceId);
-                deviceIdentifier.setType(type);
-                deviceIdentifiers.add(deviceIdentifier);
+            if (!DeviceMgtAPIUtils.getDeviceManagementService().getAvailableDeviceTypes().contains(type)) {
+                String errorMessage = "Device identifier list is empty";
+                log.error(errorMessage);
+                return Response.status(Response.Status.BAD_REQUEST).build();
             }
-            Activity activity = DeviceMgtAPIUtils.getDeviceManagementService().addOperation(type
-                    , operationRequest.getOperation(), deviceIdentifiers);
-            return Response.status(Response.Status.CREATED).entity(activity).build();
+            Operation.Type operationType = operationRequest.getOperation().getType();
+            if (operationType == Operation.Type.COMMAND || operationType == Operation.Type.CONFIG) {
+                DeviceIdentifier deviceIdentifier;
+                List<DeviceIdentifier> deviceIdentifiers = new ArrayList<>();
+                for (String deviceId : operationRequest.getDeviceIdentifiers()) {
+                    deviceIdentifier = new DeviceIdentifier();
+                    deviceIdentifier.setId(deviceId);
+                    deviceIdentifier.setType(type);
+                    deviceIdentifiers.add(deviceIdentifier);
+                }
+                Activity activity = DeviceMgtAPIUtils.getDeviceManagementService().addOperation(type
+                        , operationRequest.getOperation(), deviceIdentifiers);
+                return Response.status(Response.Status.CREATED).entity(activity).build();
+            } else {
+                String message = "Only Command and Config operation is supported through this api";
+                return Response.status(Response.Status.NOT_ACCEPTABLE).entity(message).build();
+            }
+
         } catch (InvalidDeviceException e) {
             String errorMessage = "Invalid Device Identifiers found.";
             log.error(errorMessage, e);
@@ -757,6 +769,11 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
             log.error(errorMessage, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(
                     new ErrorResponse.ErrorResponseBuilder().setMessage(errorMessage).build()).build();
+        } catch (DeviceManagementException e) {
+            String errorMessage = "Issue in retrieving deivce management service instance";
+            log.error(errorMessage, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(
+                    new ErrorResponse.ErrorResponseBuilder().setMessage(errorMessage).build()).build();
         }
     }
 
@@ -764,6 +781,11 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
     @Path("/{type}/{id}/pending/operations")
     public Response getPendingOperations(@PathParam("type") String type, @PathParam("id") String deviceId) {
         try {
+            if (!DeviceMgtAPIUtils.getDeviceManagementService().getAvailableDeviceTypes().contains(type)) {
+                String errorMessage = "Device identifier list is empty";
+                log.error(errorMessage);
+                return Response.status(Response.Status.BAD_REQUEST).build();
+            }
             List<? extends Operation> operations = DeviceMgtAPIUtils.getDeviceManagementService().getPendingOperations(
                     new DeviceIdentifier(deviceId, type));
             OperationList operationsList = new OperationList();
@@ -775,6 +797,11 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
             log.error(errorMessage, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(
                     new ErrorResponse.ErrorResponseBuilder().setMessage(errorMessage).build()).build();
+        } catch (DeviceManagementException e) {
+            String errorMessage = "Issue in retrieving deivce management service instance";
+            log.error(errorMessage, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(
+                    new ErrorResponse.ErrorResponseBuilder().setMessage(errorMessage).build()).build();
         }
     }
 
@@ -782,11 +809,21 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
     @Path("/{type}/{id}/last-pending/operation")
     public Response getNextPendingOperation(@PathParam("type") String type, @PathParam("id") String deviceId) {
         try {
+            if (!DeviceMgtAPIUtils.getDeviceManagementService().getAvailableDeviceTypes().contains(type)) {
+                String errorMessage = "Device identifier list is empty";
+                log.error(errorMessage);
+                return Response.status(Response.Status.BAD_REQUEST).build();
+            }
             Operation operation = DeviceMgtAPIUtils.getDeviceManagementService().getNextPendingOperation(
                     new DeviceIdentifier(deviceId, type));
             return Response.status(Response.Status.OK).entity(operation).build();
         } catch (OperationManagementException e) {
             String errorMessage = "Issue in retrieving operation management service instance";
+            log.error(errorMessage, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(
+                    new ErrorResponse.ErrorResponseBuilder().setMessage(errorMessage).build()).build();
+        } catch (DeviceManagementException e) {
+            String errorMessage = "Issue in retrieving deivce management service instance";
             log.error(errorMessage, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(
                     new ErrorResponse.ErrorResponseBuilder().setMessage(errorMessage).build()).build();
@@ -797,6 +834,11 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
     @Path("/{type}/{id}/operations")
     public Response updateOperation(@PathParam("type") String type, @PathParam("id") String deviceId, @Valid Operation operation) {
         try {
+            if (!DeviceMgtAPIUtils.getDeviceManagementService().getAvailableDeviceTypes().contains(type)) {
+                String errorMessage = "Device identifier list is empty";
+                log.error(errorMessage);
+                return Response.status(Response.Status.BAD_REQUEST).build();
+            }
             if (operation == null) {
                 String errorMessage = "Device identifier list is empty";
                 log.error(errorMessage);
@@ -807,6 +849,11 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
             return Response.status(Response.Status.ACCEPTED).build();
         } catch (OperationManagementException e) {
             String errorMessage = "Issue in retrieving operation management service instance";
+            log.error(errorMessage, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(
+                    new ErrorResponse.ErrorResponseBuilder().setMessage(errorMessage).build()).build();
+        } catch (DeviceManagementException e) {
+            String errorMessage = "Issue in retrieving deivce management service instance";
             log.error(errorMessage, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(
                     new ErrorResponse.ErrorResponseBuilder().setMessage(errorMessage).build()).build();
@@ -824,6 +871,11 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
         }
 
         try {
+            if (!DeviceMgtAPIUtils.getDeviceManagementService().getAvailableDeviceTypes().contains(type)) {
+                String errorMessage = "Device identifier list is empty";
+                log.error(errorMessage);
+                return Response.status(Response.Status.BAD_REQUEST).build();
+            }
             List<? extends Operation> operations = DeviceMgtAPIUtils.getDeviceManagementService()
                     .getOperationsByDeviceAndStatus(new DeviceIdentifier(deviceId, type), status);
             OperationList operationsList = new OperationList();

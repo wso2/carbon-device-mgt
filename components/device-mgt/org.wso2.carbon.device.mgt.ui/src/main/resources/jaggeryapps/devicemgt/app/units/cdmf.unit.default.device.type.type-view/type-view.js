@@ -18,7 +18,11 @@
 
 function onRequest(context) {
     var deviceType = context.uriParams.deviceType;
+	var userModule = require("/app/modules/business-controllers/user.js")["userModule"];
+	var user = userModule.getCarbonUser();
+	var tenantDomain = user.domain;
     return {
-        "deviceType": deviceType
+        "deviceType": deviceType,
+		"tenantDomain": tenantDomain
     };
 }

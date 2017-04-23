@@ -16,19 +16,8 @@
  * under the License.
  */
 
-function onRequest(context) {
-    var utility = require("/app/modules/utility.js").utility;
-    var deviceType = context.uriParams.deviceType;
-    var deviceName = request.getParameter("deviceName");
-    var deviceId = request.getParameter("deviceId");
-	var unitName = utility.getTenantedDeviceUnitName(deviceType, "analytics-view");
-	if (!unitName) {
-		unitName = "cdmf.unit.default.device.type.analytics-view";
-	}
-    return {
-        "deviceAnalyticsViewUnitName": unitName,
-        "deviceType": deviceType,
-        "deviceName": deviceName,
-        "deviceId": deviceId
-    };
+function onRequest (context) {
+    var log = new Log("overview-section.js");
+    var device = context.unit.params.device;
+    return {"device" : device};
 }

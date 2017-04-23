@@ -42,7 +42,6 @@ public class EventRecords extends BasePaginatedResult {
 
     public void setList(List<Record> records) {
         this.records = records;
-        setCount(records.size());
     }
 
     @Override

@@ -23,34 +23,50 @@
     </style>
 {{/zone}}
 
+{{#zone "overview-section"}}
+    <div style="background: #11375B; color: #fff; padding: 10px; margin-bottom: 5px">
+        Device Overview - {{label}}</div>
+    {{unit "cdmf.unit.default.device.overview-section" device=device}}
+{{/zone}}
+
 {{#zone "device-thumbnail"}}
     <img src="{{@unit.publicUri}}/images/deviceType.png"/>
 {{/zone}}
 
+
 {{#zone "device-opetations"}}
+    {{#if features}}
     <div style="background: #11375B; color: #fff; padding: 10px; margin-bottom: 5px">
         Operations
     </div>
     <div class="add-margin-top-4x">
-        operation comes here
+        {{unit "cdmf.unit.default.device.operation-bar" device=device features=features}}
     </div>
+    {{/if}}
 {{/zone}}
 
 {{#zone "device-view-tabs"}}
+    {{#if attributes}}
     <li class="active"><a class="list-group-item" href="#device_statistics" role="tab"
                           data-toggle="tab" aria-controls="device_statistics">Device
                                                                               Statistics</a>
     </li>
+    {{/if}}
+    {{#if features}}
     <li><a class="list-group-item" href="#event_log" role="tab" data-toggle="tab"
            aria-controls="event_log">Operations Log</a></li>
+    {{/if}}
 {{/zone}}
 
 {{#zone "device-view-tab-contents"}}
+    {{#if attributes}}
     <div class="panel panel-default tab-pane active"
          id="device_statistics" role="tabpanel" aria-labelledby="device_statistics">
-        <div class="panel-heading">Device Statistics</div>
-        unit "cdmf.unit.device.type.senseme.realtime.analytics-view" device=device
+        <div class="panel-heading">Realtime Statistics</div>
+        {{unit "cdmf.unit.default.device.type.realtime.analytics-view" device=device attributes=attributes}}
     </div>
+    {{/if}}
+    {{#if features}}
     <div class="panel panel-default tab-pane" id="event_log" role="tabpanel"
          aria-labelledby="event_log">
         <div class="panel-heading">Operations Log <span><a href="#"
@@ -74,4 +90,5 @@
             </div>
         </div>
     </div>
+    {{/if}}
 {{/zone}}

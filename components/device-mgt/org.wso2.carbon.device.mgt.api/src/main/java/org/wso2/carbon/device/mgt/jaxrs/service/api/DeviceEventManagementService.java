@@ -41,7 +41,7 @@ import javax.ws.rs.core.Response;
                 extensions = {
                         @Extension(properties = {
                                 @ExtensionProperty(name = "name", value = "DeviceEventManagement"),
-                                @ExtensionProperty(name = "context", value = "/api/device-mgt/v1.0/device-types/events"),
+                                @ExtensionProperty(name = "context", value = "/api/device-mgt/v1.0/events"),
                         })
                 }
         ),
@@ -65,7 +65,7 @@ import javax.ws.rs.core.Response;
                 )
         }
 )
-@Path("/device-types/events")
+@Path("/events")
 @Api(value = "Device Event Management", description = "This API corresponds to all tasks related to device " +
         "event management")
 @Produces(MediaType.APPLICATION_JSON)

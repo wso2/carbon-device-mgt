@@ -134,6 +134,32 @@
     <br>
 </div>
 
+<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 padding-double grey-bg">
+    <h3 class="uppercase">Topic to publish data for analytics : {{tenantDomain}}/{{deviceType}}/&lt;device_id&gt;/events</h3>
+    <h3 class="uppercase">Topic to publish data to an external system : {{tenantDomain}}/{{deviceType}}/&lt;device_id&gt;/proxy</h3>
+    <h3 class="uppercase">Topic to listen for operation: {{tenantDomain}}/{{deviceType}}/&lt;device_id&gt;/operation/#</h3>
+    <hr>
+    <ul class="list-unstyled">
+        <li class="padding-top-double">
+            {{tenantDomain}}/{{deviceType}}/&lt;device_id&gt;/operation/command/&lt;feature_code&gt;
+        </li>
+        <li class="padding-top-double">
+            {{tenantDomain}}/{{deviceType}}/&lt;device_id&gt;/operation/config/&lt;feature_code&gt;
+        </li>
+        <li class="padding-top-double">
+            {{tenantDomain}}/{{deviceType}}/&lt;device_id&gt;/operation/profile/&lt;feature_code&gt;
+        </li>
+        <li class="padding-top-double">
+            {{tenantDomain}}/{{deviceType}}/&lt;device_id&gt;/operation/policy/policy_bundle
+        </li>
+        <li class="padding-top-double">
+            {{tenantDomain}}/{{deviceType}}/&lt;device_id&gt;/operation/policy/policy_revoke
+        </li>
+    </ul>
+    <br>
+    <br>
+</div>
+
 {{#zone "topCss"}}
     {{css "css/styles.css"}}
 {{/zone}}

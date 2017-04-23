@@ -2,6 +2,7 @@ package org.wso2.carbon.device.mgt.jaxrs.service.impl;
 
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.client.Options;
+import org.apache.axis2.client.Stub;
 import org.apache.axis2.transport.http.HTTPConstants;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.httpclient.Header;
@@ -82,7 +83,7 @@ import java.util.UUID;
  * This is used for simple analytics purpose, to create streams and receiver dynamically and a common endpoint
  * to retrieve data.
  */
-@Path("/device-types/events")
+@Path("/events")
 public class DeviceEventManagementServiceImpl implements DeviceEventManagementService {
 
     private static final Log log = LogFactory.getLog(DeviceEventManagementServiceImpl.class);
@@ -138,6 +139,7 @@ public class DeviceEventManagementServiceImpl implements DeviceEventManagementSe
     @Override
     public Response getDeviceTypeEventDefinition(@PathParam("type") String deviceType) {
         String tenantDomain = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantDomain();
+        EventStreamAdminServiceStub eventStreamAdminServiceStub = null;
         try {
             if (deviceType == null ||
                     !DeviceMgtAPIUtils.getDeviceManagementService().getAvailableDeviceTypes().contains(deviceType)) {
@@ -146,11 +148,10 @@ public class DeviceEventManagementServiceImpl implements DeviceEventManagementSe
                 return Response.status(Response.Status.BAD_REQUEST).build();
             }
             String streamName = getStreamDefinition(deviceType, tenantDomain);
-            EventStreamAdminServiceStub eventStreamAdminServiceStub = getEventStreamAdminServiceStub();
+            eventStreamAdminServiceStub = getEventStreamAdminServiceStub();
             EventStreamDefinitionDto eventStreamDefinitionDto = eventStreamAdminServiceStub.getStreamDefinitionDto(
                     streamName + ":" + DEFAULT_STREAM_VERSION);
             if (eventStreamDefinitionDto == null) {
-                eventStreamAdminServiceStub.cleanup();
                 return Response.status(Response.Status.NO_CONTENT).build();
             }
             EventStreamAttributeDto[] eventStreamAttributeDtos = eventStreamDefinitionDto.getPayloadData();
@@ -161,7 +162,6 @@ public class DeviceEventManagementServiceImpl implements DeviceEventManagementSe
                         , AttributeType.valueOf(eventStreamAttributeDto.getAttributeType().toUpperCase())));
             }
             eventAttributeList.setList(attributes);
-            eventStreamAdminServiceStub.cleanup();
             return Response.ok().entity(eventAttributeList).build();
         } catch (AxisFault e) {
             log.error("failed to retrieve event definitions for tenantDomain:" + tenantDomain, e);
@@ -178,6 +178,8 @@ public class DeviceEventManagementServiceImpl implements DeviceEventManagementSe
         } catch (DeviceManagementException e) {
             log.error("Failed to access device management service, tenantDomain: " + tenantDomain, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        } finally {
+            cleanup(eventStreamAdminServiceStub);
         }
     }
 
@@ -250,6 +252,12 @@ public class DeviceEventManagementServiceImpl implements DeviceEventManagementSe
     public Response deleteDeviceTypeEventDefinitions(@PathParam("type") String deviceType) {
         String tenantDomain = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantDomain();
         boolean superTenantMode = false;
+        EventReceiverAdminServiceStub eventReceiverAdminServiceStub = null;
+        EventPublisherAdminServiceStub eventPublisherAdminServiceStub = null;
+        EventStreamAdminServiceStub eventStreamAdminServiceStub = null;
+
+        EventReceiverAdminServiceStub tenantBasedEventReceiverAdminServiceStub = null;
+        EventStreamAdminServiceStub tenantBasedEventStreamAdminServiceStub = null;
         try {
             if (deviceType == null ||
                     !DeviceMgtAPIUtils.getDeviceManagementService().getAvailableDeviceTypes().contains(deviceType)) {
@@ -260,43 +268,35 @@ public class DeviceEventManagementServiceImpl implements DeviceEventManagementSe
             String eventReceiverName = getReceiverName(deviceType, tenantDomain);
             String eventPublisherName = deviceType.trim().toLowerCase() + "_websocket_publisher";
             String streamName = getStreamDefinition(deviceType, tenantDomain);
-            EventStreamAdminServiceStub eventStreamAdminServiceStub = getEventStreamAdminServiceStub();
+            eventStreamAdminServiceStub = getEventStreamAdminServiceStub();
             if (eventStreamAdminServiceStub.getStreamDefinitionDto(streamName + ":" + DEFAULT_STREAM_VERSION) == null) {
                 return Response.status(Response.Status.NO_CONTENT).build();
             }
+            eventStreamAdminServiceStub.removeEventStreamDefinition(streamName, DEFAULT_STREAM_VERSION);
             EventReceiverAdminServiceCallbackHandler eventReceiverAdminServiceCallbackHandler =
                     new EventReceiverAdminServiceCallbackHandler() {};
             EventPublisherAdminServiceCallbackHandler eventPublisherAdminServiceCallbackHandler =
                     new EventPublisherAdminServiceCallbackHandler() {};
 
-            EventReceiverAdminServiceStub eventReceiverAdminServiceStub = getEventReceiverAdminServiceStub();
-            eventReceiverAdminServiceStub.startundeployActiveEventReceiverConfiguration(eventReceiverName
+            eventReceiverAdminServiceStub = getEventReceiverAdminServiceStub();
+            eventReceiverAdminServiceStub.startundeployInactiveEventReceiverConfiguration(eventReceiverName
                     , eventReceiverAdminServiceCallbackHandler);
 
-            eventStreamAdminServiceStub.removeEventStreamDefinition(streamName, DEFAULT_STREAM_VERSION);
-
-            EventPublisherAdminServiceStub eventPublisherAdminServiceStub = getEventPublisherAdminServiceStub();
-            eventPublisherAdminServiceStub.startundeployActiveEventPublisherConfiguration(eventPublisherName
+            eventPublisherAdminServiceStub = getEventPublisherAdminServiceStub();
+            eventPublisherAdminServiceStub.startundeployInactiveEventPublisherConfiguration(eventPublisherName
                     , eventPublisherAdminServiceCallbackHandler);
-
-            eventStreamAdminServiceStub.cleanup();
-            eventPublisherAdminServiceStub.cleanup();
-            eventReceiverAdminServiceStub.cleanup();
 
             superTenantMode = true;
             PrivilegedCarbonContext.startTenantFlow();
             PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(
                     MultitenantConstants.SUPER_TENANT_DOMAIN_NAME, true);
             if (!MultitenantConstants.SUPER_TENANT_DOMAIN_NAME.equals(tenantDomain)) {
-                eventReceiverAdminServiceStub = getEventReceiverAdminServiceStub();
-                eventStreamAdminServiceStub = getEventStreamAdminServiceStub();
-
-                eventReceiverAdminServiceStub.startundeployActiveEventReceiverConfiguration(eventReceiverName
-                        , eventReceiverAdminServiceCallbackHandler);
+                tenantBasedEventReceiverAdminServiceStub = getEventReceiverAdminServiceStub();
+                tenantBasedEventStreamAdminServiceStub = getEventStreamAdminServiceStub();
                 eventStreamAdminServiceStub.removeEventStreamDefinition(streamName, DEFAULT_STREAM_VERSION);
+                eventReceiverAdminServiceStub.startundeployInactiveEventReceiverConfiguration(eventReceiverName
+                        , eventReceiverAdminServiceCallbackHandler);
 
-                eventReceiverAdminServiceStub.cleanup();
-                eventStreamAdminServiceStub.cleanup();
             }
             return Response.ok().build();
         } catch (AxisFault e) {
@@ -318,6 +318,11 @@ public class DeviceEventManagementServiceImpl implements DeviceEventManagementSe
             if (superTenantMode) {
                 PrivilegedCarbonContext.endTenantFlow();
             }
+            cleanup(eventStreamAdminServiceStub);
+            cleanup(eventPublisherAdminServiceStub);
+            cleanup(eventReceiverAdminServiceStub);
+            cleanup(eventReceiverAdminServiceStub);
+            cleanup(eventStreamAdminServiceStub);
         }
     }
 
@@ -367,109 +372,120 @@ public class DeviceEventManagementServiceImpl implements DeviceEventManagementSe
             , String requestedTenantDomain, String deviceType)
             throws RemoteException, UserStoreException, JWTClientException {
         EventReceiverAdminServiceStub receiverAdminServiceStub = getEventReceiverAdminServiceStub();
-        String adapterType = "oauth-mqtt";
-        BasicInputAdapterPropertyDto basicInputAdapterPropertyDtos[];
-        if (transportType == TransportType.MQTT) {
-            basicInputAdapterPropertyDtos = new BasicInputAdapterPropertyDto[4];
-            basicInputAdapterPropertyDtos[0] = getBasicInputAdapterPropertyDto("topic", requestedTenantDomain
-                    + "/" + deviceType + "/+/events");
-            basicInputAdapterPropertyDtos[1] = getBasicInputAdapterPropertyDto("contentValidator", "iot-mqtt");
-            basicInputAdapterPropertyDtos[2] = getBasicInputAdapterPropertyDto("cleanSession", "true");
-            basicInputAdapterPropertyDtos[3] = getBasicInputAdapterPropertyDto("clientId", generateUUID());
-        } else {
-            adapterType = "oauth-http";
-            basicInputAdapterPropertyDtos = new BasicInputAdapterPropertyDto[1];
-            basicInputAdapterPropertyDtos[0] = getBasicInputAdapterPropertyDto("contentValidator", "iot-mqtt");
+        try {
+            String adapterType = "oauth-mqtt";
+            BasicInputAdapterPropertyDto basicInputAdapterPropertyDtos[];
+            if (transportType == TransportType.MQTT) {
+                basicInputAdapterPropertyDtos = new BasicInputAdapterPropertyDto[4];
+                basicInputAdapterPropertyDtos[0] = getBasicInputAdapterPropertyDto("topic", requestedTenantDomain
+                        + "/" + deviceType + "/+/events");
+                basicInputAdapterPropertyDtos[1] = getBasicInputAdapterPropertyDto("contentValidator", "iot-mqtt");
+                basicInputAdapterPropertyDtos[2] = getBasicInputAdapterPropertyDto("cleanSession", "true");
+                basicInputAdapterPropertyDtos[3] = getBasicInputAdapterPropertyDto("clientId", generateUUID());
+            } else {
+                adapterType = "oauth-http";
+                basicInputAdapterPropertyDtos = new BasicInputAdapterPropertyDto[1];
+                basicInputAdapterPropertyDtos[0] = getBasicInputAdapterPropertyDto("contentValidator", "iot-mqtt");
+            }
+            if (receiverAdminServiceStub.getActiveEventReceiverConfiguration(eventRecieverName) == null) {
+                receiverAdminServiceStub.deployJsonEventReceiverConfiguration(eventRecieverName, streamNameWithVersion
+                        , adapterType, null, basicInputAdapterPropertyDtos, false);
+            }
+        } finally {
+            cleanup(receiverAdminServiceStub);
         }
-        if (receiverAdminServiceStub.getActiveEventReceiverConfiguration(eventRecieverName) == null) {
-            receiverAdminServiceStub.deployJsonEventReceiverConfiguration(eventRecieverName, streamNameWithVersion
-                    , adapterType, null, basicInputAdapterPropertyDtos, false);
-        }
-        receiverAdminServiceStub.cleanup();
     }
 
     private void publishStreamDefinitons(String streamName, String version, String deviceType
             , EventAttributeList eventAttributes)
             throws RemoteException, UserStoreException, JWTClientException {
         EventStreamAdminServiceStub eventStreamAdminServiceStub = getEventStreamAdminServiceStub();
-        EventStreamDefinitionDto eventStreamDefinitionDto = new EventStreamDefinitionDto();
-        eventStreamDefinitionDto.setName(streamName);
-        eventStreamDefinitionDto.setVersion(version);
-        EventStreamAttributeDto eventStreamAttributeDtos[] =
-                new EventStreamAttributeDto[eventAttributes.getList().size()];
-        int i = 0;
-        for (Attribute attribute : eventAttributes.getList()) {
+        try {
+            EventStreamDefinitionDto eventStreamDefinitionDto = new EventStreamDefinitionDto();
+            eventStreamDefinitionDto.setName(streamName);
+            eventStreamDefinitionDto.setVersion(version);
+            EventStreamAttributeDto eventStreamAttributeDtos[] =
+                    new EventStreamAttributeDto[eventAttributes.getList().size() + 1];
+            int i = 0;
+            for (Attribute attribute : eventAttributes.getList()) {
+                EventStreamAttributeDto eventStreamAttributeDto = new EventStreamAttributeDto();
+                eventStreamAttributeDto.setAttributeName(attribute.getName());
+                eventStreamAttributeDto.setAttributeType(attribute.getType().toString());
+                eventStreamAttributeDtos[i] = eventStreamAttributeDto;
+                i++;
+            }
+
             EventStreamAttributeDto eventStreamAttributeDto = new EventStreamAttributeDto();
-            eventStreamAttributeDto.setAttributeName(attribute.getName());
-            eventStreamAttributeDto.setAttributeType(attribute.getType().toString());
+            eventStreamAttributeDto.setAttributeName("deviceId");
+            eventStreamAttributeDto.setAttributeType(AttributeType.STRING.toString());
             eventStreamAttributeDtos[i] = eventStreamAttributeDto;
-            i++;
+            eventStreamDefinitionDto.setPayloadData(eventStreamAttributeDtos);
+            String streamId = streamName + ":" + version;
+            if (eventStreamAdminServiceStub.getStreamDefinitionDto(streamId) != null) {
+                eventStreamAdminServiceStub.editEventStreamDefinitionAsDto(eventStreamDefinitionDto, streamId);
+            } else {
+                eventStreamAdminServiceStub.addEventStreamDefinitionAsDto(eventStreamDefinitionDto);
+            }
+        } finally {
+            cleanup(eventStreamAdminServiceStub);
         }
-        EventStreamAttributeDto metaData[] = new EventStreamAttributeDto[1];
-        EventStreamAttributeDto eventStreamAttributeDto = new EventStreamAttributeDto();
-        eventStreamAttributeDto.setAttributeName("deviceId");
-        eventStreamAttributeDto.setAttributeType(AttributeType.STRING.toString());
-        metaData[0] = eventStreamAttributeDto;
-        eventStreamDefinitionDto.setMetaData(metaData);
-        eventStreamDefinitionDto.setPayloadData(eventStreamAttributeDtos);
-        String streamId = streamName + ":" + version;
-        if (eventStreamAdminServiceStub.getStreamDefinitionDto(streamId) != null) {
-            eventStreamAdminServiceStub.editEventStreamDefinitionAsDto(eventStreamDefinitionDto, streamId);
-        } else {
-            eventStreamAdminServiceStub.addEventStreamDefinitionAsDto(eventStreamDefinitionDto);
-        }
-        eventStreamAdminServiceStub.cleanup();
     }
 
     private void publishEventStore(String streamName, String version, EventAttributeList eventAttributes)
             throws RemoteException, UserStoreException, JWTClientException,
                    EventStreamPersistenceAdminServiceEventStreamPersistenceAdminServiceExceptionException {
-        EventStreamPersistenceAdminServiceStub eventStreamAdminServiceStub =
+        EventStreamPersistenceAdminServiceStub eventStreamPersistenceAdminServiceStub =
                 getEventStreamPersistenceAdminServiceStub();
-        AnalyticsTable analyticsTable = new AnalyticsTable();
-        analyticsTable.setRecordStoreName(DEFAULT_EVENT_STORE_NAME);
-        analyticsTable.setStreamVersion(version);
-        analyticsTable.setTableName(streamName);
-        analyticsTable.setMergeSchema(false);
-        analyticsTable.setPersist(true);
-        AnalyticsTableRecord analyticsTableRecords[] = new AnalyticsTableRecord[eventAttributes.getList().size() + 1];
-        int i = 0;
-        for (Attribute attribute : eventAttributes.getList()) {
+        try {
+            AnalyticsTable analyticsTable = new AnalyticsTable();
+            analyticsTable.setRecordStoreName(DEFAULT_EVENT_STORE_NAME);
+            analyticsTable.setStreamVersion(version);
+            analyticsTable.setTableName(streamName);
+            analyticsTable.setMergeSchema(false);
+            analyticsTable.setPersist(true);
+            AnalyticsTableRecord analyticsTableRecords[] = new AnalyticsTableRecord[eventAttributes.getList().size() + 1];
+            int i = 0;
+            for (Attribute attribute : eventAttributes.getList()) {
+                AnalyticsTableRecord analyticsTableRecord = new AnalyticsTableRecord();
+                analyticsTableRecord.setColumnName(attribute.getName());
+                analyticsTableRecord.setColumnType(attribute.getType().toString().toUpperCase());
+                analyticsTableRecord.setFacet(false);
+                analyticsTableRecord.setIndexed(true);
+                analyticsTableRecord.setPersist(true);
+                analyticsTableRecord.setPrimaryKey(false);
+                analyticsTableRecord.setScoreParam(false);
+                analyticsTableRecords[i] = analyticsTableRecord;
+                i++;
+            }
             AnalyticsTableRecord analyticsTableRecord = new AnalyticsTableRecord();
-            analyticsTableRecord.setColumnName(attribute.getName());
-            analyticsTableRecord.setColumnType(attribute.getType().toString().toUpperCase());
+            analyticsTableRecord.setColumnName("deviceId");
+            analyticsTableRecord.setColumnType(AttributeType.STRING.toString().toUpperCase());
             analyticsTableRecord.setFacet(false);
             analyticsTableRecord.setIndexed(true);
             analyticsTableRecord.setPersist(true);
             analyticsTableRecord.setPrimaryKey(false);
             analyticsTableRecord.setScoreParam(false);
             analyticsTableRecords[i] = analyticsTableRecord;
-            i++;
+            analyticsTable.setAnalyticsTableRecords(analyticsTableRecords);
+            eventStreamPersistenceAdminServiceStub.addAnalyticsTable(analyticsTable);
+        } finally {
+            cleanup(eventStreamPersistenceAdminServiceStub);
         }
-        AnalyticsTableRecord analyticsTableRecord = new AnalyticsTableRecord();
-        analyticsTableRecord.setColumnName("meta_deviceId");
-        analyticsTableRecord.setColumnType(AttributeType.STRING.toString().toUpperCase());
-        analyticsTableRecord.setFacet(false);
-        analyticsTableRecord.setIndexed(true);
-        analyticsTableRecord.setPersist(true);
-        analyticsTableRecord.setPrimaryKey(false);
-        analyticsTableRecord.setScoreParam(false);
-        analyticsTableRecords[i] = analyticsTableRecord;
-        analyticsTable.setAnalyticsTableRecords(analyticsTableRecords);
-        eventStreamAdminServiceStub.addAnalyticsTable(analyticsTable);
-        eventStreamAdminServiceStub.cleanup();
     }
 
     private void publishWebsocketPublisherDefinition(String streamNameWithVersion, String deviceType)
             throws RemoteException, UserStoreException, JWTClientException {
         EventPublisherAdminServiceStub eventPublisherAdminServiceStub = getEventPublisherAdminServiceStub();
-        String eventPublisherName = deviceType.trim().toLowerCase() + "_websocket_publisher";
-        if (eventPublisherAdminServiceStub.getActiveEventPublisherConfiguration(eventPublisherName) == null) {
-            eventPublisherAdminServiceStub.deployJsonEventPublisherConfiguration(eventPublisherName
-                    , streamNameWithVersion, DEFAULT_WEBSOCKET_PUBLISHER_ADAPTER_TYPE, null, null
-                    , null, false);
+        try {
+            String eventPublisherName = deviceType.trim().toLowerCase() + "_websocket_publisher";
+            if (eventPublisherAdminServiceStub.getActiveEventPublisherConfiguration(eventPublisherName) == null) {
+                eventPublisherAdminServiceStub.deployJsonEventPublisherConfiguration(eventPublisherName
+                        , streamNameWithVersion, DEFAULT_WEBSOCKET_PUBLISHER_ADAPTER_TYPE, null, null
+                        , null, false);
+            }
+        } finally {
+            cleanup(eventPublisherAdminServiceStub);
         }
-        eventPublisherAdminServiceStub.cleanup();
     }
 
     private EventStreamAdminServiceStub getEventStreamAdminServiceStub()
@@ -695,15 +711,16 @@ public class DeviceEventManagementServiceImpl implements DeviceEventManagementSe
             , int offset, int limit) throws AnalyticsException {
         int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
         AnalyticsDataAPI analyticsDataAPI = getAnalyticsDataAPI();
+        EventRecords eventRecords = new EventRecords();
         int eventCount = analyticsDataAPI.searchCount(tenantId, tableName, query);
         if (eventCount == 0) {
-            return null;
+            eventRecords.setCount(0);
         }
         List<SearchResultEntry> resultEntries = analyticsDataAPI.search(tenantId, tableName, query, offset, limit,
                                                                         sortByFields);
         List<String> recordIds = getRecordIds(resultEntries);
         AnalyticsDataResponse response = analyticsDataAPI.get(tenantId, tableName, 1, null, recordIds);
-        EventRecords eventRecords = new EventRecords();
+        eventRecords.setCount(eventCount);
         eventRecords.setList(AnalyticsDataAPIUtil.listRecords(analyticsDataAPI, response));
         return eventRecords;
     }
@@ -714,6 +731,16 @@ public class DeviceEventManagementServiceImpl implements DeviceEventManagementSe
             ids.add(searchResult.getId());
         }
         return ids;
+    }
+
+    private void cleanup(Stub stub) {
+        if (stub != null) {
+            try {
+                stub.cleanup();
+            } catch (AxisFault axisFault) {
+                // do nothing
+            }
+        }
     }
 
 }

@@ -122,6 +122,8 @@ public class DeviceTypePublisherAdminServiceImpl implements DeviceTypePublisherA
             + ":" + DAS_PORT + "/services/CarbonAppUploader" + "/";
     private static final String DAS_EVENT_RECEIVER_EP = DEFAULT_HTTP_PROTOCOL + "://" + DAS_HOST_NAME
             + ":" + DAS_PORT + "/services/EventReceiverAdminService" + "/";
+    private static final String DAS_EVENT_STREAM_EP = DEFAULT_HTTP_PROTOCOL + "://" + DAS_HOST_NAME
+            + ":" + DAS_PORT + "/services/EventStreamAdminService" + "/";
 
     private static final String IOT_MGT_URL = DEFAULT_HTTP_PROTOCOL + "://" + IOT_MGT_HOST_NAME
             + ":" + IOT_MGT_PORT + "/services/CarbonAppUploader" + "/";
@@ -170,9 +172,6 @@ public class DeviceTypePublisherAdminServiceImpl implements DeviceTypePublisherA
                 }
             }
             List<String> receiverFileList = getReceiversList(type);
-            if (receiverFileList != null) {
-                publishDynamicEventReceivers(type, MultitenantConstants.SUPER_TENANT_DOMAIN_NAME, receiverFileList);
-            }
             if(!tenantDomain.equals(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME)) {
                 if (receiverFileList != null) {
                     publishDynamicEventReceivers(type, tenantDomain, receiverFileList);
@@ -181,6 +180,9 @@ public class DeviceTypePublisherAdminServiceImpl implements DeviceTypePublisherA
             if (deployAnalyticsCapp(type, list)){
                 return Response.status(Response.Status.BAD_REQUEST)
                         .entity("\"Error, Artifact does not exist.\"").build();
+            }
+            if (receiverFileList != null) {
+                publishDynamicEventReceivers(type, MultitenantConstants.SUPER_TENANT_DOMAIN_NAME, receiverFileList);
             }
             return Response.status(Response.Status.CREATED).entity("\"OK. \\n Successfully uploaded the artifacts.\"")
                     .build();
@@ -331,7 +333,7 @@ public class DeviceTypePublisherAdminServiceImpl implements DeviceTypePublisherA
         PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(tenantDomain, true);
         try {
             EventStreamAdminServiceStub eventStreamAdminServiceStub = new EventStreamAdminServiceStub
-                    (Utils.replaceSystemProperty(DAS_EVENT_RECEIVER_EP));
+                    (Utils.replaceSystemProperty(DAS_EVENT_STREAM_EP));
             Options eventReciverOptions = eventStreamAdminServiceStub._getServiceClient().getOptions();
             if (eventReciverOptions == null) {
                 eventReciverOptions = new Options();

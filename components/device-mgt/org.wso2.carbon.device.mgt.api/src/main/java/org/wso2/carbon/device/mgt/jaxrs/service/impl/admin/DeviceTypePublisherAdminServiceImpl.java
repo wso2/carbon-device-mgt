@@ -165,60 +165,17 @@ public class DeviceTypePublisherAdminServiceImpl implements DeviceTypePublisherA
             httpHeader.setValue(authValue);
             list.add(httpHeader);//"https"
 
-            File directory = new File(CAR_FILE_LOCATION + File.separator + type);
-            if (directory.isDirectory() && directory.exists()) {
-                UploadedFileItem[] uploadedFileItems = loadCappFromFileSystem(type);
-                if (uploadedFileItems.length > 0) {
-                    CarbonAppUploaderStub carbonAppUploaderStub = new CarbonAppUploaderStub(Utils.replaceSystemProperty(
-                            IOT_MGT_URL));
-                    Options appUploaderOptions = carbonAppUploaderStub._getServiceClient().getOptions();
-                    if (appUploaderOptions == null) {
-                        appUploaderOptions = new Options();
-                    }
-                    appUploaderOptions.setProperty(HTTPConstants.HTTP_HEADERS, list);
-                    appUploaderOptions.setProperty(HTTPConstants.CUSTOM_PROTOCOL_HANDLER
-                            , new Protocol(DEFAULT_HTTP_PROTOCOL, (ProtocolSocketFactory) new SSLProtocolSocketFactory
-                            (sslContext), Integer.parseInt(Utils.replaceSystemProperty(IOT_MGT_PORT))));
-
-                    carbonAppUploaderStub._getServiceClient().setOptions(appUploaderOptions);
-                    carbonAppUploaderStub.uploadApp(uploadedFileItems);
-
-                    if (!DEVICE_MANAGEMENT_TYPE.equals(type.toLowerCase())) {
-                        carbonAppUploaderStub = new CarbonAppUploaderStub(Utils.replaceSystemProperty(DAS_URL));
-                        appUploaderOptions = carbonAppUploaderStub._getServiceClient().getOptions();
-                        if (appUploaderOptions == null) {
-                            appUploaderOptions = new Options();
-                        }
-                        appUploaderOptions.setProperty(HTTPConstants.HTTP_HEADERS, list);
-                        appUploaderOptions.setProperty(HTTPConstants.CUSTOM_PROTOCOL_HANDLER
-                                , new Protocol(DEFAULT_HTTP_PROTOCOL
-                                , (ProtocolSocketFactory) new SSLProtocolSocketFactory(sslContext)
-                                , Integer.parseInt(Utils.replaceSystemProperty(DAS_PORT))));
-
-                        carbonAppUploaderStub._getServiceClient().setOptions(appUploaderOptions);
-                        carbonAppUploaderStub.uploadApp(uploadedFileItems);
-                    }
-                    int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
-                    Registry registry = DeviceMgtAPIUtils.getRegistryService().getConfigSystemRegistry(tenantId);
-                    if (!registry.resourceExists(DEFAULT_RESOURCE_LOCATION + type + ".exist")) {
-                        Resource resource = new ResourceImpl();
-                        resource.setContent("</exist>");
-                        resource.setMediaType(MEDIA_TYPE_XML);
-                        registry.put(DEFAULT_RESOURCE_LOCATION + type + ".exist", resource);
-                    }
-                }
-
-                if(!tenantDomain.equals(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME)) {
-                    publishDynamicEventReceivers(type, tenantDomain);
-                }
-                publishDynamicEventReceivers(type,MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
-                publishDynamicEventStream(type,MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
-
-
-            } else {
+            if (deployAnaliticsCapp(type, list)){
                 return Response.status(Response.Status.BAD_REQUEST)
                         .entity("\"Error, Artifact does not exist.\"").build();
             }
+
+            if(!tenantDomain.equals(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME)) {
+                publishDynamicEventReceivers(type, tenantDomain);
+            }
+            publishDynamicEventReceivers(type,MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
+
+            publishDynamicEventStream(type,MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
 
         } catch (Exception e) {
             log.error("Capp deployment failed due to " + e.getMessage(), e);
@@ -228,6 +185,57 @@ public class DeviceTypePublisherAdminServiceImpl implements DeviceTypePublisherA
 
         return Response.status(Response.Status.CREATED).entity("\"OK. \\n Successfully uploaded the artifacts.\"")
                 .build();
+    }
+
+    private boolean deployAnaliticsCapp(@PathParam("type") String type, List<Header> list) throws IOException, RegistryException {
+        File directory = new File(CAR_FILE_LOCATION + File.separator + type);
+        if (directory.isDirectory() && directory.exists()) {
+            UploadedFileItem[] uploadedFileItems = loadCappFromFileSystem(type);
+            if (uploadedFileItems.length > 0) {
+                CarbonAppUploaderStub carbonAppUploaderStub = new CarbonAppUploaderStub(Utils.replaceSystemProperty(
+                        IOT_MGT_URL));
+                Options appUploaderOptions = carbonAppUploaderStub._getServiceClient().getOptions();
+                if (appUploaderOptions == null) {
+                    appUploaderOptions = new Options();
+                }
+                appUploaderOptions.setProperty(HTTPConstants.HTTP_HEADERS, list);
+                appUploaderOptions.setProperty(HTTPConstants.CUSTOM_PROTOCOL_HANDLER
+                        , new Protocol(DEFAULT_HTTP_PROTOCOL, (ProtocolSocketFactory) new SSLProtocolSocketFactory
+                        (sslContext), Integer.parseInt(Utils.replaceSystemProperty(IOT_MGT_PORT))));
+
+                carbonAppUploaderStub._getServiceClient().setOptions(appUploaderOptions);
+                carbonAppUploaderStub.uploadApp(uploadedFileItems);
+
+                if (!DEVICE_MANAGEMENT_TYPE.equals(type.toLowerCase())) {
+                    carbonAppUploaderStub = new CarbonAppUploaderStub(Utils.replaceSystemProperty(DAS_URL));
+                    appUploaderOptions = carbonAppUploaderStub._getServiceClient().getOptions();
+                    if (appUploaderOptions == null) {
+                        appUploaderOptions = new Options();
+                    }
+                    appUploaderOptions.setProperty(HTTPConstants.HTTP_HEADERS, list);
+                    appUploaderOptions.setProperty(HTTPConstants.CUSTOM_PROTOCOL_HANDLER
+                            , new Protocol(DEFAULT_HTTP_PROTOCOL
+                            , (ProtocolSocketFactory) new SSLProtocolSocketFactory(sslContext)
+                            , Integer.parseInt(Utils.replaceSystemProperty(DAS_PORT))));
+
+                    carbonAppUploaderStub._getServiceClient().setOptions(appUploaderOptions);
+                    carbonAppUploaderStub.uploadApp(uploadedFileItems);
+                }
+                int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
+                Registry registry = DeviceMgtAPIUtils.getRegistryService().getConfigSystemRegistry(tenantId);
+                if (!registry.resourceExists(DEFAULT_RESOURCE_LOCATION + type + ".exist")) {
+                    Resource resource = new ResourceImpl();
+                    resource.setContent("</exist>");
+                    resource.setMediaType(MEDIA_TYPE_XML);
+                    registry.put(DEFAULT_RESOURCE_LOCATION + type + ".exist", resource);
+                }
+            }
+
+
+        } else {
+            return true;
+        }
+        return false;
     }
 
     @GET
@@ -396,8 +404,8 @@ public class DeviceTypePublisherAdminServiceImpl implements DeviceTypePublisherA
         });
        List<String> receiverList = new ArrayList<>();
         for (File receiverFile:receiverFiles) {
-            String receiverContent =new String(Files.readAllBytes(receiverFile.toPath()));
-            receiverContent.replaceAll(TENANT_DOMAIN_PROPERTY,tenantDomain.toLowerCase());
+            String receiverContentTemplate =new String(Files.readAllBytes(receiverFile.toPath()));
+            final String receiverContent = receiverContentTemplate.replaceAll(TENANT_DOMAIN_PROPERTY, tenantDomain.toLowerCase());
             receiverList.add(receiverContent);
         }
 
@@ -415,11 +423,9 @@ public class DeviceTypePublisherAdminServiceImpl implements DeviceTypePublisherA
         });
         List<String> streamList = new ArrayList<>();
         for (File StreamFile:receiverFiles) {
-            String receiverContent =new String(Files.readAllBytes(StreamFile.toPath()));
-            receiverContent.replaceAll(TENANT_DOMAIN_PROPERTY,tenantDomain.toLowerCase());
-            streamList.add(receiverContent);
+            String streamContent =new String(Files.readAllBytes(StreamFile.toPath()));
+            streamList.add(streamContent);
         }
-
         return streamList;
     }
 
@@ -508,5 +514,26 @@ public class DeviceTypePublisherAdminServiceImpl implements DeviceTypePublisherA
     }
 
 
+    public static void main(String[] args) {
+
+        try{
+            File directory = new File("/Users/jasintha/product/androidsens/wso2iot-3.1.0-SNAPSHOT/core/repository/resources/devicetypes/android_sense/receiver");
+            File[] receiverFiles = directory.listFiles(new FilenameFilter() {
+                @Override
+                public boolean accept(File dir, String name) {
+                    return name.toLowerCase().endsWith(".xml");
+                }
+            });
+            List<String> receiverList = new ArrayList<>();
+            for (File receiverFile:receiverFiles) {
+                String receiverContent =new String(Files.readAllBytes(receiverFile.toPath()));
+                receiverContent.replaceAll(TENANT_DOMAIN_PROPERTY,"foo.com");
+                System.out.println(receiverContent);
+                receiverList.add(receiverContent);
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }
 }
 

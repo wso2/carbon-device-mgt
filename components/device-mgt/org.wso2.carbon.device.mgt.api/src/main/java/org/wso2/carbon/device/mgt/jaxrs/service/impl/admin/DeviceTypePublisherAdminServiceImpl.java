@@ -134,7 +134,6 @@ public class DeviceTypePublisherAdminServiceImpl implements DeviceTypePublisherA
     @POST
     @Path("/deploy/{type}")
     public Response doPublish(@PathParam("type") String type) {
-
         try {
             //Getting the tenant Domain
             tenantDomain = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantDomain();
@@ -159,35 +158,55 @@ public class DeviceTypePublisherAdminServiceImpl implements DeviceTypePublisherA
             String authValue =  AUTHORIZATION_HEADER_VALUE + " " + new String(Base64.encodeBase64(
                     jwtClient.getJwtToken(tenantAdminUser).getBytes()));
 
-            List<Header> list = new ArrayList<Header>();
+            List<Header> list = new ArrayList<>();
             Header httpHeader = new Header();
             httpHeader.setName(AUTHORIZATION_HEADER);
             httpHeader.setValue(authValue);
             list.add(httpHeader);//"https"
-
-            if (deployAnaliticsCapp(type, list)){
+            if (!tenantDomain.equals(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME)) {
+                List<String> streamFileList = getStreamsList(type);
+                if (streamFileList != null) {
+                    publishDynamicEventStream(type, MultitenantConstants.SUPER_TENANT_DOMAIN_NAME, streamFileList);
+                }
+            }
+            List<String> receiverFileList = getReceiversList(type);
+            if (receiverFileList != null) {
+                publishDynamicEventReceivers(type, MultitenantConstants.SUPER_TENANT_DOMAIN_NAME, receiverFileList);
+            }
+            if(!tenantDomain.equals(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME)) {
+                if (receiverFileList != null) {
+                    publishDynamicEventReceivers(type, tenantDomain, receiverFileList);
+                }
+            }
+            if (deployAnalyticsCapp(type, list)){
                 return Response.status(Response.Status.BAD_REQUEST)
                         .entity("\"Error, Artifact does not exist.\"").build();
             }
-
-            if(!tenantDomain.equals(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME)) {
-                publishDynamicEventReceivers(type, tenantDomain);
-            }
-            publishDynamicEventReceivers(type,MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
-
-            publishDynamicEventStream(type,MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
-
-        } catch (Exception e) {
-            log.error("Capp deployment failed due to " + e.getMessage(), e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(
-                    "\"Error, Artifact deployment has failed\"").build();
+            return Response.status(Response.Status.CREATED).entity("\"OK. \\n Successfully uploaded the artifacts.\"")
+                    .build();
+        } catch (AxisFault e) {
+            log.error("failed to publish event definitions for tenantDomain:" + tenantDomain, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        } catch (RemoteException e) {
+            log.error("Failed to connect with the remote services:" + tenantDomain, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        } catch (JWTClientException e) {
+            log.error("Failed to generate jwt token for tenantDomain:" + tenantDomain, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        } catch (UserStoreException e) {
+            log.error("Failed to connect with the user store, tenantDomain: " + tenantDomain, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        } catch (CertificateException | UnrecoverableKeyException | KeyStoreException |
+                KeyManagementException | IOException | NoSuchAlgorithmException e) {
+            log.error("Failed to access keystore for, tenantDomain: " + tenantDomain, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        } catch (RegistryException e) {
+            log.error("Failed to load tenant, tenantDomain: " + tenantDomain, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
-
-        return Response.status(Response.Status.CREATED).entity("\"OK. \\n Successfully uploaded the artifacts.\"")
-                .build();
     }
 
-    private boolean deployAnaliticsCapp(@PathParam("type") String type, List<Header> list) throws IOException, RegistryException {
+    private boolean deployAnalyticsCapp(@PathParam("type") String type, List<Header> list) throws IOException, RegistryException {
         File directory = new File(CAR_FILE_LOCATION + File.separator + type);
         if (directory.isDirectory() && directory.exists()) {
             UploadedFileItem[] uploadedFileItems = loadCappFromFileSystem(type);
@@ -230,8 +249,6 @@ public class DeviceTypePublisherAdminServiceImpl implements DeviceTypePublisherA
                     registry.put(DEFAULT_RESOURCE_LOCATION + type + ".exist", resource);
                 }
             }
-
-
         } else {
             return true;
         }
@@ -243,7 +260,7 @@ public class DeviceTypePublisherAdminServiceImpl implements DeviceTypePublisherA
     @Override
     public Response getStatus(@PathParam("type") String deviceType) {
         int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
-        Registry registry = null;
+        Registry registry;
         try {
             registry = DeviceMgtAPIUtils.getRegistryService().getConfigSystemRegistry(tenantId);
             if (registry.resourceExists(DEFAULT_RESOURCE_LOCATION + deviceType + ".exist")) {
@@ -259,19 +276,19 @@ public class DeviceTypePublisherAdminServiceImpl implements DeviceTypePublisherA
     }
 
 
-    private void publishDynamicEventReceivers(String deviceType, String tenantDomain){
+    private void publishDynamicEventReceivers(String deviceType, String tenantDomain, List<String> receiversList)
+            throws IOException, UserStoreException, JWTClientException {
 
-        PrivilegedCarbonContext.getThreadLocalCarbonContext().startTenantFlow();
+        PrivilegedCarbonContext.startTenantFlow();
         PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(tenantDomain, true);
-
         try {
-
-            EventReceiverAdminServiceStub receiverAdminServiceStub = new EventReceiverAdminServiceStub(Utils.replaceSystemProperty(DAS_EVENT_RECEIVER_EP));
+            EventReceiverAdminServiceStub receiverAdminServiceStub = new EventReceiverAdminServiceStub
+                    (Utils.replaceSystemProperty(DAS_EVENT_RECEIVER_EP));
             Options eventReciverOptions = receiverAdminServiceStub._getServiceClient().getOptions();
             if (eventReciverOptions == null) {
                 eventReciverOptions = new Options();
             }
-            String username=null;
+            String username;
             if(!tenantDomain.equals(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME)) {
                username = PrivilegedCarbonContext.getThreadLocalCarbonContext().getUserRealm()
                         .getRealmConfiguration().getAdminUserName()+"@"+tenantDomain;
@@ -286,7 +303,7 @@ public class DeviceTypePublisherAdminServiceImpl implements DeviceTypePublisherA
             String authValue =  AUTHORIZATION_HEADER_VALUE + " " + new String(Base64.encodeBase64(
                     jwtClient.getJwtToken(username).getBytes()));
 
-            List<Header> list = new ArrayList<Header>();
+            List<Header> list = new ArrayList<>();
             Header httpHeader = new Header();
             httpHeader.setName(AUTHORIZATION_HEADER);
             httpHeader.setValue(authValue);
@@ -295,40 +312,26 @@ public class DeviceTypePublisherAdminServiceImpl implements DeviceTypePublisherA
             eventReciverOptions.setProperty(HTTPConstants.HTTP_HEADERS, list);
             eventReciverOptions.setProperty(HTTPConstants.CUSTOM_PROTOCOL_HANDLER
                     , new Protocol(DEFAULT_HTTP_PROTOCOL
-                            , (ProtocolSocketFactory) new SSLProtocolSocketFactory(sslContext)
-                            , Integer.parseInt(Utils.replaceSystemProperty(DAS_PORT))));
+                    , (ProtocolSocketFactory) new SSLProtocolSocketFactory(sslContext)
+                    , Integer.parseInt(Utils.replaceSystemProperty(DAS_PORT))));
 
             receiverAdminServiceStub._getServiceClient().setOptions(eventReciverOptions);
-
-            List<String> receiversList = getReceiversList(deviceType);
             for (String receiverContent:receiversList) {
                 receiverAdminServiceStub.deployEventReceiverConfiguration(receiverContent);
             }
-
-        } catch (AxisFault e) {
-            log.error("publishing dynamic event receiver is failed due to  " + e.getMessage(), e);
-        } catch (RemoteException e) {
-            log.error("publishing dynamic event receiver is failed due to  " + e.getMessage(), e);
-        } catch (IOException e) {
-            log.error("publishing dynamic event receiver is failed due to  " + e.getMessage(), e);
-        } catch (JWTClientException e) {
-            log.error("publishing dynamic event receiver is failed due to  " + e.getMessage(), e);
-        } catch (UserStoreException e) {
-            log.error("publishing dynamic event receiver is failed due to  " + e.getMessage(), e);
         } finally {
             PrivilegedCarbonContext.endTenantFlow();
         }
     }
 
+    private void publishDynamicEventStream(String deviceType, String tenantDomain, List<String> streamList)
+            throws IOException, UserStoreException, JWTClientException {
 
-    private void publishDynamicEventStream(String deviceType, String tenantDomain){
-
-        PrivilegedCarbonContext.getThreadLocalCarbonContext().startTenantFlow();
+        PrivilegedCarbonContext.startTenantFlow();
         PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(tenantDomain, true);
-
         try {
-
-            EventStreamAdminServiceStub eventStreamAdminServiceStub = new EventStreamAdminServiceStub(Utils.replaceSystemProperty(DAS_EVENT_RECEIVER_EP));
+            EventStreamAdminServiceStub eventStreamAdminServiceStub = new EventStreamAdminServiceStub
+                    (Utils.replaceSystemProperty(DAS_EVENT_RECEIVER_EP));
             Options eventReciverOptions = eventStreamAdminServiceStub._getServiceClient().getOptions();
             if (eventReciverOptions == null) {
                 eventReciverOptions = new Options();
@@ -348,7 +351,7 @@ public class DeviceTypePublisherAdminServiceImpl implements DeviceTypePublisherA
             String authValue =  AUTHORIZATION_HEADER_VALUE + " " + new String(Base64.encodeBase64(
                     jwtClient.getJwtToken(username).getBytes()));
 
-            List<Header> list = new ArrayList<Header>();
+            List<Header> list = new ArrayList<>();
             Header httpHeader = new Header();
             httpHeader.setName(AUTHORIZATION_HEADER);
             httpHeader.setValue(authValue);
@@ -361,32 +364,18 @@ public class DeviceTypePublisherAdminServiceImpl implements DeviceTypePublisherA
                             , Integer.parseInt(Utils.replaceSystemProperty(DAS_PORT))));
 
             eventStreamAdminServiceStub._getServiceClient().setOptions(eventReciverOptions);
-
-            List<String> streamList = getStreamsList(deviceType);
             for (String streamContent:streamList) {
                 JSONParser jsonParser = new JSONParser();
                 JSONObject steamJson = (JSONObject)jsonParser.parse(streamContent);
                 String name = (String) steamJson.get("name");
                 String version = (String) steamJson.get("version");
                 String streamId = name +":"+version;
-                if(eventStreamAdminServiceStub.getStreamDefinitionAsString(streamId)==null) {
-
+                if (eventStreamAdminServiceStub.getStreamDefinitionDto(streamId) == null) {
                     eventStreamAdminServiceStub.addEventStreamDefinitionAsString(streamContent);
                 }
             }
-
-        } catch (AxisFault e) {
-            log.error("publishing dynamic event receiver is failed due to  " + e.getMessage(), e);
-        } catch (RemoteException e) {
-            log.error("publishing dynamic event receiver is failed due to  " + e.getMessage(), e);
-        } catch (IOException e) {
-            log.error("publishing dynamic event receiver is failed due to  " + e.getMessage(), e);
-        } catch (JWTClientException e) {
-            log.error("publishing dynamic event receiver is failed due to  " + e.getMessage(), e);
-        } catch (UserStoreException e) {
-            log.error("publishing dynamic event receiver is failed due to  " + e.getMessage(), e);
         } catch (ParseException e) {
-            log.error("publishing dynamic event receiver is failed due to  " + e.getMessage(), e);
+            e.printStackTrace();
         } finally {
             PrivilegedCarbonContext.endTenantFlow();
         }
@@ -394,8 +383,10 @@ public class DeviceTypePublisherAdminServiceImpl implements DeviceTypePublisherA
 
 
     private List<String> getReceiversList(String deviceType) throws IOException {
-
         File directory = new File(CAR_FILE_LOCATION + File.separator + deviceType+File.separator+"receiver");
+        if (!directory.exists()) {
+            return null;
+        }
         File[] receiverFiles = directory.listFiles(new FilenameFilter() {
             @Override
             public boolean accept(File dir, String name) {
@@ -413,8 +404,10 @@ public class DeviceTypePublisherAdminServiceImpl implements DeviceTypePublisherA
     }
 
     private List<String> getStreamsList(String deviceType) throws IOException {
-
         File directory = new File(CAR_FILE_LOCATION + File.separator + deviceType+File.separator+"streams");
+        if (!directory.exists()) {
+            return null;
+        }
         File[] receiverFiles = directory.listFiles(new FilenameFilter() {
             @Override
             public boolean accept(File dir, String name) {
@@ -513,27 +506,5 @@ public class DeviceTypePublisherAdminServiceImpl implements DeviceTypePublisherA
         SSLContext.setDefault(sslContext);
     }
 
-
-    public static void main(String[] args) {
-
-        try{
-            File directory = new File("/Users/jasintha/product/androidsens/wso2iot-3.1.0-SNAPSHOT/core/repository/resources/devicetypes/android_sense/receiver");
-            File[] receiverFiles = directory.listFiles(new FilenameFilter() {
-                @Override
-                public boolean accept(File dir, String name) {
-                    return name.toLowerCase().endsWith(".xml");
-                }
-            });
-            List<String> receiverList = new ArrayList<>();
-            for (File receiverFile:receiverFiles) {
-                String receiverContent =new String(Files.readAllBytes(receiverFile.toPath()));
-                receiverContent.replaceAll(TENANT_DOMAIN_PROPERTY,"foo.com");
-                System.out.println(receiverContent);
-                receiverList.add(receiverContent);
-            }
-        }catch(Exception e){
-            e.printStackTrace();
-        }
-    }
 }
 

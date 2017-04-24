@@ -294,14 +294,7 @@ public class CertificateManagementAdminServiceImpl implements CertificateManagem
                 if (certificate.getSerial().toLowerCase().contains(PROXY_AUTH_MUTUAL_HEADER)) {
                     certificateResponse = certMgtService.verifySubjectDN(certificate.getPem());
                 } else {
-                    //janak
-                    X509Certificate clientCertificate;
-                    if(certificate.getCertificate()!=null){
-                        clientCertificate = certificate.getCertificate();
-                    }else {
-                        clientCertificate = certMgtService.pemToX509Certificate(certificate.getPem());
-                    }
-
+                    X509Certificate clientCertificate = certMgtService.pemToX509Certificate(certificate.getPem());
                     if (clientCertificate != null) {
                         certificateResponse = certMgtService.verifyPEMSignature(clientCertificate);
                     }

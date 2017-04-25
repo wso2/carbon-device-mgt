@@ -61,6 +61,14 @@
             <groupId>org.wso2.carbon.registry</groupId>
             <artifactId>org.wso2.carbon.registry.indexing</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.analytics-common</groupId>
+            <artifactId>org.wso2.carbon.event.receiver.stub</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.analytics-common</groupId>
+            <artifactId>org.wso2.carbon.event.stream.stub</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -133,6 +141,9 @@
                                 </bundleDef>
                                 <bundleDef>
                                     org.wso2.orbit.com.fasterxml.jackson.core:jackson-annotations:${jackson-annotations.version}
+                                </bundleDef>
+                                <bundleDef>
+                                    org.wso2.carbon.analytics-common:org.wso2.carbon.event.receiver.stub:${carbon.analytics.common.version}
                                 </bundleDef>
                                 <!-- Below should be bundled with the email verification -->
                             </bundles>

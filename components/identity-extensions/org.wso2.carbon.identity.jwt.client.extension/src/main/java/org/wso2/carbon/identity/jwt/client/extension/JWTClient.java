@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2016-2017, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -29,7 +29,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;;
+import org.json.simple.parser.ParseException;
 import org.wso2.carbon.identity.jwt.client.extension.constant.JWTConstants;
 import org.wso2.carbon.identity.jwt.client.extension.dto.AccessTokenInfo;
 import org.wso2.carbon.identity.jwt.client.extension.dto.JWTConfig;
@@ -43,9 +43,10 @@ import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+;
 
 /**
  * this class represents an implementation of Token Client which is based on JWT
@@ -69,7 +70,7 @@ public class JWTClient {
 			throws JWTClientException {
 		List<NameValuePair> params = new ArrayList<>();
 		params.add(new BasicNameValuePair(JWTConstants.GRANT_TYPE_PARAM_NAME, jwtConfig.getJwtGrantType()));
-		String assertion = JWTClientUtil.generateSignedJWTAssertion(username, jwtConfig, isDefaultJWTClient);
+		String assertion = JWTClientUtil.generateSignedJWTAssertion(username, jwtConfig, isDefaultJWTClient, false);
 		if (assertion == null) {
 			throw new JWTClientException("JWT is not configured properly for user : " + username);
 		}
@@ -84,7 +85,7 @@ public class JWTClient {
             throws JWTClientException {
         List<NameValuePair> params = new ArrayList<>();
         params.add(new BasicNameValuePair(JWTConstants.GRANT_TYPE_PARAM_NAME, jwtConfig.getJwtGrantType()));
-        String assertion = JWTClientUtil.generateSignedJWTAssertion(username, jwtConfig, isDefaultJWTClient);
+        String assertion = JWTClientUtil.generateSignedJWTAssertion(username, jwtConfig, isDefaultJWTClient, false);
         if (assertion == null) {
             throw new JWTClientException("JWT is not configured properly for user : " + username);
         }
@@ -104,7 +105,7 @@ public class JWTClient {
 			throws JWTClientException {
 		List<NameValuePair> params = new ArrayList<>();
 		params.add(new BasicNameValuePair(JWTConstants.GRANT_TYPE_PARAM_NAME, jwtConfig.getJwtGrantType()));
-		String assertion = JWTClientUtil.generateSignedJWTAssertion(username, jwtConfig, isDefaultJWTClient);
+		String assertion = JWTClientUtil.generateSignedJWTAssertion(username, jwtConfig, isDefaultJWTClient, false);
 		if (assertion == null) {
 			throw new JWTClientException("JWT is not configured properly for user : " + username);
 		}
@@ -188,13 +189,16 @@ public class JWTClient {
     }
 
     public String getJwtToken(String username) throws JWTClientException {
-		return JWTClientUtil.generateSignedJWTAssertion(username, jwtConfig, isDefaultJWTClient);
+		return JWTClientUtil.generateSignedJWTAssertion(username, jwtConfig, isDefaultJWTClient, false);
 	}
 
     public String getJwtToken(String username, Map<String, String> claims) throws JWTClientException {
-        return JWTClientUtil.generateSignedJWTAssertion(username, jwtConfig, isDefaultJWTClient, claims);
+        return JWTClientUtil.generateSignedJWTAssertion(username, jwtConfig, isDefaultJWTClient, claims, false);
     }
 
+	public String getJwtToken(String username, Map<String, String> claims, boolean isTenantMode) throws JWTClientException {
+		return JWTClientUtil.generateSignedJWTAssertion(username, jwtConfig, isDefaultJWTClient, claims, isTenantMode);
+	}
 }
 
 

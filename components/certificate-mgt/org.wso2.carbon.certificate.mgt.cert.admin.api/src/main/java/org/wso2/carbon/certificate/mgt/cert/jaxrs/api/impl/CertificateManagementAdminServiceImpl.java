@@ -1,3 +1,21 @@
+/*
+ * Copyright (c) 2016-2017, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *
+ * WSO2 Inc. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
 package org.wso2.carbon.certificate.mgt.cert.jaxrs.api.impl;
 
 import org.apache.commons.logging.Log;
@@ -6,7 +24,7 @@ import org.wso2.carbon.certificate.mgt.cert.jaxrs.api.CertificateManagementAdmin
 import org.wso2.carbon.certificate.mgt.cert.jaxrs.api.beans.CertificateList;
 import org.wso2.carbon.certificate.mgt.cert.jaxrs.api.beans.EnrollmentCertificate;
 import org.wso2.carbon.certificate.mgt.cert.jaxrs.api.beans.ErrorResponse;
-import org.wso2.carbon.certificate.mgt.cert.jaxrs.api.beans.ValidationResponce;
+import org.wso2.carbon.certificate.mgt.cert.jaxrs.api.beans.ValidationResponse;
 import org.wso2.carbon.certificate.mgt.cert.jaxrs.api.util.CertificateMgtAPIUtils;
 import org.wso2.carbon.certificate.mgt.cert.jaxrs.api.util.RequestValidationUtil;
 import org.wso2.carbon.certificate.mgt.core.dto.CertificateResponse;
@@ -232,30 +250,41 @@ public class CertificateManagementAdminServiceImpl implements CertificateManagem
                     deviceIdentifier.setId(challengeToken);
                     deviceIdentifier.setType(DeviceManagementConstants.MobileDeviceTypes.MOBILE_DEVICE_TYPE_IOS);
                     TenantedDeviceWrapper tenantedDeviceWrapper = scepManager.getValidatedDevice(deviceIdentifier);
-//
-//                    var claims = {"http://wso2.org/claims/enduserTenantId": adminUserTenantId,
-//                            "http://wso2.org/claims/enduser": adminUsername};
 
                     Map<String, String> claims = new HashMap<>();
 
-                    claims.put("http://wso2.org/claims/enduserTenantId", String.valueOf(tenantedDeviceWrapper.getTenantId()));
-                    claims.put("http://wso2.org/claims/enduser", tenantedDeviceWrapper.getDevice().getEnrolmentInfo().getOwner());
-                    claims.put("http://wso2.org/claims/deviceIdentifier", tenantedDeviceWrapper.getDevice().getDeviceIdentifier());
+                    claims.put("http://wso2.org/claims/enduserTenantId",
+                            String.valueOf(tenantedDeviceWrapper.getTenantId()));
+                    claims.put("http://wso2.org/claims/enduser",
+                            tenantedDeviceWrapper.getDevice().getEnrolmentInfo().getOwner() + "@"
+                                    + tenantedDeviceWrapper.getTenantDomain());
+                    claims.put("http://wso2.org/claims/deviceIdentifier",
+                            tenantedDeviceWrapper.getDevice().getDeviceIdentifier());
                     claims.put("http://wso2.org/claims/deviceIdType", tenantedDeviceWrapper.getDevice().getType());
 
-                    JWTClientManagerService jwtClientManagerService = CertificateMgtAPIUtils.getJwtClientManagerService();
-                    String jwdToken = jwtClientManagerService.getJWTClient().getJwtToken(
-                            tenantedDeviceWrapper.getDevice().getEnrolmentInfo().getOwner(), claims);
-
-                    ValidationResponce validationResponce = new ValidationResponce();
-                    validationResponce.setDeviceId(challengeToken);
-                    validationResponce.setDeviceType(DeviceManagementConstants.MobileDeviceTypes.MOBILE_DEVICE_TYPE_IOS);
-                    validationResponce.setJWTToken(jwdToken);
-                    validationResponce.setTenantId(tenantedDeviceWrapper.getTenantId());
-
-                    if (tenantedDeviceWrapper != null) {
-                        return Response.status(Response.Status.OK).entity(validationResponce).build();
+                    String jwdToken;
+                    try {
+                        PrivilegedCarbonContext.startTenantFlow();
+                        PrivilegedCarbonContext.getThreadLocalCarbonContext()
+                                .setTenantId(tenantedDeviceWrapper.getTenantId());
+                        PrivilegedCarbonContext.getThreadLocalCarbonContext()
+                                .setTenantDomain(tenantedDeviceWrapper.getTenantDomain());
+                        JWTClientManagerService jwtClientManagerService = CertificateMgtAPIUtils
+                                .getJwtClientManagerService();
+                        jwdToken = jwtClientManagerService.getJWTClient()
+                                .getJwtToken(tenantedDeviceWrapper.getDevice().getEnrolmentInfo().getOwner(), claims,
+                                        true);
+                    } finally {
+                        PrivilegedCarbonContext.endTenantFlow();
                     }
+
+                    ValidationResponse validationResponse = new ValidationResponse();
+                    validationResponse.setDeviceId(challengeToken);
+                    validationResponse.setDeviceType(DeviceManagementConstants.MobileDeviceTypes.MOBILE_DEVICE_TYPE_IOS);
+                    validationResponse.setJWTToken(jwdToken);
+                    validationResponse.setTenantId(tenantedDeviceWrapper.getTenantId());
+
+                    return Response.status(Response.Status.OK).entity(validationResponse).build();
                 }
             }
 

@@ -23,6 +23,7 @@ import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.PaginationRequest;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Activity;
 import org.wso2.carbon.device.mgt.common.operation.mgt.ActivityStatus;
+import org.wso2.carbon.device.mgt.common.operation.mgt.OperationMapping;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationResponse;
 import org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOException;
@@ -37,6 +38,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -135,7 +137,7 @@ public class OracleOperationDAOImpl extends GenericOperationDAOImpl {
 
     @Override
     public void updateEnrollmentOperationsStatus(int enrolmentId, String operationCode,
-            Operation.Status existingStatus, Operation.Status newStatus) throws OperationManagementDAOException {
+                                                 Operation.Status existingStatus, Operation.Status newStatus) throws OperationManagementDAOException {
         PreparedStatement stmt = null;
         ResultSet rs = null;
         try {
@@ -360,5 +362,42 @@ public class OracleOperationDAOImpl extends GenericOperationDAOImpl {
             OperationManagementDAOUtil.cleanupResources(stmt, rs);
         }
         return 0;
+    }
+
+    @Override
+    public List<OperationMapping> getOperationMappingsByStatus(Operation.Status opStatus, Operation.PushStatus pushStatus,
+                                                               int limit) throws OperationManagementDAOException {
+
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        OperationMapping operationMapping;
+        List<OperationMapping> operationMappings = new LinkedList<>();
+        try {
+            Connection conn = OperationManagementDAOFactory.getConnection();
+            String sql = "SELECT op_mappings.ENROLMENT_ID, op_mappings.OPERATION_ID, d_type.NAME ,d.TENANT_ID FROM " +
+                    "DM_DEVICE d, DM_ENROLMENT_OP_MAPPING op_mappings, DM_DEVICE_TYPE d_type  WHERE op_mappings" +
+                    ".STATUS = '?' AND op_mappings.PUSH_NOTIFICATION_STATUS = '?' AND d.DEVICE_TYPE_ID = d_type.ID " +
+                    "AND d.ID=op_mappings.ENROLMENT_ID AND ROWNUM <= ? ORDER BY op_mappings.OPERATION_ID";
+
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, opStatus.toString());
+            stmt.setString(2, pushStatus.toString());
+            stmt.setInt(3, limit);
+            rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                operationMapping = new OperationMapping();
+                operationMapping.setOperationId(rs.getInt("OPERATION_ID"));
+                operationMapping.setDeviceIdentifier(new DeviceIdentifier(String.valueOf(rs.getInt("ENROLMENT_ID")),
+                        rs.getString("NAME")));
+                operationMapping.setTenantId(rs.getInt("TENANT_ID"));
+                operationMappings.add(operationMapping);
+            }
+        } catch (SQLException e) {
+            throw new OperationManagementDAOException("SQL error while getting operation mappings from database. ", e);
+        } finally {
+            OperationManagementDAOUtil.cleanupResources(stmt, rs);
+        }
+        return operationMappings;
     }
 }

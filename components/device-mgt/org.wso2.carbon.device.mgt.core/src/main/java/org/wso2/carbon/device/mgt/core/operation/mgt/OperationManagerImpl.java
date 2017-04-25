@@ -145,6 +145,11 @@ public class OperationManagerImpl implements OperationManager {
                 int operationId = this.lookupOperationDAO(operation).addOperation(operationDto);
                 boolean isScheduledOperation = this.isTaskScheduledOperation(operation, deviceIds);
                 boolean isNotRepeated = false;
+                boolean isScheduled = false;
+                if (notificationStrategy != null) {
+                    isScheduled = notificationStrategy.getConfig().isScheduled();
+                }
+
                 boolean hasExistingTaskOperation;
                 int enrolmentId;
                 if (org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Control.NO_REPEAT == operationDto.
@@ -161,7 +166,7 @@ public class OperationManagerImpl implements OperationManager {
                     if (isScheduledOperation) {
                         hasExistingTaskOperation = operationDAO.updateTaskOperation(enrolmentId, operationCode);
                         if (!hasExistingTaskOperation) {
-                            operationMappingDAO.addOperationMapping(operationId, enrolmentId);
+                            operationMappingDAO.addOperationMapping(operationId, enrolmentId, isScheduled);
                         }
                     } else if (isNotRepeated) {
                         operationDAO.updateEnrollmentOperationsStatus(enrolmentId, operationCode,
@@ -169,17 +174,22 @@ public class OperationManagerImpl implements OperationManager {
                                                                               Operation.Status.PENDING,
                                                                       org.wso2.carbon.device.mgt.core.dto.operation.mgt.
                                                                               Operation.Status.REPEATED);
-                        operationMappingDAO.addOperationMapping(operationId, enrolmentId);
+                        operationMappingDAO.addOperationMapping(operationId, enrolmentId, isScheduled);
                     } else {
-                        operationMappingDAO.addOperationMapping(operationId, enrolmentId);
+                        operationMappingDAO.addOperationMapping(operationId, enrolmentId, isScheduled);
                     }
-                    if (notificationStrategy != null) {
+                    if (notificationStrategy != null && !notificationStrategy.getConfig().isScheduled()) {
                         try {
                             notificationStrategy.execute(new NotificationContext(deviceId, operation));
+                            operationMappingDAO.updateOperationMapping(operationId, enrolmentId, org.wso2.carbon
+                                    .device.mgt.core.dto.operation.mgt.Operation.PushStatus.COMPLETED);
                         } catch (PushNotificationExecutionFailedException e) {
                             log.error("Error occurred while sending push notifications to " +
                                       deviceId.getType() + " device carrying id '" +
                                       deviceId + "'", e);
+                            // Reschedule if push notification failed.
+                            operationMappingDAO.updateOperationMapping(operationId, enrolmentId, org.wso2.carbon
+                                    .device.mgt.core.dto.operation.mgt.Operation.PushStatus.SCHEDULED);
                         }
                     }
                 }

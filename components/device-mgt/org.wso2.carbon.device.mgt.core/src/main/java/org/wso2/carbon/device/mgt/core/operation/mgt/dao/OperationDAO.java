@@ -20,6 +20,7 @@ package org.wso2.carbon.device.mgt.core.operation.mgt.dao;
 
 import org.wso2.carbon.device.mgt.common.PaginationRequest;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Activity;
+import org.wso2.carbon.device.mgt.common.operation.mgt.OperationMapping;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationResponse;
 import org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation;
 
@@ -79,5 +80,8 @@ public interface OperationDAO {
     int getActivityCountUpdatedAfter(long timestamp) throws OperationManagementDAOException;
 
     boolean resetAttemptCount(int enrolmentId) throws OperationManagementDAOException;
+
+    List<OperationMapping> getOperationMappingsByStatus(Operation.Status opStatus, Operation.PushStatus pushStatus,
+                                                        int limit) throws OperationManagementDAOException;;
 
 }

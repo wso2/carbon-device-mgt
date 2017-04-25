@@ -86,4 +86,12 @@ public final class DeviceManagementConstants {
         public static final String ACTIVITY = "ACTIVITY_";
     }
 
+    public static final class PushNotifications {
+        private PushNotifications() {
+            throw new AssertionError();
+        }
+        public static final int DEFAULT_BATCH_DELAY_MILLS = 60000;
+        public static final int DEFAULT_BATCH_SIZE = 1000;
+    }
+
 }

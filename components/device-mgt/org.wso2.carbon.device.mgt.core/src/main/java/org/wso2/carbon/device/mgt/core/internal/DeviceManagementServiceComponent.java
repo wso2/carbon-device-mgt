@@ -48,6 +48,7 @@ import org.wso2.carbon.device.mgt.core.operation.mgt.OperationManagerImpl;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.permission.mgt.PermissionManagerServiceImpl;
 import org.wso2.carbon.device.mgt.core.push.notification.mgt.PushNotificationProviderRepository;
+import org.wso2.carbon.device.mgt.core.push.notification.mgt.task.PushNotificationSchedulerTask;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderServiceImpl;
 import org.wso2.carbon.device.mgt.core.service.GroupManagementProviderService;
@@ -62,6 +63,11 @@ import org.wso2.carbon.utils.ConfigurationContextService;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @scr.component name="org.wso2.carbon.device.manager" immediate="true"
@@ -151,7 +157,8 @@ public class DeviceManagementServiceComponent {
             this.initOperationsManager();
 
             PushNotificationProviderRepository pushNotificationRepo = new PushNotificationProviderRepository();
-            List<String> pushNotificationProviders = config.getPushNotificationProviders();
+            List<String> pushNotificationProviders = config.getPushNotificationConfiguration()
+                    .getPushNotificationProviders();
             if (pushNotificationProviders != null) {
                 for (String pushNoteProvider : pushNotificationProviders) {
                     pushNotificationRepo.addProvider(pushNoteProvider);
@@ -178,6 +185,24 @@ public class DeviceManagementServiceComponent {
             notifyStartupListeners();
             if (log.isDebugEnabled()) {
                 log.debug("Device management core bundle has been successfully initialized");
+            }
+            // Start Push Notification Scheduler Task
+            if (config.getPushNotificationConfiguration().isSchedulerTaskEnabled()) {
+                if (config.getPushNotificationConfiguration().getSchedulerBatchSize() <= 0) {
+                    log.error("Push notification batch size cannot be 0 or less than 0. Setting default batch size to:" +
+                            " " + DeviceManagementConstants.PushNotifications.DEFAULT_BATCH_SIZE);
+                    config.getPushNotificationConfiguration().setSchedulerBatchSize(DeviceManagementConstants.PushNotifications
+                            .DEFAULT_BATCH_SIZE);
+                }
+                if (config.getPushNotificationConfiguration().getSchedulerBatchDelayMills() <= 0) {
+                    log.error("Push notification batch delay cannot be 0 or less than 0. Setting default batch delay " +
+                            "milliseconds to" + DeviceManagementConstants.PushNotifications.DEFAULT_BATCH_DELAY_MILLS);
+                    config.getPushNotificationConfiguration().setSchedulerBatchDelayMills(DeviceManagementConstants.PushNotifications
+                            .DEFAULT_BATCH_DELAY_MILLS);
+                }
+                ScheduledExecutorService pushNotificationExecutor = Executors.newScheduledThreadPool(1);
+                pushNotificationExecutor.schedule(new PushNotificationSchedulerTask(), config.getPushNotificationConfiguration()
+                        .getSchedulerBatchDelayMills(), TimeUnit.MILLISECONDS);
             }
         } catch (Throwable e) {
             log.error("Error occurred while initializing device management core bundle", e);
@@ -269,7 +294,7 @@ public class DeviceManagementServiceComponent {
         try {
             if (log.isDebugEnabled()) {
                 log.debug("Setting Device Management Service Provider: '" +
-                                  deviceManagementService.getType() + "'");
+                        deviceManagementService.getType() + "'");
             }
             synchronized (LOCK) {
                 deviceManagers.add(deviceManagementService);
@@ -278,10 +303,10 @@ public class DeviceManagementServiceComponent {
                 }
             }
             log.info("Device Type deployed successfully : " + deviceManagementService.getType() + " for tenant "
-                             + deviceManagementService.getProvisioningConfig().getProviderTenantDomain());
+                    + deviceManagementService.getProvisioningConfig().getProviderTenantDomain());
         } catch (Throwable e) {
             log.error("Failed to register device management service for device type" + deviceManagementService.getType() +
-                            " for tenant " + deviceManagementService.getProvisioningConfig().getProviderTenantDomain(), e);
+                    " for tenant " + deviceManagementService.getProvisioningConfig().getProviderTenantDomain(), e);
         }
     }
 

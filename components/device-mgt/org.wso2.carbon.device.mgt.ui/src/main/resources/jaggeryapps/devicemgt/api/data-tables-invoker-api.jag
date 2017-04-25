@@ -62,6 +62,7 @@ if (uriMatcher.match("/{context}/api/data-tables/invoker")) {
             function (backendResponse) {
                 response["status"] = backendResponse["status"];
                 response["content"] =  utility.encodeJson(backendResponse["responseText"]);
+                response["contentType"] = "application/json";
             }
     );
 }

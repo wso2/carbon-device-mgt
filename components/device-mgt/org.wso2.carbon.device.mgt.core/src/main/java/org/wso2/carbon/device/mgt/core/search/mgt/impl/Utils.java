@@ -103,14 +103,6 @@ public class Utils {
         return bool;
     }
 
-    public static String getConvertedValue(String column, String value) {
-
-        if (checkColumnType(column)) {
-            return "\'" + value + "\'";
-        } else return value;
-
-    }
-
     public static Map<String, String> getDeviceDetailsColumnNames() {
         return genericColumnsMap;
     }

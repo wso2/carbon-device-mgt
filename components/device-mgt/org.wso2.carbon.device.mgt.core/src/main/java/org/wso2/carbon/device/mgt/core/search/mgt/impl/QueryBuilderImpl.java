@@ -145,10 +145,10 @@ public class QueryBuilderImpl implements QueryBuilder {
                         ValueType type = new ValueType();
                         if (Utils.checkColumnType(con.getKey())) {
                             type.setColumnType(ValueType.columnType.STRING);
-                            type.setStringValue(Utils.getConvertedValue(con.getKey(), con.getValue()));
+                            type.setStringValue(con.getValue());
                         } else {
                             type.setColumnType(ValueType.columnType.INTEGER);
-                            type.setIntValue(Integer.parseInt(Utils.getConvertedValue(con.getKey(), con.getValue())));
+                            type.setIntValue(Integer.parseInt(con.getValue()));
                         }
                         valueType[x] = type;
                         x++;
@@ -193,10 +193,10 @@ public class QueryBuilderImpl implements QueryBuilder {
                         ValueType type = new ValueType();
                         if (Utils.checkColumnType(con.getKey())) {
                             type.setColumnType(ValueType.columnType.STRING);
-                            type.setStringValue(Utils.getConvertedValue(con.getKey(), con.getValue()));
+                            type.setStringValue(con.getValue());
                         } else {
                             type.setColumnType(ValueType.columnType.INTEGER);
-                            type.setIntValue(Integer.parseInt(Utils.getConvertedValue(con.getKey(), con.getValue())));
+                            type.setIntValue(Integer.parseInt(con.getValue()));
                         }
                         valueType[x] = type;
                         x++;

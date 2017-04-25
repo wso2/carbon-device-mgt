@@ -50,17 +50,17 @@ function onRequest(context) {
                 var policyOperationsTemplateSrc = policyWizardSrc + "/public/templates/" + deviceType + "-policy-operations.hbs";
                 if (new File(policyOperationsTemplateSrc).isExists()) {
                     content["template"] = "/public/cdmf.unit.device.type." + deviceType +
-                                          ".policy-wizard/templates/" + deviceType + "-policy-operations.hbs";
+                        ".policy-wizard/templates/" + deviceType + "-policy-operations.hbs";
                 }
                 var policyOperationsScriptSrc = policyWizardSrc + "/public/js/" + deviceType + "-policy-operations.js";
                 if (new File(policyOperationsScriptSrc).isExists()) {
                     content["script"] = "/public/cdmf.unit.device.type." + deviceType +
-                                        ".policy-wizard/js/" + deviceType + "-policy-operations.js";;
+                        ".policy-wizard/js/" + deviceType + "-policy-operations.js";;
                 }
                 var policyOperationsStylesSrc = policyWizardSrc + "/public/css/" + deviceType + "-policy-operations.css";
                 if (new File(policyOperationsStylesSrc).isExists()) {
                     content["style"] = "/public/cdmf.unit.device.type." + deviceType +
-                                       ".policy-wizard/css/" + deviceType + "-policy-operations.css";;
+                        ".policy-wizard/css/" + deviceType + "-policy-operations.css";;
                 }
                 types["types"].push(content);
             }
@@ -74,6 +74,8 @@ function onRequest(context) {
         types["roles"] = roles["content"];
     }
     types["groups"] = groupModule.getGroups();
-    
+    var devicemgtProps = require("/app/modules/conf-reader/main.js")["conf"];
+    types["isCloud"] = devicemgtProps.isCloud;
+
     return types;
 }

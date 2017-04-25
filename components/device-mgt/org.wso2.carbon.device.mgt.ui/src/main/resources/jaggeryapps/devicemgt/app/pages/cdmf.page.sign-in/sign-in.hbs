@@ -39,6 +39,8 @@
                     </div>
                     <div class="form-group">
                         <label for="password">Password *</label>
+                        <!-- Below line is added to stop autocomplete in firefox -->
+                        <input type="password" style="display:none">
                         <input type="password" name="password" class="form-control" autocomplete="off"
                                placeholder="Enter your password" required="required" />
                     </div>

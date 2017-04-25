@@ -436,6 +436,7 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
                     new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
         }
         deviceList.setList(devices);
+        deviceList.setCount(devices.size());
         return Response.status(Response.Status.OK).entity(deviceList).build();
     }
 

@@ -67,8 +67,6 @@ function onRequest(context) {
         }
     }
 
-    var user = userModule.getCarbonUser();
-    types["user"] = {username: user.username, domain: user.domain, tenantId: user.tenantId};
     var roles = userModule.getRoles();
     if (roles["status"] == "success") {
         types["roles"] = roles["content"];

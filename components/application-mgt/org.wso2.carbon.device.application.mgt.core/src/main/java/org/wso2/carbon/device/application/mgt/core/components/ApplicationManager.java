@@ -16,12 +16,17 @@
  *   under the License.
  *
  */
-package org.wso2.carbon.application.mgt.core.dao;
+package org.wso2.carbon.device.application.mgt.core.components;
 
-import org.wso2.carbon.application.mgt.core.dto.Application;
+import org.wso2.carbon.device.application.mgt.core.dto.Application;
 
-public interface ApplicationDAO {
+import java.util.ArrayList;
+import java.util.List;
+
+public interface ApplicationManager {
 
     public void createApplication(Application application);
+
+    public List<Application> getApplications();
 
 }

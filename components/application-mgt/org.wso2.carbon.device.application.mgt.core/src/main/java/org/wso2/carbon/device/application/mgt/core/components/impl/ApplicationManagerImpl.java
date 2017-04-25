@@ -1,0 +1,75 @@
+/*
+ *   Copyright (c) 2017, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *
+ *   WSO2 Inc. licenses this file to you under the Apache License,
+ *   Version 2.0 (the "License"); you may not use this file except
+ *   in compliance with the License.
+ *   You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *   Unless required by applicable law or agreed to in writing,
+ *   software distributed under the License is distributed on an
+ *   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ *   KIND, either express or implied.  See the License for the
+ *   specific language governing permissions and limitations
+ *   under the License.
+ *
+ */
+package org.wso2.carbon.device.application.mgt.core.components.impl;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.device.application.mgt.core.components.ApplicationManager;
+import org.wso2.carbon.device.application.mgt.core.dao.ApplicationManagementDAO;
+import org.wso2.carbon.device.application.mgt.core.dao.ApplicationManagementDAOException;
+import org.wso2.carbon.device.application.mgt.core.dao.ApplicationManagementDAOImpl;
+import org.wso2.carbon.device.application.mgt.core.dto.Application;
+import org.wso2.carbon.device.application.mgt.core.internal.ApplicationManagementDataHolder;
+import org.wso2.carbon.device.application.mgt.core.util.ConnectionManagerUtil;
+
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
+public class ApplicationManagerImpl implements ApplicationManager {
+
+    private static final Log log = LogFactory.getLog(ApplicationManagerImpl.class);
+
+
+    private static ApplicationManagerImpl applicationManager = new ApplicationManagerImpl();
+
+    private ApplicationManagerImpl(){
+
+    }
+
+    public static ApplicationManagerImpl getInstance(){
+        return applicationManager;
+    }
+
+
+    @Override
+    public void createApplication(Application application) {
+
+    }
+
+    @Override
+    public List<Application> getApplications() {
+        ApplicationManagementDataHolder dataHolder = ApplicationManagementDataHolder.getInstance();
+        try {
+            ConnectionManagerUtil.openConnection();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        ApplicationManagementDAO applicationManagementDAO = dataHolder.getApplicationManagementDAO();
+        List<Application> applications = null;
+        try {
+            applications = applicationManagementDAO.getApplications();
+        } catch (ApplicationManagementDAOException e) {
+            log.error(e);
+        }
+
+        ConnectionManagerUtil.closeConnection();
+        return applications;
+    }
+}

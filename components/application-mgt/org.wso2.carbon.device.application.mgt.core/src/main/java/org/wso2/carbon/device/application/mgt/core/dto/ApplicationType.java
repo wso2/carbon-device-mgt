@@ -16,15 +16,36 @@
  *   under the License.
  *
  */
-package org.wso2.carbon.application.mgt.core.util;
+package org.wso2.carbon.device.application.mgt.core.dto;
 
-public class AppManagementPlugin {
+public class ApplicationType {
 
-    public void registerPlugins(){
+    private int id;
+    private String name;
+    private String code;
 
+    public int getId() {
+        return id;
     }
 
-    public void unregisterPlugins(){
-
+    public void setId(int id) {
+        this.id = id;
     }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
 }

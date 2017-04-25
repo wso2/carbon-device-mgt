@@ -16,9 +16,27 @@
  *   under the License.
  *
  */
-package org.wso2.carbon.device.application.mgt.api.service.api;
+package org.wso2.carbon.device.application.mgt.core.exception;
 
-public interface ApplicationManagementService {
+public class ApplicationManagerException extends Exception {
 
+    String message;
 
+    public ApplicationManagerException(String message){
+        this.message = message;
+    }
+
+    @Override
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    @Override
+    public String toString() {
+        return super.toString();
+    }
 }

@@ -16,19 +16,19 @@
  *   under the License.
  *
  */
-package org.wso2.carbon.application.mgt.core.dto;
+package org.wso2.carbon.device.application.mgt.core.dto;
 
 import java.util.List;
 
 public class Application{
 
     private int id;
-
     private String uuId;
-
-    private String type;
-
+    private String name;
+    private String description;
+    private ApplicationType applicationType;
     private List<String> properties;
+
 
     public int getId() {
         return id;
@@ -46,12 +46,28 @@ public class Application{
         this.uuId = uuId;
     }
 
-    public String getType() {
-        return type;
+    public String getName() {
+        return name;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public ApplicationType getApplicationType() {
+        return applicationType;
+    }
+
+    public void setApplicationType(ApplicationType applicationType) {
+        this.applicationType = applicationType;
     }
 
     public List<String> getProperties() {

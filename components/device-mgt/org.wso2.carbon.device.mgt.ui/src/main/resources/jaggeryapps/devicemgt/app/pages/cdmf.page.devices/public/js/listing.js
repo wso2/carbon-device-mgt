@@ -323,11 +323,14 @@ function loadDevices(searchType, searchParam) {
                 var deviceType = row.deviceType;
                 var deviceIdentifier = row.deviceIdentifier;
                 var html = '<span></span>';
+                var statURL = $("#device-listing").data("analitics-url");
                 if (status != 'REMOVED') {
                     html = '';
 
                     if (analyticsEnabled(row.deviceType)) {
-                        html += '<a href="' + context + '/device/' + deviceType + '/analytics?deviceId=' +
+
+
+                        html += '<a href="' + statURL  +
                             deviceIdentifier + '&deviceName=' + row.name + '" ' + 'data-click-event="remove-form"' +
                             ' class="btn padding-reduce-on-grid-view" data-placement="top" data-toggle="tooltip" data-original-title="Analytics"><span class="fw-stack">' +
                             '<i class="fw fw-circle-outline fw-stack-2x"></i><i class="fw fw-statistics fw-stack-1x"></i></span>' +

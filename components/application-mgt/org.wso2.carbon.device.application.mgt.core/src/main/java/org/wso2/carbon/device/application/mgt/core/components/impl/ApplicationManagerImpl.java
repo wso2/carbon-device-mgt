@@ -25,6 +25,7 @@ import org.wso2.carbon.device.application.mgt.core.dao.ApplicationManagementDAO;
 import org.wso2.carbon.device.application.mgt.core.dao.ApplicationManagementDAOException;
 import org.wso2.carbon.device.application.mgt.core.dao.ApplicationManagementDAOImpl;
 import org.wso2.carbon.device.application.mgt.core.dto.Application;
+import org.wso2.carbon.device.application.mgt.core.exception.ApplicationManagerException;
 import org.wso2.carbon.device.application.mgt.core.internal.ApplicationManagementDataHolder;
 import org.wso2.carbon.device.application.mgt.core.util.ConnectionManagerUtil;
 
@@ -39,11 +40,11 @@ public class ApplicationManagerImpl implements ApplicationManager {
 
     private static ApplicationManagerImpl applicationManager = new ApplicationManagerImpl();
 
-    private ApplicationManagerImpl(){
+    private ApplicationManagerImpl() {
 
     }
 
-    public static ApplicationManagerImpl getInstance(){
+    public static ApplicationManagerImpl getInstance() {
         return applicationManager;
     }
 
@@ -54,21 +55,11 @@ public class ApplicationManagerImpl implements ApplicationManager {
     }
 
     @Override
-    public List<Application> getApplications() {
-        ApplicationManagementDataHolder dataHolder = ApplicationManagementDataHolder.getInstance();
-        try {
-            ConnectionManagerUtil.openConnection();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        ApplicationManagementDAO applicationManagementDAO = dataHolder.getApplicationManagementDAO();
+    public List<Application> getApplications() throws ApplicationManagerException {
+        ConnectionManagerUtil.openConnection();
+        ApplicationManagementDAO applicationManagementDAO = ApplicationManagementDataHolder.getInstance().getApplicationManagementDAO();
         List<Application> applications = null;
-        try {
-            applications = applicationManagementDAO.getApplications();
-        } catch (ApplicationManagementDAOException e) {
-            log.error(e);
-        }
-
+        applications = applicationManagementDAO.getApplications();
         ConnectionManagerUtil.closeConnection();
         return applications;
     }

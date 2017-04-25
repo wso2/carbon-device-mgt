@@ -56,7 +56,7 @@ public class ApplicationManagementUtil {
             return docBuilder.parse(file);
         } catch (Exception e) {
             throw new ApplicationManagerException("Error occurred while parsing file, while converting " +
-                    "to a org.w3c.dom.Document : " + e.getMessage());
+                    "to a org.w3c.dom.Document : ", e);
         }
     }
 }

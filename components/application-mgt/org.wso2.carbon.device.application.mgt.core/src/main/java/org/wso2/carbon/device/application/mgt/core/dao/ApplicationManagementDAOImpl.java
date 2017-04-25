@@ -81,7 +81,7 @@ public class ApplicationManagementDAOImpl implements ApplicationManagementDAO {
             }
 
         } catch (SQLException e) {
-            throw new ApplicationManagementDAOException("Error occurred while getting application List");
+            throw new ApplicationManagementDAOException("Error occurred while getting application List", e);
         } finally {
             ApplicationManagementDAOUtil.cleanupResources(stmt, rs);
         }

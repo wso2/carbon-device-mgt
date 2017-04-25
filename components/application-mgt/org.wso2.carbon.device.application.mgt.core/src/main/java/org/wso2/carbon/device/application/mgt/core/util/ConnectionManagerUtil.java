@@ -22,8 +22,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.application.mgt.core.config.datasource.DataSourceConfig;
 import org.wso2.carbon.device.application.mgt.core.config.datasource.JNDILookupDefinition;
+import org.wso2.carbon.device.application.mgt.core.exception.ApplicationManagerException;
 import org.wso2.carbon.device.application.mgt.core.exception.IllegalTransactionStateException;
-import org.wso2.carbon.device.application.mgt.core.exception.TransactionManagementException;
 
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
@@ -52,7 +52,7 @@ public class ConnectionManagerUtil {
         return currentConnection;
     }
 
-    public static void openConnection() throws SQLException {
+    public static void openConnection() throws ApplicationManagerException {
         Connection conn = currentConnection.get();
         if (conn != null) {
             throw new IllegalTransactionStateException("A transaction is already active within the context of " +
@@ -63,14 +63,14 @@ public class ConnectionManagerUtil {
             conn = dataSource.getConnection();
         } catch (SQLException e) {
             currentTxState.set(TxState.CONNECTION_NOT_BORROWED);
-            throw e;
+            throw new ApplicationManagerException(e.getMessage(), e);
         }
         currentConnection.set(conn);
         currentTxState.set(TxState.CONNECTION_BORROWED);
     }
 
 
-    public static void beginTransaction() throws TransactionManagementException {
+    public static void beginTransaction() throws ApplicationManagerException {
         Connection conn = currentConnection.get();
         if (conn != null) {
             throw new IllegalTransactionStateException("A transaction is already active within the context of " +
@@ -80,7 +80,7 @@ public class ConnectionManagerUtil {
         try {
             conn = dataSource.getConnection();
         } catch (SQLException e) {
-            throw new TransactionManagementException("Error occurred while retrieving a data source connection", e);
+            throw new ApplicationManagerException("Error occurred while retrieving a data source connection", e);
         }
 
         try {
@@ -93,7 +93,7 @@ public class ConnectionManagerUtil {
                         "Transaction has ended pre-maturely", e1);
             }
             currentTxState.set(TxState.CONNECTION_CLOSED);
-            throw new TransactionManagementException("Error occurred while setting auto-commit to false", e);
+            throw new ApplicationManagerException("Error occurred while setting auto-commit to false", e);
         }
         currentConnection.set(conn);
         currentTxState.set(TxState.CONNECTION_BORROWED);

@@ -20,6 +20,7 @@ package org.wso2.carbon.device.mgt.jaxrs.service.impl.admin;
 
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.client.Options;
+import org.apache.axis2.client.Stub;
 import org.apache.axis2.java.security.SSLProtocolSocketFactory;
 import org.apache.axis2.transport.http.HTTPConstants;
 import org.apache.commons.codec.binary.Base64;
@@ -119,14 +120,14 @@ public class DeviceTypePublisherAdminServiceImpl implements DeviceTypePublisherA
     private static final String IOT_MGT_PORT = "${iot.manager.https.port}";
     private static final String IOT_MGT_HOST_NAME = "${iot.manager.host}";
     private static final String DAS_URL = DEFAULT_HTTP_PROTOCOL + "://" + DAS_HOST_NAME
-            + ":" + DAS_PORT + "/services/CarbonAppUploader" + "/";
+            + ":" + DAS_PORT + "/services/CarbonAppUploader/";
     private static final String DAS_EVENT_RECEIVER_EP = DEFAULT_HTTP_PROTOCOL + "://" + DAS_HOST_NAME
-            + ":" + DAS_PORT + "/services/EventReceiverAdminService" + "/";
+            + ":" + DAS_PORT + "/services/EventReceiverAdminService/";
     private static final String DAS_EVENT_STREAM_EP = DEFAULT_HTTP_PROTOCOL + "://" + DAS_HOST_NAME
-            + ":" + DAS_PORT + "/services/EventStreamAdminService" + "/";
+            + ":" + DAS_PORT + "/services/EventStreamAdminService/";
 
     private static final String IOT_MGT_URL = DEFAULT_HTTP_PROTOCOL + "://" + IOT_MGT_HOST_NAME
-            + ":" + IOT_MGT_PORT + "/services/CarbonAppUploader" + "/";
+            + ":" + IOT_MGT_PORT + "/services/CarbonAppUploader/";
     private static final String MEDIA_TYPE_XML = "application/xml";
     private static final String DEVICE_MANAGEMENT_TYPE = "device_management";
     private static final String TENANT_DOMAIN_PROPERTY = "\\$\\{tenant-domain\\}";
@@ -165,16 +166,16 @@ public class DeviceTypePublisherAdminServiceImpl implements DeviceTypePublisherA
             httpHeader.setName(AUTHORIZATION_HEADER);
             httpHeader.setValue(authValue);
             list.add(httpHeader);//"https"
+
+            List<String> streamFileList = getStreamsList(type);
+            List<String> receiverFileList = getReceiversList(type);
+
             if (!tenantDomain.equals(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME)) {
-                List<String> streamFileList = getStreamsList(type);
                 if (streamFileList != null) {
                     publishDynamicEventStream(type, MultitenantConstants.SUPER_TENANT_DOMAIN_NAME, streamFileList);
                 }
-            }
-            List<String> receiverFileList = getReceiversList(type);
-            if(!tenantDomain.equals(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME)) {
                 if (receiverFileList != null) {
-                    publishDynamicEventReceivers(type, tenantDomain, receiverFileList);
+                    publishDynamicEventReceivers(type, MultitenantConstants.SUPER_TENANT_DOMAIN_NAME, receiverFileList);
                 }
             }
             if (deployAnalyticsCapp(type, list)){
@@ -182,7 +183,15 @@ public class DeviceTypePublisherAdminServiceImpl implements DeviceTypePublisherA
                         .entity("\"Error, Artifact does not exist.\"").build();
             }
             if (receiverFileList != null) {
-                publishDynamicEventReceivers(type, MultitenantConstants.SUPER_TENANT_DOMAIN_NAME, receiverFileList);
+                publishDynamicEventReceivers(type, tenantDomain, receiverFileList);
+            }
+            int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
+            Registry registry = DeviceMgtAPIUtils.getRegistryService().getConfigSystemRegistry(tenantId);
+            if (!registry.resourceExists(DEFAULT_RESOURCE_LOCATION + type + ".exist")) {
+                Resource resource = new ResourceImpl();
+                resource.setContent("</exist>");
+                resource.setMediaType(MEDIA_TYPE_XML);
+                registry.put(DEFAULT_RESOURCE_LOCATION + type + ".exist", resource);
             }
             return Response.status(Response.Status.CREATED).entity("\"OK. \\n Successfully uploaded the artifacts.\"")
                     .build();
@@ -209,52 +218,49 @@ public class DeviceTypePublisherAdminServiceImpl implements DeviceTypePublisherA
     }
 
     private boolean deployAnalyticsCapp(@PathParam("type") String type, List<Header> list) throws IOException, RegistryException {
-        File directory = new File(CAR_FILE_LOCATION + File.separator + type);
-        if (directory.isDirectory() && directory.exists()) {
-            UploadedFileItem[] uploadedFileItems = loadCappFromFileSystem(type);
-            if (uploadedFileItems.length > 0) {
-                CarbonAppUploaderStub carbonAppUploaderStub = new CarbonAppUploaderStub(Utils.replaceSystemProperty(
-                        IOT_MGT_URL));
-                Options appUploaderOptions = carbonAppUploaderStub._getServiceClient().getOptions();
-                if (appUploaderOptions == null) {
-                    appUploaderOptions = new Options();
-                }
-                appUploaderOptions.setProperty(HTTPConstants.HTTP_HEADERS, list);
-                appUploaderOptions.setProperty(HTTPConstants.CUSTOM_PROTOCOL_HANDLER
-                        , new Protocol(DEFAULT_HTTP_PROTOCOL, (ProtocolSocketFactory) new SSLProtocolSocketFactory
-                        (sslContext), Integer.parseInt(Utils.replaceSystemProperty(IOT_MGT_PORT))));
-
-                carbonAppUploaderStub._getServiceClient().setOptions(appUploaderOptions);
-                carbonAppUploaderStub.uploadApp(uploadedFileItems);
-
-                if (!DEVICE_MANAGEMENT_TYPE.equals(type.toLowerCase())) {
-                    carbonAppUploaderStub = new CarbonAppUploaderStub(Utils.replaceSystemProperty(DAS_URL));
-                    appUploaderOptions = carbonAppUploaderStub._getServiceClient().getOptions();
+        CarbonAppUploaderStub carbonAppUploaderStub = null;
+        try {
+            File directory = new File(CAR_FILE_LOCATION + File.separator + type);
+            if (directory.isDirectory() && directory.exists()) {
+                UploadedFileItem[] uploadedFileItems = loadCappFromFileSystem(type);
+                if (uploadedFileItems.length > 0) {
+                    carbonAppUploaderStub = new CarbonAppUploaderStub(Utils.replaceSystemProperty(
+                            IOT_MGT_URL));
+                    Options appUploaderOptions = carbonAppUploaderStub._getServiceClient().getOptions();
                     if (appUploaderOptions == null) {
                         appUploaderOptions = new Options();
                     }
                     appUploaderOptions.setProperty(HTTPConstants.HTTP_HEADERS, list);
                     appUploaderOptions.setProperty(HTTPConstants.CUSTOM_PROTOCOL_HANDLER
-                            , new Protocol(DEFAULT_HTTP_PROTOCOL
-                            , (ProtocolSocketFactory) new SSLProtocolSocketFactory(sslContext)
-                            , Integer.parseInt(Utils.replaceSystemProperty(DAS_PORT))));
+                            , new Protocol(DEFAULT_HTTP_PROTOCOL, (ProtocolSocketFactory) new SSLProtocolSocketFactory
+                            (sslContext), Integer.parseInt(Utils.replaceSystemProperty(IOT_MGT_PORT))));
 
                     carbonAppUploaderStub._getServiceClient().setOptions(appUploaderOptions);
                     carbonAppUploaderStub.uploadApp(uploadedFileItems);
+
+                    if (!DEVICE_MANAGEMENT_TYPE.equals(type.toLowerCase())) {
+                        carbonAppUploaderStub = new CarbonAppUploaderStub(Utils.replaceSystemProperty(DAS_URL));
+                        appUploaderOptions = carbonAppUploaderStub._getServiceClient().getOptions();
+                        if (appUploaderOptions == null) {
+                            appUploaderOptions = new Options();
+                        }
+                        appUploaderOptions.setProperty(HTTPConstants.HTTP_HEADERS, list);
+                        appUploaderOptions.setProperty(HTTPConstants.CUSTOM_PROTOCOL_HANDLER
+                                , new Protocol(DEFAULT_HTTP_PROTOCOL
+                                , (ProtocolSocketFactory) new SSLProtocolSocketFactory(sslContext)
+                                , Integer.parseInt(Utils.replaceSystemProperty(DAS_PORT))));
+
+                        carbonAppUploaderStub._getServiceClient().setOptions(appUploaderOptions);
+                        carbonAppUploaderStub.uploadApp(uploadedFileItems);
+                    }
                 }
-                int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
-                Registry registry = DeviceMgtAPIUtils.getRegistryService().getConfigSystemRegistry(tenantId);
-                if (!registry.resourceExists(DEFAULT_RESOURCE_LOCATION + type + ".exist")) {
-                    Resource resource = new ResourceImpl();
-                    resource.setContent("</exist>");
-                    resource.setMediaType(MEDIA_TYPE_XML);
-                    registry.put(DEFAULT_RESOURCE_LOCATION + type + ".exist", resource);
-                }
+            } else {
+                return true;
             }
-        } else {
-            return true;
+            return false;
+        } finally {
+            cleanup(carbonAppUploaderStub);
         }
-        return false;
     }
 
     @GET
@@ -283,8 +289,9 @@ public class DeviceTypePublisherAdminServiceImpl implements DeviceTypePublisherA
 
         PrivilegedCarbonContext.startTenantFlow();
         PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(tenantDomain, true);
+        EventReceiverAdminServiceStub receiverAdminServiceStub = null;
         try {
-            EventReceiverAdminServiceStub receiverAdminServiceStub = new EventReceiverAdminServiceStub
+            receiverAdminServiceStub = new EventReceiverAdminServiceStub
                     (Utils.replaceSystemProperty(DAS_EVENT_RECEIVER_EP));
             Options eventReciverOptions = receiverAdminServiceStub._getServiceClient().getOptions();
             if (eventReciverOptions == null) {
@@ -322,6 +329,7 @@ public class DeviceTypePublisherAdminServiceImpl implements DeviceTypePublisherA
                 receiverAdminServiceStub.deployEventReceiverConfiguration(receiverContent);
             }
         } finally {
+            cleanup(receiverAdminServiceStub);
             PrivilegedCarbonContext.endTenantFlow();
         }
     }
@@ -331,8 +339,9 @@ public class DeviceTypePublisherAdminServiceImpl implements DeviceTypePublisherA
 
         PrivilegedCarbonContext.startTenantFlow();
         PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(tenantDomain, true);
+        EventStreamAdminServiceStub eventStreamAdminServiceStub = null;
         try {
-            EventStreamAdminServiceStub eventStreamAdminServiceStub = new EventStreamAdminServiceStub
+            eventStreamAdminServiceStub = new EventStreamAdminServiceStub
                     (Utils.replaceSystemProperty(DAS_EVENT_STREAM_EP));
             Options eventReciverOptions = eventStreamAdminServiceStub._getServiceClient().getOptions();
             if (eventReciverOptions == null) {
@@ -362,10 +371,11 @@ public class DeviceTypePublisherAdminServiceImpl implements DeviceTypePublisherA
             eventReciverOptions.setProperty(HTTPConstants.HTTP_HEADERS, list);
             eventReciverOptions.setProperty(HTTPConstants.CUSTOM_PROTOCOL_HANDLER
                     , new Protocol(DEFAULT_HTTP_PROTOCOL
-                            , (ProtocolSocketFactory) new SSLProtocolSocketFactory(sslContext)
-                            , Integer.parseInt(Utils.replaceSystemProperty(DAS_PORT))));
+                    , (ProtocolSocketFactory) new SSLProtocolSocketFactory(sslContext)
+                    , Integer.parseInt(Utils.replaceSystemProperty(DAS_PORT))));
 
             eventStreamAdminServiceStub._getServiceClient().setOptions(eventReciverOptions);
+            log.error("Working");
             for (String streamContent:streamList) {
                 JSONParser jsonParser = new JSONParser();
                 JSONObject steamJson = (JSONObject)jsonParser.parse(streamContent);
@@ -373,12 +383,16 @@ public class DeviceTypePublisherAdminServiceImpl implements DeviceTypePublisherA
                 String version = (String) steamJson.get("version");
                 String streamId = name +":"+version;
                 if (eventStreamAdminServiceStub.getStreamDefinitionDto(streamId) == null) {
+                    log.error("its not there");
                     eventStreamAdminServiceStub.addEventStreamDefinitionAsString(streamContent);
+                } else {
+                    log.error("its there");
                 }
             }
         } catch (ParseException e) {
             e.printStackTrace();
         } finally {
+            cleanup(eventStreamAdminServiceStub);
             PrivilegedCarbonContext.endTenantFlow();
         }
     }
@@ -506,6 +520,16 @@ public class DeviceTypePublisherAdminServiceImpl implements DeviceTypePublisherA
         sslContext = SSLContext.getInstance(SSLV3);
         sslContext.init(keyManagerFactory.getKeyManagers(), trustManagerFactory.getTrustManagers(), null);
         SSLContext.setDefault(sslContext);
+    }
+
+    private void cleanup(Stub stub) {
+        if (stub != null) {
+            try {
+                stub.cleanup();
+            } catch (AxisFault axisFault) {
+                //do nothing
+            }
+        }
     }
 
 }

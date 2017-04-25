@@ -18,25 +18,11 @@
  */
 package org.wso2.carbon.device.application.mgt.core.dao;
 
-public class ApplicationManagementDAOException extends Exception {
+import org.wso2.carbon.device.application.mgt.core.exception.ApplicationManagerException;
 
-    String message;
+public class ApplicationManagementDAOException extends ApplicationManagerException {
 
-    public ApplicationManagementDAOException(String message){
-        this.message = message;
-    }
-
-    @Override
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
-    @Override
-    public String toString() {
-        return super.toString();
+    public ApplicationManagementDAOException(String message, Throwable throwable) {
+        super(message, throwable);
     }
 }

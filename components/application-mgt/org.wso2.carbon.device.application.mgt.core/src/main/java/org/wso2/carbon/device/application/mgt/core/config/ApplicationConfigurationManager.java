@@ -70,7 +70,7 @@ public class ApplicationConfigurationManager {
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
             this.applicationManagerConfiguration = (ApplicationManagementConfigurations) unmarshaller.unmarshal(doc);
         } catch (Exception e) {
-            throw new ApplicationManagerException("Error occurred while initializing application config");
+            throw new ApplicationManagerException("Error occurred while initializing application config", e);
         }
     }
 

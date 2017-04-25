@@ -18,14 +18,20 @@
  */
 package org.wso2.carbon.device.application.mgt.api.services.impl;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.device.application.mgt.api.beans.ErrorResponse;
 import org.wso2.carbon.device.application.mgt.api.services.ApplicationManagementService;
 import org.wso2.carbon.device.application.mgt.core.components.ApplicationManager;
+import org.wso2.carbon.device.application.mgt.core.exception.ApplicationManagerException;
 import org.wso2.carbon.device.application.mgt.core.util.ApplicationManagementUtil;
 
 import javax.ws.rs.POST;
 import javax.ws.rs.core.Response;
 
 public class ApplicationManagementServiceImpl implements ApplicationManagementService {
+
+    private static Log log = LogFactory.getLog(ApplicationManagementServiceImpl.class);
 
     @POST
     @Override
@@ -37,6 +43,13 @@ public class ApplicationManagementServiceImpl implements ApplicationManagementSe
     @Override
     public Response getApplications(String ifModifiedSince) {
         ApplicationManager applicationManager = ApplicationManagementUtil.getApplicationManager();
-        return Response.ok().entity(applicationManager.getApplications().get(0).getName()).build();
+        try {
+            return Response.ok().entity(applicationManager.getApplications()).build();
+        } catch (ApplicationManagerException e) {
+            String msg = "Error occured while getting the application list";
+            log.error(msg, e);
+            return Response.serverError().entity(
+                    new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
+        }
     }
 }

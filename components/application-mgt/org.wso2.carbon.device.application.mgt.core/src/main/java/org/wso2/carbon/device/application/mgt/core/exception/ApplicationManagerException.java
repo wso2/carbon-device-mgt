@@ -22,8 +22,9 @@ public class ApplicationManagerException extends Exception {
 
     String message;
 
-    public ApplicationManagerException(String message){
-        this.message = message;
+    public ApplicationManagerException(String message, Throwable throwable){
+        super(message, throwable);
+        setMessage(message);
     }
 
     @Override
@@ -33,10 +34,5 @@ public class ApplicationManagerException extends Exception {
 
     public void setMessage(String message) {
         this.message = message;
-    }
-
-    @Override
-    public String toString() {
-        return super.toString();
     }
 }

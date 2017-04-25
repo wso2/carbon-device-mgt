@@ -41,6 +41,7 @@
         <module>components/apimgt-extensions</module>
         <module>components/policy-mgt</module>
         <module>components/certificate-mgt</module>
+        <module>components/application-mgt</module>
         <module>components/webapp-authenticator-framework</module>
         <module>components/email-sender</module>
         <module>features/device-mgt</module>
@@ -168,6 +169,11 @@
             <dependency>
                 <groupId>org.wso2.carbon.devicemgt</groupId>
                 <artifactId>org.wso2.carbon.certificate.mgt.core</artifactId>
+                <version>${carbon.device.mgt.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.devicemgt</groupId>
+                <artifactId>org.wso2.carbon.device.application.mgt.core</artifactId>
                 <version>${carbon.device.mgt.version}</version>
             </dependency>
             <dependency>

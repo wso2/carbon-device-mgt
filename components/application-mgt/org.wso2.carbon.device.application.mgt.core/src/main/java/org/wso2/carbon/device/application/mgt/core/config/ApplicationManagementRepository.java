@@ -16,10 +16,25 @@
  *   under the License.
  *
  */
-package org.wso2.carbon.device.application.mgt.api.service.impl;
+package org.wso2.carbon.device.application.mgt.core.config;
 
-import org.wso2.carbon.device.application.mgt.api.service.api.ApplicationManagementService;
 
-public class ApplicationManagementServiceImpl implements ApplicationManagementService {
+import org.wso2.carbon.device.application.mgt.core.config.datasource.DataSourceConfig;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
+@XmlRootElement(name = "ManagementRepository")
+public class ApplicationManagementRepository {
+
+    private DataSourceConfig dataSourceConfig;
+
+    @XmlElement(name = "DataSourceConfiguration", required = true)
+    public DataSourceConfig getDataSourceConfig() {
+        return dataSourceConfig;
+    }
+
+    public void setDataSourceConfig(DataSourceConfig dataSourceConfig) {
+        this.dataSourceConfig = dataSourceConfig;
+    }
 }

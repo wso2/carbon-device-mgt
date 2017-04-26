@@ -215,7 +215,7 @@ public class DeviceTypePublisherAdminServiceImpl implements DeviceTypePublisherA
             log.error("Failed to load tenant, tenantDomain: " + tenantDomain, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         } catch (ParseException e) {
-            log.error("Invalid stream definition for device type" + type " for tenant, tenantDomain: " + tenantDomain, e);
+            log.error("Invalid stream definition for device type" + type + " for tenant, tenantDomain: " + tenantDomain, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
     }

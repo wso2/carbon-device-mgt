@@ -47,6 +47,7 @@ public class ApiPermissionFilter implements Filter {
     private static final String PERMISSION_PREFIX = "/permission/admin";
     private static List<Permission> permissions;
     private static final String WEBAPP_CONTEXT = "/api-application-registration";
+    private static final String DEFAULT_ADMIN_ROLE = "admin";
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
         InputStream permissionStream = filterConfig.getServletContext().getResourceAsStream(PERMISSION_CONFIG_PATH);
@@ -122,7 +123,17 @@ public class ApiPermissionFilter implements Filter {
             UserRealm userRealm = APIUtil.getRealmService().getTenantUserRealm(PrivilegedCarbonContext
                                 .getThreadLocalCarbonContext().getTenantId());
             String tenantAwareUsername = MultitenantUtils.getTenantAwareUsername(username);
-            return userRealm.getAuthorizationManager().isUserAuthorized(tenantAwareUsername, permission, action);
+            boolean status =  userRealm.getAuthorizationManager()
+                    .isUserAuthorized(tenantAwareUsername, permission, action);
+            if (!status) {
+                String[] roles = userRealm.getUserStoreManager().getRoleListOfUser(tenantAwareUsername);
+                for (String role : roles) {
+                    if (role.equals(DEFAULT_ADMIN_ROLE)) {
+                        return true;
+                    }
+                }
+            }
+            return status;
         } catch (UserStoreException e) {
             String errorMsg = String.format("Unable to authorize the user : %s", username);
             log.error(errorMsg, e);

@@ -46,8 +46,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-;
-
 /**
  * this class represents an implementation of Token Client which is based on JWT
  */
@@ -70,7 +68,7 @@ public class JWTClient {
 			throws JWTClientException {
 		List<NameValuePair> params = new ArrayList<>();
 		params.add(new BasicNameValuePair(JWTConstants.GRANT_TYPE_PARAM_NAME, jwtConfig.getJwtGrantType()));
-		String assertion = JWTClientUtil.generateSignedJWTAssertion(username, jwtConfig, isDefaultJWTClient, false);
+		String assertion = JWTClientUtil.generateSignedJWTAssertion(username, jwtConfig, isDefaultJWTClient);
 		if (assertion == null) {
 			throw new JWTClientException("JWT is not configured properly for user : " + username);
 		}
@@ -85,7 +83,7 @@ public class JWTClient {
             throws JWTClientException {
         List<NameValuePair> params = new ArrayList<>();
         params.add(new BasicNameValuePair(JWTConstants.GRANT_TYPE_PARAM_NAME, jwtConfig.getJwtGrantType()));
-        String assertion = JWTClientUtil.generateSignedJWTAssertion(username, jwtConfig, isDefaultJWTClient, false);
+        String assertion = JWTClientUtil.generateSignedJWTAssertion(username, jwtConfig, isDefaultJWTClient);
         if (assertion == null) {
             throw new JWTClientException("JWT is not configured properly for user : " + username);
         }
@@ -105,7 +103,7 @@ public class JWTClient {
 			throws JWTClientException {
 		List<NameValuePair> params = new ArrayList<>();
 		params.add(new BasicNameValuePair(JWTConstants.GRANT_TYPE_PARAM_NAME, jwtConfig.getJwtGrantType()));
-		String assertion = JWTClientUtil.generateSignedJWTAssertion(username, jwtConfig, isDefaultJWTClient, false);
+		String assertion = JWTClientUtil.generateSignedJWTAssertion(username, jwtConfig, isDefaultJWTClient);
 		if (assertion == null) {
 			throw new JWTClientException("JWT is not configured properly for user : " + username);
 		}
@@ -189,16 +187,21 @@ public class JWTClient {
     }
 
     public String getJwtToken(String username) throws JWTClientException {
-		return JWTClientUtil.generateSignedJWTAssertion(username, jwtConfig, isDefaultJWTClient, false);
+		return JWTClientUtil.generateSignedJWTAssertion(username, jwtConfig, isDefaultJWTClient);
 	}
 
     public String getJwtToken(String username, Map<String, String> claims) throws JWTClientException {
-        return JWTClientUtil.generateSignedJWTAssertion(username, jwtConfig, isDefaultJWTClient, claims, false);
+        return JWTClientUtil.generateSignedJWTAssertion(username, jwtConfig, isDefaultJWTClient, claims);
     }
 
-	public String getJwtToken(String username, Map<String, String> claims, boolean isTenantMode) throws JWTClientException {
-		return JWTClientUtil.generateSignedJWTAssertion(username, jwtConfig, isDefaultJWTClient, claims, isTenantMode);
-	}
+    public String getJwtToken(String username, Map<String, String> claims, boolean enableTenantSigning)
+            throws JWTClientException {
+        if (enableTenantSigning) {
+            return JWTClientUtil.generateSignedJWTAssertion(username, jwtConfig, false, claims);
+        } else {
+            return getJwtToken(username, claims);
+        }
+    }
 }
 
 

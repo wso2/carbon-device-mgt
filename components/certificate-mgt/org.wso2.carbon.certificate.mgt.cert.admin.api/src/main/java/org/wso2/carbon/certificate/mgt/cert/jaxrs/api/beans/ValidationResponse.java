@@ -19,7 +19,7 @@
 
 package org.wso2.carbon.certificate.mgt.cert.jaxrs.api.beans;
 
-public class ValidationResponce {
+public class ValidationResponse {
 
     private String JWTToken; // X-JWT-Assertion
     private String deviceId;

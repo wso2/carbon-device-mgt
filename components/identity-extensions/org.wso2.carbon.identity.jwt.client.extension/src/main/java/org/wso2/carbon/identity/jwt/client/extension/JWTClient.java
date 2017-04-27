@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2016-2017, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -29,7 +29,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;;
+import org.json.simple.parser.ParseException;
 import org.wso2.carbon.identity.jwt.client.extension.constant.JWTConstants;
 import org.wso2.carbon.identity.jwt.client.extension.dto.AccessTokenInfo;
 import org.wso2.carbon.identity.jwt.client.extension.dto.JWTConfig;
@@ -43,7 +43,6 @@ import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -195,6 +194,14 @@ public class JWTClient {
         return JWTClientUtil.generateSignedJWTAssertion(username, jwtConfig, isDefaultJWTClient, claims);
     }
 
+    public String getJwtToken(String username, Map<String, String> claims, boolean enableTenantSigning)
+            throws JWTClientException {
+        if (enableTenantSigning) {
+            return JWTClientUtil.generateSignedJWTAssertion(username, jwtConfig, false, claims);
+        } else {
+            return getJwtToken(username, claims);
+        }
+    }
 }
 
 

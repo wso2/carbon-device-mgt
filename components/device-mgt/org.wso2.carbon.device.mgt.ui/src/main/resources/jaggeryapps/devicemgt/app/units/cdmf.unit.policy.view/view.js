@@ -39,5 +39,9 @@ function onRequest(context) {
         }
     }
     page.isAuthorized = userModule.isAuthorized("/permission/admin/device-mgt/policies/view");
+
+    var devicemgtProps = require("/app/modules/conf-reader/main.js")["conf"];
+    page["isCloud"] = devicemgtProps.isCloud;
+    
     return page;
 }

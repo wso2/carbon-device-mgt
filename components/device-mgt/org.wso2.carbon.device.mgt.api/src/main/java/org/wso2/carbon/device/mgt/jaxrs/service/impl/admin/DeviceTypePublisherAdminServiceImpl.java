@@ -214,6 +214,9 @@ public class DeviceTypePublisherAdminServiceImpl implements DeviceTypePublisherA
         } catch (RegistryException e) {
             log.error("Failed to load tenant, tenantDomain: " + tenantDomain, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        } catch (ParseException e) {
+            log.error("Invalid stream definition for device type" + type + " for tenant, tenantDomain: " + tenantDomain, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
     }
 
@@ -335,7 +338,7 @@ public class DeviceTypePublisherAdminServiceImpl implements DeviceTypePublisherA
     }
 
     private void publishDynamicEventStream(String deviceType, String tenantDomain, List<String> streamList)
-            throws IOException, UserStoreException, JWTClientException {
+            throws IOException, UserStoreException, JWTClientException, ParseException {
 
         PrivilegedCarbonContext.startTenantFlow();
         PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(tenantDomain, true);
@@ -382,14 +385,9 @@ public class DeviceTypePublisherAdminServiceImpl implements DeviceTypePublisherA
                 String version = (String) steamJson.get("version");
                 String streamId = name +":"+version;
                 if (eventStreamAdminServiceStub.getStreamDefinitionDto(streamId) == null) {
-                    log.error("its not there");
                     eventStreamAdminServiceStub.addEventStreamDefinitionAsString(streamContent);
-                } else {
-                    log.error("its there");
                 }
             }
-        } catch (ParseException e) {
-            e.printStackTrace();
         } finally {
             cleanup(eventStreamAdminServiceStub);
             PrivilegedCarbonContext.endTenantFlow();

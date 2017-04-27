@@ -1,7 +1,7 @@
 {{#zone "content"}}
     {{#if isAuthorized }}
-        <span id="logged-in-user" class="hidden" data-username="{{user.username}}" data-domain="{{user.domain}}"
-              data-tenant-id="{{user.tenantId}}"></span>
+        <span id="logged-in-user" class="hidden" data-username="{{@user.username}}" data-domain="{{@user.domain}}"
+              data-tenant-id="{{@user.tenantId}}" data-iscloud="{{isCloud}}"></span>
         <span id="policy-operations" class="hidden" data-template="{{policyOperations.template}}"
               data-script="{{policyOperations.script}}" data-style="{{policyOperations.style}}"></span>
         <div class="row">

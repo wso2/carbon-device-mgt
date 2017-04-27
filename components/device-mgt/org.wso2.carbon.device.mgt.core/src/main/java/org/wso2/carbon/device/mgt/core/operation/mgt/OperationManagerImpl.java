@@ -40,6 +40,7 @@ import org.wso2.carbon.device.mgt.common.push.notification.NotificationContext;
 import org.wso2.carbon.device.mgt.common.push.notification.NotificationStrategy;
 import org.wso2.carbon.device.mgt.common.push.notification.PushNotificationExecutionFailedException;
 import org.wso2.carbon.device.mgt.core.DeviceManagementConstants;
+import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
 import org.wso2.carbon.device.mgt.core.dao.DeviceDAO;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
@@ -146,7 +147,12 @@ public class OperationManagerImpl implements OperationManager {
                 boolean isScheduledOperation = this.isTaskScheduledOperation(operation, deviceIds);
                 boolean isNotRepeated = false;
                 boolean isScheduled = false;
-                if (notificationStrategy != null) {
+
+                // check whether device list is greater than batch size notification strategy has enable to send push
+                // notification using scheduler task
+                if (DeviceConfigurationManager.getInstance().getDeviceManagementConfig().
+                        getPushNotificationConfiguration().getSchedulerBatchSize() < authorizedDeviceList.size() &&
+                        notificationStrategy != null) {
                     isScheduled = notificationStrategy.getConfig().isScheduled();
                 }
 
@@ -178,8 +184,15 @@ public class OperationManagerImpl implements OperationManager {
                     } else {
                         operationMappingDAO.addOperationMapping(operationId, enrolmentId, isScheduled);
                     }
-                    if (notificationStrategy != null && !notificationStrategy.getConfig().isScheduled()) {
+                    /*
+                    If notification strategy has not enable to send push notification using scheduler task
+                    we will send notification immediately
+                    */
+                    if (notificationStrategy != null && !isScheduled) {
                         try {
+                            if (log.isDebugEnabled()) {
+                                log.debug("Sending push notification to " + deviceId + " add operation thread.");
+                            }
                             notificationStrategy.execute(new NotificationContext(deviceId, operation));
                             operationMappingDAO.updateOperationMapping(operationId, enrolmentId, org.wso2.carbon
                                     .device.mgt.core.dto.operation.mgt.Operation.PushStatus.COMPLETED);

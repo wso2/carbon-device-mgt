@@ -23,7 +23,7 @@ import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.TransactionManagementException;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
-import org.wso2.carbon.device.mgt.common.operation.mgt.OperationMapping;
+import org.wso2.carbon.device.mgt.core.operation.mgt.OperationMapping;
 import org.wso2.carbon.device.mgt.common.push.notification.NotificationContext;
 import org.wso2.carbon.device.mgt.common.push.notification.NotificationStrategy;
 import org.wso2.carbon.device.mgt.common.push.notification.PushNotificationExecutionFailedException;
@@ -84,6 +84,7 @@ public class PushNotificationJob implements Runnable {
                     notificationStrategy.execute(new NotificationContext(operationMapping.getDeviceIdentifier(),
                             provider.getOperation(operationMapping.getDeviceIdentifier().getType(), operationMapping
                                     .getOperationId())));
+                    operationMapping.setPushStatus(Operation.PushStatus.COMPLETED);
                     operationsCompletedList.add(operationMapping);
                 } catch (DeviceManagementException e) {
                     log.error("Error occurred while getting notification strategy for operation mapping " +
@@ -109,7 +110,7 @@ public class PushNotificationJob implements Runnable {
             // Update push notification status to competed for operations which already sent
             try {
                 OperationManagementDAOFactory.beginTransaction();
-                operationMappingDAO.updateOperationMapping(operationsCompletedList, Operation.PushStatus.COMPLETED);
+                operationMappingDAO.updateOperationMapping(operationsCompletedList);
                 OperationManagementDAOFactory.commitTransaction();
             } catch (TransactionManagementException | OperationManagementDAOException e) {
                 OperationManagementDAOFactory.rollbackTransaction();

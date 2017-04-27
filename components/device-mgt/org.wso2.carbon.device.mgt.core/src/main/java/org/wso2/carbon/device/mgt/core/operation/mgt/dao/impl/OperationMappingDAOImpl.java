@@ -18,8 +18,8 @@
  */
 package org.wso2.carbon.device.mgt.core.operation.mgt.dao.impl;
 
-import org.wso2.carbon.device.mgt.common.operation.mgt.OperationMapping;
 import org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation;
+import org.wso2.carbon.device.mgt.core.operation.mgt.OperationMapping;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOException;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOUtil;
@@ -98,7 +98,7 @@ public class OperationMappingDAOImpl implements OperationMappingDAO {
     }
 
     @Override
-    public void updateOperationMapping(List<OperationMapping> operationMappingList, Operation.PushStatus pushStatus) throws
+    public void updateOperationMapping(List<OperationMapping> operationMappingList) throws
             OperationManagementDAOException {
         PreparedStatement stmt = null;
         try {
@@ -108,7 +108,7 @@ public class OperationMappingDAOImpl implements OperationMappingDAO {
             stmt = conn.prepareStatement(sql);
             if (conn.getMetaData().supportsBatchUpdates()) {
                 for (OperationMapping operationMapping : operationMappingList) {
-                    stmt.setString(1, pushStatus.toString());
+                    stmt.setString(1, operationMapping.getPushStatus().toString());
                     stmt.setInt(2, Integer.parseInt(operationMapping.getDeviceIdentifier().getId()));
                     stmt.setInt(3, operationMapping.getOperationId());
                     stmt.addBatch();
@@ -116,7 +116,7 @@ public class OperationMappingDAOImpl implements OperationMappingDAO {
                 stmt.executeBatch();
             } else {
                 for (OperationMapping operationMapping : operationMappingList) {
-                    stmt.setString(1, pushStatus.toString());
+                    stmt.setString(1, operationMapping.getPushStatus().toString());
                     stmt.setInt(2, Integer.parseInt(operationMapping.getDeviceIdentifier().getId()));
                     stmt.setInt(3, operationMapping.getOperationId());
                     stmt.executeUpdate();

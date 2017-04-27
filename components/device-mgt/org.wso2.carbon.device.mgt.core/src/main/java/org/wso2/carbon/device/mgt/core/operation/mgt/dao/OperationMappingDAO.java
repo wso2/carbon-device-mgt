@@ -18,7 +18,7 @@
  */
 package org.wso2.carbon.device.mgt.core.operation.mgt.dao;
 
-import org.wso2.carbon.device.mgt.common.operation.mgt.OperationMapping;
+import org.wso2.carbon.device.mgt.core.operation.mgt.OperationMapping;
 import org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation;
 
 import java.util.List;
@@ -31,7 +31,7 @@ public interface OperationMappingDAO {
 
     void updateOperationMapping(int operationId, Integer deviceId, Operation.PushStatus pushStatus) throws
             OperationManagementDAOException;
-    void updateOperationMapping(List<OperationMapping> operationMappingList, Operation.PushStatus pushStatus) throws
+    void updateOperationMapping(List<OperationMapping> operationMappingList) throws
             OperationManagementDAOException;
 
 }

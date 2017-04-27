@@ -15,9 +15,10 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.wso2.carbon.device.mgt.common.operation.mgt;
+package org.wso2.carbon.device.mgt.core.operation.mgt;
 
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
+import org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation;
 
 /**
  * Class for represent operation mapping
@@ -27,6 +28,8 @@ public class OperationMapping {
     private DeviceIdentifier deviceIdentifier;
     private int operationId;
     private int tenantId;
+    private Operation.Status status;
+    private Operation.PushStatus pushStatus;
 
     public int getOperationId() {
         return operationId;
@@ -50,5 +53,21 @@ public class OperationMapping {
 
     public void setDeviceIdentifier(DeviceIdentifier deviceIdentifier) {
         this.deviceIdentifier = deviceIdentifier;
+    }
+
+    public Operation.Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Operation.Status status) {
+        this.status = status;
+    }
+
+    public Operation.PushStatus getPushStatus() {
+        return pushStatus;
+    }
+
+    public void setPushStatus(Operation.PushStatus pushStatus) {
+        this.pushStatus = pushStatus;
     }
 }

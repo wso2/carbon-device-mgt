@@ -615,6 +615,9 @@ var userModule = function () {
 		if (publicMethods.isAuthorized("/permission/admin/device-mgt")) {
 			permissions["IS_ADMIN"] = true;
 		}
+        if (publicMethods.isAuthorized("/permission/admin/device-mgt/topics/view")) {
+            permissions["VIEW_TOPICS"] = true;
+        }
 
         return permissions;
     };

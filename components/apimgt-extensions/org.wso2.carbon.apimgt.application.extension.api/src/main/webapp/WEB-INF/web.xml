@@ -39,6 +39,11 @@
         <param-name>doAuthentication</param-name>
         <param-value>true</param-value>
     </context-param>
+	<!--This is to support basic auth.-->
+	<context-param>
+		<param-name>basicAuth</param-name>
+		<param-value>true</param-value>
+	</context-param>
 
     <!--publish to apim-->
     <context-param>

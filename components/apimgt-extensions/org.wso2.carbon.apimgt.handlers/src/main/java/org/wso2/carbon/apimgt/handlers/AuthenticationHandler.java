@@ -148,14 +148,17 @@ public class AuthenticationHandler extends AbstractHandler {
                 }
             } else if (headers.containsKey(AuthConstants.MUTUAL_AUTH_HEADER)) {
                 javax.security.cert.X509Certificate[] certs =
-                        (javax.security.cert.X509Certificate[])axisMC.getProperty(AuthConstants.CLIENT_CERTIFICATE);
+                        (javax.security.cert.X509Certificate[]) axisMC.getProperty(AuthConstants.CLIENT_CERTIFICATE);
                 CertificateFactory cf = CertificateFactory.getInstance("X.509");
                 ByteArrayInputStream bais = new ByteArrayInputStream(certs[0].getEncoded());
-                X509Certificate x509 =  (X509Certificate) cf.generateCertificate(bais);
-                if (x509 != null ) {
+                X509Certificate x509 = (X509Certificate) cf.generateCertificate(bais);
+                if (bais != null) {
+                    bais.close();
+                }
+                if (x509 != null) {
                     headers.put(AuthConstants.PROXY_MUTUAL_AUTH_HEADER, CertificateGenerator.getCommonName(x509));
                     return true;
-                }else {
+                } else {
                     response = null;
                 }
             } else if (headers.containsKey(AuthConstants.ENCODED_PEM)) {
@@ -197,13 +200,12 @@ public class AuthenticationHandler extends AbstractHandler {
             log.error("Error while processing certificate.", e);
             return false;
         } catch (CertificateException e) {
-            e.printStackTrace();
+            log.error("Certificate issue occurred when generating converting PEM to x509Certificate", e);
             return false;
         } catch (CertificateEncodingException e) {
-            e.printStackTrace();
+            log.error("Error while attempting to encode certificate.", e);
             return false;
         }
-
     }
 
     @Override
@@ -215,7 +217,7 @@ public class AuthenticationHandler extends AbstractHandler {
     private String getDeviceType(String url) {
         StringTokenizer parts = new StringTokenizer(url, "/");
         while (parts.hasMoreElements()) {
-            if (parts.nextElement().equals("device-mgt")) {
+            if (parts.nextElement().equals("api")) {
                 return (String) parts.nextElement();
             }
         }

@@ -25,6 +25,7 @@ import org.wso2.carbon.device.mgt.common.operation.mgt.OperationResponse;
 import org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation;
 
 import java.util.List;
+import java.util.Map;
 
 public interface OperationDAO {
 
@@ -81,7 +82,15 @@ public interface OperationDAO {
 
     boolean resetAttemptCount(int enrolmentId) throws OperationManagementDAOException;
 
-    List<OperationMapping> getOperationMappingsByStatus(Operation.Status opStatus, Operation.PushStatus pushStatus,
-                                                        int limit) throws OperationManagementDAOException;;
+    /**
+     * This method provides operation mappings for given status
+     * @param opStatus Operation status
+     * @param pushStatus Push notification Status
+     * @param limit Limit for no devices
+     * @return Tenant based operation mappings list
+     * @throws OperationManagementDAOException
+     */
+    Map<Integer, List<OperationMapping>> getOperationMappingsByStatus(Operation.Status opStatus, Operation.PushStatus pushStatus,
+                                                                     int limit) throws OperationManagementDAOException;;
 
 }

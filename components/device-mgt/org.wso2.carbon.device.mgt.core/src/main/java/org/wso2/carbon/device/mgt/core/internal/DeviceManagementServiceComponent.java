@@ -63,9 +63,7 @@ import org.wso2.carbon.utils.ConfigurationContextService;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
@@ -200,7 +198,7 @@ public class DeviceManagementServiceComponent {
                     config.getPushNotificationConfiguration().setSchedulerBatchDelayMills(DeviceManagementConstants.PushNotifications
                             .DEFAULT_BATCH_DELAY_MILLS);
                 }
-                ScheduledExecutorService pushNotificationExecutor = Executors.newScheduledThreadPool(1);
+                ScheduledExecutorService pushNotificationExecutor = Executors.newSingleThreadScheduledExecutor();
                 pushNotificationExecutor.schedule(new PushNotificationSchedulerTask(), config.getPushNotificationConfiguration()
                         .getSchedulerBatchDelayMills(), TimeUnit.MILLISECONDS);
             }

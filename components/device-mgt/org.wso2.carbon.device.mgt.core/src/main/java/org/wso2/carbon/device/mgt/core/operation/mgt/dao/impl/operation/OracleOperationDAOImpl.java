@@ -23,9 +23,9 @@ import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.PaginationRequest;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Activity;
 import org.wso2.carbon.device.mgt.common.operation.mgt.ActivityStatus;
-import org.wso2.carbon.device.mgt.core.operation.mgt.OperationMapping;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationResponse;
 import org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation;
+import org.wso2.carbon.device.mgt.core.operation.mgt.OperationMapping;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOException;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOUtil;
@@ -38,8 +38,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * This class holds the implementation of OperationDAO which can be used to support Oracle db syntax.
@@ -364,33 +366,38 @@ public class OracleOperationDAOImpl extends GenericOperationDAOImpl {
         return 0;
     }
 
-    @Override
-    public List<OperationMapping> getOperationMappingsByStatus(Operation.Status opStatus, Operation.PushStatus pushStatus,
-                                                               int limit) throws OperationManagementDAOException {
 
+    @Override
+    public Map<Integer, List<OperationMapping>> getOperationMappingsByStatus(Operation.Status opStatus, Operation.PushStatus pushStatus,
+                                                                             int limit) throws OperationManagementDAOException {
         PreparedStatement stmt = null;
         ResultSet rs = null;
         OperationMapping operationMapping;
-        List<OperationMapping> operationMappings = new LinkedList<>();
+        Map<Integer, List<OperationMapping>> operationMappingsTenantMap = new HashMap<>();
         try {
             Connection conn = OperationManagementDAOFactory.getConnection();
-            String sql = "SELECT op_mappings.ENROLMENT_ID, op_mappings.OPERATION_ID, d_type.NAME ,d.TENANT_ID FROM " +
-                    "DM_DEVICE d, DM_ENROLMENT_OP_MAPPING op_mappings, DM_DEVICE_TYPE d_type  WHERE op_mappings" +
-                    ".STATUS = '?' AND op_mappings.PUSH_NOTIFICATION_STATUS = '?' AND d.DEVICE_TYPE_ID = d_type.ID " +
-                    "AND d.ID=op_mappings.ENROLMENT_ID AND ROWNUM <= ? ORDER BY op_mappings.OPERATION_ID";
+            String sql = "SELECT op.ENROLMENT_ID, op.OPERATION_ID, dt.NAME ,d.TENANT_ID FROM DM_DEVICE d, " +
+                    "DM_ENROLMENT_OP_MAPPING op, DM_DEVICE_TYPE dt  WHERE op.STATUS = '?' AND op" +
+                    ".PUSH_NOTIFICATION_STATUS = '?' AND d.DEVICE_TYPE_ID = dt.ID AND d.ID=op.ENROLMENT_ID AND ROWNUM" +
+                    " <= ? ORDER BY op.OPERATION_ID";
 
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, opStatus.toString());
             stmt.setString(2, pushStatus.toString());
             stmt.setInt(3, limit);
             rs = stmt.executeQuery();
-
             while (rs.next()) {
+                int tenantID = rs.getInt("TENANT_ID");
+                List<OperationMapping> operationMappings = operationMappingsTenantMap.get(tenantID);
+                if (operationMappings == null) {
+                    operationMappings = new LinkedList<>();
+                    operationMappingsTenantMap.put(tenantID, operationMappings);
+                }
                 operationMapping = new OperationMapping();
                 operationMapping.setOperationId(rs.getInt("OPERATION_ID"));
                 operationMapping.setDeviceIdentifier(new DeviceIdentifier(String.valueOf(rs.getInt("ENROLMENT_ID")),
                         rs.getString("NAME")));
-                operationMapping.setTenantId(rs.getInt("TENANT_ID"));
+                operationMapping.setTenantId(tenantID);
                 operationMappings.add(operationMapping);
             }
         } catch (SQLException e) {
@@ -398,6 +405,6 @@ public class OracleOperationDAOImpl extends GenericOperationDAOImpl {
         } finally {
             OperationManagementDAOUtil.cleanupResources(stmt, rs);
         }
-        return operationMappings;
+        return operationMappingsTenantMap;
     }
 }

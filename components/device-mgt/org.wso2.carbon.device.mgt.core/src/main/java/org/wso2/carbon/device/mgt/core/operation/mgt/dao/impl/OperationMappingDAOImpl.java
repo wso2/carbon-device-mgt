@@ -48,7 +48,7 @@ public class OperationMappingDAOImpl implements OperationMappingDAO {
             if (isScheduled) {
                 stmt.setString(4, Operation.PushStatus.SCHEDULED.toString());
             } else {
-                stmt.setString(4, Operation.PushStatus.IN_PROGRESS.toString());
+                stmt.setString(4, Operation.PushStatus.COMPLETED.toString());
             }
             stmt.setLong(5, time);
             stmt.setLong(6, time);

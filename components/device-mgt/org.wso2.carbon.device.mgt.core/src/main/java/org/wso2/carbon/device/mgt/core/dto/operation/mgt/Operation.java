@@ -36,7 +36,7 @@ public class Operation implements Serializable {
     }
 
     public enum PushStatus {
-        SCHEDULED, IN_PROGRESS, COMPLETED
+        SCHEDULED, COMPLETED
     }
 
     private String code;

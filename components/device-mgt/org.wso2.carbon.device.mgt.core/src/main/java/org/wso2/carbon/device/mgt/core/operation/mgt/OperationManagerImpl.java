@@ -131,7 +131,7 @@ public class OperationManagerImpl implements OperationManager {
                 DeviceIDHolder deviceAuthorizationResult = this.authorizeDevices(operation, validDeviceIds);
                 List<DeviceIdentifier> authorizedDeviceList = deviceAuthorizationResult.getValidDeviceIDList();
                 if (authorizedDeviceList.size() <= 0) {
-                    log.info("User : " + getUser() + " is not authorized to perform operations on given device-list.");
+                    log.warn("User : " + getUser() + " is not authorized to perform operations on given device-list.");
                     Activity activity = new Activity();
                     //Send the operation statuses only for admin triggered operations
                     String deviceType = validDeviceIds.get(0).getType();
@@ -191,7 +191,7 @@ public class OperationManagerImpl implements OperationManager {
                     if (notificationStrategy != null && !isScheduled) {
                         try {
                             if (log.isDebugEnabled()) {
-                                log.debug("Sending push notification to " + deviceId + " add operation thread.");
+                                log.debug("Sending push notification to " + deviceId + " from add operation method.");
                             }
                             notificationStrategy.execute(new NotificationContext(deviceId, operation));
                             operationMappingDAO.updateOperationMapping(operationId, enrolmentId, org.wso2.carbon

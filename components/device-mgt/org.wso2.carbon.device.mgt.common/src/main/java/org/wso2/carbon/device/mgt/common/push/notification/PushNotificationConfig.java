@@ -40,6 +40,7 @@ public class PushNotificationConfig {
         return type;
     }
 
+    @XmlElement(name = "isScheduled")
     public boolean isScheduled() {
         return isScheduled;
     }

@@ -84,7 +84,7 @@ var displayPolicy = function (policyPayloadObj) {
             hasPolicyProfileScript = false;
         }
         $.template(policyViewTemplateCacheKey, context + policyViewTemplateSrc, function (template) {
-            var content = template();
+            var content = template({"iscloud" : $("#logged-in-user").data("iscloud")});
             $("#device-type-policy-operations").html(content).removeClass("hidden");
             $(".policy-platform").addClass("hidden");
             if (hasPolicyProfileScript) {

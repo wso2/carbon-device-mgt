@@ -90,6 +90,7 @@ public final class DeviceManagementConstants {
         private PushNotifications() {
             throw new AssertionError();
         }
+        public static final int DEFAULT_SCHEDULER_TASK_INITIAL_DELAY = 60000;
         public static final int DEFAULT_BATCH_DELAY_MILLS = 60000;
         public static final int DEFAULT_BATCH_SIZE = 1000;
     }

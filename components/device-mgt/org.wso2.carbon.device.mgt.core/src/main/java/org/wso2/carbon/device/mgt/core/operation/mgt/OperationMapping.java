@@ -29,7 +29,7 @@ public class OperationMapping {
     private int operationId;
     private int tenantId;
     private Operation.Status status;
-    private Operation.PushStatus pushStatus;
+    private Operation.PushNotificationStatus pushNotificationStatus;
 
     public int getOperationId() {
         return operationId;
@@ -63,11 +63,11 @@ public class OperationMapping {
         this.status = status;
     }
 
-    public Operation.PushStatus getPushStatus() {
-        return pushStatus;
+    public Operation.PushNotificationStatus getPushNotificationStatus() {
+        return pushNotificationStatus;
     }
 
-    public void setPushStatus(Operation.PushStatus pushStatus) {
-        this.pushStatus = pushStatus;
+    public void setPushNotificationStatus(Operation.PushNotificationStatus pushNotificationStatus) {
+        this.pushNotificationStatus = pushNotificationStatus;
     }
 }

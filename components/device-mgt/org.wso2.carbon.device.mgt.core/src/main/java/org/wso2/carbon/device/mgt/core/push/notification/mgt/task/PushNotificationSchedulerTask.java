@@ -27,7 +27,6 @@ import org.wso2.carbon.device.mgt.common.push.notification.NotificationContext;
 import org.wso2.carbon.device.mgt.common.push.notification.NotificationStrategy;
 import org.wso2.carbon.device.mgt.common.push.notification.PushNotificationExecutionFailedException;
 import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
-import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 import org.wso2.carbon.device.mgt.core.operation.mgt.OperationMapping;
@@ -37,7 +36,6 @@ import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOF
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationMappingDAO;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -56,72 +54,74 @@ public class PushNotificationSchedulerTask implements Runnable {
 
     @Override
     public void run() {
-        Map<Integer, List<OperationMapping>> operationMappingsTenantMap = new HashMap<>();
-        List<OperationMapping> operationsCompletedList = new LinkedList<>();
-        if (log.isDebugEnabled()) {
-            log.debug("Push notification job started");
-        }
         try {
-            //Get next available operation list per device batch
-            DeviceManagementDAOFactory.openConnection();
-            operationMappingsTenantMap = operationDAO.getOperationMappingsByStatus(Operation.Status
-                    .PENDING, Operation.PushStatus.SCHEDULED, DeviceConfigurationManager.getInstance()
-                    .getDeviceManagementConfig().getPushNotificationConfiguration().getSchedulerBatchSize());
-        } catch (SQLException e) {
-            log.error("Error occurred while opening a connection to the data source", e);
-        } catch (OperationManagementDAOException e) {
-            log.error("Unable to retrieve scheduled pending operations for task.", e);
-        } finally {
-            DeviceManagementDAOFactory.closeConnection();
-        }
-        // Sending push notification to each device
-        for (List<OperationMapping> operationMappings : operationMappingsTenantMap.values()) {
-            for (OperationMapping operationMapping : operationMappings) {
-                try {
-                    if (log.isDebugEnabled()) {
-                        log.debug("Sending push notification for operationId :" + operationMapping.getOperationId() +
-                                "to deviceId : " + operationMapping.getDeviceIdentifier().getId());
-                    }
-                    // Set tenant id and domain
-                    PrivilegedCarbonContext.startTenantFlow();
-                    PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(operationMapping.getTenantId(), true);
-                    // Get notification strategy for given device type
-                    NotificationStrategy notificationStrategy = provider.getNotificationStrategyByDeviceType
-                            (operationMapping.getDeviceIdentifier().getType());
-                    // Send the push notification on given strategy
-                    notificationStrategy.execute(new NotificationContext(operationMapping.getDeviceIdentifier(),
-                            provider.getOperation(operationMapping.getDeviceIdentifier().getType(), operationMapping
-                                    .getOperationId())));
-                    operationMapping.setPushStatus(Operation.PushStatus.COMPLETED);
-                    operationsCompletedList.add(operationMapping);
-                } catch (DeviceManagementException e) {
-                    log.error("Error occurred while getting notification strategy for operation mapping " +
-                            operationMapping.getDeviceIdentifier().getType(), e);
-                } catch (OperationManagementException e) {
-                    log.error("Unable to get the operation for operation " + operationMapping.getOperationId(), e);
-                } catch (PushNotificationExecutionFailedException e) {
-                    log.error("Error occurred while sending push notification to operation:  " + operationMapping
-                            .getOperationId(), e);
-                } finally {
-                    PrivilegedCarbonContext.endTenantFlow();
-                }
+            Map<Integer, List<OperationMapping>> operationMappingsTenantMap = new HashMap<>();
+            List<OperationMapping> operationsCompletedList = new LinkedList<>();
+            if (log.isDebugEnabled()) {
+                log.debug("Push notification job started");
             }
-        }
-        // Update push notification status to competed for operations which already sent
-        if (operationsCompletedList.size() > 0) {
             try {
-                OperationManagementDAOFactory.beginTransaction();
-                operationMappingDAO.updateOperationMapping(operationsCompletedList);
-                OperationManagementDAOFactory.commitTransaction();
-            } catch (TransactionManagementException | OperationManagementDAOException e) {
-                OperationManagementDAOFactory.rollbackTransaction();
-                log.error("Error occurred while updating operation mappings for sent notifications ", e);
+                //Get next available operation list per device batch
+                OperationManagementDAOFactory.openConnection();
+                operationMappingsTenantMap = operationDAO.getOperationMappingsByStatus(Operation.Status
+                        .PENDING, Operation.PushNotificationStatus.SCHEDULED, DeviceConfigurationManager.getInstance()
+                        .getDeviceManagementConfig().getPushNotificationConfiguration().getSchedulerBatchSize());
+            } catch (OperationManagementDAOException e) {
+                log.error("Unable to retrieve scheduled pending operations for task.", e);
             } finally {
                 OperationManagementDAOFactory.closeConnection();
             }
-        }
-        if (log.isDebugEnabled()) {
-            log.debug("Push notification job running completed.");
+            // Sending push notification to each device
+            for (List<OperationMapping> operationMappings : operationMappingsTenantMap.values()) {
+                for (OperationMapping operationMapping : operationMappings) {
+                    try {
+                        if (log.isDebugEnabled()) {
+                            log.debug("Sending push notification for operationId :" + operationMapping.getOperationId() +
+                                    "to deviceId : " + operationMapping.getDeviceIdentifier().getId());
+                        }
+                        // Set tenant id and domain
+                        PrivilegedCarbonContext.startTenantFlow();
+                        PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(operationMapping.getTenantId(), true);
+                        // Get notification strategy for given device type
+                        NotificationStrategy notificationStrategy = provider.getNotificationStrategyByDeviceType
+                                (operationMapping.getDeviceIdentifier().getType());
+                        // Send the push notification on given strategy
+                        notificationStrategy.execute(new NotificationContext(operationMapping.getDeviceIdentifier(),
+                                provider.getOperation(operationMapping.getDeviceIdentifier().getType(), operationMapping
+                                        .getOperationId())));
+                        operationMapping.setPushNotificationStatus(Operation.PushNotificationStatus.COMPLETED);
+                        operationsCompletedList.add(operationMapping);
+                    } catch (DeviceManagementException e) {
+                        log.error("Error occurred while getting notification strategy for operation mapping " +
+                                operationMapping.getDeviceIdentifier().getType(), e);
+                    } catch (OperationManagementException e) {
+                        log.error("Unable to get the operation for operation " + operationMapping.getOperationId(), e);
+                    } catch (PushNotificationExecutionFailedException e) {
+                        log.error("Error occurred while sending push notification to operation:  " + operationMapping
+                                .getOperationId(), e);
+                    } finally {
+                        PrivilegedCarbonContext.endTenantFlow();
+                    }
+                }
+            }
+            // Update push notification status to competed for operations which already sent
+            if (operationsCompletedList.size() > 0) {
+                try {
+                    OperationManagementDAOFactory.beginTransaction();
+                    operationMappingDAO.updateOperationMapping(operationsCompletedList);
+                    OperationManagementDAOFactory.commitTransaction();
+                } catch (TransactionManagementException | OperationManagementDAOException e) {
+                    OperationManagementDAOFactory.rollbackTransaction();
+                    log.error("Error occurred while updating operation mappings for sent notifications ", e);
+                } finally {
+                    OperationManagementDAOFactory.closeConnection();
+                }
+            }
+            if (log.isDebugEnabled()) {
+                log.debug("Push notification job running completed.");
+            }
+        } catch (Throwable cause) {
+            log.error("PushNotificationSchedulerTask failed due to " + cause);
         }
     }
 }

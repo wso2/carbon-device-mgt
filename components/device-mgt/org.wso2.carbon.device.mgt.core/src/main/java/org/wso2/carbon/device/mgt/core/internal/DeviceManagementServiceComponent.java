@@ -182,25 +182,37 @@ public class DeviceManagementServiceComponent {
              * of Device Management Service component in order to avoid bundle start up order related complications */
             notifyStartupListeners();
             if (log.isDebugEnabled()) {
-                log.debug("Device management core bundle has been successfully initialized");
+                log.debug("Push notification batch enabled : " + config.getPushNotificationConfiguration()
+                        .isSchedulerTaskEnabled());
             }
             // Start Push Notification Scheduler Task
             if (config.getPushNotificationConfiguration().isSchedulerTaskEnabled()) {
                 if (config.getPushNotificationConfiguration().getSchedulerBatchSize() <= 0) {
-                    log.error("Push notification batch size cannot be 0 or less than 0. Setting default batch size to:" +
-                            " " + DeviceManagementConstants.PushNotifications.DEFAULT_BATCH_SIZE);
-                    config.getPushNotificationConfiguration().setSchedulerBatchSize(DeviceManagementConstants.PushNotifications
-                            .DEFAULT_BATCH_SIZE);
+                    log.error("Push notification batch size cannot be 0 or less than 0. Setting default batch size " +
+                            "to:" + DeviceManagementConstants.PushNotifications.DEFAULT_BATCH_SIZE);
+                    config.getPushNotificationConfiguration().setSchedulerBatchSize(DeviceManagementConstants
+                            .PushNotifications.DEFAULT_BATCH_SIZE);
                 }
                 if (config.getPushNotificationConfiguration().getSchedulerBatchDelayMills() <= 0) {
                     log.error("Push notification batch delay cannot be 0 or less than 0. Setting default batch delay " +
                             "milliseconds to" + DeviceManagementConstants.PushNotifications.DEFAULT_BATCH_DELAY_MILLS);
-                    config.getPushNotificationConfiguration().setSchedulerBatchDelayMills(DeviceManagementConstants.PushNotifications
-                            .DEFAULT_BATCH_DELAY_MILLS);
+                    config.getPushNotificationConfiguration().setSchedulerBatchDelayMills(DeviceManagementConstants
+                            .PushNotifications.DEFAULT_BATCH_DELAY_MILLS);
+                }
+                if (config.getPushNotificationConfiguration().getSchedulerTaskInitialDelay() < 0) {
+                    log.error("Push notification initial delay cannot be less than 0. Setting default initial " +
+                            "delay milliseconds to" + DeviceManagementConstants.PushNotifications
+                            .DEFAULT_SCHEDULER_TASK_INITIAL_DELAY);
+                    config.getPushNotificationConfiguration().setSchedulerTaskInitialDelay(DeviceManagementConstants
+                            .PushNotifications.DEFAULT_SCHEDULER_TASK_INITIAL_DELAY);
                 }
                 ScheduledExecutorService pushNotificationExecutor = Executors.newSingleThreadScheduledExecutor();
-                pushNotificationExecutor.schedule(new PushNotificationSchedulerTask(), config.getPushNotificationConfiguration()
-                        .getSchedulerBatchDelayMills(), TimeUnit.MILLISECONDS);
+                pushNotificationExecutor.scheduleWithFixedDelay(new PushNotificationSchedulerTask(), config
+                        .getPushNotificationConfiguration().getSchedulerTaskInitialDelay(), config
+                        .getPushNotificationConfiguration().getSchedulerBatchDelayMills(), TimeUnit.MILLISECONDS);
+            }
+            if (log.isDebugEnabled()) {
+                log.debug("Device management core bundle has been successfully initialized");
             }
         } catch (Throwable e) {
             log.error("Error occurred while initializing device management core bundle", e);

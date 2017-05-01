@@ -46,9 +46,9 @@ public class OperationMappingDAOImpl implements OperationMappingDAO {
             stmt.setInt(2, operationId);
             stmt.setString(3, Operation.Status.PENDING.toString());
             if (isScheduled) {
-                stmt.setString(4, Operation.PushStatus.SCHEDULED.toString());
+                stmt.setString(4, Operation.PushNotificationStatus.SCHEDULED.toString());
             } else {
-                stmt.setString(4, Operation.PushStatus.COMPLETED.toString());
+                stmt.setString(4, Operation.PushNotificationStatus.COMPLETED.toString());
             }
             stmt.setLong(5, time);
             stmt.setLong(6, time);
@@ -79,14 +79,14 @@ public class OperationMappingDAOImpl implements OperationMappingDAO {
     }
 
     @Override
-    public void updateOperationMapping(int operationId, Integer deviceId, Operation.PushStatus pushStatus) throws OperationManagementDAOException {
+    public void updateOperationMapping(int operationId, Integer deviceId, Operation.PushNotificationStatus pushNotificationStatus) throws OperationManagementDAOException {
         PreparedStatement stmt = null;
         try {
             Connection conn = OperationManagementDAOFactory.getConnection();
             String sql = "UPDATE DM_ENROLMENT_OP_MAPPING SET PUSH_NOTIFICATION_STATUS = ? WHERE ENROLMENT_ID = ? and " +
                     "OPERATION_ID = ?";
             stmt = conn.prepareStatement(sql);
-            stmt.setString(1, pushStatus.toString());
+            stmt.setString(1, pushNotificationStatus.toString());
             stmt.setInt(2, deviceId);
             stmt.setInt(3, operationId);
             stmt.executeUpdate();
@@ -108,7 +108,7 @@ public class OperationMappingDAOImpl implements OperationMappingDAO {
             stmt = conn.prepareStatement(sql);
             if (conn.getMetaData().supportsBatchUpdates()) {
                 for (OperationMapping operationMapping : operationMappingList) {
-                    stmt.setString(1, operationMapping.getPushStatus().toString());
+                    stmt.setString(1, operationMapping.getPushNotificationStatus().toString());
                     stmt.setInt(2, Integer.parseInt(operationMapping.getDeviceIdentifier().getId()));
                     stmt.setInt(3, operationMapping.getOperationId());
                     stmt.addBatch();
@@ -116,7 +116,7 @@ public class OperationMappingDAOImpl implements OperationMappingDAO {
                 stmt.executeBatch();
             } else {
                 for (OperationMapping operationMapping : operationMappingList) {
-                    stmt.setString(1, operationMapping.getPushStatus().toString());
+                    stmt.setString(1, operationMapping.getPushNotificationStatus().toString());
                     stmt.setInt(2, Integer.parseInt(operationMapping.getDeviceIdentifier().getId()));
                     stmt.setInt(3, operationMapping.getOperationId());
                     stmt.executeUpdate();

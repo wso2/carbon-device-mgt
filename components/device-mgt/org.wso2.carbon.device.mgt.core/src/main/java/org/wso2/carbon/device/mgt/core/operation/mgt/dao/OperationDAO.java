@@ -85,12 +85,12 @@ public interface OperationDAO {
     /**
      * This method provides operation mappings for given status
      * @param opStatus Operation status
-     * @param pushStatus Push notification Status
+     * @param pushNotificationStatus Push notification Status
      * @param limit Limit for no devices
      * @return Tenant based operation mappings list
      * @throws OperationManagementDAOException
      */
-    Map<Integer, List<OperationMapping>> getOperationMappingsByStatus(Operation.Status opStatus, Operation.PushStatus pushStatus,
-                                                                     int limit) throws OperationManagementDAOException;;
+    Map<Integer, List<OperationMapping>> getOperationMappingsByStatus(Operation.Status opStatus, Operation.PushNotificationStatus pushNotificationStatus,
+                                                                     int limit) throws OperationManagementDAOException;
 
 }

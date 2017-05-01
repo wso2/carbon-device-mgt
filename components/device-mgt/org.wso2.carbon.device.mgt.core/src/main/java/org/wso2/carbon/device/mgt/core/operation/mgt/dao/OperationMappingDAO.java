@@ -29,7 +29,7 @@ public interface OperationMappingDAO {
 
     void removeOperationMapping(int operationId, Integer deviceId) throws OperationManagementDAOException;
 
-    void updateOperationMapping(int operationId, Integer deviceId, Operation.PushStatus pushStatus) throws
+    void updateOperationMapping(int operationId, Integer deviceId, Operation.PushNotificationStatus pushNotificationStatus) throws
             OperationManagementDAOException;
     void updateOperationMapping(List<OperationMapping> operationMappingList) throws
             OperationManagementDAOException;

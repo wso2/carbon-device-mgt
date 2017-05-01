@@ -194,15 +194,13 @@ public class OperationManagerImpl implements OperationManager {
                                 log.debug("Sending push notification to " + deviceId + " from add operation method.");
                             }
                             notificationStrategy.execute(new NotificationContext(deviceId, operation));
-                            operationMappingDAO.updateOperationMapping(operationId, enrolmentId, org.wso2.carbon
-                                    .device.mgt.core.dto.operation.mgt.Operation.PushStatus.COMPLETED);
+                            operationMappingDAO.updateOperationMapping(operationId, enrolmentId, org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.PushNotificationStatus.COMPLETED);
                         } catch (PushNotificationExecutionFailedException e) {
                             log.error("Error occurred while sending push notifications to " +
                                       deviceId.getType() + " device carrying id '" +
                                       deviceId + "'", e);
                             // Reschedule if push notification failed.
-                            operationMappingDAO.updateOperationMapping(operationId, enrolmentId, org.wso2.carbon
-                                    .device.mgt.core.dto.operation.mgt.Operation.PushStatus.SCHEDULED);
+                            operationMappingDAO.updateOperationMapping(operationId, enrolmentId, org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.PushNotificationStatus.SCHEDULED);
                         }
                     }
                 }

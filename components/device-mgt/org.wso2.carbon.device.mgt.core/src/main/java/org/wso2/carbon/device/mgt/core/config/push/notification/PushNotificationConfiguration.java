@@ -28,35 +28,46 @@ import java.util.List;
 @XmlRootElement(name = "PushNotificationConfiguration")
 public class PushNotificationConfiguration {
 
-    private int SchedulerBatchSize;
-    private int SchedulerBatchDelayMills;
-    private boolean SchedulerTaskEnabled;
+    private int schedulerBatchSize;
+    private int schedulerBatchDelayMills;
+    private int schedulerTaskInitialDelay;
+    private boolean schedulerTaskEnabled;
     private List<String> pushNotificationProviders;
 
     @XmlElement(name = "SchedulerBatchSize", required = true)
     public int getSchedulerBatchSize() {
-        return SchedulerBatchSize;
+        return schedulerBatchSize;
     }
 
-    public void setSchedulerBatchSize(int SchedulerBatchSize) {
-        this.SchedulerBatchSize = SchedulerBatchSize;
+    public void setSchedulerBatchSize(int schedulerBatchSize) {
+        this.schedulerBatchSize = schedulerBatchSize;
     }
 
     @XmlElement(name = "SchedulerBatchDelayMills", required = true)
     public int getSchedulerBatchDelayMills() {
-        return SchedulerBatchDelayMills;
+        return schedulerBatchDelayMills;
     }
 
-    public void setSchedulerBatchDelayMills(int SchedulerBatchDelayMills) {
-        this.SchedulerBatchDelayMills = SchedulerBatchDelayMills;
+    public void setSchedulerBatchDelayMills(int schedulerBatchDelayMills) {
+        this.schedulerBatchDelayMills = schedulerBatchDelayMills;
     }
+
+    @XmlElement(name = "SchedulerTaskInitialDelay", required = true)
+    public int getSchedulerTaskInitialDelay() {
+        return schedulerTaskInitialDelay;
+    }
+
+    public void setSchedulerTaskInitialDelay(int schedulerTaskInitialDelay) {
+        this.schedulerTaskInitialDelay = schedulerTaskInitialDelay;
+    }
+
     @XmlElement(name = "SchedulerTaskEnabled", required = true)
     public boolean isSchedulerTaskEnabled() {
-        return SchedulerTaskEnabled;
+        return schedulerTaskEnabled;
     }
 
     public void setSchedulerTaskEnabled(boolean schedulerTaskEnabled) {
-        SchedulerTaskEnabled = schedulerTaskEnabled;
+        this.schedulerTaskEnabled = schedulerTaskEnabled;
     }
 
     @XmlElementWrapper(name = "PushNotificationProviders", required = true)

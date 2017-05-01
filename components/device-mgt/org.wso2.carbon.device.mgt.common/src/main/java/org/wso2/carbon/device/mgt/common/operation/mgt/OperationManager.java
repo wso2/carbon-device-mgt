@@ -21,6 +21,7 @@ import org.wso2.carbon.device.mgt.common.*;
 import org.wso2.carbon.device.mgt.common.push.notification.NotificationStrategy;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * This represents the Device Operation management functionality which should be implemented by

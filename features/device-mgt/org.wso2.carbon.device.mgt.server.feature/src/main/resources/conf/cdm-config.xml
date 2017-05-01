@@ -26,8 +26,9 @@
         </DataSourceConfiguration>
     </ManagementRepository>
     <PushNotificationConfiguration>
-        <SchedulerBatchSize>1</SchedulerBatchSize>
-        <SchedulerBatchDelayMills>1000</SchedulerBatchDelayMills>
+        <SchedulerBatchSize>1000</SchedulerBatchSize>
+        <SchedulerBatchDelayMills>60000</SchedulerBatchDelayMills>
+        <SchedulerTaskInitialDelay>60000</SchedulerTaskInitialDelay>
         <SchedulerTaskEnabled>true</SchedulerTaskEnabled>
         <PushNotificationProviders>
             <Provider>org.wso2.carbon.device.mgt.extensions.push.notification.provider.fcm.FCMBasedPushNotificationProvider</Provider>

@@ -30,6 +30,7 @@ import org.wso2.carbon.certificate.mgt.cert.jaxrs.api.util.RequestValidationUtil
 import org.wso2.carbon.certificate.mgt.core.dto.CertificateResponse;
 import org.wso2.carbon.certificate.mgt.core.exception.CertificateManagementException;
 import org.wso2.carbon.certificate.mgt.core.exception.KeystoreException;
+import org.wso2.carbon.certificate.mgt.core.impl.CertificateGenerator;
 import org.wso2.carbon.certificate.mgt.core.scep.SCEPException;
 import org.wso2.carbon.certificate.mgt.core.scep.SCEPManager;
 import org.wso2.carbon.certificate.mgt.core.scep.TenantedDeviceWrapper;
@@ -74,7 +75,7 @@ public class CertificateManagementAdminServiceImpl implements CertificateManagem
                 certificate.setTenantId(PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId());
                 X509Certificate x509Certificate = certificateService
                         .pemToX509Certificate(enrollmentCertificate.getPem());
-                certificate.setSerial(x509Certificate.getSerialNumber().toString());
+                certificate.setSerial(CertificateGenerator.getCommonName(x509Certificate));
                 certificate.setCertificate(x509Certificate);
                 certificates.add(certificate);
             }

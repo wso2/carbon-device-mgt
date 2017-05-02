@@ -20,7 +20,9 @@ package org.wso2.carbon.device.application.mgt.core.dao;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.json.JSONException;
 import org.wso2.carbon.device.application.mgt.core.config.datasource.DataSourceConfig;
+import org.wso2.carbon.device.application.mgt.core.dto.StoreApplication;
 import org.wso2.carbon.device.application.mgt.core.util.ConnectionManagerUtil;
 import org.wso2.carbon.device.application.mgt.core.dto.Application;
 
@@ -37,6 +39,8 @@ public class ApplicationManagementDAOImpl implements ApplicationManagementDAO {
     private DatabaseType databaseType;
     private static DataSource dataSource;
 
+    private static final String TABLE_PREFIX = "APPM";
+
     private static final Log log = LogFactory.getLog(ApplicationManagementDAOImpl.class);
 
     public ApplicationManagementDAOImpl(DataSourceConfig dataSourceConfig) {
@@ -52,25 +56,25 @@ public class ApplicationManagementDAOImpl implements ApplicationManagementDAO {
     }
 
     @Override
-    public void createApplication(Application application) throws ApplicationManagementDAOException {
+    public void createApplication(StoreApplication application) throws ApplicationManagementDAOException {
 
     }
 
     @Override
-    public List<Application> getApplications() throws ApplicationManagementDAOException {
+    public List<StoreApplication> getApplications() throws ApplicationManagementDAOException {
 
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
         String sql = null;
-        List<Application> applications;
+        List<StoreApplication> applications;
 
         try {
             conn = ConnectionManagerUtil.getCurrentConnection().get();
             switch (databaseType) {
                 case H2:
                 case MYSQL:
-                    sql = "SELECT * FROM APPM_APPLICATION";
+                    sql = "SELECT * FROM APPM_STORE_APPLICATION";
             }
 
             stmt = conn.prepareStatement(sql);
@@ -82,6 +86,8 @@ public class ApplicationManagementDAOImpl implements ApplicationManagementDAO {
 
         } catch (SQLException e) {
             throw new ApplicationManagementDAOException("Error occurred while getting application List", e);
+        } catch (JSONException e) {
+            throw new ApplicationManagementDAOException("Error occurred while parsing JSON", e);
         } finally {
             ApplicationManagementDAOUtil.cleanupResources(stmt, rs);
         }

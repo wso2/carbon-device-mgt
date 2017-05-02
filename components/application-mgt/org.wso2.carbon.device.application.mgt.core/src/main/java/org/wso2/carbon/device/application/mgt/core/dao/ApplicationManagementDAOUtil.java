@@ -20,26 +20,30 @@ package org.wso2.carbon.device.application.mgt.core.dao;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.wso2.carbon.device.application.mgt.core.dto.Application;
 import org.wso2.carbon.device.application.mgt.core.dto.ApplicationType;
+import org.wso2.carbon.device.application.mgt.core.dto.StoreApplication;
+
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ApplicationManagementDAOUtil {
 
     private static final Log log = LogFactory.getLog(ApplicationManagementDAOUtil.class);
 
-    public static Application loadApplication(ResultSet rs) throws SQLException {
+    public static StoreApplication loadApplication(ResultSet rs) throws SQLException, JSONException {
         ApplicationType applicationType = new ApplicationType();
-        Application application = new Application();
-        application.setId(rs.getInt("ID"));
-        application.setName(rs.getString("NAME"));
-        application.setUuId(rs.getString("UUID"));
-        application.setDescription(rs.getString("DESCRIPTION"));
-        applicationType.setId(rs.getInt("APPLICATION_TYPE_ID"));
-        application.setApplicationType(applicationType);
-        return application;
+        StoreApplication storeApplication = new StoreApplication();
+        storeApplication.setUuid(rs.getString("UUID"));
+        storeApplication.setIconName(rs.getString("ICON_NAME"));
+        storeApplication.setBannerName(rs.getString("BANNER_NAME"));
+        storeApplication.setScreenshotNames(jsonArrayStringToList(rs.getString("SCREENSHOTS")));
+        return storeApplication;
     }
 
     public static void cleanupResources(PreparedStatement stmt, ResultSet rs) {
@@ -57,5 +61,17 @@ public class ApplicationManagementDAOUtil {
                 log.warn("Error occurred while closing prepared statement", e);
             }
         }
+    }
+
+    public static List<String> jsonArrayStringToList(String value) throws JSONException {
+        JSONArray jsonArray = new JSONArray(value);
+        List<String> list = new ArrayList<>();
+        if (jsonArray != null) {
+            int len = jsonArray.length();
+            for (int i = 0; i < len; i++) {
+                list.add(jsonArray.get(i).toString());
+            }
+        }
+        return list;
     }
 }

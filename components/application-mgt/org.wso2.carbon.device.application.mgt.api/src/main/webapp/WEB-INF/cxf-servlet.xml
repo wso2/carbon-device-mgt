@@ -1,11 +1,11 @@
 
 
-<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:jaxrs="http://cxf.apache.org/jaxrs"
-       xmlns="http://www.springframework.org/schema/beans"
        xsi:schemaLocation="
-         http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
-         http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd">
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd">
 
     <jaxrs:server id="applicationMgtService" address="/">
         <jaxrs:serviceBeans>
@@ -13,12 +13,10 @@
         </jaxrs:serviceBeans>
         <jaxrs:providers>
             <ref bean="jsonProvider"/>
-            <ref bean="errorHandler"/>
         </jaxrs:providers>
     </jaxrs:server>
 
     <bean id="applicationMgtServiceBean" class="org.wso2.carbon.device.application.mgt.api.services.impl.ApplicationManagementServiceImpl"/>
-    <bean id="jsonProvider" class="org.wso2.carbon.device.application.mgt.api.common.GsonMessageBodyHandler"/>
-    <bean id="errorHandler" class="org.wso2.carbon.device.application.mgt.api.common.ErrorHandler"/>
+    <bean id="jsonProvider" class="org.codehaus.jackson.jaxrs.JacksonJsonProvider"/>
 
 </beans>

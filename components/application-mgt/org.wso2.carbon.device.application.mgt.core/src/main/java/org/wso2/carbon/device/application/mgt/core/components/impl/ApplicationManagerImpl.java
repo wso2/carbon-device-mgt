@@ -25,6 +25,7 @@ import org.wso2.carbon.device.application.mgt.core.dao.ApplicationManagementDAO;
 import org.wso2.carbon.device.application.mgt.core.dao.ApplicationManagementDAOException;
 import org.wso2.carbon.device.application.mgt.core.dao.ApplicationManagementDAOImpl;
 import org.wso2.carbon.device.application.mgt.core.dto.Application;
+import org.wso2.carbon.device.application.mgt.core.dto.StoreApplication;
 import org.wso2.carbon.device.application.mgt.core.exception.ApplicationManagerException;
 import org.wso2.carbon.device.application.mgt.core.internal.ApplicationManagementDataHolder;
 import org.wso2.carbon.device.application.mgt.core.util.ConnectionManagerUtil;
@@ -55,10 +56,10 @@ public class ApplicationManagerImpl implements ApplicationManager {
     }
 
     @Override
-    public List<Application> getApplications() throws ApplicationManagerException {
+    public List<StoreApplication> getApplications() throws ApplicationManagerException {
         ConnectionManagerUtil.openConnection();
         ApplicationManagementDAO applicationManagementDAO = ApplicationManagementDataHolder.getInstance().getApplicationManagementDAO();
-        List<Application> applications = null;
+        List<StoreApplication> applications = null;
         applications = applicationManagementDAO.getApplications();
         ConnectionManagerUtil.closeConnection();
         return applications;

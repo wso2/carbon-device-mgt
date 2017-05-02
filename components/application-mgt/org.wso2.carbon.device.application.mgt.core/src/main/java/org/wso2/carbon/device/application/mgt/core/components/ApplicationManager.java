@@ -19,6 +19,7 @@
 package org.wso2.carbon.device.application.mgt.core.components;
 
 import org.wso2.carbon.device.application.mgt.core.dto.Application;
+import org.wso2.carbon.device.application.mgt.core.dto.StoreApplication;
 import org.wso2.carbon.device.application.mgt.core.exception.ApplicationManagerException;
 
 import java.util.ArrayList;
@@ -28,6 +29,6 @@ public interface ApplicationManager {
 
     public void createApplication(Application application) throws ApplicationManagerException;
 
-    public List<Application> getApplications() throws ApplicationManagerException;
+    public List<StoreApplication> getApplications() throws ApplicationManagerException;
 
 }

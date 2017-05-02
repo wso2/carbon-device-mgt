@@ -117,7 +117,7 @@ public class EnrolmentInfo implements Serializable {
         if (obj instanceof EnrolmentInfo) {
             EnrolmentInfo tempInfo = (EnrolmentInfo) obj;
             if (this.owner != null && this.ownership != null) {
-                if (this.owner.equals(tempInfo.getOwner()) && this.ownership.equals(tempInfo.getOwnership())) {
+                if (this.owner.equalsIgnoreCase(tempInfo.getOwner()) && this.ownership.equals(tempInfo.getOwnership())) {
                     return true;
                 }
             }

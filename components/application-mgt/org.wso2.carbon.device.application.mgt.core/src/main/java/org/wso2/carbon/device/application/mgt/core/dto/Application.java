@@ -18,16 +18,15 @@
  */
 package org.wso2.carbon.device.application.mgt.core.dto;
 
-import java.util.List;
+import java.util.Map;
 
-public class Application{
+public class Application {
 
     private int id;
-    private String uuId;
     private String name;
     private String description;
     private ApplicationType applicationType;
-    private List<String> properties;
+    private Map<String, String> properties;
 
 
     public int getId() {
@@ -36,14 +35,6 @@ public class Application{
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public String getUuId() {
-        return uuId;
-    }
-
-    public void setUuId(String uuId) {
-        this.uuId = uuId;
     }
 
     public String getName() {
@@ -70,11 +61,11 @@ public class Application{
         this.applicationType = applicationType;
     }
 
-    public List<String> getProperties() {
+    public Map<String, String> getProperties() {
         return properties;
     }
 
-    public void setProperties(List<String> properties) {
+    public void setProperties(Map<String, String> properties) {
         this.properties = properties;
     }
 }

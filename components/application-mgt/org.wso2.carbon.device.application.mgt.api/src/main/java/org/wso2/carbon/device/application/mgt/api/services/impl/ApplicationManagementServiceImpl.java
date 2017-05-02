@@ -18,38 +18,46 @@
  */
 package org.wso2.carbon.device.application.mgt.api.services.impl;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.device.application.mgt.api.beans.ErrorResponse;
-import org.wso2.carbon.device.application.mgt.api.services.ApplicationManagementService;
+import org.wso2.carbon.device.application.mgt.api.responses.ApplicationsListResponse;
 import org.wso2.carbon.device.application.mgt.core.components.ApplicationManager;
 import org.wso2.carbon.device.application.mgt.core.exception.ApplicationManagerException;
 import org.wso2.carbon.device.application.mgt.core.util.ApplicationManagementUtil;
 
-import javax.ws.rs.POST;
+import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 
-public class ApplicationManagementServiceImpl implements ApplicationManagementService {
+@Produces({ "application/json"})
+@Consumes({ "application/json"})
+public class ApplicationManagementServiceImpl {
 
     private static Log log = LogFactory.getLog(ApplicationManagementServiceImpl.class);
 
-    @POST
-    @Override
-    public Response createApplication(String ifModifiedSince, String name) {
-        ApplicationManager applicationManager = ApplicationManagementUtil.getApplicationManager();
-        return null;
-    }
 
-    @Override
-    public Response getApplications(String ifModifiedSince) {
+    @GET
+    @Consumes("application/json")
+    @Path("applications")
+    public ApplicationsListResponse getApplications(@Context final HttpServletResponse servletResponse) {
         ApplicationManager applicationManager = ApplicationManagementUtil.getApplicationManager();
         try {
-            return Response.ok().entity(applicationManager.getApplications()).build();
-        } catch (ApplicationManagerException e) {
-            String msg = "Error occured while getting the application list";
+            ApplicationsListResponse applicationsListResponse =
+                    new ApplicationsListResponse(applicationManager.getApplications());
+            return applicationsListResponse;
+        } catch (Exception e) {
+            String msg = "Error occurred while getting the application list";
             log.error(msg, e);
-            return Response.serverError().entity(
-                    new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
+            try {
+                servletResponse.sendError(Response.Status.NOT_FOUND.getStatusCode());
+            } catch (IOException e1) {
+                log.error(msg, e1);
+            }
+            return null;
         }
     }
 }

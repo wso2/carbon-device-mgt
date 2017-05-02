@@ -20,9 +20,9 @@ package org.wso2.carbon.device.application.mgt.core.dto;
 
 public class ApplicationType {
 
-    private int id;
-    private String name;
-    private String code;
+    protected int id;
+    protected String name;
+    protected String code;
 
     public int getId() {
         return id;

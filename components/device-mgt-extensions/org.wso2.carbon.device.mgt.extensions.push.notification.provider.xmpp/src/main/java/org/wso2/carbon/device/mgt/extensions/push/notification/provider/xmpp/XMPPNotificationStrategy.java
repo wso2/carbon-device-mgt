@@ -45,10 +45,12 @@ public class XMPPNotificationStrategy implements NotificationStrategy {
     private String xmppAdapterName;
     private static final Log log = LogFactory.getLog(XMPPNotificationStrategy.class);
     private String subDomain;
+    private final PushNotificationConfig config;
 
 
     public XMPPNotificationStrategy(PushNotificationConfig config) {
 
+        this.config = config;
         OutputEventAdapterConfiguration outputEventAdapterConfiguration = new OutputEventAdapterConfiguration();
         xmppAdapterName = config.getProperty(XMPPAdapterConstants.XMPP_ADAPTER_PROPERTY_NAME);
         outputEventAdapterConfiguration.setName(xmppAdapterName);
@@ -106,4 +108,8 @@ public class XMPPNotificationStrategy implements NotificationStrategy {
         XMPPDataHolder.getInstance().getOutputEventAdapterService().destroy(xmppAdapterName);
     }
 
+    @Override
+    public PushNotificationConfig getConfig() {
+        return config;
+    }
 }

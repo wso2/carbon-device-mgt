@@ -20,7 +20,12 @@ package org.wso2.carbon.device.mgt.extensions.device.type.deployer.template;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.device.mgt.common.*;
+import org.wso2.carbon.device.mgt.common.DeviceManagementException;
+import org.wso2.carbon.device.mgt.common.DeviceManager;
+import org.wso2.carbon.device.mgt.common.InitialOperationConfig;
+import org.wso2.carbon.device.mgt.common.MonitoringOperation;
+import org.wso2.carbon.device.mgt.common.OperationMonitoringTaskConfig;
+import org.wso2.carbon.device.mgt.common.ProvisioningConfig;
 import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManager;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.ConfigurationEntry;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.PlatformConfiguration;
@@ -111,7 +116,8 @@ public class DeviceTypeManagerService implements DeviceManagementService {
                 for (Property property : pushNotificationProvider.getConfigProperties().getProperty()) {
                     staticProps.put(property.getName(), property.getValue());
                 }
-                pushNotificationConfig = new PushNotificationConfig(pushNotificationProvider.getType(), staticProps);
+                pushNotificationConfig = new PushNotificationConfig(pushNotificationProvider.getType(),
+                        pushNotificationProvider.isScheduled(), staticProps);
             } else {
                 try {
                     PlatformConfiguration deviceTypeConfig = deviceManager.getConfiguration();
@@ -120,7 +126,8 @@ public class DeviceTypeManagerService implements DeviceManagementService {
                         if (configuration.size() > 0) {
                             Map<String, String> properties = this.getConfigProperty(configuration);
                             pushNotificationConfig = new PushNotificationConfig(
-                                    pushNotificationProvider.getType(), properties);
+                                    pushNotificationProvider.getType(), pushNotificationProvider.isScheduled(),
+                                    properties);
                         }
                     }
                 } catch (DeviceManagementException e) {

@@ -32,6 +32,7 @@ import org.wso2.carbon.device.mgt.common.operation.mgt.Activity;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
 import org.wso2.carbon.device.mgt.common.policy.mgt.PolicyMonitoringManager;
+import org.wso2.carbon.device.mgt.common.push.notification.NotificationStrategy;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -130,7 +131,8 @@ public interface DeviceManagementProviderService {
 
     /**
      * This method returns the list of device owned by a user of given device type.
-     * @param userName user name.
+     *
+     * @param userName   user name.
      * @param deviceType device type name
      * @return
      * @throws DeviceManagementException
@@ -210,12 +212,20 @@ public interface DeviceManagementProviderService {
      * This method is used to check whether the device is enrolled with the give user.
      *
      * @param deviceId identifier of the device that needs to be checked against the user.
-     * @param user username of the device owner.
-     *
+     * @param user     username of the device owner.
      * @return true if the user owns the device else will return false.
      * @throws DeviceManagementException If some unusual behaviour is observed while fetching the device.
      */
     boolean isEnrolled(DeviceIdentifier deviceId, String user) throws DeviceManagementException;
+
+    /**
+     * This method is used to get notification strategy for given device type
+     *
+     * @param deviceType Device type
+     * @return Notification Strategy for device type
+     * @throws DeviceManagementException
+     */
+    NotificationStrategy getNotificationStrategyByDeviceType(String deviceType) throws DeviceManagementException;
 
     License getLicense(String deviceType, String languageCode) throws DeviceManagementException;
 
@@ -239,6 +249,7 @@ public interface DeviceManagementProviderService {
 
     /**
      * Returns the device of specified id.
+     *
      * @param deviceId device Id
      * @return Device returns null when device is not avaialble.
      * @throws DeviceManagementException

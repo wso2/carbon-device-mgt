@@ -42,7 +42,7 @@ public class FCMNotificationStrategy implements NotificationStrategy {
     private static final String FCM_API_KEY = "fcmAPIKey";
     private static final int TIME_TO_LIVE = 60;
     private static final int HTTP_STATUS_CODE_OK = 200;
-    private PushNotificationConfig config;
+    private final PushNotificationConfig config;
 
     public FCMNotificationStrategy(PushNotificationConfig config) {
         this.config = config;
@@ -131,6 +131,11 @@ public class FCMNotificationStrategy implements NotificationStrategy {
             }
         }
         return fcmToken;
+    }
+
+    @Override
+    public PushNotificationConfig getConfig() {
+        return config;
     }
 
 }

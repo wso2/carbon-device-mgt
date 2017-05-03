@@ -75,7 +75,7 @@ public class CertificateManagementAdminServiceImpl implements CertificateManagem
                 certificate.setTenantId(PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId());
                 X509Certificate x509Certificate = certificateService
                         .pemToX509Certificate(enrollmentCertificate.getPem());
-                certificate.setSerial(CertificateGenerator.getCommonName(x509Certificate));
+                certificate.setSerial(x509Certificate.getSerialNumber().toString());
                 certificate.setCertificate(x509Certificate);
                 certificates.add(certificate);
             }

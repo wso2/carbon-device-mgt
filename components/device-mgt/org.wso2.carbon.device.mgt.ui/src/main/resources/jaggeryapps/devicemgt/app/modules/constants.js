@@ -81,3 +81,6 @@ var CACHED_CREDENTIALS = "tenantBasedCredentials";
 var CACHED_CREDENTIALS_FOR_WEBSOCKET_APP = "tenantBasedWebSocketClientCredentials";
 
 var ALLOWED_SCOPES = "scopes";
+
+var SAML_TOKEN_KEY = "samlToken";
+var SKIP_WELCOME_SCREEN ="skipWelcomeScreen";

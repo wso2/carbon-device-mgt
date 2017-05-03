@@ -11,7 +11,7 @@
         "login": {
             "onSuccess": {
                 "script": "/app/modules/login.js",
-                "page": "cdmf.page.dashboard"
+                "page": "cdmf.page.processing"
             },
             "onFail": {
                 "script": "/app/modules/login.js",

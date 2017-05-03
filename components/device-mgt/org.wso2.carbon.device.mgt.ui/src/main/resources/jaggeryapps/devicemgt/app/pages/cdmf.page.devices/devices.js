@@ -80,7 +80,7 @@ function onRequest(context) {
     }
 
     var mdmProps = require("/app/modules/conf-reader/main.js")["conf"];
-    var cUser = userModule.getUser();
+    var cUser = userModule.getCarbonUser();
     var analiticsServer = mdmProps["dashboardServerURL"];
     var analiticsURL =  analiticsServer + "/portal/t/" + cUser.userDomain + "/dashboards/android-iot/battery?owner=" + cUser.username + "&deviceId=";
     viewModel.analiticsURL = analiticsURL;

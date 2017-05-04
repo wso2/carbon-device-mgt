@@ -16,18 +16,40 @@
  *   under the License.
  *
  */
-package org.wso2.carbon.device.application.mgt.core.components;
+package org.wso2.carbon.device.application.mgt.core.dto;
 
-import org.wso2.carbon.device.application.mgt.core.dto.Application;
-import org.wso2.carbon.device.application.mgt.core.dto.ApplicationList;
-import org.wso2.carbon.device.application.mgt.core.exception.ApplicationManagerException;
+import org.wso2.carbon.device.application.mgt.core.jaxrs.Exclude;
 
-import java.util.List;
+public class Category {
 
-public interface ApplicationManager {
+    @Exclude
+    private int id;
 
-    public void createApplication(Application application) throws ApplicationManagerException;
+    private String name;
 
-    public ApplicationList getApplications() throws ApplicationManagerException;
+    private String description;
 
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 }

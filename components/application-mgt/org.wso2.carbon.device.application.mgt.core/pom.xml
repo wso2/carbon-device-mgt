@@ -85,6 +85,7 @@
                             org.json,
                             org.xml.sax,
                             javax.sql,
+                            com.google.gson,
                             <!--javax.cache,-->
                             javax.naming,
                             javax.xml.bind.annotation,
@@ -93,6 +94,7 @@
                             org.wso2.carbon.device.mgt.common.*,
                             io.swagger.annotations.*;resolution:=optional,
                             org.wso2.carbon.device.mgt.core.*,
+                            org.wso2.carbon.device.mgt.core.utils.*,
                             org.wso2.carbon.registry.indexing.*,
                             <!--org.bouncycastle.pkcs.jcajce-->
                         </Import-Package>

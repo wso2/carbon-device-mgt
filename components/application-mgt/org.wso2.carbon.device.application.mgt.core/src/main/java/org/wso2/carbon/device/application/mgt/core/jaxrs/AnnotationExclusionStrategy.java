@@ -16,18 +16,20 @@
  *   under the License.
  *
  */
-package org.wso2.carbon.device.application.mgt.core.components;
+package org.wso2.carbon.device.application.mgt.core.jaxrs;
 
-import org.wso2.carbon.device.application.mgt.core.dto.Application;
-import org.wso2.carbon.device.application.mgt.core.dto.ApplicationList;
-import org.wso2.carbon.device.application.mgt.core.exception.ApplicationManagerException;
+import com.google.gson.ExclusionStrategy;
+import com.google.gson.FieldAttributes;
 
-import java.util.List;
+public class AnnotationExclusionStrategy implements ExclusionStrategy {
 
-public interface ApplicationManager {
+    @Override
+    public boolean shouldSkipField(FieldAttributes f) {
+        return f.getAnnotation(Exclude.class) != null;
+    }
 
-    public void createApplication(Application application) throws ApplicationManagerException;
-
-    public ApplicationList getApplications() throws ApplicationManagerException;
-
+    @Override
+    public boolean shouldSkipClass(Class<?> clazz) {
+        return false;
+    }
 }

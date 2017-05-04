@@ -18,48 +18,45 @@
  */
 package org.wso2.carbon.device.application.mgt.core.dto;
 
-import org.wso2.carbon.device.application.mgt.core.jaxrs.Exclude;
+public class Pagination {
 
-public class ApplicationType {
+    private int offset;
 
-    @Exclude
-    private int id;
+    private int limit;
 
-    private String name;
+    private int length;
 
-    private String code;
+    private int count;
 
-    private String parameters;
-
-    public int getId() {
-        return id;
+    public int getOffset() {
+        return offset;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setOffset(int offset) {
+        this.offset = offset;
     }
 
-    public String getName() {
-        return name;
+    public int getLimit() {
+        return limit;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setLimit(int limit) {
+        this.limit = limit;
     }
 
-    public String getCode() {
-        return code;
+    public int getLength() {
+        return length;
     }
 
-    public void setCode(String code) {
-        this.code = code;
+    public void setLength(int length) {
+        this.length = length;
     }
 
-    public String getParameters() {
-        return parameters;
+    public int getCount() {
+        return count;
     }
 
-    public void setParameters(String parameters) {
-        this.parameters = parameters;
+    public void setCount(int count) {
+        this.count = count;
     }
 }

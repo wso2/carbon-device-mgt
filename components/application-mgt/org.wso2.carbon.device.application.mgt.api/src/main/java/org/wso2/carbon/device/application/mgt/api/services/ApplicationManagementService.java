@@ -20,12 +20,11 @@ package org.wso2.carbon.device.application.mgt.api.services;
 
 import io.swagger.annotations.*;
 import org.wso2.carbon.device.application.mgt.api.beans.ErrorResponse;
-import org.wso2.carbon.device.application.mgt.api.responses.ApplicationsListResponse;
+import org.wso2.carbon.device.application.mgt.core.dto.ApplicationList;
 
-import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 @Api(value = "Application Management", description = "This API carries all device management related operations " +
         "such as get all the available devices, etc.")
@@ -57,7 +56,7 @@ public interface ApplicationManagementService {
                     @ApiResponse(
                             code = 200,
                             message = "OK. \n Successfully got application list.",
-                            response = ApplicationsListResponse.class),
+                            response = ApplicationList.class),
                     @ApiResponse(
                             code = 304,
                             message = "Not Modified. \n " +
@@ -67,8 +66,8 @@ public interface ApplicationManagementService {
                             message = "Internal Server Error. \n Error occurred while getting the application list.",
                             response = ErrorResponse.class)
             })
-    ApplicationsListResponse getApplications(@Context final HttpServletResponse servletResponse,
-                                             @ApiParam(
+    Response getApplications(
+                             @ApiParam(
                     name = "If-Modified-Since",
                     value = "Validates if the requested variant has not been modified since the time specified",
                     required = false)

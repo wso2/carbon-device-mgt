@@ -1568,7 +1568,7 @@ parameters:
     name: limit
     in: query
     description: |
-      Maximum size of resource array to return.
+      Maximum length of resource array to return.
     default: 25
     type: integer
 

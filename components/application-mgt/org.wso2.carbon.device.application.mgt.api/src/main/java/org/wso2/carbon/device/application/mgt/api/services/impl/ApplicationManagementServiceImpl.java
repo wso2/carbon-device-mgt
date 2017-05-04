@@ -18,20 +18,17 @@
  */
 package org.wso2.carbon.device.application.mgt.api.services.impl;
 
-import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.device.application.mgt.api.responses.ApplicationsListResponse;
 import org.wso2.carbon.device.application.mgt.core.components.ApplicationManager;
-import org.wso2.carbon.device.application.mgt.core.exception.ApplicationManagerException;
+import org.wso2.carbon.device.application.mgt.core.dto.ApplicationList;
 import org.wso2.carbon.device.application.mgt.core.util.ApplicationManagementUtil;
 
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 
 @Produces({ "application/json"})
 @Consumes({ "application/json"})
@@ -43,21 +40,15 @@ public class ApplicationManagementServiceImpl {
     @GET
     @Consumes("application/json")
     @Path("applications")
-    public ApplicationsListResponse getApplications(@Context final HttpServletResponse servletResponse) {
+    public Response getApplications() {
         ApplicationManager applicationManager = ApplicationManagementUtil.getApplicationManager();
         try {
-            ApplicationsListResponse applicationsListResponse =
-                    new ApplicationsListResponse(applicationManager.getApplications());
-            return applicationsListResponse;
+            ApplicationList applications = applicationManager.getApplications();
+            return Response.status(Response.Status.OK).entity(applications).build();
         } catch (Exception e) {
             String msg = "Error occurred while getting the application list";
             log.error(msg, e);
-            try {
-                servletResponse.sendError(Response.Status.NOT_FOUND.getStatusCode());
-            } catch (IOException e1) {
-                log.error(msg, e1);
-            }
-            return null;
+            return Response.status(Response.Status.NOT_FOUND).build();
         }
     }
 }

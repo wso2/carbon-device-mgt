@@ -27,7 +27,7 @@ import org.wso2.carbon.device.application.mgt.core.components.impl.ApplicationMa
 import org.wso2.carbon.device.application.mgt.core.config.ApplicationConfigurationManager;
 import org.wso2.carbon.device.application.mgt.core.config.datasource.DataSourceConfig;
 import org.wso2.carbon.device.application.mgt.core.dao.ApplicationManagementDAO;
-import org.wso2.carbon.device.application.mgt.core.dao.ApplicationManagementDAOImpl;
+import org.wso2.carbon.device.application.mgt.core.dao.ApplicationManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 
 import javax.naming.NamingException;
@@ -55,7 +55,8 @@ public class ApplicationManagementServiceComponent {
 
         DataSourceConfig dataSourceConfig  = ApplicationConfigurationManager.getInstance()
                 .getApplicationManagerConfiguration().getApplicationManagerRepository().getDataSourceConfig();
-        ApplicationManagementDAO applicationManagementDAO = new ApplicationManagementDAOImpl(dataSourceConfig);
+        ApplicationManagementDAO applicationManagementDAO = new ApplicationManagementDAOFactory(dataSourceConfig)
+                .getApplicationManagementDAO();
         ApplicationManagementDataHolder.getInstance()
                 .setApplicationManagementDAO(applicationManagementDAO);
 

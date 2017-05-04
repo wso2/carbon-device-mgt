@@ -24,7 +24,7 @@
         <title>WSO2 IoT Server</title>
     </head>
     <body style="color: #666666; background-color:#cdcdcd; padding: 0px; margin: 0px;">
-    <div style="background-color:#cdcdcd; font-size: 1em; font-family: Arial, Helvetica; line-height: 170%; color: #666666; padding: 20px 0px; margin: 0px;">
+    <div style="background-color:#cdcdcd; font-length: 1em; font-family: Arial, Helvetica; line-height: 170%; color: #666666; padding: 20px 0px; margin: 0px;">
         <div style="width: 86%; max-width: 650px; padding: 2%; background-color: #ffffff; margin: auto; border-radius: 14px;">
             <div style="background-color: #49c8f5; line-height: 0px; border-top-left-radius: 10px; border-top-right-radius: 10px; padding: 0px 10px 0px 0px;">
                 <div style="display: inline-block; line-height: 0px;">
@@ -33,33 +33,33 @@
                 </div>
             </div>
             <div style="background-color: #ffffff; line-height: 170%; color: #666666; padding: 20px 25px;">
-                <p style="font-size: 1em; font-family: Arial, Helvetica; line-height: 170%; color: #666666; margin: 5px 0px 20px;">
+                <p style="font-length: 1em; font-family: Arial, Helvetica; line-height: 170%; color: #666666; margin: 5px 0px 20px;">
                     Hi $first-name,
                 </p>
 
-                <p style="font-size: 1em; font-family: Arial, Helvetica; line-height: 170%; color: #666666; margin: 5px 0px;">
+                <p style="font-length: 1em; font-family: Arial, Helvetica; line-height: 170%; color: #666666; margin: 5px 0px;">
                     You have been registered in WSO2 IoT Server and invited to enrol your device.
                     Click <a href="$base-url-https/devicemgt/device/enroll">here</a> to enrol the WSO2 IoT Server devices to begin.</p>
 
-                <p style="font-size: 1em; font-family: Arial, Helvetica; line-height: 170%; color: #666666; margin: 5px 0px;">
+                <p style="font-length: 1em; font-family: Arial, Helvetica; line-height: 170%; color: #666666; margin: 5px 0px;">
                     Use following credentials to log in to WSO2 IoT Server.
                 </p>
 
-                <p style="font-size: 1em; font-family: Arial, Helvetica; line-height: 170%; color: #666666; margin: 5px 0px;">
+                <p style="font-length: 1em; font-family: Arial, Helvetica; line-height: 170%; color: #666666; margin: 5px 0px;">
                     <b>Username:</b> $username
                     <br/>
                     <b>Password:</b> $password
                 </p>
 
-                <p style="font-size: 1em; font-family: Arial, Helvetica; line-height: 170%; color: #666666; margin: 5px 0px;">
+                <p style="font-length: 1em; font-family: Arial, Helvetica; line-height: 170%; color: #666666; margin: 5px 0px;">
                     Should you need assistance, please contact your administrator.
                 </p>
 
-                <p style="font-size: 1em; font-family: Arial, Helvetica; line-height: 170%; color: #666666; margin: 20px 0px 5px;">
+                <p style="font-length: 1em; font-family: Arial, Helvetica; line-height: 170%; color: #666666; margin: 20px 0px 5px;">
                     Regards,
                 </p>
 
-                <p style="font-size: 1em; font-family: Arial, Helvetica; line-height: 170%; color: #666666; margin: 5px 0px;">
+                <p style="font-length: 1em; font-family: Arial, Helvetica; line-height: 170%; color: #666666; margin: 5px 0px;">
                     WSO2 IoT Server Administrator
                 </p>
             </div>

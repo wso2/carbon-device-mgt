@@ -62,7 +62,7 @@ org.eclipse.osgi/defaultprofile/logfilename =
 # requested.
 org.eclipse.osgi/defaultprofile/logsynchronously = false
 
-# Specify the size of the default profile implementation log buffer.
+# Specify the length of the default profile implementation log buffer.
 org.eclipse.osgi/defaultprofile/buffersize = 256
 
 #### Monitoring settings

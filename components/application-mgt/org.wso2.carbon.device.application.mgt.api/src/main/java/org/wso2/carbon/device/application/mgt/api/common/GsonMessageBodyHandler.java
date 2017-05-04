@@ -21,6 +21,7 @@ package org.wso2.carbon.device.application.mgt.api.common;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import org.wso2.carbon.device.application.mgt.core.jaxrs.AnnotationExclusionStrategy;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
@@ -50,7 +51,7 @@ public class GsonMessageBodyHandler implements MessageBodyWriter<Object>, Messag
 
     private Gson getGson() {
         if (gson == null) {
-            final GsonBuilder gsonBuilder = new GsonBuilder();
+            final GsonBuilder gsonBuilder = new GsonBuilder().setExclusionStrategies(new AnnotationExclusionStrategy());
             gson = gsonBuilder.create();
         }
         return gson;

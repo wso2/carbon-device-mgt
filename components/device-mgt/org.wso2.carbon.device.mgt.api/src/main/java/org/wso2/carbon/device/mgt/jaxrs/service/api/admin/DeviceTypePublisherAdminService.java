@@ -107,42 +107,4 @@ public interface DeviceTypePublisherAdminService {
                 required = true)
            @PathParam("type") String type);
 
-    @GET
-    @Path("/deploy/{type}/status")
-    @ApiOperation(
-            httpMethod = "GET",
-            value = "Check the status of device type artifact\n",
-            notes = "This is an API that can be used to check the status of the artifact",
-            response = Response.class,
-            tags = "Devicetype Status Service",
-            extensions = {
-                    @Extension(properties = {
-                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:devicetype:deployment")
-                    })
-            })
-
-    @ApiResponses(value = {
-            @ApiResponse(
-                    code = 201,
-                    message = "OK. \n  Successfully deployed the artifacts.",
-                    response = Response.class),
-            @ApiResponse(
-                    code = 400,
-                    message = "Bad Request. \n Invalid request or validation error.",
-                    response = ErrorResponse.class),
-            @ApiResponse(
-                    code = 404,
-                    message = "Not Found. \n The specified resource does not exist."),
-            @ApiResponse(
-                    code = 415,
-                    message = "Unsupported media type. \n The entity of the request was in a not supported format."),
-            @ApiResponse(
-                    code = 500,
-                    message = "Internal Server Error. \n Server error occurred while checking the authorization" +
-                            " for a specified set of devices.",
-                    response = ErrorResponse.class)
-    })
-
-    Response getStatus(@PathParam("type") String deviceType);
-
 }

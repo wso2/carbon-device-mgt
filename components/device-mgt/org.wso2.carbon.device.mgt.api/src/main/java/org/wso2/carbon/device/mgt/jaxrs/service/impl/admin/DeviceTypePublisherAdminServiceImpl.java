@@ -185,14 +185,6 @@ public class DeviceTypePublisherAdminServiceImpl implements DeviceTypePublisherA
             if (receiverFileList != null) {
                 publishDynamicEventReceivers(type, tenantDomain, receiverFileList);
             }
-            int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
-            Registry registry = DeviceMgtAPIUtils.getRegistryService().getConfigSystemRegistry(tenantId);
-            if (!registry.resourceExists(DEFAULT_RESOURCE_LOCATION + type + ".exist")) {
-                Resource resource = new ResourceImpl();
-                resource.setContent("</exist>");
-                resource.setMediaType(MEDIA_TYPE_XML);
-                registry.put(DEFAULT_RESOURCE_LOCATION + type + ".exist", resource);
-            }
             return Response.status(Response.Status.CREATED).entity("\"OK. \\n Successfully uploaded the artifacts.\"")
                     .build();
         } catch (AxisFault e) {
@@ -227,23 +219,25 @@ public class DeviceTypePublisherAdminServiceImpl implements DeviceTypePublisherA
             if (directory.isDirectory() && directory.exists()) {
                 UploadedFileItem[] uploadedFileItems = loadCappFromFileSystem(type);
                 if (uploadedFileItems.length > 0) {
-                    carbonAppUploaderStub = new CarbonAppUploaderStub(Utils.replaceSystemProperty(
-                            IOT_MGT_URL));
-                    Options appUploaderOptions = carbonAppUploaderStub._getServiceClient().getOptions();
-                    if (appUploaderOptions == null) {
-                        appUploaderOptions = new Options();
-                    }
-                    appUploaderOptions.setProperty(HTTPConstants.HTTP_HEADERS, list);
-                    appUploaderOptions.setProperty(HTTPConstants.CUSTOM_PROTOCOL_HANDLER
-                            , new Protocol(DEFAULT_HTTP_PROTOCOL, (ProtocolSocketFactory) new SSLProtocolSocketFactory
-                            (sslContext), Integer.parseInt(Utils.replaceSystemProperty(IOT_MGT_PORT))));
+                    if (DEVICE_MANAGEMENT_TYPE.equals(type.toLowerCase())) {
+                        carbonAppUploaderStub = new CarbonAppUploaderStub(Utils.replaceSystemProperty(
+                                IOT_MGT_URL));
+                        Options appUploaderOptions = carbonAppUploaderStub._getServiceClient().getOptions();
+                        if (appUploaderOptions == null) {
+                            appUploaderOptions = new Options();
+                        }
+                        appUploaderOptions.setProperty(HTTPConstants.HTTP_HEADERS, list);
+                        appUploaderOptions.setProperty(HTTPConstants.CUSTOM_PROTOCOL_HANDLER
+                                , new Protocol(DEFAULT_HTTP_PROTOCOL,
+                                               (ProtocolSocketFactory) new SSLProtocolSocketFactory
+                                                       (sslContext), Integer.parseInt(Utils.replaceSystemProperty(
+                                IOT_MGT_PORT))));
 
-                    carbonAppUploaderStub._getServiceClient().setOptions(appUploaderOptions);
-                    carbonAppUploaderStub.uploadApp(uploadedFileItems);
-
-                    if (!DEVICE_MANAGEMENT_TYPE.equals(type.toLowerCase())) {
+                        carbonAppUploaderStub._getServiceClient().setOptions(appUploaderOptions);
+                        carbonAppUploaderStub.uploadApp(uploadedFileItems);
+                    } else {
                         carbonAppUploaderStub = new CarbonAppUploaderStub(Utils.replaceSystemProperty(DAS_URL));
-                        appUploaderOptions = carbonAppUploaderStub._getServiceClient().getOptions();
+                        Options appUploaderOptions = carbonAppUploaderStub._getServiceClient().getOptions();
                         if (appUploaderOptions == null) {
                             appUploaderOptions = new Options();
                         }
@@ -265,27 +259,6 @@ public class DeviceTypePublisherAdminServiceImpl implements DeviceTypePublisherA
             cleanup(carbonAppUploaderStub);
         }
     }
-
-    @GET
-    @Path("/deploy/{type}/status")
-    @Override
-    public Response getStatus(@PathParam("type") String deviceType) {
-        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
-        Registry registry;
-        try {
-            registry = DeviceMgtAPIUtils.getRegistryService().getConfigSystemRegistry(tenantId);
-            if (registry.resourceExists(DEFAULT_RESOURCE_LOCATION + deviceType + ".exist")) {
-                return Response.status(Response.Status.OK).entity("Exist").build();
-            } else {
-                return Response.status(Response.Status.NO_CONTENT).entity("Does not Exist").build();
-            }
-        } catch (RegistryException e) {
-            log.error("Registry failed to load." + e.getMessage(), e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(
-                    "\"Error, Artifact status check has failed\"").build();
-        }
-    }
-
 
     private void publishDynamicEventReceivers(String deviceType, String tenantDomain, List<String> receiversList)
             throws IOException, UserStoreException, JWTClientException {

@@ -468,7 +468,7 @@
     -->
     <FileUploadConfig>
         <!--
-           The total file upload size limit in MB
+           The total file upllengthsize limit in MB
         -->
         <TotalFileSizeLimit>100</TotalFileSizeLimit>
 

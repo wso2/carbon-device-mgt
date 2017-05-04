@@ -24,26 +24,49 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.wso2.carbon.device.application.mgt.core.dto.Application;
 import org.wso2.carbon.device.application.mgt.core.dto.ApplicationType;
-import org.wso2.carbon.device.application.mgt.core.dto.StoreApplication;
+import org.wso2.carbon.device.application.mgt.core.dto.Category;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ApplicationManagementDAOUtil {
 
     private static final Log log = LogFactory.getLog(ApplicationManagementDAOUtil.class);
 
-    public static StoreApplication loadApplication(ResultSet rs) throws SQLException, JSONException {
+    public static Application loadApplication(ResultSet rs ,  ResultSet rsProperties) throws SQLException, JSONException {
+        Application application = new Application();
+        application.setId(rs.getInt("ID"));
+        application.setName(rs.getString("NAME"));
+        application.setUuid(rs.getString("UUID"));
+        application.setDescription(rs.getString("DESCRIPTION"));
+        application.setIconName(rs.getString("ICON_NAME"));
+        application.setBannerName(rs.getString("BANNER_NAME"));
+        application.setVideoName(rs.getString("VIDEO_NAME"));
+        application.setScreenshots(jsonArrayStringToList(rs.getString("SCREENSHOTS")));
+        application.setTags(jsonArrayStringToList(rs.getString("TAGS")));
+        application.setCreatedAt(rs.getDate("CREATED_AT"));
+        application.setModifiedAt(rs.getDate("MODIFIED_AT"));
+
         ApplicationType applicationType = new ApplicationType();
-        StoreApplication storeApplication = new StoreApplication();
-        storeApplication.setUuid(rs.getString("UUID"));
-        storeApplication.setIconName(rs.getString("ICON_NAME"));
-        storeApplication.setBannerName(rs.getString("BANNER_NAME"));
-        storeApplication.setScreenshotNames(jsonArrayStringToList(rs.getString("SCREENSHOTS")));
-        return storeApplication;
+        applicationType.setName(rs.getString("AT_NAME"));
+        applicationType.setCode(rs.getString("AT_CODE"));
+        application.setApplicationType(applicationType);
+
+        Map<String, String> properties = new HashMap<>();
+        while (rsProperties.next()){
+            properties.put(rsProperties.getString("PROP_KEY"), rsProperties.getString("PROP_VAL"));
+        }
+        application.setProperties(properties);
+
+        Category category = new Category();
+        category.setName(rs.getString("CT_NAME"));
+        application.setCategory(category);
+        return application;
     }
 
     public static void cleanupResources(PreparedStatement stmt, ResultSet rs) {

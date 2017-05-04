@@ -52,7 +52,7 @@
         <!--<Enable>true</Enable>-->
         <!--<Frequency>600000</Frequency>-->
     <!--</TaskConfiguration>-->
-    <!-- Default Page size configuration for paginated DM APIs-->
+    <!-- Default Plengthsize configuration for paginated DM APIs-->
     <PaginationConfiguration>
         <DeviceListPageSize>20</DeviceListPageSize>
         <GroupListPageSize>20</GroupListPageSize>

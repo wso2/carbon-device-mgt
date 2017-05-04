@@ -24,6 +24,6 @@
             </JndiLookupDefinition>
         </DataSourceConfiguration>
     </ManagementRepository>
-    <!-- Default page size of GET certificates API -->
+    <!-- Default plengthsize of GET certificates API -->
     <DefaultPageSize>10</DefaultPageSize>
 </CertificateConfigurations>

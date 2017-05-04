@@ -16,18 +16,29 @@
  *   under the License.
  *
  */
-package org.wso2.carbon.device.application.mgt.core.components;
-
-import org.wso2.carbon.device.application.mgt.core.dto.Application;
-import org.wso2.carbon.device.application.mgt.core.dto.ApplicationList;
-import org.wso2.carbon.device.application.mgt.core.exception.ApplicationManagerException;
+package org.wso2.carbon.device.application.mgt.core.dto;
 
 import java.util.List;
 
-public interface ApplicationManager {
+public class ApplicationList {
 
-    public void createApplication(Application application) throws ApplicationManagerException;
+    private List<Application> applications;
 
-    public ApplicationList getApplications() throws ApplicationManagerException;
+    private Pagination pagination;
 
+    public List<Application> getApplications() {
+        return applications;
+    }
+
+    public void setApplications(List<Application> applications) {
+        this.applications = applications;
+    }
+
+    public Pagination getPagination() {
+        return pagination;
+    }
+
+    public void setPagination(Pagination pagination) {
+        this.pagination = pagination;
+    }
 }

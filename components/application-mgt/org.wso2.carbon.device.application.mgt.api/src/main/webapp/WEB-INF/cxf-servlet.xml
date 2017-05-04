@@ -17,6 +17,6 @@ http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd">
     </jaxrs:server>
 
     <bean id="applicationMgtServiceBean" class="org.wso2.carbon.device.application.mgt.api.services.impl.ApplicationManagementServiceImpl"/>
-    <bean id="jsonProvider" class="org.codehaus.jackson.jaxrs.JacksonJsonProvider"/>
+    <bean id="jsonProvider" class="org.wso2.carbon.device.application.mgt.api.common.GsonMessageBodyHandler"/>
 
 </beans>

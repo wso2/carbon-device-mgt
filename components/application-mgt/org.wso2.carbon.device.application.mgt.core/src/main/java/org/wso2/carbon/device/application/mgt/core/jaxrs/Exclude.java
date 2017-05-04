@@ -16,18 +16,14 @@
  *   under the License.
  *
  */
-package org.wso2.carbon.device.application.mgt.core.components;
+package org.wso2.carbon.device.application.mgt.core.jaxrs;
 
-import org.wso2.carbon.device.application.mgt.core.dto.Application;
-import org.wso2.carbon.device.application.mgt.core.dto.ApplicationList;
-import org.wso2.carbon.device.application.mgt.core.exception.ApplicationManagerException;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-import java.util.List;
-
-public interface ApplicationManager {
-
-    public void createApplication(Application application) throws ApplicationManagerException;
-
-    public ApplicationList getApplications() throws ApplicationManagerException;
-
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.FIELD)
+public @interface Exclude {
 }

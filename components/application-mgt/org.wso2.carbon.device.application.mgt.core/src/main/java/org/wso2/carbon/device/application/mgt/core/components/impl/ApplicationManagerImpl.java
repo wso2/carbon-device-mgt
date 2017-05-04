@@ -22,16 +22,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.application.mgt.core.components.ApplicationManager;
 import org.wso2.carbon.device.application.mgt.core.dao.ApplicationManagementDAO;
-import org.wso2.carbon.device.application.mgt.core.dao.ApplicationManagementDAOException;
-import org.wso2.carbon.device.application.mgt.core.dao.ApplicationManagementDAOImpl;
 import org.wso2.carbon.device.application.mgt.core.dto.Application;
-import org.wso2.carbon.device.application.mgt.core.dto.StoreApplication;
+import org.wso2.carbon.device.application.mgt.core.dto.ApplicationList;
 import org.wso2.carbon.device.application.mgt.core.exception.ApplicationManagerException;
 import org.wso2.carbon.device.application.mgt.core.internal.ApplicationManagementDataHolder;
 import org.wso2.carbon.device.application.mgt.core.util.ConnectionManagerUtil;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 public class ApplicationManagerImpl implements ApplicationManager {
@@ -56,11 +52,10 @@ public class ApplicationManagerImpl implements ApplicationManager {
     }
 
     @Override
-    public List<StoreApplication> getApplications() throws ApplicationManagerException {
+    public ApplicationList getApplications() throws ApplicationManagerException {
         ConnectionManagerUtil.openConnection();
         ApplicationManagementDAO applicationManagementDAO = ApplicationManagementDataHolder.getInstance().getApplicationManagementDAO();
-        List<StoreApplication> applications = null;
-        applications = applicationManagementDAO.getApplications();
+        ApplicationList applications = applicationManagementDAO.getApplications();
         ConnectionManagerUtil.closeConnection();
         return applications;
     }

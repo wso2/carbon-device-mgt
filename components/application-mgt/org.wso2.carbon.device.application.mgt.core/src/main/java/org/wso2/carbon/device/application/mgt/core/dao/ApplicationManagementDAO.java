@@ -18,9 +18,8 @@
  */
 package org.wso2.carbon.device.application.mgt.core.dao;
 
-import org.apache.axis2.databinding.types.Day;
 import org.wso2.carbon.device.application.mgt.core.dto.Application;
-import org.wso2.carbon.device.application.mgt.core.dto.StoreApplication;
+import org.wso2.carbon.device.application.mgt.core.dto.ApplicationList;
 
 import java.util.HashMap;
 import java.util.List;
@@ -58,8 +57,8 @@ public interface ApplicationManagementDAO {
         }
     }
 
-    public void createApplication(StoreApplication application) throws ApplicationManagementDAOException;
+    public void createApplication(Application application) throws ApplicationManagementDAOException;
 
-    public List<StoreApplication> getApplications() throws ApplicationManagementDAOException;
+    public ApplicationList getApplications() throws ApplicationManagementDAOException;
 
 }

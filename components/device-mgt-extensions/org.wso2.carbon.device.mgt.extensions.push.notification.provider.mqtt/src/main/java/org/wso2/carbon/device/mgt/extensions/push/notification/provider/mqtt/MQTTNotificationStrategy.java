@@ -52,7 +52,7 @@ public class MQTTNotificationStrategy implements NotificationStrategy {
         OutputEventAdapterConfiguration adapterConfig = new OutputEventAdapterConfiguration();
         adapterConfig.setType(MQTTAdapterConstants.MQTT_ADAPTER_TYPE);
         mqttAdapterName = config.getProperty(MQTTAdapterConstants.MQTT_ADAPTER_PROPERTY_NAME);
-        adapterConfig.setName(mqttAdapterName);
+
         adapterConfig.setMessageFormat(MessageType.TEXT);
 
         Map<String, String> configProperties = new HashMap<String, String>();
@@ -60,16 +60,23 @@ public class MQTTNotificationStrategy implements NotificationStrategy {
         if (brokerUrl != null && !brokerUrl.isEmpty()) {
             configProperties.put(MQTTAdapterConstants.MQTT_ADAPTER_PROPERTY_BROKER_URL, brokerUrl);
         }
-        configProperties.put(MQTTAdapterConstants.MQTT_ADAPTER_PROPERTY_USERNAME,
-                config.getProperty(MQTTAdapterConstants.MQTT_ADAPTER_PROPERTY_USERNAME));
-        configProperties.put(MQTTAdapterConstants.MQTT_ADAPTER_PROPERTY_PASSWORD,
-                config.getProperty(MQTTAdapterConstants.MQTT_ADAPTER_PROPERTY_PASSWORD));
-        configProperties.put(MQTTAdapterConstants.MQTT_ADAPTER_PROPERTY_CLEAR_SESSION,
-                config.getProperty(MQTTAdapterConstants.MQTT_ADAPTER_PROPERTY_CLEAR_SESSION));
-        configProperties.put(MQTTAdapterConstants.MQTT_ADAPTER_PROPERTY_SCOPES,
-                config.getProperty(MQTTAdapterConstants.MQTT_ADAPTER_PROPERTY_SCOPES));
-        configProperties.put(MQTTAdapterConstants.MQTT_ADAPTER_PROPERTY_MESSAGE_QOS,
-                config.getProperty(MQTTAdapterConstants.MQTT_ADAPTER_PROPERTY_MESSAGE_QOS));
+        if (config.getProperties() != null) {
+            mqttAdapterName = config.getProperty(MQTTAdapterConstants.MQTT_ADAPTER_PROPERTY_NAME);
+            configProperties.put(MQTTAdapterConstants.MQTT_ADAPTER_PROPERTY_USERNAME,
+                                 config.getProperty(MQTTAdapterConstants.MQTT_ADAPTER_PROPERTY_USERNAME));
+            configProperties.put(MQTTAdapterConstants.MQTT_ADAPTER_PROPERTY_PASSWORD,
+                                 config.getProperty(MQTTAdapterConstants.MQTT_ADAPTER_PROPERTY_PASSWORD));
+            configProperties.put(MQTTAdapterConstants.MQTT_ADAPTER_PROPERTY_CLEAR_SESSION,
+                                 config.getProperty(MQTTAdapterConstants.MQTT_ADAPTER_PROPERTY_CLEAR_SESSION));
+            configProperties.put(MQTTAdapterConstants.MQTT_ADAPTER_PROPERTY_SCOPES,
+                                 config.getProperty(MQTTAdapterConstants.MQTT_ADAPTER_PROPERTY_SCOPES));
+            configProperties.put(MQTTAdapterConstants.MQTT_ADAPTER_PROPERTY_MESSAGE_QOS,
+                                 config.getProperty(MQTTAdapterConstants.MQTT_ADAPTER_PROPERTY_MESSAGE_QOS));
+        } else {
+            mqttAdapterName = "mqtt.adapter." + PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantDomain()
+                    .toLowerCase();
+        }
+        adapterConfig.setName(mqttAdapterName);
         adapterConfig.setStaticProperties(configProperties);
         try {
             MQTTDataHolder.getInstance().getOutputEventAdapterService().create(adapterConfig);

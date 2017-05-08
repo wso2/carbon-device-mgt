@@ -38,7 +38,7 @@ import javax.ws.rs.core.Response;
                 title = "",
                 extensions = {
                         @Extension(properties = {
-                                @ExtensionProperty(name = "name", value = "DeviceTypePublisherAdminService"),
+                                @ExtensionProperty(name = "name", value = "DeviceAnalyticsArtifactUploaderAdminService"),
                                 @ExtensionProperty(name = "context", value = "/api/device-mgt/v1.0/admin/devicetype"),
                         })
                 }
@@ -62,7 +62,7 @@ import javax.ws.rs.core.Response;
         }
 )
 
-public interface DeviceTypePublisherAdminService {
+public interface DeviceAnalyticsArtifactUploaderAdminService {
 
     @POST
     @Path("/deploy/{type}")

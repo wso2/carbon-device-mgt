@@ -37,13 +37,10 @@ import org.wso2.carbon.application.mgt.stub.upload.types.carbon.UploadedFileItem
 import org.wso2.carbon.base.ServerConfiguration;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.core.util.Utils;
-import org.wso2.carbon.device.mgt.jaxrs.service.api.admin.DeviceTypePublisherAdminService;
+import org.wso2.carbon.device.mgt.jaxrs.service.api.admin.DeviceAnalyticsArtifactUploaderAdminService;
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
 import org.wso2.carbon.identity.jwt.client.extension.JWTClient;
 import org.wso2.carbon.identity.jwt.client.extension.exception.JWTClientException;
-import org.wso2.carbon.registry.core.Registry;
-import org.wso2.carbon.registry.core.Resource;
-import org.wso2.carbon.registry.core.ResourceImpl;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.user.api.UserStoreException;
 import org.wso2.carbon.utils.CarbonUtils;
@@ -55,7 +52,6 @@ import javax.activation.DataHandler;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManagerFactory;
-import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -73,7 +69,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Path("/admin/devicetype")
-public class DeviceTypePublisherAdminServiceImpl implements DeviceTypePublisherAdminService {
+public class DeviceAnalyticsArtifactUploaderAdminServiceImpl implements DeviceAnalyticsArtifactUploaderAdminService {
 
     /**
      * required soap header for authorization
@@ -110,7 +106,7 @@ public class DeviceTypePublisherAdminServiceImpl implements DeviceTypePublisherA
 
     private String tenantDomain;
 
-    private static final Log log = LogFactory.getLog(DeviceTypePublisherAdminServiceImpl.class);
+    private static final Log log = LogFactory.getLog(DeviceAnalyticsArtifactUploaderAdminServiceImpl.class);
     private static final String DEFAULT_RESOURCE_LOCATION = "/resources/devicetypes";
     private static final String CAR_FILE_LOCATION = CarbonUtils.getCarbonHome() + File.separator + "repository" +
     File.separator + "resources" + File.separator + "devicetypes";

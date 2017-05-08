@@ -22,17 +22,17 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.application.mgt.core.components.ApplicationManager;
 import org.wso2.carbon.device.application.mgt.core.dto.ApplicationList;
+import org.wso2.carbon.device.application.mgt.core.dto.Filter;
 import org.wso2.carbon.device.application.mgt.core.util.ApplicationManagementUtil;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 
 @Produces({ "application/json"})
 @Consumes({ "application/json"})
 public class ApplicationManagementServiceImpl {
+
+    public static final int DEFAULT_LIMIT = 20;
 
     private static Log log = LogFactory.getLog(ApplicationManagementServiceImpl.class);
 
@@ -40,10 +40,21 @@ public class ApplicationManagementServiceImpl {
     @GET
     @Consumes("application/json")
     @Path("applications")
-    public Response getApplications() {
+    public Response getApplications(@QueryParam("offset") int offset, @QueryParam("limit") int limit,
+                                    @QueryParam("q") String searchQuery) {
         ApplicationManager applicationManager = ApplicationManagementUtil.getApplicationManager();
         try {
-            ApplicationList applications = applicationManager.getApplications();
+
+            if(limit == 0){
+                limit = DEFAULT_LIMIT;
+            }
+
+            Filter filter = new Filter();
+            filter.setOffset(offset);
+            filter.setLimit(limit);
+            filter.setSearchQuery(searchQuery);
+
+            ApplicationList applications = applicationManager.getApplications(filter);
             return Response.status(Response.Status.OK).entity(applications).build();
         } catch (Exception e) {
             String msg = "Error occurred while getting the application list";

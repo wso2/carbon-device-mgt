@@ -25,4 +25,8 @@ public class ApplicationManagementDAOException extends ApplicationManagerExcepti
     public ApplicationManagementDAOException(String message, Throwable throwable) {
         super(message, throwable);
     }
+
+    public ApplicationManagementDAOException(String message) {
+        super(message, new Exception());
+    }
 }

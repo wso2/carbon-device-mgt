@@ -18,21 +18,17 @@
  */
 package org.wso2.carbon.device.mgt.jaxrs.service.impl;
 
+import io.swagger.annotations.ApiParam;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.CarbonContext;
-import org.wso2.carbon.device.mgt.common.Device;
-import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
-import org.wso2.carbon.device.mgt.common.DeviceManagementException;
-import org.wso2.carbon.device.mgt.common.Feature;
-import org.wso2.carbon.device.mgt.common.FeatureManager;
-import org.wso2.carbon.device.mgt.common.PaginationRequest;
-import org.wso2.carbon.device.mgt.common.PaginationResult;
+import org.wso2.carbon.device.mgt.common.*;
 import org.wso2.carbon.device.mgt.common.app.mgt.Application;
 import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManagementException;
 import org.wso2.carbon.device.mgt.common.authorization.DeviceAccessAuthorizationException;
 import org.wso2.carbon.device.mgt.common.authorization.DeviceAccessAuthorizationService;
+import org.wso2.carbon.device.mgt.common.device.details.DeviceLocation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
 import org.wso2.carbon.device.mgt.common.policy.mgt.Policy;
@@ -40,6 +36,8 @@ import org.wso2.carbon.device.mgt.common.policy.mgt.monitor.NonComplianceData;
 import org.wso2.carbon.device.mgt.common.policy.mgt.monitor.PolicyComplianceException;
 import org.wso2.carbon.device.mgt.common.search.SearchContext;
 import org.wso2.carbon.device.mgt.core.app.mgt.ApplicationManagementProviderService;
+import org.wso2.carbon.device.mgt.core.device.details.mgt.DeviceDetailsMgtException;
+import org.wso2.carbon.device.mgt.core.device.details.mgt.DeviceInformationManager;
 import org.wso2.carbon.device.mgt.core.search.mgt.SearchManagerService;
 import org.wso2.carbon.device.mgt.core.search.mgt.SearchMgtException;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
@@ -55,15 +53,7 @@ import org.wso2.carbon.policy.mgt.core.PolicyManagerService;
 import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 
 import javax.validation.constraints.Size;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.HeaderParam;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.text.ParseException;
@@ -97,8 +87,8 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
             if (!StringUtils.isEmpty(name) && !StringUtils.isEmpty(role)) {
                 return Response.status(Response.Status.BAD_REQUEST).entity(
                         new ErrorResponse.ErrorResponseBuilder().setMessage("Request contains both name and role " +
-                                                                                    "parameters. Only one is allowed " +
-                                                                                    "at once.").build()).build();
+                                "parameters. Only one is allowed " +
+                                "at once.").build()).build();
             }
 //            RequestValidationUtil.validateSelectionCriteria(type, user, roleName, ownership, status);
             RequestValidationUtil.validatePaginationParameters(offset, limit);
@@ -108,7 +98,7 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
             if (deviceAccessAuthorizationService == null) {
                 return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(
                         new ErrorResponse.ErrorResponseBuilder().setMessage("Device access authorization service is " +
-                                                                            "failed").build()).build();
+                                "failed").build()).build();
             }
             PaginationRequest request = new PaginationRequest(offset, limit);
             PaginationResult result;
@@ -131,7 +121,7 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
                 RequestValidationUtil.validateStatus(status);
                 request.setStatus(status);
             }
-            if (groupId != 0 ) {
+            if (groupId != 0) {
                 request.setGroupId(groupId);
             }
             if (role != null && !role.isEmpty()) {
@@ -153,7 +143,7 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
                         request.setOwner(user);
                     } else {
                         String msg = "User '" + authorizedUser + "' is not authorized to retrieve devices of '" + user
-                                     + "' user";
+                                + "' user";
                         log.error(msg);
                         return Response.status(Response.Status.UNAUTHORIZED).entity(
                                 new ErrorResponse.ErrorResponseBuilder().setCode(401l).setMessage(msg).build()).build();
@@ -328,12 +318,12 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
                 } catch (ParseException e) {
                     return Response.status(Response.Status.BAD_REQUEST).entity(
                             new ErrorResponse.ErrorResponseBuilder().setMessage("Invalid date " +
-                                                                                "string is provided in 'If-Modified-Since' header").build()).build();
+                                    "string is provided in 'If-Modified-Since' header").build()).build();
                 }
                 device = dms.getDevice(new DeviceIdentifier(id, type), sinceDate);
                 if (device == null) {
                     return Response.status(Response.Status.NOT_MODIFIED).entity("No device is modified " +
-                                                                                "after the timestamp provided in 'If-Modified-Since' header").build();
+                            "after the timestamp provided in 'If-Modified-Since' header").build();
                 }
             } else {
                 device = dms.getDevice(new DeviceIdentifier(id, type));
@@ -355,6 +345,32 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
                             type + "', which carries id '" + id + "' does not exist").build()).build();
         }
         return Response.status(Response.Status.OK).entity(device).build();
+    }
+
+    @GET
+    @Path("/{type}/{id}/location")
+    @Override
+    public Response getDeviceLocation(
+            @PathParam("type") @Size(max = 45) String type,
+            @PathParam("id") @Size(max = 45) String id,
+            @HeaderParam("If-Modified-Since") String ifModifiedSince) {
+        DeviceInformationManager informationManager;
+        DeviceLocation deviceLocation;
+        try {
+            DeviceIdentifier deviceIdentifier = new DeviceIdentifier();
+            deviceIdentifier.setId(id);
+            deviceIdentifier.setType(type);
+            informationManager = DeviceMgtAPIUtils.getDeviceInformationManagerService();
+            deviceLocation = informationManager.getDeviceLocation(deviceIdentifier);
+
+        } catch (DeviceDetailsMgtException e) {
+            String msg = "Error occurred while getting the device location.";
+            log.error(msg, e);
+            return Response.serverError().entity(
+                    new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
+        }
+        return Response.status(Response.Status.OK).entity(deviceLocation).build();
+
     }
 
     @GET

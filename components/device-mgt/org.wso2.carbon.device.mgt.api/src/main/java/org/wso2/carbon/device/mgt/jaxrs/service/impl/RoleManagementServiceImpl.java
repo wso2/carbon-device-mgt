@@ -30,37 +30,20 @@ import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.FilteringUtil;
 import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.RequestValidationUtil;
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
 import org.wso2.carbon.device.mgt.jaxrs.util.SetReferenceTransformer;
-import org.wso2.carbon.user.api.AuthorizationManager;
-import org.wso2.carbon.user.api.Permission;
-import org.wso2.carbon.user.api.UserRealm;
-import org.wso2.carbon.user.api.UserStoreException;
-import org.wso2.carbon.user.api.UserStoreManager;
+import org.wso2.carbon.user.api.*;
 import org.wso2.carbon.user.core.common.AbstractUserStoreManager;
 import org.wso2.carbon.user.mgt.UserRealmProxy;
 import org.wso2.carbon.user.mgt.common.UIPermissionNode;
 import org.wso2.carbon.user.mgt.common.UserAdminException;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.HeaderParam;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static org.wso2.carbon.device.mgt.jaxrs.util.Constants.PRIMARY_USER_STORE;
 
@@ -95,6 +78,48 @@ public class RoleManagementServiceImpl implements RoleManagementService {
 
             filteredRoles = FilteringUtil.getFilteredList(getRolesFromUserStore(filter, userStore), offset, limit);
             targetRoles.setList(filteredRoles);
+
+            return Response.ok().entity(targetRoles).build();
+        } catch (UserStoreException e) {
+            String msg = "Error occurred while retrieving roles from the underlying user stores";
+            log.error(msg, e);
+            return Response.serverError().entity(
+                    new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
+        }
+    }
+
+    @GET
+    @Path("/filter/{prefix}")
+    @Override
+    public Response getFilteredRoles(
+            @PathParam("prefix") String prefix,
+            @QueryParam("filter") String filter,
+            @QueryParam("user-store") String userStore,
+            @HeaderParam("If-Modified-Since") String ifModifiedSince,
+            @QueryParam("offset") int offset, @QueryParam("limit") int limit) {
+        RequestValidationUtil.validatePaginationParameters(offset, limit);
+        List<String> finalRoleList;
+        RoleList targetRoles = new RoleList();
+
+        //if user store is null set it to primary
+        if (userStore == null || "".equals(userStore)) {
+            userStore = PRIMARY_USER_STORE;
+        }
+
+        try {
+
+            //Get the total role count that matches the given filter
+            List<String> filteredRoles = getRolesFromUserStore(filter, userStore);
+            finalRoleList = new ArrayList<String>();
+
+            filteredRoles = FilteringUtil.getFilteredList(getRolesFromUserStore(filter, userStore), offset, limit);
+            for (String rolename : filteredRoles){
+                if (rolename.startsWith(prefix)){
+                    finalRoleList.add(rolename);
+                }
+            }
+            targetRoles.setCount(finalRoleList.size());
+            targetRoles.setList(finalRoleList);
 
             return Response.ok().entity(targetRoles).build();
         } catch (UserStoreException e) {
@@ -208,7 +233,7 @@ public class RoleManagementServiceImpl implements RoleManagementService {
             if (!userStoreManager.isExistingRole(roleName)) {
                 return Response.status(404).entity(
                         new ErrorResponse.ErrorResponseBuilder().setMessage("No role exists with the name '" +
-                                                                                    roleName + "'").build()).build();
+                                roleName + "'").build()).build();
             }
             roleInfo.setRoleName(roleName);
             roleInfo.setUsers(userStoreManager.getUserListOfRole(roleName));
@@ -275,7 +300,7 @@ public class RoleManagementServiceImpl implements RoleManagementService {
             //TODO fix what's returned in the entity
             return Response.created(new URI(API_BASE_PATH + "/" + URLEncoder.encode(roleInfo.getRoleName(), "UTF-8"))).
                     entity("Role '" + roleInfo.getRoleName() + "' has " + "successfully been"
-                                   + " added").build();
+                            + " added").build();
         } catch (UserStoreException e) {
             String msg = "Error occurred while adding role '" + roleInfo.getRoleName() + "'";
             log.error(msg, e);
@@ -335,7 +360,7 @@ public class RoleManagementServiceImpl implements RoleManagementService {
             //TODO fix what's returned in the entity
             return Response.created(new URI(API_BASE_PATH + "/" + URLEncoder.encode(roleName, "UTF-8"))).
                     entity("Role '" + roleName + "' has " + "successfully been"
-                                   + " added").build();
+                            + " added").build();
         } catch (UserAdminException e) {
             String msg = "Error occurred while retrieving the permissions of role '" + roleName + "'";
             log.error(msg, e);
@@ -376,7 +401,7 @@ public class RoleManagementServiceImpl implements RoleManagementService {
             if (!userStoreManager.isExistingRole(roleName)) {
                 return Response.status(404).entity(
                         new ErrorResponse.ErrorResponseBuilder().setMessage("No role exists with the name '" +
-                                                                                    roleName + "'").build()).build();
+                                roleName + "'").build()).build();
             }
 
             final AuthorizationManager authorizationManager = userRealm.getAuthorizationManager();
@@ -392,7 +417,7 @@ public class RoleManagementServiceImpl implements RoleManagementService {
             if (roleInfo.getUsers() != null) {
                 SetReferenceTransformer<String> transformer = new SetReferenceTransformer<>();
                 transformer.transform(Arrays.asList(userStoreManager.getUserListOfRole(newRoleName)),
-                                      Arrays.asList(roleInfo.getUsers()));
+                        Arrays.asList(roleInfo.getUsers()));
                 final String[] usersToAdd = transformer.getObjectsToAdd().toArray(new String[transformer
                         .getObjectsToAdd().size()]);
                 final String[] usersToDelete = transformer.getObjectsToRemove().toArray(new String[transformer
@@ -404,7 +429,7 @@ public class RoleManagementServiceImpl implements RoleManagementService {
                 // Get all role permissions
                 final UIPermissionNode rolePermissions = this.getAllRolePermissions(roleName, userRealm);
                 List<String> permissions = new ArrayList<String>();
-                final UIPermissionNode emmRolePermissions = (UIPermissionNode)this.getRolePermissions(roleName);
+                final UIPermissionNode emmRolePermissions = (UIPermissionNode) this.getRolePermissions(roleName);
                 List<String> emmConsolePermissions = new ArrayList<String>();
                 this.getAuthorizedPermissions(emmRolePermissions, emmConsolePermissions);
                 emmConsolePermissions.removeAll(new ArrayList<String>(Arrays.asList(roleInfo.getPermissions())));
@@ -413,7 +438,7 @@ public class RoleManagementServiceImpl implements RoleManagementService {
                     permissions.add(permission);
                 }
                 permissions.removeAll(emmConsolePermissions);
-                String [] allApplicablePerms = new String[permissions.size()];
+                String[] allApplicablePerms = new String[permissions.size()];
                 allApplicablePerms = permissions.toArray(allApplicablePerms);
                 roleInfo.setPermissions(allApplicablePerms);
 
@@ -428,7 +453,7 @@ public class RoleManagementServiceImpl implements RoleManagementService {
             }
             //TODO: Need to send the updated role information in the entity back to the client
             return Response.status(Response.Status.OK).entity("Role '" + roleInfo.getRoleName() + "' has " +
-                                                                      "successfully been updated").build();
+                    "successfully been updated").build();
         } catch (UserStoreException e) {
             String msg = "Error occurred while updating role '" + roleName + "'";
             log.error(msg, e);
@@ -456,7 +481,7 @@ public class RoleManagementServiceImpl implements RoleManagementService {
             if (!userStoreManager.isExistingRole(roleName)) {
                 return Response.status(404).entity(
                         new ErrorResponse.ErrorResponseBuilder().setMessage("No role exists with the name '" +
-                                                                                    roleName + "'").build()).build();
+                                roleName + "'").build()).build();
             }
 
             final AuthorizationManager authorizationManager = userRealm.getAuthorizationManager();
@@ -493,7 +518,7 @@ public class RoleManagementServiceImpl implements RoleManagementService {
             }
             SetReferenceTransformer<String> transformer = new SetReferenceTransformer<>();
             transformer.transform(Arrays.asList(userStoreManager.getUserListOfRole(roleName)),
-                                  users);
+                    users);
             final String[] usersToAdd = transformer.getObjectsToAdd().toArray(new String[transformer
                     .getObjectsToAdd().size()]);
             final String[] usersToDelete = transformer.getObjectsToRemove().toArray(new String[transformer
@@ -502,7 +527,7 @@ public class RoleManagementServiceImpl implements RoleManagementService {
             userStoreManager.updateUserListOfRole(roleName, usersToDelete, usersToAdd);
 
             return Response.status(Response.Status.OK).entity("Role '" + roleName + "' has " +
-                                                                      "successfully been updated with the user list")
+                    "successfully been updated with the user list")
                     .build();
         } catch (UserStoreException e) {
             String msg = "Error occurred while updating the users of the role '" + roleName + "'";

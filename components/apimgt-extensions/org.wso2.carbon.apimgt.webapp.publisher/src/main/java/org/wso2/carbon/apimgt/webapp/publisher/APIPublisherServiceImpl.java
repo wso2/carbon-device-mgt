@@ -19,12 +19,11 @@
 package org.wso2.carbon.apimgt.webapp.publisher;
 
 import feign.FeignException;
+import org.wso2.carbon.apimgt.integration.generated.client.publisher.model.*;
 import org.wso2.carbon.apimgt.integration.client.publisher.PublisherClient;
-import org.wso2.carbon.apimgt.integration.client.publisher.model.*;
 import org.wso2.carbon.apimgt.webapp.publisher.config.WebappPublisherConfig;
 import org.wso2.carbon.apimgt.webapp.publisher.exception.APIManagerPublisherException;
 import org.wso2.carbon.apimgt.webapp.publisher.internal.APIPublisherDataHolder;
-import org.wso2.carbon.base.MultitenantConstants;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 import java.util.*;
@@ -105,8 +104,8 @@ public class APIPublisherServiceImpl implements APIPublisherService {
         api.setApiDefinition(APIPublisherUtil.getSwaggerDefinition(config));
         api.setWsdlUri(null);
         api.setStatus(PUBLISHED_STATUS);
-        api.responseCaching("DISABLED");
-        api.destinationStatsEnabled("false");
+        api.setResponseCaching("DISABLED");
+        api.setDestinationStatsEnabled("false");
         api.isDefaultVersion(true);
         List<String> transport = new ArrayList<>();
         transport.add("https");

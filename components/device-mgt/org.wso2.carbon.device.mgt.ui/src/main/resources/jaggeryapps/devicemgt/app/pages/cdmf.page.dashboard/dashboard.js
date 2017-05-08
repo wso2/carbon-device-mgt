@@ -39,8 +39,11 @@ function onRequest() {
     viewModel.groupCount = groupModule.getGroupCount();
     viewModel.userCount = userModule.getUsersCount();
     viewModel.policyCount = policyModule.getPoliciesCount();
-    viewModel.roleCount = userModule.getRolesCount();
     viewModel.isCloud = devicemgtProps.isCloud;
-
+    if (devicemgtProps.isCloud) {
+        viewModel.roleCount = userModule.getFilteredRoles("devicemgt").content.count;
+    } else {
+        viewModel.roleCount = userModule.getRolesCount();
+    }
     return viewModel;
 }

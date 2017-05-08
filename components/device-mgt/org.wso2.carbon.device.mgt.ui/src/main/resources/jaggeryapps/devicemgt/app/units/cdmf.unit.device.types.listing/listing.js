@@ -21,6 +21,7 @@ function onRequest(context) {
     var DTYPE_CONF_DEVICE_TYPE_KEY = "deviceType";
     var DTYPE_CONF_DEVICE_CATEGORY = "category";
     var DTYPE_CONF_DEVICE_TYPE_LABEL_KEY = "label";
+    var DTYPE_CONF_VIRTUAL_DEVICE_TYPE_LABEL_KEY = "virtualLabel";
 
     var viewModel = {};
     var deviceModule = require("/app/modules/business-controllers/device.js")["deviceModule"];
@@ -54,6 +55,25 @@ function onRequest(context) {
                                                     "deviceCategory": deviceCategory,
                                                     "thumb": utility.getDeviceThumb(deviceType)
                                                 });
+                } else if (deviceCategory == 'hybrid') {
+                    var virtualLabel = configs[DTYPE_CONF_DEVICE_TYPE_KEY][DTYPE_CONF_VIRTUAL_DEVICE_TYPE_LABEL_KEY];
+                    if (!virtualLabel) {
+                        virtualLabel = deviceTypeLabel;
+                    }
+                    virtualDeviceTypesList.push({
+                                                    "hasCustTemplate": false,
+                                                    "deviceTypeLabel": virtualLabel,
+                                                    "deviceTypeName": deviceType,
+                                                    "deviceCategory": deviceCategory,
+                                                    "thumb": utility.getDeviceThumb(deviceType)
+                                                });
+                    deviceTypesList.push({
+                                             "hasCustTemplate": false,
+                                             "deviceTypeLabel": deviceTypeLabel,
+                                             "deviceTypeName": deviceType,
+                                             "deviceCategory": deviceCategory,
+                                             "thumb": utility.getDeviceThumb(deviceType)
+                                         });
                 } else {
                     deviceTypesList.push({
                                              "hasCustTemplate": false,

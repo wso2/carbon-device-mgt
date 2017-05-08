@@ -18,11 +18,11 @@
 $(document).ready(function () {
     $('#cloud-menu-popover i.fw-tiles').popover({
         html: true,
-        trigger:'click',
-        title: function() {
+        trigger: 'click',
+        title: function () {
             return $("#popover-head").html();
         },
-        content: function() {
+        content: function () {
             return $("#popover-content").html();
         }
     });

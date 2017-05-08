@@ -31,11 +31,21 @@ import javax.xml.bind.annotation.XmlRootElement;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class RegistrationProfile {
     @XmlElement(required = true)
+    private String applicationName;
+    @XmlElement(required = true)
     private String tags[];
     @XmlElement(required = true)
     private boolean isAllowedToAllDomains;
     @XmlElement(required = false)
     private String validityPeriod;
+
+    public String getApplicationName() {
+        return applicationName;
+    }
+
+    public void setApiApplicationName(String apiApplicationName) {
+        this.applicationName = apiApplicationName;
+    }
 
     public String[] getTags() {
         return tags;

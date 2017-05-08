@@ -160,7 +160,9 @@
 							org.wso2.carbon.core.util,
 							org.wso2.carbon.user.api,
 							org.wso2.carbon.user.core.*,
-							org.wso2.carbon.utils.multitenancy
+							org.wso2.carbon.utils.multitenancy,
+							org.wso2.carbon.apimgt.integration.generated.client.publisher.api,
+							org.wso2.carbon.apimgt.integration.generated.client.publisher.model
                         </Import-Package>
                         <Embed-Dependency>
                             javax.ws.rs-api,

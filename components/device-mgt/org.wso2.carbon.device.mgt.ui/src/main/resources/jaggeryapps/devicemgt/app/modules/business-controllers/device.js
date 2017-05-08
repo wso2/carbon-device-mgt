@@ -98,6 +98,26 @@ deviceModule = function () {
                 locationTimeData.push(gpsReadingTimes);
             }
         }
+        var locationInfo = {};
+        try {
+            var url = devicemgtProps["httpsURL"] + "/api/device-mgt/v1.0/devices/" + deviceType + "/" + deviceId + "/location";
+            serviceInvokers.XMLHttp.get(
+                url,
+                function (backendResponse) {
+
+                    if (backendResponse.status == 200 && backendResponse.responseText) {
+                        var device = parse(backendResponse.responseText);
+                        locationInfo.latitude = device.latitude;
+                        locationInfo.longitude = device.longitude;
+                        locationInfo.updatedOn = device.updatedTime;
+
+                    }
+                });
+        } catch (e) {
+            log.error(e.message, e);
+        }
+
+
         var utility = require('/app/modules/utility.js')["utility"];
         try {
             utility.startTenantFlow(carbonUser);
@@ -174,11 +194,26 @@ deviceModule = function () {
                         }
                         if (device["deviceInfo"]) {
                             filteredDeviceData["latestDeviceInfo"] = device["deviceInfo"];
+
+                            //location related verification and modifications
+                            // adding the location histry for the movement path.
+                            var locationHistory = {};
+                            locationHistory.locations = locationData;
+                            locationHistory.times = locationTimeData;
+                            filteredDeviceData["locationHistory"] = locationHistory;
+
+                            //checking for the latest location information.
+                            if (filteredDeviceData.latestDeviceInfo.location && locationInfo) {
+                                var infoDate = new Date(filteredDeviceData.latestDeviceInfo.location.updatedTime);
+                                var locationDate = new Date(locationInfo.updatedOn);
+                                if (infoDate < locationDate) {
+                                    filteredDeviceData.latestDeviceInfo.location.longitude = locationInfo.longitude;
+                                    filteredDeviceData.latestDeviceInfo.location.latitude = locationInfo.latitude;
+                                }
+                            }
                         }
-                        var locationHistory = {};
-                        locationHistory.locations = locationData;
-                        locationHistory.times = locationTimeData;
-                        filteredDeviceData["locationHistory"] = locationHistory;
+
+
                         response["content"] = filteredDeviceData;
                         response["status"] = "success";
                         return response;

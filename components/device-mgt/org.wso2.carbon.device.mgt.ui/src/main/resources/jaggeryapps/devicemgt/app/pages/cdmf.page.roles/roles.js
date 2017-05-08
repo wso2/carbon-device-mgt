@@ -33,6 +33,16 @@ function onRequest(context) {
 
     context["adminRole"] = deviceMgtProps["adminRole"];
     context["isCloud"] = deviceMgtProps["isCloud"];
+    var roleCount = userModule.getRolesCount()
+    if (deviceMgtProps["isCloud"]) {
+        roleCount = userModule.getFilteredRoles("devicemgt").content.count;
+    }
+
+    if (roleCount > 0) {
+        context["hasRoles"] = true;
+    } else {
+        context["hasRoles"] = false;
+    }
 
     return context;
 }

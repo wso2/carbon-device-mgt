@@ -33,6 +33,8 @@ var clearInline = {};
 
 var apiBasePath = "/api/device-mgt/v1.0";
 var domain = $("#domain").val();
+var isCloud = $("#role-create-form").data("cloud");
+
 
 var enableInlineError = function (inputField, errorMsg, errorSign) {
     var fieldIdentifier = "#" + inputField;
@@ -84,18 +86,18 @@ clearInline["role-name"] = function () {
 validateInline["role-name"] = function () {
     var roleNameInput = $("input#roleName");
     var roleName = roleNameInput.val();
-    if (inputIsValid( roleNameInput.data("regex"), roleName) && roleName.indexOf("@") < 0 && roleName.indexOf("/") < 0) {
+    if (inputIsValid(roleNameInput.data("regex"), roleName) && roleName.indexOf("@") < 0 && roleName.indexOf("/") < 0) {
         disableInlineError("roleNameField", "roleNameEmpty", "roleNameError");
     } else {
         enableInlineError("roleNameField", "roleNameEmpty", "roleNameError");
     }
 };
 
-function formatRepo (user) {
+function formatRepo(user) {
     if (user.loading) {
         return user.text
     }
-    if (!user.username){
+    if (!user.username) {
         return;
     }
     var markup = '<div class="clearfix">' +
@@ -103,20 +105,22 @@ function formatRepo (user) {
         '<div class="clearfix">' +
         '<div class="col-sm-4">' + user.username + '</div>';
     if (user.name || user.name != undefined) {
-        markup +=  '<div class="col-sm-8"> ( ' + user.name + ' )</div>';
+        markup += '<div class="col-sm-8"> ( ' + user.name + ' )</div>';
     }
     markup += '</div></div></div>';
     return markup;
 }
 
-function formatRepoSelection (user) {
+function formatRepoSelection(user) {
     return user.username || user.text;
 }
 
 $(document).ready(function () {
+    isCloud = $("#role-create-form").data("cloud");
+
     var appContext = $("#app-context").data("app-context");
     $("#users").select2({
-        multiple:true,
+        multiple: true,
         tags: false,
         ajax: {
             url: appContext + "/api/invoker/execute/",
@@ -140,7 +144,7 @@ $(document).ready(function () {
                     var user = {};
                     user.id = value.username;
                     user.username = value.username;
-                    if(value.firstname && value.lastname) {
+                    if (value.firstname && value.lastname) {
                         user.name = value.firstname + " " + value.lastname;
                     }
                     newData.push(user);
@@ -151,7 +155,9 @@ $(document).ready(function () {
             },
             cache: true
         },
-        escapeMarkup: function (markup) { return markup; }, // let our custom formatter work
+        escapeMarkup: function (markup) {
+            return markup;
+        }, // let our custom formatter work
         minimumInputLength: 1,
         templateResult: formatRepo, // omitted for brevity, see the source of this page
         templateSelection: formatRepoSelection // omitted for brevity, see the source of this page
@@ -163,6 +169,7 @@ $(document).ready(function () {
      * on Add Role page in WSO2 MDM Console.
      */
     $("button#add-role-btn").click(function () {
+
         var domain = $("#domain").val();
         var roleNameInput = $("input#roleName");
         var roleName = roleNameInput.val();
@@ -185,8 +192,12 @@ $(document).ready(function () {
             $(errorMsgWrapper).removeClass("hidden");
         } else {
             var addRoleFormData = {};
-            addRoleFormData.roleName = roleName;
-            if (domain != "PRIMARY"){
+            if (isCloud) {
+                addRoleFormData.roleName = "devicemgt" + roleName;
+            } else {
+                addRoleFormData.roleName = roleName;
+            }
+            if (domain != "PRIMARY") {
                 addRoleFormData.roleName = domain + "/" + roleName;
             }
             if (users == null) {
@@ -220,16 +231,16 @@ $(document).ready(function () {
     });
 
     var roleNameInputElement = "#roleName";
-    $(roleNameInputElement).focus(function() {
+    $(roleNameInputElement).focus(function () {
         clearInline["role-name"]();
     });
 
-    $(roleNameInputElement).blur(function() {
+    $(roleNameInputElement).blur(function () {
         validateInline["role-name"]();
     });
 
     /* When the user store domain value is changed, the users who are assigned to that role should be removed, as
-       user and role can be mapped only if both are in same user store
+     user and role can be mapped only if both are in same user store
      */
     $("#domain").change(function () {
         $("#users").select2("val", "");

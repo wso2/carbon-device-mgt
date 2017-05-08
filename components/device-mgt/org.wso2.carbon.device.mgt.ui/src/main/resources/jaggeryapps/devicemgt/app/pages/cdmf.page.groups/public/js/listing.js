@@ -285,6 +285,7 @@ function openCollapsedNav() {
  * DOM ready functions.
  */
 $(document).ready(function () {
+
     /* Adding selected class for selected devices */
     $(groupCheckbox).each(function () {
         addGroupSelectedClass(this);

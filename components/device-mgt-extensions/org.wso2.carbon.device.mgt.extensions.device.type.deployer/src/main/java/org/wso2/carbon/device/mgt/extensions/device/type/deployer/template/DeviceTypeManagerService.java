@@ -59,7 +59,6 @@ public class DeviceTypeManagerService implements DeviceManagementService {
     private List<MonitoringOperation> monitoringOperations;
     private PolicyMonitoringManager policyMonitoringManager;
     private InitialOperationConfig initialOperationConfig;
-    private List<String> operations;
 
     public DeviceTypeManagerService(DeviceTypeConfigIdentifier deviceTypeConfigIdentifier,
                                     DeviceTypeConfiguration deviceTypeConfiguration) {
@@ -69,6 +68,7 @@ public class DeviceTypeManagerService implements DeviceManagementService {
         this.populatePushNotificationConfig(deviceTypeConfiguration.getPushNotificationProvider());
         this.operationMonitoringConfigs = new OperationMonitoringTaskConfig();
         this.setOperationMonitoringConfig(deviceTypeConfiguration);
+        this.initialOperationConfig = new InitialOperationConfig();
         this.setInitialOperationConfig(deviceTypeConfiguration);
         if (deviceTypeConfiguration.getPolicyMonitoring() != null ) {
             this.policyMonitoringManager = new DefaultPolicyMonitoringManager();

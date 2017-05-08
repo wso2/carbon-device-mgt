@@ -26,6 +26,6 @@ function onRequest(context) {
     var devicemgtProps = require("/app/modules/conf-reader/main.js")["conf"];
     var page = {};
     page["isCloud"] = devicemgtProps.isCloud;
-    page["contact_form_url"] = "https://cloudmgt.cloud.wso2.com/cloudmgt/site/pages/contact-us.jag?cloudType=" + devicemgtProps.cloudType + "&subject=Requesting for a new device type";
+    page["contact_form_url"] = "https://cloudmgt.cloud.wso2.com/cloudmgt/site/pages/contact-us.jag?cloud-type=device_cloud&subject=Requesting for a new device type";
     return page;
 }

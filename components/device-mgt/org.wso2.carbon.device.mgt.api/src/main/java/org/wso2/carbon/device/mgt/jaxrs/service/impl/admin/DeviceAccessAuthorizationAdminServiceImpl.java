@@ -36,6 +36,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.ArrayList;
+import java.util.List;
 
 @Path("/admin/authorization")
 @Produces(MediaType.APPLICATION_JSON)
@@ -88,6 +90,16 @@ public class DeviceAccessAuthorizationAdminServiceImpl implements DeviceAccessAu
         } finally {
             PrivilegedCarbonContext.endTenantFlow();
         }
+    }
+
+    @POST
+    @Path("/stat")
+    @Override
+    public Response isAuthorizedForStat(AuthorizationRequest authorizationRequest) {
+        List<String> permissions = new ArrayList<>();
+        permissions.add("/permission/admin/device-mgt/device/realtime_analytics");
+        authorizationRequest.setPermissions(permissions);
+        return isAuthorizedForStat(authorizationRequest);
     }
 
 }

@@ -24,7 +24,7 @@ public class Pagination {
 
     private int limit;
 
-    private int length;
+    private int size;
 
     private int count;
 
@@ -44,12 +44,12 @@ public class Pagination {
         this.limit = limit;
     }
 
-    public int getLength() {
-        return length;
+    public int getSize() {
+        return size;
     }
 
-    public void setLength(int length) {
-        this.length = length;
+    public void setSize(int size) {
+        this.size = size;
     }
 
     public int getCount() {

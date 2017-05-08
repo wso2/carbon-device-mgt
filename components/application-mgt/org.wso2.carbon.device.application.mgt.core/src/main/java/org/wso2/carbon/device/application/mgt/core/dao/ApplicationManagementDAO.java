@@ -20,6 +20,7 @@ package org.wso2.carbon.device.application.mgt.core.dao;
 
 import org.wso2.carbon.device.application.mgt.core.dto.Application;
 import org.wso2.carbon.device.application.mgt.core.dto.ApplicationList;
+import org.wso2.carbon.device.application.mgt.core.dto.Filter;
 
 import java.util.HashMap;
 import java.util.List;
@@ -59,6 +60,6 @@ public interface ApplicationManagementDAO {
 
     public void createApplication(Application application) throws ApplicationManagementDAOException;
 
-    public ApplicationList getApplications() throws ApplicationManagementDAOException;
+    public ApplicationList getApplications(Filter filter) throws ApplicationManagementDAOException;
 
 }

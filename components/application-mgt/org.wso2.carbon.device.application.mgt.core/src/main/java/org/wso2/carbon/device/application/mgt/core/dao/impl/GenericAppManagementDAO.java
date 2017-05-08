@@ -24,6 +24,7 @@ import org.wso2.carbon.device.application.mgt.core.dao.ApplicationManagementDAOE
 import org.wso2.carbon.device.application.mgt.core.dao.ApplicationManagementDAOUtil;
 import org.wso2.carbon.device.application.mgt.core.dto.Application;
 import org.wso2.carbon.device.application.mgt.core.dto.ApplicationList;
+import org.wso2.carbon.device.application.mgt.core.dto.Filter;
 import org.wso2.carbon.device.application.mgt.core.dto.Pagination;
 import org.wso2.carbon.device.application.mgt.core.util.ConnectionManagerUtil;
 
@@ -42,33 +43,52 @@ public class GenericAppManagementDAO implements ApplicationManagementDAO {
     }
 
     @Override
-    public ApplicationList getApplications() throws ApplicationManagementDAOException {
+    public ApplicationList getApplications(Filter filter) throws ApplicationManagementDAOException {
 
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
-        String sql = null;
+        String sql = "";
         ApplicationList applicationList = new ApplicationList();
         List<Application> applications = new ArrayList<>();
         Pagination pagination = new Pagination();
+
+        if (filter == null) {
+            throw new ApplicationManagementDAOException("Filter need to be instantiated");
+        } else {
+            pagination.setLimit(filter.getLimit());
+            pagination.setOffset(filter.getOffset());
+        }
 
         try {
 
             conn = ConnectionManagerUtil.getCurrentConnection().get();
 
-            sql = "SELECT SQL_CALC_FOUND_ROWS AP.*, AT.NAME AS AT_NAME, AT.CODE AS AT_CODE, CT.NAME AS CT_NAME " +
-                    "FROM APPM_APPLICATION AS AP " +
-                    "INNER JOIN APPM_APPLICATION_TYPE AS AT ON AP.APPLICATION_TYPE_ID = AT.ID " +
-                    "INNER JOIN APPM_APPLICATION_CATEGORY AS CT ON AP.CATEGORY_ID = CT.ID;";
+            sql += "SELECT SQL_CALC_FOUND_ROWS AP.*, AT.NAME AS AT_NAME, AT.CODE AS AT_CODE, CT.NAME AS CT_NAME ";
+            sql += "FROM APPM_APPLICATION AS AP ";
+            sql += "INNER JOIN APPM_APPLICATION_TYPE AS AT ON AP.APPLICATION_TYPE_ID = AT.ID ";
+            sql += "INNER JOIN APPM_APPLICATION_CATEGORY AS CT ON AP.CATEGORY_ID = CT.ID ";
+            if (filter.getSearchQuery() != null || "".equals(filter.getSearchQuery())) {
+                sql += "WHERE AP.NAME LIKE ? ";
+            }
+            sql += "LIMIT ? ";
+            sql += "OFFSET ?;";
 
             stmt = conn.prepareStatement(sql);
+            int index = 0;
+            if (filter.getSearchQuery() != null || "".equals(filter.getSearchQuery())) {
+                stmt.setString(++index, "%" + filter.getSearchQuery() + "%");
+            }
+            stmt.setInt(++index, filter.getLimit());
+            stmt.setInt(++index, filter.getOffset());
+
             rs = stmt.executeQuery();
 
             int length = 0;
             sql = "SELECT FOUND_ROWS() AS COUNT;";
             stmt = conn.prepareStatement(sql);
             ResultSet rsCount = stmt.executeQuery();
-            if(rsCount.next()){
+            if (rsCount.next()) {
                 pagination.setCount(rsCount.getInt("COUNT"));
             }
 
@@ -84,7 +104,7 @@ public class GenericAppManagementDAO implements ApplicationManagementDAO {
                 length++;
             }
 
-            pagination.setLength(length);
+            pagination.setSize(length);
 
             applicationList.setApplications(applications);
             applicationList.setPagination(pagination);

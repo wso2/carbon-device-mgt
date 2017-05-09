@@ -389,8 +389,7 @@ public class DeviceTypeManager implements DeviceManager {
         return requiredDeviceTypeAuthorization;
     }
 
-    @Override
-    public PlatformConfiguration getDefaultConfiguration() throws DeviceManagementException {
+    private PlatformConfiguration getDefaultConfiguration() throws DeviceManagementException {
 
         if (log.isDebugEnabled()) {
             log.debug("Loading default " + deviceType + " platform configuration from " + deviceType +

@@ -45,6 +45,7 @@ import java.util.List;
 public class DeviceAccessAuthorizationAdminServiceImpl implements DeviceAccessAuthorizationAdminService {
 
     private static final Log log = LogFactory.getLog(DeviceAccessAuthorizationAdminServiceImpl.class);
+    private static final String DEFAULT_STAT_PERMISSION = "/permission/admin/device-mgt/device/realtime_analytics";
 
     @POST
     @Override
@@ -97,9 +98,9 @@ public class DeviceAccessAuthorizationAdminServiceImpl implements DeviceAccessAu
     @Override
     public Response isAuthorizedForStat(AuthorizationRequest authorizationRequest) {
         List<String> permissions = new ArrayList<>();
-        permissions.add("/permission/admin/device-mgt/device/realtime_analytics");
+        permissions.add(DEFAULT_STAT_PERMISSION);
         authorizationRequest.setPermissions(permissions);
-        return isAuthorizedForStat(authorizationRequest);
+        return isAuthorized(authorizationRequest);
     }
 
 }

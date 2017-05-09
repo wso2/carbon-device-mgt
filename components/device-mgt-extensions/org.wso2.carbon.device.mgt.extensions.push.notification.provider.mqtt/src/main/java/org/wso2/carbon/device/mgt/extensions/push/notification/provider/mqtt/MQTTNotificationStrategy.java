@@ -51,16 +51,14 @@ public class MQTTNotificationStrategy implements NotificationStrategy {
         this.config = config;
         OutputEventAdapterConfiguration adapterConfig = new OutputEventAdapterConfiguration();
         adapterConfig.setType(MQTTAdapterConstants.MQTT_ADAPTER_TYPE);
-        mqttAdapterName = config.getProperty(MQTTAdapterConstants.MQTT_ADAPTER_PROPERTY_NAME);
-
         adapterConfig.setMessageFormat(MessageType.TEXT);
 
         Map<String, String> configProperties = new HashMap<String, String>();
-        String brokerUrl = config.getProperty(MQTTAdapterConstants.MQTT_ADAPTER_PROPERTY_BROKER_URL);
-        if (brokerUrl != null && !brokerUrl.isEmpty()) {
-            configProperties.put(MQTTAdapterConstants.MQTT_ADAPTER_PROPERTY_BROKER_URL, brokerUrl);
-        }
-        if (config.getProperties() != null) {
+        if (config.getProperties() != null && config.getProperties().size() > 0) {
+            String brokerUrl = config.getProperty(MQTTAdapterConstants.MQTT_ADAPTER_PROPERTY_BROKER_URL);
+            if (brokerUrl != null && !brokerUrl.isEmpty()) {
+                configProperties.put(MQTTAdapterConstants.MQTT_ADAPTER_PROPERTY_BROKER_URL, brokerUrl);
+            }
             mqttAdapterName = config.getProperty(MQTTAdapterConstants.MQTT_ADAPTER_PROPERTY_NAME);
             configProperties.put(MQTTAdapterConstants.MQTT_ADAPTER_PROPERTY_USERNAME,
                                  config.getProperty(MQTTAdapterConstants.MQTT_ADAPTER_PROPERTY_USERNAME));
@@ -79,7 +77,14 @@ public class MQTTNotificationStrategy implements NotificationStrategy {
         adapterConfig.setName(mqttAdapterName);
         adapterConfig.setStaticProperties(configProperties);
         try {
-            MQTTDataHolder.getInstance().getOutputEventAdapterService().create(adapterConfig);
+            synchronized (MQTTNotificationStrategy.class) {
+                try {
+                    MQTTDataHolder.getInstance().getOutputEventAdapterService().isPolled(mqttAdapterName);
+                } catch (OutputEventAdapterException e) {
+                    //event adapter not created
+                    MQTTDataHolder.getInstance().getOutputEventAdapterService().create(adapterConfig);
+                }
+            }
         } catch (OutputEventAdapterException e) {
             throw new InvalidConfigurationException("Error occurred while initializing MQTT output event adapter", e);
         }

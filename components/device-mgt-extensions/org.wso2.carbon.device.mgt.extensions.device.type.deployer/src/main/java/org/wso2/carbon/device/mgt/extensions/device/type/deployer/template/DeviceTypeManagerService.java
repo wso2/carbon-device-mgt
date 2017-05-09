@@ -113,8 +113,12 @@ public class DeviceTypeManagerService implements DeviceManagementService {
         if (pushNotificationProvider != null) {
             if (pushNotificationProvider.isFileBasedProperties()) {
                 Map<String, String> staticProps = new HashMap<>();
-                for (Property property : pushNotificationProvider.getConfigProperties().getProperty()) {
-                    staticProps.put(property.getName(), property.getValue());
+                if (pushNotificationProvider.getConfigProperties() != null &&
+                        pushNotificationProvider.getConfigProperties().getProperty() != null &&
+                        pushNotificationProvider.getConfigProperties().getProperty().size() > 0) {
+                    for (Property property : pushNotificationProvider.getConfigProperties().getProperty()) {
+                        staticProps.put(property.getName(), property.getValue());
+                    }
                 }
                 pushNotificationConfig = new PushNotificationConfig(pushNotificationProvider.getType(),
                         pushNotificationProvider.isScheduled(), staticProps);

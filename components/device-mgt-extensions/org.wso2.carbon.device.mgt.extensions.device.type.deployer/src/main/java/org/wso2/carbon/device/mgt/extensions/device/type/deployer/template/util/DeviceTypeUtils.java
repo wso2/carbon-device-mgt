@@ -20,6 +20,7 @@ package org.wso2.carbon.device.mgt.extensions.device.type.deployer.template.util
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.w3c.dom.Document;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.extensions.device.type.deployer.exception.DeviceTypeMgtPluginException;
 import org.wso2.carbon.device.mgt.extensions.device.type.deployer.internal.DeviceTypeManagementDataHolder;
@@ -30,6 +31,10 @@ import org.wso2.carbon.registry.core.Registry;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
+import javax.xml.XMLConstants;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.File;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -127,5 +132,19 @@ public class DeviceTypeUtils {
             throw new DeviceTypeMgtPluginException("Error in retrieving registry resource : " + e.getMessage(), e);
         }
     }
+
+    public static Document convertToDocument(File file) throws DeviceTypeMgtPluginException {
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        factory.setNamespaceAware(true);
+        try {
+            factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+            DocumentBuilder docBuilder = factory.newDocumentBuilder();
+            return docBuilder.parse(file);
+        } catch (Exception e) {
+            throw new DeviceTypeMgtPluginException("Error occurred while parsing file '" + file.getName() + "' to" +
+                    " a org.w3c.dom.Document", e);
+        }
+    }
+
 
 }

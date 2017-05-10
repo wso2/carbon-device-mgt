@@ -174,6 +174,9 @@ public class DeviceAnalyticsArtifactUploaderAdminServiceImpl implements DeviceAn
                     publishDynamicEventReceivers(type, MultitenantConstants.SUPER_TENANT_DOMAIN_NAME, receiverFileList);
                 }
             }
+            if (streamFileList != null) {
+                publishDynamicEventStream(type, tenantDomain, streamFileList);
+            }
             if (deployAnalyticsCapp(type, list)){
                 return Response.status(Response.Status.BAD_REQUEST)
                         .entity("\"Error, Artifact does not exist.\"").build();

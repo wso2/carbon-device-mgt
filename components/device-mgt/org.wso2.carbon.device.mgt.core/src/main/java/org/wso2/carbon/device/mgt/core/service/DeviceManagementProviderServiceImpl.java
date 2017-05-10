@@ -2121,17 +2121,13 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                     operation.setType(Operation.Type.COMMAND);
                     operation.setCode(str);
                     try {
-                        deviceManagementProviderService.
-                                addOperation(deviceType,
-                                             operation, deviceIdentifiers);
+                        deviceManagementProviderService.addOperation(deviceType, operation, deviceIdentifiers);
                     } catch (OperationManagementException e) {
-                        throw new DeviceManagementException(
-                                "Unable to find the device with the id: '" + deviceIdentifier.getId(),
-                                e);
+                        throw new DeviceManagementException("Unable to add the operation for the device with the id: '"
+                                                                    + deviceIdentifier.getId(), e);
                     } catch (InvalidDeviceException e) {
-                        throw new DeviceManagementException(
-                                "Unable to find the device with the id: '" + deviceIdentifier.getId(),
-                                e);
+                        throw new DeviceManagementException("Unable to find the device with the id: '"
+                                                                    + deviceIdentifier.getId(), e);
                     }
                 }
             }

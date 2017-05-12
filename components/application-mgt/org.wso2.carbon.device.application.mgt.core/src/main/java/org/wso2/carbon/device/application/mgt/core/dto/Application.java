@@ -50,7 +50,7 @@ public class Application {
 
     private Date modifiedAt;
 
-    private ApplicationType applicationType;
+    private Platform platform;
 
     private Category category;
 
@@ -147,12 +147,12 @@ public class Application {
         this.modifiedAt = modifiedAt;
     }
 
-    public ApplicationType getApplicationType() {
-        return applicationType;
+    public Platform getPlatform() {
+        return platform;
     }
 
-    public void setApplicationType(ApplicationType applicationType) {
-        this.applicationType = applicationType;
+    public void setPlatform(Platform platform) {
+        this.platform = platform;
     }
 
     public Category getCategory() {

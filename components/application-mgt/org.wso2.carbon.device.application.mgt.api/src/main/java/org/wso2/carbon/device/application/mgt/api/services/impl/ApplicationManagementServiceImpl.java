@@ -56,6 +56,7 @@ public class ApplicationManagementServiceImpl {
 
             ApplicationList applications = applicationManager.getApplications(filter);
             return Response.status(Response.Status.OK).entity(applications).build();
+
         } catch (Exception e) {
             String msg = "Error occurred while getting the application list";
             log.error(msg, e);

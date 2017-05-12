@@ -23,7 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.wso2.carbon.device.application.mgt.core.dto.Application;
-import org.wso2.carbon.device.application.mgt.core.dto.ApplicationType;
+import org.wso2.carbon.device.application.mgt.core.dto.Platform;
 import org.wso2.carbon.device.application.mgt.core.dto.Category;
 
 import java.sql.PreparedStatement;
@@ -39,6 +39,7 @@ public class ApplicationManagementDAOUtil {
     private static final Log log = LogFactory.getLog(ApplicationManagementDAOUtil.class);
 
     public static Application loadApplication(ResultSet rs ,  ResultSet rsProperties) throws SQLException, JSONException {
+
         Application application = new Application();
         application.setId(rs.getInt("ID"));
         application.setName(rs.getString("NAME"));
@@ -48,13 +49,12 @@ public class ApplicationManagementDAOUtil {
         application.setBannerName(rs.getString("BANNER_NAME"));
         application.setVideoName(rs.getString("VIDEO_NAME"));
         application.setScreenshots(jsonArrayStringToList(rs.getString("SCREENSHOTS")));
-        application.setTags(jsonArrayStringToList(rs.getString("TAGS")));
         application.setCreatedAt(rs.getDate("CREATED_AT"));
         application.setModifiedAt(rs.getDate("MODIFIED_AT"));
 
-        ApplicationType applicationType = new ApplicationType();
-        applicationType.setName(rs.getString("AT_NAME"));
-        applicationType.setCode(rs.getString("AT_CODE"));
+        Platform applicationType = new Platform();
+        applicationType.setName(rs.getString("APL_NAME"));
+        applicationType.setCode(rs.getString("APL_CODE"));
         application.setApplicationType(applicationType);
 
         Map<String, String> properties = new HashMap<>();
@@ -64,7 +64,7 @@ public class ApplicationManagementDAOUtil {
         application.setProperties(properties);
 
         Category category = new Category();
-        category.setName(rs.getString("CT_NAME"));
+        category.setName(rs.getString("CAT_NAME"));
         application.setCategory(category);
         return application;
     }

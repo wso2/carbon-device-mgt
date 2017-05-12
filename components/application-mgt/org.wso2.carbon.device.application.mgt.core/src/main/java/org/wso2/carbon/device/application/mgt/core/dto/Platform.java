@@ -20,16 +20,24 @@ package org.wso2.carbon.device.application.mgt.core.dto;
 
 import org.wso2.carbon.device.application.mgt.core.jaxrs.Exclude;
 
-public class ApplicationType {
+import java.util.List;
+
+public class Platform {
 
     @Exclude
     private int id;
 
     private String name;
 
+    private String description;
+
     private String code;
 
-    private String parameters;
+    private String iconName;
+
+    private String properties;
+
+    private List<Application> applications;
 
     public int getId() {
         return id;
@@ -47,6 +55,14 @@ public class ApplicationType {
         this.name = name;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     public String getCode() {
         return code;
     }
@@ -55,11 +71,27 @@ public class ApplicationType {
         this.code = code;
     }
 
-    public String getParameters() {
-        return parameters;
+    public String getIconName() {
+        return iconName;
     }
 
-    public void setParameters(String parameters) {
-        this.parameters = parameters;
+    public void setIconName(String iconName) {
+        this.iconName = iconName;
+    }
+
+    public String getProperties() {
+        return properties;
+    }
+
+    public void setProperties(String properties) {
+        this.properties = properties;
+    }
+
+    public List<Application> getApplications() {
+        return applications;
+    }
+
+    public void setApplications(List<Application> applications) {
+        this.applications = applications;
     }
 }

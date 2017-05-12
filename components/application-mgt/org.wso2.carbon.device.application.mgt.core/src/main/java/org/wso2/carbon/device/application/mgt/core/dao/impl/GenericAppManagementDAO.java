@@ -64,12 +64,13 @@ public class GenericAppManagementDAO implements ApplicationManagementDAO {
 
             conn = ConnectionManagerUtil.getCurrentConnection().get();
 
-            sql += "SELECT SQL_CALC_FOUND_ROWS AP.*, AT.NAME AS AT_NAME, AT.CODE AS AT_CODE, CT.NAME AS CT_NAME ";
-            sql += "FROM APPM_APPLICATION AS AP ";
-            sql += "INNER JOIN APPM_APPLICATION_TYPE AS AT ON AP.APPLICATION_TYPE_ID = AT.ID ";
-            sql += "INNER JOIN APPM_APPLICATION_CATEGORY AS CT ON AP.CATEGORY_ID = CT.ID ";
+            sql += "SELECT SQL_CALC_FOUND_ROWS APP.*, APL.NAME AS APL_NAME, APL.CODE AS APL_CODE, CAT.NAME AS CAT_NAME ";
+            sql += "FROM APPM_APPLICATION AS APP ";
+            sql += "INNER JOIN APPM_PLATFORM_APPLICATION_MAPPING AS APM ON APP.PLATFORM_APPLICATION_MAPPING_ID = APM.ID ";
+            sql += "INNER JOIN APPM_PLATFORM AS APL ON APM.PLATFORM_ID = APL.ID ";
+            sql += "INNER JOIN APPM_APPLICATION_CATEGORY AS CAT ON APP.APPLICATION_CATEGORY_ID = CAT.ID ";
             if (filter.getSearchQuery() != null || "".equals(filter.getSearchQuery())) {
-                sql += "WHERE AP.NAME LIKE ? ";
+                sql += "WHERE APP.NAME LIKE ? ";
             }
             sql += "LIMIT ? ";
             sql += "OFFSET ?;";
@@ -95,7 +96,7 @@ public class GenericAppManagementDAO implements ApplicationManagementDAO {
             while (rs.next()) {
 
                 //Getting properties
-                sql = "SELECT * FROM APPM_APPLICATION_PROPERTIES WHERE APPLICATION_ID=?";
+                sql = "SELECT * FROM APPM_APPLICATION_PROPERTY WHERE APPLICATION_ID=?";
                 stmt = conn.prepareStatement(sql);
                 stmt.setInt(1, rs.getInt("ID"));
                 ResultSet rsProperties = stmt.executeQuery();

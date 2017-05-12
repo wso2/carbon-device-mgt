@@ -40,11 +40,11 @@
             <groupId>org.wso2.carbon.devicemgt</groupId>
             <artifactId>org.wso2.carbon.device.application.mgt.core</artifactId>
         </dependency>
-        <dependency>
+        <!--dependency>
             <groupId>org.wso2.carbon.devicemgt</groupId>
             <artifactId>org.wso2.carbon.device.application.mgt.api.feature</artifactId>
             <type>zip</type>
-        </dependency>
+        </dependency-->
     </dependencies>
 
     <build>
@@ -95,9 +95,7 @@
                                 </properties>
                             </adviceFile>
                             <includedFeatures>
-                                <includedFeatureDef>
-                                    org.wso2.carbon.devicemgt:org.wso2.carbon.device.application.mgt.api.feature:${carbon.device.mgt.version}
-                                </includedFeatureDef>
+                                <!--includedFeatureDef>org.wso2.carbon.devicemgt:org.wso2.carbon.device.application.mgt.api.feature:${carbon.device.mgt.version}</includedFeatureDef-->
                             </includedFeatures>
                             <bundles>
                                 <bundleDef>

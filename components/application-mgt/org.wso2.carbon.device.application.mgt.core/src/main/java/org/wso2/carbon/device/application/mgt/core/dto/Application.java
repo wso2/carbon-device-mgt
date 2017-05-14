@@ -30,9 +30,11 @@ public class Application {
     @Exclude
     private int id;
 
+    private String uuid;
+
     private String name;
 
-    private String uuid;
+    private String shortDescription;
 
     private String description;
 
@@ -46,9 +48,7 @@ public class Application {
 
     private List<String> tags;
 
-    private Date createdAt;
-
-    private Date modifiedAt;
+    private List<Subscription> subscriptions;
 
     private Platform platform;
 
@@ -56,8 +56,14 @@ public class Application {
 
     private Map<String, String> properties;
 
-    public Application() {
-    }
+    private String createdBy;
+
+    private Date createdAt;
+
+    private Date modifiedAt;
+
+    private boolean published;
+
 
     public int getId() {
         return id;
@@ -65,6 +71,14 @@ public class Application {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 
     public String getName() {
@@ -75,12 +89,12 @@ public class Application {
         this.name = name;
     }
 
-    public String getUuid() {
-        return uuid;
+    public String getShortDescription() {
+        return shortDescription;
     }
 
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
+    public void setShortDescription(String shortDescription) {
+        this.shortDescription = shortDescription;
     }
 
     public String getDescription() {
@@ -131,20 +145,12 @@ public class Application {
         this.tags = tags;
     }
 
-    public Date getCreatedAt() {
-        return createdAt;
+    public List<Subscription> getSubscriptions() {
+        return subscriptions;
     }
 
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public Date getModifiedAt() {
-        return modifiedAt;
-    }
-
-    public void setModifiedAt(Date modifiedAt) {
-        this.modifiedAt = modifiedAt;
+    public void setSubscriptions(List<Subscription> subscriptions) {
+        this.subscriptions = subscriptions;
     }
 
     public Platform getPlatform() {
@@ -169,5 +175,37 @@ public class Application {
 
     public void setProperties(Map<String, String> properties) {
         this.properties = properties;
+    }
+
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Date getModifiedAt() {
+        return modifiedAt;
+    }
+
+    public void setModifiedAt(Date modifiedAt) {
+        this.modifiedAt = modifiedAt;
+    }
+
+    public boolean isPublished() {
+        return published;
+    }
+
+    public void setPublished(boolean published) {
+        this.published = published;
     }
 }

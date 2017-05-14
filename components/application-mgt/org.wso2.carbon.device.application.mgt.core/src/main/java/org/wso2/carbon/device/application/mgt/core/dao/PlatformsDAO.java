@@ -16,29 +16,8 @@
  *   under the License.
  *
  */
-package org.wso2.carbon.device.application.mgt.core.dto;
+package org.wso2.carbon.device.application.mgt.core.dao;
 
-import java.util.List;
+public interface PlatformsDAO {
 
-public class ApplicationList {
-
-    private List<Application> applications;
-
-    private Pagination pagination;
-
-    public List<Application> getApplications() {
-        return applications;
-    }
-
-    public void setApplications(List<Application> applications) {
-        this.applications = applications;
-    }
-
-    public Pagination getPagination() {
-        return pagination;
-    }
-
-    public void setPagination(Pagination pagination) {
-        this.pagination = pagination;
-    }
 }

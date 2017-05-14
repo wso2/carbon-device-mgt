@@ -26,8 +26,8 @@ import org.wso2.carbon.device.application.mgt.core.components.ApplicationManager
 import org.wso2.carbon.device.application.mgt.core.components.impl.ApplicationManagerImpl;
 import org.wso2.carbon.device.application.mgt.core.config.ApplicationConfigurationManager;
 import org.wso2.carbon.device.application.mgt.core.config.datasource.DataSourceConfig;
-import org.wso2.carbon.device.application.mgt.core.dao.ApplicationManagementDAO;
-import org.wso2.carbon.device.application.mgt.core.dao.ApplicationManagementDAOFactory;
+import org.wso2.carbon.device.application.mgt.core.dao.common.ApplicationManagementDAO;
+import org.wso2.carbon.device.application.mgt.core.dao.common.ApplicationManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 
 import javax.naming.NamingException;

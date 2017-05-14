@@ -16,17 +16,37 @@
  *   under the License.
  *
  */
-package org.wso2.carbon.device.application.mgt.core.components;
+package org.wso2.carbon.device.application.mgt.core.dto;
 
-import org.wso2.carbon.device.application.mgt.core.dto.Application;
-import org.wso2.carbon.device.application.mgt.core.dto.lists.ApplicationList;
-import org.wso2.carbon.device.application.mgt.core.dto.Filter;
-import org.wso2.carbon.device.application.mgt.core.exception.ApplicationManagerException;
+public class LifecycleState {
 
-public interface ApplicationManager {
+    private String id;
 
-    public void createApplication(Application application) throws ApplicationManagerException;
+    private String name;
 
-    public ApplicationList getApplications(Filter filter) throws ApplicationManagerException;
+    private String description;
 
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 }

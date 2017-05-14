@@ -20,7 +20,7 @@ package org.wso2.carbon.device.application.mgt.api.services;
 
 import io.swagger.annotations.*;
 import org.wso2.carbon.device.application.mgt.api.beans.ErrorResponse;
-import org.wso2.carbon.device.application.mgt.core.dto.ApplicationList;
+import org.wso2.carbon.device.application.mgt.core.dto.lists.ApplicationList;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;

@@ -16,17 +16,13 @@
  *   under the License.
  *
  */
-package org.wso2.carbon.device.application.mgt.core.components;
+package org.wso2.carbon.device.application.mgt.core.dao.common;
 
-import org.wso2.carbon.device.application.mgt.core.dto.Application;
-import org.wso2.carbon.device.application.mgt.core.dto.lists.ApplicationList;
-import org.wso2.carbon.device.application.mgt.core.dto.Filter;
-import org.wso2.carbon.device.application.mgt.core.exception.ApplicationManagerException;
+import org.apache.abdera.model.Categories;
+import org.wso2.carbon.device.application.mgt.core.dao.*;
+import org.wso2.carbon.device.application.mgt.core.dto.LifecycleState;
 
-public interface ApplicationManager {
-
-    public void createApplication(Application application) throws ApplicationManagerException;
-
-    public ApplicationList getApplications(Filter filter) throws ApplicationManagerException;
+public interface ApplicationManagementDAO extends ApplicationReleasesDAO, ApplicationsDAO, CategoriesDAO, CommentsDAO,
+        LifecycleStatesDAO, PlatformsDAO, ResourceTypesDAO, SubscriptionsDAO, VisibilitiesDAO {
 
 }

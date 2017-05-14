@@ -35,6 +35,8 @@ public class Platform {
 
     private String iconName;
 
+    private List<String> tags;
+
     private String properties;
 
     private List<Application> applications;
@@ -85,6 +87,14 @@ public class Platform {
 
     public void setProperties(String properties) {
         this.properties = properties;
+    }
+
+    public List<String> getTags() {
+        return tags;
+    }
+
+    public void setTags(List<String> tags) {
+        this.tags = tags;
     }
 
     public List<Application> getApplications() {

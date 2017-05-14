@@ -16,17 +16,37 @@
  *   under the License.
  *
  */
-package org.wso2.carbon.device.application.mgt.core.dao;
+package org.wso2.carbon.device.application.mgt.core.dto;
 
-import org.wso2.carbon.device.application.mgt.core.exception.ApplicationManagerException;
+public class ResourceType {
 
-public class ApplicationManagementDAOException extends ApplicationManagerException {
+    private String id;
 
-    public ApplicationManagementDAOException(String message, Throwable throwable) {
-        super(message, throwable);
+    private String name;
+
+    private String description;
+
+    public String getId() {
+        return id;
     }
 
-    public ApplicationManagementDAOException(String message) {
-        super(message, new Exception());
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

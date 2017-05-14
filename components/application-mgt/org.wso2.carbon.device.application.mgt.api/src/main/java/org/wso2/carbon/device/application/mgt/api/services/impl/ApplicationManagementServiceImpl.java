@@ -21,7 +21,7 @@ package org.wso2.carbon.device.application.mgt.api.services.impl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.application.mgt.core.components.ApplicationManager;
-import org.wso2.carbon.device.application.mgt.core.dto.ApplicationList;
+import org.wso2.carbon.device.application.mgt.core.dto.lists.ApplicationList;
 import org.wso2.carbon.device.application.mgt.core.dto.Filter;
 import org.wso2.carbon.device.application.mgt.core.util.ApplicationManagementUtil;
 

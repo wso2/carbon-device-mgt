@@ -16,17 +16,8 @@
  *   under the License.
  *
  */
-package org.wso2.carbon.device.application.mgt.core.components;
+package org.wso2.carbon.device.application.mgt.core.dao;
 
-import org.wso2.carbon.device.application.mgt.core.dto.Application;
-import org.wso2.carbon.device.application.mgt.core.dto.lists.ApplicationList;
-import org.wso2.carbon.device.application.mgt.core.dto.Filter;
-import org.wso2.carbon.device.application.mgt.core.exception.ApplicationManagerException;
-
-public interface ApplicationManager {
-
-    public void createApplication(Application application) throws ApplicationManagerException;
-
-    public ApplicationList getApplications(Filter filter) throws ApplicationManagerException;
+public interface ApplicationReleasesDAO {
 
 }

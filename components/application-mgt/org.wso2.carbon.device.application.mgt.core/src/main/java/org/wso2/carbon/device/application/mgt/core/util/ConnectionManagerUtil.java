@@ -29,8 +29,10 @@ import javax.naming.InitialContext;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 public class ConnectionManagerUtil {
 
@@ -38,6 +40,36 @@ public class ConnectionManagerUtil {
 
     private enum TxState {
         CONNECTION_NOT_BORROWED, CONNECTION_BORROWED, CONNECTION_CLOSED
+    }
+
+    public enum DatabaseType {
+
+        H2("H2"),
+        MYSQL("MySQL"),
+        ORACLE("Oracle"),
+        POSTGRESQL("PostgreSQL"),
+        MSSQL("Microsoft SQL Server");
+
+        private final String value;
+        private static final Map<String, DatabaseType> lookup = new HashMap<String, DatabaseType>();
+
+        static {
+            for (DatabaseType databaseType : DatabaseType.values()) {
+                lookup.put(databaseType.getValue(), databaseType);
+            }
+        }
+
+        DatabaseType(String value) {
+            this.value = value;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        public static DatabaseType lookup(String value) {
+            return lookup.get(value);
+        }
     }
 
     private static final ThreadLocal<Connection> currentConnection = new ThreadLocal<>();

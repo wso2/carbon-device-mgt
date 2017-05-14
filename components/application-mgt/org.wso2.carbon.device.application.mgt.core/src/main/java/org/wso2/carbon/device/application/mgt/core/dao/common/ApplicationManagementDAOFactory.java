@@ -16,23 +16,22 @@
  *   under the License.
  *
  */
-package org.wso2.carbon.device.application.mgt.core.dao;
+package org.wso2.carbon.device.application.mgt.core.dao.common;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.application.mgt.core.config.datasource.DataSourceConfig;
 import org.wso2.carbon.device.application.mgt.core.dao.impl.GenericAppManagementDAO;
 import org.wso2.carbon.device.application.mgt.core.util.ConnectionManagerUtil;
+import  org.wso2.carbon.device.application.mgt.core.util.ConnectionManagerUtil.DatabaseType;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
 
 public class ApplicationManagementDAOFactory {
 
     public static final String H2 = "H2";
-    private ApplicationManagementDAO.DatabaseType databaseType;
+    private DatabaseType databaseType;
     private static DataSource dataSource;
 
     private static final Log log = LogFactory.getLog(ApplicationManagementDAOFactory.class);
@@ -46,7 +45,7 @@ public class ApplicationManagementDAOFactory {
         } catch (SQLException e) {
             log.error("Error occurred while retrieving config.datasource connection", e);
         }
-        this.databaseType = ApplicationManagementDAO.DatabaseType.lookup(databaseEngine);
+        this.databaseType = DatabaseType.lookup(databaseEngine);
     }
 
     public ApplicationManagementDAO getApplicationManagementDAO(){

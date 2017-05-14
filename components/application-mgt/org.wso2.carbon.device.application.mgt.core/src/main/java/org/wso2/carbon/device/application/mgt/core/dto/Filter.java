@@ -22,6 +22,10 @@ import java.util.Map;
 
 public class Filter {
 
+    public enum SortingOrder {
+        ASC, DESC
+    }
+
     private int limit;
 
     private int offset;
@@ -31,6 +35,10 @@ public class Filter {
     private Map<String, String> filterProperties;
 
     private String searchQuery;
+
+    private SortingOrder sortingOrder;
+
+    private String sortBy;
 
     public int getLimit() {
         return limit;
@@ -72,10 +80,28 @@ public class Filter {
         this.searchQuery = searchQuery;
     }
 
+    public SortingOrder getSortingOrder() {
+        return sortingOrder;
+    }
+
+    public void setSortingOrder(SortingOrder sortingOrder) {
+        this.sortingOrder = sortingOrder;
+    }
+
+    public String getSortBy() {
+        return sortBy;
+    }
+
+    public void setSortBy(String sortBy) {
+        this.sortBy = sortBy;
+    }
+
     public boolean hasCondition() {
         if (filterProperties != null || searchQuery != null || filter != null) {
             return true;
         }
         return false;
     }
+
+
 }

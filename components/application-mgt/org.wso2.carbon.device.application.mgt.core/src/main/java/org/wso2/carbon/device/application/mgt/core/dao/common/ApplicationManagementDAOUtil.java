@@ -16,7 +16,7 @@
  *   under the License.
  *
  */
-package org.wso2.carbon.device.application.mgt.core.dao;
+package org.wso2.carbon.device.application.mgt.core.dao.common;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -38,7 +38,8 @@ public class ApplicationManagementDAOUtil {
 
     private static final Log log = LogFactory.getLog(ApplicationManagementDAOUtil.class);
 
-    public static Application loadApplication(ResultSet rs ,  ResultSet rsProperties) throws SQLException, JSONException {
+    public static Application loadApplication(ResultSet rs, ResultSet rsProperties, ResultSet rsTags)
+            throws SQLException, JSONException {
 
         Application application = new Application();
         application.setId(rs.getInt("ID"));
@@ -52,16 +53,22 @@ public class ApplicationManagementDAOUtil {
         application.setCreatedAt(rs.getDate("CREATED_AT"));
         application.setModifiedAt(rs.getDate("MODIFIED_AT"));
 
-        Platform applicationType = new Platform();
-        applicationType.setName(rs.getString("APL_NAME"));
-        applicationType.setCode(rs.getString("APL_CODE"));
-        application.setApplicationType(applicationType);
+        Platform platform = new Platform();
+        platform.setName(rs.getString("APL_NAME"));
+        platform.setCode(rs.getString("APL_CODE"));
+        application.setPlatform(platform);
 
         Map<String, String> properties = new HashMap<>();
-        while (rsProperties.next()){
+        while (rsProperties.next()) {
             properties.put(rsProperties.getString("PROP_KEY"), rsProperties.getString("PROP_VAL"));
         }
         application.setProperties(properties);
+
+        List<String> tags = new ArrayList<>();
+        while ((rsTags.next())){
+            tags.add(rsTags.getString("NAME"));
+        }
+        application.setTags(tags);
 
         Category category = new Category();
         category.setName(rs.getString("CAT_NAME"));

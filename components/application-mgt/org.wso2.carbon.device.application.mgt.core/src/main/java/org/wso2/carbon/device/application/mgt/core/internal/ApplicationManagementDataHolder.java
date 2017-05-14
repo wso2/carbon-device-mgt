@@ -18,7 +18,7 @@
  */
 package org.wso2.carbon.device.application.mgt.core.internal;
 
-import org.wso2.carbon.device.application.mgt.core.dao.ApplicationManagementDAO;
+import org.wso2.carbon.device.application.mgt.core.dao.common.ApplicationManagementDAO;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 
 public class ApplicationManagementDataHolder {

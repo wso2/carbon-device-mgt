@@ -22,8 +22,8 @@ import org.apache.commons.logging.Log;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.framework.BundleContext;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.device.application.mgt.core.components.ApplicationManager;
-import org.wso2.carbon.device.application.mgt.core.components.impl.ApplicationManagerImpl;
+import org.wso2.carbon.device.application.mgt.core.services.ApplicationManagementService;
+import org.wso2.carbon.device.application.mgt.core.services.impl.ApplicationManagementServiceImpl;
 import org.wso2.carbon.device.application.mgt.core.config.ApplicationConfigurationManager;
 import org.wso2.carbon.device.application.mgt.core.config.datasource.DataSourceConfig;
 import org.wso2.carbon.device.application.mgt.core.dao.common.ApplicationManagementDAO;
@@ -33,7 +33,7 @@ import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import javax.naming.NamingException;
 
 /**
- * @scr.component name="org.wso2.carbon.application.mgt" immediate="true"
+ * @scr.component name="org.wso2.carbon.application.mgt.service" immediate="true"
  * @scr.reference name="org.wso2.carbon.device.manager"
  * interface="org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService"
  * cardinality="1..1"
@@ -49,8 +49,8 @@ public class ApplicationManagementServiceComponent {
     protected void activate(ComponentContext componentContext) throws NamingException {
         BundleContext bundleContext = componentContext.getBundleContext();
 
-        bundleContext.registerService(ApplicationManager.class.getName(),
-                ApplicationManagerImpl.getInstance(), null);
+        bundleContext.registerService(ApplicationManagementService.class.getName(),
+                ApplicationManagementServiceImpl.getInstance(), null);
 
 
         DataSourceConfig dataSourceConfig  = ApplicationConfigurationManager.getInstance()
@@ -73,14 +73,14 @@ public class ApplicationManagementServiceComponent {
 
     protected void setDeviceManagementService(DeviceManagementProviderService deviceManagementProviderService) {
         if (log.isDebugEnabled()) {
-            log.debug("Setting Application Management OSGI Service");
+            log.debug("Setting Application Management OSGI Manager");
         }
         ApplicationManagementDataHolder.getInstance().setDeviceManagementService(deviceManagementProviderService);
     }
 
     protected void unsetDeviceManagementService(DeviceManagementProviderService deviceManagementProviderService) {
         if (log.isDebugEnabled()) {
-            log.debug("Removing Application Management OSGI Service");
+            log.debug("Removing Application Management OSGI Manager");
         }
         ApplicationManagementDataHolder.getInstance().setDeviceManagementService(null);
     }

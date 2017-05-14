@@ -23,7 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Document;
 import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
-import org.wso2.carbon.device.application.mgt.core.components.ApplicationManager;
+import org.wso2.carbon.device.application.mgt.core.services.ApplicationManagementService;
 import org.wso2.carbon.device.application.mgt.core.exception.ApplicationManagerException;
 
 import javax.xml.XMLConstants;
@@ -35,10 +35,10 @@ public class ApplicationManagementUtil {
 
     private static Log log = LogFactory.getLog(ApplicationManagementUtil.class);
 
-    public static ApplicationManager getApplicationManager() {
+    public static ApplicationManagementService getApplicationManagementService() {
         PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-        ApplicationManager applicationManager =
-                (ApplicationManager) CarbonContext.getThreadLocalCarbonContext().getOSGiService(ApplicationManager.class, null);
+        ApplicationManagementService applicationManager =
+                (ApplicationManagementService) CarbonContext.getThreadLocalCarbonContext().getOSGiService(ApplicationManagementService.class, null);
         if (applicationManager == null) {
             String msg = "Application Management provider service has not initialized.";
             log.error(msg);

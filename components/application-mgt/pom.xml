@@ -36,7 +36,7 @@
 
     <modules>
         <module>org.wso2.carbon.device.application.mgt.core</module>
-        <module>org.wso2.carbon.device.application.mgt.api</module>
+        <module>org.wso2.carbon.device.application.mgt.api.v2</module>
     </modules>
 
     <build>

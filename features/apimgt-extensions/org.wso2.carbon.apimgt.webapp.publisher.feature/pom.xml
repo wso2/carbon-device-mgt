@@ -133,9 +133,6 @@
                                     org.wso2.carbon.devicemgt:org.wso2.carbon.apimgt.webapp.publisher:${carbon.device.mgt.version}
                                 </bundleDef>
                                 <bundleDef>
-                                    org.wso2.carbon.devicemgt:org.wso2.carbon.apimgt.application.extension:${carbon.device.mgt.version}
-                                </bundleDef>
-                                <bundleDef>
                                     org.wso2.carbon.devicemgt:org.wso2.carbon.apimgt.annotations:${carbon.device.mgt.version}
                                 </bundleDef>
                                 <bundleDef>

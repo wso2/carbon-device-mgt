@@ -121,4 +121,9 @@ public class TestDeviceManager implements DeviceManager {
         return false;
     }
 
+    @Override
+    public PlatformConfiguration getDefaultConfiguration() throws DeviceManagementException {
+        return null;
+    }
+
 }

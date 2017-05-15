@@ -20,6 +20,7 @@ package org.wso2.carbon.device.mgt.extensions.device.type.deployer.template.dao;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.extensions.device.type.deployer.config.DeviceDetails;
 import org.wso2.carbon.device.mgt.extensions.device.type.deployer.exception.DeviceTypeMgtPluginException;
@@ -63,9 +64,11 @@ public class PropertyBasedPluginDAOImpl implements PluginDAO {
         try {
             conn = deviceTypeDAOHandler.getConnection();
             stmt = conn.prepareStatement(
-                    "SELECT * FROM DM_DEVICE_PROPERTIES WHERE DEVICE_TYPE_NAME = ? AND DEVICE_IDENTIFICATION = ?");
+                    "SELECT * FROM DM_DEVICE_PROPERTIES WHERE DEVICE_TYPE_NAME = ? AND DEVICE_IDENTIFICATION = ? " +
+                            "AND TENANT_ID = ?");
             stmt.setString(1, deviceType);
             stmt.setString(2, deviceId);
+            stmt.setInt(3, PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId(true));
             resultSet = stmt.executeQuery();
             device = new Device();
             device.setDeviceIdentifier(deviceId);
@@ -98,12 +101,13 @@ public class PropertyBasedPluginDAOImpl implements PluginDAO {
             conn = deviceTypeDAOHandler.getConnection();
             stmt = conn.prepareStatement(
                     "INSERT INTO DM_DEVICE_PROPERTIES(DEVICE_TYPE_NAME, DEVICE_IDENTIFICATION, PROPERTY_NAME, " +
-                            "PROPERTY_VALUE) VALUES (?, ?, ?, ?)");
+                            "PROPERTY_VALUE, TENANT_ID) VALUES (?, ?, ?, ?, ?)");
             for (String propertyKey : deviceProps) {
                 stmt.setString(1, deviceType);
                 stmt.setString(2, device.getDeviceIdentifier());
                 stmt.setString(3, propertyKey);
                 stmt.setString(4, getPropertyValue(device.getProperties(), propertyKey));
+                stmt.setInt(5, PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId(true));
                 stmt.addBatch();
             }
             stmt.executeBatch();
@@ -127,13 +131,14 @@ public class PropertyBasedPluginDAOImpl implements PluginDAO {
             conn = deviceTypeDAOHandler.getConnection();
             stmt = conn.prepareStatement(
                     "UPDATE DM_DEVICE_PROPERTIES SET PROPERTY_VALUE = ? WHERE  DEVICE_TYPE_NAME = ? AND " +
-                            "DEVICE_IDENTIFICATION = ? AND PROPERTY_NAME = ?");
+                            "DEVICE_IDENTIFICATION = ? AND PROPERTY_NAME = ? AND TENANT_ID= ?");
 
             for (Device.Property property : device.getProperties()) {
                 stmt.setString(1, getPropertyValue(device.getProperties(), property.getValue()));
                 stmt.setString(1, deviceType);
                 stmt.setString(2, device.getDeviceIdentifier());
                 stmt.setString(3, property.getName());
+                stmt.setInt(4, PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId(true));
                 stmt.addBatch();
             }
             stmt.executeBatch();
@@ -162,9 +167,10 @@ public class PropertyBasedPluginDAOImpl implements PluginDAO {
         try {
             conn = deviceTypeDAOHandler.getConnection();
             stmt = conn.prepareStatement("DELETE FROM DM_DEVICE_PROPERTIES WHERE DEVICE_TYPE_NAME = ? " +
-                                                 "AND DEVICE_IDENTIFICATION = ?");
+                                                 "AND DEVICE_IDENTIFICATION = ? AND TENANT_ID = ?");
             stmt.setString(1, deviceType);
             stmt.setString(2, deviceId);
+            stmt.setInt(3, PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId(true));
             int rows = stmt.executeUpdate();
             if (rows > 0) {
                 status = true;
@@ -191,9 +197,10 @@ public class PropertyBasedPluginDAOImpl implements PluginDAO {
         Map<String, Device> deviceMap = new HashMap<>();
         try {
             conn = deviceTypeDAOHandler.getConnection();
-            stmt = conn.prepareStatement("SELECT DEVICE_IDENTIFICATION, PROPERTY_NAME" +
-                                                 ", PROPERTY_VALUE FROM DM_DEVICE_PROPERTIES WHERE DEVICE_TYPE_NAME = ?");
+            stmt = conn.prepareStatement("SELECT DEVICE_IDENTIFICATION, PROPERTY_NAME, PROPERTY_VALUE FROM " +
+                                                 "DM_DEVICE_PROPERTIES WHERE DEVICE_TYPE_NAME = ? AND TENANT_ID = ?");
             stmt.setString(1, deviceType);
+            stmt.setInt(2, PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId(true));
             resultSet = stmt.executeQuery();
             while (resultSet.next()) {
                 String deviceId = resultSet.getString("DEVICE_IDENTIFICATION");

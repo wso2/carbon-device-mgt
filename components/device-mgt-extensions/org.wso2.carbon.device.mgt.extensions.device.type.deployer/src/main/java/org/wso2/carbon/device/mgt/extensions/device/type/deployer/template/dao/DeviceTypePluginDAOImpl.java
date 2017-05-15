@@ -36,9 +36,9 @@ import java.util.List;
  * Implements CRUD for Devices. This holds the generic implementation. An instance of this will be created for
  * each device type.
  */
-public class PerDeviceTypePluginDAOImpl implements PluginDAO{
+public class DeviceTypePluginDAOImpl implements PluginDAO{
 
-    private static final Log log = LogFactory.getLog(PerDeviceTypePluginDAOImpl.class);
+    private static final Log log = LogFactory.getLog(DeviceTypePluginDAOImpl.class);
     private DeviceTypeDAOHandler deviceTypeDAOHandler;
     private DeviceDAODefinition deviceDAODefinition;
     private String selectDBQueryForGetDevice;
@@ -47,8 +47,8 @@ public class PerDeviceTypePluginDAOImpl implements PluginDAO{
     private String deleteDBQueryToRemoveDevicd;
     private String selectDBQueryToGetAllDevice;
 
-    public PerDeviceTypePluginDAOImpl(DeviceDAODefinition deviceDAODefinition,
-                                      DeviceTypeDAOHandler deviceTypeDAOHandler) {
+    public DeviceTypePluginDAOImpl(DeviceDAODefinition deviceDAODefinition,
+                                   DeviceTypeDAOHandler deviceTypeDAOHandler) {
         this.deviceTypeDAOHandler = deviceTypeDAOHandler;
         this.deviceDAODefinition = deviceDAODefinition;
         initializeDbQueries();

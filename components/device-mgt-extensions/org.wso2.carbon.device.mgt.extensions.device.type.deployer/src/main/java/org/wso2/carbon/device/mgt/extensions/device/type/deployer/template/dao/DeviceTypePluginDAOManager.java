@@ -29,7 +29,7 @@ public class DeviceTypePluginDAOManager {
 
     public DeviceTypePluginDAOManager(String datasourceName, DeviceDAODefinition deviceDAODefinition) {
         deviceTypeDAOHandler = new DeviceTypeDAOHandler(datasourceName);
-        deviceTypePluginDAO = new PerDeviceTypePluginDAOImpl(deviceDAODefinition, deviceTypeDAOHandler);
+        deviceTypePluginDAO = new DeviceTypePluginDAOImpl(deviceDAODefinition, deviceTypeDAOHandler);
     }
 
     public DeviceTypePluginDAOManager(String deviceType, DeviceDetails deviceDetails) {

@@ -20,10 +20,10 @@ package org.wso2.carbon.device.application.mgt.api.services.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.device.application.mgt.core.components.ApplicationManager;
-import org.wso2.carbon.device.application.mgt.core.dto.ApplicationList;
 import org.wso2.carbon.device.application.mgt.core.dto.Filter;
+import org.wso2.carbon.device.application.mgt.core.dto.lists.ApplicationList;
 import org.wso2.carbon.device.application.mgt.core.util.ApplicationManagementUtil;
+import org.wso2.carbon.device.application.mgt.core.services.ApplicationManager;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
@@ -42,7 +42,7 @@ public class ApplicationManagementServiceImpl {
     @Path("applications")
     public Response getApplications(@QueryParam("offset") int offset, @QueryParam("limit") int limit,
                                     @QueryParam("q") String searchQuery) {
-        ApplicationManager applicationManager = ApplicationManagementUtil.getApplicationManager();
+        ApplicationManager applicationManager = ApplicationManagementUtil.getApplicationManagementService();
         try {
 
             if(limit == 0){

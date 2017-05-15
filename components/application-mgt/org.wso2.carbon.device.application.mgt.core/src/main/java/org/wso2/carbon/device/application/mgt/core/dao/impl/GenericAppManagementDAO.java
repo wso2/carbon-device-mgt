@@ -18,12 +18,14 @@
  */
 package org.wso2.carbon.device.application.mgt.core.dao.impl;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.json.JSONException;
-import org.wso2.carbon.device.application.mgt.core.dao.ApplicationManagementDAO;
-import org.wso2.carbon.device.application.mgt.core.dao.ApplicationManagementDAOException;
-import org.wso2.carbon.device.application.mgt.core.dao.ApplicationManagementDAOUtil;
+import org.wso2.carbon.device.application.mgt.core.dao.common.ApplicationManagementDAO;
+import org.wso2.carbon.device.application.mgt.core.dao.common.ApplicationManagementDAOException;
+import org.wso2.carbon.device.application.mgt.core.dao.common.ApplicationManagementDAOUtil;
 import org.wso2.carbon.device.application.mgt.core.dto.Application;
-import org.wso2.carbon.device.application.mgt.core.dto.ApplicationList;
+import org.wso2.carbon.device.application.mgt.core.dto.lists.ApplicationList;
 import org.wso2.carbon.device.application.mgt.core.dto.Filter;
 import org.wso2.carbon.device.application.mgt.core.dto.Pagination;
 import org.wso2.carbon.device.application.mgt.core.util.ConnectionManagerUtil;
@@ -37,13 +39,20 @@ import java.util.List;
 
 public class GenericAppManagementDAO implements ApplicationManagementDAO {
 
-    @Override
-    public void createApplication(Application application) throws ApplicationManagementDAOException {
+    private static final Log log = LogFactory.getLog(ApplicationManagementDAO.class);
 
+    @Override
+    public Application createApplication(Application application) throws ApplicationManagementDAOException {
+        return null;
     }
 
     @Override
     public ApplicationList getApplications(Filter filter) throws ApplicationManagementDAOException {
+
+        if(log.isDebugEnabled()){
+            log.debug("Getting application data from the database");
+            log.debug(String.format("Filter: limit=%s, offset=%", filter.getLimit(), filter.getOffset()));
+        }
 
         Connection conn = null;
         PreparedStatement stmt = null;
@@ -64,12 +73,14 @@ public class GenericAppManagementDAO implements ApplicationManagementDAO {
 
             conn = ConnectionManagerUtil.getCurrentConnection().get();
 
-            sql += "SELECT SQL_CALC_FOUND_ROWS AP.*, AT.NAME AS AT_NAME, AT.CODE AS AT_CODE, CT.NAME AS CT_NAME ";
-            sql += "FROM APPM_APPLICATION AS AP ";
-            sql += "INNER JOIN APPM_APPLICATION_TYPE AS AT ON AP.APPLICATION_TYPE_ID = AT.ID ";
-            sql += "INNER JOIN APPM_APPLICATION_CATEGORY AS CT ON AP.CATEGORY_ID = CT.ID ";
+            sql += "SELECT SQL_CALC_FOUND_ROWS APP.*, APL.NAME AS APL_NAME, APL.IDENTIFIER AS APL_IDENTIFIER," +
+                    " CAT.NAME AS CAT_NAME ";
+            sql += "FROM APPM_APPLICATION AS APP ";
+            sql += "INNER JOIN APPM_PLATFORM_APPLICATION_MAPPING AS APM ON APP.PLATFORM_APPLICATION_MAPPING_ID = APM.ID ";
+            sql += "INNER JOIN APPM_PLATFORM AS APL ON APM.PLATFORM_ID = APL.ID ";
+            sql += "INNER JOIN APPM_APPLICATION_CATEGORY AS CAT ON APP.APPLICATION_CATEGORY_ID = CAT.ID ";
             if (filter.getSearchQuery() != null || "".equals(filter.getSearchQuery())) {
-                sql += "WHERE AP.NAME LIKE ? ";
+                sql += "WHERE APP.NAME LIKE ? ";
             }
             sql += "LIMIT ? ";
             sql += "OFFSET ?;";
@@ -95,12 +106,18 @@ public class GenericAppManagementDAO implements ApplicationManagementDAO {
             while (rs.next()) {
 
                 //Getting properties
-                sql = "SELECT * FROM APPM_APPLICATION_PROPERTIES WHERE APPLICATION_ID=?";
+                sql = "SELECT * FROM APPM_APPLICATION_PROPERTY WHERE APPLICATION_ID=?";
                 stmt = conn.prepareStatement(sql);
                 stmt.setInt(1, rs.getInt("ID"));
                 ResultSet rsProperties = stmt.executeQuery();
 
-                applications.add(ApplicationManagementDAOUtil.loadApplication(rs, rsProperties));
+                //Getting tags
+                sql = "SELECT * FROM APPM_APPLICATION_TAG WHERE APPLICATION_ID=?";
+                stmt = conn.prepareStatement(sql);
+                stmt.setInt(1, rs.getInt("ID"));
+                ResultSet rsTags = stmt.executeQuery();
+
+                applications.add(ApplicationManagementDAOUtil.loadApplication(rs, rsProperties, rsTags));
                 length++;
             }
 
@@ -117,6 +134,16 @@ public class GenericAppManagementDAO implements ApplicationManagementDAO {
             ApplicationManagementDAOUtil.cleanupResources(stmt, rs);
         }
         return applicationList;
+
+    }
+
+    @Override
+    public Application editApplication(Application application) throws ApplicationManagementDAOException {
+        return null;
+    }
+
+    @Override
+    public void deleteApplication(Application application) throws ApplicationManagementDAOException {
 
     }
 }

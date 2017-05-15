@@ -19,6 +19,7 @@
 package org.wso2.carbon.device.application.mgt.core.dto;
 
 import java.util.Date;
+import java.util.Map;
 
 public class Subscription {
 
@@ -31,6 +32,8 @@ public class Subscription {
     private Application application;
 
     private ApplicationRelease applicationRelease;
+
+    private Map<String, String> properties;
 
     public String getValue() {
         return value;
@@ -70,5 +73,13 @@ public class Subscription {
 
     public void setApplicationRelease(ApplicationRelease applicationRelease) {
         this.applicationRelease = applicationRelease;
+    }
+
+    public Map<String, String> getProperties() {
+        return properties;
+    }
+
+    public void setProperties(Map<String, String> properties) {
+        this.properties = properties;
     }
 }

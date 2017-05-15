@@ -18,6 +18,7 @@
  */
 package org.wso2.carbon.device.application.mgt.core.dto;
 
+import org.json.JSONObject;
 import org.wso2.carbon.device.application.mgt.core.jaxrs.Exclude;
 
 import java.util.List;
@@ -37,7 +38,7 @@ public class Platform {
 
     private List<String> tags;
 
-    private String properties;
+    private JSONObject descriptor;
 
     private List<Application> applications;
 
@@ -81,12 +82,12 @@ public class Platform {
         this.iconName = iconName;
     }
 
-    public String getProperties() {
-        return properties;
+    public JSONObject getDescriptor() {
+        return descriptor;
     }
 
-    public void setProperties(String properties) {
-        this.properties = properties;
+    public void setDescriptor(JSONObject descriptor) {
+        this.descriptor = descriptor;
     }
 
     public List<String> getTags() {

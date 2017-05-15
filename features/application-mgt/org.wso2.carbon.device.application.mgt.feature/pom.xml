@@ -41,6 +41,11 @@
             <type>zip</type>
         </dependency>
         <dependency>
+            <groupId>org.wso2.carbon.devicemgt</groupId>
+            <artifactId>org.wso2.carbon.device.application.mgt.ui.feature</artifactId>
+            <type>zip</type>
+        </dependency>
+        <dependency>
             <groupId>javax.servlet.jsp</groupId>
             <artifactId>javax.servlet.jsp-api</artifactId>
         </dependency>
@@ -72,6 +77,7 @@
                             </adviceFile>
                             <includedFeatures>
                                 <includedFeatureDef>org.wso2.carbon.devicemgt:org.wso2.carbon.device.application.mgt.server.feature:${carbon.device.mgt.version}</includedFeatureDef>
+                                <includedFeatureDef>org.wso2.carbon.devicemgt:org.wso2.carbon.device.application.mgt.ui.feature:${carbon.device.mgt.version}</includedFeatureDef>
                             </includedFeatures>
                             <bundles>
                                 <bundleDef>javax.servlet.jsp:javax.servlet.jsp-api</bundleDef>

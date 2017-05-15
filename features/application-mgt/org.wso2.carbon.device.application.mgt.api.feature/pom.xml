@@ -101,7 +101,7 @@
                             <goal>p2-feature-gen</goal>
                         </goals>
                         <configuration>
-                            <id>org.wso2.carbon.device.mgt.api</id>
+                            <id>org.wso2.carbon.device.application.mgt.api</id>
                             <propertiesFile>../../../features/etc/feature.properties
                             </propertiesFile>
                             <adviceFile>

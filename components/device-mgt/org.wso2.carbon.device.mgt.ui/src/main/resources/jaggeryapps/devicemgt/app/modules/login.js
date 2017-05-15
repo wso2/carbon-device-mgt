@@ -25,6 +25,19 @@ var onFail;
     onSuccess = function (context) {
         var utility = require("/app/modules/utility.js").utility;
         var apiWrapperUtil = require("/app/modules/oauth/token-handlers.js")["handlers"];
+        try {
+            utility.startTenantFlow(context.user);
+            var APIManagementProviderService = utility.getAPIManagementProviderService();
+            var isLoaded = APIManagementProviderService.isTierLoaded();
+            if(!isLoaded && context.input.samlToken) {
+                session.put(constants.SKIP_WELCOME_SCREEN, false);
+                session.put(constants.SAML_TOKEN_KEY, context.input.samlToken);
+                return;
+            }
+        } finally {
+            utility.endTenantFlow();
+        }
+        session.put(constants.SKIP_WELCOME_SCREEN, true);
         if (context.input.samlToken) {
             //apiWrapperUtil.setupTokenPairBySamlGrantType(context.user.username + '@' + context.user.domain, context.input.samlToken);
 			/**

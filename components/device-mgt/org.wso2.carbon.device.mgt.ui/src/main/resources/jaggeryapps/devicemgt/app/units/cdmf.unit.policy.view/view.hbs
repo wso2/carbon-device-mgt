@@ -1,5 +1,7 @@
 {{#zone "content"}}
     {{#if isAuthorized}}
+        <span id="logged-in-user" class="hidden" data-username="{{@user.username}}" data-domain="{{@user.domain}}"
+              data-tenant-id="{{@user.tenantId}}" data-iscloud="{{isCloud}}"></span>
         {{#defineZone "policy-profile-top"}}
             <div class="row wr-device-board">
                 <div class="col-lg-12 wr-secondary-bar">

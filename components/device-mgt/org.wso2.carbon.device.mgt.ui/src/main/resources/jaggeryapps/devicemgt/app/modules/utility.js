@@ -53,6 +53,10 @@ utility = function () {
         return getOsgiService('org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService');
     };
 
+    publicMethods.getAPIManagementProviderService = function () {
+        return getOsgiService('org.wso2.carbon.apimgt.application.extension.APIManagementProviderService');
+    };
+
     publicMethods.getUserManagementService = function () {
         return getOsgiService("org.wso2.carbon.device.mgt.user.core.UserManager");
     };

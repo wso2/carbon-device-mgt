@@ -59,6 +59,8 @@ public class PushNotificationProvider {
     protected ConfigProperties configProperties;
     @XmlAttribute(name = "type")
     protected String type;
+    @XmlAttribute(name = "isScheduled")
+    protected boolean isScheduled;
 
     /**
      * Gets the value of the fileBasedProperties property.
@@ -124,4 +126,30 @@ public class PushNotificationProvider {
         this.type = value;
     }
 
+    /**
+     * Gets the value of the isScheduled property.
+     * This property will be used to determine whether to use scheduler task to send push notification
+     * If true push notification will be sent using scheduler task
+     * If false push notifications will be sent immediately.
+     *
+     * @return
+     *     possible object is
+     *     {@link Boolean }
+     *
+     */
+    public boolean isScheduled() {
+        return isScheduled;
+    }
+
+    /**
+     * Sets the value of the isScheduled property.
+     *
+     * @return
+     *     possible object is
+     *     {@link Boolean }
+     *
+     */
+    public void setScheduled(boolean scheduled) {
+        isScheduled = scheduled;
+    }
 }

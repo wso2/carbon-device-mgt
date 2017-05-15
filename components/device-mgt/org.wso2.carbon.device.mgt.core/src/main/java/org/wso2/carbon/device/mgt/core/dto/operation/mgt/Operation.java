@@ -35,6 +35,10 @@ public class Operation implements Serializable {
         REPEAT, NO_REPEAT, PAUSE_SEQUENCE, STOP_SEQUENCE
     }
 
+    public enum PushNotificationStatus {
+        SCHEDULED, COMPLETED
+    }
+
     private String code;
     private Properties properties;
     private Type type;

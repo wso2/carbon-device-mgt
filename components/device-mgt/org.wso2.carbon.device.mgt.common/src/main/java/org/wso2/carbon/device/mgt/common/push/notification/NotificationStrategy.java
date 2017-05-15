@@ -31,4 +31,10 @@ public interface NotificationStrategy {
      */
     void undeploy();
 
+    /**
+     * Provides push notification configuration
+     *
+     */
+    PushNotificationConfig getConfig();
+
 }

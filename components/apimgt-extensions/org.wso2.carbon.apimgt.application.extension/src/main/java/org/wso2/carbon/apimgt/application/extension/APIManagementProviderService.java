@@ -27,6 +27,12 @@ import org.wso2.carbon.apimgt.application.extension.exception.APIManagerExceptio
 public interface APIManagementProviderService {
 
     /**
+     * Check whether the tier is loaded for the tenant.
+     * @return
+     */
+    boolean isTierLoaded();
+
+    /**
      * Generate and retreive application keys. if the application does exist then
      * create it and subscribe to apis that are grouped with the tags.
      *

@@ -55,7 +55,7 @@ public class ApplicationManagementDAOUtil {
 
         Platform platform = new Platform();
         platform.setName(rs.getString("APL_NAME"));
-        platform.setCode(rs.getString("APL_CODE"));
+        platform.setCode(rs.getString("APL_IDENTIFIER"));
         application.setPlatform(platform);
 
         Map<String, String> properties = new HashMap<>();

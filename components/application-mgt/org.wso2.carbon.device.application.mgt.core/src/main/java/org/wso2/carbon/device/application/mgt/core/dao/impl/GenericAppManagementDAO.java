@@ -73,7 +73,8 @@ public class GenericAppManagementDAO implements ApplicationManagementDAO {
 
             conn = ConnectionManagerUtil.getCurrentConnection().get();
 
-            sql += "SELECT SQL_CALC_FOUND_ROWS APP.*, APL.NAME AS APL_NAME, APL.CODE AS APL_CODE, CAT.NAME AS CAT_NAME ";
+            sql += "SELECT SQL_CALC_FOUND_ROWS APP.*, APL.NAME AS APL_NAME, APL.IDENTIFIER AS APL_IDENTIFIER," +
+                    " CAT.NAME AS CAT_NAME ";
             sql += "FROM APPM_APPLICATION AS APP ";
             sql += "INNER JOIN APPM_PLATFORM_APPLICATION_MAPPING AS APM ON APP.PLATFORM_APPLICATION_MAPPING_ID = APM.ID ";
             sql += "INNER JOIN APPM_PLATFORM AS APL ON APM.PLATFORM_ID = APL.ID ";

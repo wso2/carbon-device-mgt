@@ -161,7 +161,7 @@ public class BasicAuthAuthenticator implements WebappAuthenticator {
 
     private boolean isAuthenticationSupported(Request request) {
         String param = request.getContext().findParameter("basicAuth");
-        return (param == null || !Boolean.parseBoolean(param));
+        return (param != null && Boolean.parseBoolean(param));
     }
 
 }

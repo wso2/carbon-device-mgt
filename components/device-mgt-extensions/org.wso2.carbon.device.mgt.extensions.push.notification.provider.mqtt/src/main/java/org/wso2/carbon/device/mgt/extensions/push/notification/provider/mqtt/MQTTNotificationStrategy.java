@@ -45,8 +45,10 @@ public class MQTTNotificationStrategy implements NotificationStrategy {
     private static final String MQTT_ADAPTER_TOPIC = "mqtt.adapter.topic";
     private String mqttAdapterName;
     private static final Log log = LogFactory.getLog(MQTTNotificationStrategy.class);
+    private final PushNotificationConfig config;
 
     public MQTTNotificationStrategy(PushNotificationConfig config) {
+        this.config = config;
         OutputEventAdapterConfiguration adapterConfig = new OutputEventAdapterConfiguration();
         adapterConfig.setType(MQTTAdapterConstants.MQTT_ADAPTER_TYPE);
         mqttAdapterName = config.getProperty(MQTTAdapterConstants.MQTT_ADAPTER_PROPERTY_NAME);
@@ -135,6 +137,11 @@ public class MQTTNotificationStrategy implements NotificationStrategy {
     @Override
     public void undeploy() {
         MQTTDataHolder.getInstance().getOutputEventAdapterService().destroy(mqttAdapterName);
+    }
+
+    @Override
+    public PushNotificationConfig getConfig() {
+        return config;
     }
 
 }

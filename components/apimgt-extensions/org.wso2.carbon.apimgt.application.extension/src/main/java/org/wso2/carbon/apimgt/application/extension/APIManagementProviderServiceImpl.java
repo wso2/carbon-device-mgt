@@ -45,8 +45,22 @@ public class APIManagementProviderServiceImpl implements APIManagementProviderSe
     private static final String CONTENT_TYPE = "application/json";
     private static final int MAX_API_PER_TAG = 200;
     private static final String APP_TIER_TYPE = "application";
-    private static final Map<String, String> tiersMap = new HashMap<>();
-    private static final int MAX_ATTEMPTS = 20;
+
+    public boolean isTierLoaded() {
+        StoreClient storeClient = APIApplicationManagerExtensionDataHolder.getInstance().getIntegrationClientService()
+                .getStoreClient();
+        String tenantDomain = PrivilegedCarbonContext.getThreadLocalCarbonContext()
+                .getTenantDomain();
+        try {
+
+            storeClient.getIndividualTier().tiersTierLevelTierNameGet(ApiApplicationConstants.DEFAULT_TIER,
+                                                                      APP_TIER_TYPE,
+                                                                      tenantDomain, CONTENT_TYPE, null, null);
+            return true;
+        } catch (FeignException e) {
+            return false;
+        }
+    }
 
     @Override
     public void removeAPIApplication(String applicationName, String username) throws APIManagerException {
@@ -72,31 +86,8 @@ public class APIManagementProviderServiceImpl implements APIManagementProviderSe
             throws APIManagerException {
         StoreClient storeClient = APIApplicationManagerExtensionDataHolder.getInstance().getIntegrationClientService()
                 .getStoreClient();
-        //This is a fix to avoid race condition and trying to load tenant related tiers before invocation.
         String tenantDomain = PrivilegedCarbonContext.getThreadLocalCarbonContext()
                 .getTenantDomain();
-        String tiersLoadedForTenant = tiersMap.get(tenantDomain);
-
-        if (tiersLoadedForTenant == null) {
-            boolean tierLoaded = false;
-            int attempts = 0;
-            do {
-                try {
-                    storeClient.getIndividualTier()
-                            .tiersTierLevelTierNameGet(ApiApplicationConstants.DEFAULT_TIER, APP_TIER_TYPE,
-                                    tenantDomain, CONTENT_TYPE, null, null);
-                    tiersMap.put(tenantDomain, "exist");
-                    tierLoaded = true;
-                } catch (FeignException e) {
-                    attempts++;
-                    try {
-                        Thread.sleep(500);
-                    } catch (InterruptedException ex) {
-                        log.warn("Interrupted the waiting for tier availability.");
-                    }
-                }
-            } while ((!tierLoaded) && attempts < MAX_ATTEMPTS);
-        }
 
         ApplicationList applicationList = storeClient.getApplications()
                 .applicationsGet("", applicationName, 1, 0, CONTENT_TYPE, null);

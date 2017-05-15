@@ -40,6 +40,20 @@
     </li>
 {{/zone}}
 
+{{#zone "navbarActions"}}
+    {{#if isCloud}}
+        <li>
+            <a href="{{contact_form_url}}" class="cu-btn">
+            <span class="icon fw-stack">
+                <i class="fw fw-mail fw-stack-1x"></i>
+                <i class="fw fw-circle-outline fw-stack-2x"></i>
+            </span>
+                Request new device type
+            </a>
+        </li>
+    {{/if}}
+{{/zone}}
+
 {{#zone "content"}}
     <div class="wr-device-list row">
         <div class="wr-hidden-operations wr-advance-operations"></div>

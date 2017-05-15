@@ -26,16 +26,23 @@ import java.util.Map;
 public class PushNotificationConfig {
 
     private String type;
+    private boolean isScheduled;
     Map<String, String> properties;
 
-    public PushNotificationConfig(String type, Map<String, String> properties) {
+    public PushNotificationConfig(String type, boolean isScheduled, Map<String, String> properties) {
         this.type = type;
         this.properties = properties;
+        this.isScheduled = isScheduled;
     }
 
     @XmlElement(name = "Type", required = true)
     public String getType() {
         return type;
+    }
+
+    @XmlElement(name = "isScheduled")
+    public boolean isScheduled() {
+        return isScheduled;
     }
 
     public Map<String, String> getProperties() {

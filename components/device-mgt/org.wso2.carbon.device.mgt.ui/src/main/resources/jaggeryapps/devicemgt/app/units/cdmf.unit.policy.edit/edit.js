@@ -60,5 +60,8 @@ function onRequest(context) {
     context.isAuthorizedViewRoles = userModule.isAuthorized("/permission/admin/device-mgt/users/view");
     context.isAuthorizedViewGroups = userModule.isAuthorized("/permission/admin/device-mgt/groups/view");
 
+    var devicemgtProps = require("/app/modules/conf-reader/main.js")["conf"];
+    context["isCloud"] = devicemgtProps.isCloud;
+
     return context;
 }

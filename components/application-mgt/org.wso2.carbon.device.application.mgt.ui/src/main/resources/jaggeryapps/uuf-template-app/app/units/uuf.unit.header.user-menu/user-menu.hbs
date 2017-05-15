@@ -1,0 +1,39 @@
+{{!
+  Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+
+  WSO2 Inc. licenses this file to you under the Apache License,
+  Version 2.0 (the "License"); you may not use this file except
+  in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing,
+  software distributed under the License is distributed on an
+  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  KIND, either express or implied. See the License for the
+  specific language governing permissions and limitations
+  under the License.
+}}
+{{#zone "userMenu"}}
+    <ul class="nav navbar-right float-remove-xs text-center-xs">
+        <li class="visible-inline-block">
+            <a href="#" class="dropdown" data-toggle="dropdown">
+                <span class="icon fw-stack fw-lg">
+                   <i class="fw fw-circle fw-stack-2x"></i>
+                   <i class="fw fw-user fw-stack-1x fw-inverse"></i>
+                </span>
+                <span class="hidden-xs add-padding-left-1x">
+                    {{@user.username}}<span class="caret"></span>
+                </span>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-right slideInDown" role="menu">
+                {{#defineZone "userMenu-items"}}
+                    <li>
+                        <a href="{{@app.context}}/signout">Sign Out</a>
+                    </li>
+                {{/defineZone}}
+            </ul>
+        </li>
+    </ul>
+{{/zone}}

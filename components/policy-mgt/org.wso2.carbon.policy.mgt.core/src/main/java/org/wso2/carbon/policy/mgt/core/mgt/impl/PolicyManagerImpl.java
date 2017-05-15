@@ -39,6 +39,7 @@ import org.wso2.carbon.policy.mgt.core.cache.impl.PolicyCacheManagerImpl;
 import org.wso2.carbon.policy.mgt.core.dao.*;
 import org.wso2.carbon.policy.mgt.core.mgt.PolicyManager;
 import org.wso2.carbon.policy.mgt.core.mgt.ProfileManager;
+import org.wso2.carbon.policy.mgt.core.mgt.bean.UpdatedPolicyDeviceListBean;
 import org.wso2.carbon.policy.mgt.core.util.PolicyManagerUtil;
 
 import java.sql.SQLException;
@@ -830,15 +831,15 @@ public class PolicyManagerImpl implements PolicyManager {
     }
 
     @Override
-    public List<String> applyChangesMadeToPolicies() throws PolicyManagementException {
+    public UpdatedPolicyDeviceListBean applyChangesMadeToPolicies() throws PolicyManagementException {
 
         List<String> changedDeviceTypes = new ArrayList<>();
+        List<Policy> updatedPolicies = new ArrayList<>();
+        List<Integer> updatedPolicyIds = new ArrayList<>();
         try {
             //HashMap<Integer, Integer> map = policyDAO.getUpdatedPolicyIdandDeviceTypeId();
-            List<Policy> updatedPolicies = new ArrayList<>();
 //            List<Policy> activePolicies = new ArrayList<>();
 //            List<Policy> inactivePolicies = new ArrayList<>();
-            List<Integer> updatedPolicyIds = new ArrayList<>();
 
 //            List<Policy> allPolicies = this.getPolicies();
             List<Policy> allPolicies = PolicyCacheManagerImpl.getInstance().getAllPolicies();
@@ -867,7 +868,7 @@ public class PolicyManagerImpl implements PolicyManager {
         } finally {
             PolicyManagementDAOFactory.closeConnection();
         }
-        return changedDeviceTypes;
+        return new UpdatedPolicyDeviceListBean(updatedPolicies, updatedPolicyIds, changedDeviceTypes);
     }
 
 

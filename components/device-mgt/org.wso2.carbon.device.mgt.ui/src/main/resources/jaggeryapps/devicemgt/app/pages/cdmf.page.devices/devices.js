@@ -78,5 +78,11 @@ function onRequest(context) {
             viewModel.deviceTypes = stringify(deviceTypes);
         }
     }
+
+    var mdmProps = require("/app/modules/conf-reader/main.js")["conf"];
+    var analyticsServer = mdmProps["dashboardServerURL"];
+    var analyticsURL =  analyticsServer + "/portal/t/" + context.user.userDomain + "/dashboards/android-iot/battery?owner=" + context.user.username + "&deviceId=";
+    viewModel.analyticsURL = analyticsURL;
+
     return viewModel;
 }

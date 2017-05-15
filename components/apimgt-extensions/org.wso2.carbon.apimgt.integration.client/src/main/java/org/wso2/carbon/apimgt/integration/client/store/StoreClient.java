@@ -19,7 +19,9 @@ package org.wso2.carbon.apimgt.integration.client.store;
 
 import feign.Feign;
 import feign.Logger;
+import feign.Request;
 import feign.RequestInterceptor;
+import feign.Retryer;
 import feign.gson.GsonDecoder;
 import feign.gson.GsonEncoder;
 import feign.slf4j.Slf4jLogger;
@@ -27,6 +29,8 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.apimgt.integration.client.configs.APIMConfigReader;
 import org.wso2.carbon.apimgt.integration.generated.client.store.api.*;
 import org.wso2.carbon.core.util.Utils;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * API Store client, created using swagger gen.
@@ -62,8 +66,10 @@ public class StoreClient {
         individualSubscription = builder.target(SubscriptionIndividualApi.class, basePath);
         subscriptionMultitpleApi = builder.target(SubscriptionMultitpleApi.class, basePath);
         tags = builder.target(TagCollectionApi.class, basePath);
-        tiers = builder.target(ThrottlingTierCollectionApi.class, basePath);
         individualTier = builder.target(ThrottlingTierIndividualApi.class, basePath);
+        tiers = builder.retryer(new Retryer.Default(100L, TimeUnit.SECONDS.toMillis(1L), 1))
+                .options(new Request.Options(10000, 5000))
+                .target(ThrottlingTierCollectionApi.class, basePath);
 
     }
 

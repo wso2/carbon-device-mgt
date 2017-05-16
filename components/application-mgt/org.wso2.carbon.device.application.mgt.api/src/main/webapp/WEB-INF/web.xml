@@ -53,6 +53,11 @@
     </context-param>
 
     <filter>
+        <filter-name>ApiOriginFilter</filter-name>
+        <filter-class>org.wso2.carbon.device.application.mgt.api.ApiOriginFilter</filter-class>
+    </filter>
+
+    <filter>
         <filter-name>HttpHeaderSecurityFilter</filter-name>
         <filter-class>org.apache.catalina.filters.HttpHeaderSecurityFilter</filter-class>
         <init-param>
@@ -85,6 +90,11 @@
 
     <filter-mapping>
         <filter-name>ContentTypeBasedCachePreventionFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <filter-mapping>
+        <filter-name>ApiOriginFilter</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 </web-app>

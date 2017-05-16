@@ -33,18 +33,6 @@ public class ApplicationManagementServiceImpl implements ApplicationManagementSe
 
     private static final Log log = LogFactory.getLog(ApplicationManagementServiceImpl.class);
 
-
-    private static ApplicationManagementServiceImpl applicationManager = new ApplicationManagementServiceImpl();
-
-    private ApplicationManagementServiceImpl() {
-
-    }
-
-    public static ApplicationManagementServiceImpl getInstance() {
-        return applicationManager;
-    }
-
-
     @Override
     public void createApplication(Application application) {
 

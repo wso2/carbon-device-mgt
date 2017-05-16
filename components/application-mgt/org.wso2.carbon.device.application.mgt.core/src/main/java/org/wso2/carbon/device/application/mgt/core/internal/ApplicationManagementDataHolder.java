@@ -18,12 +18,14 @@
  */
 package org.wso2.carbon.device.application.mgt.core.internal;
 
+import org.wso2.carbon.device.application.mgt.common.services.ApplicationManagementService;
 import org.wso2.carbon.device.application.mgt.core.dao.common.ApplicationManagementDAO;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 
 public class ApplicationManagementDataHolder {
 
     private DeviceManagementProviderService deviceManagementService;
+    private ApplicationManagementService applicationManagementService;
     private ApplicationManagementDAO applicationManagementDAO;
 
     private static final ApplicationManagementDataHolder applicationMgtDataHolder = new ApplicationManagementDataHolder();
@@ -50,5 +52,13 @@ public class ApplicationManagementDataHolder {
 
     public void setApplicationManagementDAO(ApplicationManagementDAO applicationManagementDAO) {
         this.applicationManagementDAO = applicationManagementDAO;
+    }
+
+    public ApplicationManagementService getApplicationManagementService() {
+        return applicationManagementService;
+    }
+
+    public void setApplicationManagementService(ApplicationManagementService applicationManagementService) {
+        this.applicationManagementService = applicationManagementService;
     }
 }

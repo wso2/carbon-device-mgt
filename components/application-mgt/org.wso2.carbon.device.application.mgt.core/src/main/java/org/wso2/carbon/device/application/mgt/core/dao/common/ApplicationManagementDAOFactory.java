@@ -198,7 +198,4 @@ public class ApplicationManagementDAOFactory {
         }
         return dataSource;
     }
-
-
-
 }

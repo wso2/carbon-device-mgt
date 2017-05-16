@@ -48,9 +48,10 @@ public class ApplicationManagementServiceComponent {
 
     protected void activate(ComponentContext componentContext) throws NamingException {
         BundleContext bundleContext = componentContext.getBundleContext();
-
+        ApplicationManagementService applicationManagementService = new ApplicationManagementServiceImpl();
+        ApplicationManagementDataHolder.getInstance().setApplicationManagementService(applicationManagementService);
         bundleContext.registerService(ApplicationManagementService.class.getName(),
-                ApplicationManagementServiceImpl.getInstance(), null);
+                applicationManagementService, null);
 
 
         DataSourceConfig dataSourceConfig  = ApplicationConfigurationManager.getInstance()

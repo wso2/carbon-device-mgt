@@ -20,12 +20,12 @@ package org.wso2.carbon.device.application.mgt.core.services.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.device.application.mgt.core.services.ApplicationManagementService;
+import org.wso2.carbon.device.application.mgt.common.services.ApplicationManagementService;
+import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagerException;
+import org.wso2.carbon.device.application.mgt.common.Application;
+import org.wso2.carbon.device.application.mgt.common.ApplicationList;
+import org.wso2.carbon.device.application.mgt.common.Filter;
 import org.wso2.carbon.device.application.mgt.core.dao.common.ApplicationManagementDAO;
-import org.wso2.carbon.device.application.mgt.core.dto.Application;
-import org.wso2.carbon.device.application.mgt.core.dto.lists.ApplicationList;
-import org.wso2.carbon.device.application.mgt.core.dto.Filter;
-import org.wso2.carbon.device.application.mgt.core.exception.ApplicationManagerException;
 import org.wso2.carbon.device.application.mgt.core.internal.ApplicationManagementDataHolder;
 import org.wso2.carbon.device.application.mgt.core.util.ConnectionManagerUtil;
 

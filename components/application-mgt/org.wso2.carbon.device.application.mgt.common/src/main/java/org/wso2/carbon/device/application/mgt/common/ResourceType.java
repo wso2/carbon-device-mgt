@@ -16,7 +16,37 @@
  *   under the License.
  *
  */
-package org.wso2.carbon.device.application.mgt.core.services;
+package org.wso2.carbon.device.application.mgt.common;
 
-public interface ResourceTypeManager {
+public class ResourceType {
+
+    private String id;
+
+    private String name;
+
+    private String description;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 }

@@ -21,7 +21,7 @@ package org.wso2.carbon.device.application.mgt.api.common;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import org.wso2.carbon.device.application.mgt.core.jaxrs.AnnotationExclusionStrategy;
+import org.wso2.carbon.device.application.mgt.common.jaxrs.AnnotationExclusionStrategy;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;

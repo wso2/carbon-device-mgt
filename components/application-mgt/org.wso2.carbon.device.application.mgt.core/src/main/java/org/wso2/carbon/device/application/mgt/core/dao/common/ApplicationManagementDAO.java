@@ -18,9 +18,8 @@
  */
 package org.wso2.carbon.device.application.mgt.core.dao.common;
 
-import org.apache.abdera.model.Categories;
 import org.wso2.carbon.device.application.mgt.core.dao.*;
-import org.wso2.carbon.device.application.mgt.core.dto.LifecycleState;
+import org.wso2.carbon.device.application.mgt.common.LifecycleState;
 
 public interface ApplicationManagementDAO extends ApplicationReleasesDAO, ApplicationsDAO, CategoriesDAO, CommentsDAO,
         LifecycleStatesDAO, PlatformsDAO, ResourceTypesDAO, SubscriptionsDAO, VisibilitiesDAO {

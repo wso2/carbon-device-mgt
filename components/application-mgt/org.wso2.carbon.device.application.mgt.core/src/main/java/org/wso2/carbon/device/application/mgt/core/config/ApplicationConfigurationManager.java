@@ -21,7 +21,7 @@ package org.wso2.carbon.device.application.mgt.core.config;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Document;
-import org.wso2.carbon.device.application.mgt.core.exception.ApplicationManagerException;
+import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagerException;
 import org.wso2.carbon.device.application.mgt.core.util.ApplicationManagementUtil;
 import org.wso2.carbon.device.application.mgt.core.util.ApplicationManagerConstants;
 import org.wso2.carbon.utils.CarbonUtils;

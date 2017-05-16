@@ -24,10 +24,10 @@ import org.json.JSONException;
 import org.wso2.carbon.device.application.mgt.core.dao.common.ApplicationManagementDAO;
 import org.wso2.carbon.device.application.mgt.core.dao.common.ApplicationManagementDAOException;
 import org.wso2.carbon.device.application.mgt.core.dao.common.ApplicationManagementDAOUtil;
-import org.wso2.carbon.device.application.mgt.core.dto.Application;
-import org.wso2.carbon.device.application.mgt.core.dto.lists.ApplicationList;
-import org.wso2.carbon.device.application.mgt.core.dto.Filter;
-import org.wso2.carbon.device.application.mgt.core.dto.Pagination;
+import org.wso2.carbon.device.application.mgt.common.Application;
+import org.wso2.carbon.device.application.mgt.common.ApplicationList;
+import org.wso2.carbon.device.application.mgt.common.Filter;
+import org.wso2.carbon.device.application.mgt.common.Pagination;
 import org.wso2.carbon.device.application.mgt.core.util.ConnectionManagerUtil;
 
 import java.sql.Connection;

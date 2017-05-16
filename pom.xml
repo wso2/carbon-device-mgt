@@ -179,6 +179,11 @@
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.devicemgt</groupId>
+                <artifactId>org.wso2.carbon.device.application.mgt.common</artifactId>
+                <version>${carbon.device.mgt.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.devicemgt</groupId>
                 <artifactId>org.wso2.carbon.device.application.mgt.api</artifactId>
                 <version>${carbon.device.mgt.version}</version>
             </dependency>

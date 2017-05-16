@@ -22,8 +22,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.application.mgt.core.config.datasource.DataSourceConfig;
 import org.wso2.carbon.device.application.mgt.core.config.datasource.JNDILookupDefinition;
-import org.wso2.carbon.device.application.mgt.core.exception.ApplicationManagerException;
-import org.wso2.carbon.device.application.mgt.core.exception.IllegalTransactionStateException;
+import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagerException;
+import org.wso2.carbon.device.application.mgt.common.exception.IllegalTransactionStateException;
 
 import javax.naming.InitialContext;
 import javax.sql.DataSource;

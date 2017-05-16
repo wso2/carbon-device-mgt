@@ -19,9 +19,9 @@
 package org.wso2.carbon.device.application.mgt.core.dao;
 
 import org.wso2.carbon.device.application.mgt.core.dao.common.ApplicationManagementDAOException;
-import org.wso2.carbon.device.application.mgt.core.dto.Application;
-import org.wso2.carbon.device.application.mgt.core.dto.Filter;
-import org.wso2.carbon.device.application.mgt.core.dto.lists.ApplicationList;
+import org.wso2.carbon.device.application.mgt.common.Application;
+import org.wso2.carbon.device.application.mgt.common.Filter;
+import org.wso2.carbon.device.application.mgt.common.ApplicationList;
 
 public interface ApplicationsDAO {
 

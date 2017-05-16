@@ -26,11 +26,11 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>org.wso2.carbon.device.application.mgt.core</artifactId>
+    <artifactId>org.wso2.carbon.device.application.mgt.common</artifactId>
     <version>2.0.63-SNAPSHOT</version>
     <packaging>bundle</packaging>
-    <name>WSO2 Carbon - Application Management Core</name>
-    <description>WSO2 Carbon - Application Management Core</description>
+    <name>WSO2 Carbon - Application Management Common</name>
+    <description>WSO2 Carbon - Application Management Common</description>
     <url>http://wso2.org</url>
 
     <build>
@@ -49,51 +49,28 @@
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Bundle-Version>${carbon.device.mgt.version}</Bundle-Version>
-                        <Bundle-Description>Application Management Core Bundle</Bundle-Description>
-                        <Private-Package>
-                            org.wso2.carbon.device.application.mgt.core.internal
-                        </Private-Package>
+                        <Bundle-Description>Application Management Common Bundle</Bundle-Description>
                         <Import-Package>
                             org.osgi.framework,
                             org.osgi.service.component,
                             org.apache.commons.logging,
                             javax.xml.*,
-                            javax.xml.parsers;version="${javax.xml.parsers.import.pkg.version}";resolution:=optional,
-                            org.wso2.carbon.context.*,
-                            org.wso2.carbon.utils.*,
+                            org.apache.commons.codec.binary;version="${commons-codec.wso2.osgi.version.range}",
                             org.w3c.dom,
                             org.json,
-                            javax.sql,
+                            org.xml.sax,
                             com.google.gson,
                             javax.naming,
                             javax.xml.bind.annotation,
                             javax.xml.bind,
-                            org.wso2.carbon.device.application.mgt.common.*,
-                            org.wso2.carbon.device.mgt.core.*,
-                            org.wso2.carbon.device.mgt.common.*,
+                            io.swagger.annotations.*;resolution:=optional
                         </Import-Package>
                         <Export-Package>
-                            !org.wso2.carbon.device.application.mgt.core.internal.*,
-                            org.wso2.carbon.device.application.mgt.core.*
+                            org.wso2.carbon.device.application.mgt.common.*
                         </Export-Package>
                     </instructions>
                 </configuration>
             </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.18</version>
-                <configuration>
-                    <systemPropertyVariables>
-                        <log4j.configuration>file:src/test/resources/log4j.properties</log4j.configuration>
-                    </systemPropertyVariables>
-                    <suiteXmlFiles>
-                        <suiteXmlFile>src/test/resources/testng.xml</suiteXmlFile>
-                    </suiteXmlFiles>
-                </configuration>
-            </plugin>
-
         </plugins>
     </build>
 
@@ -103,24 +80,12 @@
             <artifactId>org.eclipse.osgi</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.eclipse.osgi</groupId>
-            <artifactId>org.eclipse.osgi.services</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.eclipse.equinox</groupId>
             <artifactId>org.eclipse.equinox.common</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.testng</groupId>
-            <artifactId>testng</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.logging</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon</groupId>
-            <artifactId>org.wso2.carbon.utils</artifactId>
         </dependency>
         <dependency>
             <groupId>commons-codec.wso2</groupId>
@@ -131,9 +96,9 @@
             <artifactId>commons-io</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-simple</artifactId>
-            <scope>test</scope>
+            <groupId>io.swagger</groupId>
+            <artifactId>swagger-annotations</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.json.wso2</groupId>
@@ -142,18 +107,6 @@
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon.devicemgt</groupId>
-            <artifactId>org.wso2.carbon.device.application.mgt.common</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon.devicemgt</groupId>
-            <artifactId>org.wso2.carbon.device.mgt.common</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon.devicemgt</groupId>
-            <artifactId>org.wso2.carbon.device.mgt.core</artifactId>
         </dependency>
     </dependencies>
 </project>

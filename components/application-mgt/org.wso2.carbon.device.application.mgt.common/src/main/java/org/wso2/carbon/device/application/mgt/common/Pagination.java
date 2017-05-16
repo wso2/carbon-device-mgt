@@ -16,17 +16,47 @@
  *   under the License.
  *
  */
-package org.wso2.carbon.device.application.mgt.core.dao.common;
+package org.wso2.carbon.device.application.mgt.common;
 
-import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagerException;
+public class Pagination {
 
-public class ApplicationManagementDAOException extends ApplicationManagerException {
+    private int offset;
 
-    public ApplicationManagementDAOException(String message, Throwable throwable) {
-        super(message, throwable);
+    private int limit;
+
+    private int size;
+
+    private int count;
+
+    public int getOffset() {
+        return offset;
     }
 
-    public ApplicationManagementDAOException(String message) {
-        super(message, new Exception());
+    public void setOffset(int offset) {
+        this.offset = offset;
+    }
+
+    public int getLimit() {
+        return limit;
+    }
+
+    public void setLimit(int limit) {
+        this.limit = limit;
+    }
+
+    public int getSize() {
+        return size;
+    }
+
+    public void setSize(int size) {
+        this.size = size;
+    }
+
+    public int getCount() {
+        return count;
+    }
+
+    public void setCount(int count) {
+        this.count = count;
     }
 }

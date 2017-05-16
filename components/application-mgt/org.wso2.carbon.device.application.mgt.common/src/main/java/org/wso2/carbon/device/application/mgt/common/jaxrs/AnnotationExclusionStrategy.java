@@ -16,17 +16,20 @@
  *   under the License.
  *
  */
-package org.wso2.carbon.device.application.mgt.core.dao.common;
+package org.wso2.carbon.device.application.mgt.common.jaxrs;
 
-import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagerException;
+import com.google.gson.ExclusionStrategy;
+import com.google.gson.FieldAttributes;
 
-public class ApplicationManagementDAOException extends ApplicationManagerException {
+public class AnnotationExclusionStrategy implements ExclusionStrategy {
 
-    public ApplicationManagementDAOException(String message, Throwable throwable) {
-        super(message, throwable);
+    @Override
+    public boolean shouldSkipField(FieldAttributes f) {
+        return f.getAnnotation(Exclude.class) != null;
     }
 
-    public ApplicationManagementDAOException(String message) {
-        super(message, new Exception());
+    @Override
+    public boolean shouldSkipClass(Class<?> clazz) {
+        return false;
     }
 }

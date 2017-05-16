@@ -80,10 +80,9 @@ function onRequest(context) {
     }
 
     var mdmProps = require("/app/modules/conf-reader/main.js")["conf"];
-    var cUser = userModule.getUser();
-    var analiticsServer = mdmProps["dashboardServerURL"];
-    var analiticsURL =  analiticsServer + "/portal/t/" + cUser.userDomain + "/dashboards/android-iot/battery?owner=" + cUser.username + "&deviceId=";
-    viewModel.analiticsURL = analiticsURL;
+    var analyticsServer = mdmProps["dashboardServerURL"];
+    var analyticsURL =  analyticsServer + "/portal/t/" + context.user.userDomain + "/dashboards/android-iot/battery?owner=" + context.user.username + "&deviceId=";
+    viewModel.analyticsURL = analyticsURL;
 
     return viewModel;
 }

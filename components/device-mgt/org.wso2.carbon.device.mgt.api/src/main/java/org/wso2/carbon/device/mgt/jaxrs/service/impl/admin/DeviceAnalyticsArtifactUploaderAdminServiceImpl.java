@@ -37,13 +37,10 @@ import org.wso2.carbon.application.mgt.stub.upload.types.carbon.UploadedFileItem
 import org.wso2.carbon.base.ServerConfiguration;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.core.util.Utils;
-import org.wso2.carbon.device.mgt.jaxrs.service.api.admin.DeviceTypePublisherAdminService;
+import org.wso2.carbon.device.mgt.jaxrs.service.api.admin.DeviceAnalyticsArtifactUploaderAdminService;
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
 import org.wso2.carbon.identity.jwt.client.extension.JWTClient;
 import org.wso2.carbon.identity.jwt.client.extension.exception.JWTClientException;
-import org.wso2.carbon.registry.core.Registry;
-import org.wso2.carbon.registry.core.Resource;
-import org.wso2.carbon.registry.core.ResourceImpl;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.user.api.UserStoreException;
 import org.wso2.carbon.utils.CarbonUtils;
@@ -55,7 +52,6 @@ import javax.activation.DataHandler;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManagerFactory;
-import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -73,7 +69,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Path("/admin/devicetype")
-public class DeviceTypePublisherAdminServiceImpl implements DeviceTypePublisherAdminService {
+public class DeviceAnalyticsArtifactUploaderAdminServiceImpl implements DeviceAnalyticsArtifactUploaderAdminService {
 
     /**
      * required soap header for authorization
@@ -110,7 +106,7 @@ public class DeviceTypePublisherAdminServiceImpl implements DeviceTypePublisherA
 
     private String tenantDomain;
 
-    private static final Log log = LogFactory.getLog(DeviceTypePublisherAdminServiceImpl.class);
+    private static final Log log = LogFactory.getLog(DeviceAnalyticsArtifactUploaderAdminServiceImpl.class);
     private static final String DEFAULT_RESOURCE_LOCATION = "/resources/devicetypes";
     private static final String CAR_FILE_LOCATION = CarbonUtils.getCarbonHome() + File.separator + "repository" +
     File.separator + "resources" + File.separator + "devicetypes";
@@ -178,20 +174,15 @@ public class DeviceTypePublisherAdminServiceImpl implements DeviceTypePublisherA
                     publishDynamicEventReceivers(type, MultitenantConstants.SUPER_TENANT_DOMAIN_NAME, receiverFileList);
                 }
             }
+            if (streamFileList != null) {
+                publishDynamicEventStream(type, tenantDomain, streamFileList);
+            }
             if (deployAnalyticsCapp(type, list)){
                 return Response.status(Response.Status.BAD_REQUEST)
                         .entity("\"Error, Artifact does not exist.\"").build();
             }
             if (receiverFileList != null) {
                 publishDynamicEventReceivers(type, tenantDomain, receiverFileList);
-            }
-            int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
-            Registry registry = DeviceMgtAPIUtils.getRegistryService().getConfigSystemRegistry(tenantId);
-            if (!registry.resourceExists(DEFAULT_RESOURCE_LOCATION + type + ".exist")) {
-                Resource resource = new ResourceImpl();
-                resource.setContent("</exist>");
-                resource.setMediaType(MEDIA_TYPE_XML);
-                registry.put(DEFAULT_RESOURCE_LOCATION + type + ".exist", resource);
             }
             return Response.status(Response.Status.CREATED).entity("\"OK. \\n Successfully uploaded the artifacts.\"")
                     .build();
@@ -227,23 +218,25 @@ public class DeviceTypePublisherAdminServiceImpl implements DeviceTypePublisherA
             if (directory.isDirectory() && directory.exists()) {
                 UploadedFileItem[] uploadedFileItems = loadCappFromFileSystem(type);
                 if (uploadedFileItems.length > 0) {
-                    carbonAppUploaderStub = new CarbonAppUploaderStub(Utils.replaceSystemProperty(
-                            IOT_MGT_URL));
-                    Options appUploaderOptions = carbonAppUploaderStub._getServiceClient().getOptions();
-                    if (appUploaderOptions == null) {
-                        appUploaderOptions = new Options();
-                    }
-                    appUploaderOptions.setProperty(HTTPConstants.HTTP_HEADERS, list);
-                    appUploaderOptions.setProperty(HTTPConstants.CUSTOM_PROTOCOL_HANDLER
-                            , new Protocol(DEFAULT_HTTP_PROTOCOL, (ProtocolSocketFactory) new SSLProtocolSocketFactory
-                            (sslContext), Integer.parseInt(Utils.replaceSystemProperty(IOT_MGT_PORT))));
+                    if (DEVICE_MANAGEMENT_TYPE.equals(type.toLowerCase())) {
+                        carbonAppUploaderStub = new CarbonAppUploaderStub(Utils.replaceSystemProperty(
+                                IOT_MGT_URL));
+                        Options appUploaderOptions = carbonAppUploaderStub._getServiceClient().getOptions();
+                        if (appUploaderOptions == null) {
+                            appUploaderOptions = new Options();
+                        }
+                        appUploaderOptions.setProperty(HTTPConstants.HTTP_HEADERS, list);
+                        appUploaderOptions.setProperty(HTTPConstants.CUSTOM_PROTOCOL_HANDLER
+                                , new Protocol(DEFAULT_HTTP_PROTOCOL,
+                                               (ProtocolSocketFactory) new SSLProtocolSocketFactory
+                                                       (sslContext), Integer.parseInt(Utils.replaceSystemProperty(
+                                IOT_MGT_PORT))));
 
-                    carbonAppUploaderStub._getServiceClient().setOptions(appUploaderOptions);
-                    carbonAppUploaderStub.uploadApp(uploadedFileItems);
-
-                    if (!DEVICE_MANAGEMENT_TYPE.equals(type.toLowerCase())) {
+                        carbonAppUploaderStub._getServiceClient().setOptions(appUploaderOptions);
+                        carbonAppUploaderStub.uploadApp(uploadedFileItems);
+                    } else {
                         carbonAppUploaderStub = new CarbonAppUploaderStub(Utils.replaceSystemProperty(DAS_URL));
-                        appUploaderOptions = carbonAppUploaderStub._getServiceClient().getOptions();
+                        Options appUploaderOptions = carbonAppUploaderStub._getServiceClient().getOptions();
                         if (appUploaderOptions == null) {
                             appUploaderOptions = new Options();
                         }
@@ -265,27 +258,6 @@ public class DeviceTypePublisherAdminServiceImpl implements DeviceTypePublisherA
             cleanup(carbonAppUploaderStub);
         }
     }
-
-    @GET
-    @Path("/deploy/{type}/status")
-    @Override
-    public Response getStatus(@PathParam("type") String deviceType) {
-        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
-        Registry registry;
-        try {
-            registry = DeviceMgtAPIUtils.getRegistryService().getConfigSystemRegistry(tenantId);
-            if (registry.resourceExists(DEFAULT_RESOURCE_LOCATION + deviceType + ".exist")) {
-                return Response.status(Response.Status.OK).entity("Exist").build();
-            } else {
-                return Response.status(Response.Status.NO_CONTENT).entity("Does not Exist").build();
-            }
-        } catch (RegistryException e) {
-            log.error("Registry failed to load." + e.getMessage(), e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(
-                    "\"Error, Artifact status check has failed\"").build();
-        }
-    }
-
 
     private void publishDynamicEventReceivers(String deviceType, String tenantDomain, List<String> receiversList)
             throws IOException, UserStoreException, JWTClientException {

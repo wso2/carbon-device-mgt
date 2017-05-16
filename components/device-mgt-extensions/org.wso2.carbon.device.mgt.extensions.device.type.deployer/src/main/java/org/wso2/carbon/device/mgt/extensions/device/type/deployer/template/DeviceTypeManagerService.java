@@ -32,6 +32,7 @@ import org.wso2.carbon.device.mgt.common.configuration.mgt.PlatformConfiguration
 import org.wso2.carbon.device.mgt.common.policy.mgt.PolicyMonitoringManager;
 import org.wso2.carbon.device.mgt.common.push.notification.PushNotificationConfig;
 import org.wso2.carbon.device.mgt.common.spi.DeviceManagementService;
+import org.wso2.carbon.device.mgt.extensions.device.type.deployer.config.ConfigProperties;
 import org.wso2.carbon.device.mgt.extensions.device.type.deployer.config.DeviceTypeConfiguration;
 import org.wso2.carbon.device.mgt.extensions.device.type.deployer.config.Property;
 import org.wso2.carbon.device.mgt.extensions.device.type.deployer.config.PushNotificationProvider;
@@ -59,7 +60,6 @@ public class DeviceTypeManagerService implements DeviceManagementService {
     private List<MonitoringOperation> monitoringOperations;
     private PolicyMonitoringManager policyMonitoringManager;
     private InitialOperationConfig initialOperationConfig;
-    private List<String> operations;
 
     public DeviceTypeManagerService(DeviceTypeConfigIdentifier deviceTypeConfigIdentifier,
                                     DeviceTypeConfiguration deviceTypeConfiguration) {
@@ -69,6 +69,7 @@ public class DeviceTypeManagerService implements DeviceManagementService {
         this.populatePushNotificationConfig(deviceTypeConfiguration.getPushNotificationProvider());
         this.operationMonitoringConfigs = new OperationMonitoringTaskConfig();
         this.setOperationMonitoringConfig(deviceTypeConfiguration);
+        this.initialOperationConfig = new InitialOperationConfig();
         this.setInitialOperationConfig(deviceTypeConfiguration);
         if (deviceTypeConfiguration.getPolicyMonitoring() != null ) {
             this.policyMonitoringManager = new DefaultPolicyMonitoringManager();
@@ -113,8 +114,14 @@ public class DeviceTypeManagerService implements DeviceManagementService {
         if (pushNotificationProvider != null) {
             if (pushNotificationProvider.isFileBasedProperties()) {
                 Map<String, String> staticProps = new HashMap<>();
-                for (Property property : pushNotificationProvider.getConfigProperties().getProperty()) {
-                    staticProps.put(property.getName(), property.getValue());
+                ConfigProperties configProperties = pushNotificationProvider.getConfigProperties();
+                if (configProperties != null) {
+                    List<Property> properties = configProperties.getProperty();
+                    if (properties != null && properties.size() > 0) {
+                        for (Property property : properties) {
+                            staticProps.put(property.getName(), property.getValue());
+                        }
+                    }
                 }
                 pushNotificationConfig = new PushNotificationConfig(pushNotificationProvider.getType(),
                         pushNotificationProvider.isScheduled(), staticProps);

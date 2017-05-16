@@ -30,6 +30,7 @@ import org.wso2.carbon.certificate.mgt.cert.jaxrs.api.util.RequestValidationUtil
 import org.wso2.carbon.certificate.mgt.core.dto.CertificateResponse;
 import org.wso2.carbon.certificate.mgt.core.exception.CertificateManagementException;
 import org.wso2.carbon.certificate.mgt.core.exception.KeystoreException;
+import org.wso2.carbon.certificate.mgt.core.impl.CertificateGenerator;
 import org.wso2.carbon.certificate.mgt.core.scep.SCEPException;
 import org.wso2.carbon.certificate.mgt.core.scep.SCEPManager;
 import org.wso2.carbon.certificate.mgt.core.scep.TenantedDeviceWrapper;

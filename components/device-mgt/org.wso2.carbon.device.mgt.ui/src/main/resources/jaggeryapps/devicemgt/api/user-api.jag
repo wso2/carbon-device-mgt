@@ -176,6 +176,27 @@ if (uriMatcher.match("/{context}/api/user/authenticate")) {
     }
 } else if (uriMatcher.match("/{context}/api/user/all")) {
     result = userModule.getUsers();
+} else if (uriMatcher.match("/{context}/api/user/environment-loaded")) {
+    try {
+        var carbonUser = session.get(constants.USER_SESSION_KEY);
+        if (!carbonUser) {
+            response.sendRedirect("/devicemgt/login?#login-required");
+            exit();
+        }
+        utility.startTenantFlow(carbonUser);
+        var APIManagementProviderService = utility.getAPIManagementProviderService();
+        var isLoaded = APIManagementProviderService.isTierLoaded();
+        result = {"isLoaded": isLoaded};
+        if (isLoaded) {
+            var samlToken = session.get(constants.SAML_TOKEN_KEY);
+            if (samlToken) {
+                apiWrapperUtil.setupTokenPairByJWTGrantType(carbonUser.username + '@' + carbonUser.domain, samlToken);
+            }
+        }
+        response.contentType = 'application/json';
+    } finally {
+        utility.endTenantFlow();
+    }
 }
 
 // returning the result.

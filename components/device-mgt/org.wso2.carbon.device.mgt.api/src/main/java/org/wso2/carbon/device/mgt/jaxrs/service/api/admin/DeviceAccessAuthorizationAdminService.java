@@ -115,4 +115,43 @@ public interface DeviceAccessAuthorizationAdminService {
                     response = ErrorResponse.class)
     })
     Response isAuthorized(AuthorizationRequest authorizationRequest);
+
+    @POST
+    @Path("/stat")
+    @ApiOperation(
+            consumes = MediaType.APPLICATION_JSON,
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "POST",
+            value = "Check for device access authorization for stat\n",
+            notes = "This is an internal API that can be used to check for authorization.",
+            response = DeviceAuthorizationResult.class,
+            tags = "Authorization Administrative Service",
+            extensions = {
+                    @Extension(properties = {
+                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:authorization:verify")
+                    })
+            })
+
+    @ApiResponses(value = {
+            @ApiResponse(
+                    code = 200,
+                    message = "OK. \n Authorized device list will be delivered to the requested services",
+                    response = DeviceAuthorizationResult.class),
+            @ApiResponse(
+                    code = 400,
+                    message = "Bad Request. \n Invalid request or validation error.",
+                    response = ErrorResponse.class),
+            @ApiResponse(
+                    code = 404,
+                    message = "Not Found. \n The specified resource does not exist."),
+            @ApiResponse(
+                    code = 415,
+                    message = "Unsupported media type. \n The entity of the request was in a not supported format."),
+            @ApiResponse(
+                    code = 500,
+                    message = "Internal Server Error. \n Server error occurred while checking the authorization" +
+                            " for a specified set of devices.",
+                    response = ErrorResponse.class)
+    })
+    Response isAuthorizedForStat(AuthorizationRequest authorizationRequest);
 }

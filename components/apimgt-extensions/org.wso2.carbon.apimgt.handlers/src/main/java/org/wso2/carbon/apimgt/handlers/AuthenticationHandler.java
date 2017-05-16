@@ -31,11 +31,17 @@ import org.wso2.carbon.apimgt.handlers.invoker.RESTInvoker;
 import org.wso2.carbon.apimgt.handlers.invoker.RESTResponse;
 import org.wso2.carbon.apimgt.handlers.utils.AuthConstants;
 import org.wso2.carbon.apimgt.handlers.utils.Utils;
+import org.wso2.carbon.certificate.mgt.core.impl.CertificateGenerator;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 
+import javax.security.cert.CertificateEncodingException;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
@@ -140,6 +146,21 @@ public class AuthenticationHandler extends AbstractHandler {
                 if (log.isDebugEnabled()) {
                     log.debug("Verify response:" + response.getContent());
                 }
+            } else if (headers.containsKey(AuthConstants.MUTUAL_AUTH_HEADER)) {
+                javax.security.cert.X509Certificate[] certs =
+                        (javax.security.cert.X509Certificate[]) axisMC.getProperty(AuthConstants.CLIENT_CERTIFICATE);
+                CertificateFactory cf = CertificateFactory.getInstance("X.509");
+                ByteArrayInputStream bais = new ByteArrayInputStream(certs[0].getEncoded());
+                X509Certificate x509 = (X509Certificate) cf.generateCertificate(bais);
+                if (bais != null) {
+                    bais.close();
+                }
+                if (x509 != null) {
+                    headers.put(AuthConstants.PROXY_MUTUAL_AUTH_HEADER, CertificateGenerator.getCommonName(x509));
+                    return true;
+                } else {
+                    response = null;
+                }
             } else if (headers.containsKey(AuthConstants.ENCODED_PEM)) {
                 String encodedPem = headers.get(AuthConstants.ENCODED_PEM).toString();
                 if (log.isDebugEnabled()) {
@@ -178,8 +199,13 @@ public class AuthenticationHandler extends AbstractHandler {
         } catch (APIMCertificateMGTException e) {
             log.error("Error while processing certificate.", e);
             return false;
+        } catch (CertificateException e) {
+            log.error("Certificate issue occurred when generating converting PEM to x509Certificate", e);
+            return false;
+        } catch (CertificateEncodingException e) {
+            log.error("Error while attempting to encode certificate.", e);
+            return false;
         }
-
     }
 
     @Override

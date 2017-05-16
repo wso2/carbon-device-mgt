@@ -16,7 +16,14 @@
  *   under the License.
  *
  */
-package org.wso2.carbon.device.application.mgt.core.services;
+package org.wso2.carbon.device.application.mgt.common.jaxrs;
 
-public interface ApplicationReleaseManager {
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.FIELD)
+public @interface Exclude {
 }

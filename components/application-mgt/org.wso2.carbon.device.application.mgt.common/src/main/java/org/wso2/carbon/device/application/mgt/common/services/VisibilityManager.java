@@ -16,7 +16,7 @@
  *   under the License.
  *
  */
-package org.wso2.carbon.device.application.mgt.core.services;
+package org.wso2.carbon.device.application.mgt.common.services;
 
 public interface VisibilityManager {
 }

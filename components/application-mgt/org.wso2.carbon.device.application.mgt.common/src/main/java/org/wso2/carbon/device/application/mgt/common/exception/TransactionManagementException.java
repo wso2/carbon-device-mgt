@@ -15,33 +15,29 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.wso2.carbon.device.application.mgt.common.exception;
 
-package org.wso2.carbon.device.application.mgt.core.exception;
+public class TransactionManagementException extends Exception {
 
-/**
- * This runtime exception will be thrown if the server has configured with unsupported DB engine.
- */
-public class UnsupportedDatabaseEngineException extends RuntimeException {
+    private static final long serialVersionUID = -3151279321929070297L;
 
-    private static final long serialVersionUID = -3151279311929070297L;
-
-    public UnsupportedDatabaseEngineException(String msg, Exception nestedEx) {
+    public TransactionManagementException(String msg, Exception nestedEx) {
         super(msg, nestedEx);
     }
 
-    public UnsupportedDatabaseEngineException(String message, Throwable cause) {
+    public TransactionManagementException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public UnsupportedDatabaseEngineException(String msg) {
+    public TransactionManagementException(String msg) {
         super(msg);
     }
 
-    public UnsupportedDatabaseEngineException() {
+    public TransactionManagementException() {
         super();
     }
 
-    public UnsupportedDatabaseEngineException(Throwable cause) {
+    public TransactionManagementException(Throwable cause) {
         super(cause);
     }
 

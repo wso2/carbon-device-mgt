@@ -15,29 +15,33 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.wso2.carbon.device.application.mgt.core.exception;
 
-public class IllegalTransactionStateException extends RuntimeException {
+package org.wso2.carbon.device.application.mgt.common.exception;
 
-    private static final long serialVersionUID = -3151279331929070297L;
+/**
+ * This runtime exception will be thrown if the server has configured with unsupported DB engine.
+ */
+public class UnsupportedDatabaseEngineException extends RuntimeException {
 
-    public IllegalTransactionStateException(String msg, Exception nestedEx) {
+    private static final long serialVersionUID = -3151279311929070297L;
+
+    public UnsupportedDatabaseEngineException(String msg, Exception nestedEx) {
         super(msg, nestedEx);
     }
 
-    public IllegalTransactionStateException(String message, Throwable cause) {
+    public UnsupportedDatabaseEngineException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public IllegalTransactionStateException(String msg) {
+    public UnsupportedDatabaseEngineException(String msg) {
         super(msg);
     }
 
-    public IllegalTransactionStateException() {
+    public UnsupportedDatabaseEngineException() {
         super();
     }
 
-    public IllegalTransactionStateException(Throwable cause) {
+    public UnsupportedDatabaseEngineException(Throwable cause) {
         super(cause);
     }
 

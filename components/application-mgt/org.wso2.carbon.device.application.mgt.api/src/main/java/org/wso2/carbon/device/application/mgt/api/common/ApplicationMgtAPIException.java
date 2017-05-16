@@ -19,9 +19,9 @@
 package org.wso2.carbon.device.application.mgt.api.common;
 
 /**
- * Custom exception class for handling CDM API related exceptions.
+ * Custom exception class for handling Application-Mgt API related exceptions.
  */
-public class MDMAPIException extends Exception {
+public class ApplicationMgtAPIException extends Exception {
 
 	private static final long serialVersionUID = 7950151650447893900L;
 	private String errorMessage;
@@ -34,26 +34,26 @@ public class MDMAPIException extends Exception {
 		this.errorMessage = errorMessage;
 	}
 
-	public MDMAPIException(String msg, Exception e) {
+	public ApplicationMgtAPIException(String msg, Exception e) {
 		super(msg, e);
 		setErrorMessage(msg);
 	}
 
-	public MDMAPIException(String msg, Throwable cause) {
+	public ApplicationMgtAPIException(String msg, Throwable cause) {
 		super(msg, cause);
 		setErrorMessage(msg);
 	}
 
-	public MDMAPIException(String msg) {
+	public ApplicationMgtAPIException(String msg) {
 		super(msg);
 		setErrorMessage(msg);
 	}
 
-	public MDMAPIException() {
+	public ApplicationMgtAPIException() {
 		super();
 	}
 
-	public MDMAPIException(Throwable cause) {
+	public ApplicationMgtAPIException(Throwable cause) {
 		super(cause);
 	}
 }

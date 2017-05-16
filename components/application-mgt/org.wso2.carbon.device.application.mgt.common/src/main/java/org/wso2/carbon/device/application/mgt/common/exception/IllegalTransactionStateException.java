@@ -15,29 +15,29 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.wso2.carbon.device.application.mgt.core.exception;
+package org.wso2.carbon.device.application.mgt.common.exception;
 
-public class TransactionManagementException extends Exception {
+public class IllegalTransactionStateException extends RuntimeException {
 
-    private static final long serialVersionUID = -3151279321929070297L;
+    private static final long serialVersionUID = -3151279331929070297L;
 
-    public TransactionManagementException(String msg, Exception nestedEx) {
+    public IllegalTransactionStateException(String msg, Exception nestedEx) {
         super(msg, nestedEx);
     }
 
-    public TransactionManagementException(String message, Throwable cause) {
+    public IllegalTransactionStateException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public TransactionManagementException(String msg) {
+    public IllegalTransactionStateException(String msg) {
         super(msg);
     }
 
-    public TransactionManagementException() {
+    public IllegalTransactionStateException() {
         super();
     }
 
-    public TransactionManagementException(Throwable cause) {
+    public IllegalTransactionStateException(Throwable cause) {
         super(cause);
     }
 

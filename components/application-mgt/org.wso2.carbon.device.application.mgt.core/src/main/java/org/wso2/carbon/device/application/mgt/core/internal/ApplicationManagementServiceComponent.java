@@ -22,7 +22,7 @@ import org.apache.commons.logging.Log;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.framework.BundleContext;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.device.application.mgt.core.services.ApplicationManagementService;
+import org.wso2.carbon.device.application.mgt.common.services.ApplicationManagementService;
 import org.wso2.carbon.device.application.mgt.core.services.impl.ApplicationManagementServiceImpl;
 import org.wso2.carbon.device.application.mgt.core.config.ApplicationConfigurationManager;
 import org.wso2.carbon.device.application.mgt.core.config.datasource.DataSourceConfig;

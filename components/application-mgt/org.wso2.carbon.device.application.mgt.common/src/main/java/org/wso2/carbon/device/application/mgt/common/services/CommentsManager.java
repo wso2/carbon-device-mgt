@@ -16,15 +16,7 @@
  *   under the License.
  *
  */
-package org.wso2.carbon.device.application.mgt.core.services;
+package org.wso2.carbon.device.application.mgt.common.services;
 
-import org.wso2.carbon.device.application.mgt.core.dto.Application;
-import org.wso2.carbon.device.application.mgt.core.dto.lists.ApplicationList;
-import org.wso2.carbon.device.application.mgt.core.dto.Filter;
-import org.wso2.carbon.device.application.mgt.core.exception.ApplicationManagerException;
-
-public interface ApplicationManagementService extends ApplicationReleaseManager, ApplicationManager, CategoryManager,
-        CommentsManager, LifecycleStateManager, PlatformManager, ResourceTypeManager, SubscriptionManager,
-        VisibilityManager {
-
+public interface CommentsManager {
 }

@@ -23,8 +23,8 @@ import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Document;
 import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
-import org.wso2.carbon.device.application.mgt.core.services.ApplicationManagementService;
-import org.wso2.carbon.device.application.mgt.core.exception.ApplicationManagerException;
+import org.wso2.carbon.device.application.mgt.common.services.ApplicationManagementService;
+import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagerException;
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;

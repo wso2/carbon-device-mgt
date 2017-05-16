@@ -23,9 +23,9 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 
 @Produces({ "application/json", "application/xml" })
-public class ErrorHandler implements ExceptionMapper<MDMAPIException> {
+public class ErrorHandler implements ExceptionMapper<ApplicationMgtAPIException> {
 
-    public Response toResponse(MDMAPIException exception) {
+    public Response toResponse(ApplicationMgtAPIException exception) {
         ErrorMessage errorMessage = new ErrorMessage();
         errorMessage.setErrorMessage(exception.getErrorMessage());
         return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorMessage).build();

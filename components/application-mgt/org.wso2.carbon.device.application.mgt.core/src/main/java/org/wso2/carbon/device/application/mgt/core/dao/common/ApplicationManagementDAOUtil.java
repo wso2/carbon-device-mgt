@@ -22,17 +22,16 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.wso2.carbon.device.application.mgt.core.dto.Application;
-import org.wso2.carbon.device.application.mgt.core.dto.Platform;
-import org.wso2.carbon.device.application.mgt.core.dto.Category;
+import org.wso2.carbon.device.application.mgt.common.Application;
+import org.wso2.carbon.device.application.mgt.common.Platform;
+import org.wso2.carbon.device.application.mgt.common.Category;
 
+import javax.naming.InitialContext;
+import javax.sql.DataSource;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ApplicationManagementDAOUtil {
 
@@ -103,5 +102,18 @@ public class ApplicationManagementDAOUtil {
             }
         }
         return list;
+    }
+
+    public static DataSource lookupDataSource(String dataSourceName,
+                                              final Hashtable<Object, Object> jndiProperties) {
+        try {
+            if (jndiProperties == null || jndiProperties.isEmpty()) {
+                return (DataSource) InitialContext.doLookup(dataSourceName);
+            }
+            final InitialContext context = new InitialContext(jndiProperties);
+            return (DataSource) context.lookup(dataSourceName);
+        } catch (Exception e) {
+            throw new RuntimeException("Error in looking up data source: " + e.getMessage(), e);
+        }
     }
 }

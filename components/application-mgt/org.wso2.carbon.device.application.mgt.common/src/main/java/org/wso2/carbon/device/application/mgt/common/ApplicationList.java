@@ -16,23 +16,29 @@
  *   under the License.
  *
  */
-package org.wso2.carbon.device.application.mgt.core.exception;
+package org.wso2.carbon.device.application.mgt.common;
 
-public class ApplicationManagerException extends Exception {
+import java.util.List;
 
-    String message;
+public class ApplicationList {
 
-    public ApplicationManagerException(String message, Throwable throwable){
-        super(message, throwable);
-        setMessage(message);
+    private List<Application> applications;
+
+    private Pagination pagination;
+
+    public List<Application> getApplications() {
+        return applications;
     }
 
-    @Override
-    public String getMessage() {
-        return message;
+    public void setApplications(List<Application> applications) {
+        this.applications = applications;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
+    public Pagination getPagination() {
+        return pagination;
+    }
+
+    public void setPagination(Pagination pagination) {
+        this.pagination = pagination;
     }
 }

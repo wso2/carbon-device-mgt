@@ -21,4 +21,16 @@ package org.wso2.carbon.device.application.mgt.core.util;
 public class ApplicationManagerConstants {
 
     public static final String APPLICATION_CONFIG_XML_FILE = "application-mgt.xml";
+
+    public static final class DataBaseTypes {
+        private DataBaseTypes() {
+            throw new AssertionError();
+        }
+        public static final String DB_TYPE_MYSQL = "MySQL";
+        public static final String DB_TYPE_ORACLE = "Oracle";
+        public static final String DB_TYPE_MSSQL = "Microsoft SQL Server";
+        public static final String DB_TYPE_DB2 = "DB2";
+        public static final String DB_TYPE_H2 = "H2";
+        public static final String DB_TYPE_POSTGRESQL = "PostgreSQL";
+    }
 }

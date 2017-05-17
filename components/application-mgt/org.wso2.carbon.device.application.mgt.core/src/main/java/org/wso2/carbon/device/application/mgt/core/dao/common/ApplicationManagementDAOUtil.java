@@ -25,6 +25,8 @@ import org.json.JSONException;
 import org.wso2.carbon.device.application.mgt.common.Application;
 import org.wso2.carbon.device.application.mgt.common.Platform;
 import org.wso2.carbon.device.application.mgt.common.Category;
+import org.wso2.carbon.device.application.mgt.core.config.datasource.DataSourceConfig;
+import org.wso2.carbon.device.application.mgt.core.config.datasource.JNDILookupDefinition;
 
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
@@ -102,18 +104,5 @@ public class ApplicationManagementDAOUtil {
             }
         }
         return list;
-    }
-
-    public static DataSource lookupDataSource(String dataSourceName,
-                                              final Hashtable<Object, Object> jndiProperties) {
-        try {
-            if (jndiProperties == null || jndiProperties.isEmpty()) {
-                return (DataSource) InitialContext.doLookup(dataSourceName);
-            }
-            final InitialContext context = new InitialContext(jndiProperties);
-            return (DataSource) context.lookup(dataSourceName);
-        } catch (Exception e) {
-            throw new RuntimeException("Error in looking up data source: " + e.getMessage(), e);
-        }
     }
 }

@@ -26,7 +26,6 @@ public class ApplicationManagementDataHolder {
 
     private DeviceManagementProviderService deviceManagementService;
     private ApplicationManagementService applicationManagementService;
-    private ApplicationManagementDAO applicationManagementDAO;
 
     private static final ApplicationManagementDataHolder applicationMgtDataHolder = new ApplicationManagementDataHolder();
 
@@ -44,14 +43,6 @@ public class ApplicationManagementDataHolder {
 
     public void setDeviceManagementService(DeviceManagementProviderService deviceManagementService) {
         this.deviceManagementService = deviceManagementService;
-    }
-
-    public ApplicationManagementDAO getApplicationManagementDAO() {
-        return applicationManagementDAO;
-    }
-
-    public void setApplicationManagementDAO(ApplicationManagementDAO applicationManagementDAO) {
-        this.applicationManagementDAO = applicationManagementDAO;
     }
 
     public ApplicationManagementService getApplicationManagementService() {

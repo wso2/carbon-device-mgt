@@ -20,14 +20,18 @@ package org.wso2.carbon.device.application.mgt.core.services.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.device.application.mgt.common.exception.DBConnectionException;
 import org.wso2.carbon.device.application.mgt.common.services.ApplicationManagementService;
 import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagerException;
 import org.wso2.carbon.device.application.mgt.common.Application;
 import org.wso2.carbon.device.application.mgt.common.ApplicationList;
 import org.wso2.carbon.device.application.mgt.common.Filter;
 import org.wso2.carbon.device.application.mgt.core.dao.common.ApplicationManagementDAO;
-import org.wso2.carbon.device.application.mgt.core.internal.ApplicationManagementDataHolder;
+import org.wso2.carbon.device.application.mgt.core.dao.common.ApplicationManagementDAOException;
+import org.wso2.carbon.device.application.mgt.core.dao.common.ApplicationManagementDAOFactory;
 import org.wso2.carbon.device.application.mgt.core.util.ConnectionManagerUtil;
+
+import java.sql.SQLException;
 
 public class ApplicationManagementServiceImpl implements ApplicationManagementService {
 
@@ -40,10 +44,17 @@ public class ApplicationManagementServiceImpl implements ApplicationManagementSe
 
     @Override
     public ApplicationList getApplications(Filter filter) throws ApplicationManagerException {
-        ConnectionManagerUtil.openConnection();
-        ApplicationManagementDAO applicationManagementDAO = ApplicationManagementDataHolder.getInstance().getApplicationManagementDAO();
-        ApplicationList applications = applicationManagementDAO.getApplications(filter);
-        ConnectionManagerUtil.closeConnection();
-        return applications;
+        try {
+            ConnectionManagerUtil.openConnection();
+            ApplicationManagementDAO applicationManagementDAO = ApplicationManagementDAOFactory.getApplicationManagementDAO();
+            return applicationManagementDAO.getApplications(filter);
+        } catch (ApplicationManagementDAOException e) {
+            throw new ApplicationManagerException("Error occurred while obtaining the applications for " +
+                    "the given filter.", e);
+        } catch (DBConnectionException e) {
+            throw new ApplicationManagerException("Error occurred while opening a connection to the APPM data source", e);
+        } finally {
+            ConnectionManagerUtil.closeConnection();
+        }
     }
 }

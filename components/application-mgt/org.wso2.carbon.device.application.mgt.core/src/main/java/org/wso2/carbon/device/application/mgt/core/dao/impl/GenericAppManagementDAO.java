@@ -21,8 +21,10 @@ package org.wso2.carbon.device.application.mgt.core.dao.impl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONException;
+import org.wso2.carbon.device.application.mgt.common.exception.DBConnectionException;
 import org.wso2.carbon.device.application.mgt.core.dao.common.ApplicationManagementDAO;
 import org.wso2.carbon.device.application.mgt.core.dao.common.ApplicationManagementDAOException;
+import org.wso2.carbon.device.application.mgt.core.dao.common.ApplicationManagementDAOFactory;
 import org.wso2.carbon.device.application.mgt.core.dao.common.ApplicationManagementDAOUtil;
 import org.wso2.carbon.device.application.mgt.common.Application;
 import org.wso2.carbon.device.application.mgt.common.ApplicationList;
@@ -71,7 +73,7 @@ public class GenericAppManagementDAO implements ApplicationManagementDAO {
 
         try {
 
-            conn = ConnectionManagerUtil.getCurrentConnection().get();
+            conn = this.getConnection();
 
             sql += "SELECT SQL_CALC_FOUND_ROWS APP.*, APL.NAME AS APL_NAME, APL.IDENTIFIER AS APL_IDENTIFIER," +
                     " CAT.NAME AS CAT_NAME ";
@@ -130,6 +132,8 @@ public class GenericAppManagementDAO implements ApplicationManagementDAO {
             throw new ApplicationManagementDAOException("Error occurred while getting application List", e);
         } catch (JSONException e) {
             throw new ApplicationManagementDAOException("Error occurred while parsing JSON", e);
+        } catch (DBConnectionException e) {
+            throw new ApplicationManagementDAOException("Error occurred while obtaining the DB connection.", e);
         } finally {
             ApplicationManagementDAOUtil.cleanupResources(stmt, rs);
         }
@@ -145,5 +149,9 @@ public class GenericAppManagementDAO implements ApplicationManagementDAO {
     @Override
     public void deleteApplication(Application application) throws ApplicationManagementDAOException {
 
+    }
+
+    private Connection getConnection() throws DBConnectionException {
+        return ConnectionManagerUtil.getConnection();
     }
 }

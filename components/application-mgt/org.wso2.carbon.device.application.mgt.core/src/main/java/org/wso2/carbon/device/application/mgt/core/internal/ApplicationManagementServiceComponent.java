@@ -56,10 +56,7 @@ public class ApplicationManagementServiceComponent {
 
         DataSourceConfig dataSourceConfig  = ApplicationConfigurationManager.getInstance()
                 .getApplicationManagerConfiguration().getApplicationManagerRepository().getDataSourceConfig();
-        ApplicationManagementDAO applicationManagementDAO = new ApplicationManagementDAOFactory(dataSourceConfig)
-                .getApplicationManagementDAO();
-        ApplicationManagementDataHolder.getInstance()
-                .setApplicationManagementDAO(applicationManagementDAO);
+        ApplicationManagementDAOFactory.init(dataSourceConfig);
 
         log.info("ApplicationManagement core bundle has been successfully initialized");
 

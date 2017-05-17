@@ -20,19 +20,18 @@ package org.wso2.carbon.device.application.mgt.core.util;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.device.application.mgt.common.exception.DBConnectionException;
+import org.wso2.carbon.device.application.mgt.common.exception.IllegalTransactionStateException;
+import org.wso2.carbon.device.application.mgt.common.exception.TransactionManagementException;
 import org.wso2.carbon.device.application.mgt.core.config.datasource.DataSourceConfig;
 import org.wso2.carbon.device.application.mgt.core.config.datasource.JNDILookupDefinition;
-import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagerException;
-import org.wso2.carbon.device.application.mgt.common.exception.IllegalTransactionStateException;
 
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Map;
 
 public class ConnectionManagerUtil {
 
@@ -40,36 +39,6 @@ public class ConnectionManagerUtil {
 
     private enum TxState {
         CONNECTION_NOT_BORROWED, CONNECTION_BORROWED, CONNECTION_CLOSED
-    }
-
-    public enum DatabaseType {
-
-        H2("H2"),
-        MYSQL("MySQL"),
-        ORACLE("Oracle"),
-        POSTGRESQL("PostgreSQL"),
-        MSSQL("Microsoft SQL Server");
-
-        private final String value;
-        private static final Map<String, DatabaseType> lookup = new HashMap<String, DatabaseType>();
-
-        static {
-            for (DatabaseType databaseType : DatabaseType.values()) {
-                lookup.put(databaseType.getValue(), databaseType);
-            }
-        }
-
-        DatabaseType(String value) {
-            this.value = value;
-        }
-
-        public String getValue() {
-            return value;
-        }
-
-        public static DatabaseType lookup(String value) {
-            return lookup.get(value);
-        }
     }
 
     private static final ThreadLocal<Connection> currentConnection = new ThreadLocal<>();
@@ -84,7 +53,7 @@ public class ConnectionManagerUtil {
         return currentConnection;
     }
 
-    public static void openConnection() throws ApplicationManagerException {
+    public static void openConnection() throws DBConnectionException {
         Connection conn = currentConnection.get();
         if (conn != null) {
             throw new IllegalTransactionStateException("A transaction is already active within the context of " +
@@ -95,14 +64,23 @@ public class ConnectionManagerUtil {
             conn = dataSource.getConnection();
         } catch (SQLException e) {
             currentTxState.set(TxState.CONNECTION_NOT_BORROWED);
-            throw new ApplicationManagerException(e.getMessage(), e);
+            throw new DBConnectionException(e.getMessage(), e);
         }
         currentConnection.set(conn);
         currentTxState.set(TxState.CONNECTION_BORROWED);
     }
 
+    public static Connection getConnection() throws DBConnectionException {
+        Connection conn = currentConnection.get();
+        if (conn == null) {
+            throw new DBConnectionException("No connection is associated with the current thread. " +
+                    "This might have ideally been caused by not properly initiating the transaction via " +
+                    "'beginTransaction'/'openConnection' methods");
+        }
+        return conn;
+    }
 
-    public static void beginTransaction() throws ApplicationManagerException {
+    public static void beginTransaction() throws TransactionManagementException, DBConnectionException {
         Connection conn = currentConnection.get();
         if (conn != null) {
             throw new IllegalTransactionStateException("A transaction is already active within the context of " +
@@ -112,7 +90,7 @@ public class ConnectionManagerUtil {
         try {
             conn = dataSource.getConnection();
         } catch (SQLException e) {
-            throw new ApplicationManagerException("Error occurred while retrieving a data source connection", e);
+            throw new DBConnectionException("Error occurred while retrieving a data source connection", e);
         }
 
         try {
@@ -125,7 +103,7 @@ public class ConnectionManagerUtil {
                         "Transaction has ended pre-maturely", e1);
             }
             currentTxState.set(TxState.CONNECTION_CLOSED);
-            throw new ApplicationManagerException("Error occurred while setting auto-commit to false", e);
+            throw new TransactionManagementException("Error occurred while setting auto-commit to false", e);
         }
         currentConnection.set(conn);
         currentTxState.set(TxState.CONNECTION_BORROWED);
@@ -142,8 +120,6 @@ public class ConnectionManagerUtil {
             conn.commit();
         } catch (SQLException e) {
             log.error("Error occurred while committing the transaction", e);
-        } finally {
-            closeConnection();
         }
     }
 
@@ -158,8 +134,6 @@ public class ConnectionManagerUtil {
             conn.rollback();
         } catch (SQLException e) {
             log.warn("Error occurred while roll-backing the transaction", e);
-        } finally {
-            closeConnection();
         }
     }
 
@@ -195,10 +169,9 @@ public class ConnectionManagerUtil {
      * Resolve data source from the data source definition.
      *
      * @param config data source configuration
-     * @return data source resolved from the data source definition
+     *
      */
-    public static DataSource resolveDataSource(DataSourceConfig config) {
-        DataSource dataSource = null;
+    public static void resolveDataSource(DataSourceConfig config) {
         if (config == null) {
             throw new RuntimeException(
                     "Application Management Repository data source configuration " + "is null and " +
@@ -223,7 +196,6 @@ public class ConnectionManagerUtil {
                 dataSource = lookupDataSource(jndiConfig.getJndiName(), null);
             }
         }
-        return dataSource;
     }
 
 
@@ -237,5 +209,14 @@ public class ConnectionManagerUtil {
         } catch (Exception e) {
             throw new RuntimeException("Error in looking up data source: " + e.getMessage(), e);
         }
+    }
+
+    public static String getDatabaseType() {
+        try {
+            return dataSource.getConnection().getMetaData().getDatabaseProductName();
+        } catch (SQLException e) {
+            log.error("Error occurred while retrieving config.datasource connection", e);
+        }
+        return null;
     }
 }

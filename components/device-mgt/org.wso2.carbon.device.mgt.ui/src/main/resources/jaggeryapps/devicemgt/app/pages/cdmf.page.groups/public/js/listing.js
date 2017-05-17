@@ -112,7 +112,7 @@ function toTitleCase(str) {
     });
 }
 
-function htmlspecialchars(text){
+function htmlspecialchars(text) {
     return jQuery('<div/>').text(text).html();
 }
 
@@ -138,11 +138,11 @@ function loadGroups() {
         var objects = [];
         $(data.deviceGroups).each(function (index) {
             objects.push({
-                             groupId: htmlspecialchars(data.deviceGroups[index].id),
-                             name: htmlspecialchars(data.deviceGroups[index].name),
-                             description: htmlspecialchars(data.deviceGroups[index].description),
-                             owner: htmlspecialchars(data.deviceGroups[index].owner)
-                         })
+                groupId: htmlspecialchars(data.deviceGroups[index].id),
+                name: htmlspecialchars(data.deviceGroups[index].name),
+                description: htmlspecialchars(data.deviceGroups[index].description),
+                owner: htmlspecialchars(data.deviceGroups[index].owner)
+            })
         });
         var json = {
             "recordsTotal": data.count,
@@ -159,7 +159,7 @@ function loadGroups() {
             class: 'remove-padding icon-only content-fill viewEnabledIcon',
             render: function (data, type, row, meta) {
                 return '<div class="thumbnail icon"><img class="square-element text fw " ' +
-                       'src="public/cdmf.page.groups/images/group-icon.png"/></div>';
+                    'src="public/cdmf.page.groups/images/group-icon.png"/></div>';
             }
         },
         {
@@ -185,38 +185,38 @@ function loadGroups() {
                 var html = '';
                 if ($.hasPermission("VIEW_GROUP_DEVICES")) {
                     /*html += '<a href="group/' + row.groupId
-                            + '/analytics" data-click-event="remove-form" class="btn padding-reduce-on-grid-view">' +
-                            '<span class="fw-stack"><i class="fw fw-circle-outline fw-stack-2x"></i><i class="fw fw-statistics fw-stack-1x"></i></span>'
-                            +
-                            '<span class="hidden-xs hidden-on-grid-view">Analytics</span></a>';*/
+                     + '/analytics" data-click-event="remove-form" class="btn padding-reduce-on-grid-view">' +
+                     '<span class="fw-stack"><i class="fw fw-circle-outline fw-stack-2x"></i><i class="fw fw-statistics fw-stack-1x"></i></span>'
+                     +
+                     '<span class="hidden-xs hidden-on-grid-view">Analytics</span></a>';*/
                 }
                 if (row.owner != "wso2.system.user") {
                     if ($.hasPermission("SHARE_GROUP")) {
                         html +=
-                                '<a href="#" data-click-event="remove-form" class="btn padding-reduce-on-grid-view share-group-link" data-group-id="'
-                                + row.groupId + '" ' +
-                                'data-group-owner="' + row.owner
-                                + '" data-placement="top" data-toggle="tooltip" data-original-title="Share"><span class="fw-stack"><i class="fw fw-circle-outline fw-stack-2x"></i><i class="fw fw-share fw-stack-1x"></i></span>'
-                                +
-                                '<span class="hidden-xs hidden-on-grid-view">Share</span></a>';
+                            '<a href="#" data-click-event="remove-form" class="btn padding-reduce-on-grid-view share-group-link" data-group-id="'
+                            + row.groupId + '" ' +
+                            'data-group-owner="' + row.owner
+                            + '" data-placement="top" data-toggle="tooltip" data-original-title="Share"><span class="fw-stack"><i class="fw fw-circle-outline fw-stack-2x"></i><i class="fw fw-share fw-stack-1x"></i></span>'
+                            +
+                            '<span class="hidden-xs hidden-on-grid-view">Share</span></a>';
                     }
                     if ($.hasPermission("UPDATE_GROUP")) {
                         html +=
-                                '<a href="#" data-click-event="remove-form" class="btn padding-reduce-on-grid-view edit-group-link" data-group-name="'
-                                + row.name + '" ' +
-                                'data-group-owner="' + row.owner + '" data-group-description="' + row.description
-                                + '" data-group-id="' + row.groupId
-                                + '" data-placement="top" data-toggle="tooltip" data-original-title="Edit"><span class="fw-stack"><i class="fw fw-circle-outline fw-stack-2x"></i>' +
-                                '<i class="fw fw-edit fw-stack-1x"></i></span><span class="hidden-xs hidden-on-grid-view">Edit</span></a>';
+                            '<a href="#" data-click-event="remove-form" class="btn padding-reduce-on-grid-view edit-group-link" data-group-name="'
+                            + row.name + '" ' +
+                            'data-group-owner="' + row.owner + '" data-group-description="' + row.description
+                            + '" data-group-id="' + row.groupId
+                            + '" data-placement="top" data-toggle="tooltip" data-original-title="Edit"><span class="fw-stack"><i class="fw fw-circle-outline fw-stack-2x"></i>' +
+                            '<i class="fw fw-edit fw-stack-1x"></i></span><span class="hidden-xs hidden-on-grid-view">Edit</span></a>';
                     }
                     if ($.hasPermission("REMOVE_GROUP")) {
                         html +=
-                                '<a href="#" data-click-event="remove-form" class="btn padding-reduce-on-grid-view remove-group-link" data-group-id="'
-                                + row.groupId + '" ' +
-                                'data-group-owner="' + row.owner
-                                + '" data-placement="top" data-toggle="tooltip" data-original-title="Delete"><span class="fw-stack"><i class="fw fw-circle-outline fw-stack-2x"></i><i class="fw fw-delete fw-stack-1x"></i>'
-                                +
-                                '</span><span class="hidden-xs hidden-on-grid-view">Delete</span></a>';
+                            '<a href="#" data-click-event="remove-form" class="btn padding-reduce-on-grid-view remove-group-link" data-group-id="'
+                            + row.groupId + '" ' +
+                            'data-group-owner="' + row.owner
+                            + '" data-placement="top" data-toggle="tooltip" data-original-title="Delete"><span class="fw-stack"><i class="fw fw-circle-outline fw-stack-2x"></i><i class="fw fw-delete fw-stack-1x"></i>'
+                            +
+                            '</span><span class="hidden-xs hidden-on-grid-view">Delete</span></a>';
                     }
                 }
                 return html;
@@ -251,21 +251,21 @@ function loadGroups() {
     };
 
     $('#group-grid').datatables_extended_serverside_paging(
-            null,
-            serviceURL,
-            dataFilter,
-            columns,
-            fnCreatedRow,
-            function (oSettings) {
-                $(".icon .text").res_text(0.2);
-                attachEvents();
-                var thisTable = $(this).closest('.dataTables_wrapper').find('.dataTable').dataTable();
-                thisTable.removeClass("table-selectable");
-            },
-            {
-                "placeholder": "Search By Group Name",
-                "searchKey": "name"
-            }
+        null,
+        serviceURL,
+        dataFilter,
+        columns,
+        fnCreatedRow,
+        function (oSettings) {
+            $(".icon .text").res_text(0.2);
+            attachEvents();
+            var thisTable = $(this).closest('.dataTables_wrapper').find('.dataTable').dataTable();
+            thisTable.removeClass("table-selectable");
+        },
+        {
+            "placeholder": "Search By Group Name",
+            "searchKey": "name"
+        }
     );
     $(groupCheckbox).click(function () {
         addGroupSelectedClass(this);
@@ -442,7 +442,7 @@ function attachEvents() {
             };
 
             invokerUtil.delete("/api/device-mgt/v1.0/groups/id/" + groupId,
-                               successCallback, function (message) {
+                successCallback, function (message) {
                     displayErrors(message);
                 });
         });
@@ -487,7 +487,7 @@ function attachEvents() {
             };
 
             invokerUtil.put("/api/device-mgt/v1.0/groups/id/" + groupId, group,
-                            successCallback, function (message) {
+                successCallback, function (message) {
                     displayErrors(message);
                 });
         });
@@ -517,7 +517,7 @@ function markAlreadySavedUsersRoles(groupId) {
     };
 
     invokerUtil.get("/api/device-mgt/v1.0/groups/id/" + groupId + "/roles",
-                    successCallback, function (message) {
+        successCallback, function (message) {
             displayErrors(message);
         });
 }
@@ -535,8 +535,8 @@ function listAllRoles(groupId) {
                 $("#rolesListing").html(html);
                 markAlreadySavedUsersRoles(groupId);
                 $("select.select2[multiple=multiple]").select2({
-                                                                   tags: false
-                                                               });
+                    tags: false
+                });
             } else {
                 $("#rolesListing").html("No roles available");
             }
@@ -546,7 +546,7 @@ function listAllRoles(groupId) {
     };
 
     invokerUtil.get("/api/device-mgt/v1.0/roles?offset=0&limit=100&user-store=all",
-                    successCallback, function (message) {
+        successCallback, function (message) {
             displayErrors(message);
         });
 }
@@ -589,7 +589,7 @@ function updateGroupShare(groupId, roles) {
     };
 
     invokerUtil.post("/api/device-mgt/v1.0/groups/id/" + groupId + "/share",
-                     roles, successCallback, function (message) {
+        roles, successCallback, function (message) {
             displayErrors(message);
         });
 }
@@ -600,7 +600,7 @@ function createNewCombinedRole(roleName, roleList) {
         showPopup();
     };
     invokerUtil.post("/api/device-mgt/v1.0/roles/create-combined-role/" + roleName, roleList,
-                     successCallback, function (message) {
+        successCallback, function (message) {
             displayErrors(message);
         });
 }
@@ -633,6 +633,9 @@ function displayErrors(jqXHR) {
         });
     } else {
         $(modalPopupContent).html($('#group-unexpected-error-content').html());
+        if (jqXHR.responseText) {
+            $('#unexp-error-msg').html(jqXHR.responseText.replace(new RegExp("\"", 'g'), ""));
+        }
         $("a#group-unexpected-error-link").click(function () {
             hidePopup();
         });

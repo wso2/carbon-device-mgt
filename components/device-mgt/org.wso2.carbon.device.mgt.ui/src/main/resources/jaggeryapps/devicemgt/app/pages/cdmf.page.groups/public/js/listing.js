@@ -112,7 +112,7 @@ function toTitleCase(str) {
     });
 }
 
-function htmlspecialchars(text) {
+function htmlspecialchars(text){
     return jQuery('<div/>').text(text).html();
 }
 
@@ -402,17 +402,17 @@ function attachEvents() {
 
         var shareGroupNewRoleFromSelectionLink = $("a#share-group-new-role-from-selection");
         shareGroupNewRoleFromSelectionLink.click(function () {
-            var roles = [];
-            $('.modal .roleCheckBoxes').each(
-                function () {
-                    if ($(this).is(':checked')) {
-                        roles.push($(this).data('role-name'));
-                    }
-                }
-            );
-            addNewRole(roles);
-            // $(modalPopupContent).html($('#share-group-w3-modal-content').html());
-            // createNewRole(roles);
+            var roles = $("#roles").val();
+            if (roles && roles.length >= 2) {
+                addNewRole(roles);
+            } else {
+                var errorMsgWrapper = "#notification-error-msg";
+                var errorMsg = "#notification-error-msg span";
+                $(errorMsg).text("To create a new role with the combination of roles, at least two roles should be" +
+                    " selected.");
+                $(errorMsgWrapper).removeClass("hidden");
+
+            }
         });
     });
 
@@ -534,8 +534,8 @@ function listAllRoles(groupId) {
                 html += '</select>';
                 $("#rolesListing").html(html);
                 markAlreadySavedUsersRoles(groupId);
-                $("select.select2[multiple=multiple]").select2({
-                    tags: false
+                $("select.select2[multiple=multiple]").select2({tags: false}).on("select2:select", function () {
+                    $("#notification-error-msg").addClass("hidden");
                 });
             } else {
                 $("#rolesListing").html("No roles available");
@@ -633,9 +633,6 @@ function displayErrors(jqXHR) {
         });
     } else {
         $(modalPopupContent).html($('#group-unexpected-error-content').html());
-        if (jqXHR.responseText) {
-            $('#unexp-error-msg').html(jqXHR.responseText.replace(new RegExp("\"", 'g'), ""));
-        }
         $("a#group-unexpected-error-link").click(function () {
             hidePopup();
         });

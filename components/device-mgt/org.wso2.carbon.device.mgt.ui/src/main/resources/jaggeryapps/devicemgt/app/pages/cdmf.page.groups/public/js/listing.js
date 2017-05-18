@@ -112,7 +112,7 @@ function toTitleCase(str) {
     });
 }
 
-function htmlspecialchars(text){
+function htmlspecialchars(text) {
     return jQuery('<div/>').text(text).html();
 }
 
@@ -411,7 +411,6 @@ function attachEvents() {
                 $(errorMsg).text("To create a new role with the combination of roles, at least two roles should be" +
                     " selected.");
                 $(errorMsgWrapper).removeClass("hidden");
-
             }
         });
     });
@@ -633,6 +632,9 @@ function displayErrors(jqXHR) {
         });
     } else {
         $(modalPopupContent).html($('#group-unexpected-error-content').html());
+        if (jqXHR.responseText) {
+            $('#unexp-error-msg').html(jqXHR.responseText.replace(new RegExp("\"", 'g'), ""));
+        }
         $("a#group-unexpected-error-link").click(function () {
             hidePopup();
         });

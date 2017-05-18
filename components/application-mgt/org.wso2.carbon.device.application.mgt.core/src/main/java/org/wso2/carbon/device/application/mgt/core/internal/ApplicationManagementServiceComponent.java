@@ -26,7 +26,6 @@ import org.wso2.carbon.device.application.mgt.common.services.ApplicationManagem
 import org.wso2.carbon.device.application.mgt.core.services.impl.ApplicationManagementServiceImpl;
 import org.wso2.carbon.device.application.mgt.core.config.ApplicationConfigurationManager;
 import org.wso2.carbon.device.application.mgt.core.config.datasource.DataSourceConfig;
-import org.wso2.carbon.device.application.mgt.core.dao.common.ApplicationManagementDAO;
 import org.wso2.carbon.device.application.mgt.core.dao.common.ApplicationManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 

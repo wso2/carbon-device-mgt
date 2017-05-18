@@ -18,5 +18,6 @@
  */
 package org.wso2.carbon.device.application.mgt.core.dao;
 
-public interface SubscriptionsDAO {
+public interface PlatformDAO {
+
 }

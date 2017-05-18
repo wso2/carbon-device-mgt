@@ -18,5 +18,19 @@
  */
 package org.wso2.carbon.device.application.mgt.core.dao;
 
-public interface ResourceTypesDAO {
+import org.wso2.carbon.device.application.mgt.core.dao.common.ApplicationManagementDAOException;
+import org.wso2.carbon.device.application.mgt.common.Application;
+import org.wso2.carbon.device.application.mgt.common.Filter;
+import org.wso2.carbon.device.application.mgt.common.ApplicationList;
+
+public interface ApplicationDAO {
+
+     Application createApplication(Application application) throws ApplicationManagementDAOException;
+
+     ApplicationList getApplications(Filter filter) throws ApplicationManagementDAOException;
+
+     Application editApplication(Application application) throws ApplicationManagementDAOException;
+
+     void deleteApplication (Application application)throws ApplicationManagementDAOException;
+
 }

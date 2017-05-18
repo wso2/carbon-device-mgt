@@ -16,12 +16,7 @@
  *   under the License.
  *
  */
-package org.wso2.carbon.device.application.mgt.core.dao.common;
+package org.wso2.carbon.device.application.mgt.core.dao;
 
-import org.wso2.carbon.device.application.mgt.core.dao.*;
-import org.wso2.carbon.device.application.mgt.common.LifecycleState;
-
-public interface ApplicationManagementDAO extends ApplicationReleasesDAO, ApplicationsDAO, CategoriesDAO, CommentsDAO,
-        LifecycleStatesDAO, PlatformsDAO, ResourceTypesDAO, SubscriptionsDAO, VisibilitiesDAO {
-
+public interface ResourceTypeDAO {
 }

@@ -367,7 +367,6 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
     @Override
     public void manageGroupSharing(int groupId, List<String> newRoles)
             throws GroupManagementException, RoleDoesNotExistException {
-        if (newRoles != null) {
             int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
             UserStoreManager userStoreManager;
             try {
@@ -376,15 +375,17 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
                                 tenantId).getUserStoreManager();
                 List<String> currentUserRoles = getRoles(groupId);
                 GroupManagementDAOFactory.beginTransaction();
-                for (String role : newRoles) {
-                    if (!userStoreManager.isExistingRole(role)) {
-                        throw new RoleDoesNotExistException("Role '" + role + "' does not exists in the user store.");
-                    }
-                    // Removing role from current user roles of the group will return true if role exist.
-                    // So we don't need to add it to the db again.
-                    if (!currentUserRoles.remove(role)) {
-                        // If group doesn't have the role, it is adding to the db.
-                        groupDAO.addRole(groupId, role, tenantId);
+                if (newRoles != null) {
+                    for (String role : newRoles) {
+                        if (!userStoreManager.isExistingRole(role)) {
+                            throw new RoleDoesNotExistException("Role '" + role + "' does not exists in the user store.");
+                        }
+                        // Removing role from current user roles of the group will return true if role exist.
+                        // So we don't need to add it to the db again.
+                        if (!currentUserRoles.remove(role)) {
+                            // If group doesn't have the role, it is adding to the db.
+                            groupDAO.addRole(groupId, role, tenantId);
+                        }
                     }
                 }
                 for (String role : currentUserRoles) {
@@ -401,9 +402,6 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
                 throw new GroupManagementException(e);
             } finally {
                 GroupManagementDAOFactory.closeConnection();
-            }
-        } else {
-            throw new GroupManagementException("No roles provided to complete the operation.");
         }
     }
 

@@ -18,8 +18,10 @@
 
 package org.wso2.carbon.device.mgt.core.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import org.wso2.carbon.device.mgt.common.type.mgt.DeviceTypeMetaDefinition;
 
 import java.io.Serializable;
 
@@ -32,6 +34,10 @@ public class DeviceType implements Serializable {
     private int id;
     @ApiModelProperty(name = "name", value = "Device type name", required = true)
     private String name;
+
+    @JsonProperty("metaDefinition")
+    @ApiModelProperty(name = "metaDefinition", value = "Device type definition", required = true)
+    private DeviceTypeMetaDefinition deviceTypeMetaDefinition;
 
     public DeviceType() {
     }
@@ -54,6 +60,15 @@ public class DeviceType implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public DeviceTypeMetaDefinition getDeviceTypeMetaDefinition() {
+        return deviceTypeMetaDefinition;
+    }
+
+    public void setDeviceTypeMetaDefinition(
+            DeviceTypeMetaDefinition deviceTypeMetaDefinition) {
+        this.deviceTypeMetaDefinition = deviceTypeMetaDefinition;
     }
 
 }

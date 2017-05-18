@@ -33,6 +33,8 @@ import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
 import org.wso2.carbon.device.mgt.common.policy.mgt.PolicyMonitoringManager;
 import org.wso2.carbon.device.mgt.common.push.notification.NotificationStrategy;
+import org.wso2.carbon.device.mgt.common.spi.DeviceManagementService;
+import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -328,4 +330,17 @@ public interface DeviceManagementProviderService {
      */
     boolean changeDeviceStatus(DeviceIdentifier deviceIdentifier, EnrolmentInfo.Status newStatus)
             throws DeviceManagementException;
+
+    /**
+     * This will handle add and update of device type services.
+     * @param deviceManagementService
+     */
+    void registerDeviceType(DeviceManagementService deviceManagementService) throws DeviceManagementException;
+
+    /**
+     * This retrieves the device type info for the given type
+     * @param deviceType name of the type.
+     * @throws DeviceManagementException
+     */
+    DeviceType getDeviceType(String deviceType) throws DeviceManagementException;
 }

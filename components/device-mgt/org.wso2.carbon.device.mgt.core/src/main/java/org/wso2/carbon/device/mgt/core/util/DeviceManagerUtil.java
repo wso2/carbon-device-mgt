@@ -25,6 +25,7 @@ import org.wso2.carbon.device.mgt.common.*;
 import org.wso2.carbon.device.mgt.common.group.mgt.GroupManagementException;
 import org.wso2.carbon.device.mgt.common.notification.mgt.NotificationManagementException;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
+import org.wso2.carbon.device.mgt.common.type.mgt.DeviceTypeMetaDefinition;
 import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
 import org.wso2.carbon.device.mgt.core.config.DeviceManagementConfig;
 import org.wso2.carbon.device.mgt.core.config.datasource.DataSourceConfig;
@@ -48,6 +49,7 @@ import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
+import java.sql.SQLException;
 import java.util.*;
 
 
@@ -108,7 +110,8 @@ public final class DeviceManagerUtil {
      * @param isSharedWithAllTenants is this device type shared with all tenants.
      * @return status of the operation
      */
-    public static boolean registerDeviceType(String typeName, int tenantId, boolean isSharedWithAllTenants)
+    public static boolean registerDeviceType(String typeName, int tenantId, boolean isSharedWithAllTenants
+            , DeviceTypeMetaDefinition deviceTypeDefinition)
             throws DeviceManagementException {
         boolean status;
         try {
@@ -118,7 +121,13 @@ public final class DeviceManagerUtil {
             if (deviceType == null) {
                 deviceType = new DeviceType();
                 deviceType.setName(typeName);
+                deviceType.setDeviceTypeMetaDefinition(deviceTypeDefinition);
                 deviceTypeDAO.addDeviceType(deviceType, tenantId, isSharedWithAllTenants);
+            } else {
+                if (deviceTypeDefinition != null) {
+                    deviceType.setDeviceTypeMetaDefinition(deviceTypeDefinition);
+                    deviceTypeDAO.updateDeviceType(deviceType, tenantId);
+                }
             }
             DeviceManagementDAOFactory.commitTransaction();
             status = true;
@@ -134,6 +143,32 @@ public final class DeviceManagerUtil {
             DeviceManagementDAOFactory.closeConnection();
         }
         return status;
+    }
+
+    /**
+     * Adds a new device type to the database if it does not exists.
+     *
+     * @param typeName device type
+     * @param tenantId provider tenant Id
+     * @return device type.
+     */
+    public static DeviceType getDeviceType(String typeName, int tenantId)
+            throws DeviceManagementException {
+        try {
+            DeviceManagementDAOFactory.openConnection();
+            DeviceTypeDAO deviceTypeDAO = DeviceManagementDAOFactory.getDeviceTypeDAO();
+            return deviceTypeDAO.getDeviceType(typeName, tenantId);
+
+        } catch (DeviceManagementDAOException e) {
+            DeviceManagementDAOFactory.rollbackTransaction();
+            throw new DeviceManagementException("Error occurred while retrieving the device type '"
+                                                        + typeName + "'", e);
+        } catch (SQLException e) {
+            throw new DeviceManagementException("SQL occurred while retrieving the device type '"
+                                                        + typeName + "'", e);
+        } finally {
+            DeviceManagementDAOFactory.closeConnection();
+        }
     }
 
     /**

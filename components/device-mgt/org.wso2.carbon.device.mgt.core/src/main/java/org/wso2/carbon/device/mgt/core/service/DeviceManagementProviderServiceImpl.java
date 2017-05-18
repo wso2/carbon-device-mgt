@@ -28,7 +28,7 @@ import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.DeviceManager;
 import org.wso2.carbon.device.mgt.common.DeviceNotFoundException;
-import org.wso2.carbon.device.mgt.common.DeviceTypeIdentifier;
+import org.wso2.carbon.device.mgt.common.DeviceTypeServiceIdentifier;
 import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
 import org.wso2.carbon.device.mgt.common.FeatureManager;
 import org.wso2.carbon.device.mgt.common.InitialOperationConfig;
@@ -1007,7 +1007,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
     @Override
     public List<String> getAvailableDeviceTypes() throws DeviceManagementException {
-        List<String> deviceTypesProvidedByTenant;
+        List<DeviceType> deviceTypesProvidedByTenant;
         List<String> publicSharedDeviceTypesInDB;
         List<String> deviceTypesResponse = new ArrayList<>();
         try {
@@ -1015,17 +1015,17 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             int tenantId = this.getTenantId();
             deviceTypesProvidedByTenant = deviceTypeDAO.getDeviceTypesByProvider(tenantId);
             publicSharedDeviceTypesInDB = deviceTypeDAO.getSharedDeviceTypes();
-            Map<DeviceTypeIdentifier, DeviceManagementService> registeredTypes =
+            Map<DeviceTypeServiceIdentifier, DeviceManagementService> registeredTypes =
                     pluginRepository.getAllDeviceManagementServices(tenantId);
             Set<String> deviceTypeSetForTenant = new HashSet<>();
 
             if (registeredTypes != null) {
                 if (deviceTypesProvidedByTenant != null) {
-                    for (String deviceType : deviceTypesProvidedByTenant) {
-                        DeviceTypeIdentifier providerKey = new DeviceTypeIdentifier(deviceType, tenantId);
-                        if (registeredTypes.get(providerKey) != null) {
-                            deviceTypesResponse.add(deviceType);
-                            deviceTypeSetForTenant.add(deviceType);
+                    for (DeviceType deviceType : deviceTypesProvidedByTenant) {
+                        DeviceTypeServiceIdentifier providerKey = new DeviceTypeServiceIdentifier(deviceType.getName(), tenantId);
+                        if (registeredTypes.get(providerKey) != null || deviceType.getDeviceTypeMetaDefinition() != null) {
+                            deviceTypesResponse.add(deviceType.getName());
+                            deviceTypeSetForTenant.add(deviceType.getName());
                         }
                     }
                 }
@@ -1033,7 +1033,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                 // priority to that
                 if (publicSharedDeviceTypesInDB != null) {
                     for (String deviceType : publicSharedDeviceTypesInDB) {
-                        DeviceTypeIdentifier providerKey = new DeviceTypeIdentifier(deviceType);
+                        DeviceTypeServiceIdentifier providerKey = new DeviceTypeServiceIdentifier(deviceType);
                         if (registeredTypes.get(providerKey) != null && !deviceTypeSetForTenant.contains(deviceType)) {
                             deviceTypesResponse.add(deviceType);
                         }
@@ -2162,6 +2162,29 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             return service.getGroup(groupName);
         } else {
             return defaultGroup;
+        }
+    }
+
+    @Override
+    public void registerDeviceType(DeviceManagementService deviceManagementService) throws DeviceManagementException {
+        if (deviceManagementService != null) {
+            pluginRepository.addDeviceManagementProvider(deviceManagementService);
+        }
+    }
+
+    @Override
+    public DeviceType getDeviceType(String deviceType) throws DeviceManagementException {
+        HashMap<Integer, Device> deviceHashMap;
+        try {
+            DeviceManagementDAOFactory.openConnection();
+            int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
+            return deviceTypeDAO.getDeviceType(deviceType, tenantId);
+        } catch (DeviceManagementDAOException e) {
+            throw new DeviceManagementException("Error occurred while obtaining the device type " + deviceType, e);
+        } catch (SQLException e) {
+            throw new DeviceManagementException("Error occurred while opening a connection to the data source", e);
+        } finally {
+            DeviceManagementDAOFactory.closeConnection();
         }
     }
 }

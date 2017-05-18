@@ -17,11 +17,12 @@
  */
 package org.wso2.carbon.device.mgt.core;
 
+import com.google.gson.Gson;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
-import org.wso2.carbon.device.mgt.common.DeviceTypeIdentifier;
+import org.wso2.carbon.device.mgt.common.DeviceTypeServiceIdentifier;
 import org.wso2.carbon.device.mgt.common.OperationMonitoringTaskConfig;
 import org.wso2.carbon.device.mgt.common.ProvisioningConfig;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManager;
@@ -29,6 +30,9 @@ import org.wso2.carbon.device.mgt.common.push.notification.NotificationStrategy;
 import org.wso2.carbon.device.mgt.common.push.notification.PushNotificationConfig;
 import org.wso2.carbon.device.mgt.common.push.notification.PushNotificationProvider;
 import org.wso2.carbon.device.mgt.common.spi.DeviceManagementService;
+import org.wso2.carbon.device.mgt.common.type.mgt.DeviceTypeDefinitionProvider;
+import org.wso2.carbon.device.mgt.common.type.mgt.DeviceTypeMetaDefinition;
+import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementServiceComponent;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagerStartupListener;
@@ -38,6 +42,7 @@ import org.wso2.carbon.device.mgt.core.operation.mgt.OperationManagerRepository;
 import org.wso2.carbon.device.mgt.core.task.DeviceMgtTaskException;
 import org.wso2.carbon.device.mgt.core.task.DeviceTaskManagerService;
 import org.wso2.carbon.device.mgt.core.util.DeviceManagerUtil;
+import org.wso2.carbon.device.mgt.extensions.device.type.template.HTTPDeviceTypeManagerService;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -45,19 +50,22 @@ import java.util.Map;
 
 public class DeviceManagementPluginRepository implements DeviceManagerStartupListener {
 
-    private Map<DeviceTypeIdentifier, DeviceManagementService> providers;
+    private Map<DeviceTypeServiceIdentifier, DeviceManagementService> providers;
+    private Map<DeviceTypeServiceIdentifier, Long> dynamicProviderTimestamp;
     private boolean isInited;
     private static final Log log = LogFactory.getLog(DeviceManagementPluginRepository.class);
     private OperationManagerRepository operationManagerRepository;
+    private static final long DEFAULT_UPDATE_TIMESTAMP = 900000L;
 
     public DeviceManagementPluginRepository() {
         this.operationManagerRepository = new OperationManagerRepository();
-        providers = Collections.synchronizedMap(new HashMap<DeviceTypeIdentifier, DeviceManagementService>());
+        providers = Collections.synchronizedMap(new HashMap<DeviceTypeServiceIdentifier, DeviceManagementService>());
+        dynamicProviderTimestamp = Collections.synchronizedMap(new HashMap<DeviceTypeServiceIdentifier, Long>());
         DeviceManagementServiceComponent.registerStartupListener(this);
     }
 
     public void addDeviceManagementProvider(DeviceManagementService provider) throws DeviceManagementException {
-        String deviceType = provider.getType().toLowerCase();
+        String deviceType = provider.getType();
 
         ProvisioningConfig provisioningConfig = provider.getProvisioningConfig();
         String tenantDomain = provisioningConfig.getProviderTenantDomain();
@@ -71,7 +79,18 @@ public class DeviceManagementPluginRepository implements DeviceManagerStartupLis
                 if (isInited) {
                     /* Initializing Device Management Service Provider */
                     provider.init();
-                    DeviceManagerUtil.registerDeviceType(deviceType, tenantId, isSharedWithAllTenants);
+                    DeviceTypeMetaDefinition deviceTypeDefinition = null;
+                    if (provider instanceof DeviceTypeDefinitionProvider) {
+                        deviceTypeDefinition = ((DeviceTypeDefinitionProvider) provider).getDeviceTypeMeta();
+
+                        DeviceTypeServiceIdentifier deviceTypeIdentifier = new DeviceTypeServiceIdentifier(
+                                provider.getType().toLowerCase(), tenantId);
+                        DeviceManagementService existingProvider = providers.get(deviceTypeIdentifier);
+                        if (existingProvider != null) {
+                            removeDeviceManagementProvider(provider);
+                        }
+                    }
+                    DeviceManagerUtil.registerDeviceType(deviceType, tenantId, isSharedWithAllTenants, deviceTypeDefinition);
                     DeviceManagementDataHolder.getInstance().setRequireDeviceAuthorization(deviceType,
                                                                                            provider.getDeviceManager()
                                                                                                    .requireDeviceAuthorization());
@@ -83,33 +102,39 @@ public class DeviceManagementPluginRepository implements DeviceManagerStartupLis
                                                             deviceType + "'", e);
             }
             if (isSharedWithAllTenants) {
-                DeviceTypeIdentifier deviceTypeIdentifier = new DeviceTypeIdentifier(deviceType);
+                DeviceTypeServiceIdentifier deviceTypeIdentifier = new DeviceTypeServiceIdentifier(deviceType);
                 providers.put(deviceTypeIdentifier, provider);
             } else {
-                DeviceTypeIdentifier deviceTypeIdentifier = new DeviceTypeIdentifier(deviceType, tenantId);
+                DeviceTypeServiceIdentifier deviceTypeIdentifier = new DeviceTypeServiceIdentifier(deviceType, tenantId);
                 providers.put(deviceTypeIdentifier, provider);
+                if (provider instanceof DeviceTypeDefinitionProvider) {
+                    dynamicProviderTimestamp.put(deviceTypeIdentifier, System.currentTimeMillis());
+                }
             }
         }
     }
 
     public void removeDeviceManagementProvider(DeviceManagementService provider)
             throws DeviceManagementException {
-            String deviceTypeName = provider.getType().toLowerCase();
-            DeviceTypeIdentifier deviceTypeIdentifier;
+            String deviceTypeName = provider.getType();
+            DeviceTypeServiceIdentifier deviceTypeIdentifier;
             ProvisioningConfig provisioningConfig = provider.getProvisioningConfig();
             if (provisioningConfig.isSharedWithAllTenants()) {
-                deviceTypeIdentifier = new DeviceTypeIdentifier(deviceTypeName);
+                deviceTypeIdentifier = new DeviceTypeServiceIdentifier(deviceTypeName);
                 providers.remove(deviceTypeIdentifier);
             } else {
                 int providerTenantId = DeviceManagerUtil.getTenantId(provisioningConfig.getProviderTenantDomain());
-                deviceTypeIdentifier = new DeviceTypeIdentifier(deviceTypeName, providerTenantId);
+                deviceTypeIdentifier = new DeviceTypeServiceIdentifier(deviceTypeName, providerTenantId);
                 providers.remove(deviceTypeIdentifier);
+                if (provider instanceof DeviceTypeDefinitionProvider) {
+                    dynamicProviderTimestamp.remove(deviceTypeIdentifier);
+                }
             }
             unregisterPushNotificationStrategy(deviceTypeIdentifier);
             unregisterMonitoringTask(provider);
     }
 
-    private void unregisterPushNotificationStrategy(DeviceTypeIdentifier deviceTypeIdentifier) {
+    private void unregisterPushNotificationStrategy(DeviceTypeServiceIdentifier deviceTypeIdentifier) {
         OperationManager operationManager = operationManagerRepository.getOperationManager(
                 deviceTypeIdentifier);
         if (operationManager != null) {
@@ -123,18 +148,60 @@ public class DeviceManagementPluginRepository implements DeviceManagerStartupLis
 
     public DeviceManagementService getDeviceManagementService(String type, int tenantId) {
         //Priority need to be given to the tenant before public.
-        DeviceTypeIdentifier deviceTypeIdentifier = new DeviceTypeIdentifier(type.toLowerCase(), tenantId);
+        DeviceTypeServiceIdentifier deviceTypeIdentifier = new DeviceTypeServiceIdentifier(type.toLowerCase(), tenantId);
         DeviceManagementService provider = providers.get(deviceTypeIdentifier);
         if (provider == null) {
-            deviceTypeIdentifier = new DeviceTypeIdentifier(type.toLowerCase());
+            deviceTypeIdentifier = new DeviceTypeServiceIdentifier(type.toLowerCase());
             provider = providers.get(deviceTypeIdentifier);
+            if (provider == null) {
+                try {
+                    DeviceType deviceType = DeviceManagerUtil.getDeviceType(type,tenantId);
+                    DeviceTypeMetaDefinition deviceTypeMetaDefinition = deviceType.getDeviceTypeMetaDefinition();
+                    if (deviceTypeMetaDefinition != null) {
+                        HTTPDeviceTypeManagerService deviceTypeManagerService = new HTTPDeviceTypeManagerService
+                                (type, deviceTypeMetaDefinition);
+                        addDeviceManagementProvider(deviceTypeManagerService);
+                    }
+                } catch (DeviceManagementException e) {
+                    log.error("Failing to retrieve the device type service for " + type, e);
+                    return null;
+                }
+            }
+        } else {
+            // retrieves per tenant device type management service
+            if (provider instanceof DeviceTypeDefinitionProvider) {
+                //handle updates.
+                long updatedTimestamp = dynamicProviderTimestamp.get(deviceTypeIdentifier);
+                if (System.currentTimeMillis() - updatedTimestamp > DEFAULT_UPDATE_TIMESTAMP) {
+                    try {
+                        DeviceType deviceType = DeviceManagerUtil.getDeviceType(type,tenantId);
+                        DeviceTypeMetaDefinition deviceTypeMetaDefinition = deviceType.getDeviceTypeMetaDefinition();
+                        if (deviceTypeMetaDefinition != null) {
+                            Gson gson = new Gson();
+                            String dbStoredDefinition = gson.toJson(deviceTypeMetaDefinition);
+                            deviceTypeMetaDefinition = ((DeviceTypeDefinitionProvider) provider).getDeviceTypeMeta();
+                            String cachedDefinition = gson.toJson(deviceTypeMetaDefinition);
+                            if (!cachedDefinition.equals(dbStoredDefinition)) {
+                                HTTPDeviceTypeManagerService deviceTypeManagerService = new HTTPDeviceTypeManagerService
+                                        (type, deviceTypeMetaDefinition);
+                                addDeviceManagementProvider(deviceTypeManagerService);
+                                deviceTypeIdentifier = new DeviceTypeServiceIdentifier(type, tenantId);
+                                provider = providers.get(deviceTypeIdentifier);
+                            }
+                        }
+                    } catch (DeviceManagementException e) {
+                        log.error("Failing to retrieve the device type service for " + type, e);
+                        return null;
+                    }
+                }
+            }
         }
         return provider;
     }
 
-    public Map<DeviceTypeIdentifier, DeviceManagementService> getAllDeviceManagementServices(int tenantId) {
-        Map<DeviceTypeIdentifier, DeviceManagementService> tenantProviders = new HashMap<>();
-        for (DeviceTypeIdentifier identifier : providers.keySet()) {
+    public Map<DeviceTypeServiceIdentifier, DeviceManagementService> getAllDeviceManagementServices(int tenantId) {
+        Map<DeviceTypeServiceIdentifier, DeviceManagementService> tenantProviders = new HashMap<>();
+        for (DeviceTypeServiceIdentifier identifier : providers.keySet()) {
             if (identifier.getTenantId() == tenantId || identifier.isSharedWithAllTenant()) {
                 tenantProviders.put(identifier, providers.get(identifier));
             }
@@ -150,12 +217,12 @@ public class DeviceManagementPluginRepository implements DeviceManagerStartupLis
                 deviceManagementService.getProvisioningConfig().getProviderTenantDomain(), true);
         try {
         boolean isSharedWithAllTenants = deviceManagementService.getProvisioningConfig().isSharedWithAllTenants();
-        DeviceTypeIdentifier deviceTypeIdentifier;
+        DeviceTypeServiceIdentifier deviceTypeIdentifier;
         if (isSharedWithAllTenants) {
-            deviceTypeIdentifier = new DeviceTypeIdentifier(deviceManagementService.getType());
+            deviceTypeIdentifier = new DeviceTypeServiceIdentifier(deviceManagementService.getType());
         } else {
             int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
-            deviceTypeIdentifier = new DeviceTypeIdentifier(deviceManagementService.getType(), tenantId);
+            deviceTypeIdentifier = new DeviceTypeServiceIdentifier(deviceManagementService.getType(), tenantId);
         }
 
         if (pushNoteConfig != null) {
@@ -222,10 +289,10 @@ public class DeviceManagementPluginRepository implements DeviceManagerStartupLis
 
     public OperationManager getOperationManager(String deviceType, int tenantId) {
         //Priority need to be given to the tenant before public.
-        DeviceTypeIdentifier deviceTypeIdentifier = new DeviceTypeIdentifier(deviceType.toLowerCase(), tenantId);
+        DeviceTypeServiceIdentifier deviceTypeIdentifier = new DeviceTypeServiceIdentifier(deviceType.toLowerCase(), tenantId);
         OperationManager operationManager = operationManagerRepository.getOperationManager(deviceTypeIdentifier);
         if (operationManager == null) {
-            deviceTypeIdentifier = new DeviceTypeIdentifier(deviceType.toLowerCase());
+            deviceTypeIdentifier = new DeviceTypeServiceIdentifier(deviceType.toLowerCase());
             operationManager = operationManagerRepository.getOperationManager(deviceTypeIdentifier);
         }
         return operationManager;
@@ -241,8 +308,19 @@ public class DeviceManagementPluginRepository implements DeviceManagerStartupLis
                     deviceTypeName = provider.getType().toLowerCase();
                     ProvisioningConfig provisioningConfig = provider.getProvisioningConfig();
                     int tenantId = DeviceManagerUtil.getTenantId(provisioningConfig.getProviderTenantDomain());
-                    DeviceManagerUtil.registerDeviceType(deviceTypeName, tenantId,
-                                                         provisioningConfig.isSharedWithAllTenants());
+                    DeviceTypeMetaDefinition deviceTypeDefinition = null;
+                    if (provider instanceof DeviceTypeDefinitionProvider) {
+                        deviceTypeDefinition = ((DeviceTypeDefinitionProvider) provider).getDeviceTypeMeta();
+
+                        DeviceTypeServiceIdentifier deviceTypeIdentifier = new DeviceTypeServiceIdentifier(
+                                provider.getType().toLowerCase(), tenantId);
+                        DeviceManagementService existingProvider = providers.get(deviceTypeIdentifier);
+                        if (existingProvider == null) {
+                            removeDeviceManagementProvider(provider);
+                        }
+                    }
+                    DeviceManagerUtil.registerDeviceType(deviceTypeName, tenantId
+                            , provisioningConfig.isSharedWithAllTenants(), deviceTypeDefinition);
                     registerPushNotificationStrategy(provider);
                     registerMonitoringTask(provider);
                     //TODO:

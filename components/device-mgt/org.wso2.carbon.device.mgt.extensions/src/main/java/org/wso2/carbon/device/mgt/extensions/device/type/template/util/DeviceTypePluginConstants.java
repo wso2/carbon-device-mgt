@@ -16,17 +16,13 @@
  *   under the License.
  *
  */
-package org.wso2.carbon.device.mgt.extensions.device.type.deployer.util;
+package org.wso2.carbon.device.mgt.extensions.device.type.template.util;
 
 /**
  * This holds the constants used for this bundle.
  */
 public class DeviceTypePluginConstants {
-
-    public static final String CDMF_UI_TYPE = "devicetype/ui";
-    public static final String CDMF_UI_TYPE_DIR = "devicetypes-ui";
-
-    public static final String CDMF_PLUGIN_TYPE = "devicetype/plugin";
-    public static final String CDMF_PLUGIN_TYPE_DIR = "devicetypes";
-    public static final String CDMF_PLUGIN_TYPE_EXTENSION = "xml";
+    public static final String MEDIA_TYPE_XML = "application/xml";
+    public static final String CHARSET_UTF8 = "UTF8";
+    public static final String LANGUAGE_CODE_ENGLISH_US = "en_US";
 }

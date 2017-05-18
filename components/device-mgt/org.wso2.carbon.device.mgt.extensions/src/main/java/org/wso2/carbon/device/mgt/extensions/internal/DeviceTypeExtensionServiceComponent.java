@@ -16,26 +16,17 @@
  * under the License.
  */
 
-package org.wso2.carbon.device.mgt.extensions.device.type.deployer.internal;
+package org.wso2.carbon.device.mgt.extensions.internal;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osgi.service.component.ComponentContext;
-import org.wso2.carbon.application.deployer.handler.AppDeploymentHandler;
-import org.wso2.carbon.device.mgt.extensions.device.type.deployer.DeviceTypeCAppDeployer;
 import org.wso2.carbon.ndatasource.core.DataSourceService;
 import org.wso2.carbon.registry.core.service.RegistryService;
-import org.wso2.carbon.utils.ConfigurationContextService;
 
 /**
- * @scr.component name="org.wso2.carbon.device.mgt.iot.internal.DeviceTypeExtensionServiceComponent"
+ * @scr.component name="org.wso2.carbon.device.mgt.extensions.DeviceTypeExtensionServiceComponent"
  * immediate="true"
- * @scr.reference name="config.context.service"
- * interface="org.wso2.carbon.utils.ConfigurationContextService"
- * cardinality="0..1"
- * policy="dynamic"
- * bind="setConfigurationContextService"
- * unbind="unsetConfigurationContextService"
  * @scr.reference name="registry.service"
  * interface="org.wso2.carbon.registry.core.service.RegistryService" cardinality="0..1"
  * policy="dynamic" bind="setRegistryService" unbind="unsetRegistryService"
@@ -46,16 +37,14 @@ import org.wso2.carbon.utils.ConfigurationContextService;
  * bind="setDataSourceService"
  * unbind="unsetDataSourceService"
  */
-public class DeviceTypeManagementServiceComponent {
+public class DeviceTypeExtensionServiceComponent {
 
-    private static final Log log = LogFactory.getLog(DeviceTypeManagementServiceComponent.class);
+    private static final Log log = LogFactory.getLog(DeviceTypeExtensionServiceComponent.class);
 
     protected void activate(ComponentContext ctx) {
         if (log.isDebugEnabled()) {
             log.debug("Activating DeviceType Deployer Service Component");
         }
-//        ctx.getBundleContext().registerService(AppDeploymentHandler.class.getName(), new DeviceTypeCAppDeployer(), null);
-        DeviceTypeManagementDataHolder.getInstance().setBundleContext(ctx.getBundleContext());
     }
 
     protected void deactivate(ComponentContext ctx) {
@@ -64,35 +53,19 @@ public class DeviceTypeManagementServiceComponent {
         }
     }
 
-    protected void setConfigurationContextService(ConfigurationContextService configurationContextService) {
-        if (log.isDebugEnabled()) {
-            log.debug("Setting ConfigurationContextService");
-        }
-
-        DeviceTypeManagementDataHolder.getInstance().setConfigurationContextService(configurationContextService);
-
-    }
-
-    protected void unsetConfigurationContextService(ConfigurationContextService configurationContextService) {
-        if (log.isDebugEnabled()) {
-            log.debug("Un-setting ConfigurationContextService");
-        }
-        DeviceTypeManagementDataHolder.getInstance().setConfigurationContextService(null);
-    }
-
     protected void setRegistryService(RegistryService registryService) {
         if (log.isDebugEnabled()) {
             log.debug("RegistryService acquired");
         }
-        DeviceTypeManagementDataHolder.getInstance().setRegistryService(registryService);
+        DeviceTypeExtensionDataHolder.getInstance().setRegistryService(registryService);
     }
 
     protected void unsetRegistryService(RegistryService registryService) {
-        DeviceTypeManagementDataHolder.getInstance().setRegistryService(null);
+        DeviceTypeExtensionDataHolder.getInstance().setRegistryService(null);
     }
 
     protected void setDataSourceService(DataSourceService dataSourceService) {
-        /* This is to avoid mobile device management component getting initialized before the underlying datasources
+        /* This is to avoid  device management component getting initialized before the underlying datasources
         are registered */
         if (log.isDebugEnabled()) {
             log.debug("Data source service set to android mobile service component");

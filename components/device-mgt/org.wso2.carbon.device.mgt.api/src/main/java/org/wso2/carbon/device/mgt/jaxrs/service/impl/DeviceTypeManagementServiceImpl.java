@@ -23,6 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.Feature;
 import org.wso2.carbon.device.mgt.common.FeatureManager;
+import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.device.mgt.jaxrs.beans.DeviceTypeList;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
@@ -35,6 +36,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 import java.util.List;
 
@@ -84,6 +86,28 @@ public class DeviceTypeManagementServiceImpl implements DeviceTypeManagementServ
                     new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
         }
         return Response.status(Response.Status.OK).entity(features).build();
+    }
+
+    @Override
+    @GET
+    @Path("/all/{type}")
+    public Response getDeviceTypeByName(@PathParam("type") String type) {
+        if (type != null && type.length() > 0) {
+            try {
+                DeviceType deviceType = DeviceMgtAPIUtils.getDeviceManagementService().getDeviceType(type);
+                if (deviceType == null) {
+                    String msg = "Device type does not exist, " + type;
+                    return Response.status(Response.Status.NO_CONTENT).entity(msg).build();
+                }
+                return Response.status(Response.Status.OK).entity(deviceType).build();
+            } catch (DeviceManagementException e) {
+                String msg = "Error occurred at server side while fetching device type.";
+                log.error(msg, e);
+                return Response.serverError().entity(msg).build();
+            }
+        } else {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
     }
 
 }

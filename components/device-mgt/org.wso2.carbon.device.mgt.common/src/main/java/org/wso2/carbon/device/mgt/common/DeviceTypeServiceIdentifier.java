@@ -22,18 +22,18 @@ import java.io.Serializable;
 /**
  * This class holds the information of the device type and its provider tenant.
  */
-public class DeviceTypeIdentifier implements Serializable {
+public class DeviceTypeServiceIdentifier implements Serializable {
 
 	private String deviceType;
 	private int tenantId;
 	private static final int DEFAULT_SHARE_WITH_ALL_TENANTS_ID = -1;
 
-	public DeviceTypeIdentifier(String deviceType, int tenantId) {
+	public DeviceTypeServiceIdentifier(String deviceType, int tenantId) {
 		this.deviceType = deviceType.toLowerCase();
 		this.tenantId = tenantId;
 	}
 
-	public DeviceTypeIdentifier(String deviceType) {
+	public DeviceTypeServiceIdentifier(String deviceType) {
 		this.deviceType = deviceType.toLowerCase();
 		this.tenantId = DEFAULT_SHARE_WITH_ALL_TENANTS_ID;
 	}
@@ -59,8 +59,8 @@ public class DeviceTypeIdentifier implements Serializable {
 
 	@Override
 	public boolean equals(Object obj) {
-		return (obj instanceof DeviceTypeIdentifier) && deviceType.equals(
-				((DeviceTypeIdentifier) obj).deviceType) && tenantId == ((DeviceTypeIdentifier) obj).tenantId;
+		return (obj instanceof DeviceTypeServiceIdentifier) && deviceType.equals(
+				((DeviceTypeServiceIdentifier) obj).deviceType) && tenantId == ((DeviceTypeServiceIdentifier) obj).tenantId;
 	}
 
 	public boolean isSharedWithAllTenant() {

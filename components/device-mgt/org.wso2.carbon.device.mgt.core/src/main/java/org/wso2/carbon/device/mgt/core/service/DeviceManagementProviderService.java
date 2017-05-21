@@ -343,4 +343,10 @@ public interface DeviceManagementProviderService {
      * @throws DeviceManagementException
      */
     DeviceType getDeviceType(String deviceType) throws DeviceManagementException;
+
+    /**
+     * This retrieves the device type info for the given type
+     * @throws DeviceManagementException
+     */
+    List<DeviceType> getDeviceTypes() throws DeviceManagementException;
 }

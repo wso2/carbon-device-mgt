@@ -257,7 +257,7 @@ public interface DeviceEventManagementService {
                     @ApiResponse(
                             code = 200,
                             message = "OK. \n Successfully fetched the event defintion.",
-                            response = EventAttributeList.class,
+                            response = DeviceTypeEvent.class,
                             responseHeaders = {
                                     @ResponseHeader(
                                             name = "Content-Type",

@@ -18,6 +18,15 @@ public class DeviceTypeMetaDefinition {
     private OperationMonitoringTaskConfig taskConfig;
     private InitialOperationConfig initialOperationConfig;
     private License license;
+    private String description;
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
     public List<String> getProperties() {
         return properties;

@@ -72,7 +72,8 @@ public class DeviceTypeManagerService implements DeviceManagementService {
         this.setOperationMonitoringConfig(deviceTypeConfiguration);
         this.initialOperationConfig = new InitialOperationConfig();
         this.setInitialOperationConfig(deviceTypeConfiguration);
-        if (deviceTypeConfiguration.getPolicyMonitoring() != null ) {
+        if (deviceTypeConfiguration.getPolicyMonitoring() != null
+                && deviceTypeConfiguration.getPolicyMonitoring().isEnabled()) {
             this.policyMonitoringManager = new DefaultPolicyMonitoringManager();
         }
     }

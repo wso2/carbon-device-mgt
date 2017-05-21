@@ -81,17 +81,19 @@ public class HTTPDeviceTypeManagerService extends DeviceTypeManagerService imple
                 for (Feature feature : deviceTypeMetaDefinition.getFeatures()) {
                     org.wso2.carbon.device.mgt.extensions.device.type.template.config.Feature configFeature = new org
                             .wso2.carbon.device.mgt.extensions.device.type.template.config.Feature();
-                    configFeature.setCode(feature.getCode());
-                    configFeature.setDescription(feature.getDescription());
-                    configFeature.setName(feature.getName());
-                    if (feature.getMetadataEntries() != null && feature.getMetadataEntries().size() > 0) {
-                        List<String> metaValues = new ArrayList<>();
-                        for (Feature.MetadataEntry metadataEntry : feature.getMetadataEntries()) {
-                            metadataEntry.getValue();
+                    if (feature.getCode() != null && feature.getName() != null) {
+                        configFeature.setCode(feature.getCode());
+                        configFeature.setDescription(feature.getDescription());
+                        configFeature.setName(feature.getName());
+                        if (feature.getMetadataEntries() != null && feature.getMetadataEntries().size() > 0) {
+                            List<String> metaValues = new ArrayList<>();
+                            for (Feature.MetadataEntry metadataEntry : feature.getMetadataEntries()) {
+                                metadataEntry.getValue();
+                            }
+                            configFeature.setMetaData(metaValues);
                         }
-                        configFeature.setMetaData(metaValues);
+                        featureList.add(configFeature);
                     }
-                    featureList.add(configFeature);
                 }
                 features.addFeatures(featureList);
                 deviceTypeConfiguration.setFeatures(features);
@@ -117,7 +119,8 @@ public class HTTPDeviceTypeManagerService extends DeviceTypeManagerService imple
             if (pushNotificationConfig != null) {
                 PushNotificationProvider pushNotificationProvider = new PushNotificationProvider();
                 pushNotificationProvider.setType(pushNotificationConfig.getType());
-                pushNotificationProvider.setScheduled(pushNotificationConfig.isScheduled());
+                //default schedule value will be true.
+                pushNotificationProvider.setScheduled(true);
                 if (pushNotificationConfig.getProperties() != null &&
                         pushNotificationConfig.getProperties().size() > 0) {
                     ConfigProperties configProperties = new ConfigProperties();

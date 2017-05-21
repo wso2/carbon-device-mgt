@@ -18,7 +18,7 @@
  */
 package org.wso2.carbon.device.mgt.core.operation.mgt;
 
-import org.wso2.carbon.device.mgt.common.DeviceTypeServiceIdentifier;
+import org.wso2.carbon.device.mgt.core.dto.DeviceTypeServiceIdentifier;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManager;
 
 import java.util.Map;

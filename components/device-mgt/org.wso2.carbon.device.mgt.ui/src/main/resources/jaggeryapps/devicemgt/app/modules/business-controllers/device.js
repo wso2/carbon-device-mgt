@@ -268,6 +268,34 @@ deviceModule = function () {
         }
     };
 
+	publicMethods.getDeviceTypeCount = function () {
+		var carbonUser = session.get(constants.USER_SESSION_KEY);
+		if (carbonUser) {
+			var userModule = require("/app/modules/business-controllers/user.js")["userModule"];
+			var uiPermissions = userModule.getUIPermissions();
+			var url;
+			if (uiPermissions.LIST_OWN_DEVICES) {
+				url = devicemgtProps["httpsURL"] +
+					devicemgtProps["backendRestEndpoints"]["deviceMgt"] + "/device-types";
+			} else {
+				log.error("Access denied for user: " + carbonUser.username);
+				return -1;
+			}
+			return serviceInvokers.XMLHttp.get(
+				url, function (responsePayload) {
+					return parse(responsePayload["responseText"])["count"];
+				},
+				function (responsePayload) {
+					log.error(responsePayload["responseText"]);
+					return -1;
+				}
+			);
+		} else {
+			log.error("User object was not found in the session");
+			throw constants["ERRORS"]["USER_NOT_FOUND"];
+		}
+	};
+
     publicMethods.getDeviceTypes = function () {
         var url = devicemgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"] + "/device-types";
         var response = privateMethods.callBackend(url, constants["HTTP_GET"]);

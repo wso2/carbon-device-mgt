@@ -40,16 +40,17 @@ import org.wso2.carbon.device.mgt.jaxrs.service.api.DeviceEventManagementService
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
 import org.wso2.carbon.event.publisher.stub.EventPublisherAdminServiceCallbackHandler;
 import org.wso2.carbon.event.publisher.stub.EventPublisherAdminServiceStub;
+import org.wso2.carbon.event.receiver.stub.types.EventMappingPropertyDto;
 import org.wso2.carbon.event.receiver.stub.EventReceiverAdminServiceCallbackHandler;
 import org.wso2.carbon.event.receiver.stub.EventReceiverAdminServiceStub;
 import org.wso2.carbon.event.receiver.stub.types.BasicInputAdapterPropertyDto;
+import org.wso2.carbon.event.receiver.stub.types.EventReceiverConfigurationDto;
 import org.wso2.carbon.event.stream.stub.EventStreamAdminServiceStub;
 import org.wso2.carbon.event.stream.stub.types.EventStreamAttributeDto;
 import org.wso2.carbon.event.stream.stub.types.EventStreamDefinitionDto;
 import org.wso2.carbon.identity.jwt.client.extension.JWTClient;
 import org.wso2.carbon.identity.jwt.client.extension.exception.JWTClientException;
 import org.wso2.carbon.user.api.UserStoreException;
-import org.wso2.carbon.analytics.datasource.commons.Record;
 import org.wso2.carbon.analytics.datasource.commons.exception.AnalyticsException;
 
 import javax.net.ssl.KeyManagerFactory;
@@ -107,6 +108,8 @@ public class DeviceEventManagementServiceImpl implements DeviceEventManagementSe
     private static final String DEFAULT_STREAM_VERSION = "1.0.0";
     private static final String DEFAULT_EVENT_STORE_NAME = "EVENT_STORE";
     private static final String DEFAULT_WEBSOCKET_PUBLISHER_ADAPTER_TYPE = "secured-websocket";
+    private static final String OAUTH_MQTT_ADAPTER_TYPE = "oauth-mqtt";
+    private static final String OAUTH_HTTP_ADAPTER_TYPE = "oauth-http";
 
     private static KeyStore keyStore;
     private static KeyStore trustStore;
@@ -140,6 +143,7 @@ public class DeviceEventManagementServiceImpl implements DeviceEventManagementSe
     public Response getDeviceTypeEventDefinition(@PathParam("type") String deviceType) {
         String tenantDomain = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantDomain();
         EventStreamAdminServiceStub eventStreamAdminServiceStub = null;
+        EventReceiverAdminServiceStub eventReceiverAdminServiceStub = null;
         try {
             if (deviceType == null ||
                     !DeviceMgtAPIUtils.getDeviceManagementService().getAvailableDeviceTypes().contains(deviceType)) {
@@ -162,7 +166,18 @@ public class DeviceEventManagementServiceImpl implements DeviceEventManagementSe
                         , AttributeType.valueOf(eventStreamAttributeDto.getAttributeType().toUpperCase())));
             }
             eventAttributeList.setList(attributes);
-            return Response.ok().entity(eventAttributeList).build();
+            DeviceTypeEvent deviceTypeEvent = new DeviceTypeEvent();
+            deviceTypeEvent.setEventAttributeList(eventAttributeList);
+            deviceTypeEvent.setTransportType(TransportType.HTTP);
+            eventReceiverAdminServiceStub = getEventReceiverAdminServiceStub();
+            EventReceiverConfigurationDto eventReceiverConfigurationDto = eventReceiverAdminServiceStub
+                    .getActiveEventReceiverConfiguration(getReceiverName(deviceType, tenantDomain));
+            String eventAdapterType = eventReceiverConfigurationDto.getFromAdapterConfigurationDto()
+                    .getEventAdapterType();
+            if (OAUTH_MQTT_ADAPTER_TYPE.equals(eventAdapterType)) {
+                deviceTypeEvent.setTransportType(TransportType.MQTT);
+            }
+            return Response.ok().entity(deviceTypeEvent).build();
         } catch (AxisFault e) {
             log.error("failed to retrieve event definitions for tenantDomain:" + tenantDomain, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
@@ -180,6 +195,7 @@ public class DeviceEventManagementServiceImpl implements DeviceEventManagementSe
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         } finally {
             cleanup(eventStreamAdminServiceStub);
+            cleanup(eventReceiverAdminServiceStub);
         }
     }
 
@@ -293,8 +309,8 @@ public class DeviceEventManagementServiceImpl implements DeviceEventManagementSe
             if (!MultitenantConstants.SUPER_TENANT_DOMAIN_NAME.equals(tenantDomain)) {
                 tenantBasedEventReceiverAdminServiceStub = getEventReceiverAdminServiceStub();
                 tenantBasedEventStreamAdminServiceStub = getEventStreamAdminServiceStub();
-                eventStreamAdminServiceStub.removeEventStreamDefinition(streamName, DEFAULT_STREAM_VERSION);
-                eventReceiverAdminServiceStub.startundeployInactiveEventReceiverConfiguration(eventReceiverName
+                tenantBasedEventStreamAdminServiceStub.removeEventStreamDefinition(streamName, DEFAULT_STREAM_VERSION);
+                tenantBasedEventReceiverAdminServiceStub.startundeployInactiveEventReceiverConfiguration(eventReceiverName
                         , eventReceiverAdminServiceCallbackHandler);
 
             }
@@ -323,6 +339,8 @@ public class DeviceEventManagementServiceImpl implements DeviceEventManagementSe
             cleanup(eventReceiverAdminServiceStub);
             cleanup(eventReceiverAdminServiceStub);
             cleanup(eventStreamAdminServiceStub);
+            cleanup(tenantBasedEventReceiverAdminServiceStub);
+            cleanup(tenantBasedEventStreamAdminServiceStub);
         }
     }
 
@@ -373,7 +391,7 @@ public class DeviceEventManagementServiceImpl implements DeviceEventManagementSe
             throws RemoteException, UserStoreException, JWTClientException {
         EventReceiverAdminServiceStub receiverAdminServiceStub = getEventReceiverAdminServiceStub();
         try {
-            String adapterType = "oauth-mqtt";
+            String adapterType = OAUTH_MQTT_ADAPTER_TYPE;
             BasicInputAdapterPropertyDto basicInputAdapterPropertyDtos[];
             if (transportType == TransportType.MQTT) {
                 basicInputAdapterPropertyDtos = new BasicInputAdapterPropertyDto[4];
@@ -383,7 +401,7 @@ public class DeviceEventManagementServiceImpl implements DeviceEventManagementSe
                 basicInputAdapterPropertyDtos[2] = getBasicInputAdapterPropertyDto("cleanSession", "true");
                 basicInputAdapterPropertyDtos[3] = getBasicInputAdapterPropertyDto("clientId", generateUUID());
             } else {
-                adapterType = "oauth-http";
+                adapterType = OAUTH_HTTP_ADAPTER_TYPE;
                 basicInputAdapterPropertyDtos = new BasicInputAdapterPropertyDto[1];
                 basicInputAdapterPropertyDtos[0] = getBasicInputAdapterPropertyDto("contentValidator", "iot-mqtt");
             }

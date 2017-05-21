@@ -28,7 +28,7 @@ import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.DeviceManager;
 import org.wso2.carbon.device.mgt.common.DeviceNotFoundException;
-import org.wso2.carbon.device.mgt.common.DeviceTypeServiceIdentifier;
+import org.wso2.carbon.device.mgt.core.dto.DeviceTypeServiceIdentifier;
 import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
 import org.wso2.carbon.device.mgt.common.FeatureManager;
 import org.wso2.carbon.device.mgt.common.InitialOperationConfig;
@@ -2174,13 +2174,28 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
     @Override
     public DeviceType getDeviceType(String deviceType) throws DeviceManagementException {
-        HashMap<Integer, Device> deviceHashMap;
         try {
             DeviceManagementDAOFactory.openConnection();
             int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
             return deviceTypeDAO.getDeviceType(deviceType, tenantId);
         } catch (DeviceManagementDAOException e) {
             throw new DeviceManagementException("Error occurred while obtaining the device type " + deviceType, e);
+        } catch (SQLException e) {
+            throw new DeviceManagementException("Error occurred while opening a connection to the data source", e);
+        } finally {
+            DeviceManagementDAOFactory.closeConnection();
+        }
+    }
+
+    @Override
+    public List<DeviceType> getDeviceTypes() throws DeviceManagementException {
+        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
+        try {
+            DeviceManagementDAOFactory.openConnection();
+            return deviceTypeDAO.getDeviceTypes(tenantId);
+        } catch (DeviceManagementDAOException e) {
+            throw new DeviceManagementException("Error occurred while obtaining the device types for tenant "
+                                                        + tenantId, e);
         } catch (SQLException e) {
             throw new DeviceManagementException("Error occurred while opening a connection to the data source", e);
         } finally {

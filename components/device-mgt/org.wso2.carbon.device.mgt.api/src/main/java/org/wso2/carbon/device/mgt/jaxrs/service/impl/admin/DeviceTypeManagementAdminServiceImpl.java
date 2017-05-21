@@ -23,16 +23,21 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 import org.wso2.carbon.device.mgt.extensions.device.type.template.HTTPDeviceTypeManagerService;
+import org.wso2.carbon.device.mgt.jaxrs.beans.DeviceTypeList;
+import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
 import org.wso2.carbon.device.mgt.jaxrs.service.api.admin.DeviceTypeManagementAdminService;
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.List;
 
 @Path("/admin/device-types")
 @Produces(MediaType.APPLICATION_JSON)
@@ -41,10 +46,24 @@ public class DeviceTypeManagementAdminServiceImpl implements DeviceTypeManagemen
 
     private static final Log log = LogFactory.getLog(DeviceTypeManagementAdminServiceImpl.class);
 
+    @GET
+    @Override
+    public Response getDeviceTypes() {
+        try {
+            List<DeviceType> deviceTypes = DeviceMgtAPIUtils.getDeviceManagementService().getDeviceTypes();
+            return Response.status(Response.Status.OK).entity(deviceTypes).build();
+        } catch (DeviceManagementException e) {
+            String msg = "Error occurred while fetching the list of device types.";
+            log.error(msg, e);
+            return Response.serverError().entity(
+                    new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
+        }
+    }
+
     @Override
     @POST
     public Response addDeviceType(DeviceType deviceType) {
-        if (deviceType != null) {
+        if (deviceType != null && deviceType.getDeviceTypeMetaDefinition() != null) {
             try {
                 if (DeviceMgtAPIUtils.getDeviceManagementService().getDeviceType(deviceType.getName()) != null) {
                     String msg = "Device type already available, " + deviceType.getName();
@@ -67,7 +86,7 @@ public class DeviceTypeManagementAdminServiceImpl implements DeviceTypeManagemen
     @Override
     @PUT
     public Response updateDeviceType(DeviceType deviceType) {
-        if (deviceType != null) {
+        if (deviceType != null && deviceType.getDeviceTypeMetaDefinition() != null) {
             try {
                 if (DeviceMgtAPIUtils.getDeviceManagementService().getDeviceType(deviceType.getName()) == null) {
                     String msg = "Device type does not exist, " + deviceType.getName();

@@ -33,4 +33,6 @@ public interface ApplicationDAO {
 
      void deleteApplication (Application application)throws ApplicationManagementDAOException;
 
+     int getApplicationCount(Filter filter) throws ApplicationManagementDAOException;
+
 }

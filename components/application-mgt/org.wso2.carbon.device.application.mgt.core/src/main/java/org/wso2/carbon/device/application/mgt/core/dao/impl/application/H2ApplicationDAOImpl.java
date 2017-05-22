@@ -41,9 +41,9 @@ import java.util.List;
 /**
  * This class holds the generic implementation of ApplicationDAO which can be used to support ANSI db syntax.
  */
-public class GenericApplicationDAOImpl extends AbstractApplicationDAOImpl {
+public class H2ApplicationDAOImpl extends AbstractApplicationDAOImpl {
 
-    private static final Log log = LogFactory.getLog(GenericApplicationDAOImpl.class);
+    private static final Log log = LogFactory.getLog(H2ApplicationDAOImpl.class);
 
     @Override
     public ApplicationList getApplications(Filter filter) throws ApplicationManagementDAOException {
@@ -72,35 +72,29 @@ public class GenericApplicationDAOImpl extends AbstractApplicationDAOImpl {
 
             conn = this.getConnection();
 
-            sql += "SELECT SQL_CALC_FOUND_ROWS APP.*  , APL.NAME AS APL_NAME, APL.IDENTIFIER AS APL_IDENTIFIER," +
+            sql += "SELECT APP.*, APL.NAME AS APL_NAME, APL.IDENTIFIER AS APL_IDENTIFIER," +
                     " CAT.NAME AS CAT_NAME ";
             sql += "FROM APPM_APPLICATION AS APP ";
             sql += "INNER JOIN APPM_PLATFORM_APPLICATION_MAPPING AS APM ON APP.PLATFORM_APPLICATION_MAPPING_ID = APM.ID ";
             sql += "INNER JOIN APPM_PLATFORM AS APL ON APM.PLATFORM_ID = APL.ID ";
             sql += "INNER JOIN APPM_APPLICATION_CATEGORY AS CAT ON APP.APPLICATION_CATEGORY_ID = CAT.ID ";
-            if (filter.getSearchQuery() != null || "".equals(filter.getSearchQuery())) {
+
+            if (filter.getSearchQuery() != null && !filter.getSearchQuery().isEmpty()) {
                 sql += "WHERE APP.NAME LIKE ? ";
             }
-            sql += "LIMIT ? ";
-            sql += "OFFSET ?;";
+            sql += "LIMIT ?,?;";
 
             stmt = conn.prepareStatement(sql);
             int index = 0;
-            if (filter.getSearchQuery() != null || "".equals(filter.getSearchQuery())) {
+            if (filter.getSearchQuery() != null && !filter.getSearchQuery().isEmpty()) {
                 stmt.setString(++index, "%" + filter.getSearchQuery() + "%");
             }
-            stmt.setInt(++index, filter.getLimit());
             stmt.setInt(++index, filter.getOffset());
+            stmt.setInt(++index, filter.getLimit());
 
             rs = stmt.executeQuery();
 
             int length = 0;
-            sql = "SELECT FOUND_ROWS() AS COUNT;";
-            stmt = conn.prepareStatement(sql);
-            ResultSet rsCount = stmt.executeQuery();
-            if (rsCount.next()) {
-                pagination.setCount(rsCount.getInt("COUNT"));
-            }
 
             while (rs.next()) {
 
@@ -123,7 +117,7 @@ public class GenericApplicationDAOImpl extends AbstractApplicationDAOImpl {
             }
 
             pagination.setSize(length);
-
+            pagination.setCount(this.getApplicationCount(filter));
             applicationList.setApplications(applications);
             applicationList.setPagination(pagination);
 

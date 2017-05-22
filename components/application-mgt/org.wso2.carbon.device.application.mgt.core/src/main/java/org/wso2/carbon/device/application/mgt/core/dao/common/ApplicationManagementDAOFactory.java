@@ -23,7 +23,8 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.application.mgt.common.exception.UnsupportedDatabaseEngineException;
 import org.wso2.carbon.device.application.mgt.core.config.datasource.DataSourceConfig;
 import org.wso2.carbon.device.application.mgt.core.dao.ApplicationDAO;
-import org.wso2.carbon.device.application.mgt.core.dao.impl.application.GenericApplicationDAOImpl;
+import org.wso2.carbon.device.application.mgt.core.dao.impl.application.H2ApplicationDAOImpl;
+import org.wso2.carbon.device.application.mgt.core.dao.impl.application.MySQLApplicationDAOImpl;
 import org.wso2.carbon.device.application.mgt.core.util.ApplicationManagerConstants;
 import org.wso2.carbon.device.application.mgt.core.util.ConnectionManagerUtil;
 
@@ -55,8 +56,9 @@ public class ApplicationManagementDAOFactory {
         if (databaseEngine != null) {
             switch (databaseEngine) {
                 case ApplicationManagerConstants.DataBaseTypes.DB_TYPE_H2:
+                    return new H2ApplicationDAOImpl();
                 case ApplicationManagerConstants.DataBaseTypes.DB_TYPE_MYSQL:
-                    return new GenericApplicationDAOImpl();
+                    return new MySQLApplicationDAOImpl();
                 default:
                     throw new UnsupportedDatabaseEngineException("Unsupported database engine : " + databaseEngine);
             }

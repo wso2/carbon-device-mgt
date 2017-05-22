@@ -21,12 +21,17 @@ package org.wso2.carbon.device.application.mgt.core.dao.impl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.application.mgt.common.Application;
+import org.wso2.carbon.device.application.mgt.common.Filter;
 import org.wso2.carbon.device.application.mgt.common.exception.DBConnectionException;
 import org.wso2.carbon.device.application.mgt.core.dao.ApplicationDAO;
 import org.wso2.carbon.device.application.mgt.core.dao.common.ApplicationManagementDAOException;
+import org.wso2.carbon.device.application.mgt.core.dao.common.ApplicationManagementDAOUtil;
 import org.wso2.carbon.device.application.mgt.core.util.ConnectionManagerUtil;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public abstract class AbstractApplicationDAOImpl implements ApplicationDAO {
 
@@ -49,5 +54,54 @@ public abstract class AbstractApplicationDAOImpl implements ApplicationDAO {
 
     private Connection getConnection() throws DBConnectionException {
         return ConnectionManagerUtil.getConnection();
+    }
+
+    @Override
+    public int getApplicationCount(Filter filter) throws ApplicationManagementDAOException {
+        if(log.isDebugEnabled()){
+            log.debug("Getting application count from the database");
+            log.debug(String.format("Filter: limit=%s, offset=%", filter.getLimit(), filter.getOffset()));
+        }
+
+        Connection conn;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        String sql = "";
+        int count = 0;
+
+        if (filter == null) {
+            throw new ApplicationManagementDAOException("Filter need to be instantiated");
+        }
+
+        try {
+            conn = this.getConnection();
+            sql += "SELECT COUNT(APP.ID) AS APP_COUNT ";
+            sql += "FROM APPM_APPLICATION AS APP ";
+            sql += "INNER JOIN APPM_PLATFORM_APPLICATION_MAPPING AS APM ON APP.PLATFORM_APPLICATION_MAPPING_ID = APM.ID ";
+            sql += "INNER JOIN APPM_PLATFORM AS APL ON APM.PLATFORM_ID = APL.ID ";
+            sql += "INNER JOIN APPM_APPLICATION_CATEGORY AS CAT ON APP.APPLICATION_CATEGORY_ID = CAT.ID ";
+
+            if (filter.getSearchQuery() != null && !filter.getSearchQuery().isEmpty()) {
+                sql += "WHERE APP.NAME LIKE ? ";
+            }
+            sql += ";";
+
+            stmt = conn.prepareStatement(sql);
+            int index = 0;
+            if (filter.getSearchQuery() != null && !filter.getSearchQuery().isEmpty()) {
+                stmt.setString(++index, "%" + filter.getSearchQuery() + "%");
+            }
+            rs = stmt.executeQuery();
+            if (rs.next()) {
+                count = rs.getInt("APP_COUNT");
+            }
+        } catch (SQLException e) {
+            throw new ApplicationManagementDAOException("Error occurred while getting application List", e);
+        } catch (DBConnectionException e) {
+            throw new ApplicationManagementDAOException("Error occurred while obtaining the DB connection.", e);
+        } finally {
+            ApplicationManagementDAOUtil.cleanupResources(stmt, rs);
+        }
+        return count;
     }
 }

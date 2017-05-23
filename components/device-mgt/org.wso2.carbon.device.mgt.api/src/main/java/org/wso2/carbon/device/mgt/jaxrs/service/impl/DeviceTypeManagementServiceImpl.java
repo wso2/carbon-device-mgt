@@ -138,7 +138,6 @@ public class DeviceTypeManagementServiceImpl implements DeviceTypeManagementServ
             metaDefinition.setPushNotificationConfig(new PushNotificationConfig(metaDefinition.
                     getPushNotificationConfig().getType(), false, null));
         }
-        metaDefinition.setTaskConfig(null);
         deviceType.setDeviceTypeMetaDefinition(metaDefinition);
         return deviceType;
     }

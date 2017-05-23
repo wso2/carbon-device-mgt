@@ -131,6 +131,11 @@ public class DeviceTypeManagementServiceImpl implements DeviceTypeManagementServ
         }
     }
 
+    /**
+     * This cleans up the configs that should not be exposed to iot users.
+     * @param deviceType
+     * @return
+     */
     private DeviceType clearMetaEntryInfo(DeviceType deviceType) {
         DeviceTypeMetaDefinition metaDefinition = deviceType.getDeviceTypeMetaDefinition();
         metaDefinition.setInitialOperationConfig(null);

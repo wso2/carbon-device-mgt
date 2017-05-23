@@ -93,8 +93,6 @@ function formatRepoSelection(user) {
     return user.username || user.text;
 }
 
-
-
 $(document).ready(function () {
 
 	var appContext = $("#app-context").data("app-context");
@@ -222,8 +220,7 @@ $(document).ready(function () {
 			    deviceType,
 		        function (data, textStatus, jqXHR) {
 		            if (jqXHR.status == 200) {
-						$(successMsg).text("Device type updated.");
-						$(successMsgWrapper).removeClass("hidden");
+						$("#modalDevice").modal('show');
 		            }
 		        },
 		        function (jqXHR) {

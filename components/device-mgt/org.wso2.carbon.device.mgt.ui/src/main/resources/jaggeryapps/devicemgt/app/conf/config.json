@@ -179,7 +179,8 @@
     "perm:devicetype:deployment",
     "perm:device-types:events",
     "perm:device-types:events:view",
-    "perm:admin:device-type"
+    "perm:admin:device-type",
+    "perm:devices:add"
   ],
   "isOAuthEnabled": true,
   "backendRestEndpoints": {

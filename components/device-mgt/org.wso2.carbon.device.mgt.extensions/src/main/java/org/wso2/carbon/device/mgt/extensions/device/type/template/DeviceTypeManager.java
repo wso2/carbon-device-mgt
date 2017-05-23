@@ -175,6 +175,7 @@ public class DeviceTypeManager implements DeviceManager {
                 if (deviceDetails.getProperties() != null && deviceDetails.getProperties().getProperty() != null
                         && deviceDetails.getProperties().getProperty().size() > 0 ) {
                     deviceTypePluginDAOManager = new DeviceTypePluginDAOManager(deviceType, deviceDetails);
+                    propertiesExist = true;
                 }
             }
         }

@@ -91,7 +91,7 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
 
     @POST
     @Override
-    public Response addDevice(@Valid Device device) {
+    public Response enrollDevice(@Valid Device device) {
         if (device == null) {
             String errorMessage = "The payload of the device enrollment is incorrect.";
             return Response.status(Response.Status.BAD_REQUEST).entity(errorMessage).build();
@@ -99,6 +99,8 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
         try {
             DeviceManagementProviderService dms = DeviceMgtAPIUtils.getDeviceManagementService();
             device.getEnrolmentInfo().setOwner(DeviceMgtAPIUtils.getAuthenticatedUser());
+            device.getEnrolmentInfo().setDateOfEnrolment(System.currentTimeMillis());
+            device.getEnrolmentInfo().setDateOfLastUpdate(System.currentTimeMillis());
             boolean status = dms.enrollDevice(device);
             return Response.status(Response.Status.OK).entity(status).build();
         } catch (DeviceManagementException e) {
@@ -173,6 +175,7 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
             }
         }
         if(updateDevice.getEnrolmentInfo() != null) {
+            device.getEnrolmentInfo().setDateOfLastUpdate(System.currentTimeMillis());
             device.setEnrolmentInfo(device.getEnrolmentInfo());
         }
         device.getEnrolmentInfo().setOwner(DeviceMgtAPIUtils.getAuthenticatedUser());

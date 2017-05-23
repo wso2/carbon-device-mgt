@@ -58,8 +58,8 @@ import javax.ws.rs.core.Response;
                         permissions = {"/device-mgt/device-type/add"}
                 ),
                 @Scope(
-                        name = "Get Feature Details of a Device Type",
-                        description = "Get Feature Details of a Device Type",
+                        name = "Get Events Details of a Device Type",
+                        description = "Get Events Details of a Device Type",
                         key = "perm:device-types:events:view",
                         permissions = {"/device-mgt/devices/owning-device/view"}
                 )
@@ -237,6 +237,60 @@ public interface DeviceEventManagementService {
                      @QueryParam("offset") int offset,
                      @ApiParam(name = "limit", value = "limit of the records that needs to be picked up", required = false)
                      @QueryParam("limit") int limit);
+
+    @GET
+    @Path("last-known/{type}/{deviceId}")
+    @ApiOperation(
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "GET",
+            value = "Getting Last Known Device Events",
+            notes = "Get the Last Known events for the device.",
+            tags = "Device Event Management",
+            extensions = {
+                    @Extension(properties = {
+                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:device-types:events:view")
+                    })
+            }
+    )
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            code = 200,
+                            message = "OK. \n Successfully fetched the event.",
+                            response = EventRecords.class,
+                            responseHeaders = {
+                                    @ResponseHeader(
+                                            name = "Content-Type",
+                                            description = "The content type of the body"),
+                                    @ResponseHeader(
+                                            name = "ETag",
+                                            description = "Entity Tag of the response resource.\n" +
+                                                    "Used by caches, or in conditional requests."),
+                                    @ResponseHeader(
+                                            name = "Last-Modified",
+                                            description =
+                                                    "Date and time the resource was last modified.\n" +
+                                                            "Used by caches, or in conditional requests."),
+                            }
+                    ),
+                    @ApiResponse(
+                            code = 400,
+                            message =
+                                    "Bad Request. \n"),
+                    @ApiResponse(
+                            code = 406,
+                            message = "Not Acceptable.\n The requested media type is not supported"),
+                    @ApiResponse(
+                            code = 500,
+                            message = "Internal Server Error. \n Server error occurred while fetching the " +
+                                    "list of supported device types.",
+                            response = ErrorResponse.class)
+            }
+    )
+    Response getLastKnownData(@ApiParam(name = "deviceId", value = "id of the device ", required = false)
+                     @PathParam("deviceId") String deviceId,
+                     @ApiParam(name = "type", value = "name of the device type", required = false)
+                     @PathParam("type")  String deviceType);
 
     @GET
     @Path("/{type}")

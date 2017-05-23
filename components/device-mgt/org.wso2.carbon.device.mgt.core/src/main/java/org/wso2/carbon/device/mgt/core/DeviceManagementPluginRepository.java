@@ -199,6 +199,8 @@ public class DeviceManagementPluginRepository implements DeviceManagerStartupLis
                                 addDeviceManagementProvider(deviceTypeManagerService);
                                 deviceTypeIdentifier = new DeviceTypeServiceIdentifier(type, tenantId);
                                 provider = providers.get(deviceTypeIdentifier);
+                            } else {
+                                provider.setTimestamp(System.currentTimeMillis());
                             }
                         }
                     } catch (DeviceManagementException e) {

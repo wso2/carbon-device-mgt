@@ -484,7 +484,7 @@ public interface DeviceManagementService {
                                     "Server error occurred while retrieving the device details.",
                             response = ErrorResponse.class)
             })
-    Response addDevice(@ApiParam(name = "device", value = "Device object with data.", required = true)
+    Response enrollDevice(@ApiParam(name = "device", value = "Device object with data.", required = true)
                        @Valid Device device);
 
     @GET

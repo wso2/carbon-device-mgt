@@ -1,5 +1,6 @@
+
 <div class="col-lg-12  margin-top-double">
-    <h1 class="grey "></h1>
+    <h1 class="grey ">{{deviceType}}</h1>
     <hr>
 </div>
 
@@ -8,13 +9,12 @@
 </div>
 
 <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8 padding-top">
-
 </div>
 
 <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8 padding-top">
     <h3 class="uppercase">Description</h3>
     <hr>
-    <p class="grey margin-top">Need to get the description from the device</p>
+    <p class="grey margin-top">{{type.deviceTypeMetaDefinition.description}}</p>
     <br>
     <hr>
     <br>
@@ -108,54 +108,146 @@
     <br/><br/>
 </div>
 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 padding-double grey-bg">
-    <h3 class="uppercase">How To Enroll a Device</h3>
+    <h2 class="uppercase">How To Enroll a Device</h2>
     <hr>
     <ul class="list-unstyled">
-        <li class="padding-top-double"><span class="circle">01</span>
-            &nbsp;&nbsp;&nbsp;curl -k -X POST https://localhost:8243/api-application-registration/register -H
+        <li class="padding-top-double"><span><h3 class="uppercase">Generate Application</h3></span>
+           <code>curl -k -X POST https://localhost:8243/api-application-registration/register -H
             'authorization: Basic Base64(username:password)' -H 'content-type: application/json'
-            -d '{  "applicationName":"testme", "isAllowedToAllDomains":false, "tags":["device_management"]}'
+            -d '{  "applicationName":"testme", "isAllowedToAllDomains":false, "tags":["device_management"]}'</code>
         </li>
-        <li class="padding-top-double"><span class="circle">02</span>
-            &nbsp;&nbsp;&nbsp;curl -k -d "grant_type=password&username=%username%&password=%password%&scope=perm:devices:add"
+        <li class="padding-top-double"><span><h3 class="uppercase">Generate Token</h3></span>
+            <code>curl -k -d "grant_type=password&username=%username%&password=%password%&scope=perm:devices:add"
             -H "Authorization: Basic Base64(client_id:client_secret)"
-            -H "Content-Type: application/x-www-form-urlencoded" https://localhost:8243/token
+            -H "Content-Type: application/x-www-form-urlencoded" https://localhost:8243/token</code>
         </li>
-        <li class="padding-top-double"><span class="circle">03</span>
-            &nbsp;&nbsp;&nbsp;curl -X POST http://localhost:8280/api/device-mgt/v1.0/devices -H 'accept: application/json'
+        <li class="padding-top-double"><span><h3 class="uppercase">Create Device</h3></span>
+            <code>curl -X POST http://localhost:8280/api/device-mgt/v1.0/devices -H 'accept: application/json'
             -H 'authorization: Bearer %accessToken%'
             -H 'content-type: application/json' -d '{ "name": "devicename", "type": "{{deviceType}}",
             "description": "descritption", "deviceIdentifier": "1234", "enrolmentInfo":
-            {"dateOfEnrolment": 0, "dateOfLastUpdate": 0, "ownership": "BYOD", "status": "ACTIVE", "owner": "username"}
-            ,"properties": [{"name": "propertyName","value": "propertyValue"}]}'
+            {"ownership": "BYOD", "status": "ACTIVE"}
+            ,"properties": [{"name": "propertyName","value": "propertyValue"}]}'</code>
         </li>
     </ul>
     <br>
     <br>
 </div>
+<hr/>
 
 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 padding-double grey-bg">
-    <h3 class="uppercase">Topic to publish data for analytics : {{tenantDomain}}/{{deviceType}}/&lt;device_id&gt;/events</h3>
-    <h3 class="uppercase">Topic to publish data to an external system : {{tenantDomain}}/{{deviceType}}/&lt;device_id&gt;/proxy</h3>
-    <h3 class="uppercase">Topic to listen for operation: {{tenantDomain}}/{{deviceType}}/&lt;device_id&gt;/operation/#</h3>
+    <h2 class="uppercase">Create A Device</h2>
     <hr>
-    <ul class="list-unstyled">
-        <li class="padding-top-double">
-            {{tenantDomain}}/{{deviceType}}/&lt;device_id&gt;/operation/command/&lt;feature_code&gt;
-        </li>
-        <li class="padding-top-double">
-            {{tenantDomain}}/{{deviceType}}/&lt;device_id&gt;/operation/config/&lt;feature_code&gt;
-        </li>
-        <li class="padding-top-double">
-            {{tenantDomain}}/{{deviceType}}/&lt;device_id&gt;/operation/profile/&lt;feature_code&gt;
-        </li>
-        <li class="padding-top-double">
-            {{tenantDomain}}/{{deviceType}}/&lt;device_id&gt;/operation/policy/policy_bundle
-        </li>
-        <li class="padding-top-double">
-            {{tenantDomain}}/{{deviceType}}/&lt;device_id&gt;/operation/policy/policy_revoke
-        </li>
-    </ul>
+    <div id="device-create-form" class="container col-centered wr-content">
+        <div class="wr-form">
+            <div class="row">
+                <div class="col-lg-8">
+                    <div id="device-create-error-msg" class="alert alert-danger hidden" role="alert">
+                        <i class="icon fw fw-error"></i><span></span>
+                    </div>
+                    <input aria-describedby="basic-addon1" type="text" id="deviceTypeName" style="display: none;"
+                           data-error-msg="invalid device type name" class="form-control" value="{{deviceType}}"/>
+                    <br>
+                    <label class="wr-input-label">Name</label>
+                    <input aria-describedby="basic-addon1" type="text" id="deviceName"
+                           data-error-msg="invalid device name" class="form-control hidden-input"/>
+                    <br/>
+                    <label class="wr-input-label">Device Identifier</label>
+                    <input aria-describedby="basic-addon1" type="text" id="deviceId"
+                           data-error-msg="invalid device id" class="form-control hidden-input"/>
+                    <br/>
+
+                    <label class="wr-input-label">Description</label>
+                    <input aria-describedby="basic-addon1" type="text" id="deviceDescription"
+                           data-error-msg="invalid device description" class="form-control hidden-input"/>
+                    <br/>
+                    {{#if type.deviceTypeMetaDefinition}}
+                        {{#each type.deviceTypeMetaDefinition.properties}}
+                            <label class="wr-input-label">{{this}}</label>
+                            <input aria-describedby="basic-addon1" type="text" id="{{this}}" name="properties"
+                                   data-error-msg="invalid device description" class="form-control hidden-input"/>
+                            <br/>
+                        {{/each}}
+                    {{/if}}
+
+                    <br>
+                    <button id="add-device-btn" class="wr-btn">Create Device</button>
+
+                    <div id="device-create-success-msg" class="alert hidden" role="alert">
+                        <i class="icon fw fw-success"></i><span></span>
+                    </div>
+                </div>
+            </div>
+            <div id="devicetype-created-msg" class="container col-centered wr-content hidden">
+                <div class="wr-form">
+                    <p class="page-sub-title">Device Type Event was added successfully.</p>
+                    <b>"View Device Type List"</b> to complete the process and go back to the devie type list.
+                    <hr/>
+                    <button class="wr-btn" onclick="window.location.href='{{@app.context}}/device-types'">
+                        View Device Type List
+                    </button>
+                </div>
+            </div>
+            <!-- /content -->
+            <div id="app-context" data-app-context="{{@app.context}}" class="hidden"></div>
+        </div>
+    </div>
+    <br>
+    <br>
+</div>
+
+<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 padding-double grey-bg">
+    <h2 class="uppercase">Device Communication</h2>
+    <hr>
+    {{#if event}}
+        <h3 class="uppercase">publish data for analytics :</h3>
+        {{#if_eq event.transport "MQTT"}}
+            MQTT Topic : <code>{{tenantDomain}}/{{deviceType}}/&lt;device_id&gt;/events</code>
+        {{/if_eq}}
+        {{#if_eq event.transport "HTTP"}}
+            HTTP API : <code>POST: </code>
+        {{/if_eq}}
+        {{#if eventSample}}
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 padding-double grey-bg">
+                Device Event Payload
+                <code>{{eventSample}}</code>
+                <br>
+                <br>
+            </div>
+        {{/if}}
+    {{/if}}
+    </br>
+    <h3 class="uppercase">Retrieve operations</h3>
+    {{#if type.deviceTypeMetaDefinition.pushNotificationConfig}}
+        {{#if_eq type.deviceTypeMetaDefinition.pushNotificationConfig.type "MQTT"}}
+            MQTT Topic : <code>{{tenantDomain}}/{{deviceType}}/&lt;device_id&gt;/operation/#</code>
+            <br/>
+            Topic Structure:
+            <ul class="list-unstyled">
+                <li class="padding-top-double">
+                    <code>{{tenantDomain}}/{{deviceType}}/&lt;device_id&gt;/operation/command/&lt;feature_code&gt;</code>
+                </li>
+                <li class="padding-top-double">
+                    <code>{{tenantDomain}}/{{deviceType}}/&lt;device_id&gt;/operation/config/&lt;feature_code&gt;</code>
+                </li>
+                <li class="padding-top-double">
+                    <code>{{tenantDomain}}/{{deviceType}}/&lt;device_id&gt;/operation/profile/&lt;feature_code&gt;</code>
+                </li>
+                <li class="padding-top-double">
+                    <code>{{tenantDomain}}/{{deviceType}}/&lt;device_id&gt;/operation/policy/policy_bundle</code>
+                </li>
+                <li class="padding-top-double">
+                    <code>{{tenantDomain}}/{{deviceType}}/&lt;device_id&gt;/operation/policy/policy_revoke</code>
+                </li>
+            </ul>
+        {{/if_eq}}
+    {{else}}
+        <a href="/api-store/apis/info?name=DeviceManagement&version=1.0.0&provider=admin"
+           class="btn-operations"
+           target="_blank"><i class="fw fw-api add-margin-1x"></i> View Operation API</i>
+        </a>
+    {{/if}}
+
     <br>
     <br>
 </div>
@@ -165,4 +257,5 @@
 {{/zone}}
 
 {{#zone "bottomJs"}}
+    {{js "js/type-view.js"}}
 {{/zone}}

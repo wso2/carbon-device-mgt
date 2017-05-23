@@ -18,11 +18,77 @@
 
 function onRequest(context) {
     var deviceType = context.uriParams.deviceType;
+	var displayData = {};
 	var userModule = require("/app/modules/business-controllers/user.js")["userModule"];
 	var user = userModule.getCarbonUser();
 	var tenantDomain = user.domain;
-    return {
-        "deviceType": deviceType,
-		"tenantDomain": tenantDomain
-    };
+	var deviceMgtProps = require("/app/modules/conf-reader/main.js")["conf"];
+	var serviceInvokers = require("/app/modules/oauth/token-protected-service-invokers.js")["invokers"];
+	context.handlebars.registerHelper('if_eq', function(a, b, opts) {
+		if(a == b) // Or === depending on your needs
+			return opts.fn(this);
+		else
+			return opts.inverse(this);
+	});
+	var restAPIEndpoint = deviceMgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"]
+		+ "/device-types/all/" + deviceType;
+	displayData.deviceType = deviceType;
+	displayData.tenantDomain = tenantDomain;
+	serviceInvokers.XMLHttp.get(
+		restAPIEndpoint,
+		function (restAPIResponse) {
+			if (restAPIResponse["status"] == 200 && restAPIResponse["responseText"]) {
+				var typeData = parse(restAPIResponse["responseText"]);
+				displayData.type = typeData;
+
+			}
+		}
+	);
+
+	var eventRestAPIEndpoint = deviceMgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"]
+		+ "/events/" + deviceType;
+	serviceInvokers.XMLHttp.get(
+		eventRestAPIEndpoint,
+		function (restAPIResponse) {
+			if (restAPIResponse["status"] == 200 && restAPIResponse["responseText"]) {
+				var typeData = parse(restAPIResponse["responseText"]);
+				displayData.event = typeData;
+				if (typeData.eventAttributes && typeData.eventAttributes.attributes) {
+					var sample = {};
+					sample.event = {};
+					var eventExample = {};
+					for (var i = 0; i < typeData.eventAttributes.attributes.length; i++) {
+						var attribute = typeData.eventAttributes.attributes[i];
+						new Log().error(attribute.type);
+						switch (attribute.type) {
+							case "STRING":
+								eventExample[attribute.name] = "string";
+								break;
+							case "LONG":
+								eventExample[attribute.name] = 0;
+								break;
+							case "INT":
+								eventExample[attribute.name] = 0;
+								break;
+							case "FLOAT":
+								eventExample[attribute.name] = 0.0;
+								break;
+							case "DOUBLE":
+								eventExample[attribute.name] = 0.0;
+								break;
+							case "BOOL":
+								eventExample[attribute.name] = false;
+								break;
+
+						}
+
+					}
+					sample.event.payloadData = eventExample;
+					displayData.eventSample = JSON.stringify(sample);
+				}
+			}
+		}
+	);
+
+    return displayData;
 }

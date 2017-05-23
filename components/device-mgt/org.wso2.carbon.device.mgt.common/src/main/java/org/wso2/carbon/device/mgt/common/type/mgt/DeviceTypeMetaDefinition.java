@@ -15,7 +15,6 @@ public class DeviceTypeMetaDefinition {
     private boolean claimable;
     private PushNotificationConfig pushNotificationConfig;
     private boolean policyMonitoringEnabled;
-    private OperationMonitoringTaskConfig taskConfig;
     private InitialOperationConfig initialOperationConfig;
     private License license;
     private String description;
@@ -67,14 +66,6 @@ public class DeviceTypeMetaDefinition {
 
     public void setPolicyMonitoringEnabled(boolean policyMonitoringEnabled) {
         this.policyMonitoringEnabled = policyMonitoringEnabled;
-    }
-
-    public OperationMonitoringTaskConfig getTaskConfig() {
-        return taskConfig;
-    }
-
-    public void setTaskConfig(OperationMonitoringTaskConfig taskConfig) {
-        this.taskConfig = taskConfig;
     }
 
     public InitialOperationConfig getInitialOperationConfig() {

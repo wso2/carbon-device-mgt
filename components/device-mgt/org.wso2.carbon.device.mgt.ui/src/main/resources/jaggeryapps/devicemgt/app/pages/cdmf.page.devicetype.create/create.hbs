@@ -57,7 +57,7 @@
                                 <div class="col-md-6 col-xs-6">
                                     <div class="itm-wiz itm-wiz-current" data-step="policy-platform">
                                         <div class="wiz-no">1</div>
-                                        <div class="wiz-lbl hidden-xs"><span>Create A Device Type</span></div>
+                                        <div class="wiz-lbl hidden-xs"><span>Create Device Type</span></div>
                                     </div>
                                 </div>
                                 <div class="col-md-6 col-xs-6">
@@ -74,14 +74,14 @@
                                 <i class="icon fw fw-error"></i><span></span>
                             </div>
                             <label class="wr-input-label">
-                                Device Type Name *
+                                Name * (eg: firealarm)
                             </label>
                             <br>
                             <input aria-describedby="basic-addon1" type="text" id="deviceTypeName"
                                    data-error-msg="invalid device type name" class="form-control"/>
 
                             <label class="wr-input-label">
-                                Device Type Description *
+                                Description *
                             </label>
                             <br>
                             <textarea aria-describedby="basic-addon1" type="text" id="deviceTypeDescription"
@@ -94,13 +94,13 @@
                                 <select id="pushNotification" class="form-control select">
                                     <option>NONE</option>
                                     <option>MQTT</option>
-                                    <option>FCM</option>
-                                    <option>APNS</option>
                                 </select>
                             </div>
 
                             <label class="wr-input-label">
-                                Features
+                                Features (Definition of the operation from server to device)
+                                <br/>
+                                (eg: name: fire alarm range control, code: alarm, description: this controls the alarm sound type and range of firealarm)
                             </label>
                             <br>
 
@@ -125,7 +125,7 @@
 
                             <br>
                             <label class="wr-input-label">
-                                Device Attributes
+                                Attributes (eg: vendor, model_number ...)
                             </label>
                             <br>
 
@@ -149,7 +149,7 @@
                             </div>
 
                             <label class="wr-input-label">
-                                Initial Operation(Feature Code, Trigger operation when device enrolls)
+                                Enrolment Operation (Triggers the operation after the enrolment, eg: alarm)
                             </label>
                             <br>
 
@@ -206,6 +206,41 @@
                         </button>
                     </div>
                 </div>
+                <!-- modal -->
+                <div class="modal fade" id="modalDevice" tabindex="-1" role="dialog" aria-labelledby="modalDevice">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content clearfix">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fw fw-cancel"></i></button>
+                                <h3 class="modal-title" id="deviceModalLabel">Device Type Updated</h3>
+                            </div>
+                            <div class="modal-body add-margin-top-2x add-margin-bottom-2x">
+                                <p>One fine body…</p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-primary">Go To Enrolment Page</button>
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal fade" id="modalDeviceFailed" tabindex="-1" role="dialog" aria-labelledby="modalDeviceFailed">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content clearfix">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fw fw-cancel"></i></button>
+                                <h3 class="modal-title" id="deviceModalLabel">Device Type Update Failed</h3>
+                            </div>
+                            <div class="modal-body add-margin-top-2x add-margin-bottom-2x">
+                                <p>One fine body…</p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /modal -->
                 <!-- /content -->
                 <div id="app-context" data-app-context="{{@app.context}}" class="hidden"></div>
             </div>

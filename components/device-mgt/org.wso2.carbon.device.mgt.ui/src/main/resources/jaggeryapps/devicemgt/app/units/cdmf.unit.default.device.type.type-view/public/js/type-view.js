@@ -351,6 +351,8 @@ $(".download-link").click(function(){
     toggleEnrollment();
 });
 
+var apiBasePath = "/api/device-mgt/v1.0";
+
 $(document).ready(function () {
     $.sidebar_toggle();
     if (typeof $.fn.collapse == 'function') {
@@ -385,4 +387,68 @@ $(document).ready(function () {
             }
         );
     });
+
+	/**
+	 * Following click function would execute
+	 * when a user clicks on "Add Device type" button.
+	 */
+	$("button#add-device-btn").click(function () {
+		var errorMsgWrapper = "#device-create-error-msg";
+		var errorMsg = "#device-create-error-msg span";
+		var successMsgWrapper = "#device-create-success-msg";
+		var successMsg = "#device-create-success-msg span";
+
+		var deviceName = $("#deviceName").val();
+		var deviceType = $("#deviceTypeName").val();
+		var deviceId = $("#deviceId").val();
+		var deviceDescription = $("#deviceDescription").val();
+		if (!deviceType || deviceType.trim() == "" || !deviceName || deviceName.trim() == "" || !deviceId || deviceId.trim() == "") {
+			$(errorMsg).text("Device ID/Name Cannot be empty.");
+			$(errorMsgWrapper).removeClass("hidden");
+			return;
+		}
+		var device = {};
+		device.name = deviceName;
+		device.deviceIdentifier = deviceId;
+		device.description = deviceDescription;
+		device.type = deviceType;
+		device.enrolmentInfo = {};
+		device.enrolmentInfo.status = "ACTIVE";
+		device.enrolmentInfo.ownership = "BYOD";
+		device.properties = [];
+
+		$('input[name^="properties"]').each(function() {
+			var propName = $(this).attr('id');
+			var propValue = $(this).val();
+			if (propName && propName.trim() != "" && propValue && propValue.trim() != "") {
+				var property = {};
+				property.name = propName.trim();
+				property.value = propValue.trim();
+				device.properties.push(property);
+			}
+		});
+		var addDeviceAPI = apiBasePath + "/devices";
+
+		invokerUtil.post(
+			addDeviceAPI,
+			device,
+			function (data, textStatus, jqXHR) {
+				if (jqXHR.status == 200) {
+					$(successMsg).text("Device added.");
+					$(successMsgWrapper).removeClass("hidden");
+				}
+			},
+			function (jqXHR) {
+				if (jqXHR.status == 500) {
+					$(errorMsg).text("Unexpected error.");
+					$(errorMsgWrapper).removeClass("hidden");
+				}
+
+				if (jqXHR.status == 409) {
+					$(errorMsg).text("Device already exists");
+					$(errorMsgWrapper).removeClass("hidden");
+				}
+			}
+		);
+	});
 });

@@ -61,7 +61,7 @@
                                    data-error-msg="invalid device type name" class="form-control hidden-input" value="{{name}}"/>
 
                             <label class="wr-input-label">
-                                Device Type Description *
+                                Description *
                             </label>
                             <br>
                             <textarea aria-describedby="basic-addon1" type="text" id="deviceTypeDescription"
@@ -76,24 +76,10 @@
                                         <option>NONE</option>
                                         {{#if_eq type.deviceTypeMetaDefinition.pushNotificationConfig.type "MQTT"}}
                                             <option selected>MQTT</option>
-                                            <option>FCM</option>
-                                            <option>APNS</option>
-                                        {{/if_eq}}
-                                        {{#if_eq type.deviceTypeMetaDefinition.pushNotificationConfig.type "FCM"}}
-                                            <option>MQTT</option>
-                                            <option selected>FCM</option>
-                                            <option>APNS</option>
-                                        {{/if_eq}}
-                                        {{#if_eq type.deviceTypeMetaDefinition.pushNotificationConfig.type "APNS"}}
-                                            <option>MQTT</option>
-                                            <option>FCM</option>
-                                            <option selected>APNS</option>
                                         {{/if_eq}}
                                     {{else}}
                                         <option selected>NONE</option>
                                         <option>MQTT</option>
-                                        <option>FCM</option>
-                                        <option>APNS</option>
                                     {{/if}}
 
 
@@ -144,7 +130,7 @@
 
                             <br>
                             <label class="wr-input-label">
-                                Device Attributes
+                                Attributes
                             </label>
                             <br>
                             <div class="form-group attribute_field_wrapper">
@@ -177,7 +163,7 @@
                             </div>
 
                             <label class="wr-input-label">
-                                Initial Operation(Feature Code, Trigger operation when device enrolls)
+                                Enrolment Operation
                             </label>
                             <br>
 
@@ -251,6 +237,20 @@
                         <button class="wr-btn" onclick="window.location.href='{{@app.context}}/device-types'">
                             View Device Type List
                         </button>
+                    </div>
+                </div>
+                <div class="modal fade" id="modalDevice" tabindex="-1" role="dialog" aria-labelledby="modalDevice">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content clearfix">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fw fw-cancel"></i></button>
+                                <h3 class="modal-title" id="deviceModalLabel">Device Type Definition Updated</h3>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-primary" onclick="location.href='{{@app.context}}/device/enroll'">Go To Enrolment Page</button>
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <!-- /content -->

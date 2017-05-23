@@ -70,9 +70,6 @@ public class PropertyBasedPluginDAOImpl implements PluginDAO {
             stmt.setString(2, deviceId);
             stmt.setInt(3, PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId(true));
             resultSet = stmt.executeQuery();
-            device = new Device();
-            device.setDeviceIdentifier(deviceId);
-            device.setType(deviceType);
             List<Device.Property> properties = new ArrayList<>();
             while (resultSet.next()) {
                 Device.Property property = new Device.Property();
@@ -80,7 +77,12 @@ public class PropertyBasedPluginDAOImpl implements PluginDAO {
                 property.setValue(resultSet.getString(PROPERTY_VALUE_COLUMN_NAME));
                 properties.add(property);
             }
-            device.setProperties(properties);
+            if (properties.size() > 0) {
+                device = new Device();
+                device.setDeviceIdentifier(deviceId);
+                device.setType(deviceType);
+                device.setProperties(properties);
+            }
         } catch (SQLException e) {
             String msg = "Error occurred while fetching device : '" + deviceId + "' type " + deviceType;
             log.error(msg, e);
@@ -133,7 +135,11 @@ public class PropertyBasedPluginDAOImpl implements PluginDAO {
                     "UPDATE DM_DEVICE_PROPERTIES SET PROPERTY_VALUE = ? WHERE  DEVICE_TYPE_NAME = ? AND " +
                             "DEVICE_IDENTIFICATION = ? AND PROPERTY_NAME = ? AND TENANT_ID= ?");
 
+            Device.Property[] properties = new Device.Property[device.getProperties().size()];
+            int i =0;
             for (Device.Property property : device.getProperties()) {
+                properties[i] = property;
+                i++;
                 stmt.setString(1, getPropertyValue(device.getProperties(), property.getValue()));
                 stmt.setString(1, deviceType);
                 stmt.setString(2, device.getDeviceIdentifier());
@@ -141,13 +147,23 @@ public class PropertyBasedPluginDAOImpl implements PluginDAO {
                 stmt.setInt(4, PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId(true));
                 stmt.addBatch();
             }
-            stmt.executeBatch();
-            int rows = stmt.executeUpdate();
-            if (rows > 0) {
-                status = true;
-                if (log.isDebugEnabled()) {
-                    log.debug("device " + device.getDeviceIdentifier() + " data has been modified.");
+            int[] updates = stmt.executeBatch();
+            if (updates.length > 0) {
+                for (int j = 0; j < updates.length; j++) {
+                    if (updates[j] < 0) {
+                        stmt = conn.prepareStatement(
+                                "INSERT INTO DM_DEVICE_PROPERTIES(DEVICE_TYPE_NAME, DEVICE_IDENTIFICATION, PROPERTY_NAME, " +
+                                        "PROPERTY_VALUE, TENANT_ID) VALUES (?, ?, ?, ?, ?)");
+                        stmt.setString(1, deviceType);
+                        stmt.setString(2, device.getDeviceIdentifier());
+                        stmt.setString(3, properties[j].getName());
+                        stmt.setString(4, getPropertyValue(device.getProperties(), properties[j].getValue()));
+                        stmt.setInt(5, PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId(true));
+                        stmt.addBatch();
+                    }
                 }
+                stmt.executeBatch();
+                status = true;
             }
         } catch (SQLException e) {
             String msg = "Error occurred while modifying the device '" +

@@ -138,24 +138,25 @@ public class HTTPDeviceTypeManagerService extends DeviceTypeManagerService imple
                 deviceTypeConfiguration.setPushNotificationProvider(pushNotificationProvider);
             }
 
-            OperationMonitoringTaskConfig operationMonitoringTaskConfig = deviceTypeMetaDefinition.getTaskConfig();
-            if (operationMonitoringTaskConfig != null) {
-                TaskConfiguration taskConfiguration = new TaskConfiguration();
-                taskConfiguration.setEnabled(operationMonitoringTaskConfig.isEnabled());
-                taskConfiguration.setFrequency(operationMonitoringTaskConfig.getFrequency());
-                if (operationMonitoringTaskConfig.getMonitoringOperation() != null) {
-                    List<TaskConfiguration.Operation> operations = new ArrayList<>();
-                    for (MonitoringOperation monitoringOperation : operationMonitoringTaskConfig
-                            .getMonitoringOperation()) {
-                        TaskConfiguration.Operation operation = new TaskConfiguration.Operation();
-                        operation.setOperationName(monitoringOperation.getTaskName());
-                        operation.setRecurrency(monitoringOperation.getRecurrentTimes());
-                        operations.add(operation);
-                    }
-                    taskConfiguration.setOperations(operations);
-                }
-                deviceTypeConfiguration.setTaskConfiguration(taskConfiguration);
-            }
+//            This is commented until the task registration handling issue is solved
+//            OperationMonitoringTaskConfig operationMonitoringTaskConfig = deviceTypeMetaDefinition.getTaskConfig();
+//            if (operationMonitoringTaskConfig != null) {
+//                TaskConfiguration taskConfiguration = new TaskConfiguration();
+//                taskConfiguration.setEnabled(operationMonitoringTaskConfig.isEnabled());
+//                taskConfiguration.setFrequency(operationMonitoringTaskConfig.getFrequency());
+//                if (operationMonitoringTaskConfig.getMonitoringOperation() != null) {
+//                    List<TaskConfiguration.Operation> operations = new ArrayList<>();
+//                    for (MonitoringOperation monitoringOperation : operationMonitoringTaskConfig
+//                            .getMonitoringOperation()) {
+//                        TaskConfiguration.Operation operation = new TaskConfiguration.Operation();
+//                        operation.setOperationName(monitoringOperation.getTaskName());
+//                        operation.setRecurrency(monitoringOperation.getRecurrentTimes());
+//                        operations.add(operation);
+//                    }
+//                    taskConfiguration.setOperations(operations);
+//                }
+//                deviceTypeConfiguration.setTaskConfiguration(taskConfiguration);
+//            }
 
             if (deviceTypeMetaDefinition.getInitialOperationConfig() != null) {
                 InitialOperationConfig initialOperationConfig = deviceTypeMetaDefinition.getInitialOperationConfig();

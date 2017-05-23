@@ -18,6 +18,7 @@
 
 package org.wso2.carbon.device.mgt.core.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -46,6 +47,7 @@ public class DeviceType implements Serializable {
         this.name = name;
     }
 
+    @JsonIgnore
     public int getId() {
         return id;
     }

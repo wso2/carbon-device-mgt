@@ -260,4 +260,50 @@ public interface DeviceTypeManagementService {
             @Size(min = 2, max = 45)
             String type);
 
+    @GET
+    @Path("/all")
+    @ApiOperation(
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "GET",
+            value = "Retrieve device types information",
+            notes = "Retrieve device types information.",
+            response = DeviceType.class,
+            tags = "Device Type Management Administrative Service",
+            extensions = {
+                    @Extension(properties = {
+                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:device-types:types")
+                    })
+            }
+    )
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK. \n Successfully fetched the device type.",
+                         response = DeviceType.class,
+                         responseContainer = "List",
+                         responseHeaders = {
+                                 @ResponseHeader(
+                                         name = "Content-Type",
+                                         description = "The content type of the body")
+                         }),
+            @ApiResponse(
+                    code = 304,
+                    message = "Not Modified. Empty body because the client already has the latest version of the " +
+                            "requested resource.\n"),
+            @ApiResponse(
+                    code = 401,
+                    message = "Unauthorized.\n The unauthorized access to the requested resource.",
+                    response = ErrorResponse.class),
+            @ApiResponse(
+                    code = 404,
+                    message = "Not Found.\n The specified device does not exist",
+                    response = ErrorResponse.class),
+            @ApiResponse(
+                    code = 406,
+                    message = "Not Acceptable.\n The requested media type is not supported"),
+            @ApiResponse(
+                    code = 500,
+                    message = "Internal Server Error. \n Server error occurred while fetching the device list.",
+                    response = ErrorResponse.class)
+    })
+    Response getDeviceTypes();
+
 }

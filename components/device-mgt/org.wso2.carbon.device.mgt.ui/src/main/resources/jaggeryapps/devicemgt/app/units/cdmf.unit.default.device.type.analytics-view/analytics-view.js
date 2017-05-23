@@ -34,10 +34,10 @@ function onRequest(context) {
 			restAPIEndpoint,
 			function (restAPIResponse) {
 				if (restAPIResponse["status"] == 200 && restAPIResponse["responseText"]) {
-					var eventAttributes = parse(restAPIResponse["responseText"]);
-					if (eventAttributes.attributes.length > 0) {
-						for (var i = 0; i < eventAttributes.attributes.length; i++) {
-							var attribute = eventAttributes.attributes[i];
+					var data = parse(restAPIResponse["responseText"]);
+					if (data.eventAttributes.attributes.length > 0) {
+						for (var i = 0; i < data.eventAttributes.attributes.length; i++) {
+							var attribute = data.eventAttributes.attributes[i];
 							if (attribute['name'] == "deviceId") {
 								continue;
 							}

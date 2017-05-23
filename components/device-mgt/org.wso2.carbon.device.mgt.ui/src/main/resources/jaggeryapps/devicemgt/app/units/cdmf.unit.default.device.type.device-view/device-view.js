@@ -31,10 +31,10 @@ function onRequest(context) {
 		restAPIEndpoint,
 		function (restAPIResponse) {
 			if (restAPIResponse["status"] == 200 && restAPIResponse["responseText"]) {
-				var eventAttributes = parse(restAPIResponse["responseText"]);
-				if (eventAttributes.attributes.length > 0) {
-					for (var i = 0; i < eventAttributes.attributes.length; i++) {
-						var attribute = eventAttributes.attributes[i];
+				var data = parse(restAPIResponse["responseText"]);
+				if (data.eventAttributes.attributes.length > 0) {
+					for (var i = 0; i < data.eventAttributes.attributes.length; i++) {
+						var attribute = data.eventAttributes.attributes[i];
 						if (attribute['name'] == "deviceId") {
 							continue;
 						}
@@ -48,16 +48,18 @@ function onRequest(context) {
 
 	var featureEndpoint = devicemgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"]
 		+ "/device-types/" + deviceType + "/features";
-	var featuresList = serviceInvokers.XMLHttp.get(featureEndpoint, function (responsePayload) {
+	serviceInvokers.XMLHttp.get(featureEndpoint, function (responsePayload) {
 			var features = JSON.parse(responsePayload.responseText);
+			new Log().error(responsePayload.responseText);
 			var feature;
 			for (var i = 0; i < features.length; i++) {
 				feature = {};
 				feature["operation"] = features[i].code;
 				feature["name"] = features[i].name;
 				feature["description"] = features[i].description;
+				featureList.push(feature);
 			}
-			featureList.push(feature);
+
 		}, function (responsePayload) {
 			featureList = null;
 		}

@@ -159,18 +159,17 @@ $(document).ready(function () {
 			deviceTypeEvent,
 		        function (data, textStatus, jqXHR) {
 		            if (jqXHR.status == 200) {
-						$(successMsg).text("Device Event Definition added.");
-						$(successMsgWrapper).removeClass("hidden");
+						$("#modalDevice").modal('show');
 		            }
 		        },
 		        function (jqXHR) {
 		            if (jqXHR.status == 500) {
-		                $(errorMsg).text("Unexpected error.");
+		                $(errorMsg).text("Failed to deploy event definition, Please Contact Administrator");
 		                $(errorMsgWrapper).removeClass("hidden");
 		            }
 
 					if (jqXHR.status == 409) {
-						$(errorMsg).text("Device type already exists");
+						$(errorMsg).text("Device type definition cannot be updated");
 						$(errorMsgWrapper).removeClass("hidden");
 					}
 		        }

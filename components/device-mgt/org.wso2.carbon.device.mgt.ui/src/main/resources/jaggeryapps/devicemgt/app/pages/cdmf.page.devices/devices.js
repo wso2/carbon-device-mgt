@@ -62,7 +62,7 @@ function onRequest(context) {
                         var config = utility.getDeviceTypeConfig(data[i]);
 						var category = "iot";
 						var label =  data[i];
-						var analyticsEnabled = "true";
+						var analyticsEnabled = "false";
 						var groupingEnabled = "true";
                         if (config) {
 							var deviceType = config.deviceType;

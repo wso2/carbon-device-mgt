@@ -157,13 +157,4 @@ public interface DeviceManager {
      */
     boolean requireDeviceAuthorization();
 
-    /**
-     * This method returns the default configuration values which is stored in the configuration file
-     * rather than fetching from the registry.
-     *
-     * @return Returns Default PlatformConfiguration
-     * @throws DeviceManagementException
-     */
-    PlatformConfiguration getDefaultConfiguration() throws DeviceManagementException;
-
 }

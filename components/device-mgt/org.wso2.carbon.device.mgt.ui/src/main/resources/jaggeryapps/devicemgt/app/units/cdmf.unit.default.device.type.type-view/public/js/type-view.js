@@ -434,8 +434,22 @@ $(document).ready(function () {
 			device,
 			function (data, textStatus, jqXHR) {
 				if (jqXHR.status == 200) {
-					$(successMsg).text("Device added.");
-					$(successMsgWrapper).removeClass("hidden");
+					$.ajax({
+						type: "GET",
+						url: "/devicemgt/api/devices/agent/" + deviceType + "/" + deviceId + "/config",
+						success: function(data, status, xhr) {
+							var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data));
+							var dlAnchorElem = document.getElementById('downloadAnchorElem');
+							dlAnchorElem.setAttribute("href",     dataStr     );
+							dlAnchorElem.setAttribute("download",  deviceId + ".json");
+							dlAnchorElem.click();
+							$("#modalDevice").modal('show');
+						},
+						error: function(xhr, status, error) {
+							$(errorMsg).text("Device Created, But failed to download the agent configuration.");
+							$(errorMsgWrapper).removeClass("hidden");
+						}
+					});
 				}
 			},
 			function (jqXHR) {
@@ -452,3 +466,9 @@ $(document).ready(function () {
 		);
 	});
 });
+
+function redirectPage(url) {
+	var deviceType = $("#deviceTypeName").val();
+	var deviceId = $("#deviceId").val();
+	location.href= url + '/' + deviceType + "?id=" + deviceId;
+}

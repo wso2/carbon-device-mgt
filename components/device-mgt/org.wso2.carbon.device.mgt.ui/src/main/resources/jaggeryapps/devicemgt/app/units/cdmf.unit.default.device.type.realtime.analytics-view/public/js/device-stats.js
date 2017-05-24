@@ -41,10 +41,12 @@ function connect(target) {
     if (ws) {
         ws.onmessage = function (webSocketData) {
             var data = JSON.parse(webSocketData.data);
+			console.log(data);
 			var payloadData = data["event"]["payloadData"];
 			for (var i = 0; i < attributes.length; i++){
 				$("#" + attributes[i] +"-value").text(payloadData[attributes[i]]);
 			}
+			$("#time-mode").text("Real Time Mode");
         };
     }
 }

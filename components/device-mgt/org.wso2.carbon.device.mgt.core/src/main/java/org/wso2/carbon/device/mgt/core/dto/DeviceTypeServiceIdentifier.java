@@ -29,12 +29,12 @@ public class DeviceTypeServiceIdentifier implements Serializable {
 	private static final int DEFAULT_SHARE_WITH_ALL_TENANTS_ID = -1;
 
 	public DeviceTypeServiceIdentifier(String deviceType, int tenantId) {
-		this.deviceType = deviceType.toLowerCase();
+		this.deviceType = deviceType;
 		this.tenantId = tenantId;
 	}
 
 	public DeviceTypeServiceIdentifier(String deviceType) {
-		this.deviceType = deviceType.toLowerCase();
+		this.deviceType = deviceType;
 		this.tenantId = DEFAULT_SHARE_WITH_ALL_TENANTS_ID;
 	}
 

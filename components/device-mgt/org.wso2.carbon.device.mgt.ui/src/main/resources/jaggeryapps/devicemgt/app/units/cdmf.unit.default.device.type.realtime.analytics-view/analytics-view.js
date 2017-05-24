@@ -15,12 +15,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+var serviceInvokers = require("/app/modules/oauth/token-protected-service-invokers.js")["invokers"];
+var devicemgtProps = require("/app/modules/conf-reader/main.js")["conf"];
 
 function onRequest(context) {
     var log = new Log("stats.js");
     var carbonServer = require("carbon").server;
     var device = context.unit.params.device;
 	var attributes = context.unit.params.attributes;
+	var events = [];
     var devicemgtProps = require("/app/modules/conf-reader/main.js")["conf"];
 	var userModule = require("/app/modules/business-controllers/user.js")["userModule"];
     var constants = require("/app/modules/constants.js");
@@ -40,15 +43,43 @@ function onRequest(context) {
             token = tokenPair.accessToken;
         }
 		if (tenantDomain == "carbon.super") {
-			websocketEndpoint = websocketEndpoint + "/secured-websocket/" + tenantDomain + "." + device.type + "/1.0.0?"
+			websocketEndpoint = websocketEndpoint + "/secured-websocket/iot.per.device.stream." + tenantDomain + "." + device.type + "/1.0.0?"
 				+ "deviceId=" + device.deviceIdentifier + "&deviceType=" + device.type + "&websocketToken=" + token;
 		} else {
-			websocketEndpoint = websocketEndpoint + "/t/" + tenantDomain + "/secured-websocket/" + tenantDomain
+			websocketEndpoint = websocketEndpoint + "/t/" + tenantDomain + "/secured-websocket/iot.per.device.stream." + tenantDomain
 				+ "." + device.type + "/1.0.0?" + "deviceId=" + device.deviceIdentifier + "&deviceType="
 				+ device.type + "&websocketToken=" + token;
 		}
 
     }
+	var events = [];
+	var viewModel = {};
+	viewModel.device = device;
+	viewModel.websocketEndpoint = websocketEndpoint;
 
-    return {"device": device, "websocketEndpoint": websocketEndpoint, "attributes": attributes};
+	var restAPIEndpoint = devicemgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"]
+		+ "/events/last-known/" + device.type + "/" + device.deviceIdentifier;
+	serviceInvokers.XMLHttp.get(
+		restAPIEndpoint,
+		function (restAPIResponse) {
+			if (restAPIResponse["status"] == 200 && restAPIResponse["responseText"]) {
+				var responsePayload = parse(restAPIResponse["responseText"]);
+				var records = responsePayload["records"];
+				if (records && records[0] && records[0].values) {
+					var record = records[0].values;
+					viewModel.timestamp = new Date(records[0].timestamp);
+					for (var eventAttribute in attributes){
+						var event = {};
+						event.key = attributes[eventAttribute];
+						event.value = record["" + attributes[eventAttribute]];
+						events.push(event);
+					}
+				}
+
+			}
+		}
+	);
+	viewModel.attributes = attributes;
+	viewModel.events = events;
+    return viewModel;
 }

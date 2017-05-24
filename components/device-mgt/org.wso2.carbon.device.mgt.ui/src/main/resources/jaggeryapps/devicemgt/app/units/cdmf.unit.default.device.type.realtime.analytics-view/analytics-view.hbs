@@ -18,12 +18,13 @@
 {{unit "cdmf.unit.lib.rickshaw-graph"}}
 
 <div id="div-chart" data-websocketurl="{{websocketEndpoint}}" data-attributes="{{attributes}}">
+    <span id="time-mode">{{#if timestamp}}Last Known:{{timestamp}}{{/if}}</span>
     <table class="table table-responsive table-striped" id="members">
         <tbody>
-        {{#each attributes}}
+        {{#each events}}
             <tr role="row" class="odd">
-                <td class="sorting_1" style="padding:10px 15px;">{{this}}</td>
-                <td id="{{this}}-value" style="padding:10px 15px;">-</td>
+                <td class="sorting_1" style="padding:10px 15px;">{{this.key}}</td>
+                <td id="{{this.key}}-value" style="padding:10px 15px;">{{#if this.value}}{{this.value}}{{else}}-{{/if}}</td>
             </tr>
         {{/each}}
         </tbody>

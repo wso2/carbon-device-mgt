@@ -172,7 +172,7 @@
 
                     <br>
                     <button id="add-device-btn" class="wr-btn">Create Device</button>
-
+                    <a id="downloadAnchorElem" style="display:none"></a>
                     <div id="device-create-success-msg" class="alert hidden" role="alert">
                         <i class="icon fw fw-success"></i><span></span>
                     </div>
@@ -186,6 +186,20 @@
                     <button class="wr-btn" onclick="window.location.href='{{@app.context}}/device-types'">
                         View Device Type List
                     </button>
+                </div>
+            </div>
+            <div class="modal fade" id="modalDevice" tabindex="-1" role="dialog" aria-labelledby="modalDevice">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content clearfix">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fw fw-cancel"></i></button>
+                            <h3 class="modal-title" id="deviceModalLabel">Device Created Succesfully</h3>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" onclick="redirectPage('{{@app.context}}/device');">Go To Device Page</button>
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                        </div>
+                    </div>
                 </div>
             </div>
             <!-- /content -->

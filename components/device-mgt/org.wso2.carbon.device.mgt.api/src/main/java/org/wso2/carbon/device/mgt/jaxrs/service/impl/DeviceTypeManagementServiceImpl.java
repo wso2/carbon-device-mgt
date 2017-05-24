@@ -93,7 +93,7 @@ public class DeviceTypeManagementServiceImpl implements DeviceTypeManagementServ
 
     @Override
     @GET
-    @Path("/all")
+    @Path("/config")
     public Response getDeviceTypes() {
         try {
             List<DeviceType> deviceTypes = DeviceMgtAPIUtils.getDeviceManagementService().getDeviceTypes();
@@ -111,7 +111,7 @@ public class DeviceTypeManagementServiceImpl implements DeviceTypeManagementServ
 
     @Override
     @GET
-    @Path("/all/{type}")
+    @Path("/config/{type}")
     public Response getDeviceTypeByName(@PathParam("type") String type) {
         if (type != null && type.length() > 0) {
             try {
@@ -138,12 +138,14 @@ public class DeviceTypeManagementServiceImpl implements DeviceTypeManagementServ
      */
     private DeviceType clearMetaEntryInfo(DeviceType deviceType) {
         DeviceTypeMetaDefinition metaDefinition = deviceType.getDeviceTypeMetaDefinition();
-        metaDefinition.setInitialOperationConfig(null);
-        if (metaDefinition.getPushNotificationConfig() != null) {
-            metaDefinition.setPushNotificationConfig(new PushNotificationConfig(metaDefinition.
-                    getPushNotificationConfig().getType(), false, null));
+        if (metaDefinition != null) {
+            metaDefinition.setInitialOperationConfig(null);
+            if (metaDefinition.getPushNotificationConfig() != null) {
+                metaDefinition.setPushNotificationConfig(new PushNotificationConfig(metaDefinition.
+                        getPushNotificationConfig().getType(), false, null));
+            }
+            deviceType.setDeviceTypeMetaDefinition(metaDefinition);
         }
-        deviceType.setDeviceTypeMetaDefinition(metaDefinition);
         return deviceType;
     }
 

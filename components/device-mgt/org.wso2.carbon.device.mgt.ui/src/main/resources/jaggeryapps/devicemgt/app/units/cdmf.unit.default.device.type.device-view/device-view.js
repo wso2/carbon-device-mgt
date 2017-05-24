@@ -24,7 +24,6 @@ function onRequest(context) {
 	var deviceId = request.getParameter("id");
 	var attributes = [];
 	var featureList = [];
-	log.error(featureList);
 	var restAPIEndpoint = devicemgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"]
 		+ "/events/" + deviceType;
 	serviceInvokers.XMLHttp.get(
@@ -50,7 +49,6 @@ function onRequest(context) {
 		+ "/device-types/" + deviceType + "/features";
 	serviceInvokers.XMLHttp.get(featureEndpoint, function (responsePayload) {
 			var features = JSON.parse(responsePayload.responseText);
-			new Log().error(responsePayload.responseText);
 			var feature;
 			for (var i = 0; i < features.length; i++) {
 				feature = {};

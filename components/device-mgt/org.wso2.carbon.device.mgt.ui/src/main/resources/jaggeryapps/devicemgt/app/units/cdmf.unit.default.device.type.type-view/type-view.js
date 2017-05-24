@@ -31,7 +31,7 @@ function onRequest(context) {
 			return opts.inverse(this);
 	});
 	var restAPIEndpoint = deviceMgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"]
-		+ "/device-types/all/" + deviceType;
+		+ "/device-types/config/" + deviceType;
 	displayData.deviceType = deviceType;
 	displayData.tenantDomain = tenantDomain;
 	serviceInvokers.XMLHttp.get(
@@ -59,7 +59,6 @@ function onRequest(context) {
 					var eventExample = {};
 					for (var i = 0; i < typeData.eventAttributes.attributes.length; i++) {
 						var attribute = typeData.eventAttributes.attributes[i];
-						new Log().error(attribute.type);
 						switch (attribute.type) {
 							case "STRING":
 								eventExample[attribute.name] = "string";
@@ -83,7 +82,10 @@ function onRequest(context) {
 						}
 
 					}
+					var metaEventExample = {};
+					metaEventExample.deviceId = "deviceIdentifier";
 					sample.event.payloadData = eventExample;
+					sample.event.metaData = metaEventExample;
 					displayData.eventSample = JSON.stringify(sample);
 				}
 			}

@@ -98,6 +98,16 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
         }
         try {
             DeviceManagementProviderService dms = DeviceMgtAPIUtils.getDeviceManagementService();
+            if (device.getType() == null || device.getDeviceIdentifier() == null) {
+                String errorMessage = "The payload of the device enrollment is incorrect.";
+                return Response.status(Response.Status.BAD_REQUEST).entity(errorMessage).build();
+            }
+            Device existingDevice = dms.getDevice(new DeviceIdentifier(device.getType(), device.getType()));
+            if (existingDevice != null && existingDevice.getEnrolmentInfo() != null && existingDevice
+                    .getEnrolmentInfo().getStatus().equals(EnrolmentInfo.Status.ACTIVE)) {
+                String errorMessage = "An active enrolment exists";
+                return Response.status(Response.Status.BAD_REQUEST).entity(errorMessage).build();
+            }
             device.getEnrolmentInfo().setOwner(DeviceMgtAPIUtils.getAuthenticatedUser());
             device.getEnrolmentInfo().setDateOfEnrolment(System.currentTimeMillis());
             device.getEnrolmentInfo().setDateOfLastUpdate(System.currentTimeMillis());

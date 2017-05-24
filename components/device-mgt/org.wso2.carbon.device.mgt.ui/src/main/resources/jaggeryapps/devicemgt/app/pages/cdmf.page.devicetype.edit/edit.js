@@ -35,7 +35,7 @@ function onRequest(context) {
 	var deviceType = request.getParameter("type");
 	var serviceInvokers = require("/app/modules/oauth/token-protected-service-invokers.js")["invokers"];
 	var restAPIEndpoint = deviceMgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"]
-		+ "/device-types/all/" + deviceType;
+		+ "/device-types/config/" + deviceType;
 	displayData.name = deviceType;
 	serviceInvokers.XMLHttp.get(
 		restAPIEndpoint,

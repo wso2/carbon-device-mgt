@@ -25,8 +25,7 @@
 
 {{#zone "overview-section"}}
     <div style="background: #11375B; color: #fff; padding: 10px; margin-bottom: 5px">
-        Device Overview - {{label}}</div>
-    {{device.type}}sdf
+        Device Overview - {{device.type}}</div>
     {{unit "cdmf.unit.default.device.overview-section" device=device}}
 {{/zone}}
 
@@ -63,7 +62,7 @@
     {{#if attributes}}
     <div class="panel panel-default tab-pane active"
          id="device_statistics" role="tabpanel" aria-labelledby="device_statistics">
-        <div class="panel-heading">Realtime Statistics</div>
+        <div class="panel-heading">Device Event</div>
         {{unit "cdmf.unit.default.device.type.realtime.analytics-view" device=device attributes=attributes}}
     </div>
     {{/if}}

@@ -32,11 +32,11 @@ function onRequest(context) {
 	types.isAuthorizedViewGroups = userModule.isAuthorized("/permission/admin/device-mgt/groups/view");
 	types["types"] = [];
 
-	var typesListResponse = deviceModule.getDeviceTypes();
+	var typesListResponse = deviceModule.getDeviceTypesConfig();
 	if (typesListResponse["status"] == "success") {
-		for (var type in typesListResponse["content"]["deviceTypes"]) {
+		for (var type in typesListResponse["content"]) {
 			var content = {};
-			var deviceType = typesListResponse["content"]["deviceTypes"][type];
+			var deviceType = typesListResponse["content"][type].name;
 			content["name"] = deviceType;
 			var configs = utility.getDeviceTypeConfig(deviceType);
 			var deviceTypeLabel = deviceType;
@@ -64,7 +64,10 @@ function onRequest(context) {
 				}
 				types["types"].push(content);
 			} else {
-				policyWizardSrc = "cdmf.unit.policy.create"
+				if (!typesListResponse["content"][type].deviceTypeMetaDefinition) {
+					continue;
+				}
+				policyWizardSrc = "cdmf.unit.policy.create";
 				var policyOperationsTemplateSrc = policyWizardSrc + "/public/templates/" + deviceType + "-policy-operations.hbs";
 				if (new File(policyOperationsTemplateSrc).isExists()) {
 					content["template"] = "/public/cdmf.unit.device.type." + deviceType +

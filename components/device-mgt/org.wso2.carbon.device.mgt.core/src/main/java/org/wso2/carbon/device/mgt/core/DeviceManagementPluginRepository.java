@@ -304,6 +304,9 @@ public class DeviceManagementPluginRepository implements DeviceManagerStartupLis
     public OperationManager getOperationManager(String deviceType, int tenantId) {
         //Priority need to be given to the tenant before public.
         DeviceTypeServiceIdentifier deviceTypeIdentifier = new DeviceTypeServiceIdentifier(deviceType, tenantId);
+        if (getDeviceManagementService(deviceType, tenantId) == null) {
+            return null;
+        }
         OperationManager operationManager = operationManagerRepository.getOperationManager(deviceTypeIdentifier);
         if (operationManager == null) {
             deviceTypeIdentifier = new DeviceTypeServiceIdentifier(deviceType);
@@ -330,7 +333,7 @@ public class DeviceManagementPluginRepository implements DeviceManagerStartupLis
                         DeviceTypeServiceIdentifier deviceTypeIdentifier = new DeviceTypeServiceIdentifier(
                                 provider.getType(), tenantId);
                         DeviceManagementServiceHolder existingProvider = providers.get(deviceTypeIdentifier);
-                        if (existingProvider == null) {
+                        if (existingProvider != null) {
                             removeDeviceManagementProvider(provider);
                         }
                     }

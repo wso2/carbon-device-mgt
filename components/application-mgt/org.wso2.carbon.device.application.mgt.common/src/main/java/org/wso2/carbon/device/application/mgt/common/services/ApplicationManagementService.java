@@ -18,10 +18,5 @@
  */
 package org.wso2.carbon.device.application.mgt.common.services;
 
-import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagerException;
-
-public interface ApplicationManagementService extends ApplicationReleaseManager, ApplicationManager, CategoryManager,
-        CommentsManager, LifecycleStateManager, PlatformManager, ResourceTypeManager, SubscriptionManager,
-        VisibilityManager {
-
+public interface ApplicationManagementService {
 }

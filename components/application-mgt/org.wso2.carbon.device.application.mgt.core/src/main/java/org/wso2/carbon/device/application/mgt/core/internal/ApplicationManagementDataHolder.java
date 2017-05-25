@@ -18,17 +18,17 @@
  */
 package org.wso2.carbon.device.application.mgt.core.internal;
 
-import org.wso2.carbon.device.application.mgt.common.services.ApplicationManagementService;
+import org.wso2.carbon.device.application.mgt.core.services.impl.ApplicationManagementServiceFactory;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 
 public class ApplicationManagementDataHolder {
 
     private DeviceManagementProviderService deviceManagementService;
-    private ApplicationManagementService applicationManagementService;
+    private ApplicationManagementServiceFactory applicationManagementServiceFactory;
 
     private static final ApplicationManagementDataHolder applicationMgtDataHolder = new ApplicationManagementDataHolder();
 
-    private ApplicationManagementDataHolder(){
+    private ApplicationManagementDataHolder() {
 
     }
 
@@ -44,11 +44,15 @@ public class ApplicationManagementDataHolder {
         this.deviceManagementService = deviceManagementService;
     }
 
-    public ApplicationManagementService getApplicationManagementService() {
-        return applicationManagementService;
+    public ApplicationManagementServiceFactory getApplicationManagementServiceFactory() {
+        return applicationManagementServiceFactory;
     }
 
-    public void setApplicationManagementService(ApplicationManagementService applicationManagementService) {
-        this.applicationManagementService = applicationManagementService;
+    public void setApplicationManagementServiceFactory(ApplicationManagementServiceFactory applicationManagementServiceFactory) {
+        this.applicationManagementServiceFactory = applicationManagementServiceFactory;
+    }
+
+    public static ApplicationManagementDataHolder getApplicationMgtDataHolder() {
+        return applicationMgtDataHolder;
     }
 }

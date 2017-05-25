@@ -16,16 +16,13 @@
  *   under the License.
  *
  */
-package org.wso2.carbon.device.application.mgt.common.services;
+package org.wso2.carbon.device.application.mgt.core.dao.common;
 
-import org.wso2.carbon.device.application.mgt.common.Application;
-import org.wso2.carbon.device.application.mgt.common.Filter;
-import org.wso2.carbon.device.application.mgt.common.ApplicationList;
-import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagerException;
+import org.wso2.carbon.device.application.mgt.common.services.ApplicationManagementExtensionsService;
 
-public interface ApplicationManager extends ApplicationManagementService {
+public class ApplicationManagementExtensionsFactory {
 
-     void createApplication(Application application) throws ApplicationManagerException;
-
-     ApplicationList getApplications(Filter filter) throws ApplicationManagerException;
+    public ApplicationManagementExtensionsService getExtensionsService(Class managerClass) throws Exception {
+        return (ApplicationManagementExtensionsService) managerClass.newInstance();
+    }
 }

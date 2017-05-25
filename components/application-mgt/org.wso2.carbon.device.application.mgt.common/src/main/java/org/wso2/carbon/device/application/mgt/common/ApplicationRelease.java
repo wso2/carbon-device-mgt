@@ -43,13 +43,13 @@ public class ApplicationRelease {
 
     private Application application;
 
-    private LifecycleState lifecycleState;
-
     private Date lifecycleStateModifiedAt;
 
     private String lifecycleStateModifiedBy;
 
     private Map<String, String> properties;
+
+    private boolean published;
 
     public int getId() {
         return id;
@@ -115,14 +115,6 @@ public class ApplicationRelease {
         this.application = application;
     }
 
-    public LifecycleState getLifecycleState() {
-        return lifecycleState;
-    }
-
-    public void setLifecycleState(LifecycleState lifecycleState) {
-        this.lifecycleState = lifecycleState;
-    }
-
     public Date getLifecycleStateModifiedAt() {
         return lifecycleStateModifiedAt;
     }
@@ -145,5 +137,13 @@ public class ApplicationRelease {
 
     public void setProperties(Map<String, String> properties) {
         this.properties = properties;
+    }
+
+    public boolean isPublished() {
+        return published;
+    }
+
+    public void setPublished(boolean published) {
+        this.published = published;
     }
 }

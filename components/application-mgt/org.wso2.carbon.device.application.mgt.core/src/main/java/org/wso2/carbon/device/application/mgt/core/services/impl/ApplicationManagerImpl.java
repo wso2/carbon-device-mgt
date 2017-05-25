@@ -18,25 +18,20 @@
  */
 package org.wso2.carbon.device.application.mgt.core.services.impl;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.device.application.mgt.common.exception.DBConnectionException;
-import org.wso2.carbon.device.application.mgt.common.services.ApplicationManagementService;
-import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagerException;
 import org.wso2.carbon.device.application.mgt.common.Application;
 import org.wso2.carbon.device.application.mgt.common.ApplicationList;
 import org.wso2.carbon.device.application.mgt.common.Filter;
+import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagerException;
+import org.wso2.carbon.device.application.mgt.common.exception.DBConnectionException;
+import org.wso2.carbon.device.application.mgt.common.services.ApplicationManager;
 import org.wso2.carbon.device.application.mgt.core.dao.ApplicationDAO;
 import org.wso2.carbon.device.application.mgt.core.dao.common.ApplicationManagementDAOException;
 import org.wso2.carbon.device.application.mgt.core.dao.common.ApplicationManagementDAOFactory;
 import org.wso2.carbon.device.application.mgt.core.util.ConnectionManagerUtil;
 
-public class ApplicationManagementServiceImpl implements ApplicationManagementService {
-
-    private static final Log log = LogFactory.getLog(ApplicationManagementServiceImpl.class);
-
+public class ApplicationManagerImpl implements ApplicationManager {
     @Override
-    public void createApplication(Application application) {
+    public void createApplication(Application application) throws ApplicationManagerException {
 
     }
 

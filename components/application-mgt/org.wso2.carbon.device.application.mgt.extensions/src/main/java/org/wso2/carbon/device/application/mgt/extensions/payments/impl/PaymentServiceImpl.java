@@ -16,16 +16,9 @@
  *   under the License.
  *
  */
-package org.wso2.carbon.device.application.mgt.common.services;
+package org.wso2.carbon.device.application.mgt.extensions.payments.impl;
 
-import org.wso2.carbon.device.application.mgt.common.Application;
-import org.wso2.carbon.device.application.mgt.common.Filter;
-import org.wso2.carbon.device.application.mgt.common.ApplicationList;
-import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagerException;
+import org.wso2.carbon.device.application.mgt.extensions.payments.PaymentService;
 
-public interface ApplicationManager extends ApplicationManagementService {
-
-     void createApplication(Application application) throws ApplicationManagerException;
-
-     ApplicationList getApplications(Filter filter) throws ApplicationManagerException;
+public class PaymentServiceImpl implements PaymentService {
 }

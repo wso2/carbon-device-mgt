@@ -20,9 +20,8 @@ package org.wso2.carbon.device.application.mgt.api.util;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
-import org.wso2.carbon.device.application.mgt.common.services.ApplicationManagementService;
+import org.wso2.carbon.device.application.mgt.core.services.impl.ApplicationManagementServiceFactory;
 
 /**
  * Holds util methods required for Application-Mgt API component.
@@ -31,15 +30,15 @@ public class ApplicationMgtAPIUtil {
 
     private static Log log = LogFactory.getLog(ApplicationMgtAPIUtil.class);
 
-    public static ApplicationManagementService getApplicationManagementService() {
+    public static ApplicationManagementServiceFactory getApplicationManagementServiceFactory() {
         PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-        ApplicationManagementService applicationManager =
-                (ApplicationManagementService) ctx.getOSGiService(ApplicationManagementService.class, null);
-        if (applicationManager == null) {
+        ApplicationManagementServiceFactory applicationManagerServiceFactory =
+                (ApplicationManagementServiceFactory) ctx.getOSGiService(ApplicationManagementServiceFactory.class, null);
+        if (applicationManagerServiceFactory == null) {
             String msg = "Application Management provider service has not initialized.";
             log.error(msg);
             throw new IllegalStateException(msg);
         }
-        return applicationManager;
+        return applicationManagerServiceFactory;
     }
 }

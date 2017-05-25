@@ -64,6 +64,18 @@ public class Application {
 
     private boolean published;
 
+    private LifecycleState lifecycleState;
+
+    private Date lifecycleStateModifiedAt;
+
+    private Date getLifecycleStateModifiedBy;
+
+    private boolean freeApp;
+
+    private String paymentCurrency;
+
+    private Float paymentPrice;
+
 
     public int getId() {
         return id;
@@ -207,5 +219,53 @@ public class Application {
 
     public void setPublished(boolean published) {
         this.published = published;
+    }
+
+    public LifecycleState getLifecycleState() {
+        return lifecycleState;
+    }
+
+    public void setLifecycleState(LifecycleState lifecycleState) {
+        this.lifecycleState = lifecycleState;
+    }
+
+    public Date getLifecycleStateModifiedAt() {
+        return lifecycleStateModifiedAt;
+    }
+
+    public void setLifecycleStateModifiedAt(Date lifecycleStateModifiedAt) {
+        this.lifecycleStateModifiedAt = lifecycleStateModifiedAt;
+    }
+
+    public Date getGetLifecycleStateModifiedBy() {
+        return getLifecycleStateModifiedBy;
+    }
+
+    public void setGetLifecycleStateModifiedBy(Date getLifecycleStateModifiedBy) {
+        this.getLifecycleStateModifiedBy = getLifecycleStateModifiedBy;
+    }
+
+    public boolean isFreeApp() {
+        return freeApp;
+    }
+
+    public void setFreeApp(boolean freeApp) {
+        this.freeApp = freeApp;
+    }
+
+    public String getPaymentCurrency() {
+        return paymentCurrency;
+    }
+
+    public void setPaymentCurrency(String paymentCurrency) {
+        this.paymentCurrency = paymentCurrency;
+    }
+
+    public Float getPaymentPrice() {
+        return paymentPrice;
+    }
+
+    public void setPaymentPrice(Float paymentPrice) {
+        this.paymentPrice = paymentPrice;
     }
 }

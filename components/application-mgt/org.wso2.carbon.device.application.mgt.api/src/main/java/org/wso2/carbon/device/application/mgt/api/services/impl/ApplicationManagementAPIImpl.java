@@ -20,21 +20,25 @@ package org.wso2.carbon.device.application.mgt.api.services.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.device.application.mgt.common.Application;
 import org.wso2.carbon.device.application.mgt.common.Filter;
 import org.wso2.carbon.device.application.mgt.common.ApplicationList;
 import org.wso2.carbon.device.application.mgt.common.services.ApplicationManager;
 import org.wso2.carbon.device.application.mgt.api.util.ApplicationMgtAPIUtil;
+import org.wso2.carbon.device.application.mgt.core.services.impl.ApplicationManagementServiceFactory;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 
+import static org.wso2.carbon.device.application.mgt.core.services.impl.ApplicationManagementServiceFactory.ManagerService.APPLICATION_MANAGER;
+
 @Produces({ "application/json"})
 @Consumes({ "application/json"})
-public class ApplicationManagementServiceImpl {
+public class ApplicationManagementAPIImpl {
 
     public static final int DEFAULT_LIMIT = 20;
 
-    private static Log log = LogFactory.getLog(ApplicationManagementServiceImpl.class);
+    private static Log log = LogFactory.getLog(ApplicationManagementAPIImpl.class);
 
 
     @GET
@@ -42,7 +46,9 @@ public class ApplicationManagementServiceImpl {
     @Path("applications")
     public Response getApplications(@QueryParam("offset") int offset, @QueryParam("limit") int limit,
                                     @QueryParam("q") String searchQuery) {
-        ApplicationManager applicationManager = ApplicationMgtAPIUtil.getApplicationManagementService();
+        ApplicationManagementServiceFactory serviceFactory = ApplicationMgtAPIUtil.getApplicationManagementServiceFactory();
+        ApplicationManager applicationManager = (ApplicationManager) serviceFactory
+                .getApplicationManagementService(APPLICATION_MANAGER);
         try {
 
             if(limit == 0){

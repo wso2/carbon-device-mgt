@@ -23,7 +23,7 @@ import org.osgi.service.component.ComponentContext;
 import org.osgi.framework.BundleContext;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.application.mgt.common.services.ApplicationManagementService;
-import org.wso2.carbon.device.application.mgt.core.services.impl.ApplicationManagementServiceImpl;
+import org.wso2.carbon.device.application.mgt.core.services.impl.ApplicationManagementServiceFactory;
 import org.wso2.carbon.device.application.mgt.core.config.ApplicationConfigurationManager;
 import org.wso2.carbon.device.application.mgt.core.config.datasource.DataSourceConfig;
 import org.wso2.carbon.device.application.mgt.core.dao.common.ApplicationManagementDAOFactory;
@@ -47,11 +47,9 @@ public class ApplicationManagementServiceComponent {
 
     protected void activate(ComponentContext componentContext) throws NamingException {
         BundleContext bundleContext = componentContext.getBundleContext();
-        ApplicationManagementService applicationManagementService = new ApplicationManagementServiceImpl();
-        ApplicationManagementDataHolder.getInstance().setApplicationManagementService(applicationManagementService);
-        bundleContext.registerService(ApplicationManagementService.class.getName(),
-                applicationManagementService, null);
-
+        ApplicationManagementServiceFactory serviceFactory = new ApplicationManagementServiceFactory();
+        ApplicationManagementDataHolder.getInstance().setApplicationManagementServiceFactory(serviceFactory);
+        bundleContext.registerService(ApplicationManagementServiceFactory.class.getName(), serviceFactory, null);
 
         DataSourceConfig dataSourceConfig  = ApplicationConfigurationManager.getInstance()
                 .getApplicationManagerConfiguration().getApplicationManagerRepository().getDataSourceConfig();

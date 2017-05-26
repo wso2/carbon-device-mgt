@@ -16,9 +16,10 @@
  *   under the License.
  *
  */
-package org.wso2.carbon.device.application.mgt.extensions.payments.impl;
+package org.wso2.carbon.device.application.mgt.core.services.impl;
 
-import org.wso2.carbon.device.application.mgt.extensions.payments.PaymentService;
+import org.wso2.carbon.device.application.mgt.common.services.ApplicationReleaseManager;
 
-public class PaymentServiceImpl implements PaymentService {
+public class ApplicationReleaseManagerImpl implements ApplicationReleaseManager {
+
 }

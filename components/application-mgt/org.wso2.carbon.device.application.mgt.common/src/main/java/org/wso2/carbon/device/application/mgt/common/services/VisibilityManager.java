@@ -18,5 +18,5 @@
  */
 package org.wso2.carbon.device.application.mgt.common.services;
 
-public interface VisibilityManager {
+public interface VisibilityManager extends ApplicationManagementService  {
 }

@@ -35,13 +35,22 @@ public class ApplicationManagementServiceFactory {
 
     public enum ManagerService {
         APPLICATION_MANAGER,
-        APPLICATION_RELEASE_MANAGER
+        APPLICATION_RELEASE_MANAGER,
+        CATEGORY_MANAGER,
+        COMMENTS_MANAGER,
+        LIFECYCLE_STATE_MANAGER,
+        PLATFORM_MANAGER,
+        RESOURCE_TYPE_MANAGER,
+        SUBSCRIPTION_MANAGER,
+        VISIBILITY_MANAGER
     }
 
     public ApplicationManagementService getApplicationManagementService(ManagerService managerService) {
         switch (managerService) {
             case APPLICATION_MANAGER:
                 return new ApplicationManagerImpl();
+            case APPLICATION_RELEASE_MANAGER:
+                return new ApplicationReleaseManagerImpl();
             default:
                 return null;
         }

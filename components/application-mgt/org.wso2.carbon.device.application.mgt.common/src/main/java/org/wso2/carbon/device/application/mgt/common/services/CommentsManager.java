@@ -18,5 +18,5 @@
  */
 package org.wso2.carbon.device.application.mgt.common.services;
 
-public interface CommentsManager {
+public interface CommentsManager extends ApplicationManagementService  {
 }

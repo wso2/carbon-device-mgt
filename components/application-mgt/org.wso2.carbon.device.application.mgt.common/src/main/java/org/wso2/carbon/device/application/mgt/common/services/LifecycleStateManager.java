@@ -18,6 +18,6 @@
  */
 package org.wso2.carbon.device.application.mgt.common.services;
 
-public interface LifecycleStateManager {
+public interface LifecycleStateManager extends ApplicationManagementService  {
 
 }

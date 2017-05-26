@@ -18,6 +18,7 @@
  */
 package org.wso2.carbon.device.application.mgt.common;
 
+import java.util.List;
 import java.util.Map;
 
 public class Filter {
@@ -32,7 +33,7 @@ public class Filter {
 
     private String filter;
 
-    private Map<String, String> filterProperties;
+    private List<FilterProperty> filterProperties;
 
     private String searchQuery;
 
@@ -64,11 +65,11 @@ public class Filter {
         this.filter = filter;
     }
 
-    public Map<String, String> getFilterProperties() {
+    public List<FilterProperty> getFilterProperties() {
         return filterProperties;
     }
 
-    public void setFilterProperties(Map<String, String> filterProperties) {
+    public void setFilterProperties(List<FilterProperty> filterProperties) {
         this.filterProperties = filterProperties;
     }
 

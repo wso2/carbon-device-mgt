@@ -30,10 +30,11 @@ import org.wso2.carbon.device.application.mgt.core.services.impl.ApplicationMana
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 
-import static org.wso2.carbon.device.application.mgt.core.services.impl.ApplicationManagementServiceFactory.ManagerService.APPLICATION_MANAGER;
+import static org.wso2.carbon.device.application.mgt.core.services.impl.ApplicationManagementServiceFactory
+        .ManagerService.APPLICATION_MANAGER;
 
-@Produces({ "application/json"})
-@Consumes({ "application/json"})
+@Produces({"application/json"})
+@Consumes({"application/json"})
 public class ApplicationManagementAPIImpl {
 
     public static final int DEFAULT_LIMIT = 20;
@@ -51,7 +52,7 @@ public class ApplicationManagementAPIImpl {
                 .getApplicationManagementService(APPLICATION_MANAGER);
         try {
 
-            if(limit == 0){
+            if (limit == 0) {
                 limit = DEFAULT_LIMIT;
             }
 

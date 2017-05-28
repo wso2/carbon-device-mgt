@@ -159,11 +159,14 @@ public class MQTTNotificationStrategy implements NotificationStrategy {
                         + ctx.getDeviceId().getType() + "/" + ctx.getDeviceId().getId() + "/operation/"
                         + operation.getType().toString().toLowerCase() + "/" + operation.getCode();
                 dynamicProperties.put("topic", topic);
-                if (operation.getPayLoad() == null) {
-                    operation.setPayLoad(operation.getCode());
+                Object payload;
+                if ("command".equals(operation.getType().toString().toLowerCase())) {
+                    payload = operation.getCode();
+                } else {
+                    payload = operation.getPayLoad();
                 }
                 MQTTDataHolder.getInstance().getOutputEventAdapterService().publish(adapterName, dynamicProperties,
-                        operation.getPayLoad());
+                                                                                    payload);
 
             }
 

@@ -19,13 +19,15 @@
 
 package org.wso2.carbon.device.mgt.extensions.device.type.template.dao;
 
+import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.extensions.device.type.template.config.DeviceDetails;
+import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 
 public class DeviceTypePluginDAOManager {
 
     private PluginDAO deviceTypePluginDAO;
     private DeviceTypeDAOHandler deviceTypeDAOHandler;
-    private static String DEFAULT_DATASOURCE_NAME = "jdbc/DM_DS";
+    private static final String DEFAULT_DATASOURCE_NAME = "jdbc/DM_DS";
 
     public DeviceTypePluginDAOManager(String datasourceName, DeviceDAODefinition deviceDAODefinition) {
         deviceTypeDAOHandler = new DeviceTypeDAOHandler(datasourceName);
@@ -33,7 +35,14 @@ public class DeviceTypePluginDAOManager {
     }
 
     public DeviceTypePluginDAOManager(String deviceType, DeviceDetails deviceDetails) {
-        deviceTypeDAOHandler = new DeviceTypeDAOHandler(DEFAULT_DATASOURCE_NAME);
+        PrivilegedCarbonContext.startTenantFlow();
+        PrivilegedCarbonContext.getThreadLocalCarbonContext()
+                .setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME, true);
+        try {
+            deviceTypeDAOHandler = new DeviceTypeDAOHandler(DEFAULT_DATASOURCE_NAME);
+        } finally {
+            PrivilegedCarbonContext.endTenantFlow();
+        }
         deviceTypePluginDAO = new PropertyBasedPluginDAOImpl(deviceDetails, deviceTypeDAOHandler, deviceType);
     }
 

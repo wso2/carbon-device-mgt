@@ -42,6 +42,7 @@
             <ref bean="deviceTypeManagementAdminService"/>
             <ref bean="deviceAnalyticsArtifactUploaderAdminService"/>
 			<ref bean="deviceEventManagementService"/>
+			<ref bean="deviceAgentService"/>
             <ref bean="swaggerResource"/>
         </jaxrs:serviceBeans>
         <jaxrs:providers>
@@ -86,6 +87,7 @@
 	<bean id="deviceAccessAuthorizationAdminService" class="org.wso2.carbon.device.mgt.jaxrs.service.impl.admin.DeviceAccessAuthorizationAdminServiceImpl"/>
 	<bean id="deviceAnalyticsArtifactUploaderAdminService" class="org.wso2.carbon.device.mgt.jaxrs.service.impl.admin.DeviceAnalyticsArtifactUploaderAdminServiceImpl"/>
 	<bean id="deviceEventManagementService" class="org.wso2.carbon.device.mgt.jaxrs.service.impl.DeviceEventManagementServiceImpl"/>
+	<bean id="deviceAgentService" class="org.wso2.carbon.device.mgt.jaxrs.service.impl.DeviceAgentServiceImpl"/>
 	<bean id="jsonProvider" class="org.wso2.carbon.device.mgt.jaxrs.common.GsonMessageBodyHandler"/>
 
     <!--<bean id="errorHandler" class="org.wso2.carbon.device.mgt.jaxrs.common.ErrorHandler"/>-->

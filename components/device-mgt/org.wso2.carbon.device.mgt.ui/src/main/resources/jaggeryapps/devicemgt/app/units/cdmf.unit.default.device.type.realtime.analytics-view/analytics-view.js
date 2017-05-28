@@ -38,15 +38,19 @@ function onRequest(context) {
     if (encodedClientKeys) {
         var tokenUtil = require("/app/modules/oauth/token-handler-utils.js")["utils"];
         var resp = tokenUtil.decode(encodedClientKeys).split(":");
-        var tokenPair = jwtClient.getAccessToken(resp[0], resp[1], context.user.username,"default", {});
-        if (tokenPair) {
-            token = tokenPair.accessToken;
-        }
 		if (tenantDomain == "carbon.super") {
+			var tokenPair = jwtClient.getAccessToken(resp[0], resp[1], context.user.username,"default", {});
+			if (tokenPair) {
+				token = tokenPair.accessToken;
+			}
 			websocketEndpoint = websocketEndpoint + "/secured-websocket/iot.per.device.stream." + tenantDomain + "." + device.type + "/1.0.0?"
 				+ "deviceId=" + device.deviceIdentifier + "&deviceType=" + device.type + "&websocketToken=" + token;
 		} else {
-			websocketEndpoint = websocketEndpoint + "/t/" + tenantDomain + "/secured-websocket/iot.per.device.stream." + tenantDomain
+			var tokenPair = jwtClient.getAccessToken(resp[0], resp[1], context.user.username + "@" + tenantDomain,"default", {});
+			if (tokenPair) {
+				token = tokenPair.accessToken;
+			}
+			websocketEndpoint = websocketEndpoint + "/secured-websocket" + "/t/" + tenantDomain + "/iot.per.device.stream." + tenantDomain
 				+ "." + device.type + "/1.0.0?" + "deviceId=" + device.deviceIdentifier + "&deviceType="
 				+ device.type + "&websocketToken=" + token;
 		}

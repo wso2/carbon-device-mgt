@@ -24,6 +24,7 @@ function onRequest(context) {
 	var tenantDomain = user.domain;
 	var deviceMgtProps = require("/app/modules/conf-reader/main.js")["conf"];
 	var serviceInvokers = require("/app/modules/oauth/token-protected-service-invokers.js")["invokers"];
+	var process = require("process");
 	context.handlebars.registerHelper('if_eq', function(a, b, opts) {
 		if(a == b) // Or === depending on your needs
 			return opts.fn(this);
@@ -53,6 +54,7 @@ function onRequest(context) {
 			if (restAPIResponse["status"] == 200 && restAPIResponse["responseText"]) {
 				var typeData = parse(restAPIResponse["responseText"]);
 				displayData.event = typeData;
+				var sampleValue = "";
 				if (typeData.eventAttributes && typeData.eventAttributes.attributes) {
 					var sample = {};
 					sample.event = {};
@@ -62,21 +64,27 @@ function onRequest(context) {
 						switch (attribute.type) {
 							case "STRING":
 								eventExample[attribute.name] = "string";
+								sampleValue = sampleValue + "\"string\", ";
 								break;
 							case "LONG":
 								eventExample[attribute.name] = 0;
+								sampleValue = sampleValue + 0 +", ";
 								break;
 							case "INT":
 								eventExample[attribute.name] = 0;
+								sampleValue = sampleValue + 0 +", ";
 								break;
 							case "FLOAT":
 								eventExample[attribute.name] = 0.0;
+								sampleValue = sampleValue + 0.0 +", ";
 								break;
 							case "DOUBLE":
 								eventExample[attribute.name] = 0.0;
+								sampleValue = sampleValue + 0.0 +", ";
 								break;
 							case "BOOL":
 								eventExample[attribute.name] = false;
+								sampleValue = sampleValue + false + ", ";
 								break;
 
 						}
@@ -86,7 +94,13 @@ function onRequest(context) {
 					metaEventExample.deviceId = "deviceIdentifier";
 					sample.event.payloadData = eventExample;
 					sample.event.metaData = metaEventExample;
+					if (sampleValue && sampleValue.length > 2) {
+						displayData.sampleValue = sampleValue.substring(0, sampleValue.length - 2);
+					}
 					displayData.eventSample = JSON.stringify(sample);
+					displayData.mqttGateway = "tcp://" + process.getProperty("mqtt.broker.host") + ":" + process.getProperty("mqtt.broker.port");
+					displayData.httpsGateway = "https://" + process.getProperty("iot.gateway.host") + ":" + process.getProperty("iot.gateway.https.port");
+
 				}
 			}
 		}

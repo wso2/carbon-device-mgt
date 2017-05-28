@@ -1,14 +1,7 @@
 package org.wso2.carbon.device.mgt.jaxrs.service.impl;
 
 import org.apache.axis2.AxisFault;
-import org.apache.axis2.client.Options;
 import org.apache.axis2.client.Stub;
-import org.apache.axis2.transport.http.HTTPConstants;
-import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.httpclient.Header;
-import org.apache.commons.httpclient.protocol.Protocol;
-import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
-import org.apache.axis2.java.security.SSLProtocolSocketFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.analytics.api.AnalyticsDataAPI;
@@ -37,10 +30,11 @@ import org.wso2.carbon.device.mgt.jaxrs.beans.analytics.AttributeType;
 import org.wso2.carbon.device.mgt.jaxrs.beans.analytics.EventAttributeList;
 import org.wso2.carbon.device.mgt.jaxrs.beans.analytics.TransportType;
 import org.wso2.carbon.device.mgt.jaxrs.service.api.DeviceEventManagementService;
+import org.wso2.carbon.device.mgt.jaxrs.util.Constants;
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
 import org.wso2.carbon.event.publisher.stub.EventPublisherAdminServiceCallbackHandler;
 import org.wso2.carbon.event.publisher.stub.EventPublisherAdminServiceStub;
-import org.wso2.carbon.event.receiver.stub.types.EventMappingPropertyDto;
+import org.wso2.carbon.event.publisher.stub.types.EventMappingPropertyDto;
 import org.wso2.carbon.event.receiver.stub.EventReceiverAdminServiceCallbackHandler;
 import org.wso2.carbon.event.receiver.stub.EventReceiverAdminServiceStub;
 import org.wso2.carbon.event.receiver.stub.types.BasicInputAdapterPropertyDto;
@@ -67,15 +61,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.rmi.RemoteException;
-import java.security.KeyManagementException;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.UnrecoverableKeyException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -89,55 +75,14 @@ public class DeviceEventManagementServiceImpl implements DeviceEventManagementSe
 
     private static final Log log = LogFactory.getLog(DeviceEventManagementServiceImpl.class);
 
-    private static final String DAS_PORT = "${iot.analytics.https.port}";
-    private static final String DAS_HOST_NAME = "${iot.analytics.host}";
-    private static final String DEFAULT_HTTP_PROTOCOL = "https";
-    private static final String DAS_ADMIN_SERVICE_EP = DEFAULT_HTTP_PROTOCOL + "://" + DAS_HOST_NAME
-            + ":" + DAS_PORT + "/services/";
-    private static final String EVENT_RECIEVER_CONTEXT = "EventReceiverAdminService/";
-    private static final String EVENT_PUBLISHER_CONTEXT = "EventPublisherAdminService/";
-    private static final String EVENT_STREAM_CONTEXT = "EventStreamAdminService/";
-    private static final String EVENT_PERSISTENCE_CONTEXT = "EventStreamPersistenceAdminService/";
-    private static final String AUTHORIZATION_HEADER = "Authorization";
-    private static final String AUTHORIZATION_HEADER_VALUE = "Bearer";
-    private static final String KEY_STORE_TYPE = "JKS";
-    private static final String TRUST_STORE_TYPE = "JKS";
-    private static final String KEY_MANAGER_TYPE = "SunX509"; //Default Key Manager Type
-    private static final String TRUST_MANAGER_TYPE = "SunX509"; //Default Trust Manager Type
-    private static final String SSLV3 = "SSLv3";
-    private static final String DEFAULT_STREAM_VERSION = "1.0.0";
     private static final String DEFAULT_EVENT_STORE_NAME = "EVENT_STORE";
     private static final String DEFAULT_WEBSOCKET_PUBLISHER_ADAPTER_TYPE = "secured-websocket";
     private static final String OAUTH_MQTT_ADAPTER_TYPE = "oauth-mqtt";
-    private static final String OAUTH_HTTP_ADAPTER_TYPE = "oauth-http";
+    private static final String THRIFT_ADAPTER_TYPE = "iot-event";
     private static final String DEFAULT_DEVICE_ID_ATTRIBUTE = "deviceId";
     private static final String DEFAULT_META_DEVICE_ID_ATTRIBUTE = "meta_deviceId";
 
-    private static KeyStore keyStore;
-    private static KeyStore trustStore;
-    private static char[] keyStorePassword;
-    private static SSLContext sslContext;
 
-    static {
-        String keyStorePassword = ServerConfiguration.getInstance().getFirstProperty("Security.KeyStore.Password");
-        String trustStorePassword = ServerConfiguration.getInstance().getFirstProperty(
-                "Security.TrustStore.Password");
-        String keyStoreLocation = ServerConfiguration.getInstance().getFirstProperty("Security.KeyStore.Location");
-        String trustStoreLocation = ServerConfiguration.getInstance().getFirstProperty(
-                "Security.TrustStore.Location");
-
-        //Call to load the keystore.
-        try {
-            loadKeyStore(keyStoreLocation, keyStorePassword);
-            //Call to load the TrustStore.
-            loadTrustStore(trustStoreLocation, trustStorePassword);
-            //Create the SSL context with the loaded TrustStore/keystore.
-            initSSLConnection();
-        } catch (KeyStoreException | IOException | CertificateException | NoSuchAlgorithmException
-                | UnrecoverableKeyException | KeyManagementException e) {
-            log.error("publishing dynamic event receiver is failed due to  " + e.getMessage(), e);
-        }
-    }
 
     @GET
     @Path("/{type}")
@@ -153,13 +98,14 @@ public class DeviceEventManagementServiceImpl implements DeviceEventManagementSe
                 log.error(errorMessage);
                 return Response.status(Response.Status.BAD_REQUEST).build();
             }
-            String streamName = getStreamDefinition(deviceType, tenantDomain);
-            eventStreamAdminServiceStub = getEventStreamAdminServiceStub();
+            String streamName = DeviceMgtAPIUtils.getStreamDefinition(deviceType, tenantDomain);
+            eventStreamAdminServiceStub = DeviceMgtAPIUtils.getEventStreamAdminServiceStub();
             EventStreamDefinitionDto eventStreamDefinitionDto = eventStreamAdminServiceStub.getStreamDefinitionDto(
-                    streamName + ":" + DEFAULT_STREAM_VERSION);
+                    streamName + ":" + Constants.DEFAULT_STREAM_VERSION);
             if (eventStreamDefinitionDto == null) {
                 return Response.status(Response.Status.NO_CONTENT).build();
             }
+
             EventStreamAttributeDto[] eventStreamAttributeDtos = eventStreamDefinitionDto.getPayloadData();
             EventAttributeList eventAttributeList = new EventAttributeList();
             List<Attribute> attributes = new ArrayList<>();
@@ -168,10 +114,11 @@ public class DeviceEventManagementServiceImpl implements DeviceEventManagementSe
                         , AttributeType.valueOf(eventStreamAttributeDto.getAttributeType().toUpperCase())));
             }
             eventAttributeList.setList(attributes);
+
             DeviceTypeEvent deviceTypeEvent = new DeviceTypeEvent();
             deviceTypeEvent.setEventAttributeList(eventAttributeList);
             deviceTypeEvent.setTransportType(TransportType.HTTP);
-            eventReceiverAdminServiceStub = getEventReceiverAdminServiceStub();
+            eventReceiverAdminServiceStub = DeviceMgtAPIUtils.getEventReceiverAdminServiceStub();
             EventReceiverConfigurationDto eventReceiverConfigurationDto = eventReceiverAdminServiceStub
                     .getActiveEventReceiverConfiguration(getReceiverName(deviceType, tenantDomain));
             if (eventReceiverConfigurationDto != null) {
@@ -224,21 +171,27 @@ public class DeviceEventManagementServiceImpl implements DeviceEventManagementSe
                 return Response.status(Response.Status.BAD_REQUEST).build();
             }
             String eventReceiverName = getReceiverName(deviceType, tenantDomain);
-            String streamName = getStreamDefinition(deviceType, tenantDomain);
-            String streamNameWithVersion = streamName + ":" + DEFAULT_STREAM_VERSION;
-            publishStreamDefinitons(streamName, DEFAULT_STREAM_VERSION, deviceType, eventAttributes);
+            String streamName = DeviceMgtAPIUtils.getStreamDefinition(deviceType, tenantDomain);
+            String streamNameWithVersion = streamName + ":" + Constants.DEFAULT_STREAM_VERSION;
+            publishStreamDefinitons(streamName, Constants.DEFAULT_STREAM_VERSION, deviceType, eventAttributes);
             publishEventReceivers(eventReceiverName, streamNameWithVersion, transportType, tenantDomain, deviceType);
-            publishEventStore(streamName, DEFAULT_STREAM_VERSION, eventAttributes);
+            publishEventStore(streamName, Constants.DEFAULT_STREAM_VERSION, eventAttributes);
             publishWebsocketPublisherDefinition(streamNameWithVersion, deviceType);
             superTenantMode = true;
             PrivilegedCarbonContext.startTenantFlow();
             PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(
                     MultitenantConstants.SUPER_TENANT_DOMAIN_NAME, true);
             if (!MultitenantConstants.SUPER_TENANT_DOMAIN_NAME.equals(tenantDomain)) {
-                publishStreamDefinitons(streamName, DEFAULT_STREAM_VERSION, deviceType, eventAttributes);
-                publishEventReceivers(eventReceiverName, streamNameWithVersion, transportType, tenantDomain,
-                                      deviceType);
+                if (transportType == TransportType.MQTT) {
+                    publishStreamDefinitons(streamName, Constants.DEFAULT_STREAM_VERSION, deviceType, eventAttributes);
+                    publishEventReceivers(eventReceiverName, streamNameWithVersion, transportType, tenantDomain,
+                                          deviceType);
+                } else {
+                    publishStreamDefinitons(streamName, Constants.DEFAULT_STREAM_VERSION, deviceType, eventAttributes);
+                }
+
             }
+            DeviceMgtAPIUtils.getDynamicEventCache().remove(deviceType);
             return Response.ok().build();
         } catch (AxisFault e) {
             log.error("failed to create event definitions for tenantDomain:" + tenantDomain, e);
@@ -286,22 +239,22 @@ public class DeviceEventManagementServiceImpl implements DeviceEventManagementSe
             }
             String eventReceiverName = getReceiverName(deviceType, tenantDomain);
             String eventPublisherName = deviceType.trim().replace(" ", "_") + "_websocket_publisher";
-            String streamName = getStreamDefinition(deviceType, tenantDomain);
-            eventStreamAdminServiceStub = getEventStreamAdminServiceStub();
-            if (eventStreamAdminServiceStub.getStreamDefinitionDto(streamName + ":" + DEFAULT_STREAM_VERSION) == null) {
+            String streamName = DeviceMgtAPIUtils.getStreamDefinition(deviceType, tenantDomain);
+            eventStreamAdminServiceStub = DeviceMgtAPIUtils.getEventStreamAdminServiceStub();
+            if (eventStreamAdminServiceStub.getStreamDefinitionDto(streamName + ":" + Constants.DEFAULT_STREAM_VERSION) == null) {
                 return Response.status(Response.Status.NO_CONTENT).build();
             }
-            eventStreamAdminServiceStub.removeEventStreamDefinition(streamName, DEFAULT_STREAM_VERSION);
+            eventStreamAdminServiceStub.removeEventStreamDefinition(streamName, Constants.DEFAULT_STREAM_VERSION);
             EventReceiverAdminServiceCallbackHandler eventReceiverAdminServiceCallbackHandler =
                     new EventReceiverAdminServiceCallbackHandler() {};
             EventPublisherAdminServiceCallbackHandler eventPublisherAdminServiceCallbackHandler =
                     new EventPublisherAdminServiceCallbackHandler() {};
 
-            eventReceiverAdminServiceStub = getEventReceiverAdminServiceStub();
+            eventReceiverAdminServiceStub = DeviceMgtAPIUtils.getEventReceiverAdminServiceStub();
             eventReceiverAdminServiceStub.startundeployInactiveEventReceiverConfiguration(eventReceiverName
                     , eventReceiverAdminServiceCallbackHandler);
 
-            eventPublisherAdminServiceStub = getEventPublisherAdminServiceStub();
+            eventPublisherAdminServiceStub = DeviceMgtAPIUtils.getEventPublisherAdminServiceStub();
             eventPublisherAdminServiceStub.startundeployInactiveEventPublisherConfiguration(eventPublisherName
                     , eventPublisherAdminServiceCallbackHandler);
 
@@ -310,9 +263,9 @@ public class DeviceEventManagementServiceImpl implements DeviceEventManagementSe
             PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(
                     MultitenantConstants.SUPER_TENANT_DOMAIN_NAME, true);
             if (!MultitenantConstants.SUPER_TENANT_DOMAIN_NAME.equals(tenantDomain)) {
-                tenantBasedEventReceiverAdminServiceStub = getEventReceiverAdminServiceStub();
-                tenantBasedEventStreamAdminServiceStub = getEventStreamAdminServiceStub();
-                tenantBasedEventStreamAdminServiceStub.removeEventStreamDefinition(streamName, DEFAULT_STREAM_VERSION);
+                tenantBasedEventReceiverAdminServiceStub = DeviceMgtAPIUtils.getEventReceiverAdminServiceStub();
+                tenantBasedEventStreamAdminServiceStub = DeviceMgtAPIUtils.getEventStreamAdminServiceStub();
+                tenantBasedEventStreamAdminServiceStub.removeEventStreamDefinition(streamName, Constants.DEFAULT_STREAM_VERSION);
                 tenantBasedEventReceiverAdminServiceStub.startundeployInactiveEventReceiverConfiguration(
                         eventReceiverName
                         , eventReceiverAdminServiceCallbackHandler);
@@ -363,7 +316,7 @@ public class DeviceEventManagementServiceImpl implements DeviceEventManagementSe
         String query = DEFAULT_META_DEVICE_ID_ATTRIBUTE + ":" + deviceId
                 + " AND _timestamp : [" + fromDate + " TO " + toDate + "]";
         String tenantDomain = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantDomain();
-        String sensorTableName = getTableName(getStreamDefinition(deviceType, tenantDomain));
+        String sensorTableName = getTableName(DeviceMgtAPIUtils.getStreamDefinition(deviceType, tenantDomain));
         try {
             if (deviceType == null ||
                     !DeviceMgtAPIUtils.getDeviceManagementService().getAvailableDeviceTypes().contains(deviceType)) {
@@ -400,7 +353,7 @@ public class DeviceEventManagementServiceImpl implements DeviceEventManagementSe
     public Response getLastKnownData(@PathParam("deviceId") String deviceId, @PathParam("type") String deviceType) {
         String query = DEFAULT_META_DEVICE_ID_ATTRIBUTE + ":" + deviceId;
         String tenantDomain = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantDomain();
-        String sensorTableName = getTableName(getStreamDefinition(deviceType, tenantDomain));
+        String sensorTableName = getTableName(DeviceMgtAPIUtils.getStreamDefinition(deviceType, tenantDomain));
         try {
             if (deviceType == null ||
                     !DeviceMgtAPIUtils.getDeviceManagementService().getAvailableDeviceTypes().contains(deviceType)) {
@@ -432,10 +385,10 @@ public class DeviceEventManagementServiceImpl implements DeviceEventManagementSe
     }
 
     private void publishEventReceivers(String eventRecieverName, String streamNameWithVersion,
-                                       TransportType transportType
-            , String requestedTenantDomain, String deviceType)
+                                       TransportType transportType, String requestedTenantDomain,
+                                       String deviceType)
             throws RemoteException, UserStoreException, JWTClientException {
-        EventReceiverAdminServiceStub receiverAdminServiceStub = getEventReceiverAdminServiceStub();
+        EventReceiverAdminServiceStub receiverAdminServiceStub = DeviceMgtAPIUtils.getEventReceiverAdminServiceStub();
         try {
             EventReceiverConfigurationDto eventReceiverConfigurationDto = receiverAdminServiceStub
                     .getActiveEventReceiverConfiguration(getReceiverName(deviceType, requestedTenantDomain));
@@ -447,7 +400,7 @@ public class DeviceEventManagementServiceImpl implements DeviceEventManagementSe
                         return;
                     }
 
-                } else if (OAUTH_HTTP_ADAPTER_TYPE.equals(eventAdapterType)) {
+                } else if (THRIFT_ADAPTER_TYPE.equals(eventAdapterType)) {
                     if (transportType == TransportType.HTTP) {
                         return;
                     }
@@ -459,20 +412,24 @@ public class DeviceEventManagementServiceImpl implements DeviceEventManagementSe
             String adapterType = OAUTH_MQTT_ADAPTER_TYPE;
             BasicInputAdapterPropertyDto basicInputAdapterPropertyDtos[];
             if (transportType == TransportType.MQTT) {
-                basicInputAdapterPropertyDtos = new BasicInputAdapterPropertyDto[4];
+                basicInputAdapterPropertyDtos = new BasicInputAdapterPropertyDto[1];
                 basicInputAdapterPropertyDtos[0] = getBasicInputAdapterPropertyDto("topic", requestedTenantDomain
                         + "/" + deviceType + "/+/events");
-                basicInputAdapterPropertyDtos[1] = getBasicInputAdapterPropertyDto("contentValidator", "iot-mqtt");
-                basicInputAdapterPropertyDtos[2] = getBasicInputAdapterPropertyDto("cleanSession", "true");
-                basicInputAdapterPropertyDtos[3] = getBasicInputAdapterPropertyDto("clientId", generateUUID());
             } else {
-                adapterType = OAUTH_HTTP_ADAPTER_TYPE;
+                adapterType = THRIFT_ADAPTER_TYPE;
                 basicInputAdapterPropertyDtos = new BasicInputAdapterPropertyDto[1];
-                basicInputAdapterPropertyDtos[0] = getBasicInputAdapterPropertyDto("contentValidator", "iot-http");
+                basicInputAdapterPropertyDtos[0] = getBasicInputAdapterPropertyDto("events.duplicated.in.cluster", "false");
             }
             if (receiverAdminServiceStub.getActiveEventReceiverConfiguration(eventRecieverName) == null) {
-                receiverAdminServiceStub.deployJsonEventReceiverConfiguration(eventRecieverName, streamNameWithVersion
-                        , adapterType, null, basicInputAdapterPropertyDtos, false);
+                if (transportType == TransportType.MQTT) {
+                    receiverAdminServiceStub.deployJsonEventReceiverConfiguration(eventRecieverName, streamNameWithVersion
+                            , adapterType, null, basicInputAdapterPropertyDtos, false);
+                } else {
+                    EventMappingPropertyDto eventMappingPropertyDto = new EventMappingPropertyDto();
+
+                    receiverAdminServiceStub.deployWso2EventReceiverConfiguration(eventRecieverName, streamNameWithVersion
+                            , adapterType, null, null, null, basicInputAdapterPropertyDtos, false, null);
+                }
             }
         } finally {
             cleanup(receiverAdminServiceStub);
@@ -482,7 +439,7 @@ public class DeviceEventManagementServiceImpl implements DeviceEventManagementSe
     private void publishStreamDefinitons(String streamName, String version, String deviceType
             , EventAttributeList eventAttributes)
             throws RemoteException, UserStoreException, JWTClientException {
-        EventStreamAdminServiceStub eventStreamAdminServiceStub = getEventStreamAdminServiceStub();
+        EventStreamAdminServiceStub eventStreamAdminServiceStub = DeviceMgtAPIUtils.getEventStreamAdminServiceStub();
         try {
             EventStreamDefinitionDto eventStreamDefinitionDto = new EventStreamDefinitionDto();
             eventStreamDefinitionDto.setName(streamName);
@@ -521,7 +478,7 @@ public class DeviceEventManagementServiceImpl implements DeviceEventManagementSe
             throws RemoteException, UserStoreException, JWTClientException,
                    EventStreamPersistenceAdminServiceEventStreamPersistenceAdminServiceExceptionException {
         EventStreamPersistenceAdminServiceStub eventStreamPersistenceAdminServiceStub =
-                getEventStreamPersistenceAdminServiceStub();
+                DeviceMgtAPIUtils.getEventStreamPersistenceAdminServiceStub();
         try {
             AnalyticsTable analyticsTable = new AnalyticsTable();
             analyticsTable.setRecordStoreName(DEFAULT_EVENT_STORE_NAME);
@@ -561,7 +518,8 @@ public class DeviceEventManagementServiceImpl implements DeviceEventManagementSe
 
     private void publishWebsocketPublisherDefinition(String streamNameWithVersion, String deviceType)
             throws RemoteException, UserStoreException, JWTClientException {
-        EventPublisherAdminServiceStub eventPublisherAdminServiceStub = getEventPublisherAdminServiceStub();
+        EventPublisherAdminServiceStub eventPublisherAdminServiceStub = DeviceMgtAPIUtils
+                .getEventPublisherAdminServiceStub();
         try {
             String eventPublisherName = deviceType.trim().replace(" ", "_") + "_websocket_publisher";
             if (eventPublisherAdminServiceStub.getActiveEventPublisherConfiguration(eventPublisherName) == null) {
@@ -572,188 +530,6 @@ public class DeviceEventManagementServiceImpl implements DeviceEventManagementSe
         } finally {
             cleanup(eventPublisherAdminServiceStub);
         }
-    }
-
-    private EventStreamAdminServiceStub getEventStreamAdminServiceStub()
-            throws AxisFault, UserStoreException, JWTClientException {
-        EventStreamAdminServiceStub eventStreamAdminServiceStub = new EventStreamAdminServiceStub(
-                Utils.replaceSystemProperty(DAS_ADMIN_SERVICE_EP + EVENT_STREAM_CONTEXT));
-        Options streamOptions = eventStreamAdminServiceStub._getServiceClient().getOptions();
-        if (streamOptions == null) {
-            streamOptions = new Options();
-        }
-        String tenantDomain = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantDomain();
-        String username = PrivilegedCarbonContext.getThreadLocalCarbonContext().getUserRealm()
-                .getRealmConfiguration().getAdminUserName() + "@" + tenantDomain;
-        JWTClient jwtClient = DeviceMgtAPIUtils.getJWTClientManagerService().getJWTClient();
-
-        String authValue = AUTHORIZATION_HEADER_VALUE + " " + new String(Base64.encodeBase64(
-                jwtClient.getJwtToken(username).getBytes()));
-
-        List<Header> list = new ArrayList<>();
-        Header httpHeader = new Header();
-        httpHeader.setName(AUTHORIZATION_HEADER);
-        httpHeader.setValue(authValue);
-        list.add(httpHeader);//"https"
-        streamOptions.setProperty(HTTPConstants.HTTP_HEADERS, list);
-        streamOptions.setProperty(HTTPConstants.CUSTOM_PROTOCOL_HANDLER
-                , new Protocol(DEFAULT_HTTP_PROTOCOL
-                , (ProtocolSocketFactory) new SSLProtocolSocketFactory(sslContext)
-                , Integer.parseInt(Utils.replaceSystemProperty(DAS_PORT))));
-        eventStreamAdminServiceStub._getServiceClient().setOptions(streamOptions);
-        return eventStreamAdminServiceStub;
-    }
-
-    private EventReceiverAdminServiceStub getEventReceiverAdminServiceStub()
-            throws AxisFault, UserStoreException, JWTClientException {
-        EventReceiverAdminServiceStub receiverAdminServiceStub = new EventReceiverAdminServiceStub(
-                Utils.replaceSystemProperty(DAS_ADMIN_SERVICE_EP + EVENT_RECIEVER_CONTEXT));
-        Options eventReciverOptions = receiverAdminServiceStub._getServiceClient().getOptions();
-        if (eventReciverOptions == null) {
-            eventReciverOptions = new Options();
-        }
-        String tenantDomain = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantDomain();
-        String username = PrivilegedCarbonContext.getThreadLocalCarbonContext().getUserRealm()
-                .getRealmConfiguration().getAdminUserName() + "@" + tenantDomain;
-        JWTClient jwtClient = DeviceMgtAPIUtils.getJWTClientManagerService().getJWTClient();
-
-        String authValue = AUTHORIZATION_HEADER_VALUE + " " + new String(Base64.encodeBase64(
-                jwtClient.getJwtToken(username).getBytes()));
-
-        List<Header> list = new ArrayList<>();
-        Header httpHeader = new Header();
-        httpHeader.setName(AUTHORIZATION_HEADER);
-        httpHeader.setValue(authValue);
-        list.add(httpHeader);//"https"
-
-        eventReciverOptions.setProperty(HTTPConstants.HTTP_HEADERS, list);
-        eventReciverOptions.setProperty(HTTPConstants.CUSTOM_PROTOCOL_HANDLER
-                , new Protocol(DEFAULT_HTTP_PROTOCOL
-                , (ProtocolSocketFactory) new SSLProtocolSocketFactory(sslContext)
-                , Integer.parseInt(Utils.replaceSystemProperty(DAS_PORT))));
-        receiverAdminServiceStub._getServiceClient().setOptions(eventReciverOptions);
-        return receiverAdminServiceStub;
-    }
-
-    private EventPublisherAdminServiceStub getEventPublisherAdminServiceStub()
-            throws AxisFault, UserStoreException, JWTClientException {
-        EventPublisherAdminServiceStub eventPublisherAdminServiceStub = new EventPublisherAdminServiceStub(
-                Utils.replaceSystemProperty(DAS_ADMIN_SERVICE_EP + EVENT_PUBLISHER_CONTEXT));
-        Options eventReciverOptions = eventPublisherAdminServiceStub._getServiceClient().getOptions();
-        if (eventReciverOptions == null) {
-            eventReciverOptions = new Options();
-        }
-        String tenantDomain = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantDomain();
-        String username = PrivilegedCarbonContext.getThreadLocalCarbonContext().getUserRealm()
-                .getRealmConfiguration().getAdminUserName() + "@" + tenantDomain;
-        JWTClient jwtClient = DeviceMgtAPIUtils.getJWTClientManagerService().getJWTClient();
-
-        String authValue = AUTHORIZATION_HEADER_VALUE + " " + new String(Base64.encodeBase64(
-                jwtClient.getJwtToken(username).getBytes()));
-
-        List<Header> list = new ArrayList<>();
-        Header httpHeader = new Header();
-        httpHeader.setName(AUTHORIZATION_HEADER);
-        httpHeader.setValue(authValue);
-        list.add(httpHeader);//"https"
-
-        eventReciverOptions.setProperty(HTTPConstants.HTTP_HEADERS, list);
-        eventReciverOptions.setProperty(HTTPConstants.CUSTOM_PROTOCOL_HANDLER
-                , new Protocol(DEFAULT_HTTP_PROTOCOL
-                , (ProtocolSocketFactory) new SSLProtocolSocketFactory(sslContext)
-                , Integer.parseInt(Utils.replaceSystemProperty(DAS_PORT))));
-        eventPublisherAdminServiceStub._getServiceClient().setOptions(eventReciverOptions);
-        return eventPublisherAdminServiceStub;
-    }
-
-    private EventStreamPersistenceAdminServiceStub getEventStreamPersistenceAdminServiceStub()
-            throws AxisFault, UserStoreException, JWTClientException {
-        EventStreamPersistenceAdminServiceStub eventStreamPersistenceAdminServiceStub
-                = new EventStreamPersistenceAdminServiceStub(
-                Utils.replaceSystemProperty(DAS_ADMIN_SERVICE_EP + EVENT_PERSISTENCE_CONTEXT));
-        Options eventReciverOptions = eventStreamPersistenceAdminServiceStub._getServiceClient().getOptions();
-        if (eventReciverOptions == null) {
-            eventReciverOptions = new Options();
-        }
-        String tenantDomain = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantDomain();
-        String username = PrivilegedCarbonContext.getThreadLocalCarbonContext().getUserRealm()
-                .getRealmConfiguration().getAdminUserName() + "@" + tenantDomain;
-        JWTClient jwtClient = DeviceMgtAPIUtils.getJWTClientManagerService().getJWTClient();
-
-        String authValue = AUTHORIZATION_HEADER_VALUE + " " + new String(Base64.encodeBase64(
-                jwtClient.getJwtToken(username).getBytes()));
-
-        List<Header> list = new ArrayList<>();
-        Header httpHeader = new Header();
-        httpHeader.setName(AUTHORIZATION_HEADER);
-        httpHeader.setValue(authValue);
-        list.add(httpHeader);//"https"
-
-        eventReciverOptions.setProperty(HTTPConstants.HTTP_HEADERS, list);
-        eventReciverOptions.setProperty(HTTPConstants.CUSTOM_PROTOCOL_HANDLER
-                , new Protocol(DEFAULT_HTTP_PROTOCOL
-                , (ProtocolSocketFactory) new SSLProtocolSocketFactory(sslContext)
-                , Integer.parseInt(Utils.replaceSystemProperty(DAS_PORT))));
-        eventStreamPersistenceAdminServiceStub._getServiceClient().setOptions(eventReciverOptions);
-        return eventStreamPersistenceAdminServiceStub;
-    }
-
-    /**
-     * Loads the keystore.
-     *
-     * @param keyStorePath - the path of the keystore
-     * @param ksPassword   - the keystore password
-     */
-    private static void loadKeyStore(String keyStorePath, String ksPassword)
-            throws KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException {
-        InputStream fis = null;
-        try {
-            keyStorePassword = ksPassword.toCharArray();
-            keyStore = KeyStore.getInstance(KEY_STORE_TYPE);
-            fis = new FileInputStream(keyStorePath);
-            keyStore.load(fis, keyStorePassword);
-        } finally {
-            if (fis != null) {
-                fis.close();
-            }
-        }
-    }
-
-    /**
-     * Loads the trustore
-     *
-     * @param trustStorePath - the trustore path in the filesystem.
-     * @param tsPassword     - the truststore password
-     */
-    private static void loadTrustStore(String trustStorePath, String tsPassword)
-            throws KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException {
-
-        InputStream fis = null;
-        try {
-            trustStore = KeyStore.getInstance(TRUST_STORE_TYPE);
-            fis = new FileInputStream(trustStorePath);
-            trustStore.load(fis, tsPassword.toCharArray());
-        } finally {
-            if (fis != null) {
-                fis.close();
-            }
-        }
-    }
-
-    /**
-     * Initializes the SSL Context
-     */
-    private static void initSSLConnection() throws NoSuchAlgorithmException, UnrecoverableKeyException,
-                                                   KeyStoreException, KeyManagementException {
-        KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(KEY_MANAGER_TYPE);
-        keyManagerFactory.init(keyStore, keyStorePassword);
-        TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(TRUST_MANAGER_TYPE);
-        trustManagerFactory.init(trustStore);
-
-        // Create and initialize SSLContext for HTTPS communication
-        sslContext = SSLContext.getInstance(SSLV3);
-        sslContext.init(keyManagerFactory.getKeyManagers(), trustManagerFactory.getTrustManagers(), null);
-        SSLContext.setDefault(sslContext);
     }
 
     private BasicInputAdapterPropertyDto getBasicInputAdapterPropertyDto(String key, String value) {
@@ -767,10 +543,6 @@ public class DeviceEventManagementServiceImpl implements DeviceEventManagementSe
         UUID uuid = UUID.randomUUID();
         long l = ByteBuffer.wrap(uuid.toString().getBytes(StandardCharsets.UTF_8)).getLong();
         return Long.toString(l, Character.MAX_RADIX);
-    }
-
-    private String getStreamDefinition(String deviceType, String tenantDomain) {
-        return "iot.per.device.stream." + tenantDomain + "." + deviceType.replace(" ", ".");
     }
 
     private String getTableName(String streamName) {

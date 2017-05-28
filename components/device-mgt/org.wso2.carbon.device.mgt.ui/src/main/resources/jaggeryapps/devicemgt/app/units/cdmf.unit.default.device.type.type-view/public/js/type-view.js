@@ -427,7 +427,7 @@ $(document).ready(function () {
 				device.properties.push(property);
 			}
 		});
-		var addDeviceAPI = apiBasePath + "/devices";
+		var addDeviceAPI = apiBasePath + "/device/agent/enroll";
 
 		invokerUtil.post(
 			addDeviceAPI,
@@ -438,7 +438,7 @@ $(document).ready(function () {
 						type: "GET",
 						url: "/devicemgt/api/devices/agent/" + deviceType + "/" + deviceId + "/config",
 						success: function(data, status, xhr) {
-							var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data));
+							var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data, null, 4));
 							var dlAnchorElem = document.getElementById('downloadAnchorElem');
 							dlAnchorElem.setAttribute("href",     dataStr     );
 							dlAnchorElem.setAttribute("download",  deviceId + ".json");

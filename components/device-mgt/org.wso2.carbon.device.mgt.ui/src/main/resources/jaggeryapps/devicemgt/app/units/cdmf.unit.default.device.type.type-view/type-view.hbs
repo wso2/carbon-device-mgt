@@ -18,7 +18,7 @@
     <br>
     <hr>
     <br>
-    <a href="/api-store/apis/info?name=DeviceManagement&version=1.0.0&provider=admin"
+    <a href="/api-store/apis/info?name=DeviceAgent Service&version=1.0.0&provider=admin"
        class="btn-operations"
        target="_blank"><i class="fw fw-api add-margin-1x"></i> View API</i>
     </a>
@@ -112,17 +112,17 @@
     <hr>
     <ul class="list-unstyled">
         <li class="padding-top-double"><span><h3 class="uppercase">Generate Application</h3></span>
-           <code>curl -k -X POST https://localhost:8243/api-application-registration/register -H
+           <code>curl -k -X POST {{httpsGateway}}/api-application-registration/register -H
             'authorization: Basic Base64(username:password)' -H 'content-type: application/json'
-            -d '{  "applicationName":"testme", "isAllowedToAllDomains":false, "tags":["device_management"]}'</code>
+            -d '{  "applicationName":"testme", "isAllowedToAllDomains":false, "tags":["device_agent"]}'</code>
         </li>
         <li class="padding-top-double"><span><h3 class="uppercase">Generate Token</h3></span>
-            <code>curl -k -d "grant_type=password&username=%username%&password=%password%&scope=perm:devices:add"
+            <code>curl -k -d "grant_type=password&username=%username%&password=%password%&scope=perm:device:enroll perm:device:disenroll perm:device:modify perm:devices:operations"
             -H "Authorization: Basic Base64(client_id:client_secret)"
-            -H "Content-Type: application/x-www-form-urlencoded" https://localhost:8243/token</code>
+            -H "Content-Type: application/x-www-form-urlencoded" {{httpsGateway}}/token</code>
         </li>
         <li class="padding-top-double"><span><h3 class="uppercase">Create Device</h3></span>
-            <code>curl -X POST http://localhost:8280/api/device-mgt/v1.0/devices -H 'accept: application/json'
+            <code>curl -X POST {{httpsGateway}}/api/device-mgt/v1.0/device/agent/enroll -H 'accept: application/json'
             -H 'authorization: Bearer %accessToken%'
             -H 'content-type: application/json' -d '{ "name": "devicename", "type": "{{deviceType}}",
             "description": "descritption", "deviceIdentifier": "1234", "enrolmentInfo":
@@ -214,26 +214,32 @@
     <h2 class="uppercase">Device Communication</h2>
     <hr>
     {{#if event}}
-        <h3 class="uppercase">publish data for analytics :</h3>
+        <h3 class="uppercase">publish device events :</h3>
         {{#if_eq event.transport "MQTT"}}
             MQTT Topic : <code>{{tenantDomain}}/{{deviceType}}/&lt;device_id&gt;/events</code>
+            {{#if eventSample}}
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 padding-double grey-bg">
+                    Device Event Payload
+                    <code>{{eventSample}}</code>
+                    <br>
+                    <br>
+                </div>
+            {{/if}}
         {{/if_eq}}
         {{#if_eq event.transport "HTTP"}}
-            HTTP API : <code>POST: </code>
+            <code> curl -k -X POST {{httpsGateway}}/api/device-mgt/v1.0/device/agent/events/publish/{{deviceType}}/%deviceId%
+                   -H 'authorization: Bearer %accessToken%'
+                   -H 'content-type: application/json'
+                   -d '{"payloadData": [{{sampleValue}}]}'
+            </code>
+
         {{/if_eq}}
-        {{#if eventSample}}
-            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 padding-double grey-bg">
-                Device Event Payload
-                <code>{{eventSample}}</code>
-                <br>
-                <br>
-            </div>
-        {{/if}}
     {{/if}}
     </br>
     <h3 class="uppercase">Retrieve operations</h3>
     {{#if type.deviceTypeMetaDefinition.pushNotificationConfig}}
         {{#if_eq type.deviceTypeMetaDefinition.pushNotificationConfig.type "MQTT"}}
+            MQTT - {{mqttGateway}}
             MQTT Topic : <code>{{tenantDomain}}/{{deviceType}}/&lt;device_id&gt;/operation/#</code>
             <br/>
             Topic Structure:
@@ -256,10 +262,19 @@
             </ul>
         {{/if_eq}}
     {{else}}
-        <a href="/api-store/apis/info?name=DeviceManagement&version=1.0.0&provider=admin"
-           class="btn-operations"
-           target="_blank"><i class="fw fw-api add-margin-1x"></i> View Operation API</i>
-        </a>
+        Retrieve pending operation:
+        <code>curl -k -X GET {{httpsGateway}}/api/device-mgt/v1.0/device/agent/pending/operations/{{deviceType}}/deviceId
+              -H 'authorization: Bearer %accessToken%' -H 'content-type: application/json'</code>
+        </br>
+        Retrieve last pending operation:
+        <code>curl -k -X GET {{httpsGateway}}/api/device-mgt/v1.0/device/agent/last-pending/operation/{{deviceType}}/deviceId
+              -H 'authorization: Bearer %accessToken%' -H 'content-type: application/json'</code>
+        </br>
+        Update operation:
+        <code>curl -k -X PUT {{httpsGateway}}/api/device-mgt/v1.0/device/agent/operations/{{deviceType}}/deviceId
+              -H 'authorization: Bearer %accessToken%' -H 'content-type: application/json' -d '{"enabled": true,"code": "alarm","type": "COMMAND","id": 1,"status": "COMPLETED",
+              "isEnabled": false,"activityId": "ACTIVITY_1"}'</code>
+
     {{/if}}
 
     <br>

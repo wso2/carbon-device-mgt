@@ -168,7 +168,6 @@ if (!user) {
             response.sendError(403);
         }
     } else if (uriMatcher.match("/{context}/api/devices/agent/{type}/{deviceId}/config")) {
-        log.error("matching");
         elements = uriMatcher.elements();
         deviceId = elements.deviceId;
         type = elements.type;

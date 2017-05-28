@@ -169,6 +169,11 @@
         </dependency>
 		<dependency>
 			<groupId>org.wso2.carbon.devicemgt</groupId>
+			<artifactId>org.wso2.carbon.device.mgt.analytics.data.publisher</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.wso2.carbon.devicemgt</groupId>
 			<artifactId>org.wso2.carbon.device.mgt.extensions</artifactId>
 			<scope>provided</scope>
 		</dependency>

@@ -369,7 +369,7 @@ deviceModule = function () {
 		var applicationName = type.replace(" ", "") + "_" + carbonUser.domain;
 		var requestURL = (devicemgtProps["oauthProvider"]["appRegistration"]
 			["apiManagerClientAppRegistrationServiceURL"]).replace("/tenants","");
-		var payload = {applicationName:applicationName, tags:["device_management"],
+		var payload = {applicationName:applicationName, tags:["device_agent"],
 			isAllowedToAllDomains:false, validityPeriod: 3600};
 
 		serviceInvokers.XMLHttp.post(
@@ -386,7 +386,8 @@ deviceModule = function () {
 					//noinspection JSUnresolvedFunction
 					var jwtClient = JWTClientManagerService.getJWTClient();
 					// returning access token by JWT grant type
-					var deviceScope = "device_" + type.replace(" ", "") + "_" + deviceId;
+					var deviceScope = "device_" + type.replace(" ", "") + "_" + deviceId + " perm:device:enroll " +
+						"perm:device:disenroll perm:device:modify perm:devices:operations";
 					var tokenInfo = jwtClient.getAccessToken(config.clientId, config.clientSecret,
 						userName, deviceScope);
 					config.accessToken = tokenInfo.getAccessToken();

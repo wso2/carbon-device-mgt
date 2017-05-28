@@ -135,7 +135,7 @@ function loadDeviceTypes() {
             class: "",
             data: "name",
             render: function (name, type, row, meta) {
-                return '<h4>' + name.replace("devicemgt", ""); + '</h4>';
+                return '<h4>' + name.replace("devicemgt", "") + '</h4>';
             }
         },
         {
@@ -189,7 +189,8 @@ function loadDeviceTypes() {
 
     var options = {
         "placeholder": "Search By Device Type Name",
-        "searchKey": "filter"
+        "searchKey": "filter",
+		"searching": false
     };
     var settings = {
         "sorting": false

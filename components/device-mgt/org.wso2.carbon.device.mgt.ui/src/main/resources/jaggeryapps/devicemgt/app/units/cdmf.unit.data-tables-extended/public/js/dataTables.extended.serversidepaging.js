@@ -50,6 +50,12 @@ $.fn.datatables_extended_serverside_paging = function (settings, url, dataFilter
 
     var deviceType;
     var ownership;
+	var searching = true;
+	if (options) {
+		if (typeof options.searching !== 'undefined') {
+			searching = options.searching;
+		}
+	}
 
     //--- End of EMM related codes
 
@@ -57,7 +63,7 @@ $.fn.datatables_extended_serverside_paging = function (settings, url, dataFilter
         $.extend({}, {
             serverSide: true,
             processing: false,
-            searching: true,
+            searching: searching,
             ordering: false,
             filter: false,
             bSortCellsTop: true,

@@ -77,7 +77,7 @@ public class PushNotificationSchedulerTask implements Runnable {
                     try {
                         if (log.isDebugEnabled()) {
                             log.debug("Sending push notification for operationId :" + operationMapping.getOperationId() +
-                                    "to deviceId : " + operationMapping.getDeviceIdentifier().getId());
+                                    " to deviceId : " + operationMapping.getDeviceIdentifier().getId());
                         }
                         // Set tenant id and domain
                         PrivilegedCarbonContext.startTenantFlow();

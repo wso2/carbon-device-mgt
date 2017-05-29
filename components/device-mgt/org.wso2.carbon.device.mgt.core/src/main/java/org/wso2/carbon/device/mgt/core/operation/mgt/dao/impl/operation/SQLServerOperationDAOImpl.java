@@ -277,9 +277,9 @@ public class SQLServerOperationDAOImpl extends GenericOperationDAOImpl {
         Map<Integer, List<OperationMapping>> operationMappingsTenantMap = new HashMap<>();
         try {
             Connection conn = OperationManagementDAOFactory.getConnection();
-            String sql = "SELECT op.ENROLMENT_ID, op.OPERATION_ID, dt.NAME ,d.TENANT_ID FROM DM_DEVICE d, " +
-                    "DM_ENROLMENT_OP_MAPPING op, DM_DEVICE_TYPE dt  WHERE op.STATUS = ? AND op" +
-                    ".PUSH_NOTIFICATION_STATUS = ? AND d.DEVICE_TYPE_ID = dt.ID " +
+            String sql = "SELECT op.ENROLMENT_ID, op.OPERATION_ID, d.DEVICE_IDENTIFICATION, dt.NAME as DEVICE_TYPE, d" +
+                    ".TENANT_ID FROM DM_DEVICE d, DM_ENROLMENT_OP_MAPPING op, DM_DEVICE_TYPE dt  WHERE op.STATUS = ? " +
+                    "AND op.PUSH_NOTIFICATION_STATUS = ? AND d.DEVICE_TYPE_ID = dt.ID " +
                     "AND d.ID=op.ENROLMENT_ID ORDER BY op.OPERATION_ID OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, opStatus.toString());
@@ -295,8 +295,11 @@ public class SQLServerOperationDAOImpl extends GenericOperationDAOImpl {
                 }
                 operationMapping = new OperationMapping();
                 operationMapping.setOperationId(rs.getInt("OPERATION_ID"));
-                operationMapping.setDeviceIdentifier(new DeviceIdentifier(String.valueOf(rs.getInt("ENROLMENT_ID")),
-                        rs.getString("NAME")));
+                DeviceIdentifier deviceIdentifier = new DeviceIdentifier();
+                deviceIdentifier.setId(rs.getString("DEVICE_IDENTIFICATION"));
+                deviceIdentifier.setType(rs.getString("DEVICE_TYPE"));
+                operationMapping.setDeviceIdentifier(deviceIdentifier);
+                operationMapping.setEnrollmentId(rs.getInt("ENROLMENT_ID"));
                 operationMapping.setTenantId(tenantID);
                 operationMappings.add(operationMapping);
             }

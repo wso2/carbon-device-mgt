@@ -389,6 +389,38 @@ public class DeviceTypeManager implements DeviceManager {
         return requiredDeviceTypeAuthorization;
     }
 
+    private PlatformConfiguration getDefaultConfiguration() throws DeviceManagementException {
+
+        if (log.isDebugEnabled()) {
+            log.debug("Loading default " + deviceType + " platform configuration from " + deviceType +
+                    "-default-platform-configuration.xml");
+        }
+        try {
+            String platformConfigurationPath =
+                    PATH_MOBILE_PLUGIN_CONF_DIR + File.separator + deviceType + "-default-platform-configuration.xml";
+            File platformConfig = new File(platformConfigurationPath);
+
+            if (platformConfig.exists()) {
+                Document doc = DeviceTypeUtils.convertToDocument(platformConfig);
+                JAXBContext context = JAXBContext.newInstance(PlatformConfiguration.class);
+                Unmarshaller unmarshaller = context.createUnmarshaller();
+                return (PlatformConfiguration) unmarshaller.unmarshal(doc);
+            } else {
+                log.warn(deviceType + "-default-platform-configuration.xml is not available, hence default " +
+                        deviceType + "platform configuration cannot be loaded.");
+            }
+            return null;
+        } catch (JAXBException e) {
+            throw new DeviceManagementException(
+                    "Error occurred while parsing the " + deviceType + " default platform configuration : " + e
+                            .getMessage(), e);
+        } catch (DeviceTypeMgtPluginException e) {
+            throw new DeviceManagementException(
+                    "Error occurred while parsing the " + deviceType + " default platform configuration : " + e
+                            .getMessage(), e);
+        }
+    }
+
     @Override
     public PlatformConfiguration getDefaultConfiguration() throws DeviceManagementException {
 

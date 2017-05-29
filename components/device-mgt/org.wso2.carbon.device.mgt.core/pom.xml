@@ -86,7 +86,10 @@
                             io.swagger.annotations.*;resolution:=optional,
                             org.wso2.carbon,
                             org.wso2.carbon.base,
-							org.scannotation.*
+							org.scannotation.*,
+                            org.wso2.carbon.event.processor.stub,
+                            org.wso2.carbon.identity.jwt.client.extension.service,
+                            org.apache.commons.codec.binary
                         </Import-Package>
                         <Export-Package>
                             !org.wso2.carbon.device.mgt.core.internal,
@@ -261,6 +264,20 @@
         <dependency>
             <groupId>org.wso2.carbon.devicemgt</groupId>
             <artifactId>org.wso2.carbon.apimgt.annotations</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.event-processing</groupId>
+            <artifactId>org.wso2.carbon.event.processor.stub</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.devicemgt</groupId>
+            <artifactId>org.wso2.carbon.identity.jwt.client.extension</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>commons-codec.wso2</groupId>
+            <artifactId>commons-codec</artifactId>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>

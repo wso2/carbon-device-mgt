@@ -176,7 +176,8 @@
     "perm:ios:get-restrictions",
     "perm:ios:wipe-data",
     "perm:admin",
-    "perm:devicetype:deployment"
+    "perm:devicetype:deployment",
+    "perm:geo-service:analytics"
   ],
   "isOAuthEnabled": true,
   "backendRestEndpoints": {

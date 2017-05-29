@@ -49,7 +49,7 @@ public class ApplicationRelease {
 
     private Map<String, String> properties;
 
-    private boolean published;
+    private boolean isDefault;
 
     public int getId() {
         return id;
@@ -139,11 +139,11 @@ public class ApplicationRelease {
         this.properties = properties;
     }
 
-    public boolean isPublished() {
-        return published;
+    public boolean isDefault() {
+        return isDefault;
     }
 
-    public void setPublished(boolean published) {
-        this.published = published;
+    public void setDefault(boolean aDefault) {
+        isDefault = aDefault;
     }
 }

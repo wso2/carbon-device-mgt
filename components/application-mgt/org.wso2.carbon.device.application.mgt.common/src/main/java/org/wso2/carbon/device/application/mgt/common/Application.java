@@ -32,6 +32,8 @@ public class Application {
 
     private String uuid;
 
+    private String identifier;
+
     private String name;
 
     private String shortDescription;
@@ -62,8 +64,6 @@ public class Application {
 
     private Date modifiedAt;
 
-    private boolean published;
-
     private LifecycleState lifecycleState;
 
     private Date lifecycleStateModifiedAt;
@@ -91,6 +91,14 @@ public class Application {
 
     public void setUuid(String uuid) {
         this.uuid = uuid;
+    }
+
+    public String getIdentifier() {
+        return identifier;
+    }
+
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
     }
 
     public String getName() {
@@ -211,14 +219,6 @@ public class Application {
 
     public void setModifiedAt(Date modifiedAt) {
         this.modifiedAt = modifiedAt;
-    }
-
-    public boolean isPublished() {
-        return published;
-    }
-
-    public void setPublished(boolean published) {
-        this.published = published;
     }
 
     public LifecycleState getLifecycleState() {

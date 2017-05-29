@@ -266,3 +266,8 @@ header .username {
 .add-padding-top-3x {
     padding-top: 15px !important;
 }
+
+.op-disabled, .op-disabled i, .op-disabled span{
+    cursor: not-allowed;
+    color: #d2d2d2;
+}

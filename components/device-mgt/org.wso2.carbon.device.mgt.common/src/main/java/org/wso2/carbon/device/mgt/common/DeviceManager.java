@@ -156,5 +156,4 @@ public interface DeviceManager {
      * @return Returns boolean status to enable or disable device-authentication.
      */
     boolean requireDeviceAuthorization();
-
 }

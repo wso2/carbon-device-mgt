@@ -20,6 +20,7 @@ package org.wso2.carbon.device.mgt.extensions.device.type.deployer.template;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.w3c.dom.Document;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
@@ -42,12 +43,14 @@ import org.wso2.carbon.device.mgt.extensions.device.type.deployer.template.util.
 import org.wso2.carbon.device.mgt.extensions.license.mgt.registry.RegistryBasedLicenseManager;
 import org.wso2.carbon.registry.api.RegistryException;
 import org.wso2.carbon.registry.api.Resource;
+import org.wso2.carbon.utils.CarbonUtils;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
+import java.io.File;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.nio.charset.Charset;
@@ -63,9 +66,14 @@ public class DeviceTypeManager implements DeviceManager {
     private String deviceType;
     private DeviceTypePluginDAOManager deviceTypePluginDAOManager;
     private LicenseManager licenseManager;
+    private PlatformConfiguration defaultPlatformConfiguration;
     private boolean propertiesExist;
     private boolean requiredDeviceTypeAuthorization;
     private boolean claimable;
+
+    private static final String PATH_MOBILE_PLUGIN_CONF_DIR =
+            CarbonUtils.getEtcCarbonConfigDirPath() + File.separator + "device-mgt-plugin-configs" + File.separator
+                    + "mobile";
 
     private FeatureManager featureManager;
 
@@ -105,6 +113,14 @@ public class DeviceTypeManager implements DeviceManager {
         claimable = false;
         if (deviceTypeConfiguration.getClaimable() != null ) {
             claimable = deviceTypeConfiguration.getClaimable().isEnabled();
+        }
+
+        // Loading default platform configuration
+        try {
+            defaultPlatformConfiguration = this.getDefaultConfiguration();
+        } catch (DeviceManagementException e) {
+            String msg = "Error occurred while default platform configuration";
+            throw new DeviceTypeDeployerFileException(msg, e);
         }
 
         DeviceDetails deviceDetails = deviceTypeConfiguration.getDeviceDetails();
@@ -205,6 +221,8 @@ public class DeviceTypeManager implements DeviceManager {
                 return (PlatformConfiguration) unmarshaller.unmarshal(
                         new StringReader(new String((byte[]) resource.getContent(), Charset.
                                 forName(DeviceTypePluginConstants.CHARSET_UTF8))));
+            } else if (defaultPlatformConfiguration != null) {
+                return defaultPlatformConfiguration;
             }
             return null;
         } catch (DeviceTypeMgtPluginException e) {
@@ -369,6 +387,38 @@ public class DeviceTypeManager implements DeviceManager {
     @Override
     public boolean requireDeviceAuthorization() {
         return requiredDeviceTypeAuthorization;
+    }
+
+    private PlatformConfiguration getDefaultConfiguration() throws DeviceManagementException {
+
+        if (log.isDebugEnabled()) {
+            log.debug("Loading default " + deviceType + " platform configuration from " + deviceType +
+                    "-default-platform-configuration.xml");
+        }
+        try {
+            String platformConfigurationPath =
+                    PATH_MOBILE_PLUGIN_CONF_DIR + File.separator + deviceType + "-default-platform-configuration.xml";
+            File platformConfig = new File(platformConfigurationPath);
+
+            if (platformConfig.exists()) {
+                Document doc = DeviceTypeUtils.convertToDocument(platformConfig);
+                JAXBContext context = JAXBContext.newInstance(PlatformConfiguration.class);
+                Unmarshaller unmarshaller = context.createUnmarshaller();
+                return (PlatformConfiguration) unmarshaller.unmarshal(doc);
+            } else {
+                log.warn(deviceType + "-default-platform-configuration.xml is not available, hence default " +
+                        deviceType + "platform configuration cannot be loaded.");
+            }
+            return null;
+        } catch (JAXBException e) {
+            throw new DeviceManagementException(
+                    "Error occurred while parsing the " + deviceType + " default platform configuration : " + e
+                            .getMessage(), e);
+        } catch (DeviceTypeMgtPluginException e) {
+            throw new DeviceManagementException(
+                    "Error occurred while parsing the " + deviceType + " default platform configuration : " + e
+                            .getMessage(), e);
+        }
     }
 
     @Override

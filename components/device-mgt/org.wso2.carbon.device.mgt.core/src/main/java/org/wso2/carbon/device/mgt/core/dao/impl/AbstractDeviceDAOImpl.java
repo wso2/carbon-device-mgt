@@ -122,7 +122,7 @@ public abstract class AbstractDeviceDAOImpl implements DeviceDAO {
                     "e.DATE_OF_ENROLMENT, e.ID AS ENROLMENT_ID FROM DM_ENROLMENT e, (SELECT d.ID, d.DESCRIPTION, d.NAME, " +
                     "t.NAME AS DEVICE_TYPE, d.DEVICE_IDENTIFICATION FROM DM_DEVICE d, DM_DEVICE_TYPE t WHERE " +
                     "t.NAME = ? AND d.DEVICE_IDENTIFICATION = ? AND d.TENANT_ID = ?) d1 WHERE d1.ID = e.DEVICE_ID " +
-                    "AND TENANT_ID = ?";
+                    "AND TENANT_ID = ? ORDER BY e.DATE_OF_LAST_UPDATE DESC";
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, deviceIdentifier.getType());
             stmt.setString(2, deviceIdentifier.getId());
@@ -165,7 +165,7 @@ public abstract class AbstractDeviceDAOImpl implements DeviceDAO {
             stmt.setInt(paramIdx, tenantId);
             rs = stmt.executeQuery();
             if (rs.next()) {
-                device = DeviceManagementDAOUtil.loadMatchingDevice(rs, true);
+                device = DeviceManagementDAOUtil.loadMatchingDevice(rs, false);
             }
         } catch (SQLException e) {
             throw new DeviceManagementDAOException("Error occurred while listing device for type " +
@@ -223,7 +223,7 @@ public abstract class AbstractDeviceDAOImpl implements DeviceDAO {
                     "d1.DEVICE_IDENTIFICATION, e.OWNER, e.OWNERSHIP, e.STATUS, e.DATE_OF_LAST_UPDATE, " +
                     "e.DATE_OF_ENROLMENT, e.ID AS ENROLMENT_ID FROM DM_ENROLMENT e, (SELECT d.ID, d.DESCRIPTION, d.NAME, " +
                     "t.NAME AS DEVICE_TYPE, d.DEVICE_IDENTIFICATION FROM DM_DEVICE d, DM_DEVICE_TYPE t WHERE " +
-                    "t.NAME = ? AND d.DEVICE_IDENTIFICATION = ? ) d1 WHERE d1.ID = e.DEVICE_ID ";
+                    "t.NAME = ? AND d.DEVICE_IDENTIFICATION = ? ) d1 WHERE d1.ID = e.DEVICE_ID ORDER BY e.DATE_OF_LAST_UPDATE DESC";
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, deviceIdentifier.getType());
             stmt.setString(2, deviceIdentifier.getId());
@@ -254,7 +254,7 @@ public abstract class AbstractDeviceDAOImpl implements DeviceDAO {
                          "e.DATE_OF_ENROLMENT, e.ID AS ENROLMENT_ID FROM DM_ENROLMENT e, (SELECT d.ID, d.DESCRIPTION, d.NAME, " +
                          "t.NAME AS DEVICE_TYPE, d.DEVICE_IDENTIFICATION FROM DM_DEVICE d, DM_DEVICE_TYPE t WHERE " +
                          "d.ID = ? AND d.TENANT_ID = ?) d1 WHERE d1.ID = e.DEVICE_ID " +
-                         "AND TENANT_ID = ?";
+                         "AND TENANT_ID = ? ORDER BY e.DATE_OF_LAST_UPDATE DESC";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, deviceId);
             stmt.setInt(2, tenantId);

@@ -16,5 +16,9 @@
   under the License.
 }}
 {{#zone "favicon"}}
-    <link rel="shortcut icon" href="{{@unit.publicUri}}/img/favicon.png" />
+    {{#if isCloud}}
+        <link rel="shortcut icon" href="{{@unit.publicUri}}/img/cloud-favicon.png" />
+    {{else}}
+        <link rel="shortcut icon" href="{{@unit.publicUri}}/img/favicon.png" />
+    {{/if}}
 {{/zone}}

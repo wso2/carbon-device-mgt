@@ -40,6 +40,7 @@ import org.wso2.carbon.device.mgt.common.push.notification.NotificationContext;
 import org.wso2.carbon.device.mgt.common.push.notification.NotificationStrategy;
 import org.wso2.carbon.device.mgt.common.push.notification.PushNotificationExecutionFailedException;
 import org.wso2.carbon.device.mgt.core.DeviceManagementConstants;
+import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
 import org.wso2.carbon.device.mgt.core.dao.DeviceDAO;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
@@ -130,7 +131,7 @@ public class OperationManagerImpl implements OperationManager {
                 DeviceIDHolder deviceAuthorizationResult = this.authorizeDevices(operation, validDeviceIds);
                 List<DeviceIdentifier> authorizedDeviceList = deviceAuthorizationResult.getValidDeviceIDList();
                 if (authorizedDeviceList.size() <= 0) {
-                    log.info("User : " + getUser() + " is not authorized to perform operations on given device-list.");
+                    log.warn("User : " + getUser() + " is not authorized to perform operations on given device-list.");
                     Activity activity = new Activity();
                     //Send the operation statuses only for admin triggered operations
                     String deviceType = validDeviceIds.get(0).getType();
@@ -145,6 +146,16 @@ public class OperationManagerImpl implements OperationManager {
                 int operationId = this.lookupOperationDAO(operation).addOperation(operationDto);
                 boolean isScheduledOperation = this.isTaskScheduledOperation(operation, deviceIds);
                 boolean isNotRepeated = false;
+                boolean isScheduled = false;
+
+                // check whether device list is greater than batch size notification strategy has enable to send push
+                // notification using scheduler task
+                if (DeviceConfigurationManager.getInstance().getDeviceManagementConfig().
+                        getPushNotificationConfiguration().getSchedulerBatchSize() <= authorizedDeviceList.size() &&
+                        notificationStrategy != null) {
+                    isScheduled = notificationStrategy.getConfig().isScheduled();
+                }
+
                 boolean hasExistingTaskOperation;
                 int enrolmentId;
                 if (org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Control.NO_REPEAT == operationDto.
@@ -161,7 +172,7 @@ public class OperationManagerImpl implements OperationManager {
                     if (isScheduledOperation) {
                         hasExistingTaskOperation = operationDAO.updateTaskOperation(enrolmentId, operationCode);
                         if (!hasExistingTaskOperation) {
-                            operationMappingDAO.addOperationMapping(operationId, enrolmentId);
+                            operationMappingDAO.addOperationMapping(operationId, enrolmentId, isScheduled);
                         }
                     } else if (isNotRepeated) {
                         operationDAO.updateEnrollmentOperationsStatus(enrolmentId, operationCode,
@@ -169,17 +180,27 @@ public class OperationManagerImpl implements OperationManager {
                                                                               Operation.Status.PENDING,
                                                                       org.wso2.carbon.device.mgt.core.dto.operation.mgt.
                                                                               Operation.Status.REPEATED);
-                        operationMappingDAO.addOperationMapping(operationId, enrolmentId);
+                        operationMappingDAO.addOperationMapping(operationId, enrolmentId, isScheduled);
                     } else {
-                        operationMappingDAO.addOperationMapping(operationId, enrolmentId);
+                        operationMappingDAO.addOperationMapping(operationId, enrolmentId, isScheduled);
                     }
-                    if (notificationStrategy != null) {
+                    /*
+                    If notification strategy has not enable to send push notification using scheduler task
+                    we will send notification immediately
+                    */
+                    if (notificationStrategy != null && !isScheduled) {
                         try {
+                            if (log.isDebugEnabled()) {
+                                log.debug("Sending push notification to " + deviceId + " from add operation method.");
+                            }
                             notificationStrategy.execute(new NotificationContext(deviceId, operation));
+                            operationMappingDAO.updateOperationMapping(operationId, enrolmentId, org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.PushNotificationStatus.COMPLETED);
                         } catch (PushNotificationExecutionFailedException e) {
                             log.error("Error occurred while sending push notifications to " +
                                       deviceId.getType() + " device carrying id '" +
                                       deviceId + "'", e);
+                            // Reschedule if push notification failed.
+                            operationMappingDAO.updateOperationMapping(operationId, enrolmentId, org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.PushNotificationStatus.SCHEDULED);
                         }
                     }
                 }

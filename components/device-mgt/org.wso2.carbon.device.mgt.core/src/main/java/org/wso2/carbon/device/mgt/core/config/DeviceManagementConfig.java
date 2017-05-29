@@ -20,6 +20,7 @@ package org.wso2.carbon.device.mgt.core.config;
 import org.wso2.carbon.device.mgt.core.config.identity.IdentityConfigurations;
 import org.wso2.carbon.device.mgt.core.config.pagination.PaginationConfiguration;
 import org.wso2.carbon.device.mgt.core.config.policy.PolicyConfiguration;
+import org.wso2.carbon.device.mgt.core.config.push.notification.PushNotificationConfiguration;
 import org.wso2.carbon.device.mgt.core.config.task.TaskConfiguration;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -39,7 +40,7 @@ public final class DeviceManagementConfig {
     private IdentityConfigurations identityConfigurations;
     private PolicyConfiguration policyConfiguration;
     private PaginationConfiguration paginationConfiguration;
-    private List<String> pushNotificationProviders;
+    private PushNotificationConfiguration pushNotificationConfiguration;
 
 
     @XmlElement(name = "ManagementRepository", required = true)
@@ -79,16 +80,6 @@ public final class DeviceManagementConfig {
         this.taskConfiguration = taskConfiguration;
     }
 
-    @XmlElementWrapper(name = "PushNotificationProviders", required = true)
-    @XmlElement(name = "Provider", required = true)
-    public List<String> getPushNotificationProviders() {
-        return pushNotificationProviders;
-    }
-
-    public void setPushNotificationProviders(List<String> pushNotificationProviders) {
-        this.pushNotificationProviders = pushNotificationProviders;
-    }
-
     @XmlElement(name = "PaginationConfiguration", required = true)
     public PaginationConfiguration getPaginationConfiguration() {
         return paginationConfiguration;
@@ -98,5 +89,13 @@ public final class DeviceManagementConfig {
         this.paginationConfiguration = paginationConfiguration;
     }
 
+    @XmlElement(name = "PushNotificationConfiguration", required = true)
+    public PushNotificationConfiguration getPushNotificationConfiguration() {
+        return pushNotificationConfiguration;
+    }
+
+    public void setPushNotificationConfiguration(PushNotificationConfiguration pushNotificationConfiguration) {
+        this.pushNotificationConfiguration = pushNotificationConfiguration;
+    }
 }
 

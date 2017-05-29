@@ -18,10 +18,20 @@
  */
 package org.wso2.carbon.device.mgt.core.operation.mgt.dao;
 
+import org.wso2.carbon.device.mgt.core.operation.mgt.OperationMapping;
+import org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation;
+
+import java.util.List;
+
 public interface OperationMappingDAO {
 
-    void addOperationMapping(int operationId, Integer deviceIds) throws OperationManagementDAOException;
+    void addOperationMapping(int operationId, Integer deviceId, boolean isScheduled) throws OperationManagementDAOException;
 
-    void removeOperationMapping(int operationId, Integer deviceIds) throws OperationManagementDAOException;
+    void removeOperationMapping(int operationId, Integer deviceId) throws OperationManagementDAOException;
+
+    void updateOperationMapping(int operationId, Integer deviceId, Operation.PushNotificationStatus pushNotificationStatus) throws
+            OperationManagementDAOException;
+    void updateOperationMapping(List<OperationMapping> operationMappingList) throws
+            OperationManagementDAOException;
 
 }

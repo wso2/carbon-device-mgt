@@ -612,6 +612,9 @@ var userModule = function () {
         if (publicMethods.isAuthorized("/permission/admin/device-mgt/devices/change-status")) {
             permissions["CHANGE_DEVICE_STATUS"] = true;
         }
+		if (publicMethods.isAuthorized("/permission/admin/device-mgt")) {
+			permissions["IS_ADMIN"] = true;
+		}
 
         return permissions;
     };

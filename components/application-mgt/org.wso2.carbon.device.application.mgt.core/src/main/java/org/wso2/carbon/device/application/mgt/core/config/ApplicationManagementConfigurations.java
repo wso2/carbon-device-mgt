@@ -18,6 +18,8 @@
  */
 package org.wso2.carbon.device.application.mgt.core.config;
 
+import org.wso2.carbon.device.application.mgt.core.config.extensions.ExtensionsConfig;
+
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -26,6 +28,8 @@ public class ApplicationManagementConfigurations {
 
     private ApplicationManagementRepository applicationManagerRepository;
 
+    private ExtensionsConfig extensionsConfig;
+
     @XmlElement(name = "ManagementRepository", required = true)
     public ApplicationManagementRepository getApplicationManagerRepository() {
         return applicationManagerRepository;
@@ -33,6 +37,15 @@ public class ApplicationManagementConfigurations {
 
     public void setApplicationManagerRepository(ApplicationManagementRepository applicationManagerRepository) {
         this.applicationManagerRepository = applicationManagerRepository;
+    }
+
+    @XmlElement(name = "ExtensionsConfig", required = false)
+    public ExtensionsConfig getExtensionsConfig() {
+        return extensionsConfig;
+    }
+
+    public void setExtensionsConfig(ExtensionsConfig extensionsConfig) {
+        this.extensionsConfig = extensionsConfig;
     }
 }
 

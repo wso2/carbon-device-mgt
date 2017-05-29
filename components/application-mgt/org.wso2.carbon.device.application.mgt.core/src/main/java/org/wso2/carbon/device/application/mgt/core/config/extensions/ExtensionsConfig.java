@@ -16,8 +16,22 @@
  *   under the License.
  *
  */
-package org.wso2.carbon.device.application.mgt.common.services;
+package org.wso2.carbon.device.application.mgt.core.config.extensions;
 
-public interface ApplicationManagementExtensionsService {
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
+@XmlRootElement(name = "ExtensionsConfig")
+public class ExtensionsConfig {
+
+    private Extensions extensions;
+
+    @XmlElement(name = "Extensions", nillable = true)
+    public Extensions getExtensions() {
+        return extensions;
+    }
+
+    public void setExtensions(Extensions extensions) {
+        this.extensions = extensions;
+    }
 }

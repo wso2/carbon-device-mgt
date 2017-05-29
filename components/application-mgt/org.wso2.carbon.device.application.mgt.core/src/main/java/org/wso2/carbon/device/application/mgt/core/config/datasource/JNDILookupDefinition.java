@@ -40,7 +40,7 @@ public class JNDILookupDefinition {
     }
 
     @XmlElementWrapper(name = "Environment", nillable = false)
-    @XmlElement(name = "Property", nillable = false)
+    @XmlElement(name = "Parameters", nillable = false)
     public List<JNDIProperty> getJndiProperties() {
         return jndiProperties;
     }
@@ -49,7 +49,7 @@ public class JNDILookupDefinition {
         this.jndiProperties = jndiProperties;
     }
 
-    @XmlRootElement(name = "Property")
+    @XmlRootElement(name = "Parameters")
     public static class JNDIProperty {
 
         private String name;

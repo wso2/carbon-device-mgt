@@ -16,13 +16,10 @@
  *   under the License.
  *
  */
-package org.wso2.carbon.device.application.mgt.core.dao.common;
+package org.wso2.carbon.device.application.mgt.extensions.appupload;
 
-import org.wso2.carbon.device.application.mgt.common.services.ApplicationManagementExtensionsService;
+import org.wso2.carbon.device.application.mgt.common.services.ApplicationManagementService;
 
-public class ApplicationManagementExtensionsFactory {
+public interface AppUploadManager {
 
-    public ApplicationManagementExtensionsService getExtensionsService(Class managerClass) throws Exception {
-        return (ApplicationManagementExtensionsService) managerClass.newInstance();
-    }
 }

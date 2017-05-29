@@ -49,10 +49,7 @@
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Bundle-Version>${carbon.device.mgt.version}</Bundle-Version>
-                        <Bundle-Description>Application Management Core Bundle</Bundle-Description>
-                        <Private-Package>
-                            org.wso2.carbon.device.application.mgt.core.internal
-                        </Private-Package>
+                        <Bundle-Description>Application Management Extensions Bundle</Bundle-Description>
                         <Import-Package>
                             org.osgi.framework,
                             org.osgi.service.component,
@@ -73,8 +70,7 @@
                             org.wso2.carbon.device.mgt.common.*,
                         </Import-Package>
                         <Export-Package>
-                            !org.wso2.carbon.device.application.mgt.core.internal.*,
-                            org.wso2.carbon.device.application.mgt.core.*
+                            org.wso2.carbon.device.application.mgt.extensions.*
                         </Export-Package>
                     </instructions>
                 </configuration>

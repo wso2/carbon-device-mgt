@@ -20,18 +20,14 @@ package org.wso2.carbon.device.application.mgt.core.services.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.device.application.mgt.common.exception.DBConnectionException;
-import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagerException;
-import org.wso2.carbon.device.application.mgt.common.Application;
-import org.wso2.carbon.device.application.mgt.common.ApplicationList;
-import org.wso2.carbon.device.application.mgt.common.Filter;
 import org.wso2.carbon.device.application.mgt.common.services.*;
-import org.wso2.carbon.device.application.mgt.core.dao.ApplicationDAO;
-import org.wso2.carbon.device.application.mgt.core.dao.common.ApplicationManagementDAOException;
-import org.wso2.carbon.device.application.mgt.core.dao.common.ApplicationManagementDAOFactory;
-import org.wso2.carbon.device.application.mgt.core.util.ConnectionManagerUtil;
+import org.wso2.carbon.device.application.mgt.core.config.ApplicationConfigurationManager;
+import org.wso2.carbon.device.application.mgt.core.config.extensions.Extension;
+import org.wso2.carbon.device.application.mgt.core.config.extensions.ExtensionsConfig;
 
 public class ApplicationManagementServiceFactory {
+
+    private static Log log = LogFactory.getLog(ApplicationManagementServiceFactory.class);
 
     public enum ManagerService {
         APPLICATION_MANAGER,
@@ -54,5 +50,31 @@ public class ApplicationManagementServiceFactory {
             default:
                 return null;
         }
+    }
+
+    public ApplicationManagementExtension applicationManagementExtensionsService(String extensionName) {
+        ApplicationConfigurationManager applicationConfigurationManager = ApplicationConfigurationManager.getInstance();
+
+        ExtensionsConfig extensionConfig = applicationConfigurationManager
+                .getApplicationManagerConfiguration().getExtensionsConfig();
+
+        Extension extension = extensionConfig.getExtensions().getExtensionByName(extensionName);
+
+        try {
+            Class<?> theClass = Class.forName(extension.getClassName());
+            ApplicationManagementExtension appManagementExtension = (ApplicationManagementExtension) theClass.newInstance();
+            appManagementExtension.setParameters(extension.getParameters());
+            return appManagementExtension;
+        } catch (ClassNotFoundException e) {
+           log.error("Class not Found", e);
+        } catch (IllegalAccessException e) {
+            log.error("Illegal Access of Class", e);
+        } catch (InstantiationException e) {
+            log.error("Class instantiation exception", e);
+        }
+
+
+        return null;
+
     }
 }

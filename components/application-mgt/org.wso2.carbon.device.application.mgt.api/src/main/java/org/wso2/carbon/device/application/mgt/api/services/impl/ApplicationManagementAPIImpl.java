@@ -26,6 +26,7 @@ import org.wso2.carbon.device.application.mgt.common.ApplicationList;
 import org.wso2.carbon.device.application.mgt.common.services.ApplicationManager;
 import org.wso2.carbon.device.application.mgt.api.util.ApplicationMgtAPIUtil;
 import org.wso2.carbon.device.application.mgt.core.services.impl.ApplicationManagementServiceFactory;
+import org.wso2.carbon.device.application.mgt.extensions.appupload.AppUploadManager;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
@@ -39,6 +40,8 @@ public class ApplicationManagementAPIImpl {
 
     public static final int DEFAULT_LIMIT = 20;
 
+    public static final String APPLICATION_UPLOAD_EXTENSION = "ApplicationUploadExtension";
+
     private static Log log = LogFactory.getLog(ApplicationManagementAPIImpl.class);
 
 
@@ -50,6 +53,10 @@ public class ApplicationManagementAPIImpl {
         ApplicationManagementServiceFactory serviceFactory = ApplicationMgtAPIUtil.getApplicationManagementServiceFactory();
         ApplicationManager applicationManager = (ApplicationManager) serviceFactory
                 .getApplicationManagementService(APPLICATION_MANAGER);
+
+        AppUploadManager appUploadManager = (AppUploadManager) serviceFactory
+                .applicationManagementExtensionsService(APPLICATION_UPLOAD_EXTENSION);
+
         try {
 
             if (limit == 0) {

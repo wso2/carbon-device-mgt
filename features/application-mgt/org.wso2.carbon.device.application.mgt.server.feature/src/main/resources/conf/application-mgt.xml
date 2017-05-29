@@ -10,4 +10,16 @@
         </DataSourceConfiguration>
     </ManagementRepository>
 
+
+    <ExtensionsConfig>
+        <Extensions>
+            <Extension name="ApplicationUploadExtension">
+                <ClassName>org.wso2.carbon.device.application.mgt.extensions.appupload.AppUploadManagerImpl</ClassName>
+                <Parameters>
+                    <Parameter name="UploadPath">repository/resources/mobileapps</Parameter>
+                </Parameters>
+            </Extension>
+        </Extensions>
+    </ExtensionsConfig>
+
 </ApplicationManagementConfigurations>

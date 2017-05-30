@@ -151,7 +151,7 @@ public class OperationManagerImpl implements OperationManager {
                 // check whether device list is greater than batch size notification strategy has enable to send push
                 // notification using scheduler task
                 if (DeviceConfigurationManager.getInstance().getDeviceManagementConfig().
-                        getPushNotificationConfiguration().getSchedulerBatchSize() < authorizedDeviceList.size() &&
+                        getPushNotificationConfiguration().getSchedulerBatchSize() <= authorizedDeviceList.size() &&
                         notificationStrategy != null) {
                     isScheduled = notificationStrategy.getConfig().isScheduled();
                 }

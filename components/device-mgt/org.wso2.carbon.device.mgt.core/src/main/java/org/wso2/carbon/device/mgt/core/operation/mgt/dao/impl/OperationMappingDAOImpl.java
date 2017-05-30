@@ -18,6 +18,7 @@
  */
 package org.wso2.carbon.device.mgt.core.operation.mgt.dao.impl;
 
+import org.wso2.carbon.device.mgt.core.operation.mgt.OperationEnrolmentMapping;
 import org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.core.operation.mgt.OperationMapping;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOException;
@@ -27,7 +28,9 @@ import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationMappingDAO;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class OperationMappingDAOImpl implements OperationMappingDAO {
@@ -128,5 +131,47 @@ public class OperationMappingDAOImpl implements OperationMappingDAO {
         } finally {
             OperationManagementDAOUtil.cleanupResources(stmt, null);
         }
+    }
+
+    @Override
+    public List<OperationEnrolmentMapping> getFirstPendingOperationMappingsForActiveEnrolments(long createdTimeStamp)
+            throws OperationManagementDAOException {
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        List<OperationEnrolmentMapping> enrolmentOperationMappingList = null;
+        try {
+            Connection conn = OperationManagementDAOFactory.getConnection();
+            //We are specifically looking for operation mappings in 'Pending' & 'Repeated' states. Further we want
+            //devices to be active at that moment. Hence filtering by 'ACTIVE' & 'UNREACHABLE' device states.
+            String sql = "SELECT E.ID AS ENROLMENT_ID, E.DEVICE_ID, E.OWNER, E.STATUS, E.TENANT_ID, OP.CREATED_TIMESTAMP " +
+                    "FROM DM_ENROLMENT E, (SELECT ENROLMENT_ID AS EID, MIN(CREATED_TIMESTAMP) AS CREATED_TIMESTAMP FROM " +
+                    "DM_ENROLMENT_OP_MAPPING WHERE STATUS IN ('PENDING','REPEATED') AND CREATED_TIMESTAMP >= ? " +
+                    "GROUP BY EID) OP WHERE OP.EID=E.ID AND E.STATUS IN ('ACTIVE','UNREACHABLE')";
+            stmt = conn.prepareStatement(sql);
+            stmt.setLong(1, createdTimeStamp);
+            rs = stmt.executeQuery();
+            enrolmentOperationMappingList = new ArrayList<>();
+            while (rs.next()) {
+                OperationEnrolmentMapping enrolmentOperationMapping = this.getEnrolmentOpMapping(rs);
+                enrolmentOperationMappingList.add(enrolmentOperationMapping);
+            }
+        } catch (SQLException e) {
+            throw new OperationManagementDAOException("Error occurred while fetching pending operation mappings for " +
+                    "active devices ", e);
+        } finally {
+            OperationManagementDAOUtil.cleanupResources(stmt, rs);
+        }
+        return enrolmentOperationMappingList;
+    }
+
+    private OperationEnrolmentMapping getEnrolmentOpMapping(ResultSet rs) throws SQLException {
+        OperationEnrolmentMapping enrolmentOperationMapping = new OperationEnrolmentMapping();
+        enrolmentOperationMapping.setEnrolmentId(rs.getInt("ENROLMENT_ID"));
+        enrolmentOperationMapping.setDeviceId(rs.getInt("DEVICE_ID"));
+        enrolmentOperationMapping.setTenantId(rs.getInt("TENANT_ID"));
+        enrolmentOperationMapping.setOwner(rs.getString("OWNER"));
+        enrolmentOperationMapping.setCreatedTime(rs.getLong("CREATED_TIMESTAMP"));
+        enrolmentOperationMapping.setDeviceStatus(rs.getString("STATUS"));
+        return enrolmentOperationMapping;
     }
 }

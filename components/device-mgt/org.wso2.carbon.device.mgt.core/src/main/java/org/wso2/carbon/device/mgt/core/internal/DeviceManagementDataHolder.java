@@ -18,6 +18,7 @@
 
 package org.wso2.carbon.device.mgt.core.internal;
 
+import org.wso2.carbon.device.mgt.common.DeviceStatusTaskPluginConfig;
 import org.wso2.carbon.device.mgt.common.OperationMonitoringTaskConfig;
 import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManager;
 import org.wso2.carbon.device.mgt.common.authorization.DeviceAccessAuthorizationService;
@@ -28,6 +29,7 @@ import org.wso2.carbon.device.mgt.core.config.license.LicenseConfig;
 import org.wso2.carbon.device.mgt.core.push.notification.mgt.PushNotificationProviderRepository;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.device.mgt.core.service.GroupManagementProviderService;
+import org.wso2.carbon.device.mgt.core.status.task.DeviceStatusTaskManagerService;
 import org.wso2.carbon.device.mgt.core.task.DeviceTaskManagerService;
 import org.wso2.carbon.email.sender.core.service.EmailSenderService;
 import org.wso2.carbon.ntask.core.service.TaskService;
@@ -36,6 +38,7 @@ import org.wso2.carbon.user.core.service.RealmService;
 import org.wso2.carbon.user.core.tenant.TenantManager;
 import org.wso2.carbon.utils.ConfigurationContextService;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -59,6 +62,9 @@ public class DeviceManagementDataHolder {
     private EmailSenderService emailSenderService;
     private PushNotificationProviderRepository pushNotificationProviderRepository;
     private DeviceTaskManagerService deviceTaskManagerService;
+    private DeviceStatusTaskManagerService deviceStatusTaskManagerService;
+    private Map<String, DeviceStatusTaskPluginConfig> deviceStatusTaskPluginConfigs = Collections.synchronizedMap(
+            new HashMap<String, DeviceStatusTaskPluginConfig>());
 
     private Map<String, OperationMonitoringTaskConfig> map = new HashMap<>();
 
@@ -191,7 +197,6 @@ public class DeviceManagementDataHolder {
         this.deviceAccessAuthorizationService = deviceAccessAuthorizationService;
     }
 
-
     public TaskService getTaskService() {
         return taskService;
     }
@@ -223,5 +228,29 @@ public class DeviceManagementDataHolder {
 
     public void setDeviceTaskManagerService(DeviceTaskManagerService deviceTaskManagerService) {
         this.deviceTaskManagerService = deviceTaskManagerService;
+    }
+
+    public DeviceStatusTaskManagerService getDeviceStatusTaskManagerService() {
+        return deviceStatusTaskManagerService;
+    }
+
+    public void setDeviceStatusTaskManagerService(DeviceStatusTaskManagerService deviceStatusTaskManagerService) {
+        this.deviceStatusTaskManagerService = deviceStatusTaskManagerService;
+    }
+
+    public void addDeviceStatusTaskPluginConfig(String deviceType, DeviceStatusTaskPluginConfig deviceStatusTaskPluginConfig) {
+        this.deviceStatusTaskPluginConfigs.put(deviceType, deviceStatusTaskPluginConfig);
+    }
+
+    public DeviceStatusTaskPluginConfig getDeviceStatusTaskPluginConfig(String deviceType) {
+        return this.deviceStatusTaskPluginConfigs.get(deviceType);
+    }
+
+    public Map<String, DeviceStatusTaskPluginConfig> getDeviceStatusTaskPluginConfigs() {
+        return this.deviceStatusTaskPluginConfigs;
+    }
+
+    public void removeDeviceStatusTaskPluginConfig(String deviceType) {
+        this.deviceStatusTaskPluginConfigs.remove(deviceType);
     }
 }

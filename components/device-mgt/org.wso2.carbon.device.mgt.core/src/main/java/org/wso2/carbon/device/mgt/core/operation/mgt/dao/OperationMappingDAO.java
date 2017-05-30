@@ -18,6 +18,7 @@
  */
 package org.wso2.carbon.device.mgt.core.operation.mgt.dao;
 
+import org.wso2.carbon.device.mgt.core.operation.mgt.OperationEnrolmentMapping;
 import org.wso2.carbon.device.mgt.core.operation.mgt.OperationMapping;
 import org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation;
 
@@ -33,5 +34,15 @@ public interface OperationMappingDAO {
             OperationManagementDAOException;
     void updateOperationMapping(List<OperationMapping> operationMappingList) throws
             OperationManagementDAOException;
+
+    /**
+     * This method returns first pending/repeated operation available for each active enrolment where the operation was
+     * created after the given timestamp.
+     *
+     * @param createdTimeStamp - Operation created time
+     * @throws OperationManagementDAOException
+     */
+    List<OperationEnrolmentMapping> getFirstPendingOperationMappingsForActiveEnrolments(long createdTimeStamp)
+            throws OperationManagementDAOException;
 
 }

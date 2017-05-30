@@ -45,7 +45,7 @@ public interface DeviceTaskManager {
 //    String getTaskImplementedClazz() throws DeviceMgtTaskException;
 
     /**
-     * This method checks wheather task is enabled in config file.
+     * This method checks weather task is enabled in config file.
      * @return - return true or false
      * @throws DeviceMgtTaskException
      */

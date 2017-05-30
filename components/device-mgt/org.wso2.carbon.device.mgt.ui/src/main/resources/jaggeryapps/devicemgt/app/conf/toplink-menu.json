@@ -41,7 +41,7 @@
           "id": "device_cloud",
           "url": "https://docs.wso2.com/display/DeviceCloud/WSO2+Device+Cloud+Documentation",
           "icon": "fw fw-mobile",
-          "target": "_self"
+          "target": "_blank"
         }
       }
     }

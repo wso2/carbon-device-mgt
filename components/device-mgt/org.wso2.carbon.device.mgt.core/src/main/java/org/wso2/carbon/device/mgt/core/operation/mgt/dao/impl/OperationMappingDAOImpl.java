@@ -109,7 +109,7 @@ public class OperationMappingDAOImpl implements OperationMappingDAO {
             if (conn.getMetaData().supportsBatchUpdates()) {
                 for (OperationMapping operationMapping : operationMappingList) {
                     stmt.setString(1, operationMapping.getPushNotificationStatus().toString());
-                    stmt.setInt(2, Integer.parseInt(operationMapping.getDeviceIdentifier().getId()));
+                    stmt.setInt(2, operationMapping.getEnrollmentId());
                     stmt.setInt(3, operationMapping.getOperationId());
                     stmt.addBatch();
                 }
@@ -117,7 +117,7 @@ public class OperationMappingDAOImpl implements OperationMappingDAO {
             } else {
                 for (OperationMapping operationMapping : operationMappingList) {
                     stmt.setString(1, operationMapping.getPushNotificationStatus().toString());
-                    stmt.setInt(2, Integer.parseInt(operationMapping.getDeviceIdentifier().getId()));
+                    stmt.setInt(2, operationMapping.getEnrollmentId());
                     stmt.setInt(3, operationMapping.getOperationId());
                     stmt.executeUpdate();
                 }

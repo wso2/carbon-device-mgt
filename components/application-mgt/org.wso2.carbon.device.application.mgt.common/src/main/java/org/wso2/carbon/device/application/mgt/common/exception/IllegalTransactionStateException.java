@@ -17,7 +17,7 @@
  */
 package org.wso2.carbon.device.application.mgt.common.exception;
 
-public class IllegalTransactionStateException extends RuntimeException {
+public class IllegalTransactionStateException extends ApplicationManagementException {
 
     private static final long serialVersionUID = -3151279331929070297L;
 
@@ -31,14 +31,6 @@ public class IllegalTransactionStateException extends RuntimeException {
 
     public IllegalTransactionStateException(String msg) {
         super(msg);
-    }
-
-    public IllegalTransactionStateException() {
-        super();
-    }
-
-    public IllegalTransactionStateException(Throwable cause) {
-        super(cause);
     }
 
 }

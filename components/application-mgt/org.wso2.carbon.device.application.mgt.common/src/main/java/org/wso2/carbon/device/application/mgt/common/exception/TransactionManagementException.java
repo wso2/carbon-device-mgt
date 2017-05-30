@@ -17,7 +17,7 @@
  */
 package org.wso2.carbon.device.application.mgt.common.exception;
 
-public class TransactionManagementException extends Exception {
+public class TransactionManagementException extends ApplicationManagementException {
 
     private static final long serialVersionUID = -3151279321929070297L;
 
@@ -31,14 +31,6 @@ public class TransactionManagementException extends Exception {
 
     public TransactionManagementException(String msg) {
         super(msg);
-    }
-
-    public TransactionManagementException() {
-        super();
-    }
-
-    public TransactionManagementException(Throwable cause) {
-        super(cause);
     }
 
 }

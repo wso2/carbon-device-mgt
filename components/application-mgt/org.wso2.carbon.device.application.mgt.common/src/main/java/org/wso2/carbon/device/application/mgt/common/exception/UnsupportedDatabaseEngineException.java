@@ -21,7 +21,7 @@ package org.wso2.carbon.device.application.mgt.common.exception;
 /**
  * This runtime exception will be thrown if the server has configured with unsupported DB engine.
  */
-public class UnsupportedDatabaseEngineException extends RuntimeException {
+public class UnsupportedDatabaseEngineException extends ApplicationManagementException {
 
     private static final long serialVersionUID = -3151279311929070297L;
 
@@ -35,14 +35,6 @@ public class UnsupportedDatabaseEngineException extends RuntimeException {
 
     public UnsupportedDatabaseEngineException(String msg) {
         super(msg);
-    }
-
-    public UnsupportedDatabaseEngineException() {
-        super();
-    }
-
-    public UnsupportedDatabaseEngineException(Throwable cause) {
-        super(cause);
     }
 
 }

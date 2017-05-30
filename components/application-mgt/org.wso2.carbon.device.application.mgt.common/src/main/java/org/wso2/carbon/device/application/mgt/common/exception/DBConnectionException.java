@@ -17,13 +17,9 @@
  */
 package org.wso2.carbon.device.application.mgt.common.exception;
 
-public class DBConnectionException extends Exception {
+public class DBConnectionException extends ApplicationManagementException {
 
     private static final long serialVersionUID = -3151279331929070297L;
-
-    public DBConnectionException(String msg, Exception nestedEx) {
-        super(msg, nestedEx);
-    }
 
     public DBConnectionException(String message, Throwable cause) {
         super(message, cause);
@@ -32,13 +28,4 @@ public class DBConnectionException extends Exception {
     public DBConnectionException(String msg) {
         super(msg);
     }
-
-    public DBConnectionException() {
-        super();
-    }
-
-    public DBConnectionException(Throwable cause) {
-        super(cause);
-    }
-
 }

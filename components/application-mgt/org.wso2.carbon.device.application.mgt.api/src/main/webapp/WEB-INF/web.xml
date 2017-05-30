@@ -54,7 +54,7 @@
 
     <filter>
         <filter-name>ApiOriginFilter</filter-name>
-        <filter-class>org.wso2.carbon.device.application.mgt.api.ApiOriginFilter</filter-class>
+        <filter-class>org.wso2.carbon.device.application.mgt.api.APIOriginFilter</filter-class>
     </filter>
 
     <filter>

@@ -86,6 +86,14 @@ var operationModule = function () {
             var iconIdentifier = operations[op].operation;
             if (features && features[iconIdentifier]) {
                 var icon = features[iconIdentifier].icon;
+                var isCloud = devicemgtProps["isCloud"];
+                //TODO: remove isCloud check once able to verify features from the device agent
+                var isDisabled = features[iconIdentifier].isDisabled;
+                if (isDisabled && isCloud) {
+                    operations[op]["isDisabled"] = isDisabled;
+                } else {
+                    operations[op]["isDisabled"] = false;
+                }
                 if (icon) {
                     operations[op]["iconFont"] = icon;
                 } else if (iconPath) {

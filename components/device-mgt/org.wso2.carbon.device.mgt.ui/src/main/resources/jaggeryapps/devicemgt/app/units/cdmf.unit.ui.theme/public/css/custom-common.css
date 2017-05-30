@@ -267,6 +267,11 @@ header .username {
     padding-top: 15px !important;
 }
 
+.op-disabled, .op-disabled i, .op-disabled span {
+    cursor: not-allowed;
+    color: #d2d2d2;
+}
+
 ul#noty_topRight_layout_container li{
     margin-bottom: 10px;
 }

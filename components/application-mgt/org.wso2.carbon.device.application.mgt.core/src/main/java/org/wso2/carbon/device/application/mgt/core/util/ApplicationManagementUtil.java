@@ -23,6 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Document;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
+import org.wso2.carbon.device.application.mgt.common.exception.InvalidConfigurationException;
 import org.wso2.carbon.device.application.mgt.core.services.impl.ApplicationManagementServiceFactory;
 
 import javax.xml.XMLConstants;
@@ -54,7 +55,7 @@ public class ApplicationManagementUtil {
             factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
             return docBuilder.parse(file);
         } catch (Exception e) {
-            throw new ApplicationManagementException("Error occurred while parsing file, while converting " +
+            throw new InvalidConfigurationException("Error occurred while parsing file, while converting " +
                     "to a org.w3c.dom.Document : ", e);
         }
     }

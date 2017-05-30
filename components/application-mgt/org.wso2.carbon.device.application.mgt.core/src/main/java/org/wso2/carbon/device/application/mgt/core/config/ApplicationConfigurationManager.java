@@ -22,6 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Document;
 import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
+import org.wso2.carbon.device.application.mgt.common.exception.InvalidConfigurationException;
 import org.wso2.carbon.device.application.mgt.core.util.ApplicationManagementUtil;
 import org.wso2.carbon.device.application.mgt.core.util.ApplicationManagerConstants;
 import org.wso2.carbon.utils.CarbonUtils;
@@ -71,7 +72,7 @@ public class ApplicationConfigurationManager {
             this.applicationManagerConfiguration = (ApplicationManagementConfigurations) unmarshaller.unmarshal(doc);
         } catch (Exception e) {
             log.error(e);
-            throw new ApplicationManagementException("Error occurred while initializing application config", e);
+            throw new InvalidConfigurationException("Error occurred while initializing application config", e);
         }
     }
 

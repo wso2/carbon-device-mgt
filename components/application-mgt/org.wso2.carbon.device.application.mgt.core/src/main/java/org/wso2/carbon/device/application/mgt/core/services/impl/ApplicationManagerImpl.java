@@ -41,11 +41,6 @@ public class ApplicationManagerImpl implements ApplicationManager {
             ConnectionManagerUtil.openConnection();
             ApplicationDAO applicationDAO = ApplicationManagementDAOFactory.getApplicationDAO();
             return applicationDAO.getApplications(filter);
-        } catch (ApplicationManagementDAOException e) {
-            throw new ApplicationManagementException("Error occurred while obtaining the applications for " +
-                    "the given filter.", e);
-        } catch (DBConnectionException e) {
-            throw new ApplicationManagementException("Error occurred while opening a connection to the APPM data source", e);
         } finally {
             ConnectionManagerUtil.closeConnection();
         }

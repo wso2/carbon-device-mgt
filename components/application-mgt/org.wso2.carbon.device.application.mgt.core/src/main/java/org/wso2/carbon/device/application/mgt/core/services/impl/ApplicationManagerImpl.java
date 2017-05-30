@@ -21,7 +21,7 @@ package org.wso2.carbon.device.application.mgt.core.services.impl;
 import org.wso2.carbon.device.application.mgt.common.Application;
 import org.wso2.carbon.device.application.mgt.common.ApplicationList;
 import org.wso2.carbon.device.application.mgt.common.Filter;
-import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagerException;
+import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
 import org.wso2.carbon.device.application.mgt.common.exception.DBConnectionException;
 import org.wso2.carbon.device.application.mgt.common.services.ApplicationManager;
 import org.wso2.carbon.device.application.mgt.core.dao.ApplicationDAO;
@@ -31,21 +31,16 @@ import org.wso2.carbon.device.application.mgt.core.util.ConnectionManagerUtil;
 
 public class ApplicationManagerImpl implements ApplicationManager {
     @Override
-    public void createApplication(Application application) throws ApplicationManagerException {
+    public void createApplication(Application application) throws ApplicationManagementException {
 
     }
 
     @Override
-    public ApplicationList getApplications(Filter filter) throws ApplicationManagerException {
+    public ApplicationList getApplications(Filter filter) throws ApplicationManagementException {
         try {
             ConnectionManagerUtil.openConnection();
             ApplicationDAO applicationDAO = ApplicationManagementDAOFactory.getApplicationDAO();
             return applicationDAO.getApplications(filter);
-        } catch (ApplicationManagementDAOException e) {
-            throw new ApplicationManagerException("Error occurred while obtaining the applications for " +
-                    "the given filter.", e);
-        } catch (DBConnectionException e) {
-            throw new ApplicationManagerException("Error occurred while opening a connection to the APPM data source", e);
         } finally {
             ConnectionManagerUtil.closeConnection();
         }

@@ -21,7 +21,8 @@ package org.wso2.carbon.device.application.mgt.core.config;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Document;
-import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagerException;
+import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
+import org.wso2.carbon.device.application.mgt.common.exception.InvalidConfigurationException;
 import org.wso2.carbon.device.application.mgt.core.util.ApplicationManagementUtil;
 import org.wso2.carbon.device.application.mgt.core.util.ApplicationManagerConstants;
 import org.wso2.carbon.utils.CarbonUtils;
@@ -51,7 +52,7 @@ public class ApplicationConfigurationManager {
             applicationConfigurationManager = new ApplicationConfigurationManager();
             try {
                 applicationConfigurationManager.initConfig();
-            } catch (ApplicationManagerException e) {
+            } catch (ApplicationManagementException e) {
                 log.error(e);
             }
         }
@@ -60,7 +61,7 @@ public class ApplicationConfigurationManager {
     }
 
 
-    public synchronized void initConfig() throws ApplicationManagerException {
+    public synchronized void initConfig() throws ApplicationManagementException {
         try {
             File appMgtConfig = new File(applicationMgtConfigXMLPath);
             Document doc = ApplicationManagementUtil.convertToDocument(appMgtConfig);
@@ -71,7 +72,7 @@ public class ApplicationConfigurationManager {
             this.applicationManagerConfiguration = (ApplicationManagementConfigurations) unmarshaller.unmarshal(doc);
         } catch (Exception e) {
             log.error(e);
-            throw new ApplicationManagerException("Error occurred while initializing application config", e);
+            throw new InvalidConfigurationException("Error occurred while initializing application config", e);
         }
     }
 

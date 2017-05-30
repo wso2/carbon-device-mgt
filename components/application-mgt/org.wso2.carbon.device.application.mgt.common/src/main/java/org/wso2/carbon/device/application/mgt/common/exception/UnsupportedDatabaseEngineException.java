@@ -37,12 +37,4 @@ public class UnsupportedDatabaseEngineException extends RuntimeException {
         super(msg);
     }
 
-    public UnsupportedDatabaseEngineException() {
-        super();
-    }
-
-    public UnsupportedDatabaseEngineException(Throwable cause) {
-        super(cause);
-    }
-
 }

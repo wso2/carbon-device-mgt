@@ -76,14 +76,14 @@ public interface ApplicationManagementAPI {
 
             @ApiParam(
                     name = "offset",
-                    value = "Provide how many apps it should return",
+                    value = "Provide from which position apps should return",
                     required = false,
                     defaultValue = "20")
             @QueryParam("offset") int offset,
 
             @ApiParam(
                     name = "limit",
-                    value = "Provide from which position apps should return",
+                    value = "Provide how many apps it should return",
                     required = false,
                     defaultValue = "0")
             @QueryParam("limit") int limit

@@ -20,11 +20,11 @@ package org.wso2.carbon.device.application.mgt.api.services.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.device.application.mgt.common.Application;
 import org.wso2.carbon.device.application.mgt.common.Filter;
 import org.wso2.carbon.device.application.mgt.common.ApplicationList;
+import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
 import org.wso2.carbon.device.application.mgt.common.services.ApplicationManager;
-import org.wso2.carbon.device.application.mgt.api.util.ApplicationMgtAPIUtil;
+import org.wso2.carbon.device.application.mgt.api.APIUtil;
 import org.wso2.carbon.device.application.mgt.core.services.impl.ApplicationManagementServiceFactory;
 import org.wso2.carbon.device.application.mgt.extensions.appupload.AppUploadManager;
 
@@ -50,19 +50,13 @@ public class ApplicationManagementAPIImpl {
     @Path("applications")
     public Response getApplications(@QueryParam("offset") int offset, @QueryParam("limit") int limit,
                                     @QueryParam("q") String searchQuery) {
-        ApplicationManagementServiceFactory serviceFactory = ApplicationMgtAPIUtil.getApplicationManagementServiceFactory();
+        ApplicationManagementServiceFactory serviceFactory = APIUtil.getApplicationManagementServiceFactory();
         ApplicationManager applicationManager = (ApplicationManager) serviceFactory
                 .getApplicationManagementService(APPLICATION_MANAGER);
-
-        AppUploadManager appUploadManager = (AppUploadManager) serviceFactory
-                .applicationManagementExtensionsService(APPLICATION_UPLOAD_EXTENSION);
-
         try {
-
             if (limit == 0) {
                 limit = DEFAULT_LIMIT;
             }
-
             Filter filter = new Filter();
             filter.setOffset(offset);
             filter.setLimit(limit);
@@ -70,7 +64,7 @@ public class ApplicationManagementAPIImpl {
 
             ApplicationList applications = applicationManager.getApplications(filter);
             return Response.status(Response.Status.OK).entity(applications).build();
-        } catch (Exception e) {
+        } catch (ApplicationManagementException e) {
             String msg = "Error occurred while getting the application list";
             log.error(msg, e);
             return Response.status(Response.Status.NOT_FOUND).build();

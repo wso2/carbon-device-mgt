@@ -21,9 +21,9 @@ package org.wso2.carbon.device.application.mgt.core.util;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Document;
-import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
-import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagerException;
+import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
+import org.wso2.carbon.device.application.mgt.common.exception.InvalidConfigurationException;
 import org.wso2.carbon.device.application.mgt.core.services.impl.ApplicationManagementServiceFactory;
 
 import javax.xml.XMLConstants;
@@ -47,7 +47,7 @@ public class ApplicationManagementUtil {
         return applicationManagerServiceFactory;
     }
 
-    public static Document convertToDocument(File file) throws ApplicationManagerException {
+    public static Document convertToDocument(File file) throws ApplicationManagementException {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setNamespaceAware(true);
         try {
@@ -55,7 +55,7 @@ public class ApplicationManagementUtil {
             factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
             return docBuilder.parse(file);
         } catch (Exception e) {
-            throw new ApplicationManagerException("Error occurred while parsing file, while converting " +
+            throw new InvalidConfigurationException("Error occurred while parsing file, while converting " +
                     "to a org.w3c.dom.Document : ", e);
         }
     }

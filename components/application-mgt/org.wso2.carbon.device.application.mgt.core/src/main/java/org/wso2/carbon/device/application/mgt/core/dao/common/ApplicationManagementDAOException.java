@@ -18,9 +18,9 @@
  */
 package org.wso2.carbon.device.application.mgt.core.dao.common;
 
-import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagerException;
+import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
 
-public class ApplicationManagementDAOException extends ApplicationManagerException {
+public class ApplicationManagementDAOException extends ApplicationManagementException {
 
     public ApplicationManagementDAOException(String message, Throwable throwable) {
         super(message, throwable);

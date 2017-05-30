@@ -21,8 +21,9 @@ import javax.servlet.*;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-public class ApiOriginFilter implements Filter {
+public class APIOriginFilter implements Filter {
 
+    //TODO: check no config option.
     public void doFilter(ServletRequest request, ServletResponse response,
                          FilterChain chain) throws IOException, ServletException {
         HttpServletResponse res = (HttpServletResponse) response;

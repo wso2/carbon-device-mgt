@@ -18,12 +18,17 @@
  */
 package org.wso2.carbon.device.application.mgt.common.exception;
 
-public class ApplicationManagerException extends Exception {
+public abstract class ApplicationManagementException extends Exception {
 
     String message;
 
-    public ApplicationManagerException(String message, Throwable throwable){
+    public ApplicationManagementException(String message, Throwable throwable){
         super(message, throwable);
+        setMessage(message);
+    }
+
+    public ApplicationManagementException(String message){
+        super(message);
         setMessage(message);
     }
 

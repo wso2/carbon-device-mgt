@@ -33,12 +33,4 @@ public class IllegalTransactionStateException extends RuntimeException {
         super(msg);
     }
 
-    public IllegalTransactionStateException() {
-        super();
-    }
-
-    public IllegalTransactionStateException(Throwable cause) {
-        super(cause);
-    }
-
 }

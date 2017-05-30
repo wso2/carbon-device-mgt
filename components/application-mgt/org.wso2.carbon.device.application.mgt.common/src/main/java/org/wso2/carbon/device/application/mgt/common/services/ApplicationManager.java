@@ -21,11 +21,11 @@ package org.wso2.carbon.device.application.mgt.common.services;
 import org.wso2.carbon.device.application.mgt.common.Application;
 import org.wso2.carbon.device.application.mgt.common.Filter;
 import org.wso2.carbon.device.application.mgt.common.ApplicationList;
-import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagerException;
+import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
 
 public interface ApplicationManager extends ApplicationManagementService {
 
-     void createApplication(Application application) throws ApplicationManagerException;
+     void createApplication(Application application) throws ApplicationManagementException;
 
-     ApplicationList getApplications(Filter filter) throws ApplicationManagerException;
+     ApplicationList getApplications(Filter filter) throws ApplicationManagementException;
 }

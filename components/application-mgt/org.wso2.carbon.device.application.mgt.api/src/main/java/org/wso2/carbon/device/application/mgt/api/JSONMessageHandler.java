@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.wso2.carbon.device.application.mgt.api.common;
+package org.wso2.carbon.device.application.mgt.api;
 
 
 import com.google.gson.Gson;
@@ -40,7 +40,7 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 @Provider
 @Produces(APPLICATION_JSON)
 @Consumes(APPLICATION_JSON)
-public class GsonMessageBodyHandler implements MessageBodyWriter<Object>, MessageBodyReader<Object> {
+public class JSONMessageHandler implements MessageBodyWriter<Object>, MessageBodyReader<Object> {
 
     private Gson gson;
     private static final String UTF_8 = "UTF-8";
@@ -62,13 +62,8 @@ public class GsonMessageBodyHandler implements MessageBodyWriter<Object>, Messag
     public Object readFrom(Class<Object> objectClass, Type type, Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, String> stringStringMultivaluedMap, InputStream entityStream)
             throws IOException, WebApplicationException {
-
-        InputStreamReader reader = new InputStreamReader(entityStream, "UTF-8");
-
-        try {
+        try (InputStreamReader reader = new InputStreamReader(entityStream, "UTF-8")) {
             return getGson().fromJson(reader, type);
-        } finally {
-            reader.close();
         }
     }
 
@@ -84,11 +79,8 @@ public class GsonMessageBodyHandler implements MessageBodyWriter<Object>, Messag
             MultivaluedMap<String, Object> stringObjectMultivaluedMap, OutputStream entityStream)
             throws IOException, WebApplicationException {
 
-        OutputStreamWriter writer = new OutputStreamWriter(entityStream, UTF_8);
-        try {
+        try (OutputStreamWriter writer = new OutputStreamWriter(entityStream, UTF_8)) {
             getGson().toJson(object, type, writer);
-        } finally {
-            writer.close();
         }
     }
 }

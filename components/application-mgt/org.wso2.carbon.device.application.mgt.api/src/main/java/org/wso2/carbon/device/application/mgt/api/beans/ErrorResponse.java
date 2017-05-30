@@ -28,22 +28,19 @@ import java.util.List;
 @ApiModel(description = "Error Response")
 public class ErrorResponse {
 
-    private Long code = null;
+    private Integer code = null;
     private String message = null;
     private String description = null;
     private String moreInfo = null;
     private List<ErrorListItem> errorItems = new ArrayList<>();
 
-    private ErrorResponse() {
-    }
-
     @JsonProperty(value = "code")
     @ApiModelProperty(required = true, value = "")
-    public Long getCode() {
+    public Integer getCode() {
         return code;
     }
 
-    public void setCode(Long code) {
+    public void setCode(Integer code) {
         this.code = code;
     }
 
@@ -94,57 +91,4 @@ public class ErrorResponse {
     public void setErrorItems(List<ErrorListItem> error) {
         this.errorItems = error;
     }
-
-    public static class ErrorResponseBuilder {
-
-        private Long code = null;
-        private String message = null;
-        private String description = null;
-        private String moreInfo = null;
-        private List<ErrorListItem> error;
-
-
-        public ErrorResponseBuilder() {
-            this.error = new ArrayList<>();
-        }
-
-        public ErrorResponseBuilder setCode(long code) {
-            this.code = code;
-            return this;
-        }
-
-        public ErrorResponseBuilder setMessage(String message) {
-            this.message = message;
-            return this;
-        }
-
-        public ErrorResponseBuilder setDescription(String description) {
-            this.description = description;
-            return this;
-        }
-
-        public ErrorResponseBuilder setMoreInfo(String moreInfo) {
-            this.moreInfo = moreInfo;
-            return this;
-        }
-
-        public ErrorResponseBuilder addErrorItem(String code, String msg) {
-            ErrorListItem item = new ErrorListItem();
-            item.setCode(code);
-            item.setMessage(msg);
-            this.error.add(item);
-            return this;
-        }
-
-        public ErrorResponse build() {
-            ErrorResponse errorResponse = new ErrorResponse();
-            errorResponse.setCode(code);
-            errorResponse.setMessage(message);
-            errorResponse.setErrorItems(error);
-            errorResponse.setDescription(description);
-            errorResponse.setMoreInfo(moreInfo);
-            return errorResponse;
-        }
-    }
-
 }

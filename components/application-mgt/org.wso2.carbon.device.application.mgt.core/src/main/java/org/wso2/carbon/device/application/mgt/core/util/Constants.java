@@ -18,14 +18,22 @@
  */
 package org.wso2.carbon.device.application.mgt.core.util;
 
+import org.wso2.carbon.utils.CarbonUtils;
+
+import java.io.File;
+
 public class Constants {
 
     public static final String APPLICATION_CONFIG_XML_FILE = "application-mgt.xml";
 
+    public static final String DEFAULT_CONFIG_FILE_LOCATION = CarbonUtils.getCarbonConfigDirPath() + File.separator +
+            Constants.APPLICATION_CONFIG_XML_FILE;
+
     public static final class DataBaseTypes {
+
         private DataBaseTypes() {
-            throw new AssertionError();
         }
+
         public static final String DB_TYPE_MYSQL = "MySQL";
         public static final String DB_TYPE_ORACLE = "Oracle";
         public static final String DB_TYPE_MSSQL = "Microsoft SQL Server";

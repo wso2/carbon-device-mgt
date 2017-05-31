@@ -22,9 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
 import org.wso2.carbon.device.application.mgt.common.exception.InvalidConfigurationException;
-import org.wso2.carbon.device.application.mgt.core.config.extensions.Extension;
 import org.wso2.carbon.device.application.mgt.core.util.Constants;
-import org.wso2.carbon.utils.CarbonUtils;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
@@ -32,13 +30,11 @@ import java.io.File;
 
 public class ConfigurationManager {
 
-    private final String applicationMgtConfigXMLPath = CarbonUtils.getCarbonConfigDirPath() + File.separator +
-            Constants.APPLICATION_CONFIG_XML_FILE;
-
     private static final Log log = LogFactory.getLog(ConfigurationManager.class);
 
-    private Configurations configuration;
+    private Configuration configuration;
 
+    private static String configPath;
 
     private static ConfigurationManager configurationManager;
 
@@ -62,20 +58,30 @@ public class ConfigurationManager {
         return configurationManager;
     }
 
-
-    private void initConfig() throws ApplicationManagementException {
-        try {
-            JAXBContext jaxbContext = JAXBContext.newInstance(Configurations.class);
-            Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-            this.configuration = (Configurations) unmarshaller.unmarshal(new File(applicationMgtConfigXMLPath));
-        } catch (Exception e) {
-            log.error(e);
-            throw new InvalidConfigurationException("Error occurred while initializing application config: "
-                    + applicationMgtConfigXMLPath, e);
+    public static synchronized void setConfigLocation(String configPath) throws InvalidConfigurationException {
+        if (ConfigurationManager.configPath == null) {
+            ConfigurationManager.configPath = configPath;
+        } else {
+            throw new InvalidConfigurationException("Configuration path " + configPath + " is already defined");
         }
     }
 
-    public Configurations getConfiguration() {
+    private void initConfig() throws ApplicationManagementException {
+        try {
+            JAXBContext jaxbContext = JAXBContext.newInstance(Configuration.class);
+            Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+            if (configPath == null) {
+                configPath = Constants.DEFAULT_CONFIG_FILE_LOCATION;
+            }
+            this.configuration = (Configuration) unmarshaller.unmarshal(new File(configPath));
+        } catch (Exception e) {
+            log.error(e);
+            throw new InvalidConfigurationException("Error occurred while initializing application config: "
+                    + configPath, e);
+        }
+    }
+
+    public Configuration getConfiguration() {
         return configuration;
     }
 

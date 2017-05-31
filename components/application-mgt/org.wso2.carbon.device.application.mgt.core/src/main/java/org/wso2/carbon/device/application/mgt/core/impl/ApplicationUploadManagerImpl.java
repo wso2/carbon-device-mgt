@@ -16,15 +16,14 @@
  *   under the License.
  *
  */
-package org.wso2.carbon.device.application.mgt.extensions.appupload;
+package org.wso2.carbon.device.application.mgt.core.impl;
 
 
 import org.wso2.carbon.device.application.mgt.common.services.ApplicationUploadManager;
 
-public class AppUploadManagerImpl implements ApplicationUploadManager {
+public class ApplicationUploadManagerImpl implements ApplicationUploadManager {
 
-    public AppUploadManagerImpl(String a, String b){
-        //do a
+    public ApplicationUploadManagerImpl(String uploadPath){
+
     }
-
 }

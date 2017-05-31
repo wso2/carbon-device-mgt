@@ -23,7 +23,8 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.application.mgt.common.exception.InvalidConfigurationException;
 import org.wso2.carbon.device.application.mgt.common.services.*;
 import org.wso2.carbon.device.application.mgt.core.config.ConfigurationManager;
-import org.wso2.carbon.device.application.mgt.core.config.extensions.Extension;
+import org.wso2.carbon.device.application.mgt.core.config.Extension;
+
 import java.lang.reflect.Constructor;
 
 public class ApplicationManagementUtil {
@@ -90,17 +91,22 @@ public class ApplicationManagementUtil {
         return getInstance(extension, ApplicationUploadManager.class);
     }
 
-    private static  <T> T getInstance(Extension extension, Class<T> cls) throws InvalidConfigurationException {
+    private static <T> T getInstance(Extension extension, Class<T> cls) throws InvalidConfigurationException {
         try {
-            Class theClass =  Class.forName(extension.getClassName());
+            Class theClass = Class.forName(extension.getClassName());
             Class[] types = new Class[extension.getParameters().size()];
             Object[] paramValues = new String[extension.getParameters().size()];
-            for (int i = 0; i < extension.getParameters().size(); i++) {
-                types[i] = String.class;
-                paramValues[i] = extension.getParameters().get(i).getValue();
+            if (extension.getParameters() != null && extension.getParameters().size() > 0) {
+                for (int i = 0; i < extension.getParameters().size(); i++) {
+                    types[i] = String.class;
+                    paramValues[i] = extension.getParameters().get(i).getValue();
+                }
+                Constructor<T> constructor = theClass.getConstructor(types);
+                return constructor.newInstance(paramValues);
+            } else {
+                Constructor<T> constructor = theClass.getConstructor(types);
+                return constructor.newInstance();
             }
-            Constructor<T> constructor = theClass.getConstructor(types);
-            return constructor.newInstance(paramValues);
         } catch (Exception e) {
             throw new InvalidConfigurationException("Unable to get instance of extension - " + extension.getName()
                     + " , for class - " + extension.getClassName(), e);

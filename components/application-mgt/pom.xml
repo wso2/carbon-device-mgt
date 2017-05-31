@@ -28,7 +28,6 @@
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>application-mgt</artifactId>
-    <groupId>org.wso2.carbon.devicemgt</groupId>
     <packaging>pom</packaging>
     <name>WSO2 Carbon - Application Management Component</name>
     <description>WSO2 Carbon - Application Management Component</description>
@@ -39,7 +38,7 @@
         <module>org.wso2.carbon.device.application.mgt.common</module>
         <module>org.wso2.carbon.device.application.mgt.api</module>
         <module>org.wso2.carbon.device.application.mgt.ui</module>
-        <module>org.wso2.carbon.device.application.mgt.extensions</module>
+        <!--<module>org.wso2.carbon.device.application.mgt.extensions</module>-->
 
     </modules>
 

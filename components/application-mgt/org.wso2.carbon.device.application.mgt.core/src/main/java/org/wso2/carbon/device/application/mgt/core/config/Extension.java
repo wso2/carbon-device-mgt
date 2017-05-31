@@ -16,14 +16,10 @@
  *   under the License.
  *
  */
-package org.wso2.carbon.device.application.mgt.core.config.extensions;
+package org.wso2.carbon.device.application.mgt.core.config;
 
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import javax.xml.bind.annotation.*;
 import java.util.List;
-import java.util.Map;
 
 @XmlRootElement(name = "Extension")
 public class Extension {
@@ -43,7 +39,7 @@ public class Extension {
         this.name = name;
     }
 
-    @XmlElement(name = "ClassName", nillable = false)
+    @XmlElement(name = "ClassName")
     public String getClassName() {
         return className;
     }
@@ -52,7 +48,8 @@ public class Extension {
         this.className = className;
     }
 
-    @XmlElement(name = "Parameters", nillable = true)
+    @XmlElementWrapper(name = "Parameters")
+    @XmlElement(name = "Parameter")
     public List<Parameter> getParameters() {
         return parameters;
     }
@@ -61,10 +58,10 @@ public class Extension {
         this.parameters = parameters;
     }
 
-    public boolean equals(Object anotherObj){
-        if (anotherObj instanceof Extension){
+    public boolean equals(Object anotherObj) {
+        if (anotherObj instanceof Extension) {
             Extension anExt = (Extension) anotherObj;
-            if (anExt.getName().contentEquals(this.getName())){
+            if (anExt.getName().contentEquals(this.getName())) {
                 return true;
             }
         }

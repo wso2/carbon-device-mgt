@@ -21,7 +21,7 @@ var invokerUtil = function () {
     var publicMethods = {};
     var privateMethods = {};
 
-    privateMethods.execute = function (requestMethod, requestURL, requestPayload, successCallback, errorCallback, contentType, acceptType) {
+    privateMethods.execute = function (requestMethod, requestURL, requestPayload, successCallback, errorCallback, contentType, acceptType, isSynchronous) {
         var restAPIRequestDetails = {};
         restAPIRequestDetails["requestMethod"] = requestMethod;
         restAPIRequestDetails["requestURL"] = requestURL;

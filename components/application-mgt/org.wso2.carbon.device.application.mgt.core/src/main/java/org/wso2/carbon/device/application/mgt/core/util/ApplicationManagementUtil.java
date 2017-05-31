@@ -20,43 +20,96 @@ package org.wso2.carbon.device.application.mgt.core.util;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.w3c.dom.Document;
-import org.wso2.carbon.context.PrivilegedCarbonContext;
-import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
 import org.wso2.carbon.device.application.mgt.common.exception.InvalidConfigurationException;
-import org.wso2.carbon.device.application.mgt.core.services.impl.ApplicationManagementServiceFactory;
+import org.wso2.carbon.device.application.mgt.common.services.*;
+import org.wso2.carbon.device.application.mgt.core.config.ConfigurationManager;
+import org.wso2.carbon.device.application.mgt.core.config.Extension;
 
-import javax.xml.XMLConstants;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import java.io.File;
+import java.lang.reflect.Constructor;
 
 public class ApplicationManagementUtil {
 
     private static Log log = LogFactory.getLog(ApplicationManagementUtil.class);
 
-    public static ApplicationManagementServiceFactory getApplicationManagementServiceFactory() {
-        PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-        ApplicationManagementServiceFactory applicationManagerServiceFactory =
-                (ApplicationManagementServiceFactory) ctx.getOSGiService(ApplicationManagementServiceFactory.class, null);
-        if (applicationManagerServiceFactory == null) {
-            String msg = "Application Management provider service has not initialized.";
-            log.error(msg);
-            throw new IllegalStateException(msg);
-        }
-        return applicationManagerServiceFactory;
+    public static ApplicationManager getApplicationManagerInstance() throws InvalidConfigurationException {
+        ConfigurationManager configurationManager = ConfigurationManager.getInstance();
+        Extension extension = configurationManager.getExtension(Extension.Name.ApplicationManager);
+        return getInstance(extension, ApplicationManager.class);
     }
 
-    public static Document convertToDocument(File file) throws ApplicationManagementException {
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        factory.setNamespaceAware(true);
+    public static ApplicationReleaseManager getApplicationReleaseManagerInstance() throws InvalidConfigurationException {
+        ConfigurationManager configurationManager = ConfigurationManager.getInstance();
+        Extension extension = configurationManager.getExtension(Extension.Name.ApplicationReleaseManager);
+        return getInstance(extension, ApplicationReleaseManager.class);
+    }
+
+    public static CategoryManager getCategoryManagerInstance() throws InvalidConfigurationException {
+        ConfigurationManager configurationManager = ConfigurationManager.getInstance();
+        Extension extension = configurationManager.getExtension(Extension.Name.CategoryManager);
+        return getInstance(extension, CategoryManager.class);
+    }
+
+    public static CommentsManager getCommentsManagerInstance() throws InvalidConfigurationException {
+        ConfigurationManager configurationManager = ConfigurationManager.getInstance();
+        Extension extension = configurationManager.getExtension(Extension.Name.CommentsManager);
+        return getInstance(extension, CommentsManager.class);
+    }
+
+    public static LifecycleStateManager getLifecycleStateManagerInstance() throws InvalidConfigurationException {
+        ConfigurationManager configurationManager = ConfigurationManager.getInstance();
+        Extension extension = configurationManager.getExtension(Extension.Name.LifecycleStateManager);
+        return getInstance(extension, LifecycleStateManager.class);
+    }
+
+    public static PlatformManager getPlatformManagerInstance() throws InvalidConfigurationException {
+        ConfigurationManager configurationManager = ConfigurationManager.getInstance();
+        Extension extension = configurationManager.getExtension(Extension.Name.PlatformManager);
+        return getInstance(extension, PlatformManager.class);
+    }
+
+    public static VisibilityTypeManager getVisibilityTypeManagerInstance() throws InvalidConfigurationException {
+        ConfigurationManager configurationManager = ConfigurationManager.getInstance();
+        Extension extension = configurationManager.getExtension(Extension.Name.VisibilityTypeManager);
+        return getInstance(extension, VisibilityTypeManager.class);
+    }
+
+    public static VisibilityManager getVisibilityManagerInstance() throws InvalidConfigurationException {
+        ConfigurationManager configurationManager = ConfigurationManager.getInstance();
+        Extension extension = configurationManager.getExtension(Extension.Name.VisibilityManager);
+        return getInstance(extension, VisibilityManager.class);
+    }
+
+    public static SubscriptionManager getSubscriptionManagerInstance() throws InvalidConfigurationException {
+        ConfigurationManager configurationManager = ConfigurationManager.getInstance();
+        Extension extension = configurationManager.getExtension(Extension.Name.SubscriptionManager);
+        return getInstance(extension, SubscriptionManager.class);
+    }
+
+    public static ApplicationUploadManager getApplicationUploadManagerInstance() throws InvalidConfigurationException {
+        ConfigurationManager configurationManager = ConfigurationManager.getInstance();
+        Extension extension = configurationManager.getExtension(Extension.Name.ApplicationUploadManager);
+        return getInstance(extension, ApplicationUploadManager.class);
+    }
+
+    private static <T> T getInstance(Extension extension, Class<T> cls) throws InvalidConfigurationException {
         try {
-            DocumentBuilder docBuilder = factory.newDocumentBuilder();
-            factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
-            return docBuilder.parse(file);
+            Class theClass = Class.forName(extension.getClassName());
+            if (extension.getParameters() != null && extension.getParameters().size() > 0) {
+                Class[] types = new Class[extension.getParameters().size()];
+                Object[] paramValues = new String[extension.getParameters().size()];
+                for (int i = 0; i < extension.getParameters().size(); i++) {
+                    types[i] = String.class;
+                    paramValues[i] = extension.getParameters().get(i).getValue();
+                }
+                Constructor<T> constructor = theClass.getConstructor(types);
+                return constructor.newInstance(paramValues);
+            } else {
+                Constructor<T> constructor = theClass.getConstructor();
+                return constructor.newInstance();
+            }
         } catch (Exception e) {
-            throw new InvalidConfigurationException("Error occurred while parsing file, while converting " +
-                    "to a org.w3c.dom.Document : ", e);
+            throw new InvalidConfigurationException("Unable to get instance of extension - " + extension.getName()
+                    + " , for class - " + extension.getClassName(), e);
         }
     }
 }

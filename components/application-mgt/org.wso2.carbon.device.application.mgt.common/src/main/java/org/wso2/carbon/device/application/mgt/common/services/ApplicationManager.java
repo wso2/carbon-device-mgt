@@ -23,7 +23,7 @@ import org.wso2.carbon.device.application.mgt.common.Filter;
 import org.wso2.carbon.device.application.mgt.common.ApplicationList;
 import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
 
-public interface ApplicationManager extends ApplicationManagementService {
+public interface ApplicationManager{
 
      void createApplication(Application application) throws ApplicationManagementException;
 

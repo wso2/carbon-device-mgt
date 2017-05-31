@@ -16,7 +16,17 @@
  *   under the License.
  *
  */
-package org.wso2.carbon.device.application.mgt.common.services;
+package org.wso2.carbon.device.application.mgt.core.exception;
 
-public interface ApplicationReleaseManager{
+import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
+
+public class ApplicationManagementDAOException extends ApplicationManagementException {
+
+    public ApplicationManagementDAOException(String message, Throwable throwable) {
+        super(message, throwable);
+    }
+
+    public ApplicationManagementDAOException(String message) {
+        super(message, new Exception());
+    }
 }

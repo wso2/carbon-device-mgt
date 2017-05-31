@@ -23,15 +23,11 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.application.mgt.common.exception.DBConnectionException;
 import org.wso2.carbon.device.application.mgt.common.exception.IllegalTransactionStateException;
 import org.wso2.carbon.device.application.mgt.common.exception.TransactionManagementException;
-import org.wso2.carbon.device.application.mgt.core.config.datasource.DataSourceConfig;
-import org.wso2.carbon.device.application.mgt.core.config.datasource.JNDILookupDefinition;
 
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Hashtable;
-import java.util.List;
 
 public class ConnectionManagerUtil {
 
@@ -44,10 +40,6 @@ public class ConnectionManagerUtil {
     private static final ThreadLocal<Connection> currentConnection = new ThreadLocal<>();
     private static ThreadLocal<TxState> currentTxState = new ThreadLocal<>();
     private static DataSource dataSource;
-
-    public static void setDataSource(DataSource dataSource) {
-        ConnectionManagerUtil.dataSource = dataSource;
-    }
 
     public static ThreadLocal<Connection> getCurrentConnection() {
         return currentConnection;
@@ -168,48 +160,16 @@ public class ConnectionManagerUtil {
     /**
      * Resolve data source from the data source definition.
      *
-     * @param config data source configuration
-     *
+     * @param dataSourceName data source name
      */
-    public static void resolveDataSource(DataSourceConfig config) {
-        if (config == null) {
-            throw new RuntimeException(
-                    "Application Management Repository data source configuration " + "is null and " +
-                            "thus, is not initialized"
-            );
-        }
-        JNDILookupDefinition jndiConfig = config.getJndiLookupDefinition();
-        if (jndiConfig != null) {
-            if (log.isDebugEnabled()) {
-                log.debug("Initializing Application Management Repository data source using the JNDI " +
-                        "Lookup Definition");
-            }
-            List<JNDILookupDefinition.JNDIProperty> jndiPropertyList =
-                    jndiConfig.getJndiProperties();
-            if (jndiPropertyList != null) {
-                Hashtable<Object, Object> jndiProperties = new Hashtable<Object, Object>();
-                for (JNDILookupDefinition.JNDIProperty prop : jndiPropertyList) {
-                    jndiProperties.put(prop.getName(), prop.getValue());
-                }
-                dataSource = lookupDataSource(jndiConfig.getJndiName(), jndiProperties);
-            } else {
-                dataSource = lookupDataSource(jndiConfig.getJndiName(), null);
-            }
-        }
-    }
-
-
-    public static DataSource lookupDataSource(String dataSourceName, final Hashtable<Object, Object> jndiProperties) {
+    public static void resolveDataSource(String dataSourceName) {
         try {
-            if (jndiProperties == null || jndiProperties.isEmpty()) {
-                return (DataSource) InitialContext.doLookup(dataSourceName);
-            }
-            final InitialContext context = new InitialContext(jndiProperties);
-            return (DataSource) context.doLookup(dataSourceName);
+            dataSource = InitialContext.doLookup(dataSourceName);
         } catch (Exception e) {
             throw new RuntimeException("Error in looking up data source: " + e.getMessage(), e);
         }
     }
+
 
     public static String getDatabaseType() {
         try {

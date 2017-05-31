@@ -100,7 +100,6 @@
                             </adviceFile>
                             <includedFeatures>
                                 <includedFeatureDef>org.wso2.carbon.devicemgt:org.wso2.carbon.device.application.mgt.api.feature:${carbon.device.mgt.version}</includedFeatureDef>
-                                <includedFeatureDef>org.wso2.carbon.devicemgt:org.wso2.carbon.device.application.mgt.extensions.feature:${carbon.device.mgt.version}</includedFeatureDef>
                             </includedFeatures>
                             <bundles>
                                 <bundleDef>

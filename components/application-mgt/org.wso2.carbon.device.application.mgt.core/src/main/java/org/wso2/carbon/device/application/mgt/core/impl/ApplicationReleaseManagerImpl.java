@@ -16,7 +16,10 @@
  *   under the License.
  *
  */
-package org.wso2.carbon.device.application.mgt.common.services;
+package org.wso2.carbon.device.application.mgt.core.impl;
 
-public interface ApplicationReleaseManager{
+import org.wso2.carbon.device.application.mgt.common.services.ApplicationReleaseManager;
+
+public class ApplicationReleaseManagerImpl implements ApplicationReleaseManager {
+
 }

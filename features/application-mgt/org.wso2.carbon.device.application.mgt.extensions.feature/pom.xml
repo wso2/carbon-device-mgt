@@ -80,7 +80,7 @@
                             <goal>p2-feature-gen</goal>
                         </goals>
                         <configuration>
-                            <id>org.wso2.carbon.device.application.mgt.extensions</id>
+                            <id>org.wso2.carbon.device.application.mgt.extensions.feature</id>
                             <propertiesFile>../../../features/etc/feature.properties</propertiesFile>
                             <adviceFile>
                                 <properties>

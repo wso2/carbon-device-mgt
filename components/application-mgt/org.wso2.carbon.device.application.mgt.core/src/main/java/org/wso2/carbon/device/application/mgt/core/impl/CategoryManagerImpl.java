@@ -15,9 +15,9 @@
 * under the License.
 *
 */
+package org.wso2.carbon.device.application.mgt.core.impl;
 
-package org.wso2.carbon.device.application.mgt.common.services;
+import org.wso2.carbon.device.application.mgt.common.services.CategoryManager;
 
-public interface VisibilityManager {
-
+public class CategoryManagerImpl implements CategoryManager {
 }

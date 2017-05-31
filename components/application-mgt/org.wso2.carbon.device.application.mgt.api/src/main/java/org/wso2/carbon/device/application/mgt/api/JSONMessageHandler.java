@@ -62,7 +62,7 @@ public class JSONMessageHandler implements MessageBodyWriter<Object>, MessageBod
     public Object readFrom(Class<Object> objectClass, Type type, Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, String> stringStringMultivaluedMap, InputStream entityStream)
             throws IOException, WebApplicationException {
-        try (InputStreamReader reader = new InputStreamReader(entityStream, "UTF-8")) {
+        try (InputStreamReader reader = new InputStreamReader(entityStream, UTF_8)) {
             return getGson().fromJson(reader, type);
         }
     }
@@ -78,7 +78,6 @@ public class JSONMessageHandler implements MessageBodyWriter<Object>, MessageBod
     public void writeTo(Object object, Class<?> aClass, Type type, Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, Object> stringObjectMultivaluedMap, OutputStream entityStream)
             throws IOException, WebApplicationException {
-
         try (OutputStreamWriter writer = new OutputStreamWriter(entityStream, UTF_8)) {
             getGson().toJson(object, type, writer);
         }

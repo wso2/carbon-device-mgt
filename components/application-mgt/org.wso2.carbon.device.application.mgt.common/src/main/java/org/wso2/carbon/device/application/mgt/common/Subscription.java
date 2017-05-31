@@ -22,7 +22,7 @@ import java.util.Date;
 
 public class Subscription {
 
-    private ResourceType type;
+    private Visibility.Type type;
 
     private String value;
 
@@ -40,11 +40,11 @@ public class Subscription {
         this.value = value;
     }
 
-    public ResourceType getType() {
+    public Visibility.Type getType() {
         return type;
     }
 
-    public void setType(ResourceType type) {
+    public void setType(Visibility.Type type) {
         this.type = type;
     }
 

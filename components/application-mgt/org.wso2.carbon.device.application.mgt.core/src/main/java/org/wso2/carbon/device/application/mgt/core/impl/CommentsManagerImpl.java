@@ -15,9 +15,9 @@
 * under the License.
 *
 */
+package org.wso2.carbon.device.application.mgt.core.impl;
 
-package org.wso2.carbon.device.application.mgt.common.services;
+import org.wso2.carbon.device.application.mgt.common.services.CommentsManager;
 
-public interface VisibilityManager {
-
+public class CommentsManagerImpl implements CommentsManager {
 }

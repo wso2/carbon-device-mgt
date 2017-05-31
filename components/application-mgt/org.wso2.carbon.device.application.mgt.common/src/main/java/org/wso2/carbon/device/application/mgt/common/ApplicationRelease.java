@@ -23,7 +23,7 @@ import java.util.Map;
 
 public class ApplicationRelease {
 
-    private enum ReleaseChannel {
+    private enum Channel {
         PRODUCTION, ALPHA, BETA
     }
 
@@ -35,7 +35,7 @@ public class ApplicationRelease {
 
     private String resource;
 
-    private ReleaseChannel releaseChannel;
+    private Channel releaseChannel;
 
     private String releaseDetails;
 
@@ -83,11 +83,11 @@ public class ApplicationRelease {
         this.resource = resource;
     }
 
-    public ReleaseChannel getReleaseChannel() {
+    public Channel getReleaseChannel() {
         return releaseChannel;
     }
 
-    public void setReleaseChannel(ReleaseChannel releaseChannel) {
+    public void setReleaseChannel(Channel releaseChannel) {
         this.releaseChannel = releaseChannel;
     }
 

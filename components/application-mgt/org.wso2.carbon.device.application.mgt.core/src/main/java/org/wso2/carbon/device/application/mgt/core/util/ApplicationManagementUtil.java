@@ -94,9 +94,9 @@ public class ApplicationManagementUtil {
     private static <T> T getInstance(Extension extension, Class<T> cls) throws InvalidConfigurationException {
         try {
             Class theClass = Class.forName(extension.getClassName());
-            Class[] types = new Class[extension.getParameters().size()];
-            Object[] paramValues = new String[extension.getParameters().size()];
             if (extension.getParameters() != null && extension.getParameters().size() > 0) {
+                Class[] types = new Class[extension.getParameters().size()];
+                Object[] paramValues = new String[extension.getParameters().size()];
                 for (int i = 0; i < extension.getParameters().size(); i++) {
                     types[i] = String.class;
                     paramValues[i] = extension.getParameters().get(i).getValue();
@@ -104,7 +104,7 @@ public class ApplicationManagementUtil {
                 Constructor<T> constructor = theClass.getConstructor(types);
                 return constructor.newInstance(paramValues);
             } else {
-                Constructor<T> constructor = theClass.getConstructor(types);
+                Constructor<T> constructor = theClass.getConstructor();
                 return constructor.newInstance();
             }
         } catch (Exception e) {

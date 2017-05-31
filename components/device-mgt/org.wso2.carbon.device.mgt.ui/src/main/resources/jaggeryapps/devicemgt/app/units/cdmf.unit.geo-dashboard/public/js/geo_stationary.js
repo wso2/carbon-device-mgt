@@ -24,7 +24,6 @@ function initStationaryAlert() {
     invokerUtil.get(serverUrl, function (response) {
         if (response) {
             response = JSON.parse(response);
-            console.log(response);
             $(".fence-not-exist").hide();
             for (var index in response) {
                 var alert = response[index];

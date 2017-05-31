@@ -43,6 +43,7 @@
 data-device-location="{{lastLocation}}"></span>
 
 <div class="map-wrapper">
+    {{#unless @unit.params.hideSearch}}
     <div class="navbar-collapse collapse" style="display:inline-block;">
         <ul class="nav navbar-nav-right">
             <li>
@@ -58,75 +59,7 @@ data-device-location="{{lastLocation}}"></span>
             </li>
         </ul>
     </div>
-
-
-    <div id="left_side_pannel" class="col-lg-2">
-        <ul class="nav nav-sidebar">
-            <li>
-                <a href="#" data-toggle="collapse" data-target="#toggleDemo" data-parent="#sidenav01" class="collapsed">
-                    <span class="fw fw-notification"></span> Set alerts <span class="caret pull-right"></span>
-                </a>
-                <div class="collapse" id="toggleDemo" style="height: 0px;">
-                    <ul class="nav nav-list">
-                        <li><a data-target="#commonModal" data-toggle="modal" href="{{@unit.publicUri}}/assets/html_templates/modal/speed_alert.html"><i class="glyphicon glyphicon-dashboard"></i> Speed Alert</a></li>
-                        <li><a data-target="#commonModal" data-toggle="modal" href="{{@unit.publicUri}}/assets/html_templates/modal/stationery_alert.html"><i class="glyphicon glyphicon-link"></i> Stationary Alert</a></li>
-                    </ul>
-                </div>
-            </li>
-            <li>
-                <a href="#" data-toggle="collapse" data-target="#toggleGeoFencing" data-parent="#sidenav01" class="collapsed">
-                    <span class="fw fw-map-location"></span> Geo Fencing <span class="caret pull-right"></span>
-                </a>
-                <div class="collapse" id="toggleGeoFencing" style="height: 0px;">
-                    <ul class="nav nav-list">
-                        <li><a data-target="#commonModal" data-toggle="modal"
-                               href="{{@unit.publicUri}}/assets/html_templates/modal/within_alert.html">
-                            <i class="glyphicon glyphicon-edit"></i> Within Alert</a></li>
-                    </ul>
-                </div>
-            </li>
-        </ul>
-
-        <!--<div class="uk-offcanvas-bar" style="box-shadow: 3px 14px 13px -2px #211404;">-->
-            <!--<ul class="uk-nav uk-nav-offcanvas uk-nav-parent-icon" data-uk-nav>-->
-                <!--<li class="uk-parent" style="box-shadow: 0 2px 12px 1px #2D1600;min-height: 50px;line-height: 25px;">-->
-                    <!--<a style="min-height: 50px;">-->
-                        <!--<span style="color: #d58512">WSO<sub style="font-size: medium;">2</sub></span> Geo Dashboard-->
-                    <!--</a>-->
-                <!--</li>-->
-                <!--<li class="uk-nav-header">Alerts</li>-->
-                <!--<li class="uk-parent">-->
-                    <!--<a href="#"><i class="fa fa-pencil-square-o"></i> Set alerts</a>-->
-                    <!--<ul class="uk-nav-sub">-->
-                        <!--<li><a style="margin-left: 20%;" data-toggle="modal" href="/portal/store/carbon.super/fs/gadget/geo-dashboard/controllers/modals/speed_alert.jag"-->
-                               <!--data-target="#commonModal"><i class="fa fa-tachometer"></i> Speed alert</a></li>-->
-                        <!--<li id = "proximity_alert"><a style="margin-left: 20%;" data-toggle="modal" href="/portal/store/carbon.super/fs/gadget/geo-dashboard/controllers/modals/proximity_alert.jag"-->
-                                                      <!--data-target="#commonModal"><i class="fa fa-link"></i> Proximity alert</a></li>-->
-                        <!--<li><a style="margin-left: 20%;" data-toggle="modal" href="/portal/store/carbon.super/fs/gadget/geo-dashboard/controllers/modals/stationery_alert.jag"-->
-                               <!--data-target="#commonModal"><i class="fa fa-chain-broken"></i> Stationary alert</a></li>-->
-                        <!--&lt;!&ndash;<li><a style="margin-left: 20%;" data-toggle="modal" href="/portal/store/carbon.super/fs/gadget/geo-dashboard/controllers/modals/traffic_point.jag"&ndash;&gt;-->
-                                           <!--&lt;!&ndash;data-target="#commonModal"><i class="fa fa-square-o"></i> Congestion Alert</a></li>&ndash;&gt;-->
-                    <!--</ul>-->
-                <!--</li>-->
-                <!--<li class="uk-parent">-->
-                    <!--<a href="#"><i class="fa fa-filter"></i> Geo-fencing</a>-->
-                    <!--<ul class="uk-nav-sub">-->
-                        <!--<li><a style="margin-left: 20%;" data-toggle="modal" href="/portal/store/carbon.super/fs/gadget/geo-dashboard/controllers/modals/within_alert.jag"-->
-                               <!--data-target="#commonModal"><i class="fa fa-square-o"></i> Within</a></li>-->
-                    <!--</ul>-->
-                <!--</li>-->
-
-                <!--<li class="uk-sub">-->
-                    <!--<a onclick="-->
-                    <!--$('.removeGeoFence').tooltip(); openTools('Prediction')"><i class="fa fa-paper-plane"></i> Traffic-->
-                        <!--Prediction</a>-->
-                <!--</li>-->
-
-            <!--</ul>
-
-        </div>-->
-    </div>
-
+    {{/unless}}
 
     <div id="" style="height: 100vh;">
         <!-- Sidebar -->
@@ -187,13 +120,6 @@ data-device-location="{{lastLocation}}"></span>
         </div>
     </div>
 
-
-
-
-
-
-
-
     <div id="loading">
         <div class="loading-indicator">
             <div class="progress progress-striped active">
@@ -201,7 +127,6 @@ data-device-location="{{lastLocation}}"></span>
             </div>
         </div>
     </div>
-
 
     <div class="modal" id="aboutModal" tabindex="-1" role="dialog">
         <div class="modal-dialog modal-lg">
@@ -769,6 +694,28 @@ data-device-location="{{lastLocation}}"></span>
     {{js "js/app.js" }}
     {{js "js/websocket.js" }}
     {{js "js/geo_fencing.js" }}
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var geoLocationLink = $(".initGeoLocationLink");
+            if (geoLocationLink) {
+                geoLocationLink.on('click', function () {
+                    initializeGeoLocation()
+                });
+                {{#if showGeoFencingTools}}
+                    var locationItems = geoLocationLink.closest('li');
+                    var geoToolsMenu = $("<ul/>", {class: 'collapse list-group geo-tools'}).appendTo(locationItems);
+                    geoPublicUri = $("#geo-charts").data("geo-public-uri");
+                    createGeoToolListItem(geoPublicUri + '/assets/html_templates/modal/speed_alert.html',
+                                          'Set Speed Alert', 'glyphicon glyphicon-dashboard', geoToolsMenu);
+                    createGeoToolListItem(geoPublicUri + '/assets/html_templates/modal/stationery_alert.html',
+                                          'Add Stationary Alert', 'glyphicon glyphicon-link', geoToolsMenu);
+                    createGeoToolListItem(geoPublicUri + '/assets/html_templates/modal/within_alert.html',
+                                          'Add Geo Fence Alert', 'glyphicon glyphicon-edit', geoToolsMenu);
+                {{/if}}
+            }
+        });
+    </script>
 {{/zone}}
 
 

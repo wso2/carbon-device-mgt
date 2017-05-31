@@ -31,6 +31,10 @@ $('body').on('hidden.bs.modal', '.modal', function () {
 /*Map layer configurations*/
 var map;
 
+var zoomLevel = 15;
+var tileSet = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
+var attribution = "&copy; <a href='https://openstreetmap.org/copyright'>OpenStreetMap</a> contributors";
+
 function initialLoad() {
     if (document.getElementById('map') == null) {
         setTimeout(initialLoad, 500); // give everything some time to render
@@ -101,6 +105,8 @@ function initializeMap() {
         maxZoom: 20,
         maxNativeZoom: 18
     });
+    L.tileLayer(tileSet, {attribution: attribution}).addTo(map);
+
     map.zoomControl.setPosition('bottomleft');
     map.on('click', function (e) {
         $.noty.closeAll();
@@ -291,7 +297,7 @@ function focusOnSpatialObject(objectId) {
         return true;
     }
 
-    map.setView(spatialObject.marker.getLatLng(), 15, {animate: true}); // TODO: check the map._layersMaxZoom and set the zoom level accordingly
+    map.setView(spatialObject.marker.getLatLng(), zoomLevel, {animate: true}); // TODO: check the map._layersMaxZoom and set the zoom level accordingly
 
     $('#objectInfo').find('#objectInfoId').html(selectedSpatialObject);
     spatialObject.marker.openPopup();
@@ -315,15 +321,6 @@ var getProviderData = function (timeFrom, timeTo) {
     deviceId = deviceDetails.data("deviceid");
     deviceType = deviceDetails.data("type");
 
-    // $.ajax({
-    //     url: context + '/api/geo-location/' + deviceType + '/' + deviceId + '?from=' + timeFrom + '&to=' + timeTo,
-    //     method: "GET",
-    //     contentType: "application/json",
-    //     async: false,
-    //     success: function (data) {
-    //         tableData = data;
-    //     }
-    // });
     var serviceUrl = '/api/device-mgt/v1.0/geo-services/stats/' + deviceType + '/' + deviceId + '?from=' + timeFrom + '&to=' + timeTo;
     invokerUtil.get(serviceUrl,
                     function (data) {
@@ -445,7 +442,7 @@ function InitSpatialObject() {
         return true;
     }
 
-    map.setView(spatialObject.marker.getLatLng(), 15, {animate: true}); // TODO: check the map._layersMaxZoom and set the zoom level accordingly
+    map.setView(spatialObject.marker.getLatLng(), zoomLevel, {animate: true}); // TODO: check the map._layersMaxZoom and set the zoom level accordingly
 
     $('#objectInfo').find('#objectInfoId').html(selectedSpatialObject);
     spatialObject.marker.openPopup();
@@ -510,7 +507,7 @@ function focusOnHistorySpatialObject(objectId, timeFrom, timeTo) {
             return true;
         }
 
-        map.setView(spatialObject.marker.getLatLng(), 15, {animate: true}); // TODO: check the map._layersMaxZoom and set the zoom level accordingly
+        map.setView(spatialObject.marker.getLatLng(), zoomLevel, {animate: true}); // TODO: check the map._layersMaxZoom and set the zoom level accordingly
 
         $('#objectInfo').find('#objectInfoId').html(selectedSpatialObject);
         spatialObject.marker.openPopup();
@@ -534,4 +531,12 @@ function clearFocus() {
         spatialObject.removeFromMap();
         selectedSpatialObject = null;
     }
+}
+
+function createGeoToolListItem(link, text, icon, menuRoot) {
+    var listItem = $("<li/>", { class: 'list-group-item'}).appendTo(menuRoot);
+    var anchor = $("<a/>", {href: link, text: ' ' + text}).appendTo(listItem);
+    anchor.attr('data-toggle', 'modal');
+    anchor.attr('data-target', '#commonModal');
+    $("<i/>", {class: icon}).prependTo(anchor);
 }

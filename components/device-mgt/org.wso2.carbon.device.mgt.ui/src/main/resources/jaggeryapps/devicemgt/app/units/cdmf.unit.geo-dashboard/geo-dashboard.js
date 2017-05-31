@@ -54,5 +54,6 @@ function onRequest(context) {
     } else {
         viewModel.lastLocation = stringify({});
     }
+    viewModel.showGeoFencingTools = true;
     return viewModel;
 }

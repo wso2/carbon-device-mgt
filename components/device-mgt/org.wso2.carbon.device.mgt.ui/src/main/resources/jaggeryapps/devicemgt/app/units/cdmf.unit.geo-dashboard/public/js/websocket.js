@@ -638,7 +638,7 @@ function initializeOnAlertWebSocket() {
     onAlertWebsocket.onopen = webSocketOnAlertOpen;
 }
 
-function initializeGeoFencing() {
+function initializeGeoLocation() {
     var deviceDetails = $(".device-id");
     deviceId = deviceDetails.data("deviceid");
     deviceType = deviceDetails.data("type");

@@ -308,7 +308,12 @@ function updateDrawing(updatedGeoJson) {
 }
 
 function viewFence(geoFenceElement,id) {
-    var geoJson = JSON.parse($(geoFenceElement).attr('data-geoJson').replace(/'/g, '"'));
+    var geoJson = $(geoFenceElement).attr('data-geoJson');
+    var matchResults = /(?:"geoFenceGeoJSON"):"{(.*)}"/g.exec(geoJson);
+    if (matchResults.length > 1) {
+        geoJson = "{" + matchResults[1] + "}";
+    }
+    geoJson = JSON.parse(geoJson.replace(/'/g, '"'));
     var queryName = $(geoFenceElement).attr('data-queryName');
     var areaName = $(geoFenceElement).attr('data-areaName');
     var geometryShape;

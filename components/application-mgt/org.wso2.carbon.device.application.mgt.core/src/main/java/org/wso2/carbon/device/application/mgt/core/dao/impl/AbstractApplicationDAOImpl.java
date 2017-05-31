@@ -24,8 +24,8 @@ import org.wso2.carbon.device.application.mgt.common.Application;
 import org.wso2.carbon.device.application.mgt.common.Filter;
 import org.wso2.carbon.device.application.mgt.common.exception.DBConnectionException;
 import org.wso2.carbon.device.application.mgt.core.dao.ApplicationDAO;
-import org.wso2.carbon.device.application.mgt.core.dao.common.ApplicationManagementDAOException;
-import org.wso2.carbon.device.application.mgt.core.dao.common.ApplicationManagementDAOUtil;
+import org.wso2.carbon.device.application.mgt.core.exception.ApplicationManagementDAOException;
+import org.wso2.carbon.device.application.mgt.core.dao.common.Util;
 import org.wso2.carbon.device.application.mgt.core.util.ConnectionManagerUtil;
 
 import java.sql.Connection;
@@ -100,7 +100,7 @@ public abstract class AbstractApplicationDAOImpl implements ApplicationDAO {
         } catch (DBConnectionException e) {
             throw new ApplicationManagementDAOException("Error occurred while obtaining the DB connection.", e);
         } finally {
-            ApplicationManagementDAOUtil.cleanupResources(stmt, rs);
+            Util.cleanupResources(stmt, rs);
         }
         return count;
     }

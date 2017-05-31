@@ -16,7 +16,7 @@
  *   under the License.
  *
  */
-package org.wso2.carbon.device.application.mgt.core.services.impl;
+package org.wso2.carbon.device.application.mgt.core.impl;
 
 import org.wso2.carbon.device.application.mgt.common.services.ApplicationReleaseManager;
 

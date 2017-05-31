@@ -22,6 +22,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import java.util.List;
 import java.util.Map;
 
 @XmlRootElement(name = "Extension")
@@ -31,7 +32,7 @@ public class Extension {
 
     private String className;
 
-    private Map<String, String> parameters;
+    private List<Parameter> parameters;
 
     @XmlAttribute(name = "name")
     public String getName() {
@@ -42,7 +43,7 @@ public class Extension {
         this.name = name;
     }
 
-    @XmlElement(name = "ClassName", nillable = true)
+    @XmlElement(name = "ClassName", nillable = false)
     public String getClassName() {
         return className;
     }
@@ -52,12 +53,35 @@ public class Extension {
     }
 
     @XmlElement(name = "Parameters", nillable = true)
-    @XmlJavaTypeAdapter(ParameterAdapter.class)
-    public Map<String, String> getParameters() {
+    public List<Parameter> getParameters() {
         return parameters;
     }
 
-    public void setParameters(Map<String, String> parameters) {
+    public void setParameters(List<Parameter> parameters) {
         this.parameters = parameters;
     }
+
+    public boolean equals(Object anotherObj){
+        if (anotherObj instanceof Extension){
+            Extension anExt = (Extension) anotherObj;
+            if (anExt.getName().contentEquals(this.getName())){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public enum Name {
+        ApplicationManager,
+        ApplicationReleaseManager,
+        ApplicationUploadManager,
+        CategoryManager,
+        CommentsManager,
+        LifecycleStateManager,
+        PlatformManager,
+        VisibilityTypeManager,
+        SubscriptionManager,
+        VisibilityManager
+    }
 }
+

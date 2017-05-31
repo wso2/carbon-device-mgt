@@ -18,8 +18,13 @@
  */
 package org.wso2.carbon.device.application.mgt.extensions.appupload;
 
-import org.wso2.carbon.device.application.mgt.common.services.ApplicationManagementExtension;
 
-public class AppUploadManagerImpl extends ApplicationManagementExtension implements AppUploadManager {
+import org.wso2.carbon.device.application.mgt.common.services.ApplicationUploadManager;
+
+public class AppUploadManagerImpl implements ApplicationUploadManager {
+
+    public AppUploadManagerImpl(String a, String b){
+        //do a
+    }
 
 }

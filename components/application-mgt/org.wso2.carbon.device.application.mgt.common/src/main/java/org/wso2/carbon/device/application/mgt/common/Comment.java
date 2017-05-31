@@ -26,6 +26,7 @@ public class Comment {
 
     private int rating;
 
+    //TODO: Pagination, comment ID for child
     private Comment parent;
 
     private String createdBy;

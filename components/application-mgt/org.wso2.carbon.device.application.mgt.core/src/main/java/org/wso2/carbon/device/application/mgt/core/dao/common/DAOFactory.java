@@ -21,11 +21,10 @@ package org.wso2.carbon.device.application.mgt.core.dao.common;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.application.mgt.common.exception.UnsupportedDatabaseEngineException;
-import org.wso2.carbon.device.application.mgt.core.config.datasource.DataSourceConfig;
 import org.wso2.carbon.device.application.mgt.core.dao.ApplicationDAO;
 import org.wso2.carbon.device.application.mgt.core.dao.impl.application.H2ApplicationDAOImpl;
 import org.wso2.carbon.device.application.mgt.core.dao.impl.application.MySQLApplicationDAOImpl;
-import org.wso2.carbon.device.application.mgt.core.util.ApplicationManagerConstants;
+import org.wso2.carbon.device.application.mgt.core.util.Constants;
 import org.wso2.carbon.device.application.mgt.core.util.ConnectionManagerUtil;
 
 import javax.sql.DataSource;
@@ -37,27 +36,22 @@ import javax.sql.DataSource;
  * different data sources, connection acquisition mechanisms as well as different forms of DAO implementations to the
  * high-level implementations that require Application management related metadata persistence.
  */
-public class ApplicationManagementDAOFactory {
+public class DAOFactory {
 
     private static String databaseEngine;
-    private static final Log log = LogFactory.getLog(ApplicationManagementDAOFactory.class);
+    private static final Log log = LogFactory.getLog(DAOFactory.class);
 
-    public static void init(DataSourceConfig config) {
-        ConnectionManagerUtil.resolveDataSource(config);
-        databaseEngine = ConnectionManagerUtil.getDatabaseType();
-    }
-
-    public static void init(DataSource dtSource) {
-        ConnectionManagerUtil.setDataSource(dtSource);
+    public static void init(String datasourceName) {
+        ConnectionManagerUtil.resolveDataSource(datasourceName);
         databaseEngine = ConnectionManagerUtil.getDatabaseType();
     }
 
     public static ApplicationDAO getApplicationDAO(){
         if (databaseEngine != null) {
             switch (databaseEngine) {
-                case ApplicationManagerConstants.DataBaseTypes.DB_TYPE_H2:
+                case Constants.DataBaseTypes.DB_TYPE_H2:
                     return new H2ApplicationDAOImpl();
-                case ApplicationManagerConstants.DataBaseTypes.DB_TYPE_MYSQL:
+                case Constants.DataBaseTypes.DB_TYPE_MYSQL:
                     return new MySQLApplicationDAOImpl();
                 default:
                     throw new UnsupportedDatabaseEngineException("Unsupported database engine : " + databaseEngine);

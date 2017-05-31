@@ -16,17 +16,15 @@
  *   under the License.
  *
  */
-package org.wso2.carbon.device.application.mgt.core.services.impl;
+package org.wso2.carbon.device.application.mgt.core.impl;
 
 import org.wso2.carbon.device.application.mgt.common.Application;
 import org.wso2.carbon.device.application.mgt.common.ApplicationList;
 import org.wso2.carbon.device.application.mgt.common.Filter;
 import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
-import org.wso2.carbon.device.application.mgt.common.exception.DBConnectionException;
 import org.wso2.carbon.device.application.mgt.common.services.ApplicationManager;
 import org.wso2.carbon.device.application.mgt.core.dao.ApplicationDAO;
-import org.wso2.carbon.device.application.mgt.core.dao.common.ApplicationManagementDAOException;
-import org.wso2.carbon.device.application.mgt.core.dao.common.ApplicationManagementDAOFactory;
+import org.wso2.carbon.device.application.mgt.core.dao.common.DAOFactory;
 import org.wso2.carbon.device.application.mgt.core.util.ConnectionManagerUtil;
 
 public class ApplicationManagerImpl implements ApplicationManager {
@@ -39,7 +37,7 @@ public class ApplicationManagerImpl implements ApplicationManager {
     public ApplicationList getApplications(Filter filter) throws ApplicationManagementException {
         try {
             ConnectionManagerUtil.openConnection();
-            ApplicationDAO applicationDAO = ApplicationManagementDAOFactory.getApplicationDAO();
+            ApplicationDAO applicationDAO = DAOFactory.getApplicationDAO();
             return applicationDAO.getApplications(filter);
         } finally {
             ConnectionManagerUtil.closeConnection();

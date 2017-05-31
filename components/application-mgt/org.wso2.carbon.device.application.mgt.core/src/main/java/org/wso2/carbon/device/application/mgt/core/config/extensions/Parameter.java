@@ -19,22 +19,15 @@
 package org.wso2.carbon.device.application.mgt.core.config.extensions;
 
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlValue;
 
+@XmlRootElement(name = "Parameter")
 public class Parameter {
 
     private String name;
 
     private String value;
-
-    Parameter(String name, String value) {
-        this.name = name;
-        this.value = value;
-    }
-
-    Parameter(){
-
-    }
 
     @XmlAttribute(name = "name")
     public String getName() {

@@ -21,6 +21,7 @@ package org.wso2.carbon.device.application.mgt.common;
 import org.wso2.carbon.device.application.mgt.common.jaxrs.Exclude;
 
 import java.util.List;
+import java.util.Map;
 
 public class Platform {
 
@@ -37,9 +38,7 @@ public class Platform {
 
     private List<String> tags;
 
-    private String properties;
-
-    private List<Application> applications;
+    private Map<String, String> properties;
 
     public int getId() {
         return id;
@@ -81,11 +80,11 @@ public class Platform {
         this.iconName = iconName;
     }
 
-    public String getProperties() {
+    public Map<String, String> getProperties() {
         return properties;
     }
 
-    public void setProperties(String properties) {
+    public void setProperties(Map<String, String> properties) {
         this.properties = properties;
     }
 
@@ -95,13 +94,5 @@ public class Platform {
 
     public void setTags(List<String> tags) {
         this.tags = tags;
-    }
-
-    public List<Application> getApplications() {
-        return applications;
-    }
-
-    public void setApplications(List<Application> applications) {
-        this.applications = applications;
     }
 }

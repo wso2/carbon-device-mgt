@@ -50,9 +50,9 @@ public class Application {
 
     private List<String> tags;
 
-    private List<Subscription> subscriptions;
-
     private Platform platform;
+
+    private List<Comment> comments;
 
     private Category category;
 
@@ -64,21 +64,49 @@ public class Application {
 
     private Date modifiedAt;
 
-    private LifecycleState lifecycleState;
+    private Payment payment;
 
-    private Date lifecycleStateModifiedAt;
+    private Lifecycle currentLifecycle;
 
-    private Date getLifecycleStateModifiedBy;
+    private List<ApplicationRelease> releases;
 
-    private boolean freeApp;
-
-    private String paymentCurrency;
-
-    private Float paymentPrice;
-
+    private Visibility visibility;
 
     public int getId() {
         return id;
+    }
+
+    public List<ApplicationRelease> getReleases() {
+        return releases;
+    }
+
+    public void setReleases(List<ApplicationRelease> releases) {
+        this.releases = releases;
+    }
+
+
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
+    }
+
+    public Payment getPayment() {
+        return payment;
+    }
+
+    public void setPayment(Payment payment) {
+        this.payment = payment;
+    }
+
+    public Lifecycle getCurrentLifecycle() {
+        return currentLifecycle;
+    }
+
+    public void setCurrentLifecycle(Lifecycle currentLifecycle) {
+        this.currentLifecycle = currentLifecycle;
     }
 
     public void setId(int id) {
@@ -165,14 +193,6 @@ public class Application {
         this.tags = tags;
     }
 
-    public List<Subscription> getSubscriptions() {
-        return subscriptions;
-    }
-
-    public void setSubscriptions(List<Subscription> subscriptions) {
-        this.subscriptions = subscriptions;
-    }
-
     public Platform getPlatform() {
         return platform;
     }
@@ -221,51 +241,11 @@ public class Application {
         this.modifiedAt = modifiedAt;
     }
 
-    public LifecycleState getLifecycleState() {
-        return lifecycleState;
+    public Visibility getVisibility() {
+        return visibility;
     }
 
-    public void setLifecycleState(LifecycleState lifecycleState) {
-        this.lifecycleState = lifecycleState;
-    }
-
-    public Date getLifecycleStateModifiedAt() {
-        return lifecycleStateModifiedAt;
-    }
-
-    public void setLifecycleStateModifiedAt(Date lifecycleStateModifiedAt) {
-        this.lifecycleStateModifiedAt = lifecycleStateModifiedAt;
-    }
-
-    public Date getGetLifecycleStateModifiedBy() {
-        return getLifecycleStateModifiedBy;
-    }
-
-    public void setGetLifecycleStateModifiedBy(Date getLifecycleStateModifiedBy) {
-        this.getLifecycleStateModifiedBy = getLifecycleStateModifiedBy;
-    }
-
-    public boolean isFreeApp() {
-        return freeApp;
-    }
-
-    public void setFreeApp(boolean freeApp) {
-        this.freeApp = freeApp;
-    }
-
-    public String getPaymentCurrency() {
-        return paymentCurrency;
-    }
-
-    public void setPaymentCurrency(String paymentCurrency) {
-        this.paymentCurrency = paymentCurrency;
-    }
-
-    public Float getPaymentPrice() {
-        return paymentPrice;
-    }
-
-    public void setPaymentPrice(Float paymentPrice) {
-        this.paymentPrice = paymentPrice;
+    public void setVisibility(Visibility visibility) {
+        this.visibility = visibility;
     }
 }

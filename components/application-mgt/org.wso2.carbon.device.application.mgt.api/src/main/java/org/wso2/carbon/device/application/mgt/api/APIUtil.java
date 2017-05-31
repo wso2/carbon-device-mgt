@@ -23,7 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.application.mgt.api.beans.ErrorResponse;
 import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
-import org.wso2.carbon.device.application.mgt.core.services.impl.ApplicationManagementServiceFactory;
+import org.wso2.carbon.device.application.mgt.common.services.ApplicationManager;
 
 import javax.ws.rs.core.Response;
 
@@ -35,24 +35,24 @@ public class APIUtil {
 
     private static Log log = LogFactory.getLog(APIUtil.class);
 
-    private static ApplicationManagementServiceFactory applicationManagementServiceFactory;
+    private static ApplicationManager applicationManager;
 
-    public static ApplicationManagementServiceFactory getApplicationManagementServiceFactory() {
-        if (applicationManagementServiceFactory == null) {
+    public static ApplicationManager getApplicationManagemer() {
+        if (applicationManager == null) {
             synchronized (APIUtil.class) {
-                if (applicationManagementServiceFactory == null) {
+                if (applicationManager == null) {
                     PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-                    applicationManagementServiceFactory =
-                            (ApplicationManagementServiceFactory) ctx.getOSGiService(ApplicationManagementServiceFactory.class, null);
-                    if (applicationManagementServiceFactory == null) {
-                        String msg = "Application Management provider service has not initialized.";
+                    applicationManager =
+                            (ApplicationManager) ctx.getOSGiService(ApplicationManager.class, null);
+                    if (applicationManager == null) {
+                        String msg = "Application Manager service has not initialized.";
                         log.error(msg);
                         throw new IllegalStateException(msg);
                     }
                 }
             }
         }
-        return applicationManagementServiceFactory;
+        return applicationManager;
     }
 
     public static Response getResponse(ApplicationManagementException ex, Response.Status status) {

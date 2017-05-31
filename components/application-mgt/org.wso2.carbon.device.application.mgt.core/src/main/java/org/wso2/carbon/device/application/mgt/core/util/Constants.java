@@ -16,37 +16,21 @@
  *   under the License.
  *
  */
-package org.wso2.carbon.device.application.mgt.common;
+package org.wso2.carbon.device.application.mgt.core.util;
 
-public class ResourceType {
+public class Constants {
 
-    private String id;
+    public static final String APPLICATION_CONFIG_XML_FILE = "application-mgt.xml";
 
-    private String name;
-
-    private String description;
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
+    public static final class DataBaseTypes {
+        private DataBaseTypes() {
+            throw new AssertionError();
+        }
+        public static final String DB_TYPE_MYSQL = "MySQL";
+        public static final String DB_TYPE_ORACLE = "Oracle";
+        public static final String DB_TYPE_MSSQL = "Microsoft SQL Server";
+        public static final String DB_TYPE_DB2 = "DB2";
+        public static final String DB_TYPE_H2 = "H2";
+        public static final String DB_TYPE_POSTGRESQL = "PostgreSQL";
     }
 }

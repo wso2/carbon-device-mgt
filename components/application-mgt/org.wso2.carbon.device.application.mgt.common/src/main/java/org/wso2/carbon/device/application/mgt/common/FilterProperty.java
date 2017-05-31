@@ -18,6 +18,7 @@
  */
 package org.wso2.carbon.device.application.mgt.common;
 
+//TODO
 public class FilterProperty {
 
     public enum Operator {

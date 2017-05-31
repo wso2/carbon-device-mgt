@@ -25,19 +25,15 @@ import org.json.JSONException;
 import org.wso2.carbon.device.application.mgt.common.Application;
 import org.wso2.carbon.device.application.mgt.common.Platform;
 import org.wso2.carbon.device.application.mgt.common.Category;
-import org.wso2.carbon.device.application.mgt.core.config.datasource.DataSourceConfig;
-import org.wso2.carbon.device.application.mgt.core.config.datasource.JNDILookupDefinition;
 
-import javax.naming.InitialContext;
-import javax.sql.DataSource;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 
-public class ApplicationManagementDAOUtil {
+public class Util {
 
-    private static final Log log = LogFactory.getLog(ApplicationManagementDAOUtil.class);
+    private static final Log log = LogFactory.getLog(Util.class);
 
     public static Application loadApplication(ResultSet rs, ResultSet rsProperties, ResultSet rsTags)
             throws SQLException, JSONException {

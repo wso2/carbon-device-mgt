@@ -25,14 +25,8 @@ import org.wso2.carbon.device.application.mgt.common.ApplicationList;
 import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
 import org.wso2.carbon.device.application.mgt.common.services.ApplicationManager;
 import org.wso2.carbon.device.application.mgt.api.APIUtil;
-import org.wso2.carbon.device.application.mgt.core.services.impl.ApplicationManagementServiceFactory;
-import org.wso2.carbon.device.application.mgt.extensions.appupload.AppUploadManager;
-
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
-
-import static org.wso2.carbon.device.application.mgt.core.services.impl.ApplicationManagementServiceFactory
-        .ManagerService.APPLICATION_MANAGER;
 
 @Produces({"application/json"})
 @Consumes({"application/json"})
@@ -49,10 +43,8 @@ public class ApplicationManagementAPIImpl {
     @Consumes("application/json")
     @Path("applications")
     public Response getApplications(@QueryParam("offset") int offset, @QueryParam("limit") int limit,
-                                    @QueryParam("q") String searchQuery) {
-        ApplicationManagementServiceFactory serviceFactory = APIUtil.getApplicationManagementServiceFactory();
-        ApplicationManager applicationManager = (ApplicationManager) serviceFactory
-                .getApplicationManagementService(APPLICATION_MANAGER);
+                                    @QueryParam("query") String searchQuery) {
+        ApplicationManager applicationManager = APIUtil.getApplicationManagemer();
         try {
             if (limit == 0) {
                 limit = DEFAULT_LIMIT;

@@ -16,22 +16,17 @@
  *   under the License.
  *
  */
-package org.wso2.carbon.device.application.mgt.core.config.extensions;
+package org.wso2.carbon.device.application.mgt.core.exception;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
 
-@XmlRootElement(name = "ExtensionsConfig")
-public class ExtensionsConfig {
+public class ApplicationManagementDAOException extends ApplicationManagementException {
 
-    private Extensions extensions;
-
-    @XmlElement(name = "Extensions", nillable = true)
-    public Extensions getExtensions() {
-        return extensions;
+    public ApplicationManagementDAOException(String message, Throwable throwable) {
+        super(message, throwable);
     }
 
-    public void setExtensions(Extensions extensions) {
-        this.extensions = extensions;
+    public ApplicationManagementDAOException(String message) {
+        super(message, new Exception());
     }
 }

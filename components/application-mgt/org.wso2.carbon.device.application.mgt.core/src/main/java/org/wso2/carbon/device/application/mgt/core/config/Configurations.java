@@ -16,30 +16,37 @@
  *   under the License.
  *
  */
-package org.wso2.carbon.device.application.mgt.core.config.extensions;
+package org.wso2.carbon.device.application.mgt.core.config;
 
+import org.wso2.carbon.device.application.mgt.core.config.extensions.Extension;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-@XmlRootElement(name = "Parameters")
-public class Parameters {
+@XmlRootElement(name = "ApplicationManagementConfiguration")
+public class Configurations {
 
-    private List<Parameter> parameters = new ArrayList<>();;
+    private String datasourceName;
 
-    @XmlElement(name = "Parameter", nillable = true)
-    public List<Parameter> getParameters() {
-        return parameters;
+    private List<Extension> extensionsConfig;
+
+    @XmlElement(name = "DatasourceName", required = true)
+    public String getDatasourceName() {
+        return datasourceName;
     }
 
-    public void setParameters(List<Parameter> parameters) {
-        this.parameters = parameters;
+    public void setDatasourceName(String datasourceName) {
+        this.datasourceName = datasourceName;
     }
 
-    void addEntry(Parameter parameter) {
-        parameters.add(parameter);
+    @XmlElement(name = "Extensions", required = false)
+    public List<Extension> getExtensions() {
+        return extensionsConfig;
+    }
+
+    public void setExtensionsConfig(List<Extension> extensionsConfig) {
+        this.extensionsConfig = extensionsConfig;
     }
 }
+
+

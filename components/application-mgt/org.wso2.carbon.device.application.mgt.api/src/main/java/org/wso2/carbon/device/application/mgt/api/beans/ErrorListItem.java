@@ -50,7 +50,6 @@ public class ErrorListItem {
         this.message = msg;
     }
 
-
     /**
      * Description about individual errors occurred
      */

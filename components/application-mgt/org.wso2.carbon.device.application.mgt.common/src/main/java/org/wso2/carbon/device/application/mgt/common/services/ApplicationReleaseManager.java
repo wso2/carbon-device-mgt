@@ -18,5 +18,5 @@
  */
 package org.wso2.carbon.device.application.mgt.common.services;
 
-public interface ApplicationReleaseManager extends ApplicationManagementService {
+public interface ApplicationReleaseManager{
 }

@@ -49,6 +49,11 @@
             <artifactId>org.wso2.carbon.device.application.mgt.api.feature</artifactId>
             <type>zip</type>
         </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.devicemgt</groupId>
+            <artifactId>org.wso2.carbon.device.application.mgt.extensions.feature</artifactId>
+            <type>zip</type>
+        </dependency>
     </dependencies>
 
     <build>

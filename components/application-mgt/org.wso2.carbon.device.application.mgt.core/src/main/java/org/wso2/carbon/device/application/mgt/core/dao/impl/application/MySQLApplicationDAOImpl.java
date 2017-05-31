@@ -26,8 +26,8 @@ import org.wso2.carbon.device.application.mgt.common.ApplicationList;
 import org.wso2.carbon.device.application.mgt.common.Filter;
 import org.wso2.carbon.device.application.mgt.common.Pagination;
 import org.wso2.carbon.device.application.mgt.common.exception.DBConnectionException;
-import org.wso2.carbon.device.application.mgt.core.dao.common.ApplicationManagementDAOException;
-import org.wso2.carbon.device.application.mgt.core.dao.common.ApplicationManagementDAOUtil;
+import org.wso2.carbon.device.application.mgt.core.exception.ApplicationManagementDAOException;
+import org.wso2.carbon.device.application.mgt.core.dao.common.Util;
 import org.wso2.carbon.device.application.mgt.core.dao.impl.AbstractApplicationDAOImpl;
 import org.wso2.carbon.device.application.mgt.core.util.ConnectionManagerUtil;
 
@@ -95,7 +95,7 @@ public class MySQLApplicationDAOImpl extends AbstractApplicationDAOImpl {
             rs = stmt.executeQuery();
 
             int length = 0;
-            sql = "SELECT FOUND_ROWS() AS COUNT;";
+            sql = "SELECT FOUND_ROWS() AS COUNT;"; //TODO: from which tables????
             stmt = conn.prepareStatement(sql);
             ResultSet rsCount = stmt.executeQuery();
             if (rsCount.next()) {
@@ -116,9 +116,9 @@ public class MySQLApplicationDAOImpl extends AbstractApplicationDAOImpl {
                 stmt.setInt(1, rs.getInt("ID"));
                 ResultSet rsTags = stmt.executeQuery();
 
-                applications.add(ApplicationManagementDAOUtil.loadApplication(rs, rsProperties, rsTags));
-                ApplicationManagementDAOUtil.cleanupResources(null, rsProperties);
-                ApplicationManagementDAOUtil.cleanupResources(null, rsTags);
+                applications.add(Util.loadApplication(rs, rsProperties, rsTags));
+                Util.cleanupResources(null, rsProperties);
+                Util.cleanupResources(null, rsTags);
                 length++;
             }
 
@@ -134,7 +134,7 @@ public class MySQLApplicationDAOImpl extends AbstractApplicationDAOImpl {
         } catch (DBConnectionException e) {
             throw new ApplicationManagementDAOException("Error occurred while obtaining the DB connection.", e);
         } finally {
-            ApplicationManagementDAOUtil.cleanupResources(stmt, rs);
+            Util.cleanupResources(stmt, rs);
         }
         return applicationList;
     }

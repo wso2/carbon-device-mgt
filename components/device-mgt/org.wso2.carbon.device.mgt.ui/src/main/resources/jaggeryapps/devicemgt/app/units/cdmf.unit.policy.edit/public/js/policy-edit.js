@@ -196,7 +196,7 @@ skipStep["policy-platform"] = function (policyPayloadObj) {
             hasPolicyProfileScript = false;
         }
         $.template(policyEditTemplateCacheKey, context + policyEditTemplateSrc, function (template) {
-            var content = template();
+            var content = template({"iscloud" : $("#logged-in-user").data("iscloud")});
             $("#device-type-policy-operations").html(content).removeClass("hidden");
             $(".policy-platform").addClass("hidden");
             if (hasPolicyProfileScript) {

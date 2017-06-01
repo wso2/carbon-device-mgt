@@ -92,6 +92,13 @@
 		</ConfigProperties>
 	</PushNotificationProvider>
 
+	<PullNotificationExecutor className="org.wso2.carbon.device.mgt.pull.notification.proxy.http.HTTPNotificationPublisher">
+		<ConfigProperties>
+			<Property Name="url">sample.mqtt.adapter</Property>
+			<Property Name="authorization">admin</Property>
+		</ConfigProperties>
+	</PullNotificationExecutor>
+
 	<PolicyMonitoring enabled="true"/>
 
 	<License>

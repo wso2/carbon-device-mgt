@@ -19,17 +19,9 @@
 package org.wso2.carbon.device.mgt.jaxrs.service.impl;
 
 import org.apache.axis2.AxisFault;
-import org.apache.axis2.client.Options;
-import org.apache.axis2.java.security.SSLProtocolSocketFactory;
-import org.apache.axis2.transport.http.HTTPConstants;
-import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.httpclient.Header;
-import org.apache.commons.httpclient.protocol.Protocol;
-import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
-import org.wso2.carbon.core.util.Utils;
 import org.wso2.carbon.device.mgt.analytics.data.publisher.exception.DataPublisherConfigurationException;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
@@ -52,12 +44,9 @@ import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
 import org.wso2.carbon.event.stream.stub.EventStreamAdminServiceStub;
 import org.wso2.carbon.event.stream.stub.types.EventStreamAttributeDto;
 import org.wso2.carbon.event.stream.stub.types.EventStreamDefinitionDto;
-import org.wso2.carbon.identity.jwt.client.extension.JWTClient;
 import org.wso2.carbon.identity.jwt.client.extension.exception.JWTClientException;
 import org.wso2.carbon.user.api.UserStoreException;
 
-import javax.cache.Cache;
-import javax.cache.Caching;
 import javax.validation.Valid;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;

@@ -30,6 +30,7 @@ import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManager;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.ConfigurationEntry;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.PlatformConfiguration;
 import org.wso2.carbon.device.mgt.common.policy.mgt.PolicyMonitoringManager;
+import org.wso2.carbon.device.mgt.common.pull.notification.PullNotificationSubscriber;
 import org.wso2.carbon.device.mgt.common.push.notification.PushNotificationConfig;
 import org.wso2.carbon.device.mgt.common.spi.DeviceManagementService;
 import org.wso2.carbon.device.mgt.extensions.device.type.template.config.ConfigProperties;
@@ -39,6 +40,7 @@ import org.wso2.carbon.device.mgt.extensions.device.type.template.config.Propert
 import org.wso2.carbon.device.mgt.extensions.device.type.template.config.PushNotificationProvider;
 import org.wso2.carbon.device.mgt.extensions.device.type.template.config.TaskConfiguration;
 import org.wso2.carbon.device.mgt.extensions.device.type.template.policy.mgt.DefaultPolicyMonitoringManager;
+import org.wso2.carbon.device.mgt.extensions.device.type.template.pull.notification.PullNotificationSubscriberLoader;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -61,6 +63,7 @@ public class DeviceTypeManagerService implements DeviceManagementService {
     private List<MonitoringOperation> monitoringOperations;
     private PolicyMonitoringManager policyMonitoringManager;
     private InitialOperationConfig initialOperationConfig;
+    private PullNotificationSubscriber pullNotificationSubscriber;
 
     public DeviceTypeManagerService(DeviceTypeConfigIdentifier deviceTypeConfigIdentifier,
                                     DeviceTypeConfiguration deviceTypeConfiguration) {
@@ -75,6 +78,15 @@ public class DeviceTypeManagerService implements DeviceManagementService {
         if (deviceTypeConfiguration.getPolicyMonitoring() != null
                 && deviceTypeConfiguration.getPolicyMonitoring().isEnabled()) {
             this.policyMonitoringManager = new DefaultPolicyMonitoringManager();
+        }
+
+        if (deviceTypeConfiguration.getPullNotificationExecutor() != null) {
+            String className = deviceTypeConfiguration.getPullNotificationExecutor().getClassName();
+            if (className != null && !className.isEmpty()) {
+                PullNotificationSubscriberLoader pullNotificationExecutorImpl = new PullNotificationSubscriberLoader(className
+                        , deviceTypeConfiguration.getPullNotificationExecutor().getConfigProperties());
+                this.pullNotificationSubscriber = pullNotificationExecutorImpl.getPullNotificationSubscriber();
+            }
         }
     }
 
@@ -174,6 +186,11 @@ public class DeviceTypeManagerService implements DeviceManagementService {
     @Override
     public InitialOperationConfig getInitialOperationConfig() {
         return initialOperationConfig;
+    }
+
+    @Override
+    public PullNotificationSubscriber getPullNotificationSubscriber() {
+        return pullNotificationSubscriber;
     }
 
     private void setProvisioningConfig(String tenantDomain, DeviceTypeConfiguration deviceTypeConfiguration) {

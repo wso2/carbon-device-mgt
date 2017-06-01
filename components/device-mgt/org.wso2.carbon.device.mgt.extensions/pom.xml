@@ -109,8 +109,9 @@
 							org.wso2.carbon.ndatasource.core,
 							org.wso2.carbon.registry.core.service,
 							org.wso2.carbon.utils.dbcreator,
-							org.wso2.carbon.utils.multitenancy
+							org.wso2.carbon.utils.multitenancy,
                         </Import-Package>
+						<DynamicImport-Package>org.wso2.carbon.device.mgt.extensions.pull.notification.*</DynamicImport-Package>
                     </instructions>
                 </configuration>
             </plugin>

@@ -37,6 +37,9 @@
             <Provider>org.wso2.carbon.device.mgt.extensions.push.notification.provider.xmpp.XMPPBasedPushNotificationProvider</Provider>
         </PushNotificationProviders>
     </PushNotificationConfiguration>
+	<PullNotificationConfiguration>
+		<Enabled>true</Enabled>
+	</PullNotificationConfiguration>
     <IdentityConfiguration>
         <ServerUrl>https://localhost:9443</ServerUrl>
         <AdminUsername>admin</AdminUsername>

@@ -117,7 +117,7 @@
             -d '{  "applicationName":"testme", "isAllowedToAllDomains":false, "tags":["device_agent"]}'</code>
         </li>
         <li class="padding-top-double"><span><h3 class="uppercase">Generate Token</h3></span>
-            <code>curl -k -d "grant_type=password&username=%username%&password=%password%&scope=perm:device:enroll perm:device:disenroll perm:device:modify perm:devices:operations"
+            <code>curl -k -d "grant_type=password&username=%username%&password=%password%&scope=perm:device:enroll perm:device:disenroll perm:device:modify perm:device:operations perm:device:publish-event"
             -H "Authorization: Basic Base64(client_id:client_secret)"
             -H "Content-Type: application/x-www-form-urlencoded" {{httpsGateway}}/token</code>
         </li>
@@ -242,16 +242,21 @@
             MQTT - {{mqttGateway}}
             MQTT Topic : <code>{{tenantDomain}}/{{deviceType}}/&lt;device_id&gt;/operation/#</code>
             <br/>
+            Operation Response:
+            <code>{{tenantDomain}}/{{deviceType}}/&lt;device_id&gt;/update/operation</code>
+            <br/>
+            Payload : <code>{operationId:1, payload:"example"}</code>
+            <br/>
             Topic Structure:
             <ul class="list-unstyled">
                 <li class="padding-top-double">
-                    <code>{{tenantDomain}}/{{deviceType}}/&lt;device_id&gt;/operation/command/&lt;feature_code&gt;</code>
+                    <code>{{tenantDomain}}/{{deviceType}}/&lt;device_id&gt;/operation/command/&lt;feature_code&gt;&lt;operation_id&gt;</code>
                 </li>
                 <li class="padding-top-double">
-                    <code>{{tenantDomain}}/{{deviceType}}/&lt;device_id&gt;/operation/config/&lt;feature_code&gt;</code>
+                    <code>{{tenantDomain}}/{{deviceType}}/&lt;device_id&gt;/operation/config/&lt;feature_code&gt;&lt;operation_id&gt;</code>
                 </li>
                 <li class="padding-top-double">
-                    <code>{{tenantDomain}}/{{deviceType}}/&lt;device_id&gt;/operation/profile/&lt;feature_code&gt;</code>
+                    <code>{{tenantDomain}}/{{deviceType}}/&lt;device_id&gt;/operation/profile/&lt;feature_code&gt;&lt;operation_id&gt;</code>
                 </li>
                 <li class="padding-top-double">
                     <code>{{tenantDomain}}/{{deviceType}}/&lt;device_id&gt;/operation/policy/policy_bundle</code>

@@ -85,16 +85,22 @@ import javax.ws.rs.core.Response;
                         permissions = {"/device-mgt/devices/owning-device/modify"}
                 ),
                 @Scope(
-                        name = "Getting Device Operation Details",
-                        description = "Getting Device Operation Details",
-                        key = "perm:devices:operations",
-                        permissions = {"/device-mgt/devices/owning-device/view"}
-                ),
-                @Scope(
                         name = "Disenroll Device",
                         description = "Disenroll a device",
                         key = "perm:device:disenroll",
                         permissions = {"/device-mgt/devices/owning-device/remove"}
+                ),
+                @Scope(
+                        name = "Publish Event",
+                        description = "publish device event",
+                        key = "perm:device:publish-event",
+                        permissions = {"/device-mgt/devices/owning-device/event"}
+                ),
+                @Scope(
+                        name = "Getting Device Operation Details",
+                        description = "Getting Device Operation Details",
+                        key = "perm:device:operations",
+                        permissions = {"/device-mgt/devices/owning-device/view"}
                 )
         }
 )
@@ -250,18 +256,14 @@ public interface DeviceAgentService {
             tags = "Device Agent Management",
             extensions = {
                     @Extension(properties = {
-                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:device:enroll")
+                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:device:publish-event")
                     })
             }
     )
     @ApiResponses(
             value = {
-                    @ApiResponse(code = 201, message = "Created. \n Successfully published the event. Location header " +
-                            "contains URL of newly enrolled device",
+                    @ApiResponse(code = 200, message = "OK. \n Successfully published the event",
                             responseHeaders = {
-                                    @ResponseHeader(
-                                            name = "Content-Location",
-                                            description = "The URL of the added policy."),
                                     @ResponseHeader(
                                             name = "Content-Type",
                                             description = "The content type of the body"),
@@ -318,7 +320,7 @@ public interface DeviceAgentService {
             tags = "Device Agent Management",
             extensions = {
                     @Extension(properties = {
-                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:devices:operations")
+                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:device:operations")
                     })
             }
     )
@@ -375,7 +377,7 @@ public interface DeviceAgentService {
             tags = "Device Agent Management",
             extensions = {
                     @Extension(properties = {
-                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:devices:operations")
+                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:device:operations")
                     })
             }
     )
@@ -432,7 +434,7 @@ public interface DeviceAgentService {
             tags = "Device Agent Management",
             extensions = {
                     @Extension(properties = {
-                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:devices:operations")
+                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:device:operations")
                     })
             }
     )
@@ -490,7 +492,7 @@ public interface DeviceAgentService {
             tags = "Device Agent Management",
             extensions = {
                     @Extension(properties = {
-                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:devices:operations")
+                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:device:operations")
                     })
             }
     )
@@ -537,7 +539,5 @@ public interface DeviceAgentService {
                                             @PathParam("id") String deviceId,
                                             @ApiParam(name = "status", value = "status of the operation.", required = true)
                                             @QueryParam("status")Operation.Status status);
-
-
 
 }

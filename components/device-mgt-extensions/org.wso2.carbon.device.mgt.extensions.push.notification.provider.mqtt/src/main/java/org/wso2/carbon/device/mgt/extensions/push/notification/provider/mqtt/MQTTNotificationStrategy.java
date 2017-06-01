@@ -157,7 +157,7 @@ public class MQTTNotificationStrategy implements NotificationStrategy {
                 Map<String, String> dynamicProperties = new HashMap<>();
                 String topic = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantDomain(true) + "/"
                         + ctx.getDeviceId().getType() + "/" + ctx.getDeviceId().getId() + "/operation/"
-                        + operation.getType().toString().toLowerCase() + "/" + operation.getCode();
+                        + operation.getType().toString().toLowerCase() + "/" + operation.getCode() + "/" + operation.getId();
                 dynamicProperties.put("topic", topic);
                 Object payload;
                 if ("command".equals(operation.getType().toString().toLowerCase())) {

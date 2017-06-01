@@ -61,6 +61,8 @@ public class DeviceTypeConfiguration {
     protected ProvisioningConfig provisioningConfig;
     @XmlElement(name = "PushNotificationProvider", required = true)
     protected PushNotificationProvider pushNotificationProvider;
+    @XmlElement(name = "PullNotificationSubscriber", required = true)
+    protected PullNotificationSubscriber pullNotificationSubscriber;
     @XmlElement(name = "License", required = true)
     protected License license;
     @XmlElement(name = "DataSource", required = true)
@@ -228,6 +230,26 @@ public class DeviceTypeConfiguration {
      */
     public void setPushNotificationProvider(PushNotificationProvider value) {
         this.pushNotificationProvider = value;
+    }
+
+    /**
+     * Gets the value of the pullNotificationSubscriber property.
+     *
+     * @return possible object is
+     * {@link PullNotificationSubscriber }
+     */
+    public PullNotificationSubscriber getPullNotificationExecutor() {
+        return pullNotificationSubscriber;
+    }
+
+    /**
+     * Sets the value of the pullNotificationSubscriber property.
+     *
+     * @param value allowed object is
+     *              {@link PullNotificationSubscriber }
+     */
+    public void setPullNotificationExecutor(PullNotificationSubscriber value) {
+        this.pullNotificationSubscriber = value;
     }
 
     /**

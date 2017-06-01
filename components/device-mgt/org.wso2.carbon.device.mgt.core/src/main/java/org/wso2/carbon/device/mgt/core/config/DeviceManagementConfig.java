@@ -20,13 +20,12 @@ package org.wso2.carbon.device.mgt.core.config;
 import org.wso2.carbon.device.mgt.core.config.identity.IdentityConfigurations;
 import org.wso2.carbon.device.mgt.core.config.pagination.PaginationConfiguration;
 import org.wso2.carbon.device.mgt.core.config.policy.PolicyConfiguration;
+import org.wso2.carbon.device.mgt.core.config.pull.notification.PullNotificationConfiguration;
 import org.wso2.carbon.device.mgt.core.config.push.notification.PushNotificationConfiguration;
 import org.wso2.carbon.device.mgt.core.config.task.TaskConfiguration;
 
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.util.List;
 
 /**
  * Represents Device Mgt configuration.
@@ -41,6 +40,7 @@ public final class DeviceManagementConfig {
     private PolicyConfiguration policyConfiguration;
     private PaginationConfiguration paginationConfiguration;
     private PushNotificationConfiguration pushNotificationConfiguration;
+    private PullNotificationConfiguration pullNotificationConfiguration;
 
 
     @XmlElement(name = "ManagementRepository", required = true)
@@ -96,6 +96,15 @@ public final class DeviceManagementConfig {
 
     public void setPushNotificationConfiguration(PushNotificationConfiguration pushNotificationConfiguration) {
         this.pushNotificationConfiguration = pushNotificationConfiguration;
+    }
+
+    @XmlElement(name = "PullNotificationConfiguration", required = true)
+    public PullNotificationConfiguration getPullNotificationConfiguration() {
+        return pullNotificationConfiguration;
+    }
+
+    public void setPullNotificationConfiguration(PullNotificationConfiguration pullNotificationConfiguration) {
+        this.pullNotificationConfiguration = pullNotificationConfiguration;
     }
 }
 

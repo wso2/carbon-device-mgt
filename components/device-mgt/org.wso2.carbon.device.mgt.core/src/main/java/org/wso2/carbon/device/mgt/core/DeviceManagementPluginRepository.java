@@ -22,6 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
+import org.wso2.carbon.device.mgt.common.pull.notification.PullNotificationSubscriber;
 import org.wso2.carbon.device.mgt.core.dto.DeviceManagementServiceHolder;
 import org.wso2.carbon.device.mgt.core.dto.DeviceTypeServiceIdentifier;
 import org.wso2.carbon.device.mgt.common.OperationMonitoringTaskConfig;
@@ -121,19 +122,22 @@ public class DeviceManagementPluginRepository implements DeviceManagerStartupLis
 
     public void removeDeviceManagementProvider(DeviceManagementService provider)
             throws DeviceManagementException {
-            String deviceTypeName = provider.getType();
-            DeviceTypeServiceIdentifier deviceTypeIdentifier;
-            ProvisioningConfig provisioningConfig = provider.getProvisioningConfig();
-            if (provisioningConfig.isSharedWithAllTenants()) {
-                deviceTypeIdentifier = new DeviceTypeServiceIdentifier(deviceTypeName);
-                providers.remove(deviceTypeIdentifier);
-            } else {
-                int providerTenantId = DeviceManagerUtil.getTenantId(provisioningConfig.getProviderTenantDomain());
-                deviceTypeIdentifier = new DeviceTypeServiceIdentifier(deviceTypeName, providerTenantId);
-                providers.remove(deviceTypeIdentifier);
-            }
-            unregisterPushNotificationStrategy(deviceTypeIdentifier);
-            unregisterMonitoringTask(provider);
+        String deviceTypeName = provider.getType();
+        DeviceTypeServiceIdentifier deviceTypeIdentifier;
+        ProvisioningConfig provisioningConfig = provider.getProvisioningConfig();
+        if (provisioningConfig.isSharedWithAllTenants()) {
+            deviceTypeIdentifier = new DeviceTypeServiceIdentifier(deviceTypeName);
+        } else {
+            int providerTenantId = DeviceManagerUtil.getTenantId(provisioningConfig.getProviderTenantDomain());
+            deviceTypeIdentifier = new DeviceTypeServiceIdentifier(deviceTypeName, providerTenantId);
+        }
+        PullNotificationSubscriber pullNotificationSubscriber = provider.getPullNotificationSubscriber();
+        if (pullNotificationSubscriber != null) {
+            pullNotificationSubscriber.clean();
+        }
+        providers.remove(deviceTypeIdentifier);
+        unregisterPushNotificationStrategy(deviceTypeIdentifier);
+        unregisterMonitoringTask(provider);
     }
 
     private void unregisterPushNotificationStrategy(DeviceTypeServiceIdentifier deviceTypeIdentifier) {

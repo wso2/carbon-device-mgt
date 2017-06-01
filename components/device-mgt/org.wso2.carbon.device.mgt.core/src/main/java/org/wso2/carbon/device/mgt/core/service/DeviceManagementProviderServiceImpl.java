@@ -28,6 +28,9 @@ import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.DeviceManager;
 import org.wso2.carbon.device.mgt.common.DeviceNotFoundException;
+import org.wso2.carbon.device.mgt.common.pull.notification.NotificationContext;
+import org.wso2.carbon.device.mgt.common.pull.notification.PullNotificationExecutionFailedException;
+import org.wso2.carbon.device.mgt.common.pull.notification.PullNotificationSubscriber;
 import org.wso2.carbon.device.mgt.core.dto.DeviceTypeServiceIdentifier;
 import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
 import org.wso2.carbon.device.mgt.common.FeatureManager;
@@ -2201,5 +2204,26 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         } finally {
             DeviceManagementDAOFactory.closeConnection();
         }
+    }
+
+    @Override
+    public void executePullNotification(String deviceType, NotificationContext notificationContext)
+            throws PullNotificationExecutionFailedException {
+        DeviceManagementService dms =
+                pluginRepository.getDeviceManagementService(deviceType, this.getTenantId());
+        if (dms == null) {
+            String message = "Device type '" + deviceType + "' does not have an associated device management " +
+                    "plugin registered within the framework";
+            if (log.isDebugEnabled()) {
+                log.debug(message);
+            }
+            throw new PullNotificationExecutionFailedException(message);
+        }
+        PullNotificationSubscriber pullNotificationSubscriber = dms.getPullNotificationSubscriber();
+        if (pullNotificationSubscriber == null) {
+            throw new PullNotificationExecutionFailedException("Pull Notification Subscriber is not configured " +
+                                                                       "for device type" + deviceType);
+        }
+        pullNotificationSubscriber.execute(notificationContext);
     }
 }

@@ -51,7 +51,7 @@ var handlers = function () {
                 // tokenPair will include current access token as well as current refresh token
                 var arrayOfScopes = devicemgtProps["scopes"];
                 arrayOfScopes = arrayOfScopes.concat(utility.getDeviceTypesScopesList());
-                var stringOfScopes = "";
+                var stringOfScopes = tokenUtil.getUniqueBrowserScope();
                 arrayOfScopes.forEach(function (entry) {
                     stringOfScopes += entry + " ";
                 });
@@ -94,7 +94,7 @@ var handlers = function () {
                 var tokenData;
                 var arrayOfScopes = devicemgtProps["scopes"];
                 arrayOfScopes = arrayOfScopes.concat(utility.getDeviceTypesScopesList());
-                var stringOfScopes = "";
+				var stringOfScopes = tokenUtil.getUniqueBrowserScope();
                 arrayOfScopes.forEach(function (entry) {
                     stringOfScopes += entry + " ";
                 });
@@ -139,7 +139,7 @@ var handlers = function () {
 				var tokenData;
 				var arrayOfScopes = devicemgtProps["scopes"];
 				arrayOfScopes = arrayOfScopes.concat(utility.getDeviceTypesScopesList());
-				var stringOfScopes = "";
+				var stringOfScopes = tokenUtil.getUniqueBrowserScope();
 				arrayOfScopes.forEach(function (entry) {
 					stringOfScopes += entry + " ";
 				});
@@ -148,8 +148,7 @@ var handlers = function () {
 				tokenData = tokenUtil.
 					getTokenPairAndScopesByJWTGrantType(samlToken, encodedClientAppCredentials, stringOfScopes);
 				if (!tokenData) {
-					throw new Error("{/app/modules/oauth/token-handlers.js} Could not set up token " +
-					"pair by password grant type. Error in token " +
+					throw new Error("{/app/modules/oauth/token-handlers.js} Could not set up token. Error in token " +
 					"retrieval - setupTokenPairBySamlGrantType(x, y)");
 				} else {
 					var tokenPair = {};
@@ -180,6 +179,9 @@ var handlers = function () {
             if (!newTokenPair) {
                 log.error("{/app/modules/oauth/token-handlers.js} Error in refreshing token pair. " +
                     "Unable to update session context with new access token pair - refreshTokenPair()");
+				userModule.logout(function () {
+					response.sendRedirect(devicemgtProps["appContext"] + "login");
+				});
             } else {
                 session.put(constants["TOKEN_PAIR"], stringify(newTokenPair));
             }
@@ -262,6 +264,19 @@ var handlers = function () {
 
         }
     };
+
+	publicMethods["removeClientDetails"] = function () {
+		var user = session.get(constants.USER_SESSION_KEY);
+		if (!user) {
+			log.error("User object was not found in the session");
+			throw constants.ERRORS.USER_NOT_FOUND;
+		}
+		tokenUtil.removeClientAppCredentials(user.domain);
+		session.remove(constants["ENCODED_TENANT_BASED_WEB_SOCKET_CLIENT_CREDENTIALS"]);
+		session.remove(constants["ENCODED_TENANT_BASED_CLIENT_APP_CREDENTIALS"]);
+		session.remove(constants["TOKEN_PAIR"]);
+		session.remove(constants["ALLOWED_SCOPES"]);
+	};
 
     return publicMethods;
 }();

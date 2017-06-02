@@ -39,13 +39,13 @@ import java.util.Map;
  */
 public class DeviceStatusTaskManagerServiceImpl implements DeviceStatusTaskManagerService {
 
-    private static Log log = LogFactory.getLog(DeviceStatusTaskManagerServiceImpl.class);
+    private static final Log log = LogFactory.getLog(DeviceStatusTaskManagerServiceImpl.class);
 
     public static final String DEVICE_STATUS_MONITORING_TASK_TYPE = "DEVICE_STATUS_MONITORING";
     static final String DEVICE_TYPE = "DEVICE_TYPE";
     static final String DEVICE_TYPE_ID = "DEVICE_TYPE_ID";
     static final String DEVICE_STATUS_TASK_CONFIG = "DEVICE_STATUS_TASK_CONFIG";
-    private static String TASK_CLASS = DeviceStatusMonitoringTask.class.getName();
+    private static final String TASK_CLASS = DeviceStatusMonitoringTask.class.getName();
 
     @Override
     public void startTask(DeviceType deviceType, DeviceStatusTaskPluginConfig deviceStatusTaskConfig)

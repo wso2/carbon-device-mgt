@@ -43,7 +43,7 @@ import java.util.Map;
  */
 public class DeviceStatusMonitoringTask implements Task {
 
-    private static Log log = LogFactory.getLog(DeviceStatusMonitoringTask.class);
+    private static final Log log = LogFactory.getLog(DeviceStatusMonitoringTask.class);
     private String deviceType;
     private DeviceStatusTaskPluginConfig deviceStatusTaskPluginConfig;
     private int deviceTypeId = -1;
@@ -70,7 +70,7 @@ public class DeviceStatusMonitoringTask implements Task {
         EnrolmentInfo enrolmentInfo;
         try {
             operationEnrolmentMappings = this.getOperationEnrolmentMappings();
-            if (operationEnrolmentMappings.size() > 0) {
+            if (operationEnrolmentMappings != null && operationEnrolmentMappings.size() > 0) {
                 lastActivities = this.getLastDeviceActivities();
             }
         } catch (DeviceStatusTaskException e) {
@@ -78,7 +78,7 @@ public class DeviceStatusMonitoringTask implements Task {
         }
         for (OperationEnrolmentMapping mapping:operationEnrolmentMappings) {
             long lastActivity = -1;
-            if (lastActivities.containsKey(mapping.getEnrolmentId())) {
+            if (lastActivities != null && lastActivities.containsKey(mapping.getEnrolmentId())) {
                 lastActivity = lastActivities.get(mapping.getEnrolmentId());
             }
             EnrolmentInfo.Status newStatus = this.determineDeviceStatus(mapping, lastActivity);

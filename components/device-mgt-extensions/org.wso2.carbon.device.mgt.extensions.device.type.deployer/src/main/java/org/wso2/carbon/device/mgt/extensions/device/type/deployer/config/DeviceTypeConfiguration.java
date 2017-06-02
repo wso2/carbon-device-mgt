@@ -18,7 +18,12 @@
  */
 package org.wso2.carbon.device.mgt.extensions.device.type.deployer.config;
 
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlAccessType;
 import java.util.List;
 
 
@@ -40,6 +45,7 @@ import java.util.List;
  *         &lt;element name="DataSource" type="{}DataSource"/>
  *         &lt;element name="PolicyMonitoring" type="{}PolicyMonitoring"/>
  *         &lt;element name="DeviceAuthorizationConfig" type="{}DeviceAuthorizationConfig"/>
+ *         &lt;element name="DeviceStatusTaskConfig" type="{}DeviceStatusTaskConfig"/>
  *       &lt;/sequence>
  *       &lt;attribute name="name" type="{http://www.w3.org/2001/XMLSchema}string" />
  *     &lt;/restriction>
@@ -67,6 +73,8 @@ public class DeviceTypeConfiguration {
     protected DataSource dataSource;
     @XmlElement(name = "TaskConfiguration", required = true)
     private TaskConfiguration taskConfiguration;
+    @XmlElement(name = "DeviceStatusTaskConfig")
+    private DeviceStatusTaskConfiguration deviceStatusTaskConfiguration;
     @XmlElement(name = "DeviceAuthorizationConfig", required = true)
     protected DeviceAuthorizationConfig deviceAuthorizationConfig;
     @XmlAttribute(name = "name")
@@ -85,9 +93,29 @@ public class DeviceTypeConfiguration {
         this.operations = operations;
     }
 
+    /**
+     * Gets the value of the deviceStatusTaskConfiguration property.
+     *
+     * @return
+     *     possible object is
+     *     {@link DeviceStatusTaskConfiguration }
+     *
+     */
+    public DeviceStatusTaskConfiguration getDeviceStatusTaskConfiguration() {
+        return deviceStatusTaskConfiguration;
+    }
 
-
-
+    /**
+     * Sets the value of the deviceStatusTaskConfiguration property.
+     *
+     * @param deviceStatusTaskConfiguration
+     *     allowed object is
+     *     {@link DeviceStatusTaskConfiguration }
+     *
+     */
+    public void setDeviceStatusTaskConfiguration(DeviceStatusTaskConfiguration deviceStatusTaskConfiguration) {
+        this.deviceStatusTaskConfiguration = deviceStatusTaskConfiguration;
+    }
 
     /**
      * Gets the value of the taskConfiguration property.
@@ -313,5 +341,4 @@ public class DeviceTypeConfiguration {
     public void setDeviceAuthorizationConfig(DeviceAuthorizationConfig value) {
         this.deviceAuthorizationConfig = value;
     }
-
 }

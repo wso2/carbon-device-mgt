@@ -19,7 +19,7 @@
 package org.wso2.carbon.device.mgt.core.status.task;
 
 import org.wso2.carbon.device.mgt.common.DeviceStatusTaskPluginConfig;
-import org.wso2.carbon.device.mgt.core.config.status.task.DeviceStatusTaskConfig;
+import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 
 /**
  * This interface defines the methods that should be implemented by the management service of
@@ -29,26 +29,32 @@ public interface DeviceStatusTaskManagerService {
 
     /**
      * This method will start the task.
+     *
+     * @param deviceType - DeviceType
      * @param deviceStatusTaskConfig - DeviceStatusTaskConfig
      * @throws DeviceStatusTaskException
      */
-    void startTask(String deviceType, DeviceStatusTaskPluginConfig deviceStatusTaskConfig)
+    void startTask(DeviceType deviceType, DeviceStatusTaskPluginConfig deviceStatusTaskConfig)
             throws DeviceStatusTaskException;
 
     /**
      * This method will stop the task.
+     *
+     * @param deviceType - DeviceType
      * @param deviceStatusTaskConfig - DeviceStatusTaskConfig
      * @throws DeviceStatusTaskException
      */
-    void stopTask(String deviceType, DeviceStatusTaskPluginConfig deviceStatusTaskConfig)
+    void stopTask(DeviceType deviceType, DeviceStatusTaskPluginConfig deviceStatusTaskConfig)
             throws DeviceStatusTaskException;
 
     /**
      * This will update the task frequency which it runs.
+     *
+     * @param deviceType
      * @param deviceStatusTaskConfig - DeviceStatusTaskConfig
      * @throws DeviceStatusTaskException
      */
-    void updateTask(String deviceType, DeviceStatusTaskPluginConfig deviceStatusTaskConfig)
+    void updateTask(DeviceType deviceType, DeviceStatusTaskPluginConfig deviceStatusTaskConfig)
             throws DeviceStatusTaskException;
 
     /**
@@ -56,5 +62,5 @@ public interface DeviceStatusTaskManagerService {
      * @param deviceType - Device Type
      * @throws DeviceStatusTaskException
      */
-    boolean isTaskScheduled(String deviceType) throws DeviceStatusTaskException;
+    boolean isTaskScheduled(DeviceType deviceType) throws DeviceStatusTaskException;
 }

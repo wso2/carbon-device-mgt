@@ -32,6 +32,7 @@ import org.wso2.carbon.device.mgt.common.push.notification.PushNotificationProvi
 import org.wso2.carbon.device.mgt.common.spi.DeviceManagementService;
 import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
 import org.wso2.carbon.device.mgt.core.config.DeviceManagementConfig;
+import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementServiceComponent;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagerStartupListener;
@@ -73,23 +74,19 @@ public class DeviceManagementPluginRepository implements DeviceManagerStartupLis
             throw new DeviceManagementException("No tenant available for tenant domain " + tenantDomain);
         }
         synchronized (providers) {
-            try {
-                if (isInitiated) {
-                    /* Initializing Device Management Service Provider */
-                    provider.init();
-                    DeviceManagerUtil.registerDeviceType(deviceType, tenantId, isSharedWithAllTenants);
-                    DeviceManagementDataHolder.getInstance().setRequireDeviceAuthorization(deviceType,
-                                                                                           provider.getDeviceManager().
-                                                                                                   requireDeviceAuthorization());
-                    registerPushNotificationStrategy(provider);
-                    registerMonitoringTask(provider);
-                    if (deviceManagementConfig != null && deviceManagementConfig.getDeviceStatusTaskConfig().isEnabled()) {
-                        registerDeviceStatusMonitoringTask(provider);
-                    }
+            if (isInitiated) {
+                /* Initializing Device Management Service Provider */
+                provider.init();
+                DeviceManagerUtil.registerDeviceType(deviceType, tenantId, isSharedWithAllTenants);
+                DeviceManagementDataHolder.getInstance().setRequireDeviceAuthorization(deviceType,
+                        provider.getDeviceManager().
+                                requireDeviceAuthorization());
+                registerPushNotificationStrategy(provider);
+                registerMonitoringTask(provider);
+                if (deviceManagementConfig != null && deviceManagementConfig.getDeviceStatusTaskConfig().isEnabled()) {
+                    DeviceType deviceTypeObj = DeviceManagerUtil.getDeviceType(deviceType, tenantId);
+                    registerDeviceStatusMonitoringTask(deviceTypeObj, provider);
                 }
-            } catch (DeviceManagementException e) {
-                throw new DeviceManagementException("Error occurred while adding device management provider '" +
-                                                            deviceType + "'", e);
             }
             if (isSharedWithAllTenants) {
                 DeviceTypeIdentifier deviceTypeIdentifier = new DeviceTypeIdentifier(deviceType);
@@ -118,7 +115,9 @@ public class DeviceManagementPluginRepository implements DeviceManagerStartupLis
         unregisterPushNotificationStrategy(deviceTypeIdentifier);
         unregisterMonitoringTask(provider);
         if (deviceManagementConfig != null && deviceManagementConfig.getDeviceStatusTaskConfig().isEnabled()) {
-            unregisterDeviceStatusMonitoringTask(provider);
+            DeviceType deviceTypeObj = DeviceManagerUtil.getDeviceType(deviceTypeIdentifier.getDeviceType(),
+                    deviceTypeIdentifier.getTenantId());
+            unregisterDeviceStatusMonitoringTask(deviceTypeObj, provider);
         }
     }
 
@@ -162,30 +161,30 @@ public class DeviceManagementPluginRepository implements DeviceManagerStartupLis
         PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(
                 deviceManagementService.getProvisioningConfig().getProviderTenantDomain(), true);
         try {
-        boolean isSharedWithAllTenants = deviceManagementService.getProvisioningConfig().isSharedWithAllTenants();
-        DeviceTypeIdentifier deviceTypeIdentifier;
-        if (isSharedWithAllTenants) {
-            deviceTypeIdentifier = new DeviceTypeIdentifier(deviceManagementService.getType());
-        } else {
-            int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
-            deviceTypeIdentifier = new DeviceTypeIdentifier(deviceManagementService.getType(), tenantId);
-        }
-
-        if (pushNoteConfig != null) {
-            PushNotificationProvider provider = DeviceManagementDataHolder.getInstance()
-                    .getPushNotificationProviderRepository().getProvider(pushNoteConfig.getType());
-            if (provider == null) {
-                throw new DeviceManagementException(
-                        "No registered push notification provider found for the type: '" +
-                                pushNoteConfig.getType() + "'.");
+            boolean isSharedWithAllTenants = deviceManagementService.getProvisioningConfig().isSharedWithAllTenants();
+            DeviceTypeIdentifier deviceTypeIdentifier;
+            if (isSharedWithAllTenants) {
+                deviceTypeIdentifier = new DeviceTypeIdentifier(deviceManagementService.getType());
+            } else {
+                int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
+                deviceTypeIdentifier = new DeviceTypeIdentifier(deviceManagementService.getType(), tenantId);
             }
-            NotificationStrategy notificationStrategy = provider.getNotificationStrategy(pushNoteConfig);
-            operationManagerRepository.addOperationManager(deviceTypeIdentifier,
-                    new OperationManagerImpl(deviceTypeIdentifier.getDeviceType(), notificationStrategy));
-        } else {
-            operationManagerRepository.addOperationManager(deviceTypeIdentifier,
-                    new OperationManagerImpl(deviceTypeIdentifier.getDeviceType()));
-        }
+
+            if (pushNoteConfig != null) {
+                PushNotificationProvider provider = DeviceManagementDataHolder.getInstance()
+                        .getPushNotificationProviderRepository().getProvider(pushNoteConfig.getType());
+                if (provider == null) {
+                    throw new DeviceManagementException(
+                            "No registered push notification provider found for the type: '" +
+                                    pushNoteConfig.getType() + "'.");
+                }
+                NotificationStrategy notificationStrategy = provider.getNotificationStrategy(pushNoteConfig);
+                operationManagerRepository.addOperationManager(deviceTypeIdentifier,
+                        new OperationManagerImpl(deviceTypeIdentifier.getDeviceType(), notificationStrategy));
+            } else {
+                operationManagerRepository.addOperationManager(deviceTypeIdentifier,
+                        new OperationManagerImpl(deviceTypeIdentifier.getDeviceType()));
+            }
         } finally {
             PrivilegedCarbonContext.endTenantFlow();
         }
@@ -231,18 +230,18 @@ public class DeviceManagementPluginRepository implements DeviceManagerStartupLis
         }
     }
 
-    private void registerDeviceStatusMonitoringTask(DeviceManagementService deviceManagementService) throws
+    private void registerDeviceStatusMonitoringTask(DeviceType deviceType, DeviceManagementService deviceManagementService) throws
             DeviceManagementException {
         DeviceTaskManagerService deviceTaskManagerService = DeviceManagementDataHolder.getInstance().
                 getDeviceTaskManagerService();
         DeviceStatusTaskPluginConfig deviceStatusTaskPluginConfig = deviceManagementService.getDeviceStatusTaskPluginConfig();
         if (deviceStatusTaskPluginConfig != null && deviceStatusTaskPluginConfig.isRequireStatusMonitoring()) {
             if (deviceTaskManagerService == null) {
-                DeviceManagementDataHolder.getInstance().addDeviceStatusTaskPluginConfig(deviceManagementService.getType(),
+                DeviceManagementDataHolder.getInstance().addDeviceStatusTaskPluginConfig(deviceType,
                         deviceStatusTaskPluginConfig);
             } else {
                 try {
-                    new DeviceStatusTaskManagerServiceImpl().startTask(deviceManagementService.getType(), deviceStatusTaskPluginConfig);
+                    new DeviceStatusTaskManagerServiceImpl().startTask(deviceType, deviceStatusTaskPluginConfig);
                 } catch (DeviceStatusTaskException e) {
                     throw new DeviceManagementException("Error occurred while adding Device Status task service for '" +
                             deviceManagementService.getType() + "'", e);
@@ -251,21 +250,21 @@ public class DeviceManagementPluginRepository implements DeviceManagerStartupLis
         }
     }
 
-    private void unregisterDeviceStatusMonitoringTask(DeviceManagementService deviceManagementService) throws
+    private void unregisterDeviceStatusMonitoringTask(DeviceType deviceType, DeviceManagementService deviceManagementService) throws
             DeviceManagementException {
         DeviceStatusTaskManagerService deviceStatusTaskManagerService = DeviceManagementDataHolder.getInstance().
                 getDeviceStatusTaskManagerService();
         DeviceStatusTaskPluginConfig deviceStatusTaskPluginConfig = deviceManagementService.getDeviceStatusTaskPluginConfig();
         if (deviceStatusTaskPluginConfig != null && deviceStatusTaskPluginConfig.isRequireStatusMonitoring()) {
             try {
-                DeviceManagementDataHolder.getInstance().removeDeviceStatusTaskPluginConfig(deviceManagementService.getType());
-                deviceStatusTaskManagerService.stopTask(deviceManagementService.getType(), deviceStatusTaskPluginConfig);
+                DeviceManagementDataHolder.getInstance().removeDeviceStatusTaskPluginConfig(deviceType);
+                deviceStatusTaskManagerService.stopTask(deviceType, deviceStatusTaskPluginConfig);
             } catch (DeviceStatusTaskException e) {
                 throw new DeviceManagementException("Error occurred while stopping Device Status task service for '" +
                         deviceManagementService.getType() + "'", e);
             }
         }
-     }
+    }
 
     public OperationManager getOperationManager(String deviceType, int tenantId) {
         //Priority need to be given to the tenant before public.
@@ -289,7 +288,7 @@ public class DeviceManagementPluginRepository implements DeviceManagerStartupLis
                     ProvisioningConfig provisioningConfig = provider.getProvisioningConfig();
                     int tenantId = DeviceManagerUtil.getTenantId(provisioningConfig.getProviderTenantDomain());
                     DeviceManagerUtil.registerDeviceType(deviceTypeName, tenantId,
-                                                         provisioningConfig.isSharedWithAllTenants());
+                            provisioningConfig.isSharedWithAllTenants());
                     registerPushNotificationStrategy(provider);
                     registerMonitoringTask(provider);
 
@@ -299,13 +298,13 @@ public class DeviceManagementPluginRepository implements DeviceManagerStartupLis
                     //until fix that, use following variable to enable and disable of checking user authorization.
 
                     DeviceManagementDataHolder.getInstance().setRequireDeviceAuthorization(provider.getType(),
-                                                                                           provider.getDeviceManager()
-                                                                                                   .requireDeviceAuthorization());
+                            provider.getDeviceManager()
+                                    .requireDeviceAuthorization());
                 } catch (Throwable e) {
                     /* Throwable is caught intentionally as failure of one plugin - due to invalid start up parameters,
                         etc - should not block the initialization of other device management providers */
                     log.error("Error occurred while initializing device management provider '" +
-                                      provider.getType() + "'", e);
+                            provider.getType() + "'", e);
                 }
             }
             this.isInitiated = true;

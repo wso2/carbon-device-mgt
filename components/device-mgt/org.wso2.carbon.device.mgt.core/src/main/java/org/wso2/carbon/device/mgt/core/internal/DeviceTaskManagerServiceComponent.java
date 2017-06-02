@@ -28,6 +28,7 @@ import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
 import org.wso2.carbon.device.mgt.core.config.DeviceManagementConfig;
 import org.wso2.carbon.device.mgt.core.device.details.mgt.DeviceInformationManager;
 import org.wso2.carbon.device.mgt.core.device.details.mgt.impl.DeviceInformationManagerImpl;
+import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 import org.wso2.carbon.device.mgt.core.search.mgt.SearchManagerService;
 import org.wso2.carbon.device.mgt.core.search.mgt.impl.SearchManagerServiceImpl;
 import org.wso2.carbon.device.mgt.core.status.task.DeviceStatusTaskException;
@@ -95,12 +96,11 @@ public class DeviceTaskManagerServiceComponent {
 
     private void startDeviceStatusMonitoringTask() {
         DeviceStatusTaskManagerService deviceStatusTaskManagerService = new DeviceStatusTaskManagerServiceImpl();
-        Map<String, DeviceStatusTaskPluginConfig> deviceStatusTaskPluginConfigs = DeviceManagementDataHolder.
+        Map<DeviceType, DeviceStatusTaskPluginConfig> deviceStatusTaskPluginConfigs = DeviceManagementDataHolder.
                 getInstance().getDeviceStatusTaskPluginConfigs();
-        for (String deviceType : new ArrayList<>(deviceStatusTaskPluginConfigs.keySet())) {
+        for (DeviceType deviceType : new ArrayList<>(deviceStatusTaskPluginConfigs.keySet())) {
             try {
                 deviceStatusTaskManagerService.startTask(deviceType, deviceStatusTaskPluginConfigs.get(deviceType));
-
             } catch (DeviceStatusTaskException e) {
                 log.error("Exception occurred while starting the DeviceStatusMonitoring Task for deviceType '" +
                         deviceType + "'", e);

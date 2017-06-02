@@ -21,8 +21,8 @@ package org.wso2.carbon.device.mgt.core.status.task.impl;
 import com.google.gson.Gson;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.common.DeviceStatusTaskPluginConfig;
+import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 import org.wso2.carbon.device.mgt.core.status.task.DeviceStatusTaskException;
 import org.wso2.carbon.device.mgt.core.status.task.DeviceStatusTaskManagerService;
@@ -43,20 +43,21 @@ public class DeviceStatusTaskManagerServiceImpl implements DeviceStatusTaskManag
 
     public static final String DEVICE_STATUS_MONITORING_TASK_TYPE = "DEVICE_STATUS_MONITORING";
     static final String DEVICE_TYPE = "DEVICE_TYPE";
+    static final String DEVICE_TYPE_ID = "DEVICE_TYPE_ID";
     static final String DEVICE_STATUS_TASK_CONFIG = "DEVICE_STATUS_TASK_CONFIG";
     private static String TASK_CLASS = DeviceStatusMonitoringTask.class.getName();
 
     @Override
-    public void startTask(String deviceType, DeviceStatusTaskPluginConfig deviceStatusTaskConfig)
+    public void startTask(DeviceType deviceType, DeviceStatusTaskPluginConfig deviceStatusTaskConfig)
             throws DeviceStatusTaskException {
-        log.info("Device Status monitoring Task adding for " + deviceType);
+        log.info("Device Status monitoring Task adding for " + deviceType.getName());
 
         try {
             TaskService taskService = DeviceManagementDataHolder.getInstance().getTaskService();
             taskService.registerTaskType(DEVICE_STATUS_MONITORING_TASK_TYPE);
 
             if (log.isDebugEnabled()) {
-                log.debug("Device Status monitoring task is started for the device type " + deviceType);
+                log.debug("Device Status monitoring task is started for the device type " + deviceType.getName());
                 log.debug(
                         "Device Status monitoring task is at frequency of : " + deviceStatusTaskConfig.getFrequency());
             }
@@ -73,48 +74,49 @@ public class DeviceStatusTaskManagerServiceImpl implements DeviceStatusTaskManag
 
             Map<String, String> properties = new HashMap<>();
 
-            properties.put(DEVICE_TYPE, deviceType);
+            properties.put(DEVICE_TYPE, deviceType.getName());
+            properties.put(DEVICE_TYPE_ID, deviceType.getId() + "");
             properties.put(DEVICE_STATUS_TASK_CONFIG, deviceStatusTaskConfigs);
 
-            String taskName = DEVICE_STATUS_MONITORING_TASK_TYPE + "_" + deviceType;
+            String taskName = DEVICE_STATUS_MONITORING_TASK_TYPE + "_" + deviceType.getName() + "_" + deviceType.getId();
 
-            if (!taskManager.isTaskScheduled(deviceType)) {
+            if (!taskManager.isTaskScheduled(taskName)) {
                 TaskInfo taskInfo = new TaskInfo(taskName, TASK_CLASS, properties, triggerInfo);
                 taskManager.registerTask(taskInfo);
                 taskManager.rescheduleTask(taskInfo.getName());
             } else {
                 throw new DeviceStatusTaskException(
-                        "Device Status monitoring task is already started for this device-type : " + deviceType);
+                        "Device Status monitoring task is already started for this device-type : " + deviceType.getName());
             }
         } catch (TaskException e) {
             throw new DeviceStatusTaskException("Error occurred while creating the Device Status monitoring task " +
-                    "for device-type : " + deviceType, e);
+                    "for device-type : " + deviceType.getName(), e);
         }
     }
 
     @Override
-    public void stopTask(String deviceType, DeviceStatusTaskPluginConfig deviceStatusTaskConfig)
+    public void stopTask(DeviceType deviceType, DeviceStatusTaskPluginConfig deviceStatusTaskConfig)
             throws DeviceStatusTaskException {
         try {
             TaskService taskService = DeviceManagementDataHolder.getInstance().getTaskService();
+            String taskName = DEVICE_STATUS_MONITORING_TASK_TYPE + "_" + deviceType.getName() + "_" + deviceType.getId();
             if (taskService.isServerInit()) {
                 TaskManager taskManager = taskService.getTaskManager(DEVICE_STATUS_MONITORING_TASK_TYPE);
-                taskManager.deleteTask(deviceType);
+                taskManager.deleteTask(taskName);
             }
         } catch (TaskException e) {
             throw new DeviceStatusTaskException("Error occurred while deleting the Device Status monitoring task " +
-                    "for tenant " + getTenantId(), e);
+                    "for device-type : " + deviceType.getName(), e);
         }
     }
 
     @Override
-    public void updateTask(String deviceType, DeviceStatusTaskPluginConfig deviceStatusTaskConfig)
+    public void updateTask(DeviceType deviceType, DeviceStatusTaskPluginConfig deviceStatusTaskConfig)
             throws DeviceStatusTaskException {
-        int tenantId = getTenantId();
         try {
             TaskService taskService = DeviceManagementDataHolder.getInstance().getTaskService();
             TaskManager taskManager = taskService.getTaskManager(DEVICE_STATUS_MONITORING_TASK_TYPE);
-            String taskName = DEVICE_STATUS_MONITORING_TASK_TYPE + "_" + deviceType + "_" + String.valueOf(tenantId);
+            String taskName = DEVICE_STATUS_MONITORING_TASK_TYPE + "_" + deviceType + "_" + deviceType.getId();
             if (taskManager.isTaskScheduled(taskName)) {
                 taskManager.deleteTask(taskName);
                 TaskInfo.TriggerInfo triggerInfo = new TaskInfo.TriggerInfo();
@@ -122,44 +124,40 @@ public class DeviceStatusTaskManagerServiceImpl implements DeviceStatusTaskManag
                 triggerInfo.setRepeatCount(-1);
 
                 Map<String, String> properties = new HashMap<>();
-                properties.put(DEVICE_TYPE, deviceType);
+                properties.put(DEVICE_TYPE, deviceType.getName());
+                properties.put(DEVICE_TYPE_ID, deviceType.getId() + "");
 
                 Gson gson = new Gson();
                 String deviceStatusTaskConfigs = gson.toJson(deviceStatusTaskConfig);
                 properties.put(DEVICE_STATUS_TASK_CONFIG, deviceStatusTaskConfigs);
 
-                TaskInfo taskInfo = new TaskInfo(deviceType, TASK_CLASS, properties, triggerInfo);
+                TaskInfo taskInfo = new TaskInfo(taskName, TASK_CLASS, properties, triggerInfo);
 
                 taskManager.registerTask(taskInfo);
                 taskManager.rescheduleTask(taskInfo.getName());
             } else {
                 throw new DeviceStatusTaskException(
-                        "Device details retrieving Device Status monitoring  task has not been started for this tenant " +
-                                tenantId + ". Please start the task first.");
+                        "Device details retrieving Device Status monitoring task has not been started for this device-type " +
+                                deviceType.getName() + ". Please start the task first.");
             }
 
         } catch (TaskException e) {
-            throw new DeviceStatusTaskException("Error occurred while updating the Device Status monitoring  task for tenant " + tenantId,
-                    e);
+            throw new DeviceStatusTaskException("Error occurred while updating the Device Status monitoring  " +
+                    "task for device-type : " + deviceType.getName(), e);
         }
     }
 
     @Override
-    public boolean isTaskScheduled(String deviceType) throws DeviceStatusTaskException {
-        int tenantId = getTenantId();
-        String taskName = DEVICE_STATUS_MONITORING_TASK_TYPE + "_" + deviceType + "_" + String.valueOf(tenantId);
+    public boolean isTaskScheduled(DeviceType deviceType) throws DeviceStatusTaskException {
+        String taskName = DEVICE_STATUS_MONITORING_TASK_TYPE + "_" + deviceType.getName() + "_" + deviceType.getId();
         TaskService taskService = DeviceManagementDataHolder.getInstance().getTaskService();
         TaskManager taskManager;
         try {
             taskManager = taskService.getTaskManager(DEVICE_STATUS_MONITORING_TASK_TYPE);
             return taskManager.isTaskScheduled(taskName);
         } catch (TaskException e) {
-            throw new DeviceStatusTaskException("Error occurred while checking Device Status monitoring task for tenant " +
-                    tenantId, e);
+            throw new DeviceStatusTaskException("Error occurred while checking Device Status monitoring task for device-type : " +
+                    deviceType.getName(), e);
         }
-    }
-
-    private int getTenantId() {
-        return PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
     }
 }

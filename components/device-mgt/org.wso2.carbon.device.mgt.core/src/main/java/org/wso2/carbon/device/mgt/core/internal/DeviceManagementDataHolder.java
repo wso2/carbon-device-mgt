@@ -19,6 +19,7 @@
 package org.wso2.carbon.device.mgt.core.internal;
 
 import org.wso2.carbon.device.mgt.common.DeviceStatusTaskPluginConfig;
+import org.wso2.carbon.device.mgt.common.DeviceTypeIdentifier;
 import org.wso2.carbon.device.mgt.common.OperationMonitoringTaskConfig;
 import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManager;
 import org.wso2.carbon.device.mgt.common.authorization.DeviceAccessAuthorizationService;
@@ -26,6 +27,7 @@ import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManager;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManager;
 import org.wso2.carbon.device.mgt.core.app.mgt.config.AppManagementConfig;
 import org.wso2.carbon.device.mgt.core.config.license.LicenseConfig;
+import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 import org.wso2.carbon.device.mgt.core.push.notification.mgt.PushNotificationProviderRepository;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.device.mgt.core.service.GroupManagementProviderService;
@@ -63,8 +65,8 @@ public class DeviceManagementDataHolder {
     private PushNotificationProviderRepository pushNotificationProviderRepository;
     private DeviceTaskManagerService deviceTaskManagerService;
     private DeviceStatusTaskManagerService deviceStatusTaskManagerService;
-    private Map<String, DeviceStatusTaskPluginConfig> deviceStatusTaskPluginConfigs = Collections.synchronizedMap(
-            new HashMap<String, DeviceStatusTaskPluginConfig>());
+    private Map<DeviceType, DeviceStatusTaskPluginConfig> deviceStatusTaskPluginConfigs = Collections.synchronizedMap(
+            new HashMap<DeviceType, DeviceStatusTaskPluginConfig>());
 
     private Map<String, OperationMonitoringTaskConfig> map = new HashMap<>();
 
@@ -238,19 +240,19 @@ public class DeviceManagementDataHolder {
         this.deviceStatusTaskManagerService = deviceStatusTaskManagerService;
     }
 
-    public void addDeviceStatusTaskPluginConfig(String deviceType, DeviceStatusTaskPluginConfig deviceStatusTaskPluginConfig) {
+    public void addDeviceStatusTaskPluginConfig(DeviceType deviceType, DeviceStatusTaskPluginConfig deviceStatusTaskPluginConfig) {
         this.deviceStatusTaskPluginConfigs.put(deviceType, deviceStatusTaskPluginConfig);
     }
 
-    public DeviceStatusTaskPluginConfig getDeviceStatusTaskPluginConfig(String deviceType) {
+    public DeviceStatusTaskPluginConfig getDeviceStatusTaskPluginConfig(DeviceTypeIdentifier deviceType) {
         return this.deviceStatusTaskPluginConfigs.get(deviceType);
     }
 
-    public Map<String, DeviceStatusTaskPluginConfig> getDeviceStatusTaskPluginConfigs() {
+    public Map<DeviceType, DeviceStatusTaskPluginConfig> getDeviceStatusTaskPluginConfigs() {
         return this.deviceStatusTaskPluginConfigs;
     }
 
-    public void removeDeviceStatusTaskPluginConfig(String deviceType) {
+    public void removeDeviceStatusTaskPluginConfig(DeviceType deviceType) {
         this.deviceStatusTaskPluginConfigs.remove(deviceType);
     }
 }

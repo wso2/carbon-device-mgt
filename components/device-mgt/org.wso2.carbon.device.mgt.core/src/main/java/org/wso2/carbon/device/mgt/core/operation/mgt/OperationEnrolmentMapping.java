@@ -26,10 +26,10 @@ import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
 public class OperationEnrolmentMapping {
 
     int enrolmentId;
-    int deviceId;
     int tenantId;
     long createdTime;
-    String owner;
+    String deviceType;
+    String deviceId;
     EnrolmentInfo.Status deviceStatus;
 
     public int getTenantId() {
@@ -48,11 +48,11 @@ public class OperationEnrolmentMapping {
         this.enrolmentId = enrolmentId;
     }
 
-    public int getDeviceId() {
+    public String getDeviceId() {
         return deviceId;
     }
 
-    public void setDeviceId(int deviceId) {
+    public void setDeviceId(String deviceId) {
         this.deviceId = deviceId;
     }
 
@@ -64,19 +64,19 @@ public class OperationEnrolmentMapping {
         this.createdTime = createdTime;
     }
 
-    public String getOwner() {
-        return owner;
-    }
-
-    public void setOwner(String owner) {
-        this.owner = owner;
-    }
-
     public EnrolmentInfo.Status getDeviceStatus() {
         return deviceStatus;
     }
 
     public void setDeviceStatus(String deviceStatus) {
         this.deviceStatus = EnrolmentInfo.Status.valueOf(deviceStatus);
+    }
+
+    public String getDeviceType() {
+        return deviceType;
+    }
+
+    public void setDeviceType(String deviceType) {
+        this.deviceType = deviceType;
     }
 }

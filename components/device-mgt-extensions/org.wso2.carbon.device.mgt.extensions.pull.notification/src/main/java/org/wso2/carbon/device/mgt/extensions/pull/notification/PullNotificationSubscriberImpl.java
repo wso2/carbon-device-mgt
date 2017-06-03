@@ -20,9 +20,9 @@ package org.wso2.carbon.device.mgt.extensions.pull.notification;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
-import org.wso2.carbon.device.mgt.common.pull.notification.NotificationContext;
 import org.wso2.carbon.device.mgt.common.pull.notification.PullNotificationExecutionFailedException;
 import org.wso2.carbon.device.mgt.common.pull.notification.PullNotificationSubscriber;
 import org.wso2.carbon.device.mgt.extensions.pull.notification.internal.PullNotificationDataHolder;
@@ -37,13 +37,11 @@ public class PullNotificationSubscriberImpl implements PullNotificationSubscribe
 
     }
 
-    public void execute(NotificationContext ctx) throws PullNotificationExecutionFailedException {
-        Operation operation = new Operation();
-        operation.setId(ctx.getNotificationPayload().getOperationId());
-        operation.setPayLoad(ctx.getNotificationPayload().getPayload());
+    @Override
+    public void execute(DeviceIdentifier deviceIdentifier, Operation operation) throws PullNotificationExecutionFailedException {
         try {
             PullNotificationDataHolder.getInstance().getDeviceManagementProviderService().updateOperation(
-                    ctx.getDeviceId(), operation);
+                    deviceIdentifier, operation);
         } catch (OperationManagementException e) {
             throw new PullNotificationExecutionFailedException(e);
         }

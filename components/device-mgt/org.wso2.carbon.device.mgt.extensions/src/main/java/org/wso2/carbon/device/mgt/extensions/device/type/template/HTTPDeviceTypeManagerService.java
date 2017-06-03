@@ -36,6 +36,7 @@ import org.wso2.carbon.device.mgt.extensions.device.type.template.config.PolicyM
 import org.wso2.carbon.device.mgt.extensions.device.type.template.config.Properties;
 import org.wso2.carbon.device.mgt.extensions.device.type.template.config.Property;
 import org.wso2.carbon.device.mgt.extensions.device.type.template.config.ProvisioningConfig;
+import org.wso2.carbon.device.mgt.extensions.device.type.template.config.PullNotificationSubscriber;
 import org.wso2.carbon.device.mgt.extensions.device.type.template.config.PushNotificationProvider;
 import org.wso2.carbon.device.mgt.extensions.device.type.template.config.TaskConfiguration;
 
@@ -50,6 +51,7 @@ import java.util.Map;
 public class HTTPDeviceTypeManagerService extends DeviceTypeManagerService implements DeviceTypeDefinitionProvider {
 
     private DeviceTypeMetaDefinition deviceTypeMetaDefinition;
+    private static final String DEFAULT_PULL_NOTIFICATION_CLASS_NAME = "org.wso2.carbon.device.mgt.extensions.pull.notification";
 
     public HTTPDeviceTypeManagerService(String deviceTypeName, DeviceTypeMetaDefinition deviceTypeMetaDefinition) {
         super(getDeviceTypeConfigIdentifier(deviceTypeName), getDeviceTypeConfiguration(
@@ -163,6 +165,9 @@ public class HTTPDeviceTypeManagerService extends DeviceTypeManagerService imple
                 deviceTypeConfiguration.setOperations(initialOperationConfig.getOperations());
             }
         }
+        PullNotificationSubscriber pullNotificationSubscriber = new PullNotificationSubscriber();
+        pullNotificationSubscriber.setClassName(DEFAULT_PULL_NOTIFICATION_CLASS_NAME);
+        deviceTypeConfiguration.setPullNotificationSubscriber(pullNotificationSubscriber);
         return deviceTypeConfiguration;
     }
 

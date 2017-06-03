@@ -80,12 +80,12 @@ public class DeviceTypeManagerService implements DeviceManagementService {
             this.policyMonitoringManager = new DefaultPolicyMonitoringManager();
         }
 
-        if (deviceTypeConfiguration.getPullNotificationExecutor() != null) {
-            String className = deviceTypeConfiguration.getPullNotificationExecutor().getClassName();
+        if (deviceTypeConfiguration.getPullNotificationSubscriber() != null) {
+            String className = deviceTypeConfiguration.getPullNotificationSubscriber().getClassName();
             if (className != null && !className.isEmpty()) {
-                PullNotificationSubscriberLoader pullNotificationExecutorImpl = new PullNotificationSubscriberLoader(className
-                        , deviceTypeConfiguration.getPullNotificationExecutor().getConfigProperties());
-                this.pullNotificationSubscriber = pullNotificationExecutorImpl.getPullNotificationSubscriber();
+                PullNotificationSubscriberLoader pullNotificationSubscriberLoader = new PullNotificationSubscriberLoader(className
+                        , deviceTypeConfiguration.getPullNotificationSubscriber().getConfigProperties());
+                this.pullNotificationSubscriber = pullNotificationSubscriberLoader.getPullNotificationSubscriber();
             }
         }
     }

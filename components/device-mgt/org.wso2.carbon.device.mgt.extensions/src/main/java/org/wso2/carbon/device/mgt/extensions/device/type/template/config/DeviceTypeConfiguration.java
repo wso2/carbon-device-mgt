@@ -233,22 +233,22 @@ public class DeviceTypeConfiguration {
     }
 
     /**
-     * Gets the value of the pullNotificationSubscriber property.
+     * Gets the value of the PullNotificationSubscriber property.
      *
      * @return possible object is
      * {@link PullNotificationSubscriber }
      */
-    public PullNotificationSubscriber getPullNotificationExecutor() {
+    public PullNotificationSubscriber getPullNotificationSubscriber() {
         return pullNotificationSubscriber;
     }
 
     /**
-     * Sets the value of the pullNotificationSubscriber property.
+     * Sets the value of the PullNotificationSubscriber property.
      *
      * @param value allowed object is
      *              {@link PullNotificationSubscriber }
      */
-    public void setPullNotificationExecutor(PullNotificationSubscriber value) {
+    public void setPullNotificationSubscriber(PullNotificationSubscriber value) {
         this.pullNotificationSubscriber = value;
     }
 

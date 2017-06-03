@@ -28,7 +28,6 @@ import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.DeviceManager;
 import org.wso2.carbon.device.mgt.common.DeviceNotFoundException;
-import org.wso2.carbon.device.mgt.common.pull.notification.NotificationContext;
 import org.wso2.carbon.device.mgt.common.pull.notification.PullNotificationExecutionFailedException;
 import org.wso2.carbon.device.mgt.common.pull.notification.PullNotificationSubscriber;
 import org.wso2.carbon.device.mgt.core.dto.DeviceTypeServiceIdentifier;
@@ -2207,12 +2206,12 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     }
 
     @Override
-    public void executePullNotification(String deviceType, NotificationContext notificationContext)
+    public void updatePullNotificationOperation(DeviceIdentifier deviceIdentifier, Operation operation)
             throws PullNotificationExecutionFailedException {
         DeviceManagementService dms =
-                pluginRepository.getDeviceManagementService(deviceType, this.getTenantId());
+                pluginRepository.getDeviceManagementService(deviceIdentifier.getType(), this.getTenantId());
         if (dms == null) {
-            String message = "Device type '" + deviceType + "' does not have an associated device management " +
+            String message = "Device type '" + deviceIdentifier.getType() + "' does not have an associated device management " +
                     "plugin registered within the framework";
             if (log.isDebugEnabled()) {
                 log.debug(message);
@@ -2222,8 +2221,8 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         PullNotificationSubscriber pullNotificationSubscriber = dms.getPullNotificationSubscriber();
         if (pullNotificationSubscriber == null) {
             throw new PullNotificationExecutionFailedException("Pull Notification Subscriber is not configured " +
-                                                                       "for device type" + deviceType);
+                                                                       "for device type" + deviceIdentifier.getType());
         }
-        pullNotificationSubscriber.execute(notificationContext);
+        pullNotificationSubscriber.execute(deviceIdentifier, operation);
     }
 }

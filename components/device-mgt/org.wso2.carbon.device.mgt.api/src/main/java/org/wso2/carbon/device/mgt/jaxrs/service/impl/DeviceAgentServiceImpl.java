@@ -59,6 +59,7 @@ import javax.ws.rs.core.Response;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Path("/device/agent")
 public class DeviceAgentServiceImpl implements DeviceAgentService {
@@ -205,7 +206,6 @@ public class DeviceAgentServiceImpl implements DeviceAgentService {
     public Response publishEvents(@Valid EventBeanWrapper eventBeanWrapper, @PathParam("type") String type
             , @PathParam("deviceId") String deviceId) {
 
-
         String tenantDomain = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantDomain();
         try {
             if (eventBeanWrapper == null) {
@@ -238,7 +238,7 @@ public class DeviceAgentServiceImpl implements DeviceAgentService {
                                 , AttributeType.valueOf(eventStreamAttributeDto.getAttributeType().toUpperCase())));
 
                     }
-                    if (eventBeanWrapper.getPayloadData().length != attributes.size()) {
+                    if (eventBeanWrapper.getPayloadData().size() != attributes.size()) {
                         String msg = "payload does not match the stream definition";
                         return Response.status(Response.Status.BAD_REQUEST).entity(msg).build();
                     }
@@ -247,13 +247,16 @@ public class DeviceAgentServiceImpl implements DeviceAgentService {
                     DeviceMgtAPIUtils.getDynamicEventCache().put(type, eventAttributeList);
                 }
             }
-            Object[] payload = eventBeanWrapper.getPayloadData();
+            Map<String, Object> payload = eventBeanWrapper.getPayloadData();
             int i = 0;
+            Object[] payloadData = new Object[eventAttributeList.getList().size()];
             for (Attribute attribute : eventAttributeList.getList()) {
                 if (attribute.getType() == AttributeType.INT) {
-                    payload[i] = ((Double) payload[i]).intValue();
+                    payloadData[i] = ((Double) payload.get(attribute.getName())).intValue();
                 } else if (attribute.getType() == AttributeType.LONG) {
-                    payload[i] = ((Double) payload[i]).longValue();
+                    payloadData[i] = ((Double) payload.get(attribute.getName())).longValue();
+                } else {
+                    payloadData[i] = payload.get(attribute.getName());
                 }
                 i++;
             }
@@ -262,7 +265,7 @@ public class DeviceAgentServiceImpl implements DeviceAgentService {
             if (DeviceMgtAPIUtils.getEventPublisherService().publishEvent(DeviceMgtAPIUtils.getStreamDefinition(type
                     , PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantDomain())
                     , Constants.DEFAULT_STREAM_VERSION, metaData
-                    , null, eventBeanWrapper.getPayloadData())) {
+                    , null, payloadData)) {
                 return Response.status(Response.Status.OK).build();
             } else {
                 String msg = "Error occurred while publishing the event.";

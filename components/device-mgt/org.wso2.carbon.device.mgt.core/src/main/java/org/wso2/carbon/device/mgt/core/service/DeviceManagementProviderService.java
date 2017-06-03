@@ -32,7 +32,6 @@ import org.wso2.carbon.device.mgt.common.operation.mgt.Activity;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
 import org.wso2.carbon.device.mgt.common.policy.mgt.PolicyMonitoringManager;
-import org.wso2.carbon.device.mgt.common.pull.notification.NotificationContext;
 import org.wso2.carbon.device.mgt.common.pull.notification.PullNotificationExecutionFailedException;
 import org.wso2.carbon.device.mgt.common.push.notification.NotificationStrategy;
 import org.wso2.carbon.device.mgt.common.spi.DeviceManagementService;
@@ -356,6 +355,6 @@ public interface DeviceManagementProviderService {
      * This retrieves the device pull notification payload and passes to device type executor.
      * @throws PullNotificationExecutionFailedException
      */
-    void executePullNotification(String deviceType, NotificationContext notificationContext)
+    void updatePullNotificationOperation(DeviceIdentifier deviceIdentifier, Operation operation)
             throws PullNotificationExecutionFailedException;
 }

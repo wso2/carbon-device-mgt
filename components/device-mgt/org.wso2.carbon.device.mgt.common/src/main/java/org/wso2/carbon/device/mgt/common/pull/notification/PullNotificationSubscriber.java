@@ -19,6 +19,9 @@
 package org.wso2.carbon.device.mgt.common.pull.notification;
 
 
+import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
+import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
+
 import java.util.Map;
 
 /**
@@ -28,7 +31,7 @@ public interface PullNotificationSubscriber {
 
     void init(Map<String, String> properties);
 
-    void execute(NotificationContext ctx) throws PullNotificationExecutionFailedException;
+    void execute(DeviceIdentifier deviceIdentifier, Operation operation) throws PullNotificationExecutionFailedException;
 
     void clean();
 }

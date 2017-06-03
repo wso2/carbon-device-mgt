@@ -22,6 +22,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 import javax.validation.constraints.Size;
+import java.util.Map;
 
 /**
  * This class is used to wrap the events which receive from the agent application.
@@ -31,13 +32,13 @@ import javax.validation.constraints.Size;
 public class EventBeanWrapper {
 
     @ApiModelProperty(name = "payloadData", value = "Event payload payload.", required = true)
-    Object[] payloadData;
+    Map<String, Object> payloadData;
 
-    public Object[] getPayloadData() {
+    public Map<String, Object> getPayloadData() {
         return payloadData;
     }
 
-    public void setPayloadData(Object[] payloadData) {
+    public void setPayloadData(Map<String, Object> payloadData) {
         this.payloadData = payloadData;
     }
 

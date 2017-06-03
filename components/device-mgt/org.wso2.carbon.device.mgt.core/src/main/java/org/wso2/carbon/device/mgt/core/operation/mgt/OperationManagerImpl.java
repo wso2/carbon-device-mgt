@@ -420,12 +420,8 @@ public class OperationManagerImpl implements OperationManager {
         int enrolmentId = enrolmentInfo.getId();
         //Changing the enrollment status & attempt count if the device is marked as inactive or unreachable
         switch (enrolmentInfo.getStatus()) {
-            case ACTIVE:
-                this.resetAttemptCount(enrolmentId);
-                break;
             case INACTIVE:
             case UNREACHABLE:
-                this.resetAttemptCount(enrolmentId);
                 this.setEnrolmentStatus(enrolmentId, EnrolmentInfo.Status.ACTIVE);
                 break;
         }
@@ -481,12 +477,8 @@ public class OperationManagerImpl implements OperationManager {
         int enrolmentId = enrolmentInfo.getId();
         //Changing the enrollment status & attempt count if the device is marked as inactive or unreachable
         switch (enrolmentInfo.getStatus()) {
-            case ACTIVE:
-                this.resetAttemptCount(enrolmentId);
-                break;
             case INACTIVE:
             case UNREACHABLE:
-                this.resetAttemptCount(enrolmentId);
                 this.setEnrolmentStatus(enrolmentId, EnrolmentInfo.Status.ACTIVE);
                 break;
         }
@@ -1040,24 +1032,6 @@ public class OperationManagerImpl implements OperationManager {
             DeviceManagementDAOFactory.closeConnection();
         }
         return updateStatus;
-    }
-
-    private boolean resetAttemptCount(int enrolmentId) throws OperationManagementException {
-        boolean resetStatus;
-        try {
-            OperationManagementDAOFactory.beginTransaction();
-            resetStatus = operationDAO.resetAttemptCount(enrolmentId);
-            OperationManagementDAOFactory.commitTransaction();
-        } catch (OperationManagementDAOException e) {
-            OperationManagementDAOFactory.rollbackTransaction();
-            throw new OperationManagementException("Error occurred while resetting attempt count of device id : '" +
-                                                   enrolmentId + "'", e);
-        } catch (TransactionManagementException e) {
-            throw new OperationManagementException("Error occurred while initiating a transaction", e);
-        } finally {
-            OperationManagementDAOFactory.closeConnection();
-        }
-        return resetStatus;
     }
 
     private boolean isTaskScheduledOperation(Operation operation, List<DeviceIdentifier> deviceIds) {

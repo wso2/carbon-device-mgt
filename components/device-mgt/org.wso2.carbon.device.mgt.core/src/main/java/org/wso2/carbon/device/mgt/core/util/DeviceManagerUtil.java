@@ -21,7 +21,13 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Document;
 import org.wso2.carbon.base.MultitenantConstants;
-import org.wso2.carbon.device.mgt.common.*;
+import org.wso2.carbon.device.mgt.common.Device;
+import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
+import org.wso2.carbon.device.mgt.common.DeviceManagementException;
+import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
+import org.wso2.carbon.device.mgt.common.GroupPaginationRequest;
+import org.wso2.carbon.device.mgt.common.PaginationRequest;
+import org.wso2.carbon.device.mgt.common.TransactionManagementException;
 import org.wso2.carbon.device.mgt.common.group.mgt.GroupManagementException;
 import org.wso2.carbon.device.mgt.common.notification.mgt.NotificationManagementException;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
@@ -50,7 +56,11 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
 
 
 public final class DeviceManagerUtil {
@@ -146,29 +156,28 @@ public final class DeviceManagerUtil {
     }
 
     /**
-     * Adds a new device type to the database if it does not exists.
+     * Get the DeviceType information from Database.
      *
      * @param typeName device type
      * @param tenantId provider tenant Id
-     * @return device type.
+     * @return DeviceType which contains info about the device-type.
      */
-    public static DeviceType getDeviceType(String typeName, int tenantId)
-            throws DeviceManagementException {
+    public static DeviceType getDeviceType(String typeName, int tenantId) throws DeviceManagementException {
+        DeviceType deviceType = null;
         try {
             DeviceManagementDAOFactory.openConnection();
             DeviceTypeDAO deviceTypeDAO = DeviceManagementDAOFactory.getDeviceTypeDAO();
-            return deviceTypeDAO.getDeviceType(typeName, tenantId);
-
+            deviceType = deviceTypeDAO.getDeviceType(typeName, tenantId);
         } catch (DeviceManagementDAOException e) {
-            DeviceManagementDAOFactory.rollbackTransaction();
-            throw new DeviceManagementException("Error occurred while retrieving the device type '"
-                                                        + typeName + "'", e);
+            throw new DeviceManagementException("Error occurred while fetching the device type '"
+                    + typeName + "'", e);
         } catch (SQLException e) {
-            throw new DeviceManagementException("SQL occurred while retrieving the device type '"
-                                                        + typeName + "'", e);
+            throw new DeviceManagementException("SQL Error occurred while fetching the device type '"
+                    + typeName + "'", e);
         } finally {
             DeviceManagementDAOFactory.closeConnection();
         }
+        return deviceType;
     }
 
     /**

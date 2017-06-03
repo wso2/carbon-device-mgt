@@ -83,4 +83,8 @@ public class TestDeviceManagementService implements DeviceManagementService {
         return null;
     }
 
+    @Override
+    public DeviceStatusTaskPluginConfig getDeviceStatusTaskPluginConfig() {
+        return null;
+    }
 }

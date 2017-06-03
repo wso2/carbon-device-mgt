@@ -50,4 +50,6 @@ public interface DeviceManagementService {
 
     PullNotificationSubscriber getPullNotificationSubscriber();
 
+    DeviceStatusTaskPluginConfig getDeviceStatusTaskPluginConfig();
+
 }

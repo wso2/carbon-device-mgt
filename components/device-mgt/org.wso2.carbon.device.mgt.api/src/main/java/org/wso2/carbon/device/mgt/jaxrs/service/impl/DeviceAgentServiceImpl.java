@@ -33,7 +33,6 @@ import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
-import org.wso2.carbon.device.mgt.jaxrs.beans.EventBeanWrapper;
 import org.wso2.carbon.device.mgt.jaxrs.beans.OperationList;
 import org.wso2.carbon.device.mgt.jaxrs.beans.analytics.Attribute;
 import org.wso2.carbon.device.mgt.jaxrs.beans.analytics.AttributeType;
@@ -203,12 +202,13 @@ public class DeviceAgentServiceImpl implements DeviceAgentService {
     @POST
     @Path("/events/publish/{type}/{deviceId}")
     @Override
-    public Response publishEvents(@Valid EventBeanWrapper eventBeanWrapper, @PathParam("type") String type
+    public Response publishEvents(@Valid Map<String, Object> payload, @PathParam("type") String type
             , @PathParam("deviceId") String deviceId) {
 
         String tenantDomain = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantDomain();
+        EventStreamAdminServiceStub eventStreamAdminServiceStub = null;
         try {
-            if (eventBeanWrapper == null) {
+            if (payload == null) {
                 String msg = "invalid payload structure";
                 return Response.status(Response.Status.BAD_REQUEST).entity(msg).build();
             } else {
@@ -224,8 +224,7 @@ public class DeviceAgentServiceImpl implements DeviceAgentService {
             EventAttributeList eventAttributeList = DeviceMgtAPIUtils.getDynamicEventCache().get(type);
             if (eventAttributeList == null) {
                 String streamName = DeviceMgtAPIUtils.getStreamDefinition(type, tenantDomain);
-                EventStreamAdminServiceStub eventStreamAdminServiceStub =
-                        DeviceMgtAPIUtils.getEventStreamAdminServiceStub();
+                eventStreamAdminServiceStub = DeviceMgtAPIUtils.getEventStreamAdminServiceStub();
                 EventStreamDefinitionDto eventStreamDefinitionDto = eventStreamAdminServiceStub.getStreamDefinitionDto(
                         streamName + ":" + Constants.DEFAULT_STREAM_VERSION);
                 if (eventStreamDefinitionDto == null) {
@@ -238,7 +237,7 @@ public class DeviceAgentServiceImpl implements DeviceAgentService {
                                 , AttributeType.valueOf(eventStreamAttributeDto.getAttributeType().toUpperCase())));
 
                     }
-                    if (eventBeanWrapper.getPayloadData().size() != attributes.size()) {
+                    if (payload.size() != attributes.size()) {
                         String msg = "payload does not match the stream definition";
                         return Response.status(Response.Status.BAD_REQUEST).entity(msg).build();
                     }
@@ -247,7 +246,6 @@ public class DeviceAgentServiceImpl implements DeviceAgentService {
                     DeviceMgtAPIUtils.getDynamicEventCache().put(type, eventAttributeList);
                 }
             }
-            Map<String, Object> payload = eventBeanWrapper.getPayloadData();
             int i = 0;
             Object[] payloadData = new Object[eventAttributeList.getList().size()];
             for (Attribute attribute : eventAttributeList.getList()) {
@@ -260,7 +258,6 @@ public class DeviceAgentServiceImpl implements DeviceAgentService {
                 }
                 i++;
             }
-            eventBeanWrapper.setPayloadData(payload);
 
             if (DeviceMgtAPIUtils.getEventPublisherService().publishEvent(DeviceMgtAPIUtils.getStreamDefinition(type
                     , PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantDomain())
@@ -291,7 +288,14 @@ public class DeviceAgentServiceImpl implements DeviceAgentService {
         } catch (UserStoreException e) {
             log.error("Failed to connect with the user store, tenantDomain: " + tenantDomain, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
-
+        } finally {
+            if (eventStreamAdminServiceStub != null) {
+                try {
+                    eventStreamAdminServiceStub.cleanup();
+                } catch (AxisFault axisFault) {
+                    log.warn("Failed to clean eventStreamAdminServiceStub");
+                }
+            }
         }
     }
 

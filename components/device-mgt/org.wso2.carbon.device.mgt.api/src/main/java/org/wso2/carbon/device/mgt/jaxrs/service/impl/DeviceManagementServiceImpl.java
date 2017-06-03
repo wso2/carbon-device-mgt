@@ -629,7 +629,8 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
     @Path("/{type}/operations")
     public Response addOperation(@PathParam("type") String type, @Valid OperationRequest operationRequest) {
         try {
-            if (operationRequest == null || operationRequest.getDeviceIdentifiers() == null) {
+            if (operationRequest == null || operationRequest.getDeviceIdentifiers() == null
+                    || operationRequest.getOperation() == null) {
                 String errorMessage = "Device identifier list is empty";
                 log.error(errorMessage);
                 return Response.status(Response.Status.BAD_REQUEST).build();

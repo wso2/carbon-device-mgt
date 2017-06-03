@@ -34,7 +34,6 @@ import org.wso2.carbon.apimgt.annotations.api.Scopes;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
-import org.wso2.carbon.device.mgt.jaxrs.beans.EventBeanWrapper;
 import org.wso2.carbon.device.mgt.jaxrs.beans.OperationList;
 import org.wso2.carbon.device.mgt.jaxrs.util.Constants;
 
@@ -50,6 +49,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.Map;
 
 @SwaggerDefinition(
         info = @Info(
@@ -296,10 +296,10 @@ public interface DeviceAgentService {
             })
     Response publishEvents(
             @ApiParam(
-                    name = "eventBeanWrapper",
+                    name = "payloadData",
                     value = "Information of the agent event to be published on DAS.")
             @Valid
-            EventBeanWrapper eventBeanWrapper,
+            Map<String, Object> payloadData,
             @ApiParam(
                     name = "type",
                     value = "name of the device type")

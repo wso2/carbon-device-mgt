@@ -26,12 +26,12 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for PullNotificationSubscriber complex type.
+ * <p>Java class for PullNotificationSubscriberConfig complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="PullNotificationSubscriber">
+ * &lt;complexType name="PullNotificationSubscriberConfig">
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
@@ -46,10 +46,10 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "PullNotificationSubscriber", propOrder = {
+@XmlType(name = "PullNotificationSubscriberConfig", propOrder = {
     "configProperties"
 })
-public class PullNotificationSubscriber {
+public class PullNotificationSubscriberConfig {
     @XmlElement(name = "ConfigProperties", required = true)
     protected ConfigProperties configProperties;
     @XmlAttribute(name = "className")

@@ -21,8 +21,6 @@ package org.wso2.carbon.device.mgt.extensions.device.type.template;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.common.Feature;
 import org.wso2.carbon.device.mgt.common.InitialOperationConfig;
-import org.wso2.carbon.device.mgt.common.MonitoringOperation;
-import org.wso2.carbon.device.mgt.common.OperationMonitoringTaskConfig;
 import org.wso2.carbon.device.mgt.common.push.notification.PushNotificationConfig;
 import org.wso2.carbon.device.mgt.common.type.mgt.DeviceTypeDefinitionProvider;
 import org.wso2.carbon.device.mgt.common.type.mgt.DeviceTypeMetaDefinition;
@@ -36,9 +34,8 @@ import org.wso2.carbon.device.mgt.extensions.device.type.template.config.PolicyM
 import org.wso2.carbon.device.mgt.extensions.device.type.template.config.Properties;
 import org.wso2.carbon.device.mgt.extensions.device.type.template.config.Property;
 import org.wso2.carbon.device.mgt.extensions.device.type.template.config.ProvisioningConfig;
-import org.wso2.carbon.device.mgt.extensions.device.type.template.config.PullNotificationSubscriber;
+import org.wso2.carbon.device.mgt.extensions.device.type.template.config.PullNotificationSubscriberConfig;
 import org.wso2.carbon.device.mgt.extensions.device.type.template.config.PushNotificationProvider;
-import org.wso2.carbon.device.mgt.extensions.device.type.template.config.TaskConfiguration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,7 +48,7 @@ import java.util.Map;
 public class HTTPDeviceTypeManagerService extends DeviceTypeManagerService implements DeviceTypeDefinitionProvider {
 
     private DeviceTypeMetaDefinition deviceTypeMetaDefinition;
-    private static final String DEFAULT_PULL_NOTIFICATION_CLASS_NAME = "org.wso2.carbon.device.mgt.extensions.pull.notification";
+    private static final String DEFAULT_PULL_NOTIFICATION_CLASS_NAME = "org.wso2.carbon.device.mgt.extensions.pull.notification.PullNotificationSubscriberImpl";
 
     public HTTPDeviceTypeManagerService(String deviceTypeName, DeviceTypeMetaDefinition deviceTypeMetaDefinition) {
         super(getDeviceTypeConfigIdentifier(deviceTypeName), getDeviceTypeConfiguration(
@@ -165,9 +162,9 @@ public class HTTPDeviceTypeManagerService extends DeviceTypeManagerService imple
                 deviceTypeConfiguration.setOperations(initialOperationConfig.getOperations());
             }
         }
-        PullNotificationSubscriber pullNotificationSubscriber = new PullNotificationSubscriber();
+        PullNotificationSubscriberConfig pullNotificationSubscriber = new PullNotificationSubscriberConfig();
         pullNotificationSubscriber.setClassName(DEFAULT_PULL_NOTIFICATION_CLASS_NAME);
-        deviceTypeConfiguration.setPullNotificationSubscriber(pullNotificationSubscriber);
+        deviceTypeConfiguration.setPullNotificationSubscriberConfig(pullNotificationSubscriber);
         return deviceTypeConfiguration;
     }
 

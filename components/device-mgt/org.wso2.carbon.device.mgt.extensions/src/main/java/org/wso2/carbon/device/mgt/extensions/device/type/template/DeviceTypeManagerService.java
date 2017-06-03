@@ -25,6 +25,7 @@ import org.wso2.carbon.device.mgt.common.DeviceManager;
 import org.wso2.carbon.device.mgt.common.InitialOperationConfig;
 import org.wso2.carbon.device.mgt.common.MonitoringOperation;
 import org.wso2.carbon.device.mgt.common.OperationMonitoringTaskConfig;
+import org.wso2.carbon.device.mgt.common.DeviceStatusTaskPluginConfig;
 import org.wso2.carbon.device.mgt.common.ProvisioningConfig;
 import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManager;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.ConfigurationEntry;
@@ -34,9 +35,12 @@ import org.wso2.carbon.device.mgt.common.pull.notification.PullNotificationSubsc
 import org.wso2.carbon.device.mgt.common.push.notification.PushNotificationConfig;
 import org.wso2.carbon.device.mgt.common.spi.DeviceManagementService;
 import org.wso2.carbon.device.mgt.extensions.device.type.template.config.ConfigProperties;
+import org.wso2.carbon.device.mgt.extensions.device.type.template.config.DeviceStatusTaskConfiguration;
 import org.wso2.carbon.device.mgt.extensions.device.type.template.config.DeviceTypeConfiguration;
 import org.wso2.carbon.device.mgt.extensions.device.type.template.config.Feature;
+import org.wso2.carbon.device.mgt.extensions.device.type.template.config.PolicyMonitoring;
 import org.wso2.carbon.device.mgt.extensions.device.type.template.config.Property;
+import org.wso2.carbon.device.mgt.extensions.device.type.template.config.PullNotificationSubscriberConfig;
 import org.wso2.carbon.device.mgt.extensions.device.type.template.config.PushNotificationProvider;
 import org.wso2.carbon.device.mgt.extensions.device.type.template.config.TaskConfiguration;
 import org.wso2.carbon.device.mgt.extensions.device.type.template.policy.mgt.DefaultPolicyMonitoringManager;
@@ -64,6 +68,7 @@ public class DeviceTypeManagerService implements DeviceManagementService {
     private PolicyMonitoringManager policyMonitoringManager;
     private InitialOperationConfig initialOperationConfig;
     private PullNotificationSubscriber pullNotificationSubscriber;
+    private DeviceStatusTaskPluginConfig deviceStatusTaskPluginConfig;
 
     public DeviceTypeManagerService(DeviceTypeConfigIdentifier deviceTypeConfigIdentifier,
                                     DeviceTypeConfiguration deviceTypeConfiguration) {
@@ -75,19 +80,10 @@ public class DeviceTypeManagerService implements DeviceManagementService {
         this.setOperationMonitoringConfig(deviceTypeConfiguration);
         this.initialOperationConfig = new InitialOperationConfig();
         this.setInitialOperationConfig(deviceTypeConfiguration);
-        if (deviceTypeConfiguration.getPolicyMonitoring() != null
-                && deviceTypeConfiguration.getPolicyMonitoring().isEnabled()) {
-            this.policyMonitoringManager = new DefaultPolicyMonitoringManager();
-        }
-
-        if (deviceTypeConfiguration.getPullNotificationSubscriber() != null) {
-            String className = deviceTypeConfiguration.getPullNotificationSubscriber().getClassName();
-            if (className != null && !className.isEmpty()) {
-                PullNotificationSubscriberLoader pullNotificationSubscriberLoader = new PullNotificationSubscriberLoader(className
-                        , deviceTypeConfiguration.getPullNotificationSubscriber().getConfigProperties());
-                this.pullNotificationSubscriber = pullNotificationSubscriberLoader.getPullNotificationSubscriber();
-            }
-        }
+        this.deviceStatusTaskPluginConfig = new DeviceStatusTaskPluginConfig();
+        this.setDeviceStatusTaskPluginConfig(deviceTypeConfiguration.getDeviceStatusTaskConfiguration());
+        this.setPolicyMonitoringManager(deviceTypeConfiguration.getPolicyMonitoring());
+        this.setPullNotificationSubscriber(deviceTypeConfiguration.getPullNotificationSubscriberConfig());
     }
 
     @Override
@@ -193,12 +189,25 @@ public class DeviceTypeManagerService implements DeviceManagementService {
         return pullNotificationSubscriber;
     }
 
+    public DeviceStatusTaskPluginConfig getDeviceStatusTaskPluginConfig() {
+        return deviceStatusTaskPluginConfig;
+    }
+
     private void setProvisioningConfig(String tenantDomain, DeviceTypeConfiguration deviceTypeConfiguration) {
         if (deviceTypeConfiguration.getProvisioningConfig() != null) {
             boolean sharedWithAllTenants = deviceTypeConfiguration.getProvisioningConfig().isSharedWithAllTenants();
             provisioningConfig = new ProvisioningConfig(tenantDomain, sharedWithAllTenants);
         } else {
             provisioningConfig = new ProvisioningConfig(tenantDomain, false);
+        }
+    }
+
+    private void setDeviceStatusTaskPluginConfig(DeviceStatusTaskConfiguration deviceStatusTaskConfiguration) {
+        if (deviceStatusTaskConfiguration != null && deviceStatusTaskConfiguration.isEnabled()) {
+            deviceStatusTaskPluginConfig.setRequireStatusMonitoring(deviceStatusTaskConfiguration.isEnabled());
+            deviceStatusTaskPluginConfig.setIdleTimeToMarkInactive(deviceStatusTaskConfiguration.getIdleTimeToMarkInactive());
+            deviceStatusTaskPluginConfig.setIdleTimeToMarkUnreachable(deviceStatusTaskConfiguration.getIdleTimeToMarkUnreachable());
+            deviceStatusTaskPluginConfig.setFrequency(deviceStatusTaskConfiguration.getFrequency());
         }
     }
 
@@ -237,5 +246,22 @@ public class DeviceTypeManagerService implements DeviceManagementService {
             propertMap.put(entry.getName(), entry.getValue().toString());
         }
         return propertMap;
+    }
+
+    private void setPolicyMonitoringManager(PolicyMonitoring policyMonitoring) {
+        if (policyMonitoring != null && policyMonitoring.isEnabled()) {
+            this.policyMonitoringManager = new DefaultPolicyMonitoringManager();
+        }
+    }
+
+    private void setPullNotificationSubscriber(PullNotificationSubscriberConfig pullNotificationSubscriberConfig) {
+        if (pullNotificationSubscriberConfig != null) {
+            String className = pullNotificationSubscriberConfig.getClassName();
+            if (className != null && !className.isEmpty()) {
+                PullNotificationSubscriberLoader pullNotificationSubscriberLoader = new PullNotificationSubscriberLoader
+                        (className, pullNotificationSubscriberConfig.getConfigProperties());
+                this.pullNotificationSubscriber = pullNotificationSubscriberLoader.getPullNotificationSubscriber();
+            }
+        }
     }
 }

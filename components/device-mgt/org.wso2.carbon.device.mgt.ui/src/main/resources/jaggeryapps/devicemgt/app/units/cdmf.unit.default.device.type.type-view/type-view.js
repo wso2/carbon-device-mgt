@@ -56,8 +56,6 @@ function onRequest(context) {
 				displayData.event = typeData;
 				var sampleValue = "";
 				if (typeData.eventAttributes && typeData.eventAttributes.attributes) {
-					var sample = {};
-					sample.event = {};
 					var eventExample = {};
 					for (var i = 0; i < typeData.eventAttributes.attributes.length; i++) {
 						var attribute = typeData.eventAttributes.attributes[i];
@@ -90,10 +88,7 @@ function onRequest(context) {
 						}
 
 					}
-					var metaEventExample = {};
-					metaEventExample.deviceId = "deviceIdentifier";
-					sample.event.payloadData = eventExample;
-					sample.event.metaData = metaEventExample;
+					var sample = eventExample;
 					if (sampleValue && sampleValue.length > 2) {
 						displayData.sampleValue = sampleValue.substring(0, sampleValue.length - 2);
 					}

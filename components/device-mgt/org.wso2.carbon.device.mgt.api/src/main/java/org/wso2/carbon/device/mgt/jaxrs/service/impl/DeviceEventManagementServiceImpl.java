@@ -596,7 +596,7 @@ public class DeviceEventManagementServiceImpl implements DeviceEventManagementSe
             try {
                 stub.cleanup();
             } catch (AxisFault axisFault) {
-                // do nothing
+                log.warn("Failed to clean the stub " + stub.getClass());
             }
         }
     }

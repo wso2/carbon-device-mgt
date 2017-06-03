@@ -18,7 +18,12 @@
  */
 package org.wso2.carbon.device.mgt.extensions.device.type.template.config;
 
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlAccessType;
 import java.util.List;
 
 
@@ -40,6 +45,7 @@ import java.util.List;
  *         &lt;element name="DataSource" type="{}DataSource"/>
  *         &lt;element name="PolicyMonitoring" type="{}PolicyMonitoring"/>
  *         &lt;element name="DeviceAuthorizationConfig" type="{}DeviceAuthorizationConfig"/>
+ *         &lt;element name="DeviceStatusTaskConfig" type="{}DeviceStatusTaskConfig"/>
  *       &lt;/sequence>
  *       &lt;attribute name="name" type="{http://www.w3.org/2001/XMLSchema}string" />
  *     &lt;/restriction>
@@ -59,16 +65,18 @@ public class DeviceTypeConfiguration {
     protected Features features;
     @XmlElement(name = "ProvisioningConfig", required = true)
     protected ProvisioningConfig provisioningConfig;
-    @XmlElement(name = "PushNotificationProvider", required = true)
+    @XmlElement(name = "PushNotificationProviderConfig", required = true)
     protected PushNotificationProvider pushNotificationProvider;
-    @XmlElement(name = "PullNotificationSubscriber", required = true)
-    protected PullNotificationSubscriber pullNotificationSubscriber;
+    @XmlElement(name = "PullNotificationSubscriberConfig", required = true)
+    protected PullNotificationSubscriberConfig pullNotificationSubscriberConfig;
     @XmlElement(name = "License", required = true)
     protected License license;
     @XmlElement(name = "DataSource", required = true)
     protected DataSource dataSource;
     @XmlElement(name = "TaskConfiguration", required = true)
     private TaskConfiguration taskConfiguration;
+    @XmlElement(name = "DeviceStatusTaskConfig")
+    private DeviceStatusTaskConfiguration deviceStatusTaskConfiguration;
     @XmlElement(name = "DeviceAuthorizationConfig", required = true)
     protected DeviceAuthorizationConfig deviceAuthorizationConfig;
     @XmlAttribute(name = "name")
@@ -85,6 +93,30 @@ public class DeviceTypeConfiguration {
 
     public void setOperations(List<String> operations) {
         this.operations = operations;
+    }
+
+    /**
+     * Gets the value of the deviceStatusTaskConfiguration property.
+     *
+     * @return
+     *     possible object is
+     *     {@link DeviceStatusTaskConfiguration }
+     *
+     */
+    public DeviceStatusTaskConfiguration getDeviceStatusTaskConfiguration() {
+        return deviceStatusTaskConfiguration;
+    }
+
+    /**
+     * Sets the value of the deviceStatusTaskConfiguration property.
+     *
+     * @param deviceStatusTaskConfiguration
+     *     allowed object is
+     *     {@link DeviceStatusTaskConfiguration }
+     *
+     */
+    public void setDeviceStatusTaskConfiguration(DeviceStatusTaskConfiguration deviceStatusTaskConfiguration) {
+        this.deviceStatusTaskConfiguration = deviceStatusTaskConfiguration;
     }
 
     /**
@@ -233,23 +265,23 @@ public class DeviceTypeConfiguration {
     }
 
     /**
-     * Gets the value of the PullNotificationSubscriber property.
+     * Gets the value of the PullNotificationSubscriberConfig property.
      *
      * @return possible object is
-     * {@link PullNotificationSubscriber }
+     * {@link PullNotificationSubscriberConfig }
      */
-    public PullNotificationSubscriber getPullNotificationSubscriber() {
-        return pullNotificationSubscriber;
+    public PullNotificationSubscriberConfig getPullNotificationSubscriberConfig() {
+        return pullNotificationSubscriberConfig;
     }
 
     /**
-     * Sets the value of the PullNotificationSubscriber property.
+     * Sets the value of the PullNotificationSubscriberConfig property.
      *
      * @param value allowed object is
-     *              {@link PullNotificationSubscriber }
+     *              {@link PullNotificationSubscriberConfig }
      */
-    public void setPullNotificationSubscriber(PullNotificationSubscriber value) {
-        this.pullNotificationSubscriber = value;
+    public void setPullNotificationSubscriberConfig(PullNotificationSubscriberConfig value) {
+        this.pullNotificationSubscriberConfig = value;
     }
 
     /**
@@ -331,5 +363,4 @@ public class DeviceTypeConfiguration {
     public void setDeviceAuthorizationConfig(DeviceAuthorizationConfig value) {
         this.deviceAuthorizationConfig = value;
     }
-
 }

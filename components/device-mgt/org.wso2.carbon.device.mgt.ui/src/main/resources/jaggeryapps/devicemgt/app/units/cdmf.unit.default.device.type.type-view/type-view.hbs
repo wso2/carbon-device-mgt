@@ -230,7 +230,7 @@
             <code> curl -k -X POST {{httpsGateway}}/api/device-mgt/v1.0/device/agent/events/publish/{{deviceType}}/%deviceId%
                    -H 'authorization: Bearer %accessToken%'
                    -H 'content-type: application/json'
-                   -d '{"payloadData": [{{sampleValue}}]}'
+                   -d '{{eventSample}}'
             </code>
 
         {{/if_eq}}
@@ -277,8 +277,7 @@
         </br>
         Update operation:
         <code>curl -k -X PUT {{httpsGateway}}/api/device-mgt/v1.0/device/agent/operations/{{deviceType}}/deviceId
-              -H 'authorization: Bearer %accessToken%' -H 'content-type: application/json' -d '{"enabled": true,"code": "alarm","type": "COMMAND","id": 1,"status": "COMPLETED",
-              "isEnabled": false,"activityId": "ACTIVITY_1"}'</code>
+              -H 'authorization: Bearer %accessToken%' -H 'content-type: application/json' -d '{"id": 1,"status": "COMPLETED", "payload": "this is my response"}'</code>
 
     {{/if}}
 

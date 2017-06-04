@@ -100,7 +100,7 @@ public class PullNotificationSubscriberConfig {
      *     
      */
     public void setClassName(String value) {
-        this.className = className;
+        this.className = value;
     }
 
 }

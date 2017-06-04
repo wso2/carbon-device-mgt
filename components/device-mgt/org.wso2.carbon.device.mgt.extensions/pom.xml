@@ -111,7 +111,8 @@
 							org.wso2.carbon.utils.dbcreator,
 							org.wso2.carbon.utils.multitenancy,
                         </Import-Package>
-						<DynamicImport-Package>org.wso2.carbon.device.mgt.extensions.pull.notification.*</DynamicImport-Package>
+						<DynamicImport-Package>org.wso2.carbon.device.mgt.extensions.pull.notification,
+							org.wso2.carbon.device.mgt.extensions.pull.notification.*</DynamicImport-Package>
                     </instructions>
                 </configuration>
             </plugin>

@@ -81,8 +81,10 @@ public class DeviceEventManagementServiceImpl implements DeviceEventManagementSe
     private static final String THRIFT_ADAPTER_TYPE = "iot-event";
     private static final String DEFAULT_DEVICE_ID_ATTRIBUTE = "deviceId";
     private static final String DEFAULT_META_DEVICE_ID_ATTRIBUTE = "meta_deviceId";
-
-
+    private static final String MQTT_CONTENT_TRANSFORMER = "device-meta-transformer";
+    private static final String MQTT_CONTENT_TRANSFORMER_TYPE = "contentTransformer";
+    private static final String MQTT_CONTENT_VALIDATOR_TYPE = "contentValidator";
+    private static final String MQTT_CONTENT_VALIDATOR = "default";
 
     @GET
     @Path("/{type}")
@@ -182,14 +184,9 @@ public class DeviceEventManagementServiceImpl implements DeviceEventManagementSe
             PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(
                     MultitenantConstants.SUPER_TENANT_DOMAIN_NAME, true);
             if (!MultitenantConstants.SUPER_TENANT_DOMAIN_NAME.equals(tenantDomain)) {
-                if (transportType == TransportType.MQTT) {
-                    publishStreamDefinitons(streamName, Constants.DEFAULT_STREAM_VERSION, deviceType, eventAttributes);
-                    publishEventReceivers(eventReceiverName, streamNameWithVersion, transportType, tenantDomain,
-                                          deviceType);
-                } else {
-                    publishStreamDefinitons(streamName, Constants.DEFAULT_STREAM_VERSION, deviceType, eventAttributes);
-                }
-
+                publishStreamDefinitons(streamName, Constants.DEFAULT_STREAM_VERSION, deviceType, eventAttributes);
+                publishEventReceivers(eventReceiverName, streamNameWithVersion, transportType, tenantDomain,
+                                      deviceType);
             }
             DeviceMgtAPIUtils.getDynamicEventCache().remove(deviceType);
             return Response.ok().build();
@@ -412,9 +409,13 @@ public class DeviceEventManagementServiceImpl implements DeviceEventManagementSe
             String adapterType = OAUTH_MQTT_ADAPTER_TYPE;
             BasicInputAdapterPropertyDto basicInputAdapterPropertyDtos[];
             if (transportType == TransportType.MQTT) {
-                basicInputAdapterPropertyDtos = new BasicInputAdapterPropertyDto[1];
+                basicInputAdapterPropertyDtos = new BasicInputAdapterPropertyDto[3];
                 basicInputAdapterPropertyDtos[0] = getBasicInputAdapterPropertyDto("topic", requestedTenantDomain
                         + "/" + deviceType + "/+/events");
+                basicInputAdapterPropertyDtos[1] = getBasicInputAdapterPropertyDto(MQTT_CONTENT_TRANSFORMER_TYPE
+                        , MQTT_CONTENT_TRANSFORMER);
+                basicInputAdapterPropertyDtos[2] = getBasicInputAdapterPropertyDto(MQTT_CONTENT_VALIDATOR_TYPE
+                        , MQTT_CONTENT_VALIDATOR);
             } else {
                 adapterType = THRIFT_ADAPTER_TYPE;
                 basicInputAdapterPropertyDtos = new BasicInputAdapterPropertyDto[1];
@@ -425,8 +426,6 @@ public class DeviceEventManagementServiceImpl implements DeviceEventManagementSe
                     receiverAdminServiceStub.deployJsonEventReceiverConfiguration(eventRecieverName, streamNameWithVersion
                             , adapterType, null, basicInputAdapterPropertyDtos, false);
                 } else {
-                    EventMappingPropertyDto eventMappingPropertyDto = new EventMappingPropertyDto();
-
                     receiverAdminServiceStub.deployWso2EventReceiverConfiguration(eventRecieverName, streamNameWithVersion
                             , adapterType, null, null, null, basicInputAdapterPropertyDtos, false, null);
                 }

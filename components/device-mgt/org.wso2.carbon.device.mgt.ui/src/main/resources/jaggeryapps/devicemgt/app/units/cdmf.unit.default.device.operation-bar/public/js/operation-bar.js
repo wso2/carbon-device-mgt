@@ -32,9 +32,6 @@ function submitForm(formId) {
     var operationDetails = $("#operation-details");
 	var deviceId = operationDetails.data("deviceid");
 	var operationEndpoint = operationDetails.data("endpoint");
-	console.log(deviceId);
-	console.log(operationEndpoint);
-
 	var contentType = "application/json";
 
     var payload = {};
@@ -44,7 +41,7 @@ function submitForm(formId) {
 	var operation = {};
 	operation["code"] = form.find("#operation-code").val();
 	operation["type"]= form.find("#operation-type").val();
-	operation["status"] = "IN_PROGRESS";
+	operation["status"] = "PENDING";
 	operation["control"] = "REPEAT";
 	operation["payLoad"] = form.find("#operation-payload").val();
 	operation["enabled"] = true;

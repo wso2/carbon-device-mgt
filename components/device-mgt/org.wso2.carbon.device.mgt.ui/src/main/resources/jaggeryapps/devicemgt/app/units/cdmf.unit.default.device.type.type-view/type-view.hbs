@@ -245,18 +245,18 @@
             Operation Response:
             <code>{{tenantDomain}}/{{deviceType}}/&lt;device_id&gt;/update/operation</code>
             <br/>
-            Payload : <code>{operationId:1, payload:"example"}</code>
+            Payload : <code>{"id": 1,"status": "COMPLETED", "operationResponse": "this is my response"}</code>
             <br/>
             Topic Structure:
             <ul class="list-unstyled">
                 <li class="padding-top-double">
-                    <code>{{tenantDomain}}/{{deviceType}}/&lt;device_id&gt;/operation/command/&lt;feature_code&gt;&lt;operation_id&gt;</code>
+                    <code>{{tenantDomain}}/{{deviceType}}/&lt;device_id&gt;/operation/command/&lt;feature_code&gt;/&lt;operation_id&gt;</code>
                 </li>
                 <li class="padding-top-double">
-                    <code>{{tenantDomain}}/{{deviceType}}/&lt;device_id&gt;/operation/config/&lt;feature_code&gt;&lt;operation_id&gt;</code>
+                    <code>{{tenantDomain}}/{{deviceType}}/&lt;device_id&gt;/operation/config/&lt;feature_code&gt;/&lt;operation_id&gt;</code>
                 </li>
                 <li class="padding-top-double">
-                    <code>{{tenantDomain}}/{{deviceType}}/&lt;device_id&gt;/operation/profile/&lt;feature_code&gt;&lt;operation_id&gt;</code>
+                    <code>{{tenantDomain}}/{{deviceType}}/&lt;device_id&gt;/operation/profile/&lt;feature_code&gt;/&lt;operation_id&gt;</code>
                 </li>
                 <li class="padding-top-double">
                     <code>{{tenantDomain}}/{{deviceType}}/&lt;device_id&gt;/operation/policy/policy_bundle</code>

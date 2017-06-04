@@ -18,6 +18,10 @@
  */
 package org.wso2.carbon.device.mgt.jaxrs.service.impl;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import org.apache.axis2.AxisFault;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -31,6 +35,9 @@ import org.wso2.carbon.device.mgt.common.authorization.DeviceAccessAuthorization
 import org.wso2.carbon.device.mgt.common.authorization.DeviceAccessAuthorizationService;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
+import org.wso2.carbon.device.mgt.common.policy.mgt.monitor.ComplianceFeature;
+import org.wso2.carbon.device.mgt.common.policy.mgt.monitor.PolicyComplianceException;
+import org.wso2.carbon.device.mgt.core.operation.mgt.OperationMgtConstants;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
 import org.wso2.carbon.device.mgt.jaxrs.beans.OperationList;
@@ -63,7 +70,7 @@ import java.util.Map;
 @Path("/device/agent")
 public class DeviceAgentServiceImpl implements DeviceAgentService {
     private static final Log log = LogFactory.getLog(DeviceAgentServiceImpl.class);
-
+    private static final String POLICY_MONITOR = "POLICY_MONITOR";
     @POST
     @Path("/enroll")
     @Override
@@ -323,13 +330,11 @@ public class DeviceAgentServiceImpl implements DeviceAgentService {
         } catch (OperationManagementException e) {
             String errorMessage = "Issue in retrieving operation management service instance";
             log.error(errorMessage, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(
-                    new ErrorResponse.ErrorResponseBuilder().setMessage(errorMessage).build()).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorMessage).build();
         } catch (DeviceManagementException e) {
             String errorMessage = "Issue in retrieving deivce management service instance";
             log.error(errorMessage, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(
-                    new ErrorResponse.ErrorResponseBuilder().setMessage(errorMessage).build()).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorMessage).build();
         }
     }
 
@@ -354,13 +359,11 @@ public class DeviceAgentServiceImpl implements DeviceAgentService {
         } catch (OperationManagementException e) {
             String errorMessage = "Issue in retrieving operation management service instance";
             log.error(errorMessage, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(
-                    new ErrorResponse.ErrorResponseBuilder().setMessage(errorMessage).build()).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorMessage).build();
         } catch (DeviceManagementException e) {
             String errorMessage = "Issue in retrieving deivce management service instance";
             log.error(errorMessage, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(
-                    new ErrorResponse.ErrorResponseBuilder().setMessage(errorMessage).build()).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorMessage).build();
         }
     }
 
@@ -384,19 +387,30 @@ public class DeviceAgentServiceImpl implements DeviceAgentService {
                 log.error(msg);
                 return Response.status(Response.Status.NO_CONTENT).entity(msg).build();
             }
-            DeviceMgtAPIUtils.getDeviceManagementService().updateOperation
-                    (deviceIdentifier, operation);
+            if (!Operation.Status.ERROR.equals(operation.getStatus()) && operation.getCode() != null &&
+                    POLICY_MONITOR.equals(operation.getCode())) {
+                if (log.isDebugEnabled()) {
+                    log.info("Received compliance status from POLICY_MONITOR operation ID: " + operation.getId());
+                }
+                List<ComplianceFeature> features = getComplianceFeatures(operation.getPayLoad());
+                DeviceMgtAPIUtils.getPolicyManagementService().checkCompliance(deviceIdentifier, features);
+
+            } else {
+                DeviceMgtAPIUtils.getDeviceManagementService().updateOperation(deviceIdentifier, operation);
+            }
             return Response.status(Response.Status.ACCEPTED).build();
         } catch (OperationManagementException e) {
             String errorMessage = "Issue in retrieving operation management service instance";
             log.error(errorMessage, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(
-                    new ErrorResponse.ErrorResponseBuilder().setMessage(errorMessage).build()).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorMessage).build();
         } catch (DeviceManagementException e) {
             String errorMessage = "Issue in retrieving deivce management service instance";
             log.error(errorMessage, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(
-                    new ErrorResponse.ErrorResponseBuilder().setMessage(errorMessage).build()).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorMessage).build();
+        } catch (PolicyComplianceException e) {
+            String errorMessage = "Issue in retrieving deivce management service instance";
+            log.error(errorMessage, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorMessage).build();
         }
     }
 
@@ -425,13 +439,37 @@ public class DeviceAgentServiceImpl implements DeviceAgentService {
         } catch (OperationManagementException e) {
             String errorMessage = "Issue in retrieving operation management service instance";
             log.error(errorMessage, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(
-                    new ErrorResponse.ErrorResponseBuilder().setMessage(errorMessage).build()).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorMessage).build();
         } catch (DeviceManagementException e) {
             String errorMessage = "Issue in retrieving device management service";
             log.error(errorMessage, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(
-                    new ErrorResponse.ErrorResponseBuilder().setMessage(errorMessage).build()).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorMessage).build();
         }
+    }
+
+    private static List<ComplianceFeature> getComplianceFeatures(Object compliancePayload) throws
+                                                                                           PolicyComplianceException {
+        String compliancePayloadString = new Gson().toJson(compliancePayload);
+        if (compliancePayload == null) {
+            return null;
+        }
+        // Parsing json string to get compliance features.
+        JsonElement jsonElement;
+        if (compliancePayloadString instanceof String) {
+            jsonElement = new JsonParser().parse(compliancePayloadString);
+        } else {
+            throw new PolicyComplianceException("Invalid policy compliance payload");
+        }
+
+        JsonArray jsonArray = jsonElement.getAsJsonArray();
+        Gson gson = new Gson();
+        ComplianceFeature complianceFeature;
+        List<ComplianceFeature> complianceFeatures = new ArrayList<ComplianceFeature>(jsonArray.size());
+
+        for (JsonElement element : jsonArray) {
+            complianceFeature = gson.fromJson(element, ComplianceFeature.class);
+            complianceFeatures.add(complianceFeature);
+        }
+        return complianceFeatures;
     }
 }

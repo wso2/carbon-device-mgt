@@ -54,6 +54,10 @@
 			<groupId>org.eclipse.osgi</groupId>
 			<artifactId>org.eclipse.osgi.services</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.wso2.carbon.devicemgt</groupId>
+			<artifactId>org.wso2.carbon.policy.mgt.core</artifactId>
+		</dependency>
     </dependencies>
 
     <build>
@@ -82,6 +86,10 @@
                             org.apache.commons.logging,
                             org.wso2.carbon.device.mgt.common.*,
                             org.wso2.carbon.device.mgt.core.service
+							org.wso2.carbon.policy.mgt.core.*,
+							org.wso2.carbon.policy.mgt.core,
+							com.google.gson,
+							org.wso2.carbon.device.mgt.core.service.*
                         </Import-Package>
                     </instructions>
                 </configuration>

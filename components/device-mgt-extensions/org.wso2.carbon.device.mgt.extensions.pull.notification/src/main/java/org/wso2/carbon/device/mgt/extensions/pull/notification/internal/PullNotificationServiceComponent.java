@@ -22,6 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
+import org.wso2.carbon.policy.mgt.core.PolicyManagerService;
 
 /**
  * @scr.component name="org.wso2.carbon.device.mgt.extensions.pull.notification.internal.PullNotificationServiceComponent" immediate="true"
@@ -31,6 +32,12 @@ import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
  * policy="dynamic"
  * bind="setDeviceManagementProviderService"
  * unbind="unsetDeviceManagementProviderService"
+ * @scr.reference name="org.wso2.carbon.policy.mgt.core"
+ * interface="org.wso2.carbon.policy.mgt.core.PolicyManagerService"
+ * cardinality="1..1"
+ * policy="dynamic"
+ * bind="setPolicyManagerService"
+ * unbind="unsetPolicyManagerService"
  */
 public class PullNotificationServiceComponent {
 
@@ -59,7 +66,15 @@ public class PullNotificationServiceComponent {
     }
 
     protected void unsetDeviceManagementProviderService(DeviceManagementProviderService deviceManagementProviderService) {
-        PullNotificationDataHolder.getInstance().setDeviceManagementProviderService(deviceManagementProviderService);
+        PullNotificationDataHolder.getInstance().setDeviceManagementProviderService(null);
+    }
+
+    protected void setPolicyManagerService(PolicyManagerService policyManagerService) {
+        PullNotificationDataHolder.getInstance().setPolicyManagerService(policyManagerService);
+    }
+
+    protected void unsetPolicyManagerService(PolicyManagerService policyManagerService) {
+        PullNotificationDataHolder.getInstance().setPolicyManagerService(null);
     }
 
 }

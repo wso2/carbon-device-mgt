@@ -19,10 +19,12 @@
 package org.wso2.carbon.device.mgt.extensions.pull.notification.internal;
 
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
+import org.wso2.carbon.policy.mgt.core.PolicyManagerService;
 
 public class PullNotificationDataHolder {
 
     private DeviceManagementProviderService deviceManagementProviderService;
+    private PolicyManagerService policyManagerService;
 
     private static PullNotificationDataHolder thisInstance = new PullNotificationDataHolder();
 
@@ -38,4 +40,11 @@ public class PullNotificationDataHolder {
         this.deviceManagementProviderService = deviceManagementProviderService;
     }
 
+    public PolicyManagerService getPolicyManagerService() {
+        return policyManagerService;
+    }
+
+    public void setPolicyManagerService(PolicyManagerService policyManagerService) {
+        this.policyManagerService = policyManagerService;
+    }
 }

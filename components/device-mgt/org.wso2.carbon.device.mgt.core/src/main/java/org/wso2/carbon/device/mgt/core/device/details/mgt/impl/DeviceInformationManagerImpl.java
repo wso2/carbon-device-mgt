@@ -22,7 +22,11 @@ package org.wso2.carbon.device.mgt.core.device.details.mgt.impl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.CarbonContext;
-import org.wso2.carbon.device.mgt.common.*;
+import org.wso2.carbon.device.mgt.analytics.data.publisher.exception.DataPublisherConfigurationException;
+import org.wso2.carbon.device.mgt.common.Device;
+import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
+import org.wso2.carbon.device.mgt.common.DeviceManagementException;
+import org.wso2.carbon.device.mgt.common.TransactionManagementException;
 import org.wso2.carbon.device.mgt.common.device.details.DeviceInfo;
 import org.wso2.carbon.device.mgt.common.device.details.DeviceLocation;
 import org.wso2.carbon.device.mgt.core.dao.DeviceDAO;
@@ -33,6 +37,7 @@ import org.wso2.carbon.device.mgt.core.device.details.mgt.DeviceInformationManag
 import org.wso2.carbon.device.mgt.core.device.details.mgt.dao.DeviceDetailsDAO;
 import org.wso2.carbon.device.mgt.core.device.details.mgt.dao.DeviceDetailsMgtDAOException;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
+import org.wso2.carbon.device.mgt.core.util.DeviceManagerUtil;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -45,6 +50,7 @@ public class DeviceInformationManagerImpl implements DeviceInformationManager {
     private DeviceDetailsDAO deviceDetailsDAO;
     private DeviceDAO deviceDAO;
     private static final Log log = LogFactory.getLog(DeviceInformationManagerImpl.class);
+    private static final String EVENT_STREAM_DEFINITION = "org.wso2.iot.LocationStream";
 
     public DeviceInformationManagerImpl() {
         this.deviceDAO = DeviceManagementDAOFactory.getDeviceDAO();
@@ -160,6 +166,17 @@ public class DeviceInformationManagerImpl implements DeviceInformationManager {
             deviceDAO.updateDevice(device, CarbonContext.getThreadLocalCarbonContext().getTenantId());
             deviceDetailsDAO.deleteDeviceLocation(deviceLocation.getDeviceId());
             deviceDetailsDAO.addDeviceLocation(deviceLocation);
+            if (DeviceManagerUtil.isPublishLocationOperationResEnabled()) {
+                Object metaData[] = {device.getDeviceIdentifier(), device.getType()};
+                Object payload[] = new Object[]{
+                        deviceLocation.getUpdatedTime().getTime(),
+                        deviceLocation.getLatitude(),
+                        deviceLocation.getLongitude()
+                };
+                DeviceManagerUtil.getEventPublisherService().publishEvent(
+                        EVENT_STREAM_DEFINITION, "1.0.0", metaData, new Object[0], payload
+                );
+            }
             DeviceManagementDAOFactory.commitTransaction();
         } catch (TransactionManagementException e) {
             throw new DeviceDetailsMgtException("Transactional error occurred while adding the device location " +
@@ -174,6 +191,9 @@ public class DeviceInformationManagerImpl implements DeviceInformationManager {
             DeviceManagementDAOFactory.rollbackTransaction();
             throw new DeviceDetailsMgtException("Error occurred while updating the last updated timestamp of " +
                     "the device", e);
+        } catch (DataPublisherConfigurationException e) {
+            DeviceManagementDAOFactory.rollbackTransaction();
+            throw new DeviceDetailsMgtException("Error occurred while publishing the device location information.", e);
         } finally {
             DeviceManagementDAOFactory.closeConnection();
         }

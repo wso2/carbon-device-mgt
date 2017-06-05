@@ -66,6 +66,7 @@
                             org.wso2.carbon.core,
                             org.wso2.carbon.utils.*,
                             org.wso2.carbon.device.mgt.common.*,
+                            org.wso2.carbon.device.mgt.analytics.data.publisher.service,
                             org.wso2.carbon.user.api,
                             org.wso2.carbon.user.core.*,
                             org.wso2.carbon.registry.core.service,
@@ -81,7 +82,7 @@
                             org.wso2.carbon.ntask.common,
                             org.apache.catalina,
                             org.apache.catalina.core,
-                            org.apache.commons.collections,
+                            org.apache.commons.collections;version="${commons-collections.version.range}",
                             org.wso2.carbon.email.sender.*,
                             io.swagger.annotations.*;resolution:=optional,
                             org.wso2.carbon,
@@ -135,6 +136,17 @@
         <dependency>
             <groupId>org.wso2.carbon.devicemgt</groupId>
             <artifactId>org.wso2.carbon.device.mgt.common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.devicemgt</groupId>
+            <artifactId>org.wso2.carbon.device.mgt.analytics.data.publisher</artifactId>
+            <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon</groupId>

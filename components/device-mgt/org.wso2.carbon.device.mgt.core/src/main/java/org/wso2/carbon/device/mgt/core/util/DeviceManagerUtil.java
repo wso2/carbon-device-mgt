@@ -21,7 +21,15 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Document;
 import org.wso2.carbon.base.MultitenantConstants;
-import org.wso2.carbon.device.mgt.common.*;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
+import org.wso2.carbon.device.mgt.analytics.data.publisher.service.EventsPublisherService;
+import org.wso2.carbon.device.mgt.common.Device;
+import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
+import org.wso2.carbon.device.mgt.common.DeviceManagementException;
+import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
+import org.wso2.carbon.device.mgt.common.GroupPaginationRequest;
+import org.wso2.carbon.device.mgt.common.PaginationRequest;
+import org.wso2.carbon.device.mgt.common.TransactionManagementException;
 import org.wso2.carbon.device.mgt.common.group.mgt.GroupManagementException;
 import org.wso2.carbon.device.mgt.common.notification.mgt.NotificationManagementException;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
@@ -48,7 +56,11 @@ import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
 
 
 public final class DeviceManagerUtil {
@@ -358,6 +370,17 @@ public final class DeviceManagerUtil {
         return limit;
     }
 
+    public static boolean isPublishLocationOperationResEnabled() throws DeviceManagementException {
+        DeviceManagementConfig deviceManagementConfig = DeviceConfigurationManager.getInstance().
+                getDeviceManagementConfig();
+        if (deviceManagementConfig != null) {
+            return deviceManagementConfig.getGeoLocationConfiguration().getPublishLocationOperationResponse();
+        } else {
+            throw new DeviceManagementException("Device-Mgt configuration has not initialized. Please check the " +
+                                                        "cdm-config.xml file.");
+        }
+    }
+
     public static DeviceIDHolder validateDeviceIdentifiers(List<DeviceIdentifier> deviceIDs) {
 
         List<String> errorDeviceIdList = new ArrayList<String>();
@@ -403,5 +426,17 @@ public final class DeviceManagerUtil {
             return false;
         }
         return true;
+    }
+
+    public static EventsPublisherService getEventPublisherService() {
+        PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        EventsPublisherService eventsPublisherService =
+                (EventsPublisherService) ctx.getOSGiService(EventsPublisherService.class, null);
+        if (eventsPublisherService == null) {
+            String msg = "Event Publisher service has not initialized.";
+            log.error(msg);
+            throw new IllegalStateException(msg);
+        }
+        return eventsPublisherService;
     }
 }

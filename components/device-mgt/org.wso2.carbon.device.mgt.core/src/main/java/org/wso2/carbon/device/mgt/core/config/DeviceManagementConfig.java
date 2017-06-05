@@ -21,6 +21,7 @@ import org.wso2.carbon.device.mgt.core.config.identity.IdentityConfigurations;
 import org.wso2.carbon.device.mgt.core.config.pagination.PaginationConfiguration;
 import org.wso2.carbon.device.mgt.core.config.policy.PolicyConfiguration;
 import org.wso2.carbon.device.mgt.core.config.push.notification.PushNotificationConfiguration;
+import org.wso2.carbon.device.mgt.core.config.status.task.DeviceStatusTaskConfig;
 import org.wso2.carbon.device.mgt.core.config.task.TaskConfiguration;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -41,6 +42,7 @@ public final class DeviceManagementConfig {
     private PolicyConfiguration policyConfiguration;
     private PaginationConfiguration paginationConfiguration;
     private PushNotificationConfiguration pushNotificationConfiguration;
+    private DeviceStatusTaskConfig deviceStatusTaskConfig;
 
 
     @XmlElement(name = "ManagementRepository", required = true)
@@ -96,6 +98,15 @@ public final class DeviceManagementConfig {
 
     public void setPushNotificationConfiguration(PushNotificationConfiguration pushNotificationConfiguration) {
         this.pushNotificationConfiguration = pushNotificationConfiguration;
+    }
+
+    @XmlElement(name = "DeviceStatusTaskConfig", required = true)
+    public DeviceStatusTaskConfig getDeviceStatusTaskConfig() {
+        return deviceStatusTaskConfig;
+    }
+
+    public void setDeviceStatusTaskConfig(DeviceStatusTaskConfig deviceStatusTaskConfig) {
+        this.deviceStatusTaskConfig = deviceStatusTaskConfig;
     }
 }
 

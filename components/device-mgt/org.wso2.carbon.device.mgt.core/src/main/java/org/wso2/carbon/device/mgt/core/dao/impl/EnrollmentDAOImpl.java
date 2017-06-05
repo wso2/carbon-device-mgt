@@ -23,6 +23,7 @@ import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.dao.EnrollmentDAO;
 import org.wso2.carbon.device.mgt.core.dao.util.DeviceManagementDAOUtil;
+import org.wso2.carbon.device.mgt.core.operation.mgt.OperationMapping;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -115,6 +116,42 @@ public class EnrollmentDAOImpl implements EnrollmentDAO {
         }
     }
 
+    @Override
+    public boolean updateEnrollmentStatus(List<EnrolmentInfo> enrolmentInfos) throws DeviceManagementDAOException {
+        Connection conn;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        boolean status = false;
+        int updateStatus = -1;
+        try {
+            conn = this.getConnection();
+            String sql = "UPDATE DM_ENROLMENT SET STATUS = ? WHERE ID = ?";
+            stmt = conn.prepareStatement(sql);
+            if (conn.getMetaData().supportsBatchUpdates()) {
+                for (EnrolmentInfo enrolmentInfo : enrolmentInfos) {
+                    stmt.setString(1, enrolmentInfo.getStatus().toString());
+                    stmt.setInt(2, enrolmentInfo.getId());
+                    stmt.addBatch();
+                }
+                updateStatus = stmt.executeBatch().length;
+            } else {
+                for (EnrolmentInfo enrolmentInfo : enrolmentInfos) {
+                    stmt.setString(1, enrolmentInfo.getStatus().toString());
+                    stmt.setInt(2, enrolmentInfo.getId());
+                    updateStatus = stmt.executeUpdate();
+                }
+            }
+            if (updateStatus > 0) {
+                status = true;
+            }
+        } catch (SQLException e) {
+            throw new DeviceManagementDAOException("Error occurred while updating enrolment status of given device-list.", e);
+        } finally {
+            DeviceManagementDAOUtil.cleanupResources(stmt, rs);
+        }
+        return status;
+    }
+
 
     @Override
     public int removeEnrollment(int deviceId, String currentOwner,
@@ -157,6 +194,26 @@ public class EnrollmentDAOImpl implements EnrollmentDAO {
             stmt.setInt(2, enrolmentID);
             stmt.setString(3, currentOwner);
             stmt.setInt(4, tenantId);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new DeviceManagementDAOException("Error occurred while setting the status of device enrolment", e);
+        } finally {
+            DeviceManagementDAOUtil.cleanupResources(stmt, null);
+        }
+        return true;
+    }
+
+    @Override
+    public boolean setStatus(int enrolmentID, EnrolmentInfo.Status status, int tenantId) throws DeviceManagementDAOException {
+        Connection conn;
+        PreparedStatement stmt = null;
+        try {
+            conn = this.getConnection();
+            String sql = "UPDATE DM_ENROLMENT SET STATUS = ? WHERE ID = ? AND TENANT_ID = ?";
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, status.toString());
+            stmt.setInt(2, enrolmentID);
+            stmt.setInt(3, tenantId);
             stmt.executeUpdate();
         } catch (SQLException e) {
             throw new DeviceManagementDAOException("Error occurred while setting the status of device enrolment", e);

@@ -47,6 +47,6 @@ public interface DeviceManagementService {
 
     InitialOperationConfig getInitialOperationConfig();
 
-
+    DeviceStatusTaskPluginConfig getDeviceStatusTaskPluginConfig();
 
 }

@@ -81,9 +81,9 @@ var baseLayers = {
 
 function getTileServers() {
     /*var backendApiUrl = $("#arduino-div-chart").data("backend-api-url") + "?from=" + from + "&to=" + to;
-    invokerUtil.get(backendApiUrl, successCallback, function (message) {
+     invokerUtil.get(backendApiUrl, successCallback, function (message) {
 
-    });*/
+     });*/
     $.getJSON("/api/controllers/tile_servers?serverId=all", function (data) {
         console.log(JSON.stringify(data));
         $.each(data, function (key, val) {
@@ -221,8 +221,8 @@ function setSpeedAlert() {
             }
         };
         invokerUtil.put(serviceUrl,
-                         data,
-                         responseHandler, function (xhr) {
+                        data,
+                        responseHandler, function (xhr) {
                 responseHandler(xhr.responseText, xhr.statusText, xhr);
             });
     }
@@ -251,11 +251,11 @@ function setWithinAlert(leafletId) {
     } else {
         var data = {
             'parseData': JSON.stringify({
-                'geoFenceGeoJSON': selectedAreaGeoJson,
-                'executionPlanName': createExecutionPlanName(queryName, "WithIn", deviceId),
-                'areaName': areaName,
-                'deviceId' : deviceId
-            }),
+                                            'geoFenceGeoJSON': selectedAreaGeoJson,
+                                            'executionPlanName': createExecutionPlanName(queryName, "WithIn", deviceId),
+                                            'areaName': areaName,
+                                            'deviceId' : deviceId
+                                        }),
             'executionPlan': 'Within',
             'customName': areaName, // TODO: fix , When template copies there can be two queryName and areaName id elements in the DOM
             'queryName': queryName,
@@ -282,8 +282,8 @@ function setWithinAlert(leafletId) {
         invokerUtil.post(serviceUrl,
                          data,
                          responseHandler, function (xhr) {
-                            responseHandler(xhr.responseText, xhr.statusText, xhr);
-        });
+                responseHandler(xhr.responseText, xhr.statusText, xhr);
+            });
     }
 }
 
@@ -320,12 +320,12 @@ function setStationeryAlert(leafletId) {
     } else {
         var data = {
             'parseData': JSON.stringify({
-                'geoFenceGeoJSON': selectedProcessedAreaGeoJson,
-                'executionPlanName': createExecutionPlanName(queryName, "Stationery", deviceId),
-                'stationeryName': stationeryName,
-                'stationeryTime': time,
-                'fluctuationRadius': fluctuationRadius
-            }),
+                                            'geoFenceGeoJSON': selectedProcessedAreaGeoJson,
+                                            'executionPlanName': createExecutionPlanName(queryName, "Stationery", deviceId),
+                                            'stationeryName': stationeryName,
+                                            'stationeryTime': time,
+                                            'fluctuationRadius': fluctuationRadius
+                                        }),
             'stationeryTime': time,
             'fluctuationRadius': fluctuationRadius,
             'executionPlan': 'Stationery',
@@ -431,10 +431,10 @@ function setTrafficAlert(leafletId) {
     } else {
         var data = {
             'parseData': JSON.stringify({
-                'geoFenceGeoJSON': selectedProcessedAreaGeoJson,
-                'executionPlanName': createExecutionPlanName(queryName, "Traffic", deviceId),
-                'areaName': areaName
-            }),
+                                            'geoFenceGeoJSON': selectedProcessedAreaGeoJson,
+                                            'executionPlanName': createExecutionPlanName(queryName, "Traffic", deviceId),
+                                            'areaName': areaName
+                                        }),
             'executionPlan': 'Traffic',
             'customName': areaName, // TODO: fix , When template copies there can be two queryName and areaName id elements in the DOM
             'queryName': queryName,
@@ -487,41 +487,51 @@ function removeGeoFence(geoFenceElement, id) {
                        });
 }
 
-function getAlertsHistory(objectId) {
+function getAlertsHistory(deviceType, deviceId, timeFrom, timeTo) {
+    var timeRange = '';
+    if (timeFrom && timeTo) {
+        timeRange = '?from=' + timeFrom + '&to=' + timeTo;
+    }
+    var serviceUrl = '/api/device-mgt/v1.0/geo-services/alerts/history/' + deviceType + '/' + deviceId + timeRange;
+    invokerUtil.get(serviceUrl,
+                    function (data) {
+                        var alertsContainer = $('#showAlertsArea').empty();
+                        var alerts = JSON.parse(data);
+                        $.each(alerts, function (key, val) {
+                            var alertDOMElement = document.createElement('a'); // Reason for using
+                                                                               // document.createElement
+                                                                               // (performance issue)
+                                                                               // http://stackoverflow.com/questions/268490/jquery-document-createelement-equivalent
+                            switch (val.STATE) {
+                                case "NORMAL":
+//                                       $(alertDOMElement).addClass("list-group-item list-group-item-info");
+                                    return;
+                                case "WARNING":
+                                    $(alertDOMElement).addClass("list-group-item list-group-item-warning");
+                                    break;
+                                case "ALERTED":
+                                    $(alertDOMElement).addClass("list-group-item list-group-item-danger");
+                                    break;
+                                case "OFFLINE":
+                                    $(alertDOMElement).addClass("list-group-item list-group-item-success");
+                                    break;
+                            }
+                            $(alertDOMElement).html(val.INFORMATION);
+                            $(alertDOMElement).css({marginTop: "5px"});
+                            $(alertDOMElement).attr('onClick', 'showAlertInMap(this)');
 
-    $.getJSON("/portal/store/carbon.super/fs/gadget/geo-dashboard/controllers/get_alerts_history.jag?objectId=" + objectId, function (data) {
-        var alertsContainer = $('#showAlertsArea').empty();
-        $.each(data, function (key, val) {
-            var alertDOMElement = document.createElement('a'); // Reason for using document.createElement (performance issue) http://stackoverflow.com/questions/268490/jquery-document-createelement-equivalent
+                            // Set HTML5 data attributes for later use
+                            $(alertDOMElement).attr('data-id', val.ID);
+                            $(alertDOMElement).attr('data-latitude', val.LATITUDE);
+                            $(alertDOMElement).attr('data-longitude', val.LONGITUDE);
+                            $(alertDOMElement).attr('data-state', val.STATE);
+                            $(alertDOMElement).attr('data-information', val.INFORMATION);
 
-            switch (val.STATE) {
-                case "NORMAL":
-//                    $(alertDOMElement).addClass("list-group-item list-group-item-info");
-                    return;
-                case "WARNING":
-                    $(alertDOMElement).addClass("list-group-item list-group-item-warning");
-                    break;
-                case "ALERTED":
-                    $(alertDOMElement).addClass("list-group-item list-group-item-danger");
-                    break;
-                case "OFFLINE":
-                    $(alertDOMElement).addClass("list-group-item list-group-item-success");
-                    break;
-            }
-            $(alertDOMElement).html(val.INFORMATION);
-            $(alertDOMElement).css({marginTop: "5px"});
-            $(alertDOMElement).attr('onClick', 'showAlertInMap(this)');
-
-            // Set HTML5 data attributes for later use
-            $(alertDOMElement).attr('data-id', val.ID);
-            $(alertDOMElement).attr('data-latitude', val.LATITUDE);
-            $(alertDOMElement).attr('data-longitude', val.LONGITUDE);
-            $(alertDOMElement).attr('data-state', val.STATE);
-            $(alertDOMElement).attr('data-information', val.INFORMATION);
-
-            alertsContainer.append(alertDOMElement);
+                            alertsContainer.append(alertDOMElement);
+                        });
+                    }, function (message) {
+            console.log(message);
         });
-    });
 }
 
 
@@ -564,8 +574,8 @@ function setProximityAlert() {
             }
         };
         invokerUtil.put(serviceUrl,
-                         data,
-                         responseHandler, function (xhr) {
+                        data,
+                        responseHandler, function (xhr) {
                 responseHandler(xhr.responseText, xhr.statusText, xhr);
             });
 

@@ -650,7 +650,7 @@ function initializeGeoLocation() {
         var wsEndPoint = geoCharts.data("ws-endpoint");
         wsToken = geoCharts.data("ws-token");
         geoPublicUri = geoCharts.data("geo-public-uri");
-        webSocketURL = wsEndPoint + userDomain + "/org.wso2.geo.FusedSpatialEvent/1.0.0?"
+        webSocketURL = wsEndPoint + userDomain + "/iot.per.device.stream.geo.FusedSpatialEvent/1.0.0?"
                        + "deviceId=" + deviceId + "&deviceType=" + deviceType + "&websocketToken=" + wsToken;
         alertWebSocketURL = wsEndPoint + userDomain + "/org.wso2.geo.AlertsNotifications/1.0.0?"
                             + "deviceId=" + deviceId + "&deviceType=" + deviceType + "&websocketToken=" + wsToken;

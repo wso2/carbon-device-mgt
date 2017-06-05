@@ -40,25 +40,25 @@
 {{/zone}}
 
 <span id="geo-charts" data-ws-endpoint="{{wsEndpoint}}" data-ws-token="{{wsToken}}" data-geo-public-uri="{{@unit.publicUri}}"
-data-device-location="{{lastLocation}}"></span>
+      data-device-location="{{lastLocation}}"></span>
 
 <div class="map-wrapper">
     {{#unless @unit.params.hideSearch}}
-    <div class="navbar-collapse collapse" style="display:inline-block;">
-        <ul class="nav navbar-nav-right">
-            <li>
-                <form id="mapSearch" class="navbar-form" role="search"
-                      onsubmit="focusOnSpatialObject($(this).find('#searchbox').val());return false;">
-                    <div class="form-group has-feedback">
-                        <input autofocus="true" id="searchbox" type="text" placeholder="Search"
-                               class="form-control typeahead">
-                        <span id="searchicon" class="fa fa-search form-control-feedback"></span>
-                    </div>
-                    <input style="visibility: hidden; position: fixed;" type="submit"/>
-                </form>
-            </li>
-        </ul>
-    </div>
+        <div class="navbar-collapse collapse" style="display:inline-block;">
+            <ul class="nav navbar-nav-right">
+                <li>
+                    <form id="mapSearch" class="navbar-form" role="search"
+                          onsubmit="focusOnSpatialObject($(this).find('#searchbox').val());return false;">
+                        <div class="form-group has-feedback">
+                            <input autofocus="true" id="searchbox" type="text" placeholder="Search"
+                                   class="form-control typeahead">
+                            <span id="searchicon" class="fa fa-search form-control-feedback"></span>
+                        </div>
+                        <input style="visibility: hidden; position: fixed;" type="submit"/>
+                    </form>
+                </li>
+            </ul>
+        </div>
     {{/unless}}
 
     <div id="" style="height: 100vh;">
@@ -138,7 +138,7 @@ data-device-location="{{lastLocation}}"></span>
                 <div class="modal-body">
                     <ul class="nav nav-tabs" id="aboutTabs">
                         <li class="active"><a href="#about" data-toggle="tab"><i class="fa fa-question-circle"></i>&nbsp;About
-                            the project</a></li>
+                                                                                                                   the project</a></li>
                         <li><a href="#contact" data-toggle="tab"><i class="fa fa-envelope"></i>&nbsp;Contact us</a></li>
                         <li><a href="#disclaimer" data-toggle="tab"><i class="fa fa-exclamation-circle"></i>&nbsp;Disclaimer</a>
                         </li>
@@ -159,27 +159,27 @@ data-device-location="{{lastLocation}}"></span>
                                     href="http://getbootstrap.com/">Bootstrap 3</a>, <a href="http://leafletjs.com/"
                                                                                         target="_blank">Leaflet</a>, and <a
                                     href="http://twitter.github.io/typeahead.js/" target="_blank">typeahead.js</a>. Open
-                                source, MIT licensed, and available on <a href="https://github.com/bmcbride/bootleaf"
-                                                                          target="_blank">GitHub</a>.</p>
+                               source, MIT licensed, and available on <a href="https://github.com/bmcbride/bootleaf"
+                                                                         target="_blank">GitHub</a>.</p>
 
                             <div class="panel panel-primary">
                                 <div class="panel-heading">Features</div>
                                 <ul class="list-group">
                                     <li class="list-group-item">Fullscreen mobile-friendly map template with responsive
-                                        navbar and modal placeholders
+                                                                navbar and modal placeholders
                                     </li>
                                     <li class="list-group-item">jQuery loading of external GeoJSON files</li>
                                     <li class="list-group-item">Logical multiple layer marker clustering via the <a
                                             href="https://github.com/Leaflet/Leaflet.markercluster" target="_blank">leaflet
-                                        marker cluster plugin</a></li>
+                                                                                                                    marker cluster plugin</a></li>
                                     <li class="list-group-item">Elegant client-side multi-layer feature search with
-                                        autocomplete using <a href="http://twitter.github.io/typeahead.js/" target="_blank">typeahead.js</a>
+                                                                autocomplete using <a href="http://twitter.github.io/typeahead.js/" target="_blank">typeahead.js</a>
                                     </li>
                                     <li class="list-group-item">Responsive sidebar feature list with sorting and filtering
-                                        via <a href="http://listjs.com/" target="_blank">list.js</a></li>
+                                                                via <a href="http://listjs.com/" target="_blank">list.js</a></li>
                                     <li class="list-group-item">Marker icons included in grouped layer control via the <a
                                             href="https://github.com/ismyrnow/Leaflet.groupedlayercontrol" target="_blank">grouped
-                                        layer control plugin</a></li>
+                                                                                                                           layer control plugin</a></li>
                                 </ul>
                             </div>
                         </div>
@@ -187,8 +187,8 @@ data-device-location="{{lastLocation}}"></span>
                             <p>The data provided on this site is for informational and planning purposes only.</p>
 
                             <p>Absolutely no accuracy or completeness guarantee is implied or intended. All information on
-                                this map is subject to such variations and corrections as might result from a complete title
-                                search and/or accurate field survey.</p>
+                               this map is subject to such variations and corrections as might result from a complete title
+                               search and/or accurate field survey.</p>
                         </div>
                         <div class="tab-pane fade" id="contact">
                             <form id="contact-form">
@@ -237,7 +237,7 @@ data-device-location="{{lastLocation}}"></span>
                         <div class="tab-pane fade" id="theaters-tab">
                             <p>Theater data courtesy of <a
                                     href="https://data.cityofnewyork.us/Recreation/Theaters/kdu2-865w" target="_blank">NYC
-                                Department of Information & Telecommunications (DoITT)</a></p>
+                                                                                                                       Department of Information & Telecommunications (DoITT)</a></p>
                         </div>
                         <div class="tab-pane fade" id="museums-tab">
                             <p>Museum data courtesy of <a
@@ -291,11 +291,11 @@ data-device-location="{{lastLocation}}"></span>
                                 <p>A string of the following form:</p>
                                 <pre><code class="javascript"><span class="string">'http://{s}.somedomain.com/blabla/{z}/{x}/{y}.png'</span></code></pre>
                                 <p><code class="javascript">{s}</code> means one of the available subdomains (used
-                                    sequentially to help with browser parallel requests per domain limitation; subdomain
-                                    values are specified in options; <code class="javascript">a</code>, <code
+                                                                       sequentially to help with browser parallel requests per domain limitation; subdomain
+                                                                       values are specified in options; <code class="javascript">a</code>, <code
                                             class="javascript">b</code> or <code class="javascript">c</code> by default, can
-                                    be omitted), <code class="javascript">{z}</code> — zoom level, <code class="javascript">{x}</code>
-                                    and <code class="javascript">{y}</code> — tile coordinates.</p>
+                                                                       be omitted), <code class="javascript">{z}</code> — zoom level, <code class="javascript">{x}</code>
+                                                                       and <code class="javascript">{y}</code> — tile coordinates.</p>
 
                                 <p>You can use custom keys in the template, which will be <a
                                         href="#util-template">evaluated</a> from TileLayer options, like this:</p>
@@ -704,8 +704,12 @@ data-device-location="{{lastLocation}}"></span>
                 });
                 {{#if showGeoFencingTools}}
                     var locationItems = geoLocationLink.closest('li');
-                    var geoToolsMenu = $("<ul/>", {class: 'collapse list-group geo-tools'}).appendTo(locationItems);
+                    var geoToolsMenu = $("<ul/>", {class: 'collapse list-group geo-tools active'}).appendTo(locationItems);
                     geoPublicUri = $("#geo-charts").data("geo-public-uri");
+                    var realtTime = createGeoToolListItem('javascript:enableRealTime()',
+                                                          'Return to Real Time View', 'fw fw-undo', geoToolsMenu);
+                    realtTime.css("display", "none");
+                    realtTime.attr("id", "realTimeShow");
                     createGeoToolListItem(geoPublicUri + '/assets/html_templates/modal/speed_alert.html',
                                           'Set Speed Alert', 'glyphicon glyphicon-dashboard', geoToolsMenu);
                     createGeoToolListItem(geoPublicUri + '/assets/html_templates/modal/stationery_alert.html',

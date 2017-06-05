@@ -297,7 +297,8 @@ function focusOnSpatialObject(objectId) {
         return true;
     }
 
-    map.setView(spatialObject.marker.getLatLng(), zoomLevel, {animate: true}); // TODO: check the map._layersMaxZoom and set the zoom level accordingly
+    map.setView(spatialObject.marker.getLatLng(), zoomLevel, {animate: true});
+    // TODO: check the map._layersMaxZoom and set the zoom level accordingly
 
     $('#objectInfo').find('#objectInfoId').html(selectedSpatialObject);
     spatialObject.marker.openPopup();
@@ -305,7 +306,7 @@ function focusOnSpatialObject(objectId) {
         $('#objectInfo').animate({width: 'toggle'}, 100);
         toggled = true;
     }
-    getAlertsHistory(objectId);
+    getAlertsHistory(deviceType, deviceId, new Date($('#timeFrom').val()).getTime(), new Date($('#timeTo').val()).getTime());
     spatialObject.drawPath();
     setTimeout(function () {
         createChart();
@@ -470,7 +471,7 @@ function focusOnHistorySpatialObject(objectId, timeFrom, timeTo) {
         clearMap();
         var fromDate = new Date(timeFrom);
         var toDate = new Date(timeTo);
-        var tableData = getProviderData(fromDate.valueOf() / 1000, toDate.valueOf() / 1000);
+        var tableData = getProviderData(fromDate.valueOf(), toDate.valueOf());
         for (var i = 0; i < tableData.length; i++) {
             var data = tableData[i];
             var geoMessage = {
@@ -507,7 +508,8 @@ function focusOnHistorySpatialObject(objectId, timeFrom, timeTo) {
             return true;
         }
 
-        map.setView(spatialObject.marker.getLatLng(), zoomLevel, {animate: true}); // TODO: check the map._layersMaxZoom and set the zoom level accordingly
+        map.setView(spatialObject.marker.getLatLng(), zoomLevel, {animate: true});
+        // TODO: check the map._layersMaxZoom and set the zoom level accordingly
 
         $('#objectInfo').find('#objectInfoId').html(selectedSpatialObject);
         spatialObject.marker.openPopup();
@@ -515,7 +517,7 @@ function focusOnHistorySpatialObject(objectId, timeFrom, timeTo) {
             $('#objectInfo').animate({width: 'toggle'}, 100);
             toggled = true;
         }
-        getAlertsHistory(objectId);
+        getAlertsHistory(deviceType, deviceId, new Date($('#timeFrom').val()).getTime(), new Date($('#timeTo').val()).getTime());
         spatialObject.drawPath();
         setTimeout(function () {
             createChart();
@@ -539,4 +541,5 @@ function createGeoToolListItem(link, text, icon, menuRoot) {
     anchor.attr('data-toggle', 'modal');
     anchor.attr('data-target', '#commonModal');
     $("<i/>", {class: icon}).prependTo(anchor);
+    return listItem;
 }

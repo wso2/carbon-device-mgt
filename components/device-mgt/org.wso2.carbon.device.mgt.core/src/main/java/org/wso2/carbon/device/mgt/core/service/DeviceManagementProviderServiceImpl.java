@@ -351,8 +351,6 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                 }
                 return false;
             }
-            DeviceType deviceType = deviceTypeDAO.getDeviceType(device.getType(), tenantId);
-
             device.getEnrolmentInfo().setDateOfLastUpdate(new Date().getTime());
             device.getEnrolmentInfo().setStatus(EnrolmentInfo.Status.REMOVED);
             enrollmentDAO.updateEnrollment(device.getId(), device.getEnrolmentInfo(), tenantId);
@@ -2052,21 +2050,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         return CarbonContext.getThreadLocalCarbonContext().getTenantId();
     }
 
-//    private int getTenantId(String tenantDomain) throws DeviceManagementException {
-//        RealmService realmService =
-//                (RealmService) PrivilegedCarbonContext.getThreadLocalCarbonContext().getOSGiService(RealmService.class, null);
-//        if (realmService == null) {
-//            throw new IllegalStateException("");
-//        }
-//        try {
-//            return realmService.getTenantManager().getTenantId(tenantDomain);
-//        } catch (UserStoreException e) {
-//            throw new DeviceManagementException("");
-//        }
-//    }
-
     private DeviceManager getDeviceManager(String deviceType) {
-
         DeviceManagementService deviceManagementService =
                 pluginRepository.getDeviceManagementService(deviceType, this.getTenantId());
         if (deviceManagementService == null) {

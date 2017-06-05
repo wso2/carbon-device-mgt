@@ -77,4 +77,7 @@ public class TestDeviceManagementService implements DeviceManagementService {
         return null;
     }
 
+    public DeviceStatusTaskPluginConfig getDeviceStatusTaskPluginConfig() {
+        return null;
+    }
 }

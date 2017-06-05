@@ -45,7 +45,7 @@ public interface DeviceTaskManager {
 //    String getTaskImplementedClazz() throws DeviceMgtTaskException;
 
     /**
-     * This method checks wheather task is enabled in config file.
+     * This method checks whether task is enabled in config file.
      * @return - return true or false
      * @throws DeviceMgtTaskException
      */
@@ -67,7 +67,7 @@ public interface DeviceTaskManager {
 //    List<String> getValidOperationNames(String deviceType) throws DeviceMgtTaskException;
 
     /**
-     * This method will check wheather give operation is added by the task.
+     * This method will check whether given operation is added by the task.
      * @param opName - Operation name
      * @return - true or false
      * @throws DeviceMgtTaskException

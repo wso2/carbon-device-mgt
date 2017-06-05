@@ -56,6 +56,7 @@ import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -146,6 +147,31 @@ public final class DeviceManagerUtil {
             DeviceManagementDAOFactory.closeConnection();
         }
         return status;
+    }
+
+    /**
+     * Get the DeviceType information from Database.
+     *
+     * @param typeName device type
+     * @param tenantId provider tenant Id
+     * @return DeviceType which contains info about the device-type.
+     */
+    public static DeviceType getDeviceType(String typeName, int tenantId) throws DeviceManagementException {
+        DeviceType deviceType = null;
+        try {
+            DeviceManagementDAOFactory.openConnection();
+            DeviceTypeDAO deviceTypeDAO = DeviceManagementDAOFactory.getDeviceTypeDAO();
+            deviceType = deviceTypeDAO.getDeviceType(typeName, tenantId);
+        } catch (DeviceManagementDAOException e) {
+            throw new DeviceManagementException("Error occurred while fetching the device type '"
+                    + typeName + "'", e);
+        } catch (SQLException e) {
+            throw new DeviceManagementException("Error occurred while fetching the device type '"
+                    + typeName + "'", e);
+        } finally {
+            DeviceManagementDAOFactory.closeConnection();
+        }
+        return deviceType;
     }
 
     /**

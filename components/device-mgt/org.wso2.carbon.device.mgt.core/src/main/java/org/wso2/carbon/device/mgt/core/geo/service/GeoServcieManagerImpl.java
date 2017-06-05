@@ -129,7 +129,6 @@ public class GeoServcieManagerImpl implements GeoService {
                 Object contentObj = resource.getContent();
                 if (contentObj instanceof String[]) {
                     String[] content = (String[]) contentObj;
-                    Gson gson = new Gson();
                     for (String res : content) {
                         Resource childRes = registry.get(res);
                         Properties props = childRes.getProperties();
@@ -437,7 +436,6 @@ public class GeoServcieManagerImpl implements GeoService {
 
                 if (contentObj instanceof String[]) {
                     String[] content = (String[]) contentObj;
-                    Gson gson = new Gson();
                     for (String res : content) {
                         Resource childRes = registry.get(res);
                         Properties props = childRes.getProperties();
@@ -488,7 +486,6 @@ public class GeoServcieManagerImpl implements GeoService {
                 Object contentObj = resource.getContent();
                 if (contentObj instanceof String[]) {
                     String[] content = (String[]) contentObj;
-                    Gson gson = new Gson();
                     for (String res : content) {
                         Resource childRes = registry.get(res);
                         Properties props = childRes.getProperties();

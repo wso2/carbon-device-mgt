@@ -1899,6 +1899,7 @@
 
         <commons-io.version>2.4.0.wso2v1</commons-io.version>
         <commons-collections.version>3.2.0.wso2v1</commons-collections.version>
+        <commons-collections.version.range>(3.2.0, 3.3.0]</commons-collections.version.range>
         <commons-configuration.version>1.8</commons-configuration.version>
 
         <!--Tomcat version-->

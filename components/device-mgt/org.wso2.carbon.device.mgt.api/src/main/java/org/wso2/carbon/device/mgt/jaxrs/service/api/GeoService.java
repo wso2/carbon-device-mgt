@@ -340,6 +340,74 @@ public interface GeoService {
                     required = true)
             @PathParam("executionPlanType") String executionPlanType);
 
+    /**
+     * Retrieve Geo alerts history
+     */
+    @GET
+    @Path("alerts/history/{deviceType}/{deviceId}")
+    @ApiOperation(
+            consumes = "application/json",
+            produces = "application/json",
+            httpMethod = "GET",
+            value = "Retrieve Geo alerts history for the device",
+            notes = "",
+            response = Response.class,
+            tags = "Geo Service Management",
+            extensions = {
+                    @Extension(properties = {
+                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:geo-service:analytics")
+                    })
+            }
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    code = 200,
+                    message = "OK.",
+                    response = Response.class,
+                    responseHeaders = {
+                            @ResponseHeader(
+                                    name = "Content-Type",
+                                    description = "The content type of the body"),
+                            @ResponseHeader(
+                                    name = "Last-Modified",
+                                    description = "Date and time the resource was last modified.\n" +
+                                            "Used by caches, or in conditional requests.")
+                    }),
+            @ApiResponse(
+                    code = 400,
+                    message = "Bad Request. \n Invalid Device Identifiers found.",
+                    response = Response.class),
+            @ApiResponse(
+                    code = 401,
+                    message = "Unauthorized. \n Unauthorized request."),
+            @ApiResponse(
+                    code = 500,
+                    message = "Internal Server Error. \n Error on retrieving stats",
+                    response = Response.class)
+    })
+    Response getGeoAlertsHistory(
+            @ApiParam(
+                    name = "deviceId",
+                    value = "The registered device Id.",
+                    required = true)
+            @PathParam("deviceId") String deviceId,
+            @ApiParam(
+                    name = "device-type",
+                    value = "The device type, such as ios, android or windows.",
+                    required = true)
+            @PathParam("deviceType")
+            @Size(max = 45)
+                    String deviceType,
+            @ApiParam(
+                    name = "from",
+            value = "Get stats from what time",
+            required = true)
+            @QueryParam("from") long from,
+            @ApiParam(
+                    name = "to",
+                    value = "Get stats up to what time",
+                    required = true)
+            @QueryParam("to") long to);
 
     @DELETE
     @Path("alerts/{executionPlanType}/{deviceType}/{deviceId}")

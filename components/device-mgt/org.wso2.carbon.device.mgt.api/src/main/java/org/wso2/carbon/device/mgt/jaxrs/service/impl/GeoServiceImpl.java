@@ -73,7 +73,7 @@ public class GeoServiceImpl implements GeoService {
     public Response getGeoDeviceStats(@PathParam("deviceId") String deviceId,
                                       @PathParam("deviceType") String deviceType,
                                       @QueryParam("from") long from, @QueryParam("to") long to) {
-        String tableName = "ORG_WSO2_GEO_FUSEDSPATIALEVENT";
+        String tableName = "IOT_PER_DEVICE_STREAM_GEO_FUSEDSPATIALEVENT";
         String fromDate = String.valueOf(from);
         String toDate = String.valueOf(to);
         String query = "id:" + deviceId + " AND type:" + deviceType;
@@ -262,6 +262,56 @@ public class GeoServiceImpl implements GeoService {
             String error = "Error occurred while getting the geo alerts for " + deviceType + " with id: " + deviceId;
             log.error(error, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(error).build();
+        }
+    }
+
+    @Path("alerts/history/{deviceType}/{deviceId}")
+    @GET
+    @Consumes("application/json")
+    @Produces("application/json")
+    public Response getGeoAlertsHistory(@PathParam("deviceId") String deviceId,
+                                        @PathParam("deviceType") String deviceType,
+                                        @QueryParam("from") long from, @QueryParam("to") long to) {
+        String tableName = "IOT_PER_DEVICE_STREAM_GEO_ALERTNOTIFICATIONS";
+        String fromDate = String.valueOf(from);
+        String toDate = String.valueOf(to);
+        String query = "id:" + deviceId + " AND type:" + deviceType;
+        if (from != 0 || to != 0) {
+            query += " AND timeStamp : [" + fromDate + " TO " + toDate + "]";
+        }
+        try {
+            if (!DeviceMgtAPIUtils.getDeviceAccessAuthorizationService().isUserAuthorized(
+                    new DeviceIdentifier(deviceId, deviceType),
+                    DeviceGroupConstants.Permissions.DEFAULT_STATS_MONITOR_PERMISSIONS)) {
+                return Response.status(Response.Status.UNAUTHORIZED.getStatusCode()).build();
+            }
+            List<SortByField> sortByFields = new ArrayList<>();
+            SortByField sortByField = new SortByField("timeStamp", SortType.ASC);
+            sortByFields.add(sortByField);
+
+            // this is the user who initiates the request
+            String authorizedUser = MultitenantUtils.getTenantAwareUsername(
+                    CarbonContext.getThreadLocalCarbonContext().getUsername());
+
+            try {
+                String tenantDomain = MultitenantUtils.getTenantDomain(authorizedUser);
+                int tenantId = DeviceMgtAPIUtils.getRealmService().getTenantManager().getTenantId(tenantDomain);
+                AnalyticsDataAPI analyticsDataAPI = DeviceMgtAPIUtils.getAnalyticsDataAPI();
+                List<SearchResultEntry> searchResults = analyticsDataAPI.search(tenantId, tableName, query,
+                                                                                0,
+                                                                                100,
+                                                                                sortByFields);
+                List<Event> events = getEventBeans(analyticsDataAPI, tenantId, tableName, new ArrayList<String>(),
+                                                   searchResults);
+                return Response.ok().entity(events).build();
+            } catch (AnalyticsException | UserStoreException e) {
+                log.error("Failed to perform search on table: " + tableName + " : " + e.getMessage(), e);
+                throw DeviceMgtUtil.buildBadRequestException(
+                        Constants.ErrorMessages.STATUS_BAD_REQUEST_MESSAGE_DEFAULT);
+            }
+        } catch (DeviceAccessAuthorizationException e) {
+            log.error(e.getErrorMessage());
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()).build();
         }
     }
 

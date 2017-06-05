@@ -1,0 +1,30 @@
+{
+    "name": "org.wso2.iot.LocationStream",
+    "version": "1.0.0",
+    "nickName": "",
+    "description": "IoT Server Location Stream",
+    "metaData": [
+        {
+            "name": "deviceId",
+            "type": "STRING"
+        },
+        {
+            "name": "deviceType",
+            "type": "STRING"
+        }
+    ],
+    "payloadData": [
+        {
+            "name": "timeStamp",
+            "type": "LONG"
+        },
+        {
+            "name": "latitude",
+            "type": "DOUBLE"
+        },
+        {
+            "name": "longitude",
+            "type": "DOUBLE"
+        }
+    ]
+}

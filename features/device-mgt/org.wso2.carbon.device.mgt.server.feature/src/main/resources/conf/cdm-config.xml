@@ -66,5 +66,8 @@
         <ActivityListPageSize>20</ActivityListPageSize>
         <OperationListPageSize>20</OperationListPageSize>
     </PaginationConfiguration>
+    <GeoLocationConfiguration>
+        <PublishLocationOperationResponse>true</PublishLocationOperationResponse>
+    </GeoLocationConfiguration>
 </DeviceMgtConfiguration>
 

@@ -34,6 +34,10 @@
     <url>http://wso2.org</url>
 
     <dependencies>
+        <dependency>
+            <groupId>org.wso2.carbon.devicemgt</groupId>
+            <artifactId>org.wso2.carbon.identity.authenticator.backend.oauth</artifactId>
+        </dependency>
 		<dependency>
 			<groupId>commons-codec.wso2</groupId>
 			<artifactId>commons-codec</artifactId>
@@ -87,13 +91,17 @@
                             org.wso2.carbon.device.mgt.oauth.extensions.*
                         </Export-Package>
                         <Import-Package>
+                            org.wso2.carbon.identity.authenticator.backend.oauth.*,
 							org.wso2.carbon.identity.oauth2.grant.jwt;version="${carbon.identity.jwt.grant.version.range}",
+                            org.apache.commons.lang.StringUtils,
                             org.apache.commons.logging,
                             org.osgi.service.component,
                             org.wso2.carbon.identity.application.common.model;version="${carbon.identity.framework.version.range}",
+                            org.wso2.carbon.identity.application.common.IdentityApplicationManagementException;version="${carbon.identity.framework.version.range}",
                             org.wso2.carbon.user.api,
                             org.wso2.carbon.user.core.service,
                             org.wso2.carbon.user.core.tenant,
+                            org.wso2.carbon.user.core.util,
                             org.json.simple,
                             javax.cache,
                             org.wso2.carbon.identity.core.util;version="${carbon.identity.framework.version.range}",

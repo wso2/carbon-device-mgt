@@ -224,6 +224,7 @@ function loadDevices(searchType, searchParam) {
         return true;
     }
 
+    // Read "analyticsView" from config.json and return value if exists
     function getAnalyticsView(type) {
         var deviceTypes = deviceListing.data("deviceTypes");
         for (var i = 0; i < deviceTypes.length; i++) {
@@ -347,6 +348,7 @@ function loadDevices(searchType, searchParam) {
 
                     if (analyticsEnabled(row.deviceType)) {
 
+                        // redirecting to respective analytics view depending on device configs
                         switch (getAnalyticsView(deviceType)) {
                             case "DAS" : { statURL =portalUrl + "/portal/t/"+ userDomain+ "/dashboards/android-iot/battery?owner=" +currentUser+"&deviceId=";break;}
                             default : {statURL=context+ "/device/" + row.deviceType +"/analytics?deviceId="}

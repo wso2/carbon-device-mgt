@@ -86,12 +86,8 @@ function onRequest(context) {
     var serverUrl = mdmProps["httpsURL"];
     var portalUrl = mdmProps["portalURL"];
     var userDomain = context.user.domain;
-    //var userName = context.user.username;
-
     viewModel.serverUrl = serverUrl;
     viewModel.portalUrl = portalUrl;
     viewModel.userDomain = userDomain;
-    //viewModel.userName = userName;
-
     return viewModel;
 }

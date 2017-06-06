@@ -158,6 +158,54 @@ public class GeoServcieManagerImpl implements GeoService {
     }
 
     @Override
+    public List<GeoFence> getExitAlerts(DeviceIdentifier identifier) throws GeoServiceException {
+
+        Registry registry = getGovernanceRegistry();
+        String registryPath = GeoServices.REGISTRY_PATH_FOR_ALERTS +
+                GeoServices.EXECUTION_PLAN_TYPE_EXIT + "/" + identifier.getId() + "/";
+        Resource resource;
+        try {
+            resource = registry.get(registryPath);
+        } catch (RegistryException e) {
+            log.error("Error while reading the registry path: " + registryPath);
+            return null;
+        }
+
+        try {
+            List<GeoFence> fences = new ArrayList<>();
+            if (resource != null) {
+                Object contentObj = resource.getContent();
+                if (contentObj instanceof String[]) {
+                    String[] content = (String[]) contentObj;
+                    for (String res : content) {
+                        Resource childRes = registry.get(res);
+                        Properties props = childRes.getProperties();
+
+                        GeoFence geoFence = new GeoFence();
+
+                        InputStream inputStream = childRes.getContentStream();
+                        StringWriter writer = new StringWriter();
+                        IOUtils.copy(inputStream, writer, "UTF-8");
+                        geoFence.setGeoJson(writer.toString());
+
+                        List queryNameObj = (List) props.get(GeoServices.QUERY_NAME);
+                        geoFence.setQueryName(queryNameObj != null ? queryNameObj.get(0).toString() : null);
+                        List areaNameObj = (List) props.get(GeoServices.AREA_NAME);
+                        geoFence.setAreaName(areaNameObj != null ? areaNameObj.get(0).toString() : null);
+                        geoFence.setCreatedTime(childRes.getCreatedTime().getTime());
+                        fences.add(geoFence);
+                    }
+                }
+            }
+            return fences;
+        } catch (RegistryException | IOException e) {
+            throw new GeoServiceException(
+                    "Error occurred while getting the geo alerts for " + identifier.getType() + " with id: " +
+                            identifier.getId(), e);
+        }
+    }
+
+    @Override
     public boolean createGeoAlert(Alert alert, DeviceIdentifier identifier, String executionPlanType)
             throws GeoServiceException {
         return saveGeoAlert(alert, identifier, executionPlanType, false);
@@ -181,6 +229,11 @@ public class GeoServcieManagerImpl implements GeoService {
         Object content = null;
 
         if (GeoServices.EXECUTION_PLAN_TYPE_WITHIN.equals(executionPlanType)) {
+            options.put(GeoServices.QUERY_NAME, alert.getQueryName());
+            options.put(GeoServices.AREA_NAME, alert.getCustomName());
+            content = parseMap.get(GeoServices.GEO_FENCE_GEO_JSON);
+
+        } else if (GeoServices.EXECUTION_PLAN_TYPE_EXIT.equals(executionPlanType)) {
             options.put(GeoServices.QUERY_NAME, alert.getQueryName());
             options.put(GeoServices.AREA_NAME, alert.getCustomName());
             content = parseMap.get(GeoServices.GEO_FENCE_GEO_JSON);

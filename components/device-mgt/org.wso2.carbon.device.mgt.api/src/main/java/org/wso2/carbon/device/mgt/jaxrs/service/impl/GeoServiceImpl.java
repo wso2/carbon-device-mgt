@@ -244,6 +244,9 @@ public class GeoServiceImpl implements GeoService {
             if (GeoServices.EXECUTION_PLAN_TYPE_WITHIN.equals(executionPlanType)) {
                 List<GeoFence> alerts = geoService.getWithinAlerts(identifier);
                 return Response.ok().entity(alerts).build();
+            } else if (GeoServices.EXECUTION_PLAN_TYPE_EXIT.equals(executionPlanType)) {
+                List<GeoFence> alerts = geoService.getExitAlerts(identifier);
+                return Response.ok().entity(alerts).build();
             } else if (GeoServices.EXECUTION_PLAN_TYPE_SPEED.equals(executionPlanType)) {
                 String result = geoService.getSpeedAlerts(identifier);
                 return Response.ok().entity(result).build();

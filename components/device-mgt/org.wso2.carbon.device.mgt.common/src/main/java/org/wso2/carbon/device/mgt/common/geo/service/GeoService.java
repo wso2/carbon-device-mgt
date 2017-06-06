@@ -30,6 +30,8 @@ public interface GeoService {
 
     List<GeoFence> getWithinAlerts(DeviceIdentifier identifier) throws GeoServiceException;
 
+    List<GeoFence> getExitAlerts(DeviceIdentifier identifier) throws GeoServiceException;
+
     boolean createGeoAlert(Alert alert, DeviceIdentifier identifier, String executionPlanType)
             throws GeoServiceException;
 

@@ -101,6 +101,7 @@ public final class DeviceManagementConstants {
 
         public static final String EXECUTION_PLAN_TYPE_SPEED = "Speed";
         public static final String EXECUTION_PLAN_TYPE_WITHIN = "Within";
+        public static final String EXECUTION_PLAN_TYPE_EXIT = "Exit";
         public static final String EXECUTION_PLAN_TYPE_PROXIMITY = "Proximity";
         public static final String EXECUTION_PLAN_TYPE_STATIONARY = "Stationery";
         public static final String EXECUTION_PLAN_TYPE_TRAFFIC = "Traffic";

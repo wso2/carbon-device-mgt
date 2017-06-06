@@ -2211,7 +2211,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     }
 
     @Override
-    public void updatePullNotificationOperation(DeviceIdentifier deviceIdentifier, Operation operation)
+    public void notifyPullNotificationSubscriber(DeviceIdentifier deviceIdentifier, Operation operation)
             throws PullNotificationExecutionFailedException {
         DeviceManagementService dms =
                 pluginRepository.getDeviceManagementService(deviceIdentifier.getType(), this.getTenantId());

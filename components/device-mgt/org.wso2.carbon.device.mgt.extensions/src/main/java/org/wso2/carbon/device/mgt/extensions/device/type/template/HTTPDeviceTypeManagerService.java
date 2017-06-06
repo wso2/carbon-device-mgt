@@ -42,8 +42,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * This is the template for device type manager service. This will create and instance of device management service
- * through the json payload.
+ * This inherits the capabiliy that is provided through the file based device type manager service.
+ * This will create and instance of device management service through a json payload.
  */
 public class HTTPDeviceTypeManagerService extends DeviceTypeManagerService implements DeviceTypeDefinitionProvider {
 
@@ -174,7 +174,7 @@ public class HTTPDeviceTypeManagerService extends DeviceTypeManagerService imple
     }
 
     @Override
-    public DeviceTypeMetaDefinition getDeviceTypeMeta() {
+    public DeviceTypeMetaDefinition getDeviceTypeMetaDefinition() {
         return deviceTypeMetaDefinition;
     }
 }

@@ -202,11 +202,12 @@ $(document).ready(function () {
 		$('div[name^="deviceFeature"]').each(function() {
 			var featureName = $(this).find("#feature-name").val();
 			var featureCode = $(this).find("#feature-code").val();
+			var featureDescription = $(this).find("#feature-description").val();
 			if (featureName && featureName.trim() != "" && featureCode && featureCode.trim() != "") {
 				var feature = {};
 				feature.name = featureName.trim();
 				feature.code = featureCode.trim();
-				feature.description = $("#feature-description").val();
+				feature.description = featureDescription.trim();
 				features.push(feature);
 			}
 		});

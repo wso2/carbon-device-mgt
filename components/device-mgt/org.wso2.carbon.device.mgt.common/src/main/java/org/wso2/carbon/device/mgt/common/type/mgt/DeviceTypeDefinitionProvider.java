@@ -20,6 +20,6 @@ package org.wso2.carbon.device.mgt.common.type.mgt;
 
 public interface DeviceTypeDefinitionProvider {
 
-    DeviceTypeMetaDefinition getDeviceTypeMeta();
+    DeviceTypeMetaDefinition getDeviceTypeMetaDefinition();
 
 }

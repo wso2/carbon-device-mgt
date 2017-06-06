@@ -352,9 +352,9 @@ public interface DeviceManagementProviderService {
     List<DeviceType> getDeviceTypes() throws DeviceManagementException;
 
     /**
-     * This retrieves the device pull notification payload and passes to device type executor.
+     * This retrieves the device pull notification payload and passes to device type pull notification subscriber.
      * @throws PullNotificationExecutionFailedException
      */
-    void updatePullNotificationOperation(DeviceIdentifier deviceIdentifier, Operation operation)
+    void notifyPullNotificationSubscriber(DeviceIdentifier deviceIdentifier, Operation operation)
             throws PullNotificationExecutionFailedException;
 }

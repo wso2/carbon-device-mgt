@@ -89,7 +89,7 @@ public class DeviceManagementPluginRepository implements DeviceManagerStartupLis
                     DeviceTypeServiceIdentifier deviceTypeIdentifier = new DeviceTypeServiceIdentifier(
                             provider.getType());
                     DeviceManagementServiceHolder existingProvider = providers.get(deviceTypeIdentifier);
-                    deviceTypeDefinition = ((DeviceTypeDefinitionProvider) provider).getDeviceTypeMeta();
+                    deviceTypeDefinition = ((DeviceTypeDefinitionProvider) provider).getDeviceTypeMetaDefinition();
                     if (existingProvider != null && !(existingProvider.getDeviceManagementService()
                             instanceof DeviceTypeDefinitionProvider)) {
                         throw new DeviceManagementException("Definition of device type " + provider.getType()
@@ -207,7 +207,7 @@ public class DeviceManagementPluginRepository implements DeviceManagerStartupLis
                             Gson gson = new Gson();
                             String dbStoredDefinition = gson.toJson(deviceTypeMetaDefinition);
                             deviceTypeMetaDefinition = ((DeviceTypeDefinitionProvider)
-                                    provider.getDeviceManagementService()).getDeviceTypeMeta();
+                                    provider.getDeviceManagementService()).getDeviceTypeMetaDefinition();
                             String cachedDefinition = gson.toJson(deviceTypeMetaDefinition);
                             if (!cachedDefinition.equals(dbStoredDefinition)) {
                                 HTTPDeviceTypeManagerService deviceTypeManagerService = new HTTPDeviceTypeManagerService
@@ -378,7 +378,7 @@ public class DeviceManagementPluginRepository implements DeviceManagerStartupLis
                     int tenantId = DeviceManagerUtil.getTenantId(provisioningConfig.getProviderTenantDomain());
                     DeviceTypeMetaDefinition deviceTypeDefinition = null;
                     if (provider instanceof DeviceTypeDefinitionProvider) {
-                        deviceTypeDefinition = ((DeviceTypeDefinitionProvider) provider).getDeviceTypeMeta();
+                        deviceTypeDefinition = ((DeviceTypeDefinitionProvider) provider).getDeviceTypeMetaDefinition();
 
                         DeviceTypeServiceIdentifier deviceTypeIdentifier = new DeviceTypeServiceIdentifier(
                                 provider.getType(), tenantId);

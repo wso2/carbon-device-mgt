@@ -47,6 +47,8 @@ import org.wso2.carbon.device.mgt.common.search.SearchContext;
 import org.wso2.carbon.device.mgt.core.app.mgt.ApplicationManagementProviderService;
 import org.wso2.carbon.device.mgt.core.device.details.mgt.DeviceDetailsMgtException;
 import org.wso2.carbon.device.mgt.core.device.details.mgt.DeviceInformationManager;
+import org.wso2.carbon.device.mgt.core.operation.mgt.CommandOperation;
+import org.wso2.carbon.device.mgt.core.operation.mgt.ConfigOperation;
 import org.wso2.carbon.device.mgt.core.search.mgt.SearchManagerService;
 import org.wso2.carbon.device.mgt.core.search.mgt.SearchMgtException;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
@@ -62,6 +64,7 @@ import org.wso2.carbon.policy.mgt.common.PolicyManagementException;
 import org.wso2.carbon.policy.mgt.core.PolicyManagerService;
 import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 
+import javax.security.auth.login.Configuration;
 import javax.validation.Valid;
 import javax.validation.constraints.Size;
 import javax.ws.rs.Consumes;
@@ -88,6 +91,7 @@ import java.util.List;
 public class DeviceManagementServiceImpl implements DeviceManagementService {
 
     private static final Log log = LogFactory.getLog(DeviceManagementServiceImpl.class);
+    public static final String DATE_FORMAT_NOW = "yyyy-MM-dd HH:mm:ss";
 
     @GET
     @Path("/{type}/{id}/status")
@@ -100,7 +104,7 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
             if (result) {
                 return Response.status(Response.Status.OK).build();
             } else {
-                return Response.status(Response.Status.NOT_FOUND).build();
+                return Response.status(Response.Status.NO_CONTENT).build();
             }
         } catch (DeviceManagementException e) {
             String msg = "Error occurred while checking enrollment status of the device.";
@@ -558,7 +562,7 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
         RequestValidationUtil.validateDeviceIdentifier(type, id);
         PolicyManagerService policyManagementService = DeviceMgtAPIUtils.getPolicyManagementService();
         Policy policy;
-        NonComplianceData complianceData = null;
+        NonComplianceData complianceData;
         DeviceCompliance deviceCompliance = new DeviceCompliance();
 
         try {
@@ -650,8 +654,28 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
                     deviceIdentifier.setType(type);
                     deviceIdentifiers.add(deviceIdentifier);
                 }
-                Activity activity = DeviceMgtAPIUtils.getDeviceManagementService().addOperation(type
-                        , operationRequest.getOperation(), deviceIdentifiers);
+                Operation operation;
+                if (operationType == Operation.Type.COMMAND) {
+                    Operation commandOperation = operationRequest.getOperation();
+                    operation = new CommandOperation();
+                    operation.setType(Operation.Type.COMMAND);
+                    operation.setCode(commandOperation.getCode());
+                    operation.setEnabled(commandOperation.isEnabled());
+                    operation.setStatus(commandOperation.getStatus());
+
+                } else {
+                    Operation configOperation = operationRequest.getOperation();
+                    operation = new ConfigOperation();
+                    operation.setType(Operation.Type.CONFIG);
+                    operation.setCode(configOperation.getCode());
+                    operation.setEnabled(configOperation.isEnabled());
+                    operation.setPayLoad(configOperation.getPayLoad());
+                    operation.setStatus(configOperation.getStatus());
+                }
+                String date = new SimpleDateFormat(DATE_FORMAT_NOW).format(new Date());
+                operation.setCreatedTimeStamp(date);
+                Activity activity = DeviceMgtAPIUtils.getDeviceManagementService().addOperation(type, operation,
+                                                                                       deviceIdentifiers);
                 return Response.status(Response.Status.CREATED).entity(activity).build();
             } else {
                 String message = "Only Command and Config operation is supported through this api";

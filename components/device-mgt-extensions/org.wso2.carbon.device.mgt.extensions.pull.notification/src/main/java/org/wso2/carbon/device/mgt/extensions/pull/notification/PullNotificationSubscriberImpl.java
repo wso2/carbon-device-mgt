@@ -87,13 +87,7 @@ public class PullNotificationSubscriberImpl implements PullNotificationSubscribe
             return null;
         }
         // Parsing json string to get compliance features.
-        JsonElement jsonElement;
-        if (compliancePayloadString instanceof String) {
-            jsonElement = new JsonParser().parse(compliancePayloadString);
-        } else {
-            throw new PolicyComplianceException("Invalid policy compliance payload");
-        }
-
+        JsonElement jsonElement = new JsonParser().parse(compliancePayloadString);
         JsonArray jsonArray = jsonElement.getAsJsonArray();
         Gson gson = new Gson();
         ComplianceFeature complianceFeature;

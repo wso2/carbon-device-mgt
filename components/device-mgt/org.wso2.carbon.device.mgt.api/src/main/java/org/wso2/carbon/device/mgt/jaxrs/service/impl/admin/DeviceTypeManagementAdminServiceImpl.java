@@ -74,7 +74,7 @@ public class DeviceTypeManagementAdminServiceImpl implements DeviceTypeManagemen
                 DeviceMgtAPIUtils.getDeviceManagementService().registerDeviceType(httpDeviceTypeManagerService);
                 return Response.status(Response.Status.OK).build();
             } catch (DeviceManagementException e) {
-                String msg = "Error occurred at server side while fetching device list.";
+                String msg = "Error occurred at server side while adding a device type.";
                 log.error(msg, e);
                 return Response.serverError().entity(msg).build();
             }
@@ -97,7 +97,7 @@ public class DeviceTypeManagementAdminServiceImpl implements DeviceTypeManagemen
                 DeviceMgtAPIUtils.getDeviceManagementService().registerDeviceType(httpDeviceTypeManagerService);
                 return Response.status(Response.Status.OK).build();
             } catch (DeviceManagementException e) {
-                String msg = "Error occurred at server side while fetching device list.";
+                String msg = "Error occurred at server side while updating the device type.";
                 log.error(msg, e);
                 return Response.serverError().entity(msg).build();
             }

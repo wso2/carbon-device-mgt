@@ -245,7 +245,7 @@ public class DeviceAgentServiceImpl implements DeviceAgentService {
 
                     }
                     if (payload.size() != attributes.size()) {
-                        String msg = "payload does not match the stream definition";
+                        String msg = "payload does not match with the stream definition";
                         return Response.status(Response.Status.BAD_REQUEST).entity(msg).build();
                     }
                     eventAttributeList = new EventAttributeList();

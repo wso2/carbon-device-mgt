@@ -310,7 +310,7 @@ function updateDrawing(updatedGeoJson) {
 function viewFence(geoFenceElement,id) {
     var geoJson = $(geoFenceElement).attr('data-geoJson');
     var matchResults = /(?:"geoFenceGeoJSON"):"{(.*)}"/g.exec(geoJson);
-    if (matchResults.length > 1) {
+    if (matchResults && matchResults.length > 1) {
         geoJson = "{" + matchResults[1] + "}";
     }
     geoJson = JSON.parse(geoJson.replace(/'/g, '"'));

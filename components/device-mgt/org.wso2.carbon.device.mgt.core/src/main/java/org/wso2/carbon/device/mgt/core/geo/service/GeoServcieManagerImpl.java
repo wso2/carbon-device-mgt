@@ -227,7 +227,14 @@ public class GeoServcieManagerImpl implements GeoService {
                     eventprocessorStub.deployExecutionPlan(parsedTemplate);
                 }
             } else {
-                log.error("Execution plan validation failed: " + validationResponse);
+                if (validationResponse.startsWith(
+                        "'within' is neither a function extension nor an aggregated attribute extension"
+                )) {
+                    log.error("GPL Siddhi Geo Extension is not configured. Please execute maven script " +
+                                      "`siddhi-geo-extention-deployer.xml` in $IOT_HOME/analytics/scripts");
+                } else {
+                    log.error("Execution plan validation failed: " + validationResponse);
+                }
                 throw new GeoServiceException(
                         "Error occurred while " + action + " geo " + executionPlanType + " alert for " +
                                 identifier.getType() + " with id: " + identifier.getId());
@@ -235,13 +242,13 @@ public class GeoServcieManagerImpl implements GeoService {
             return true;
         } catch (AxisFault axisFault) {
             throw new GeoServiceException(
-                    "Event processor admin service stub initialization failed while " + action + " geo alert '" +
+                    "Event processor admin service initialization failed while " + action + " geo alert '" +
                             executionPlanType + "' for " + identifier.getType() + " " +
                             "device with id: " + identifier.getId(), axisFault
             );
         } catch (IOException e) {
             throw new GeoServiceException(
-                    "Event processor admin service stub invocation failed while " + action + " geo alert '" +
+                    "Event processor admin service failed while " + action + " geo alert '" +
                             executionPlanType + "' for " + identifier.getType() + " " +
                             "device with id: " + identifier.getId(), e);
         } catch (JWTClientException e) {

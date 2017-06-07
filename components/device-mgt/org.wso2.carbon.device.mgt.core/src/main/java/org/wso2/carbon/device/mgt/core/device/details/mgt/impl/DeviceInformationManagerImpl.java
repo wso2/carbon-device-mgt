@@ -55,7 +55,7 @@ public class DeviceInformationManagerImpl implements DeviceInformationManager {
     public void addDeviceInfo(DeviceIdentifier deviceId, DeviceInfo deviceInfo) throws DeviceDetailsMgtException {
         try {
             Device device = DeviceManagementDataHolder.getInstance().
-                    getDeviceManagementProvider().getDevice(deviceId);
+                    getDeviceManagementProvider().getDevice(deviceId, false);
 
             DeviceManagementDAOFactory.beginTransaction();
             deviceDAO.updateDevice(device, CarbonContext.getThreadLocalCarbonContext().getTenantId());
@@ -87,7 +87,7 @@ public class DeviceInformationManagerImpl implements DeviceInformationManager {
         Device device;
         try {
             device = DeviceManagementDataHolder.getInstance().
-                    getDeviceManagementProvider().getDevice(deviceId);
+                    getDeviceManagementProvider().getDevice(deviceId, false);
             if (device == null) {
                 if (log.isDebugEnabled()) {
                     log.debug("No device is found upon the device identifier '" + deviceId.getId() +
@@ -123,8 +123,8 @@ public class DeviceInformationManagerImpl implements DeviceInformationManager {
         }
         try {
             List<Integer> deviceIds = new ArrayList<>();
-            List<Device> devices = DeviceManagementDataHolder.getInstance().
-                    getDeviceManagementProvider().getAllDevices();
+            List<Device> devices = DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().
+                    getAllDevices(false);
             for (Device device : devices) {
                 if (identifierMap.containsKey(device.getDeviceIdentifier()) &&
                         device.getType().equals(identifierMap.get(device.getDeviceIdentifier()).getType())) {
@@ -154,7 +154,7 @@ public class DeviceInformationManagerImpl implements DeviceInformationManager {
 
         try {
             Device device = DeviceManagementDataHolder.getInstance().
-                    getDeviceManagementProvider().getDevice(deviceLocation.getDeviceIdentifier());
+                    getDeviceManagementProvider().getDevice(deviceLocation.getDeviceIdentifier(), false);
             deviceLocation.setDeviceId(device.getId());
             DeviceManagementDAOFactory.beginTransaction();
             deviceDAO.updateDevice(device, CarbonContext.getThreadLocalCarbonContext().getTenantId());
@@ -183,7 +183,7 @@ public class DeviceInformationManagerImpl implements DeviceInformationManager {
     public DeviceLocation getDeviceLocation(DeviceIdentifier deviceId) throws DeviceDetailsMgtException {
         Device device;
         try {
-            device = DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().getDevice(deviceId);
+            device = DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().getDevice(deviceId, false);
             if (device == null) {
                 if (log.isDebugEnabled()) {
                     log.debug("No device is found upon the device identifier '" + deviceId.getId() +
@@ -212,7 +212,7 @@ public class DeviceInformationManagerImpl implements DeviceInformationManager {
 
         try {
             List<Device> devices = DeviceManagementDataHolder.getInstance().
-                    getDeviceManagementProvider().getAllDevices(deviceIdentifiers.get(0).getType());
+                    getDeviceManagementProvider().getAllDevices(deviceIdentifiers.get(0).getType(), false);
             List<DeviceLocation> deviceLocations = new ArrayList<>();
             DeviceManagementDAOFactory.openConnection();
             for (Device device : devices) {

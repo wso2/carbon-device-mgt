@@ -79,7 +79,7 @@ public class MonitoringManagerImpl implements MonitoringManager {
             DeviceManagementProviderService service =
                     PolicyManagementDataHolder.getInstance().getDeviceManagementService();
             PolicyManager manager = PolicyManagementDataHolder.getInstance().getPolicyManager();
-            Device device = service.getDevice(deviceIdentifier);
+            Device device = service.getDevice(deviceIdentifier, false);
             Policy policy = manager.getAppliedPolicyToDevice(deviceIdentifier);
             if (policy != null) {
                 PolicyMonitoringManager monitoringService = PolicyManagementDataHolder.getInstance().
@@ -177,7 +177,7 @@ public class MonitoringManagerImpl implements MonitoringManager {
         try {
             DeviceManagementProviderService service =
                     PolicyManagementDataHolder.getInstance().getDeviceManagementService();
-            Device device = service.getDevice(deviceIdentifier);
+            Device device = service.getDevice(deviceIdentifier, false);
             PolicyManagementDAOFactory.openConnection();
             NonComplianceData complianceData = monitoringDAO.getCompliance(device.getId(), device.getEnrolmentInfo()
                                                                                               .getId());
@@ -207,7 +207,7 @@ public class MonitoringManagerImpl implements MonitoringManager {
             PolicyManagementDAOFactory.openConnection();
             DeviceManagementProviderService service =
                     PolicyManagementDataHolder.getInstance().getDeviceManagementService();
-            Device device = service.getDevice(deviceIdentifier);
+            Device device = service.getDevice(deviceIdentifier, false);
             complianceData = monitoringDAO.getCompliance(device.getId(), device.getEnrolmentInfo().getId());
             List<ComplianceFeature> complianceFeatures =
                     monitoringDAO.getNoneComplianceFeatures(complianceData.getId());

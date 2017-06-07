@@ -472,7 +472,8 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
             int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
             GroupManagementDAOFactory.beginTransaction();
             for (DeviceIdentifier deviceIdentifier : deviceIdentifiers) {
-                device = DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().getDevice(deviceIdentifier);
+                device = DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().
+                        getDevice(deviceIdentifier, false);
                 if (device == null) {
                     throw new DeviceNotFoundException("Device not found for id '" + deviceIdentifier.getId() + "'");
                 }
@@ -504,7 +505,8 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
             int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
             GroupManagementDAOFactory.beginTransaction();
             for (DeviceIdentifier deviceIdentifier : deviceIdentifiers) {
-                device = DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().getDevice(deviceIdentifier);
+                device = DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().
+                        getDevice(deviceIdentifier, false);
                 if (device == null) {
                     throw new DeviceNotFoundException("Device not found for id '" + deviceIdentifier.getId() + "'");
                 }
@@ -553,7 +555,7 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
     public List<DeviceGroup> getGroups(DeviceIdentifier deviceIdentifier) throws GroupManagementException {
         DeviceManagementProviderService managementProviderService = new DeviceManagementProviderServiceImpl();
         try {
-            Device device = managementProviderService.getDevice(deviceIdentifier);
+            Device device = managementProviderService.getDevice(deviceIdentifier, false);
             GroupManagementDAOFactory.openConnection();
             return groupDAO.getGroups(device.getId(),
                     PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId());

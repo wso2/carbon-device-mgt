@@ -95,7 +95,7 @@ public class PolicyEvaluationTestCase extends BasePolicyManagementDAOTest {
         log.debug("Getting effective policy for device started ..........");
 
         DeviceManagementProviderService service = new DeviceManagementProviderServiceImpl();
-        List<Device> devices = service.getAllDevices(ANDROID);
+        List<Device> devices = service.getAllDevices(ANDROID, false);
 
         PolicyEvaluationPoint evaluationPoint = PolicyManagementDataHolder.getInstance().getPolicyEvaluationPoint();
 

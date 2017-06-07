@@ -431,7 +431,8 @@ public final class DeviceManagerUtil {
     }
 
     public static boolean isValidDeviceIdentifier(DeviceIdentifier deviceIdentifier) throws DeviceManagementException {
-        Device device = DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().getDevice(deviceIdentifier);
+        Device device = DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().getDevice(deviceIdentifier,
+                false);
         if (device == null || device.getDeviceIdentifier() == null ||
                 device.getDeviceIdentifier().isEmpty() || device.getEnrolmentInfo() == null) {
             return false;

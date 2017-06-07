@@ -21,6 +21,7 @@ package org.wso2.carbon.device.mgt.oauth.extensions.handlers.grant;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.apimgt.keymgt.ScopesIssuer;
 import org.wso2.carbon.identity.application.authentication.framework.model.AuthenticatedUser;
 import org.wso2.carbon.identity.application.common.IdentityApplicationManagementException;
 import org.wso2.carbon.identity.application.common.model.ServiceProvider;
@@ -55,6 +56,11 @@ public class AccessTokenGrantHandler extends AbstractAuthorizationGrantHandler {
         } catch (IllegalArgumentException e) {
             log.error("Failed to initialise Authenticator", e);
         }
+    }
+
+    @Override
+    public boolean validateScope(OAuthTokenReqMessageContext tokReqMsgCtx) {
+        return ScopesIssuer.getInstance().setScopes(tokReqMsgCtx);
     }
 
     @Override

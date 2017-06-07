@@ -25,7 +25,11 @@ import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManage
 
 public interface ApplicationManager{
 
-     void createApplication(Application application) throws ApplicationManagementException;
+     public Application createApplication(Application application) throws ApplicationManagementException;
 
-     ApplicationList getApplications(Filter filter) throws ApplicationManagementException;
+     public Application editApplication(int applicationId, Application application) throws ApplicationManagementException;
+
+     public void deleteApplication(int applicationId) throws ApplicationManagementException;
+
+     public ApplicationList getApplications(Filter filter) throws ApplicationManagementException;
 }

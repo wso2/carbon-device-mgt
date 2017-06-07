@@ -17,7 +17,30 @@
 */
 package org.wso2.carbon.device.application.mgt.core.impl;
 
+import org.wso2.carbon.device.application.mgt.common.Category;
+import org.wso2.carbon.device.application.mgt.common.Filter;
+import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
 import org.wso2.carbon.device.application.mgt.common.services.CategoryManager;
 
 public class CategoryManagerImpl implements CategoryManager {
+
+    @Override
+    public Category createCategory(Category application) throws ApplicationManagementException {
+        return null;
+    }
+
+    @Override
+    public Category editCategory(int applicationId, Category category) throws ApplicationManagementException {
+        return null;
+    }
+
+    @Override
+    public void deleteCategory(int applicationId) throws ApplicationManagementException {
+
+    }
+
+    @Override
+    public Category getCategory(Filter filter) throws ApplicationManagementException {
+        return null;
+    }
 }

@@ -44,6 +44,7 @@ import org.wso2.carbon.device.mgt.common.configuration.mgt.ConfigurationEntry;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.PlatformConfiguration;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.PlatformConfigurationManagementService;
 import org.wso2.carbon.device.mgt.common.notification.mgt.NotificationManagementService;
+import org.wso2.carbon.device.mgt.common.spi.DeviceTypeGeneratorService;
 import org.wso2.carbon.device.mgt.core.app.mgt.ApplicationManagementProviderService;
 import org.wso2.carbon.device.mgt.core.device.details.mgt.DeviceInformationManager;
 import org.wso2.carbon.device.mgt.core.search.mgt.SearchManagerService;
@@ -191,6 +192,18 @@ public class DeviceMgtAPIUtils {
             throw new IllegalStateException(msg);
         }
         return deviceManagementProviderService;
+    }
+
+    public static DeviceTypeGeneratorService getDeviceTypeGeneratorService() {
+        PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        DeviceTypeGeneratorService deviceTypeGeneratorService =
+                (DeviceTypeGeneratorService) ctx.getOSGiService(DeviceTypeGeneratorService.class, null);
+        if (deviceTypeGeneratorService == null) {
+            String msg = "DeviceTypeGeneratorService service has not initialized.";
+            log.error(msg);
+            throw new IllegalStateException(msg);
+        }
+        return deviceTypeGeneratorService;
     }
 
     public static boolean isValidDeviceIdentifier(DeviceIdentifier deviceIdentifier) throws DeviceManagementException {

@@ -50,7 +50,6 @@ import org.wso2.carbon.device.mgt.core.status.task.impl.DeviceStatusTaskManagerS
 import org.wso2.carbon.device.mgt.core.task.DeviceMgtTaskException;
 import org.wso2.carbon.device.mgt.core.task.DeviceTaskManagerService;
 import org.wso2.carbon.device.mgt.core.util.DeviceManagerUtil;
-import org.wso2.carbon.device.mgt.extensions.device.type.template.HTTPDeviceTypeManagerService;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -179,8 +178,12 @@ public class DeviceManagementPluginRepository implements DeviceManagerStartupLis
                     }
                     DeviceTypeMetaDefinition deviceTypeMetaDefinition = deviceType.getDeviceTypeMetaDefinition();
                     if (deviceTypeMetaDefinition != null) {
-                        HTTPDeviceTypeManagerService deviceTypeManagerService = new HTTPDeviceTypeManagerService
-                                (type, deviceTypeMetaDefinition);
+                        DeviceManagementService deviceTypeManagerService = DeviceManagementDataHolder.getInstance()
+                                .getDeviceTypeGeneratorService().populateDeviceManagementService(type, deviceTypeMetaDefinition);
+                        if (deviceTypeManagerService == null) {
+                            log.error("Failing to retrieve the device type service for " + type);
+                            return null;
+                        }
                         addDeviceManagementProvider(deviceTypeManagerService);
                         deviceTypeIdentifier = new DeviceTypeServiceIdentifier(type, tenantId);
                         provider = providers.get(deviceTypeIdentifier);
@@ -210,8 +213,12 @@ public class DeviceManagementPluginRepository implements DeviceManagerStartupLis
                                     provider.getDeviceManagementService()).getDeviceTypeMetaDefinition();
                             String cachedDefinition = gson.toJson(deviceTypeMetaDefinition);
                             if (!cachedDefinition.equals(dbStoredDefinition)) {
-                                HTTPDeviceTypeManagerService deviceTypeManagerService = new HTTPDeviceTypeManagerService
-                                        (type, deviceTypeMetaDefinition);
+                                DeviceManagementService deviceTypeManagerService = DeviceManagementDataHolder.getInstance()
+                                        .getDeviceTypeGeneratorService().populateDeviceManagementService(type, deviceTypeMetaDefinition);
+                                if (deviceTypeManagerService == null) {
+                                    log.error("Failing to retrieve the device type service for " + type);
+                                    return null;
+                                }
                                 addDeviceManagementProvider(deviceTypeManagerService);
                                 deviceTypeIdentifier = new DeviceTypeServiceIdentifier(type, tenantId);
                                 provider = providers.get(deviceTypeIdentifier);

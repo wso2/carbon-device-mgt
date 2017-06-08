@@ -37,6 +37,7 @@
         <module>org.wso2.carbon.device.mgt.extensions.push.notification.provider.fcm.feature</module>
         <module>org.wso2.carbon.device.mgt.extensions.push.notification.provider.mqtt.feature</module>
         <module>org.wso2.carbon.device.mgt.extensions.push.notification.provider.xmpp.feature</module>
+		<module>org.wso2.carbon.device.mgt.extensions.push.notification.provider.http.feature</module>
     </modules>
 
 </project>

@@ -21,16 +21,15 @@ package org.wso2.carbon.device.mgt.jaxrs.service.impl.admin;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
+import org.wso2.carbon.device.mgt.common.spi.DeviceManagementService;
+import org.wso2.carbon.device.mgt.common.spi.DeviceTypeGeneratorService;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
-import org.wso2.carbon.device.mgt.extensions.device.type.template.HTTPDeviceTypeManagerService;
-import org.wso2.carbon.device.mgt.jaxrs.beans.DeviceTypeList;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
 import org.wso2.carbon.device.mgt.jaxrs.service.api.admin.DeviceTypeManagementAdminService;
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
-import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -69,8 +68,8 @@ public class DeviceTypeManagementAdminServiceImpl implements DeviceTypeManagemen
                     String msg = "Device type already available, " + deviceType.getName();
                     return Response.status(Response.Status.CONFLICT).entity(msg).build();
                 }
-                HTTPDeviceTypeManagerService httpDeviceTypeManagerService = new HTTPDeviceTypeManagerService
-                        (deviceType.getName(), deviceType.getDeviceTypeMetaDefinition());
+                DeviceManagementService httpDeviceTypeManagerService = DeviceMgtAPIUtils.getDeviceTypeGeneratorService()
+                        .populateDeviceManagementService(deviceType.getName(), deviceType.getDeviceTypeMetaDefinition());
                 DeviceMgtAPIUtils.getDeviceManagementService().registerDeviceType(httpDeviceTypeManagerService);
                 return Response.status(Response.Status.OK).build();
             } catch (DeviceManagementException e) {
@@ -92,8 +91,8 @@ public class DeviceTypeManagementAdminServiceImpl implements DeviceTypeManagemen
                     String msg = "Device type does not exist, " + deviceType.getName();
                     return Response.status(Response.Status.BAD_REQUEST).entity(msg).build();
                 }
-                HTTPDeviceTypeManagerService httpDeviceTypeManagerService = new HTTPDeviceTypeManagerService
-                        (deviceType.getName(), deviceType.getDeviceTypeMetaDefinition());
+                DeviceManagementService httpDeviceTypeManagerService = DeviceMgtAPIUtils.getDeviceTypeGeneratorService()
+                        .populateDeviceManagementService(deviceType.getName(), deviceType.getDeviceTypeMetaDefinition());
                 DeviceMgtAPIUtils.getDeviceManagementService().registerDeviceType(httpDeviceTypeManagerService);
                 return Response.status(Response.Status.OK).build();
             } catch (DeviceManagementException e) {

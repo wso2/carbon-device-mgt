@@ -1446,6 +1446,11 @@
                 <artifactId>org.wso2.carbon.device.mgt.extensions.push.notification.provider.mqtt</artifactId>
                 <version>${carbon.device.mgt.version}</version>
             </dependency>
+			<dependency>
+				<groupId>org.wso2.carbon.devicemgt</groupId>
+				<artifactId>org.wso2.carbon.device.mgt.extensions.push.notification.provider.http</artifactId>
+				<version>${carbon.device.mgt.version}</version>
+			</dependency>
             <dependency>
                 <groupId>org.wso2.carbon.devicemgt</groupId>
                 <artifactId>org.wso2.carbon.device.mgt.extensions.push.notification.provider.xmpp</artifactId>

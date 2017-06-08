@@ -21,6 +21,8 @@ package org.wso2.carbon.device.mgt.extensions.internal;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osgi.service.component.ComponentContext;
+import org.wso2.carbon.device.mgt.common.spi.DeviceTypeGeneratorService;
+import org.wso2.carbon.device.mgt.extensions.device.type.template.DeviceTypeGeneratorServiceImpl;
 import org.wso2.carbon.ndatasource.core.DataSourceService;
 import org.wso2.carbon.registry.core.service.RegistryService;
 
@@ -45,6 +47,8 @@ public class DeviceTypeExtensionServiceComponent {
         if (log.isDebugEnabled()) {
             log.debug("Activating DeviceType Deployer Service Component");
         }
+        ctx.getBundleContext().registerService(DeviceTypeGeneratorService.class, new DeviceTypeGeneratorServiceImpl()
+                , null);
     }
 
     protected void deactivate(ComponentContext ctx) {

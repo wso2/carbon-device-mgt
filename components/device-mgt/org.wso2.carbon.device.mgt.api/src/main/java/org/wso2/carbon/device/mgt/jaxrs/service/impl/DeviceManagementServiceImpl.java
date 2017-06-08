@@ -125,6 +125,7 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
             @QueryParam("groupId") int groupId,
             @QueryParam("since") String since,
             @HeaderParam("If-Modified-Since") String ifModifiedSince,
+            @QueryParam("requireDeviceInfo") boolean requireDeviceInfo,
             @QueryParam("offset") int offset,
             @QueryParam("limit") int limit) {
         try {
@@ -208,7 +209,12 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
                                     "string is provided in 'If-Modified-Since' header").build()).build();
                 }
                 request.setSince(sinceDate);
-                result = dms.getAllDevices(request);
+                if (requireDeviceInfo) {
+                    result = dms.getAllDevices(request);
+                } else {
+                    result = dms.getAllDevices(request, false);
+                }
+
                 if (result == null || result.getData() == null || result.getData().size() <= 0) {
                     return Response.status(Response.Status.NOT_MODIFIED).entity("No device is modified " +
                             "after the timestamp provided in 'If-Modified-Since' header").build();
@@ -224,14 +230,22 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
                                     "string is provided in 'since' filter").build()).build();
                 }
                 request.setSince(sinceDate);
-                result = dms.getAllDevices(request);
+                if (requireDeviceInfo) {
+                    result = dms.getAllDevices(request);
+                } else {
+                    result = dms.getAllDevices(request, false);
+                }
                 if (result == null || result.getData() == null || result.getData().size() <= 0) {
                     devices.setList(new ArrayList<Device>());
                     devices.setCount(0);
                     return Response.status(Response.Status.OK).entity(devices).build();
                 }
             } else {
-                result = dms.getAllDevices(request);
+                if (requireDeviceInfo) {
+                    result = dms.getAllDevices(request);
+                } else {
+                    result = dms.getAllDevices(request, false);
+                }
                 int resultCount = result.getRecordsTotal();
                 if (resultCount == 0) {
                     Response.status(Response.Status.OK).entity(devices).build();
@@ -257,7 +271,8 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
     @GET
     @Override
     @Path("/user-devices")
-    public Response getDeviceByUser(@QueryParam("offset") int offset,
+    public Response getDeviceByUser(@QueryParam("requireDeviceInfo") boolean requireDeviceInfo,
+                                    @QueryParam("offset") int offset,
                                     @QueryParam("limit") int limit) {
 
         RequestValidationUtil.validatePaginationParameters(offset, limit);
@@ -269,7 +284,11 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
         request.setOwner(currentUser);
 
         try {
-            result = DeviceMgtAPIUtils.getDeviceManagementService().getDevicesOfUser(request);
+            if (requireDeviceInfo) {
+                result = DeviceMgtAPIUtils.getDeviceManagementService().getDevicesOfUser(request);
+            } else {
+                result = DeviceMgtAPIUtils.getDeviceManagementService().getDevicesOfUser(request, false);
+            }
             devices.setList((List<Device>) result.getData());
             devices.setCount(result.getRecordsTotal());
             return Response.status(Response.Status.OK).entity(devices).build();
@@ -289,7 +308,7 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
                 DeviceMgtAPIUtils.getDeviceManagementService();
         try {
             DeviceIdentifier deviceIdentifier = new DeviceIdentifier(deviceId, deviceType);
-            Device persistedDevice = deviceManagementProviderService.getDevice(deviceIdentifier);
+            Device persistedDevice = deviceManagementProviderService.getDevice(deviceIdentifier, true);
             if (persistedDevice == null) {
                 return Response.status(Response.Status.NOT_FOUND).build();
             }
@@ -315,7 +334,7 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
         DeviceManagementProviderService deviceManagementProviderService = DeviceMgtAPIUtils.getDeviceManagementService();
         try {
             Device persistedDevice = deviceManagementProviderService.getDevice(new DeviceIdentifier
-                    (deviceId, deviceType));
+                    (deviceId, deviceType), true);
             persistedDevice.setName(device.getName());
             boolean response = deviceManagementProviderService.modifyEnrollment(persistedDevice);
             return Response.status(Response.Status.CREATED).entity(response).build();
@@ -614,7 +633,7 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
                 DeviceMgtAPIUtils.getDeviceManagementService();
         try {
             DeviceIdentifier deviceIdentifier = new DeviceIdentifier(id, type);
-            Device persistedDevice = deviceManagementProviderService.getDevice(deviceIdentifier);
+            Device persistedDevice = deviceManagementProviderService.getDevice(deviceIdentifier, false);
             if (persistedDevice == null) {
                 return Response.status(Response.Status.NOT_FOUND).build();
             }

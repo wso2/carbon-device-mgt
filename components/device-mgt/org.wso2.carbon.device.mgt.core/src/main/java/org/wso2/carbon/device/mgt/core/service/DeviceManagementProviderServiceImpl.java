@@ -178,7 +178,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         }
         int tenantId = this.getTenantId();
 
-        Device existingDevice = this.getDevice(deviceIdentifier);
+        Device existingDevice = this.getDevice(deviceIdentifier, false);
 
         if (existingDevice != null) {
             EnrolmentInfo existingEnrolmentInfo = existingDevice.getEnrolmentInfo();
@@ -417,298 +417,12 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     }
 
     @Override
-    public List<Device> getAllDevices() throws DeviceManagementException {
-        List<Device> devices = new ArrayList<>();
-        List<Device> allDevices;
-        try {
-            DeviceManagementDAOFactory.openConnection();
-            allDevices = deviceDAO.getDevices(this.getTenantId());
-        } catch (DeviceManagementDAOException e) {
-            throw new DeviceManagementException("Error occurred while retrieving device list pertaining to " +
-                    "the current tenant", e);
-        } catch (SQLException e) {
-            throw new DeviceManagementException("Error occurred while opening a connection to the data source", e);
-        } finally {
-            DeviceManagementDAOFactory.closeConnection();
-        }
-
-        for (Device device : allDevices) {
-            DeviceInfo info = null;
-            try {
-                DeviceManagementDAOFactory.openConnection();
-                info = deviceInfoDAO.getDeviceInformation(device.getId());
-                DeviceLocation location = deviceInfoDAO.getDeviceLocation(device.getId());
-                if (info != null) {
-                    info.setLocation(location);
-                }
-            } catch (DeviceDetailsMgtDAOException e) {
-                log.error("Error occurred while retrieving advance info of '" + device.getType() +
-                        "' that carries the id '" + device.getDeviceIdentifier() + "'", e);
-            } catch (SQLException e) {
-                log.error("Error occurred while opening a connection to the data source", e);
-            } finally {
-                DeviceManagementDAOFactory.closeConnection();
-            }
-            device.setDeviceInfo(info);
-
-            try {
-                DeviceManagementDAOFactory.openConnection();
-                List<Application> applications = applicationDAO.getInstalledApplications(device.getId());
-                device.setApplications(applications);
-            } catch (DeviceManagementDAOException e) {
-                log.error("Error occurred while retrieving the application list of '" + device.getType() + "', " +
-                        "which carries the id '" + device.getId() + "'", e);
-            } catch (SQLException e) {
-                log.error("Error occurred while opening a connection to the data source", e);
-            } finally {
-                DeviceManagementDAOFactory.closeConnection();
-            }
-
-            DeviceManager deviceManager = this.getDeviceManager(device.getType());
-            if (deviceManager == null) {
-                if (log.isDebugEnabled()) {
-                    log.debug("Device Manager associated with the device type '" + device.getType() + "' is null. " +
-                            "Therefore, not attempting method 'isEnrolled'");
-                }
-                devices.add(device);
-                continue;
-            }
-            Device dmsDevice =
-                    deviceManager.getDevice(new DeviceIdentifier(device.getDeviceIdentifier(), device.getType()));
-            if (dmsDevice != null) {
-                device.setFeatures(dmsDevice.getFeatures());
-                device.setProperties(dmsDevice.getProperties());
-            }
-            devices.add(device);
-        }
-        return devices;
-    }
-
-    public List<Device> getDevices(Date since) throws DeviceManagementException {
-        List<Device> devices = new ArrayList<>();
-        List<Device> allDevices;
-        try {
-            DeviceManagementDAOFactory.openConnection();
-            allDevices = deviceDAO.getDevices(since.getTime(), this.getTenantId());
-        } catch (DeviceManagementDAOException e) {
-            throw new DeviceManagementException("Error occurred while retrieving device list pertaining to " +
-                    "the current tenant", e);
-        } catch (SQLException e) {
-            throw new DeviceManagementException("Error occurred while opening a connection to the data source", e);
-        } finally {
-            DeviceManagementDAOFactory.closeConnection();
-        }
-
-        for (Device device : allDevices) {
-            DeviceInfo info = null;
-            try {
-                DeviceManagementDAOFactory.openConnection();
-                info = deviceInfoDAO.getDeviceInformation(device.getId());
-                DeviceLocation location = deviceInfoDAO.getDeviceLocation(device.getId());
-                if (info != null) {
-                    info.setLocation(location);
-                }
-            } catch (DeviceDetailsMgtDAOException e) {
-                log.error("Error occurred while retrieving advance info of '" + device.getType() +
-                        "' that carries the id '" + device.getDeviceIdentifier() + "'");
-            } catch (SQLException e) {
-                log.error("Error occurred while opening a connection to the data source", e);
-            } finally {
-                DeviceManagementDAOFactory.closeConnection();
-            }
-            device.setDeviceInfo(info);
-
-            try {
-                DeviceManagementDAOFactory.openConnection();
-                List<Application> applications = applicationDAO.getInstalledApplications(device.getId());
-                device.setApplications(applications);
-            } catch (DeviceManagementDAOException e) {
-                log.error("Error occurred while retrieving the application list of '" + device.getType() + "', " +
-                        "which carries the id '" + device.getId() + "'", e);
-            } catch (SQLException e) {
-                log.error("Error occurred while opening a connection to the data source", e);
-            } finally {
-                DeviceManagementDAOFactory.closeConnection();
-            }
-
-            DeviceManager deviceManager = this.getDeviceManager(device.getType());
-            if (deviceManager == null) {
-                if (log.isDebugEnabled()) {
-                    log.debug("Device Manager associated with the device type '" + device.getType() + "' is null. " +
-                            "Therefore, not attempting method 'isEnrolled'");
-                }
-                devices.add(device);
-                continue;
-            }
-            Device dmsDevice =
-                    deviceManager.getDevice(new DeviceIdentifier(device.getDeviceIdentifier(), device.getType()));
-            if (dmsDevice != null) {
-                device.setFeatures(dmsDevice.getFeatures());
-                device.setProperties(dmsDevice.getProperties());
-            }
-            devices.add(device);
-        }
-        return devices;
-    }
-
-    @Override
-    public PaginationResult getDevicesByType(PaginationRequest request) throws DeviceManagementException {
-        PaginationResult paginationResult = new PaginationResult();
-        List<Device> devices = new ArrayList<>();
-        List<Device> allDevices = new ArrayList<>();
-        int count = 0;
-        int tenantId = this.getTenantId();
-        String deviceType = request.getDeviceType();
-        request = DeviceManagerUtil.validateDeviceListPageSize(request);
-        try {
-            DeviceManagementDAOFactory.openConnection();
-            allDevices = deviceDAO.getDevices(request, tenantId);
-            count = deviceDAO.getDeviceCountByType(deviceType, tenantId);
-        } catch (DeviceManagementDAOException e) {
-            throw new DeviceManagementException("Error occurred while retrieving device list pertaining to " +
-                    "the current tenant of type " + deviceType, e);
-        } catch (SQLException e) {
-            throw new DeviceManagementException("Error occurred while opening a connection to the data source", e);
-        } finally {
-            DeviceManagementDAOFactory.closeConnection();
-        }
-        for (Device device : allDevices) {
-            DeviceInfo info = null;
-            try {
-                DeviceManagementDAOFactory.openConnection();
-                info = deviceInfoDAO.getDeviceInformation(device.getId());
-                DeviceLocation location = deviceInfoDAO.getDeviceLocation(device.getId());
-                if (info != null) {
-                    info.setLocation(location);
-                }
-                device.setDeviceInfo(info);
-            } catch (DeviceDetailsMgtDAOException e) {
-                log.error("Error occurred while retrieving advance info of '" + device.getType() +
-                        "' that carries the id '" + device.getDeviceIdentifier() + "'");
-            } catch (SQLException e) {
-                log.error("Error occurred while opening a connection to the data source", e);
-            } finally {
-                DeviceManagementDAOFactory.closeConnection();
-            }
-            device.setDeviceInfo(info);
-            DeviceManager deviceManager = this.getDeviceManager(device.getType());
-            if (deviceManager == null) {
-                if (log.isDebugEnabled()) {
-                    log.debug("Device Manager associated with the device type '" + device.getType() + "' is null. " +
-                            "Therefore, not attempting method 'isEnrolled'");
-                }
-                devices.add(device);
-                continue;
-            }
-            Device dmsDevice =
-                    deviceManager.getDevice(new DeviceIdentifier(device.getDeviceIdentifier(), device.getType()));
-            if (dmsDevice != null) {
-                device.setFeatures(dmsDevice.getFeatures());
-                device.setProperties(dmsDevice.getProperties());
-            }
-            devices.add(device);
-        }
-        paginationResult.setData(devices);
-        paginationResult.setRecordsFiltered(count);
-        paginationResult.setRecordsTotal(count);
-        return paginationResult;
-    }
-
-    @Override
-    public PaginationResult getAllDevices(PaginationRequest request) throws DeviceManagementException {
-        List<Device> devicesForRoles = null;
-        PaginationResult paginationResult = new PaginationResult();
-        List<Device> devices = new ArrayList<>();
-        List<Device> allDevices = new ArrayList<>();
-        int count = 0;
-        int tenantId = this.getTenantId();
-        request = DeviceManagerUtil.validateDeviceListPageSize(request);
-        if (!StringUtils.isEmpty(request.getOwnerRole())) {
-            devicesForRoles = DeviceManagementDataHolder.getInstance().getDeviceManagementProvider()
-                    .getAllDevicesOfRole(request.getOwnerRole());
-        }
-        try {
-            DeviceManagementDAOFactory.openConnection();
-            allDevices = deviceDAO.getDevices(request, tenantId);
-            count = deviceDAO.getDeviceCount(request, tenantId);
-        } catch (DeviceManagementDAOException e) {
-            throw new DeviceManagementException("Error occurred while retrieving device list pertaining to " +
-                    "the current tenant", e);
-        } catch (SQLException e) {
-            throw new DeviceManagementException("Error occurred while opening a connection to the data source", e);
-        } finally {
-            DeviceManagementDAOFactory.closeConnection();
-        }
-
-        devices = processDevices(devices, allDevices);
-
-        if (devicesForRoles != null) {
-            count += devicesForRoles.size();
-            devices = processDevices(devices, devicesForRoles);
-        }
-        paginationResult.setData(devices);
-        paginationResult.setRecordsFiltered(count);
-        paginationResult.setRecordsTotal(count);
-        return paginationResult;
-    }
-
-    private List<Device> processDevices(List<Device> devices, List<Device> allDevices) throws DeviceManagementException {
-        for (Device device : allDevices) {
-            DeviceInfo info = null;
-            try {
-                DeviceManagementDAOFactory.openConnection();
-                info = deviceInfoDAO.getDeviceInformation(device.getId());
-                DeviceLocation location = deviceInfoDAO.getDeviceLocation(device.getId());
-                if (info != null) {
-                    info.setLocation(location);
-                }
-                device.setDeviceInfo(info);
-            } catch (DeviceDetailsMgtDAOException e) {
-                log.error("Error occurred while retrieving advance info of '" + device.getType() +
-                        "' that carries the id '" + device.getDeviceIdentifier() + "'");
-            } catch (SQLException e) {
-                log.error("Error occurred while opening a connection to the data source", e);
-            } finally {
-                DeviceManagementDAOFactory.closeConnection();
-            }
-            device.setDeviceInfo(info);
-
-            try {
-                DeviceManagementDAOFactory.openConnection();
-                List<Application> applications = applicationDAO.getInstalledApplications(device.getId());
-                device.setApplications(applications);
-            } catch (DeviceManagementDAOException e) {
-                log.error("Error occurred while retrieving the application list of '" + device.getType() + "', " +
-                        "which carries the id '" + device.getId() + "'", e);
-            } catch (SQLException e) {
-                log.error("Error occurred while opening a connection to the data source", e);
-            } finally {
-                DeviceManagementDAOFactory.closeConnection();
-            }
-
-            DeviceManager deviceManager = this.getDeviceManager(device.getType());
-            if (deviceManager == null) {
-                if (log.isDebugEnabled()) {
-                    log.debug("Device Manager associated with the device type '" + device.getType() + "' is null. " +
-                            "Therefore, not attempting method 'isEnrolled'");
-                }
-                devices.add(device);
-                continue;
-            }
-            Device dmsDevice =
-                    deviceManager.getDevice(new DeviceIdentifier(device.getDeviceIdentifier(), device.getType()));
-            if (dmsDevice != null) {
-                device.setFeatures(dmsDevice.getFeatures());
-                device.setProperties(dmsDevice.getProperties());
-            }
-            devices.add(device);
-        }
-        return devices;
-    }
-
-    @Override
     public List<Device> getAllDevices(String deviceType) throws DeviceManagementException {
-        List<Device> devices = new ArrayList<>();
+        return this.getAllDevices(deviceType, true);
+    }
+
+    @Override
+    public List<Device> getAllDevices(String deviceType, boolean requireDeviceInfo) throws DeviceManagementException {
         List<Device> allDevices;
         try {
             DeviceManagementDAOFactory.openConnection();
@@ -728,56 +442,172 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             DeviceManagementDAOFactory.closeConnection();
         }
 
-        for (Device device : allDevices) {
-            DeviceInfo info = null;
-            try {
-                DeviceManagementDAOFactory.openConnection();
-                info = deviceInfoDAO.getDeviceInformation(device.getId());
-                DeviceLocation location = deviceInfoDAO.getDeviceLocation(device.getId());
-                if (info != null) {
-                    info.setLocation(location);
-                }
-            } catch (DeviceDetailsMgtDAOException e) {
-                log.error("Error occurred while retrieving advance info of '" + device.getType() +
-                        "' that carries the id '" + device.getDeviceIdentifier() + "'");
-            } catch (SQLException e) {
-                log.error("Error occurred while opening a connection to the data source", e);
-            } finally {
-                DeviceManagementDAOFactory.closeConnection();
-            }
-            device.setDeviceInfo(info);
-
-            try {
-                DeviceManagementDAOFactory.openConnection();
-                List<Application> applications = applicationDAO.getInstalledApplications(device.getId());
-                device.setApplications(applications);
-            } catch (DeviceManagementDAOException e) {
-                log.error("Error occurred while retrieving the application list of '" + device.getType() + "', " +
-                        "which carries the id '" + device.getId() + "'", e);
-            } catch (SQLException e) {
-                log.error("Error occurred while opening a connection to the data source", e);
-            } finally {
-                DeviceManagementDAOFactory.closeConnection();
-            }
-
-            DeviceManager deviceManager = this.getDeviceManager(deviceType);
-            if (deviceManager == null) {
-                if (log.isDebugEnabled()) {
-                    log.debug("Device Manager associated with the device type '" + deviceType + "' is null. " +
-                            "Therefore, not attempting method 'isEnrolled'");
-                }
-                devices.add(device);
-                continue;
-            }
-            Device dmsDevice =
-                    deviceManager.getDevice(new DeviceIdentifier(device.getDeviceIdentifier(), device.getType()));
-            if (dmsDevice != null) {
-                device.setFeatures(dmsDevice.getFeatures());
-                device.setProperties(dmsDevice.getProperties());
-            }
-            devices.add(device);
+        if (requireDeviceInfo) {
+            return this.getAllDeviceInfo(allDevices);
         }
-        return devices;
+        return allDevices;
+    }
+
+    @Override
+    public List<Device> getAllDevices() throws DeviceManagementException {
+        return this.getAllDevices(true);
+    }
+
+    @Override
+    public List<Device> getAllDevices(boolean requireDeviceInfo) throws DeviceManagementException {
+        List<Device> allDevices;
+        try {
+            DeviceManagementDAOFactory.openConnection();
+            allDevices = deviceDAO.getDevices(this.getTenantId());
+        } catch (DeviceManagementDAOException e) {
+            throw new DeviceManagementException("Error occurred while retrieving device list pertaining to " +
+                    "the current tenant", e);
+        } catch (SQLException e) {
+            throw new DeviceManagementException("Error occurred while opening a connection to the data source", e);
+        } finally {
+            DeviceManagementDAOFactory.closeConnection();
+        }
+
+        if (requireDeviceInfo) {
+            return this.getAllDeviceInfo(allDevices);
+        }
+        return allDevices;
+    }
+
+    @Override
+    public List<Device> getDevices(Date since) throws DeviceManagementException {
+        return this.getDevices(since, true);
+    }
+
+    @Override
+    public List<Device> getDevices(Date since, boolean requireDeviceInfo) throws DeviceManagementException {
+        List<Device> allDevices;
+        try {
+            DeviceManagementDAOFactory.openConnection();
+            allDevices = deviceDAO.getDevices(since.getTime(), this.getTenantId());
+        } catch (DeviceManagementDAOException e) {
+            throw new DeviceManagementException("Error occurred while retrieving device list pertaining to " +
+                    "the current tenant", e);
+        } catch (SQLException e) {
+            throw new DeviceManagementException("Error occurred while opening a connection to the data source", e);
+        } finally {
+            DeviceManagementDAOFactory.closeConnection();
+        }
+
+        if (requireDeviceInfo) {
+            return this.getAllDeviceInfo(allDevices);
+        }
+        return allDevices;
+    }
+
+    @Override
+    public PaginationResult getDevicesByType(PaginationRequest request) throws DeviceManagementException {
+        return this.getDevicesByType(request, true);
+    }
+
+    @Override
+    public PaginationResult getDevicesByType(PaginationRequest request, boolean requireDeviceInfo) throws DeviceManagementException {
+        PaginationResult paginationResult = new PaginationResult();
+        List<Device> allDevices = new ArrayList<>();
+        int count = 0;
+        int tenantId = this.getTenantId();
+        String deviceType = request.getDeviceType();
+        request = DeviceManagerUtil.validateDeviceListPageSize(request);
+        try {
+            DeviceManagementDAOFactory.openConnection();
+            allDevices = deviceDAO.getDevices(request, tenantId);
+            count = deviceDAO.getDeviceCountByType(deviceType, tenantId);
+        } catch (DeviceManagementDAOException e) {
+            throw new DeviceManagementException("Error occurred while retrieving device list pertaining to " +
+                    "the current tenant of type " + deviceType, e);
+        } catch (SQLException e) {
+            throw new DeviceManagementException("Error occurred while opening a connection to the data source", e);
+        } finally {
+            DeviceManagementDAOFactory.closeConnection();
+        }
+
+        if (requireDeviceInfo) {
+            paginationResult.setData(this.getAllDeviceInfo(allDevices));
+        } else {
+            paginationResult.setData(allDevices);
+        }
+
+        paginationResult.setRecordsFiltered(count);
+        paginationResult.setRecordsTotal(count);
+        return paginationResult;
+    }
+
+    @Override
+    public PaginationResult getAllDevices(PaginationRequest request) throws DeviceManagementException {
+        return this.getAllDevices(request, true);
+    }
+
+    @Override
+    public PaginationResult getAllDevices(PaginationRequest request, boolean requireDeviceInfo) throws DeviceManagementException {
+        List<Device> devicesForRoles = null;
+        PaginationResult paginationResult = new PaginationResult();
+        List<Device> allDevices = new ArrayList<>();
+        int count = 0;
+        int tenantId = this.getTenantId();
+        request = DeviceManagerUtil.validateDeviceListPageSize(request);
+        if (!StringUtils.isEmpty(request.getOwnerRole())) {
+            devicesForRoles = this.getAllDevicesOfRole(request.getOwnerRole(), false);
+            if (devicesForRoles != null) {
+                count = devicesForRoles.size();
+                if (requireDeviceInfo) {
+                    paginationResult.setData(getAllDeviceInfo(devicesForRoles));
+                }
+            }
+        } else {
+            try {
+                DeviceManagementDAOFactory.openConnection();
+                allDevices = deviceDAO.getDevices(request, tenantId);
+                count = deviceDAO.getDeviceCount(request, tenantId);
+            } catch (DeviceManagementDAOException e) {
+                throw new DeviceManagementException("Error occurred while retrieving device list pertaining to " +
+                        "the current tenant", e);
+            } catch (SQLException e) {
+                throw new DeviceManagementException("Error occurred while opening a connection to the data source", e);
+            } finally {
+                DeviceManagementDAOFactory.closeConnection();
+            }
+            if (requireDeviceInfo) {
+                paginationResult.setData(getAllDeviceInfo(allDevices));
+            } else {
+                paginationResult.setData(allDevices);
+            }
+        }
+        paginationResult.setRecordsFiltered(count);
+        paginationResult.setRecordsTotal(count);
+        return paginationResult;
+    }
+
+    @Override
+    public Device getDevice(DeviceIdentifier deviceId, boolean requireDeviceInfo) throws DeviceManagementException {
+        Device device;
+        try {
+            DeviceManagementDAOFactory.openConnection();
+            device = deviceDAO.getDevice(deviceId, this.getTenantId());
+            if (device == null) {
+                String msg = "No device is found upon the type '" + deviceId.getType() + "' and id '" +
+                        deviceId.getId() + "'";
+                if (log.isDebugEnabled()) {
+                    log.debug(msg);
+                }
+                return null;
+            }
+        } catch (DeviceManagementDAOException e) {
+            throw new DeviceManagementException("Error occurred while obtaining the device for id " +
+                    "'" + deviceId.getId() + "'", e);
+        } catch (SQLException e) {
+            throw new DeviceManagementException("Error occurred while opening a connection to the data source", e);
+        } finally {
+            DeviceManagementDAOFactory.closeConnection();
+        }
+        if (requireDeviceInfo) {
+            device = this.getAllDeviceInfo(device);
+        }
+        return device;
     }
 
     @Override
@@ -857,57 +687,55 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
     @Override
     public Device getDevice(DeviceIdentifier deviceId) throws DeviceManagementException {
+        return this.getDevice(deviceId, true);
+    }
+
+    @Override
+    public Device getDeviceWithTypeProperties(DeviceIdentifier deviceId) throws DeviceManagementException {
         Device device;
         try {
             DeviceManagementDAOFactory.openConnection();
             device = deviceDAO.getDevice(deviceId, this.getTenantId());
             if (device == null) {
-                String msg = "No device is found upon the type '" + deviceId.getType() + "' and id '" +
-                        deviceId.getId() + "'";
                 if (log.isDebugEnabled()) {
-                    log.debug(msg);
+                    log.debug("No device is found upon the type '" + deviceId.getType() + "' and id '" +
+                            deviceId.getId() + "'");
                 }
                 return null;
             }
-            DeviceInfo info = deviceInfoDAO.getDeviceInformation(device.getId());
-            DeviceLocation location = deviceInfoDAO.getDeviceLocation(device.getId());
-            if (info != null) {
-                info.setLocation(location);
-            }
-            device.setDeviceInfo(info);
-
-            List<Application> applications = applicationDAO.getInstalledApplications(device.getId());
-            device.setApplications(applications);
         } catch (DeviceManagementDAOException e) {
             throw new DeviceManagementException("Error occurred while obtaining the device for id " +
                     "'" + deviceId.getId() + "'", e);
         } catch (SQLException e) {
             throw new DeviceManagementException("Error occurred while opening a connection to the data source", e);
-        } catch (DeviceDetailsMgtDAOException e) {
-            throw new DeviceManagementException("Error occurred while fetching advanced device information", e);
         } finally {
             DeviceManagementDAOFactory.closeConnection();
         }
-        // The changes made here to prevent unit tests getting failed. They failed because when running the unit
-        // tests there is no osgi services. So getDeviceManager() returns a null.
-        DeviceManager deviceManager = this.getDeviceManager(deviceId.getType());
+
+        DeviceManager deviceManager = this.getDeviceManager(device.getType());
         if (deviceManager == null) {
             if (log.isDebugEnabled()) {
-                log.debug("Device Manager associated with the device type '" + deviceId.getType() + "' is null. " +
-                        "Therefore, not attempting method 'getDevice'");
+                log.debug("Device Manager associated with the device type '" + device.getType() + "' is null. " +
+                        "Therefore, not attempting method 'isEnrolled'");
             }
             return device;
         }
-        Device pluginSpecificInfo = deviceManager.getDevice(deviceId);
-        if (pluginSpecificInfo != null) {
-            device.setFeatures(pluginSpecificInfo.getFeatures());
-            device.setProperties(pluginSpecificInfo.getProperties());
+        Device dmsDevice =
+                deviceManager.getDevice(new DeviceIdentifier(device.getDeviceIdentifier(), device.getType()));
+        if (dmsDevice != null) {
+            device.setFeatures(dmsDevice.getFeatures());
+            device.setProperties(dmsDevice.getProperties());
         }
         return device;
     }
 
     @Override
     public Device getDevice(DeviceIdentifier deviceId, Date since) throws DeviceManagementException {
+        return this.getDevice(deviceId, since, true);
+    }
+
+    @Override
+    public Device getDevice(DeviceIdentifier deviceId, Date since, boolean requireDeviceInfo) throws DeviceManagementException {
         Device device;
         try {
             DeviceManagementDAOFactory.openConnection();
@@ -919,43 +747,28 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                 }
                 return null;
             }
-            DeviceLocation location = deviceInfoDAO.getDeviceLocation(device.getId());
-            if (device.getDeviceInfo() != null) {
-                device.getDeviceInfo().setLocation(location);
-            }
-
-            List<Application> applications = applicationDAO.getInstalledApplications(device.getId());
-            device.setApplications(applications);
         } catch (DeviceManagementDAOException e) {
             throw new DeviceManagementException("Error occurred while obtaining the device for id " +
                     "'" + deviceId.getId() + "'", e);
         } catch (SQLException e) {
             throw new DeviceManagementException("Error occurred while opening a connection to the data source", e);
-        } catch (DeviceDetailsMgtDAOException e) {
-            throw new DeviceManagementException("Error occurred while fetching advanced device information", e);
         } finally {
             DeviceManagementDAOFactory.closeConnection();
         }
-        // The changes made here to prevent unit tests getting failed. They failed because when running the unit
-        // tests there is no osgi services. So getDeviceManager() returns a null.
-        DeviceManager deviceManager = this.getDeviceManager(deviceId.getType());
-        if (deviceManager == null) {
-            if (log.isDebugEnabled()) {
-                log.debug("Device Manager associated with the device type '" + deviceId.getType() + "' is null. " +
-                        "Therefore, not attempting method 'getDevice'");
-            }
-            return device;
-        }
-        Device pluginSpecificInfo = deviceManager.getDevice(deviceId);
-        if (pluginSpecificInfo != null) {
-            device.setFeatures(pluginSpecificInfo.getFeatures());
-            device.setProperties(pluginSpecificInfo.getProperties());
+        if (requireDeviceInfo) {
+            device = this.getAllDeviceInfo(device);
         }
         return device;
     }
 
     @Override
     public Device getDevice(DeviceIdentifier deviceId, EnrolmentInfo.Status status) throws DeviceManagementException {
+        return this.getDevice(deviceId, status, true);
+    }
+
+    @Override
+    public Device getDevice(DeviceIdentifier deviceId, EnrolmentInfo.Status status, boolean requireDeviceInfo)
+            throws DeviceManagementException {
         Device device;
         try {
             DeviceManagementDAOFactory.openConnection();
@@ -967,41 +780,18 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                 }
                 return null;
             }
-            DeviceInfo info = deviceInfoDAO.getDeviceInformation(device.getId());
-            DeviceLocation location = deviceInfoDAO.getDeviceLocation(device.getId());
-            if (info != null) {
-                info.setLocation(location);
-            }
-            device.setDeviceInfo(info);
-
-            List<Application> applications = applicationDAO.getInstalledApplications(device.getId());
-            device.setApplications(applications);
         } catch (DeviceManagementDAOException e) {
             throw new DeviceManagementException("Error occurred while obtaining the device for id " +
                     "'" + deviceId.getId() + "'", e);
         } catch (SQLException e) {
             throw new DeviceManagementException("Error occurred while opening a connection to the data source", e);
-        } catch (DeviceDetailsMgtDAOException e) {
-            throw new DeviceManagementException("Error occurred while obtaining information of the device with id " +
-                    "'" + deviceId.getId() + "'", e);
         } finally {
             DeviceManagementDAOFactory.closeConnection();
         }
-        // The changes made here to prevent unit tests getting failed. They failed because when running the unit
-        // tests there is no osgi services. So getDeviceManager() returns a null.
-        DeviceManager deviceManager = this.getDeviceManager(deviceId.getType());
-        if (deviceManager == null) {
-            if (log.isDebugEnabled()) {
-                log.debug("Device Manager associated with the device type '" + deviceId.getType() + "' is null. " +
-                        "Therefore, not attempting method 'getDevice'");
-            }
-            return device;
+        if (requireDeviceInfo) {
+            device = this.getAllDeviceInfo(device);
         }
-        Device pluginSpecificInfo = deviceManager.getDevice(deviceId);
-        if (pluginSpecificInfo != null) {
-            device.setFeatures(pluginSpecificInfo.getFeatures());
-            device.setProperties(pluginSpecificInfo.getProperties());
-        }
+
         return device;
     }
 
@@ -1291,7 +1081,11 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
     @Override
     public List<Device> getDevicesOfUser(String username) throws DeviceManagementException {
-        List<Device> devices = new ArrayList<>();
+        return this.getDevicesOfUser(username, true);
+    }
+
+    @Override
+    public List<Device> getDevicesOfUser(String username, boolean requireDeviceInfo) throws DeviceManagementException {
         List<Device> userDevices;
         try {
             DeviceManagementDAOFactory.openConnection();
@@ -1305,61 +1099,20 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             DeviceManagementDAOFactory.closeConnection();
         }
 
-        for (Device device : userDevices) {
-            DeviceInfo info = null;
-            try {
-                DeviceManagementDAOFactory.openConnection();
-                info = deviceInfoDAO.getDeviceInformation(device.getId());
-                DeviceLocation location = deviceInfoDAO.getDeviceLocation(device.getId());
-                if (info != null) {
-                    info.setLocation(location);
-                }
-            } catch (DeviceDetailsMgtDAOException e) {
-                log.error("Error occurred while retrieving advance info of '" + device.getType() +
-                        "' that carries the id '" + device.getDeviceIdentifier() + "'");
-            } catch (SQLException e) {
-                log.error("Error occurred while opening a connection to the data source", e);
-            } finally {
-                DeviceManagementDAOFactory.closeConnection();
-            }
-            device.setDeviceInfo(info);
-
-            try {
-                DeviceManagementDAOFactory.openConnection();
-                List<Application> applications = applicationDAO.getInstalledApplications(device.getId());
-                device.setApplications(applications);
-            } catch (DeviceManagementDAOException e) {
-                log.error("Error occurred while retrieving the application list of '" + device.getType() + "', " +
-                        "which carries the id '" + device.getId() + "'", e);
-            } catch (SQLException e) {
-                log.error("Error occurred while opening a connection to the data source", e);
-            } finally {
-                DeviceManagementDAOFactory.closeConnection();
-            }
-
-            DeviceManager deviceManager = this.getDeviceManager(device.getType());
-            if (deviceManager == null) {
-                if (log.isDebugEnabled()) {
-                    log.debug("Device Manager associated with the device type '" + device.getType() + "' is null. " +
-                            "Therefore, not attempting method 'isEnrolled'");
-                }
-                devices.add(device);
-                continue;
-            }
-            Device dmsDevice =
-                    deviceManager.getDevice(new DeviceIdentifier(device.getDeviceIdentifier(), device.getType()));
-            if (dmsDevice != null) {
-                device.setFeatures(dmsDevice.getFeatures());
-                device.setProperties(dmsDevice.getProperties());
-            }
-            devices.add(device);
+        if (requireDeviceInfo) {
+            return this.getAllDeviceInfo(userDevices);
         }
-        return devices;
+        return userDevices;
     }
 
     @Override
     public List<Device> getDevicesOfUser(String username, String deviceType) throws DeviceManagementException {
-        List<Device> devices = new ArrayList<>();
+        return  this.getDevicesOfUser(username, deviceType, true);
+    }
+
+    @Override
+    public List<Device> getDevicesOfUser(String username, String deviceType, boolean requireDeviceInfo) throws
+            DeviceManagementException {
         List<Device> userDevices;
         try {
             DeviceManagementDAOFactory.openConnection();
@@ -1373,66 +1126,24 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             DeviceManagementDAOFactory.closeConnection();
         }
 
-        for (Device device : userDevices) {
-            DeviceInfo info = null;
-            try {
-                DeviceManagementDAOFactory.openConnection();
-                info = deviceInfoDAO.getDeviceInformation(device.getId());
-                DeviceLocation location = deviceInfoDAO.getDeviceLocation(device.getId());
-                if (info != null) {
-                    info.setLocation(location);
-                }
-            } catch (DeviceDetailsMgtDAOException e) {
-                log.error("Error occurred while retrieving advance info of '" + device.getType() +
-                        "' that carries the id '" + device.getDeviceIdentifier() + "'");
-            } catch (SQLException e) {
-                log.error("Error occurred while opening a connection to the data source", e);
-            } finally {
-                DeviceManagementDAOFactory.closeConnection();
-            }
-            device.setDeviceInfo(info);
-
-            try {
-                DeviceManagementDAOFactory.openConnection();
-                List<Application> applications = applicationDAO.getInstalledApplications(device.getId());
-                device.setApplications(applications);
-            } catch (DeviceManagementDAOException e) {
-                log.error("Error occurred while retrieving the application list of '" + device.getType() + "', " +
-                        "which carries the id '" + device.getId() + "'", e);
-            } catch (SQLException e) {
-                log.error("Error occurred while opening a connection to the data source", e);
-            } finally {
-                DeviceManagementDAOFactory.closeConnection();
-            }
-
-            DeviceManager deviceManager = this.getDeviceManager(device.getType());
-            if (deviceManager == null) {
-                if (log.isDebugEnabled()) {
-                    log.debug("Device Manager associated with the device type '" + device.getType() + "' is null. " +
-                            "Therefore, not attempting method 'isEnrolled'");
-                }
-                devices.add(device);
-                continue;
-            }
-            Device dmsDevice =
-                    deviceManager.getDevice(new DeviceIdentifier(device.getDeviceIdentifier(), device.getType()));
-            if (dmsDevice != null) {
-                device.setFeatures(dmsDevice.getFeatures());
-                device.setProperties(dmsDevice.getProperties());
-            }
-            devices.add(device);
+        if (requireDeviceInfo) {
+            return this.getAllDeviceInfo(userDevices);
         }
-        return devices;
+        return userDevices;
     }
 
     @Override
-    public PaginationResult getDevicesOfUser(PaginationRequest request)
+    public PaginationResult getDevicesOfUser(PaginationRequest request) throws DeviceManagementException {
+        return this.getDevicesOfUser(request, true);
+    }
+
+    @Override
+    public PaginationResult getDevicesOfUser(PaginationRequest request, boolean requireDeviceInfo)
             throws DeviceManagementException {
         PaginationResult result = new PaginationResult();
         int deviceCount = 0;
         int tenantId = this.getTenantId();
         String username = request.getOwner();
-        List<Device> devices = new ArrayList<>();
         List<Device> userDevices = new ArrayList<>();
         request = DeviceManagerUtil.validateDeviceListPageSize(request);
         try {
@@ -1448,56 +1159,12 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             DeviceManagementDAOFactory.closeConnection();
         }
 
-        for (Device device : userDevices) {
-            DeviceInfo info = null;
-            try {
-                DeviceManagementDAOFactory.openConnection();
-                info = deviceInfoDAO.getDeviceInformation(device.getId());
-                DeviceLocation location = deviceInfoDAO.getDeviceLocation(device.getId());
-                if (info != null) {
-                    info.setLocation(location);
-                }
-            } catch (DeviceDetailsMgtDAOException e) {
-                log.error("Error occurred while retrieving advance info of '" + device.getType() +
-                        "' that carries the id '" + device.getDeviceIdentifier() + "'");
-            } catch (SQLException e) {
-                log.error("Error occurred while opening a connection to the data source", e);
-            } finally {
-                DeviceManagementDAOFactory.closeConnection();
-            }
-            device.setDeviceInfo(info);
-
-            try {
-                DeviceManagementDAOFactory.openConnection();
-                List<Application> applications = applicationDAO.getInstalledApplications(device.getId());
-                device.setApplications(applications);
-            } catch (DeviceManagementDAOException e) {
-                log.error("Error occurred while retrieving the application list of '" + device.getType() + "', " +
-                        "which carries the id '" + device.getId() + "'", e);
-            } catch (SQLException e) {
-                log.error("Error occurred while opening a connection to the data source", e);
-            } finally {
-                DeviceManagementDAOFactory.closeConnection();
-            }
-
-            DeviceManager deviceManager = this.getDeviceManager(device.getType());
-            if (deviceManager == null) {
-                if (log.isDebugEnabled()) {
-                    log.debug("Device Manager associated with the device type '" + device.getType() + "' is null. " +
-                            "Therefore, not attempting method 'isEnrolled'");
-                }
-                devices.add(device);
-                continue;
-            }
-            Device dmsDevice =
-                    deviceManager.getDevice(new DeviceIdentifier(device.getDeviceIdentifier(), device.getType()));
-            if (dmsDevice != null) {
-                device.setFeatures(dmsDevice.getFeatures());
-                device.setProperties(dmsDevice.getProperties());
-            }
-            devices.add(device);
+        if (requireDeviceInfo) {
+            result.setData(this.getAllDeviceInfo(userDevices));
+        } else {
+            result.setData(userDevices);
         }
-        result.setData(devices);
+
         result.setRecordsTotal(deviceCount);
         result.setRecordsFiltered(deviceCount);
         return result;
@@ -1506,8 +1173,13 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     @Override
     public PaginationResult getDevicesByOwnership(PaginationRequest request)
             throws DeviceManagementException {
+        return this.getDevicesByOwnership(request, true);
+    }
+
+    @Override
+    public PaginationResult getDevicesByOwnership(PaginationRequest request, boolean requireDeviceInfo)
+            throws DeviceManagementException {
         PaginationResult result = new PaginationResult();
-        List<Device> devices = new ArrayList<>();
         List<Device> allDevices;
         int deviceCount = 0;
         int tenantId = this.getTenantId();
@@ -1525,51 +1197,12 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         } finally {
             DeviceManagementDAOFactory.closeConnection();
         }
-        for (Device device : allDevices) {
-            DeviceInfo info = null;
-            try {
-                DeviceManagementDAOFactory.openConnection();
-                info = deviceInfoDAO.getDeviceInformation(device.getId());
-                DeviceLocation location = deviceInfoDAO.getDeviceLocation(device.getId());
-                if (info != null) {
-                    info.setLocation(location);
-                }
-            } catch (DeviceDetailsMgtDAOException e) {
-                log.error("Error occurred while retrieving advance info of '" + device.getType() +
-                        "' that carries the id '" + device.getDeviceIdentifier() + "'");
-            } catch (SQLException e) {
-                log.error("Error occurred while opening a connection to the data source", e);
-            } finally {
-                DeviceManagementDAOFactory.closeConnection();
-            }
-            device.setDeviceInfo(info);
-
-            try {
-                DeviceManagementDAOFactory.openConnection();
-                List<Application> applications = applicationDAO.getInstalledApplications(device.getId());
-                device.setApplications(applications);
-            } catch (DeviceManagementDAOException e) {
-                log.error("Error occurred while retrieving the application list of '" + device.getType() + "', " +
-                        "which carries the id '" + device.getId() + "'", e);
-            } catch (SQLException e) {
-                log.error("Error occurred while opening a connection to the data source", e);
-            } finally {
-                DeviceManagementDAOFactory.closeConnection();
-            }
-            DeviceManager deviceManager = this.getDeviceManager(device.getType());
-            if (deviceManager == null) {
-                throw new DeviceManagementException("Failed to retrieve device type definition for "
-                                                            + device.getType());
-            }
-            Device dmsDevice = deviceManager.getDevice(new DeviceIdentifier(device.getDeviceIdentifier(),
-                                                                            device.getType()));
-            if (dmsDevice != null) {
-                device.setFeatures(dmsDevice.getFeatures());
-                device.setProperties(dmsDevice.getProperties());
-            }
-            devices.add(device);
+        if (requireDeviceInfo) {
+            result.setData(this.getAllDeviceInfo(allDevices));
+        } else {
+            result.setData(allDevices);
         }
-        result.setData(devices);
+
         result.setRecordsTotal(deviceCount);
         result.setRecordsFiltered(deviceCount);
         return result;
@@ -1577,6 +1210,12 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
     @Override
     public List<Device> getAllDevicesOfRole(String role) throws DeviceManagementException {
+        return this.getAllDevicesOfRole(role, true);
+    }
+
+    //TODO FIX THIS
+    @Override
+    public List<Device> getAllDevicesOfRole(String role, boolean requireDeviceInfo) throws DeviceManagementException {
         List<Device> devices = new ArrayList<>();
         String[] users;
         int tenantId = this.getTenantId();
@@ -1599,48 +1238,8 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             } finally {
                 DeviceManagementDAOFactory.closeConnection();
             }
-            for (Device device : userDevices) {
-                DeviceInfo info = null;
-                try {
-                    DeviceManagementDAOFactory.openConnection();
-                    info = deviceInfoDAO.getDeviceInformation(device.getId());
-                    DeviceLocation location = deviceInfoDAO.getDeviceLocation(device.getId());
-                    if (info != null) {
-                        info.setLocation(location);
-                    }
-                } catch (DeviceDetailsMgtDAOException e) {
-                    log.error("Error occurred while retrieving advance info of '" + device.getType() +
-                            "' that carries the id '" + device.getDeviceIdentifier() + "'");
-                } catch (SQLException e) {
-                    log.error("Error occurred while opening a connection to the data source", e);
-                } finally {
-                    DeviceManagementDAOFactory.closeConnection();
-                }
-                device.setDeviceInfo(info);
-
-                try {
-                    DeviceManagementDAOFactory.openConnection();
-                    List<Application> applications = applicationDAO.getInstalledApplications(device.getId());
-                    device.setApplications(applications);
-                } catch (DeviceManagementDAOException e) {
-                    log.error("Error occurred while retrieving the application list of '" + device.getType() + "', " +
-                            "which carries the id '" + device.getId() + "'", e);
-                } catch (SQLException e) {
-                    log.error("Error occurred while opening a connection to the data source", e);
-                } finally {
-                    DeviceManagementDAOFactory.closeConnection();
-                }
-                DeviceManager deviceManager = this.getDeviceManager(device.getType());
-                if (deviceManager == null) {
-                    continue;
-                }
-                Device dmsDevice = deviceManager.getDevice(new DeviceIdentifier(device.getDeviceIdentifier(),
-                                                                                device.getType()));
-                if (dmsDevice != null) {
-                    device.setFeatures(dmsDevice.getFeatures());
-                    device.setProperties(dmsDevice.getProperties());
-                }
-                devices.add(device);
+            if (requireDeviceInfo) {
+                this.getAllDeviceInfo(userDevices);
             }
         }
         return devices;
@@ -1676,74 +1275,40 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     }
 
     @Override
-    public List<Device> getDevicesByNameAndType(String deviceName, String type, int offset, int limit) throws DeviceManagementException {
+    public List<Device> getDevicesByNameAndType(PaginationRequest request, boolean requireDeviceInfo)
+            throws DeviceManagementException {
         List<Device> devices = new ArrayList<>();
         List<Device> allDevices;
-        limit = DeviceManagerUtil.validateDeviceListPageSize(limit);
+        int limit = DeviceManagerUtil.validateDeviceListPageSize(request.getRowCount());
         try {
             DeviceManagementDAOFactory.openConnection();
-            allDevices = deviceDAO.getDevicesByNameAndType(deviceName, type, this.getTenantId(), offset, limit);
+            allDevices = deviceDAO.getDevicesByNameAndType(request.getDeviceName(), request.getDeviceType(),
+                    this.getTenantId(), request.getStartIndex(), limit);
         } catch (DeviceManagementDAOException e) {
             throw new DeviceManagementException("Error occurred while fetching the list of devices that matches to '"
-                    + deviceName + "'", e);
+                    + request.getDeviceName() + "'", e);
         } catch (SQLException e) {
             throw new DeviceManagementException("Error occurred while opening a connection to the data source", e);
         } finally {
             DeviceManagementDAOFactory.closeConnection();
         }
-        for (Device device : allDevices) {
-            DeviceInfo info = null;
-            try {
-                DeviceManagementDAOFactory.openConnection();
-                info = deviceInfoDAO.getDeviceInformation(device.getId());
-                DeviceLocation location = deviceInfoDAO.getDeviceLocation(device.getId());
-                if (info != null) {
-                    info.setLocation(location);
-                }
-            } catch (DeviceDetailsMgtDAOException e) {
-                log.error("Error occurred while retrieving advance info of '" + device.getType() +
-                        "' that carries the id '" + device.getDeviceIdentifier() + "'");
-            } catch (SQLException e) {
-                log.error("Error occurred while opening a connection to the data source", e);
-            } finally {
-                DeviceManagementDAOFactory.closeConnection();
-            }
-            device.setDeviceInfo(info);
 
-            try {
-                DeviceManagementDAOFactory.openConnection();
-                List<Application> applications = applicationDAO.getInstalledApplications(device.getId());
-                device.setApplications(applications);
-            } catch (DeviceManagementDAOException e) {
-                log.error("Error occurred while retrieving the application list of '" + device.getType() + "', " +
-                        "which carries the id '" + device.getId() + "'", e);
-            } catch (SQLException e) {
-                log.error("Error occurred while opening a connection to the data source", e);
-            } finally {
-                DeviceManagementDAOFactory.closeConnection();
-            }
-            DeviceManager deviceManager = this.getDeviceManager(device.getType());
-            if (deviceManager == null) {
-                throw new DeviceManagementException("Failed to retrieve device type definition for "
-                                                            + device.getType());
-            }
-            Device dmsDevice = deviceManager.
-                    getDevice(new DeviceIdentifier(device.getDeviceIdentifier(), device.getType()));
-            if (dmsDevice != null) {
-                device.setFeatures(dmsDevice.getFeatures());
-                device.setProperties(dmsDevice.getProperties());
-            }
-            devices.add(device);
+        if (requireDeviceInfo) {
+            return this.getAllDeviceInfo(allDevices);
         }
-        return devices;
+        return allDevices;
     }
 
     @Override
-    public PaginationResult getDevicesByName(PaginationRequest request)
-            throws DeviceManagementException {
+    public PaginationResult getDevicesByName(PaginationRequest request) throws DeviceManagementException {
+        return this.getDevicesByName(request, true);
+    }
+
+    @Override
+    public PaginationResult getDevicesByName(PaginationRequest request, boolean requireDeviceInfo) throws
+            DeviceManagementException {
         PaginationResult result = new PaginationResult();
         int tenantId = this.getTenantId();
-        List<Device> devices = new ArrayList<>();
         List<Device> allDevices = new ArrayList<>();
         String deviceName = request.getDeviceName();
         request = DeviceManagerUtil.validateDeviceListPageSize(request);
@@ -1761,50 +1326,11 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         } finally {
             DeviceManagementDAOFactory.closeConnection();
         }
-        for (Device device : allDevices) {
-            DeviceInfo info = null;
-            try {
-                DeviceManagementDAOFactory.openConnection();
-                info = deviceInfoDAO.getDeviceInformation(device.getId());
-                DeviceLocation location = deviceInfoDAO.getDeviceLocation(device.getId());
-                if (info != null) {
-                    info.setLocation(location);
-                }
-            } catch (DeviceDetailsMgtDAOException e) {
-                log.error("Error occurred while retrieving advance info of '" + device.getType() +
-                        "' that carries the id '" + device.getDeviceIdentifier() + "'");
-            } catch (SQLException e) {
-                log.error("Error occurred while opening a connection to the data source", e);
-            } finally {
-                DeviceManagementDAOFactory.closeConnection();
-            }
-            device.setDeviceInfo(info);
-
-            try {
-                DeviceManagementDAOFactory.openConnection();
-                List<Application> applications = applicationDAO.getInstalledApplications(device.getId());
-                device.setApplications(applications);
-            } catch (DeviceManagementDAOException e) {
-                log.error("Error occurred while retrieving the application list of '" + device.getType() + "', " +
-                        "which carries the id '" + device.getId() + "'", e);
-            } catch (SQLException e) {
-                log.error("Error occurred while opening a connection to the data source", e);
-            } finally {
-                DeviceManagementDAOFactory.closeConnection();
-            }
-            DeviceManager deviceManager = this.getDeviceManager(device.getType());
-            if (deviceManager == null) {
-                continue;
-            }
-            Device dmsDevice = deviceManager.
-                    getDevice(new DeviceIdentifier(device.getDeviceIdentifier(), device.getType()));
-            if (dmsDevice != null) {
-                device.setFeatures(dmsDevice.getFeatures());
-                device.setProperties(dmsDevice.getProperties());
-            }
-            devices.add(device);
+        if (requireDeviceInfo) {
+            result.setData(this.getAllDeviceInfo(allDevices));
+        } else {
+            result.setData(allDevices);
         }
-        result.setData(devices);
         return result;
     }
 
@@ -1847,8 +1373,14 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         }
     }
 
+    @Override
     public List<Device> getDevicesByStatus(EnrolmentInfo.Status status) throws DeviceManagementException {
-        List<Device> devices = new ArrayList<>();
+        return this.getDevicesByStatus(status, true);
+    }
+
+    @Override
+    public List<Device> getDevicesByStatus(EnrolmentInfo.Status status, boolean requireDeviceInfo) throws
+            DeviceManagementException {
         List<Device> allDevices;
         try {
             DeviceManagementDAOFactory.openConnection();
@@ -1861,57 +1393,21 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         } finally {
             DeviceManagementDAOFactory.closeConnection();
         }
-        for (Device device : allDevices) {
-            DeviceInfo info = null;
-            try {
-                DeviceManagementDAOFactory.openConnection();
-                info = deviceInfoDAO.getDeviceInformation(device.getId());
-                DeviceLocation location = deviceInfoDAO.getDeviceLocation(device.getId());
-                if (info != null) {
-                    info.setLocation(location);
-                }
-            } catch (DeviceDetailsMgtDAOException e) {
-                log.error("Error occurred while retrieving advance info of '" + device.getType() +
-                        "' that carries the id '" + device.getDeviceIdentifier() + "'");
-            } catch (SQLException e) {
-                log.error("Error occurred while opening a connection to the data source", e);
-            } finally {
-                DeviceManagementDAOFactory.closeConnection();
-            }
-            device.setDeviceInfo(info);
-
-            try {
-                DeviceManagementDAOFactory.openConnection();
-                List<Application> applications = applicationDAO.getInstalledApplications(device.getId());
-                device.setApplications(applications);
-            } catch (DeviceManagementDAOException e) {
-                log.error("Error occurred while retrieving the application list of '" + device.getType() + "', " +
-                        "which carries the id '" + device.getId() + "'", e);
-            } catch (SQLException e) {
-                log.error("Error occurred while opening a connection to the data source", e);
-            } finally {
-                DeviceManagementDAOFactory.closeConnection();
-            }
-            DeviceManager deviceManager = this.getDeviceManager(device.getType());
-            if (deviceManager == null) {
-                continue;
-            }
-            Device dmsDevice = deviceManager.
-                    getDevice(new DeviceIdentifier(device.getDeviceIdentifier(), device.getType()));
-            if (dmsDevice != null) {
-                device.setFeatures(dmsDevice.getFeatures());
-                device.setProperties(dmsDevice.getProperties());
-            }
-            devices.add(device);
+        if (requireDeviceInfo) {
+            return this.getAllDeviceInfo(allDevices);
         }
-        return devices;
+        return allDevices;
     }
 
     @Override
-    public PaginationResult getDevicesByStatus(PaginationRequest request)
+    public PaginationResult getDevicesByStatus(PaginationRequest request) throws DeviceManagementException {
+        return this.getDevicesByStatus(request, true);
+    }
+
+    @Override
+    public PaginationResult getDevicesByStatus(PaginationRequest request, boolean requireDeviceInfo)
             throws DeviceManagementException {
         PaginationResult result = new PaginationResult();
-        List<Device> devices = new ArrayList<>();
         List<Device> allDevices = new ArrayList<>();
         int tenantId = this.getTenantId();
         String status = request.getStatus();
@@ -1930,50 +1426,11 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         } finally {
             DeviceManagementDAOFactory.closeConnection();
         }
-        for (Device device : allDevices) {
-            DeviceInfo info = null;
-            try {
-                DeviceManagementDAOFactory.openConnection();
-                info = deviceInfoDAO.getDeviceInformation(device.getId());
-                DeviceLocation location = deviceInfoDAO.getDeviceLocation(device.getId());
-                if (info != null) {
-                    info.setLocation(location);
-                }
-            } catch (DeviceDetailsMgtDAOException e) {
-                log.error("Error occurred while retrieving advance info of '" + device.getType() +
-                        "' that carries the id '" + device.getDeviceIdentifier() + "'");
-            } catch (SQLException e) {
-                log.error("Error occurred while opening a connection to the data source", e);
-            } finally {
-                DeviceManagementDAOFactory.closeConnection();
-            }
-            device.setDeviceInfo(info);
-
-            try {
-                DeviceManagementDAOFactory.openConnection();
-                List<Application> applications = applicationDAO.getInstalledApplications(device.getId());
-                device.setApplications(applications);
-            } catch (DeviceManagementDAOException e) {
-                log.error("Error occurred while retrieving the application list of '" + device.getType() + "', " +
-                        "which carries the id '" + device.getId() + "'", e);
-            } catch (SQLException e) {
-                log.error("Error occurred while opening a connection to the data source", e);
-            } finally {
-                DeviceManagementDAOFactory.closeConnection();
-            }
-            DeviceManager deviceManager = this.getDeviceManager(device.getType());
-            if (deviceManager == null) {
-                continue;
-            }
-            Device dmsDevice = deviceManager.
-                    getDevice(new DeviceIdentifier(device.getDeviceIdentifier(), device.getType()));
-            if (dmsDevice != null) {
-                device.setFeatures(dmsDevice.getFeatures());
-                device.setProperties(dmsDevice.getProperties());
-            }
-            devices.add(device);
+        if (requireDeviceInfo) {
+            result.setData(this.getAllDeviceInfo(allDevices));
+        } else {
+            result.setData(allDevices);
         }
-        result.setData(devices);
         return result;
     }
 
@@ -2018,8 +1475,8 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     @Override
     public boolean changeDeviceStatus(DeviceIdentifier deviceIdentifier, EnrolmentInfo.Status newStatus)
             throws DeviceManagementException {
-        boolean isDeviceUpdated;
-        Device device = getDevice(deviceIdentifier);
+        boolean isDeviceUpdated = false;
+        Device device = getDevice(deviceIdentifier, false);
         int deviceId = device.getId();
         EnrolmentInfo enrolmentInfo = device.getEnrolmentInfo();
         enrolmentInfo.setStatus(newStatus);
@@ -2229,5 +1686,106 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                                                                        "for device type" + deviceIdentifier.getType());
         }
         pullNotificationSubscriber.execute(deviceIdentifier, operation);
+    }
+
+    /**
+     *  Returns all the device-info including location of the given device.
+     */
+    private DeviceInfo getDeviceInfo(Device device) {
+        DeviceInfo info = null;
+        try {
+            DeviceManagementDAOFactory.openConnection();
+            info = deviceInfoDAO.getDeviceInformation(device.getId());
+            DeviceLocation location = deviceInfoDAO.getDeviceLocation(device.getId());
+            if (info != null) {
+                info.setLocation(location);
+            }
+        } catch (DeviceDetailsMgtDAOException e) {
+            log.error("Error occurred while retrieving advance info of '" + device.getType() +
+                    "' that carries the id '" + device.getDeviceIdentifier() + "'");
+        } catch (SQLException e) {
+            log.error("Error occurred while opening a connection to the data source", e);
+        } finally {
+            DeviceManagementDAOFactory.closeConnection();
+        }
+        return info;
+    }
+
+    /**
+     *  Returns all the installed apps of the given device.
+     */
+    private List<Application> getInstalledApplications(Device device) {
+        List<Application> applications = new ArrayList<>();
+        try {
+            DeviceManagementDAOFactory.openConnection();
+            applications = applicationDAO.getInstalledApplications(device.getId());
+            device.setApplications(applications);
+        } catch (DeviceManagementDAOException e) {
+            log.error("Error occurred while retrieving the application list of '" + device.getType() + "', " +
+                    "which carries the id '" + device.getId() + "'", e);
+        } catch (SQLException e) {
+            log.error("Error occurred while opening a connection to the data source", e);
+        } finally {
+            DeviceManagementDAOFactory.closeConnection();
+        }
+        return applications;
+    }
+
+    /**
+     *  Returns all the available information (device-info, location, applications and plugin-db data)
+     *  of the given device list.
+     */
+    private List<Device> getAllDeviceInfo(List<Device> allDevices)
+            throws DeviceManagementException {
+        List<Device> devices = new ArrayList<>();
+        if (allDevices != null) {
+            for (Device device : allDevices) {
+                device.setDeviceInfo(this.getDeviceInfo(device));
+                device.setApplications(this.getInstalledApplications(device));
+
+                DeviceManager deviceManager = this.getDeviceManager(device.getType());
+                if (deviceManager == null) {
+                    if (log.isDebugEnabled()) {
+                        log.debug("Device Manager associated with the device type '" + device.getType() + "' is null. " +
+                                "Therefore, not attempting method 'isEnrolled'");
+                    }
+                    devices.add(device);
+                    continue;
+                }
+                Device dmsDevice =
+                        deviceManager.getDevice(new DeviceIdentifier(device.getDeviceIdentifier(), device.getType()));
+                if (dmsDevice != null) {
+                    device.setFeatures(dmsDevice.getFeatures());
+                    device.setProperties(dmsDevice.getProperties());
+                }
+                devices.add(device);
+            }
+        }
+        return devices;
+    }
+
+    /**
+     *  Returns all the available information (device-info, location, applications and plugin-db data)
+     *  of a given device.
+     */
+    private Device getAllDeviceInfo(Device device) throws DeviceManagementException {
+        device.setDeviceInfo(this.getDeviceInfo(device));
+        device.setApplications(this.getInstalledApplications(device));
+
+        DeviceManager deviceManager = this.getDeviceManager(device.getType());
+        if (deviceManager == null) {
+            if (log.isDebugEnabled()) {
+                log.debug("Device Manager associated with the device type '" + device.getType() + "' is null. " +
+                        "Therefore, not attempting method 'isEnrolled'");
+            }
+            return device;
+        }
+        Device dmsDevice =
+                deviceManager.getDevice(new DeviceIdentifier(device.getDeviceIdentifier(), device.getType()));
+        if (dmsDevice != null) {
+            device.setFeatures(dmsDevice.getFeatures());
+            device.setProperties(dmsDevice.getProperties());
+        }
+        return device;
     }
 }

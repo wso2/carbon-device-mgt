@@ -274,6 +274,13 @@ public interface DeviceManagementService {
             @HeaderParam("If-Modified-Since")
             String timestamp,
             @ApiParam(
+                    name = "requireDeviceInfo",
+                    value = "Boolean flag indicating whether to include device-info (location, application list etc) \n" +
+                            " to the device object.",
+                    required = false)
+            @QueryParam("requireDeviceInfo")
+                    boolean requireDeviceInfo,
+            @ApiParam(
                     name = "offset",
                     value = "The starting pagination index for the complete list of qualified items.",
                     required = false,
@@ -339,6 +346,13 @@ public interface DeviceManagementService {
     })
     @Path("/user-devices")
     Response getDeviceByUser(
+            @ApiParam(
+                    name = "requireDeviceInfo",
+                    value = "Boolean flag indicating whether to include device-info (location, application list etc) \n" +
+                            " to the device object.",
+                    required = false)
+            @QueryParam("requireDeviceInfo")
+                    boolean requireDeviceInfo,
             @ApiParam(
                     name = "offset",
                     value = "The starting pagination index for the complete list of qualified items.",

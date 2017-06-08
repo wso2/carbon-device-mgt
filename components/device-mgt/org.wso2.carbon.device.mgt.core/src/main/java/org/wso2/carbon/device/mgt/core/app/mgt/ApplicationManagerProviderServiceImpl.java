@@ -114,7 +114,7 @@ public class ApplicationManagerProviderServiceImpl implements ApplicationManagem
             for (String user : userNameList) {
                 userName = user;
                 deviceList = DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().getDevicesOfUser
-                        (user);
+                        (user, false);
                 for (Device device : deviceList) {
                     deviceIdentifier = new DeviceIdentifier();
                     deviceIdentifier.setId(Integer.toString(device.getId()));
@@ -156,7 +156,7 @@ public class ApplicationManagerProviderServiceImpl implements ApplicationManagem
             for (String role : userRoleList) {
                 userRole = role;
                 deviceList = DeviceManagementDataHolder.getInstance().getDeviceManagementProvider()
-                        .getAllDevicesOfRole(userRole);
+                        .getAllDevicesOfRole(userRole, false);
                 for (Device device : deviceList) {
                     deviceIdentifier = new DeviceIdentifier();
                     deviceIdentifier.setId(Integer.toString(device.getId()));

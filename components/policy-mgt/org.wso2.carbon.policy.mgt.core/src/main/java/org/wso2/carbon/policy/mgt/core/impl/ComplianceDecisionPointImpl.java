@@ -54,7 +54,7 @@ public class ComplianceDecisionPointImpl implements ComplianceDecisionPoint {
         try {
             DeviceManagementProviderService service = this.getDeviceManagementProviderService();
             for (DeviceIdentifier deviceIdentifier : deviceIdentifiers) {
-                Device device = service.getDevice(deviceIdentifier);
+                Device device = service.getDevice(deviceIdentifier, false);
                 service.setStatus(deviceIdentifier, device.getEnrolmentInfo().getOwner(),
                         EnrolmentInfo.Status.UNREACHABLE);
             }
@@ -71,7 +71,7 @@ public class ComplianceDecisionPointImpl implements ComplianceDecisionPoint {
         try {
             DeviceManagementProviderService service = this.getDeviceManagementProviderService();
             for (DeviceIdentifier deviceIdentifier : deviceIdentifiers) {
-                Device device = service.getDevice(deviceIdentifier);
+                Device device = service.getDevice(deviceIdentifier, false);
                 service.setStatus(deviceIdentifier, device.getEnrolmentInfo().getOwner(),
                                   EnrolmentInfo.Status.INACTIVE);
             }
@@ -106,7 +106,7 @@ public class ComplianceDecisionPointImpl implements ComplianceDecisionPoint {
         try {
 
             DeviceManagementProviderService service = this.getDeviceManagementProviderService();
-            Device device = service.getDevice(deviceIdentifier);
+            Device device = service.getDevice(deviceIdentifier, false);
             service.setStatus(deviceIdentifier, device.getEnrolmentInfo().getOwner(),
                     EnrolmentInfo.Status.ACTIVE);
 
@@ -213,7 +213,7 @@ public class ComplianceDecisionPointImpl implements ComplianceDecisionPoint {
 
         try {
             DeviceManagementProviderService service = this.getDeviceManagementProviderService();
-            Device device = service.getDevice(deviceIdentifier);
+            Device device = service.getDevice(deviceIdentifier, false);
             service.setStatus(deviceIdentifier, device.getEnrolmentInfo().getOwner(),
                     EnrolmentInfo.Status.ACTIVE);
 
@@ -231,7 +231,7 @@ public class ComplianceDecisionPointImpl implements ComplianceDecisionPoint {
         try {
 
             DeviceManagementProviderService service = this.getDeviceManagementProviderService();
-            Device device = service.getDevice(deviceIdentifier);
+            Device device = service.getDevice(deviceIdentifier, false);
             service.setStatus(deviceIdentifier, device.getEnrolmentInfo().getOwner(),
                     EnrolmentInfo.Status.INACTIVE);
 
@@ -248,7 +248,7 @@ public class ComplianceDecisionPointImpl implements ComplianceDecisionPoint {
 
         try {
             DeviceManagementProviderService service = this.getDeviceManagementProviderService();
-            Device device = service.getDevice(deviceIdentifier);
+            Device device = service.getDevice(deviceIdentifier, false);
             service.setStatus(deviceIdentifier, device.getEnrolmentInfo().getOwner(),
                     EnrolmentInfo.Status.ACTIVE);
 

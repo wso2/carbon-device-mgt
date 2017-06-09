@@ -20,11 +20,13 @@ package org.wso2.carbon.device.application.mgt.core.internal;
 
 import org.wso2.carbon.device.application.mgt.common.services.*;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
+import org.wso2.carbon.user.core.service.RealmService;
 
 public class DataHolder {
-    //TODO move the osgi classes here.
 
     private DeviceManagementProviderService deviceManagementService;
+
+    private RealmService realmService;
 
     private ApplicationManager applicationManager;
 
@@ -62,10 +64,6 @@ public class DataHolder {
 
     public void setDeviceManagementService(DeviceManagementProviderService deviceManagementService) {
         this.deviceManagementService = deviceManagementService;
-    }
-
-    public static DataHolder getApplicationMgtDataHolder() {
-        return applicationMgtDataHolder;
     }
 
     public ApplicationManager getApplicationManager() {
@@ -142,5 +140,17 @@ public class DataHolder {
 
     public void setApplicationUploadManager(ApplicationUploadManager applicationUploadManager) {
         this.applicationUploadManager = applicationUploadManager;
+    }
+
+    public ApplicationUploadManager getApplicationUploadManager() {
+        return applicationUploadManager;
+    }
+
+    public RealmService getRealmService() {
+        return realmService;
+    }
+
+    public void setRealmService(RealmService realmService) {
+        this.realmService = realmService;
     }
 }

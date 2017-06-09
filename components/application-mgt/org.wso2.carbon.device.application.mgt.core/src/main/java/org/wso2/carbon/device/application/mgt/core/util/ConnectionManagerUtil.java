@@ -45,7 +45,7 @@ public class ConnectionManagerUtil {
         return currentConnection;
     }
 
-    public static void openConnection() throws DBConnectionException {
+    public static Connection openConnection() throws DBConnectionException {
         Connection conn = currentConnection.get();
         if (conn != null) {
             throw new IllegalTransactionStateException("A transaction is already active within the context of " +
@@ -60,6 +60,7 @@ public class ConnectionManagerUtil {
         }
         currentConnection.set(conn);
         currentTxState.set(TxState.CONNECTION_BORROWED);
+        return conn;
     }
 
     public static Connection getConnection() throws DBConnectionException {

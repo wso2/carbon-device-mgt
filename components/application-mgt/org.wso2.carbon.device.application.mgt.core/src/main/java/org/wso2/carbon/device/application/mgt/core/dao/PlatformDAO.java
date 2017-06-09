@@ -18,6 +18,21 @@
  */
 package org.wso2.carbon.device.application.mgt.core.dao;
 
+import org.wso2.carbon.device.application.mgt.common.Platform;
+import org.wso2.carbon.device.application.mgt.core.exception.PlatformManagementDAOException;
+
+import java.util.List;
+
 public interface PlatformDAO {
+
+    void register(String tenantDomain, Platform platform) throws PlatformManagementDAOException;
+
+    void unregister(String tenantDomain, String platformCode) throws PlatformManagementDAOException;
+
+    void addMapping(String tenantDomain, String platformCode) throws PlatformManagementDAOException;
+
+    void removeMapping(String tenantDomain, String platformCode) throws PlatformManagementDAOException;
+
+    List<Platform> getPlatforms(String tenantDomain) throws PlatformManagementDAOException;
 
 }

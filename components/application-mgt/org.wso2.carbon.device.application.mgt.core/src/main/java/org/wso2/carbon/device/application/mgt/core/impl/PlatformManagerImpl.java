@@ -17,7 +17,84 @@
 */
 package org.wso2.carbon.device.application.mgt.core.impl;
 
+import org.wso2.carbon.device.application.mgt.common.Platform;
 import org.wso2.carbon.device.application.mgt.common.services.PlatformManager;
+import org.wso2.carbon.device.application.mgt.common.exception.PlatformManagementException;
+import org.wso2.carbon.device.application.mgt.core.dao.common.DAOFactory;
+import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class PlatformManagerImpl implements PlatformManager {
+    private Map<String, Map<String, Platform>> inMemoryStore;
+
+    public PlatformManagerImpl() {
+        this.inMemoryStore = new HashMap<>();
+    }
+
+
+    @Override
+    public List<Platform> getPlatforms(String tenantDomain) throws PlatformManagementException {
+        List<Platform> platforms = DAOFactory.getPlatformDAO().getPlatforms(tenantDomain);
+        int platformIndex = 0;
+        for (Platform platform : platforms) {
+            if (platform.isFileBased()) {
+                Map<String, Platform> superTenantPlatforms = this.inMemoryStore.get(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
+                Platform registeredPlatform = superTenantPlatforms.get(platform.getCode());
+                if (registeredPlatform != null) {
+                    platforms.set(platformIndex, new Platform(registeredPlatform));
+                } else {
+                    platforms.remove(platformIndex);
+                }
+            }
+            platformIndex++;
+        }
+        return platforms;
+    }
+
+    @Override
+    public synchronized void register(String tenantDomain, Platform platform) throws PlatformManagementException {
+        if (platform.isShared() && !tenantDomain.equals(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME)) {
+            throw new PlatformManagementException("Platform sharing is a restricted operation, therefore Platform - "
+                    + platform.getCode() + " cannot be shared by the tenant domain - " + tenantDomain);
+        }
+        if (platform.isFileBased()) {
+            Map<String, Platform> tenantPlatforms = this.inMemoryStore.get(tenantDomain);
+            if (tenantPlatforms == null) {
+                tenantPlatforms = new HashMap<>();
+                this.inMemoryStore.put(tenantDomain, tenantPlatforms);
+            }
+            if (tenantPlatforms.get(platform.getCode()) == null) {
+                tenantPlatforms.put(platform.getCode(), platform);
+            } else {
+                throw new PlatformManagementException("Platform - " + platform.getCode() + " is already registered!");
+            }
+        } else {
+            DAOFactory.getPlatformDAO().register(tenantDomain, platform);
+        }
+    }
+
+    @Override
+    public void unregister(String tenantDomain, String platformCode, boolean isFileBased) throws PlatformManagementException {
+        if (isFileBased) {
+            Map<String, Platform> tenantPlatforms = this.inMemoryStore.get(tenantDomain);
+            if (tenantPlatforms != null) {
+                this.inMemoryStore.remove(platformCode);
+            }
+        } else {
+            DAOFactory.getPlatformDAO().unregister(tenantDomain, platformCode);
+        }
+    }
+
+    @Override
+    public void addMapping(String tenantDomain, String platformCode) throws PlatformManagementException {
+        DAOFactory.getPlatformDAO().addMapping(tenantDomain, platformCode);
+    }
+
+    @Override
+    public void removeMapping(String tenantDomain, String platformCode) throws PlatformManagementException {
+        DAOFactory.getPlatformDAO().removeMapping(tenantDomain, platformCode);
+    }
 }

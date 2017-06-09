@@ -28,6 +28,8 @@ public class Constants {
 
     public static final String DEFAULT_CONFIG_FILE_LOCATION = CarbonUtils.getCarbonConfigDirPath() + File.separator +
             Constants.APPLICATION_CONFIG_XML_FILE;
+    public static final String PLATFORMS_DEPLOYMENT_DIR_NAME = "platforms";
+    public static final String PLATFORM_DEPLOYMENT_EXT = ".xml";
 
     public static final class DataBaseTypes {
 

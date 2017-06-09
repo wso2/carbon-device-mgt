@@ -71,11 +71,14 @@
                             org.wso2.carbon.device.application.mgt.common.*,
                             org.wso2.carbon.device.mgt.core.*,
                             org.wso2.carbon.device.mgt.common.*,
+                            org.apache.axis2.*,
+                            org.wso2.carbon.user.core.*
                         </Import-Package>
                         <Export-Package>
                             !org.wso2.carbon.device.application.mgt.core.internal.*,
                             org.wso2.carbon.device.application.mgt.core.*
                         </Export-Package>
+                        <Axis2Deployer>PlatformDeployer</Axis2Deployer>
                     </instructions>
                 </configuration>
             </plugin>
@@ -151,6 +154,10 @@
         <dependency>
             <groupId>org.wso2.carbon.devicemgt</groupId>
             <artifactId>org.wso2.carbon.device.mgt.core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.user.core</artifactId>
         </dependency>
     </dependencies>
 </project>

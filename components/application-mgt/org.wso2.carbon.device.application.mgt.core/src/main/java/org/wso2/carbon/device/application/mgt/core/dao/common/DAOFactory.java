@@ -22,12 +22,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.application.mgt.common.exception.UnsupportedDatabaseEngineException;
 import org.wso2.carbon.device.application.mgt.core.dao.ApplicationDAO;
+import org.wso2.carbon.device.application.mgt.core.dao.PlatformDAO;
+import org.wso2.carbon.device.application.mgt.core.dao.impl.PlatformDAOImpl;
 import org.wso2.carbon.device.application.mgt.core.dao.impl.application.H2ApplicationDAOImpl;
 import org.wso2.carbon.device.application.mgt.core.dao.impl.application.MySQLApplicationDAOImpl;
 import org.wso2.carbon.device.application.mgt.core.util.Constants;
 import org.wso2.carbon.device.application.mgt.core.util.ConnectionManagerUtil;
-
-import javax.sql.DataSource;
 
 
 /**
@@ -56,6 +56,13 @@ public class DAOFactory {
                 default:
                     throw new UnsupportedDatabaseEngineException("Unsupported database engine : " + databaseEngine);
             }
+        }
+        throw new IllegalStateException("Database engine has not initialized properly.");
+    }
+
+    public static PlatformDAO getPlatformDAO(){
+        if (databaseEngine != null){
+            return new PlatformDAOImpl();
         }
         throw new IllegalStateException("Database engine has not initialized properly.");
     }

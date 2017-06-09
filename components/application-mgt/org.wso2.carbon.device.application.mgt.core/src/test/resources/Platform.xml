@@ -1,0 +1,6 @@
+<Platforms>
+    <Platform id="android" name="Android" description="something...." icon="" isShared="true">
+        <Property optional="true">test</Property>
+        <Property optional="false" default="xxxxx">number</Property>
+    </Platform>
+</Platforms>

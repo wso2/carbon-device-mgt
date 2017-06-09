@@ -28,6 +28,7 @@ import org.wso2.carbon.device.application.mgt.core.config.ConfigurationManager;
 import org.wso2.carbon.device.application.mgt.core.dao.common.DAOFactory;
 import org.wso2.carbon.device.application.mgt.core.util.ApplicationManagementUtil;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
+import org.wso2.carbon.user.core.service.RealmService;
 
 import javax.naming.NamingException;
 
@@ -39,6 +40,13 @@ import javax.naming.NamingException;
  * policy="dynamic"
  * bind="setDeviceManagementService"
  * unbind="unsetDeviceManagementService"
+ * @scr.reference name="realm.service"
+ * immediate="true"
+ * interface="org.wso2.carbon.user.core.service.RealmService"
+ * cardinality="1..1"
+ * policy="dynamic"
+ * bind="setRealmService"
+ * unbind="unsetRealmService"
  */
 public class ServiceComponent {
 
@@ -118,5 +126,13 @@ public class ServiceComponent {
             log.debug("Removing Application Management OSGI Manager");
         }
         DataHolder.getInstance().setDeviceManagementService(null);
+    }
+
+    protected void setRealmService(RealmService realmService) {
+        DataHolder.getInstance().setRealmService(realmService);
+    }
+
+    protected void unsetRealmService(RealmService realmService) {
+        DataHolder.getInstance().setRealmService(null);
     }
 }

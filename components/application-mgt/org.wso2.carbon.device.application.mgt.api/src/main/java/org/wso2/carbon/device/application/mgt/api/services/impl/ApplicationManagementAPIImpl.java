@@ -44,7 +44,7 @@ public class ApplicationManagementAPIImpl {
     @Path("applications")
     public Response getApplications(@QueryParam("offset") int offset, @QueryParam("limit") int limit,
                                     @QueryParam("query") String searchQuery) {
-        ApplicationManager applicationManager = APIUtil.getApplicationManagemer();
+        ApplicationManager applicationManager = APIUtil.getApplicationManager();
         try {
             if (limit == 0) {
                 limit = DEFAULT_LIMIT;

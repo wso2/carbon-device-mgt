@@ -29,13 +29,25 @@ import org.wso2.carbon.device.application.mgt.core.dao.common.DAOFactory;
 import org.wso2.carbon.device.application.mgt.core.util.ConnectionManagerUtil;
 
 public class ApplicationManagerImpl implements ApplicationManager {
+
     @Override
-    public void createApplication(Application application) throws ApplicationManagementException {
+    public Application createApplication(Application application) throws ApplicationManagementException {
+        return null;
+    }
+
+    @Override
+    public Application editApplication(int applicationId, Application application) throws ApplicationManagementException {
+        return null;
+    }
+
+    @Override
+    public void deleteApplication(int applicationId) throws ApplicationManagementException {
 
     }
 
     @Override
     public ApplicationList getApplications(Filter filter) throws ApplicationManagementException {
+
         try {
             ConnectionManagerUtil.openConnection();
             ApplicationDAO applicationDAO = DAOFactory.getApplicationDAO();
@@ -43,5 +55,6 @@ public class ApplicationManagerImpl implements ApplicationManager {
         }  finally {
             ConnectionManagerUtil.closeConnection();
         }
+
     }
 }

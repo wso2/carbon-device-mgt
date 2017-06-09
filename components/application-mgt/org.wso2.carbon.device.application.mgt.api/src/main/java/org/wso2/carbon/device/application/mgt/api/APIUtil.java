@@ -37,7 +37,8 @@ public class APIUtil {
 
     private static ApplicationManager applicationManager;
 
-    public static ApplicationManager getApplicationManagemer() {
+    public static ApplicationManager getApplicationManager() {
+
         if (applicationManager == null) {
             synchronized (APIUtil.class) {
                 if (applicationManager == null) {
@@ -52,10 +53,12 @@ public class APIUtil {
                 }
             }
         }
+
         return applicationManager;
     }
 
     public static Response getResponse(ApplicationManagementException ex, Response.Status status) {
+
         //TODO: check for exception type and set the response code.
         ErrorResponse errorMessage = new ErrorResponse();
         errorMessage.setMessage(ex.getMessage());
@@ -64,5 +67,6 @@ public class APIUtil {
         }
         errorMessage.setCode(status.getStatusCode());
         return Response.status(status).entity(errorMessage).build();
+
     }
 }

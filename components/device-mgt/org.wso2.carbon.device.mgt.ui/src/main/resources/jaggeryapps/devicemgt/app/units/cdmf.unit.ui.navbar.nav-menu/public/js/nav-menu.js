@@ -98,6 +98,7 @@ function loadNewNotifications() {
                     var responsePayload = JSON.parse(data);
 
                     if (responsePayload.notifications) {
+                        viewModel.context = context;
                         viewModel.notifications = responsePayload.notifications;
                         if (responsePayload.count > 0) {
                             $(messageSideBar).html(template(viewModel));

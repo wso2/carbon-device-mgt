@@ -20,50 +20,36 @@
     <title></title>
 </head>
 <body>
+<div id="viewExitAlert" >
+    <div class="popover-content">
+        <form role="form" style="width: auto">
+            <h6>Query name<span id="viewQueryName" class="label label-primary pull-right">N/A</span></h6>
+            <h6>Area name<span id="viewAreaName" class="label label-primary pull-right">N/A</span></h6>
+            <button type="button" id="exportGeoJson" download="geoJson.json" onclick="exportToGeoJSON($('#downloadLinkFwrd'),JSON.stringify(map._layers[$(this).attr('leaflet_id')].toGeoJSON(),null, '\t'))" class="btn btn-info btn-xs" data-toggle="tooltip" data-placement="left" title="Export selected area as a geoJson file">Export</button>
+            <button type="button" id="hideViewFence" class="btn btn-info btn-xs" data-toggle="tooltip" data-placement="left" title="Hide this fence" onclick="map.removeLayer(map._layers[$(this).attr('leaflet_id')])" >Hide</button>
+        </form>
+    </div>
+</div>
 <div id="viewWithinAlert" >
-    <form role="form" style="width: auto">
-        <div class="form-group">
-            <label class="text-info">Query name</label>
-            <div id="viewQueryName" class="well well-sm"></div>
-
-            <label class="text-info">Area name</label>
-            <div id="viewAreaName" class="well well-sm"></div>
-        </div>
-        <div>
-            <div class="btn-group btn-group-sm btn-group-justified">
-                <div class="btn-group">
-                    <a id="exportGeoJson" download="geoJson.json" href="#" onclick="exportToGeoJSON(this,JSON.stringify(map._layers[$(this).attr('leaflet_id')].toGeoJSON(),null, '\t'))" class="btn btn-default btn-xs" data-toggle="tooltip" data-placement="left" title="Export selected area as a geoJson file">Export</a>
-                </div>
-                <div class="btn-group">
-                    <a id="hideViewFence" class="btn btn-default btn-xs" data-toggle="tooltip" data-placement="left" title="Hide this fence" onclick="map.removeLayer(map._layers[$(this).attr('leaflet_id')])" >Hide</a>
-                </div>
-            </div>
-        </div>
-    </form>
+    <div class="popover-content">
+        <form role="form" style="width: auto">
+            <h6>Query name<span id="viewQueryName" class="label label-primary pull-right">N/A</span></h6>
+            <h6>Area name<span id="viewAreaName" class="label label-primary pull-right">N/A</span></h6>
+            <button type="button" id="exportGeoJson" download="geoJson.json" onclick="exportToGeoJSON($('#downloadLinkFwrd'),JSON.stringify(map._layers[$(this).attr('leaflet_id')].toGeoJSON(),null, '\t'))" class="btn btn-info btn-xs" data-toggle="tooltip" data-placement="left" title="Export selected area as a geoJson file">Export</button>
+            <button type="button" id="hideViewFence" class="btn btn-info btn-xs" data-toggle="tooltip" data-placement="left" title="Hide this fence" onclick="map.removeLayer(map._layers[$(this).attr('leaflet_id')])" >Hide</button>
+        </form>
+    </div>
 </div>
 <div id="viewStationeryAlert" >
-    <form role="form" style="width: auto">
-        <div class="form-group">
-            <label class="text-info">Query name</label>
-            <div id="viewQueryName" class="well well-sm"></div>
-
-            <label class="text-info">Stationery name</label>
-            <div id="viewAreaName" class="well well-sm"></div>
-
-            <label class="text-info">Stationery time(Seconds)</label>
-            <div id="viewAreaTime" class="well well-sm"></div>
-        </div>
-        <div>
-            <div class="btn-group btn-group-sm btn-group-justified">
-                <div class="btn-group">
-                    <a id="exportGeoJson" download="geoJson.json" href="#" onclick="exportToGeoJSON(this,JSON.stringify(map._layers[$(this).attr('leaflet_id')].toGeoJSON(),null, '\t'))" class="btn btn-default btn-xs" data-toggle="tooltip" data-placement="left" title="Export selected area as a geoJson file">Export</a>
-                </div>
-                <div class="btn-group">
-                    <a id="hideViewFence" class="btn btn-default btn-xs" data-toggle="tooltip" data-placement="left" title="Hide this fence" onclick="map.removeLayer(map._layers[$(this).attr('leaflet_id')])" >Hide</a>
-                </div>
-            </div>
-        </div>
-    </form>
+    <div class="popover-content">
+        <form role="form" style="width: auto">
+            <h6>Query name<span id="viewQueryName" class="label label-primary pull-right">N/A</span></h6>
+            <h6>Stationery name<span id="viewAreaName" class="label label-primary pull-right">N/A</span></h6>
+            <h6>Stationery time(Seconds)<span id="viewAreaTime" class="label label-primary pull-right">N/A</span></h6>
+            <button type="button" id="exportGeoJson" download="geoJson.json" onclick="exportToGeoJSON($('#downloadLinkFwrd'),JSON.stringify(map._layers[$(this).attr('leaflet_id')].toGeoJSON(),null, '\t'))" class="btn btn-info btn-xs" data-toggle="tooltip" data-placement="left" title="Export selected area as a geoJson file">Export</button>
+            <button type="button" id="hideViewFence" class="btn btn-info btn-xs" data-toggle="tooltip" data-placement="left" title="Hide this fence" onclick="map.removeLayer(map._layers[$(this).attr('leaflet_id')])" >Hide</button>
+        </form>
+    </div>
 </div>
 </body>
 </html>

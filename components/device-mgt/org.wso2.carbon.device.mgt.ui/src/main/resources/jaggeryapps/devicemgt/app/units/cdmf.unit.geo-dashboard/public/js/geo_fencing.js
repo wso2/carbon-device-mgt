@@ -138,6 +138,33 @@ function openTools(id) {
                 featureGroup: drawnItems
             }
         });
+    } else if(id=="Exit"){
+        // Initialise the draw control and pass it the FeatureGroup of editable layers
+        drawControl = new L.Control.Draw({
+                                             draw: {
+                                                 polygon: {
+                                                     allowIntersection: false, // Restricts shapes to simple polygons
+                                                     drawError: {
+                                                         color: '#e1e100', // Color the shape will turn when intersects
+                                                         message: '<strong>Oh snap!<strong> you can\'t draw that!' // Message that will show when intersect
+                                                     },
+                                                     shapeOptions: {
+                                                         color: '#ff0043'
+                                                     }
+                                                 },
+                                                 rectangle: {
+                                                     shapeOptions: {
+                                                         color: '#002bff'
+                                                     }
+                                                 },
+                                                 polyline: false,
+                                                 circle: false, // Turns off this drawing tool
+                                                 marker: false // Markers are not applicable for within geo fencing
+                                             },
+                                             edit: {
+                                                 featureGroup: drawnItems
+                                             }
+                                         });
     } else if(id=="Stationery"){
         // Initialise the draw control and pass it the FeatureGroup of editable layers
 
@@ -235,6 +262,9 @@ function createPopup(layer,id) {
     if(id=="WithIn"){
         var popupTemplate = $('#setWithinAlert');
         popupTemplate.find('#addWithinAlert').attr('leaflet_id', layer._leaflet_id);
+    } else if(id=="Exit"){
+        var popupTemplate = $('#setExitAlert');
+        popupTemplate.find('#addExitAlert').attr('leaflet_id', layer._leaflet_id);
     } else if(id=="Stationery"){
         var popupTemplate = $('#setStationeryAlert');
         popupTemplate.find('#addStationeryAlert').attr('leaflet_id', layer._leaflet_id);
@@ -263,16 +293,18 @@ function closeTools(leafletId) {
 }
 
 /* Export selected area on the map as a json encoded geoJson standard file, no back-end calls simple HTML5 trick ;) */
-function exportToGeoJSON(link, content) {
+function exportToGeoJSON(element, content) {
     // HTML5 features has been used here
     var geoJsonData = 'data:application/json;charset=utf-8,' + encodeURIComponent(content);
     // TODO: replace closest()  by using persistence id for templates, template id prefixed by unique id(i.e leaflet_id)
-    var fileName = $(link).closest('form').find('#areaName').val() || 'geoJson';
-    $(link).attr({
-        'href': geoJsonData,
-        'target': '_blank',
-        'download': fileName + '.json' // Use the fence name given by the user as the file name of the JSON file
-    });
+    var fileName = $(element).closest('form').find('#areaName').val() || 'geoJson';
+    var link = document.createElement("a");
+    link.download = fileName + '.json'; // Use the fence name given by the user as the file name of the JSON file;
+    link.href = geoJsonData;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    delete link;
 }
 
 $(function () {
@@ -349,7 +381,7 @@ function viewFence(geoFenceElement,id) {
             popupTemplate.find('#viewAreaName').html(areaName);
             popupTemplate.find('#viewQueryName').html(queryName);
             popupTemplate.find('#viewAreaTime').html(stationeryTime);
-            geometryShape.bindPopup(popupTemplate.html(), {closeButton: false}).openPopup();
+            geometryShape.bindPopup(popupTemplate.html(), {closeButton: true}).openPopup();
             // transparent the layer .leaflet-popup-content-wrapper
             $(geometryShape._popup._container.childNodes[0]).css("background", "rgba(255,255,255,0.8)");
 
@@ -362,19 +394,19 @@ function viewFence(geoFenceElement,id) {
             popupTemplate.find('#hideViewFence').attr('leaflet_id', geometryShape._leaflet_id);
             popupTemplate.find('#viewAreaName').html(areaName);
             popupTemplate.find('#viewQueryName').html(queryName);
-            geometryShape.bindPopup(popupTemplate.html(), {closeButton: false}).openPopup();
+            geometryShape.bindPopup(popupTemplate.html(), {closeButton: true}).openPopup();
             // transparent the layer .leaflet-popup-content-wrapper
             $(geometryShape._popup._container.childNodes[0]).css("background", "rgba(255,255,255,0.8)");
         });
     } else if(id=="Exit"){
 
         $('#templateLoader').load(geoPublicUri + "/assets/html_templates/view_fence_popup.html #viewExitAlert", function () {
-            var popupTemplate = $('#templateLoader').find('#viewWithinAlert');
+            var popupTemplate = $('#templateLoader').find('#viewExitAlert');
             popupTemplate.find('#exportGeoJson').attr('leaflet_id', geometryShape._leaflet_id);
             popupTemplate.find('#hideViewFence').attr('leaflet_id', geometryShape._leaflet_id);
             popupTemplate.find('#viewAreaName').html(areaName);
             popupTemplate.find('#viewQueryName').html(queryName);
-            geometryShape.bindPopup(popupTemplate.html(), {closeButton: false}).openPopup();
+            geometryShape.bindPopup(popupTemplate.html(), {closeButton: true}).openPopup();
             // transparent the layer .leaflet-popup-content-wrapper
             $(geometryShape._popup._container.childNodes[0]).css("background", "rgba(255,255,255,0.8)");
         });

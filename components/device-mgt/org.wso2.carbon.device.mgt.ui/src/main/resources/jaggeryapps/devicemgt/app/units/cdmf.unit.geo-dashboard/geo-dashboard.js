@@ -45,8 +45,6 @@ function onRequest(context) {
     viewModel.device = device;
     viewModel.wsToken = token;
     viewModel.wsEndpoint = wsEndpoint;
-    log.error("----error-----");
-    log.error(device);
     if (device.latestDeviceInfo) {
         viewModel.lastLocation = stringify(device.latestDeviceInfo.location);
     } else if (device.location) {

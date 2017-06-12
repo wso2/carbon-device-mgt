@@ -557,10 +557,6 @@
         <div id="setWithinAlert">
             <form role="form" style="width: auto;">
                 <div class="form-group">
-                    <label class="text-primary" for="queryName">Query name</label>
-                    <input class="form-control" id="queryName" placeholder="Query name" type="text">
-                    <span class="help-block">Can use this name to locate the execution plan</span>
-
                     <label class="text-primary" for="areaName">Fence name</label>
                     <input class="form-control" id="areaName" placeholder="Fence name" type="text">
                     <span class="help-block">Name of the selected area(i.e colombo)</span>
@@ -581,7 +577,38 @@
                         </div>
                         <div class="btn-group">
                             <a id="exportGeoJson" download="geoJson.json" href="#"
-                               onclick="exportToGeoJSON(this,JSON.stringify(map._layers[$(this).attr('leaflet_id')].toGeoJSON(),null, '\t'))"
+                               onclick="exportToGeoJSON(this, JSON.stringify(map._layers[$(this).attr('leaflet_id')].toGeoJSON(),null, '\t'))"
+                               class="btn btn-default btn-xs" data-toggle="tooltip" data-placement="left"
+                               title="Export selected area as a geoJson file">Export</a>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div id="setExitAlert">
+            <form role="form" style="width: auto;">
+                <div class="form-group">
+                    <label class="text-primary" for="areaName">Fence name</label>
+                    <input class="form-control" id="areaName" placeholder="Fence name" type="text">
+                    <span class="help-block">Name of the selected area(i.e colombo)</span>
+                </div>
+                <div>
+                    <div class="btn-group btn-group-sm btn-group-justified">
+                        <div class="btn-group">
+                            <button id="addExitAlert" onclick="setExitAlert($(this).attr('leaflet_id'))" type="button"
+                                    class="btn btn-info btn-xs" data-toggle="tooltip" data-placement="left"
+                                    title="Save selected area for alerts">Save
+                            </button>
+                        </div>
+                        <div class="btn-group">
+                            <button id="editGeoJson"
+                                    onclick="$('#editExitGeoJSON #updateGeoJson').attr('leaflet_id',$(this).attr('leaflet_id'));$('#editExitGeoJSON textarea').text(JSON.stringify(map._layers[$(this).attr('leaflet_id')].toGeoJSON(),null, '\t'));$('#editExitGeoJSON').modal('toggle')"
+                                    type="button" class="btn btn-default btn-xs">Edit
+                            </button>
+                        </div>
+                        <div class="btn-group">
+                            <a id="exportGeoJson" download="geoJson.json" href="#"
+                               onclick="exportToGeoJSON(this, JSON.stringify(map._layers[$(this).attr('leaflet_id')].toGeoJSON(),null, '\t'))"
                                class="btn btn-default btn-xs" data-toggle="tooltip" data-placement="left"
                                title="Export selected area as a geoJson file">Export</a>
                         </div>
@@ -593,10 +620,6 @@
         <div id="setStationeryAlert">
             <form role="form" style="width: auto;">
                 <div class="form-group">
-                    <label class="text-primary" for="queryName">Query name</label>
-                    <input class="form-control" id="queryName" placeholder="Query name" type="text">
-                    <span class="help-block">Can use this name to locate the execution plan</span>
-
                     <label class="text-primary" for="areaName">Fence name</label>
                     <input class="form-control" id="areaName" placeholder="Stationery name" type="text">
                     <span class="help-block">Name of the selected area(i.e colombo)</span>
@@ -623,7 +646,7 @@
                         </div>
                         <div class="btn-group">
                             <a id="exportGeoJson" download="geoJson.json" href="#"
-                               onclick="exportToGeoJSON(this,JSON.stringify(map._layers[$(this).attr('leaflet_id')].toGeoJSON(),null, '\t'))"
+                               onclick="exportToGeoJSON(this, JSON.stringify(map._layers[$(this).attr('leaflet_id')].toGeoJSON(),null, '\t'))"
                                class="btn btn-default btn-xs" data-toggle="tooltip" data-placement="left"
                                title="Export selected area as a geoJson file">Export</a>
                         </div>
@@ -634,10 +657,6 @@
         <div id="setTrafficAlert">
             <form role="form" style="width: auto;">
                 <div class="form-group">
-                    <label class="text-primary" for="queryName">Query name</label>
-                    <input class="form-control" id="queryName" placeholder="Query name" type="text">
-                    <span class="help-block">Can use this name to locate the execution plan</span>
-
                     <label class="text-primary" for="areaName">Fence name</label>
                     <input class="form-control" id="areaName" placeholder="Area Name" type="text">
                     <span class="help-block">Name of the selected area(i.e colombo)</span>
@@ -658,7 +677,7 @@
                         </div>
                         <div class="btn-group">
                             <a id="exportGeoJson" download="geoJson.json" href="#"
-                               onclick="exportToGeoJSON(this,JSON.stringify(map._layers[$(this).attr('leaflet_id')].toGeoJSON(),null, '\t'))"
+                               onclick="exportToGeoJSON(this, JSON.stringify(map._layers[$(this).attr('leaflet_id')].toGeoJSON(),null, '\t'))"
                                class="btn btn-default btn-xs" data-toggle="tooltip" data-placement="left"
                                title="Export selected area as a geoJson file">Export</a>
                         </div>

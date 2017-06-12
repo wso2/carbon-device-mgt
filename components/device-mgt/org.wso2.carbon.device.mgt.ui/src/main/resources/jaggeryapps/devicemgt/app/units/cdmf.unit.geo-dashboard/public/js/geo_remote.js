@@ -238,14 +238,11 @@ function setWithinAlert(leafletId) {
      * (look in get_alerts for .replace() method)
      * */
     var selectedAreaGeoJson = JSON.stringify(map._layers[leafletId].toGeoJSON().geometry).replace(/"/g, "'");
-    var queryName = $("#queryName").val();
     var areaName = $("#areaName").val();
+    var queryName = areaName;
 
 
-    if (queryName == null || queryName === undefined || queryName == "") {
-        var message = "Query Name cannot be empty.";
-        noty({text: message, type : 'error' });
-    } else if (areaName == null || areaName === undefined || areaName == "") {
+    if (areaName == null || areaName === undefined || areaName == "") {
         var message = "Area Name cannot be empty.";
         noty({text: message, type : 'error' });
     } else {
@@ -287,6 +284,59 @@ function setWithinAlert(leafletId) {
     }
 }
 
+function setExitAlert(leafletId) {
+    /*
+     * TODO: replace double quote to single quote because of a conflict when deploying execution plan in CEP
+     * this is against JSON standards so has been re-replaced when getting the data from governance registry
+     * (look in get_alerts for .replace() method)
+     * */
+    var selectedAreaGeoJson = JSON.stringify(map._layers[leafletId].toGeoJSON().geometry).replace(/"/g, "'");
+    var areaName = $("#areaName").val();
+    var queryName = areaName;
+
+
+    if (areaName == null || areaName === undefined || areaName == "") {
+        var message = "Area Name cannot be empty.";
+        noty({text: message, type : 'error' });
+    } else {
+        var data = {
+            'parseData': JSON.stringify({
+                                            'geoFenceGeoJSON': selectedAreaGeoJson,
+                                            'executionPlanName': createExecutionPlanName(queryName, "Exit", deviceId),
+                                            'areaName': areaName,
+                                            'deviceId' : deviceId
+                                        }),
+            'executionPlan': 'Exit',
+            'customName': areaName, // TODO: fix , When template copies there can be two queryName and areaName id elements in the DOM
+            'queryName': queryName,
+            'cepAction': 'deploy',
+            'deviceId' : deviceId
+        };
+
+        var serviceUrl = '/api/device-mgt/v1.0/geo-services/alerts/Exit/' + deviceType + '/' + deviceId;
+        var responseHandler = function (data, textStatus, xhr) {
+            closeTools(leafletId);
+            if (xhr.status == 200) {
+                noty({text: 'Successfully added alert', type : 'success'});
+            } else {
+                var ptrn = /(?:<am\:description>)(.*)(?:<\/am\:description>)/g;
+                var errorTxt;
+                if (result) {
+                    errorTxt = result.length > 1 ? result[1] : data;
+                } else {
+                    errorTxt = data;
+                }
+                noty({text: textStatus + ' : ' + errorTxt, type : 'error'});
+            }
+        };
+        invokerUtil.post(serviceUrl,
+                         data,
+                         responseHandler, function (xhr) {
+                responseHandler(xhr.responseText, xhr.statusText, xhr);
+            });
+    }
+}
+
 function setStationeryAlert(leafletId) {
 
     var selectedAreaGeoJson = map._layers[leafletId].toGeoJSON().geometry;
@@ -300,15 +350,12 @@ function setStationeryAlert(leafletId) {
 
     var selectedProcessedAreaGeoJson = JSON.stringify(selectedAreaGeoJson).replace(/"/g, "'");
 
-    var queryName = $("#queryName").val();
     var stationeryName = $("#areaName").val();
+    var queryName = stationeryName;
     var fluctuationRadius = $("#fRadius").val();
     var time = $("#time").val();
 
-    if (queryName == null || queryName === undefined || queryName == "") {
-        var message = "Query Name cannot be empty.";
-        noty({text: message, type : 'error' });
-    } else if (stationeryName == null || stationeryName === undefined || stationeryName == "") {
+    if (stationeryName == null || stationeryName === undefined || stationeryName == "") {
         var message = "Stationery Name cannot be empty.";
         noty({text: message, type : 'error' });
     } else if (fluctuationRadius == null || fluctuationRadius === undefined || fluctuationRadius == "") {
@@ -418,14 +465,11 @@ function setTrafficAlert(leafletId) {
 
     var selectedProcessedAreaGeoJson = JSON.stringify(selectedAreaGeoJson).replace(/"/g, "'");
 
-    var queryName = $("#queryName").val();
     var areaName = $("#areaName").val();
+    var queryName = areaName;
     //var time = $("#time").val();
 
-    if (queryName == null || queryName === undefined || queryName == "") {
-        var message = "Query Name cannot be empty.";
-        noty({text: message, type : 'error' });
-    } else if (areaName == null || areaName === undefined || areaName == "") {
+    if (areaName == null || areaName === undefined || areaName == "") {
         var message = "Area Name cannot be empty.";
         noty({text: message, type : 'error' });
     } else {
@@ -587,11 +631,11 @@ function createExecutionPlanName(queryName, id, deviceId) {
 
     if (id == "WithIn") {
         return 'Geo-ExecutionPlan-Within' + (queryName ? '_' + queryName : '') + "---" + (deviceId ? '_' + deviceId : '') + '_alert'; // TODO: value of the `queryName` can't be empty, because it will cause name conflicts in CEP, have to do validation(check not empty String)
-    }
-    else if (id == "Stationery") {
+    } else if(id == "Exit"){
+        return 'Geo-ExecutionPlan-Exit' + (queryName ? '_' + queryName : '') + "---" + (deviceId ? '_' + deviceId : '') + '_alert'; // TODO: value of the `queryName` can't be empty, because it will cause name conflicts in CEP, have to do validation(check not empty String)
+    } else if (id == "Stationery") {
         return 'Geo-ExecutionPlan-Stationery' + (queryName ? '_' + queryName : '') + "---" + (deviceId ? '_' + deviceId : '') + '_alert'; // TODO: value of the `queryName` can't be empty, because it will cause name conflicts in CEP, have to do validation(check not empty String)
-    }
-    else if (id == "Traffic") {
+    } else if (id == "Traffic") {
         return 'Geo-ExecutionPlan-Traffic' + (queryName ? '_' + queryName : '') + '_alert'; // TODO: value of the `queryName` can't be empty, because it will cause name conflicts in CEP, have to do validation(check not empty String)
     }
 

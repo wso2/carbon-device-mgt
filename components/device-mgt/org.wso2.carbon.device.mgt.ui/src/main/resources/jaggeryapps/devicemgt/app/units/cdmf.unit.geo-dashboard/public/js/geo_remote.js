@@ -542,11 +542,14 @@ function getAlertsHistory(deviceType, deviceId, timeFrom, timeTo) {
                         var alertsContainer = $('#showAlertsArea').empty();
                         var alerts = JSON.parse(data);
                         $.each(alerts, function (key, val) {
+                            if(val.values){
+                                val = val.values;
+                            }
                             var alertDOMElement = document.createElement('a'); // Reason for using
                                                                                // document.createElement
                                                                                // (performance issue)
                                                                                // http://stackoverflow.com/questions/268490/jquery-document-createelement-equivalent
-                            switch (val.STATE) {
+                            switch (val.state) {
                                 case "NORMAL":
 //                                       $(alertDOMElement).addClass("list-group-item list-group-item-info");
                                     return;
@@ -560,16 +563,16 @@ function getAlertsHistory(deviceType, deviceId, timeFrom, timeTo) {
                                     $(alertDOMElement).addClass("list-group-item list-group-item-success");
                                     break;
                             }
-                            $(alertDOMElement).html(val.INFORMATION);
+                            $(alertDOMElement).html(val.information);
                             $(alertDOMElement).css({marginTop: "5px"});
                             $(alertDOMElement).attr('onClick', 'showAlertInMap(this)');
 
                             // Set HTML5 data attributes for later use
-                            $(alertDOMElement).attr('data-id', val.ID);
-                            $(alertDOMElement).attr('data-latitude', val.LATITUDE);
-                            $(alertDOMElement).attr('data-longitude', val.LONGITUDE);
-                            $(alertDOMElement).attr('data-state', val.STATE);
-                            $(alertDOMElement).attr('data-information', val.INFORMATION);
+                            $(alertDOMElement).attr('data-id', val.id);
+                            $(alertDOMElement).attr('data-latitude', val.latitude);
+                            $(alertDOMElement).attr('data-longitude', val.longitude);
+                            $(alertDOMElement).attr('data-state', val.state);
+                            $(alertDOMElement).attr('data-information', val.information);
 
                             alertsContainer.append(alertDOMElement);
                         });

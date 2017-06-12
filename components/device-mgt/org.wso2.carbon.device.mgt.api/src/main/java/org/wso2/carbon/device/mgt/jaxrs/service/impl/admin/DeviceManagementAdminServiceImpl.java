@@ -25,6 +25,7 @@ import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
+import org.wso2.carbon.device.mgt.common.PaginationRequest;
 import org.wso2.carbon.device.mgt.jaxrs.beans.DeviceList;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
 import org.wso2.carbon.device.mgt.jaxrs.service.api.admin.DeviceManagementAdminService;
@@ -64,8 +65,11 @@ public class DeviceManagementAdminServiceImpl implements DeviceManagementAdminSe
             PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(tenantDomain);
             PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(DeviceMgtAPIUtils.getTenantId(tenantDomain));
 
+            PaginationRequest request = new PaginationRequest(offset, limit);
+            request.setDeviceType(type);
+            request.setDeviceName(name);
             List<Device> devices = DeviceMgtAPIUtils.getDeviceManagementService().
-                    getDevicesByNameAndType(name, type, offset, limit);
+                    getDevicesByNameAndType(request, false);
 
             // setting up paginated result
             DeviceList deviceList = new DeviceList();

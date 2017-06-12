@@ -21,7 +21,7 @@ function onRequest(context) {
     var userModule = require("/app/modules/business-controllers/user.js")["userModule"];
     var deviceModule = require("/app/modules/business-controllers/device.js")["deviceModule"];
     var groupModule = require("/app/modules/business-controllers/group.js")["groupModule"];
-    
+
     var groupId = request.getParameter("groupId");
 
     var viewModel = {};
@@ -60,6 +60,8 @@ function onRequest(context) {
                 if (data) {
                     for (var i = 0; i < data.length; i++) {
                         var config = utility.getDeviceTypeConfig(data[i]);
+                        var log = new Log("devices.js");
+
                         if (!config) {
                             continue;
                         }
@@ -70,7 +72,8 @@ function onRequest(context) {
                                              "label": deviceType.label,
                                              "thumb": utility.getDeviceThumb(data[i]),
                                              "analyticsEnabled": deviceType.analyticsEnabled,
-                                             "groupingEnabled": deviceType.groupingEnabled
+                                             "groupingEnabled": deviceType.groupingEnabled,
+                                             "analyticsView" : deviceType.analyticsView
                                          });
                     }
                 }
@@ -80,9 +83,11 @@ function onRequest(context) {
     }
 
     var mdmProps = require("/app/modules/conf-reader/main.js")["conf"];
-    var analyticsServer = mdmProps["dashboardServerURL"];
-    var analyticsURL =  analyticsServer + "/portal/t/" + context.user.userDomain + "/dashboards/android-iot/battery?owner=" + context.user.username + "&deviceId=";
-    viewModel.analyticsURL = analyticsURL;
-
+    var serverUrl = mdmProps["httpsURL"];
+    var portalUrl = mdmProps["portalURL"];
+    var userDomain = context.user.domain;
+    viewModel.serverUrl = serverUrl;
+    viewModel.portalUrl = portalUrl;
+    viewModel.userDomain = userDomain;
     return viewModel;
 }

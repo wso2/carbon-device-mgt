@@ -519,8 +519,8 @@
 {{/zone}}
 
 {{#zone "bottomJs"}}
-    <script id="device-listing" data-analitics-url="{{analyticsURL}}" data-current-user="{{@user.username}}" data-device-types="{{deviceTypes}}"
-            type="text/x-handlebars-template"></script>
+    <script id="device-listing" data-server-url="{{serverUrl}}" data-current-user="{{@user.username}}" data-device-types="{{deviceTypes}}"
+            data-portal-url="{{portalUrl}}" data-user-domain="{{userDomain}}" type="text/x-handlebars-template"></script>
     {{js "js/listing.js"}}
 {{/zone}}
 

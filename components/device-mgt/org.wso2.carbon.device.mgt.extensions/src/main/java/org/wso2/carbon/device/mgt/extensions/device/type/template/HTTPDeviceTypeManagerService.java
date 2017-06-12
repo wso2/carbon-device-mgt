@@ -99,13 +99,14 @@ public class HTTPDeviceTypeManagerService extends DeviceTypeManagerService imple
             }
 
             deviceTypeConfiguration.setName(deviceTypeName);
-            if (deviceTypeMetaDefinition.getLicense() != null) {
-                License license = new License();
-                license.setLanguage(deviceTypeMetaDefinition.getLicense().getLanguage());
-                license.setText(deviceTypeMetaDefinition.getLicense().getText());
-                license.setVersion(deviceTypeMetaDefinition.getLicense().getVersion());
-                deviceTypeConfiguration.setLicense(license);
-            }
+            //TODO: Add it to the license management service.
+//            if (deviceTypeMetaDefinition.getLicense() != null) {
+//                License license = new License();
+//                license.setLanguage(deviceTypeMetaDefinition.getLicense().getLanguage());
+//                license.setText(deviceTypeMetaDefinition.getLicense().getText());
+//                license.setVersion(deviceTypeMetaDefinition.getLicense().getVersion());
+//                deviceTypeConfiguration.setLicense(license);
+//            }
             PolicyMonitoring policyMonitoring = new PolicyMonitoring();
             policyMonitoring.setEnabled(deviceTypeMetaDefinition.isPolicyMonitoringEnabled());
             deviceTypeConfiguration.setPolicyMonitoring(policyMonitoring);

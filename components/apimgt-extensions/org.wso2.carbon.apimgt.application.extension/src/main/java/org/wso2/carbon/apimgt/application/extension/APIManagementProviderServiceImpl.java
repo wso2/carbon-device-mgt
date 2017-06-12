@@ -26,15 +26,21 @@ import org.wso2.carbon.apimgt.application.extension.dto.ApiApplicationKey;
 import org.wso2.carbon.apimgt.application.extension.exception.APIManagerException;
 import org.wso2.carbon.apimgt.application.extension.internal.APIApplicationManagerExtensionDataHolder;
 import org.wso2.carbon.apimgt.application.extension.util.APIManagerUtil;
-import org.wso2.carbon.apimgt.integration.client.store.*;
-import org.wso2.carbon.apimgt.integration.generated.client.store.model.*;
+import org.wso2.carbon.apimgt.integration.client.store.StoreClient;
+import org.wso2.carbon.apimgt.integration.generated.client.store.model.APIInfo;
+import org.wso2.carbon.apimgt.integration.generated.client.store.model.APIList;
+import org.wso2.carbon.apimgt.integration.generated.client.store.model.Application;
+import org.wso2.carbon.apimgt.integration.generated.client.store.model.ApplicationInfo;
+import org.wso2.carbon.apimgt.integration.generated.client.store.model.ApplicationKey;
+import org.wso2.carbon.apimgt.integration.generated.client.store.model.ApplicationKeyGenerateRequest;
+import org.wso2.carbon.apimgt.integration.generated.client.store.model.ApplicationList;
+import org.wso2.carbon.apimgt.integration.generated.client.store.model.Subscription;
+import org.wso2.carbon.apimgt.integration.generated.client.store.model.SubscriptionList;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * This class represents an implementation of APIManagementProviderService.
@@ -45,8 +51,22 @@ public class APIManagementProviderServiceImpl implements APIManagementProviderSe
     private static final String CONTENT_TYPE = "application/json";
     private static final int MAX_API_PER_TAG = 200;
     private static final String APP_TIER_TYPE = "application";
-    private static final Map<String, String> tiersMap = new HashMap<>();
-    private static final int MAX_ATTEMPTS = 20;
+
+    public boolean isTierLoaded() {
+        StoreClient storeClient = APIApplicationManagerExtensionDataHolder.getInstance().getIntegrationClientService()
+                .getStoreClient();
+        String tenantDomain = PrivilegedCarbonContext.getThreadLocalCarbonContext()
+                .getTenantDomain();
+        try {
+
+            storeClient.getIndividualTier().tiersTierLevelTierNameGet(ApiApplicationConstants.DEFAULT_TIER,
+                                                                      APP_TIER_TYPE,
+                                                                      tenantDomain, CONTENT_TYPE, null, null);
+            return true;
+        } catch (FeignException e) {
+            return false;
+        }
+    }
 
     @Override
     public void removeAPIApplication(String applicationName, String username) throws APIManagerException {
@@ -70,130 +90,118 @@ public class APIManagementProviderServiceImpl implements APIManagementProviderSe
                                                                 String keyType, String username,
                                                                 boolean isAllowedAllDomains, String validityTime)
             throws APIManagerException {
-        StoreClient storeClient = APIApplicationManagerExtensionDataHolder.getInstance().getIntegrationClientService()
-                .getStoreClient();
-        //This is a fix to avoid race condition and trying to load tenant related tiers before invocation.
+        StoreClient storeClient =
+                APIApplicationManagerExtensionDataHolder.getInstance().getIntegrationClientService()
+                        .getStoreClient();
         String tenantDomain = PrivilegedCarbonContext.getThreadLocalCarbonContext()
                 .getTenantDomain();
-        String tiersLoadedForTenant = tiersMap.get(tenantDomain);
+        try {
+            ApplicationList applicationList = storeClient.getApplications()
+                    .applicationsGet("", applicationName, 1, 0, CONTENT_TYPE, null);
+            Application application;
+            if (applicationList == null || applicationList.getList() == null || applicationList.getList().size() == 0) {
+                //create application;
+                application = new Application();
+                application.setName(applicationName);
+                application.setSubscriber(username);
+                application.setDescription("");
+                application.setThrottlingTier(ApiApplicationConstants.DEFAULT_TIER);
+                application.setGroupId("");
+                application = storeClient.getIndividualApplication().applicationsPost(application, CONTENT_TYPE);
+            } else {
+                ApplicationInfo applicationInfo = applicationList.getList().get(0);
+                application = storeClient.getIndividualApplication()
+                        .applicationsApplicationIdGet(applicationInfo.getApplicationId(), CONTENT_TYPE, null, null);
+            }
+            if (application == null) {
+                throw new APIManagerException(
+                        "Api application creation failed for " + applicationName + " to the user " + username);
+            }
 
-        if (tiersLoadedForTenant == null) {
-            boolean tierLoaded = false;
-            int attempts = 0;
-            do {
-                try {
-                    storeClient.getIndividualTier()
-                            .tiersTierLevelTierNameGet(ApiApplicationConstants.DEFAULT_TIER, APP_TIER_TYPE,
-                                    tenantDomain, CONTENT_TYPE, null, null);
-                    tiersMap.put(tenantDomain, "exist");
-                    tierLoaded = true;
-                } catch (FeignException e) {
-                    attempts++;
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException ex) {
-                        log.warn("Interrupted the waiting for tier availability.");
+            SubscriptionList subscriptionList = storeClient.getSubscriptions().subscriptionsGet
+                    (null, application.getApplicationId(), "", 0, 100, CONTENT_TYPE, null);
+            List<Subscription> needToSubscribe = new ArrayList<>();
+            // subscribe to apis.
+            if (tags != null && tags.length > 0) {
+                for (String tag : tags) {
+                    APIList apiList = storeClient.getApis().apisGet(MAX_API_PER_TAG, 0, tenantDomain, "tag:" + tag
+                            , CONTENT_TYPE, null);
+                    if (apiList.getList() == null || apiList.getList().size() == 0) {
+                        apiList = storeClient.getApis().apisGet(MAX_API_PER_TAG, 0
+                                , MultitenantConstants.SUPER_TENANT_DOMAIN_NAME, "tag:" + tag, CONTENT_TYPE, null);
                     }
-                }
-            } while ((!tierLoaded) && attempts < MAX_ATTEMPTS);
-        }
 
-        ApplicationList applicationList = storeClient.getApplications()
-                .applicationsGet("", applicationName, 1, 0, CONTENT_TYPE, null);
-        Application application;
-        if (applicationList == null || applicationList.getList() == null || applicationList.getList().size() == 0) {
-            //create application;
-            application = new Application();
-            application.setName(applicationName);
-            application.setSubscriber(username);
-            application.setDescription("");
-            application.setThrottlingTier(ApiApplicationConstants.DEFAULT_TIER);
-            application.setGroupId("");
-            application = storeClient.getIndividualApplication().applicationsPost(application, CONTENT_TYPE);
-        } else {
-            ApplicationInfo applicationInfo = applicationList.getList().get(0);
-            application = storeClient.getIndividualApplication()
-                    .applicationsApplicationIdGet(applicationInfo.getApplicationId(), CONTENT_TYPE, null, null);
-        }
-        if (application == null) {
-            throw new APIManagerException (
-                    "Api application creation failed for " + applicationName + " to the user " + username);
-        }
+                    if (apiList.getList() != null && apiList.getList().size() > 0) {
+                        for (APIInfo apiInfo : apiList.getList()) {
+                            String id = apiInfo.getProvider().replace("@", "-AT-")
+                                    + "-" + apiInfo.getName() + "-" + apiInfo.getVersion();
+                            boolean subscriptionExist = false;
+                            if (subscriptionList.getList() != null && subscriptionList.getList().size() > 0) {
+                                for (Subscription subs : subscriptionList.getList()) {
+                                    if (subs.getApiIdentifier().equals(id)) {
+                                        subscriptionExist = true;
+                                        break;
+                                    }
+                                }
+                            }
+                            if (!subscriptionExist) {
+                                Subscription subscription = new Subscription();
+                                //fix for APIMANAGER-5566 admin-AT-tenant1.com-Tenant1API1-1.0.0
 
-        SubscriptionList subscriptionList = storeClient.getSubscriptions().subscriptionsGet
-                (null, application.getApplicationId(), "", 0, 100, CONTENT_TYPE, null);
-        List<Subscription> needToSubscribe = new ArrayList<>();
-        // subscribe to apis.
-        if (tags != null && tags.length > 0) {
-            for (String tag: tags) {
-                APIList apiList = storeClient.getApis().apisGet(MAX_API_PER_TAG, 0, tenantDomain, "tag:" + tag
-                        , CONTENT_TYPE, null);
-                if (apiList.getList() == null || apiList.getList().size() == 0) {
-                    apiList = storeClient.getApis().apisGet(MAX_API_PER_TAG, 0
-                            , MultitenantConstants.SUPER_TENANT_DOMAIN_NAME, "tag:" + tag, CONTENT_TYPE, null);
-                }
-
-                if (apiList.getList() != null && apiList.getList().size() > 0) {
-                    for (APIInfo apiInfo : apiList.getList()) {
-                        String id = apiInfo.getProvider().replace("@", "-AT-")
-                                + "-" + apiInfo.getName()+ "-" + apiInfo.getVersion();
-                        boolean subscriptionExist = false;
-                        if (subscriptionList.getList() != null && subscriptionList.getList().size() > 0) {
-                            for (Subscription subs : subscriptionList.getList()) {
-                                if (subs.getApiIdentifier().equals(id)) {
-                                    subscriptionExist = true;
-                                    break;
+                                subscription.setApiIdentifier(id);
+                                subscription.setApplicationId(application.getApplicationId());
+                                subscription.tier(ApiApplicationConstants.DEFAULT_TIER);
+                                if (!needToSubscribe.contains(subscription)) {
+                                    needToSubscribe.add(subscription);
                                 }
                             }
                         }
-                        if (!subscriptionExist) {
-                            Subscription subscription = new Subscription();
-                            //fix for APIMANAGER-5566 admin-AT-tenant1.com-Tenant1API1-1.0.0
+                    }
+                }
+            }
+            if (!needToSubscribe.isEmpty()) {
+                storeClient.getSubscriptionMultitpleApi().subscriptionsMultiplePost(needToSubscribe, CONTENT_TYPE);
+            }
+            //end of subscription
 
-                            subscription.setApiIdentifier(id);
-                            subscription.setApplicationId(application.getApplicationId());
-                            subscription.tier(ApiApplicationConstants.DEFAULT_TIER);
-                            needToSubscribe.add(subscription);
+            List<ApplicationKey> applicationKeys = application.getKeys();
+            if (applicationKeys != null) {
+                for (ApplicationKey applicationKey : applicationKeys) {
+                    if (keyType.equals(applicationKey.getKeyType().toString())) {
+                        if (applicationKey.getConsumerKey() != null && !applicationKey.getConsumerKey().isEmpty()) {
+                            ApiApplicationKey apiApplicationKey = new ApiApplicationKey();
+                            apiApplicationKey.setConsumerKey(applicationKey.getConsumerKey());
+                            apiApplicationKey.setConsumerSecret(applicationKey.getConsumerSecret());
+                            return apiApplicationKey;
                         }
                     }
                 }
             }
-        }
-        if (!needToSubscribe.isEmpty()) {
-            storeClient.getSubscriptionMultitpleApi().subscriptionsMultiplePost(needToSubscribe, CONTENT_TYPE);
-        }
-        //end of subscription
 
-        List<ApplicationKey> applicationKeys = application.getKeys();
-        if (applicationKeys != null) {
-            for (ApplicationKey applicationKey : applicationKeys) {
-                if (keyType.equals(applicationKey.getKeyType().toString())) {
-                    ApiApplicationKey apiApplicationKey = new ApiApplicationKey();
-                    apiApplicationKey.setConsumerKey(applicationKey.getConsumerKey());
-                    apiApplicationKey.setConsumerSecret(applicationKey.getConsumerSecret());
-                    return apiApplicationKey;
-                }
+            ApplicationKeyGenerateRequest applicationKeyGenerateRequest = new ApplicationKeyGenerateRequest();
+            List<String> allowedDomains = new ArrayList<>();
+            if (isAllowedAllDomains) {
+                allowedDomains.add(ApiApplicationConstants.ALLOWED_DOMAINS);
+            } else {
+                allowedDomains.add(APIManagerUtil.getTenantDomain());
             }
-        }
+            applicationKeyGenerateRequest.setAccessAllowDomains(allowedDomains);
+            applicationKeyGenerateRequest.setCallbackUrl("");
+            applicationKeyGenerateRequest.setKeyType(ApplicationKeyGenerateRequest.KeyTypeEnum.PRODUCTION);
+            applicationKeyGenerateRequest.setValidityTime(validityTime);
 
-        ApplicationKeyGenerateRequest applicationKeyGenerateRequest = new ApplicationKeyGenerateRequest();
-        List<String> allowedDomains = new ArrayList<>();
-        if (isAllowedAllDomains) {
-            allowedDomains.add(ApiApplicationConstants.ALLOWED_DOMAINS);
-        } else {
-            allowedDomains.add(APIManagerUtil.getTenantDomain());
+            ApplicationKey applicationKey = storeClient.getIndividualApplication().applicationsGenerateKeysPost(
+                    application.getApplicationId(), applicationKeyGenerateRequest, CONTENT_TYPE, null, null);
+            if (applicationKey.getConsumerKey() != null && !applicationKey.getConsumerKey().isEmpty()) {
+                ApiApplicationKey apiApplicationKey = new ApiApplicationKey();
+                apiApplicationKey.setConsumerKey(applicationKey.getConsumerKey());
+                apiApplicationKey.setConsumerSecret(applicationKey.getConsumerSecret());
+                return apiApplicationKey;
+            }
+            throw new APIManagerException("Failed to generate keys for tenant: " + tenantDomain);
+        } catch (FeignException e) {
+            throw new APIManagerException("Failed to create api application for tenant: " + tenantDomain, e);
         }
-        applicationKeyGenerateRequest.setAccessAllowDomains(allowedDomains);
-        applicationKeyGenerateRequest.setCallbackUrl("");
-        applicationKeyGenerateRequest.setKeyType(ApplicationKeyGenerateRequest.KeyTypeEnum.PRODUCTION);
-        applicationKeyGenerateRequest.setValidityTime(validityTime);
-
-        ApplicationKey applicationKey = storeClient.getIndividualApplication().applicationsGenerateKeysPost(
-                application.getApplicationId(), applicationKeyGenerateRequest, CONTENT_TYPE, null, null);
-        ApiApplicationKey apiApplicationKey = new ApiApplicationKey();
-        apiApplicationKey.setConsumerKey(applicationKey.getConsumerKey());
-        apiApplicationKey.setConsumerSecret(applicationKey.getConsumerSecret());
-        return apiApplicationKey;
     }
 
 }

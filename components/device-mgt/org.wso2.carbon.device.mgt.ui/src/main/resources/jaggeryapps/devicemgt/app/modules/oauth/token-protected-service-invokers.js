@@ -122,7 +122,12 @@ var invokers = function () {
                 xmlHttpRequest.responseText == TOKEN_INVALID ) && count < 5) {
                 tokenUtil.refreshTokenPair();
                 return privateMethods.execute(httpMethod, requestPayload, endpoint, responseCallback, ++count, headers);
-            } else if (privateMethods.isInvalidCredential(xmlHttpRequest.responseText)) {
+            } else if (privateMethods.isInvalidClientCredential(xmlHttpRequest.responseText)) {
+				log.error("API application has been removed.");
+				tokenUtil.removeClientDetails();
+				session.invalidate();
+				response.sendRedirect(devicemgtProps["appContext"] + "login");
+			} else if (privateMethods.isInvalidCredential(xmlHttpRequest.responseText)) {
                 tokenUtil.refreshTokenPair();
                 return privateMethods.execute(httpMethod, requestPayload, endpoint, responseCallback, ++count, headers);
             }
@@ -143,17 +148,38 @@ var invokers = function () {
             if (responsePayload) {
                 try {
                     payload = parse(responsePayload);
-                    if (payload["fault"]["code"] == 900901) {
-                        log.debug("Access token is invalid: " + payload["fault"]["code"]);
-                        log.debug(payload["fault"]["description"]);
-                        return true;
-                    }
+					if (payload["fault"]["code"] == 900901) {
+						log.debug("Access token is invalid: " + payload["fault"]["code"]);
+						log.debug(payload["fault"]["description"]);
+						return true;
+					}
                 } catch (err) {
                     // do nothing
                 }
             }
             return false;
         };
+
+	/**
+	 * This method verify whether the client credential is removed/blocked using response payload.
+	 * This is required when using API gateway.
+	 * @param responsePayload response payload.
+	 * return true if it is invalid otherwise false.
+	 */
+	privateMethods["isInvalidClientCredential"] =
+		function (responsePayload) {
+			if (responsePayload) {
+				try {
+					payload = parse(responsePayload);
+					if (payload["fault"]["message"] == "Invalid Credentials") {
+						return true;
+					}
+				} catch (err) {
+					// do nothing
+				}
+			}
+			return false;
+		};
 
     /**
      * This method add Oauth authentication header to outgoing XML-HTTP Requests if Oauth authentication is enabled.

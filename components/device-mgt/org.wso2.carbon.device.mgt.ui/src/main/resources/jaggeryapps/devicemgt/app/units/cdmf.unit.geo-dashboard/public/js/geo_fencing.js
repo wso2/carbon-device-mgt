@@ -366,6 +366,18 @@ function viewFence(geoFenceElement,id) {
             // transparent the layer .leaflet-popup-content-wrapper
             $(geometryShape._popup._container.childNodes[0]).css("background", "rgba(255,255,255,0.8)");
         });
+    } else if(id=="Exit"){
+
+        $('#templateLoader').load(geoPublicUri + "/assets/html_templates/view_fence_popup.html #viewExitAlert", function () {
+            var popupTemplate = $('#templateLoader').find('#viewWithinAlert');
+            popupTemplate.find('#exportGeoJson').attr('leaflet_id', geometryShape._leaflet_id);
+            popupTemplate.find('#hideViewFence').attr('leaflet_id', geometryShape._leaflet_id);
+            popupTemplate.find('#viewAreaName').html(areaName);
+            popupTemplate.find('#viewQueryName').html(queryName);
+            geometryShape.bindPopup(popupTemplate.html(), {closeButton: false}).openPopup();
+            // transparent the layer .leaflet-popup-content-wrapper
+            $(geometryShape._popup._container.childNodes[0]).css("background", "rgba(255,255,255,0.8)");
+        });
     } else if(id=="Traffic"){
     }
     closeAll();

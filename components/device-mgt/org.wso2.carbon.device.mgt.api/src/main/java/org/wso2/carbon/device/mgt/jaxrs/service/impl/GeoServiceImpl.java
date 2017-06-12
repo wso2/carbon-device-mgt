@@ -116,13 +116,13 @@ public class GeoServiceImpl implements GeoService {
         }
     }
 
-    @Path("alerts/{executionPlanType}/{deviceType}/{deviceId}")
+    @Path("alerts/{alertType}/{deviceType}/{deviceId}")
     @POST
     @Consumes("application/json")
     @Produces("application/json")
     public Response createGeoAlerts(Alert alert, @PathParam("deviceId") String deviceId,
                                     @PathParam("deviceType") String deviceType,
-                                    @PathParam("executionPlanType") String executionPlanType) {
+                                    @PathParam("alertType") String alertType) {
         try {
             if (!DeviceMgtAPIUtils.getDeviceAccessAuthorizationService().isUserAuthorized(
                     new DeviceIdentifier(deviceId, deviceType),
@@ -140,7 +140,7 @@ public class GeoServiceImpl implements GeoService {
             identifier.setType(deviceType);
 
             org.wso2.carbon.device.mgt.common.geo.service.GeoService geoService = DeviceMgtAPIUtils.getGeoService();
-            geoService.createGeoAlert(alert, identifier, executionPlanType);
+            geoService.createGeoAlert(alert, identifier, alertType);
             return Response.ok().build();
         } catch (DeviceAccessAuthorizationException | GeoServiceException e) {
             String error = "Error occurred while creating the geo alert for " + deviceType + " with id: " + deviceId;
@@ -149,13 +149,13 @@ public class GeoServiceImpl implements GeoService {
         }
     }
 
-    @Path("alerts/{executionPlanType}/{deviceType}/{deviceId}")
+    @Path("alerts/{alertType}/{deviceType}/{deviceId}")
     @PUT
     @Consumes("application/json")
     @Produces("application/json")
     public Response updateGeoAlerts(Alert alert, @PathParam("deviceId") String deviceId,
                                     @PathParam("deviceType") String deviceType,
-                                    @PathParam("executionPlanType") String executionPlanType) {
+                                    @PathParam("alertType") String alertType) {
         try {
             if (!DeviceMgtAPIUtils.getDeviceAccessAuthorizationService().isUserAuthorized(
                     new DeviceIdentifier(deviceId, deviceType),
@@ -173,7 +173,7 @@ public class GeoServiceImpl implements GeoService {
             identifier.setType(deviceType);
 
             org.wso2.carbon.device.mgt.common.geo.service.GeoService geoService = DeviceMgtAPIUtils.getGeoService();
-            geoService.updateGeoAlert(alert, identifier, executionPlanType);
+            geoService.updateGeoAlert(alert, identifier, alertType);
             return Response.ok().build();
         } catch (DeviceAccessAuthorizationException | GeoServiceException e) {
             String error = "Error occurred while creating the geo alert for " + deviceType + " with id: " + deviceId;
@@ -182,13 +182,13 @@ public class GeoServiceImpl implements GeoService {
         }
     }
 
-    @Path("alerts/{executionPlanType}/{deviceType}/{deviceId}")
+    @Path("alerts/{alertType}/{deviceType}/{deviceId}")
     @DELETE
     @Consumes("application/json")
     @Produces("application/json")
     public Response removeGeoAlerts(@PathParam("deviceId") String deviceId,
                                     @PathParam("deviceType") String deviceType,
-                                    @PathParam("executionPlanType") String executionPlanType,
+                                    @PathParam("alertType") String alertType,
                                     @QueryParam("queryName") String queryName) {
         try {
             if (!DeviceMgtAPIUtils.getDeviceAccessAuthorizationService().isUserAuthorized(
@@ -207,7 +207,7 @@ public class GeoServiceImpl implements GeoService {
             identifier.setType(deviceType);
 
             org.wso2.carbon.device.mgt.common.geo.service.GeoService geoService = DeviceMgtAPIUtils.getGeoService();
-            geoService.removeGeoAlert(executionPlanType, identifier, queryName);
+            geoService.removeGeoAlert(alertType, identifier, queryName);
             return Response.ok().build();
         } catch (DeviceAccessAuthorizationException | GeoServiceException e) {
             String error = "Error occurred while removing the geo alert for " + deviceType + " with id: " + deviceId;
@@ -216,13 +216,13 @@ public class GeoServiceImpl implements GeoService {
         }
     }
 
-    @Path("alerts/{executionPlanType}/{deviceType}/{deviceId}")
+    @Path("alerts/{alertType}/{deviceType}/{deviceId}")
     @GET
     @Consumes("application/json")
     @Produces("application/json")
     public Response getGeoAlerts(@PathParam("deviceId") String deviceId,
                                  @PathParam("deviceType") String deviceType,
-                                 @PathParam("executionPlanType") String executionPlanType) {
+                                 @PathParam("alertType") String alertType) {
         try {
             if (!DeviceMgtAPIUtils.getDeviceAccessAuthorizationService().isUserAuthorized(
                     new DeviceIdentifier(deviceId, deviceType),
@@ -241,22 +241,22 @@ public class GeoServiceImpl implements GeoService {
 
             org.wso2.carbon.device.mgt.common.geo.service.GeoService geoService = DeviceMgtAPIUtils.getGeoService();
 
-            if (GeoServices.EXECUTION_PLAN_TYPE_WITHIN.equals(executionPlanType)) {
+            if (GeoServices.ALERT_TYPE_WITHIN.equals(alertType)) {
                 List<GeoFence> alerts = geoService.getWithinAlerts(identifier);
                 return Response.ok().entity(alerts).build();
-            } else if (GeoServices.EXECUTION_PLAN_TYPE_EXIT.equals(executionPlanType)) {
+            } else if (GeoServices.ALERT_TYPE_EXIT.equals(alertType)) {
                 List<GeoFence> alerts = geoService.getExitAlerts(identifier);
                 return Response.ok().entity(alerts).build();
-            } else if (GeoServices.EXECUTION_PLAN_TYPE_SPEED.equals(executionPlanType)) {
+            } else if (GeoServices.ALERT_TYPE_SPEED.equals(alertType)) {
                 String result = geoService.getSpeedAlerts(identifier);
                 return Response.ok().entity(result).build();
-            } else if (GeoServices.EXECUTION_PLAN_TYPE_PROXIMITY.equals(executionPlanType)) {
+            } else if (GeoServices.ALERT_TYPE_PROXIMITY.equals(alertType)) {
                 String result = geoService.getProximityAlerts(identifier);
                 return Response.ok().entity(result).build();
-            } else if (GeoServices.EXECUTION_PLAN_TYPE_STATIONARY.equals(executionPlanType)) {
+            } else if (GeoServices.ALERT_TYPE_STATIONARY.equals(alertType)) {
                 List<GeoFence> alerts = geoService.getStationaryAlerts(identifier);
                 return Response.ok().entity(alerts).build();
-            } else if (GeoServices.EXECUTION_PLAN_TYPE_TRAFFIC.equals(executionPlanType)) {
+            } else if (GeoServices.ALERT_TYPE_TRAFFIC.equals(alertType)) {
                 List<GeoFence> alerts = geoService.getTrafficAlerts(identifier);
                 return Response.ok().entity(alerts).build();
             }

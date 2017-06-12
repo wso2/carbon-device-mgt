@@ -99,12 +99,12 @@ public final class DeviceManagementConstants {
             throw new AssertionError();
         }
 
-        public static final String EXECUTION_PLAN_TYPE_SPEED = "Speed";
-        public static final String EXECUTION_PLAN_TYPE_WITHIN = "Within";
-        public static final String EXECUTION_PLAN_TYPE_EXIT = "Exit";
-        public static final String EXECUTION_PLAN_TYPE_PROXIMITY = "Proximity";
-        public static final String EXECUTION_PLAN_TYPE_STATIONARY = "Stationery";
-        public static final String EXECUTION_PLAN_TYPE_TRAFFIC = "Traffic";
+        public static final String ALERT_TYPE_SPEED = "Speed";
+        public static final String ALERT_TYPE_WITHIN = "Within";
+        public static final String ALERT_TYPE_EXIT = "Exit";
+        public static final String ALERT_TYPE_PROXIMITY = "Proximity";
+        public static final String ALERT_TYPE_STATIONARY = "Stationery";
+        public static final String ALERT_TYPE_TRAFFIC = "Traffic";
         public static final String REGISTRY_PATH_FOR_ALERTS = "/_system/governance/geo/alerts/";
         public static final String PROXIMITY_DISTANCE = "proximityDistance";
         public static final String PROXIMITY_TIME = "proximityTime";

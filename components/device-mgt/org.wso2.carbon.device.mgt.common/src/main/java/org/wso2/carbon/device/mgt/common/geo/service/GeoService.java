@@ -32,13 +32,13 @@ public interface GeoService {
 
     List<GeoFence> getExitAlerts(DeviceIdentifier identifier) throws GeoServiceException;
 
-    boolean createGeoAlert(Alert alert, DeviceIdentifier identifier, String executionPlanType)
+    boolean createGeoAlert(Alert alert, DeviceIdentifier identifier, String alertType)
             throws GeoServiceException;
 
-    boolean updateGeoAlert(Alert alert, DeviceIdentifier identifier, String executionPlanType)
+    boolean updateGeoAlert(Alert alert, DeviceIdentifier identifier, String alertType)
             throws GeoServiceException;
 
-    boolean removeGeoAlert(String executionPlanType, DeviceIdentifier identifier, String queryName)
+    boolean removeGeoAlert(String alertType, DeviceIdentifier identifier, String queryName)
             throws GeoServiceException;
 
     String getSpeedAlerts(DeviceIdentifier identifier) throws GeoServiceException;

@@ -150,7 +150,7 @@ public interface GeoService {
      * Create Geo alerts
      */
     @POST
-    @Path("alerts/{executionPlanType}/{deviceType}/{deviceId}")
+    @Path("alerts/{alertType}/{deviceType}/{deviceId}")
     @ApiOperation(
             consumes = "application/json",
             produces = "application/json",
@@ -206,16 +206,16 @@ public interface GeoService {
             @Size(max = 45)
                     String deviceType,
             @ApiParam(
-                    name = "executionPlanType",
-                    value = "The execution plan type, such as Within, Speed, Stationary",
+                    name = "alertType",
+                    value = "The alert type, such as Within, Speed, Stationary",
                     required = true)
-            @PathParam("executionPlanType") String executionPlanType);
+            @PathParam("alertType") String alertType);
 
     /**
      * Update Geo alerts
      */
     @PUT
-    @Path("alerts/{executionPlanType}/{deviceType}/{deviceId}")
+    @Path("alerts/{alertType}/{deviceType}/{deviceId}")
     @ApiOperation(
             consumes = "application/json",
             produces = "application/json",
@@ -271,16 +271,16 @@ public interface GeoService {
             @Size(max = 45)
                     String deviceType,
             @ApiParam(
-                    name = "executionPlanType",
-                    value = "The execution plan type, such as Within, Speed, Stationary",
+                    name = "alertType",
+                    value = "The alert type, such as Within, Speed, Stationary",
                     required = true)
-            @PathParam("executionPlanType") String executionPlanType);
+            @PathParam("alertType") String alertType);
 
     /**
      * Retrieve Geo alerts
      */
     @GET
-    @Path("alerts/{executionPlanType}/{deviceType}/{deviceId}")
+    @Path("alerts/{alertType}/{deviceType}/{deviceId}")
     @ApiOperation(
             consumes = "application/json",
             produces = "application/json",
@@ -335,10 +335,10 @@ public interface GeoService {
             @Size(max = 45)
                     String deviceType,
             @ApiParam(
-                    name = "executionPlanType",
-                    value = "The execution plan type, such as Within, Speed, Stationary",
+                    name = "alertType",
+                    value = "The alert type, such as Within, Speed, Stationary",
                     required = true)
-            @PathParam("executionPlanType") String executionPlanType);
+            @PathParam("alertType") String alertType);
 
     /**
      * Retrieve Geo alerts history
@@ -410,7 +410,7 @@ public interface GeoService {
             @QueryParam("to") long to);
 
     @DELETE
-    @Path("alerts/{executionPlanType}/{deviceType}/{deviceId}")
+    @Path("alerts/{alertType}/{deviceType}/{deviceId}")
     @ApiOperation(
             consumes = "application/json",
             produces = "application/json",
@@ -459,10 +459,10 @@ public interface GeoService {
                     required = true)
             @PathParam("deviceType") String deviceType,
             @ApiParam(
-                    name = "executionPlanType",
-                    value = "The execution plan type, such as Within, Speed, Stationary",
+                    name = "alertType",
+                    value = "The alert type, such as Within, Speed, Stationary",
                     required = true)
-            @PathParam("executionPlanType") String executionPlanType,
+            @PathParam("alertType") String alertType,
             @ApiParam(
                     name = "queryName",
                     value = "The query name.",

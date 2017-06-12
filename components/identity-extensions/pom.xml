@@ -22,7 +22,7 @@
     <parent>
         <groupId>org.wso2.carbon.devicemgt</groupId>
         <artifactId>carbon-devicemgt</artifactId>
-        <version>2.0.74-SNAPSHOT</version>
+        <version>2.0.75-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
@@ -34,10 +34,10 @@
     <url>http://wso2.org</url>
 
     <modules>
+        <module>org.wso2.carbon.identity.authenticator.backend.oauth</module>
         <module>org.wso2.carbon.device.mgt.oauth.extensions</module>
         <module>org.wso2.carbon.identity.jwt.client.extension</module>
         <module>dynamic-client-registration</module>
-        <module>org.wso2.carbon.identity.authenticator.backend.oauth</module>
     </modules>
 
 </project>

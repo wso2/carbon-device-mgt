@@ -38,7 +38,6 @@ public class ApplicationManagementAPIImpl {
 
     private static Log log = LogFactory.getLog(ApplicationManagementAPIImpl.class);
 
-
     @GET
     @Consumes("application/json")
     @Path("applications")

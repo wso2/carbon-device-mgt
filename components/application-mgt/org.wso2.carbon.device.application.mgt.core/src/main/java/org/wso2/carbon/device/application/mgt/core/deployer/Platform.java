@@ -30,6 +30,7 @@ public class Platform {
     private String description;
     private String icon;
     private boolean shared;
+    private boolean tenantMapping;
     private List<Property> properties;
 
     @XmlAttribute(name = "id")
@@ -84,5 +85,14 @@ public class Platform {
 
     public void setShared(boolean shared) {
         this.shared = shared;
+    }
+
+    @XmlAttribute(name = "tenantMapping")
+    public boolean isTenantMapping() {
+        return tenantMapping;
+    }
+
+    public void setTenantMapping(boolean tenantMapping) {
+        this.tenantMapping = tenantMapping;
     }
 }

@@ -29,7 +29,7 @@ public interface PlatformDAO {
 
     void unregister(String tenantDomain, String platformCode) throws PlatformManagementDAOException;
 
-    void addMapping(String tenantDomain, String platformCode) throws PlatformManagementDAOException;
+    void addMapping(String tenantDomain, List<String> platformCode) throws PlatformManagementDAOException;
 
     void removeMapping(String tenantDomain, String platformCode) throws PlatformManagementDAOException;
 

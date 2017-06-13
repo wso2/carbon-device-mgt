@@ -21,8 +21,13 @@ import org.wso2.carbon.device.application.mgt.common.Platform;
 import org.wso2.carbon.device.application.mgt.common.services.PlatformManager;
 import org.wso2.carbon.device.application.mgt.common.exception.PlatformManagementException;
 import org.wso2.carbon.device.application.mgt.core.dao.common.DAOFactory;
+import org.wso2.carbon.device.application.mgt.core.internal.DataHolder;
+import org.wso2.carbon.user.api.Tenant;
+import org.wso2.carbon.user.api.TenantManager;
+import org.wso2.carbon.user.api.UserStoreException;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +39,17 @@ public class PlatformManagerImpl implements PlatformManager {
         this.inMemoryStore = new HashMap<>();
     }
 
+    @Override
+    public void initialize(String tenantDomain) throws PlatformManagementException {
+        List<Platform> platforms = DAOFactory.getPlatformDAO().getPlatforms(tenantDomain);
+        List<String> platformCodes = new ArrayList<>();
+        for (Platform platform : platforms) {
+            if (!platform.isEnabled() & platform.isDefaultTenantMapping()) {
+                platformCodes.add(platform.getCode());
+            }
+        }
+        addMapping(tenantDomain, platformCodes);
+    }
 
     @Override
     public List<Platform> getPlatforms(String tenantDomain) throws PlatformManagementException {
@@ -74,6 +90,20 @@ public class PlatformManagerImpl implements PlatformManager {
         } else {
             DAOFactory.getPlatformDAO().register(tenantDomain, platform);
         }
+        if (platform.isDefaultTenantMapping()) {
+            try {
+                if (platform.isShared()) {
+                    TenantManager tenantManager = DataHolder.getInstance().getRealmService().getTenantManager();
+                    Tenant[] tenants = tenantManager.getAllTenants();
+                    for (Tenant tenant : tenants) {
+                        addMapping(tenant.getDomain(), platform.getCode());
+                    }
+                }
+                addMapping(tenantDomain, platform.getCode());
+            } catch (UserStoreException e) {
+                throw new PlatformManagementException("Error occured while assigning the platforms for tenants!", e);
+            }
+        }
     }
 
     @Override
@@ -89,8 +119,15 @@ public class PlatformManagerImpl implements PlatformManager {
     }
 
     @Override
-    public void addMapping(String tenantDomain, String platformCode) throws PlatformManagementException {
+    public void addMapping(String tenantDomain, List<String> platformCode) throws PlatformManagementException {
         DAOFactory.getPlatformDAO().addMapping(tenantDomain, platformCode);
+    }
+
+    @Override
+    public void addMapping(String tenantDomain, String platformCode) throws PlatformManagementException {
+        List<String> codes = new ArrayList<>();
+        codes.add(platformCode);
+        DAOFactory.getPlatformDAO().addMapping(tenantDomain, codes);
     }
 
     @Override

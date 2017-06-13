@@ -44,6 +44,10 @@ public class Platform implements Cloneable {
 
     private List<Property> properties;
 
+    private boolean enabled;
+
+    private boolean defaultTenantMapping;
+
     public Platform(Platform platform) {
         this.id = platform.getId();
         this.name = platform.getName();
@@ -145,6 +149,21 @@ public class Platform implements Cloneable {
         this.shared = shared;
     }
 
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public boolean isDefaultTenantMapping() {
+        return defaultTenantMapping;
+    }
+
+    public void setDefaultTenantMapping(boolean defaultTenantMapping) {
+        this.defaultTenantMapping = defaultTenantMapping;
+    }
 
     public static class Property implements Cloneable {
 

@@ -31,7 +31,6 @@ public class Filter {
 
     private int offset;
 
-    //TODO:
     private String filter;
 
     private List<FilterProperty> filterProperties;

@@ -96,6 +96,8 @@ public class PlatformDeployer extends AbstractDeployer {
         platform.setIconName(platformConfig.getIcon());
         platform.setFileBased(true);
         platform.setShared(platformConfig.isShared());
+        platform.setDefaultTenantMapping(platformConfig.isTenantMapping());
+        platform.setEnabled(false);
         List<org.wso2.carbon.device.application.mgt.common.Platform.Property> properties = new ArrayList<>();
         for (Property propertyConfig : platformConfig.getProperties()) {
             org.wso2.carbon.device.application.mgt.common.Platform.Property property = new org.wso2.carbon.device.application.mgt.common.Platform.Property();

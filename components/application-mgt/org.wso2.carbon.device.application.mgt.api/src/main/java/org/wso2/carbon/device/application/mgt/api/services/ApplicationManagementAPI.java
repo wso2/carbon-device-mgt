@@ -26,8 +26,8 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-@Api(value = "Application Management", description = "This API carries all device management related operations " +
-        "such as get all the available devices, etc.")
+@Api(value = "Application Management", description = "This API carries all application management related operations " +
+        "such as get all the applications, add application, etc.")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public interface ApplicationManagementAPI {

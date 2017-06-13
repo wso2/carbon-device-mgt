@@ -29,11 +29,15 @@ import java.util.List;
  */
 public interface PlatformManager {
 
+    void initialize(String tenantDomain) throws PlatformManagementException;
+
     List<Platform> getPlatforms(String tenantDomain) throws PlatformManagementException;
 
     void register(String tenantDomain, Platform platform) throws PlatformManagementException;
 
     void unregister(String tenantDomain, String platformCode, boolean isFileBased) throws PlatformManagementException;
+
+    void addMapping(String tenantDomain, List<String> platformCode) throws PlatformManagementException;
 
     void addMapping(String tenantDomain, String platformCode) throws PlatformManagementException;
 

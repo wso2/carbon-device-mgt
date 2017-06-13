@@ -148,22 +148,26 @@ public class PlatformDAOImpl implements PlatformDAO {
         }
     }
 
-    public void addMapping(String tenantDomain, String platformCode) throws PlatformManagementDAOException {
+    public void addMapping(String tenantDomain, List<String> platformCodes) throws PlatformManagementDAOException {
         String insertMapping = "INSERT INTO APPM_PLATFORM_TENANT_MAPPING(TENANT_DOMAIN, PLATFORM_CODE) VALUES (?, ?)";
         try {
             ConnectionManagerUtil.beginTransaction();
-            if (getTenantPlatformMapping(tenantDomain, platformCode) != -1) {
-                Connection connection = ConnectionManagerUtil.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(insertMapping);
-                preparedStatement.execute();
-                ConnectionManagerUtil.commitTransaction();
-            } else {
-                throw new PlatformManagementDAOException("Platform - " + platformCode + " is already assigned to tenant domain - " + tenantDomain);
+            for (String platformCode : platformCodes) {
+                if (getTenantPlatformMapping(tenantDomain, platformCode) != -1) {
+                    Connection connection = ConnectionManagerUtil.getConnection();
+                    PreparedStatement preparedStatement = connection.prepareStatement(insertMapping);
+                    preparedStatement.setString(1, tenantDomain);
+                    preparedStatement.setString(2, platformCode);
+                    preparedStatement.execute();
+                } else {
+                    throw new PlatformManagementDAOException("Platform - " + platformCode + " is already assigned to tenant domain - " + tenantDomain);
+                }
             }
+            ConnectionManagerUtil.commitTransaction();
         } catch (TransactionManagementException e) {
             ConnectionManagerUtil.rollbackTransaction();
             throw new PlatformManagementDAOException("Error occured while trying to add the mapping of platform - "
-                    + platformCode + " for tenant - " + tenantDomain, e);
+                    + platformCodes.toString() + " for tenant - " + tenantDomain, e);
         } catch (DBConnectionException e) {
             ConnectionManagerUtil.rollbackTransaction();
             throw new PlatformManagementDAOException("Error occurred when getting the connection for the database. ", e);
@@ -232,15 +236,23 @@ public class PlatformDAOImpl implements PlatformDAO {
 
     @Override
     public List<Platform> getPlatforms(String tenantDomain) throws PlatformManagementDAOException {
-        String selectQuery = "SELECT PLATFORM_CODE FROM APPM_PLATFORM_TENANT_MAPPING WHERE TENANT_DOMAIN=?";
+        String selectQuery = "SELECT * FROM (SELECT * FROM APPM_PLATFORM WHERE TENANT_DOMAIN=? OR IS_SHARED = TRUE) PLATFORM " +
+                "LEFT JOIN APPM_PLATFORM_TENANT_MAPPING MAPPING ON PLATFORM.CODE = MAPPING.PLATFORM_CODE";
         try {
             Connection connection = ConnectionManagerUtil.openConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(selectQuery);
             ResultSet resultSet = preparedStatement.executeQuery();
             List<Platform> platforms = new ArrayList<>();
             while (resultSet.next()) {
-                String platformCode = resultSet.getString(1);
-                platforms.add(getPlatform(tenantDomain, platformCode));
+                String platformCode = resultSet.getString("PLATFORM.CODE");
+                int mappingID = resultSet.getInt("MAPPING.ID");
+                Platform platform = getPlatform(tenantDomain, platformCode);
+                if (mappingID != 0) {
+                    platform.setEnabled(true);
+                } else {
+                    platform.setEnabled(false);
+                }
+                platforms.add(platform);
             }
             return platforms;
         } catch (DBConnectionException e) {
@@ -253,13 +265,14 @@ public class PlatformDAOImpl implements PlatformDAO {
     }
 
     private Platform getPlatform(String tenantDomain, String platformCode) throws PlatformManagementDAOException {
-        String platformQuery = "SELECT * FROM (SELECT * FROM APPM_PLATFORM WHERE (TENANT_DOMAIN=? AND CODE=?) PLATFORM " +
-                "LEFT JOIN APPM_PLATFORM_PROPERTIES PROPS ON PLATFORM.ID = PROPS.PLATFORM_ID ORDER BY PLATFORM.CODE DESC";
+        String platformQuery = "SELECT * FROM (SELECT * FROM APPM_PLATFORM WHERE (TENANT_DOMAIN=? AND CODE=?) OR (IS_SHARED = TRUE AND CODE=?)) PLATFORM " +
+                "LEFT JOIN APPM_PLATFORM_PROPERTIES PROPS ON PLATFORM.ID = PROPS.PLATFORM_ID";
         try {
             Connection connection = ConnectionManagerUtil.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(platformQuery);
             preparedStatement.setString(1, tenantDomain);
             preparedStatement.setString(2, platformCode);
+            preparedStatement.setString(3, platformCode);
             ResultSet resultSet = preparedStatement.executeQuery();
             Platform platform = new Platform();
             if (resultSet.next()) {
@@ -292,4 +305,5 @@ public class PlatformDAOImpl implements PlatformDAO {
             throw new PlatformManagementDAOException("Error in executing the query - " + platformQuery, e);
         }
     }
+
 }

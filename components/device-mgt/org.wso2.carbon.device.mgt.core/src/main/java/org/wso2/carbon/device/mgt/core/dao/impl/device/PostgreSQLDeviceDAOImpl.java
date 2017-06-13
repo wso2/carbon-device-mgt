@@ -85,7 +85,7 @@ public class PostgreSQLDeviceDAOImpl extends AbstractDeviceDAOImpl {
             }
             //Add the query for owner
             if (owner != null && !owner.isEmpty()) {
-                sql = sql + " AND e.OWNER LIKE ?";
+                sql = sql + " AND LOWER(e.OWNER) LIKE LOWER(?)";
                 isOwnerProvided = true;
             }
             //Add the query for status

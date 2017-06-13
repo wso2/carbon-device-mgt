@@ -350,7 +350,7 @@ public abstract class AbstractDeviceDAOImpl implements DeviceDAO {
                          " e1.DATE_OF_ENROLMENT, d.DESCRIPTION, d.NAME AS DEVICE_NAME, d.DEVICE_IDENTIFICATION, t.NAME " +
                          "AS DEVICE_TYPE FROM DM_DEVICE d, (SELECT e.OWNER, e.OWNERSHIP, e.ID AS ENROLMENT_ID, " +
                          "e.DEVICE_ID, e.STATUS, e.DATE_OF_LAST_UPDATE, e.DATE_OF_ENROLMENT FROM DM_ENROLMENT e WHERE " +
-                         "e.TENANT_ID = ? AND e.OWNER = ?) e1, DM_DEVICE_TYPE t WHERE d.ID = e1.DEVICE_ID " +
+                         "e.TENANT_ID = ? AND LOWER(e.OWNER) = LOWER(?)) e1, DM_DEVICE_TYPE t WHERE d.ID = e1.DEVICE_ID " +
                          "AND t.ID = d.DEVICE_TYPE_ID";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, tenantId);
@@ -383,7 +383,7 @@ public abstract class AbstractDeviceDAOImpl implements DeviceDAO {
                     " e1.DATE_OF_ENROLMENT, d.DESCRIPTION, d.NAME AS DEVICE_NAME, d.DEVICE_IDENTIFICATION, t.NAME " +
                     "AS DEVICE_TYPE FROM DM_DEVICE d, (SELECT e.OWNER, e.OWNERSHIP, e.ID AS ENROLMENT_ID, " +
                     "e.DEVICE_ID, e.STATUS, e.DATE_OF_LAST_UPDATE, e.DATE_OF_ENROLMENT FROM DM_ENROLMENT e WHERE " +
-                    "e.TENANT_ID = ? AND e.OWNER = ?) e1, DM_DEVICE_TYPE t WHERE d.ID = e1.DEVICE_ID " +
+                    "e.TENANT_ID = ? AND LOWER(e.OWNER) = LOWER(?)) e1, DM_DEVICE_TYPE t WHERE d.ID = e1.DEVICE_ID " +
                     "AND t.ID = d.DEVICE_TYPE_ID AND t.NAME= ?";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, tenantId);
@@ -424,7 +424,7 @@ public abstract class AbstractDeviceDAOImpl implements DeviceDAO {
             conn = this.getConnection();
             String sql = "SELECT COUNT(d1.DEVICE_ID) AS DEVICE_COUNT FROM DM_ENROLMENT e, (SELECT d.ID AS DEVICE_ID FROM " +
                          "DM_DEVICE d, DM_DEVICE_TYPE t WHERE d.DEVICE_TYPE_ID = t.ID AND d.TENANT_ID = ?) d1 WHERE " +
-                         "d1.DEVICE_ID = e.DEVICE_ID AND e.OWNER = ? AND TENANT_ID = ?";
+                         "d1.DEVICE_ID = e.DEVICE_ID AND LOWER(e.OWNER) = LOWER(?) AND TENANT_ID = ?";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, tenantId);
             stmt.setString(2, username);
@@ -524,7 +524,7 @@ public abstract class AbstractDeviceDAOImpl implements DeviceDAO {
             }
 
             if (owner != null && !owner.isEmpty()) {
-                sql = sql + " AND e.OWNER LIKE ?";
+                sql = sql + " AND LOWER(e.OWNER) LIKE LOWER(?)";
                 isOwnerProvided = true;
             }
 
@@ -604,7 +604,7 @@ public abstract class AbstractDeviceDAOImpl implements DeviceDAO {
         try {
             conn = this.getConnection();
             String sql = "SELECT COUNT(e1.DEVICE_ID) AS DEVICE_COUNT FROM DM_DEVICE d, (SELECT e.DEVICE_ID " +
-                         "FROM DM_ENROLMENT e WHERE e.TENANT_ID = ? AND e.OWNER = ?) " +
+                         "FROM DM_ENROLMENT e WHERE e.TENANT_ID = ? AND LOWER(e.OWNER) = LOWER(?)) " +
                          "e1, DM_DEVICE_TYPE t WHERE d.ID = e1.DEVICE_ID AND t.ID = d.DEVICE_TYPE_ID";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, tenantId);

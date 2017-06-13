@@ -22,6 +22,9 @@ import org.wso2.carbon.device.mgt.core.operation.mgt.PolicyOperation;
 
 public final class DeviceManagementConstants {
 
+    public static final String DM_CACHE_MANAGER = "DM_CACHE_MANAGER";
+    public static final String DEVICE_CACHE = "DEVICE_CACHE";
+
     public static final class Common {
         private Common() {
             throw new AssertionError();

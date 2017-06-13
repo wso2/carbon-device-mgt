@@ -70,5 +70,9 @@
     <DeviceStatusTaskConfig>
         <Enable>true</Enable>
     </DeviceStatusTaskConfig>
+    <DeviceCacheConfiguration>
+        <Enable>true</Enable>
+        <ExpiryTime>600</ExpiryTime>
+    </DeviceCacheConfiguration>
 </DeviceMgtConfiguration>
 

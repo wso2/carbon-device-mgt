@@ -71,6 +71,38 @@ public class PlatformManagerImpl implements PlatformManager {
     }
 
     @Override
+    public Platform getPlatform(String tenantDomain, String code) throws PlatformManagementException {
+        Platform platform = getPlatformFromInMemory(tenantDomain, code);
+        if (platform == null) {
+            platform = DAOFactory.getPlatformDAO().getPlatform(tenantDomain, code);
+        }
+        if (platform != null) {
+            return new Platform(platform);
+        }
+        throw new PlatformManagementException("No platform was found for tenant - "+ tenantDomain+" with Platform code - "+ code);
+    }
+
+    private Platform getPlatformFromInMemory(String tenantDomain, String code) {
+        Map<String, Platform> platformMap = this.inMemoryStore.get(tenantDomain);
+        if (platformMap != null) {
+            Platform platform = platformMap.get(code);
+            if (platform != null) {
+                return platform;
+            }
+        }
+        if (!tenantDomain.equalsIgnoreCase(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME)) {
+            platformMap = this.inMemoryStore.get(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
+            if (platformMap != null) {
+                Platform platform = platformMap.get(code);
+                if (platform != null && platform.isShared()) {
+                    return platform;
+                }
+            }
+        }
+        return null;
+    }
+
+    @Override
     public synchronized void register(String tenantDomain, Platform platform) throws PlatformManagementException {
         if (platform.isShared() && !tenantDomain.equals(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME)) {
             throw new PlatformManagementException("Platform sharing is a restricted operation, therefore Platform - "

@@ -264,7 +264,7 @@ public class PlatformDAOImpl implements PlatformDAO {
         }
     }
 
-    private Platform getPlatform(String tenantDomain, String platformCode) throws PlatformManagementDAOException {
+    public Platform getPlatform(String tenantDomain, String platformCode) throws PlatformManagementDAOException {
         String platformQuery = "SELECT * FROM (SELECT * FROM APPM_PLATFORM WHERE (TENANT_DOMAIN=? AND CODE=?) OR (IS_SHARED = TRUE AND CODE=?)) PLATFORM " +
                 "LEFT JOIN APPM_PLATFORM_PROPERTIES PROPS ON PLATFORM.ID = PROPS.PLATFORM_ID";
         try {

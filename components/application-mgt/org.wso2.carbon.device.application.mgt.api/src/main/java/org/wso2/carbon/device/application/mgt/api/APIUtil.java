@@ -77,8 +77,12 @@ public class APIUtil {
     }
 
     public static Response getResponse(ApplicationManagementException ex, Response.Status status) {
+        return getResponse(ex.getMessage(), status);
+    }
+
+    public static Response getResponse(String message, Response.Status status) {
         ErrorResponse errorMessage = new ErrorResponse();
-        errorMessage.setMessage(ex.getMessage());
+        errorMessage.setMessage(message);
         if (status == null) {
             status = Response.Status.INTERNAL_SERVER_ERROR;
         }

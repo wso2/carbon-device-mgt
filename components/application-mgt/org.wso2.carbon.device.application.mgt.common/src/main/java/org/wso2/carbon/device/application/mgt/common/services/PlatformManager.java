@@ -33,6 +33,8 @@ public interface PlatformManager {
 
     List<Platform> getPlatforms(String tenantDomain) throws PlatformManagementException;
 
+    Platform getPlatform(String tenantDomain, String code) throws PlatformManagementException;
+
     void register(String tenantDomain, Platform platform) throws PlatformManagementException;
 
     void unregister(String tenantDomain, String platformCode, boolean isFileBased) throws PlatformManagementException;

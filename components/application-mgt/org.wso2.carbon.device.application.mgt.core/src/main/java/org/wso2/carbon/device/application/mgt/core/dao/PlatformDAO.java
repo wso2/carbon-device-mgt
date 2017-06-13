@@ -35,4 +35,6 @@ public interface PlatformDAO {
 
     List<Platform> getPlatforms(String tenantDomain) throws PlatformManagementDAOException;
 
+    Platform getPlatform(String tenantDomain, String platformCode) throws PlatformManagementDAOException;
+
 }

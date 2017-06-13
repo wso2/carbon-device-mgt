@@ -165,6 +165,10 @@ public class Platform implements Cloneable {
         this.defaultTenantMapping = defaultTenantMapping;
     }
 
+    public boolean validate(){
+        return !(name == null || code == null);
+    }
+
     public static class Property implements Cloneable {
 
         private String name;

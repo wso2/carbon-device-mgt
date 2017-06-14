@@ -83,8 +83,6 @@ public class Platform {
 
     }
 
-    private boolean published;
-
     public int getId() {
         return id;
     }
@@ -139,14 +137,6 @@ public class Platform {
 
     public void setTags(List<String> tags) {
         this.tags = tags;
-    }
-
-    public boolean isPublished() {
-        return published;
-    }
-
-    public void setPublished(boolean published) {
-        this.published = published;
     }
 
     public boolean isFileBased() {

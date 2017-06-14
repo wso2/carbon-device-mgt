@@ -33,16 +33,18 @@ public interface PlatformManager {
 
     List<Platform> getPlatforms(String tenantDomain) throws PlatformManagementException;
 
-    Platform getPlatform(String tenantDomain, String code) throws PlatformManagementException;
+    Platform getPlatform(String tenantDomain, String platformIdentifier) throws PlatformManagementException;
 
     void register(String tenantDomain, Platform platform) throws PlatformManagementException;
 
-    void unregister(String tenantDomain, String platformCode, boolean isFileBased) throws PlatformManagementException;
+    void update(String tenantDomain, String oldPlatformIdentifier, Platform platform) throws PlatformManagementException;
 
-    void addMapping(String tenantDomain, List<String> platformCode) throws PlatformManagementException;
+    void unregister(String tenantDomain, String platformIdentifier, boolean isFileBased) throws PlatformManagementException;
 
-    void addMapping(String tenantDomain, String platformCode) throws PlatformManagementException;
+    void addMapping(String tenantDomain, List<String> platformIdentifiers) throws PlatformManagementException;
 
-    void removeMapping(String tenantDomain, String platformCode) throws PlatformManagementException;
+    void addMapping(String tenantDomain, String platformIdentifier) throws PlatformManagementException;
+
+    void removeMapping(String tenantDomain, String platformIdentifier) throws PlatformManagementException;
 
 }

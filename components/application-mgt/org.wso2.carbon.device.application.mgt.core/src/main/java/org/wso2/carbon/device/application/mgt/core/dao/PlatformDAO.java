@@ -26,18 +26,20 @@ import java.util.List;
 
 public interface PlatformDAO {
 
-    public Platform getPlatformByIdentifier(String identifier) throws ApplicationManagementDAOException;
+    int register(String tenantDomain, Platform platform) throws PlatformManagementDAOException;
 
-    void register(String tenantDomain, Platform platform) throws PlatformManagementDAOException;
+    void update(String tenantDomain, String oldPlatformIdentifier, Platform platform) throws PlatformManagementDAOException;
 
-    void unregister(String tenantDomain, String platformCode) throws PlatformManagementDAOException;
+    void unregister(String tenantDomain, String platformIdentifier) throws PlatformManagementDAOException;
 
-    void addMapping(String tenantDomain, List<String> platformCode) throws PlatformManagementDAOException;
+    void addMapping(String tenantDomain, List<String> platformIdentifiers) throws PlatformManagementDAOException;
 
-    void removeMapping(String tenantDomain, String platformCode) throws PlatformManagementDAOException;
+    void removeMapping(String tenantDomain, String platformIdentifier) throws PlatformManagementDAOException;
+
+    void removeMappingTenants(String platformIdentifier) throws PlatformManagementDAOException;
 
     List<Platform> getPlatforms(String tenantDomain) throws PlatformManagementDAOException;
 
-    Platform getPlatform(String tenantDomain, String platformCode) throws PlatformManagementDAOException;
+    Platform getPlatform(String tenantDomain, String platformIdentifier) throws PlatformManagementDAOException;
 
 }

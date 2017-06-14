@@ -23,15 +23,24 @@ import org.wso2.carbon.device.application.mgt.common.jaxrs.Exclude;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Platform implements Cloneable {
+public class Platform {
 
+    /**
+     * Unique id reference that is used in the database.
+     */
     @Exclude
     private int id;
 
+    /**
+     * The name of the platform. It can contain spaces,etc.
+     */
     private String name;
 
     private String description;
 
+    /**
+     * Unique human readable identifier used for the platform.
+     */
     private String identifier;
 
     private String iconName;
@@ -172,7 +181,7 @@ public class Platform implements Cloneable {
         this.defaultTenantMapping = defaultTenantMapping;
     }
 
-    public boolean validate(){
+    public boolean validate() {
         return !(name == null || identifier == null);
     }
 

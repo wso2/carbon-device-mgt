@@ -37,6 +37,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Path("/admin/device-types")
 @Produces(MediaType.APPLICATION_JSON)
@@ -44,6 +46,8 @@ import java.util.List;
 public class DeviceTypeManagementAdminServiceImpl implements DeviceTypeManagementAdminService {
 
     private static final Log log = LogFactory.getLog(DeviceTypeManagementAdminServiceImpl.class);
+    private static final String DEVICETYPE_REGEX_PATTERN = "^[^ /]+$";
+    private static final Pattern patternMatcher = Pattern.compile(DEVICETYPE_REGEX_PATTERN);
 
     @GET
     @Override
@@ -68,10 +72,18 @@ public class DeviceTypeManagementAdminServiceImpl implements DeviceTypeManagemen
                     String msg = "Device type already available, " + deviceType.getName();
                     return Response.status(Response.Status.CONFLICT).entity(msg).build();
                 }
-                DeviceManagementService httpDeviceTypeManagerService = DeviceMgtAPIUtils.getDeviceTypeGeneratorService()
-                        .populateDeviceManagementService(deviceType.getName(), deviceType.getDeviceTypeMetaDefinition());
-                DeviceMgtAPIUtils.getDeviceManagementService().registerDeviceType(httpDeviceTypeManagerService);
-                return Response.status(Response.Status.OK).build();
+                Matcher matcher = patternMatcher.matcher(deviceType.getName());
+                if(matcher.find()) {
+                    DeviceManagementService httpDeviceTypeManagerService =
+                            DeviceMgtAPIUtils.getDeviceTypeGeneratorService()
+                                    .populateDeviceManagementService(deviceType.getName(),
+                                                                     deviceType.getDeviceTypeMetaDefinition());
+                    DeviceMgtAPIUtils.getDeviceManagementService().registerDeviceType(httpDeviceTypeManagerService);
+                    return Response.status(Response.Status.OK).build();
+                } else {
+                    return Response.status(Response.Status.BAD_REQUEST).entity("device type name does not match the pattern "
+                                                                                       + DEVICETYPE_REGEX_PATTERN).build();
+                }
             } catch (DeviceManagementException e) {
                 String msg = "Error occurred at server side while adding a device type.";
                 log.error(msg, e);

@@ -271,11 +271,10 @@
         <code>curl -k -X GET {{httpsGateway}}/api/device-mgt/v1.0/device/agent/pending/operations/{{deviceType}}/deviceId
               -H 'authorization: Bearer %accessToken%' -H 'content-type: application/json'</code>
         </br>
-        Retrieve last pending operation:
-        <code>curl -k -X GET {{httpsGateway}}/api/device-mgt/v1.0/device/agent/last-pending/operation/{{deviceType}}/deviceId
+        Retrieve next pending operation:
+        <code>curl -k -X GET {{httpsGateway}}/api/device-mgt/v1.0/device/agent/next-pending/operations/{{deviceType}}/deviceId
               -H 'authorization: Bearer %accessToken%' -H 'content-type: application/json'</code>
         </br>
-        Update operation:
         <code>curl -k -X PUT {{httpsGateway}}/api/device-mgt/v1.0/device/agent/operations/{{deviceType}}/deviceId
               -H 'authorization: Bearer %accessToken%' -H 'content-type: application/json' -d '{"id": 1,"status": "COMPLETED", "payload": "this is my response"}'</code>
 

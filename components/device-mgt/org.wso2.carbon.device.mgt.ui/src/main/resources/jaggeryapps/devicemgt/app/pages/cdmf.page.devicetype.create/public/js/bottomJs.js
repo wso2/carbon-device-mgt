@@ -229,6 +229,10 @@ $(document).ready(function () {
 		                $(errorMsg).text("Unexpected error.");
 		                $(errorMsgWrapper).removeClass("hidden");
 		            }
+					if (jqXHR.status == 400) {
+						$(errorMsg).text("Device type name should not contain whitespaces.");
+						$(errorMsgWrapper).removeClass("hidden");
+					}
 
 					if (jqXHR.status == 409) {
 						$(errorMsg).text("Device type already exists");

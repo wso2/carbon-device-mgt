@@ -49,6 +49,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.List;
 import java.util.Map;
 
 @SwaggerDefinition(
@@ -309,6 +310,70 @@ public interface DeviceAgentService {
                     value = "deviceId of the device")
             @PathParam("deviceId") String deviceId);
 
+    @POST
+    @Path("/events/publish/data/{type}/{deviceId}")
+    @ApiOperation(
+            produces = MediaType.APPLICATION_JSON,
+            consumes = MediaType.APPLICATION_JSON,
+            httpMethod = "POST",
+            value = "Publishing Events data only",
+            notes = "Publish events received by the device client to the WSO2 Data Analytics Server (DAS) using this API.",
+            tags = "Device Agent Management",
+            extensions = {
+                    @Extension(properties = {
+                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:device:publish-event")
+                    })
+            }
+    )
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "OK. \n Successfully published the event",
+                                 responseHeaders = {
+                                         @ResponseHeader(
+                                                 name = "Content-Type",
+                                                 description = "The content type of the body"),
+                                         @ResponseHeader(
+                                                 name = "ETag",
+                                                 description = "Entity Tag of the response resource.\n" +
+                                                         "Used by caches, or in conditional requests."),
+                                         @ResponseHeader(
+                                                 name = "Last-Modified",
+                                                 description = "Date and time the resource was last modified.\n" +
+                                                         "Used by caches, or in conditional requests.")
+                                 }),
+                    @ApiResponse(
+                            code = 303,
+                            message = "See Other. \n The source can be retrieved from the URL specified in the location header.",
+                            responseHeaders = {
+                                    @ResponseHeader(
+                                            name = "Content-Location",
+                                            description = "The Source URL of the document.")}),
+                    @ApiResponse(
+                            code = 400,
+                            message = "Bad Request. \n Invalid request or validation error."),
+                    @ApiResponse(
+                            code = 415,
+                            message = "Unsupported media type. \n The format of the requested entity was not supported."),
+                    @ApiResponse(
+                            code = 500,
+                            message = "Internal Server Error. \n " +
+                                    "Server error occurred while publishing events.")
+            })
+    Response publishEvents(
+            @ApiParam(
+                    name = "payloadData",
+                    value = "Information of the agent event to be published on DAS.")
+            @Valid
+            List<Object> payloadData,
+            @ApiParam(
+                    name = "type",
+                    value = "name of the device type")
+            @PathParam("type") String type,
+            @ApiParam(
+                    name = "deviceId",
+                    value = "deviceId of the device")
+            @PathParam("deviceId") String deviceId);
+
     @GET
     @Path("/pending/operations/{type}/{id}")
     @ApiOperation(
@@ -367,7 +432,7 @@ public interface DeviceAgentService {
                                   @PathParam("id") String deviceId);
 
     @GET
-    @Path("/last-pending/operation/{type}/{id}")
+    @Path("/next-pending/operation/{type}/{id}")
     @ApiOperation(
             produces = MediaType.APPLICATION_JSON,
             consumes = MediaType.APPLICATION_JSON,

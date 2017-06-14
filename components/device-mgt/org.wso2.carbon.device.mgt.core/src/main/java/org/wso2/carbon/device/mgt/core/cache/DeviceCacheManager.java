@@ -29,9 +29,45 @@ import java.util.List;
  */
 public interface DeviceCacheManager {
 
+    /**
+     * Adds a given device object to the device-cache.
+     * @param deviceIdentifier - DeviceIdentifier of the device to be added.
+     * @param device - Device object to be added.
+     * @param tenantId - Owning tenant of the device.
+     *
+     */
     void addDeviceToCache(DeviceIdentifier deviceIdentifier, Device device, int tenantId);
-    void removeDeviceFromCache(DeviceIdentifier identifier, int tenantId);
-    void removeDevicesFromCache(List<DeviceIdentifier> deviceList, int tenantId);
+
+    /**
+     * Removes a device object from device-cache.
+     * @param deviceIdentifier - DeviceIdentifier of the device to be removed.
+     * @param tenantId - Owning tenant of the device.
+     *
+     */
+    void removeDeviceFromCache(DeviceIdentifier deviceIdentifier, int tenantId);
+
+    /**
+     * Removes a list of devices from device-cache.
+     * @param deviceList - List of Cache-Keys of the device objects to be removed.
+     *
+     */
+    void removeDevicesFromCache(List<DeviceCacheKey> deviceList);
+
+    /**
+     * Updates a given device object in the device-cache.
+     * @param deviceIdentifier - DeviceIdentifier of the device to be updated.
+     * @param device - Device object to be updated.
+     * @param tenantId - Owning tenant of the device.
+     *
+     */
     void updateDeviceInCache(DeviceIdentifier deviceIdentifier, Device device, int tenantId);
+
+    /**
+     * Fetches a device object from device-cache.
+     * @param deviceIdentifier - DeviceIdentifier of the device to be fetched.
+     * @param tenantId - Owning tenant of the device.
+     * @return Device object
+     *
+     */
     Device getDeviceFromCache(DeviceIdentifier deviceIdentifier, int tenantId);
 }

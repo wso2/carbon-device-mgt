@@ -1937,6 +1937,7 @@
 		<commons.codec.verision>1.9</commons.codec.verision>
 		<commons.codec.verision.range>(1.9,2.0]</commons.codec.verision.range>
 		<javassist.version>3.12.1.GA</javassist.version>
+        <maven.javadoc.skip>true</maven.javadoc.skip>
     </properties>
 
 </project>

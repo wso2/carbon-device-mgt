@@ -66,10 +66,14 @@
         <ActivityListPageSize>20</ActivityListPageSize>
         <OperationListPageSize>20</OperationListPageSize>
     </PaginationConfiguration>
-    <!--This specifies whether to enable the DeviceStatus Task in this node.-->
+    <!--This specifies whether to enable the DeviceStatus Task in this node. In clustered setup only master node
+     should  have to run this task.-->
     <DeviceStatusTaskConfig>
         <Enable>true</Enable>
     </DeviceStatusTaskConfig>
+    <!--This controls the in-memory device cache which is local to this node. Setting it enable will activate the
+    device caching for upto configured expiry-time in seconds. In clustered setup all worker nodes can enable the
+    device-cache to improve performance. -->
     <DeviceCacheConfiguration>
         <Enable>true</Enable>
         <ExpiryTime>600</ExpiryTime>

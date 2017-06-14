@@ -17,11 +17,14 @@
  */
 package org.wso2.carbon.device.mgt.common.operation.mgt;
 
-import org.wso2.carbon.device.mgt.common.*;
+import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
+import org.wso2.carbon.device.mgt.common.DeviceManagementException;
+import org.wso2.carbon.device.mgt.common.InvalidDeviceException;
+import org.wso2.carbon.device.mgt.common.PaginationRequest;
+import org.wso2.carbon.device.mgt.common.PaginationResult;
 import org.wso2.carbon.device.mgt.common.push.notification.NotificationStrategy;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * This represents the Device Operation management functionality which should be implemented by
@@ -34,6 +37,7 @@ public interface OperationManager {
      *
      * @param operation Operation to be added
      * @param devices   List of DeviceIdentifiers to execute the operation
+     * @return Activity object corresponds to the added operation.
      * @throws OperationManagementException If some unusual behaviour is observed while adding the operation
      *         InvalidDeviceException       If addOperation request contains Invalid DeviceIdentifiers.
      */
@@ -43,7 +47,8 @@ public interface OperationManager {
     /**
      * Method to retrieve the list of all operations to a device.
      *
-     * @param deviceId
+     * @param deviceId - Device Identifier of the device
+     * @return A List of operations applied to the given device-id.
      * @throws OperationManagementException If some unusual behaviour is observed while fetching the
      *                                      operation list.
      */
@@ -64,6 +69,7 @@ public interface OperationManager {
      * Method to retrieve the list of available operations to a device.
      *
      * @param deviceId DeviceIdentifier of the device
+     * @return A List of pending operations.
      * @throws OperationManagementException If some unusual behaviour is observed while fetching the
      *                                      operation list.
      */

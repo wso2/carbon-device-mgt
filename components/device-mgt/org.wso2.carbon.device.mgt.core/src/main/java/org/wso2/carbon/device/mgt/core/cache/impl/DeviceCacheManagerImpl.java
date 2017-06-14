@@ -73,10 +73,9 @@ public class DeviceCacheManagerImpl implements DeviceCacheManager {
     }
 
     @Override
-    public void removeDevicesFromCache(List<DeviceIdentifier> deviceList, int tenantId) {
+    public void removeDevicesFromCache(List<DeviceCacheKey> deviceList) {
         Cache<DeviceCacheKey, Device> lCache = DeviceManagerUtil.getDeviceCache();
-        for (DeviceIdentifier deviceIdentifier : deviceList) {
-            DeviceCacheKey cacheKey = getCacheKey(deviceIdentifier, tenantId);
+        for (DeviceCacheKey cacheKey : deviceList) {
             if (lCache.containsKey(cacheKey)) {
                 lCache.remove(cacheKey);
             }

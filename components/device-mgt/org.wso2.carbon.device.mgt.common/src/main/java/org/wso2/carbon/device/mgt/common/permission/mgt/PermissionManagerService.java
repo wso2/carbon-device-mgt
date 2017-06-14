@@ -27,19 +27,20 @@ import java.util.Properties;
 public interface PermissionManagerService {
 
     /**
+     * Adds a permission.
      *
      * @param permission - Permission to be added
-     * @throws PermissionManagementException If some unusual behaviour is observed while adding the
-     * permission.
+     * @return A boolean indicating the status of the operation.
+     * @throws PermissionManagementException If some unusual behaviour is observed while adding the permission.
      */
     boolean addPermission(Permission permission) throws PermissionManagementException;
 
     /**
+     * Fetches a given permission.
      *
      * @param properties - Properties of the permission to be fetched.
      * @return The matched Permission object.
-     * @throws PermissionManagementException If some unusual behaviour is observed while fetching the
-     * permission.
+     * @throws PermissionManagementException If some unusual behaviour is observed while fetching the permission.
      */
     Permission getPermission(Properties properties) throws PermissionManagementException;
 

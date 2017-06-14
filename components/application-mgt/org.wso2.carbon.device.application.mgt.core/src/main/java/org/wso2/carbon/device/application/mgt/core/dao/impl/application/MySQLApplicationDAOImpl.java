@@ -139,7 +139,73 @@ public class MySQLApplicationDAOImpl extends AbstractApplicationDAOImpl {
 
     @Override
     public Application editApplication(Application application) throws ApplicationManagementDAOException {
-        return null;
+
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        String sql = "";
+
+        try {
+            conn = this.getConnection();
+            sql += "UPDATE APPM_APPLICATION SET ";
+            sql += "NAME = IFNULL (?, NAME), ";
+            sql += "SHORT_DESCRIPTION = IFNULL (?, SHORT_DESCRIPTION), DESCRIPTION = IFNULL (?, DESCRIPTION), ";
+            sql += "ICON_NAME = IFNULL (?, ICON_NAME), BANNER_NAME = IFNULL (?, BANNER_NAME) ";
+            sql += " WHERE UUID = ?";
+
+
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, application.getName());
+            stmt.setString(2, application.getShortDescription());
+            stmt.setString(3, application.getDescription());
+            stmt.setString(4, application.getIconName());
+            stmt.setString(5, application.getBannerName());
+            stmt.setString(6, application.getUuid());
+//            stmt.setString(7, application.getVideoName());
+//            stmt.setString(8, JSONUtil.listToJsonArrayString(application.getScreenshots()));
+//            stmt.setString(9, application.getUser().getUserName());
+//            stmt.setDate(10, new Date(application.getCreatedAt().getTime()));
+//            stmt.setDate(11, new Date(application.getModifiedAt().getTime()));
+//            stmt.setInt(12, application.getCategory().getId());
+//            stmt.setInt(13, application.getPlatform().getId());
+//            stmt.setInt(14, application.getUser().getTenantId());
+//            stmt.setInt(15, application.getCurrentLifecycle().getLifecycleState().getId());
+//            stmt.setDate(16, new Date(application.getCurrentLifecycle().getLifecycleStateModifiedAt().getTime()));
+//            stmt.setString(17, application.getCurrentLifecycle().getGetLifecycleStateModifiedBy());
+            stmt.executeUpdate();
+
+//            if (application.getTags() != null && application.getTags().size() > 0) {
+//                sql = "INSERT INTO APPM_APPLICATION_TAG (NAME, APPLICATION_ID) VALUES (?, ?); ";
+//                stmt = conn.prepareStatement(sql);
+//                for (String tag : application.getTags()) {
+//                    stmt.setString(1, tag);
+//                    stmt.setInt(2, application.getId());
+//                    stmt.addBatch();
+//                }
+//                stmt.executeBatch();
+//            }
+//
+//            if (application.getProperties() != null && application.getProperties().size() > 0) {
+//                sql = "INSERT INTO APPM_APPLICATION_PROPERTY (PROP_KEY, PROP_VAL, APPLICATION_ID) VALUES (?, ?, ?); ";
+//                stmt = conn.prepareStatement(sql);
+//                Iterator it = application.getProperties().entrySet().iterator();
+//                while (it.hasNext()) {
+//                    Map.Entry<String, String> property = (Map.Entry)it.next();
+//                    stmt.setString(1, property.getKey());
+//                    stmt.setString(2, property.getValue());
+//                    stmt.setInt(3, application.getId());
+//                    stmt.addBatch();
+//                }
+//                stmt.executeBatch();
+//            }
+
+        } catch (DBConnectionException e) {
+            throw new ApplicationManagementDAOException("Error occurred while obtaining the DB connection.", e);
+        } catch (SQLException e) {
+            throw new ApplicationManagementDAOException("Error occurred while adding the application", e);
+        }
+
+        return application;
     }
 
 

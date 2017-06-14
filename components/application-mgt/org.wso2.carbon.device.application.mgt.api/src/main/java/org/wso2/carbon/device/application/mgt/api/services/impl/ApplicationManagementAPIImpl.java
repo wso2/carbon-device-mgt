@@ -86,4 +86,27 @@ public class ApplicationManagementAPIImpl {
         return Response.status(Response.Status.OK).entity(application).build();
     }
 
+
+    @PUT
+    @Consumes("application/json")
+    @Path("applications")
+    public Response editApplication(@Valid Application application) {
+
+        ApplicationManager applicationManager = APIUtil.getApplicationManager();
+
+        //TODO : Get username and tenantId
+        User user = new User("admin", -1234);
+        application.setUser(user);
+
+        try {
+            application = applicationManager.editApplication(application);
+
+        } catch (ApplicationManagementException e) {
+            String msg = "Error occurred while creating the application";
+            log.error(msg, e);
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+        return Response.status(Response.Status.OK).entity(application).build();
+    }
+
 }

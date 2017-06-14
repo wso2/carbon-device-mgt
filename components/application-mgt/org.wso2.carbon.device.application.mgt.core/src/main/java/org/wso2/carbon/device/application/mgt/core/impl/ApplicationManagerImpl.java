@@ -81,7 +81,7 @@ public class ApplicationManagerImpl implements ApplicationManager {
 
 
     @Override
-    public Application editApplication(int uuid, Application application) throws ApplicationManagementException {
+    public Application editApplication(Application application) throws ApplicationManagementException {
 
         validateApplication(application, true);
 

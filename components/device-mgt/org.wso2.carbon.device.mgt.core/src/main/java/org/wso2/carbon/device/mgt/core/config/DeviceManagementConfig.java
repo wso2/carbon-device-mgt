@@ -17,6 +17,7 @@
  */
 package org.wso2.carbon.device.mgt.core.config;
 
+import org.wso2.carbon.device.mgt.core.config.cache.DeviceCacheConfiguration;
 import org.wso2.carbon.device.mgt.core.config.identity.IdentityConfigurations;
 import org.wso2.carbon.device.mgt.core.config.pagination.PaginationConfiguration;
 import org.wso2.carbon.device.mgt.core.config.policy.PolicyConfiguration;
@@ -25,9 +26,7 @@ import org.wso2.carbon.device.mgt.core.config.status.task.DeviceStatusTaskConfig
 import org.wso2.carbon.device.mgt.core.config.task.TaskConfiguration;
 
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.util.List;
 
 /**
  * Represents Device Mgt configuration.
@@ -43,6 +42,7 @@ public final class DeviceManagementConfig {
     private PaginationConfiguration paginationConfiguration;
     private PushNotificationConfiguration pushNotificationConfiguration;
     private DeviceStatusTaskConfig deviceStatusTaskConfig;
+    private DeviceCacheConfiguration deviceCacheConfiguration;
 
 
     @XmlElement(name = "ManagementRepository", required = true)
@@ -107,6 +107,15 @@ public final class DeviceManagementConfig {
 
     public void setDeviceStatusTaskConfig(DeviceStatusTaskConfig deviceStatusTaskConfig) {
         this.deviceStatusTaskConfig = deviceStatusTaskConfig;
+    }
+
+    @XmlElement(name = "DeviceCacheConfiguration", required = true)
+    public DeviceCacheConfiguration getDeviceCacheConfiguration() {
+        return deviceCacheConfiguration;
+    }
+
+    public void setDeviceCacheConfiguration(DeviceCacheConfiguration deviceCacheConfiguration) {
+        this.deviceCacheConfiguration = deviceCacheConfiguration;
     }
 }
 

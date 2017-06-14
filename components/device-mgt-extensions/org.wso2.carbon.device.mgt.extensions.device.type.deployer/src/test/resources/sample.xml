@@ -125,4 +125,28 @@
         </tableConfig>
     </DataSource>
 
+    <InitialOperationConfig>
+        <Operations>
+            <Operation>DEVICE_INFO</Operation>
+            <Operation>APPLICATION_LIST</Operation>
+            <Operation>DEVICE_LOCATION</Operation>
+        </Operations>
+    </InitialOperationConfig>
+
+    <!--This configures the Task service for the device-type. Given below are the property definitions.
+        <RequireStatusMonitoring> - This will enable or disable status monitoring for that particular device-type.
+        <Frequency> - The time interval (in seconds) in which the task should run for this device-type
+        <IdleTimeToMarkInactive> - The time duration (in seconds) in which the device can be moved to inactive status
+                                   which means the device will be moved to inactive status if that device does not
+                                   contact the server within that time period.
+        <IdleTimeToMarkUnreachable> - The time duration (in seconds) in which the device can be moved to unreachable status
+                                      which means the device will be moved to unreachable status if that device does not
+                                      contact the server within that time period.
+    -->
+    <DeviceStatusTaskConfig>
+        <RequireStatusMonitoring>false</RequireStatusMonitoring>
+        <Frequency>300</Frequency>
+        <IdleTimeToMarkInactive>600</IdleTimeToMarkInactive>
+        <IdleTimeToMarkUnreachable>300</IdleTimeToMarkUnreachable>
+    </DeviceStatusTaskConfig>
 </DeviceTypeConfiguration>

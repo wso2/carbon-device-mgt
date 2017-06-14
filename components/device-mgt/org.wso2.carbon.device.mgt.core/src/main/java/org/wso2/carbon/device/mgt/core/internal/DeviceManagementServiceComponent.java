@@ -55,6 +55,7 @@ import org.wso2.carbon.device.mgt.core.service.GroupManagementProviderService;
 import org.wso2.carbon.device.mgt.core.service.GroupManagementProviderServiceImpl;
 import org.wso2.carbon.device.mgt.core.task.DeviceTaskManagerService;
 import org.wso2.carbon.device.mgt.core.util.DeviceManagementSchemaInitializer;
+import org.wso2.carbon.device.mgt.core.util.DeviceManagerUtil;
 import org.wso2.carbon.email.sender.core.service.EmailSenderService;
 import org.wso2.carbon.ndatasource.core.DataSourceService;
 import org.wso2.carbon.registry.core.service.RegistryService;
@@ -150,6 +151,8 @@ public class DeviceManagementServiceComponent {
             GroupManagementDAOFactory.init(dsConfig);
             NotificationManagementDAOFactory.init(dsConfig);
             OperationManagementDAOFactory.init(dsConfig);
+            /*Initialize the device cache*/
+            DeviceManagerUtil.initializeDeviceCache();
 
             /* Initialize Operation Manager */
             this.initOperationsManager();

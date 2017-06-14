@@ -42,13 +42,13 @@ public class PlatformManagerImpl implements PlatformManager {
     @Override
     public void initialize(String tenantDomain) throws PlatformManagementException {
         List<Platform> platforms = DAOFactory.getPlatformDAO().getPlatforms(tenantDomain);
-        List<String> platformCodes = new ArrayList<>();
+        List<String> platformIdentifiers = new ArrayList<>();
         for (Platform platform : platforms) {
             if (!platform.isEnabled() & platform.isDefaultTenantMapping()) {
-                platformCodes.add(platform.getIdentifier());
+                platformIdentifiers.add(platform.getIdentifier());
             }
         }
-        addMapping(tenantDomain, platformCodes);
+        addMapping(tenantDomain, platformIdentifiers);
     }
 
     @Override
@@ -71,21 +71,24 @@ public class PlatformManagerImpl implements PlatformManager {
     }
 
     @Override
-    public Platform getPlatform(String tenantDomain, String code) throws PlatformManagementException {
-        Platform platform = getPlatformFromInMemory(tenantDomain, code);
+    public Platform getPlatform(String tenantDomain, String identifier) throws PlatformManagementException {
+        Platform platform = getPlatformFromInMemory(tenantDomain, identifier);
         if (platform == null) {
-            platform = DAOFactory.getPlatformDAO().getPlatform(tenantDomain, code);
-        }
-        if (platform != null) {
+            platform = DAOFactory.getPlatformDAO().getPlatform(tenantDomain, identifier);
+            if (platform != null) {
+                return platform;
+            }
+        } else {
             return new Platform(platform);
         }
-        throw new PlatformManagementException("No platform was found for tenant - "+ tenantDomain+" with Platform code - "+ code);
+        throw new PlatformManagementException("No platform was found for tenant - " + tenantDomain +
+                " with Platform identifier - " + identifier);
     }
 
-    private Platform getPlatformFromInMemory(String tenantDomain, String code) {
+    private Platform getPlatformFromInMemory(String tenantDomain, String identifier) {
         Map<String, Platform> platformMap = this.inMemoryStore.get(tenantDomain);
         if (platformMap != null) {
-            Platform platform = platformMap.get(code);
+            Platform platform = platformMap.get(identifier);
             if (platform != null) {
                 return platform;
             }
@@ -93,7 +96,7 @@ public class PlatformManagerImpl implements PlatformManager {
         if (!tenantDomain.equalsIgnoreCase(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME)) {
             platformMap = this.inMemoryStore.get(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
             if (platformMap != null) {
-                Platform platform = platformMap.get(code);
+                Platform platform = platformMap.get(identifier);
                 if (platform != null && platform.isShared()) {
                     return platform;
                 }
@@ -108,7 +111,9 @@ public class PlatformManagerImpl implements PlatformManager {
             throw new PlatformManagementException("Platform sharing is a restricted operation, therefore Platform - "
                     + platform.getIdentifier() + " cannot be shared by the tenant domain - " + tenantDomain);
         }
+        int platformId = DAOFactory.getPlatformDAO().register(tenantDomain, platform);
         if (platform.isFileBased()) {
+            platform.setId(platformId);
             Map<String, Platform> tenantPlatforms = this.inMemoryStore.get(tenantDomain);
             if (tenantPlatforms == null) {
                 tenantPlatforms = new HashMap<>();
@@ -119,8 +124,6 @@ public class PlatformManagerImpl implements PlatformManager {
             } else {
                 throw new PlatformManagementException("Platform - " + platform.getIdentifier() + " is already registered!");
             }
-        } else {
-            DAOFactory.getPlatformDAO().register(tenantDomain, platform);
         }
         if (platform.isDefaultTenantMapping()) {
             try {
@@ -139,31 +142,77 @@ public class PlatformManagerImpl implements PlatformManager {
     }
 
     @Override
-    public void unregister(String tenantDomain, String platformCode, boolean isFileBased) throws PlatformManagementException {
-        if (isFileBased) {
+    public void update(String tenantDomain, String oldPlatformIdentifier, Platform platform)
+            throws PlatformManagementException {
+        if (platform.isShared() && !tenantDomain.equals(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME)) {
+            throw new PlatformManagementException("Platform sharing is a restricted operation, therefore Platform - "
+                    + platform.getIdentifier() + " cannot be shared by the tenant domain - " + tenantDomain);
+        }
+        Platform oldPlatform;
+        if (platform.isFileBased()) {
             Map<String, Platform> tenantPlatforms = this.inMemoryStore.get(tenantDomain);
-            if (tenantPlatforms != null) {
-                this.inMemoryStore.remove(platformCode);
+            if (tenantPlatforms == null) {
+                throw new PlatformManagementException("No platforms registered for the tenant - " + tenantDomain +
+                        " with platform identifier - " + platform.getIdentifier());
+            }
+            oldPlatform = tenantPlatforms.get(oldPlatformIdentifier);
+            if (oldPlatform == null) {
+                throw new PlatformManagementException("No platforms registered for the tenant - " + tenantDomain +
+                        " with platform identifier - " + platform.getIdentifier());
+            } else {
+                DAOFactory.getPlatformDAO().update(tenantDomain, oldPlatformIdentifier, platform);
+                platform.setId(oldPlatform.getId());
+                tenantPlatforms.put(platform.getIdentifier(), platform);
             }
         } else {
-            DAOFactory.getPlatformDAO().unregister(tenantDomain, platformCode);
+            oldPlatform = DAOFactory.getPlatformDAO().getPlatform(tenantDomain, oldPlatformIdentifier);
+            DAOFactory.getPlatformDAO().update(tenantDomain, oldPlatformIdentifier, platform);
+        }
+        if (platform.isDefaultTenantMapping() && !oldPlatform.isDefaultTenantMapping()) {
+            try {
+                if (platform.isShared() && !oldPlatform.isShared()) {
+                    TenantManager tenantManager = DataHolder.getInstance().getRealmService().getTenantManager();
+                    Tenant[] tenants = tenantManager.getAllTenants();
+                    for (Tenant tenant : tenants) {
+                        addMapping(tenant.getDomain(), platform.getIdentifier());
+                    }
+                }
+                addMapping(tenantDomain, platform.getIdentifier());
+            } catch (UserStoreException e) {
+                throw new PlatformManagementException("Error occured while assigning the platforms for tenants!", e);
+            }
+        }
+        if (!platform.isShared() && oldPlatform.isShared()) {
+            DAOFactory.getPlatformDAO().removeMappingTenants(platform.getIdentifier());
         }
     }
 
     @Override
-    public void addMapping(String tenantDomain, List<String> platformCode) throws PlatformManagementException {
-        DAOFactory.getPlatformDAO().addMapping(tenantDomain, platformCode);
+    public void unregister(String tenantDomain, String identifier, boolean isFileBased) throws PlatformManagementException {
+        if (isFileBased) {
+            Map<String, Platform> tenantPlatforms = this.inMemoryStore.get(tenantDomain);
+            if (tenantPlatforms != null) {
+                this.inMemoryStore.remove(identifier);
+            }
+        } else {
+            DAOFactory.getPlatformDAO().unregister(tenantDomain, identifier);
+        }
     }
 
     @Override
-    public void addMapping(String tenantDomain, String platformCode) throws PlatformManagementException {
-        List<String> codes = new ArrayList<>();
-        codes.add(platformCode);
-        DAOFactory.getPlatformDAO().addMapping(tenantDomain, codes);
+    public void addMapping(String tenantDomain, List<String> platformIdentifiers) throws PlatformManagementException {
+        DAOFactory.getPlatformDAO().addMapping(tenantDomain, platformIdentifiers);
     }
 
     @Override
-    public void removeMapping(String tenantDomain, String platformCode) throws PlatformManagementException {
-        DAOFactory.getPlatformDAO().removeMapping(tenantDomain, platformCode);
+    public void addMapping(String tenantDomain, String platformIdentifier) throws PlatformManagementException {
+        List<String> identifiers = new ArrayList<>();
+        identifiers.add(platformIdentifier);
+        DAOFactory.getPlatformDAO().addMapping(tenantDomain, identifiers);
+    }
+
+    @Override
+    public void removeMapping(String tenantDomain, String platformIdentifier) throws PlatformManagementException {
+        DAOFactory.getPlatformDAO().removeMapping(tenantDomain, platformIdentifier);
     }
 }

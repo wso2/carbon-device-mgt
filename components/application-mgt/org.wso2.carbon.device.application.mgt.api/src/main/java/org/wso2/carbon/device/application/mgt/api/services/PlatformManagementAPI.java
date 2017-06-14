@@ -76,7 +76,7 @@ public interface PlatformManagementAPI {
     );
 
     @GET
-    @Path("/{code}")
+    @Path("/{identifier}")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(
@@ -105,11 +105,11 @@ public interface PlatformManagementAPI {
             })
     Response getPlatform(
             @ApiParam(
-                    name = "code",
+                    name = "identifier",
                     required = true)
-            @PathParam("code")
+            @PathParam("identifier")
             @Size(max = 45)
-                    String code
+                    String identifier
     );
 
     @POST
@@ -147,6 +147,50 @@ public interface PlatformManagementAPI {
                     value = "The payload of the platform",
                     required = true)
                     Platform platform
+    );
+
+    @PUT
+    @Path("/{identifier}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(
+            consumes = MediaType.APPLICATION_JSON,
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "PUT",
+            value = "Update Platform",
+            notes = "This will update the platform configuration for the tenant space",
+            tags = "Platform Management",
+            extensions = {
+                    @Extension(properties = {
+                            @ExtensionProperty(name = SCOPE, value = "perm:update-platform")
+                    })
+            }
+    )
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            code = 200,
+                            message = "OK. \n Successfully updated the platform"),
+                    @ApiResponse(
+                            code = 400,
+                            message = "Bad Request. \n Invalid request parameters passed."),
+                    @ApiResponse(
+                            code = 500,
+                            message = "Internal Server Error. \n Error occurred while getting the platform list.",
+                            response = ErrorResponse.class)
+            })
+    Response updatePlatform(
+            @ApiParam(
+                    name = "platform",
+                    value = "The payload of the platform",
+                    required = true)
+                    Platform platform,
+            @ApiParam(
+                    name = "identifier",
+                    required = true)
+            @PathParam("identifier")
+            @Size(max = 45)
+                    String identifier
     );
 
 }

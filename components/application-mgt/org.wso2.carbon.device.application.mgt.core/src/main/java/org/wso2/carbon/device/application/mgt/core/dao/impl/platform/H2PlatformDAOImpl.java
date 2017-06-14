@@ -20,12 +20,44 @@ package org.wso2.carbon.device.application.mgt.core.dao.impl.platform;
 
 import org.wso2.carbon.device.application.mgt.common.Platform;
 import org.wso2.carbon.device.application.mgt.core.exception.ApplicationManagementDAOException;
+import org.wso2.carbon.device.application.mgt.core.exception.PlatformManagementDAOException;
+
+import java.util.List;
 
 public class H2PlatformDAOImpl extends AbstractPlatformDAOImpl {
 
-
     @Override
     public Platform getPlatformByIdentifier(String identifier) throws ApplicationManagementDAOException {
+        return null;
+    }
+
+    @Override
+    public void register(String tenantDomain, Platform platform) throws PlatformManagementDAOException {
+
+    }
+
+    @Override
+    public void unregister(String tenantDomain, String platformCode) throws PlatformManagementDAOException {
+
+    }
+
+    @Override
+    public void addMapping(String tenantDomain, List<String> platformCode) throws PlatformManagementDAOException {
+
+    }
+
+    @Override
+    public void removeMapping(String tenantDomain, String platformCode) throws PlatformManagementDAOException {
+
+    }
+
+    @Override
+    public List<Platform> getPlatforms(String tenantDomain) throws PlatformManagementDAOException {
+        return null;
+    }
+
+    @Override
+    public Platform getPlatform(String tenantDomain, String platformCode) throws PlatformManagementDAOException {
         return null;
     }
 }

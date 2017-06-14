@@ -18,5 +18,31 @@
  */
 package org.wso2.carbon.device.application.mgt.common.services;
 
+import org.wso2.carbon.device.application.mgt.common.Platform;
+import org.wso2.carbon.device.application.mgt.common.exception.PlatformManagementException;
+
+import java.util.List;
+
+/**
+ * Platform manager is responsible for handling platforms, which will be used to as a registry of platforms.
+ * And will be able to provide the platforms related informations to other classes which requires.
+ */
 public interface PlatformManager {
+
+    void initialize(String tenantDomain) throws PlatformManagementException;
+
+    List<Platform> getPlatforms(String tenantDomain) throws PlatformManagementException;
+
+    Platform getPlatform(String tenantDomain, String code) throws PlatformManagementException;
+
+    void register(String tenantDomain, Platform platform) throws PlatformManagementException;
+
+    void unregister(String tenantDomain, String platformCode, boolean isFileBased) throws PlatformManagementException;
+
+    void addMapping(String tenantDomain, List<String> platformCode) throws PlatformManagementException;
+
+    void addMapping(String tenantDomain, String platformCode) throws PlatformManagementException;
+
+    void removeMapping(String tenantDomain, String platformCode) throws PlatformManagementException;
+
 }

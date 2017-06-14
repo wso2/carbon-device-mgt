@@ -24,6 +24,7 @@ import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.application.mgt.api.beans.ErrorResponse;
 import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
 import org.wso2.carbon.device.application.mgt.common.services.ApplicationManager;
+import org.wso2.carbon.device.application.mgt.common.services.PlatformManager;
 
 import javax.ws.rs.core.Response;
 
@@ -36,9 +37,9 @@ public class APIUtil {
     private static Log log = LogFactory.getLog(APIUtil.class);
 
     private static ApplicationManager applicationManager;
+    private static PlatformManager platformManager;
 
     public static ApplicationManager getApplicationManager() {
-
         if (applicationManager == null) {
             synchronized (APIUtil.class) {
                 if (applicationManager == null) {
@@ -57,16 +58,35 @@ public class APIUtil {
         return applicationManager;
     }
 
-    public static Response getResponse(ApplicationManagementException ex, Response.Status status) {
+    public static PlatformManager getPlatformManager() {
+        if (platformManager == null) {
+            synchronized (APIUtil.class) {
+                if (platformManager == null) {
+                    PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+                    platformManager =
+                            (PlatformManager) ctx.getOSGiService(PlatformManager.class, null);
+                    if (platformManager == null) {
+                        String msg = "Platform Manager service has not initialized.";
+                        log.error(msg);
+                        throw new IllegalStateException(msg);
+                    }
+                }
+            }
+        }
+        return platformManager;
+    }
 
-        //TODO: check for exception type and set the response code.
+    public static Response getResponse(ApplicationManagementException ex, Response.Status status) {
+        return getResponse(ex.getMessage(), status);
+    }
+
+    public static Response getResponse(String message, Response.Status status) {
         ErrorResponse errorMessage = new ErrorResponse();
-        errorMessage.setMessage(ex.getMessage());
+        errorMessage.setMessage(message);
         if (status == null) {
             status = Response.Status.INTERNAL_SERVER_ERROR;
         }
         errorMessage.setCode(status.getStatusCode());
         return Response.status(status).entity(errorMessage).build();
-
     }
 }

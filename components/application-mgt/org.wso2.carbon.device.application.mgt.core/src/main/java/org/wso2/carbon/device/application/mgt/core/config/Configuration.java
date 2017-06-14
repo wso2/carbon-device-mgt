@@ -18,7 +18,7 @@
  */
 package org.wso2.carbon.device.application.mgt.core.config;
 
-import org.wso2.carbon.device.application.mgt.common.exception.InvalidConfigurationException;
+import org.wso2.carbon.device.application.mgt.core.deployer.Platform;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;

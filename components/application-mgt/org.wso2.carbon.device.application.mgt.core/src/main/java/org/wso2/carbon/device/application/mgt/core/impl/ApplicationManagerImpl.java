@@ -20,6 +20,7 @@ package org.wso2.carbon.device.application.mgt.core.impl;
 
 import org.wso2.carbon.device.application.mgt.common.*;
 import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
+import org.wso2.carbon.device.application.mgt.common.exception.DBConnectionException;
 import org.wso2.carbon.device.application.mgt.common.services.ApplicationManager;
 import org.wso2.carbon.device.application.mgt.core.dao.ApplicationDAO;
 import org.wso2.carbon.device.application.mgt.core.dao.LifecycleStateDAO;
@@ -109,7 +110,7 @@ public class ApplicationManagerImpl implements ApplicationManager {
             ConnectionManagerUtil.openConnection();
             ApplicationDAO applicationDAO = DAOFactory.getApplicationDAO();
             return applicationDAO.getApplications(filter);
-        } finally {
+        }  finally {
             ConnectionManagerUtil.closeConnection();
         }
 

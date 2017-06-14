@@ -20,10 +20,10 @@ package org.wso2.carbon.device.application.mgt.common;
 
 import org.wso2.carbon.device.application.mgt.common.jaxrs.Exclude;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-public class Platform {
+public class Platform implements Cloneable {
 
     @Exclude
     private int id;
@@ -36,9 +36,43 @@ public class Platform {
 
     private String iconName;
 
+    private boolean fileBased;
+
+    private boolean shared;
+
     private List<String> tags;
 
-    private Map<String, String> properties;
+    private List<Property> properties;
+
+    private boolean enabled;
+
+    private boolean defaultTenantMapping;
+
+    public Platform(Platform platform) {
+        this.id = platform.getId();
+        this.name = platform.getName();
+        this.description = platform.getDescription();
+        this.identifier = platform.getIdentifier();
+        this.iconName = platform.getIconName();
+        this.fileBased = platform.isFileBased();
+        this.shared = platform.isShared();
+        if (platform.getProperties() != null) {
+            this.properties = new ArrayList<>();
+            for (Property property : platform.getProperties()) {
+                this.properties.add(new Property(property));
+            }
+        }
+        if (platform.getTags() != null) {
+            this.tags = new ArrayList<>();
+            for (String tag : platform.getTags()) {
+                this.tags.add(tag);
+            }
+        }
+    }
+
+    public Platform() {
+
+    }
 
     private boolean published;
 
@@ -82,11 +116,11 @@ public class Platform {
         this.iconName = iconName;
     }
 
-    public Map<String, String> getProperties() {
+    public List<Property> getProperties() {
         return properties;
     }
 
-    public void setProperties(Map<String, String> properties) {
+    public void setProperties(List<Property> properties) {
         this.properties = properties;
     }
 
@@ -104,5 +138,83 @@ public class Platform {
 
     public void setPublished(boolean published) {
         this.published = published;
+    }
+
+    public boolean isFileBased() {
+        return fileBased;
+    }
+
+    public void setFileBased(boolean fileBased) {
+        this.fileBased = fileBased;
+    }
+
+    public boolean isShared() {
+        return shared;
+    }
+
+    public void setShared(boolean shared) {
+        this.shared = shared;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public boolean isDefaultTenantMapping() {
+        return defaultTenantMapping;
+    }
+
+    public void setDefaultTenantMapping(boolean defaultTenantMapping) {
+        this.defaultTenantMapping = defaultTenantMapping;
+    }
+
+    public boolean validate(){
+        return !(name == null || identifier == null);
+    }
+
+    public static class Property implements Cloneable {
+
+        private String name;
+        private boolean optional;
+        private String defaultValue;
+
+        public Property(Property property) {
+            this.name = property.getName();
+            this.optional = property.isOptional();
+            this.defaultValue = property.getDefaultValue();
+        }
+
+        public Property() {
+
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public boolean isOptional() {
+            return optional;
+        }
+
+        public void setOptional(boolean optional) {
+            this.optional = optional;
+        }
+
+        public String getDefaultValue() {
+            return defaultValue;
+        }
+
+        public void setDefaultValue(String defaultValue) {
+            this.defaultValue = defaultValue;
+        }
+
     }
 }

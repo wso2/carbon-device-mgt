@@ -28,6 +28,7 @@ public interface PlatformConfigurationManagementService {
 	 *
 	 * @param platformConfiguration Operation to be added.
 	 * @param resourcePath Registry resource path.
+     * @return A boolean indicating the status of the operation.
 	 * @throws org.wso2.carbon.device.mgt.common.configuration.mgt.ConfigurationManagementException If some unusual behaviour is observed while adding the
 	 * configuration.
 	 */
@@ -38,6 +39,7 @@ public interface PlatformConfigurationManagementService {
 	 * Method to retrieve the list of general tenant configurations.
 	 *
 	 * @param resourcePath Registry resource path.
+     * @return Platform Configuration object.
 	 * @throws org.wso2.carbon.device.mgt.common.configuration.mgt.ConfigurationManagementException If some unusual behaviour is observed while fetching the
 	 * operation list.
 	 */

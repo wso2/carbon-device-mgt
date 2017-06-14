@@ -39,7 +39,7 @@ public interface OperationManager {
      * @param devices   List of DeviceIdentifiers to execute the operation
      * @return Activity object corresponds to the added operation.
      * @throws OperationManagementException If some unusual behaviour is observed while adding the operation
-     *         InvalidDeviceException       If addOperation request contains Invalid DeviceIdentifiers.
+     * @throws InvalidDeviceException       If addOperation request contains Invalid DeviceIdentifiers.
      */
     Activity addOperation(Operation operation, List<DeviceIdentifier> devices) throws OperationManagementException,
             InvalidDeviceException;

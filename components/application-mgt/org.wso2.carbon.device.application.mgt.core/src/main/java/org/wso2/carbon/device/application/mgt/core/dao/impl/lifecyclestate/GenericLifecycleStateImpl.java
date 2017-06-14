@@ -19,10 +19,10 @@
 package org.wso2.carbon.device.application.mgt.core.dao.impl.lifecyclestate;
 
 import org.wso2.carbon.device.application.mgt.common.LifecycleState;
-import org.wso2.carbon.device.application.mgt.common.Platform;
 import org.wso2.carbon.device.application.mgt.common.exception.DBConnectionException;
+import org.wso2.carbon.device.application.mgt.core.dao.LifecycleStateDAO;
 import org.wso2.carbon.device.application.mgt.core.dao.common.Util;
-import org.wso2.carbon.device.application.mgt.core.dao.impl.platform.AbstractPlatformDAOImpl;
+import org.wso2.carbon.device.application.mgt.core.dao.impl.AbstractDAOImpl;
 import org.wso2.carbon.device.application.mgt.core.exception.ApplicationManagementDAOException;
 
 import java.sql.Connection;
@@ -30,7 +30,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class MySQLLifecycleStateDAOImpl extends AbstractLifecycleStateDAOImpl {
+public class GenericLifecycleStateImpl extends AbstractDAOImpl implements LifecycleStateDAO {
 
     @Override
     public LifecycleState getLifeCycleStateByIdentifier(String identifier) throws ApplicationManagementDAOException {
@@ -72,5 +72,4 @@ public class MySQLLifecycleStateDAOImpl extends AbstractLifecycleStateDAOImpl {
 
 
     }
-
 }

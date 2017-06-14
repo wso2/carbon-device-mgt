@@ -21,7 +21,9 @@ package org.wso2.carbon.device.application.mgt.core.dao.impl.platform;
 import org.wso2.carbon.device.application.mgt.common.Platform;
 import org.wso2.carbon.device.application.mgt.common.exception.DBConnectionException;
 import org.wso2.carbon.device.application.mgt.common.exception.TransactionManagementException;
+import org.wso2.carbon.device.application.mgt.core.dao.PlatformDAO;
 import org.wso2.carbon.device.application.mgt.core.dao.common.Util;
+import org.wso2.carbon.device.application.mgt.core.dao.impl.AbstractDAOImpl;
 import org.wso2.carbon.device.application.mgt.core.exception.ApplicationManagementDAOException;
 import org.wso2.carbon.device.application.mgt.core.exception.PlatformManagementDAOException;
 import org.wso2.carbon.device.application.mgt.core.util.ConnectionManagerUtil;
@@ -33,7 +35,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MySQLPlatformDAOImpl extends AbstractPlatformDAOImpl {
+public class GenericPlatformDAOImpl extends AbstractDAOImpl implements PlatformDAO {
 
     @Override
     public Platform getPlatformByIdentifier(String identifier) throws ApplicationManagementDAOException {

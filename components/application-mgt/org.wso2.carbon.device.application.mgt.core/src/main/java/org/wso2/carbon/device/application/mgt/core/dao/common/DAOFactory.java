@@ -26,10 +26,8 @@ import org.wso2.carbon.device.application.mgt.core.dao.LifecycleStateDAO;
 import org.wso2.carbon.device.application.mgt.core.dao.PlatformDAO;
 import org.wso2.carbon.device.application.mgt.core.dao.impl.application.H2ApplicationDAOImpl;
 import org.wso2.carbon.device.application.mgt.core.dao.impl.application.MySQLApplicationDAOImpl;
-import org.wso2.carbon.device.application.mgt.core.dao.impl.lifecyclestate.H2LifecycleStateDAOImpl;
-import org.wso2.carbon.device.application.mgt.core.dao.impl.lifecyclestate.MySQLLifecycleStateDAOImpl;
-import org.wso2.carbon.device.application.mgt.core.dao.impl.platform.H2PlatformDAOImpl;
-import org.wso2.carbon.device.application.mgt.core.dao.impl.platform.MySQLPlatformDAOImpl;
+import org.wso2.carbon.device.application.mgt.core.dao.impl.lifecyclestate.GenericLifecycleStateImpl;
+import org.wso2.carbon.device.application.mgt.core.dao.impl.platform.GenericPlatformDAOImpl;
 import org.wso2.carbon.device.application.mgt.core.util.Constants;
 import org.wso2.carbon.device.application.mgt.core.util.ConnectionManagerUtil;
 
@@ -68,9 +66,8 @@ public class DAOFactory {
         if (databaseEngine != null) {
             switch (databaseEngine) {
                 case Constants.DataBaseTypes.DB_TYPE_H2:
-                    return new H2PlatformDAOImpl();
                 case Constants.DataBaseTypes.DB_TYPE_MYSQL:
-                    return new MySQLPlatformDAOImpl();
+                    return new GenericPlatformDAOImpl();
                 default:
                     throw new UnsupportedDatabaseEngineException("Unsupported database engine : " + databaseEngine);
             }
@@ -82,9 +79,8 @@ public class DAOFactory {
         if (databaseEngine != null) {
             switch (databaseEngine) {
                 case Constants.DataBaseTypes.DB_TYPE_H2:
-                    return new H2LifecycleStateDAOImpl();
                 case Constants.DataBaseTypes.DB_TYPE_MYSQL:
-                    return new MySQLLifecycleStateDAOImpl();
+                    return new GenericLifecycleStateImpl();
                 default:
                     throw new UnsupportedDatabaseEngineException("Unsupported database engine : " + databaseEngine);
             }

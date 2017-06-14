@@ -107,7 +107,7 @@ function initializeMap() {
     });
     L.tileLayer(tileSet, {attribution: attribution}).addTo(map);
 
-    map.zoomControl.setPosition('bottomleft');
+    map.zoomControl.setPosition('bottomright');
     map.on('click', function (e) {
         $.noty.closeAll();
     });
@@ -162,14 +162,14 @@ function processAfterInitializationMap() {
         div.innerHTML = "<a href='#' onclick='$(\"#attributionModal\").modal(\"show\"); return false;'>Attribution</a>";
         return div;
     };
-    //map.addControl(attributionControl);
-
+    // map.addControl(attributionControl);
+    map.addControl(L.control.fullscreen({position: 'bottomright'}));
     //L.control.fullscreen({
     //    position: 'bottomright'
     //}).addTo(map);
-    L.control.zoom({
-        position: "bottomright"
-    }).addTo(map);
+    // L.control.zoom({
+    //     position: "bottomright"
+    // }).addTo(map);
 
     groupedOverlays = {
         "Web Map Service layers": {}
@@ -312,6 +312,7 @@ function focusOnSpatialObject(objectId) {
         createChart();
         chart.load({columns: [spatialObject.speedHistory.getArray()]});
     }, 100);
+    map.addControl(L.control.focus({position: 'bottomright', marker: spatialObject.marker, zoomLevel: zoomLevel}));
 }
 
 
@@ -402,10 +403,20 @@ function enableRealTime() {
 }
 
 function InitSpatialObject() {
+    var spatialObject = drawSpatialObject();
+    map.addControl(L.control.focus({position: 'bottomright', marker: spatialObject.marker, zoomLevel: zoomLevel}));
+}
+
+function focusOnRecentHistorySpatialObject(objectId) {
+    drawSpatialObject();
+    noty({text: "Showing last two hours geo history", type: "information"});
+}
+
+function drawSpatialObject() {
     var fromDate = new Date();
     fromDate.setHours(fromDate.getHours() - 2);
     var toDate = new Date();
-    console.log(fromDate + " " + toDate);
+    //console.log(fromDate.valueOf() + " " + toDate.valueOf());
     var tableData = getProviderData(fromDate.valueOf(), toDate.valueOf());
     for (var i = 0; i < tableData.length; i++) {
         var data = tableData[i];
@@ -456,7 +467,9 @@ function InitSpatialObject() {
         createChart();
         chart.load({columns: [spatialObject.speedHistory.getArray()]});
     }, 100);
+    return spatialObject;
 }
+
 
 function focusOnHistorySpatialObject(objectId, timeFrom, timeTo) {
     if (!timeFrom) {
@@ -471,6 +484,7 @@ function focusOnHistorySpatialObject(objectId, timeFrom, timeTo) {
         clearMap();
         var fromDate = new Date(timeFrom);
         var toDate = new Date(timeTo);
+        //console.log(fromDate.valueOf() + " " + toDate.valueOf());
         var tableData = getProviderData(fromDate.valueOf(), toDate.valueOf());
         for (var i = 0; i < tableData.length; i++) {
             var data = tableData[i];

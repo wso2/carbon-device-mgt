@@ -23,6 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
+import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
 import org.wso2.carbon.device.mgt.common.InvalidDeviceException;
 import org.wso2.carbon.device.mgt.common.MonitoringOperation;
@@ -295,19 +296,11 @@ public class OperationManagerImpl implements OperationManager {
     }
 
     private Device getDevice(DeviceIdentifier deviceId) throws OperationManagementException {
-        int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
         try {
-            DeviceManagementDAOFactory.openConnection();
-            return deviceDAO.getDevice(deviceId, tenantId);
-        } catch (SQLException e) {
-            throw new OperationManagementException("Error occurred while opening a connection the data " +
-                                                   "source", e);
-        } catch (DeviceManagementDAOException e) {
-            OperationManagementDAOFactory.rollbackTransaction();
+            return DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().getDevice(deviceId, false);
+        } catch (DeviceManagementException e) {
             throw new OperationManagementException(
-                    "Error occurred while retrieving device info", e);
-        } finally {
-            DeviceManagementDAOFactory.closeConnection();
+                    "Error occurred while retrieving device info.", e);
         }
     }
 

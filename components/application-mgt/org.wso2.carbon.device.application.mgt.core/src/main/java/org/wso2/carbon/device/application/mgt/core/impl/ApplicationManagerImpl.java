@@ -18,6 +18,7 @@
  */
 package org.wso2.carbon.device.application.mgt.core.impl;
 
+import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.application.mgt.common.*;
 import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
 import org.wso2.carbon.device.application.mgt.common.exception.DBConnectionException;
@@ -66,7 +67,8 @@ public class ApplicationManagerImpl implements ApplicationManager {
             application.setCurrentLifecycle(lifecycle);
 
             PlatformDAO platformDAO = DAOFactory.getPlatformDAO();
-            Platform platform = platformDAO.getPlatformByIdentifier(application.getPlatform().getIdentifier());
+            Platform platform = platformDAO.getPlatform(PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantDomain(true),
+                    application.getPlatform().getIdentifier());
             if (platform == null) {
                 throw new NotFoundException("Invalid platform");
             }
@@ -110,7 +112,7 @@ public class ApplicationManagerImpl implements ApplicationManager {
             ConnectionManagerUtil.openConnection();
             ApplicationDAO applicationDAO = DAOFactory.getApplicationDAO();
             return applicationDAO.getApplications(filter);
-        }  finally {
+        } finally {
             ConnectionManagerUtil.closeConnection();
         }
 

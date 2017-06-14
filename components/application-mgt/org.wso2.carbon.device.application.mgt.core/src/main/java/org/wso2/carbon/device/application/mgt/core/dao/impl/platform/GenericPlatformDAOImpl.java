@@ -62,7 +62,6 @@ public class GenericPlatformDAOImpl extends AbstractDAOImpl implements PlatformD
                 platform.setId(rs.getInt("ID"));
                 platform.setName(rs.getString("NAME"));
                 platform.setIdentifier(rs.getString("IDENTIFIER"));
-                platform.setPublished(rs.getBoolean("PUBLISHED"));
             }
 
             return platform;

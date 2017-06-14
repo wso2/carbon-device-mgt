@@ -74,8 +74,6 @@ public class Platform implements Cloneable {
 
     }
 
-    private boolean published;
-
     public int getId() {
         return id;
     }
@@ -130,14 +128,6 @@ public class Platform implements Cloneable {
 
     public void setTags(List<String> tags) {
         this.tags = tags;
-    }
-
-    public boolean isPublished() {
-        return published;
-    }
-
-    public void setPublished(boolean published) {
-        this.published = published;
     }
 
     public boolean isFileBased() {

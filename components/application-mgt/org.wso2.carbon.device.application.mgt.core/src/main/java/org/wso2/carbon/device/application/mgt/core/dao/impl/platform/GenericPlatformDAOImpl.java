@@ -38,7 +38,7 @@ import java.util.List;
 public class GenericPlatformDAOImpl extends AbstractDAOImpl implements PlatformDAO {
 
     @Override
-    public Platform getPlatformByIdentifier(String identifier) throws ApplicationManagementDAOException {
+    public Platform getPlatformByIdentifier(String identifier) throws PlatformManagementDAOException {
 
         Connection conn = null;
         PreparedStatement stmt = null;
@@ -68,9 +68,9 @@ public class GenericPlatformDAOImpl extends AbstractDAOImpl implements PlatformD
             return platform;
 
         } catch (SQLException e) {
-            throw new ApplicationManagementDAOException("Error occurred while getting application List", e);
+            throw new PlatformManagementDAOException("Error occurred while getting application List", e);
         }  catch (DBConnectionException e) {
-            throw new ApplicationManagementDAOException("Error occurred while obtaining the DB connection.", e);
+            throw new PlatformManagementDAOException("Error occurred while obtaining the DB connection.", e);
         } finally {
             Util.cleanupResources(stmt, rs);
         }

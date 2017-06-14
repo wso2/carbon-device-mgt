@@ -26,7 +26,7 @@ import java.util.List;
 
 public interface PlatformDAO {
 
-    public Platform getPlatformByIdentifier(String identifier) throws ApplicationManagementDAOException;
+    public Platform getPlatformByIdentifier(String identifier) throws PlatformManagementDAOException;
 
     void register(String tenantDomain, Platform platform) throws PlatformManagementDAOException;
 

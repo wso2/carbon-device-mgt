@@ -290,3 +290,7 @@ ul#noty_topRight_layout_container li{
 .list-group-item.active > .list-group > .list-group-item > a:hover{
     color : whitesmoke;
 }
+
+a.new-notification {
+    text-transform: capitalize;
+}

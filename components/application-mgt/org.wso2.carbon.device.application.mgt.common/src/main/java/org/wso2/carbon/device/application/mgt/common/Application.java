@@ -58,8 +58,6 @@ public class Application {
 
     private Map<String, String> properties;
 
-    private String createdBy;
-
     private Date createdAt;
 
     private Date modifiedAt;
@@ -72,6 +70,8 @@ public class Application {
 
     private Visibility visibility;
 
+    private User user;
+
     public int getId() {
         return id;
     }
@@ -83,7 +83,6 @@ public class Application {
     public void setReleases(List<ApplicationRelease> releases) {
         this.releases = releases;
     }
-
 
     public List<Comment> getComments() {
         return comments;
@@ -217,14 +216,6 @@ public class Application {
         this.properties = properties;
     }
 
-    public String getCreatedBy() {
-        return createdBy;
-    }
-
-    public void setCreatedBy(String createdBy) {
-        this.createdBy = createdBy;
-    }
-
     public Date getCreatedAt() {
         return createdAt;
     }
@@ -247,5 +238,13 @@ public class Application {
 
     public void setVisibility(Visibility visibility) {
         this.visibility = visibility;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }

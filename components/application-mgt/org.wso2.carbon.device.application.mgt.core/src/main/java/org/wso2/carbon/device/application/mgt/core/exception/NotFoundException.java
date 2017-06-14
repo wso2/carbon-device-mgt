@@ -16,13 +16,18 @@
  *   under the License.
  *
  */
-package org.wso2.carbon.device.application.mgt.core.dao;
+package org.wso2.carbon.device.application.mgt.core.exception;
 
-import org.wso2.carbon.device.application.mgt.common.Platform;
-import org.wso2.carbon.device.application.mgt.core.exception.ApplicationManagementDAOException;
+import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
 
-public interface PlatformDAO {
+public class NotFoundException extends ApplicationManagementException {
 
-    public Platform getPlatformByIdentifier(String identifier) throws ApplicationManagementDAOException;
+    public NotFoundException(String message, Throwable throwable) {
+        super(message, throwable);
+    }
+
+    public NotFoundException(String message) {
+        setMessage(message);
+    }
 
 }

@@ -16,13 +16,16 @@
  *   under the License.
  *
  */
-package org.wso2.carbon.device.application.mgt.core.dao;
+package org.wso2.carbon.device.application.mgt.core.dao.impl.platform;
 
 import org.wso2.carbon.device.application.mgt.common.Platform;
 import org.wso2.carbon.device.application.mgt.core.exception.ApplicationManagementDAOException;
 
-public interface PlatformDAO {
+public class H2PlatformDAOImpl extends AbstractPlatformDAOImpl {
 
-    public Platform getPlatformByIdentifier(String identifier) throws ApplicationManagementDAOException;
 
+    @Override
+    public Platform getPlatformByIdentifier(String identifier) throws ApplicationManagementDAOException {
+        return null;
+    }
 }

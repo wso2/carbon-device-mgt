@@ -27,9 +27,9 @@ public interface ApplicationManager{
 
      public Application createApplication(Application application) throws ApplicationManagementException;
 
-     public Application editApplication(int applicationId, Application application) throws ApplicationManagementException;
+     public Application editApplication(int uuid, Application application) throws ApplicationManagementException;
 
-     public void deleteApplication(int applicationId) throws ApplicationManagementException;
+     public void deleteApplication(int uuid) throws ApplicationManagementException;
 
      public ApplicationList getApplications(Filter filter) throws ApplicationManagementException;
 }

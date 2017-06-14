@@ -28,7 +28,6 @@ import org.wso2.carbon.device.application.mgt.common.Pagination;
 import org.wso2.carbon.device.application.mgt.common.exception.DBConnectionException;
 import org.wso2.carbon.device.application.mgt.core.exception.ApplicationManagementDAOException;
 import org.wso2.carbon.device.application.mgt.core.dao.common.Util;
-import org.wso2.carbon.device.application.mgt.core.dao.impl.AbstractApplicationDAOImpl;
 import org.wso2.carbon.device.application.mgt.core.util.ConnectionManagerUtil;
 
 import java.sql.Connection;
@@ -44,6 +43,11 @@ import java.util.List;
 public class H2ApplicationDAOImpl extends AbstractApplicationDAOImpl {
 
     private static final Log log = LogFactory.getLog(H2ApplicationDAOImpl.class);
+
+    @Override
+    public Application createApplication(Application application) throws ApplicationManagementDAOException {
+        return null;
+    }
 
     @Override
     public ApplicationList getApplications(Filter filter) throws ApplicationManagementDAOException {
@@ -133,7 +137,10 @@ public class H2ApplicationDAOImpl extends AbstractApplicationDAOImpl {
         return applicationList;
     }
 
-    private Connection getConnection() throws DBConnectionException {
-        return ConnectionManagerUtil.getConnection();
+    @Override
+    public Application editApplication(Application application) throws ApplicationManagementDAOException {
+        return null;
     }
+
+
 }

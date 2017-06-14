@@ -130,30 +130,33 @@ public class ConnectionManagerUtil {
     }
 
     public static void closeConnection() {
-        TxState txState = currentTxState.get();
-        if (TxState.CONNECTION_NOT_BORROWED == txState) {
-            if (log.isDebugEnabled()) {
-                log.debug("No successful connection appears to have been borrowed to perform the underlying " +
-                        "transaction even though the 'openConnection' method has been called. Therefore, " +
-                        "'closeConnection' method is returning silently");
-            }
-            currentTxState.remove();
-            return;
-        }
+        if(currentTxState != null) {
+            TxState txState = currentTxState.get();
 
-        Connection conn = currentConnection.get();
-        if (conn == null) {
-            throw new IllegalTransactionStateException("No connection is associated with the current transaction. " +
-                    "This might have ideally been caused by not properly initiating the transaction via " +
-                    "'beginTransaction'/'openConnection' methods");
+            if (TxState.CONNECTION_NOT_BORROWED == txState) {
+                if (log.isDebugEnabled()) {
+                    log.debug("No successful connection appears to have been borrowed to perform the underlying " +
+                            "transaction even though the 'openConnection' method has been called. Therefore, " +
+                            "'closeConnection' method is returning silently");
+                }
+                currentTxState.remove();
+                return;
+            }
+
+            Connection conn = currentConnection.get();
+            if (conn == null) {
+                throw new IllegalTransactionStateException("No connection is associated with the current transaction. " +
+                        "This might have ideally been caused by not properly initiating the transaction via " +
+                        "'beginTransaction'/'openConnection' methods");
+            }
+            try {
+                conn.close();
+            } catch (SQLException e) {
+                log.warn("Error occurred while close the connection", e);
+            }
+            currentConnection.remove();
+            currentTxState.remove();
         }
-        try {
-            conn.close();
-        } catch (SQLException e) {
-            log.warn("Error occurred while close the connection", e);
-        }
-        currentConnection.remove();
-        currentTxState.remove();
     }
 
 

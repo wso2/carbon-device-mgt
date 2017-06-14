@@ -22,12 +22,16 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.application.mgt.common.exception.UnsupportedDatabaseEngineException;
 import org.wso2.carbon.device.application.mgt.core.dao.ApplicationDAO;
+import org.wso2.carbon.device.application.mgt.core.dao.LifecycleStateDAO;
+import org.wso2.carbon.device.application.mgt.core.dao.PlatformDAO;
 import org.wso2.carbon.device.application.mgt.core.dao.impl.application.H2ApplicationDAOImpl;
 import org.wso2.carbon.device.application.mgt.core.dao.impl.application.MySQLApplicationDAOImpl;
+import org.wso2.carbon.device.application.mgt.core.dao.impl.lifecyclestate.H2LifecycleStateDAOImpl;
+import org.wso2.carbon.device.application.mgt.core.dao.impl.lifecyclestate.MySQLLifecycleStateDAOImpl;
+import org.wso2.carbon.device.application.mgt.core.dao.impl.platform.H2PlatformDAOImpl;
+import org.wso2.carbon.device.application.mgt.core.dao.impl.platform.MySQLPlatformDAOImpl;
 import org.wso2.carbon.device.application.mgt.core.util.Constants;
 import org.wso2.carbon.device.application.mgt.core.util.ConnectionManagerUtil;
-
-import javax.sql.DataSource;
 
 
 /**
@@ -59,4 +63,34 @@ public class DAOFactory {
         }
         throw new IllegalStateException("Database engine has not initialized properly.");
     }
+
+    public static PlatformDAO getPlatformDAO(){
+        if (databaseEngine != null) {
+            switch (databaseEngine) {
+                case Constants.DataBaseTypes.DB_TYPE_H2:
+                    return new H2PlatformDAOImpl();
+                case Constants.DataBaseTypes.DB_TYPE_MYSQL:
+                    return new MySQLPlatformDAOImpl();
+                default:
+                    throw new UnsupportedDatabaseEngineException("Unsupported database engine : " + databaseEngine);
+            }
+        }
+        throw new IllegalStateException("Database engine has not initialized properly.");
+    }
+
+    public static LifecycleStateDAO getLifecycleStateDAO(){
+        if (databaseEngine != null) {
+            switch (databaseEngine) {
+                case Constants.DataBaseTypes.DB_TYPE_H2:
+                    return new H2LifecycleStateDAOImpl();
+                case Constants.DataBaseTypes.DB_TYPE_MYSQL:
+                    return new MySQLLifecycleStateDAOImpl();
+                default:
+                    throw new UnsupportedDatabaseEngineException("Unsupported database engine : " + databaseEngine);
+            }
+        }
+        throw new IllegalStateException("Database engine has not initialized properly.");
+    }
 }
+
+

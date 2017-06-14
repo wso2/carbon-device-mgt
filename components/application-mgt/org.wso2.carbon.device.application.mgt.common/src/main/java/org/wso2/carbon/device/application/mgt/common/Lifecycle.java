@@ -25,7 +25,7 @@ public class Lifecycle {
 
     private Date lifecycleStateModifiedAt;
 
-    private Date getLifecycleStateModifiedBy;
+    private String getLifecycleStateModifiedBy;
 
     public LifecycleState getLifecycleState() {
         return lifecycleState;
@@ -43,11 +43,11 @@ public class Lifecycle {
         this.lifecycleStateModifiedAt = lifecycleStateModifiedAt;
     }
 
-    public Date getGetLifecycleStateModifiedBy() {
+    public String getGetLifecycleStateModifiedBy() {
         return getLifecycleStateModifiedBy;
     }
 
-    public void setGetLifecycleStateModifiedBy(Date getLifecycleStateModifiedBy) {
+    public void setGetLifecycleStateModifiedBy(String getLifecycleStateModifiedBy) {
         this.getLifecycleStateModifiedBy = getLifecycleStateModifiedBy;
     }
 }

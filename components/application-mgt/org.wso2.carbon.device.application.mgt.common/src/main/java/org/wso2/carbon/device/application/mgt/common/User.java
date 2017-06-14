@@ -18,45 +18,30 @@
  */
 package org.wso2.carbon.device.application.mgt.common;
 
-public class LifecycleState {
+public class User {
 
-    private int id;
+    private String userName;
 
-    private String name;
+    private int tenantId;
 
-    private String identifier;
-
-    private String description;
-
-    public int getId() {
-        return id;
+    public User(String userName, int tenantId) {
+        this.userName = userName;
+        this.tenantId = tenantId;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public String getUserName() {
+        return userName;
     }
 
-    public String getName() {
-        return name;
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public int getTenantId() {
+        return tenantId;
     }
 
-    public String getIdentifier() {
-        return identifier;
-    }
-
-    public void setIdentifier(String identifier) {
-        this.identifier = identifier;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
+    public void setTenantId(int tenantId) {
+        this.tenantId = tenantId;
     }
 }

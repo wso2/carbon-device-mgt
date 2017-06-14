@@ -18,6 +18,11 @@
  */
 package org.wso2.carbon.device.application.mgt.core.dao;
 
+import org.wso2.carbon.device.application.mgt.common.LifecycleState;
+import org.wso2.carbon.device.application.mgt.core.exception.ApplicationManagementDAOException;
+
 public interface LifecycleStateDAO {
+
+    public LifecycleState getLifeCycleStateByIdentifier(String identifier) throws ApplicationManagementDAOException;
 
 }

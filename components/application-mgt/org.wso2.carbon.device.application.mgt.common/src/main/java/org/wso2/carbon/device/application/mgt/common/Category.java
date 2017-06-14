@@ -22,7 +22,6 @@ import org.wso2.carbon.device.application.mgt.common.jaxrs.Exclude;
 
 public class Category {
 
-    @Exclude
     private int id;
 
     private String name;

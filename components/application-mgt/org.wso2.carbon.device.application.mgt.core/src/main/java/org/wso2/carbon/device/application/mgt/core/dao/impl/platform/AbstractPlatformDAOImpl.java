@@ -16,13 +16,24 @@
  *   under the License.
  *
  */
-package org.wso2.carbon.device.application.mgt.core.dao;
+package org.wso2.carbon.device.application.mgt.core.dao.impl.platform;
 
+import org.json.JSONException;
 import org.wso2.carbon.device.application.mgt.common.Platform;
+import org.wso2.carbon.device.application.mgt.common.exception.DBConnectionException;
+import org.wso2.carbon.device.application.mgt.core.dao.PlatformDAO;
+import org.wso2.carbon.device.application.mgt.core.dao.common.Util;
+import org.wso2.carbon.device.application.mgt.core.dao.impl.AbstractDAOImpl;
 import org.wso2.carbon.device.application.mgt.core.exception.ApplicationManagementDAOException;
+import org.wso2.carbon.device.application.mgt.core.util.ConnectionManagerUtil;
 
-public interface PlatformDAO {
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
-    public Platform getPlatformByIdentifier(String identifier) throws ApplicationManagementDAOException;
+public abstract class AbstractPlatformDAOImpl extends AbstractDAOImpl implements PlatformDAO  {
+
+
 
 }

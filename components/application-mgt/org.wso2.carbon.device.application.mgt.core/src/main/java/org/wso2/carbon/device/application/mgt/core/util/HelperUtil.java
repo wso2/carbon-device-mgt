@@ -16,13 +16,14 @@
  *   under the License.
  *
  */
-package org.wso2.carbon.device.application.mgt.core.dao;
+package org.wso2.carbon.device.application.mgt.core.util;
 
-import org.wso2.carbon.device.application.mgt.common.Platform;
-import org.wso2.carbon.device.application.mgt.core.exception.ApplicationManagementDAOException;
+import java.util.UUID;
 
-public interface PlatformDAO {
+public class HelperUtil {
 
-    public Platform getPlatformByIdentifier(String identifier) throws ApplicationManagementDAOException;
+    public static String generateApplicationUuid(){
+        return UUID.randomUUID().toString();
+    }
 
 }

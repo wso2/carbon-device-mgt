@@ -25,6 +25,7 @@ import org.json.JSONException;
 import org.wso2.carbon.device.application.mgt.common.Application;
 import org.wso2.carbon.device.application.mgt.common.Platform;
 import org.wso2.carbon.device.application.mgt.common.Category;
+import org.wso2.carbon.device.application.mgt.core.util.JSONUtil;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -46,13 +47,13 @@ public class Util {
         application.setIconName(rs.getString("ICON_NAME"));
         application.setBannerName(rs.getString("BANNER_NAME"));
         application.setVideoName(rs.getString("VIDEO_NAME"));
-        application.setScreenshots(jsonArrayStringToList(rs.getString("SCREENSHOTS")));
+        application.setScreenshots(JSONUtil.jsonArrayStringToList(rs.getString("SCREENSHOTS")));
         application.setCreatedAt(rs.getDate("CREATED_AT"));
         application.setModifiedAt(rs.getDate("MODIFIED_AT"));
 
         Platform platform = new Platform();
         platform.setName(rs.getString("APL_NAME"));
-        platform.setCode(rs.getString("APL_IDENTIFIER"));
+        platform.setIdentifier(rs.getString("APL_IDENTIFIER"));
         application.setPlatform(platform);
 
         Map<String, String> properties = new HashMap<>();
@@ -90,15 +91,5 @@ public class Util {
         }
     }
 
-    public static List<String> jsonArrayStringToList(String value) throws JSONException {
-        JSONArray jsonArray = new JSONArray(value);
-        List<String> list = new ArrayList<>();
-        if (jsonArray != null) {
-            int len = jsonArray.length();
-            for (int i = 0; i < len; i++) {
-                list.add(jsonArray.get(i).toString());
-            }
-        }
-        return list;
-    }
+
 }

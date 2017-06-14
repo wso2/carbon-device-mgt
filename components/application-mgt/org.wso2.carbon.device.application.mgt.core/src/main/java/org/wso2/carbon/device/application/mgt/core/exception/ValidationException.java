@@ -16,13 +16,17 @@
  *   under the License.
  *
  */
-package org.wso2.carbon.device.application.mgt.core.dao;
+package org.wso2.carbon.device.application.mgt.core.exception;
 
-import org.wso2.carbon.device.application.mgt.common.Platform;
-import org.wso2.carbon.device.application.mgt.core.exception.ApplicationManagementDAOException;
+import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
 
-public interface PlatformDAO {
+public class ValidationException extends ApplicationManagementException {
 
-    public Platform getPlatformByIdentifier(String identifier) throws ApplicationManagementDAOException;
+    public ValidationException(String message, Throwable throwable) {
+        super(message, throwable);
+    }
 
+    public ValidationException(String message) {
+       setMessage(message);
+    }
 }

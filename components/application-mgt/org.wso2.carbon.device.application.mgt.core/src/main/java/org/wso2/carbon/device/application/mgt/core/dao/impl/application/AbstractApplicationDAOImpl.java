@@ -16,7 +16,7 @@
  *   under the License.
  *
  */
-package org.wso2.carbon.device.application.mgt.core.dao.impl;
+package org.wso2.carbon.device.application.mgt.core.dao.impl.application;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -24,36 +24,22 @@ import org.wso2.carbon.device.application.mgt.common.Application;
 import org.wso2.carbon.device.application.mgt.common.Filter;
 import org.wso2.carbon.device.application.mgt.common.exception.DBConnectionException;
 import org.wso2.carbon.device.application.mgt.core.dao.ApplicationDAO;
+import org.wso2.carbon.device.application.mgt.core.dao.impl.AbstractDAOImpl;
 import org.wso2.carbon.device.application.mgt.core.exception.ApplicationManagementDAOException;
 import org.wso2.carbon.device.application.mgt.core.dao.common.Util;
-import org.wso2.carbon.device.application.mgt.core.util.ConnectionManagerUtil;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public abstract class AbstractApplicationDAOImpl implements ApplicationDAO {
+public abstract class AbstractApplicationDAOImpl extends AbstractDAOImpl implements ApplicationDAO {
 
     private static final Log log = LogFactory.getLog(AbstractApplicationDAOImpl.class);
 
     @Override
-    public Application createApplication(Application application) throws ApplicationManagementDAOException {
-        return null;
-    }
-
-    @Override
-    public Application editApplication(Application application) throws ApplicationManagementDAOException {
-        return null;
-    }
-
-    @Override
     public void deleteApplication(Application application) throws ApplicationManagementDAOException {
 
-    }
-
-    private Connection getConnection() throws DBConnectionException {
-        return ConnectionManagerUtil.getConnection();
     }
 
     @Override
@@ -77,8 +63,7 @@ public abstract class AbstractApplicationDAOImpl implements ApplicationDAO {
             conn = this.getConnection();
             sql += "SELECT COUNT(APP.ID) AS APP_COUNT ";
             sql += "FROM APPM_APPLICATION AS APP ";
-            sql += "INNER JOIN APPM_PLATFORM_APPLICATION_MAPPING AS APM ON APP.PLATFORM_APPLICATION_MAPPING_ID = APM.ID ";
-            sql += "INNER JOIN APPM_PLATFORM AS APL ON APM.PLATFORM_ID = APL.ID ";
+            sql += "INNER JOIN APPM_PLATFORM AS APL ON APP.PLATFORM_ID = APL.ID ";
             sql += "INNER JOIN APPM_APPLICATION_CATEGORY AS CAT ON APP.APPLICATION_CATEGORY_ID = CAT.ID ";
 
             if (filter.getSearchQuery() != null && !filter.getSearchQuery().isEmpty()) {

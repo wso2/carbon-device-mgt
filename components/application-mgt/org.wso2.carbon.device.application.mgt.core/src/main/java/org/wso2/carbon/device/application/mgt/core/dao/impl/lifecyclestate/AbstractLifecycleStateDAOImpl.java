@@ -16,13 +16,11 @@
  *   under the License.
  *
  */
-package org.wso2.carbon.device.application.mgt.core.dao;
+package org.wso2.carbon.device.application.mgt.core.dao.impl.lifecyclestate;
 
-import org.wso2.carbon.device.application.mgt.common.Platform;
-import org.wso2.carbon.device.application.mgt.core.exception.ApplicationManagementDAOException;
+import org.wso2.carbon.device.application.mgt.core.dao.LifecycleStateDAO;
+import org.wso2.carbon.device.application.mgt.core.dao.impl.AbstractDAOImpl;
 
-public interface PlatformDAO {
-
-    public Platform getPlatformByIdentifier(String identifier) throws ApplicationManagementDAOException;
+public abstract class AbstractLifecycleStateDAOImpl extends AbstractDAOImpl implements LifecycleStateDAO {
 
 }

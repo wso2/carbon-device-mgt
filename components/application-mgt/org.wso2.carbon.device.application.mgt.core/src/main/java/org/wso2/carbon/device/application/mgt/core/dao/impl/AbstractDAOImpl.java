@@ -16,13 +16,16 @@
  *   under the License.
  *
  */
-package org.wso2.carbon.device.application.mgt.core.dao;
+package org.wso2.carbon.device.application.mgt.core.dao.impl;
 
-import org.wso2.carbon.device.application.mgt.common.Platform;
-import org.wso2.carbon.device.application.mgt.core.exception.ApplicationManagementDAOException;
+import org.wso2.carbon.device.application.mgt.common.exception.DBConnectionException;
+import org.wso2.carbon.device.application.mgt.core.util.ConnectionManagerUtil;
 
-public interface PlatformDAO {
+import java.sql.Connection;
 
-    public Platform getPlatformByIdentifier(String identifier) throws ApplicationManagementDAOException;
+public abstract class AbstractDAOImpl {
 
+    protected Connection getConnection() throws DBConnectionException {
+        return ConnectionManagerUtil.getConnection();
+    }
 }

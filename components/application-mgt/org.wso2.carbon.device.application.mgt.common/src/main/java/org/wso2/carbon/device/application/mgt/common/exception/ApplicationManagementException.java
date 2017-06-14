@@ -32,6 +32,9 @@ public abstract class ApplicationManagementException extends Exception {
         setMessage(message);
     }
 
+    public ApplicationManagementException() {
+
+    }
     @Override
     public String getMessage() {
         return message;

@@ -32,13 +32,15 @@ public class Platform {
 
     private String description;
 
-    private String code;
+    private String identifier;
 
     private String iconName;
 
     private List<String> tags;
 
     private Map<String, String> properties;
+
+    private boolean published;
 
     public int getId() {
         return id;
@@ -64,12 +66,12 @@ public class Platform {
         this.description = description;
     }
 
-    public String getCode() {
-        return code;
+    public String getIdentifier() {
+        return identifier;
     }
 
-    public void setCode(String code) {
-        this.code = code;
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
     }
 
     public String getIconName() {
@@ -94,5 +96,13 @@ public class Platform {
 
     public void setTags(List<String> tags) {
         this.tags = tags;
+    }
+
+    public boolean isPublished() {
+        return published;
+    }
+
+    public void setPublished(boolean published) {
+        this.published = published;
     }
 }

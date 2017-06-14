@@ -20,13 +20,15 @@ package org.wso2.carbon.device.application.mgt.api.services.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.device.application.mgt.common.Filter;
-import org.wso2.carbon.device.application.mgt.common.ApplicationList;
+import org.wso2.carbon.device.application.mgt.common.*;
 import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
 import org.wso2.carbon.device.application.mgt.common.services.ApplicationManager;
 import org.wso2.carbon.device.application.mgt.api.APIUtil;
+
+import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
+import java.util.Date;
 
 @Produces({"application/json"})
 @Consumes({"application/json"})
@@ -62,4 +64,27 @@ public class ApplicationManagementAPIImpl {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
     }
+
+    @POST
+    @Consumes("application/json")
+    @Path("applications")
+    public Response createApplication(@Valid Application application) {
+
+        ApplicationManager applicationManager = APIUtil.getApplicationManager();
+
+        //TODO : Get username and tenantId
+        User user = new User("admin", -1234);
+        application.setUser(user);
+
+        try {
+            application = applicationManager.createApplication(application);
+
+        } catch (ApplicationManagementException e) {
+            String msg = "Error occurred while creating the application";
+            log.error(msg, e);
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+        return Response.status(Response.Status.OK).entity(application).build();
+    }
+
 }

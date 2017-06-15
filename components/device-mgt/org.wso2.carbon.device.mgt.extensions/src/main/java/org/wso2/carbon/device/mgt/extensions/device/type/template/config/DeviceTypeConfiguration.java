@@ -40,7 +40,7 @@ import java.util.List;
  *         &lt;element name="DeviceDetails" type="{}DeviceDetails"/>
  *         &lt;element name="Features" type="{}Features"/>
  *         &lt;element name="ProvisioningConfig" type="{}ProvisioningConfig"/>
- *         &lt;element name="PushNotificationProvider" type="{}PushNotificationProvider"/>
+ *         &lt;element name="PushNotificationProviderConfig" type="{}PushNotificationProviderConfig"/>
  *         &lt;element name="License" type="{}License"/>
  *         &lt;element name="DataSource" type="{}DataSource"/>
  *         &lt;element name="PolicyMonitoring" type="{}PolicyMonitoring"/>

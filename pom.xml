@@ -23,7 +23,7 @@
     <groupId>org.wso2.carbon.devicemgt</groupId>
     <artifactId>carbon-devicemgt</artifactId>
     <packaging>pom</packaging>
-    <version>2.0.76-SNAPSHOT</version>
+    <version>3.0.0-SNAPSHOT</version>
     <name>WSO2 Carbon - Device Management - Parent</name>
     <url>http://wso2.org</url>
     <description>WSO2 Connected Device Manager Components</description>
@@ -1858,7 +1858,7 @@
         <axiom.wso2.version>1.2.11.wso2v10</axiom.wso2.version>
 
         <!-- Carbon Device Management -->
-        <carbon.device.mgt.version>2.0.76-SNAPSHOT</carbon.device.mgt.version>
+        <carbon.device.mgt.version>3.0.0-SNAPSHOT</carbon.device.mgt.version>
 
         <!-- Carbon Commons -->
         <carbon.commons.version>4.4.8</carbon.commons.version>
@@ -1984,6 +1984,7 @@
 		<commons.codec.verision>1.9</commons.codec.verision>
 		<commons.codec.verision.range>(1.9,2.0]</commons.codec.verision.range>
 		<javassist.version>3.12.1.GA</javassist.version>
+        <maven.javadoc.skip>true</maven.javadoc.skip>
     </properties>
 
 </project>

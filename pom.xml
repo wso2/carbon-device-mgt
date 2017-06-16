@@ -39,12 +39,14 @@
         <module>components/device-mgt-extensions</module>
 		<module>components/identity-extensions</module>
         <module>components/apimgt-extensions</module>
+        <module>components/application-mgt</module>
         <module>components/policy-mgt</module>
         <module>components/certificate-mgt</module>
         <module>components/webapp-authenticator-framework</module>
         <module>components/email-sender</module>
         <module>features/device-mgt</module>
         <module>features/apimgt-extensions</module>
+        <module>features/application-mgt</module>
         <module>features/policy-mgt</module>
         <module>features/webapp-authenticator-framework</module>
         <module>features/certificate-mgt</module>
@@ -168,6 +170,31 @@
             <dependency>
                 <groupId>org.wso2.carbon.devicemgt</groupId>
                 <artifactId>org.wso2.carbon.certificate.mgt.core</artifactId>
+                <version>${carbon.device.mgt.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.devicemgt</groupId>
+                <artifactId>org.wso2.carbon.device.application.mgt.core</artifactId>
+                <version>${carbon.device.mgt.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.devicemgt</groupId>
+                <artifactId>org.wso2.carbon.device.application.mgt.common</artifactId>
+                <version>${carbon.device.mgt.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.devicemgt</groupId>
+                <artifactId>org.wso2.carbon.device.application.mgt.api</artifactId>
+                <version>${carbon.device.mgt.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.devicemgt</groupId>
+                <artifactId>org.wso2.carbon.device.application.mgt.extensions</artifactId>
+                <version>${carbon.device.mgt.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.devicemgt</groupId>
+                <artifactId>org.wso2.carbon.device.application.mgt.ui</artifactId>
                 <version>${carbon.device.mgt.version}</version>
             </dependency>
             <dependency>
@@ -320,6 +347,36 @@
             <dependency>
                 <groupId>org.wso2.carbon.devicemgt</groupId>
                 <artifactId>org.wso2.carbon.apimgt.handlers</artifactId>
+                <version>${carbon.device.mgt.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.devicemgt</groupId>
+                <artifactId>org.wso2.carbon.device.application.mgt.server.feature</artifactId>
+                <type>zip</type>
+                <version>${carbon.device.mgt.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.devicemgt</groupId>
+                <artifactId>org.wso2.carbon.device.application.mgt.extensions.feature</artifactId>
+                <type>zip</type>
+                <version>${carbon.device.mgt.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.devicemgt</groupId>
+                <artifactId>org.wso2.carbon.device.application.mgt.api.feature</artifactId>
+                <type>zip</type>
+                <version>${carbon.device.mgt.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.devicemgt</groupId>
+                <artifactId>org.wso2.carbon.device.application.mgt.ui.feature</artifactId>
+                <type>zip</type>
+                <version>${carbon.device.mgt.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.devicemgt</groupId>
+                <artifactId>org.wso2.carbon.device.application.mgt.feature</artifactId>
+                <type>zip</type>
                 <version>${carbon.device.mgt.version}</version>
             </dependency>
             <!-- Device Management dependencies -->

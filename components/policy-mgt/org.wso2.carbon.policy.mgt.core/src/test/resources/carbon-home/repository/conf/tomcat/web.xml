@@ -47,7 +47,7 @@
     <!--   fileEncoding        Encoding to be used to read static resources   -->
     <!--                       [platform default]                             -->
     <!--                                                                      -->
-    <!--   input               Input buffer size (in bytes) when reading      -->
+    <!--   input               Input buflengthsize (in bytes) when reading      -->
     <!--                       resources to be served.  [2048]                -->
     <!--                                                                      -->
     <!--   listings            Should directory listings be produced if there -->
@@ -56,7 +56,7 @@
     <!--                       entries can be slow and may consume            -->
     <!--                       significant proportions of server resources.   -->
     <!--                                                                      -->
-    <!--   output              Output buffer size (in bytes) when writing     -->
+    <!--   output              Output buflengthsize (in bytes) when writing     -->
     <!--                       resources to be served.  [2048]                -->
     <!--                                                                      -->
     <!--   readonly            Is this context "read only", so HTTP           -->
@@ -67,7 +67,7 @@
     <!--                       contents. [null]                               -->
     <!--                                                                      -->
     <!--   sendfileSize        If the connector used supports sendfile, this  -->
-    <!--                       represents the minimal file size in KB for     -->
+    <!--                       represents the minimal flengthsize in KB for     -->
     <!--                       which sendfile will be used. Use a negative    -->
     <!--                       value to always disable sendfile.  [48]        -->
     <!--                                                                      -->

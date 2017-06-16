@@ -1,0 +1,9 @@
+instructions.configure = \
+org.eclipse.equinox.p2.touchpoint.natives.mkdir(path:${installFolder}/../../deployment/server/jaggeryapps/application-mgt);\
+org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.wso2.carbon.device.application.mgt.ui_${feature.version}/jaggeryapps/application-mgt,target:${installFolder}/../../deployment/server/jaggeryapps/application-mgt,overwrite:true);\
+org.eclipse.equinox.p2.touchpoint.natives.mkdir(path:${installFolder}/../../deployment/server/jaggeryapps/appmgt-uuf-template-app);\
+org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.wso2.carbon.device.application.mgt.ui_${feature.version}/jaggeryapps/appmgt-uuf-template-app,target:${installFolder}/../../deployment/server/jaggeryapps/appmgt-uuf-template-app,overwrite:true);\
+org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.wso2.carbon.device.application.mgt.ui_${feature.version}/jaggery-modules/utils/,target:${installFolder}/../../modules/utils,overwrite:true);\
+
+instructions.unconfigure = \
+org.eclipse.equinox.p2.touchpoint.natives.remove(path:${installFolder}/../../deployment/server/jaggeryapps/application-mgt);\

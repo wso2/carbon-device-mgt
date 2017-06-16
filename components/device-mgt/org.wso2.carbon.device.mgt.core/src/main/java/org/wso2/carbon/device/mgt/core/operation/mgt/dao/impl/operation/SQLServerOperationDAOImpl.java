@@ -284,7 +284,8 @@ public class SQLServerOperationDAOImpl extends GenericOperationDAOImpl {
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, opStatus.toString());
             stmt.setString(2, pushNotificationStatus.toString());
-            stmt.setInt(3, limit);
+            stmt.setInt(3, 0);
+            stmt.setInt(4, limit);
             rs = stmt.executeQuery();
             while (rs.next()) {
                 int tenantID = rs.getInt("TENANT_ID");

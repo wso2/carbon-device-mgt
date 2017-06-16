@@ -44,6 +44,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Contains util methods for synapse gateway authentication handler
@@ -62,19 +64,45 @@ public class Utils {
     public static IOTServerConfiguration initConfig() {
         try {
 
-            String IOTServerAPIConfigurationPath =
-                    CarbonUtils.getCarbonConfigDirPath() + File.separator + IOT_APIS_CONFIG_FILE;
+            String IOTServerAPIConfigurationPath = CarbonUtils.getCarbonConfigDirPath() + File.separator
+                    + IOT_APIS_CONFIG_FILE;
             File file = new File(IOTServerAPIConfigurationPath);
             Document doc = Utils.convertToDocument(file);
 
             JAXBContext fileContext = JAXBContext.newInstance(IOTServerConfiguration.class);
             Unmarshaller unmarshaller = fileContext.createUnmarshaller();
-            return (IOTServerConfiguration) unmarshaller.unmarshal(doc);
 
+            IOTServerConfiguration iotServerConfiguration = (IOTServerConfiguration) unmarshaller.unmarshal(
+                    doc);
+            iotServerConfiguration.setHostname(replaceProperties(iotServerConfiguration.getHostname()));
+            iotServerConfiguration.setVerificationEndpoint(
+                    replaceProperties(iotServerConfiguration.getVerificationEndpoint()));
+            iotServerConfiguration.setDynamicClientRegistrationEndpoint(
+                    replaceProperties(iotServerConfiguration.getDynamicClientRegistrationEndpoint()));
+            iotServerConfiguration.setOauthTokenEndpoint(
+                    replaceProperties(iotServerConfiguration.getOauthTokenEndpoint()));
+            return iotServerConfiguration;
         } catch (JAXBException | APIMCertificateMGTException e) {
             log.error("Error occurred while initializing Data Source config", e);
             return null;
         }
+    }
+
+    /**
+     * This method gets the values from system variables and sets to xml.
+     */
+    public static String replaceProperties(String text) {
+        String regex = "\\$\\{(.*?)\\}";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matchPattern = pattern.matcher(text);
+        while (matchPattern.find()) {
+            String sysPropertyName = matchPattern.group(1);
+            String sysPropertyValue = System.getProperty(sysPropertyName);
+            if (sysPropertyValue != null && !sysPropertyName.isEmpty()) {
+                text = text.replaceAll("\\$\\{(" + sysPropertyName + ")\\}", sysPropertyValue);
+            }
+        }
+        return text;
     }
 
     /**

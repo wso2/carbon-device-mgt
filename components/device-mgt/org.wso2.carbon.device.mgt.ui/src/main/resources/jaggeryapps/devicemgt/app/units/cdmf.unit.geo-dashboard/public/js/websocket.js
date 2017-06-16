@@ -144,7 +144,9 @@ SpatialObject.prototype.update = function (geoJSON) {
 
     if (selectedSpatialObject == this.id) {
         this.updatePath([geoJSON.geometry.coordinates[1], geoJSON.geometry.coordinates[0]]);
-        chart.load({columns: [this.speedHistory.getArray()]});
+        if (speedGraphControl) {
+            chart.load({columns: [this.speedHistory.getArray()]});
+        }
         map.setView([this.latitude, this.longitude]);
     }
 

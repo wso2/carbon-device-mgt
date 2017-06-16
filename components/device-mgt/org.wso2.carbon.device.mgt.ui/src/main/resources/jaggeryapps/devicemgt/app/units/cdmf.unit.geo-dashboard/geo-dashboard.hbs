@@ -482,7 +482,7 @@
                 <h6>Speed<span class="label label-primary pull-right"><span id="speed"></span> km/h</span></h6>
                 <h6>Heading<span id="heading" class="label label-primary pull-right"></span></h6>
                 <button type="button" class="btn btn-info btn-xs" onClick="toggleSpeedGraph();return false;">Speed Graph</button>
-                <button type="button" class="btn btn-info btn-xs" onClick="focusOnSpatialObject(document.getElementById('objectId').innerHTML);return false;">Recent History</button>
+                <button type="button" class="btn btn-info btn-xs" onClick="focusOnRecentHistorySpatialObject();return false;">Recent History</button>
                 <button type="button" class="btn btn-info btn-xs" onClick="popupDateRange();">Full History</button>
             </div>
         </div>
@@ -703,9 +703,9 @@
                     createGeoToolListItem(geoPublicUri + '/assets/html_templates/modal/stationery_alert.html',
                                           'Add Stationary Alert', 'glyphicon glyphicon-link', geoToolsMenu);
                     createGeoToolListItem(geoPublicUri + '/assets/html_templates/modal/within_alert.html',
-                                          'Add Geo Fence Enter Alert', 'glyphicon glyphicon-edit', geoToolsMenu);
+                                          'Add Geo Fence Enter Alert', 'glyphicon glyphicon-log-in', geoToolsMenu);
                     createGeoToolListItem(geoPublicUri + '/assets/html_templates/modal/exit_alert.html',
-                                          'Add Geo Fence Exit Alert', 'glyphicon glyphicon-edit', geoToolsMenu);
+                                          'Add Geo Fence Exit Alert', 'glyphicon glyphicon-log-out', geoToolsMenu);
                 {{/if}}
             }
         });

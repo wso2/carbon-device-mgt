@@ -531,6 +531,8 @@ function removeGeoFence(geoFenceElement, id) {
                        });
 }
 
+
+
 function getAlertsHistory(deviceType, deviceId, timeFrom, timeTo) {
     var timeRange = '';
     if (timeFrom && timeTo) {
@@ -539,42 +541,27 @@ function getAlertsHistory(deviceType, deviceId, timeFrom, timeTo) {
     var serviceUrl = '/api/device-mgt/v1.0/geo-services/alerts/history/' + deviceType + '/' + deviceId + timeRange;
     invokerUtil.get(serviceUrl,
                     function (data) {
-                        var alertsContainer = $('#showAlertsArea').empty();
+                        geoAlertsBar.clearAllAlerts();
                         var alerts = JSON.parse(data);
                         $.each(alerts, function (key, val) {
                             if(val.values){
                                 val = val.values;
                             }
-                            var alertDOMElement = document.createElement('a'); // Reason for using
-                                                                               // document.createElement
-                                                                               // (performance issue)
-                                                                               // http://stackoverflow.com/questions/268490/jquery-document-createelement-equivalent
+                            var msg = deviceType.charAt(0).toUpperCase() + deviceType.slice(1)  +
+                                      " " +  deviceId +" "+ val.information.replace("Alerts: ,", "") + " - " + timeSince(val.timeStamp);
                             switch (val.state) {
                                 case "NORMAL":
-//                                       $(alertDOMElement).addClass("list-group-item list-group-item-info");
                                     return;
                                 case "WARNING":
-                                    $(alertDOMElement).addClass("list-group-item list-group-item-warning");
+                                    geoAlertsBar.addAlert('warn', msg, val);
                                     break;
                                 case "ALERTED":
-                                    $(alertDOMElement).addClass("list-group-item list-group-item-danger");
+                                    geoAlertsBar.addAlert('danger', msg, val);
                                     break;
                                 case "OFFLINE":
-                                    $(alertDOMElement).addClass("list-group-item list-group-item-success");
+                                    geoAlertsBar.addAlert('info', msg, val);
                                     break;
                             }
-                            $(alertDOMElement).html(val.information);
-                            $(alertDOMElement).css({marginTop: "5px"});
-                            $(alertDOMElement).attr('onClick', 'showAlertInMap(this)');
-
-                            // Set HTML5 data attributes for later use
-                            $(alertDOMElement).attr('data-id', val.id);
-                            $(alertDOMElement).attr('data-latitude', val.latitude);
-                            $(alertDOMElement).attr('data-longitude', val.longitude);
-                            $(alertDOMElement).attr('data-state', val.state);
-                            $(alertDOMElement).attr('data-information', val.information);
-
-                            alertsContainer.append(alertDOMElement);
                         });
                     }, function (message) {
             console.log(message);

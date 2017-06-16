@@ -66,40 +66,6 @@
         <div id="map"></div>
     </div>
 
-
-    <div id="objectInfo" style="background: darkgray;display: none;border-radius: 13px;height: 94%;padding: 0; top: 20%; left: 83.54%; position: absolute"
-         class="col-md-2 pull-right">
-        <div class="panel-heading text-center">
-            <h4> Device ID: <span id="objectInfoId" class="text-info"></span>
-                <i id="objectInfoCloseButton" class="fa fa-times pull-right"
-                   onclick="$('#objectInfo').animate({width: ['toggle','swing']},200);toggled = false;spatialObject = currentSpatialObjects[selectedSpatialObject];spatialObject.removePath();spatialObject.marker.closePopup();selectedSpatialObject = null;">
-                </i>
-            </h4>
-        </div>
-        <br>
-        <div class="panel panel-default" style="overflow: auto;box-shadow: 0 0 8px 0 #635749">
-            <div class="panel-heading text-center"><h4>Speed variation</h4>
-            </div>
-            <br>
-            <div class="panel-body">
-                <div style="max-height: 100%;margin: 0;border: none;margin-left: -25px" id="chart_div"></div>
-            </div>
-        </div>
-
-
-        <div class="panel panel-default" style="max-height: 47%;overflow: auto;box-shadow: 0px 0px 8px 0px #635749">
-            <div class="panel-heading text-center">
-                <div class="panel-title"><h4>Alerts</h4></div>
-            </div>
-            <div class="panel-body" style="padding: 0px">
-                <div id="showAlertsArea" class="list-group" style="margin-top: 15px">
-
-                </div>
-
-            </div>
-        </div>
-    </div>
-
     <div id="predictionResults" style="background: darkgray;display: none;border-radius: 13px;height: 94%;padding: 0"
          class="col-md-2 pull-right">
         <div class="panel-heading text-center">
@@ -515,6 +481,7 @@
                 <p id="information" class="bg-primary" style="margin: 0px;padding: 0px;"></p>
                 <h6>Speed<span class="label label-primary pull-right"><span id="speed"></span> km/h</span></h6>
                 <h6>Heading<span id="heading" class="label label-primary pull-right"></span></h6>
+                <button type="button" class="btn btn-info btn-xs" onClick="toggleSpeedGraph();return false;">Speed Graph</button>
                 <button type="button" class="btn btn-info btn-xs" onClick="focusOnSpatialObject(document.getElementById('objectId').innerHTML);return false;">Recent History</button>
                 <button type="button" class="btn btn-info btn-xs" onClick="popupDateRange();">Full History</button>
             </div>
@@ -693,6 +660,7 @@
     {{js "js/leaflet/leaflet.markercluster.js" }}
     {{js "js/leaflet/L.Control.Locate.js" }}
     {{js "js/leaflet/L.Control.Focus.js" }}
+    {{js "js/leaflet/L.Control.GeoAlerts.js" }}
     {{js "js/leaflet/leaflet.groupedlayercontrol.js" }}
     {{js "js/leaflet/Leaflet.fullscreen.min.js" }}
     {{js "js/leaflet/Marker.Rotate.js" }}

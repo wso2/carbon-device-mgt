@@ -113,6 +113,22 @@ input[type="radio"], input[type="checkbox"] {
         display: none;
     }
 }
+
+.leaflet-geo-alerts{
+    border-radius: 4px;
+    border: none;
+    background-color: white;
+    padding: 5px;
+    box-shadow: 0 1px 5px rgba(0,0,0,0.65);
+    width: 200px;
+    font-size: 11px;
+}
+
+.leaflet-geo-alerts a{
+    padding: 5px 10px;
+}
+
+
 /*
 
 !* Print Handling *!

@@ -17,6 +17,7 @@
  */
 
 var drawControl;
+var speedGraphControl;
 var removeAllControl;
 var drawnItems;
 var lastId;
@@ -285,6 +286,20 @@ function createPopup(layer,id) {
     $(layer._popup._container.childNodes[0]).css("background", "rgba(255,255,255,0.8)");
 }
 
+function toggleSpeedGraph(){
+    if (speedGraphControl) {
+        try {
+            map.removeControl(speedGraphControl);
+            speedGraphControl = null;
+        } catch (e) {
+            console.log("error: " + e.message);
+        }
+    } else {
+        speedGraphControl = new L.control.speedChart({'position' : 'topright'});
+        map.addControl(speedGraphControl);
+    }
+}
+
 function closeTools(leafletId) {
     map.removeLayer(map._layers[leafletId]);
     map.removeControl(drawControl);
@@ -336,7 +351,6 @@ function updateDrawing(updatedGeoJson) {
     map.addLayer(polygon);
     createPopup(polygon);
     closeAll();
-
 }
 
 function viewFence(geoFenceElement,id) {

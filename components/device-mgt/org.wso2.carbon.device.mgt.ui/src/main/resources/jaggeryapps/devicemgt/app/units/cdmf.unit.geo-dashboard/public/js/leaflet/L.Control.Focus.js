@@ -40,22 +40,12 @@ L.Control.Focus = L.Control.extend({
             .on(link, 'click', L.DomEvent.stopPropagation)
             .on(link, 'click', L.DomEvent.preventDefault)
             .on(link, 'click', function () {
-                    focus();
+                // self.options.latlng
+                map.setView(self.options.marker.getLatLng(), self.options.marker.zoomLevel, {animate: true});
+                self.options.marker.openPopup();
             })
             .on(link, 'dblclick', L.DomEvent.stopPropagation);
 
-        var focus = function () {
-            visualizeLocation();
-        };
-
-        var visualizeLocation = function () {
-            // self.options.latlng
-            map.setView(self.options.marker.getLatLng(), self.options.marker.zoomLevel, {animate: true});
-            self.options.marker.openPopup();
-        };
-
-        // make focus functions available to outside world
-        this.focus = focus;
         return container;
     }
 });
@@ -70,21 +60,3 @@ L.Map.addInitHook(function () {
 L.control.focus = function (options) {
     return new L.Control.Focus(options);
 };
-
-(function () {
-    // leaflet.js raises bug when trying to addClass / removeClass multiple classes at once
-    // Let's create a wrapper on it which fixes it.
-    var LDomUtilApplyClassesMethod = function (method, element, classNames) {
-        classNames = classNames.split(' ');
-        classNames.forEach(function (className) {
-            L.DomUtil[method].call(this, element, className);
-        });
-    };
-
-    L.DomUtil.addClasses = function (el, names) {
-        LDomUtilApplyClassesMethod('addClass', el, names);
-    };
-    L.DomUtil.removeClasses = function (el, names) {
-        LDomUtilApplyClassesMethod('removeClass', el, names);
-    };
-})();

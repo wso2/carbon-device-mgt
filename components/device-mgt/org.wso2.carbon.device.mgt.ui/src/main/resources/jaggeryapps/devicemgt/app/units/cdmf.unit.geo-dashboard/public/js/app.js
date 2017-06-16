@@ -45,23 +45,7 @@ function initialLoad() {
         processAfterInitializationMap();
         //Access gps and make zoom to server location as map center
         //navigator.geolocation.getCurrentPosition(success, error);
-        setPageTitle();
         $("#loading").hide();
-    }
-}
-
-function setPageTitle() {
-    var hash = window.parent.location.hash;
-    if(hash) {
-        var startIdx = hash.indexOf("/") + 1;
-        var lastIdx = hash.length;
-        var deviceInfoString = hash.substring(startIdx,lastIdx);
-        var deviceInfo = JSON.parse(deviceInfoString);
-        if(deviceInfo) {
-            var newTitle = "[ " + deviceInfo.device.id + "]" + " - Geo Dashboard ["  + deviceInfo.device.type + "]";
-            window.parent.document.title =  newTitle;
-            $("#title").val(newTitle)
-        }
     }
 }
 
@@ -150,6 +134,7 @@ function updateAttribution(e) {
 }
 
 var attributionControl;
+var geoAlertsBar;
 var groupedOverlays;
 var layerControl;
 
@@ -164,6 +149,9 @@ function processAfterInitializationMap() {
     };
     // map.addControl(attributionControl);
     map.addControl(L.control.fullscreen({position: 'bottomright'}));
+
+    geoAlertsBar = L.control.geoAlerts({position: 'topright'});
+    map.addControl(geoAlertsBar);
     //L.control.fullscreen({
     //    position: 'bottomright'
     //}).addTo(map);
@@ -300,18 +288,15 @@ function focusOnSpatialObject(objectId) {
     map.setView(spatialObject.marker.getLatLng(), zoomLevel, {animate: true});
     // TODO: check the map._layersMaxZoom and set the zoom level accordingly
 
-    $('#objectInfo').find('#objectInfoId').html(selectedSpatialObject);
     spatialObject.marker.openPopup();
-    if (!toggled) {
-        $('#objectInfo').animate({width: 'toggle'}, 100);
-        toggled = true;
-    }
     getAlertsHistory(deviceType, deviceId, new Date($('#timeFrom').val()).getTime(), new Date($('#timeTo').val()).getTime());
     spatialObject.drawPath();
-    setTimeout(function () {
-        createChart();
-        chart.load({columns: [spatialObject.speedHistory.getArray()]});
-    }, 100);
+    if (speedGraphControl) {
+        setTimeout(function () {
+            createChart();
+            chart.load({columns: [spatialObject.speedHistory.getArray()]});
+        }, 100);
+    }
     map.addControl(L.control.focus({position: 'bottomright', marker: spatialObject.marker, zoomLevel: zoomLevel}));
 }
 
@@ -359,29 +344,41 @@ function timeSince(date) {
     }
 
     var seconds = Math.floor((new Date() - date) / 1000);
+    var intervalType;
 
     var interval = Math.floor(seconds / 31536000);
+    if (interval >= 1) {
+        intervalType = 'year';
+    } else {
+        interval = Math.floor(seconds / 2592000);
+        if (interval >= 1) {
+            intervalType = 'month';
+        } else {
+            interval = Math.floor(seconds / 86400);
+            if (interval >= 1) {
+                intervalType = 'day';
+            } else {
+                interval = Math.floor(seconds / 3600);
+                if (interval >= 1) {
+                    intervalType = "hour";
+                } else {
+                    interval = Math.floor(seconds / 60);
+                    if (interval >= 1) {
+                        intervalType = "minute";
+                    } else {
+                        interval = seconds;
+                        intervalType = "second";
+                    }
+                }
+            }
+        }
+    }
 
-    if (interval > 1) {
-        return interval + " years";
+    if (interval > 1 || interval === 0) {
+        intervalType += 's';
     }
-    interval = Math.floor(seconds / 2592000);
-    if (interval > 1) {
-        return interval + " months";
-    }
-    interval = Math.floor(seconds / 86400);
-    if (interval > 1) {
-        return interval + " days";
-    }
-    interval = Math.floor(seconds / 3600);
-    if (interval > 1) {
-        return interval + " hours";
-    }
-    interval = Math.floor(seconds / 60);
-    if (interval > 1) {
-        return interval + " minutes";
-    }
-    return Math.floor(seconds) + " seconds ago";
+
+    return interval + ' ' + intervalType + ' ago';
 }
 
 function notifyError(message) {
@@ -404,6 +401,10 @@ function enableRealTime() {
 
 function InitSpatialObject() {
     var spatialObject = drawSpatialObject();
+    setTimeout(function () {
+                   map.setView(spatialObject.marker.getLatLng(), spatialObject.marker.zoomLevel, {animate: true});
+               }, 1000
+    );
     map.addControl(L.control.focus({position: 'bottomright', marker: spatialObject.marker, zoomLevel: zoomLevel}));
 }
 
@@ -456,17 +457,17 @@ function drawSpatialObject() {
 
     map.setView(spatialObject.marker.getLatLng(), zoomLevel, {animate: true}); // TODO: check the map._layersMaxZoom and set the zoom level accordingly
 
-    $('#objectInfo').find('#objectInfoId').html(selectedSpatialObject);
+    var alertsFromDate = new Date();
+    alertsFromDate.setHours(alertsFromDate.getHours() - 24); //last 24 hours
+    getAlertsHistory(deviceType, deviceId, alertsFromDate.valueOf(), toDate.valueOf());
     spatialObject.marker.openPopup();
-    if (!toggled) {
-        $('#objectInfo').animate({width: 'toggle'}, 100);
-        toggled = true;
-    }
     spatialObject.drawPath();
-    setTimeout(function () {
-        createChart();
-        chart.load({columns: [spatialObject.speedHistory.getArray()]});
-    }, 100);
+    if (speedGraphControl) {
+        setTimeout(function () {
+            createChart();
+            chart.load({columns: [spatialObject.speedHistory.getArray()]});
+        }, 100);
+    }
     return spatialObject;
 }
 
@@ -525,18 +526,15 @@ function focusOnHistorySpatialObject(objectId, timeFrom, timeTo) {
         map.setView(spatialObject.marker.getLatLng(), zoomLevel, {animate: true});
         // TODO: check the map._layersMaxZoom and set the zoom level accordingly
 
-        $('#objectInfo').find('#objectInfoId').html(selectedSpatialObject);
         spatialObject.marker.openPopup();
-        if (!toggled) {
-            $('#objectInfo').animate({width: 'toggle'}, 100);
-            toggled = true;
-        }
         getAlertsHistory(deviceType, deviceId, new Date($('#timeFrom').val()).getTime(), new Date($('#timeTo').val()).getTime());
         spatialObject.drawPath();
-        setTimeout(function () {
-            createChart();
-            chart.load({columns: [spatialObject.speedHistory.getArray()]});
-        }, 100);
+        if (speedGraphControl) {
+            setTimeout(function () {
+                createChart();
+                chart.load({columns: [spatialObject.speedHistory.getArray()]});
+            }, 100);
+        }
     }
 }
 

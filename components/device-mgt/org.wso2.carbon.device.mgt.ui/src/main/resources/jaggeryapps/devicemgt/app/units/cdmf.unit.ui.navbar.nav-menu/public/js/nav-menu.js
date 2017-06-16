@@ -428,7 +428,7 @@ $(document).ready(function () {
     $("#right-sidebar").on("click", ".new-notification", function () {
         var notificationId = $(this).data("id");
         var redirectUrl = $(this).data("url");
-        var markAsReadNotificationsAPI = "/mdm-admin/notifications/" + notificationId + "/CHECKED";
+        var markAsReadNotificationsAPI = "/api/device-mgt/v1.0/notifications/" + notificationId + "/mark-checked";
         var messageSideBar = ".sidebar-messages";
 
         invokerUtil.put(

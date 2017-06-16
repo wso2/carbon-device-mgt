@@ -72,7 +72,7 @@ public class PolicyInformationPointImpl implements PolicyInformationPoint {
         GroupManagementProviderService groupManagementProviderService = new GroupManagementProviderServiceImpl();
 
         try {
-            device = deviceManagementService.getDevice(deviceIdentifier);
+            device = deviceManagementService.getDevice(deviceIdentifier, false);
 
             if (device != null) {
                 pipDevice.setDevice(device);

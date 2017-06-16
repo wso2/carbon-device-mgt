@@ -37,8 +37,9 @@ public interface DeviceManager {
 
     /**
      * Method to save platform specific Configuration.
-     *
+     * @param  configuration - A Platform configuration object which needs to save
      * @return Returns the status of the operation
+     * @throws DeviceManagementException If something goes wrong while saving the configuration.
      */
     boolean saveConfiguration(PlatformConfiguration configuration) throws DeviceManagementException;
 
@@ -46,6 +47,7 @@ public interface DeviceManager {
      * Method to get platform specific Configuration.
      *
      * @return Returns the platform specific tenant configurations
+     * @throws DeviceManagementException If something goes wrong while fetching the configuration.
      */
     PlatformConfiguration getConfiguration() throws DeviceManagementException;
 
@@ -53,6 +55,7 @@ public interface DeviceManager {
      * Method to enrolling a particular device of type mobile, IoT, etc within CDM.
      *
      * @param device Metadata corresponding to the device being enrolled
+     * @return A boolean indicating the status of the operation.
      * @throws DeviceManagementException If some unusual behaviour is observed while enrolling a device
      */
     boolean enrollDevice(Device device) throws DeviceManagementException;
@@ -61,6 +64,7 @@ public interface DeviceManager {
      * Method to modify the metadata corresponding to device enrollment.
      *
      * @param device Modified device enrollment related metadata
+     * @return A boolean indicating the status of the operation.
      * @throws DeviceManagementException If some unusual behaviour is observed while modify the enrollment of a
      *                                   device
      */
@@ -70,6 +74,7 @@ public interface DeviceManager {
      * Method to disenroll a particular device from CDM.
      *
      * @param deviceId Fully qualified device identifier
+     * @return A boolean indicating the status of the operation.
      * @throws DeviceManagementException If some unusual behaviour is observed while disenrolling a device
      */
     boolean disenrollDevice(DeviceIdentifier deviceId) throws DeviceManagementException;
@@ -100,6 +105,7 @@ public interface DeviceManager {
      *
      * @param deviceId Fully qualified device identifier
      * @param status   Indicates whether the device is active
+     * @return A boolean indicating the status of the operation.
      * @throws DeviceManagementException If some unusual behaviour is observed while updating the active status
      *                                   of the device
      */
@@ -127,6 +133,7 @@ public interface DeviceManager {
      *
      * @param deviceIdentifier identifier to identify the device
      * @param device           Updated device information related data
+     * @return A boolean indicating the status of the operation.
      * @throws DeviceManagementException If some unusual behaviour is observed while updating the device info
      */
     boolean updateDeviceInfo(DeviceIdentifier deviceIdentifier, Device device) throws DeviceManagementException;
@@ -136,6 +143,7 @@ public interface DeviceManager {
      *
      * @param deviceId      Fully qualified device identifier
      * @param ownershipType Type of ownership
+     * @return A boolean indicating the status of the operation.
      * @throws DeviceManagementException If some unusual behaviour is observed while setting the ownership
      *                                   of the device
      */

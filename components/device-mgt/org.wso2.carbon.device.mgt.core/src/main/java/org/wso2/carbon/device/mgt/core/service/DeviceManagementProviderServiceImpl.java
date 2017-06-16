@@ -57,6 +57,7 @@ import org.wso2.carbon.device.mgt.common.push.notification.NotificationStrategy;
 import org.wso2.carbon.device.mgt.common.spi.DeviceManagementService;
 import org.wso2.carbon.device.mgt.core.DeviceManagementConstants;
 import org.wso2.carbon.device.mgt.core.DeviceManagementPluginRepository;
+import org.wso2.carbon.device.mgt.core.cache.impl.DeviceCacheManagerImpl;
 import org.wso2.carbon.device.mgt.core.dao.ApplicationDAO;
 import org.wso2.carbon.device.mgt.core.dao.DeviceDAO;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
@@ -282,8 +283,8 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         boolean status = deviceManager.modifyEnrollment(device);
         try {
             int tenantId = this.getTenantId();
+            Device currentDevice = this.getDevice(deviceIdentifier, false);
             DeviceManagementDAOFactory.beginTransaction();
-            Device currentDevice = deviceDAO.getDevice(deviceIdentifier, tenantId);
             device.setId(currentDevice.getId());
             if (device.getEnrolmentInfo().getId() == 0) {
                 device.getEnrolmentInfo().setId(currentDevice.getEnrolmentInfo().getId());
@@ -294,6 +295,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             deviceDAO.updateDevice(device, tenantId);
             enrollmentDAO.updateEnrollment(device.getEnrolmentInfo());
             DeviceManagementDAOFactory.commitTransaction();
+            this.removeDeviceFromCache(deviceIdentifier);
         } catch (DeviceManagementDAOException e) {
             DeviceManagementDAOFactory.rollbackTransaction();
             throw new DeviceManagementException("Error occurred while modifying the device " +
@@ -333,30 +335,33 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             }
             return false;
         }
+
+        int tenantId = this.getTenantId();
+
+        Device device = this.getDevice(deviceId, false);
+        if (device == null) {
+            if (log.isDebugEnabled()) {
+                log.debug("Device not found for id '" + deviceId.getId() + "'");
+            }
+            return false;
+        }
+
+        if (device.getEnrolmentInfo().getStatus().equals(EnrolmentInfo.Status.REMOVED)) {
+            if (log.isDebugEnabled()) {
+                log.debug("Device has already disenrolled : " + deviceId.getId() + "'");
+            }
+            return true;
+        }
+
         try {
-            int tenantId = this.getTenantId();
-            DeviceManagementDAOFactory.beginTransaction();
-
-            Device device = deviceDAO.getDevice(deviceId, tenantId);
-            if (device == null) {
-                if (log.isDebugEnabled()) {
-                    log.debug("Device not found for id '" + deviceId.getId() + "'");
-                }
-                return false;
-            }
-
-            if (device.getEnrolmentInfo().getStatus().equals(EnrolmentInfo.Status.REMOVED)) {
-                if (log.isDebugEnabled()) {
-                    log.debug("Device has already disenrolled : " + deviceId.getId() + "'");
-                }
-                return false;
-            }
             device.getEnrolmentInfo().setDateOfLastUpdate(new Date().getTime());
             device.getEnrolmentInfo().setStatus(EnrolmentInfo.Status.REMOVED);
+            DeviceManagementDAOFactory.beginTransaction();
             enrollmentDAO.updateEnrollment(device.getId(), device.getEnrolmentInfo(), tenantId);
             deviceDAO.updateDevice(device, tenantId);
 
             DeviceManagementDAOFactory.commitTransaction();
+            this.removeDeviceFromCache(deviceId);
         } catch (DeviceManagementDAOException e) {
             DeviceManagementDAOFactory.rollbackTransaction();
             throw new DeviceManagementException("Error occurred while dis-enrolling '" + deviceId.getType() +
@@ -371,19 +376,9 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
     @Override
     public boolean isEnrolled(DeviceIdentifier deviceId) throws DeviceManagementException {
-        try {
-            DeviceManagementDAOFactory.openConnection();
-            Device device = deviceDAO.getDevice(deviceId, this.getTenantId());
-            if (device != null) {
-                return true;
-            }
-        } catch (DeviceManagementDAOException e) {
-            throw new DeviceManagementException("Error occurred while obtaining the enrollment information device for" +
-                    "id '" + deviceId.getId() + "'", e);
-        } catch (SQLException e) {
-            throw new DeviceManagementException("Error occurred while opening a connection to the data source", e);
-        } finally {
-            DeviceManagementDAOFactory.closeConnection();
+        Device device = this.getDevice(deviceId, false);
+        if (device != null) {
+            return true;
         }
         return false;
     }
@@ -582,25 +577,29 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
     @Override
     public Device getDevice(DeviceIdentifier deviceId, boolean requireDeviceInfo) throws DeviceManagementException {
-        Device device;
-        try {
-            DeviceManagementDAOFactory.openConnection();
-            device = deviceDAO.getDevice(deviceId, this.getTenantId());
-            if (device == null) {
-                String msg = "No device is found upon the type '" + deviceId.getType() + "' and id '" +
-                        deviceId.getId() + "'";
-                if (log.isDebugEnabled()) {
-                    log.debug(msg);
+        int tenantId = this.getTenantId();
+        Device device = this.getDeviceFromCache(deviceId);
+        if (device == null) {
+            try {
+                DeviceManagementDAOFactory.openConnection();
+                device = deviceDAO.getDevice(deviceId, tenantId);
+                if (device == null) {
+                    String msg = "No device is found upon the type '" + deviceId.getType() + "' and id '" +
+                            deviceId.getId() + "'";
+                    if (log.isDebugEnabled()) {
+                        log.debug(msg);
+                    }
+                    return null;
                 }
-                return null;
+                this.addDeviceToCache(deviceId, device);
+            } catch (DeviceManagementDAOException e) {
+                throw new DeviceManagementException("Error occurred while obtaining the device for id " +
+                        "'" + deviceId.getId() + "'", e);
+            } catch (SQLException e) {
+                throw new DeviceManagementException("Error occurred while opening a connection to the data source", e);
+            } finally {
+                DeviceManagementDAOFactory.closeConnection();
             }
-        } catch (DeviceManagementDAOException e) {
-            throw new DeviceManagementException("Error occurred while obtaining the device for id " +
-                    "'" + deviceId.getId() + "'", e);
-        } catch (SQLException e) {
-            throw new DeviceManagementException("Error occurred while opening a connection to the data source", e);
-        } finally {
-            DeviceManagementDAOFactory.closeConnection();
         }
         if (requireDeviceInfo) {
             device = this.getAllDeviceInfo(device);
@@ -690,25 +689,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
     @Override
     public Device getDeviceWithTypeProperties(DeviceIdentifier deviceId) throws DeviceManagementException {
-        Device device;
-        try {
-            DeviceManagementDAOFactory.openConnection();
-            device = deviceDAO.getDevice(deviceId, this.getTenantId());
-            if (device == null) {
-                if (log.isDebugEnabled()) {
-                    log.debug("No device is found upon the type '" + deviceId.getType() + "' and id '" +
-                            deviceId.getId() + "'");
-                }
-                return null;
-            }
-        } catch (DeviceManagementDAOException e) {
-            throw new DeviceManagementException("Error occurred while obtaining the device for id " +
-                    "'" + deviceId.getId() + "'", e);
-        } catch (SQLException e) {
-            throw new DeviceManagementException("Error occurred while opening a connection to the data source", e);
-        } finally {
-            DeviceManagementDAOFactory.closeConnection();
-        }
+        Device device = this.getDevice(deviceId, false);
 
         DeviceManager deviceManager = this.getDeviceManager(device.getType());
         if (deviceManager == null) {
@@ -883,14 +864,15 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                              EnrolmentInfo.Status status) throws DeviceManagementException {
         try {
             boolean success = false;
-            DeviceManagementDAOFactory.beginTransaction();
             int tenantId = this.getTenantId();
-            Device device = deviceDAO.getDevice(deviceId, tenantId);
+            Device device = this.getDevice(deviceId, false);
             EnrolmentInfo enrolmentInfo = device.getEnrolmentInfo();
+            DeviceManagementDAOFactory.beginTransaction();
             if (enrolmentInfo != null) {
                 success = enrollmentDAO.setStatus(enrolmentInfo.getId(), currentOwner, status, tenantId);
             }
             DeviceManagementDAOFactory.commitTransaction();
+            this.removeDeviceFromCache(deviceId);
             return success;
         } catch (DeviceManagementDAOException e) {
             DeviceManagementDAOFactory.rollbackTransaction();
@@ -899,7 +881,6 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             throw new DeviceManagementException("Error occurred while initiating transaction", e);
         } finally {
             DeviceManagementDAOFactory.closeConnection();
-
         }
     }
 
@@ -1210,7 +1191,6 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         return this.getAllDevicesOfRole(role, true);
     }
 
-    //TODO FIX THIS
     @Override
     public List<Device> getAllDevicesOfRole(String role, boolean requireDeviceInfo) throws DeviceManagementException {
         List<Device> devices = new ArrayList<>();
@@ -1433,19 +1413,9 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
     @Override
     public boolean isEnrolled(DeviceIdentifier deviceId, String user) throws DeviceManagementException {
-        try {
-            DeviceManagementDAOFactory.openConnection();
-            Device device = deviceDAO.getDevice(deviceId, this.getTenantId());
-            if (device != null && device.getEnrolmentInfo().getOwner().equals(user)) {
-                return true;
-            }
-        } catch (DeviceManagementDAOException e) {
-            throw new DeviceManagementException("Error occurred while obtaining the enrollment information device for" +
-                    "id '" + deviceId.getId() + "' and user : " + user, e);
-        } catch (SQLException e) {
-            throw new DeviceManagementException("Error occurred while opening a connection to the data source", e);
-        } finally {
-            DeviceManagementDAOFactory.closeConnection();
+        Device device = this.getDevice(deviceId, false);
+        if (device != null && device.getEnrolmentInfo() != null && device.getEnrolmentInfo().getOwner().equals(user)) {
+            return true;
         }
         return false;
     }
@@ -1725,5 +1695,17 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             device.setProperties(dmsDevice.getProperties());
         }
         return device;
+    }
+
+    private Device getDeviceFromCache(DeviceIdentifier deviceIdentifier) {
+        return DeviceCacheManagerImpl.getInstance().getDeviceFromCache(deviceIdentifier, this.getTenantId());
+    }
+
+    private void addDeviceToCache(DeviceIdentifier deviceIdentifier, Device device) {
+        DeviceCacheManagerImpl.getInstance().addDeviceToCache(deviceIdentifier, device, this.getTenantId());
+    }
+
+    private void removeDeviceFromCache(DeviceIdentifier deviceIdentifier) {
+        DeviceCacheManagerImpl.getInstance().removeDeviceFromCache(deviceIdentifier, this.getTenantId());
     }
 }

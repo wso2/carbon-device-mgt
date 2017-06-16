@@ -158,7 +158,7 @@ public interface DeviceDAO {
     HashMap<Integer, Device> getDevice(DeviceIdentifier deviceIdentifier) throws DeviceManagementDAOException;
 
     /**
-     * This method is used to retrieve a device of a given id.
+     * This method is used to retrieve a device of a given tenant id.
      *
      * @param deviceId device id.
      * @param tenantId tenant id.

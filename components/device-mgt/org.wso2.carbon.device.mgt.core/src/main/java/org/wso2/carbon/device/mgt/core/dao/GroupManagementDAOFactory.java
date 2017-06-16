@@ -20,11 +20,16 @@ package org.wso2.carbon.device.mgt.core.dao;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.device.mgt.common.DeviceManagementConstants;
 import org.wso2.carbon.device.mgt.common.IllegalTransactionStateException;
 import org.wso2.carbon.device.mgt.common.TransactionManagementException;
+import org.wso2.carbon.device.mgt.common.UnsupportedDatabaseEngineException;
 import org.wso2.carbon.device.mgt.core.config.datasource.DataSourceConfig;
 import org.wso2.carbon.device.mgt.core.config.datasource.JNDILookupDefinition;
-import org.wso2.carbon.device.mgt.core.dao.impl.GroupDAOImpl;
+import org.wso2.carbon.device.mgt.core.dao.impl.group.GenericGroupDAOImpl;
+import org.wso2.carbon.device.mgt.core.dao.impl.group.OracleGroupDAOImpl;
+import org.wso2.carbon.device.mgt.core.dao.impl.group.PostgreSQLGroupDAOImpl;
+import org.wso2.carbon.device.mgt.core.dao.impl.group.SQLServerGroupDAOImpl;
 import org.wso2.carbon.device.mgt.core.dao.util.GroupManagementDAOUtil;
 
 import javax.sql.DataSource;
@@ -40,6 +45,7 @@ public class GroupManagementDAOFactory {
 
     private static final Log log = LogFactory.getLog(GroupManagementDAOFactory.class);
     private static DataSource dataSource;
+    private static String databaseEngine;
     private static ThreadLocal<Connection> currentConnection = new ThreadLocal<>();
 
     /**
@@ -48,25 +54,40 @@ public class GroupManagementDAOFactory {
      * @return instance of GroupDAO implementation
      */
     public static GroupDAO getGroupDAO() {
-        return new GroupDAOImpl();
+        if (databaseEngine != null) {
+            switch (databaseEngine) {
+                case DeviceManagementConstants.DataBaseTypes.DB_TYPE_ORACLE:
+                    return new OracleGroupDAOImpl();
+                case DeviceManagementConstants.DataBaseTypes.DB_TYPE_MSSQL:
+                    return new SQLServerGroupDAOImpl();
+                case DeviceManagementConstants.DataBaseTypes.DB_TYPE_POSTGRESQL:
+                    return new PostgreSQLGroupDAOImpl();
+                case DeviceManagementConstants.DataBaseTypes.DB_TYPE_H2:
+                case DeviceManagementConstants.DataBaseTypes.DB_TYPE_MYSQL:
+                    return new GenericGroupDAOImpl();
+                default:
+                    throw new UnsupportedDatabaseEngineException("Unsupported database engine : " + databaseEngine);
+            }
+        }
+        throw new IllegalStateException("Database engine has not initialized properly.");
     }
 
-    /**
-     * Initialize factory with datasource configs
-     *
-     * @param config data source configuration
-     */
     public static void init(DataSourceConfig config) {
         dataSource = resolveDataSource(config);
+        try {
+            databaseEngine = dataSource.getConnection().getMetaData().getDatabaseProductName();
+        } catch (SQLException e) {
+            log.error("Error occurred while retrieving config.datasource connection", e);
+        }
     }
 
-    /**
-     * Initialize factory with existing datasource
-     *
-     * @param dtSource an existing datasource
-     */
     public static void init(DataSource dtSource) {
         dataSource = dtSource;
+        try {
+            databaseEngine = dataSource.getConnection().getMetaData().getDatabaseProductName();
+        } catch (SQLException e) {
+            log.error("Error occurred while retrieving config.datasource connection", e);
+        }
     }
 
     /**
@@ -129,8 +150,8 @@ public class GroupManagementDAOFactory {
         Connection conn = currentConnection.get();
         if (conn == null) {
             throw new IllegalTransactionStateException("No connection is associated with the current transaction. " +
-                                                       "This might have ideally been caused by not properly initiating the transaction via " +
-                                                       "'beginTransaction'/'openConnection' methods");
+                                                       "This might have ideally been caused by not properly initiating " +
+                    "the transaction via 'beginTransaction'/'openConnection' methods");
         }
         try {
             conn.commit();
@@ -146,8 +167,8 @@ public class GroupManagementDAOFactory {
         Connection conn = currentConnection.get();
         if (conn == null) {
             throw new IllegalTransactionStateException("No connection is associated with the current transaction. " +
-                                                       "This might have ideally been caused by not properly initiating the transaction via " +
-                                                       "'beginTransaction'/'openConnection' methods");
+                                                       "This might have ideally been caused by not properly initiating " +
+                    "the transaction via 'beginTransaction'/'openConnection' methods");
         }
         try {
             conn.rollback();

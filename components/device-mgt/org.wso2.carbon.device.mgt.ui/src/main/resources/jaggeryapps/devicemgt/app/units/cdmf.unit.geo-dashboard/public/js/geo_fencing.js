@@ -312,7 +312,7 @@ function exportToGeoJSON(element, content) {
     // HTML5 features has been used here
     var geoJsonData = 'data:application/json;charset=utf-8,' + encodeURIComponent(content);
     // TODO: replace closest()  by using persistence id for templates, template id prefixed by unique id(i.e leaflet_id)
-    var fileName = $(element).closest('form').find('#areaName').val() || 'geoJson';
+    var fileName = $(element).closest('form').attr('area-name') || 'geoJson';
     var link = document.createElement("a");
     link.download = fileName + '.json'; // Use the fence name given by the user as the file name of the JSON file;
     link.href = geoJsonData;
@@ -393,7 +393,8 @@ function viewFence(geoFenceElement,id) {
             popupTemplate.find('#exportGeoJson').attr('leaflet_id', geometryShape._leaflet_id);
             popupTemplate.find('#hideViewFence').attr('leaflet_id', geometryShape._leaflet_id);
             popupTemplate.find('#viewAreaName').html(areaName);
-            popupTemplate.find('#viewQueryName').html(queryName);
+            popupTemplate.find('#stationaryAlertForm').attr('area-name', areaName);
+            popupTemplate.find('#stationaryAlertForm').attr('query-name', queryName);
             popupTemplate.find('#viewAreaTime').html(stationeryTime);
             geometryShape.bindPopup(popupTemplate.html(), {closeButton: true}).openPopup();
             // transparent the layer .leaflet-popup-content-wrapper
@@ -407,7 +408,8 @@ function viewFence(geoFenceElement,id) {
             popupTemplate.find('#exportGeoJson').attr('leaflet_id', geometryShape._leaflet_id);
             popupTemplate.find('#hideViewFence').attr('leaflet_id', geometryShape._leaflet_id);
             popupTemplate.find('#viewAreaName').html(areaName);
-            popupTemplate.find('#viewQueryName').html(queryName);
+            popupTemplate.find('#withinAlertForm').attr('area-name', areaName);
+            popupTemplate.find('#withinAlertForm').attr('query-name', queryName);
             geometryShape.bindPopup(popupTemplate.html(), {closeButton: true}).openPopup();
             // transparent the layer .leaflet-popup-content-wrapper
             $(geometryShape._popup._container.childNodes[0]).css("background", "rgba(255,255,255,0.8)");
@@ -419,7 +421,8 @@ function viewFence(geoFenceElement,id) {
             popupTemplate.find('#exportGeoJson').attr('leaflet_id', geometryShape._leaflet_id);
             popupTemplate.find('#hideViewFence').attr('leaflet_id', geometryShape._leaflet_id);
             popupTemplate.find('#viewAreaName').html(areaName);
-            popupTemplate.find('#viewQueryName').html(queryName);
+            popupTemplate.find('#exitAlertForm').attr('area-name', areaName);
+            popupTemplate.find('#exitAlertForm').attr('query-name', queryName);
             geometryShape.bindPopup(popupTemplate.html(), {closeButton: true}).openPopup();
             // transparent the layer .leaflet-popup-content-wrapper
             $(geometryShape._popup._container.childNodes[0]).css("background", "rgba(255,255,255,0.8)");

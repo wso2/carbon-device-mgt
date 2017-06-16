@@ -32,7 +32,7 @@ function initStationaryAlert() {
                     "'data-fluctuationRadius='" + alert.fluctuationRadius + "'data-areaName='" + alert.areaName +
                     "'data-queryName='" + alert.queryName + "'data-geoJson=" + alert.geoJson + ">" +
                     "<td>" + alert.areaName + "</td><td>" + alert.stationaryTime + "</td><td>" + alert.fluctuationRadius +
-                    "<td>" + alert.queryName + "</td><td>" + alert.createdTime + "</td><td" +
+                    "<td>" + alert.queryName + "</td><td>" + formatDate(new Date(alert.createdTime)) + "</td><td" +
                     " onClick=removeGeoFence(this.parentElement,'Stationery') data-toggle=" +
                     " 'tooltip' title='Remove fence' ><i class='fa fa-trash-o'></i></td></tr>")
             }

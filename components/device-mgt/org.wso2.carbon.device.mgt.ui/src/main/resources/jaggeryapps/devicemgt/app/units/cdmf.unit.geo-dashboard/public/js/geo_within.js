@@ -28,7 +28,7 @@ function initializeWithin() {
                 $("#within-alert > tbody").append(
                     "<tr class='viewGeoFenceRow' style='cursor: pointer' data-areaName='" + alertBean.areaName  +
                     "' data-queryName='" + alertBean.queryName + "'data-geoJson="+ alertBean.geoJson +"><td>" + alertBean.areaName  + "</td>" +
-                    "<td>" + alertBean.queryName + "</td><td>" + alertBean.createdTime + "</td>" +
+                    "<td>" + alertBean.queryName + "</td><td>" + formatDate(new Date(alertBean.createdTime)) + "</td>" +
                     "<td onClick=removeGeoFence(this.parentElement,'Within') class='removeGeoFence'" +
                     " data-toggle='tooltip' title='Remove fence' ><i class='fa fa-trash-o'></i></td></tr>");
             }

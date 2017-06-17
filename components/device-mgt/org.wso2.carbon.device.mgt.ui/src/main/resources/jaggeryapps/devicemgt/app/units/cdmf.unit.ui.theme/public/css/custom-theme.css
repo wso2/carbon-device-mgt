@@ -428,26 +428,26 @@ a.ctrl-filter-category:hover {
 }
 
 .btn {
-	display: inline-block;
-	padding: 8px 20px;
-	margin-bottom: 0;
-	font-size: 16px;
-	font-weight: normal;
-	line-height: 1.42857143;
-	text-align: center;
-	white-space: nowrap;
-	vertical-align: middle;
-	-ms-touch-action: manipulation;
-	touch-action: manipulation;
-	cursor: pointer;
-	-webkit-user-select: none;
-	-moz-user-select: none;
-	-ms-user-select: none;
-	user-select: none;
-	background-image: none;
-	border: 1px solid transparent;
-	border-radius: 0;
-	transition: background 0.2s;
+    display: inline-block;
+    /*padding: 8px 20px;*/
+    margin-bottom: 0;
+    /*font-size: 16px;*/
+    font-weight: normal;
+    /*line-height: 1.42857143;*/
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    -ms-touch-action: manipulation;
+    touch-action: manipulation;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    background-image: none;
+    border: 1px solid transparent;
+    /*border-radius: 0;*/
+    transition: background 0.2s;
 }
 
 .col-centered {

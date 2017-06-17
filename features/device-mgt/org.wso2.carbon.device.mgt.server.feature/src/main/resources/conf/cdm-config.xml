@@ -39,7 +39,7 @@
         </PushNotificationProviders>
     </PushNotificationConfiguration>
 	<PullNotificationConfiguration>
-		<Enabled>true</Enabled>
+		<Enabled>false</Enabled>
 	</PullNotificationConfiguration>
     <IdentityConfiguration>
         <ServerUrl>https://localhost:9443</ServerUrl>

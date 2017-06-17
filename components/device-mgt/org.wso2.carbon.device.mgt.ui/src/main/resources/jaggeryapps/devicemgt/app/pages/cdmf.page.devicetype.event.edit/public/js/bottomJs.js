@@ -101,12 +101,12 @@ $(document).ready(function () {
 	var addEventButton = $('.add_event_button'); //Add button selector
 	var eventWrapper = $('.event_field_wrapper'); //Input field wrapper
 	$(addEventButton).click(function(){ //Once add button is clicked
-		var eventFieldHtml = ' <div class="dontfloat" name="deviceEvent"> ' +
+		var eventFieldHtml = '<div class="row"><div class="dontfloat event-wrapper" name="deviceEvent"> ' +
 			'<div class="col-xs-3"> <input type="text" class="form-control" id="event-name" placeholder="name"/> ' +
 			'</div> <div class="col-xs-4"> <select class="form-control select" id="event-type"> ' +
 			'<option>STRING</option> <option>LONG</option> <option>BOOL</option> <option>INT</option> <option>FLOAT</option> ' +
 			'<option>DOUBLE</option> </select> </div> ' +
-				'<button type="button" class="btn btn-default remove_event_button"><i class="fa fa-minus"></i></button> </div>'
+				'<button type="button" class="wr-btn wr-btn-horizontal wr-btn-secondary remove_event_button"><i class="fa fa-minus"></i></button> </div></div>'
 		$(eventWrapper).append(eventFieldHtml); // Add field html
 
 	});

@@ -78,6 +78,13 @@ function onRequest(context) {
 						event.value = record["" + attributes[eventAttribute]];
 						events.push(event);
 					}
+				} else {
+					for (var eventAttribute in attributes){
+						var event = {};
+						event.key = attributes[eventAttribute];
+						event.value = "-";
+						events.push(event);
+					}
 				}
 
 			}

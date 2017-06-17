@@ -16,10 +16,10 @@
  *   under the License.
  *
  */
-package org.wso2.carbon.device.mgt.extensions.push.notification.provider.http;
+package org.wso2.carbon.device.mgt.common;
 
 /**
- * This exception is thrown whether the http configured with invalid configuration.
+ * This exception is thrown when configured with invalid configuration.
  */
 public class InvalidConfigurationException extends  RuntimeException {
 

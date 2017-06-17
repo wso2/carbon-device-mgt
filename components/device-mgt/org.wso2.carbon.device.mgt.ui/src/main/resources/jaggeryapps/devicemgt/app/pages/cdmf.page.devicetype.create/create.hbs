@@ -51,8 +51,7 @@
                 <div class="wr-form">
                     <p class="page-sub-title">Create Device Type</p>
                     <hr/>
-                    <div class="row">
-                        <div class="col-lg-8">
+                        <div class="">
                             <div class="wr-steps">
                                 <div class="col-md-6 col-xs-6">
                                     <div class="itm-wiz itm-wiz-current" data-step="policy-platform">
@@ -70,42 +69,48 @@
                             </div>
                             <br/><br/>
                             <hr/>
+
                             <div id="devicetype-create-error-msg" class="alert alert-danger hidden" role="alert">
                                 <i class="icon fw fw-error"></i><span></span>
                             </div>
+
+
                             <label class="wr-input-label">
-                                Name * (eg: firealarm)
+                                Name *
                             </label>
-                            <br>
-                            <input aria-describedby="basic-addon1" type="text" id="deviceTypeName"
+                            <div class="wr-input-control">
+                                <input placeholder="E.g firealarm" aria-describedby="basic-addon1" type="text" id="deviceTypeName"
                                    data-error-msg="invalid device type name" class="form-control"/>
+                            </div>
 
                             <label class="wr-input-label">
                                 Description *
                             </label>
-                            <br>
-                            <textarea aria-describedby="basic-addon1" type="text" id="deviceTypeDescription"
+                            <div class="wr-input-control ">
+                                <textarea aria-describedby="basic-addon1" type="text" id="deviceTypeDescription"
                                       data-error-msg="invalid device type description"
                                       class="form-control" rows="3" cols="70"></textarea>
+                            </div>
 
-                            <label class="wr-input-label">Push Notification Transport</label>
+                            <label class="wr-input-label">
+                                Push Notification Transport
+                            </label>
                             <div class="wr-input-control">
-                                <!--suppress HtmlFormInputWithoutLabel -->
                                 <select id="pushNotification" class="form-control select">
                                     <option>NONE</option>
                                     <option>MQTT</option>
                                 </select>
                             </div>
 
-                            <label class="wr-input-label">
+                            <label class="wr-input-label" for="passcode-policy-min-length">
                                 Features (Definition of the operation from server to device)
-                                <br/>
-                                (eg: name: fire alarm range control, code: alarm, description: this controls the alarm sound type and range of firealarm)
+                                <span class="helper" title="E.g  name: fire alarm range control, code: alarm, description: this controls the alarm sound type and range of firealarm">
+                                    <span class="wr-help-tip glyphicon glyphicon-question-sign"></span>
+                                </span>
                             </label>
-                            <br>
 
                             <div class="form-group feature_field_wrapper">
-                                <div class="dontfloat" name="deviceFeature">
+                                <div class="row">
                                     <div class="col-xs-3">
                                         <input type="text" class="form-control" id="feature-name" placeholder="name"/>
                                     </div>
@@ -118,70 +123,69 @@
                                                   data-error-msg="invalid feature description"
                                                   class="form-control" rows="1" cols="30"></textarea>
                                     </div>
-                                    <button type="button" class="btn btn-default add_feature_button"><i class="fa fa-plus"></i></button>
+                                    <button type="button" class="wr-btn wr-btn-horizontal add_feature_button"><i class="fa fa-plus"></i></button>
                                 </div>
                             </div>
 
-
-                            <br>
-                            <label class="wr-input-label">
-                                Attributes (eg: vendor, model_number ...)
+                            <label class="wr-input-label" for="passcode-policy-min-length">
+                                Attributes
+                                <span class="helper" title="E.g vendor, model_number ...">
+                                    <span class="wr-help-tip glyphicon glyphicon-question-sign"></span>
+                                </span>
                             </label>
-                            <br>
 
                             <div class="form-group attribute_field_wrapper">
-                                <div class="dontfloat">
-                                    <div class="col-xs-3">
-                                        <input type="text" class="form-control" name="attribute[]" />
-                                    </div>
-                                    <button type="button" class="btn btn-default add_button"><i class="fa fa-plus"></i></button>
-                                </div>
-                            </div>
-                            <div class="hidden-div">
-                                <div id="add-attribute-field" name="add-attribute-field">
+                                <div class="row">
                                     <div class="dontfloat">
                                         <div class="col-xs-3">
                                             <input type="text" class="form-control" name="attribute[]" />
                                         </div>
-                                        <button type="button" class="btn btn-default remove_button"><i class="fa fa-minus"></i></button>
+                                        <button type="button" class="wr-btn wr-btn-horizontal add_button"><i class="fa fa-plus"></i></button>
                                     </div>
                                 </div>
-                            </div>
-
-                            <label class="wr-input-label">
-                                Enrolment Operation (Triggers the operation after the enrolment, eg: alarm)
-                            </label>
-                            <br>
-
-                            <div class="form-group operation_field_wrapper">
-                                <div class="dontfloat">
-                                    <div class="col-xs-3">
-                                        <input type="text" class="form-control" name="operation[]" />
-                                    </div>
-                                    <button type="button" class="btn btn-default add_operation_button"><i class="fa fa-plus"></i></button>
-                                </div>
-
                             </div>
                             <div class="hidden-div">
-                                <div id="add-operation-field" name="add-operation-field">
+                                <div id="add-attribute-field" name="add-attribute-field">
+                                    <div class="row">
+                                        <div class="dontfloat feature-wrapper">
+                                            <div class="col-xs-3">
+                                                <input type="text" class="form-control" name="attribute[]" />
+                                            </div>
+                                            <button type="button" class="wr-btn wr-btn-horizontal wr-btn-secondary remove_button"><i class="fa fa-minus"></i></button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <label class="wr-input-label" for="passcode-policy-min-length">
+                                Enrolment Operation
+                                <span class="helper" title="Triggers the operation after the enrolment, E.g alarm">
+                                    <span class="wr-help-tip glyphicon glyphicon-question-sign"></span>
+                                </span>
+                            </label>
+
+                            <div class="form-group operation_field_wrapper">
+                                <div class="row">
                                     <div class="dontfloat">
                                         <div class="col-xs-3">
                                             <input type="text" class="form-control" name="operation[]" />
                                         </div>
-                                        <button type="button" class="btn btn-default remove_operation_button"><i class="fa fa-minus"></i></button>
+                                        <button type="button" class="wr-btn wr-btn-horizontal add_operation_button"><i class="fa fa-plus"></i></button>
                                     </div>
                                 </div>
                             </div>
-
-
-                            <label class="wr-input-label">Claimable</label>
-                            <input aria-describedby="basic-addon1" type="checkbox" id="deviceClaimable"/>
-                            </br>
-
-                            <label class="wr-input-label">Policy Monitoring</label>
-                            <input aria-describedby="basic-addon1" type="checkbox" id="policyMonitoring"/>
-                            </br>
-
+                            <div class="hidden-div">
+                                <div id="add-operation-field" name="add-operation-field">
+                                    <div class="row">
+                                        <div class="dontfloat feature-wrapper">
+                                            <div class="col-xs-3">
+                                                <input type="text" class="form-control" name="operation[]" />
+                                            </div>
+                                            <button type="button" class="wr-btn wr-btn-horizontal wr-btn-secondary remove_operation_button"><i class="fa fa-minus"></i></button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
 
                             <span class="roleNameError hidden glyphicon glyphicon-remove form-control-feedback"></span>
                             <label class="error roleNameEmpty hidden" for="summary">
@@ -191,7 +195,6 @@
 
                         </div>
 
-                        </div>
                         <br>
                         <button id="add-devicetype-btn" class="wr-btn">Add Device Type</button>
                     </div>

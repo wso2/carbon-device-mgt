@@ -485,7 +485,7 @@ public class DeviceEventManagementServiceImpl implements DeviceEventManagementSe
                 analyticsTableRecord.setColumnName(attribute.getName());
                 analyticsTableRecord.setColumnType(attribute.getType().toString().toUpperCase());
                 analyticsTableRecord.setFacet(false);
-                analyticsTableRecord.setIndexed(true);
+                analyticsTableRecord.setIndexed(false);
                 analyticsTableRecord.setPersist(true);
                 analyticsTableRecord.setPrimaryKey(false);
                 analyticsTableRecord.setScoreParam(false);

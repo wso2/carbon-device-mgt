@@ -8,6 +8,7 @@ import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.device.mgt.common.InvalidConfigurationException;
 import org.wso2.carbon.device.mgt.common.push.notification.NotificationContext;
 
 import java.net.UnknownHostException;
@@ -80,8 +81,10 @@ public class HTTPMessageExecutor implements Runnable {
 
         } catch (UnknownHostException e) {
             log.error("Push Notification message dropped " + url, e);
+            throw new InvalidConfigurationException("invalid host: url", e);
         } catch (Throwable e) {
             log.error("Push Notification message dropped ", e);
+            throw new InvalidConfigurationException("Push Notification message dropped, " + e.getMessage(), e);
         } finally {
             if (method != null) {
                 method.releaseConnection();

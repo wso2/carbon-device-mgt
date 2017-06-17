@@ -1,4 +1,6 @@
-
+.wr-btn-horizontal{
+	padding: 7px 10px;
+}
 
 .dontfloat {
 	clear:both;
@@ -10,4 +12,14 @@
 
 .hidden-input {
 	display: none;
+}
+
+.feature-wrapper{
+	margin-top: 10px;
+}
+.wr-btn-secondary{
+	background-color: #617d8b;
+}
+.wr-btn-secondary{
+	background-color: #617d8b;
 }

@@ -31,6 +31,7 @@ import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
+import org.wso2.carbon.device.mgt.common.InvalidConfigurationException;
 import org.wso2.carbon.device.mgt.common.authorization.DeviceAccessAuthorizationException;
 import org.wso2.carbon.device.mgt.common.authorization.DeviceAccessAuthorizationService;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
@@ -85,7 +86,7 @@ public class DeviceAgentServiceImpl implements DeviceAgentService {
                 String errorMessage = "The payload of the device enrollment is incorrect.";
                 return Response.status(Response.Status.BAD_REQUEST).entity(errorMessage).build();
             }
-            Device existingDevice = dms.getDevice(new DeviceIdentifier(device.getType(), device.getType()));
+            Device existingDevice = dms.getDevice(new DeviceIdentifier(device.getDeviceIdentifier(), device.getType()));
             if (existingDevice != null && existingDevice.getEnrolmentInfo() != null && existingDevice
                     .getEnrolmentInfo().getStatus().equals(EnrolmentInfo.Status.ACTIVE)) {
                 String errorMessage = "An active enrolment exists";
@@ -101,6 +102,9 @@ public class DeviceAgentServiceImpl implements DeviceAgentService {
                     device.getDeviceIdentifier() + "'";
             log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+        } catch (InvalidConfigurationException e) {
+            log.error("failed to add operation", e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
     }
 

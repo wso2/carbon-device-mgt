@@ -21,6 +21,7 @@ package org.wso2.carbon.device.mgt.jaxrs.service.impl.admin;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
+import org.wso2.carbon.device.mgt.common.InvalidConfigurationException;
 import org.wso2.carbon.device.mgt.common.spi.DeviceManagementService;
 import org.wso2.carbon.device.mgt.common.spi.DeviceTypeGeneratorService;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
@@ -88,6 +89,8 @@ public class DeviceTypeManagementAdminServiceImpl implements DeviceTypeManagemen
                 String msg = "Error occurred at server side while adding a device type.";
                 log.error(msg, e);
                 return Response.serverError().entity(msg).build();
+            } catch (InvalidConfigurationException e) {
+                return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
             }
         } else {
             return Response.status(Response.Status.BAD_REQUEST).build();
@@ -111,6 +114,8 @@ public class DeviceTypeManagementAdminServiceImpl implements DeviceTypeManagemen
                 String msg = "Error occurred at server side while updating the device type.";
                 log.error(msg, e);
                 return Response.serverError().entity(msg).build();
+            } catch (InvalidConfigurationException e) {
+                return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
             }
         } else {
             return Response.status(Response.Status.BAD_REQUEST).build();

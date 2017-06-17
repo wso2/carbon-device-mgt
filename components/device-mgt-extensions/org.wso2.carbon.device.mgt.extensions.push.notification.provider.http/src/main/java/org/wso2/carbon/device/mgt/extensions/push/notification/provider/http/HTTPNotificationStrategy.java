@@ -22,6 +22,7 @@ import org.apache.commons.httpclient.HostConfiguration;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.device.mgt.common.InvalidConfigurationException;
 import org.wso2.carbon.device.mgt.common.push.notification.NotificationContext;
 import org.wso2.carbon.device.mgt.common.push.notification.NotificationStrategy;
 import org.wso2.carbon.device.mgt.common.push.notification.PushNotificationConfig;
@@ -48,10 +49,9 @@ public class HTTPNotificationStrategy implements NotificationStrategy {
 
     public HTTPNotificationStrategy(PushNotificationConfig config) {
         this.config = config;
-    }
-
-    @Override
-    public void init() {
+        if (this.config == null) {
+            throw new InvalidConfigurationException("Properties Cannot be found");
+        }
         endpoint = config.getProperties().get(URL_PROPERTY);
         if (endpoint == null || endpoint.isEmpty()) {
             throw new InvalidConfigurationException("Property - 'url' cannot be found");
@@ -67,6 +67,11 @@ public class HTTPNotificationStrategy implements NotificationStrategy {
         } catch (MalformedURLException e) {
             throw new InvalidConfigurationException("Property - 'url' is malformed.", e);
         }
+    }
+
+    @Override
+    public void init() {
+
     }
 
     @Override

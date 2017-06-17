@@ -17,6 +17,7 @@
  */
 var serviceInvokers = require("/app/modules/oauth/token-protected-service-invokers.js")["invokers"];
 var devicemgtProps = require("/app/modules/conf-reader/main.js")["conf"];
+var process = require("process");
 
 function onRequest(context) {
 	var log = new Log("device-view.js");
@@ -65,17 +66,82 @@ function onRequest(context) {
 	var autoCompleteParams = [
 		{"name" : "deviceId", "value" : deviceId}
 	];
+	context.handlebars.registerHelper('if_eq', function(a, b, opts) {
+		if(a == b) // Or === depending on your needs
+			return opts.fn(this);
+		else
+			return opts.inverse(this);
+	});
+
+	var displayData = {};
+	var eventRestAPIEndpoint = devicemgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"]
+		+ "/events/" + deviceType;
+	serviceInvokers.XMLHttp.get(
+		eventRestAPIEndpoint,
+		function (restAPIResponse) {
+			if (restAPIResponse["status"] == 200 && restAPIResponse["responseText"]) {
+				var typeData = parse(restAPIResponse["responseText"]);
+				displayData.event = typeData;
+				var sampleValue = "";
+				if (typeData.eventAttributes && typeData.eventAttributes.attributes) {
+					var eventExample = {};
+					for (var i = 0; i < typeData.eventAttributes.attributes.length; i++) {
+						var attribute = typeData.eventAttributes.attributes[i];
+						switch (attribute.type) {
+							case "STRING":
+								eventExample[attribute.name] = "string";
+								sampleValue = sampleValue + "\"string\", ";
+								break;
+							case "LONG":
+								eventExample[attribute.name] = 0;
+								sampleValue = sampleValue + 0 +", ";
+								break;
+							case "INT":
+								eventExample[attribute.name] = 0;
+								sampleValue = sampleValue + 0 +", ";
+								break;
+							case "FLOAT":
+								eventExample[attribute.name] = 0.0;
+								sampleValue = sampleValue + 0.0 +", ";
+								break;
+							case "DOUBLE":
+								eventExample[attribute.name] = 0.0;
+								sampleValue = sampleValue + 0.0 +", ";
+								break;
+							case "BOOL":
+								eventExample[attribute.name] = false;
+								sampleValue = sampleValue + false + ", ";
+								break;
+
+						}
+
+					}
+					var sample = eventExample;
+					if (sampleValue && sampleValue.length > 2) {
+						displayData.sampleValue = sampleValue.substring(0, sampleValue.length - 2);
+					}
+					displayData.eventSample = JSON.stringify(sample);
+					displayData.mqttGateway = "tcp://" + process.getProperty("mqtt.broker.host") + ":" + process.getProperty("mqtt.broker.port");
+					displayData.httpsGateway = "https://" + process.getProperty("iot.gateway.host") + ":" + process.getProperty("iot.gateway.https.port");
+
+				}
+			}
+		}
+	);
 
 	if (deviceType != null && deviceType != undefined && deviceId != null && deviceId != undefined) {
 		var deviceModule = require("/app/modules/business-controllers/device.js")["deviceModule"];
 		var device = deviceModule.viewDevice(deviceType, deviceId);
 		if (device && device.status != "error") {
+			displayData.device = device.content;
+			displayData.autoCompleteParams = autoCompleteParams;
+			displayData.encodedFeaturePayloads = "";
+			displayData.features = featureList;
 			if (attributes.length === 0 || attributes.length === undefined) {
-				return {"device": device.content, "autoCompleteParams" : autoCompleteParams
-					, "encodedFeaturePayloads": "", "features":featureList};
+				return displayData;
 			} else {
-				return {"device": device.content, "autoCompleteParams" : autoCompleteParams
-					, "encodedFeaturePayloads": "", "attributes": attributes, "features":featureList};
+				displayData.attributes = attributes;
+				return displayData;
 			}
 		} else {
 			response.sendError(404, "Device Id " + deviceId + " of type " + deviceType + " cannot be found!");

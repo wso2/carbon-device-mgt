@@ -60,31 +60,32 @@
                             <input aria-describedby="basic-addon1" type="text" id="deviceTypeName"
                                    data-error-msg="invalid device type name" class="form-control hidden-input" value="{{name}}"/>
 
-                            <label class="wr-input-label">
-                                Description *
-                            </label>
-                            <br>
-                            <textarea aria-describedby="basic-addon1" type="text" id="deviceTypeDescription"
-                                      data-error-msg="invalid device type description"
-                                      class="form-control" rows="3" cols="70">{{type.deviceTypeMetaDefinition.description}}</textarea>
-
-                            <label class="wr-input-label">Push Notification Transport</label>
                             <div class="wr-input-control">
-                                <!--suppress HtmlFormInputWithoutLabel -->
-                                <select id="pushNotification" class="form-control select">
-                                    {{#if type.deviceTypeMetaDefinition.pushNotificationConfig}}
-                                        <option>NONE</option>
-                                        {{#if_eq type.deviceTypeMetaDefinition.pushNotificationConfig.type "MQTT"}}
-                                            <option selected>MQTT</option>
-                                        {{/if_eq}}
-                                    {{else}}
-                                        <option selected>NONE</option>
-                                        <option>MQTT</option>
-                                    {{/if}}
-
-
-
-                                </select>
+                                <label class="wr-input-label">
+                                Description *
+                                </label>
+                                <br>
+                                <textarea aria-describedby="basic-addon1" type="text" id="deviceTypeDescription"
+                                          data-error-msg="invalid device type description"
+                                          class="form-control" rows="3" cols="70">{{type.deviceTypeMetaDefinition.description}}</textarea>
+                            </div>
+                            
+                            <div class="wr-input-control">
+                                <label class="wr-input-label">Push Notification Transport</label>
+                                <div class="wr-input-control">
+                                    <!--suppress HtmlFormInputWithoutLabel -->
+                                    <select id="pushNotification" class="form-control select">
+                                        {{#if type.deviceTypeMetaDefinition.pushNotificationConfig}}
+                                            <option>NONE</option>
+                                            {{#if_eq type.deviceTypeMetaDefinition.pushNotificationConfig.type "MQTT"}}
+                                                <option selected>MQTT</option>
+                                            {{/if_eq}}
+                                        {{else}}
+                                            <option selected>NONE</option>
+                                            <option>MQTT</option>
+                                        {{/if}}
+                                    </select>
+                                </div>
                             </div>
 
                             <label class="wr-input-label">
@@ -94,7 +95,8 @@
                             <div class="form-group feature_field_wrapper">
                                 {{#if type.deviceTypeMetaDefinition.features}}
                                     {{#each type.deviceTypeMetaDefinition.features}}
-                                        <div class="dontfloat" name ="deviceFeature">
+                                    <div class="row">
+                                        <div class="dontfloat feature-wrapper" name ="deviceFeature">
                                             <div class="col-xs-3">
                                                 <input type="text" class="form-control" id="feature-name" placeholder="name" value="{{this.name}}"/>
                                             </div>
@@ -105,24 +107,27 @@
                                             <textarea aria-describedby="basic-addon1" type="text" id="feature-description"
                                                       placeholder="description" data-error-msg="invalid feature description" class="form-control" rows="1" cols="30">{{this.description}}</textarea>
                                             </div>
-                                            <button type="button" class="btn btn-default remove_feature_button"><i class="fa fa-minus"></i></button>
+                                            <button type="button" class="wr-btn wr-btn-horizontal remove_feature_button"><i class="fa fa-minus"></i></button>
                                         </div>
+                                    </div>  
                                     {{/each}}
                                 {{/if}}
-                                <div class="dontfloat" name="deviceFeature">
-                                    <div class="col-xs-3">
-                                        <input type="text" class="form-control" id="feature-name" placeholder="name"/>
+                                <div class="row">
+                                    <div class="dontfloat feature-wrapper" name="deviceFeature">
+                                        <div class="col-xs-3">
+                                            <input type="text" class="form-control" id="feature-name" placeholder="name"/>
+                                        </div>
+                                        <div class="col-xs-4">
+                                            <input type="text" class="form-control" id="feature-code" placeholder="code"/>
+                                        </div>
+                                        <div class="col-xs-4">
+                                            <textarea aria-describedby="basic-addon1" type="text" id="feature-description"
+                                                      placeholder="description"
+                                                      data-error-msg="invalid feature description"
+                                                      class="form-control" rows="1" cols="30"></textarea>
+                                        </div>
+                                        <button type="button" class="wr-btn wr-btn-horizontal add_feature_button"><i class="fa fa-plus"></i></button>
                                     </div>
-                                    <div class="col-xs-4">
-                                        <input type="text" class="form-control" id="feature-code" placeholder="code"/>
-                                    </div>
-                                    <div class="col-xs-4">
-                                        <textarea aria-describedby="basic-addon1" type="text" id="feature-description"
-                                                  placeholder="description"
-                                                  data-error-msg="invalid feature description"
-                                                  class="form-control" rows="1" cols="30"></textarea>
-                                    </div>
-                                    <button type="button" class="btn btn-default add_feature_button"><i class="fa fa-plus"></i></button>
                                 </div>
                             </div>
 
@@ -134,28 +139,34 @@
                             <div class="form-group attribute_field_wrapper">
                                 {{#if type.deviceTypeMetaDefinition.properties}}
                                     {{#each type.deviceTypeMetaDefinition.properties}}
+                                    <div class="row">
                                         <div class="dontfloat">
                                             <div class="col-xs-3">
                                                 <input type="text" class="form-control" name="attribute[]" value="{{this}}" />
                                             </div>
-                                            <button type="button" class="btn btn-default remove_button"><i class="fa fa-minus"></i></button>
+                                            <button type="button" class="wr-btn wr-btn-horizontal wr-btn-secondary remove_button"><i class="fa fa-minus"></i></button>
                                         </div>
+                                    </div>
                                     {{/each}}
                                 {{/if}}
-                                <div class="dontfloat">
-                                    <div class="col-xs-3">
-                                        <input type="text" class="form-control" name="attribute[]" />
+                                <div class="row">
+                                    <div class="dontfloat feature-wrapper">
+                                        <div class="col-xs-3">
+                                            <input type="text" class="form-control" name="attribute[]" />
+                                        </div>
+                                        <button type="button" class="wr-btn wr-btn-horizontal add_button"><i class="fa fa-plus"></i></button>
                                     </div>
-                                    <button type="button" class="btn btn-default add_button"><i class="fa fa-plus"></i></button>
                                 </div>
                             </div>
                             <div class="hidden-div">
                                 <div id="add-attribute-field" name="add-attribute-field">
-                                    <div class="dontfloat">
-                                        <div class="col-xs-3">
-                                            <input type="text" class="form-control" name="attribute[]" />
+                                    <div class="row">
+                                        <div class="dontfloat feature-wrapper">
+                                            <div class="col-xs-3">
+                                                <input type="text" class="form-control" name="attribute[]" />
+                                            </div>
+                                            <button type="button" class="wr-btn wr-btn-horizontal wr-btn-secondary remove_button"><i class="fa fa-minus"></i></button>
                                         </div>
-                                        <button type="button" class="btn btn-default remove_button"><i class="fa fa-minus"></i></button>
                                     </div>
                                 </div>
                             </div>
@@ -168,48 +179,37 @@
                             <div class="form-group operation_field_wrapper">
                                 {{#if type.deviceTypeMetaDefinition.initialOperationConfig}}
                                     {{#each type.deviceTypeMetaDefinition.initialOperationConfig.operations}}
-                                        <div class="dontfloat">
+                                    <div class="row">
+                                        <div class="dontfloat feature-wrapper">
                                             <div class="col-xs-3">
                                                 <input type="text" class="form-control" name="operation[]" value="{{this}}"/>
                                             </div>
-                                            <button type="button" class="btn btn-default remove_operation_button"><i class="fa fa-minus"></i></button>
+                                            <button type="button" class="wr-btn wr-btn-horizontal wr-btn-secondary remove_operation_button"><i class="fa fa-minus"></i></button>
                                         </div>
+                                    </div>
                                     {{/each}}
                                 {{/if}}
-                                <div class="dontfloat">
-                                    <div class="col-xs-3">
-                                        <input type="text" class="form-control" name="operation[]" />
-                                    </div>
-                                    <button type="button" class="btn btn-default add_operation_button"><i class="fa fa-plus"></i></button>
-                                </div>
-
-                            </div>
-                            <div class="hidden-div">
-                                <div id="add-operation-field" name="add-operation-field">
-                                    <div class="dontfloat">
+                                <div class="row">
+                                    <div class="dontfloat feature-wrapper">
                                         <div class="col-xs-3">
                                             <input type="text" class="form-control" name="operation[]" />
                                         </div>
-                                        <button type="button" class="btn btn-default remove_operation_button"><i class="fa fa-minus"></i></button>
+                                        <button type="button" class="wr-btn wr-btn-horizontal add_operation_button"><i class="fa fa-plus"></i></button>
                                     </div>
                                 </div>
                             </div>
-
-
-                            <label class="wr-input-label">Claimable</label>
-                            <input aria-describedby="basic-addon1" type="checkbox" id="deviceClaimable"
-                                {{#if type.deviceTypeMetaDefinition.claimable}}
-                                   checked
-                            {{/if}}/>
-                            </br>
-
-                            <label class="wr-input-label">Policy Monitoring</label>
-                            <input aria-describedby="basic-addon1" type="checkbox" id="policyMonitoring"
-                                {{#if type.deviceTypeMetaDefinition.policyMonitoringEnabled}}
-                                   checked
-                            {{/if}}/>
-                            </br>
-
+                            <div class="hidden-div">
+                                <div id="add-operation-field" name="add-operation-field">
+                                    <div class="row">
+                                        <div class="dontfloat feature-wrapper">
+                                            <div class="col-xs-3">
+                                                <input type="text" class="form-control" name="operation[]" />
+                                            </div>
+                                            <button type="button" class="wr-btn wr-btn-horizontal wr-btn-secondary remove_operation_button"><i class="fa fa-minus"></i></button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
 
                             <span class="roleNameError hidden glyphicon glyphicon-remove form-control-feedback"></span>
                             <label class="error roleNameEmpty hidden" for="summary">

@@ -65,11 +65,11 @@
                                 <!--suppress HtmlFormInputWithoutLabel -->
                                 <select id="transport" class="form-control select">
                                     {{#if event}}
-                                        <option {{selected event.transport "MQTT"}}>MQTT</option>
                                         <option {{selected event.transport "HTTP"}}>HTTP</option>
+                                        <option {{selected event.transport "MQTT"}}>MQTT</option>
                                     {{else}}
-                                        <option>MQTT</option>
                                         <option>HTTP</option>
+                                        <option>MQTT</option>
                                     {{/if}}
 
                                 </select>
@@ -82,39 +82,43 @@
                             <div class="form-group event_field_wrapper">
                                 {{#if event.eventAttributes}}
                                     {{#each event.eventAttributes.attributes}}
-                                        <div class="dontfloat" name="deviceEvent">
-                                            <div class="col-xs-3">
-                                                <input type="text" class="form-control" id="event-name" placeholder="name" value="{{this.name}}"/>
+                                        <div class="row">
+                                            <div class="dontfloat" name="deviceEvent">
+                                                <div class="col-xs-3">
+                                                    <input type="text" class="form-control" id="event-name" placeholder="name" value="{{this.name}}"/>
+                                                </div>
+                                                <div class="col-xs-4">
+                                                    <select class="form-control select" id="event-type">
+                                                        <option {{selected this.type "STRING"}}>STRING</option>
+                                                        <option {{selected this.type "LONG"}}>LONG</option>
+                                                        <option {{selected this.type "BOOL"}}>BOOL</option>
+                                                        <option {{selected this.type "INT"}}>INT</option>
+                                                        <option {{selected this.type "FLOAT"}}>FLOAT</option>
+                                                        <option {{selected this.type "DOUBLE"}}>DOUBLE</option>
+                                                    </select>
+                                                </div>
+                                                <button type="button" class="wr-btn wr-btn-horizontal remove_event_button"><i class="fa fa-minus"></i></button>
                                             </div>
-                                            <div class="col-xs-4">
-                                                <select class="form-control select" id="event-type">
-                                                    <option {{selected this.type "STRING"}}>STRING</option>
-                                                    <option {{selected this.type "LONG"}}>LONG</option>
-                                                    <option {{selected this.type "BOOL"}}>BOOL</option>
-                                                    <option {{selected this.type "INT"}}>INT</option>
-                                                    <option {{selected this.type "FLOAT"}}>FLOAT</option>
-                                                    <option {{selected this.type "DOUBLE"}}>DOUBLE</option>
-                                                </select>
-                                            </div>
-                                            <button type="button" class="btn btn-default remove_event_button"><i class="fa fa-minus"></i></button>
                                         </div>
                                     {{/each}}
                                 {{/if}}
-                                <div class="dontfloat" name="deviceEvent">
-                                    <div class="col-xs-3">
-                                        <input type="text" class="form-control" id="event-name" placeholder="name"/>
+                                <div class="row">
+                                    <div class="dontfloat event-wrapper" name="deviceEvent">
+                                        <div class="col-xs-3">
+                                            <input type="text" class="form-control" id="event-name" placeholder="name"/>
+                                        </div>
+                                        <div class="col-xs-4">
+                                            <select class="form-control select" id="event-type">
+                                                <option>STRING</option>
+                                                <option>LONG</option>
+                                                <option>BOOL</option>
+                                                <option>INT</option>
+                                                <option>FLOAT</option>
+                                                <option>DOUBLE</option>
+                                            </select>
+                                        </div>
+                                        <button type="button" class="wr-btn wr-btn-horizontal add_event_button"><i class="fa fa-plus"></i></button>
                                     </div>
-                                    <div class="col-xs-4">
-                                        <select class="form-control select" id="event-type">
-                                            <option>STRING</option>
-                                            <option>LONG</option>
-                                            <option>BOOL</option>
-                                            <option>INT</option>
-                                            <option>FLOAT</option>
-                                            <option>DOUBLE</option>
-                                        </select>
-                                    </div>
-                                    <button type="button" class="btn btn-default add_event_button"><i class="fa fa-plus"></i></button>
                                 </div>
                             </div>
 

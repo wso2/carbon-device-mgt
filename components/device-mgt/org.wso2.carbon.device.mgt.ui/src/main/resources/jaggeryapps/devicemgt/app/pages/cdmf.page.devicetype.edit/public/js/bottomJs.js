@@ -123,13 +123,13 @@ $(document).ready(function () {
 	var addFeatureButton = $('.add_feature_button'); //Add button selector
 	var featureWrapper = $('.feature_field_wrapper'); //Input field wrapper
 	$(addFeatureButton).click(function(){ //Once add button is clicked
-		var featureFieldHtml = ' <div class="dontfloat" name ="deviceFeature"> <div class="col-xs-3"> <input type="text"' +
+		var featureFieldHtml = '<div class="row"><div class="dontfloat feature-wrapper" name ="deviceFeature"> <div class="col-xs-3"> <input type="text"' +
 				' class="form-control" id="feature-name" placeholder="name"/> </div> <div class="col-xs-4"> ' +
 				'<input type="text" class="form-control" id="feature-code" placeholder="code"/> </div> ' +
 				'<div class="col-xs-4"> <textarea aria-describedby="basic-addon1" type="text" ' +
 				'id="feature-description" placeholder="description"data-error-msg="invalid ' +
 				'feature description"class="form-control" rows="1" cols="30"></textarea> </div> ' +
-				'<button type="button" class="btn btn-default remove_feature_button"><i class="fa fa-minus"></i></button> </div>'
+				'<button type="button" class="wr-btn wr-btn-horizontal wr-btn-secondary remove_feature_button"><i class="fa fa-minus"></i></button> </div></div>'
 		$(featureWrapper).append(featureFieldHtml); // Add field html
 
 	});
@@ -195,9 +195,6 @@ $(document).ready(function () {
 			deviceType.deviceTypeMetaDefinition.initialOperationConfig = {};
 			deviceType.deviceTypeMetaDefinition.initialOperationConfig.operations = operationValues;
 		}
-
-		deviceType.deviceTypeMetaDefinition.policyMonitoringEnabled = $("#policyMonitoring").is(":checked");
-		deviceType.deviceTypeMetaDefinition.claimable = $("#deviceClaimable").is(":checked");;
 
 		var features = [];
 		$('div[name^="deviceFeature"]').each(function() {

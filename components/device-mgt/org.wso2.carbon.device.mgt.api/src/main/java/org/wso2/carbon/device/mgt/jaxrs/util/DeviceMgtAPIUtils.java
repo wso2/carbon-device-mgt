@@ -30,6 +30,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.analytics.stream.persistence.stub.EventStreamPersistenceAdminServiceStub;
 import org.wso2.carbon.base.ServerConfiguration;
+import org.wso2.carbon.analytics.api.AnalyticsDataAPI;
 import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.core.util.Utils;
@@ -43,6 +44,7 @@ import org.wso2.carbon.device.mgt.common.authorization.DeviceAccessAuthorization
 import org.wso2.carbon.device.mgt.common.configuration.mgt.ConfigurationEntry;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.PlatformConfiguration;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.PlatformConfigurationManagementService;
+import org.wso2.carbon.device.mgt.common.geo.service.GeoService;
 import org.wso2.carbon.device.mgt.common.notification.mgt.NotificationManagementService;
 import org.wso2.carbon.device.mgt.common.spi.DeviceTypeGeneratorService;
 import org.wso2.carbon.device.mgt.core.app.mgt.ApplicationManagementProviderService;
@@ -423,6 +425,27 @@ public class DeviceMgtAPIUtils {
             throw new IllegalStateException("Gadget Data Service has not been initialized.");
         }
         return gadgetDataService;
+    }
+
+    public static GeoService getGeoService() {
+        PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        GeoService geoService = (GeoService) ctx.getOSGiService(GeoService.class, null);
+        if (geoService == null) {
+            throw new IllegalStateException("Geo Service has not been initialized.");
+        }
+        return geoService;
+    }
+
+    public static AnalyticsDataAPI getAnalyticsDataAPI() {
+        PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        AnalyticsDataAPI analyticsDataAPI =
+                (AnalyticsDataAPI) ctx.getOSGiService(AnalyticsDataAPI.class, null);
+        if (analyticsDataAPI == null) {
+            String msg = "Analytics api service has not initialized.";
+            log.error(msg);
+            throw new IllegalStateException(msg);
+        }
+        return analyticsDataAPI;
     }
 
     public static int getTenantId(String tenantDomain) throws DeviceManagementException {

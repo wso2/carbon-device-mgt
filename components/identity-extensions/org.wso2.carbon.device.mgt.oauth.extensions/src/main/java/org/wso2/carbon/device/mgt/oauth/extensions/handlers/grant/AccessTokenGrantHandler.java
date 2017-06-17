@@ -22,12 +22,11 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.apimgt.keymgt.ScopesIssuer;
+import org.wso2.carbon.device.mgt.oauth.extensions.handlers.grant.oauth.validator.LocalOAuthValidator;
+import org.wso2.carbon.device.mgt.oauth.extensions.handlers.grant.oauth.validator.OAuthValidationResponse;
 import org.wso2.carbon.identity.application.authentication.framework.model.AuthenticatedUser;
 import org.wso2.carbon.identity.application.common.IdentityApplicationManagementException;
 import org.wso2.carbon.identity.application.common.model.ServiceProvider;
-import org.wso2.carbon.identity.authenticator.backend.oauth.validator.OAuth2TokenValidator;
-import org.wso2.carbon.identity.authenticator.backend.oauth.validator.OAuthValidationResponse;
-import org.wso2.carbon.identity.authenticator.backend.oauth.validator.OAuthValidatorFactory;
 import org.wso2.carbon.identity.oauth2.IdentityOAuth2Exception;
 import org.wso2.carbon.identity.oauth2.dto.OAuth2AccessTokenReqDTO;
 import org.wso2.carbon.identity.oauth2.internal.OAuth2ServiceComponentHolder;
@@ -47,12 +46,12 @@ public class AccessTokenGrantHandler extends AbstractAuthorizationGrantHandler {
     private static Log log = LogFactory.getLog(AccessTokenGrantHandler.class);
     private static final String TENANT_DOMAIN_KEY = "tenantDomain";
 
-    private OAuth2TokenValidator tokenValidator;
+    private LocalOAuthValidator tokenValidator;
     public static final String TOKEN_GRANT_PARAM = "admin_access_token";
 
     public AccessTokenGrantHandler() {
         try {
-           // tokenValidator = OAuthValidatorFactory.getValidator();
+            // tokenValidator = OAuthValidatorFactory.getValidator();
         } catch (IllegalArgumentException e) {
             log.error("Failed to initialise Authenticator", e);
         }

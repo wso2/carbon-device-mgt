@@ -92,13 +92,19 @@ public class DeviceTaskManagerImpl implements DeviceTaskManager {
             operations = this.getValidOperationNames(); //list operations for each device type
             devices = deviceManagementProviderService.getAllDevices(deviceType, false);//list devices for each type
             if (!devices.isEmpty()) {
-                for (String str : operations) {
-                    CommandOperation operation = new CommandOperation();
-                    operation.setEnabled(true);
-                    operation.setType(Operation.Type.COMMAND);
-                    operation.setCode(str);
-                    deviceManagementProviderService.addOperation(deviceType, operation,
-                            DeviceManagerUtil.getValidDeviceIdentifiers(devices));
+                if (operations != null) {
+                    for (String str : operations) {
+                        CommandOperation operation = new CommandOperation();
+                        operation.setEnabled(true);
+                        operation.setType(Operation.Type.COMMAND);
+                        operation.setCode(str);
+                        deviceManagementProviderService.addOperation(deviceType, operation,
+                                DeviceManagerUtil.getValidDeviceIdentifiers(devices));
+                    }
+                } else {
+                    if (log.isDebugEnabled()) {
+                        log.debug("No operations are available.");
+                    }
                 }
             } else {
                 if (log.isDebugEnabled()) {

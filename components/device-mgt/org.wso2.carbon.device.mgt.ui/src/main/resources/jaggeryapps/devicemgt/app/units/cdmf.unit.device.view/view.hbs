@@ -19,6 +19,8 @@
 {{#zone "content"}}
     {{#if deviceFound}}
         {{#if isAuthorized}}
+            <span id="logged-in-user" class="hidden" data-username="{{@user.username}}" data-domain="{{@user.domain}}"
+                  data-tenant-id="{{@user.tenantId}}" data-iscloud="{{isCloud}}"></span>
             {{#defineZone "device-details-header"}}
                 <h1 class="page-sub-title device-id device-select" data-deviceid="{{device.deviceIdentifier}}"
                     data-type="{{device.type}}">

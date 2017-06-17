@@ -17,6 +17,7 @@
  */
 package org.wso2.carbon.device.mgt.core.config;
 
+import org.wso2.carbon.device.mgt.core.config.geo.location.GeoLocationConfiguration;
 import org.wso2.carbon.device.mgt.core.config.cache.DeviceCacheConfiguration;
 import org.wso2.carbon.device.mgt.core.config.identity.IdentityConfigurations;
 import org.wso2.carbon.device.mgt.core.config.pagination.PaginationConfiguration;
@@ -45,7 +46,7 @@ public final class DeviceManagementConfig {
     private PullNotificationConfiguration pullNotificationConfiguration;
     private DeviceStatusTaskConfig deviceStatusTaskConfig;
     private DeviceCacheConfiguration deviceCacheConfiguration;
-
+    private GeoLocationConfiguration geoLocationConfiguration;
 
     @XmlElement(name = "ManagementRepository", required = true)
     public DeviceManagementConfigRepository getDeviceManagementConfigRepository() {
@@ -127,6 +128,15 @@ public final class DeviceManagementConfig {
 
     public void setDeviceCacheConfiguration(DeviceCacheConfiguration deviceCacheConfiguration) {
         this.deviceCacheConfiguration = deviceCacheConfiguration;
+    }
+
+    @XmlElement(name = "GeoLocationConfiguration", required = true)
+    public GeoLocationConfiguration getGeoLocationConfiguration() {
+        return geoLocationConfiguration;
+    }
+
+    public void setGeoLocationConfiguration(GeoLocationConfiguration geoLocationConfiguration) {
+        this.geoLocationConfiguration = geoLocationConfiguration;
     }
 }
 

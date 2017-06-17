@@ -41,7 +41,7 @@ public class EventsPublisherServiceImpl implements EventsPublisherService {
 	 * @param metaDataArray        - meta data that needs to pushed
 	 * @param correlationDataArray - correlation data that needs to be pushed
 	 * @param payloadDataArray     - payload data that needs to be pushed
-	 * @return
+	 * @return if success returns true
 	 * @throws DataPublisherConfigurationException
 	 */
 	@Override
@@ -74,7 +74,4 @@ public class EventsPublisherServiceImpl implements EventsPublisherService {
             PrivilegedCarbonContext.endTenantFlow();
         }
     }
-
-
-
 }

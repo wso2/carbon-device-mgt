@@ -337,23 +337,25 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             }
             return false;
         }
+
+        int tenantId = this.getTenantId();
+
+        Device device = this.getDevice(deviceId, false);
+        if (device == null) {
+            if (log.isDebugEnabled()) {
+                log.debug("Device not found for id '" + deviceId.getId() + "'");
+            }
+            return false;
+        }
+
+        if (device.getEnrolmentInfo().getStatus().equals(EnrolmentInfo.Status.REMOVED)) {
+            if (log.isDebugEnabled()) {
+                log.debug("Device has already disenrolled : " + deviceId.getId() + "'");
+            }
+            return true;
+        }
+
         try {
-            int tenantId = this.getTenantId();
-
-            Device device = this.getDevice(deviceId, false);
-            if (device == null) {
-                if (log.isDebugEnabled()) {
-                    log.debug("Device not found for id '" + deviceId.getId() + "'");
-                }
-                return false;
-            }
-
-            if (device.getEnrolmentInfo().getStatus().equals(EnrolmentInfo.Status.REMOVED)) {
-                if (log.isDebugEnabled()) {
-                    log.debug("Device has already disenrolled : " + deviceId.getId() + "'");
-                }
-                return false;
-            }
             device.getEnrolmentInfo().setDateOfLastUpdate(new Date().getTime());
             device.getEnrolmentInfo().setStatus(EnrolmentInfo.Status.REMOVED);
             DeviceManagementDAOFactory.beginTransaction();

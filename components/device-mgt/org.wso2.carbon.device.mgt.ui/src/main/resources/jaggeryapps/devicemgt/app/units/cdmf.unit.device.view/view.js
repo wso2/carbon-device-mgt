@@ -34,6 +34,7 @@ function onRequest(context) {
             var viewModel = {};
             if (filteredDeviceData["type"]) {
                 viewModel["deviceType"] = filteredDeviceData["type"];
+                viewModel["type"] = filteredDeviceData["type"];
                 viewModel.isNotWindows = true;
                 if (viewModel["deviceType"] == "windows") {
                     viewModel.isNotWindows = false;

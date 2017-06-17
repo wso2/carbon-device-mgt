@@ -190,7 +190,7 @@ public class PolicyManagerImpl implements PolicyManager {
             policy.setProfileId(profileId);
             Timestamp currentTimestamp = new Timestamp(Calendar.getInstance().getTime().getTime());
             policy.getProfile().setUpdatedDate(currentTimestamp);
-
+            policy.setPriorityId(previousPolicy.getPriorityId());
             policyDAO.updatePolicy(policy);
             profileDAO.updateProfile(policy.getProfile());
 

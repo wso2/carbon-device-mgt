@@ -18,51 +18,16 @@
 var serviceInvokers = require("/app/modules/oauth/token-protected-service-invokers.js")["invokers"];
 var devicemgtProps = require("/app/modules/conf-reader/main.js")["conf"];
 var process = require("process");
-
+var userModule = require("/app/modules/business-controllers/user.js")["userModule"];
 function onRequest(context) {
 	var log = new Log("device-view.js");
 	var deviceType = context.uriParams.deviceType;
 	var deviceId = request.getParameter("id");
 	var attributes = [];
 	var featureList = [];
-	var restAPIEndpoint = devicemgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"]
-		+ "/events/" + deviceType;
-	serviceInvokers.XMLHttp.get(
-		restAPIEndpoint,
-		function (restAPIResponse) {
-			if (restAPIResponse["status"] == 200 && restAPIResponse["responseText"]) {
-				var data = parse(restAPIResponse["responseText"]);
-				if (data.eventAttributes.attributes.length > 0) {
-					for (var i = 0; i < data.eventAttributes.attributes.length; i++) {
-						var attribute = data.eventAttributes.attributes[i];
-						if (attribute['name'] == "deviceId") {
-							continue;
-						}
-						attributes.push(attribute['name']);
-					}
-				}
+	var user = userModule.getCarbonUser();
+	var tenantDomain = user.domain;
 
-			}
-		}
-	);
-
-	var featureEndpoint = devicemgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"]
-		+ "/device-types/" + deviceType + "/features";
-	serviceInvokers.XMLHttp.get(featureEndpoint, function (responsePayload) {
-			var features = JSON.parse(responsePayload.responseText);
-			var feature;
-			for (var i = 0; i < features.length; i++) {
-				feature = {};
-				feature["operation"] = features[i].code;
-				feature["name"] = features[i].name;
-				feature["description"] = features[i].description;
-				featureList.push(feature);
-			}
-
-		}, function (responsePayload) {
-			featureList = null;
-		}
-	);
 	var autoCompleteParams = [
 		{"name" : "deviceId", "value" : deviceId}
 	];
@@ -74,6 +39,34 @@ function onRequest(context) {
 	});
 
 	var displayData = {};
+
+	var restAPIEndpoint = devicemgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"]
+		+ "/device-types/config/" + deviceType;
+	displayData.deviceType = deviceType;
+	displayData.tenantDomain = tenantDomain;
+	serviceInvokers.XMLHttp.get(
+		restAPIEndpoint,
+		function (restAPIResponse) {
+			if (restAPIResponse["status"] == 200 && restAPIResponse["responseText"]) {
+				var typeData = parse(restAPIResponse["responseText"]);
+				displayData.type = typeData;
+				if (typeData.deviceTypeMetaDefinition) {
+					var features = typeData.deviceTypeMetaDefinition.features;
+					if (features) {
+						var feature;
+						for (var i = 0; i < features.length; i++) {
+							feature = {};
+							feature["operation"] = features[i].code;
+							feature["name"] = features[i].name;
+							feature["description"] = features[i].description;
+							featureList.push(feature);
+						}
+					}
+				}
+			}
+		}
+	);
+
 	var eventRestAPIEndpoint = devicemgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"]
 		+ "/events/" + deviceType;
 	serviceInvokers.XMLHttp.get(
@@ -87,6 +80,11 @@ function onRequest(context) {
 					var eventExample = {};
 					for (var i = 0; i < typeData.eventAttributes.attributes.length; i++) {
 						var attribute = typeData.eventAttributes.attributes[i];
+						if (attribute['name'] == "deviceId") {
+							continue;
+						}
+						attributes.push(attribute['name']);
+
 						switch (attribute.type) {
 							case "STRING":
 								eventExample[attribute.name] = "string";
@@ -128,6 +126,8 @@ function onRequest(context) {
 			}
 		}
 	);
+
+	displayData.tenantDomain = tenantDomain;
 
 	if (deviceType != null && deviceType != undefined && deviceId != null && deviceId != undefined) {
 		var deviceModule = require("/app/modules/business-controllers/device.js")["deviceModule"];

@@ -133,10 +133,30 @@
         <h3 class="uppercase">Retrieve operations</h3>
         {{#if type.deviceTypeMetaDefinition.pushNotificationConfig}}
             {{#if_eq type.deviceTypeMetaDefinition.pushNotificationConfig.type "MQTT"}}
-                MQTT - {{mqttGateway}}
                 <div class="code-segment">
                     <span>MQTT Topic :</span>
                     <code>{{tenantDomain}}/{{device.type}}/{{device.deviceIdentifier}}/operation/#</code>
+                    <br/>
+                    <div class="code-segment">
+                        <span>Topic Structure :</span>
+                        <ul class="list-unstyled">
+                            <li class="padding-top-double">
+                                <code>{{tenantDomain}}/{{device.type}}/{{device.deviceIdentifier}}/operation/command/&lt;feature_code&gt;/&lt;operation_id&gt;</code>
+                            </li>
+                            <li class="padding-top-double">
+                                <code>{{tenantDomain}}/{{device.type}}/{{device.deviceIdentifier}}/operation/config/&lt;feature_code&gt;/&lt;operation_id&gt;</code>
+                            </li>
+                            <li class="padding-top-double">
+                                <code>{{tenantDomain}}/{{device.type}}/{{device.deviceIdentifier}}/operation/profile/&lt;feature_code&gt;/&lt;operation_id&gt;</code>
+                            </li>
+                            <li class="padding-top-double">
+                                <code>{{tenantDomain}}/{{device.type}}/{{device.deviceIdentifier}}/operation/policy/policy_bundle</code>
+                            </li>
+                            <li class="padding-top-double">
+                                <code>{{tenantDomain}}/{{device.type}}/{{device.deviceIdentifier}}/operation/policy/policy_revoke</code>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
                 <div class="code-segment">
                     <span>Operation Response :</span>
@@ -147,24 +167,7 @@
                     <code>{"id": 1,"status": "COMPLETED", "operationResponse": "this is my response"}</code>
                 </div>
                 <br/>
-                Topic Structure:
-                    <ul class="list-unstyled">
-                        <li class="padding-top-double">
-                            <code>{{tenantDomain}}/{{device.type}}/{{device.deviceIdentifier}}/operation/command/&lt;feature_code&gt;/&lt;operation_id&gt;</code>
-                        </li>
-                        <li class="padding-top-double">
-                            <code>{{tenantDomain}}/{{device.type}}/{{device.deviceIdentifier}}/operation/config/&lt;feature_code&gt;/&lt;operation_id&gt;</code>
-                        </li>
-                        <li class="padding-top-double">
-                            <code>{{tenantDomain}}/{{device.type}}/{{device.deviceIdentifier}}/operation/profile/&lt;feature_code&gt;/&lt;operation_id&gt;</code>
-                        </li>
-                        <li class="padding-top-double">
-                            <code>{{tenantDomain}}/{{device.type}}/{{device.deviceIdentifier}}/operation/policy/policy_bundle</code>
-                        </li>
-                        <li class="padding-top-double">
-                            <code>{{tenantDomain}}/{{device.type}}/{{device.deviceIdentifier}}/operation/policy/policy_revoke</code>
-                        </li>
-                    </ul>
+
             {{/if_eq}}
         {{else}}
             <div class="code-segment">
@@ -173,7 +176,7 @@
             </div>
             <div class="code-segment">
                 <span>Retrieve next pending operation :</span>
-                <code>curl -k -X GET {{httpsGateway}}/api/device-mgt/v1.0/device/agent/next-pending/ -H 'authorization: Bearer %accessToken%' -H 'content-type: application/json'</code>
+                <code>curl -k -X GET {{httpsGateway}}/api/device-mgt/v1.0/device/agent/next-pending/{{device.type}}/{{device.deviceIdentifier}} -H 'authorization: Bearer %accessToken%' -H 'content-type: application/json'</code>
             </div>
             <div class="code-segment">
                 <span>Update operation :</span>

@@ -222,6 +222,12 @@ public interface DeviceManagementService {
             @QueryParam("user")
                     String user,
             @ApiParam(
+                    name = "userPattern",
+                    value = "The pattern of username of the owner of the device.",
+                    required = false)
+            @QueryParam("userPattern")
+                    String userPattern,
+            @ApiParam(
                     name = "role",
                     value = "A role of device owners. Ex : store-admin",
                     required = false)

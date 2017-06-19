@@ -90,6 +90,7 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
             @QueryParam("name") String name,
             @QueryParam("type") String type,
             @QueryParam("user") String user,
+            @QueryParam("userPattern") String userPattern,
             @QueryParam("role") String role,
             @QueryParam("ownership") String ownership,
             @QueryParam("status") String status,
@@ -126,9 +127,6 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
             if (type != null && !type.isEmpty()) {
                 request.setDeviceType(type);
             }
-            if (user != null && !user.isEmpty()) {
-                request.setOwner(user);
-            }
             if (ownership != null && !ownership.isEmpty()) {
                 RequestValidationUtil.validateOwnershipType(ownership);
                 request.setOwnership(ownership);
@@ -151,6 +149,8 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
             if (deviceAccessAuthorizationService.isDeviceAdminUser()) {
                 if (user != null && !user.isEmpty()) {
                     request.setOwner(MultitenantUtils.getTenantAwareUsername(user));
+                } else if (userPattern != null && !userPattern.isEmpty()) {
+                    request.setOwnerPattern(userPattern);
                 }
             } else {
                 if (user != null && !user.isEmpty()) {

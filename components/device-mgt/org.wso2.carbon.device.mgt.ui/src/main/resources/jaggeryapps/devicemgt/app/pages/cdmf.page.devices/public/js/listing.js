@@ -155,7 +155,7 @@ function loadDevices(searchType, searchParam) {
         serviceURL = "/api/device-mgt/v1.0/devices";
     } else if (permissionsUtil.hasPermission("LIST_OWN_DEVICES")) {
         //Get authenticated users devices
-        serviceURL = "/api/device-mgt/v1.0/devices?username=" + currentUser;
+        serviceURL = "/api/device-mgt/v1.0/devices?user=" + currentUser;
     } else {
         $("#loading-content").remove();
         $('#device-table').addClass('hidden');
@@ -282,7 +282,7 @@ function loadDevices(searchType, searchParam) {
         },
         {
             targets: 2,
-            data: 'user',
+            data: 'userPattern',
             class: 'remove-padding-top viewEnabledIcon'
         },
         {
@@ -410,7 +410,7 @@ function loadDevices(searchType, searchParam) {
         $(row).attr('data-url', context + '/device/' + htmlspecialchars(data.deviceType) + '?id=' + htmlspecialchars(data.deviceIdentifier));
         var model = htmlspecialchars(getPropertyValue(data.properties, 'DEVICE_MODEL'));
         var vendor = htmlspecialchars(getPropertyValue(data.properties, 'VENDOR'));
-        var owner = htmlspecialchars(data.user);
+        var owner = htmlspecialchars(data.userPattern);
         var status = htmlspecialchars(data.status);
         var ownership = htmlspecialchars(data.ownership);
         var deviceType = htmlspecialchars(data.deviceType);
@@ -460,7 +460,7 @@ function loadDevices(searchType, searchParam) {
                 {
                     model: getPropertyValue(data.devices[index].properties, "DEVICE_MODEL"),
                     vendor: getPropertyValue(data.devices[index].properties, "VENDOR"),
-                    user: data.devices[index].enrolmentInfo.owner,
+                    userPattern: data.devices[index].enrolmentInfo.owner,
                     status: data.devices[index].enrolmentInfo.status,
                     ownership: data.devices[index].enrolmentInfo.ownership,
                     deviceType: data.devices[index].type,

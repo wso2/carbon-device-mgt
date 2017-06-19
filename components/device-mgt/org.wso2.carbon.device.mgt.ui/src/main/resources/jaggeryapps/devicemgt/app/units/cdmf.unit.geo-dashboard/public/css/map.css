@@ -1,0 +1,49 @@
+
+/*.navbar {
+    background-color: rgba(54, 51, 45, 0.7);
+    background: rgba(54, 51, 45, 0.7);
+    color: rgba(0, 0, 0, 0.8);
+    border-radius: 0px 0px 0px 0px;
+    -webkit-box-shadow: 0px 16px 29px -17px rgba(33, 20, 4, 1);
+    -moz-box-shadow: 0px 16px 29px -17px rgba(33, 20, 4, 1);
+    box-shadow: 0px 16px 29px -17px rgba(33, 20, 4, 1);
+    border: none;
+    margin: auto;
+    z-index: 0;
+}*/
+
+.uk-notify {
+    z-index: 2147483647 !important;
+
+}
+
+.leaflet-top {
+    top: 30px !important;
+}
+#mapSearch {
+    border: 0;
+}
+
+#container {
+    position: fixed;
+    top: 0px;
+}
+
+.leaflet-top {
+    /*To prevent cutting off the top element by header bar in dashboard*/
+    top: 50px;
+}
+
+.leaflet-right {
+    /* to prevent showing layers controller over objectInfor side pane */
+    z-index: 0;
+}
+
+.leaflet-popup-content {
+    width: 200px;
+    margin: 6px;
+}
+
+.sectionJointStyle {
+    stroke-dasharray: 3, 20;
+}

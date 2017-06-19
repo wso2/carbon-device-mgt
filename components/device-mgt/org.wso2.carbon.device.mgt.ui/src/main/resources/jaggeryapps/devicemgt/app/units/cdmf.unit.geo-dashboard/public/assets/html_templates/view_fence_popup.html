@@ -1,0 +1,52 @@
+<!--~ Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+~
+~ WSO2 Inc. licenses this file to you under the Apache License,
+~ Version 2.0 (the "License"); you may not use this file except
+~ in compliance with the License.
+~ You may obtain a copy of the License at
+~
+~ http://www.apache.org/licenses/LICENSE-2.0
+~
+~ Unless required by applicable law or agreed to in writing,
+~ software distributed under the License is distributed on an
+~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+~ KIND, either express or implied.  See the License for the
+~ specific language governing permissions and limitations
+~ under the License.-->
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<div id="viewExitAlert" >
+    <h3 class="popover-title" id="viewAreaName"></h3>
+    <div class="popover-content">
+        <form role="form" style="width: auto" id="exitAlertForm">
+            <button type="button" id="exportGeoJson" download="geoJson.json" onclick="exportToGeoJSON(this,JSON.stringify(map._layers[$(this).attr('leaflet_id')].toGeoJSON(),null, '\t'))" class="btn btn-info btn-xs" data-toggle="tooltip" data-placement="left" title="Export selected area as a geoJson file">Export</button>
+            <button type="button" id="hideViewFence" class="btn btn-info btn-xs" data-toggle="tooltip" data-placement="left" title="Hide this fence" onclick="map.removeLayer(map._layers[$(this).attr('leaflet_id')])" >Hide</button>
+        </form>
+    </div>
+</div>
+<div id="viewWithinAlert" >
+    <h3 class="popover-title" id="viewAreaName"></h3>
+    <div class="popover-content">
+        <form role="form" style="width: auto" class="" id="withinAlertForm">
+            <button type="button" id="exportGeoJson" download="geoJson.json" onclick="exportToGeoJSON(this,JSON.stringify(map._layers[$(this).attr('leaflet_id')].toGeoJSON(),null, '\t'))" class="btn btn-info btn-xs" data-toggle="tooltip" data-placement="left" title="Export selected area as a geoJson file">Export</button>
+            <button type="button" id="hideViewFence" class="btn btn-info btn-xs" data-toggle="tooltip" data-placement="left" title="Hide this fence" onclick="map.removeLayer(map._layers[$(this).attr('leaflet_id')])" >Hide</button>
+        </form>
+    </div>
+</div>
+<div id="viewStationeryAlert" >
+    <h3 class="popover-title" id="viewAreaName"></h3>
+    <div class="popover-content">
+        <form role="form" style="width: auto" id="stationaryAlertForm">
+            <h6>Stationery time(Seconds)<span id="viewAreaTime" class="label label-primary pull-right">N/A</span></h6>
+            <button type="button" id="exportGeoJson" download="geoJson.json" onclick="exportToGeoJSON(this,JSON.stringify(map._layers[$(this).attr('leaflet_id')].toGeoJSON(),null, '\t'))" class="btn btn-info btn-xs" data-toggle="tooltip" data-placement="left" title="Export selected area as a geoJson file">Export</button>
+            <button type="button" id="hideViewFence" class="btn btn-info btn-xs" data-toggle="tooltip" data-placement="left" title="Hide this fence" onclick="map.removeLayer(map._layers[$(this).attr('leaflet_id')])" >Hide</button>
+        </form>
+    </div>
+</div>
+</body>
+</html>

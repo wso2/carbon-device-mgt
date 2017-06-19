@@ -92,6 +92,18 @@
                                             <button id="save-general-btn" class="wr-btn">Save</button>
                                         </div>
                                     </div>
+                                    <div id="general-config-heading" role="tab">
+                                        <h2 class="sub-title panel-title">
+                                            Geo Analytics
+                                        </h2>
+                                    </div>
+                                    <div class="panel-collapse panel-body" role="tabpanel">
+                                        <div class="wr-input-control">
+                                            <button class="wr-btn" onclick="artifactGeoUpload();">
+                                                Deploy Geo Analytics Artifacts
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             <!-- general-->
@@ -130,6 +142,26 @@
         You not authorized to enter General and Platform Specific Server Setting Management Section.
         <br>
     {{/if}}
+    <div id="geo-analytics-response-template" style="display: none">
+        <div class="content">
+            <div class="row">
+                <div class="col-lg-5 col-md-6 col-centered">
+                    <h3>
+                    <span class="fw-stack">
+                        <i class="fw fw-circle-outline fw-stack-2x"></i>
+                        <i id="status-icon" class="fw fw-error fw-stack-1x"></i>
+                    </span>
+                        <br>
+                    </h3>
+                    <h4>
+                        <span id="title"></span>
+                        <br>
+                    </h4>
+                    <span id="description"></span>
+                </div>
+            </div>
+        </div>
+    </div>
 {{/zone}}
 {{#zone "bottomJs"}}
     {{js "js/platform-configuration.js"}}

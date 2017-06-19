@@ -19,6 +19,7 @@
 package org.wso2.carbon.device.mgt.core.dao.impl;
 
 import org.wso2.carbon.device.mgt.common.Device;
+import org.wso2.carbon.device.mgt.common.DeviceManagementConstants;
 import org.wso2.carbon.device.mgt.common.GroupPaginationRequest;
 import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroup;
 import org.wso2.carbon.device.mgt.core.dao.GroupDAO;
@@ -60,7 +61,7 @@ public class GroupDAOImpl implements GroupDAO {
             return groupId;
         } catch (SQLException e) {
             throw new GroupManagementDAOException("Error occurred while adding deviceGroup '" +
-                                                          deviceGroup.getName() + "'", e);
+                    deviceGroup.getName() + "'", e);
         } finally {
             GroupManagementDAOUtil.cleanupResources(stmt, null);
         }
@@ -83,7 +84,7 @@ public class GroupDAOImpl implements GroupDAO {
             stmt.executeUpdate();
         } catch (SQLException e) {
             throw new GroupManagementDAOException("Error occurred while updating deviceGroup '" +
-                                                          deviceGroup.getName() + "'", e);
+                    deviceGroup.getName() + "'", e);
         } finally {
             GroupManagementDAOUtil.cleanupResources(stmt, null);
         }
@@ -148,7 +149,7 @@ public class GroupDAOImpl implements GroupDAO {
             }
         } catch (SQLException e) {
             throw new GroupManagementDAOException("Error occurred while obtaining information of Device Group '" +
-                                                          groupId + "'", e);
+                    groupId + "'", e);
         } finally {
             GroupManagementDAOUtil.cleanupResources(stmt, resultSet);
         }
@@ -204,7 +205,12 @@ public class GroupDAOImpl implements GroupDAO {
                 hasOwner = true;
             }
             if (hasLimit) {
-                sql += " LIMIT ?, ?";
+                if (conn.getMetaData().getDatabaseProductName().contains(DeviceManagementConstants.DataBaseTypes.DB_TYPE_ORACLE) ||
+                        conn.getMetaData().getDatabaseProductName().contains(DeviceManagementConstants.DataBaseTypes.DB_TYPE_MSSQL)) {
+                    sql += " OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+                } else {
+                    sql += " LIMIT ?, ?";
+                }
             }
 
             int paramIndex = 1;
@@ -267,7 +273,12 @@ public class GroupDAOImpl implements GroupDAO {
             }
             sql += ")";
             if (hasLimit) {
-                sql += " LIMIT ?, ?";
+                if (conn.getMetaData().getDatabaseProductName().contains(DeviceManagementConstants.DataBaseTypes.DB_TYPE_ORACLE) ||
+                        conn.getMetaData().getDatabaseProductName().contains(DeviceManagementConstants.DataBaseTypes.DB_TYPE_MSSQL)) {
+                    sql += " OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+                } else {
+                    sql += " LIMIT ?, ?";
+                }
             }
 
             int paramIndex = 1;
@@ -513,7 +524,13 @@ public class GroupDAOImpl implements GroupDAO {
                     " DM_DEVICE d, (" +
                     "SELECT dgm.DEVICE_ID FROM DM_DEVICE_GROUP_MAP dgm WHERE dgm.GROUP_ID = ?) dgm1 " +
                     "WHERE d.ID = dgm1.DEVICE_ID AND d.TENANT_ID = ?) gd, DM_DEVICE_TYPE t " +
-                    "WHERE gd.DEVICE_TYPE_ID = t.ID) d1 WHERE d1.DEVICE_ID = e.DEVICE_ID AND TENANT_ID = ? LIMIT ? , ?";
+                    "WHERE gd.DEVICE_TYPE_ID = t.ID) d1 WHERE d1.DEVICE_ID = e.DEVICE_ID AND TENANT_ID = ?";
+            if (conn.getMetaData().getDatabaseProductName().contains(DeviceManagementConstants.DataBaseTypes.DB_TYPE_ORACLE) ||
+                    conn.getMetaData().getDatabaseProductName().contains(DeviceManagementConstants.DataBaseTypes.DB_TYPE_MSSQL)) {
+                sql += " OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+            } else {
+                sql += " LIMIT ?, ?";
+            }
 
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, groupId);
@@ -531,7 +548,7 @@ public class GroupDAOImpl implements GroupDAO {
             }
         } catch (SQLException e) {
             throw new GroupManagementDAOException("Error occurred while retrieving information of all " +
-                                                          "registered devices", e);
+                    "registered devices", e);
         } finally {
             DeviceManagementDAOUtil.cleanupResources(stmt, rs);
         }
@@ -728,7 +745,7 @@ public class GroupDAOImpl implements GroupDAO {
             }
         } catch (SQLException e) {
             throw new GroupManagementDAOException("Error occurred while getting own groups of user '"
-                                                          + username + "'", e);
+                    + username + "'", e);
         } finally {
             GroupManagementDAOUtil.cleanupResources(stmt, resultSet);
         }
@@ -753,7 +770,7 @@ public class GroupDAOImpl implements GroupDAO {
             }
         } catch (SQLException e) {
             throw new GroupManagementDAOException("Error occurred while getting own groups of user '"
-                                                          + username + "'", e);
+                    + username + "'", e);
         } finally {
             GroupManagementDAOUtil.cleanupResources(stmt, resultSet);
         }
@@ -778,7 +795,7 @@ public class GroupDAOImpl implements GroupDAO {
             }
         } catch (SQLException e) {
             throw new GroupManagementDAOException("Error occurred while getting own groups count of user '"
-                                                          + username + "'", e);
+                    + username + "'", e);
         } finally {
             GroupManagementDAOUtil.cleanupResources(stmt, resultSet);
         }

@@ -320,12 +320,12 @@ public class GenericOperationDAOImpl implements OperationDAO {
                     "de.DEVICE_ID, d.DEVICE_IDENTIFICATION, \n" +
                     "d.DEVICE_TYPE_ID, dt.NAME AS DEVICE_TYPE_NAME, eom.STATUS, eom.CREATED_TIMESTAMP, \n" +
                     "eom.UPDATED_TIMESTAMP, op.OPERATION_CODE, op.TYPE AS OPERATION_TYPE, dor.OPERATION_RESPONSE, \n" +
-                    "dor.RECEIVED_TIMESTAMP FROM DM_ENROLMENT_OP_MAPPING AS eom \n" +
-                    "INNER JOIN DM_OPERATION AS op ON op.ID=eom.OPERATION_ID\n" +
-                    "INNER JOIN DM_ENROLMENT AS de ON de.ID=eom.ENROLMENT_ID\n" +
-                    "INNER JOIN DM_DEVICE AS d ON d.ID=de.DEVICE_ID \n" +
-                    "INNER JOIN DM_DEVICE_TYPE AS dt ON dt.ID=d.DEVICE_TYPE_ID\n" +
-                    "LEFT JOIN DM_DEVICE_OPERATION_RESPONSE AS dor ON dor.ENROLMENT_ID=de.id \n" +
+                    "dor.RECEIVED_TIMESTAMP FROM DM_ENROLMENT_OP_MAPPING eom \n" +
+                    "INNER JOIN DM_OPERATION op ON op.ID=eom.OPERATION_ID\n" +
+                    "INNER JOIN DM_ENROLMENT de ON de.ID=eom.ENROLMENT_ID\n" +
+                    "INNER JOIN DM_DEVICE d ON d.ID=de.DEVICE_ID \n" +
+                    "INNER JOIN DM_DEVICE_TYPE dt ON dt.ID=d.DEVICE_TYPE_ID\n" +
+                    "LEFT JOIN DM_DEVICE_OPERATION_RESPONSE dor ON dor.ENROLMENT_ID=de.id \n" +
                     "AND dor.OPERATION_ID = eom.OPERATION_ID\n" +
                     "WHERE eom.OPERATION_ID = ? AND de.TENANT_ID = ?";
 

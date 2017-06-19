@@ -53,7 +53,6 @@ public class DeviceTaskManagerServiceImpl implements DeviceTaskManagerService {
         log.info("Task adding for " + deviceType);
 
         int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
-
         try {
             TaskService taskService = DeviceManagementDataHolder.getInstance().getTaskService();
             taskService.registerTaskType(TASK_TYPE);

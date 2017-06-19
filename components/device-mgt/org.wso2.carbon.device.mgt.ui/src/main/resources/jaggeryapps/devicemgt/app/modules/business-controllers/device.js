@@ -302,6 +302,9 @@ deviceModule = function () {
     publicMethods.getDevices = function (userName) {
         var url = devicemgtProps["httpsURL"] +
             devicemgtProps["backendRestEndpoints"]["deviceMgt"] + "/devices";
+        if (userName && userName !== "") {
+            url = url + "?user=" + userName;
+        }
         return serviceInvokers.XMLHttp.get(
             url, function (responsePayload) {
                 var devices = JSON.parse(responsePayload.responseText).devices;

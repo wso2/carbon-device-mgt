@@ -412,4 +412,39 @@ public class GenericPlatformDAOImpl extends AbstractDAOImpl implements PlatformD
         }
     }
 
+    public Platform getPlatform(int tenantId, String identifier) throws PlatformManagementDAOException  {
+
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        String sql = "";
+
+        try {
+            conn = this.getConnection();
+            sql += "SELECT * ";
+            sql += "FROM APPM_PLATFORM ";
+            sql += "WHERE IDENTIFIER = ? ";
+
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, identifier);
+            rs = stmt.executeQuery();
+
+            Platform platform = null;
+
+            if (rs.next()) {
+                platform = new Platform();
+                platform.setId(rs.getInt("ID"));
+                platform.setName(rs.getString("NAME"));
+                platform.setIdentifier(rs.getString("IDENTIFIER"));
+            }
+
+            return platform;
+
+        } catch (SQLException e) {
+            throw new PlatformManagementDAOException("Error occurred while getting application List", e);
+        }  catch (DBConnectionException e) {
+            throw new PlatformManagementDAOException("Error occurred while obtaining the DB connection.", e);
+        }
+    }
+
 }

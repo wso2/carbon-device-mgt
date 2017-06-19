@@ -150,8 +150,13 @@ public class MySQLApplicationDAOImpl extends AbstractApplicationDAOImpl {
             sql += "UPDATE APPM_APPLICATION SET ";
             sql += "NAME = IFNULL (?, NAME), ";
             sql += "SHORT_DESCRIPTION = IFNULL (?, SHORT_DESCRIPTION), DESCRIPTION = IFNULL (?, DESCRIPTION), ";
-            sql += "ICON_NAME = IFNULL (?, ICON_NAME), BANNER_NAME = IFNULL (?, BANNER_NAME) ";
-            sql += " WHERE UUID = ?";
+            sql += "ICON_NAME = IFNULL (?, ICON_NAME), BANNER_NAME = IFNULL (?, BANNER_NAME), ";
+            sql += "VIDEO_NAME = IFNULL (?, VIDEO_NAME), SCREENSHOTS = IFNULL (?, SCREENSHOTS), ";
+            sql += "MODIFIED_AT = IFNULL (?, MODIFIED_AT), IS_FREE = IFNULL (?, IS_FREE), ";
+            sql += "PAYMENT_CURRENCY = IFNULL (?, PAYMENT_CURRENCY), PAYMENT_PRICE = IFNULL (?, PAYMENT_PRICE), ";
+            sql += "APPLICATION_CATEGORY_ID = IFNULL (?, APPLICATION_CATEGORY_ID), PLATFORM_ID = IFNULL (?, PLATFORM_ID), ";
+            sql += "TENANT_ID = IFNULL (?, TENANT_ID) ";
+            sql += "WHERE UUID = ?";
 
 
             stmt = conn.prepareStatement(sql);
@@ -160,18 +165,16 @@ public class MySQLApplicationDAOImpl extends AbstractApplicationDAOImpl {
             stmt.setString(3, application.getDescription());
             stmt.setString(4, application.getIconName());
             stmt.setString(5, application.getBannerName());
-            stmt.setString(6, application.getUuid());
-//            stmt.setString(7, application.getVideoName());
-//            stmt.setString(8, JSONUtil.listToJsonArrayString(application.getScreenshots()));
-//            stmt.setString(9, application.getUser().getUserName());
-//            stmt.setDate(10, new Date(application.getCreatedAt().getTime()));
-//            stmt.setDate(11, new Date(application.getModifiedAt().getTime()));
-//            stmt.setInt(12, application.getCategory().getId());
-//            stmt.setInt(13, application.getPlatform().getId());
-//            stmt.setInt(14, application.getUser().getTenantId());
-//            stmt.setInt(15, application.getCurrentLifecycle().getLifecycleState().getId());
-//            stmt.setDate(16, new Date(application.getCurrentLifecycle().getLifecycleStateModifiedAt().getTime()));
-//            stmt.setString(17, application.getCurrentLifecycle().getGetLifecycleStateModifiedBy());
+            stmt.setString(6, application.getVideoName());
+            stmt.setString(7, JSONUtil.listToJsonArrayString(application.getScreenshots()));
+            stmt.setDate(8, new Date(application.getModifiedAt().getTime()));
+            stmt.setBoolean(9, application.getPayment().isFreeApp());
+            stmt.setString(10, application.getPayment().getPaymentCurrency());
+            stmt.setFloat(11, application.getPayment().getPaymentPrice());
+            stmt.setInt(12, application.getCategory().getId());
+            stmt.setInt(13, application.getPlatform().getId());
+            stmt.setInt(14, application.getUser().getTenantId());
+            stmt.setString(15, application.getUuid());
             stmt.executeUpdate();
 
 //            if (application.getTags() != null && application.getTags().size() > 0) {

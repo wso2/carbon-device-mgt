@@ -22,7 +22,7 @@ public class Payment {
 
     private String paymentCurrency;
 
-    private Float paymentPrice;
+    private float paymentPrice;
 
     public boolean isFreeApp() {
         return freeApp;
@@ -40,11 +40,11 @@ public class Payment {
         this.paymentCurrency = paymentCurrency;
     }
 
-    public Float getPaymentPrice() {
+    public float getPaymentPrice() {
         return paymentPrice;
     }
 
-    public void setPaymentPrice(Float paymentPrice) {
+    public void setPaymentPrice(float paymentPrice) {
         this.paymentPrice = paymentPrice;
     }
 }

@@ -18,19 +18,16 @@
  */
 package org.wso2.carbon.device.application.mgt.core.impl;
 
-import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.application.mgt.common.*;
 import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
 import org.wso2.carbon.device.application.mgt.common.exception.DBConnectionException;
 import org.wso2.carbon.device.application.mgt.common.services.ApplicationManager;
-import org.wso2.carbon.device.application.mgt.common.services.PlatformManager;
 import org.wso2.carbon.device.application.mgt.core.dao.ApplicationDAO;
 import org.wso2.carbon.device.application.mgt.core.dao.LifecycleStateDAO;
 import org.wso2.carbon.device.application.mgt.core.dao.PlatformDAO;
 import org.wso2.carbon.device.application.mgt.core.dao.common.DAOFactory;
 import org.wso2.carbon.device.application.mgt.core.exception.NotFoundException;
 import org.wso2.carbon.device.application.mgt.core.exception.ValidationException;
-import org.wso2.carbon.device.application.mgt.core.internal.DataHolder;
 import org.wso2.carbon.device.application.mgt.core.util.ConnectionManagerUtil;
 import org.wso2.carbon.device.application.mgt.core.util.HelperUtil;
 
@@ -68,9 +65,8 @@ public class ApplicationManagerImpl implements ApplicationManager {
             lifecycle.setGetLifecycleStateModifiedBy(application.getUser().getUserName());
             application.setCurrentLifecycle(lifecycle);
 
-            PlatformManager platformManager = DataHolder.getInstance().getPlatformManager();
-            Platform platform = platformManager.getPlatform(PrivilegedCarbonContext.getThreadLocalCarbonContext().
-                    getTenantDomain(true), application.getPlatform().getIdentifier());
+            PlatformDAO platformDAO = DAOFactory.getPlatformDAO();
+            Platform platform = platformDAO.getPlatform(application.getUser().getTenantId(), application.getPlatform().getIdentifier());
             if (platform == null) {
                 throw new NotFoundException("Invalid platform");
             }
@@ -87,11 +83,33 @@ public class ApplicationManagerImpl implements ApplicationManager {
     @Override
     public Application editApplication(Application application) throws ApplicationManagementException {
 
-        validateApplication(application, true);
+        if (application.getUuid() == null) {
+            throw new ValidationException("Application UUID cannot be empty");
+        }
 
         try {
             ConnectionManagerUtil.openConnection();
             ApplicationDAO applicationDAO = DAOFactory.getApplicationDAO();
+
+            if (application.getCategory() == null) {
+                application.setCategory(new Category());
+            }
+
+            if (application.getPlatform() == null) {
+                application.setPlatform(new Platform());
+            } else {
+                PlatformDAO platformDAO = DAOFactory.getPlatformDAO();
+                Platform platform = platformDAO.getPlatform(application.getUser().getTenantId(), application.getPlatform()
+                        .getIdentifier());
+                application.setPlatform(platform);
+                if (platform == null) {
+                    throw new NotFoundException("Invalid platform");
+                }
+            }
+
+            if (application.getPayment() == null) {
+                application.setPayment(new Payment());
+            }
 
             application.setModifiedAt(new Date());
 
@@ -131,13 +149,12 @@ public class ApplicationManagerImpl implements ApplicationManager {
             throw new ValidationException("Username and tenant Id cannot be empty");
         }
 
-        if (!isEdit) {
-            if (application.getCategory() == null || application.getCategory().getId() == 0) {
-                throw new ValidationException("Category id cannot be empty");
-            }
-            if (application.getPlatform() == null || application.getPlatform().getIdentifier() == null) {
-                throw new ValidationException("Platform identifier cannot be empty");
-            }
+        if (application.getCategory() == null || application.getCategory().getId() == 0) {
+            throw new ValidationException("Category id cannot be empty");
+        }
+
+        if (application.getPlatform() == null || application.getPlatform().getIdentifier() == null) {
+            throw new ValidationException("Platform identifier cannot be empty");
         }
 
 

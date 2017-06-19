@@ -17,7 +17,8 @@
   ~ under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <parent>
         <groupId>org.wso2.carbon.devicemgt</groupId>
@@ -114,6 +115,7 @@
                             org.osgi.framework,
                             org.osgi.service.component,
                             org.apache.commons.logging.*,
+                            org.wso2.carbon.utils.multitenancy,
                             org.wso2.carbon.context;version="${carbon.kernel.version.range}",
                             org.wso2.carbon.utils;version="${carbon.kernel.version.range}",
                             org.wso2.carbon.databridge.*;version="${carbon.analytics.common.version.range}",
@@ -122,7 +124,7 @@
                             org.wso2.carbon.registry.indexing.*; version="${carbon.registry.imp.pkg.version.range}",
                             org.json;version="${commons-json.version}",
                             javax.xml.*,
-			    javax.xml.parsers;version="${javax.xml.parsers.import.pkg.version}";resolution:=optional,
+                            javax.xml.parsers;version="${javax.xml.parsers.import.pkg.version}";resolution:=optional,
                             org.w3c.dom,
                             org.wso2.carbon.base
                         </Import-Package>
@@ -131,5 +133,5 @@
             </plugin>
         </plugins>
     </build>
-    
+
 </project>

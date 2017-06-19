@@ -147,7 +147,7 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
 
             // check whether the user is device-mgt admin
             if (deviceAccessAuthorizationService.isDeviceAdminUser()) {
-                if ((user != null && !user.isEmpty())) {
+                if (user != null && !user.isEmpty()) {
                     request.setOwner(MultitenantUtils.getTenantAwareUsername(user));
                 } else if (userPattern != null && !userPattern.isEmpty()) {
                     request.setOwnerPattern(userPattern);

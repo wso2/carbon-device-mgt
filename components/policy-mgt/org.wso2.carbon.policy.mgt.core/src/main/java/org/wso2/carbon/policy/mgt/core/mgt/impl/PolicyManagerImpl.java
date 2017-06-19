@@ -190,7 +190,7 @@ public class PolicyManagerImpl implements PolicyManager {
             policy.setProfileId(profileId);
             Timestamp currentTimestamp = new Timestamp(Calendar.getInstance().getTime().getTime());
             policy.getProfile().setUpdatedDate(currentTimestamp);
-
+            policy.setPriorityId(previousPolicy.getPriorityId());
             policyDAO.updatePolicy(policy);
             profileDAO.updateProfile(policy.getProfile());
 
@@ -392,7 +392,7 @@ public class PolicyManagerImpl implements PolicyManager {
         DeviceManagementProviderService service = new DeviceManagementProviderServiceImpl();
         for (DeviceIdentifier deviceIdentifier : deviceIdentifierList) {
             try {
-                Device device = service.getDevice(deviceIdentifier);
+                Device device = service.getDevice(deviceIdentifier, false);
                 deviceList.add(device);
             } catch (DeviceManagementException e) {
                 throw new PolicyManagementException("Error occurred while retrieving device information", e);
@@ -641,7 +641,7 @@ public class PolicyManagerImpl implements PolicyManager {
         try {
 
             DeviceManagementProviderService service = new DeviceManagementProviderServiceImpl();
-            Device device = service.getDevice(deviceIdentifier);
+            Device device = service.getDevice(deviceIdentifier, false);
 
             PolicyManagementDAOFactory.openConnection();
             policyIdList = policyDAO.getPolicyIdsOfDevice(device);
@@ -807,7 +807,7 @@ public class PolicyManagerImpl implements PolicyManager {
         int deviceId = -1;
         try {
             DeviceManagementProviderService service = new DeviceManagementProviderServiceImpl();
-            Device device = service.getDevice(deviceIdentifier);
+            Device device = service.getDevice(deviceIdentifier, false);
             deviceId = device.getId();
 
             PolicyManagementDAOFactory.beginTransaction();
@@ -879,7 +879,7 @@ public class PolicyManagerImpl implements PolicyManager {
         int deviceId = -1;
         try {
             DeviceManagementProviderService service = new DeviceManagementProviderServiceImpl();
-            Device device = service.getDevice(deviceIdentifier);
+            Device device = service.getDevice(deviceIdentifier, false);
             deviceId = device.getId();
             PolicyManagementDAOFactory.beginTransaction();
 
@@ -909,7 +909,7 @@ public class PolicyManagerImpl implements PolicyManager {
         int deviceId = -1;
         try {
             DeviceManagementProviderService service = new DeviceManagementProviderServiceImpl();
-            Device device = service.getDevice(deviceIdentifier);
+            Device device = service.getDevice(deviceIdentifier, false);
             deviceId = device.getId();
             PolicyManagementDAOFactory.beginTransaction();
 
@@ -937,7 +937,7 @@ public class PolicyManagerImpl implements PolicyManager {
         boolean exist;
         try {
             DeviceManagementProviderService service = new DeviceManagementProviderServiceImpl();
-            Device device = service.getDevice(deviceIdentifier);
+            Device device = service.getDevice(deviceIdentifier, false);
             PolicyManagementDAOFactory.openConnection();
             exist = policyDAO.checkPolicyAvailable(device.getId(), device.getEnrolmentInfo().getId());
         } catch (PolicyManagerDAOException e) {
@@ -958,7 +958,7 @@ public class PolicyManagerImpl implements PolicyManager {
     public boolean setPolicyApplied(DeviceIdentifier deviceIdentifier) throws PolicyManagementException {
         try {
             DeviceManagementProviderService service = new DeviceManagementProviderServiceImpl();
-            Device device = service.getDevice(deviceIdentifier);
+            Device device = service.getDevice(deviceIdentifier, false);
 
             PolicyManagementDAOFactory.openConnection();
             policyDAO.setPolicyApplied(device.getId(), device.getEnrolmentInfo().getId());
@@ -996,7 +996,7 @@ public class PolicyManagerImpl implements PolicyManager {
         DeviceManagementProviderService service = new DeviceManagementProviderServiceImpl();
         Device device;
         try {
-            device = service.getDevice(deviceId);
+            device = service.getDevice(deviceId, false);
             if (device == null) {
                 if (log.isDebugEnabled()) {
                     log.debug("No device is found upon the device identifier '" + deviceId.getId() +

@@ -128,7 +128,7 @@ public class PolicyManagementServiceImpl implements PolicyManagementService {
         List<DeviceIdentifier> deviceIdentifiers = policyWrapper.getDeviceIdentifiers();
         if (deviceIdentifiers != null) {
             for (DeviceIdentifier id : deviceIdentifiers) {
-                devices.add(DeviceMgtAPIUtils.getDeviceManagementService().getDevice(id));
+                devices.add(DeviceMgtAPIUtils.getDeviceManagementService().getDevice(id, false));
             }
         }
         policy.setDevices(devices);

@@ -38,17 +38,17 @@ deviceModule = function () {
     privateMethods.callBackend = function (url, method) {
         if (constants["HTTP_GET"] == method) {
             return serviceInvokers.XMLHttp.get(url,
-                function (backendResponse) {
-                    var response = {};
-                    response.content = backendResponse.responseText;
-                    if (backendResponse.status == 200) {
-                        response.status = "success";
-                    } else if (backendResponse.status == 400 || backendResponse.status == 401 ||
-                        backendResponse.status == 404 || backendResponse.status == 500) {
-                        response.status = "error";
-                    }
-                    return response;
-                }
+                                               function (backendResponse) {
+                                                   var response = {};
+                                                   response.content = backendResponse.responseText;
+                                                   if (backendResponse.status == 200) {
+                                                       response.status = "success";
+                                                   } else if (backendResponse.status == 400 || backendResponse.status == 401 ||
+                                                              backendResponse.status == 404 || backendResponse.status == 500) {
+                                                       response.status = "error";
+                                                   }
+                                                   return response;
+                                               }
             );
         } else {
             log.error("Runtime error : This method only support HTTP GET requests.");
@@ -69,35 +69,22 @@ deviceModule = function () {
             throw constants["ERRORS"]["USER_NOT_FOUND"];
         }
         var userName = carbonUser.username + "@" + carbonUser.domain;
-
-        var locationDataSet = [];
-        switch (deviceType) {
-            case 'android':
-                locationDataSet = batchProvider.getData(userName, deviceId, deviceType);
-                break;
-            case 'android_sense':
-                locationDataSet = batchProvider.getData(userName, deviceId, deviceType);
-                break;
-
+        var locationHistory = [];
+        try {
+            var fromDate = new Date();
+            fromDate.setHours(fromDate.getHours() - 2);
+            var toDate = new Date();
+            var serviceUrl = devicemgtProps["httpsURL"] + '/api/device-mgt/v1.0/geo-services/stats/' + deviceType + '/' + deviceId;
+            serviceInvokers.XMLHttp.get(serviceUrl,
+                                        function (backendResponse) {
+                                            if (backendResponse.status === 200 && backendResponse.responseText) {
+                                                locationHistory = JSON.parse(backendResponse.responseText);
+                                            }
+                                        });
+        } catch (e) {
+            log.error(e.message, e);
         }
-        var locationData = [];
-        var locationTimeData = [];
-        if (locationDataSet != null) {
 
-            for (var i = 0; i < locationDataSet.length; i++) {
-                var gpsReading = {};
-                var gpsReadingTimes = {};
-                gpsReading.lat = locationDataSet[i].latitude;
-                gpsReading.lng = locationDataSet[i].longitude;
-                if (deviceType == "android") {
-                    gpsReadingTimes.time = locationDataSet[i].timeStamp;
-                } else {
-                    gpsReadingTimes.time = locationDataSet[i].meta_timestamp;
-                }
-                locationData.push(gpsReading);
-                locationTimeData.push(gpsReadingTimes);
-            }
-        }
         var locationInfo = {};
         try {
             var url = devicemgtProps["httpsURL"] + "/api/device-mgt/v1.0/devices/" + deviceType + "/" + deviceId + "/location";
@@ -110,13 +97,11 @@ deviceModule = function () {
                         locationInfo.latitude = device.latitude;
                         locationInfo.longitude = device.longitude;
                         locationInfo.updatedOn = device.updatedTime;
-
                     }
                 });
         } catch (e) {
             log.error(e.message, e);
         }
-
 
         var utility = require('/app/modules/utility.js')["utility"];
         try {
@@ -192,27 +177,45 @@ deviceModule = function () {
                                 }
                             }
                         }
+
                         if (device["deviceInfo"]) {
                             filteredDeviceData["latestDeviceInfo"] = device["deviceInfo"];
+                        } else {
+                            filteredDeviceData["latestDeviceInfo"] = {};
+                            filteredDeviceData["latestDeviceInfo"]["location"] = {};
+                        }
 
-                            //location related verification and modifications
-                            // adding the location histry for the movement path.
-                            var locationHistory = {};
-                            locationHistory.locations = locationData;
-                            locationHistory.times = locationTimeData;
-                            filteredDeviceData["locationHistory"] = locationHistory;
+                        //location related verification and modifications
+                        // adding the location histry for the movement path.
+                        filteredDeviceData["locationHistory"] = locationHistory;
 
-                            //checking for the latest location information.
-                            if (filteredDeviceData.latestDeviceInfo.location && locationInfo) {
-                                var infoDate = new Date(filteredDeviceData.latestDeviceInfo.location.updatedTime);
-                                var locationDate = new Date(locationInfo.updatedOn);
-                                if (infoDate < locationDate) {
-                                    filteredDeviceData.latestDeviceInfo.location.longitude = locationInfo.longitude;
-                                    filteredDeviceData.latestDeviceInfo.location.latitude = locationInfo.latitude;
-                                }
+                        //checking for the latest location information based on historical data.
+                        if (locationHistory) {
+                            var infoDate;
+                            var locationDate;
+                            var historicalLatestLoc = locationHistory[locationHistory.length - 1];
+                            if (historicalLatestLoc && filteredDeviceData.latestDeviceInfo && filteredDeviceData.latestDeviceInfo.location) {
+                                infoDate = new Date(filteredDeviceData.latestDeviceInfo.location.updatedTime);
+                                locationDate = new Date(historicalLatestLoc.values.timeStamp);
+                            }
+                            if (infoDate < locationDate || filteredDeviceData.latestDeviceInfo.length === 0) {
+                                filteredDeviceData.latestDeviceInfo.location = {};
+                                filteredDeviceData.latestDeviceInfo.location.longitude = historicalLatestLoc.values.longitude;
+                                filteredDeviceData.latestDeviceInfo.location.latitude = historicalLatestLoc.values.latitude;
+                                filteredDeviceData.latestDeviceInfo.location.updatedTime = historicalLatestLoc.values.timeStamp;
                             }
                         }
 
+                        //checking for the latest location information.
+                        if (filteredDeviceData.latestDeviceInfo.location && locationInfo) {
+                            var infoDate = new Date(filteredDeviceData.latestDeviceInfo.location.updatedTime);
+                            var locationDate = new Date(locationInfo.updatedOn);
+                            if (infoDate < locationDate) {
+                                filteredDeviceData.latestDeviceInfo.location.longitude = locationInfo.longitude;
+                                filteredDeviceData.latestDeviceInfo.location.latitude = locationInfo.latitude;
+                                filteredDeviceData.latestDeviceInfo.location.updatedTime = locationInfo.updatedOn;
+                            }
+                        }
 
                         response["content"] = filteredDeviceData;
                         response["status"] = "success";
@@ -245,10 +248,10 @@ deviceModule = function () {
             var url;
             if (uiPermissions.LIST_DEVICES) {
                 url = devicemgtProps["httpsURL"] +
-                    devicemgtProps["backendRestEndpoints"]["deviceMgt"] + "/devices?offset=0&limit=1";
+                      devicemgtProps["backendRestEndpoints"]["deviceMgt"] + "/devices?offset=0&limit=1";
             } else if (uiPermissions.LIST_OWN_DEVICES) {
                 url = devicemgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"] +
-                    "/devices?offset=0&limit=1&user=" + carbonUser.username;
+                      "/devices?offset=0&limit=1&user=" + carbonUser.username;
             } else {
                 log.error("Access denied for user: " + carbonUser.username);
                 return -1;
@@ -277,31 +280,9 @@ deviceModule = function () {
         return response;
     };
 
-    /*
-     @Updated
-     */
-    // publicMethods.getLicense = function (deviceType) {
-    //     var url;
-    //     var license;
-    //     if (deviceType == "windows") {
-    //         url = mdmProps["httpURL"] + "/mdm-windows-agent/services/device/license";
-    //     } else if (deviceType == "ios") {
-    //         url = mdmProps["httpsURL"] + "/ios-enrollment/license/";
-    //     }
-
-    //     if (url != null && url != undefined) {
-    //         serviceInvokers.XMLHttp.get(url, function (responsePayload) {
-    //             license = responsePayload.text;
-    //         }, function (responsePayload) {
-    //             return null;
-    //         });
-    //     }
-    //     return license;
-    // };
-
     publicMethods.getDevices = function (userName) {
         var url = devicemgtProps["httpsURL"] +
-            devicemgtProps["backendRestEndpoints"]["deviceMgt"] + "/devices";
+                  devicemgtProps["backendRestEndpoints"]["deviceMgt"] + "/devices";
         return serviceInvokers.XMLHttp.get(
             url, function (responsePayload) {
                 var devices = JSON.parse(responsePayload.responseText).devices;

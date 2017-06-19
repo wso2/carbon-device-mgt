@@ -118,7 +118,7 @@ public class PolicyDAOTestCase extends BasePolicyManagementDAOTest {
         if (log.isDebugEnabled()) {
             log.debug("Printing device taken by calling the service layer with device type.");
         }
-        List<Device> devices3 = service.getAllDevices("android");
+        List<Device> devices3 = service.getAllDevices("android", false);
 
         log.debug("Device list size ...! " + devices3.size());
         for (Device device : devices3) {
@@ -437,7 +437,7 @@ public class PolicyDAOTestCase extends BasePolicyManagementDAOTest {
         PolicyManagerService policyManagerService = new PolicyManagerServiceImpl();
 
         List<Policy> policies = policyManagerService.getPolicies("android");
-        List<Device> devices = service.getAllDevices("android");
+        List<Device> devices = service.getAllDevices("android", false);
 
         for (Policy policy : policies) {
             log.debug("Policy Name : " + policy.getPolicyName());

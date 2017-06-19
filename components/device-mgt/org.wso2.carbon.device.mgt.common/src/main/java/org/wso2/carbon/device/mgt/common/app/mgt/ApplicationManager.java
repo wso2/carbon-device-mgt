@@ -39,7 +39,7 @@ public interface ApplicationManager {
      * @param pageNumber Page number of the list.
      * @param size       Number of items in one page.
      * @return The list of applications belongs to a domain.
-     * @throws ApplicationManagementException
+     * @throws ApplicationManagementException If something goes wrong
      */
 
     Application[] getApplications(String domain, int pageNumber, int size)
@@ -52,6 +52,7 @@ public interface ApplicationManager {
      * @param deviceId    Device id of the device that the status belongs to.
      * @param application Application details of the app being updated.
      * @param status      Installed/Uninstalled
+     * @throws ApplicationManagementException If something goes wrong
      */
     void updateApplicationStatus(DeviceIdentifier deviceId, Application application, String status)
             throws ApplicationManagementException;
@@ -62,6 +63,7 @@ public interface ApplicationManager {
      * @param deviceId    Device id of the device that the status belongs to.
      * @param application Application details of the app being searched.
      * @return Status of the application on the device.
+     * @throws ApplicationManagementException If something goes wrong
      */
     String getApplicationStatus(DeviceIdentifier deviceId, Application application)
             throws ApplicationManagementException;

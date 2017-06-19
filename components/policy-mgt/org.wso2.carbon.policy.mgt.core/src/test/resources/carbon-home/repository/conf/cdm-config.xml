@@ -24,27 +24,35 @@
                 <Name>jdbc/DM_DS</Name>
             </JndiLookupDefinition>
         </DataSourceConfiguration>
-        <EmailClientConfiguration>
-            <minimumThread>8</minimumThread>
-            <maximumThread>100</maximumThread>
-            <keepAliveTime>20</keepAliveTime>
-            <ThreadQueueCapacity>1000</ThreadQueueCapacity>
-        </EmailClientConfiguration>
-        <IdentityConfiguration>
-            <ServerUrl>https://localhost:9443</ServerUrl>
-            <AdminUsername>admin</AdminUsername>
-            <AdminPassword>admin</AdminPassword>
-        </IdentityConfiguration>
-        <PolicyConfiguration>
-            <monitoringClass>org.wso2.carbon.policy.mgt</monitoringClass>
-            <monitoringEnable>true</monitoringEnable>
-            <monitoringFrequency>60000</monitoringFrequency>
-            <maxRetries>5</maxRetries>
-            <minRetriesToMarkUnreachable>8</minRetriesToMarkUnreachable>
-            <minRetriesToMarkInactive>20</minRetriesToMarkInactive>
-            <!--<PolicyEvaluationPoint>Simple</PolicyEvaluationPoint>-->
-            <PolicyEvaluationPoint>Simple</PolicyEvaluationPoint>
-        </PolicyConfiguration>
     </ManagementRepository>
+    <EmailClientConfiguration>
+        <minimumThread>8</minimumThread>
+        <maximumThread>100</maximumThread>
+        <keepAliveTime>20</keepAliveTime>
+        <ThreadQueueCapacity>1000</ThreadQueueCapacity>
+    </EmailClientConfiguration>
+    <IdentityConfiguration>
+        <ServerUrl>https://localhost:9443</ServerUrl>
+        <AdminUsername>admin</AdminUsername>
+        <AdminPassword>admin</AdminPassword>
+    </IdentityConfiguration>
+    <PolicyConfiguration>
+        <monitoringClass>org.wso2.carbon.policy.mgt</monitoringClass>
+        <monitoringEnable>true</monitoringEnable>
+        <monitoringFrequency>60000</monitoringFrequency>
+        <maxRetries>5</maxRetries>
+        <minRetriesToMarkUnreachable>8</minRetriesToMarkUnreachable>
+        <minRetriesToMarkInactive>20</minRetriesToMarkInactive>
+        <!--<PolicyEvaluationPoint>Simple</PolicyEvaluationPoint>-->
+        <PolicyEvaluationPoint>Simple</PolicyEvaluationPoint>
+    </PolicyConfiguration>
+    <!--This specifies whether to enable the DeviceStatus Task in this node.-->
+    <DeviceStatusTaskConfig>
+        <Enable>true</Enable>
+    </DeviceStatusTaskConfig>
+    <DeviceCacheConfiguration>
+        <Enable>true</Enable>
+        <ExpiryTime>300</ExpiryTime>
+    </DeviceCacheConfiguration>
 </DeviceMgtConfiguration>
 

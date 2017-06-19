@@ -24,11 +24,9 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
 import org.wso2.carbon.device.mgt.common.policy.mgt.PolicyMonitoringManager;
-import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
-import org.wso2.carbon.device.mgt.core.config.policy.PolicyConfiguration;
+import org.wso2.carbon.device.mgt.common.policy.mgt.monitor.PolicyComplianceException;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.ntask.core.Task;
-import org.wso2.carbon.device.mgt.common.policy.mgt.monitor.PolicyComplianceException;
 import org.wso2.carbon.policy.mgt.core.internal.PolicyManagementDataHolder;
 import org.wso2.carbon.policy.mgt.core.mgt.MonitoringManager;
 
@@ -83,7 +81,7 @@ public class MonitoringTask implements Task {
                     PolicyMonitoringManager monitoringService =
                             PolicyManagementDataHolder.getInstance().getDeviceManagementService()
                                     .getPolicyMonitoringManager(deviceType);
-                    List<Device> devices = deviceManagementProviderService.getAllDevices(deviceType);
+                    List<Device> devices = deviceManagementProviderService.getAllDevices(deviceType, false);
                     if (monitoringService != null && !devices.isEmpty()) {
                         List<Device> notifiableDevices = new ArrayList<>();
                         if (log.isDebugEnabled()) {

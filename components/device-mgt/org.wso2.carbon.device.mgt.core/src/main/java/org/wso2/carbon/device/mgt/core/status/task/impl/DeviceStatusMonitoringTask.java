@@ -21,6 +21,7 @@ package org.wso2.carbon.device.mgt.core.status.task.impl;
 import com.google.gson.Gson;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.DeviceStatusTaskPluginConfig;
 import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
 import org.wso2.carbon.device.mgt.common.TransactionManagementException;
@@ -66,8 +67,10 @@ public class DeviceStatusMonitoringTask implements Task {
     public void execute() {
         List<OperationEnrolmentMapping> operationEnrolmentMappings = null;
         List<EnrolmentInfo> enrolmentInfoTobeUpdated = new ArrayList<>();
+        List<DeviceIdentifier> identifiers = new ArrayList<>();
         Map<Integer, Long> lastActivities = null;
         EnrolmentInfo enrolmentInfo;
+        DeviceIdentifier deviceIdentifier;
         try {
             operationEnrolmentMappings = this.getOperationEnrolmentMappings();
             if (operationEnrolmentMappings != null && operationEnrolmentMappings.size() > 0) {
@@ -87,12 +90,19 @@ public class DeviceStatusMonitoringTask implements Task {
                 enrolmentInfo.setId(mapping.getEnrolmentId());
                 enrolmentInfo.setStatus(newStatus);
                 enrolmentInfoTobeUpdated.add(enrolmentInfo);
+
+                deviceIdentifier = new DeviceIdentifier();
+                deviceIdentifier.setId(mapping.getDeviceId());
+                deviceIdentifier.setId(mapping.getDeviceType());
+                identifiers.add(deviceIdentifier);
             }
         }
 
         if (enrolmentInfoTobeUpdated.size() > 0) {
             try {
                 this.updateDeviceStatus(enrolmentInfoTobeUpdated);
+                //Remove updated entries from cache
+                //DeviceCacheManagerImpl.getInstance().removeDevicesFromCache(identifiers);
             } catch (DeviceStatusTaskException e) {
                 log.error("Error occurred while updating non-responsive device-status of devices of type '" + deviceType + "'",e);
             }

@@ -138,77 +138,47 @@ public class OracleOperationDAOImpl extends GenericOperationDAOImpl {
     }
 
     @Override
-    public void updateEnrollmentOperationsStatus(int enrolmentId, String operationCode,
-                                                 Operation.Status existingStatus, Operation.Status newStatus) throws OperationManagementDAOException {
+    public Map<Integer, List<OperationMapping>> getOperationMappingsByStatus(Operation.Status opStatus, Operation.PushNotificationStatus pushNotificationStatus,
+                                                                             int limit) throws OperationManagementDAOException {
         PreparedStatement stmt = null;
         ResultSet rs = null;
+        OperationMapping operationMapping;
+        Map<Integer, List<OperationMapping>> operationMappingsTenantMap = new HashMap<>();
         try {
-            Connection connection = OperationManagementDAOFactory.getConnection();
-            String query = "SELECT EOM.ID FROM DM_ENROLMENT_OP_MAPPING EOM INNER JOIN DM_OPERATION DM "
-                    + "ON DM.ID = EOM.OPERATION_ID  WHERE EOM.ENROLMENT_ID = ? AND DM.OPERATION_CODE = ? "
-                    + "AND EOM.STATUS = ?";
-            stmt = connection.prepareStatement(query);
-            stmt.setInt(1, enrolmentId);
-            stmt.setString(2, operationCode);
-            stmt.setString(3, existingStatus.toString());
-            // This will return only one result always.
+            Connection conn = OperationManagementDAOFactory.getConnection();
+            String sql = "SELECT op.ENROLMENT_ID, op.OPERATION_ID, d.DEVICE_IDENTIFICATION, dt.NAME as DEVICE_TYPE, d" +
+                    ".TENANT_ID FROM DM_DEVICE d, DM_ENROLMENT_OP_MAPPING op, DM_DEVICE_TYPE dt  WHERE op.STATUS = ? " +
+                    "AND op.PUSH_NOTIFICATION_STATUS = ? AND d.DEVICE_TYPE_ID = dt.ID AND d.ID=op.ENROLMENT_ID AND " +
+                    "ROWNUM <= ? ORDER BY op.OPERATION_ID";
+
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, opStatus.toString());
+            stmt.setString(2, pushNotificationStatus.toString());
+            stmt.setInt(3, limit);
             rs = stmt.executeQuery();
-            int id = 0;
             while (rs.next()) {
-                id = rs.getInt("ID");
-            }
-            if (id != 0) {
-                stmt = connection.prepareStatement(
-                        "UPDATE DM_ENROLMENT_OP_MAPPING SET STATUS = ?, " + "UPDATED_TIMESTAMP = ?  WHERE ID = ?");
-                stmt.setString(1, newStatus.toString());
-                stmt.setLong(2, System.currentTimeMillis() / 1000);
-                stmt.setInt(3, id);
-                stmt.executeUpdate();
-            }
-
-        } catch (SQLException e) {
-            throw new OperationManagementDAOException(
-                    "Error occurred while update device mapping operation status " + "metadata", e);
-        } finally {
-            OperationManagementDAOUtil.cleanupResources(stmt);
-        }
-    }
-
-    @Override
-    public boolean updateTaskOperation(int enrolmentId, String operationCode) throws OperationManagementDAOException {
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-        boolean result = false;
-        try {
-            Connection connection = OperationManagementDAOFactory.getConnection();
-            String query = "SELECT EOM.ID FROM DM_ENROLMENT_OP_MAPPING EOM INNER JOIN DM_OPERATION DM "
-                    + "ON DM.ID = EOM.OPERATION_ID WHERE EOM.ENROLMENT_ID = ? AND DM.OPERATION_CODE = ? AND "
-                    + "EOM.STATUS = ?";
-            stmt = connection.prepareStatement(query);
-            stmt.setInt(1, enrolmentId);
-            stmt.setString(2, operationCode);
-            stmt.setString(3, Operation.Status.PENDING.toString());
-            // This will return only one result always.
-            rs = stmt.executeQuery();
-            int id = 0;
-            if (rs.next()) {
-                id = rs.getInt("ID");
-            }
-            if (id != 0) {
-                stmt = connection.prepareStatement(
-                        "UPDATE DM_ENROLMENT_OP_MAPPING SET UPDATED_TIMESTAMP = ?  " + "WHERE ID = ?");
-                stmt.setLong(1, System.currentTimeMillis() / 1000);
-                stmt.setInt(2, id);
-                stmt.executeUpdate();
-                result = true;
+                int tenantID = rs.getInt("TENANT_ID");
+                List<OperationMapping> operationMappings = operationMappingsTenantMap.get(tenantID);
+                if (operationMappings == null) {
+                    operationMappings = new LinkedList<>();
+                    operationMappingsTenantMap.put(tenantID, operationMappings);
+                }
+                operationMapping = new OperationMapping();
+                operationMapping.setOperationId(rs.getInt("OPERATION_ID"));
+                DeviceIdentifier deviceIdentifier = new DeviceIdentifier();
+                deviceIdentifier.setId(rs.getString("DEVICE_IDENTIFICATION"));
+                deviceIdentifier.setType(rs.getString("DEVICE_TYPE"));
+                operationMapping.setDeviceIdentifier(deviceIdentifier);
+                operationMapping.setEnrollmentId(rs.getInt("ENROLMENT_ID"));
+                operationMapping.setTenantId(tenantID);
+                operationMappings.add(operationMapping);
             }
         } catch (SQLException e) {
-            throw new OperationManagementDAOException(
-                    "Error occurred while update device mapping operation status " + "metadata", e);
+            throw new OperationManagementDAOException("SQL error while getting operation mappings from database. ", e);
         } finally {
-            OperationManagementDAOUtil.cleanupResources(stmt);
+            OperationManagementDAOUtil.cleanupResources(stmt, rs);
         }
-        return result;
+        return operationMappingsTenantMap;
     }
 
     @Override
@@ -339,75 +309,5 @@ public class OracleOperationDAOImpl extends GenericOperationDAOImpl {
             OperationManagementDAOUtil.cleanupResources(stmt, rs);
         }
         return activities;
-    }
-
-    @Override
-    public int getActivityCountUpdatedAfter(long timestamp) throws OperationManagementDAOException {
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-        try {
-            Connection conn = OperationManagementDAOFactory.getConnection();
-            String sql = "SELECT COUNT(*) COUNT FROM DM_ENROLMENT_OP_MAPPING m \n"
-                    + "INNER JOIN DM_ENROLMENT d ON m.ENROLMENT_ID = d.ID \n"
-                    + "WHERE m.UPDATED_TIMESTAMP > ? AND d.TENANT_ID = ?";
-            stmt = conn.prepareStatement(sql);
-            stmt.setLong(1, timestamp);
-            stmt.setInt(2, PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId());
-            rs = stmt.executeQuery();
-            if (rs.next()) {
-                return rs.getInt("COUNT");
-            }
-        } catch (SQLException e) {
-            throw new OperationManagementDAOException(
-                    "Error occurred while getting the activity count from " + "the database.", e);
-        } finally {
-            OperationManagementDAOUtil.cleanupResources(stmt, rs);
-        }
-        return 0;
-    }
-
-
-    @Override
-    public Map<Integer, List<OperationMapping>> getOperationMappingsByStatus(Operation.Status opStatus, Operation.PushNotificationStatus pushNotificationStatus,
-                                                                             int limit) throws OperationManagementDAOException {
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-        OperationMapping operationMapping;
-        Map<Integer, List<OperationMapping>> operationMappingsTenantMap = new HashMap<>();
-        try {
-            Connection conn = OperationManagementDAOFactory.getConnection();
-            String sql = "SELECT op.ENROLMENT_ID, op.OPERATION_ID, d.DEVICE_IDENTIFICATION, dt.NAME as DEVICE_TYPE, d" +
-                    ".TENANT_ID FROM DM_DEVICE d, DM_ENROLMENT_OP_MAPPING op, DM_DEVICE_TYPE dt  WHERE op.STATUS = ? " +
-                    "AND op.PUSH_NOTIFICATION_STATUS = ? AND d.DEVICE_TYPE_ID = dt.ID AND d.ID=op.ENROLMENT_ID AND " +
-                    "ROWNUM <= ? ORDER BY op.OPERATION_ID";
-
-            stmt = conn.prepareStatement(sql);
-            stmt.setString(1, opStatus.toString());
-            stmt.setString(2, pushNotificationStatus.toString());
-            stmt.setInt(3, limit);
-            rs = stmt.executeQuery();
-            while (rs.next()) {
-                int tenantID = rs.getInt("TENANT_ID");
-                List<OperationMapping> operationMappings = operationMappingsTenantMap.get(tenantID);
-                if (operationMappings == null) {
-                    operationMappings = new LinkedList<>();
-                    operationMappingsTenantMap.put(tenantID, operationMappings);
-                }
-                operationMapping = new OperationMapping();
-                operationMapping.setOperationId(rs.getInt("OPERATION_ID"));
-                DeviceIdentifier deviceIdentifier = new DeviceIdentifier();
-                deviceIdentifier.setId(rs.getString("DEVICE_IDENTIFICATION"));
-                deviceIdentifier.setType(rs.getString("DEVICE_TYPE"));
-                operationMapping.setDeviceIdentifier(deviceIdentifier);
-                operationMapping.setEnrollmentId(rs.getInt("ENROLMENT_ID"));
-                operationMapping.setTenantId(tenantID);
-                operationMappings.add(operationMapping);
-            }
-        } catch (SQLException e) {
-            throw new OperationManagementDAOException("SQL error while getting operation mappings from database. ", e);
-        } finally {
-            OperationManagementDAOUtil.cleanupResources(stmt, rs);
-        }
-        return operationMappingsTenantMap;
     }
 }

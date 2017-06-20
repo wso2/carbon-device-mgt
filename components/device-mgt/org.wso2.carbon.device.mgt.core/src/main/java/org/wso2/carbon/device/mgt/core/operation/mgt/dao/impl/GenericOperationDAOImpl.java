@@ -135,9 +135,9 @@ public class GenericOperationDAOImpl implements OperationDAO {
         ResultSet rs = null;
         try {
             Connection connection = OperationManagementDAOFactory.getConnection();
-            String query = "SELECT EOM.ID FROM DM_ENROLMENT_OP_MAPPING AS EOM INNER JOIN DM_OPERATION DM " +
-                    "ON DM.ID = EOM.OPERATION_ID  WHERE EOM.ENROLMENT_ID = ? AND DM.OPERATION_CODE = ? " +
-                    "AND EOM.STATUS = ?;";
+            String query = "SELECT EOM.ID FROM DM_ENROLMENT_OP_MAPPING EOM INNER JOIN DM_OPERATION DM "
+                    + "ON DM.ID = EOM.OPERATION_ID  WHERE EOM.ENROLMENT_ID = ? AND DM.OPERATION_CODE = ? "
+                    + "AND EOM.STATUS = ?";
             stmt = connection.prepareStatement(query);
             stmt.setInt(1, enrolmentId);
             stmt.setString(2, operationCode);
@@ -149,8 +149,8 @@ public class GenericOperationDAOImpl implements OperationDAO {
                 id = rs.getInt("ID");
             }
             if (id != 0) {
-                stmt = connection.prepareStatement("UPDATE DM_ENROLMENT_OP_MAPPING SET STATUS = ?, " +
-                        "UPDATED_TIMESTAMP = ?  WHERE ID = ?");
+                stmt = connection.prepareStatement(
+                        "UPDATE DM_ENROLMENT_OP_MAPPING SET STATUS = ?, " + "UPDATED_TIMESTAMP = ?  WHERE ID = ?");
                 stmt.setString(1, newStatus.toString());
                 stmt.setLong(2, System.currentTimeMillis() / 1000);
                 stmt.setInt(3, id);
@@ -158,8 +158,8 @@ public class GenericOperationDAOImpl implements OperationDAO {
             }
 
         } catch (SQLException e) {
-            throw new OperationManagementDAOException("Error occurred while update device mapping operation status " +
-                    "metadata", e);
+            throw new OperationManagementDAOException(
+                    "Error occurred while update device mapping operation status " + "metadata", e);
         } finally {
             OperationManagementDAOUtil.cleanupResources(stmt);
         }
@@ -173,9 +173,9 @@ public class GenericOperationDAOImpl implements OperationDAO {
         boolean result = false;
         try {
             Connection connection = OperationManagementDAOFactory.getConnection();
-            String query = "SELECT EOM.ID FROM DM_ENROLMENT_OP_MAPPING AS EOM INNER JOIN DM_OPERATION DM " +
-                    "ON DM.ID = EOM.OPERATION_ID WHERE EOM.ENROLMENT_ID = ? AND DM.OPERATION_CODE = ? AND " +
-                    "EOM.STATUS = ?;";
+            String query = "SELECT EOM.ID FROM DM_ENROLMENT_OP_MAPPING EOM INNER JOIN DM_OPERATION DM "
+                    + "ON DM.ID = EOM.OPERATION_ID WHERE EOM.ENROLMENT_ID = ? AND DM.OPERATION_CODE = ? AND "
+                    + "EOM.STATUS = ?";
             stmt = connection.prepareStatement(query);
             stmt.setInt(1, enrolmentId);
             stmt.setString(2, operationCode);
@@ -187,16 +187,16 @@ public class GenericOperationDAOImpl implements OperationDAO {
                 id = rs.getInt("ID");
             }
             if (id != 0) {
-                stmt = connection.prepareStatement("UPDATE DM_ENROLMENT_OP_MAPPING SET UPDATED_TIMESTAMP = ?  " +
-                        "WHERE ID = ?");
+                stmt = connection.prepareStatement(
+                        "UPDATE DM_ENROLMENT_OP_MAPPING SET UPDATED_TIMESTAMP = ?  " + "WHERE ID = ?");
                 stmt.setLong(1, System.currentTimeMillis() / 1000);
                 stmt.setInt(2, id);
                 stmt.executeUpdate();
                 result = true;
             }
         } catch (SQLException e) {
-            throw new OperationManagementDAOException("Error occurred while update device mapping operation status " +
-                    "metadata", e);
+            throw new OperationManagementDAOException(
+                    "Error occurred while update device mapping operation status " + "metadata", e);
         } finally {
             OperationManagementDAOUtil.cleanupResources(stmt);
         }
@@ -548,9 +548,9 @@ public class GenericOperationDAOImpl implements OperationDAO {
         ResultSet rs = null;
         try {
             Connection conn = OperationManagementDAOFactory.getConnection();
-            String sql = "SELECT COUNT(*) AS COUNT FROM DM_ENROLMENT_OP_MAPPING AS m \n" +
-                    "INNER JOIN DM_ENROLMENT AS d ON m.ENROLMENT_ID = d.ID \n" +
-                    "WHERE m.UPDATED_TIMESTAMP > ? AND d.TENANT_ID = ?;";
+            String sql = "SELECT COUNT(*) AS COUNT FROM DM_ENROLMENT_OP_MAPPING m \n"
+                    + "INNER JOIN DM_ENROLMENT d ON m.ENROLMENT_ID = d.ID \n"
+                    + "WHERE m.UPDATED_TIMESTAMP > ? AND d.TENANT_ID = ?";
             stmt = conn.prepareStatement(sql);
             stmt.setLong(1, timestamp);
             stmt.setInt(2, PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId());
@@ -559,8 +559,8 @@ public class GenericOperationDAOImpl implements OperationDAO {
                 return rs.getInt("COUNT");
             }
         } catch (SQLException e) {
-            throw new OperationManagementDAOException("Error occurred while getting the activity count from " +
-                    "the database.", e);
+            throw new OperationManagementDAOException(
+                    "Error occurred while getting the activity count from " + "the database.", e);
         } finally {
             OperationManagementDAOUtil.cleanupResources(stmt, rs);
         }

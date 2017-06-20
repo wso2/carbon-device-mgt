@@ -32,6 +32,9 @@ import java.sql.SQLException;
 import java.util.List;
 
 public class OracleServerFeatureDAOImpl extends AbstractFeatureDAO {
+    /**
+     * Batch sizes greater than 10 throws array out of bound exception.
+     */
     private static int BATCH_SIZE = 10;
 
     @Override

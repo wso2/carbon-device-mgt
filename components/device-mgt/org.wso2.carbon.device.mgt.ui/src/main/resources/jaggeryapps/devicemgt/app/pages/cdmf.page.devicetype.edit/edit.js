@@ -43,7 +43,7 @@ function onRequest(context) {
 			if (restAPIResponse["status"] == 200 && restAPIResponse["responseText"]) {
 				var typeData = parse(restAPIResponse["responseText"]);
 				displayData.type = typeData;
-				
+
 			}
 		}
 	);

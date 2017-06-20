@@ -18,6 +18,8 @@
 
 package org.wso2.carbon.device.mgt.core.dao.impl;
 
+import org.wso2.carbon.device.mgt.common.Device;
+import org.wso2.carbon.device.mgt.common.DeviceManagementConstants;
 import org.wso2.carbon.device.mgt.common.GroupPaginationRequest;
 import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroup;
 import org.wso2.carbon.device.mgt.core.dao.GroupDAO;
@@ -58,7 +60,7 @@ public abstract class AbstractGroupDAOImpl implements GroupDAO {
             return groupId;
         } catch (SQLException e) {
             throw new GroupManagementDAOException("Error occurred while adding deviceGroup '" +
-                                                          deviceGroup.getName() + "'", e);
+                    deviceGroup.getName() + "'", e);
         } finally {
             GroupManagementDAOUtil.cleanupResources(stmt, null);
         }
@@ -81,7 +83,7 @@ public abstract class AbstractGroupDAOImpl implements GroupDAO {
             stmt.executeUpdate();
         } catch (SQLException e) {
             throw new GroupManagementDAOException("Error occurred while updating deviceGroup '" +
-                                                          deviceGroup.getName() + "'", e);
+                    deviceGroup.getName() + "'", e);
         } finally {
             GroupManagementDAOUtil.cleanupResources(stmt, null);
         }
@@ -146,7 +148,7 @@ public abstract class AbstractGroupDAOImpl implements GroupDAO {
             }
         } catch (SQLException e) {
             throw new GroupManagementDAOException("Error occurred while obtaining information of Device Group '" +
-                                                          groupId + "'", e);
+                    groupId + "'", e);
         } finally {
             GroupManagementDAOUtil.cleanupResources(stmt, resultSet);
         }
@@ -563,7 +565,7 @@ public abstract class AbstractGroupDAOImpl implements GroupDAO {
             }
         } catch (SQLException e) {
             throw new GroupManagementDAOException("Error occurred while getting own groups of user '"
-                                                          + username + "'", e);
+                    + username + "'", e);
         } finally {
             GroupManagementDAOUtil.cleanupResources(stmt, resultSet);
         }
@@ -588,7 +590,7 @@ public abstract class AbstractGroupDAOImpl implements GroupDAO {
             }
         } catch (SQLException e) {
             throw new GroupManagementDAOException("Error occurred while getting own groups of user '"
-                                                          + username + "'", e);
+                    + username + "'", e);
         } finally {
             GroupManagementDAOUtil.cleanupResources(stmt, resultSet);
         }
@@ -613,7 +615,7 @@ public abstract class AbstractGroupDAOImpl implements GroupDAO {
             }
         } catch (SQLException e) {
             throw new GroupManagementDAOException("Error occurred while getting own groups count of user '"
-                                                          + username + "'", e);
+                    + username + "'", e);
         } finally {
             GroupManagementDAOUtil.cleanupResources(stmt, resultSet);
         }

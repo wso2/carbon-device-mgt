@@ -363,7 +363,8 @@ public class ProcessorImpl implements Processor {
             String query = "SELECT * FROM DM_DEVICE_INFO WHERE DEVICE_ID IN (";
             if (conn.getMetaData().getDatabaseProductName().contains(DeviceManagementConstants.DataBaseTypes.DB_TYPE_H2) || conn.getMetaData()
                     .getDatabaseProductName().contains(DeviceManagementConstants.DataBaseTypes.DB_TYPE_MYSQL) ||
-                    conn.getMetaData().getDatabaseProductName().contains(DeviceManagementConstants.DataBaseTypes.DB_TYPE_ORACLE)) {
+                    conn.getMetaData().getDatabaseProductName().contains(DeviceManagementConstants.DataBaseTypes.DB_TYPE_ORACLE) ||
+                    conn.getMetaData().getDatabaseProductName().contains(DeviceManagementConstants.DataBaseTypes.DB_TYPE_MSSQL)) {
                 StringBuilder builder = new StringBuilder();
                 for (int i = 0; i < devices.size(); i++) {
                     builder.append("?,");
@@ -376,9 +377,8 @@ public class ProcessorImpl implements Processor {
             } else {
                 query += "?) ORDER BY DEVICE_ID";
                 stmt = conn.prepareStatement(query);
-                for (int i = 0; i < devices.size(); i++) {
-                    stmt.setInt(i, devices.get(i).getId());
-                }
+                Array array = conn.createArrayOf("INT", Utils.getArrayOfDeviceIds(devices));
+                stmt.setArray(1, array);
             }
             rs = stmt.executeQuery();
 

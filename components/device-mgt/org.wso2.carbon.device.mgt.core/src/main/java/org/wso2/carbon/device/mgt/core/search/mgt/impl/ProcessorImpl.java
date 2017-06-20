@@ -363,7 +363,8 @@ public class ProcessorImpl implements Processor {
             String query = "SELECT * FROM DM_DEVICE_INFO WHERE DEVICE_ID IN (";
             if (conn.getMetaData().getDatabaseProductName().contains(DeviceManagementConstants.DataBaseTypes.DB_TYPE_H2) || conn.getMetaData()
                     .getDatabaseProductName().contains(DeviceManagementConstants.DataBaseTypes.DB_TYPE_MYSQL) ||
-                    conn.getMetaData().getDatabaseProductName().contains(DeviceManagementConstants.DataBaseTypes.DB_TYPE_ORACLE)) {
+                    conn.getMetaData().getDatabaseProductName().contains(DeviceManagementConstants.DataBaseTypes.DB_TYPE_ORACLE) ||
+                    conn.getMetaData().getDatabaseProductName().contains(DeviceManagementConstants.DataBaseTypes.DB_TYPE_MSSQL)) {
                 StringBuilder builder = new StringBuilder();
                 for (int i = 0; i < devices.size(); i++) {
                     builder.append("?,");

@@ -20,6 +20,7 @@ package org.wso2.carbon.device.mgt.jaxrs.service.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Activity;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
@@ -71,6 +72,43 @@ public class ActivityProviderServiceImpl implements ActivityInfoProviderService 
                     new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
         }
     }
+
+
+    @GET
+    @Override
+    @Path("/{id}/{devicetype}/{deviceid}")
+    public Response getActivityByDevice(@PathParam("id")
+                                        @Size(max = 45) String id,
+                                        @PathParam("devicetype")
+                                        @Size(max = 45) String devicetype,
+                                        @PathParam("deviceid")
+                                        @Size(max = 45) String deviceid,
+                                        @HeaderParam("If-Modified-Since") String ifModifiedSince) {
+        Activity activity;
+        DeviceManagementProviderService dmService;
+        try {
+            RequestValidationUtil.validateActivityId(id);
+
+            DeviceIdentifier deviceIdentifier = new DeviceIdentifier();
+            deviceIdentifier.setId(deviceid);
+            deviceIdentifier.setType(devicetype);
+
+            dmService = DeviceMgtAPIUtils.getDeviceManagementService();
+            activity = dmService.getOperationByActivityIdAndDevice(id, deviceIdentifier);
+            if (activity == null) {
+                return Response.status(404).entity(
+                        new ErrorResponse.ErrorResponseBuilder().setMessage("No activity can be " +
+                                "found upon the provided activity id '" + id + "'").build()).build();
+            }
+            return Response.status(Response.Status.OK).entity(activity).build();
+        } catch (OperationManagementException e) {
+            String msg = "ErrorResponse occurred while fetching the activity for the supplied id.";
+            log.error(msg, e);
+            return Response.serverError().entity(
+                    new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
+        }
+    }
+
 
     @GET
     @Override

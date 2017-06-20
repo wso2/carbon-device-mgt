@@ -18,21 +18,36 @@
  */
 package org.wso2.carbon.device.application.mgt.core.dao;
 
+import org.wso2.carbon.device.application.mgt.common.*;
 import org.wso2.carbon.device.application.mgt.core.exception.ApplicationManagementDAOException;
-import org.wso2.carbon.device.application.mgt.common.Application;
-import org.wso2.carbon.device.application.mgt.common.Filter;
-import org.wso2.carbon.device.application.mgt.common.ApplicationList;
+
+import java.util.List;
+import java.util.Map;
 
 public interface ApplicationDAO {
 
-     Application createApplication(Application application) throws ApplicationManagementDAOException;
+    Application createApplication(Application application) throws ApplicationManagementDAOException;
 
-     ApplicationList getApplications(Filter filter) throws ApplicationManagementDAOException;
+    ApplicationList getApplications(Filter filter) throws ApplicationManagementDAOException;
 
-     Application editApplication(Application application) throws ApplicationManagementDAOException;
+    Application getApplication(String uuid) throws ApplicationManagementDAOException;
 
-     void deleteApplication (Application application)throws ApplicationManagementDAOException;
+    int getApplicationId(String uuid) throws ApplicationManagementDAOException;
 
-     int getApplicationCount(Filter filter) throws ApplicationManagementDAOException;
+    Application editApplication(Application application) throws ApplicationManagementDAOException;
+
+    void deleteApplication(Application application) throws ApplicationManagementDAOException;
+
+    int getApplicationCount(Filter filter) throws ApplicationManagementDAOException;
+
+    void addProperties(Map<String, String> properties) throws ApplicationManagementDAOException;
+
+    void editProperties(Map<String, String> properties) throws ApplicationManagementDAOException;
+
+    void deleteProperties(List<String> propertyKeys) throws ApplicationManagementDAOException;
+
+    void changeLifeCycle(LifecycleState lifecycleState) throws ApplicationManagementDAOException;
+
+    void addRelease(ApplicationRelease release) throws ApplicationManagementDAOException;
 
 }

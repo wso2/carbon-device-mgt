@@ -21,10 +21,7 @@ package org.wso2.carbon.device.application.mgt.core.dao.impl.application;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONException;
-import org.wso2.carbon.device.application.mgt.common.Application;
-import org.wso2.carbon.device.application.mgt.common.ApplicationList;
-import org.wso2.carbon.device.application.mgt.common.Filter;
-import org.wso2.carbon.device.application.mgt.common.Pagination;
+import org.wso2.carbon.device.application.mgt.common.*;
 import org.wso2.carbon.device.application.mgt.common.exception.DBConnectionException;
 import org.wso2.carbon.device.application.mgt.core.exception.ApplicationManagementDAOException;
 import org.wso2.carbon.device.application.mgt.core.dao.common.Util;
@@ -36,6 +33,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * This class holds the generic implementation of ApplicationDAO which can be used to support ANSI db syntax.
@@ -138,8 +136,43 @@ public class H2ApplicationDAOImpl extends AbstractApplicationDAOImpl {
     }
 
     @Override
+    public Application getApplication(String uuid) throws ApplicationManagementDAOException {
+        return null;
+    }
+
+    @Override
+    public int getApplicationId(String uuid) throws ApplicationManagementDAOException {
+        return 0;
+    }
+
+    @Override
     public Application editApplication(Application application) throws ApplicationManagementDAOException {
         return null;
+    }
+
+    @Override
+    public void addProperties(Map<String, String> properties) throws ApplicationManagementDAOException {
+        
+    }
+
+    @Override
+    public void editProperties(Map<String, String> properties) throws ApplicationManagementDAOException {
+
+    }
+
+    @Override
+    public void deleteProperties(List<String> propertyKeys) throws ApplicationManagementDAOException {
+
+    }
+
+    @Override
+    public void changeLifeCycle(LifecycleState lifecycleState) throws ApplicationManagementDAOException {
+
+    }
+
+    @Override
+    public void addRelease(ApplicationRelease release) throws ApplicationManagementDAOException {
+
     }
 
 

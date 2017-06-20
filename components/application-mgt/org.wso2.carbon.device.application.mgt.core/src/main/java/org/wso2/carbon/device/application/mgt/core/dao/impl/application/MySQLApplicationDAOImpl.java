@@ -21,10 +21,7 @@ package org.wso2.carbon.device.application.mgt.core.dao.impl.application;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONException;
-import org.wso2.carbon.device.application.mgt.common.Application;
-import org.wso2.carbon.device.application.mgt.common.ApplicationList;
-import org.wso2.carbon.device.application.mgt.common.Filter;
-import org.wso2.carbon.device.application.mgt.common.Pagination;
+import org.wso2.carbon.device.application.mgt.common.*;
 import org.wso2.carbon.device.application.mgt.common.exception.DBConnectionException;
 import org.wso2.carbon.device.application.mgt.core.exception.ApplicationManagementDAOException;
 import org.wso2.carbon.device.application.mgt.core.dao.common.Util;
@@ -71,8 +68,8 @@ public class MySQLApplicationDAOImpl extends AbstractApplicationDAOImpl {
 
             conn = this.getConnection();
 
-            sql += "SELECT SQL_CALC_FOUND_ROWS APP.*, APL.NAME AS APL_NAME, APL.IDENTIFIER AS APL_IDENTIFIER," +
-                    " CAT.NAME AS CAT_NAME ";
+            sql += "SELECT SQL_CALC_FOUND_ROWS APP.*, APL.NAME AS APL_NAME, APL.IDENTIFIER AS APL_IDENTIFIER, ";
+            sql += "CAT.ID AS CAT_ID, CAT.NAME AS CAT_NAME ";
             sql += "FROM APPM_APPLICATION AS APP ";
             sql += "INNER JOIN APPM_PLATFORM AS APL ON APP.PLATFORM_ID = APL.ID ";
             sql += "INNER JOIN APPM_APPLICATION_CATEGORY AS CAT ON APP.APPLICATION_CATEGORY_ID = CAT.ID ";
@@ -138,6 +135,91 @@ public class MySQLApplicationDAOImpl extends AbstractApplicationDAOImpl {
     }
 
     @Override
+    public Application getApplication(String uuid) throws ApplicationManagementDAOException {
+        if (log.isDebugEnabled()) {
+            log.debug("Getting application data from the database");
+        }
+
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        String sql = "";
+        Application application = new Application();
+        try {
+
+            conn = this.getConnection();
+
+            sql += "SELECT SQL_CALC_FOUND_ROWS APP.*, APL.NAME AS APL_NAME, APL.IDENTIFIER AS APL_IDENTIFIER, ";
+            sql += "CAT.ID AS CAT_ID, CAT.NAME AS CAT_NAME ";
+            sql += "FROM APPM_APPLICATION AS APP ";
+            sql += "INNER JOIN APPM_PLATFORM AS APL ON APP.PLATFORM_ID = APL.ID ";
+            sql += "INNER JOIN APPM_APPLICATION_CATEGORY AS CAT ON APP.APPLICATION_CATEGORY_ID = CAT.ID ";
+            sql += "WHERE UUID = ?";
+
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, uuid);
+            rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                //Getting properties
+                sql = "SELECT * FROM APPM_APPLICATION_PROPERTY WHERE APPLICATION_ID=?";
+                stmt = conn.prepareStatement(sql);
+                stmt.setInt(1, rs.getInt("ID"));
+                ResultSet rsProperties = stmt.executeQuery();
+
+                //Getting tags
+                sql = "SELECT * FROM APPM_APPLICATION_TAG WHERE APPLICATION_ID=?";
+                stmt = conn.prepareStatement(sql);
+                stmt.setInt(1, rs.getInt("ID"));
+                ResultSet rsTags = stmt.executeQuery();
+
+                application = Util.loadApplication(rs, rsProperties, rsTags);
+                Util.cleanupResources(null, rsProperties);
+                Util.cleanupResources(null, rsTags);
+            }
+        } catch (SQLException e) {
+            throw new ApplicationManagementDAOException("Error occurred while getting application List", e);
+        } catch (JSONException e) {
+            throw new ApplicationManagementDAOException("Error occurred while parsing JSON", e);
+        } catch (DBConnectionException e) {
+            throw new ApplicationManagementDAOException("Error occurred while obtaining the DB connection.", e);
+        } finally {
+            Util.cleanupResources(stmt, rs);
+        }
+        return application;
+    }
+
+    @Override
+    public int getApplicationId(String uuid) throws ApplicationManagementDAOException {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        String sql = "";
+
+        int id = 0;
+
+        try {
+            conn = this.getConnection();
+            sql += "SELECT ID FROM APPM_APPLICATION WHERE UUID = ?";
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, uuid);
+            rs = stmt.executeQuery();
+            if (rs.next()) {
+                id = rs.getInt(1);
+            }
+        } catch (DBConnectionException e) {
+            throw new ApplicationManagementDAOException("Error occurred while obtaining the DB connection.", e);
+        } catch (SQLException e) {
+            throw new ApplicationManagementDAOException("Error occurred while getting application List", e);
+        } finally {
+            Util.cleanupResources(stmt, rs);
+        }
+
+        return id;
+
+    }
+
+    @Override
     public Application editApplication(Application application) throws ApplicationManagementDAOException {
 
         Connection conn = null;
@@ -152,55 +234,69 @@ public class MySQLApplicationDAOImpl extends AbstractApplicationDAOImpl {
             sql += "SHORT_DESCRIPTION = IFNULL (?, SHORT_DESCRIPTION), DESCRIPTION = IFNULL (?, DESCRIPTION), ";
             sql += "ICON_NAME = IFNULL (?, ICON_NAME), BANNER_NAME = IFNULL (?, BANNER_NAME), ";
             sql += "VIDEO_NAME = IFNULL (?, VIDEO_NAME), SCREENSHOTS = IFNULL (?, SCREENSHOTS), ";
-            sql += "MODIFIED_AT = IFNULL (?, MODIFIED_AT), IS_FREE = IFNULL (?, IS_FREE), ";
-            sql += "PAYMENT_CURRENCY = IFNULL (?, PAYMENT_CURRENCY), PAYMENT_PRICE = IFNULL (?, PAYMENT_PRICE), ";
-            sql += "APPLICATION_CATEGORY_ID = IFNULL (?, APPLICATION_CATEGORY_ID), PLATFORM_ID = IFNULL (?, PLATFORM_ID), ";
+            sql += "MODIFIED_AT = IFNULL (?, MODIFIED_AT), ";
+            if (application.getPayment() != null) {
+                sql += " IS_FREE = IFNULL (?, IS_FREE), ";
+                if (application.getPayment().getPaymentCurrency() != null) {
+                    sql += "PAYMENT_CURRENCY = IFNULL (?, PAYMENT_CURRENCY), ";
+                }
+                sql += "PAYMENT_PRICE = IFNULL (?, PAYMENT_PRICE), ";
+            }
+            if (application.getCategory() != null && application.getCategory().getId() != 0) {
+                sql += "APPLICATION_CATEGORY_ID = IFNULL (?, APPLICATION_CATEGORY_ID), ";
+            }
+            if (application.getPlatform() != null && application.getPlatform().getId() != 0) {
+                sql += "PLATFORM_ID = IFNULL (?, PLATFORM_ID), ";
+            }
+
             sql += "TENANT_ID = IFNULL (?, TENANT_ID) ";
             sql += "WHERE UUID = ?";
 
-
+            int i = 0;
             stmt = conn.prepareStatement(sql);
-            stmt.setString(1, application.getName());
-            stmt.setString(2, application.getShortDescription());
-            stmt.setString(3, application.getDescription());
-            stmt.setString(4, application.getIconName());
-            stmt.setString(5, application.getBannerName());
-            stmt.setString(6, application.getVideoName());
-            stmt.setString(7, JSONUtil.listToJsonArrayString(application.getScreenshots()));
-            stmt.setDate(8, new Date(application.getModifiedAt().getTime()));
-            stmt.setBoolean(9, application.getPayment().isFreeApp());
-            stmt.setString(10, application.getPayment().getPaymentCurrency());
-            stmt.setFloat(11, application.getPayment().getPaymentPrice());
-            stmt.setInt(12, application.getCategory().getId());
-            stmt.setInt(13, application.getPlatform().getId());
-            stmt.setInt(14, application.getUser().getTenantId());
-            stmt.setString(15, application.getUuid());
+            stmt.setString(++i, application.getName());
+            stmt.setString(++i, application.getShortDescription());
+            stmt.setString(++i, application.getDescription());
+            stmt.setString(++i, application.getIconName());
+            stmt.setString(++i, application.getBannerName());
+            stmt.setString(++i, application.getVideoName());
+            stmt.setString(++i, JSONUtil.listToJsonArrayString(application.getScreenshots()));
+            stmt.setDate(++i, new Date(application.getModifiedAt().getTime()));
+            if (application.getPayment() != null) {
+                stmt.setBoolean(++i, application.getPayment().isFreeApp());
+                if (application.getPayment().getPaymentCurrency() != null) {
+                    stmt.setString(++i, application.getPayment().getPaymentCurrency());
+                }
+                stmt.setFloat(++i, application.getPayment().getPaymentPrice());
+            }
+
+            if (application.getCategory() != null && application.getCategory().getId() != 0) {
+                stmt.setInt(++i, application.getCategory().getId());
+            }
+            if (application.getPlatform() != null && application.getPlatform().getId() != 0) {
+                stmt.setInt(++i, application.getPlatform().getId());
+            }
+            stmt.setInt(++i, application.getUser().getTenantId());
+            stmt.setString(++i, application.getUuid());
             stmt.executeUpdate();
 
-//            if (application.getTags() != null && application.getTags().size() > 0) {
-//                sql = "INSERT INTO APPM_APPLICATION_TAG (NAME, APPLICATION_ID) VALUES (?, ?); ";
-//                stmt = conn.prepareStatement(sql);
-//                for (String tag : application.getTags()) {
-//                    stmt.setString(1, tag);
-//                    stmt.setInt(2, application.getId());
-//                    stmt.addBatch();
-//                }
-//                stmt.executeBatch();
-//            }
-//
-//            if (application.getProperties() != null && application.getProperties().size() > 0) {
-//                sql = "INSERT INTO APPM_APPLICATION_PROPERTY (PROP_KEY, PROP_VAL, APPLICATION_ID) VALUES (?, ?, ?); ";
-//                stmt = conn.prepareStatement(sql);
-//                Iterator it = application.getProperties().entrySet().iterator();
-//                while (it.hasNext()) {
-//                    Map.Entry<String, String> property = (Map.Entry)it.next();
-//                    stmt.setString(1, property.getKey());
-//                    stmt.setString(2, property.getValue());
-//                    stmt.setInt(3, application.getId());
-//                    stmt.addBatch();
-//                }
-//                stmt.executeBatch();
-//            }
+            application.setId(getApplicationId(application.getUuid()));
+
+            if (application.getTags() != null && application.getTags().size() > 0) {
+                sql = "DELETE FROM APPM_APPLICATION_TAG WHERE APPLICATION_ID = ?";
+                stmt = conn.prepareStatement(sql);
+                stmt.setInt(1, application.getId());
+                stmt.executeUpdate();
+
+                sql = "INSERT INTO APPM_APPLICATION_TAG (NAME, APPLICATION_ID) VALUES (?, ?); ";
+                stmt = conn.prepareStatement(sql);
+                for (String tag : application.getTags()) {
+                    stmt.setString(1, tag);
+                    stmt.setInt(2, application.getId());
+                    stmt.addBatch();
+                }
+                stmt.executeBatch();
+            }
 
         } catch (DBConnectionException e) {
             throw new ApplicationManagementDAOException("Error occurred while obtaining the DB connection.", e);
@@ -209,6 +305,31 @@ public class MySQLApplicationDAOImpl extends AbstractApplicationDAOImpl {
         }
 
         return application;
+    }
+
+    @Override
+    public void addProperties(Map<String, String> properties) throws ApplicationManagementDAOException {
+
+    }
+
+    @Override
+    public void editProperties(Map<String, String> properties) throws ApplicationManagementDAOException {
+
+    }
+
+    @Override
+    public void deleteProperties(List<String> propertyKeys) throws ApplicationManagementDAOException {
+
+    }
+
+    @Override
+    public void changeLifeCycle(LifecycleState lifecycleState) throws ApplicationManagementDAOException {
+
+    }
+
+    @Override
+    public void addRelease(ApplicationRelease release) throws ApplicationManagementDAOException {
+
     }
 
 
@@ -223,6 +344,7 @@ public class MySQLApplicationDAOImpl extends AbstractApplicationDAOImpl {
 
         try {
             conn = this.getConnection();
+
             sql += "INSERT INTO APPM_APPLICATION (UUID, NAME, SHORT_DESCRIPTION, DESCRIPTION, ICON_NAME, BANNER_NAME, " +
                     "VIDEO_NAME, SCREENSHOTS, CREATED_BY, CREATED_AT, MODIFIED_AT, APPLICATION_CATEGORY_ID, " + "" +
                     "PLATFORM_ID, TENANT_ID, LIFECYCLE_STATE_ID, LIFECYCLE_STATE_MODIFIED_AT, " +
@@ -269,7 +391,7 @@ public class MySQLApplicationDAOImpl extends AbstractApplicationDAOImpl {
                 stmt = conn.prepareStatement(sql);
                 Iterator it = application.getProperties().entrySet().iterator();
                 while (it.hasNext()) {
-                    Map.Entry<String, String> property = (Map.Entry)it.next();
+                    Map.Entry<String, String> property = (Map.Entry) it.next();
                     stmt.setString(1, property.getKey());
                     stmt.setString(2, property.getValue());
                     stmt.setInt(3, application.getId());

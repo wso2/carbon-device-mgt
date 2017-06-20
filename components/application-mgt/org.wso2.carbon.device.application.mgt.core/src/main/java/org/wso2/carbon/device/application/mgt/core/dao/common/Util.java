@@ -69,6 +69,7 @@ public class Util {
         application.setTags(tags);
 
         Category category = new Category();
+        category.setId(rs.getInt("CAT_ID"));
         category.setName(rs.getString("CAT_NAME"));
         application.setCategory(category);
         return application;

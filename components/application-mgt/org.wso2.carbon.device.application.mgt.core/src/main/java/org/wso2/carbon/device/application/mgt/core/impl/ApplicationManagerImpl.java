@@ -91,13 +91,7 @@ public class ApplicationManagerImpl implements ApplicationManager {
             ConnectionManagerUtil.openConnection();
             ApplicationDAO applicationDAO = DAOFactory.getApplicationDAO();
 
-            if (application.getCategory() == null) {
-                application.setCategory(new Category());
-            }
-
-            if (application.getPlatform() == null) {
-                application.setPlatform(new Platform());
-            } else {
+            if (application.getPlatform()!= null && application.getPlatform().getIdentifier() != null) {
                 PlatformDAO platformDAO = DAOFactory.getPlatformDAO();
                 Platform platform = platformDAO.getPlatform(application.getUser().getTenantId(), application.getPlatform()
                         .getIdentifier());
@@ -105,10 +99,6 @@ public class ApplicationManagerImpl implements ApplicationManager {
                 if (platform == null) {
                     throw new NotFoundException("Invalid platform");
                 }
-            }
-
-            if (application.getPayment() == null) {
-                application.setPayment(new Payment());
             }
 
             application.setModifiedAt(new Date());

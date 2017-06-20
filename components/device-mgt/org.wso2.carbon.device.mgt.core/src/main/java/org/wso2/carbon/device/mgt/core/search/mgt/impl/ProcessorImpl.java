@@ -23,6 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
+import org.wso2.carbon.device.mgt.common.DeviceManagementConstants;
 import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
 import org.wso2.carbon.device.mgt.common.authorization.DeviceAccessAuthorizationException;
 import org.wso2.carbon.device.mgt.common.authorization.DeviceAccessAuthorizationService;
@@ -62,7 +63,7 @@ public class ProcessorImpl implements Processor {
     @Override
     public List<Device> execute(SearchContext searchContext) throws SearchMgtException {
 
-        if(!Utils.validateOperators(searchContext.getConditions())){
+        if (!Utils.validateOperators(searchContext.getConditions())) {
             throw new SearchMgtException("Invalid validator is provided.");
         }
 
@@ -268,10 +269,10 @@ public class ProcessorImpl implements Processor {
                 } else if (type.getColumnType().equals(ValueType.columnType.INTEGER)) {
                     stmt.setInt(x, type.getIntValue());
                     x++;
-                } else if (type.getColumnType().equals(ValueType.columnType.LONG)){
+                } else if (type.getColumnType().equals(ValueType.columnType.LONG)) {
                     stmt.setLong(x, type.getLongValue());
                     x++;
-                } else  if(type.getColumnType().equals(ValueType.columnType.DOUBLE)){
+                } else if (type.getColumnType().equals(ValueType.columnType.DOUBLE)) {
                     stmt.setDouble(x, type.getDoubleValue());
                     x++;
                 }
@@ -360,8 +361,10 @@ public class ProcessorImpl implements Processor {
         try {
             conn = this.getConnection();
             String query = "SELECT * FROM DM_DEVICE_INFO WHERE DEVICE_ID IN (";
-            if (conn.getMetaData().getDatabaseProductName().contains("H2") || conn.getMetaData()
-                    .getDatabaseProductName().contains("MySQL")) {
+            if (conn.getMetaData().getDatabaseProductName().contains(DeviceManagementConstants.DataBaseTypes.DB_TYPE_H2) || conn.getMetaData()
+                    .getDatabaseProductName().contains(DeviceManagementConstants.DataBaseTypes.DB_TYPE_MYSQL) ||
+                    conn.getMetaData().getDatabaseProductName().contains(DeviceManagementConstants.DataBaseTypes.DB_TYPE_ORACLE) ||
+                    conn.getMetaData().getDatabaseProductName().contains(DeviceManagementConstants.DataBaseTypes.DB_TYPE_MSSQL)) {
                 StringBuilder builder = new StringBuilder();
                 for (int i = 0; i < devices.size(); i++) {
                     builder.append("?,");

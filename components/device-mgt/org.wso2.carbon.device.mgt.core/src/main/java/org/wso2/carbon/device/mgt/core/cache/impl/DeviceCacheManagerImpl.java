@@ -55,27 +55,21 @@ public class DeviceCacheManagerImpl implements DeviceCacheManager {
     @Override
     public void addDeviceToCache(DeviceIdentifier deviceIdentifier, Device device, int tenantId) {
         Cache<DeviceCacheKey, Device> lCache = DeviceManagerUtil.getDeviceCache();
-        DeviceCacheKey cacheKey = getCacheKey(deviceIdentifier, tenantId);
-        if (lCache.containsKey(cacheKey)) {
-            this.updateDeviceInCache(deviceIdentifier, device, tenantId);
-        } else {
-            lCache.put(cacheKey, device);
+        if (lCache != null) {
+            DeviceCacheKey cacheKey = getCacheKey(deviceIdentifier, tenantId);
+            if (lCache.containsKey(cacheKey)) {
+                this.updateDeviceInCache(deviceIdentifier, device, tenantId);
+            } else {
+                lCache.put(cacheKey, device);
+            }
         }
     }
 
     @Override
     public void removeDeviceFromCache(DeviceIdentifier deviceIdentifier, int tenantId) {
         Cache<DeviceCacheKey, Device> lCache = DeviceManagerUtil.getDeviceCache();
-        DeviceCacheKey cacheKey = getCacheKey(deviceIdentifier, tenantId);
-        if (lCache.containsKey(cacheKey)) {
-            lCache.remove(cacheKey);
-        }
-    }
-
-    @Override
-    public void removeDevicesFromCache(List<DeviceCacheKey> deviceList) {
-        Cache<DeviceCacheKey, Device> lCache = DeviceManagerUtil.getDeviceCache();
-        for (DeviceCacheKey cacheKey : deviceList) {
+        if (lCache != null) {
+            DeviceCacheKey cacheKey = getCacheKey(deviceIdentifier, tenantId);
             if (lCache.containsKey(cacheKey)) {
                 lCache.remove(cacheKey);
             }
@@ -83,18 +77,35 @@ public class DeviceCacheManagerImpl implements DeviceCacheManager {
     }
 
     @Override
+    public void removeDevicesFromCache(List<DeviceCacheKey> deviceList) {
+        Cache<DeviceCacheKey, Device> lCache = DeviceManagerUtil.getDeviceCache();
+        if (lCache != null) {
+            for (DeviceCacheKey cacheKey : deviceList) {
+                if (lCache.containsKey(cacheKey)) {
+                    lCache.remove(cacheKey);
+                }
+            }
+        }
+    }
+
+    @Override
     public void updateDeviceInCache(DeviceIdentifier deviceIdentifier, Device device, int tenantId) {
         Cache<DeviceCacheKey, Device> lCache = DeviceManagerUtil.getDeviceCache();
-        DeviceCacheKey cacheKey = getCacheKey(deviceIdentifier, tenantId);
-        if (lCache.containsKey(cacheKey)) {
-            lCache.replace(cacheKey, device);
+        if (lCache != null) {
+            DeviceCacheKey cacheKey = getCacheKey(deviceIdentifier, tenantId);
+            if (lCache.containsKey(cacheKey)) {
+                lCache.replace(cacheKey, device);
+            }
         }
     }
 
     @Override
     public Device getDeviceFromCache(DeviceIdentifier deviceIdentifier, int tenantId) {
         Cache<DeviceCacheKey, Device> lCache = DeviceManagerUtil.getDeviceCache();
-        return lCache.get(getCacheKey(deviceIdentifier, tenantId));
+        if (lCache != null) {
+            return lCache.get(getCacheKey(deviceIdentifier, tenantId));
+        }
+        return null;
     }
 
 

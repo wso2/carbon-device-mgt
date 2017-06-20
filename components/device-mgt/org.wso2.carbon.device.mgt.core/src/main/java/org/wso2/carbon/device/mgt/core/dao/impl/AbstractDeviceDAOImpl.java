@@ -485,6 +485,8 @@ public abstract class AbstractDeviceDAOImpl implements DeviceDAO {
         boolean isDeviceNameProvided = false;
         String owner = request.getOwner();
         boolean isOwnerProvided = false;
+        String ownerPattern = request.getOwnerPattern();
+        boolean isOwnerPatternProvided = false;
         String ownership = request.getOwnership();
         boolean isOwnershipProvided = false;
         String status = request.getStatus();
@@ -523,9 +525,13 @@ public abstract class AbstractDeviceDAOImpl implements DeviceDAO {
                 isOwnershipProvided = true;
             }
 
+            //Add the query for owner
             if (owner != null && !owner.isEmpty()) {
-                sql = sql + " AND LOWER(e.OWNER) LIKE LOWER(?)";
+                sql = sql + " AND e.OWNER = ?";
                 isOwnerProvided = true;
+            } else if (ownerPattern != null && !ownerPattern.isEmpty()) {
+                sql = sql + " AND e.OWNER LIKE ?";
+                isOwnerPatternProvided = true;
             }
 
             if (status != null && !status.isEmpty()) {
@@ -551,7 +557,9 @@ public abstract class AbstractDeviceDAOImpl implements DeviceDAO {
                 stmt.setString(paramIdx++, request.getOwnership());
             }
             if (isOwnerProvided) {
-                stmt.setString(paramIdx++, request.getOwner() + "%");
+                stmt.setString(paramIdx++, owner);
+            } else if (isOwnerPatternProvided) {
+                stmt.setString(paramIdx++, ownerPattern + "%");
             }
             if (isStatusProvided) {
                 stmt.setString(paramIdx++, request.getStatus());

@@ -29,6 +29,7 @@ import org.wso2.carbon.policy.mgt.core.dao.impl.MonitoringDAOImpl;
 import org.wso2.carbon.policy.mgt.core.dao.impl.PolicyDAOImpl;
 import org.wso2.carbon.policy.mgt.core.dao.impl.ProfileDAOImpl;
 import org.wso2.carbon.policy.mgt.core.dao.impl.feature.GenericFeatureDAOImpl;
+import org.wso2.carbon.policy.mgt.core.dao.impl.feature.OracleServerFeatureDAOImpl;
 import org.wso2.carbon.policy.mgt.core.dao.impl.feature.SQLServerFeatureDAOImpl;
 import org.wso2.carbon.policy.mgt.core.dao.util.PolicyManagementDAOUtil;
 
@@ -77,6 +78,7 @@ public class PolicyManagementDAOFactory {
                 case DeviceManagementConstants.DataBaseTypes.DB_TYPE_MSSQL:
                     return new SQLServerFeatureDAOImpl();
                 case DeviceManagementConstants.DataBaseTypes.DB_TYPE_ORACLE:
+                    return new OracleServerFeatureDAOImpl();
                 case DeviceManagementConstants.DataBaseTypes.DB_TYPE_POSTGRESQL:
                 case DeviceManagementConstants.DataBaseTypes.DB_TYPE_H2:
                 case DeviceManagementConstants.DataBaseTypes.DB_TYPE_MYSQL:

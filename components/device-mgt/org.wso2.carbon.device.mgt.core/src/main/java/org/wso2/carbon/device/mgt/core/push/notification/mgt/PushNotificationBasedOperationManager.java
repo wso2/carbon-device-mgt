@@ -117,6 +117,11 @@ public class PushNotificationBasedOperationManager implements OperationManager {
     }
 
     @Override
+    public Activity getOperationByActivityIdAndDevice(String activity, DeviceIdentifier deviceId) throws OperationManagementException {
+        return this.operationManager.getOperationByActivityIdAndDevice(activity, deviceId);
+    }
+
+    @Override
     public List<Operation> getOperationUpdatedAfter(long timestamp) throws OperationManagementException {
         return this.operationManager.getOperationUpdatedAfter(timestamp);
     }

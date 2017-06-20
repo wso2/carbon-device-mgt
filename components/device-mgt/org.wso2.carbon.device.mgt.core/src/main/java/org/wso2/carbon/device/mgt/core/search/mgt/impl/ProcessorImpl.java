@@ -376,9 +376,8 @@ public class ProcessorImpl implements Processor {
             } else {
                 query += "?) ORDER BY DEVICE_ID";
                 stmt = conn.prepareStatement(query);
-                for (int i = 0; i < devices.size(); i++) {
-                    stmt.setInt(i, devices.get(i).getId());
-                }
+                Array array = conn.createArrayOf("INT", Utils.getArrayOfDeviceIds(devices));
+                stmt.setArray(1, array);
             }
             rs = stmt.executeQuery();
 

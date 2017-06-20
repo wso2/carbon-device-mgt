@@ -113,12 +113,12 @@ public class QueryBuilderImpl implements QueryBuilder {
             queries.put(Constants.LOCATION, this.processLocation(locCondition));
         }
 
-//        if (log.isDebugEnabled()) {
-            log.info("General Query : " + queries.get(Constants.GENERAL));
-            log.info("Property with AND Query : " + queries.get(Constants.PROP_AND));
-            log.info("Property with OR Query : " + queries.get(Constants.PROP_OR));
-            log.info("Location related Query : " + queries.get(Constants.LOCATION));
-//        }
+        if (log.isDebugEnabled()) {
+            log.debug("General Query : " + queries.get(Constants.GENERAL));
+            log.debug("Property with AND Query : " + queries.get(Constants.PROP_AND));
+            log.debug("Property with OR Query : " + queries.get(Constants.PROP_OR));
+            log.debug("Location related Query : " + queries.get(Constants.LOCATION));
+        }
         return queries;
     }
 

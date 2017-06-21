@@ -2859,7 +2859,8 @@ a.ast-type-item:hover {
     font-size: 12px;
     text-decoration: none;
     margin-right: 10px;
-    color: #526A84;
+    /*color: #526A84;*/
+    color: #333;
     min-width: 70px;
     background: #fafafa;
     padding: 2px 10px 10px 10px;

@@ -64,7 +64,7 @@ public class SQLServerGroupDAOImpl extends AbstractGroupDAOImpl {
                 hasOwner = true;
             }
             if (hasLimit) {
-                sql += " OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+                sql += " ORDER BY ID OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
             }
 
             int paramIndex = 1;
@@ -127,7 +127,7 @@ public class SQLServerGroupDAOImpl extends AbstractGroupDAOImpl {
             }
             sql += ")";
             if (hasLimit) {
-                sql += " OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+                sql += " ORDER BY ID OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
             }
 
             int paramIndex = 1;
@@ -177,7 +177,7 @@ public class SQLServerGroupDAOImpl extends AbstractGroupDAOImpl {
                     " DM_DEVICE d, (" +
                     "SELECT dgm.DEVICE_ID FROM DM_DEVICE_GROUP_MAP dgm WHERE dgm.GROUP_ID = ?) dgm1 " +
                     "WHERE d.ID = dgm1.DEVICE_ID AND d.TENANT_ID = ?) gd, DM_DEVICE_TYPE t " +
-                    "WHERE gd.DEVICE_TYPE_ID = t.ID) d1 WHERE d1.DEVICE_ID = e.DEVICE_ID AND TENANT_ID = ? OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+                    "WHERE gd.DEVICE_TYPE_ID = t.ID) d1 WHERE d1.DEVICE_ID = e.DEVICE_ID AND TENANT_ID = ? ORDER BY d1.DEVICE_ID OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
 
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, groupId);
@@ -195,7 +195,7 @@ public class SQLServerGroupDAOImpl extends AbstractGroupDAOImpl {
             }
         } catch (SQLException e) {
             throw new GroupManagementDAOException("Error occurred while retrieving information of all " +
-                                                          "registered devices", e);
+                    "registered devices", e);
         } finally {
             DeviceManagementDAOUtil.cleanupResources(stmt, rs);
         }

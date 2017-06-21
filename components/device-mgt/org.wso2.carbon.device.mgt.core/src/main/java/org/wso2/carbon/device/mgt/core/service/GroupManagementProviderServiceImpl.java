@@ -432,12 +432,15 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
         int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
         List<Device> devices;
         try {
+            rowCount = DeviceManagerUtil.validateDeviceListPageSize(rowCount);
             GroupManagementDAOFactory.openConnection();
             devices = this.groupDAO.getDevices(groupId, startIndex, rowCount, tenantId);
         } catch (GroupManagementDAOException e) {
             throw new GroupManagementException("Error occurred while getting devices in group.", e);
         } catch (SQLException e) {
             throw new GroupManagementException("Error occurred while opening a connection to the data source.", e);
+        } catch (DeviceManagementException e) {
+            throw new GroupManagementException("Error occurred while validating the limit of the devices to be returned", e);
         } finally {
             GroupManagementDAOFactory.closeConnection();
         }

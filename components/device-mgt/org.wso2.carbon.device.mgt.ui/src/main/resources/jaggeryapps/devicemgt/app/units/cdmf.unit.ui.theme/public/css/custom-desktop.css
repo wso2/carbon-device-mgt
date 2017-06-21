@@ -1173,6 +1173,10 @@ header .dropdown[aria-expanded=true], header .dropdown:hover {
     right: 0;
 }
 
+.sidebar-wrapper.toggled a.btn{
+   margin-bottom: 70px;
+}
+
 .sidebar-wrapper-animation-fix {
     -webkit-transition: left 0.5s ease, right 0.5s ease !important;
     -moz-transition: left 0.5s ease, right 0.5s ease !important;

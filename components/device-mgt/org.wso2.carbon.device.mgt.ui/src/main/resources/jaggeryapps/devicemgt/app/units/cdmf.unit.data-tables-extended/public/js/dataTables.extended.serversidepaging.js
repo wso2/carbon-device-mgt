@@ -186,7 +186,7 @@ $.fn.datatables_extended_serverside_paging = function (settings, url, dataFilter
                         $(filterColumn.eq(column.index()).empty()).html('<input type="text" class="form-control" placeholder="Search ' + title + '" />');
 
                         //noinspection SpellCheckingInspection
-                        filterColumn.eq(column.index()).find('input').on('keyup change', function () {
+                        filterColumn.eq(column.index()).find('input').on('keyup', function () {
                             column.search($(this).val()).draw();
                         });
                     }

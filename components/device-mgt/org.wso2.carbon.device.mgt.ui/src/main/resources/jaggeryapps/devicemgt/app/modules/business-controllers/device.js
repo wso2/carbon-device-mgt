@@ -38,17 +38,17 @@ deviceModule = function () {
     privateMethods.callBackend = function (url, method) {
         if (constants["HTTP_GET"] == method) {
             return serviceInvokers.XMLHttp.get(url,
-                                               function (backendResponse) {
-                                                   var response = {};
-                                                   response.content = backendResponse.responseText;
-                                                   if (backendResponse.status == 200) {
-                                                       response.status = "success";
-                                                   } else if (backendResponse.status == 400 || backendResponse.status == 401 ||
-                                                              backendResponse.status == 404 || backendResponse.status == 500) {
-                                                       response.status = "error";
-                                                   }
-                                                   return response;
-                                               }
+                function (backendResponse) {
+                    var response = {};
+                    response.content = backendResponse.responseText;
+                    if (backendResponse.status == 200) {
+                        response.status = "success";
+                    } else if (backendResponse.status == 400 || backendResponse.status == 401 ||
+                        backendResponse.status == 404 || backendResponse.status == 500) {
+                        response.status = "error";
+                    }
+                    return response;
+                }
             );
         } else {
             log.error("Runtime error : This method only support HTTP GET requests.");
@@ -282,7 +282,10 @@ deviceModule = function () {
 
     publicMethods.getDevices = function (userName) {
         var url = devicemgtProps["httpsURL"] +
-                  devicemgtProps["backendRestEndpoints"]["deviceMgt"] + "/devices";
+            devicemgtProps["backendRestEndpoints"]["deviceMgt"] + "/devices";
+        if (userName && userName !== "") {
+            url = url + "?user=" + userName;
+        }
         return serviceInvokers.XMLHttp.get(
             url, function (responsePayload) {
                 var devices = JSON.parse(responsePayload.responseText).devices;

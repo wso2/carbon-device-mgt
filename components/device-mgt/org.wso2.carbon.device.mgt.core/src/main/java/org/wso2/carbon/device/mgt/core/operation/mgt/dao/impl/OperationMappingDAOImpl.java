@@ -148,7 +148,7 @@ public class OperationMappingDAOImpl implements OperationMappingDAO {
             //devices to be active at that moment. Hence filtering by 'ACTIVE' & 'UNREACHABLE' device states.
             String sql = "SELECT ENROLMENT_ID, D.DEVICE_IDENTIFICATION AS DEVICE_IDENTIFIER, MIN(CREATED_TIMESTAMP) " +
                     "AS CREATED_TIMESTAMP, E.STATUS AS ENROLMENT_STATUS, E.TENANT_ID FROM " +
-                    "DM_ENROLMENT_OP_MAPPING AS OP INNER JOIN DM_ENROLMENT E ON OP.ENROLMENT_ID = E.ID INNER JOIN " +
+                    "DM_ENROLMENT_OP_MAPPING OP INNER JOIN DM_ENROLMENT E ON OP.ENROLMENT_ID = E.ID INNER JOIN " +
                     "DM_DEVICE D ON E.DEVICE_ID = D.ID WHERE " +
                     "OP.STATUS IN ('"+ Operation.Status.PENDING.name() + "','" + Operation.Status.REPEATED.name() + "') " +
                     "AND OP.CREATED_TIMESTAMP BETWEEN ? AND ? AND E.STATUS IN ('" + EnrolmentInfo.Status.ACTIVE.name() +
@@ -183,7 +183,7 @@ public class OperationMappingDAOImpl implements OperationMappingDAO {
             //We are specifically looking for operation mappings in 'Pending' & 'Repeated' states. Further we want
             //devices to be active at that moment. Hence filtering by 'ACTIVE' & 'UNREACHABLE' device states.
             String sql = "SELECT OP.ENROLMENT_ID AS EID, MAX(OP.UPDATED_TIMESTAMP) AS LAST_CONNECTED_TIME FROM " +
-                    "DM_ENROLMENT_OP_MAPPING AS OP INNER JOIN DM_ENROLMENT E ON OP.ENROLMENT_ID = E.ID INNER JOIN " +
+                    "DM_ENROLMENT_OP_MAPPING OP INNER JOIN DM_ENROLMENT E ON OP.ENROLMENT_ID = E.ID INNER JOIN " +
                     "DM_DEVICE D ON E.DEVICE_ID = D.ID WHERE " +
                     "OP.STATUS = '" + Operation.Status.COMPLETED.name() + "'" +
                     "AND OP.UPDATED_TIMESTAMP >= ? AND E.STATUS IN ('" + EnrolmentInfo.Status.ACTIVE.name() +

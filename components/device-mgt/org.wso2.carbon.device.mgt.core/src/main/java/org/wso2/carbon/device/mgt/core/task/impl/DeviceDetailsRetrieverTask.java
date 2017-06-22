@@ -41,6 +41,7 @@ public class DeviceDetailsRetrieverTask implements Task {
     private String oppConfig;
     private OperationMonitoringTaskConfig operationMonitoringTaskConfig;
     private boolean executeForTenants = false;
+    private final String IS_CLOUD = "is.cloud";
 
     @Override
     public void setProperties(Map<String, String> map) {
@@ -60,7 +61,7 @@ public class DeviceDetailsRetrieverTask implements Task {
     @Override
     public void execute() {
 
-        if(System.getProperty("is.cloud") != null && Boolean.parseBoolean(System.getProperty("is.cloud"))){
+        if(System.getProperty(IS_CLOUD) != null && Boolean.parseBoolean(System.getProperty(IS_CLOUD))){
             executeForTenants = true;
         }
         if(executeForTenants){

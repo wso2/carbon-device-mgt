@@ -44,6 +44,7 @@ public class MonitoringTask implements Task {
 
     Map<String, String> properties;
     private boolean executeForTenants = false;
+    private final String IS_CLOUD = "is.cloud";
 
 
     @Override
@@ -61,7 +62,7 @@ public class MonitoringTask implements Task {
         if (log.isDebugEnabled()) {
             log.debug("Monitoring task started to run.");
         }
-        if(System.getProperty("is.cloud") != null && Boolean.parseBoolean(System.getProperty("is.cloud"))){
+        if(System.getProperty(IS_CLOUD) != null && Boolean.parseBoolean(System.getProperty(IS_CLOUD))){
             executeForTenants = true;
         }
         if(executeForTenants) {

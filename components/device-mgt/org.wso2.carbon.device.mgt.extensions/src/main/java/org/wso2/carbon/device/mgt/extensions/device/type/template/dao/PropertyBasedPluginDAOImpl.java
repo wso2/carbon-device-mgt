@@ -135,36 +135,19 @@ public class PropertyBasedPluginDAOImpl implements PluginDAO {
                     "UPDATE DM_DEVICE_PROPERTIES SET PROPERTY_VALUE = ? WHERE  DEVICE_TYPE_NAME = ? AND " +
                             "DEVICE_IDENTIFICATION = ? AND PROPERTY_NAME = ? AND TENANT_ID= ?");
 
-            Device.Property[] properties = new Device.Property[device.getProperties().size()];
-            int i =0;
             for (Device.Property property : device.getProperties()) {
-                properties[i] = property;
-                i++;
-                stmt.setString(1, getPropertyValue(device.getProperties(), property.getValue()));
+                if (!deviceProps.contains(property.getName())) {
+                    continue;
+                }
+                stmt.setString(1, property.getValue());
                 stmt.setString(1, deviceType);
                 stmt.setString(2, device.getDeviceIdentifier());
                 stmt.setString(3, property.getName());
                 stmt.setInt(4, PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId(true));
                 stmt.addBatch();
             }
-            int[] updates = stmt.executeBatch();
-            if (updates.length > 0) {
-                for (int j = 0; j < updates.length; j++) {
-                    if (updates[j] < 0) {
-                        stmt = conn.prepareStatement(
-                                "INSERT INTO DM_DEVICE_PROPERTIES(DEVICE_TYPE_NAME, DEVICE_IDENTIFICATION, PROPERTY_NAME, " +
-                                        "PROPERTY_VALUE, TENANT_ID) VALUES (?, ?, ?, ?, ?)");
-                        stmt.setString(1, deviceType);
-                        stmt.setString(2, device.getDeviceIdentifier());
-                        stmt.setString(3, properties[j].getName());
-                        stmt.setString(4, getPropertyValue(device.getProperties(), properties[j].getValue()));
-                        stmt.setInt(5, PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId(true));
-                        stmt.addBatch();
-                    }
-                }
-                stmt.executeBatch();
-                status = true;
-            }
+            stmt.executeBatch();
+            return true;
         } catch (SQLException e) {
             String msg = "Error occurred while modifying the device '" +
                     device.getDeviceIdentifier() + "' data on" + deviceType;
@@ -173,7 +156,6 @@ public class PropertyBasedPluginDAOImpl implements PluginDAO {
         } finally {
             DeviceTypeUtils.cleanupResources(stmt, null);
         }
-        return status;
     }
 
     public boolean deleteDevice(String deviceId) throws DeviceTypeMgtPluginException {

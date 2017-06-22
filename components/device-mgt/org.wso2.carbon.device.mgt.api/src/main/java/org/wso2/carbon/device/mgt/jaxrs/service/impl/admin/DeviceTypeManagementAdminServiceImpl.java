@@ -82,7 +82,7 @@ public class DeviceTypeManagementAdminServiceImpl implements DeviceTypeManagemen
                     DeviceMgtAPIUtils.getDeviceManagementService().registerDeviceType(httpDeviceTypeManagerService);
                     return Response.status(Response.Status.OK).build();
                 } else {
-                    return Response.status(Response.Status.BAD_REQUEST).entity("device type name does not match the pattern "
+                    return Response.status(Response.Status.BAD_REQUEST).entity("Device type name does not match the pattern "
                                                                                        + DEVICETYPE_REGEX_PATTERN).build();
                 }
             } catch (DeviceManagementException e) {

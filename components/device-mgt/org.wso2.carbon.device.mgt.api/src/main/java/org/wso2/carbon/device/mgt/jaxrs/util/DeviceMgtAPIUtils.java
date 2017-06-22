@@ -538,7 +538,7 @@ public class DeviceMgtAPIUtils {
         Header httpHeader = new Header();
         httpHeader.setName(AUTHORIZATION_HEADER);
         httpHeader.setValue(authValue);
-        list.add(httpHeader);//"https"
+        list.add(httpHeader);
 
         eventReciverOptions.setProperty(HTTPConstants.HTTP_HEADERS, list);
         eventReciverOptions.setProperty(HTTPConstants.CUSTOM_PROTOCOL_HANDLER
@@ -570,7 +570,7 @@ public class DeviceMgtAPIUtils {
         Header httpHeader = new Header();
         httpHeader.setName(AUTHORIZATION_HEADER);
         httpHeader.setValue(authValue);
-        list.add(httpHeader);//"https"
+        list.add(httpHeader);
 
         eventReciverOptions.setProperty(HTTPConstants.HTTP_HEADERS, list);
         eventReciverOptions.setProperty(HTTPConstants.CUSTOM_PROTOCOL_HANDLER
@@ -602,7 +602,7 @@ public class DeviceMgtAPIUtils {
         Header httpHeader = new Header();
         httpHeader.setName(AUTHORIZATION_HEADER);
         httpHeader.setValue(authValue);
-        list.add(httpHeader);//"https"
+        list.add(httpHeader);
 
         eventReciverOptions.setProperty(HTTPConstants.HTTP_HEADERS, list);
         eventReciverOptions.setProperty(HTTPConstants.CUSTOM_PROTOCOL_HANDLER

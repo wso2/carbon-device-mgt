@@ -87,7 +87,7 @@ public class HTTPDeviceTypeManagerService extends DeviceTypeManagerService imple
                         if (feature.getMetadataEntries() != null && feature.getMetadataEntries().size() > 0) {
                             List<String> metaValues = new ArrayList<>();
                             for (Feature.MetadataEntry metadataEntry : feature.getMetadataEntries()) {
-                                metadataEntry.getValue();
+                                metaValues.add(metadataEntry.getValue().toString());
                             }
                             configFeature.setMetaData(metaValues);
                         }

@@ -140,7 +140,7 @@ public class DeviceAgentServiceImpl implements DeviceAgentService {
         try {
             device = DeviceMgtAPIUtils.getDeviceManagementService().getDevice(deviceIdentifier);
         } catch (DeviceManagementException e) {
-            String msg = "Error occurred while getting enrollment details of the Android device that carries the id '" +
+            String msg = "Error occurred while getting enrollment details of the device that carries the id '" +
                     id + "'";
             log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
@@ -226,7 +226,7 @@ public class DeviceAgentServiceImpl implements DeviceAgentService {
                 boolean authorized = DeviceMgtAPIUtils.getDeviceAccessAuthorizationService().isUserAuthorized
                         (new DeviceIdentifier(type, deviceId));
                 if (!authorized) {
-                    String msg = "does not have permission to access the device.";
+                    String msg = "Does not have permission to access the device.";
                     return Response.status(Response.Status.UNAUTHORIZED).entity(msg).build();
                 }
             }
@@ -249,7 +249,7 @@ public class DeviceAgentServiceImpl implements DeviceAgentService {
 
                     }
                     if (payload.size() != attributes.size()) {
-                        String msg = "payload does not match with the stream definition";
+                        String msg = "Payload does not match with the stream definition";
                         return Response.status(Response.Status.BAD_REQUEST).entity(msg).build();
                     }
                     eventAttributeList = new EventAttributeList();
@@ -288,7 +288,7 @@ public class DeviceAgentServiceImpl implements DeviceAgentService {
             log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         } catch (AxisFault e) {
-            log.error("failed to retrieve event definitions for tenantDomain:" + tenantDomain, e);
+            log.error("Failed to retrieve event definitions for tenantDomain:" + tenantDomain, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         } catch (RemoteException e) {
             log.error("Failed to connect with the remote services:" + tenantDomain, e);
@@ -320,13 +320,13 @@ public class DeviceAgentServiceImpl implements DeviceAgentService {
         EventStreamAdminServiceStub eventStreamAdminServiceStub = null;
         try {
             if (payload == null) {
-                String msg = "invalid payload structure";
+                String msg = "Invalid payload structure";
                 return Response.status(Response.Status.BAD_REQUEST).entity(msg).build();
             } else {
                 boolean authorized = DeviceMgtAPIUtils.getDeviceAccessAuthorizationService().isUserAuthorized
                         (new DeviceIdentifier(type, deviceId));
                 if (!authorized) {
-                    String msg = "does not have permission to access the device.";
+                    String msg = "Does not have permission to access the device.";
                     return Response.status(Response.Status.UNAUTHORIZED).entity(msg).build();
                 }
             }
@@ -349,7 +349,7 @@ public class DeviceAgentServiceImpl implements DeviceAgentService {
 
                     }
                     if (payload.size() != attributes.size()) {
-                        String msg = "payload does not match with the stream definition";
+                        String msg = "Payload does not match with the stream definition";
                         return Response.status(Response.Status.BAD_REQUEST).entity(msg).build();
                     }
                     eventAttributeList = new EventAttributeList();
@@ -388,7 +388,7 @@ public class DeviceAgentServiceImpl implements DeviceAgentService {
             log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         } catch (AxisFault e) {
-            log.error("failed to retrieve event definitions for tenantDomain:" + tenantDomain, e);
+            log.error("Failed to retrieve event definitions for tenantDomain:" + tenantDomain, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         } catch (RemoteException e) {
             log.error("Failed to connect with the remote services:" + tenantDomain, e);
@@ -447,7 +447,7 @@ public class DeviceAgentServiceImpl implements DeviceAgentService {
     public Response getNextPendingOperation(@PathParam("type") String type, @PathParam("id") String deviceId) {
         try {
             if (!DeviceMgtAPIUtils.getDeviceManagementService().getAvailableDeviceTypes().contains(type)) {
-                String errorMessage = "Device identifier list is empty";
+                String errorMessage = "Device type is invalid";
                 log.error(errorMessage);
                 return Response.status(Response.Status.BAD_REQUEST).build();
             }
@@ -455,7 +455,7 @@ public class DeviceAgentServiceImpl implements DeviceAgentService {
             if (!DeviceMgtAPIUtils.isValidDeviceIdentifier(deviceIdentifier)) {
                 String msg = "Device not found for identifier '" + deviceId + "'";
                 log.error(msg);
-                return Response.status(Response.Status.NO_CONTENT).entity(msg).build();
+                return Response.status(Response.Status.BAD_REQUEST).entity(msg).build();
             }
             Operation operation = DeviceMgtAPIUtils.getDeviceManagementService().getNextPendingOperation(
                     deviceIdentifier);
@@ -476,12 +476,12 @@ public class DeviceAgentServiceImpl implements DeviceAgentService {
     public Response updateOperation(@PathParam("type") String type, @PathParam("id") String deviceId, @Valid Operation operation) {
         try {
             if (!DeviceMgtAPIUtils.getDeviceManagementService().getAvailableDeviceTypes().contains(type)) {
-                String errorMessage = "Device identifier list is empty";
+                String errorMessage = "Device type is invalid";
                 log.error(errorMessage);
                 return Response.status(Response.Status.BAD_REQUEST).build();
             }
             if (operation == null) {
-                String errorMessage = "Device identifier list is empty";
+                String errorMessage = "Operation cannot empty";
                 log.error(errorMessage);
                 return Response.status(Response.Status.BAD_REQUEST).build();
             }
@@ -489,7 +489,7 @@ public class DeviceAgentServiceImpl implements DeviceAgentService {
             if (!DeviceMgtAPIUtils.isValidDeviceIdentifier(deviceIdentifier)) {
                 String msg = "Device not found for identifier '" + deviceId + "'";
                 log.error(msg);
-                return Response.status(Response.Status.NO_CONTENT).entity(msg).build();
+                return Response.status(Response.Status.BAD_REQUEST).entity(msg).build();
             }
             if (!Operation.Status.ERROR.equals(operation.getStatus()) && operation.getCode() != null &&
                     POLICY_MONITOR.equals(operation.getCode())) {
@@ -502,7 +502,7 @@ public class DeviceAgentServiceImpl implements DeviceAgentService {
             } else {
                 DeviceMgtAPIUtils.getDeviceManagementService().updateOperation(deviceIdentifier, operation);
             }
-            return Response.status(Response.Status.ACCEPTED).build();
+            return Response.status(Response.Status.OK).build();
         } catch (OperationManagementException e) {
             String errorMessage = "Issue in retrieving operation management service instance";
             log.error(errorMessage, e);
@@ -521,16 +521,16 @@ public class DeviceAgentServiceImpl implements DeviceAgentService {
     @GET
     @Path("/status/operations/{type}/{id}")
     public Response getOperationsByDeviceAndStatus(@PathParam("type") String type, @PathParam("id") String deviceId,
-                                                   @QueryParam("status")Operation.Status status) {
+                                                   @QueryParam("status") Operation.Status status) {
         if (status == null) {
-            String errorMessage = "status is empty";
+            String errorMessage = "Status is empty";
             log.error(errorMessage);
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
 
         try {
             if (!DeviceMgtAPIUtils.getDeviceManagementService().getAvailableDeviceTypes().contains(type)) {
-                String errorMessage = "Device identifier list is empty";
+                String errorMessage = "Invalid Device Type";
                 log.error(errorMessage);
                 return Response.status(Response.Status.BAD_REQUEST).build();
             }
@@ -558,12 +558,7 @@ public class DeviceAgentServiceImpl implements DeviceAgentService {
             return null;
         }
         // Parsing json string to get compliance features.
-        JsonElement jsonElement;
-        if (compliancePayloadString instanceof String) {
-            jsonElement = new JsonParser().parse(compliancePayloadString);
-        } else {
-            throw new PolicyComplianceException("Invalid policy compliance payload");
-        }
+        JsonElement jsonElement = new JsonParser().parse(compliancePayloadString);
 
         JsonArray jsonArray = jsonElement.getAsJsonArray();
         Gson gson = new Gson();

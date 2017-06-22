@@ -21,6 +21,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Document;
 import org.wso2.carbon.base.MultitenantConstants;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
+import org.wso2.carbon.device.mgt.analytics.data.publisher.service.EventsPublisherService;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
@@ -403,6 +405,17 @@ public final class DeviceManagerUtil {
         return limit;
     }
 
+    public static boolean isPublishLocationOperationResEnabled() throws DeviceManagementException {
+        DeviceManagementConfig deviceManagementConfig = DeviceConfigurationManager.getInstance().
+                getDeviceManagementConfig();
+        if (deviceManagementConfig != null) {
+            return deviceManagementConfig.getGeoLocationConfiguration().getPublishLocationOperationResponse();
+        } else {
+            throw new DeviceManagementException("Device-Mgt configuration has not initialized. Please check the " +
+                                                        "cdm-config.xml file.");
+        }
+    }
+
     public static DeviceIDHolder validateDeviceIdentifiers(List<DeviceIdentifier> deviceIDs) {
 
         List<String> errorDeviceIdList = new ArrayList<String>();
@@ -453,6 +466,18 @@ public final class DeviceManagerUtil {
 
     private static CacheManager getCacheManager() {
         return Caching.getCacheManagerFactory().getCacheManager(DeviceManagementConstants.DM_CACHE_MANAGER);
+    }
+
+    public static EventsPublisherService getEventPublisherService() {
+        PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        EventsPublisherService eventsPublisherService =
+                (EventsPublisherService) ctx.getOSGiService(EventsPublisherService.class, null);
+        if (eventsPublisherService == null) {
+            String msg = "Event Publisher service has not initialized.";
+            log.error(msg);
+            throw new IllegalStateException(msg);
+        }
+        return eventsPublisherService;
     }
 
     public static void initializeDeviceCache() {

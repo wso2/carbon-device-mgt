@@ -61,6 +61,7 @@ public final class DeviceManagementConstants {
         private LicenseProperties() {
             throw new AssertionError();
         }
+
         public static final String PROVIDER = "overview_provider";
         public static final String NAME = "overview_name";
         public static final String LANGUAGE = "overview_language";
@@ -76,6 +77,7 @@ public final class DeviceManagementConstants {
         private NotificationProperties() {
             throw new AssertionError();
         }
+
         public static final String NOTIFICATION_CONFIG_FILE = "notification-messages.xml";
     }
 
@@ -83,6 +85,7 @@ public final class DeviceManagementConstants {
         private DataBaseTypes() {
             throw new AssertionError();
         }
+
         public static final String DB_TYPE_MYSQL = "MySQL";
         public static final String DB_TYPE_ORACLE = "Oracle";
         public static final String DB_TYPE_MSSQL = "Microsoft SQL Server";
@@ -91,4 +94,32 @@ public final class DeviceManagementConstants {
         public static final String DB_TYPE_POSTGRESQL = "PostgreSQL";
     }
 
+    public static final class GeoServices {
+        private GeoServices() {
+            throw new AssertionError();
+        }
+
+        public static final String ALERT_TYPE_SPEED = "Speed";
+        public static final String ALERT_TYPE_WITHIN = "Within";
+        public static final String ALERT_TYPE_EXIT = "Exit";
+        public static final String ALERT_TYPE_PROXIMITY = "Proximity";
+        public static final String ALERT_TYPE_STATIONARY = "Stationery";
+        public static final String ALERT_TYPE_TRAFFIC = "Traffic";
+        public static final String REGISTRY_PATH_FOR_ALERTS = "/_system/governance/geo/alerts/";
+        public static final String PROXIMITY_DISTANCE = "proximityDistance";
+        public static final String PROXIMITY_TIME = "proximityTime";
+        public static final String STATIONARY_NAME = "stationeryName";
+        public static final String STATIONARY_TIME = "stationeryTime";
+        public static final String FLUCTUATION_RADIUS = "fluctuationRadius";
+        public static final String QUERY_NAME = "queryName";
+        public static final String AREA_NAME = "areaName";
+
+        public static final String GEO_FENCE_GEO_JSON = "geoFenceGeoJSON";
+        public static final String SPEED_ALERT_VALUE = "speedAlertValue";
+
+        public static final String DAS_PORT = "${iot.analytics.https.port}";
+        public static final String DAS_HOST_NAME = "${iot.analytics.host}";
+        public static final String DEFAULT_HTTP_PROTOCOL = "https";
+        public static final String DAS_URL = DEFAULT_HTTP_PROTOCOL + "://" + DAS_HOST_NAME + ":" + DAS_PORT;
+    }
 }

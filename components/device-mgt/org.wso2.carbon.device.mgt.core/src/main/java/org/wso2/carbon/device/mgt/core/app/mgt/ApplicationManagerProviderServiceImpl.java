@@ -265,16 +265,22 @@ public class ApplicationManagerProviderServiceImpl implements ApplicationManagem
     @Override
     public List<Application> getApplicationListForDevice(
             DeviceIdentifier deviceId) throws ApplicationManagementException {
+        Device device = null;
         try {
-            Device device = DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().getDevice(deviceId,
+            device = DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().getDevice(deviceId,
                     false);
-            if (device == null) {
-                if (log.isDebugEnabled()) {
-                    log.debug("No device is found upon the device identifier '" + deviceId.getId() +
-                            "' and type '" + deviceId.getType() + "'. Therefore returning null");
-                }
-                return null;
+        } catch (DeviceManagementException e) {
+            throw new ApplicationManagementException("Error occurred while fetching the device of '" +
+                    deviceId.getType() + "' carrying the identifier'" + deviceId.getId(), e);
+        }
+        if (device == null) {
+            if (log.isDebugEnabled()) {
+                log.debug("No device is found upon the device identifier '" + deviceId.getId() +
+                        "' and type '" + deviceId.getType() + "'. Therefore returning null");
             }
+            return null;
+        }
+        try {
             DeviceManagementDAOFactory.openConnection();
             return applicationDAO.getInstalledApplications(device.getId());
         } catch (DeviceManagementDAOException e) {
@@ -282,10 +288,7 @@ public class ApplicationManagerProviderServiceImpl implements ApplicationManagem
                     deviceId.getType() + "' device carrying the identifier'" + deviceId.getId(), e);
         } catch (SQLException e) {
             throw new ApplicationManagementException("Error occurred while opening a connection to the data source", e);
-        } catch (DeviceManagementException e) {
-            throw new ApplicationManagementException("Error occurred while fetching the device of '" +
-                    deviceId.getType() + "' carrying the identifier'" + deviceId.getId(), e);
-        } finally {
+        }  finally {
             DeviceManagementDAOFactory.closeConnection();
         }
     }

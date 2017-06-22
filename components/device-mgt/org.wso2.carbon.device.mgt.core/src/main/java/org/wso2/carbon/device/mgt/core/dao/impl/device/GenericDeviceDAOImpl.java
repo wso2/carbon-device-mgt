@@ -48,6 +48,8 @@ public class GenericDeviceDAOImpl extends AbstractDeviceDAOImpl {
         boolean isDeviceNameProvided = false;
         String owner = request.getOwner();
         boolean isOwnerProvided = false;
+        String ownerPattern = request.getOwnerPattern();
+        boolean isOwnerPatternProvided = false;
         String ownership = request.getOwnership();
         boolean isOwnershipProvided = false;
         String status = request.getStatus();
@@ -95,8 +97,11 @@ public class GenericDeviceDAOImpl extends AbstractDeviceDAOImpl {
             }
             //Add the query for owner
             if (owner != null && !owner.isEmpty()) {
-                sql = sql + " AND e.OWNER LIKE ?";
+                sql = sql + " AND e.OWNER = ?";
                 isOwnerProvided = true;
+            } else if (ownerPattern != null && !ownerPattern.isEmpty()) {
+                sql = sql + " AND e.OWNER LIKE ?";
+                isOwnerPatternProvided = true;
             }
             //Add the query for status
             if (status != null && !status.isEmpty()) {
@@ -113,21 +118,23 @@ public class GenericDeviceDAOImpl extends AbstractDeviceDAOImpl {
                 stmt.setLong(paramIdx++, since.getTime());
             }
             if (isDeviceTypeProvided) {
-                stmt.setString(paramIdx++, request.getDeviceType());
+                stmt.setString(paramIdx++, deviceType);
             }
             if (isDeviceNameProvided) {
-                stmt.setString(paramIdx++, request.getDeviceName() + "%");
+                stmt.setString(paramIdx++, deviceName + "%");
             }
 
             stmt.setInt(paramIdx++, tenantId);
             if (isOwnershipProvided) {
-                stmt.setString(paramIdx++, request.getOwnership());
+                stmt.setString(paramIdx++, ownership);
             }
             if (isOwnerProvided) {
-                stmt.setString(paramIdx++, request.getOwner() + "%");
+                stmt.setString(paramIdx++, owner);
+            } else if (isOwnerPatternProvided) {
+                stmt.setString(paramIdx++, ownerPattern + "%");
             }
             if (isStatusProvided) {
-                stmt.setString(paramIdx++, request.getStatus());
+                stmt.setString(paramIdx++, status);
             }
             stmt.setInt(paramIdx++, request.getStartIndex());
             stmt.setInt(paramIdx, request.getRowCount());

@@ -54,10 +54,6 @@
         <!--Merged ->  Merged policy evaluation point -->
         <PolicyEvaluationPoint>Simple</PolicyEvaluationPoint>
     </PolicyConfiguration>
-    <!--<TaskConfiguration>-->
-        <!--<Enable>true</Enable>-->
-        <!--<Frequency>600000</Frequency>-->
-    <!--</TaskConfiguration>-->
     <!-- Default Page size configuration for paginated DM APIs-->
     <PaginationConfiguration>
         <DeviceListPageSize>20</DeviceListPageSize>
@@ -78,5 +74,8 @@
         <Enable>true</Enable>
         <ExpiryTime>600</ExpiryTime>
     </DeviceCacheConfiguration>
+    <GeoLocationConfiguration>
+        <PublishLocationOperationResponse>true</PublishLocationOperationResponse>
+    </GeoLocationConfiguration>
 </DeviceMgtConfiguration>
 

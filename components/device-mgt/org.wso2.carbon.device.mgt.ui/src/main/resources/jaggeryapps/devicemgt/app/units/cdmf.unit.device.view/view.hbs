@@ -56,10 +56,8 @@
                           </div>
                       </div>
                   </div>
-                  <div class="vital-strip">
-                    {{#defineZone "device-details"}}
-                    {{/defineZone}}
-                  </div>
+                  {{#defineZone "device-details"}}
+                  {{/defineZone}}
                   {{#defineZone "device-opetations"}}
                     <div class="operation-container">
                       <div class="operation-title">
@@ -82,6 +80,18 @@
                   <div class="tab-content">
                     {{#defineZone "device-view-tab-contents"}}
                         <div id="event_log" class="tab-pane fade in active">
+                          <div class="tab-actions">
+                            <div class="action-btn-container">
+                                <div class="action-btn show filter">
+                                    <a href="javascript:void(0);" id="refresh-operations">
+                                        <i class="fw fw-refresh"></i> Refresh Log
+                                    </a>
+                                </div>
+                            </div>
+                          </div>
+                          <div id="operations-spinner" class="wr-advance-operations-init hidden">
+                              <i class="fw fw-wso2-logo fw-pulse fw-2x"></i> Loading Operations Log...
+                          </div>
                           <div class="clearfix"></div>
                             <div class="operation-log-container">
                                 <table class="table table-striped table-hover table-responsive list-table display responsive nowrap data-table"
@@ -101,18 +111,6 @@
                                     <tbody>
                                     </tbody>
                                 </table>
-                                <!-- <table class="table table-striped table-hover table-bordered display data-table"
-                                       id="operations-log-table">
-                                    <thead>
-                                    <tr class="sort-row">
-                                        <th>Operation Code</th>
-                                        <th>Status</th>
-                                        <th>Request created at</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    </tbody>
-                                </table> -->
                             </div>
                         </div>
                       {{#defineZone "device-view-tab-injected-conents"}}

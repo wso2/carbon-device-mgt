@@ -420,5 +420,7 @@ public interface DeviceDAO {
      */
     List<EnrolmentInfo> getEnrolmentsByStatus(List<DeviceIdentifier> deviceIds, Status status,
                                               int tenantId) throws DeviceManagementDAOException;
+
+    List<Integer> getDeviceEnrolledTenants() throws DeviceManagementDAOException;
 }
 

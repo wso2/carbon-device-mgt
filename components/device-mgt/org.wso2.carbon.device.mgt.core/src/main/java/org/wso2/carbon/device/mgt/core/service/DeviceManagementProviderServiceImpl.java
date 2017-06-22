@@ -1468,6 +1468,21 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         return isDeviceUpdated;
     }
 
+    @Override
+    public List<Integer> getDeviceEnrolledTenants() throws DeviceManagementException {
+        try {
+            DeviceManagementDAOFactory.openConnection();
+            return deviceDAO.getDeviceEnrolledTenants();
+        } catch (DeviceManagementDAOException e) {
+            throw new DeviceManagementException("Error occurred while retrieving the tenants " +
+                    "which have device enrolled.", e);
+        } catch (SQLException e) {
+            throw new DeviceManagementException("Error occurred while opening a connection to the data source", e);
+        } finally {
+            DeviceManagementDAOFactory.closeConnection();
+        }
+    }
+
     private boolean updateEnrollment(int deviceId, EnrolmentInfo enrolmentInfo, int tenantId)
             throws DeviceManagementException {
         boolean isUpdatedEnrollment = false;

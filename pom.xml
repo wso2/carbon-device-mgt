@@ -1523,6 +1523,11 @@
                 <artifactId>org.wso2.carbon.event.stream.stub</artifactId>
                 <version>${carbon.analytics.common.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.registry</groupId>
+                <artifactId>org.wso2.carbon.registry.resource</artifactId>
+                <version>4.6.5</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 

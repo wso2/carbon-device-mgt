@@ -22,6 +22,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.CarbonConstants;
 import org.wso2.carbon.base.MultitenantConstants;
+import org.wso2.carbon.context.CarbonContext;
+import org.wso2.carbon.context.RegistryType;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
 import org.wso2.carbon.device.mgt.jaxrs.beans.RoleInfo;
 import org.wso2.carbon.device.mgt.jaxrs.beans.RoleList;
@@ -30,6 +32,9 @@ import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.FilteringUtil;
 import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.RequestValidationUtil;
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
 import org.wso2.carbon.device.mgt.jaxrs.util.SetReferenceTransformer;
+import org.wso2.carbon.registry.api.Registry;
+import org.wso2.carbon.registry.core.session.UserRegistry;
+import org.wso2.carbon.registry.resource.services.utils.ChangeRolePermissionsUtil;
 import org.wso2.carbon.user.api.*;
 import org.wso2.carbon.user.core.common.AbstractUserStoreManager;
 import org.wso2.carbon.user.mgt.UserRealmProxy;
@@ -296,6 +301,7 @@ public class RoleManagementServiceImpl implements RoleManagementService {
                 }
             }
             userStoreManager.addRole(roleInfo.getRoleName(), roleInfo.getUsers(), permissions);
+            authorizeRoleForAppmgt(roleInfo.getRoleName(), roleInfo.getPermissions());
 
             //TODO fix what's returned in the entity
             return Response.created(new URI(API_BASE_PATH + "/" + URLEncoder.encode(roleInfo.getRoleName(), "UTF-8"))).
@@ -450,6 +456,7 @@ public class RoleManagementServiceImpl implements RoleManagementService {
                         authorizationManager.authorizeRole(roleName, permission, CarbonConstants.UI_PERMISSION_ACTION);
                     }
                 }
+                authorizeRoleForAppmgt(roleName, roleInfo.getPermissions());
             }
             //TODO: Need to send the updated role information in the entity back to the client
             return Response.status(Response.Status.OK).entity("Role '" + roleInfo.getRoleName() + "' has " +
@@ -464,6 +471,59 @@ public class RoleManagementServiceImpl implements RoleManagementService {
             log.error(msg, e);
             return Response.serverError().entity(
                     new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
+        }
+    }
+
+    /**
+     * When presented with role and a set of permissions, if given role has permission to
+     * perform mobile app management, said role will be given rights mobile app collection in the
+     * governance registry.
+     *
+     * @param role
+     * @param permissions
+     * @return state of role update Operation
+     */
+    private boolean authorizeRoleForAppmgt(String role, String[] permissions) {
+        String permissionString =
+                "ra^true:rd^false:wa^true:wd^false:da^true:dd^false:aa^true:ad^false";
+        String resourcePath = "/_system/governance/mobileapps/";
+        boolean appmPermAvailable = false;
+
+        if (permissions != null) {
+            for (int i = 0; i < permissions.length; i++)
+                switch (permissions[i]) {
+                    case "/permission/admin/manage/mobileapp":
+                        appmPermAvailable = true;
+                        break;
+                    case "/permission/admin/manage/mobileapp/create":
+                        appmPermAvailable = true;
+                        break;
+                    case "/permission/admin/manage/mobileapp/publish":
+                        appmPermAvailable = true;
+                        break;
+                }
+        }
+
+        if (appmPermAvailable) {
+            try {
+                Registry registry = CarbonContext.getThreadLocalCarbonContext().
+                        getRegistry(RegistryType.SYSTEM_GOVERNANCE);
+                ChangeRolePermissionsUtil.changeRolePermissions((UserRegistry) registry,
+                        resourcePath, role + ":" + permissionString);
+
+                return true;
+            } catch (Exception e) {
+                String msg = "Error while retrieving user registry in order to update permissions "
+                        + "for resource : " + resourcePath;
+                log.error(msg, e);
+                return false;
+            }
+        } else {
+            if (log.isDebugEnabled()) {
+                log.debug("Mobile App Management permissions not selected, therefore role : " +
+                        role + " not given permission for registry collection : " + resourcePath);
+            }
+            return false;
         }
     }
 

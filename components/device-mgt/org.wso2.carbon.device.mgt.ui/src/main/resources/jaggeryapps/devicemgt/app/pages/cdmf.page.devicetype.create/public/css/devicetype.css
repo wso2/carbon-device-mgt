@@ -1,0 +1,19 @@
+.wr-btn-horizontal{
+	padding: 7px 10px;
+}
+
+.dontfloat {
+	clear:both;
+}
+
+.hidden-div {
+	display: none;
+}
+
+.feature-wrapper{
+	margin-top: 10px;
+}
+
+.wr-btn-secondary{
+	background-color: #617d8b;
+}

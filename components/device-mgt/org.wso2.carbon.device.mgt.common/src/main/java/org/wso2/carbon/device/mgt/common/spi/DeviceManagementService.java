@@ -21,6 +21,7 @@ package org.wso2.carbon.device.mgt.common.spi;
 import org.wso2.carbon.device.mgt.common.*;
 import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManager;
 import org.wso2.carbon.device.mgt.common.policy.mgt.PolicyMonitoringManager;
+import org.wso2.carbon.device.mgt.common.pull.notification.PullNotificationSubscriber;
 import org.wso2.carbon.device.mgt.common.push.notification.PushNotificationConfig;
 
 /**
@@ -46,6 +47,8 @@ public interface DeviceManagementService {
     PolicyMonitoringManager getPolicyMonitoringManager();
 
     InitialOperationConfig getInitialOperationConfig();
+
+    PullNotificationSubscriber getPullNotificationSubscriber();
 
     DeviceStatusTaskPluginConfig getDeviceStatusTaskPluginConfig();
 

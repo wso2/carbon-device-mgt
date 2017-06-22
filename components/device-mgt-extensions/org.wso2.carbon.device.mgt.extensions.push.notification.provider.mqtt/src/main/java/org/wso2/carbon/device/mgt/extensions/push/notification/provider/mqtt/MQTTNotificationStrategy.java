@@ -21,8 +21,8 @@ package org.wso2.carbon.device.mgt.extensions.push.notification.provider.mqtt;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
+import org.wso2.carbon.device.mgt.common.InvalidConfigurationException;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
-import org.wso2.carbon.device.mgt.common.policy.mgt.Profile;
 import org.wso2.carbon.device.mgt.common.push.notification.NotificationContext;
 import org.wso2.carbon.device.mgt.common.push.notification.NotificationStrategy;
 import org.wso2.carbon.device.mgt.common.push.notification.PushNotificationConfig;
@@ -147,7 +147,7 @@ public class MQTTNotificationStrategy implements NotificationStrategy {
                 for (ProfileOperation profileOperation : profileOperations) {
                     Map<String, String> dynamicProperties = new HashMap<>();
                     String topic = tenantDomain + "/"
-                            + deviceType + "/" + deviceId + "/" + profileOperation.getType()
+                            + deviceType + "/" + deviceId + "/operation/" + profileOperation.getType()
                             .toString().toLowerCase() + "/" + profileOperation.getCode().toLowerCase();
                     dynamicProperties.put("topic", topic);
                     MQTTDataHolder.getInstance().getOutputEventAdapterService().publish(adapterName, dynamicProperties,
@@ -157,14 +157,17 @@ public class MQTTNotificationStrategy implements NotificationStrategy {
             } else {
                 Map<String, String> dynamicProperties = new HashMap<>();
                 String topic = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantDomain(true) + "/"
-                        + ctx.getDeviceId().getType() + "/" + ctx.getDeviceId().getId() + "/" + operation.getType()
-                        .toString().toLowerCase() + "/" + operation.getCode();
+                        + ctx.getDeviceId().getType() + "/" + ctx.getDeviceId().getId() + "/operation/"
+                        + operation.getType().toString().toLowerCase() + "/" + operation.getCode() + "/" + operation.getId();
                 dynamicProperties.put("topic", topic);
-                if (operation.getPayLoad() == null) {
-                    operation.setPayLoad("");
+                Object payload;
+                if ("command".equals(operation.getType().toString().toLowerCase())) {
+                    payload = operation.getCode();
+                } else {
+                    payload = operation.getPayLoad();
                 }
                 MQTTDataHolder.getInstance().getOutputEventAdapterService().publish(adapterName, dynamicProperties,
-                        operation.getPayLoad());
+                                                                                    payload);
 
             }
 

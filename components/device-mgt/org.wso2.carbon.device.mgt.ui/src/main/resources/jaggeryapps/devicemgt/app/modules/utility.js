@@ -67,6 +67,9 @@ utility = function () {
 
     publicMethods.getDeviceTypeConfig = function (deviceType) {
         var unitName = publicMethods.getTenantedDeviceUnitName(deviceType, "type-view");
+		if (!unitName) {
+			return null;
+		}
 
         if (deviceType in deviceTypeConfigMap) {
             return deviceTypeConfigMap[deviceType];
@@ -103,6 +106,9 @@ utility = function () {
 
     publicMethods.getDeviceThumb = function (deviceType) {
         var unitName = publicMethods.getTenantedDeviceUnitName(deviceType, "type-view");
+		if (!unitName) {
+			unitName = "cdmf.unit.default.device.type.type-view";
+		}
         var iconPath = "/app/units/" + unitName + "/public/images/thumb.png";
         var icon = new File(iconPath);
         if (icon.isExists()) {

@@ -33,6 +33,7 @@ import org.wso2.carbon.device.mgt.common.TransactionManagementException;
 import org.wso2.carbon.device.mgt.common.group.mgt.GroupManagementException;
 import org.wso2.carbon.device.mgt.common.notification.mgt.NotificationManagementException;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
+import org.wso2.carbon.device.mgt.common.type.mgt.DeviceTypeMetaDefinition;
 import org.wso2.carbon.device.mgt.core.DeviceManagementConstants;
 import org.wso2.carbon.device.mgt.core.cache.DeviceCacheKey;
 import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
@@ -130,7 +131,8 @@ public final class DeviceManagerUtil {
      * @param isSharedWithAllTenants is this device type shared with all tenants.
      * @return status of the operation
      */
-    public static boolean registerDeviceType(String typeName, int tenantId, boolean isSharedWithAllTenants)
+    public static boolean registerDeviceType(String typeName, int tenantId, boolean isSharedWithAllTenants
+            , DeviceTypeMetaDefinition deviceTypeDefinition)
             throws DeviceManagementException {
         boolean status;
         try {
@@ -140,7 +142,13 @@ public final class DeviceManagerUtil {
             if (deviceType == null) {
                 deviceType = new DeviceType();
                 deviceType.setName(typeName);
+                deviceType.setDeviceTypeMetaDefinition(deviceTypeDefinition);
                 deviceTypeDAO.addDeviceType(deviceType, tenantId, isSharedWithAllTenants);
+            } else {
+                if (deviceTypeDefinition != null) {
+                    deviceType.setDeviceTypeMetaDefinition(deviceTypeDefinition);
+                    deviceTypeDAO.updateDeviceType(deviceType, tenantId);
+                }
             }
             DeviceManagementDAOFactory.commitTransaction();
             status = true;
@@ -175,7 +183,7 @@ public final class DeviceManagerUtil {
             throw new DeviceManagementException("Error occurred while fetching the device type '"
                     + typeName + "'", e);
         } catch (SQLException e) {
-            throw new DeviceManagementException("Error occurred while fetching the device type '"
+            throw new DeviceManagementException("SQL Error occurred while fetching the device type '"
                     + typeName + "'", e);
         } finally {
             DeviceManagementDAOFactory.closeConnection();

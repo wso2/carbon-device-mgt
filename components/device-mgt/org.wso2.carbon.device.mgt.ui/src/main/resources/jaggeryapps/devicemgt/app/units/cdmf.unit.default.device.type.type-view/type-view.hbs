@@ -1,0 +1,222 @@
+
+<div class="col-lg-12  margin-top-double">
+    <h1 class="grey ">{{deviceType}}</h1>
+    <hr>
+</div>
+
+<div class="col-xs-12 col-sm-4 col-md-4 col-lg-3 padding-top add-margin-bottom-5x">
+    <img src="{{@unit.publicUri}}/images/deviceType.png" class="img-responsive">
+</div>
+
+<div class="col-xs-12 col-sm-8 col-md-8 col-lg-8 padding-top">
+</div>
+
+<div class="col-xs-12 col-sm-8 col-md-8 col-lg-8 padding-top">
+    <h3 class="uppercase">Description</h3>
+    <hr>
+    <p class="grey margin-top">{{type.deviceTypeMetaDefinition.description}}</p>
+    <br>
+    <hr>
+    <br>
+    <a href="#create"
+       class="btn-operations"><i class="fw fw-add add-margin-1x"></i> Create Device</i>
+    </a>
+    <a href="/api-store/apis/info?name=DeviceAgent Service&version=1.0.0&provider=admin"
+       class="btn-operations"
+       target="_blank"><i class="fw fw-api add-margin-1x"></i> View API</i>
+    </a>
+    <div id="device-agent-downloading-content" class="hide">
+        <div class="modal-content">
+            <div class="row">
+                <div class="col-md-7 col-centered center-container">
+                    <h3>Device Agent will downloading shortly.</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="device-400-content" class="hide">
+        <div class="modal-content">
+            <div class="row">
+                <div class="col-md-7 col-centered center-container">
+                    <h3>Exception at backend. Try Later.</h3>
+                    <div class="buttons">
+                        <a href="#" id="device-400-link" class="btn-operations">
+                            OK
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="device-401-content" class="hide">
+        <div class="modal-content">
+            <div class="row">
+                <div class="col-md-7 col-centered center-container">
+                    <h3>You have to log in first.</h3><br/>
+                    <div class="buttons">
+                        <a href="#" id="device-401-link" class="blue-button">
+                            Goto Login Page
+                        </a>&nbsp;&nbsp;
+                        <a href="#" onclick="hidePopup();" class="btn-operations">
+                            Cancel
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="device-403-content" class="hide">
+        <div class="modal-content">
+            <div class="row">
+                <div class="col-md-7 col-centered center-container">
+                    <h3>Action not permitted.</h3><br/>
+
+                    <div class="buttons">
+                        <a href="#" id="device-403-link" class="btn-operations">
+                            OK
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="device-409-content" class="hide">
+        <div class="modal-content">
+            <div class="row">
+                <div class="col-md-7 col-centered center-container">
+                    <h3>Device Sketch does not exist.</h3><br/>
+                    <div class="buttons">
+                        <a href="#" id="device-409-link" class="btn-operations">
+                            OK
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="device-unexpected-error-content" class="hide">
+        <div class="modal-content">
+            <div class="row">
+                <div class="col-md-7 col-centered center-container">
+                    <h3>Unexpected error.</h3><br/>
+                    <div class="buttons">
+                        <a href="#" id="device-unexpected-error-link" class="btn-operations">
+                            OK
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br/><br/>
+</div>
+<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 padding-double grey-bg">
+    <h2 class="uppercase">How To Enroll a Device</h2>
+    <hr>
+    <ul class="list-unstyled">
+        <li class="padding-top-double"><span><h4 class="uppercase">Generate Application</h4></span>
+           <code>curl -k -X POST {{httpsGateway}}/api-application-registration/register -H
+            'authorization: Basic Base64(username:password)' -H 'content-type: application/json'
+            -d '{  "applicationName":"testme", "isAllowedToAllDomains":false, "tags":["device_agent"]}'</code>
+        </li>
+        <li class="padding-top-double"><span><h4 class="uppercase">Generate Token</h4></span>
+            <code>curl -k -d "grant_type=password&username=%username%&password=%password%&scope=perm:device:enroll perm:device:disenroll perm:device:modify perm:device:operations perm:device:publish-event"
+            -H "Authorization: Basic Base64(client_id:client_secret)"
+            -H "Content-Type: application/x-www-form-urlencoded" {{httpsGateway}}/token</code>
+        </li>
+        <li class="padding-top-double"><span><h4 class="uppercase">Create Device</h4></span>
+            <code>curl -X POST {{httpsGateway}}/api/device-mgt/v1.0/device/agent/enroll -H 'accept: application/json'
+            -H 'authorization: Bearer %accessToken%'
+            -H 'content-type: application/json' -d '{ "name": "devicename", "type": "{{deviceType}}",
+            "description": "descritption", "deviceIdentifier": "1234", "enrolmentInfo":
+            {"ownership": "BYOD", "status": "ACTIVE"}
+            ,"properties": [{"name": "propertyName","value": "propertyValue"}]}'</code>
+        </li>
+    </ul>
+    <br>
+    <br>
+</div>
+<hr/>
+
+<div id="create" class="col-xs-12 col-sm-12 col-md-12 col-lg-12 padding-double grey-bg">
+    <h2 class="uppercase">Create A Device</h2>
+    <hr>
+    <div id="device-create-form" class=" wr-content">
+        <div class="wr-form">
+            <div class="row">
+                <div class="col-lg-8">
+                    <div id="device-create-error-msg" class="alert alert-danger hidden" role="alert">
+                        <i class="icon fw fw-error"></i><span></span>
+                    </div>
+                    <input aria-describedby="basic-addon1" type="text" id="deviceTypeName" style="display: none;"
+                           data-error-msg="invalid device type name" class="form-control" value="{{deviceType}}"/>
+                    <br>
+                    <label class="wr-input-label">Name</label>
+                    <input aria-describedby="basic-addon1" type="text" id="deviceName"
+                           data-error-msg="invalid device name" class="form-control hidden-input"/>
+                    <br/>
+                    <label class="wr-input-label">Device Identifier</label>
+                    <input aria-describedby="basic-addon1" type="text" id="deviceId"
+                           data-error-msg="invalid device id" class="form-control hidden-input"/>
+                    <br/>
+
+                    <label class="wr-input-label">Description</label>
+                    <input aria-describedby="basic-addon1" type="text" id="deviceDescription"
+                           data-error-msg="invalid device description" class="form-control hidden-input"/>
+                    <br/>
+                    {{#if type.deviceTypeMetaDefinition}}
+                        {{#each type.deviceTypeMetaDefinition.properties}}
+                            <label class="wr-input-label">{{this}}</label>
+                            <input aria-describedby="basic-addon1" type="text" id="{{this}}" name="properties"
+                                   data-error-msg="invalid device description" class="form-control hidden-input"/>
+                            <br/>
+                        {{/each}}
+                    {{/if}}
+
+                    <br>
+                    <button id="add-device-btn" class="wr-btn">Create Device</button>
+                    <a id="downloadAnchorElem" style="display:none"></a>
+                    <div id="device-create-success-msg" class="alert hidden" role="alert">
+                        <i class="icon fw fw-success"></i><span></span>
+                    </div>
+                </div>
+            </div>
+            <div id="devicetype-created-msg" class="container col-centered wr-content hidden">
+                <div class="wr-form">
+                    <p class="page-sub-title">Device Type Event was added successfully.</p>
+                    <b>"View Device Type List"</b> to complete the process and go back to the devie type list.
+                    <hr/>
+                    <button class="wr-btn" onclick="window.location.href='{{@app.context}}/device-types'">
+                        View Device Type List
+                    </button>
+                </div>
+            </div>
+            <div class="modal fade" id="modalDevice" tabindex="-1" role="dialog" aria-labelledby="modalDevice">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content clearfix">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fw fw-cancel"></i></button>
+                            <h3 class="modal-title" id="deviceModalLabel">Device Created Succesfully</h3>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" onclick="redirectPage('{{@app.context}}/device');">Go To Device Page</button>
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /content -->
+            <div id="app-context" data-app-context="{{@app.context}}" class="hidden"></div>
+        </div>
+    </div>
+    <br>
+    <br>
+</div>
+
+{{#zone "topCss"}}
+    {{css "css/styles.css"}}
+{{/zone}}
+
+{{#zone "bottomJs"}}
+    {{js "js/type-view.js"}}
+{{/zone}}

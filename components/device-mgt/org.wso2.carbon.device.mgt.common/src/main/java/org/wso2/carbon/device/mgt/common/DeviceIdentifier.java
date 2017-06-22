@@ -56,7 +56,7 @@ public class DeviceIdentifier implements Serializable{
     }
 
     public void setType(String type) {
-        this.type = type.toLowerCase();
+        this.type = type.trim();
     }
     public String getId() {
         return id;

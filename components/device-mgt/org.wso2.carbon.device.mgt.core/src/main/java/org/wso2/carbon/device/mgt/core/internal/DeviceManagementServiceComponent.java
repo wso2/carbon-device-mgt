@@ -31,6 +31,7 @@ import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementExcept
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManager;
 import org.wso2.carbon.device.mgt.common.permission.mgt.PermissionManagerService;
 import org.wso2.carbon.device.mgt.common.spi.DeviceManagementService;
+import org.wso2.carbon.device.mgt.common.spi.DeviceTypeGeneratorService;
 import org.wso2.carbon.device.mgt.core.DeviceManagementConstants;
 import org.wso2.carbon.device.mgt.core.app.mgt.ApplicationManagementProviderService;
 import org.wso2.carbon.device.mgt.core.app.mgt.ApplicationManagerProviderServiceImpl;
@@ -108,6 +109,12 @@ import java.util.concurrent.TimeUnit;
  * policy="dynamic"
  * bind="setEmailSenderService"
  * unbind="unsetEmailSenderService"
+ * @scr.reference name="device.type.generator.service"
+ * interface="org.wso2.carbon.device.mgt.common.spi.DeviceTypeGeneratorService"
+ * cardinality="0..1"
+ * policy="dynamic"
+ * bind="setDeviceTypeGeneratorService"
+ * unbind="unsetDeviceTypeGeneratorService"
  */
 public class DeviceManagementServiceComponent {
 
@@ -313,7 +320,7 @@ public class DeviceManagementServiceComponent {
         try {
             if (log.isDebugEnabled()) {
                 log.debug("Setting Device Management Service Provider: '" +
-                        deviceManagementService.getType() + "'");
+                                  deviceManagementService.getType() + "'");
             }
             synchronized (LOCK) {
                 deviceManagers.add(deviceManagementService);
@@ -443,6 +450,30 @@ public class DeviceManagementServiceComponent {
         if (log.isDebugEnabled()) {
         }
         DeviceManagementDataHolder.getInstance().setDeviceTaskManagerService(null);
+    }
+
+    /**
+     * sets DeviceTypeGeneratorService.
+     *
+     * @param deviceTypeGeneratorService An Instance of DeviceTypeGeneratorService
+     */
+    protected void setDeviceTypeGeneratorService(DeviceTypeGeneratorService deviceTypeGeneratorService) {
+        if (log.isDebugEnabled()) {
+            log.debug("Un setting Device DeviceTypeGeneratorService");
+        }
+        DeviceManagementDataHolder.getInstance().setDeviceTypeGeneratorService(deviceTypeGeneratorService);
+    }
+
+    /**
+     * sets DeviceTypeGeneratorService.
+     *
+     * @param deviceTypeGeneratorService An Instance of DeviceTypeGeneratorService
+     */
+    protected void unsetDeviceTypeGeneratorService(DeviceTypeGeneratorService deviceTypeGeneratorService) {
+        if (log.isDebugEnabled()) {
+            log.debug("Un setting Device DeviceTypeGeneratorService");
+        }
+        DeviceManagementDataHolder.getInstance().setDeviceTypeGeneratorService(null);
     }
 }
 

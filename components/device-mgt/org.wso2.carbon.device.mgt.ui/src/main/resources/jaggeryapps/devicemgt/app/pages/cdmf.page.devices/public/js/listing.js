@@ -404,7 +404,13 @@ function loadDevices(searchType, searchParam) {
     ];
 
     var fnCreatedRow = function (row, data, dataIndex) {
-        $(row).attr('data-type', 'selectable');
+
+        if(data.status != "REMOVED"){
+            $(row).attr('data-type', 'selectable');
+        }else{
+            $(row).attr('data-type', 'non-selectable');
+        }
+        
         $(row).attr('data-deviceid', htmlspecialchars(data.deviceIdentifier));
         $(row).attr('data-devicetype', htmlspecialchars(data.deviceType));
         $(row).attr('data-url', context + '/device/' + htmlspecialchars(data.deviceType) + '?id=' + htmlspecialchars(data.deviceIdentifier));

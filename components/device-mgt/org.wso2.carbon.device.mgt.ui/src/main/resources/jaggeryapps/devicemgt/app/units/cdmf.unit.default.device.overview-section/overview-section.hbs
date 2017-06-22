@@ -23,18 +23,5 @@
         <td style="padding:10px 15px;">{{this}}</td>
       </tr>
     {{/each}}
-    <tr role="row" class="even">
-        <td class="sorting_1" style="padding:10px 15px;">Status</td>
-        <td style="padding:10px 15px;">
-          {{#equal device.enrolmentInfo.status "ACTIVE"}}<span><i
-                  class="fw fw-success icon-success"></i> Active</span>{{/equal}}
-          {{#equal device.enrolmentInfo.status "INACTIVE"}}<span><i
-                  class="fw fw-warning icon-warning"></i> Inactive</span>{{/equal}}
-          {{#equal device.enrolmentInfo.status "BLOCKED"}}<span><i
-                  class="fw fw-remove icon-danger"></i> Blocked</span>{{/equal}}
-          {{#equal device.enrolmentInfo.status "REMOVED"}}<span><i
-                  class="fw fw-delete icon-danger"></i> Removed</span>{{/equal}}
-        </td>
-    </tr>
     </tbody>
 </table>

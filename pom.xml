@@ -1538,6 +1538,11 @@
                 <artifactId>org.wso2.carbon.event.stream.stub</artifactId>
                 <version>${carbon.analytics.common.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.registry</groupId>
+                <artifactId>org.wso2.carbon.registry.resource</artifactId>
+                <version>${carbon.registry.resource.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -1851,6 +1856,7 @@
 
         <!-- Carbon Registry -->
         <carbon.registry.version>4.6.0</carbon.registry.version>
+        <carbon.registry.resource.version>4.6.5</carbon.registry.resource.version>
         <carbon.registry.imp.pkg.version.range>[4.4.8, 5.0.0)</carbon.registry.imp.pkg.version.range>
 
         <!--CXF properties-->

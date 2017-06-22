@@ -122,7 +122,7 @@ public class DeviceEventManagementServiceImpl implements DeviceEventManagementSe
             }
             return Response.ok().entity(deviceTypeEvent).build();
         } catch (AxisFault e) {
-            log.error("failed to retrieve event definitions for tenantDomain:" + tenantDomain, e);
+            log.error("Failed to retrieve event definitions for tenantDomain:" + tenantDomain, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         } catch (RemoteException e) {
             log.error("Failed to connect with the remote services:" + tenantDomain, e);
@@ -180,7 +180,7 @@ public class DeviceEventManagementServiceImpl implements DeviceEventManagementSe
             }
             return Response.ok().build();
         } catch (AxisFault e) {
-            log.error("failed to create event definitions for tenantDomain:" + tenantDomain, e);
+            log.error("Failed to create event definitions for tenantDomain:" + tenantDomain, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         } catch (RemoteException e) {
             log.error("Failed to connect with the remote services:" + tenantDomain, e);
@@ -267,7 +267,7 @@ public class DeviceEventManagementServiceImpl implements DeviceEventManagementSe
             }
             return Response.ok().build();
         } catch (AxisFault e) {
-            log.error("failed to delete event definitions for tenantDomain:" + tenantDomain, e);
+            log.error("Failed to delete event definitions for tenantDomain:" + tenantDomain, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         } catch (RemoteException e) {
             log.error("Failed to connect with the remote services:" + tenantDomain, e);

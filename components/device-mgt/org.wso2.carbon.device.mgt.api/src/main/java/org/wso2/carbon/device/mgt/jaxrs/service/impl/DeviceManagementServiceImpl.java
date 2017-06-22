@@ -655,12 +655,12 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
         try {
             if (operationRequest == null || operationRequest.getDeviceIdentifiers() == null
                     || operationRequest.getOperation() == null) {
-                String errorMessage = "Device identifier list is empty";
+                String errorMessage = "Operation cannot be empty";
                 log.error(errorMessage);
                 return Response.status(Response.Status.BAD_REQUEST).build();
             }
             if (!DeviceMgtAPIUtils.getDeviceManagementService().getAvailableDeviceTypes().contains(type)) {
-                String errorMessage = "Device identifier list is empty";
+                String errorMessage = "Device Type is invalid";
                 log.error(errorMessage);
                 return Response.status(Response.Status.BAD_REQUEST).build();
             }

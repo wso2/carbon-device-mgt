@@ -1173,6 +1173,10 @@ header .dropdown[aria-expanded=true], header .dropdown:hover {
     right: 0;
 }
 
+.sidebar-wrapper.toggled a.btn{
+   margin-bottom: 70px;
+}
+
 .sidebar-wrapper-animation-fix {
     -webkit-transition: left 0.5s ease, right 0.5s ease !important;
     -moz-transition: left 0.5s ease, right 0.5s ease !important;
@@ -2859,7 +2863,8 @@ a.ast-type-item:hover {
     font-size: 12px;
     text-decoration: none;
     margin-right: 10px;
-    color: #526A84;
+    /*color: #526A84;*/
+    color: #333;
     min-width: 70px;
     background: #fafafa;
     padding: 2px 10px 10px 10px;

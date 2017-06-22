@@ -70,6 +70,8 @@ public interface OperationDAO {
 
     Activity getActivity(int operationId) throws OperationManagementDAOException;
 
+    Activity getActivityByDevice(int operationId, int deviceId) throws OperationManagementDAOException;
+
     int getEnrolmentIdFromMappingId(int enrollmentOpMappingId) throws OperationManagementDAOException;
 
     List<Operation> getOperationsUpdatedAfter(long timestamp) throws OperationManagementDAOException;

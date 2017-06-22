@@ -66,11 +66,9 @@ public class DeviceDetailsRetrieverTask implements Task {
         if(executeForTenants){
             this.executeForAllTenants();
         } else {
-
             if (log.isDebugEnabled()) {
                 log.debug("Device details retrieving task started to run.");
             }
-
             DeviceTaskManager deviceTaskManager = new DeviceTaskManagerImpl(deviceType,
                     operationMonitoringTaskConfig);
             //pass the configurations also from here, monitoring tasks
@@ -78,12 +76,10 @@ public class DeviceDetailsRetrieverTask implements Task {
                 deviceTaskManager.addOperations();
             } catch (DeviceMgtTaskException e) {
                 log.error(
-                        "Error occurred while trying to add the operations to device to retrieve device details.",
-                        e);
+                        "Error occurred while trying to add the operations to device to retrieve device details.", e);
             }
         }
     }
-
 
     private void executeForAllTenants() {
 
@@ -119,7 +115,6 @@ public class DeviceDetailsRetrieverTask implements Task {
             log.error("Error occurred while trying to get the available tenants " +
                     "from device manager provider service.", e);
         }
-
     }
 
 }

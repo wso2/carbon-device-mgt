@@ -88,7 +88,6 @@ public class MonitoringTask implements Task {
         return false;
     }
 
-
     private void executeforAllTenants() {
 
         if (log.isDebugEnabled()) {
@@ -104,9 +103,7 @@ public class MonitoringTask implements Task {
                     PrivilegedCarbonContext.startTenantFlow();
                     PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(tenantDomain);
                     PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(tenant);
-
                     this.executeTask();
-
                 } finally {
                     PrivilegedCarbonContext.endTenantFlow();
                 }
@@ -116,9 +113,7 @@ public class MonitoringTask implements Task {
         } catch (DeviceManagementException e) {
             log.error("Error occurred while trying to get the available tenants from device manager service ", e);
         }
-
     }
-
 
     private void executeTask(){
 

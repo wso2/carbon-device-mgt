@@ -561,7 +561,7 @@ public interface DeviceManagementProviderService {
      */
     boolean changeDeviceStatus(DeviceIdentifier deviceIdentifier, EnrolmentInfo.Status newStatus)
             throws DeviceManagementException;
-
+    
     /**
      * This will handle add and update of device type services.
      * @param deviceManagementService
@@ -587,4 +587,6 @@ public interface DeviceManagementProviderService {
      */
     void notifyPullNotificationSubscriber(DeviceIdentifier deviceIdentifier, Operation operation)
             throws PullNotificationExecutionFailedException;
+
+    List<Integer> getDeviceEnrolledTenants() throws DeviceManagementException;
 }

@@ -469,7 +469,7 @@ function statisticLoad(redirectUrl) {
 			window.location.href = redirectUrl;
 		},
 		error: function() {
-			var urix = backendEndBasePath + "/admin/devicetype/deploy/device_management";
+			var urix = backendEndBasePath + "/admin/publish-artifact/deploy/device_management";
 			var device = {};
 			invokerUtil.post(urix, device, function (data) {
 				title.html("Deploying statistic artifacts. Please wait...");

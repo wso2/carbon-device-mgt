@@ -134,8 +134,8 @@ function resetPassword(username) {
     $("a#reset-password-yes-link").click(function () {
         var newPassword = $("#basic-modal-view .new-password").val();
         var confirmedPassword = $("#basic-modal-view .confirmed-password").val();
-        var errorMsgWrapper = "#notification-error-msg";
-        var errorMsg = "#notification-error-msg span";
+        var errorMsgWrapper = ".modal #notification-error-msg";
+        var errorMsg = ".modal #notification-error-msg span";
         if (!newPassword) {
             $(errorMsg).text("New password is a required field. It cannot be empty.");
             $(errorMsgWrapper).removeClass("hidden");

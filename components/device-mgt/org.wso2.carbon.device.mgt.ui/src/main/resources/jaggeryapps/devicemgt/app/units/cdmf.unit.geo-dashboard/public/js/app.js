@@ -548,7 +548,7 @@ function clearFocus() {
 }
 
 function createGeoToolListItem(link, text, icon, menuRoot) {
-    var listItem = $("<li/>", { class: 'list-group-item'}).appendTo(menuRoot);
+    var listItem = $("<div/>", { class: 'action-btn filter'}).appendTo(menuRoot);
     var anchor = $("<a/>", {href: link, text: ' ' + text}).appendTo(listItem);
     anchor.attr('data-toggle', 'modal');
     anchor.attr('data-target', '#commonModal');

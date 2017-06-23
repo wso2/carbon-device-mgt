@@ -194,6 +194,8 @@ public class OperationManagerImpl implements OperationManager {
                             if (log.isDebugEnabled()) {
                                 log.debug("Sending push notification to " + deviceId + " from add operation method.");
                             }
+                            operation.setId(operationId);
+                            operation.setActivityId(DeviceManagementConstants.OperationAttributes.ACTIVITY + operationId);
                             notificationStrategy.execute(new NotificationContext(deviceId, operation));
                             operationMappingDAO.updateOperationMapping(operationId, enrolmentId, org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.PushNotificationStatus.COMPLETED);
                         } catch (PushNotificationExecutionFailedException e) {
@@ -539,7 +541,7 @@ public class OperationManagerImpl implements OperationManager {
                                                                        Operation.Status.valueOf(operation.getStatus().
                                                                        toString()));
             }
-            if (isUpdated && operation.getOperationResponse() != null) {
+            if (operation.getOperationResponse() != null) {
                 operationDAO.addOperationResponse(enrolmentId, operationId, operation.getOperationResponse());
             }
             OperationManagementDAOFactory.commitTransaction();

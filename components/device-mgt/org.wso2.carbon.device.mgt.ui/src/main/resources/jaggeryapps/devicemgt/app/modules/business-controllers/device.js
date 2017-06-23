@@ -25,7 +25,8 @@ deviceModule = function () {
     var devicemgtProps = require("/app/modules/conf-reader/main.js")["conf"];
     var serviceInvokers = require("/app/modules/oauth/token-protected-service-invokers.js")["invokers"];
     var batchProvider = require("/app/modules/batch-provider-api.js")["batchProviders"];
-
+	var process = require("process");
+	var carbon = require("carbon");
     var publicMethods = {};
     var privateMethods = {};
 
@@ -271,6 +272,34 @@ deviceModule = function () {
         }
     };
 
+	publicMethods.getDeviceTypeCount = function () {
+		var carbonUser = session.get(constants.USER_SESSION_KEY);
+		if (carbonUser) {
+			var userModule = require("/app/modules/business-controllers/user.js")["userModule"];
+			var uiPermissions = userModule.getUIPermissions();
+			var url;
+			if (uiPermissions.LIST_OWN_DEVICES) {
+				url = devicemgtProps["httpsURL"] +
+					devicemgtProps["backendRestEndpoints"]["deviceMgt"] + "/device-types";
+			} else {
+				log.error("Access denied for user: " + carbonUser.username);
+				return -1;
+			}
+			return serviceInvokers.XMLHttp.get(
+				url, function (responsePayload) {
+					return parse(responsePayload["responseText"])["count"];
+				},
+				function (responsePayload) {
+					log.error(responsePayload["responseText"]);
+					return -1;
+				}
+			);
+		} else {
+			log.error("User object was not found in the session");
+			throw constants["ERRORS"]["USER_NOT_FOUND"];
+		}
+	};
+
     publicMethods.getDeviceTypes = function () {
         var url = devicemgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"] + "/device-types";
         var response = privateMethods.callBackend(url, constants["HTTP_GET"]);
@@ -279,6 +308,37 @@ deviceModule = function () {
         }
         return response;
     };
+
+	publicMethods.getDeviceTypesConfig = function () {
+		var url = devicemgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"] + "/device-types/config";
+		var response = privateMethods.callBackend(url, constants["HTTP_GET"]);
+		if (response.status == "success") {
+			response.content = parse(response.content);
+		}
+		return response;
+	};
+
+    /*
+     @Updated
+     */
+    // publicMethods.getLicense = function (deviceType) {
+    //     var url;
+    //     var license;
+    //     if (deviceType == "windows") {
+    //         url = mdmProps["httpURL"] + "/mdm-windows-agent/services/device/license";
+    //     } else if (deviceType == "ios") {
+    //         url = mdmProps["httpsURL"] + "/ios-enrollment/license/";
+    //     }
+
+    //     if (url != null && url != undefined) {
+    //         serviceInvokers.XMLHttp.get(url, function (responsePayload) {
+    //             license = responsePayload.text;
+    //         }, function (responsePayload) {
+    //             return null;
+    //         });
+    //     }
+    //     return license;
+    // };
 
     publicMethods.getDevices = function (userName) {
         var url = devicemgtProps["httpsURL"] +
@@ -300,5 +360,64 @@ deviceModule = function () {
             }
         );
     };
+
+	publicMethods.getDeviceAgentConfig = function (type, deviceId) {
+		var carbonUser = session.get(constants["USER_SESSION_KEY"]);
+		if (!carbonUser) {
+			log.error("User object was not found in the session");
+			throw constants["ERRORS"]["USER_NOT_FOUND"];
+		}
+		var userName = carbonUser.username + "@" + carbonUser.domain;
+		var config = {};
+		config.type = type;
+		config.deviceId = deviceId;
+		// register a tenant based  app at API Manager
+		var applicationName = type.replace(" ", "") + "_" + carbonUser.domain;
+		var requestURL = (devicemgtProps["oauthProvider"]["appRegistration"]
+			["apiManagerClientAppRegistrationServiceURL"]).replace("/tenants","");
+		var payload = {applicationName:applicationName, tags:["device_agent"],
+			isAllowedToAllDomains:false, validityPeriod: 3600};
+
+		serviceInvokers.XMLHttp.post(
+			requestURL, payload, function (responsePayload) {
+				var app = JSON.parse(responsePayload.responseText);
+
+				config.clientId = app["client_id"];
+				config.clientSecret = app["client_secret"];
+				if (config.clientId && config.clientSecret) {
+					var JWTClientManagerServicePackagePath =
+						"org.wso2.carbon.identity.jwt.client.extension.service.JWTClientManagerService";
+					//noinspection JSUnresolvedFunction, JSUnresolvedVariable
+					var JWTClientManagerService = carbon.server.osgiService(JWTClientManagerServicePackagePath);
+					//noinspection JSUnresolvedFunction
+					var jwtClient = JWTClientManagerService.getJWTClient();
+					// returning access token by JWT grant type
+					var deviceScope = "device_" + type.replace(" ", "") + "_" + deviceId + " perm:device:enroll " +
+						"perm:device:disenroll perm:device:modify perm:devices:operations perm:device:publish-event";
+					var tokenInfo = jwtClient.getAccessToken(config.clientId, config.clientSecret,
+						userName, deviceScope);
+					config.accessToken = tokenInfo.getAccessToken();
+					config.refreshToken = tokenInfo.getRefreshToken();
+					if (config.accessToken == null) {
+						return null;
+					}
+					config.mqttGateway = "tcp://" + process.getProperty("mqtt.broker.host") + ":" + process.getProperty("mqtt.broker.port");
+					config.httpsGateway = "https://" + process.getProperty("iot.gateway.host") + ":" + process.getProperty("iot.gateway.https.port");
+					config.httpGateway = "http://" + process.getProperty("iot.gateway.host") + ":" + process.getProperty("iot.gateway.http.port");
+					return config;
+				} else {
+					return null;
+				}
+				return config;
+			},
+			function (responsePayload) {
+				log.error(responsePayload);
+				return null;
+			}
+		);
+		return config;
+
+	};
+
     return publicMethods;
 }();

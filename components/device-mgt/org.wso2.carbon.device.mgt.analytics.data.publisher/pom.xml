@@ -22,7 +22,7 @@
     <parent>
         <groupId>org.wso2.carbon.devicemgt</groupId>
         <artifactId>device-mgt</artifactId>
-        <version>3.0.8-SNAPSHOT</version>
+        <version>3.0.9-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -125,7 +125,8 @@
                             javax.xml.*,
                             javax.xml.parsers;version="${javax.xml.parsers.import.pkg.version}";resolution:=optional,
                             org.w3c.dom,
-                            org.wso2.carbon.base
+                            org.wso2.carbon.base,
+							org.wso2.carbon.utils.multitenancy
                         </Import-Package>
                     </instructions>
                 </configuration>

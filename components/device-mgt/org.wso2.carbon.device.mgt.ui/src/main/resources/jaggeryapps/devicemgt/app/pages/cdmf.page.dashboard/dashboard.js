@@ -44,6 +44,7 @@ function onRequest(context) {
     viewModel.groupCount = groupModule.getGroupCount();
     viewModel.userCount = userModule.getUsersCount();
     viewModel.policyCount = policyModule.getPoliciesCount();
+	viewModel.deviceTypeCount = deviceModule.getDeviceTypeCount();
     viewModel.isCloud = devicemgtProps.isCloud;
     if (devicemgtProps.isCloud) {
         viewModel.roleCount = userModule.getFilteredRoles("devicemgt").content.count;

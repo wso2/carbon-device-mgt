@@ -397,8 +397,6 @@ var utils = function () {
 	publicMethods["getUniqueBrowserScope"] = function () {
 		var deviceScope = "device_" + utility.md5(request.getHeader("User-Agent") + "::" + request.getRemoteAddr());
 		deviceScope = deviceScope + " ";
-		log.debug("device scope");
-		log.debug(deviceScope);
 		return deviceScope;
 	};
 

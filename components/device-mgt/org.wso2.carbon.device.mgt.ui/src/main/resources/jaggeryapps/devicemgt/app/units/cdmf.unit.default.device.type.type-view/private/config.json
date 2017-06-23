@@ -1,0 +1,49 @@
+{
+    "deviceType": {
+        "label": "Windows",
+        "category": "mobile",
+        "scopes" : [
+          "perm:windows:enroll",
+            "perm:windows:lock-devices",
+            "perm:windows:ring",
+            "perm:windows:wipe",
+            "perm:windows:lock-reset",
+            "perm:windows:reboot",
+            "perm:windows:location",
+            "perm:windows:disenroll"
+        ],
+        "analyticsEnabled": "false",
+        "groupingEnabled": "false",
+        "features": {
+            "DEVICE_RING": {
+                "icon": "fw-dial-up",
+                "permission": "/device-mgt/devices/owning-device/operations/android/ring"
+            },
+            "DEVICE_LOCK": {
+                "icon": "fw-lock",
+                "permission": "/device-mgt/devices/owning-device/operations/windows/lock"
+            },
+            "DEVICE_LOCATION": {
+                "icon": "fw-map-location",
+                "permission": "/device-mgt/devices/owning-device/operations/windows/location"
+            },
+            "DEVICE_REBOOT": {
+                "icon": "fw-refresh",
+                "permission": "/device-mgt/devices/owning-device/operations/windows/reboot"
+            },
+            "LOCK_RESET": {
+                "icon": "fw-security",
+                "permission": "/device-mgt/devices/owning-device/operations/windows/lock-reset"
+
+            },
+            "DISENROLL": {
+                "icon": "fw-block",
+                "permission": "/device-mgt/devices/owning-device/operations/windows/disenroll"
+            },
+            "WIPE_DATA": {
+                "icon": "fw-delete",
+                "permission": "/device-mgt/devices/owning-device/operations/windows/wipe"
+            }
+        }
+    }
+}

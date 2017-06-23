@@ -259,6 +259,10 @@ deviceModule = function () {
             }
             return serviceInvokers.XMLHttp.get(
                 url, function (responsePayload) {
+                    if(!responsePayload["responseText"]){
+                        log.error("Error while fetching device count. API `" + url + "` returns HTTP: " + responsePayload["status"]);
+                        throw constants["ERRORS"]["UNKNOWN_ERROR"];
+                    }
                     return parse(responsePayload["responseText"])["count"];
                 },
                 function (responsePayload) {

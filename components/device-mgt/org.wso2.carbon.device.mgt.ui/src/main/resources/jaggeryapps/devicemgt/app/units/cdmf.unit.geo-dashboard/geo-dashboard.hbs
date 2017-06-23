@@ -61,7 +61,7 @@
         </div>
     {{/unless}}
 
-    <div id="" style="height: 93vh;">
+    <div id="" style="height: 63vh;">
         <!-- Sidebar -->
         <div id="map"></div>
     </div>
@@ -691,8 +691,7 @@
                     initializeGeoLocation()
                 });
                 {{#if showGeoFencingTools}}
-                    var locationItems = geoLocationLink.closest('li');
-                    var geoToolsMenu = $("<ul/>", {class: 'collapse list-group geo-tools active'}).appendTo(locationItems);
+                    var geoToolsMenu = $('#location-action-bar');
                     geoPublicUri = $("#geo-charts").data("geo-public-uri");
                     var realtTime = createGeoToolListItem('javascript:enableRealTime()',
                                                           'Return to Real Time View', 'fw fw-undo', geoToolsMenu);

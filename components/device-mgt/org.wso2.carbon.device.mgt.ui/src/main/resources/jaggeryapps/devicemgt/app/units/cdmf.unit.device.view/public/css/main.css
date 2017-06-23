@@ -40,7 +40,9 @@
 
 .app-info h4{
     margin-bottom: 0px;
-    overflow-wrap: break-word;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
 }
 
 .application i{

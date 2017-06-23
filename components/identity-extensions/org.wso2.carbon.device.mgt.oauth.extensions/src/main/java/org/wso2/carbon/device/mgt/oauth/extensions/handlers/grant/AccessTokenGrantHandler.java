@@ -51,7 +51,7 @@ public class AccessTokenGrantHandler extends AbstractAuthorizationGrantHandler {
 
     public AccessTokenGrantHandler() {
         try {
-            // tokenValidator = OAuthValidatorFactory.getValidator();
+            tokenValidator = new LocalOAuthValidator();
         } catch (IllegalArgumentException e) {
             log.error("Failed to initialise Authenticator", e);
         }

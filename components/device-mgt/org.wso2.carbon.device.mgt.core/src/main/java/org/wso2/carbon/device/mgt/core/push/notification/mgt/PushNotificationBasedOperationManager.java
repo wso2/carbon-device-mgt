@@ -28,6 +28,7 @@ import org.wso2.carbon.device.mgt.common.push.notification.NotificationStrategy;
 import org.wso2.carbon.device.mgt.common.push.notification.PushNotificationExecutionFailedException;
 
 import java.util.List;
+import java.util.Map;
 
 public class PushNotificationBasedOperationManager implements OperationManager {
 
@@ -142,13 +143,24 @@ public class PushNotificationBasedOperationManager implements OperationManager {
     }
 
     @Override
-    public void setNotificationStrategy(NotificationStrategy notificationStrategy) {
+    public void setDefaultNotificationStrategy(NotificationStrategy notificationStrategy) {
 
     }
 
     @Override
-    public NotificationStrategy getNotificationStrategy() {
-        return notificationProvider;
+    public NotificationStrategy getDefaultNotificationStrategy() {
+        return null;
     }
+
+    @Override
+    public void setNotificationStrategyMap(Map<String, NotificationStrategy> notificationStrategyMap) {
+
+    }
+
+    @Override
+    public Map<String, NotificationStrategy> getNotificationStrategyMap() {
+        return null;
+    }
+
 
 }

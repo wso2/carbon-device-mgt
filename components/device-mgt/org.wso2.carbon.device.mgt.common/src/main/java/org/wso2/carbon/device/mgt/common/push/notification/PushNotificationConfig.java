@@ -27,12 +27,15 @@ public class PushNotificationConfig {
 
     private String type;
     private boolean isScheduled;
+    private boolean isDefault;
     Map<String, String> properties;
 
-    public PushNotificationConfig(String type, boolean isScheduled, Map<String, String> properties) {
+    public PushNotificationConfig(String type, boolean isScheduled, boolean isDefault, Map<String, String>
+            properties) {
         this.type = type;
         this.properties = properties;
         this.isScheduled = isScheduled;
+        this.isDefault = isDefault;
     }
 
     @XmlElement(name = "Type", required = true)
@@ -43,6 +46,11 @@ public class PushNotificationConfig {
     @XmlElement(name = "isScheduled")
     public boolean isScheduled() {
         return isScheduled;
+    }
+
+    @XmlElement(name = "Default")
+    public boolean isDefault() {
+        return isDefault;
     }
 
     public Map<String, String> getProperties() {

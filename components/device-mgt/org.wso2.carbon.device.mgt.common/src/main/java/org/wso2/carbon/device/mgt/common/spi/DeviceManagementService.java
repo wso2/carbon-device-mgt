@@ -24,6 +24,8 @@ import org.wso2.carbon.device.mgt.common.policy.mgt.PolicyMonitoringManager;
 import org.wso2.carbon.device.mgt.common.pull.notification.PullNotificationSubscriber;
 import org.wso2.carbon.device.mgt.common.push.notification.PushNotificationConfig;
 
+import java.util.List;
+
 /**
  * Composite interface that acts as the SPI exposing all device management as well as application management
  * functionalities.
@@ -42,7 +44,7 @@ public interface DeviceManagementService {
 
     ProvisioningConfig getProvisioningConfig();
 
-    PushNotificationConfig getPushNotificationConfig();
+    List<PushNotificationConfig> getPushNotificationConfigs();
 
     PolicyMonitoringManager getPolicyMonitoringManager();
 

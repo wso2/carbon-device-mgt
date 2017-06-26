@@ -29,6 +29,7 @@ public class Constants {
 	public static final String PRIMARY_USER_STORE = "PRIMARY";
     public static final String DEFAULT_STREAM_VERSION = "1.0.0";
 	public static final String SCOPE = "scope";
+	public static final String JDBC_USERSTOREMANAGER = "org.wso2.carbon.user.core.jdbc.JDBCUserStoreManager";
 
 
 	public final class ErrorMessages {

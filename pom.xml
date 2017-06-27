@@ -48,7 +48,6 @@
         <module>features/policy-mgt</module>
         <module>features/webapp-authenticator-framework</module>
         <module>features/certificate-mgt</module>
-        <module>features/dynamic-client-registration</module>
         <module>features/oauth-extensions</module>
         <module>features/email-sender</module>
         <module>features/jwt-client</module>

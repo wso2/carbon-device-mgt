@@ -6964,3 +6964,7 @@ header.header-default {
     padding: 8px 15px !important;
     line-height: 0px !important;
 }
+
+.header .fw-user{
+    color: #333 !important;
+}

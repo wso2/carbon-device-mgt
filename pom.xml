@@ -216,43 +216,6 @@
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.devicemgt</groupId>
-                <artifactId>org.wso2.carbon.dynamic.client.registration</artifactId>
-                <version>${carbon.device.mgt.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.wso2.carbon.identity</groupId>
-                        <artifactId>org.wso2.carbon.identity.oauth</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.wso2.carbon.identity</groupId>
-                        <artifactId>org.wso2.carbon.identity.sso.saml</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.eclipse.osgi</groupId>
-                        <artifactId>org.eclipse.osgi</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.eclipse.osgi</groupId>
-                        <artifactId>org.eclipse.osgi.services</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.json.wso2</groupId>
-                        <artifactId>json</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.carbon.devicemgt</groupId>
-                <artifactId>org.wso2.carbon.dynamic.client.web.app.registration</artifactId>
-                <version>${carbon.device.mgt.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.carbon.devicemgt</groupId>
-                <artifactId>dynamic-client-web</artifactId>
-                <version>${carbon.device.mgt.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.carbon.devicemgt</groupId>
                 <artifactId>org.wso2.carbon.device.mgt.oauth.extensions</artifactId>
                 <version>${carbon.device.mgt.version}</version>
                 <exclusions>

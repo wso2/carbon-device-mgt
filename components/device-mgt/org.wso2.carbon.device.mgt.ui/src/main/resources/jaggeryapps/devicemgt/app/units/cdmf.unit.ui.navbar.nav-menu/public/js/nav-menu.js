@@ -37,7 +37,7 @@ function setPopupMaxHeight() {
  * show popup function.
  */
 function showPopup() {
-    $(modalPopup).modal('show');
+    $(modalPopup).first().modal('show');
 }
 
 /*

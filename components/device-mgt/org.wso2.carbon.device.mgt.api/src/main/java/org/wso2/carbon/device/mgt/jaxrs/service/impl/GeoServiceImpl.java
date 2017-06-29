@@ -37,7 +37,6 @@ import org.wso2.carbon.device.mgt.common.geo.service.Event;
 import org.wso2.carbon.device.mgt.common.geo.service.GeoFence;
 import org.wso2.carbon.device.mgt.common.geo.service.GeoServiceException;
 import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroupConstants;
-import org.wso2.carbon.device.mgt.common.notification.mgt.NotificationManagementException;
 import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
 import org.wso2.carbon.device.mgt.core.config.DeviceManagementConfig;
 import org.wso2.carbon.device.mgt.jaxrs.service.api.GeoService;

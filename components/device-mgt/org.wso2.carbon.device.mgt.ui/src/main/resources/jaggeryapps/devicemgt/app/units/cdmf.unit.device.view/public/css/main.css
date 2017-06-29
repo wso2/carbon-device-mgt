@@ -106,13 +106,18 @@
     font-size: 9em;
 }
 .device-info h1, .device-info h4:not(:last-child){
-	margin: 0px 0px 9px 0px;
-  position: relative;
+    margin: 0px 0px 9px 0px;
+    position: relative;
+    width: 100%;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
 }
 .device-id a{
-	font-size: 0.4em;
-	position: absolute;
-	margin: 0px 5px;
+    font-size: 0.4em;
+    position: absolute;
+    margin: 0px 5px;
+    right: -5px;
 }
 .device-info h4:last-child{
 	margin: 0px;

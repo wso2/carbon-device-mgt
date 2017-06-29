@@ -37,6 +37,9 @@ import org.wso2.carbon.device.mgt.common.geo.service.Event;
 import org.wso2.carbon.device.mgt.common.geo.service.GeoFence;
 import org.wso2.carbon.device.mgt.common.geo.service.GeoServiceException;
 import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroupConstants;
+import org.wso2.carbon.device.mgt.common.notification.mgt.NotificationManagementException;
+import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
+import org.wso2.carbon.device.mgt.core.config.DeviceManagementConfig;
 import org.wso2.carbon.device.mgt.jaxrs.service.api.GeoService;
 import org.wso2.carbon.device.mgt.jaxrs.util.Constants;
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
@@ -73,6 +76,15 @@ public class GeoServiceImpl implements GeoService {
     public Response getGeoDeviceStats(@PathParam("deviceId") String deviceId,
                                       @PathParam("deviceType") String deviceType,
                                       @QueryParam("from") long from, @QueryParam("to") long to) {
+        //First, check whether the Geo Location service has been enabled in the cdmf-config.xml file
+        DeviceManagementConfig deviceManagementConfig = DeviceConfigurationManager.getInstance()
+                .getDeviceManagementConfig();
+        if (deviceManagementConfig != null) {
+            if(!deviceManagementConfig.getGeoLocationConfiguration().getPublishLocationOperationResponse()){
+                log.warn("Failed to fetch geo location stats since the GeoLocation service has not been enabled.");
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()).build();
+            }
+        }
         String tableName = "IOT_PER_DEVICE_STREAM_GEO_FUSEDSPATIALEVENT";
         String fromDate = String.valueOf(from);
         String toDate = String.valueOf(to);

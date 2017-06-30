@@ -125,7 +125,7 @@ function loadDeviceTypes() {
     //noinspection JSUnusedLocalSymbols
     var columns = [
         {
-            class: "remove-padding icon-only content-fill",
+            class: "remove-padding content-fill",
             data: null,
             defaultContent: "<div class='thumbnail icon'>" +
             "<i class='square-element text fw fw-devices' style='font-size: 74px;'></i>" +
@@ -193,7 +193,8 @@ function loadDeviceTypes() {
 		"searching": false
     };
     var settings = {
-        "sorting": false
+        "sorting": false,
+        "select": false
     };
     var deviceTypeApiUrl = '/api/device-mgt/v1.0/admin/device-types';
 

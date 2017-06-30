@@ -887,6 +887,26 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     }
 
     @Override
+    public boolean setStatus(String currentOwner,
+                             EnrolmentInfo.Status status) throws DeviceManagementException {
+        try {
+            boolean success = false;
+            int tenantId = this.getTenantId();
+            DeviceManagementDAOFactory.beginTransaction();
+            success = enrollmentDAO.setStatus(currentOwner, status, tenantId);
+            DeviceManagementDAOFactory.commitTransaction();
+            return success;
+        } catch (DeviceManagementDAOException e) {
+            DeviceManagementDAOFactory.rollbackTransaction();
+            throw new DeviceManagementException("Error occurred while setting enrollment status", e);
+        } catch (TransactionManagementException e) {
+            throw new DeviceManagementException("Error occurred while initiating transaction", e);
+        } finally {
+            DeviceManagementDAOFactory.closeConnection();
+        }
+    }
+
+    @Override
     @Deprecated
     public void notifyOperationToDevices(Operation operation, List<DeviceIdentifier> deviceIds)
             throws DeviceManagementException {

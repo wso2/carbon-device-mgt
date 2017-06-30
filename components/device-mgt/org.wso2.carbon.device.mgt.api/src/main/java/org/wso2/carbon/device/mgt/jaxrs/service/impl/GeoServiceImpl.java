@@ -80,8 +80,7 @@ public class GeoServiceImpl implements GeoService {
                 .getDeviceManagementConfig();
         if (deviceManagementConfig != null) {
             if(!deviceManagementConfig.getGeoLocationConfiguration().getPublishLocationOperationResponse()){
-                log.warn("Failed to fetch geo location stats since the GeoLocation service has not been enabled.");
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()).build();
+                return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
             }
         }
         String tableName = "IOT_PER_DEVICE_STREAM_GEO_FUSEDSPATIALEVENT";

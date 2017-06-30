@@ -193,8 +193,7 @@ function loadDeviceTypes() {
 		"searching": false
     };
     var settings = {
-        "sorting": false,
-        "select": false
+        "sorting": false
     };
     var deviceTypeApiUrl = '/api/device-mgt/v1.0/admin/device-types';
 

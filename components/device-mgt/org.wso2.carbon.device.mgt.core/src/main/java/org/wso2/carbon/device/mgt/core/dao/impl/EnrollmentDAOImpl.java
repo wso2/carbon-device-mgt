@@ -204,6 +204,27 @@ public class EnrollmentDAOImpl implements EnrollmentDAO {
     }
 
     @Override
+    public boolean setStatus(String currentOwner, EnrolmentInfo.Status status,
+                             int tenantId) throws DeviceManagementDAOException {
+        Connection conn;
+        PreparedStatement stmt = null;
+        try {
+            conn = this.getConnection();
+            String sql = "UPDATE DM_ENROLMENT SET STATUS = ? WHERE OWNER = ? AND TENANT_ID = ?";
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, status.toString());
+            stmt.setString(2, currentOwner);
+            stmt.setInt(3, tenantId);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new DeviceManagementDAOException("Error occurred while setting the status of device enrolment", e);
+        } finally {
+            DeviceManagementDAOUtil.cleanupResources(stmt, null);
+        }
+        return true;
+    }
+
+    @Override
     public boolean setStatus(int enrolmentID, EnrolmentInfo.Status status, int tenantId) throws DeviceManagementDAOException {
         Connection conn;
         PreparedStatement stmt = null;

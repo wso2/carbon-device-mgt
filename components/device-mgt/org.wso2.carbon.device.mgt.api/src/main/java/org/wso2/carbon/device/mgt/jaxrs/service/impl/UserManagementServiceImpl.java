@@ -24,6 +24,7 @@ import org.apache.commons.logging.LogFactory;
 import org.eclipse.wst.common.uriresolver.internal.util.URIEncoder;
 import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
+import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
 import org.wso2.carbon.device.mgt.core.DeviceManagementConstants;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.device.mgt.core.service.EmailMetaInfo;
@@ -306,13 +307,16 @@ public class UserManagementServiceImpl implements UserManagementService {
                         new ErrorResponse.ErrorResponseBuilder().setMessage("User '" +
                                 username + "' does not exist for removal.").build()).build();
             }
+            // Un-enroll all devices for the user
+            DeviceManagementProviderService deviceManagementService = DeviceMgtAPIUtils.getDeviceManagementService();
+            deviceManagementService.setStatus(username, EnrolmentInfo.Status.REMOVED);
 
             userStoreManager.deleteUser(username);
             if (log.isDebugEnabled()) {
                 log.debug("User '" + username + "' was successfully removed.");
             }
             return Response.status(Response.Status.OK).build();
-        } catch (UserStoreException e) {
+        } catch (DeviceManagementException | UserStoreException e) {
             String msg = "Exception in trying to remove user by username: " + username;
             log.error(msg, e);
             return Response.serverError().entity(

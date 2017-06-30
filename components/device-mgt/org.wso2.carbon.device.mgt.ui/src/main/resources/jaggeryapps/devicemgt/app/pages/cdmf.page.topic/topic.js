@@ -37,8 +37,8 @@ function onRequest(context) {
         }
         viewModel.currentUser = currentUser;
         var deviceCount = 1;
-            viewModel.deviceCount = deviceCount;
-            var utility = require("/app/modules/utility.js").utility;
+        viewModel.deviceCount = deviceCount;
+        var utility = require("/app/modules/utility.js").utility;
     }
     return viewModel;
 }

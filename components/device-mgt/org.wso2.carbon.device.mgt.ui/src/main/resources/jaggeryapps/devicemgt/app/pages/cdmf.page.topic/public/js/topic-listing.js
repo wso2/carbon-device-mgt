@@ -28,24 +28,6 @@ function InitiateViewOption(url) {
     }
 }
 
-(function () {
-    var cache = {};
-    var validateAndReturn = function (value) {
-        return (value == undefined || value == null) ? "Unspecified" : value;
-    };
-    Handlebars.registerHelper("deviceMap", function (device) {
-        device.owner = validateAndReturn(device.owner);
-        device.ownership = validateAndReturn(device.ownership);
-        var arr = device.properties;
-        if (arr) {
-            device.properties = arr.reduce(function (total, current) {
-                total[current.name] = validateAndReturn(current.value);
-                return total;
-            }, {});
-        }
-    });
-})();
-
 /*
  * Setting-up global variables.
  */
@@ -68,13 +50,10 @@ $(document).ready(function () {
         return permissionSet[permission];
     };
 
-    deviceListing = $("#device-listing");
-    currentUser = deviceListing.data("current-user");
-
     name = getParameterByName("name");
 
 
-    /* Adding selected class for selected devices */
+    /* Adding selected class for selected topics */
     $(deviceCheckbox).each(function () {
         addDeviceSelectedClass(this);
     });
@@ -102,16 +81,6 @@ function addDeviceSelectedClass(checkbox) {
 }
 
 function loadTopics(searchType, searchParam) {
-
-    function getDeviceTypeThumb(type) {
-        var deviceTypes = deviceListing.data("deviceTypes");
-        for (var i = 0; i < deviceTypes.length; i++) {
-            if (deviceTypes[i].type == type) {
-                return deviceTypes[i].thumb;
-            }
-        }
-        return type;
-    }
 
     var serviceURL;
     if ($.hasPermission("VIEW_TOPICS")) {
@@ -284,7 +253,7 @@ $(document).ready(function () {
     loadTopics();
     $(".dataTables_toolbar").css("display", "none");
 
-    /* for device list sorting drop down */
+    /* for topic list sorting drop down */
     $(".ctrl-filter-type-switcher").popover({
         html: true,
         content: function () {
@@ -309,13 +278,6 @@ $(document).ready(function () {
             top: $('header').height()
         }
     });
-
-    var table = $('#example').DataTable();
-
-// #myInput is a <input type="text"> element
-    $('#myInput').on( 'keyup', function () {
-        table.search( this.value ).draw();
-    } );
 
 });
 
@@ -355,9 +317,4 @@ function getParameterByName(name) {
     var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
         results = regex.exec(location.search);
     return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
-}
-
-function disableSelectButtons() {
-    var x = document.getElementById('toggle-selectable');
-        x.display = 'none';
 }

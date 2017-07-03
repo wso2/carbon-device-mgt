@@ -124,11 +124,13 @@ function loadOperationsLog(update) {
 
         if (row.child.isShown()) {
             row.child.hide();
+            tr.find('i.fw-up').removeClass('fw-up').addClass('fw-down');
             $(row.child()).removeClass('log-data-row');
             tr.removeClass('shown');
         } else {
             invokerUtil.get(uri,(payload) => {
                 row.child(renderLogDetails(row.data(),payload)).show();
+                tr.find('i.fw-down').removeClass('fw-down').addClass('fw-up');
                 $(row.child()).addClass('log-data-row');
                 tr.addClass('shown');
             },(error) => {

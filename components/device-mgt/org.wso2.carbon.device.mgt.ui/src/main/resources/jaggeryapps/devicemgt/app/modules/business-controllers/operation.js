@@ -79,18 +79,19 @@ var operationModule = function () {
         return featuresList;
     };
 
-    publicMethods.getControlOperations = function (deviceType) {
+    publicMethods.getControlOperations = function (device) {
+        var deviceType = device.type;
         var operations = privateMethods.getOperationsFromFeatures(deviceType, "operation");
         var features = utility.getDeviceTypeConfig(deviceType).deviceType.features;
         for (var op in operations) {
             var iconIdentifier = operations[op].operation;
             if (features && features[iconIdentifier]) {
                 var icon = features[iconIdentifier].icon;
-                var isCloud = devicemgtProps["isCloud"];
-                //TODO: remove isCloud check once able to verify features from the device agent
-                var isDisabled = features[iconIdentifier].isDisabled;
-                if (isDisabled && isCloud) {
-                    operations[op]["isDisabled"] = isDisabled;
+                //TODO: need improve this check to get feature availability from agent side
+                var filter = features[iconIdentifier].filter;
+                if (device && filter && filter.property && device[filter.property] !== filter.value) {
+                    operations[op]["isDisabled"] = true;
+                    operations[op]["disabledText"] = filter.text;
                 } else {
                     operations[op]["isDisabled"] = false;
                 }

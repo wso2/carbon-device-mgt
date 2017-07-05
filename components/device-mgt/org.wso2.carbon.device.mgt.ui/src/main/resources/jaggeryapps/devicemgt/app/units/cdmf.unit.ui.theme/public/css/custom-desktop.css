@@ -807,6 +807,11 @@ header .dropdown[aria-expanded=true], header .dropdown:hover {
     background: #072038;
 }
 
+header .fw-user:before{
+    color: #333 !important;
+}
+
+
 @media only screen and (max-width: 768px) {
     header .brand img.logo {
         margin-top: 15px;

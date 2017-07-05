@@ -34,6 +34,7 @@ function initializeWithin() {
             }
         } else{
             $(".fence-not-exist").show();
+            $("#within-alert").hide();
         }
         $('.viewGeoFenceRow td:not(:last-child)').click(function () {
             viewFence(this.parentElement,'WithIn');

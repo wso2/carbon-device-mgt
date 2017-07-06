@@ -34,6 +34,7 @@ function initializeExit() {
             }
         } else{
             $(".fence-not-exist").show();
+            $("#exit-alert").hide();
         }
         $('.viewGeoFenceRow td:not(:last-child)').click(function () {
             viewFence(this.parentElement,'Exit');

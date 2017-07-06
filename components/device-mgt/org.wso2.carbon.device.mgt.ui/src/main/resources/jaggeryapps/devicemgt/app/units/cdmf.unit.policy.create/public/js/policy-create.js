@@ -66,7 +66,7 @@ var disableInlineError = function (inputField, errorMsg, errorSign) {
  */
 function loadGroups(callback) {
     invokerUtil.get(
-        "/api/device-mgt/v1.0/groups",
+        "/api/device-mgt/v1.0/admin/groups",
         function (data) {
             data = JSON.parse(data);
             callback(data.deviceGroups);

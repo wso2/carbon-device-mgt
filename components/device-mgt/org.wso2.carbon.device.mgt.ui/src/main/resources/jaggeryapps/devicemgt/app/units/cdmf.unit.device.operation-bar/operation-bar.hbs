@@ -79,6 +79,11 @@
                                     <input type="{{type}}" id="{{name}}" placeholder="{{name}}" class="form-control" data-param-type="query" value="{{value}}" />
                                     <br />
                                 {{/each}}
+                                {{#each uiParams}}
+                                    <input type="{{type}}" id="{{id}}" name="{{name}}" data-param-type="form" value="{{value}}" />
+                                    <label>{{label}}</label>
+                                    <br />
+                                {{/each}}
                                 <button id="btnSend" type="button" onclick="submitForm('form-{{operation}}')" class="btn btn-default">&nbsp;&nbsp;&nbsp;&nbsp;Send
                                                        to Device&nbsp;&nbsp;&nbsp;&nbsp;</button>
                                 <label id="lblSending" class="wr-input-label hidden"><i

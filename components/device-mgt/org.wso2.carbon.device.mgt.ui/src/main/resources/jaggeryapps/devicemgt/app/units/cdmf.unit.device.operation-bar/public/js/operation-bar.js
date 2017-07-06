@@ -39,6 +39,7 @@ function submitForm(formId) {
     var content = $("#operation-response-template").find(".content");
     var defaultStatusClasses = "fw fw-stack-1x";
     var title = content.find("#title");
+    title.attr("class","center-block text-center");
     var statusIcon = content.find("#status-icon");
     var description = content.find("#description");
 

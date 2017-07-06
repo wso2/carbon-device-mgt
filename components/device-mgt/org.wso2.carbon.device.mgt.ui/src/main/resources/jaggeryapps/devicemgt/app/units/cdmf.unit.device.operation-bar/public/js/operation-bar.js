@@ -42,14 +42,18 @@ function submitForm(formId) {
             uriencodedQueryStr += prefix + input.attr("id") + "=" + input.val();
         } else if (input.data("param-type") == "form") {
             var prefix = (uriencodedFormStr == "") ? "" : "&";
-            uriencodedFormStr += prefix + input.attr("id") + "=" + input.val();
-            //payload[input.attr("id")] = input.val();
+            if (input.attr("type") == "checkbox" || input.attr("type") == "radio"){
+                if (input.is(':checked')){
+                    uriencodedFormStr += prefix + input.attr("name") + "=" + input.val();
+                }
+            }else{
+                uriencodedFormStr += prefix + input.attr("id") + "=" + input.val();
+            }
         }
     });
     uri += uriencodedQueryStr;
     var httpMethod = form.attr("method").toUpperCase();
     var contentType = form.attr("enctype");
-    console.log(payload);
     var featurePayload = form.attr("data-payload");
     if (featurePayload) {
         contentType = "application/json";

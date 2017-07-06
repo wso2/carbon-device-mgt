@@ -33,6 +33,15 @@ function submitForm(formId) {
     var uriencodedQueryStr = "";
     var uriencodedFormStr = "";
     var payload = {};
+    var isItemSelected;
+
+    //setting responses callbacks
+    var content = $("#operation-response-template").find(".content");
+    var defaultStatusClasses = "fw fw-stack-1x";
+    var title = content.find("#title");
+    var statusIcon = content.find("#status-icon");
+    var description = content.find("#description");
+
     form.find("input").each(function () {
         var input = $(this);
         if (input.data("param-type") == "path") {
@@ -43,7 +52,12 @@ function submitForm(formId) {
         } else if (input.data("param-type") == "form") {
             var prefix = (uriencodedFormStr == "") ? "" : "&";
             if (input.attr("type") == "checkbox" || input.attr("type") == "radio"){
+
+                if (isItemSelected == undefined){
+                    isItemSelected = false;
+                }
                 if (input.is(':checked')){
+                    isItemSelected = true;
                     uriencodedFormStr += prefix + input.attr("name") + "=" + input.val();
                 }
             }else{
@@ -51,6 +65,14 @@ function submitForm(formId) {
             }
         }
     });
+
+    if (isItemSelected === false){
+        title.html("Please Select One Option");
+        statusIcon.attr("class", defaultStatusClasses + " fw-error");
+        $(modalPopupContent).html(content.html());
+        return false;
+    }
+
     uri += uriencodedQueryStr;
     var httpMethod = form.attr("method").toUpperCase();
     var contentType = form.attr("enctype");
@@ -63,12 +85,7 @@ function submitForm(formId) {
         contentType = "application/x-www-form-urlencoded";
         payload = uriencodedFormStr;
     }
-    //setting responses callbacks
-    var defaultStatusClasses = "fw fw-stack-1x";
-    var content = $("#operation-response-template").find(".content");
-    var title = content.find("#title");
-    var statusIcon = content.find("#status-icon");
-    var description = content.find("#description");
+
     var successCallBack = function (response) {
         var res = response;
         try {
@@ -82,7 +99,6 @@ function submitForm(formId) {
         $(modalPopupContent).html(content.html());
     };
     var errorCallBack = function (response) {
-        console.log(response);
         title.html("An Error Occurred!");
         statusIcon.attr("class", defaultStatusClasses + " fw-error");
         var reason = (response.responseText == "null")?response.statusText:response.responseText;
@@ -109,9 +125,9 @@ function submitForm(formId) {
 $(document).on('submit', 'form', function (e) {
     e.preventDefault();
     var postOperationRequest = $.ajax({
-                                          url: $(this).attr("action") + '&' + $(this).serialize(),
-                                          method: "post"
-                                      });
+        url: $(this).attr("action") + '&' + $(this).serialize(),
+        method: "post"
+    });
 
     var btnSubmit = $('#btnSend', this);
     btnSubmit.addClass('hidden');

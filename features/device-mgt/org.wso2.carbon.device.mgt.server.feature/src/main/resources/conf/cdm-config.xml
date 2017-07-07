@@ -79,6 +79,7 @@
         <ExpiryTime>600</ExpiryTime>
     </DeviceCacheConfiguration>
     <GeoLocationConfiguration>
+        <isEnabled>false</isEnabled>
         <PublishLocationOperationResponse>false</PublishLocationOperationResponse>
     </GeoLocationConfiguration>
 </DeviceMgtConfiguration>

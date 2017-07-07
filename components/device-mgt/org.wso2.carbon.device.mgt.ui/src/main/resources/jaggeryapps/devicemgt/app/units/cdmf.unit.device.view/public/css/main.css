@@ -72,10 +72,6 @@
 	padding: 20px 0px;
 }
 
-#location{
-    height: calc(100vh - 400px);
-}
-
 .page-loader{
 	position: absolute;
     left: 0px;

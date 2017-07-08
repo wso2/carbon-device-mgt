@@ -65,17 +65,7 @@ var defaultOSM = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png
     maxZoom: 19
 });
 
-//var defaultTFL = L.tileLayer('https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',{
-//    maxZoom: 19,
-//    subdomains:['mt0','mt1','mt2','mt3']
-//});
-var defaultTFL = L.tileLayer("", {
-    maxZoom: 19,
-    attribution: '| London Traffic and London Buses data Powered by TfL Open Data'
-});
-
 var baseLayers = {
-    //"Google Maps": defaultTFL,
     "Open Street Maps": defaultOSM
 };
 
@@ -564,7 +554,6 @@ function getAlertsHistory(deviceType, deviceId, timeFrom, timeTo) {
                             }
                         });
                     }, function (message) {
-            console.log(message);
         });
 }
 

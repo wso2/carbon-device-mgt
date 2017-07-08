@@ -631,7 +631,7 @@ function initializeGeoLocation(geoFencingEnabled) {
         $("#proximity_alert").hide();
 
         initialLoad();
-        InitSpatialObject();
+        InitSpatialObject(geoFencingEnabled);
 
         if (geoFencingEnabled) {
             initializeSpatialStreamWebSocket();

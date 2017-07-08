@@ -273,16 +273,20 @@ var getProviderData = function (timeFrom, timeTo) {
     deviceId = deviceDetails.data("deviceid");
     deviceType = deviceDetails.data("type");
 
-    var serviceUrl = '/api/device-mgt/v1.0/geo-services/stats/' + deviceType + '/' + deviceId + '?from=' + timeFrom + '&to=' + timeTo;
-    invokerUtil.get(serviceUrl,
-                    function (data) {
-                        tableData = JSON.parse(data);
-                        if (tableData.length === 0) {
-                        showCurrentLocation(tableData);
-                        }
-                    }, function (message) {
-                        showCurrentLocation(tableData);
-                    });
+    if (geoFencingEnabled) {
+        var serviceUrl = '/api/device-mgt/v1.0/geo-services/stats/' + deviceType + '/' + deviceId + '?from=' + timeFrom + '&to=' + timeTo;
+        invokerUtil.get(serviceUrl,
+                        function (data) {
+                            tableData = JSON.parse(data);
+                            if (tableData.length === 0) {
+                            showCurrentLocation(tableData);
+                            }
+                        }, function (message) {
+                            showCurrentLocation(tableData);
+                        });
+    } else {
+        showCurrentLocation(tableData);
+    }
     return tableData;
 };
 
@@ -368,7 +372,9 @@ function enableRealTime() {
     isBatchModeOn = false;
 }
 
-function InitSpatialObject() {
+var geoFencingEnabled = true;
+function InitSpatialObject(geoFencingIsEnabled) {
+    geoFencingEnabled = geoFencingIsEnabled;
     var spatialObject = drawSpatialObject();
     map.addControl(L.control.focus({position: 'bottomright', marker: spatialObject.marker, zoomLevel: zoomLevel}));
 }
@@ -420,9 +426,11 @@ function drawSpatialObject() {
         return true;
     }
 
-    var alertsFromDate = new Date();
-    alertsFromDate.setHours(alertsFromDate.getHours() - 24); //last 24 hours
-    getAlertsHistory(deviceType, deviceId, alertsFromDate.valueOf(), toDate.valueOf());
+    if (geoFencingEnabled) {
+        var alertsFromDate = new Date();
+        alertsFromDate.setHours(alertsFromDate.getHours() - 24); //last 24 hours
+        getAlertsHistory(deviceType, deviceId, alertsFromDate.valueOf(), toDate.valueOf());
+    }
 
     setTimeout(function () {
                    map.invalidateSize();

@@ -40,37 +40,10 @@ function initialLoad() {
         setTimeout(initialLoad, 500); // give everything some time to render
     } else {
         initializeMap();
-        // getTileServers();
-        // loadWms();
         processAfterInitializationMap();
-        //Access gps and make zoom to server location as map center
-        //navigator.geolocation.getCurrentPosition(success, error);
         $("#loading").hide();
     }
 }
-
-//function success(position) {
-//    var browserLatitude = position.coords.latitude;
-//    var browserLongitude = position.coords.longitude;
-//    map.setView([browserLatitude, browserLongitude]);
-//    map.setZoom(14);
-//    $.UIkit.notify({
-//        message: "Map view set to browser's location",
-//        status: 'info',
-//        timeout: ApplicationOptions.constance.NOTIFY_INFO_TIMEOUT,
-//        pos: 'top-center'
-//    });
-//}
-//
-//function error() {
-//    $.UIkit.notify({
-//        message: "Unable to find browser location!",
-//        status: 'warning',
-//        timeout: ApplicationOptions.constance.NOTIFY_WARNING_TIMEOUT,
-//        pos: 'top-center'
-//    });
-//}
-
 
 function initializeMap() {
     if (typeof(map) !== 'undefined') {
@@ -83,7 +56,7 @@ function initializeMap() {
     map = L.map("map", {
         zoom: 14,
         center: [6.927078, 79.861243],
-        layers: [defaultOSM, defaultTFL],
+        layers: [defaultOSM],
         zoomControl: true,
         attributionControl: false,
         maxZoom: 20,
@@ -147,28 +120,20 @@ function processAfterInitializationMap() {
         div.innerHTML = "<a href='#' onclick='$(\"#attributionModal\").modal(\"show\"); return false;'>Attribution</a>";
         return div;
     };
-    // map.addControl(attributionControl);
     map.addControl(L.control.fullscreen({position: 'bottomright'}));
 
     geoAlertsBar = L.control.geoAlerts({position: 'topright'});
     map.addControl(geoAlertsBar);
-    //L.control.fullscreen({
-    //    position: 'bottomright'
-    //}).addTo(map);
-    // L.control.zoom({
-    //     position: "bottomright"
-    // }).addTo(map);
 
     groupedOverlays = {
         "Web Map Service layers": {}
     };
 
     layerControl = L.control.groupedLayers(baseLayers, groupedOverlays, {
-        collapsed: true
+        collapsed: true,
+        position: 'bottomleft'
     }).addTo(map);
 
-    //L.control.layers(baseLayers).addTo(map);
-    //map.addLayer(defaultTFL);
 }
 
 /* Highlight search box text on click */
@@ -313,29 +278,33 @@ var getProviderData = function (timeFrom, timeTo) {
                     function (data) {
                         tableData = JSON.parse(data);
                         if (tableData.length === 0) {
-                            var geoCharts = $("#geo-charts");
-                            var location = geoCharts.data("device-location");
-                            location.heading = 0;
-                            location.id = deviceId;
-                            location.values = {};
-                            location.values.id = deviceId;
-                            location.values.information = "Last seen " + timeSince(new Date(location.updatedTime));
-                            location.values.notify = false;
-                            location.values.speed = 0;
-                            location.values.state = "NORMAL";
-                            location.values.longitude = location.longitude;
-                            location.values.latitude = location.latitude;
-                            location.timestamp = location.updatedTime;
-                            location.values.timeStamp = location.updatedTime;
-                            location.values.type = deviceType;
-                            location._version = "1.0.0";
-                            tableData.push(location);
+                        showCurrentLocation(tableData);
                         }
                     }, function (message) {
-            console.log(message);
-        });
+                        showCurrentLocation(tableData);
+                    });
     return tableData;
 };
+
+function showCurrentLocation(tableData){
+    var geoCharts = $("#geo-charts");
+    var location = geoCharts.data("device-location");
+    location.heading = 0;
+    location.id = deviceId;
+    location.values = {};
+    location.values.id = deviceId;
+    location.values.information = "Last seen " + timeSince(new Date(location.updatedTime));
+    location.values.notify = false;
+    location.values.speed = 0;
+    location.values.state = "NORMAL";
+    location.values.longitude = location.longitude;
+    location.values.latitude = location.latitude;
+    location.timestamp = location.updatedTime;
+    location.values.timeStamp = location.updatedTime;
+    location.values.type = deviceType;
+    location._version = "1.0.0";
+    tableData.push(location);
+}
 
 function timeSince(date) {
 
@@ -401,10 +370,6 @@ function enableRealTime() {
 
 function InitSpatialObject() {
     var spatialObject = drawSpatialObject();
-    setTimeout(function () {
-                   map.setView(spatialObject.marker.getLatLng(), spatialObject.marker.zoomLevel, {animate: true});
-               }, 1000
-    );
     map.addControl(L.control.focus({position: 'bottomright', marker: spatialObject.marker, zoomLevel: zoomLevel}));
 }
 
@@ -455,13 +420,17 @@ function drawSpatialObject() {
         return true;
     }
 
-    map.setView(spatialObject.marker.getLatLng(), zoomLevel, {animate: true}); // TODO: check the map._layersMaxZoom and set the zoom level accordingly
-
     var alertsFromDate = new Date();
     alertsFromDate.setHours(alertsFromDate.getHours() - 24); //last 24 hours
     getAlertsHistory(deviceType, deviceId, alertsFromDate.valueOf(), toDate.valueOf());
-    spatialObject.marker.openPopup();
-    spatialObject.drawPath();
+
+    setTimeout(function () {
+                   map.invalidateSize();
+                   map.setView(spatialObject.marker.getLatLng(), spatialObject.marker.zoomLevel, {animate: true});
+                   spatialObject.marker.openPopup();
+                   spatialObject.drawPath();
+               }, 500);
+
     if (speedGraphControl) {
         setTimeout(function () {
             createChart();

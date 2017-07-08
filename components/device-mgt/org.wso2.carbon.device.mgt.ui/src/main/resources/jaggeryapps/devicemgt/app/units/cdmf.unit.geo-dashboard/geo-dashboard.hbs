@@ -64,6 +64,12 @@
     <div id="" style="height: 63vh;">
         <!-- Sidebar -->
         <div id="map"></div>
+        {{#if geoServicesEnabled}}
+        <div id="ws-alerts">
+            <i id="ws-alert-stream" class="fw fw-circle text-muted"></i> Alerts Stream&nbsp;
+            <i id="ws-spatial-stream" class="fw fw-circle text-muted"></i> Spatial Stream
+        </div>
+        {{/if}}
     </div>
 
     <div id="predictionResults" style="background: darkgray;display: none;border-radius: 13px;height: 94%;padding: 0"
@@ -688,11 +694,11 @@
             var geoLocationLink = $(".initGeoLocationLink");
             if (geoLocationLink) {
                 geoLocationLink.on('click', function () {
-                    initializeGeoLocation()
+                    initializeGeoLocation({{geoServicesEnabled}});
                 });
-                {{#if showGeoFencingTools}}
+                geoPublicUri = $("#geo-charts").data("geo-public-uri");
+                {{#if geoServicesEnabled}}
                     var geoToolsMenu = $('#location-action-bar');
-                    geoPublicUri = $("#geo-charts").data("geo-public-uri");
                     var realtTime = createGeoToolListItem('javascript:enableRealTime()',
                                                           'Return to Real Time View', 'fw fw-undo', geoToolsMenu);
                     realtTime.css("display", "none");

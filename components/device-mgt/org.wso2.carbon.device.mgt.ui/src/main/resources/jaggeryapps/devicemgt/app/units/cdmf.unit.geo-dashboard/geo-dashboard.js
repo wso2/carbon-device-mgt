@@ -52,6 +52,6 @@ function onRequest(context) {
     } else {
         viewModel.lastLocation = stringify({});
     }
-    viewModel.showGeoFencingTools = devicemgtProps.serverConfig.geoLocationConfiguration.isEnabled;
+    viewModel.geoServicesEnabled = devicemgtProps.serverConfig.geoLocationConfiguration.isEnabled;
     return viewModel;
 }

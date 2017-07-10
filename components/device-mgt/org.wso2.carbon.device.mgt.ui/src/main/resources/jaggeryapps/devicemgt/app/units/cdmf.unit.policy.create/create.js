@@ -74,6 +74,7 @@ function onRequest(context) {
     types["groups"] = groupModule.getGroups();
     var devicemgtProps = require("/app/modules/conf-reader/main.js")["conf"];
     types["isCloud"] = devicemgtProps.isCloud;
+    types["isDeviceOwnerEnabled"] = devicemgtProps.isDeviceOwnerEnabled;
 
     return types;
 }

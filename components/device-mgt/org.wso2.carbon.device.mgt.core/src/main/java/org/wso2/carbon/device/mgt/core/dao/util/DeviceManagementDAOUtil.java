@@ -200,33 +200,7 @@ public final class DeviceManagementDAOUtil {
         if (deviceInfoIncluded) {
             device.setDeviceInfo(loadDeviceInfo(rs));
         }
-
-        if (EnrolmentInfo.Status.ACTIVE.equals(device.getEnrolmentInfo().getStatus())) {
-            return device;
-        }
-        deviceMap.put(device.getEnrolmentInfo().getStatus(), device);
-        while (rs.next()) {
-            device = loadDevice(rs);
-            if (deviceInfoIncluded) {
-                device.setDeviceInfo(loadDeviceInfo(rs));
-            }
-            if (EnrolmentInfo.Status.ACTIVE.equals(device.getEnrolmentInfo().getStatus())) {
-                return device;
-            }
-            if (device.getEnrolmentInfo() != null) {
-                deviceMap.put(device.getEnrolmentInfo().getStatus(), device);
-            }
-        }
-        if (deviceMap.containsKey(EnrolmentInfo.Status.UNREACHABLE)) {
-            return deviceMap.get(EnrolmentInfo.Status.UNREACHABLE);
-        } else if (deviceMap.containsKey(EnrolmentInfo.Status.INACTIVE)) {
-            return deviceMap.get(EnrolmentInfo.Status.INACTIVE);
-        } else if (deviceMap.containsKey(EnrolmentInfo.Status.CREATED)) {
-            return deviceMap.get(EnrolmentInfo.Status.CREATED);
-        } else if (deviceMap.containsKey(EnrolmentInfo.Status.UNCLAIMED)) {
-            return deviceMap.get(EnrolmentInfo.Status.UNCLAIMED);
-        }
-        return null;
+        return device;
     }
 
     //This method will retrieve most appropriate device information when there are multiple device enrollments for
@@ -236,39 +210,6 @@ public final class DeviceManagementDAOUtil {
         Device device = loadDevice(rs);
         if (deviceInfoIncluded) {
             device.setDeviceInfo(loadDeviceInfo(rs));
-        }
-
-        if (EnrolmentInfo.Status.ACTIVE.equals(device.getEnrolmentInfo().getStatus())) {
-            return device;
-        }
-        while (rs.next()) {
-            device = loadDevice(rs);
-            if (deviceInfoIncluded) {
-                device.setDeviceInfo(loadDeviceInfo(rs));
-            }
-            if (EnrolmentInfo.Status.ACTIVE.equals(device.getEnrolmentInfo().getStatus())) {
-                return device;
-            }
-            if (device.getEnrolmentInfo() != null) {
-                deviceMap.put(device.getEnrolmentInfo().getStatus(), device);
-            }
-        }
-        if (deviceMap.containsKey(EnrolmentInfo.Status.UNREACHABLE)) {
-            return deviceMap.get(EnrolmentInfo.Status.UNREACHABLE);
-        } else if (deviceMap.containsKey(EnrolmentInfo.Status.INACTIVE)) {
-            return deviceMap.get(EnrolmentInfo.Status.INACTIVE);
-        } else if (deviceMap.containsKey(EnrolmentInfo.Status.DISENROLLMENT_REQUESTED)) {
-            return deviceMap.get(EnrolmentInfo.Status.DISENROLLMENT_REQUESTED);
-        } else if (deviceMap.containsKey(EnrolmentInfo.Status.CREATED)) {
-            return deviceMap.get(EnrolmentInfo.Status.CREATED);
-        } else if (deviceMap.containsKey(EnrolmentInfo.Status.REMOVED)) {
-            return deviceMap.get(EnrolmentInfo.Status.REMOVED);
-        } else if (deviceMap.containsKey(EnrolmentInfo.Status.UNCLAIMED)) {
-            return deviceMap.get(EnrolmentInfo.Status.UNCLAIMED);
-        } else if (deviceMap.containsKey(EnrolmentInfo.Status.SUSPENDED)) {
-            return deviceMap.get(EnrolmentInfo.Status.SUSPENDED);
-        } else if (deviceMap.containsKey(EnrolmentInfo.Status.BLOCKED)) {
-            return deviceMap.get(EnrolmentInfo.Status.BLOCKED);
         }
         return device;
     }

@@ -213,6 +213,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                             enrolmentId = enrollmentDAO.
                                     addEnrollment(existingDevice.getId(), newEnrolmentInfo, tenantId);
                             DeviceManagementDAOFactory.commitTransaction();
+                            this.removeDeviceFromCache(deviceIdentifier);
                             if (log.isDebugEnabled()) {
                                 log.debug("An enrolment is successfully added with the id '" + enrolmentId +
                                         "' associated with " + "the device identified by key '" +

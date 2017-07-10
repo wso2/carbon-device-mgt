@@ -28,6 +28,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class GeoLocationConfiguration {
 
     private boolean publishLocationOperationResponse;
+    private boolean isEnabled;
 
     public boolean getPublishLocationOperationResponse() {
         return publishLocationOperationResponse;
@@ -36,5 +37,14 @@ public class GeoLocationConfiguration {
     @XmlElement(name = "PublishLocationOperationResponse", required = true)
     public void setPublishLocationOperationResponse(boolean publishLocationOperationResponse) {
         this.publishLocationOperationResponse = publishLocationOperationResponse;
+    }
+
+    public boolean getIsEnabled() {
+        return isEnabled;
+    }
+
+    @XmlElement(name = "isEnabled", required = true)
+    public void setEnabled(boolean enabled) {
+        isEnabled = enabled;
     }
 }

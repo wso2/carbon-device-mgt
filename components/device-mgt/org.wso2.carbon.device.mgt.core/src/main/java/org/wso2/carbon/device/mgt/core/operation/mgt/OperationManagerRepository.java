@@ -18,7 +18,7 @@
  */
 package org.wso2.carbon.device.mgt.core.operation.mgt;
 
-import org.wso2.carbon.device.mgt.common.DeviceTypeIdentifier;
+import org.wso2.carbon.device.mgt.core.dto.DeviceTypeServiceIdentifier;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManager;
 
 import java.util.Map;
@@ -26,21 +26,21 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class OperationManagerRepository {
 
-    private Map<DeviceTypeIdentifier, OperationManager> operationManagers;
+    private Map<DeviceTypeServiceIdentifier, OperationManager> operationManagers;
 
     public OperationManagerRepository() {
         operationManagers = new ConcurrentHashMap<>();
     }
 
-    public void addOperationManager(DeviceTypeIdentifier type, OperationManager operationManager) {
+    public void addOperationManager(DeviceTypeServiceIdentifier type, OperationManager operationManager) {
         operationManagers.put(type, operationManager);
     }
 
-    public OperationManager getOperationManager(DeviceTypeIdentifier type) {
+    public OperationManager getOperationManager(DeviceTypeServiceIdentifier type) {
         return operationManagers.get(type);
     }
 
-    public void removeOperationManager(DeviceTypeIdentifier type) {
+    public void removeOperationManager(DeviceTypeServiceIdentifier type) {
         operationManagers.remove(type);
     }
 

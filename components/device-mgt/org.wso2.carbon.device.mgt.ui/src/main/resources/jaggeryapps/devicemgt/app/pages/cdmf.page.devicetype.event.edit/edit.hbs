@@ -1,0 +1,179 @@
+{{!
+  Copyright (c) 2017, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+
+  WSO2 Inc. licenses this file to you under the Apache License,
+  Version 2.0 (the "License"); you may not use this file except
+  in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing,
+  software distributed under the License is distributed on an
+  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  KIND, either express or implied. See the License for the
+  specific language governing permissions and limitations
+  under the License.
+}}
+{{unit "cdmf.unit.ui.title" pageTitle="Device Type Management"}}
+
+{{#zone "topCss"}}
+    {{css "css/devicetype.css"}}
+{{/zone}}
+
+{{#zone "breadcrumbs"}}
+    <li>
+        <a href="{{@app.context}}/">
+            <i class="icon fw fw-home"></i>
+        </a>
+    </li>
+    <li>
+        <!--suppress HtmlUnknownTarget -->
+        <a href="{{@app.context}}/device-types">
+            Device Types
+        </a>
+    </li>
+    <li>
+        <!--suppress HtmlUnknownTarget -->
+        <a href="{{@app.context}}/device-type/edit-event?type={{name}}">
+            Event
+        </a>
+    </li>
+{{/zone}}
+
+{{#zone "content"}}
+    {{#if canManage}}
+        <!-- content/body -->
+        <div class="row">
+            <div class="col-md-12">
+                <!-- content -->
+                <div id="devicetype-create-form" class="container col-centered wr-content">
+                <div class="wr-form">
+                    <p class="page-sub-title">{{name}}</p>
+                    <hr/>
+                    <div class="row">
+                        <div class="col-lg-8">
+                            <div id="devicetype-create-error-msg" class="alert alert-danger hidden" role="alert">
+                                <i class="icon fw fw-error"></i><span></span>
+                            </div>
+                            <br>
+                            <input aria-describedby="basic-addon1" type="text" id="deviceTypeName"
+                                   data-error-msg="invalid device type name" class="form-control hidden-input" value="{{name}}"/>
+
+                            <label class="wr-input-label">Transport</label>
+                            <div class="wr-input-control">
+                                <!--suppress HtmlFormInputWithoutLabel -->
+                                <select id="transport" class="form-control select">
+                                    {{#if event}}
+                                        <option {{selected event.transport "HTTP"}}>HTTP</option>
+                                        <option {{selected event.transport "MQTT"}}>MQTT</option>
+                                    {{else}}
+                                        <option>HTTP</option>
+                                        <option>MQTT</option>
+                                    {{/if}}
+
+                                </select>
+                            </div>
+
+                            <label class="wr-input-label">
+                                Event Attributes (eg: alarm_status, temperature)
+                            </label>
+                            <br>
+                            <div class="form-group event_field_wrapper">
+                                {{#if event.eventAttributes}}
+                                    {{#each event.eventAttributes.attributes}}
+                                        <div class="row">
+                                            <div class="dontfloat" name="deviceEvent">
+                                                <div class="col-xs-3">
+                                                    <input type="text" class="form-control" id="event-name" placeholder="name" value="{{this.name}}"/>
+                                                </div>
+                                                <div class="col-xs-4">
+                                                    <select class="form-control select" id="event-type">
+                                                        <option {{selected this.type "STRING"}}>STRING</option>
+                                                        <option {{selected this.type "LONG"}}>LONG</option>
+                                                        <option {{selected this.type "BOOL"}}>BOOL</option>
+                                                        <option {{selected this.type "INT"}}>INT</option>
+                                                        <option {{selected this.type "FLOAT"}}>FLOAT</option>
+                                                        <option {{selected this.type "DOUBLE"}}>DOUBLE</option>
+                                                    </select>
+                                                </div>
+                                                <button type="button" class="wr-btn wr-btn-horizontal remove_event_button"><i class="fa fa-minus"></i></button>
+                                            </div>
+                                        </div>
+                                    {{/each}}
+                                {{/if}}
+                                <div class="row">
+                                    <div class="dontfloat event-wrapper" name="deviceEvent">
+                                        <div class="col-xs-3">
+                                            <input type="text" class="form-control" id="event-name" placeholder="name"/>
+                                        </div>
+                                        <div class="col-xs-4">
+                                            <select class="form-control select" id="event-type">
+                                                <option>STRING</option>
+                                                <option>LONG</option>
+                                                <option>BOOL</option>
+                                                <option>INT</option>
+                                                <option>FLOAT</option>
+                                                <option>DOUBLE</option>
+                                            </select>
+                                        </div>
+                                        <button type="button" class="wr-btn wr-btn-horizontal add_event_button"><i class="fa fa-plus"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+
+                        <br>
+                        {{#if event}}
+                            <button id="add-event-btn" class="wr-btn">Update</button>
+                        {{else}}
+                            <button id="add-event-btn" class="wr-btn">Add</button>
+                        {{/if}}
+
+                        <div id="devicetype-create-success-msg" class="alert hidden" role="alert">
+                            <i class="icon fw fw-success"></i><span></span>
+                        </div>
+                    </div>
+                </div>
+                <div id="devicetype-created-msg" class="container col-centered wr-content hidden">
+                    <div class="wr-form">
+                        <p class="page-sub-title">Device Type Event was added successfully.</p>
+                        <b>"View Device Type List"</b> to complete the process and go back to the devie type list.
+                        <hr/>
+                        <button class="wr-btn" onclick="window.location.href='{{@app.context}}/device-types'">
+                            View Device Type List
+                        </button>
+                    </div>
+                </div>
+                <!-- /content -->
+                <div id="app-context" data-app-context="{{@app.context}}" class="hidden"></div>
+            </div>
+        </div>
+        <!-- /content/body -->
+            <div class="modal fade" id="modalDevice" tabindex="-1" role="dialog" aria-labelledby="modalDevice">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content clearfix">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fw fw-cancel"></i></button>
+                            <h3 class="modal-title" id="deviceModalLabel">Successfully Deployed Event Definition</h3>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" onclick="location.href='{{@app.context}}/device/enroll'">Go To Enrolment Page</button>
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+    {{else}}
+        <h1 class="page-sub-title">
+            Permission Denied
+        </h1>
+        <br>
+        You not authorized to edit device type.
+        <br>
+    {{/if}}
+{{/zone}}
+
+{{#zone "bottomJs"}}
+    {{js "js/bottomJs.js"}}
+{{/zone}}

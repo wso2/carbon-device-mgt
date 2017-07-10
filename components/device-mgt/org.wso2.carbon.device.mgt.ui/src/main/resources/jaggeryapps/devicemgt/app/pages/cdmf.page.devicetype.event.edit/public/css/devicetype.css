@@ -1,0 +1,29 @@
+
+
+.dontfloat {
+	clear:both;
+}
+
+.hidden-div {
+	display: none;
+}
+
+.hidden-input {
+	display: none;
+}
+
+.event-wrapper{
+	margin-top: 10px;
+}
+
+.wr-btn-horizontal{
+	padding: 7px 10px;
+}
+
+.wr-btn-secondary{
+	background-color: #617d8b;
+}
+
+.page-content-wrapper{
+	height: calc(100vh - 50px);
+}

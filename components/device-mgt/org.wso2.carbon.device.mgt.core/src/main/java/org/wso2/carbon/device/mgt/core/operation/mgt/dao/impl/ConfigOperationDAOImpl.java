@@ -178,6 +178,7 @@ public class ConfigOperationDAOImpl extends GenericOperationDAOImpl {
                 ois = new ObjectInputStream(bais);
                 configOperation = (ConfigOperation) ois.readObject();
                 configOperation.setStatus(status);
+                configOperation.setId(rs.getInt("OPERATION_ID"));
                 operations.add(configOperation);
             }
         } catch (IOException e) {

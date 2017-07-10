@@ -30,7 +30,7 @@ public class Device implements Serializable {
 
     private static final long serialVersionUID = 1998101711L;
 
-    @ApiModelProperty(name = "id", value = "ID of the device in the WSO2 EMM device information database.",
+    @ApiModelProperty(name = "id", value = "ID of the device in the device information database.",
             required = true)
     private int id;
 

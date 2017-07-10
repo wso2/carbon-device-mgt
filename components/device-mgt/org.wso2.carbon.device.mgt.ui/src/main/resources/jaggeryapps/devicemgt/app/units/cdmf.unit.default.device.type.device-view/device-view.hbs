@@ -1,0 +1,188 @@
+{{!
+  Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+
+  WSO2 Inc. licenses this file to you under the Apache License,
+  Version 2.0 (the "License"); you may not use this file except
+  in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing,
+  software distributed under the License is distributed on an
+  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  KIND, either express or implied. See the License for the
+  specific language governing permissions and limitations
+  under the License.
+}}
+{{#zone "topCss"}}
+    <style>
+        .thumbnail.icon:before {
+            padding-top: 0;
+        }
+        .code-segment{
+            margin-bottom: 10px;
+        }
+        .code-segment span{
+            display: block;
+        }
+        .code-segment code{
+            padding: 10px;
+            display: block;
+            background-color: #f3f3f3;
+        }
+    </style>
+{{/zone}}
+
+{{#zone "device-thumbnail"}}
+    <i class='square-element text fw fw-devices' style='font-size: 74px;'></i>
+{{/zone}}
+
+{{#zone "device-details"}}
+    {{unit "cdmf.unit.default.device.overview-section" device=device}}
+{{/zone}}
+
+{{#zone "device-opetations"}}
+    {{#if features}}
+        <div class="operation-container">
+            <div class="operation-title">
+                <h4>Device Operations</h4>
+            </div>
+            {{unit "cdmf.unit.default.device.operation-bar" device=device features=features}}
+        </div>
+    {{/if}}
+{{/zone}}
+
+{{#zone "device-view-tabs"}}
+    {{#if attributes}}
+    <li class="active"><a class="list-group-item" href="#device_statistics" role="tab"
+                          data-toggle="tab" aria-controls="device_statistics">Device
+                                                                              Statistics</a>
+    </li>
+    {{/if}}
+    {{#if features}}
+    <li><a class="list-group-item" href="#event_log" role="tab" data-toggle="tab"
+           aria-controls="event_log">Operations Log</a></li>
+    {{/if}}
+{{/zone}}
+
+{{#zone "device-view-tab-contents"}}
+    {{#if attributes}}
+    <div class="panel panel-default tab-pane active"
+         id="device_statistics" role="tabpanel" aria-labelledby="device_statistics">
+        <div class="panel-heading">Device Event</div>
+        {{unit "cdmf.unit.default.device.type.realtime.analytics-view" device=device attributes=attributes}}
+    </div>
+    {{/if}}
+    {{#if features}}
+    <div class="panel panel-default tab-pane" id="event_log" role="tabpanel"
+         aria-labelledby="event_log">
+        <div class="panel-heading">Operations Log <span><a href="#"
+                                                           id="refresh-operations"><i
+                class="fw fw-refresh"></i></a></span></div>
+        <div class="panel-body">
+            <div id="operations-spinner" class="wr-advance-operations-init hidden">
+                <br>
+
+                <i class="fw fw-settings fw-spin fw-2x"></i>
+
+                Loading Operations Log . . .
+                <br>
+                <br>
+            </div>
+            <div id="operations-log-container">
+                <div class="panel-body">
+                    Not available yet
+                </div>
+                <br class="c-both"/>
+            </div>
+        </div>
+    </div>
+    {{/if}}
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 padding-double grey-bg">
+        <h2 class="uppercase">Device Communication</h2>
+        <hr>
+        {{#if event}}
+            <h3 class="uppercase">publish device events :</h3>
+            {{#if_eq event.transport "MQTT"}}
+                    <div class="code-segment">
+                        <span>MQTT Topic :</span>
+                        <code>{{tenantDomain}}/{{device.type}}/&lt;device_id&gt;/events</code>
+                    </div>
+                {{#if eventSample}}
+                    <div class="code-segment">
+                        <span>Device Event Payload :</span>
+                        <code>{{eventSample}}</code>
+                    </div>
+                {{/if}}
+            {{/if_eq}}
+            {{#if_eq event.transport "HTTP"}}
+                <div class="code-segment">
+                    <code> curl -k -X POST {{httpsGateway}}/api/device-mgt/v1.0/device/agent/events/publish/{{device.type}}/{{device.deviceIdentifier}}
+                       -H 'authorization: Bearer %accessToken%'
+                       -H 'content-type: application/json'
+                       -d '{{eventSample}}'
+                    </code>
+                </div>
+            {{/if_eq}}
+        {{/if}}
+        </br>
+        <h3 class="uppercase">Retrieve operations</h3>
+        {{#if type.deviceTypeMetaDefinition.pushNotificationConfig}}
+            {{#if_eq type.deviceTypeMetaDefinition.pushNotificationConfig.type "MQTT"}}
+                <div class="code-segment">
+                    <span>MQTT Topic :</span>
+                    <code>{{tenantDomain}}/{{device.type}}/{{device.deviceIdentifier}}/operation/#</code>
+                    <br/>
+                    <div class="code-segment">
+                        <span>Topic Structure :</span>
+                        <ul class="list-unstyled">
+                            <li class="padding-top-double">
+                                <code>{{tenantDomain}}/{{device.type}}/{{device.deviceIdentifier}}/operation/command/&lt;feature_code&gt;/&lt;operation_id&gt;</code>
+                            </li>
+                            <li class="padding-top-double">
+                                <code>{{tenantDomain}}/{{device.type}}/{{device.deviceIdentifier}}/operation/config/&lt;feature_code&gt;/&lt;operation_id&gt;</code>
+                            </li>
+                            <li class="padding-top-double">
+                                <code>{{tenantDomain}}/{{device.type}}/{{device.deviceIdentifier}}/operation/profile/&lt;feature_code&gt;/&lt;operation_id&gt;</code>
+                            </li>
+                            <li class="padding-top-double">
+                                <code>{{tenantDomain}}/{{device.type}}/{{device.deviceIdentifier}}/operation/policy/policy_bundle</code>
+                            </li>
+                            <li class="padding-top-double">
+                                <code>{{tenantDomain}}/{{device.type}}/{{device.deviceIdentifier}}/operation/policy/policy_revoke</code>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="code-segment">
+                    <span>Operation Response :</span>
+                    <code>{{tenantDomain}}/{{device.type}}/{{device.deviceIdentifier}}/update/operation</code>
+                </div>
+                <div class="code-segment">
+                    <span>Payload :</span>
+                    <code>{"id": 1,"status": "COMPLETED", "operationResponse": "this is my response"}</code>
+                </div>
+                <br/>
+
+            {{/if_eq}}
+        {{else}}
+            <div class="code-segment">
+                <span>Retrieve pending operation :</span>
+                <code>curl -k -X GET {{httpsGateway}}/api/device-mgt/v1.0/device/agent/pending/operations/{{device.type}}/{{device.deviceIdentifier}} -H 'authorization: Bearer %accessToken%' -H 'content-type: application/json'</code>
+            </div>
+            <div class="code-segment">
+                <span>Retrieve next pending operation :</span>
+                <code>curl -k -X GET {{httpsGateway}}/api/device-mgt/v1.0/device/agent/next-pending/{{device.type}}/{{device.deviceIdentifier}} -H 'authorization: Bearer %accessToken%' -H 'content-type: application/json'</code>
+            </div>
+            <div class="code-segment">
+                <span>Update operation :</span>
+                <code>curl -k -X PUT {{httpsGateway}}/api/device-mgt/v1.0/device/agent/operations/{{device.type}}/{{device.deviceIdentifier}} -H 'authorization: Bearer %accessToken%' -H 'content-type: application/json' -d '{"id": 1,"status": "COMPLETED", "payload": "this is my response"}'</code>
+            </div>
+
+        {{/if}}
+
+        <br>
+        <br>
+    </div>
+{{/zone}}

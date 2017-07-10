@@ -1,0 +1,44 @@
+{{#each deviceTypes}}
+    <tr data-type="selectable" id="devicetype-{{deviceTypeName}}">
+        <td class="remove-padding icon-only content-fill">
+            <div class="thumbnail icon">
+                <i class="square-element text fw fw-user"></i>
+            </div>
+        </td>
+        <td class="remove-padding-top">{{deviceTypeName}}</td>
+        <td class="text-right content-fill text-left-on-grid-view no-wrap">
+
+            {{#if canEdit}}
+                <a onclick="javascript:loadDeviceTypeBasedActionURL('edit', '{{deviceTypeName}}')" data-devicetype="{{deviceTypeName}}"
+                   data-click-event="edit-form"
+                   class="btn padding-reduce-on-grid-view edit-devicetype-link" title="Edit Device Type">
+                            <span class="fw-stack fw-lg">
+                               <i class="fw fw-circle-outline fw-stack-2x"></i>
+                               <i class="fw fw-user fw-stack-1x"></i>
+                               <span class="fw-stack fw-move-right fw-move-bottom">
+                                  <i class="fw fw-circle fw-stack-2x fw-stroke fw-inverse"></i>
+                                  <i class="fw fw-circle fw-stack-2x"></i>
+                                  <i class="fw fw-edit fw-stack-1x fw-inverse"></i>
+                               </span>
+                            </span>
+                    <span class="hidden-xs hidden-on-grid-view">Edit</span>
+                </a>
+                <a onclick="javascript:loadDeviceTypeBasedActionURL('edit-event', '{{deviceTypeName}}')"
+                   data-devicetype="{{deviceTypeName}}"
+                   data-click-event="edit-form" class="btn padding-reduce-on-grid-view edit-permission-link"
+                   title="Edit Device Event">
+                            <span class="fw-stack fw-lg">
+                               <i class="fw fw-circle-outline fw-stack-2x"></i>
+                               <i class="fw fw-security-policy fw-stack-1x"></i>
+                               <span class="fw-stack fw-move-right fw-move-bottom">
+                                  <i class="fw fw-circle fw-stack-2x fw-stroke fw-inverse"></i>
+                                  <i class="fw fw-circle fw-stack-2x"></i>
+                                  <i class="fw fw-edit fw-stack-1x fw-inverse"></i>
+                               </span>
+                            </span>
+                    <span class="hidden-xs hidden-on-grid-view">Edit Event</span>
+                </a>
+            {{/if}}
+        </td>
+    </tr>
+{{/each}}

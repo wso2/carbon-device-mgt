@@ -807,6 +807,11 @@ header .dropdown[aria-expanded=true], header .dropdown:hover {
     background: #072038;
 }
 
+header .fw-user:before{
+    color: #333 !important;
+}
+
+
 @media only screen and (max-width: 768px) {
     header .brand img.logo {
         margin-top: 15px;
@@ -1171,6 +1176,10 @@ header .dropdown[aria-expanded=true], header .dropdown:hover {
 .sidebar-wrapper[data-side=right].toggled {
     left: auto;
     right: 0;
+}
+
+.sidebar-wrapper.toggled a.btn{
+   margin-bottom: 70px;
 }
 
 .sidebar-wrapper-animation-fix {
@@ -2835,6 +2844,31 @@ a.ast-type-item:hover {
 }
 
 /* operations panel/board */
+.operation-tile{
+    width: 88px;
+    height: 100px;
+    background-color: #ebebeb;
+    float: left;
+    margin: 0px 10px 10px 0px;
+    cursor: pointer;
+    position: relative;
+}
+
+.operation-tile i{
+    padding: 15px 0px 0px 0px;
+    display: block;
+    min-height: 65px;
+    margin: -5px !important;
+    font-size: 36px !important;
+}
+
+.operation-tile span{
+    height: 35px;
+    line-height: 15px;
+    vertical-align: middle;
+    display: table-cell !important;
+    width: inherit;
+}
 .wr-operations-board {
     background: #fafafa;
     margin-bottom: 10px;
@@ -6967,4 +7001,7 @@ header.header-default {
     line-height: 0px !important;
 }
 
+.header .fw-user{
+    color: #333 !important;
+}
 

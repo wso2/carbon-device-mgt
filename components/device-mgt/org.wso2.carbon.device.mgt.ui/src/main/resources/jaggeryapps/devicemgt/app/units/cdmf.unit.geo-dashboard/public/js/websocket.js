@@ -20,7 +20,7 @@ var debugObject; // assign object and debug from browser console, this is for de
 var showPathFlag = false; // Flag to hold the status of draw objects path
 var currentSpatialObjects = {};
 var selectedSpatialObject; // This is set when user search for an object from the search box
-var websocket;
+var spatialWebsocket;
 var onAlertWebsocket;
 var onTrafficStreamWebsocket;
 var currentPredictions = {};
@@ -506,36 +506,11 @@ function LocalStorageArray(id) {
     };
 }
 
-var webSocketOnTrafficStreamOpen = function () {
-    onTrafficStreamWebsocket.set_opened();
-    noty({text: 'You Are Connected to Traffic Stream !!', type: 'success'});
-};
-
-var webSocketOnTrafficStreamMessage = function processMessage(message) {
-    var json = $.parseJSON(message.data);
-    if (json.messageType == "Traffic") {
-        processTrafficMessage(json);
-    } else {
-        console.log("Message type not supported.");
-    }
-};
-
-var webSocketOnTrafficStreamClose = function (e) {
-    if (onTrafficStreamWebsocket.get_opened()) {
-        noty({text: 'Connection lost with Traffic Stream Stream !!', type: 'error'});
-    }
-    waitForSocketConnection(onTrafficStreamWebsocket, initializeOnTrafficStreamWebSocket);
-};
-
-var webSocketOnTrafficStreamError = function (e) {
-    if (!onTrafficStreamWebsocket.get_opened()) return;
-    noty({text: 'Something went wrong when trying to connect to <b>' + trafficStreamWebSocketURL + '<b/>', type: 'error'});
-};
-
+var initLoading = true;
 
 var webSocketOnAlertOpen = function () {
     onAlertWebsocket.set_opened();
-    noty({text: 'You Are Connected to Alert Stream !!', type: 'success'});
+    $('#ws-alert-stream').removeClass('text-muted text-danger text-success').addClass('text-success');
 };
 
 var webSocketOnAlertMessage = function processMessage(message) {
@@ -551,7 +526,7 @@ var webSocketOnAlertMessage = function processMessage(message) {
 
 var webSocketOnAlertClose = function (e) {
     if (onAlertWebsocket.get_opened()) {
-        noty({text: 'Connection lost with Alert Stream !!', type: 'error'});
+        $('#ws-alert-stream').removeClass('text-muted text-danger text-success').addClass('text-danger');
     }
     waitForSocketConnection(onAlertWebsocket, initializeOnAlertWebSocket);
 };
@@ -561,18 +536,15 @@ var webSocketOnAlertError = function (e) {
     noty({text: 'Something went wrong when trying to connect to <b>' + alertWebSocketURL + '<b/>', type: 'error'});
 };
 
-var initLoading = true;
-var webSocketOnOpen = function () {
-    websocket.set_opened();
+var webSocketSpatialOnOpen = function () {
+    spatialWebsocket.set_opened();
     if (initLoading) {
-        initialLoad();
-        InitSpatialObject();
         initLoading = false;
     }
-    noty({text: 'You Are Connected to Spatial Stream !!', type: 'success'});
+    $('#ws-spatial-stream').removeClass('text-muted text-danger text-success').addClass('text-success');
 };
 
-var webSocketOnMessage = function (message) {
+var webSocketSpatialOnMessage = function (message) {
     if (!isBatchModeOn) {
         var json = $.parseJSON(message.data);
         if (json.messageType == "Point") {
@@ -585,15 +557,15 @@ var webSocketOnMessage = function (message) {
     }
 };
 
-var webSocketOnClose = function (e) {
-    if (websocket.get_opened()) {
-        noty({text: 'Connection lost with server!!', type: 'error'});
+var webSocketSpatialOnClose = function (e) {
+    if (spatialWebsocket.get_opened()) {
+        $('#ws-spatial-stream').removeClass('text-muted text-danger text-success').addClass('text-danger');
     }
-    waitForSocketConnection(websocket, initializeWebSocket);
+    waitForSocketConnection(spatialWebsocket, initializeSpatialStreamWebSocket);
 };
 
-var webSocketOnError = function (err) {
-    if (!websocket.get_opened()) return;
+var webSocketSpatialOnError = function (err) {
+    if (!spatialWebsocket.get_opened()) return;
     noty({text: 'Something went wrong when trying to connect to <b>' + webSocketURL + '<b/>', type: 'error'});
 };
 
@@ -622,13 +594,13 @@ function waitForSocketConnection(socket, callback) {
 }
 
 
-function initializeWebSocket() {
-    if(websocket) websocket.close();
-    websocket = new WebSocket(webSocketURL);
-    websocket.onopen = webSocketOnOpen;
-    websocket.onmessage = webSocketOnMessage;
-    websocket.onclose = webSocketOnClose;
-    websocket.onerror = webSocketOnError;
+function initializeSpatialStreamWebSocket() {
+    if(spatialWebsocket) spatialWebsocket.close();
+    spatialWebsocket = new WebSocket(webSocketURL);
+    spatialWebsocket.onopen = webSocketSpatialOnOpen;
+    spatialWebsocket.onmessage = webSocketSpatialOnMessage;
+    spatialWebsocket.onclose = webSocketSpatialOnClose;
+    spatialWebsocket.onerror = webSocketSpatialOnError;
 }
 
 function initializeOnAlertWebSocket() {
@@ -640,7 +612,7 @@ function initializeOnAlertWebSocket() {
     onAlertWebsocket.onopen = webSocketOnAlertOpen;
 }
 
-function initializeGeoLocation() {
+function initializeGeoLocation(geoFencingEnabled) {
     var deviceDetails = $(".device-id");
     deviceId = deviceDetails.data("deviceid");
     deviceType = deviceDetails.data("type");
@@ -657,11 +629,17 @@ function initializeGeoLocation() {
         alertWebSocketURL = wsEndPoint + userDomain + "/org.wso2.geo.AlertsNotifications/1.0.0?"
                             + "deviceId=" + deviceId + "&deviceType=" + deviceType + "&websocketToken=" + wsToken;
         $("#proximity_alert").hide();
-        initializeWebSocket();
-        initializeOnAlertWebSocket();
-        window.onbeforeunload = function () {
-            websocket.close();
-            onAlertWebsocket.close();
+
+        initialLoad();
+        InitSpatialObject(geoFencingEnabled);
+
+        if (geoFencingEnabled) {
+            initializeSpatialStreamWebSocket();
+            initializeOnAlertWebSocket();
+            window.onbeforeunload = function () {
+                spatialWebsocket.close();
+                onAlertWebsocket.close();
+            }
         }
     } else {
         noty({text: 'Invalid Access! No device information provided to track!', type: 'error'});

@@ -42,6 +42,7 @@ public class APIUtil {
 
     private static Log log = LogFactory.getLog(APIUtil.class);
     private static final String DEFAULT_CDMF_API_TAG = "device_management";
+    private static final String DEFAULT_AGENT_API_TAG = "device_agent";
     private static final String DEFAULT_CERT_API_TAG = "scep_management";
     public static final String PERMISSION_PROPERTY_NAME = "name";
 
@@ -106,6 +107,7 @@ public class APIUtil {
         List<String> allowedApisTags = getDeviceManagementProviderService().getAvailableDeviceTypes();
         allowedApisTags.add(DEFAULT_CDMF_API_TAG);
         allowedApisTags.add(DEFAULT_CERT_API_TAG);
+        allowedApisTags.add(DEFAULT_AGENT_API_TAG);
         return allowedApisTags;
     }
 

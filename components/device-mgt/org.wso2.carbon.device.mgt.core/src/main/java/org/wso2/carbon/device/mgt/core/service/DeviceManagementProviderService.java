@@ -32,7 +32,10 @@ import org.wso2.carbon.device.mgt.common.operation.mgt.Activity;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
 import org.wso2.carbon.device.mgt.common.policy.mgt.PolicyMonitoringManager;
+import org.wso2.carbon.device.mgt.common.pull.notification.PullNotificationExecutionFailedException;
 import org.wso2.carbon.device.mgt.common.push.notification.NotificationStrategy;
+import org.wso2.carbon.device.mgt.common.spi.DeviceManagementService;
+import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -501,6 +504,8 @@ public interface DeviceManagementProviderService {
     boolean setStatus(DeviceIdentifier deviceId, String currentOwner,
                       EnrolmentInfo.Status status) throws DeviceManagementException;
 
+    boolean setStatus(String currentOwner, EnrolmentInfo.Status status) throws DeviceManagementException;
+
     void notifyOperationToDevices(Operation operation,
                                   List<DeviceIdentifier> deviceIds) throws DeviceManagementException;
 
@@ -558,4 +563,32 @@ public interface DeviceManagementProviderService {
      */
     boolean changeDeviceStatus(DeviceIdentifier deviceIdentifier, EnrolmentInfo.Status newStatus)
             throws DeviceManagementException;
+    
+    /**
+     * This will handle add and update of device type services.
+     * @param deviceManagementService
+     */
+    void registerDeviceType(DeviceManagementService deviceManagementService) throws DeviceManagementException;
+
+    /**
+     * This retrieves the device type info for the given type
+     * @param deviceType name of the type.
+     * @throws DeviceManagementException
+     */
+    DeviceType getDeviceType(String deviceType) throws DeviceManagementException;
+
+    /**
+     * This retrieves the device type info for the given type
+     * @throws DeviceManagementException
+     */
+    List<DeviceType> getDeviceTypes() throws DeviceManagementException;
+
+    /**
+     * This retrieves the device pull notification payload and passes to device type pull notification subscriber.
+     * @throws PullNotificationExecutionFailedException
+     */
+    void notifyPullNotificationSubscriber(DeviceIdentifier deviceIdentifier, Operation operation)
+            throws PullNotificationExecutionFailedException;
+
+    List<Integer> getDeviceEnrolledTenants() throws DeviceManagementException;
 }

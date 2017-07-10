@@ -54,13 +54,13 @@ public class DeviceManagementAdminServiceImpl implements DeviceManagementAdminSe
                                      @QueryParam("offset") int offset,
                                      @QueryParam("limit") int limit) {
         RequestValidationUtil.validatePaginationParameters(offset, limit);
+        int currentTenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+        if (MultitenantConstants.SUPER_TENANT_ID != currentTenantId) {
+            return Response.status(Response.Status.UNAUTHORIZED).entity(
+                    new ErrorResponse.ErrorResponseBuilder().setMessage(
+                            "Current logged in user is not authorized to perform this operation").build()).build();
+        }
         try {
-            int currentTenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
-            if (MultitenantConstants.SUPER_TENANT_ID != currentTenantId) {
-                return Response.status(Response.Status.UNAUTHORIZED).entity(
-                        new ErrorResponse.ErrorResponseBuilder().setMessage(
-                                "Current logged in user is not authorized to perform this operation").build()).build();
-            }
             PrivilegedCarbonContext.startTenantFlow();
             PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(tenantDomain);
             PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(DeviceMgtAPIUtils.getTenantId(tenantDomain));

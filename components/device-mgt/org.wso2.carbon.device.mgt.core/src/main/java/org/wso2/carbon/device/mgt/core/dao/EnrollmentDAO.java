@@ -39,6 +39,8 @@ public interface EnrollmentDAO {
     boolean setStatus(int enrolmentId, String currentOwner, Status status,
                       int tenantId) throws DeviceManagementDAOException;
 
+    boolean setStatus(String currentOwner, Status status, int tenantId) throws DeviceManagementDAOException;
+
     boolean setStatus(int enrolmentId, Status status, int tenantId) throws DeviceManagementDAOException;
 
     Status getStatus(int deviceId, String currentOwner, int tenantId) throws DeviceManagementDAOException;

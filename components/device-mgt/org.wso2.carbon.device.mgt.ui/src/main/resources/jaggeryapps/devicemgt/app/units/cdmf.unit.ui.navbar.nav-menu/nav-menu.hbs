@@ -30,7 +30,14 @@
             </a>
         </li>
     {{/if}}
-
+    {{#if permissions.IS_ADMIN}}
+        <li>
+            <a href="{{@app.context}}/device-types">
+                <i class="fw fw-devices"></i>
+                Device Type Management
+            </a>
+        </li>
+    {{/if}}
     {{#unless isCloud}}
     {{#if permissions.VIEW_DASHBOARD}}
         <li>

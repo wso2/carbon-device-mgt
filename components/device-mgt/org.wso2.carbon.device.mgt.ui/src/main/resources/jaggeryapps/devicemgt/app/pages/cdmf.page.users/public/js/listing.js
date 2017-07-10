@@ -82,6 +82,7 @@ $("a#invite-user-link").click(function () {
             usernameList,
             function () {
                 modalDialog.header("User invitation email for enrollment was successfully sent.");
+                modalDialog.content("");
                 modalDialog.footer('<div class="buttons"><a href="#" id="invite-user-success-link" ' +
                     'class="btn-operations">Ok </a></div>');
                 $("a#invite-user-success-link").click(function () {

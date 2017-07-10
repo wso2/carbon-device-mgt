@@ -115,7 +115,6 @@ var userModule = function () {
         var url = carbon.server.address('https') + "/admin/services";
         var server = new carbon.server.Server(url);
         var userManager = new carbon.user.UserManager(server, tenantId);
-
         try {
             if (userManager.userExists(username)) {
                 if (log.isDebugEnabled()) {
@@ -632,11 +631,17 @@ var userModule = function () {
         var url = carbon.server.address('https') + "/admin/services";
         var server = new carbon.server.Server(url);
         var userManager = new carbon.user.UserManager(server, tenantId);
+
         try {
             if (!userManager.roleExists(roleName)) {
                 userManager.addRole(roleName, users, permissions);
             } else {
-                log.info("Role exist with name: " + roleName);
+                var array = Object.keys(permissions);
+                var i, permission;
+                for (i = 0; i < array.length; i++) {
+                    permission = array[i];
+                    userManager.authorizeRole(roleName, permission, "ui.execute");
+                }
             }
         } catch (e) {
             throw e;

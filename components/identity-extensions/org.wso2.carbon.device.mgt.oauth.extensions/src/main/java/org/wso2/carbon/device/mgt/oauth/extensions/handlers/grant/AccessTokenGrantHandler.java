@@ -96,9 +96,11 @@ public class AccessTokenGrantHandler extends AbstractAuthorizationGrantHandler {
                 }
                 if (response != null && response.isValid()) {
                     authStatus = true;
-                    username = response.getUserName();
+                    username = response.getUserName() + "@" + response.getTenantDomain();
                     userTenantDomain = MultitenantUtils.getTenantDomain(username);
                     spTenantDomain = response.getTenantDomain();
+                } else if (response != null && !response.isValid()) {
+                    throw new IdentityOAuth2Exception("Authentication failed for the provided access token");
                 }
             }
 

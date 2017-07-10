@@ -140,6 +140,10 @@ function loadOperationsLog(update) {
 
     });
 
+    $("a[data-toggle=\"tab\"]").on("shown.bs.tab", function (e) {
+        $("#operation-log").DataTable().columns.adjust().responsive.recalc();
+    });
+
     function renderLogDetails(obj,data) {
         var payload = JSON.parse(data);
         var logStream = '<div class="log-data">';

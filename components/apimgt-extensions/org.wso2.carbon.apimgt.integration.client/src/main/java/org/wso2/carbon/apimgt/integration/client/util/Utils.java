@@ -74,7 +74,6 @@ public class Utils {
     }
 
     public static Client getSSLClient() {
-
         boolean isIgnoreHostnameVerification = Boolean.parseBoolean(System.getProperty("org.wso2.ignoreHostnameVerification"));
         if(isIgnoreHostnameVerification) {
             return new Client.Default(getSimpleTrustedSSLSocketFactory(), new HostnameVerifier() {
@@ -82,7 +81,6 @@ public class Utils {
                 public boolean verify(String s, SSLSession sslSession) {
                     return true;
                 }
-
             });
         }else {
             return new Client.Default(getTrustedSSLSocketFactory(), null);
@@ -125,7 +123,6 @@ public class Utils {
             KeyStore trustStore = loadTrustStore(trustStoreLocation,trustStorePassword);
 
             return initSSLConnection(keyStore,keyStorePassword,trustStore);
-
         } catch (KeyManagementException | NoSuchAlgorithmException | KeyStoreException
                 |CertificateException | IOException | UnrecoverableKeyException e) {
             log.error("Error while creating the SSL socket factory due to "+e.getMessage(),e);
@@ -133,7 +130,6 @@ public class Utils {
         }
 
     }
-
 
     private static SSLSocketFactory initSSLConnection(KeyStore keyStore,String keyStorePassword,KeyStore trustStore) throws NoSuchAlgorithmException, UnrecoverableKeyException,
             KeyStoreException, KeyManagementException {
@@ -152,34 +148,22 @@ public class Utils {
 
     private static KeyStore loadKeyStore(String keyStorePath, String ksPassword,String type)
             throws KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException {
-        InputStream fis = null;
+        InputStream fileInputStream = null;
         try {
             char[] keypassChar = ksPassword.toCharArray();
             KeyStore keyStore = KeyStore.getInstance(type);
-            FileInputStream fileInputStream = new FileInputStream(keyStorePath);
-
+            fileInputStream = new FileInputStream(keyStorePath);
             keyStore.load(fileInputStream, keypassChar);
             return keyStore;
         } finally {
-            if (fis != null) {
-                fis.close();
+            if (fileInputStream != null) {
+                fileInputStream.close();
             }
         }
     }
 
-    /**
-     * Loads the trustore
-     *
-     * @param trustStorePath - the trustore path in the filesystem.
-     * @param tsPassword     - the truststore password
-     */
     private static KeyStore loadTrustStore(String trustStorePath, String tsPassword)
             throws KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException {
-
         return loadKeyStore(trustStorePath,tsPassword,TRUST_STORE_TYPE);
     }
-
-
-
-
 }

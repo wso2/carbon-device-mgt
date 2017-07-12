@@ -39,6 +39,8 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="ConfigProperties" type="{}ConfigProperties"/>
  *       &lt;/sequence>
  *       &lt;attribute name="type" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="isScheduled" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="default" type="{http://www.w3.org/2001/XMLSchema}string" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -61,6 +63,8 @@ public class PushNotificationProvider {
     protected String type;
     @XmlAttribute(name = "isScheduled")
     protected boolean isScheduled;
+    @XmlAttribute(name = "default")
+    protected boolean isDefault;
 
     /**
      * Gets the value of the fileBasedProperties property.
@@ -151,5 +155,31 @@ public class PushNotificationProvider {
      */
     public void setScheduled(boolean scheduled) {
         isScheduled = scheduled;
+    }
+
+    /**
+     * Gets the value of the isDefault property.
+     * This property will be used to determine whether the given push notification will be used as Default for
+     * features which do not have push notification provider config
+     *
+     * @return
+     *     possible object is
+     *     {@link Boolean }
+     *
+     */
+    public boolean isDefault() {
+        return isDefault;
+    }
+
+    /**
+     * Sets the value of the isDefault property.
+     *
+     * @return
+     *     possible object is
+     *     {@link Boolean }
+     *
+     */
+    public void setDefault(boolean isDefault) {
+        isScheduled = isDefault;
     }
 }

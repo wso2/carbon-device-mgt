@@ -25,6 +25,8 @@ import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
+import org.wso2.carbon.device.mgt.common.Feature;
+import org.wso2.carbon.device.mgt.common.FeatureManager;
 import org.wso2.carbon.device.mgt.common.InvalidDeviceException;
 import org.wso2.carbon.device.mgt.common.MonitoringOperation;
 import org.wso2.carbon.device.mgt.common.PaginationRequest;
@@ -64,6 +66,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * This class implements all the functionality exposed as part of the OperationManager. Any transaction initiated
@@ -82,8 +85,10 @@ public class OperationManagerImpl implements OperationManager {
     private OperationDAO operationDAO;
     private DeviceDAO deviceDAO;
     private EnrollmentDAO enrollmentDAO;
-    private NotificationStrategy notificationStrategy;
+    private Map<String, NotificationStrategy> notificationStrategyMap;
+    private NotificationStrategy defaultNotificationStrategy;
     private String deviceType;
+    private FeatureManager featureManager;
 
     public OperationManagerImpl() {
         commandOperationDAO = OperationManagementDAOFactory.getCommandOperationDAO();
@@ -96,22 +101,35 @@ public class OperationManagerImpl implements OperationManager {
         enrollmentDAO = DeviceManagementDAOFactory.getEnrollmentDAO();
     }
 
-    public OperationManagerImpl(String deviceType) {
+    public OperationManagerImpl(String deviceType) throws DeviceManagementException {
         this();
         this.deviceType = deviceType;
+        featureManager = DeviceManagementDataHolder.getInstance().getDeviceManagementProvider()
+                .getFeatureManager(deviceType);
     }
 
-    public NotificationStrategy getNotificationStrategy() {
-        return notificationStrategy;
+    public NotificationStrategy getDefaultNotificationStrategy() {
+        return defaultNotificationStrategy;
     }
 
-    public void setNotificationStrategy(NotificationStrategy notificationStrategy) {
-        this.notificationStrategy = notificationStrategy;
+    public void setDefaultNotificationStrategy(NotificationStrategy defaultNotificationStrategy) {
+        this.defaultNotificationStrategy = defaultNotificationStrategy;
     }
 
-    public OperationManagerImpl(String deviceType, NotificationStrategy notificationStrategy) {
+    public Map<String, NotificationStrategy> getNotificationStrategyMap() {
+        return notificationStrategyMap;
+    }
+
+    public void setNotificationStrategyMap(Map<String, NotificationStrategy> notificationStrategyMap) {
+        this.notificationStrategyMap = notificationStrategyMap;
+    }
+
+    public OperationManagerImpl(String deviceType, NotificationStrategy defaultNotificationStrategy, Map<String,
+            NotificationStrategy> notificationStrategyMap) throws
+            DeviceManagementException {
         this(deviceType);
-        this.notificationStrategy = notificationStrategy;
+        this.defaultNotificationStrategy = defaultNotificationStrategy;
+        this.notificationStrategyMap = notificationStrategyMap;
     }
 
     @Override
@@ -149,8 +167,17 @@ public class OperationManagerImpl implements OperationManager {
                 boolean isNotRepeated = false;
                 boolean isScheduled = false;
 
+
                 // check whether device list is greater than batch size notification strategy has enable to send push
                 // notification using scheduler task
+                NotificationStrategy notificationStrategy = null;
+                Feature feature = featureManager.getFeature(operation.getCode());
+                if (feature != null && feature.getPushNotificationType() != null) {
+                    notificationStrategy = notificationStrategyMap.get(feature.getPushNotificationType());
+                }
+                if (notificationStrategy == null) {
+                    notificationStrategy = defaultNotificationStrategy;
+                }
                 if (DeviceConfigurationManager.getInstance().getDeviceManagementConfig().
                         getPushNotificationConfiguration().getSchedulerBatchSize() <= authorizedDeviceList.size() &&
                         notificationStrategy != null) {
@@ -197,13 +224,15 @@ public class OperationManagerImpl implements OperationManager {
                             operation.setId(operationId);
                             operation.setActivityId(DeviceManagementConstants.OperationAttributes.ACTIVITY + operationId);
                             notificationStrategy.execute(new NotificationContext(deviceId, operation));
-                            operationMappingDAO.updateOperationMapping(operationId, enrolmentId, org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.PushNotificationStatus.COMPLETED);
+                            operationMappingDAO.updateOperationMapping(operationId, enrolmentId, org.wso2.carbon
+                                    .device.mgt.core.dto.operation.mgt.Operation.PushNotificationStatus.COMPLETED);
                         } catch (PushNotificationExecutionFailedException e) {
                             log.error("Error occurred while sending push notifications to " +
                                       deviceId.getType() + " device carrying id '" +
                                       deviceId + "'", e);
                             // Reschedule if push notification failed.
-                            operationMappingDAO.updateOperationMapping(operationId, enrolmentId, org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.PushNotificationStatus.SCHEDULED);
+                            operationMappingDAO.updateOperationMapping(operationId, enrolmentId, org.wso2.carbon
+                                    .device.mgt.core.dto.operation.mgt.Operation.PushNotificationStatus.SCHEDULED);
                         }
                     }
                 }
@@ -230,6 +259,9 @@ public class OperationManagerImpl implements OperationManager {
             throw new OperationManagementException("Error occurred while adding operation", e);
         } catch (TransactionManagementException e) {
             throw new OperationManagementException("Error occurred while initiating the transaction", e);
+        } catch (DeviceManagementException e) {
+            throw new OperationManagementException("Error occurred while getting feature for given operation code :"
+                    + operation.getCode(), e);
         } finally {
             OperationManagementDAOFactory.closeConnection();
         }
@@ -242,7 +274,7 @@ public class OperationManagerImpl implements OperationManager {
         //Add the invalid DeviceIds
         for (String id : deviceIdValidationResult.getErrorDeviceIdList()) {
             activityStatus = new ActivityStatus();
-            activityStatus.setDeviceIdentifier(new DeviceIdentifier(id,deviceType));
+            activityStatus.setDeviceIdentifier(new DeviceIdentifier(id, deviceType));
             activityStatus.setStatus(ActivityStatus.Status.INVALID);
             activityStatuses.add(activityStatus);
         }

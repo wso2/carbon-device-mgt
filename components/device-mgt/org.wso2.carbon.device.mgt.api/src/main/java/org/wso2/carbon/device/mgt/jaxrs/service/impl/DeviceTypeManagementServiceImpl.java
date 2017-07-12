@@ -30,7 +30,6 @@ import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.device.mgt.jaxrs.beans.DeviceTypeList;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
 import org.wso2.carbon.device.mgt.jaxrs.service.api.DeviceTypeManagementService;
-import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.RequestValidationUtil;
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
 
 import javax.validation.constraints.Size;
@@ -38,9 +37,9 @@ import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 @Path("/device-types")
@@ -79,7 +78,7 @@ public class DeviceTypeManagementServiceImpl implements DeviceTypeManagementServ
             if (fm == null) {
                 return Response.status(Response.Status.NOT_FOUND).entity(
                         new ErrorResponse.ErrorResponseBuilder().setMessage("No feature manager is " +
-                                                                                    "registered with the given type '" + type + "'").build()).build();
+                                "registered with the given type '" + type + "'").build()).build();
             }
             features = fm.getFeatures();
         } catch (DeviceManagementException e) {
@@ -133,6 +132,7 @@ public class DeviceTypeManagementServiceImpl implements DeviceTypeManagementServ
 
     /**
      * This cleans up the configs that should not be exposed to iot users.
+     *
      * @param deviceType
      * @return
      */
@@ -140,9 +140,13 @@ public class DeviceTypeManagementServiceImpl implements DeviceTypeManagementServ
         DeviceTypeMetaDefinition metaDefinition = deviceType.getDeviceTypeMetaDefinition();
         if (metaDefinition != null) {
             metaDefinition.setInitialOperationConfig(null);
-            if (metaDefinition.getPushNotificationConfig() != null) {
-                metaDefinition.setPushNotificationConfig(new PushNotificationConfig(metaDefinition.
-                        getPushNotificationConfig().getType(), false, null));
+            if (metaDefinition.getPushNotificationConfigs() != null) {
+                List<PushNotificationConfig> pushNotificationConfigs = new LinkedList<>();
+                for (PushNotificationConfig pushNotificationConfig : metaDefinition.getPushNotificationConfigs()) {
+                    pushNotificationConfigs.add(new PushNotificationConfig(pushNotificationConfig.getType(), false,
+                            false, null));
+                }
+                metaDefinition.setPushNotificationConfigs(pushNotificationConfigs);
             }
             deviceType.setDeviceTypeMetaDefinition(metaDefinition);
         }

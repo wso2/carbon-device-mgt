@@ -41,6 +41,7 @@ import java.util.List;
  *         &lt;element name="Features" type="{}Features"/>
  *         &lt;element name="ProvisioningConfig" type="{}ProvisioningConfig"/>
  *         &lt;element name="PushNotificationProviderConfig" type="{}PushNotificationProviderConfig"/>
+ *         &lt;element name="PullNotificationSubscriberConfig" type="{}PullNotificationSubscriberConfig"/>
  *         &lt;element name="License" type="{}License"/>
  *         &lt;element name="DataSource" type="{}DataSource"/>
  *         &lt;element name="PolicyMonitoring" type="{}PolicyMonitoring"/>
@@ -65,8 +66,8 @@ public class DeviceTypeConfiguration {
     protected Features features;
     @XmlElement(name = "ProvisioningConfig", required = true)
     protected ProvisioningConfig provisioningConfig;
-    @XmlElement(name = "PushNotificationProviderConfig", required = true)
-    protected PushNotificationProvider pushNotificationProvider;
+    @XmlElement(name = "PushNotificationProviderConfigs", required = true)
+    protected PushNotificationProviders pushNotificationProviders;
     @XmlElement(name = "PullNotificationSubscriberConfig", required = true)
     protected PullNotificationSubscriberConfig pullNotificationSubscriberConfig;
     @XmlElement(name = "License", required = true)
@@ -245,23 +246,23 @@ public class DeviceTypeConfiguration {
     }
 
     /**
-     * Gets the value of the pushNotificationProvider property.
+     * Gets the value of the pushNotificationProviders property.
      *
      * @return possible object is
      * {@link PushNotificationProvider }
      */
-    public PushNotificationProvider getPushNotificationProvider() {
-        return pushNotificationProvider;
+    public PushNotificationProviders getPushNotificationProviders() {
+        return pushNotificationProviders;
     }
 
     /**
-     * Sets the value of the pushNotificationProvider property.
+     * Sets the value of the pushNotificationProviders property.
      *
      * @param value allowed object is
      *              {@link PushNotificationProvider }
      */
-    public void setPushNotificationProvider(PushNotificationProvider value) {
-        this.pushNotificationProvider = value;
+    public void setPushNotificationProviders(PushNotificationProviders value) {
+        this.pushNotificationProviders = value;
     }
 
     /**

@@ -22,10 +22,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.DeviceManager;
+import org.wso2.carbon.device.mgt.common.DeviceStatusTaskPluginConfig;
 import org.wso2.carbon.device.mgt.common.InitialOperationConfig;
 import org.wso2.carbon.device.mgt.common.MonitoringOperation;
 import org.wso2.carbon.device.mgt.common.OperationMonitoringTaskConfig;
-import org.wso2.carbon.device.mgt.common.DeviceStatusTaskPluginConfig;
 import org.wso2.carbon.device.mgt.common.ProvisioningConfig;
 import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManager;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.ConfigurationEntry;
@@ -42,12 +42,14 @@ import org.wso2.carbon.device.mgt.extensions.device.type.template.config.PolicyM
 import org.wso2.carbon.device.mgt.extensions.device.type.template.config.Property;
 import org.wso2.carbon.device.mgt.extensions.device.type.template.config.PullNotificationSubscriberConfig;
 import org.wso2.carbon.device.mgt.extensions.device.type.template.config.PushNotificationProvider;
+import org.wso2.carbon.device.mgt.extensions.device.type.template.config.PushNotificationProviders;
 import org.wso2.carbon.device.mgt.extensions.device.type.template.config.TaskConfiguration;
 import org.wso2.carbon.device.mgt.extensions.device.type.template.policy.mgt.DefaultPolicyMonitoringManager;
 import org.wso2.carbon.device.mgt.extensions.device.type.template.pull.notification.PullNotificationSubscriberLoader;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -60,7 +62,7 @@ public class DeviceTypeManagerService implements DeviceManagementService {
     private static final Log log = LogFactory.getLog(DeviceTypeManagerService.class);
 
     private DeviceManager deviceManager;
-    private PushNotificationConfig pushNotificationConfig;
+    private List<PushNotificationConfig> pushNotificationConfigs;
     private ProvisioningConfig provisioningConfig;
     private String type;
     private OperationMonitoringTaskConfig operationMonitoringConfigs;
@@ -75,7 +77,7 @@ public class DeviceTypeManagerService implements DeviceManagementService {
         this.setProvisioningConfig(deviceTypeConfigIdentifier.getTenantDomain(), deviceTypeConfiguration);
         this.deviceManager = new DeviceTypeManager(deviceTypeConfigIdentifier, deviceTypeConfiguration);
         this.setType(deviceTypeConfiguration.getName());
-        this.populatePushNotificationConfig(deviceTypeConfiguration.getPushNotificationProvider());
+        this.populatePushNotificationConfig(deviceTypeConfiguration.getPushNotificationProviders());
         this.operationMonitoringConfigs = new OperationMonitoringTaskConfig();
         this.setOperationMonitoringConfig(deviceTypeConfiguration);
         this.initialOperationConfig = new InitialOperationConfig();
@@ -92,7 +94,7 @@ public class DeviceTypeManagerService implements DeviceManagementService {
     }
 
     @Override
-    public OperationMonitoringTaskConfig getOperationMonitoringConfig(){
+    public OperationMonitoringTaskConfig getOperationMonitoringConfig() {
         return operationMonitoringConfigs;
     }
 
@@ -120,35 +122,42 @@ public class DeviceTypeManagerService implements DeviceManagementService {
     public void init() throws DeviceManagementException {
     }
 
-    private void populatePushNotificationConfig(PushNotificationProvider pushNotificationProvider) {
-        if (pushNotificationProvider != null) {
-            if (pushNotificationProvider.isFileBasedProperties()) {
-                Map<String, String> staticProps = new HashMap<>();
-                ConfigProperties configProperties = pushNotificationProvider.getConfigProperties();
-                if (configProperties != null) {
-                    List<Property> properties = configProperties.getProperty();
-                    if (properties != null && properties.size() > 0) {
-                        for (Property property : properties) {
-                            staticProps.put(property.getName(), property.getValue());
+    private void populatePushNotificationConfig(PushNotificationProviders pushNotificationProviders) {
+        if (pushNotificationProviders != null) {
+            pushNotificationConfigs = new LinkedList<>();
+            List<PushNotificationProvider> notificationProviders = pushNotificationProviders.getPushNotificationProviders();
+            for (PushNotificationProvider pushNotificationProvider : notificationProviders) {
+                if (pushNotificationProvider != null) {
+                    if (pushNotificationProvider.isFileBasedProperties()) {
+                        Map<String, String> staticProps = new HashMap<>();
+                        ConfigProperties configProperties = pushNotificationProvider.getConfigProperties();
+                        if (configProperties != null) {
+                            List<Property> properties = configProperties.getProperty();
+                            if (properties != null && properties.size() > 0) {
+                                for (Property property : properties) {
+                                    staticProps.put(property.getName(), property.getValue());
+                                }
+                            }
+                        }
+                        pushNotificationConfigs.add(new PushNotificationConfig(pushNotificationProvider.getType(),
+                                pushNotificationProvider.isScheduled(), pushNotificationProvider.isDefault(), staticProps));
+                    } else {
+                        try {
+                            PlatformConfiguration deviceTypeConfig = deviceManager.getConfiguration();
+                            if (deviceTypeConfig != null) {
+                                List<ConfigurationEntry> configuration = deviceTypeConfig.getConfiguration();
+                                if (configuration.size() > 0) {
+                                    Map<String, String> properties = this.getConfigProperty(configuration);
+                                    pushNotificationConfigs.add(new PushNotificationConfig(
+                                            pushNotificationProvider.getType(), pushNotificationProvider.isScheduled(),
+                                            pushNotificationProvider.isDefault(),
+                                            properties));
+                                }
+                            }
+                        } catch (DeviceManagementException e) {
+                            log.error("Unable to get the " + type + " platform configuration from registry.");
                         }
                     }
-                }
-                pushNotificationConfig = new PushNotificationConfig(pushNotificationProvider.getType(),
-                        pushNotificationProvider.isScheduled(), staticProps);
-            } else {
-                try {
-                    PlatformConfiguration deviceTypeConfig = deviceManager.getConfiguration();
-                    if (deviceTypeConfig != null) {
-                        List<ConfigurationEntry> configuration = deviceTypeConfig.getConfiguration();
-                        if (configuration.size() > 0) {
-                            Map<String, String> properties = this.getConfigProperty(configuration);
-                            pushNotificationConfig = new PushNotificationConfig(
-                                    pushNotificationProvider.getType(), pushNotificationProvider.isScheduled(),
-                                    properties);
-                        }
-                    }
-                } catch (DeviceManagementException e) {
-                    log.error("Unable to get the " + type + " platform configuration from registry.");
                 }
             }
         }
@@ -169,9 +178,8 @@ public class DeviceTypeManagerService implements DeviceManagementService {
         return provisioningConfig;
     }
 
-    @Override
-    public PushNotificationConfig getPushNotificationConfig() {
-        return pushNotificationConfig;
+    public List<PushNotificationConfig> getPushNotificationConfigs() {
+        return pushNotificationConfigs;
     }
 
     @Override

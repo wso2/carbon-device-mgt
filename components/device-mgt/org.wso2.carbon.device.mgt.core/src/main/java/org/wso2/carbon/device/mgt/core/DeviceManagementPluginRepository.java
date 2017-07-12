@@ -22,13 +22,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
-import org.wso2.carbon.device.mgt.common.pull.notification.PullNotificationSubscriber;
-import org.wso2.carbon.device.mgt.core.dto.DeviceManagementServiceHolder;
-import org.wso2.carbon.device.mgt.core.dto.DeviceTypeServiceIdentifier;
+import org.wso2.carbon.device.mgt.common.DeviceStatusTaskPluginConfig;
 import org.wso2.carbon.device.mgt.common.OperationMonitoringTaskConfig;
 import org.wso2.carbon.device.mgt.common.ProvisioningConfig;
-import org.wso2.carbon.device.mgt.common.DeviceStatusTaskPluginConfig;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManager;
+import org.wso2.carbon.device.mgt.common.pull.notification.PullNotificationSubscriber;
 import org.wso2.carbon.device.mgt.common.push.notification.NotificationStrategy;
 import org.wso2.carbon.device.mgt.common.push.notification.PushNotificationConfig;
 import org.wso2.carbon.device.mgt.common.push.notification.PushNotificationProvider;
@@ -37,7 +35,9 @@ import org.wso2.carbon.device.mgt.common.type.mgt.DeviceTypeDefinitionProvider;
 import org.wso2.carbon.device.mgt.common.type.mgt.DeviceTypeMetaDefinition;
 import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
 import org.wso2.carbon.device.mgt.core.config.DeviceManagementConfig;
+import org.wso2.carbon.device.mgt.core.dto.DeviceManagementServiceHolder;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
+import org.wso2.carbon.device.mgt.core.dto.DeviceTypeServiceIdentifier;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementServiceComponent;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagerStartupListener;
@@ -51,9 +51,12 @@ import org.wso2.carbon.device.mgt.core.task.DeviceMgtTaskException;
 import org.wso2.carbon.device.mgt.core.task.DeviceTaskManagerService;
 import org.wso2.carbon.device.mgt.core.util.DeviceManagerUtil;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class DeviceManagementPluginRepository implements DeviceManagerStartupListener {
 
@@ -155,8 +158,9 @@ public class DeviceManagementPluginRepository implements DeviceManagerStartupLis
         OperationManager operationManager = operationManagerRepository.getOperationManager(
                 deviceTypeIdentifier);
         if (operationManager != null) {
-            NotificationStrategy notificationStrategy = operationManager.getNotificationStrategy();
-            if (notificationStrategy != null) {
+            Collection<NotificationStrategy> notificationStrategies = operationManager.getNotificationStrategyMap()
+                    .values();
+            for (NotificationStrategy notificationStrategy : notificationStrategies) {
                 notificationStrategy.undeploy();
             }
             operationManagerRepository.removeOperationManager(deviceTypeIdentifier);
@@ -204,7 +208,7 @@ public class DeviceManagementPluginRepository implements DeviceManagerStartupLis
                 long updatedTimestamp = provider.getTimestamp();
                 if (System.currentTimeMillis() - updatedTimestamp > DEFAULT_UPDATE_TIMESTAMP) {
                     try {
-                        DeviceType deviceType = DeviceManagerUtil.getDeviceType(type,tenantId);
+                        DeviceType deviceType = DeviceManagerUtil.getDeviceType(type, tenantId);
                         DeviceTypeMetaDefinition deviceTypeMetaDefinition = deviceType.getDeviceTypeMetaDefinition();
                         if (deviceTypeMetaDefinition != null) {
                             Gson gson = new Gson();
@@ -213,8 +217,9 @@ public class DeviceManagementPluginRepository implements DeviceManagerStartupLis
                                     provider.getDeviceManagementService()).getDeviceTypeMetaDefinition();
                             String cachedDefinition = gson.toJson(deviceTypeMetaDefinition);
                             if (!cachedDefinition.equals(dbStoredDefinition)) {
-                                DeviceManagementService deviceTypeManagerService = DeviceManagementDataHolder.getInstance()
-                                        .getDeviceTypeGeneratorService().populateDeviceManagementService(type, deviceTypeMetaDefinition);
+                                DeviceManagementService deviceTypeManagerService = DeviceManagementDataHolder
+                                        .getInstance().getDeviceTypeGeneratorService()
+                                        .populateDeviceManagementService(type, deviceTypeMetaDefinition);
                                 if (deviceTypeManagerService == null) {
                                     log.error("Failing to retrieve the device type service for " + type);
                                     return null;
@@ -248,7 +253,7 @@ public class DeviceManagementPluginRepository implements DeviceManagerStartupLis
 
     private void registerPushNotificationStrategy(DeviceManagementService deviceManagementService)
             throws DeviceManagementException {
-        PushNotificationConfig pushNoteConfig = deviceManagementService.getPushNotificationConfig();
+        List<PushNotificationConfig> pushNoteConfigs = deviceManagementService.getPushNotificationConfigs();
         PrivilegedCarbonContext.startTenantFlow();
         PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(
                 deviceManagementService.getProvisioningConfig().getProviderTenantDomain(), true);
@@ -262,17 +267,40 @@ public class DeviceManagementPluginRepository implements DeviceManagerStartupLis
                 deviceTypeIdentifier = new DeviceTypeServiceIdentifier(deviceManagementService.getType(), tenantId);
             }
 
-            if (pushNoteConfig != null) {
-                PushNotificationProvider provider = DeviceManagementDataHolder.getInstance()
-                        .getPushNotificationProviderRepository().getProvider(pushNoteConfig.getType());
-                if (provider == null) {
-                    throw new DeviceManagementException(
-                            "No registered push notification provider found for the type: '" +
-                                    pushNoteConfig.getType() + "'.");
+            if (pushNoteConfigs != null) {
+                Map<String, NotificationStrategy> notificationStrategyMap = new ConcurrentHashMap<>();
+                NotificationStrategy defaultNotificationStrategy = null;
+                for (PushNotificationConfig pushNoteConfig : pushNoteConfigs) {
+                    PushNotificationProvider provider = DeviceManagementDataHolder.getInstance()
+                            .getPushNotificationProviderRepository().getProvider(pushNoteConfig.getType());
+                    if (provider == null) {
+                        throw new DeviceManagementException(
+                                "No registered push notification provider found for the type: '" +
+                                        pushNoteConfig.getType() + "'.");
+                    }
+                    NotificationStrategy notificationStrategy = provider.getNotificationStrategy(pushNoteConfig);
+                    if (pushNoteConfig.isDefault()) {
+                        if (defaultNotificationStrategy == null) {
+                            defaultNotificationStrategy = notificationStrategy;
+                        } else {
+                            throw new DeviceManagementException(
+                                    "Multiple push notification strategies are set as default. Only one strategy can " +
+                                            "be set as default for the device type: '" + deviceTypeIdentifier
+                                            .getDeviceType() + "'.");
+                        }
+                    }
+                    notificationStrategyMap.put(pushNoteConfig.getType(), notificationStrategy);
                 }
-                NotificationStrategy notificationStrategy = provider.getNotificationStrategy(pushNoteConfig);
-                operationManagerRepository.addOperationManager(deviceTypeIdentifier,
-                        new OperationManagerImpl(deviceTypeIdentifier.getDeviceType(), notificationStrategy));
+
+                if (defaultNotificationStrategy != null) {
+                    operationManagerRepository.addOperationManager(deviceTypeIdentifier,
+                            new OperationManagerImpl(deviceTypeIdentifier.getDeviceType(),
+                                    defaultNotificationStrategy, notificationStrategyMap));
+                } else {
+                    throw new DeviceManagementException(
+                            "No registered default push notification provider found for the device type: '" + deviceTypeIdentifier
+                                    .getDeviceType() + "'.");
+                }
             } else {
                 operationManagerRepository.addOperationManager(deviceTypeIdentifier,
                         new OperationManagerImpl(deviceTypeIdentifier.getDeviceType()));
@@ -377,7 +405,7 @@ public class DeviceManagementPluginRepository implements DeviceManagerStartupLis
         String deviceTypeName;
         synchronized (providers) {
             for (DeviceManagementServiceHolder deviceManagementServiceHolder : providers.values()) {
-                DeviceManagementService  provider= deviceManagementServiceHolder.getDeviceManagementService();
+                DeviceManagementService provider = deviceManagementServiceHolder.getDeviceManagementService();
                 try {
                     provider.init();
                     deviceTypeName = provider.getType();

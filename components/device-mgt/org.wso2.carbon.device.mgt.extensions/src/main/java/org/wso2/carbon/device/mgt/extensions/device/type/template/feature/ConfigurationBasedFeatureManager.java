@@ -50,7 +50,6 @@ public class ConfigurationBasedFeatureManager implements FeatureManager {
             deviceFeature.setCode(feature.getCode());
             deviceFeature.setName(feature.getName());
             deviceFeature.setDescription(feature.getDescription());
-            deviceFeature.setPushNotificationType(feature.getPushNotificationType());
             Operation operation = feature.getOperation();
             List<Feature.MetadataEntry> metadataEntries = null;
             if (feature.getMetaData() != null) {

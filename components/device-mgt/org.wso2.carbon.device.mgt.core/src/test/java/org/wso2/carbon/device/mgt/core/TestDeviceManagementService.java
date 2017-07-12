@@ -24,8 +24,6 @@ import org.wso2.carbon.device.mgt.common.pull.notification.PullNotificationSubsc
 import org.wso2.carbon.device.mgt.common.push.notification.PushNotificationConfig;
 import org.wso2.carbon.device.mgt.common.spi.DeviceManagementService;
 
-import java.util.List;
-
 public class TestDeviceManagementService implements DeviceManagementService {
 
     private String providerType;
@@ -65,7 +63,8 @@ public class TestDeviceManagementService implements DeviceManagementService {
         return new ProvisioningConfig(tenantDomain, false);
     }
 
-    public List<PushNotificationConfig> getPushNotificationConfigs() {
+    @Override
+    public PushNotificationConfig getPushNotificationConfig() {
         return null;
     }
 

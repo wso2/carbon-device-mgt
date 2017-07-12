@@ -29,16 +29,15 @@ import org.wso2.carbon.device.mgt.extensions.device.type.template.config.ConfigP
 import org.wso2.carbon.device.mgt.extensions.device.type.template.config.DeviceDetails;
 import org.wso2.carbon.device.mgt.extensions.device.type.template.config.DeviceTypeConfiguration;
 import org.wso2.carbon.device.mgt.extensions.device.type.template.config.Features;
+import org.wso2.carbon.device.mgt.extensions.device.type.template.config.License;
 import org.wso2.carbon.device.mgt.extensions.device.type.template.config.PolicyMonitoring;
 import org.wso2.carbon.device.mgt.extensions.device.type.template.config.Properties;
 import org.wso2.carbon.device.mgt.extensions.device.type.template.config.Property;
 import org.wso2.carbon.device.mgt.extensions.device.type.template.config.ProvisioningConfig;
 import org.wso2.carbon.device.mgt.extensions.device.type.template.config.PullNotificationSubscriberConfig;
 import org.wso2.carbon.device.mgt.extensions.device.type.template.config.PushNotificationProvider;
-import org.wso2.carbon.device.mgt.extensions.device.type.template.config.PushNotificationProviders;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -85,7 +84,6 @@ public class HTTPDeviceTypeManagerService extends DeviceTypeManagerService imple
                         configFeature.setCode(feature.getCode());
                         configFeature.setDescription(feature.getDescription());
                         configFeature.setName(feature.getName());
-                        configFeature.setPushNotificationType(feature.getPushNotificationType());
                         if (feature.getMetadataEntries() != null && feature.getMetadataEntries().size() > 0) {
                             List<String> metaValues = new ArrayList<>();
                             for (Feature.MetadataEntry metadataEntry : feature.getMetadataEntries()) {
@@ -117,36 +115,28 @@ public class HTTPDeviceTypeManagerService extends DeviceTypeManagerService imple
             provisioningConfig.setSharedWithAllTenants(false);
             deviceTypeConfiguration.setProvisioningConfig(provisioningConfig);
 
-            List<PushNotificationConfig> pushNotificationConfigs = deviceTypeMetaDefinition
-                    .getPushNotificationConfigs();
-            if (pushNotificationConfigs != null) {
-                List<PushNotificationProvider> pushNotificationProviderList = new LinkedList<>();
-                PushNotificationProviders pushNotificationProviders = new PushNotificationProviders();
-                for (PushNotificationConfig pushNotificationConfig : pushNotificationConfigs) {
-                    PushNotificationProvider pushNotificationProvider = new PushNotificationProvider();
-                    pushNotificationProvider.setType(pushNotificationConfig.getType());
-                    //default schedule value will be true.
-                    pushNotificationProvider.setScheduled(true);
-                    if (pushNotificationConfig.getProperties() != null &&
-                            pushNotificationConfig.getProperties().size() > 0) {
-                        ConfigProperties configProperties = new ConfigProperties();
-                        List<Property> properties = new ArrayList<>();
-                        for (Map.Entry<String, String> entry : pushNotificationConfig.getProperties().entrySet()) {
-                            Property property = new Property();
-                            property.setName(entry.getKey());
-                            property.setValue(entry.getValue());
-                            properties.add(property);
-                        }
-                        configProperties.addProperties(properties);
-                        pushNotificationProvider.setConfigProperties(configProperties);
+            PushNotificationConfig pushNotificationConfig = deviceTypeMetaDefinition.getPushNotificationConfig();
+            if (pushNotificationConfig != null) {
+                PushNotificationProvider pushNotificationProvider = new PushNotificationProvider();
+                pushNotificationProvider.setType(pushNotificationConfig.getType());
+                //default schedule value will be true.
+                pushNotificationProvider.setScheduled(true);
+                if (pushNotificationConfig.getProperties() != null &&
+                        pushNotificationConfig.getProperties().size() > 0) {
+                    ConfigProperties configProperties = new ConfigProperties();
+                    List<Property> properties = new ArrayList<>();
+                    for (Map.Entry<String, String> entry : pushNotificationConfig.getProperties().entrySet()) {
+                        Property property = new Property();
+                        property.setName(entry.getKey());
+                        property.setValue(entry.getValue());
+                        properties.add(property);
                     }
-                    pushNotificationProvider.setFileBasedProperties(true);
-                    pushNotificationProviderList.add(pushNotificationProvider);
+                    configProperties.addProperties(properties);
+                    pushNotificationProvider.setConfigProperties(configProperties);
                 }
-                pushNotificationProviders.addPushNotificationProviders(pushNotificationProviderList);
-                deviceTypeConfiguration.setPushNotificationProviders(pushNotificationProviders);
+                pushNotificationProvider.setFileBasedProperties(true);
+                deviceTypeConfiguration.setPushNotificationProvider(pushNotificationProvider);
             }
-
 
 //            This is commented until the task registration handling issue is solved
 //            OperationMonitoringTaskConfig operationMonitoringTaskConfig = deviceTypeMetaDefinition.getTaskConfig();

@@ -42,7 +42,6 @@ import java.util.List;
  *         &lt;element name="Operation" type="{}Operation"/>
  *       &lt;/sequence>
  *       &lt;attribute name="code" type="{http://www.w3.org/2001/XMLSchema}string" />
- *       &lt;attribute name="pushNotificationType" type="{http://www.w3.org/2001/XMLSchema}string" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -69,8 +68,6 @@ public class Feature {
     @XmlElementWrapper(name = "MetaData")
     @XmlElement(name = "Property", required = true)
     protected List<String> metaData;
-    @XmlAttribute(name = "pushNotificationType")
-    protected String pushNotificationType;
 
     /**
      * Gets the value of the name property.
@@ -174,29 +171,5 @@ public class Feature {
 
     public void setMetaData(List<String> metaData) {
         this.metaData = metaData;
-    }
-
-    /**
-     * Gets the value of the pushNotificationType property.
-     *
-     * @return
-     *     possible object is
-     *     {@link String }
-     *
-     */
-    public String getPushNotificationType() {
-        return pushNotificationType;
-    }
-
-    /**
-     * Sets the value of the pushNotificationType property.
-     *
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *
-     */
-    public void setPushNotificationType(String value) {
-        this.pushNotificationType = value;
     }
 }

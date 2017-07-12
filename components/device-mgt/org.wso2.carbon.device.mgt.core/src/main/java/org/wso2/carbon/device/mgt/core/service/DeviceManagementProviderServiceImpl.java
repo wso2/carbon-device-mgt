@@ -28,6 +28,9 @@ import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.DeviceManager;
 import org.wso2.carbon.device.mgt.common.DeviceNotFoundException;
+import org.wso2.carbon.device.mgt.common.pull.notification.PullNotificationExecutionFailedException;
+import org.wso2.carbon.device.mgt.common.pull.notification.PullNotificationSubscriber;
+import org.wso2.carbon.device.mgt.core.dto.DeviceTypeServiceIdentifier;
 import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
 import org.wso2.carbon.device.mgt.common.FeatureManager;
 import org.wso2.carbon.device.mgt.common.InitialOperationConfig;
@@ -52,8 +55,6 @@ import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManager;
 import org.wso2.carbon.device.mgt.common.policy.mgt.PolicyMonitoringManager;
-import org.wso2.carbon.device.mgt.common.pull.notification.PullNotificationExecutionFailedException;
-import org.wso2.carbon.device.mgt.common.pull.notification.PullNotificationSubscriber;
 import org.wso2.carbon.device.mgt.common.push.notification.NotificationStrategy;
 import org.wso2.carbon.device.mgt.common.spi.DeviceManagementService;
 import org.wso2.carbon.device.mgt.core.DeviceManagementConstants;
@@ -68,7 +69,6 @@ import org.wso2.carbon.device.mgt.core.dao.EnrollmentDAO;
 import org.wso2.carbon.device.mgt.core.device.details.mgt.dao.DeviceDetailsDAO;
 import org.wso2.carbon.device.mgt.core.device.details.mgt.dao.DeviceDetailsMgtDAOException;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
-import org.wso2.carbon.device.mgt.core.dto.DeviceTypeServiceIdentifier;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementServiceComponent;
 import org.wso2.carbon.device.mgt.core.internal.PluginInitializationListener;
@@ -1449,24 +1449,11 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     }
 
     @Override
-    public NotificationStrategy getDefaultNotificationStrategyByDeviceType(String deviceType) throws
-            DeviceManagementException {
+    public NotificationStrategy getNotificationStrategyByDeviceType(String deviceType) throws DeviceManagementException {
         int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
         OperationManager operationManager = pluginRepository.getOperationManager(deviceType, tenantId);
         if (operationManager != null) {
-            return operationManager.getDefaultNotificationStrategy();
-        } else {
-            throw new DeviceManagementException("Cannot find operation manager for given device type :" + deviceType);
-        }
-    }
-
-    @Override
-    public Map<String, NotificationStrategy> getNotificationStrategyListByDeviceType(String deviceType) throws
-            DeviceManagementException {
-        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
-        OperationManager operationManager = pluginRepository.getOperationManager(deviceType, tenantId);
-        if (operationManager != null) {
-            return operationManager.getNotificationStrategyMap();
+            return operationManager.getNotificationStrategy();
         } else {
             throw new DeviceManagementException("Cannot find operation manager for given device type :" + deviceType);
         }
@@ -1696,8 +1683,8 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         DeviceManagementService dms =
                 pluginRepository.getDeviceManagementService(deviceIdentifier.getType(), this.getTenantId());
         if (dms == null) {
-            String message = "Device type '" + deviceIdentifier.getType() + "' does not have an associated device " +
-                    "management " + "plugin registered within the framework";
+            String message = "Device type '" + deviceIdentifier.getType() + "' does not have an associated device management " +
+                    "plugin registered within the framework";
             if (log.isDebugEnabled()) {
                 log.debug(message);
             }

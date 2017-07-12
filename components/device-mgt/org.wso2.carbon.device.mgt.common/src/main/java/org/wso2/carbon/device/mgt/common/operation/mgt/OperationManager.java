@@ -25,7 +25,6 @@ import org.wso2.carbon.device.mgt.common.PaginationResult;
 import org.wso2.carbon.device.mgt.common.push.notification.NotificationStrategy;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * This represents the Device Operation management functionality which should be implemented by
@@ -108,23 +107,12 @@ public interface OperationManager {
      * Operation manger implementation can have a push notification stratergy
      * @param notificationStrategy eg: mqtt/xmpp
      */
-    void setDefaultNotificationStrategy(NotificationStrategy notificationStrategy);
+    void setNotificationStrategy(NotificationStrategy notificationStrategy);
 
     /**
      * retrive the push notification strategy.
      * @return NotificationStrategy
      */
-    NotificationStrategy getDefaultNotificationStrategy();
-
-    /**
-     * Set notification strategy map which contains feature code to notification strategy map
-     * @param notificationStrategyMap
-     */
-    public void setNotificationStrategyMap(Map<String, NotificationStrategy> notificationStrategyMap);
-    /**
-     * Provides notification strategy Map
-     * @return Map which contains mapping for feature code to notification strategy
-     */
-    public Map<String, NotificationStrategy> getNotificationStrategyMap();
+    NotificationStrategy getNotificationStrategy();
 
 }

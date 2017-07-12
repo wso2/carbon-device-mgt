@@ -39,10 +39,6 @@ public class Feature implements Serializable {
                                                    "Features allow you to perform operations on any device type, " +
                                                    "such as android, iOS or windows..", required = true )
     private String deviceType;
-
-    @ApiModelProperty(name = "pushNotificationProviderType", value = "Provides push notification provider for the " +
-            "feature. If not set default push notification strategy will be used.")
-    private String pushNotificationType;
     
     @ApiModelProperty(name = "metadataEntries", value = "Properties related to features.", required = true )
     private List<MetadataEntry> metadataEntries;
@@ -89,15 +85,6 @@ public class Feature implements Serializable {
 
     public void setDeviceType(String deviceType) {
         this.deviceType = deviceType;
-    }
-
-    @XmlElement
-    public String getPushNotificationType() {
-        return pushNotificationType;
-    }
-
-    public void setPushNotificationType(String pushNotificationType) {
-        this.pushNotificationType = pushNotificationType;
     }
 
     @XmlElement

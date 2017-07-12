@@ -39,9 +39,7 @@ import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 
 import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Proxy class for all Device Management related operations that take the corresponding plugin type in
@@ -473,10 +471,7 @@ public interface DeviceManagementProviderService {
      * @return Notification Strategy for device type
      * @throws DeviceManagementException
      */
-    NotificationStrategy getDefaultNotificationStrategyByDeviceType(String deviceType) throws DeviceManagementException;
-
-    Map<String, NotificationStrategy> getNotificationStrategyListByDeviceType(String deviceType) throws
-            DeviceManagementException;
+    NotificationStrategy getNotificationStrategyByDeviceType(String deviceType) throws DeviceManagementException;
 
     License getLicense(String deviceType, String languageCode) throws DeviceManagementException;
 

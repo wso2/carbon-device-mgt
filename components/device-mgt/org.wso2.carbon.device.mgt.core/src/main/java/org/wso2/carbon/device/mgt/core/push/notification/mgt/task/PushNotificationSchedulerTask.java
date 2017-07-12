@@ -21,8 +21,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
-import org.wso2.carbon.device.mgt.common.Feature;
-import org.wso2.carbon.device.mgt.common.FeatureManager;
 import org.wso2.carbon.device.mgt.common.TransactionManagementException;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
 import org.wso2.carbon.device.mgt.common.push.notification.NotificationContext;
@@ -85,24 +83,12 @@ public class PushNotificationSchedulerTask implements Runnable {
                         PrivilegedCarbonContext.startTenantFlow();
                         PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(operationMapping.getTenantId(), true);
                         // Get notification strategy for given device type
-                        NotificationStrategy notificationStrategy = null;
-                        org.wso2.carbon.device.mgt.common.operation.mgt.Operation operation = provider.getOperation(operationMapping.getDeviceIdentifier().getType(), operationMapping
-                                .getOperationId());
-                        FeatureManager featureManager = provider.getFeatureManager(operationMapping.getDeviceIdentifier().getType());
-                        Feature feature = featureManager.getFeature(operation.getCode());
-                        if (feature != null) {
-                            Map<String, NotificationStrategy> notificationStrategyListByDeviceType = provider.getNotificationStrategyListByDeviceType(operationMapping.getDeviceIdentifier().getType());
-                            if (notificationStrategyListByDeviceType != null && feature.getPushNotificationType() != null) {
-                                notificationStrategy = notificationStrategyListByDeviceType.get(feature.getPushNotificationType());
-                            }
-                        }
-                        if (notificationStrategy == null) {
-                            notificationStrategy = provider.getDefaultNotificationStrategyByDeviceType(operationMapping.getDeviceIdentifier()
-                                    .getType());
-                        }
+                        NotificationStrategy notificationStrategy = provider.getNotificationStrategyByDeviceType
+                                (operationMapping.getDeviceIdentifier().getType());
                         // Send the push notification on given strategy
                         notificationStrategy.execute(new NotificationContext(operationMapping.getDeviceIdentifier(),
-                                operation));
+                                provider.getOperation(operationMapping.getDeviceIdentifier().getType(), operationMapping
+                                        .getOperationId())));
                         operationMapping.setPushNotificationStatus(Operation.PushNotificationStatus.COMPLETED);
                         operationsCompletedList.add(operationMapping);
                     } catch (DeviceManagementException e) {

@@ -6888,6 +6888,12 @@ select > option:hover {
     /*background:url('http://cdn-sg1.pgimgs.com/images/pg/close-button.png') no-repeat center center;*/
 }
 
+.device-owner-operations {
+    pointer-events: none;
+    opacity: 0.5;
+    background: #b6b4bb;
+}
+
 .label-bold {
     font-weight: 400;
 }
@@ -6998,3 +7004,4 @@ header.header-default {
 .header .fw-user{
     color: #333 !important;
 }
+

@@ -88,13 +88,15 @@ function onRequest(context) {
 		}
 	}
 
-	var roles = userModule.getRoles();
-	if (roles["status"] == "success") {
-		types["roles"] = roles["content"];
-	}
-	types["groups"] = groupModule.getGroups();
-	var devicemgtProps = require("/app/modules/conf-reader/main.js")["conf"];
-	types["isCloud"] = devicemgtProps.isCloud;
+    var roles = userModule.getRoles();
+    if (roles["status"] == "success") {
+        types["roles"] = roles["content"];
+    }
+    types["groups"] = groupModule.getGroups();
+    var devicemgtProps = require("/app/modules/conf-reader/main.js")["conf"];
+    types["isCloud"] = devicemgtProps.isCloud;
+    types["isDeviceOwnerEnabled"] = devicemgtProps.isDeviceOwnerEnabled;
+
 
 	return types;
 }

@@ -38,6 +38,7 @@ function initStationaryAlert() {
             }
         } else{
             $(".fence-not-exist").show();
+            $("#stationary-alert-table").hide();
         }
         $('.viewGeoFenceRow td:not(:last-child)').click(function () {
             viewFence(this.parentElement,'Stationery');

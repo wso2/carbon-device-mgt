@@ -64,6 +64,12 @@
     <div id="" style="height: 63vh;">
         <!-- Sidebar -->
         <div id="map"></div>
+        {{#if geoServicesEnabled}}
+        <div id="ws-alerts">
+            <i id="ws-alert-stream" class="fw fw-circle text-muted"></i> Alerts Stream&nbsp;
+            <i id="ws-spatial-stream" class="fw fw-circle text-muted"></i> Spatial Stream
+        </div>
+        {{/if}}
     </div>
 
     <div id="predictionResults" style="background: darkgray;display: none;border-radius: 13px;height: 94%;padding: 0"
@@ -479,11 +485,13 @@
             <div class="popover-content">
                 <h6>Information</h6>
                 <p id="information" class="bg-primary" style="margin: 0px;padding: 0px;"></p>
+                {{#if geoServicesEnabled}}
                 <h6>Speed<span class="label label-primary pull-right"><span id="speed"></span> km/h</span></h6>
                 <h6>Heading<span id="heading" class="label label-primary pull-right"></span></h6>
                 <button type="button" class="btn btn-info btn-xs" onClick="toggleSpeedGraph();return false;">Speed Graph</button>
                 <button type="button" class="btn btn-info btn-xs" onClick="focusOnRecentHistorySpatialObject();return false;">Recent History</button>
                 <button type="button" class="btn btn-info btn-xs" onClick="popupDateRange();">Full History</button>
+                {{/if}}
             </div>
         </div>
 
@@ -526,7 +534,7 @@
                 <div class="form-group">
                     <label class="text-primary" for="areaName">Fence name</label>
                     <input class="form-control" id="areaName" placeholder="Fence name" type="text">
-                    <span class="help-block">Name of the selected area(i.e colombo)</span>
+                    <span class="help-block">Name of the selected area(e.g. colombo)</span>
                 </div>
                 <div>
                     <div class="btn-group btn-group-sm btn-group-justified">
@@ -557,7 +565,7 @@
                 <div class="form-group">
                     <label class="text-primary" for="areaName">Fence name</label>
                     <input class="form-control" id="areaName" placeholder="Fence name" type="text">
-                    <span class="help-block">Name of the selected area(i.e colombo)</span>
+                    <span class="help-block">Name of the selected area(e.g. colombo)</span>
                 </div>
                 <div>
                     <div class="btn-group btn-group-sm btn-group-justified">
@@ -589,7 +597,7 @@
                 <div class="form-group">
                     <label class="text-primary" for="areaName">Fence name</label>
                     <input class="form-control" id="areaName" placeholder="Stationery name" type="text">
-                    <span class="help-block">Name of the selected area(i.e colombo)</span>
+                    <span class="help-block">Name of the selected area(e.g. colombo)</span>
 
                     <label class="text-primary" for="fRadius">Fluctuation radius</label>
                     <input class="form-control" id="fRadius" onblur="reformatRadius(this.form.fRadius.value);" placeholder="m" type="text">
@@ -626,7 +634,7 @@
                 <div class="form-group">
                     <label class="text-primary" for="areaName">Fence name</label>
                     <input class="form-control" id="areaName" placeholder="Area Name" type="text">
-                    <span class="help-block">Name of the selected area(i.e colombo)</span>
+                    <span class="help-block">Name of the selected area(e.g. colombo)</span>
                 </div>
                 <div>
                     <div class="btn-group btn-group-sm btn-group-justified">
@@ -688,11 +696,11 @@
             var geoLocationLink = $(".initGeoLocationLink");
             if (geoLocationLink) {
                 geoLocationLink.on('click', function () {
-                    initializeGeoLocation()
+                    initializeGeoLocation({{geoServicesEnabled}});
                 });
-                {{#if showGeoFencingTools}}
+                geoPublicUri = $("#geo-charts").data("geo-public-uri");
+                {{#if geoServicesEnabled}}
                     var geoToolsMenu = $('#location-action-bar');
-                    geoPublicUri = $("#geo-charts").data("geo-public-uri");
                     var realtTime = createGeoToolListItem('javascript:enableRealTime()',
                                                           'Return to Real Time View', 'fw fw-undo', geoToolsMenu);
                     realtTime.css("display", "none");

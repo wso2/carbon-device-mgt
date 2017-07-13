@@ -34,14 +34,14 @@
                           <div class="col-lg-9">
                               <div class="device-info">
                                 {{#defineZone "device-details-header"}}
-                                  <h1 data-deviceid="{{device.deviceIdentifier}}"
+                                  <h1 class="device-id" data-deviceid="{{device.deviceIdentifier}}"
                                   data-type="{{device.type}}"
                                   data-ownership="{{device.ownership}}"
                                   data-owner="{{device.owner}}">
-                                        {{#if device.viewModel.model}}
-                                          <h4>{{device.viewModel.vendor}} {{device.viewModel.model}}</h4>
+                                        {{#if device.model}}
+                                          <h4>{{device.vendor}} {{device.model}}</h4>
                                         {{/if}}
-                                        <h4>Ownership - <strong>{{device.viewModel.ownership}}</strong></h4>
+                                        <h4>Ownership - <strong>{{device.ownership}}</strong></h4>
                                         <h4>Device is
                                           <strong>
                                             {{#equal device.status "ACTIVE"}}Active{{/equal}}

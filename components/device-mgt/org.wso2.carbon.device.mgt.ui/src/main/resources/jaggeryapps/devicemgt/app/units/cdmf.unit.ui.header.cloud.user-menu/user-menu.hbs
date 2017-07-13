@@ -15,6 +15,7 @@
   specific language governing permissions and limitations
   under the License.
 }}
+{{unit "cdmf.unit.ui.modal"}}
 <ul class="nav navbar-right float-remove-xs text-center-xs">
     {{#each Main}}
         <li class="visible-inline-block">
@@ -26,23 +27,35 @@
                 {{#if this.isDomain }}
                    {{@user.domain}}
                {{else}}
-                   {{@key}}
+                   {{#if this.label}}
+                       {{this.label}}
+                   {{else}}
+                       {{@key}}
+                   {{/if}}
                {{/if}}
             ">
-                <span class="icon fw-stack fw-lg" {{#if this.isSupport}} style="color: #ff8c27;" {{/if}}>
+                <span class="icon fw-stack fw-lg" {{#if this.isSupport}} style="color: #ff8c27;" {{/if}} {{#if this.color}} style="color: {{this.color}};" {{/if}}>
                     <i class="{{this.icon}} fw-stack-1x" title="
                     {{#if this.isDomain }}
                         {{@user.domain}}
                     {{else}}
-                        {{@key}}
+                        {{#if this.label}}
+                            {{this.label}}
+                        {{else}}
+                            {{@key}}
+                        {{/if}}
                     {{/if}}
                     "></i>
                 </span>
-                <span class="hidden-xs {{#if this.isDomain }} username {{/if}}">
+                <span class="hidden-xs {{#if this.isDomain }} username {{/if}}" {{#if this.color}} style="color: {{this.color}};" {{/if}}>
                     {{#if this.isDomain }}
                         {{@user.domain}}
                     {{else}}
-                        {{@key}}
+                        {{#if this.label}}
+                            {{this.label}}
+                        {{else}}
+                            {{@key}}
+                        {{/if}}
                     {{/if}}
                 </span>
                 {{#if this.dropDownVisible}}
@@ -136,6 +149,42 @@
     </div>
 </div>
 
+{{#if Main.Account.isExpired}}
+    <div id="expire-modal-content" class="hide">
+        <div class="modal-header">
+            <h3 class="pull-left modal-title">
+       	    <span>
+       		<span class="fw-stack">
+       	    <i class="fw fw-circle-outline fw-stack-2x"></i>
+       		    <i class="fw fw-alert fw-stack-1x"></i>
+       		</span> Trial Expired
+       	    </span>
+            </h3>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i
+                    class="fw fw-cancel"></i></button>
+        </div>
+        <div class="modal-body add-margin-top-2x add-margin-bottom-2x">
+            <div id="notification-error-msg" class="alert alert-danger hidden" role="alert">
+                <i class="icon fw fw-error"></i><span></span>
+            </div>
+            <div id="user-groups">Was it a successful trial? Your trial unfortunately expired, however it is really easy to upgrade to a paid plan and keep using WSO2 Device Cloud</div>
+        </div>
+        <div class="modal-footer">
+            <div class="buttons">
+                <a href="{{Main.Account.dropDown.[Upgrade Now].url}}" id="expire-upgrade-now-link" class="btn-operations">
+                    Upgrade Now
+                </a>
+                <a href="{{Main.Account.dropDown.[Request Extension].url}}" id="expire-req-ext-link" class="btn-operations">
+                    Request Exception
+                </a>
+            </div>
+        </div>
+    </div>
+{{/if}}
+
 {{#zone "bottomJs"}}
+    {{#if Main.Account.isExpired}}
+        {{js "/js/monetize.js"}}
+    {{/if}}
     {{js "/js/user-menu.js"}}
 {{/zone}}

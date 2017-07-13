@@ -2844,6 +2844,31 @@ a.ast-type-item:hover {
 }
 
 /* operations panel/board */
+.operation-tile{
+    width: 88px;
+    height: 100px;
+    background-color: #ebebeb;
+    float: left;
+    margin: 0px 10px 10px 0px;
+    cursor: pointer;
+    position: relative;
+}
+
+.operation-tile i{
+    padding: 15px 0px 0px 0px;
+    display: block;
+    min-height: 65px;
+    margin: -5px !important;
+    font-size: 36px !important;
+}
+
+.operation-tile span{
+    height: 35px;
+    line-height: 15px;
+    vertical-align: middle;
+    display: table-cell !important;
+    width: inherit;
+}
 .wr-operations-board {
     background: #fafafa;
     margin-bottom: 10px;
@@ -6863,6 +6888,12 @@ select > option:hover {
     /*background:url('http://cdn-sg1.pgimgs.com/images/pg/close-button.png') no-repeat center center;*/
 }
 
+.device-owner-operations {
+    pointer-events: none;
+    opacity: 0.5;
+    background: #b6b4bb;
+}
+
 .label-bold {
     font-weight: 400;
 }
@@ -6973,3 +7004,4 @@ header.header-default {
 .header .fw-user{
     color: #333 !important;
 }
+

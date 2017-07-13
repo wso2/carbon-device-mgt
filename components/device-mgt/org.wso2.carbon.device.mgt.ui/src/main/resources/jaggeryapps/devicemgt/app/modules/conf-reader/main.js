@@ -56,6 +56,8 @@ var conf = function () {
                 }
             }
         );
+        var DeviceConfigurationManager = Packages.org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
+        conf["serverConfig"] = DeviceConfigurationManager.getInstance().getDeviceManagementConfig();
         application.put("CONF", conf);
     }
     return conf;

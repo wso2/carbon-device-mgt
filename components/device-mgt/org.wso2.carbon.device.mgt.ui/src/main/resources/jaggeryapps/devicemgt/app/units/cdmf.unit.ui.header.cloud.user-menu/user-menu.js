@@ -50,9 +50,11 @@ function onRequest(context) {
     var BILLING_INFO_RETRY_COUNT_KEY = 'BILLING_INFO_RETRY_COUNT_' + context.user.domain;
 
     if (viewModal.Main.Account.billingEnabled) {
+        var cookie = getLoginCookie();
         if (!session.get(BILLING_INFO_KEY) || daysAfterLastCheck(session.get(BILLING_INFO_KEY).lastChecked) > 1) {
             session.put(BILLING_INFO_RETRY_COUNT_KEY, 0);
-            getBillingData(getLoginCookie());
+            var serviceUrl = viewModal.Main.Account.cloudMgtHost + "/cloudmgt/site/blocks/admin/admin.jag";
+            getBillingData(serviceUrl, cookie, 1);
         }
 
         var billingInfo = session.get(BILLING_INFO_KEY);
@@ -63,6 +65,7 @@ function onRequest(context) {
         var cloudMgtIndexPage = viewModal.Main.Account.cloudMgtIndexPage;
 
         if (!billingInfo) {
+            recordFirstLogin(serviceUrl, cookie, 1);
             log.info("Access denied for tenant: " + context.user.domain
                      + " with a NULL subscription. Redirected to CloudMgt");
             response.sendRedirect(cloudMgtIndexPage);
@@ -158,29 +161,32 @@ function onRequest(context) {
     viewModal.isCloud = mdmProps.isCloud;
     return viewModal;
 
-    function getBillingData(cookie, attempt) {
-        serviceUrl = "https://cloudmgt.cloudstaging.wso2.com/cloudmgt/site/blocks/admin/admin.jag";
+    function getBillingData(serviceUrl, cookie, attempt) {
         result = post(serviceUrl,
                       'action=getBillingStatusOfTenant&tenantDomain=' + context.user.domain + '&cloudType=device_cloud',
                       {"Cookie": cookie});
         if (result.data) {
             var billing = JSON.parse(result.data).data;
-            if (!billing.isPaidAccount && billing.billingPlanStatus === status.INACTIVE) {
-                var rv = post(serviceUrl,
-                              'action=informFirstLogin&tenantDomain=' + context.user.domain + '&cloudType=device_cloud',
-                              {"Cookie": cookie});
-                if (!attempt) attempt = 1;
-                var failStr = "First login capturing failed";
-                var successStr = "First login captured successfully";
-                if (rv.data.substring(0, failStr.length) === failStr && attempt < 3) {
-                    getBillingData(cookie, ++attempt); //retry
-                } else if(rv.data.substring(0, successStr.length) === successStr) {
-                    getBillingData(cookie); //get expiry details
-                }
+            if (!billing || !billing.isPaidAccount && billing.billingPlanStatus === status.INACTIVE) {
+                recordFirstLogin(serviceUrl, cookie, attempt);
             } else {
                 session.put(BILLING_INFO_KEY, JSON.parse(result.data).data);
                 session.put(BILLING_INFO_RETRY_COUNT_KEY, 0);
             }
+        }
+    }
+
+    function recordFirstLogin(serviceUrl, cookie, attempt){
+        var rv = post(serviceUrl,
+                      'action=informFirstLogin&tenantDomain=' + context.user.domain + '&cloudType=device_cloud',
+                      {"Cookie": cookie});
+        if (!attempt) attempt = 1;
+        var failStr = "First login capturing failed";
+        var successStr = "First login captured successfully";
+        if (rv.data.substring(0, failStr.length) === failStr && attempt < 3) {
+            recordFirstLogin(serviceUrl, cookie, ++attempt); //retry
+        } else {
+            getBillingData(serviceUrl, cookie, ++attempt); //get expiry details
         }
     }
 
@@ -191,7 +197,7 @@ function onRequest(context) {
             session.put(BILLING_INFO_RETRY_COUNT_KEY, retryCount);
             var username = viewModal.Main.Account.billingApi.username;
             var password = viewModal.Main.Account.billingApi.password;
-            var serviceUrl = "https://cloudmgt.cloudstaging.wso2.com/cloudmgt/site/blocks/user/authenticate/ajax/login.jag";
+            var serviceUrl = viewModal.Main.Account.cloudMgtHost + "/cloudmgt/site/blocks/user/authenticate/ajax/login.jag";
             var result = post(serviceUrl, 'action=login&userName=' + username + '&password=' + password,
                               {"Content-Type": "application/x-www-form-urlencoded"});
             if (result.data && result.data.trim() === "true") {

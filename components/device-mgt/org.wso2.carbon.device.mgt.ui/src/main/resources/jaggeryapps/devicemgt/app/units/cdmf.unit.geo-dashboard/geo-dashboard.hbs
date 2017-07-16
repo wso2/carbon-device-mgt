@@ -478,6 +478,40 @@
             </div>
         </div>
     </div>
+    <div class="modal" id="editExitGeoJSON" tabindex="-1" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button class="close" type="button" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">
+                    </h4>
+                    <div class="col-lg-5 col-md-6 col-centered">
+                        <h4>
+                            Adding GeoJson
+                            <br>
+                        </h4>
+                    </div>
+                </div>
+                <div class="modal-body">
+                    <div class="col-lg-8 col-md-8 col-centered">
+                        <div>
+                            <label for="importGeoJsonFile">Import GeoJson</label>
+                            <input id="importGeoJsonFile" type="file">
+                            <hr />
+                            <label for="enterGeoJson">Enter GeoJson</label>
+                            <textarea id="enterGeoJson" class="form-control" rows="10"></textarea>
+                        </div>
+                        <div class="pull-right">
+                            <button id="updateGeoJson" class="btn btn-primary" onclick="importGeoJson()">Import</button>
+                            <button type="button" class="btn btn-default" onclick="closeAll()">Cancel</button>
+                            <br />
+                            <br />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     <div style="display: none">
         <div id="markerPopup" class="popover top">
             <div class="arrow"></div>

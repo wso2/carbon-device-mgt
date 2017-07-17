@@ -232,6 +232,9 @@ function loadGroups() {
         $.each($('td', row), function (colIndex) {
             switch (colIndex) {
                 case 1:
+                    //TODO : The following line encodes html entities. 
+                    //Should check for a better solution since it only changes the presentation layer
+                    $(this).text($("<textarea></textarea>").html(this.innerText).text())
                     $(this).attr('data-grid-label', "Name");
                     $(this).attr('data-search', data.name);
                     $(this).attr('data-display', data.name);

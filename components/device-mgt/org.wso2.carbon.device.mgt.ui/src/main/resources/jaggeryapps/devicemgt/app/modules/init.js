@@ -30,6 +30,7 @@ application.put("carbonServer", carbonServer);
 
 var permissions = {
     "/permission/admin/Login": ["ui.execute"],
+    "/permission/admin/manage/api/subscribe": ["ui.execute"],
     "/permission/admin/device-mgt/device/api/subscribe": ["ui.execute"],
 	"/permission/admin/device-mgt/devices/enroll": ["ui.execute"],
 	"/permission/admin/device-mgt/devices/disenroll": ["ui.execute"],

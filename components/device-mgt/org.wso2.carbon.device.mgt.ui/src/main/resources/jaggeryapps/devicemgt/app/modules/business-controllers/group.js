@@ -41,7 +41,9 @@ var groupModule = {};
         } else {
             if (!user) {
                 log.error("User object was not found in the session");
-                throw constants["ERRORS"]["USER_NOT_FOUND"];
+                userModule.logout(function () {
+                    response.sendRedirect(devicemgtProps["appContext"] + "login");
+                });
             }
             log.error("Access denied for user: " + user.username);
             return -1;

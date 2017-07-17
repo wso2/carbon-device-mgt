@@ -82,5 +82,6 @@
         <isEnabled>false</isEnabled>
         <PublishLocationOperationResponse>false</PublishLocationOperationResponse>
     </GeoLocationConfiguration>
+    <DefaultGroupsConfiguration>BYOD,COPE</DefaultGroupsConfiguration>
 </DeviceMgtConfiguration>
 

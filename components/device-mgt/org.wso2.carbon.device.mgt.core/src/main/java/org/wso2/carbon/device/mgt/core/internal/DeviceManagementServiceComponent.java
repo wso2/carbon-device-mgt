@@ -26,6 +26,7 @@ import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManagementException;
 import org.wso2.carbon.device.mgt.common.authorization.DeviceAccessAuthorizationService;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.PlatformConfigurationManagementService;
 import org.wso2.carbon.device.mgt.common.geo.service.GeoService;
+import org.wso2.carbon.device.mgt.common.group.mgt.GroupManagementException;
 import org.wso2.carbon.device.mgt.common.notification.mgt.NotificationManagementService;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManager;
@@ -253,6 +254,21 @@ public class DeviceManagementServiceComponent {
 
         /* Registering Group Management Service */
         GroupManagementProviderService groupManagementProvider = new GroupManagementProviderServiceImpl();
+        String defaultGroups =
+                DeviceConfigurationManager.getInstance().getDeviceManagementConfig().getDefaultGroupsConfiguration();
+        List<String> groups = this.parseDefaultGroups(defaultGroups);
+        for(String group : groups){
+            try {
+                groupManagementProvider.createDefaultGroup(group);
+            } catch (GroupManagementException e) {
+                // Error is ignored, because error could be group already exist exception. Therefore it does not require
+                // to print the error.
+                if(log.isDebugEnabled()){
+                    log.error("Error occurred while adding the group");
+                }
+            }
+        }
+
         DeviceManagementDataHolder.getInstance().setGroupManagementProviderService(groupManagementProvider);
         bundleContext.registerService(GroupManagementProviderService.class.getName(), groupManagementProvider, null);
 
@@ -311,6 +327,19 @@ public class DeviceManagementServiceComponent {
         }
     }
 
+    private List<String> parseDefaultGroups(String defaultGroups) {
+        List<String> defaultGroupsList = new ArrayList<>();
+        if (defaultGroups != null && !defaultGroups.isEmpty()) {
+            String gps[] = defaultGroups.split(",");
+            if (gps.length != 0) {
+                for(String group : gps){
+                    defaultGroupsList.add(group.trim());
+                }
+            }
+        }
+        return defaultGroupsList;
+    }
+
     /**
      * Sets Device Manager service.
      *
@@ -320,7 +349,7 @@ public class DeviceManagementServiceComponent {
         try {
             if (log.isDebugEnabled()) {
                 log.debug("Setting Device Management Service Provider: '" +
-                                  deviceManagementService.getType() + "'");
+                        deviceManagementService.getType() + "'");
             }
             synchronized (LOCK) {
                 deviceManagers.add(deviceManagementService);

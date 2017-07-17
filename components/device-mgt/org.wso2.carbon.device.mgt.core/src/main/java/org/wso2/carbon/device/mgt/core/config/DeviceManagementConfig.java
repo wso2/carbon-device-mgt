@@ -47,6 +47,7 @@ public final class DeviceManagementConfig {
     private DeviceStatusTaskConfig deviceStatusTaskConfig;
     private DeviceCacheConfiguration deviceCacheConfiguration;
     private GeoLocationConfiguration geoLocationConfiguration;
+    private String defaultGroupsConfiguration;
 
     @XmlElement(name = "ManagementRepository", required = true)
     public DeviceManagementConfigRepository getDeviceManagementConfigRepository() {
@@ -137,6 +138,15 @@ public final class DeviceManagementConfig {
 
     public void setGeoLocationConfiguration(GeoLocationConfiguration geoLocationConfiguration) {
         this.geoLocationConfiguration = geoLocationConfiguration;
+    }
+
+    @XmlElement(name = "DefaultGroupsConfiguration", required = true)
+    public String getDefaultGroupsConfiguration() {
+        return defaultGroupsConfiguration;
+    }
+
+    public void setDefaultGroupsConfiguration(String defaultGroupsConfiguration) {
+        this.defaultGroupsConfiguration = defaultGroupsConfiguration;
     }
 }
 

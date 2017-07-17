@@ -30,10 +30,7 @@ import org.wso2.carbon.device.mgt.common.DeviceNotFoundException;
 import org.wso2.carbon.device.mgt.common.GroupPaginationRequest;
 import org.wso2.carbon.device.mgt.common.PaginationResult;
 import org.wso2.carbon.device.mgt.common.TransactionManagementException;
-import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroup;
-import org.wso2.carbon.device.mgt.common.group.mgt.GroupAlreadyExistException;
-import org.wso2.carbon.device.mgt.common.group.mgt.GroupManagementException;
-import org.wso2.carbon.device.mgt.common.group.mgt.RoleDoesNotExistException;
+import org.wso2.carbon.device.mgt.common.group.mgt.*;
 import org.wso2.carbon.device.mgt.core.dao.GroupDAO;
 import org.wso2.carbon.device.mgt.core.dao.GroupManagementDAOException;
 import org.wso2.carbon.device.mgt.core.dao.GroupManagementDAOFactory;
@@ -570,6 +567,33 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
             throw new GroupManagementException("Error occurred while opening database connection.", e);
         } finally {
             GroupManagementDAOFactory.closeConnection();
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public DeviceGroup createDefaultGroup(String groupName) throws GroupManagementException {
+
+        DeviceGroup defaultGroup = this.getGroup(groupName);
+        if (defaultGroup == null) {
+            defaultGroup = new DeviceGroup(groupName);
+            // Setting system level user (wso2.system.user) as the owner
+            defaultGroup.setOwner(CarbonConstants.REGISTRY_SYSTEM_USERNAME);
+            defaultGroup.setDescription("Default system group for devices with " + groupName + " ownership.");
+            try {
+                this.createGroup(defaultGroup, DeviceGroupConstants.Roles.DEFAULT_ADMIN_ROLE,
+                        DeviceGroupConstants.Permissions.DEFAULT_ADMIN_PERMISSIONS);
+            } catch (GroupAlreadyExistException e) {
+                if (log.isDebugEnabled()) {
+                    log.debug("Default group: " + defaultGroup.getName() + " already exists. Skipping group creation.",
+                            e);
+                }
+            }
+            return this.getGroup(groupName);
+        } else {
+            return defaultGroup;
         }
     }
 }

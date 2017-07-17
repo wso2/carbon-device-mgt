@@ -34,6 +34,7 @@
                 "username": "admin",
                 "password": "admin"
             },
+            "cloudMgtHost" : "https://cloudmgt.cloudstaging.wso2.com",
             "cloudMgtIndexPage": "https://cloudmgt.cloud.wso2.com/cloudmgt/site/pages/index.jag",
             "dropDown": {
                 "Upgrade Now": {

@@ -263,7 +263,9 @@ deviceModule = function () {
                 url, function (responsePayload) {
                     if(!responsePayload["responseText"]){
                         log.error("Error while fetching device count. API `" + url + "` returns HTTP: " + responsePayload["status"]);
-                        throw constants["ERRORS"]["UNKNOWN_ERROR"];
+                        userModule.logout(function () {
+                            response.sendRedirect(devicemgtProps["appContext"] + "login");
+                        });
                     }
                     return parse(responsePayload["responseText"])["count"];
                 },
@@ -304,7 +306,9 @@ deviceModule = function () {
 			);
 		} else {
 			log.error("User object was not found in the session");
-			throw constants["ERRORS"]["USER_NOT_FOUND"];
+            userModule.logout(function () {
+                response.sendRedirect(devicemgtProps["appContext"] + "login");
+            });
 		}
 	};
 

@@ -67,7 +67,9 @@ deviceModule = function () {
         var carbonUser = session.get(constants["USER_SESSION_KEY"]);
         if (!carbonUser) {
             log.error("User object was not found in the session");
-            throw constants["ERRORS"]["USER_NOT_FOUND"];
+            userModule.logout(function () {
+                response.sendRedirect(devicemgtProps["appContext"] + "login");
+            });
         }
         var userName = carbonUser.username + "@" + carbonUser.domain;
         var locationHistory = [];
@@ -272,7 +274,9 @@ deviceModule = function () {
             );
         } else {
             log.error("User object was not found in the session");
-            throw constants["ERRORS"]["USER_NOT_FOUND"];
+            userModule.logout(function () {
+                response.sendRedirect(devicemgtProps["appContext"] + "login");
+            });
         }
     };
 
@@ -369,7 +373,9 @@ deviceModule = function () {
 		var carbonUser = session.get(constants["USER_SESSION_KEY"]);
 		if (!carbonUser) {
 			log.error("User object was not found in the session");
-			throw constants["ERRORS"]["USER_NOT_FOUND"];
+            userModule.logout(function () {
+                response.sendRedirect(devicemgtProps["appContext"] + "login");
+            });
 		}
 		var userName = carbonUser.username + "@" + carbonUser.domain;
 		var config = {};

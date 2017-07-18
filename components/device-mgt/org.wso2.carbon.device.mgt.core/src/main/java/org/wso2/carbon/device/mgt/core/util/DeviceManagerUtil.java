@@ -247,6 +247,7 @@ public final class DeviceManagerUtil {
                 switch (device.getEnrolmentInfo().getStatus()) {
                     case BLOCKED:
                     case REMOVED:
+                        break;
                     case SUSPENDED:
                         break;
                     default:

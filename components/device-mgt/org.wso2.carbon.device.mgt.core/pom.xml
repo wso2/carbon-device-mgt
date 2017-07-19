@@ -146,6 +146,18 @@
                     <groupId>org.slf4j</groupId>
                     <artifactId>slf4j-api</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>javax.servlet</groupId>
+                    <artifactId>servlet-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.wso2.carbon.registry</groupId>
+                    <artifactId>org.wso2.carbon.registry.indexing</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.wso2.carbon.identity.framework</groupId>
+                    <artifactId>org.wso2.carbon.user.mgt</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>

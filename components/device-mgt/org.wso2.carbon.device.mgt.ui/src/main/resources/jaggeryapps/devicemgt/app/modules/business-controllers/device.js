@@ -73,19 +73,22 @@ deviceModule = function () {
         }
         var userName = carbonUser.username + "@" + carbonUser.domain;
         var locationHistory = [];
-        try {
-            var fromDate = new Date();
-            fromDate.setHours(fromDate.getHours() - 2);
-            var toDate = new Date();
-            var serviceUrl = devicemgtProps["httpsURL"] + '/api/device-mgt/v1.0/geo-services/stats/' + deviceType + '/' + deviceId;
-            serviceInvokers.XMLHttp.get(serviceUrl,
-                                        function (backendResponse) {
-                                            if (backendResponse.status === 200 && backendResponse.responseText) {
-                                                locationHistory = JSON.parse(backendResponse.responseText);
-                                            }
-                                        });
-        } catch (e) {
-            log.error(e.message, e);
+        var geoServicesEnabled = devicemgtProps.serverConfig.geoLocationConfiguration.isEnabled;
+        if (geoServicesEnabled) {
+            try {
+                var fromDate = new Date();
+                fromDate.setHours(fromDate.getHours() - 2);
+                var toDate = new Date();
+                var serviceUrl = devicemgtProps["httpsURL"] + '/api/device-mgt/v1.0/geo-services/stats/' + deviceType + '/' + deviceId + '?from=' + fromDate + '&to=' + toDate;
+                serviceInvokers.XMLHttp.get(serviceUrl,
+                                            function (backendResponse) {
+                                                if (backendResponse.status === 200 && backendResponse.responseText) {
+                                                    locationHistory = JSON.parse(backendResponse.responseText);
+                                                }
+                                            });
+            } catch (e) {
+                log.error(e.message, e);
+            }
         }
 
         var locationInfo = {};

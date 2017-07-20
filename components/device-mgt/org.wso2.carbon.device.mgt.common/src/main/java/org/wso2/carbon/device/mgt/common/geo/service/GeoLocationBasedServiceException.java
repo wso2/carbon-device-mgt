@@ -20,7 +20,7 @@ package org.wso2.carbon.device.mgt.common.geo.service;
 /**
  * Custom exception class of Geo Service related operations.
  */
-public class GeoServiceException extends Exception {
+public class GeoLocationBasedServiceException extends Exception {
 
     private static final long serialVersionUID = -7151990041029070298L;
 
@@ -34,26 +34,26 @@ public class GeoServiceException extends Exception {
         this.errorMessage = errorMessage;
     }
 
-    public GeoServiceException(String msg, Exception nestedEx) {
+    public GeoLocationBasedServiceException(String msg, Exception nestedEx) {
         super(msg, nestedEx);
         setErrorMessage(msg);
     }
 
-    public GeoServiceException(String message, Throwable cause) {
+    public GeoLocationBasedServiceException(String message, Throwable cause) {
         super(message, cause);
         setErrorMessage(message);
     }
 
-    public GeoServiceException(String msg) {
+    public GeoLocationBasedServiceException(String msg) {
         super(msg);
         setErrorMessage(msg);
     }
 
-    public GeoServiceException() {
+    public GeoLocationBasedServiceException() {
         super();
     }
 
-    public GeoServiceException(Throwable cause) {
+    public GeoLocationBasedServiceException(Throwable cause) {
         super(cause);
     }
 

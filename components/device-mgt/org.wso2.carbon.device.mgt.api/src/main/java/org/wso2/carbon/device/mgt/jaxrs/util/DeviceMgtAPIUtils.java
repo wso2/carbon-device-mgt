@@ -44,7 +44,7 @@ import org.wso2.carbon.device.mgt.common.authorization.DeviceAccessAuthorization
 import org.wso2.carbon.device.mgt.common.configuration.mgt.ConfigurationEntry;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.PlatformConfiguration;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.PlatformConfigurationManagementService;
-import org.wso2.carbon.device.mgt.common.geo.service.GeoService;
+import org.wso2.carbon.device.mgt.common.geo.service.GeoLocationProviderService;
 import org.wso2.carbon.device.mgt.common.notification.mgt.NotificationManagementService;
 import org.wso2.carbon.device.mgt.common.spi.DeviceTypeGeneratorService;
 import org.wso2.carbon.device.mgt.core.app.mgt.ApplicationManagementProviderService;
@@ -427,9 +427,10 @@ public class DeviceMgtAPIUtils {
         return gadgetDataService;
     }
 
-    public static GeoService getGeoService() {
+    public static GeoLocationProviderService getGeoService() {
         PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-        GeoService geoService = (GeoService) ctx.getOSGiService(GeoService.class, null);
+        GeoLocationProviderService
+                geoService = (GeoLocationProviderService) ctx.getOSGiService(GeoLocationProviderService.class, null);
         if (geoService == null) {
             throw new IllegalStateException("Geo Service has not been initialized.");
         }

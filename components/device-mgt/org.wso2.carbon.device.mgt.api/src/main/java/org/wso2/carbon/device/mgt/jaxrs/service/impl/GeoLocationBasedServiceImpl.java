@@ -35,11 +35,12 @@ import org.wso2.carbon.device.mgt.common.authorization.DeviceAccessAuthorization
 import org.wso2.carbon.device.mgt.common.geo.service.Alert;
 import org.wso2.carbon.device.mgt.common.geo.service.Event;
 import org.wso2.carbon.device.mgt.common.geo.service.GeoFence;
-import org.wso2.carbon.device.mgt.common.geo.service.GeoServiceException;
+import org.wso2.carbon.device.mgt.common.geo.service.GeoLocationProviderService;
+import org.wso2.carbon.device.mgt.common.geo.service.GeoLocationBasedServiceException;
 import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroupConstants;
 import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
 import org.wso2.carbon.device.mgt.core.config.DeviceManagementConfig;
-import org.wso2.carbon.device.mgt.jaxrs.service.api.GeoService;
+import org.wso2.carbon.device.mgt.jaxrs.service.api.GeoLocationBasedService;
 import org.wso2.carbon.device.mgt.jaxrs.util.Constants;
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtUtil;
@@ -64,9 +65,9 @@ import java.util.Map;
 /**
  * The api for
  */
-public class GeoServiceImpl implements GeoService {
+public class GeoLocationBasedServiceImpl implements GeoLocationBasedService {
 
-    private static Log log = LogFactory.getLog(GeoServiceImpl.class);
+    private static Log log = LogFactory.getLog(GeoLocationBasedServiceImpl.class);
 
     @Path("stats/{deviceType}/{deviceId}")
     @GET
@@ -149,10 +150,10 @@ public class GeoServiceImpl implements GeoService {
             identifier.setId(deviceId);
             identifier.setType(deviceType);
 
-            org.wso2.carbon.device.mgt.common.geo.service.GeoService geoService = DeviceMgtAPIUtils.getGeoService();
+            GeoLocationProviderService geoService = DeviceMgtAPIUtils.getGeoService();
             geoService.createGeoAlert(alert, identifier, alertType);
             return Response.ok().build();
-        } catch (DeviceAccessAuthorizationException | GeoServiceException e) {
+        } catch (DeviceAccessAuthorizationException | GeoLocationBasedServiceException e) {
             String error = "Error occurred while creating the geo alert for " + deviceType + " with id: " + deviceId;
             log.error(error, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(error).build();
@@ -182,10 +183,10 @@ public class GeoServiceImpl implements GeoService {
             identifier.setId(deviceId);
             identifier.setType(deviceType);
 
-            org.wso2.carbon.device.mgt.common.geo.service.GeoService geoService = DeviceMgtAPIUtils.getGeoService();
+            GeoLocationProviderService geoService = DeviceMgtAPIUtils.getGeoService();
             geoService.updateGeoAlert(alert, identifier, alertType);
             return Response.ok().build();
-        } catch (DeviceAccessAuthorizationException | GeoServiceException e) {
+        } catch (DeviceAccessAuthorizationException | GeoLocationBasedServiceException e) {
             String error = "Error occurred while creating the geo alert for " + deviceType + " with id: " + deviceId;
             log.error(error, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(error).build();
@@ -216,10 +217,10 @@ public class GeoServiceImpl implements GeoService {
             identifier.setId(deviceId);
             identifier.setType(deviceType);
 
-            org.wso2.carbon.device.mgt.common.geo.service.GeoService geoService = DeviceMgtAPIUtils.getGeoService();
+            GeoLocationProviderService geoService = DeviceMgtAPIUtils.getGeoService();
             geoService.removeGeoAlert(alertType, identifier, queryName);
             return Response.ok().build();
-        } catch (DeviceAccessAuthorizationException | GeoServiceException e) {
+        } catch (DeviceAccessAuthorizationException | GeoLocationBasedServiceException e) {
             String error = "Error occurred while removing the geo alert for " + deviceType + " with id: " + deviceId;
             log.error(error, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(error).build();
@@ -249,7 +250,7 @@ public class GeoServiceImpl implements GeoService {
             identifier.setId(deviceId);
             identifier.setType(deviceType);
 
-            org.wso2.carbon.device.mgt.common.geo.service.GeoService geoService = DeviceMgtAPIUtils.getGeoService();
+            GeoLocationProviderService geoService = DeviceMgtAPIUtils.getGeoService();
 
             if (GeoServices.ALERT_TYPE_WITHIN.equals(alertType)) {
                 List<GeoFence> alerts = geoService.getWithinAlerts(identifier);
@@ -271,7 +272,7 @@ public class GeoServiceImpl implements GeoService {
                 return Response.ok().entity(alerts).build();
             }
             return null;
-        } catch (DeviceAccessAuthorizationException | GeoServiceException e) {
+        } catch (DeviceAccessAuthorizationException | GeoLocationBasedServiceException e) {
             String error = "Error occurred while getting the geo alerts for " + deviceType + " with id: " + deviceId;
             log.error(error, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(error).build();

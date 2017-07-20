@@ -313,7 +313,7 @@ function loadDevices(searchType, searchParam) {
         },
         {
             targets: 4,
-            data: 'deviceType',
+            data: 'type',
             class: 'remove-padding-top viewEnabledIcon',
             render: function (status, type, row, meta) {
                 return getDeviceTypeLabel(row.deviceType);

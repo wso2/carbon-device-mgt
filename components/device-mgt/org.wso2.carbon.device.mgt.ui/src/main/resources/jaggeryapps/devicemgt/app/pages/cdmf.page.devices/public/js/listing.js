@@ -313,7 +313,7 @@ function loadDevices(searchType, searchParam) {
         },
         {
             targets: 4,
-            data: 'deviceType',
+            data: 'type',
             class: 'remove-padding-top viewEnabledIcon',
             render: function (status, type, row, meta) {
                 return getDeviceTypeLabel(row.deviceType);
@@ -333,7 +333,7 @@ function loadDevices(searchType, searchParam) {
         },
         {
             targets: 6,
-            data: 'status',
+            data: 'action-buttons',
             class: 'text-right content-fill text-left-on-grid-view no-wrap tooltip-overflow-fix',
             render: function (status, type, row, meta) {
                 var deviceType = row.deviceType;

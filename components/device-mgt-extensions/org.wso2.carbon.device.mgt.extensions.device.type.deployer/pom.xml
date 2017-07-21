@@ -22,7 +22,7 @@
     <parent>
         <artifactId>device-mgt-extensions</artifactId>
         <groupId>org.wso2.carbon.devicemgt</groupId>
-        <version>3.0.45-SNAPSHOT</version>
+        <version>3.0.45</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 

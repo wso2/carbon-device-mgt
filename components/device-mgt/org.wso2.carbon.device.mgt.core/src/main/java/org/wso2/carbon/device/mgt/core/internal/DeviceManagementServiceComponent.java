@@ -25,7 +25,7 @@ import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManagementException;
 import org.wso2.carbon.device.mgt.common.authorization.DeviceAccessAuthorizationService;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.PlatformConfigurationManagementService;
-import org.wso2.carbon.device.mgt.common.geo.service.GeoService;
+import org.wso2.carbon.device.mgt.common.geo.service.GeoLocationProviderService;
 import org.wso2.carbon.device.mgt.common.group.mgt.GroupManagementException;
 import org.wso2.carbon.device.mgt.common.notification.mgt.NotificationManagementService;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
@@ -45,7 +45,7 @@ import org.wso2.carbon.device.mgt.core.config.datasource.DataSourceConfig;
 import org.wso2.carbon.device.mgt.core.config.tenant.PlatformConfigurationManagementServiceImpl;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.dao.GroupManagementDAOFactory;
-import org.wso2.carbon.device.mgt.core.geo.service.GeoServcieManagerImpl;
+import org.wso2.carbon.device.mgt.core.geo.service.GeoLocationProviderServiceImpl;
 import org.wso2.carbon.device.mgt.core.notification.mgt.NotificationManagementServiceImpl;
 import org.wso2.carbon.device.mgt.core.notification.mgt.dao.NotificationManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.operation.mgt.OperationManagerImpl;
@@ -289,8 +289,8 @@ public class DeviceManagementServiceComponent {
                 deviceAccessAuthorizationService, null);
 
         /* Registering Geo Service */
-        GeoService geoService = new GeoServcieManagerImpl();
-        bundleContext.registerService(GeoService.class.getName(), geoService, null);
+        GeoLocationProviderService geoService = new GeoLocationProviderServiceImpl();
+        bundleContext.registerService(GeoLocationProviderService.class.getName(), geoService, null);
 
 	     /* Registering App Management service */
         try {

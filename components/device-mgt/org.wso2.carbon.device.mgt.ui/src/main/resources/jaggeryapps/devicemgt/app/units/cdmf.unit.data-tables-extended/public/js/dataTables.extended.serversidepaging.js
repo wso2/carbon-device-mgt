@@ -323,13 +323,11 @@ $.fn.datatables_extended_serverside_paging = function (settings, url, dataFilter
                 $('body').on('click', '[data-type=selectable]', function () {
                     var rowSelectedClass = 'DTTT_selected selected';
                     $(this).toggleClass(rowSelectedClass);
-
-                    if($('.table-selectable .DTTT_selected').length > 0){
+                    if ($('.table-selectable .DTTT_selected').length > 0) {
                         $('.bulk-action-row').removeClass('hidden');
-                    }else{
+                    } else {
                         $('.bulk-action-row').addClass('hidden');
                     }
-
                     var button = this,
                         thisTable = $(this).closest('.dataTables_wrapper').find('.dataTable').dataTable();
 

@@ -531,9 +531,9 @@
 
         <div id="dateRangePopup">
             <div>
-                <label> From: <input id="timeFrom" type="text"> </label>
-                <label> To: <input id="timeTo" type="text"> </label>
-                <button type="button" class="btn btn-info btn-xs" onClick="focusOnHistorySpatialObject(document.getElementById('objectId').innerHTML, document.getElementById('timeFrom').value, document.getElementById('timeTo').value);return false;">Full History</button>
+                <label> From: <input id="timeFromCal" type="text"> </label>
+                <label> To: <input id="timeToCal" type="text"> </label>
+                <button type="button" class="btn btn-info btn-xs" onClick="focusOnHistorySpatialObject(document.getElementById('objectId').innerHTML, document.getElementById('timeFromCal').value, document.getElementById('timeToCal').value);return false;">Full History</button>
             </div>
         </div>
 
@@ -707,7 +707,7 @@
     {{js "js/leaflet/Leaflet.fullscreen.min.js" }}
     {{js "js/leaflet/Marker.Rotate.js" }}
     {{js "js/leaflet/leaflet.draw.js" }}
-    {{js "js/jquery/jquery-ui.min.js" }}
+    {{!js "js/jquery/jquery-ui.min.js" }}
     <!-- Leaflet plugins libries -->
 
     {{js "js/firstTemp.js" }}
@@ -749,6 +749,10 @@
                                           'Add Geofence Exit Alert', 'glyphicon glyphicon-log-out', geoToolsMenu);
                 {{/if}}
             }
+
+            $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+                $('#dateRangePopup').dialog('close');
+            })
         });
     </script>
 {{/zone}}

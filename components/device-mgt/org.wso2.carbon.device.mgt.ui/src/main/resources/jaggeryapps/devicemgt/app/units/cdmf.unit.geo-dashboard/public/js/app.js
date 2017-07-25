@@ -254,7 +254,7 @@ function focusOnSpatialObject(objectId) {
     // TODO: check the map._layersMaxZoom and set the zoom level accordingly
 
     spatialObject.marker.openPopup();
-    getAlertsHistory(deviceType, deviceId, new Date($('#timeFrom').val()).getTime(), new Date($('#timeTo').val()).getTime());
+    getAlertsHistory(deviceType, deviceId, new Date($('#timeFromCal').val()).getTime(), new Date($('#timeToCal').val()).getTime());
     spatialObject.drawPath();
     if (speedGraphControl) {
         setTimeout(function () {
@@ -504,7 +504,7 @@ function focusOnHistorySpatialObject(objectId, timeFrom, timeTo) {
         // TODO: check the map._layersMaxZoom and set the zoom level accordingly
 
         spatialObject.marker.openPopup();
-        getAlertsHistory(deviceType, deviceId, new Date($('#timeFrom').val()).getTime(), new Date($('#timeTo').val()).getTime());
+        getAlertsHistory(deviceType, deviceId, new Date($('#timeFromCal').val()).getTime(), new Date($('#timeToCal').val()).getTime());
         spatialObject.drawPath();
         if (speedGraphControl) {
             setTimeout(function () {

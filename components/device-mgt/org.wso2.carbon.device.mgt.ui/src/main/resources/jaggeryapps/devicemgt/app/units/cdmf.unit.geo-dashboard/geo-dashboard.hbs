@@ -530,11 +530,21 @@
         </div>
 
         <div id="dateRangePopup">
-            <div>
-                <label> From: <input id="timeFromCal" type="text"> </label>
-                <label> To: <input id="timeToCal" type="text"> </label>
-                <button type="button" class="btn btn-info btn-xs" onClick="focusOnHistorySpatialObject(document.getElementById('objectId').innerHTML, document.getElementById('timeFromCal').value, document.getElementById('timeToCal').value);return false;">Full History</button>
+            <div class="form-horizontal">
+                <div class="form-group">
+                    <label class="col-sm-3">From:</label>
+                    <div class="col-sm-9">
+                        <input id="timeFromCal" type="text">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-3">To:</label>
+                    <div class="col-sm-9">
+                        <input id="timeToCal" type="text">
+                    </div>
+                </div>
             </div>
+            <button type="button" class="btn btn-info btn-xs" onClick="focusOnHistorySpatialObject(document.getElementById('objectId').innerHTML, document.getElementById('timeFromCal').value, document.getElementById('timeToCal').value);return false;">Full History</button>
         </div>
 
         <div id="markerPopupStop" class="popover top">

@@ -266,3 +266,31 @@ header .username {
 .add-padding-top-3x {
     padding-top: 15px !important;
 }
+
+.op-disabled, .op-disabled i, .op-disabled span {
+    cursor: not-allowed;
+    color: #d2d2d2;
+}
+
+ul#noty_topRight_layout_container li{
+    margin-bottom: 10px;
+}
+
+.list-group-item.active > .list-group{
+    display: block;
+    margin-bottom: 0px;
+}
+
+.list-group-item.active > .list-group > .list-group-item > a{
+    background: none;
+}
+
+.list-group-item.active > .list-group > .list-group-item > a:active,
+.list-group-item.active > .list-group > .list-group-item > a:focus,
+.list-group-item.active > .list-group > .list-group-item > a:hover{
+    color : whitesmoke;
+}
+
+a.new-notification {
+    text-transform: capitalize;
+}

@@ -1,0 +1,349 @@
+.operation-icon{
+	width: 88px;
+	height: 100px;
+	background-color: #ebebeb;
+	float: left;
+	margin: 0px 10px 10px 0px;
+	cursor: pointer;
+	position: relative;
+}
+
+.operation-icon i{
+    padding: 15px 0px 0px 0px;
+    display: block;
+    min-height: 65px;
+		font-size: 3em !important;
+    margin: 0px !important;
+}
+
+.operation-icon span{
+	height: 35px;
+    line-height: 15px;
+    vertical-align: middle;
+    display: table-cell;
+    width: inherit;
+}
+
+.application{
+	width: 250px;
+	height: 100px;
+	background-color: #ebebeb;
+	float: left;
+	margin: 0px 10px 10px 0px;
+}
+
+.application img{
+    height: inherit;
+    padding: 10px;
+    float: left;
+}
+
+.app-info h4{
+    margin-bottom: 0px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.application i{
+	float: right;
+    margin: 0px 10px;
+    position: relative;
+    bottom: -20px;
+	cursor: pointer;
+}
+
+.nav-tabs>li>a{
+	color: #333;
+}
+.nav-tabs>li.active>a, .nav-tabs>li.active>a:focus, .nav-tabs>li.active>a:hover{
+	border-bottom: 2px solid #37474f;
+	border-right: none;
+	border-top: none;
+	border-left: none;
+    font-weight: 400;
+}
+.nav-tabs-selector{
+    margin: 0px;
+    border: 1px solid #37474f;
+}
+
+.tab-pane{
+	padding: 20px 0px;
+}
+
+.page-loader{
+	position: absolute;
+    left: 0px;
+    top: 0px;
+    width: 100%;
+    height: calc(100vh - 160px);
+    z-index: 9999;
+    background: url(images/page-loader.gif) 50% 50% no-repeat rgb(249,249,249);
+}
+
+.page-loader .loader{
+    left: 43%;
+    position: absolute;
+    bottom: 50%;
+    width: 13%;
+}
+
+.page-loader .loader span{
+    padding: 9px;
+    position: absolute;
+    font-size: 18px;
+}
+
+.device-info-container{
+    margin-bottom: 40px;
+}
+.device-type{
+    font-size: 9em;
+}
+.device-info h1, .device-info h4:not(:last-child){
+    margin: 0px 0px 9px 0px;
+    position: relative;
+    width: 100%;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+.device-id a{
+    font-size: 0.4em;
+    position: absolute;
+    margin: 0px 5px;
+    right: -5px;
+}
+.device-info h4:last-child{
+	margin: 0px;
+}
+.tab-actions{
+    position: relative;
+}
+.tab-actions .action-btn{
+	padding: 10px 15px;
+    background-color: #ebebeb;
+    float: right;
+    cursor: pointer;
+    position: relative;
+    margin-left: 10px;
+    ma
+}
+.tab-actions .action{
+    float: right;
+    margin-left: 10px;
+}
+.tab-actions .action-btn.show a{
+    margin: 0 0 10px;
+}
+.tab-actions .action-btn a{
+    margin: 0px;
+}
+.tab-actions {
+	margin: 0px;
+}
+.tab-actions .action-prop{
+    padding: 10px;
+    background: #ebebeb;
+    width: 100%;
+    margin-bottom: 10px;
+}
+.tab-action-active{
+    padding-bottom: 15px !important;
+}
+.action-btn-container:after{
+    content: '';
+    display: block;
+    clear:both;
+}
+.input-group .fw{
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 100;
+}
+
+.vital-strip{
+    display: flex;
+    flex-direction: row;
+    background-color: #ebebeb;
+    padding: 10px;
+    margin-bottom: 40px;
+}
+.vital-strip p{
+    flex-grow: 1;
+    margin: 0px;
+    display: inline-flex;
+}
+.vital-strip p i{
+	margin: 0px 10px;
+}
+.vital-strip p span{
+    padding: 5px 0px;
+}
+.memory-amt{
+	font-size: 0.8em;
+    position: relative;
+    bottom: -3px;
+    padding-left: 2px !important;
+}
+
+.policy-item{
+	display: flex;
+    flex-direction: row;
+    padding: 10px;
+    background-color: #ebebeb;
+}
+.policy-item .policy-status, .policy-item p{
+	flex-grow: 1;
+}
+.policy-item .policy-status{
+    flex-grow: 1;
+    flex-basis: 0;
+    margin-right: 10px;
+    align-self: center;
+    color: #5cb85c;
+}
+.policy-name{
+    font-size: 1.5em;
+    display: flex;
+}
+.policy-platform{
+    display: flex;
+}
+.policy-item p:nth-child(2){
+    margin: 0px;
+}
+.policy-item p:nth-child(3){
+	flex-grow: 7;
+    align-self: center;
+    margin: 0px;
+}
+.policy-item p:nth-child(3) span{
+    display: flex;
+}
+.policy-item .actions{
+	flex-grow: 1;
+    display: flex;
+}
+.policy-item .action-btn{
+    flex-grow: 1;
+    margin: 3px 5px;
+    background-color: #ccc;
+    display: flex;
+    cursor: pointer;
+    position: relative;
+}
+.policy-item .action-btn p{
+    align-self: center;
+    margin: 0px;
+    display: flex;
+    justify-content: center;
+}
+.policy-item .action-btn p i{
+    padding: 0px 5px;
+}
+.policy-item .action-btn span{
+    align-self: center;
+}
+
+
+#operation-log tr td{
+    border-bottom: 15px solid #fff !important;
+}
+#operation-log tr.shown td{
+    border-bottom: none !important;
+}
+.log-data-row td{
+    padding: 0px !important;
+    border-bottom: 15px solid #fff !important;
+}
+.log-data{
+    background-color: #f6f6f6;
+    padding: 0px 20px;
+}
+.log-data:after{
+    content: '';
+    width: 0;
+    height: 100%;
+    position: absolute;
+    border: 1px solid #ced8db;
+    top: 0;
+    left: 50px;
+}
+.log-record-status{
+    background-color: #4c4c4c !important;
+    color: #fff;
+    cursor: pointer;
+    user-select: none;
+}
+.log-record-status i:first-child{
+    float: left;
+    line-height: 19px;
+    padding: 0px 10px 0px 0px;
+}
+.log-record-status span{
+    float: left;
+    line-height: 17px;
+}
+.log-status{
+    padding-left: 14px;
+    z-index: 10;
+    position: relative;
+}
+.log-status i{
+    margin: 0px 10px;
+    background-color: #f6f6f6;
+    border-radius: 20px;
+}
+.log-entry{
+   padding: 15px 0px;
+}
+.log-entry:not(:first-child){
+    padding-top: 0px;
+}
+
+
+/*
+ * custom css fixes
+ */
+
+.page-content-wrapper, .page-content-wrapper[data-container-behaviour=static]{
+	min-height: calc(100vh - 123px);
+}
+
+.content{
+	/*opacity: 0;*/
+}
+
+.content-wrapper{
+	position: relative;
+}
+
+.dataTablesTop{
+	display: none;
+}
+
+.table.list-table:not(.grid-view)>tbody>tr>td, .table.list-table:not(.grid-view)>tbody>tr>th{
+    background-color: #eaeaea;
+}
+.table.table-hover>tbody>tr:hover td:not(.dataTables_empty){
+    background-color: inherit !important;
+}
+.table-hover>tbody>tr:hover,{
+    background-color:
+}
+.table.list-table>tbody>tr:nth-of-type(even), .table.list-table>tbody>tr:nth-of-type(odd){
+    background-color: #eaeaea;
+}
+.table.table-hover>tbody>tr:hover td:not(.dataTables_empty){
+    background-color: inherit !important;
+}
+.table.table-hover>tbody>tr:hover td.log-record-status{
+    background-color: #4c4c4c !important;
+}
+
+.tab-content{
+	border:none;
+}

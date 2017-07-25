@@ -28,7 +28,7 @@ import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.utils.ConfigurationContextService;
 
 /**
- * @scr.component name="org.wso2.carbon.device.mgt.iot.internal.DeviceTypeManagementServiceComponent"
+ * @scr.component name="org.wso2.carbon.device.mgt.iot.internal.DeviceTypeExtensionServiceComponent"
  * immediate="true"
  * @scr.reference name="config.context.service"
  * interface="org.wso2.carbon.utils.ConfigurationContextService"

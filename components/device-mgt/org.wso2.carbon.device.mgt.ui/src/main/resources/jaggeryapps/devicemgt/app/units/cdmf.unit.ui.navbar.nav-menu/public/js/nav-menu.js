@@ -37,7 +37,7 @@ function setPopupMaxHeight() {
  * show popup function.
  */
 function showPopup() {
-    $(modalPopup).modal('show');
+    $(modalPopup).first().modal('show');
 }
 
 /*
@@ -98,6 +98,7 @@ function loadNewNotifications() {
                     var responsePayload = JSON.parse(data);
 
                     if (responsePayload.notifications) {
+                        viewModel.context = context;
                         viewModel.notifications = responsePayload.notifications;
                         if (responsePayload.count > 0) {
                             $(messageSideBar).html(template(viewModel));
@@ -427,7 +428,7 @@ $(document).ready(function () {
     $("#right-sidebar").on("click", ".new-notification", function () {
         var notificationId = $(this).data("id");
         var redirectUrl = $(this).data("url");
-        var markAsReadNotificationsAPI = "/mdm-admin/notifications/" + notificationId + "/CHECKED";
+        var markAsReadNotificationsAPI = "/api/device-mgt/v1.0/notifications/" + notificationId + "/mark-checked";
         var messageSideBar = ".sidebar-messages";
 
         invokerUtil.put(
@@ -468,7 +469,7 @@ function statisticLoad(redirectUrl) {
 			window.location.href = redirectUrl;
 		},
 		error: function() {
-			var urix = backendEndBasePath + "/admin/devicetype/deploy/device_management";
+			var urix = backendEndBasePath + "/admin/publish-artifact/deploy/device_management";
 			var device = {};
 			invokerUtil.post(urix, device, function (data) {
 				title.html("Deploying statistic artifacts. Please wait...");

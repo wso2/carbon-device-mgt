@@ -167,6 +167,19 @@ if (!user) {
         }else {
             response.sendError(403);
         }
+    } else if (uriMatcher.match("/{context}/api/devices/agent/{type}/{deviceId}/config")) {
+        elements = uriMatcher.elements();
+        deviceId = elements.deviceId;
+        type = elements.type;
+        operation = elements.operation;
+        if (userModule.isAuthorized("/permission/admin/device-mgt/devices/owning-device")) {
+            result = deviceModule.getDeviceAgentConfig(type, deviceId);
+            if (!result) {
+                response.sendError(500);
+            }
+        } else {
+            response.sendError(403);
+        }
     } else if (uriMatcher.match("{context}/api/devices/{type}/{deviceId}/{operation}")) {
         elements = uriMatcher.elements();
         deviceId = elements.deviceId;

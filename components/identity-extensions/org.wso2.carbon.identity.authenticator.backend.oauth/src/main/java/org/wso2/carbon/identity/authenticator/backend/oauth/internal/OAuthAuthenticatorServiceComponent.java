@@ -44,14 +44,6 @@ public class OAuthAuthenticatorServiceComponent {
         if (log.isDebugEnabled()) {
             log.debug("Starting Backend OAuthAuthenticator Framework Bundle");
         }
-        try {
-             /* Registering BackendOAuthAuthenticator Service */
-            BundleContext bundleContext = componentContext.getBundleContext();
-            OauthAuthenticator oAuthAuthenticator = new OauthAuthenticator();
-            bundleContext.registerService(CarbonServerAuthenticator.class.getName(), oAuthAuthenticator, null);
-        } catch (Throwable e) {
-            log.error("Error occurred while initializing the bundle", e);
-        }
     }
 
     @SuppressWarnings("unused")

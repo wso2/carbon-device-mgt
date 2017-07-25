@@ -35,7 +35,7 @@
             }
         </style>
         {{#each control_operations}}
-            <a href="javascript:operationSelect('{{operation}}')">
+            <a class='operation-tile' href="javascript:operationSelect('{{operation}}')">
                 {{#if iconFont}}
                     <i class="fw {{iconFont}}"></i>
                 {{else}}
@@ -79,6 +79,11 @@
                                     <input type="{{type}}" id="{{name}}" placeholder="{{name}}" class="form-control" data-param-type="query" value="{{value}}" />
                                     <br />
                                 {{/each}}
+                                {{#each uiParams}}
+                                    <input type="{{type}}" id="{{id}}" name="{{name}}" data-param-type="form" value="{{value}}" />
+                                    <label>{{label}}</label>
+                                    <br />
+                                {{/each}}
                                 <button id="btnSend" type="button" onclick="submitForm('form-{{operation}}')" class="btn btn-default">&nbsp;&nbsp;&nbsp;&nbsp;Send
                                                        to Device&nbsp;&nbsp;&nbsp;&nbsp;</button>
                                 <label id="lblSending" class="wr-input-label hidden"><i
@@ -104,7 +109,7 @@
         <div class="row">
             <div class="col-lg-5 col-md-6 col-centered">
                 <h3>
-                    <span class="fw-stack">
+                    <span class="fw-stack center-block">
                         <i class="fw fw-circle-outline fw-stack-2x"></i>
                         <i id="status-icon" class="fw fw-error fw-stack-1x"></i>
                     </span>

@@ -21,7 +21,7 @@
     <parent>
         <artifactId>device-mgt</artifactId>
         <groupId>org.wso2.carbon.devicemgt</groupId>
-        <version>2.0.63-SNAPSHOT</version>
+        <version>3.0.46-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -50,6 +50,7 @@
                         <Import-Package>
                             javax.xml.bind.annotation; version="${javax.xml.bind.imp.pkg.version}",
                             com.fasterxml.jackson.annotation;version="${jackson-annotations.version}",
+                            org.wso2.carbon.analytics.datasource.commons;version="${carbon.analytics.version.range}",
                             io.swagger.annotations; version="${swagger.annotations.version}"; resolution:=optional
                         </Import-Package>
                     </instructions>
@@ -67,6 +68,14 @@
         <dependency>
             <groupId>org.wso2.orbit.com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-annotations</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.analytics</groupId>
+            <artifactId>org.wso2.carbon.analytics.api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.analytics</groupId>
+            <artifactId>org.wso2.carbon.analytics.datasource.commons</artifactId>
         </dependency>
     </dependencies>
 

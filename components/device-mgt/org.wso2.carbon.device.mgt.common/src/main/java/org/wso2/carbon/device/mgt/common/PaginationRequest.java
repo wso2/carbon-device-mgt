@@ -29,6 +29,7 @@ public class PaginationRequest {
     private int rowCount;
     private int groupId;
     private String owner;
+    private String ownerPattern;
     private String status;
     private String deviceType;
     private String deviceName;
@@ -119,5 +120,13 @@ public class PaginationRequest {
 
     public void setOwnerRole(String ownerRole) {
         this.ownerRole = ownerRole;
+    }
+
+    public String getOwnerPattern() {
+        return ownerPattern;
+    }
+
+    public void setOwnerPattern(String ownerPattern) {
+        this.ownerPattern = ownerPattern;
     }
 }

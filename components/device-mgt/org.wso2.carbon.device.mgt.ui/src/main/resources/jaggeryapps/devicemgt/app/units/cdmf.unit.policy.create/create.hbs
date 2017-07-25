@@ -1,7 +1,7 @@
 {{#zone "content"}}
     {{#if isAuthorized}}
         <span id="logged-in-user" class="hidden" data-username="{{@user.username}}" data-domain="{{@user.domain}}"
-              data-tenant-id="{{@user.tenantId}}" data-iscloud="{{isCloud}}"></span>
+              data-tenant-id="{{@user.tenantId}}" data-iscloud="{{isCloud}}" data-isDeviceOwnerEnabled="{{isDeviceOwnerEnabled}}"></span>
         <div class="row">
             <div class="col-md-12">
 
@@ -196,11 +196,11 @@
                                             </div>
                                         </div>
                                     {{/if}}
-                                    <br>
-                                    <label class="wr-input-label" title="">
+                                    <!--<br>-->
+                                    <label class="wr-input-label" title="" style="display: none;">
                                         Set an action upon non-compliance
                                     </label>
-                                    <div class="wr-input-control">
+                                    <div class="wr-input-control" style="display: none;">
                                         <div class="cus-col-50">
                                             <!--suppress HtmlFormInputWithoutLabel -->
                                             <select id="action-input" class="form-control">
@@ -209,7 +209,7 @@
                                                 <option data-action="monitor">Monitor</option>
                                             </select>
                                         </div>
-                                        <br class="c-both"/>
+                                        <!--<br class="c-both"/>-->
                                     </div>
                                 </div>
                                 <div class="wr-input-control wr-btn-grp">

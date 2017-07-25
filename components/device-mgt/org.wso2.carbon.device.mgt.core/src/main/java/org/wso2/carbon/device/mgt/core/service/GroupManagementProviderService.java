@@ -212,4 +212,12 @@ public interface GroupManagementProviderService {
      */
     List<DeviceGroup> getGroups(DeviceIdentifier deviceIdentifier) throws GroupManagementException;
 
+    /**
+     * Checks for the default group existence and create group based on device ownership.
+     * @param groupName
+     * @return
+     * @throws GroupManagementException
+     */
+    DeviceGroup createDefaultGroup(String groupName) throws GroupManagementException;
+
 }

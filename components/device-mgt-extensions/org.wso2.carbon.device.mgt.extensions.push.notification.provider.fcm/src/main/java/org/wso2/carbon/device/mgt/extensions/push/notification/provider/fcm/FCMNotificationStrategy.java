@@ -57,7 +57,7 @@ public class FCMNotificationStrategy implements NotificationStrategy {
     public void execute(NotificationContext ctx) throws PushNotificationExecutionFailedException {
         try {
             Device device =
-                    FCMDataHolder.getInstance().getDeviceManagementProviderService().getDevice(ctx.getDeviceId());
+                    FCMDataHolder.getInstance().getDeviceManagementProviderService().getDeviceWithTypeProperties(ctx.getDeviceId());
             this.sendWakeUpCall(ctx.getOperation().getCode(), device);
         } catch (DeviceManagementException e) {
             throw new PushNotificationExecutionFailedException("Error occurred while retrieving device information", e);

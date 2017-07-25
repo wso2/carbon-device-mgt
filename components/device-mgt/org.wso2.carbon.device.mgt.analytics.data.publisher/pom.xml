@@ -22,7 +22,7 @@
     <parent>
         <groupId>org.wso2.carbon.devicemgt</groupId>
         <artifactId>device-mgt</artifactId>
-        <version>2.0.63-SNAPSHOT</version>
+        <version>3.0.46-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -65,10 +65,6 @@
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.utils</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon.devicemgt</groupId>
-            <artifactId>org.wso2.carbon.device.mgt.core</artifactId>
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon.analytics-common</groupId>
@@ -118,6 +114,7 @@
                             org.osgi.framework,
                             org.osgi.service.component,
                             org.apache.commons.logging.*,
+                            org.wso2.carbon.utils.multitenancy,
                             org.wso2.carbon.context;version="${carbon.kernel.version.range}",
                             org.wso2.carbon.utils;version="${carbon.kernel.version.range}",
                             org.wso2.carbon.databridge.*;version="${carbon.analytics.common.version.range}",
@@ -126,14 +123,15 @@
                             org.wso2.carbon.registry.indexing.*; version="${carbon.registry.imp.pkg.version.range}",
                             org.json;version="${commons-json.version}",
                             javax.xml.*,
-			    javax.xml.parsers;version="${javax.xml.parsers.import.pkg.version}";resolution:=optional,
+                            javax.xml.parsers;version="${javax.xml.parsers.import.pkg.version}";resolution:=optional,
                             org.w3c.dom,
-                            org.wso2.carbon.base
+                            org.wso2.carbon.base,
+							org.wso2.carbon.utils.multitenancy
                         </Import-Package>
                     </instructions>
                 </configuration>
             </plugin>
         </plugins>
     </build>
-    
+
 </project>

@@ -128,7 +128,7 @@ public class PolicyManagementServiceImpl implements PolicyManagementService {
         List<DeviceIdentifier> deviceIdentifiers = policyWrapper.getDeviceIdentifiers();
         if (deviceIdentifiers != null) {
             for (DeviceIdentifier id : deviceIdentifiers) {
-                devices.add(DeviceMgtAPIUtils.getDeviceManagementService().getDevice(id));
+                devices.add(DeviceMgtAPIUtils.getDeviceManagementService().getDevice(id, false));
             }
         }
         policy.setDevices(devices);
@@ -345,11 +345,11 @@ public class PolicyManagementServiceImpl implements PolicyManagementService {
     public Response updatePolicyPriorities(List<PriorityUpdatedPolicyWrapper> priorityUpdatedPolicies) {
         PolicyManagerService policyManagementService = DeviceMgtAPIUtils.getPolicyManagementService();
         List<Policy> policiesToUpdate = new ArrayList<>(priorityUpdatedPolicies.size());
-        int i;
-        for (i = 0; i < priorityUpdatedPolicies.size(); i++) {
+
+        for (PriorityUpdatedPolicyWrapper priorityUpdatedPolicy : priorityUpdatedPolicies) {
             Policy policyObj = new Policy();
-            policyObj.setId(priorityUpdatedPolicies.get(i).getId());
-            policyObj.setPriorityId(priorityUpdatedPolicies.get(i).getPriority());
+            policyObj.setId(priorityUpdatedPolicy.getId());
+            policyObj.setPriorityId(priorityUpdatedPolicy.getPriority());
             policiesToUpdate.add(policyObj);
         }
         boolean policiesUpdated;

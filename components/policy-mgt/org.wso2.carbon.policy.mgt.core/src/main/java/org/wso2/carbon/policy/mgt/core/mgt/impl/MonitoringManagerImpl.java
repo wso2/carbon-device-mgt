@@ -59,8 +59,7 @@ public class MonitoringManagerImpl implements MonitoringManager {
 
     private static final Log log = LogFactory.getLog(MonitoringManagerImpl.class);
     private static final String OPERATION_MONITOR = "MONITOR";
-    private static final String OPERATION_INFO = "DEVICE_INFO";
-    private static final String OPERATION_APP_LIST = "APPLICATION_LIST";
+
 
     public MonitoringManagerImpl() {
         this.policyDAO = PolicyManagementDAOFactory.getPolicyDAO();
@@ -80,7 +79,7 @@ public class MonitoringManagerImpl implements MonitoringManager {
             DeviceManagementProviderService service =
                     PolicyManagementDataHolder.getInstance().getDeviceManagementService();
             PolicyManager manager = PolicyManagementDataHolder.getInstance().getPolicyManager();
-            Device device = service.getDevice(deviceIdentifier);
+            Device device = service.getDevice(deviceIdentifier, false);
             Policy policy = manager.getAppliedPolicyToDevice(deviceIdentifier);
             if (policy != null) {
                 PolicyMonitoringManager monitoringService = PolicyManagementDataHolder.getInstance().
@@ -178,7 +177,7 @@ public class MonitoringManagerImpl implements MonitoringManager {
         try {
             DeviceManagementProviderService service =
                     PolicyManagementDataHolder.getInstance().getDeviceManagementService();
-            Device device = service.getDevice(deviceIdentifier);
+            Device device = service.getDevice(deviceIdentifier, false);
             PolicyManagementDAOFactory.openConnection();
             NonComplianceData complianceData = monitoringDAO.getCompliance(device.getId(), device.getEnrolmentInfo()
                                                                                               .getId());
@@ -208,7 +207,7 @@ public class MonitoringManagerImpl implements MonitoringManager {
             PolicyManagementDAOFactory.openConnection();
             DeviceManagementProviderService service =
                     PolicyManagementDataHolder.getInstance().getDeviceManagementService();
-            Device device = service.getDevice(deviceIdentifier);
+            Device device = service.getDevice(deviceIdentifier, false);
             complianceData = monitoringDAO.getCompliance(device.getId(), device.getEnrolmentInfo().getId());
             List<ComplianceFeature> complianceFeatures =
                     monitoringDAO.getNoneComplianceFeatures(complianceData.getId());
@@ -273,9 +272,6 @@ public class MonitoringManagerImpl implements MonitoringManager {
 
         Map<Integer, Device> deviceIdsToAddOperation = new HashMap<>();
         Map<Integer, Device> deviceIdsWithExistingOperation = new HashMap<>();
-        Map<Integer, Device> inactiveDeviceIds = new HashMap<>();
-        Map<Integer, Device> devicesToMarkUnreachable = new HashMap<>();
-        //Map<Integer, Integer> firstTimeDeviceIdsWithPolicyIds = new HashMap<>();
 
         List<PolicyDeviceWrapper> firstTimeDevices = new ArrayList<>();
 
@@ -293,14 +289,6 @@ public class MonitoringManagerImpl implements MonitoringManager {
                     } else {
                         deviceIdsWithExistingOperation.put(complianceData.getDeviceId(),
                                                            deviceIds.get(complianceData.getDeviceId()));
-                        if (complianceData.getAttempts() >= policyConfiguration.getMinRetriesToMarkUnreachable()) {
-                            devicesToMarkUnreachable.put(complianceData.getDeviceId(),
-                                                        deviceIds.get(complianceData.getDeviceId()));
-                        }
-                    }
-                    if (complianceData.getAttempts() >= policyConfiguration.getMinRetriesToMarkInactive()) {
-                        inactiveDeviceIds.put(complianceData.getDeviceId(),
-                                              deviceIds.get(complianceData.getDeviceId()));
                     }
                 }
             }
@@ -360,22 +348,6 @@ public class MonitoringManagerImpl implements MonitoringManager {
                 throw new PolicyComplianceException("Error occurred while adding monitoring operation to devices", e);
             }
         }
-
-        // TODO : This should be uncommented, this is to mark the device as unreachable, But given the current
-        // implementation we are not able to do so.
-
-        if (!devicesToMarkUnreachable.isEmpty()) {
-            ComplianceDecisionPoint decisionPoint = new ComplianceDecisionPointImpl();
-            decisionPoint.setDevicesAsUnreachable(this.getDeviceIdentifiersFromDevices(
-                    new ArrayList<>(devicesToMarkUnreachable.values())));
-        }
-
-        if (!inactiveDeviceIds.isEmpty()) {
-            ComplianceDecisionPoint decisionPoint = new ComplianceDecisionPointImpl();
-            decisionPoint.setDevicesAsInactive(this.getDeviceIdentifiersFromDevices(
-                    new ArrayList<>(inactiveDeviceIds.values())));
-        }
-
     }
 
     @Override

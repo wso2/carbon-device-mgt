@@ -18,17 +18,19 @@
  */
 package org.wso2.carbon.device.mgt.jaxrs.service.impl;
 
-import io.swagger.annotations.ApiParam;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
+import org.wso2.carbon.device.mgt.common.DeviceManagementConstants;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
 import org.wso2.carbon.device.mgt.common.Feature;
 import org.wso2.carbon.device.mgt.common.FeatureManager;
+import org.wso2.carbon.device.mgt.common.InvalidConfigurationException;
+import org.wso2.carbon.device.mgt.common.InvalidDeviceException;
 import org.wso2.carbon.device.mgt.common.PaginationRequest;
 import org.wso2.carbon.device.mgt.common.PaginationResult;
 import org.wso2.carbon.device.mgt.common.app.mgt.Application;
@@ -36,6 +38,7 @@ import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManagementException;
 import org.wso2.carbon.device.mgt.common.authorization.DeviceAccessAuthorizationException;
 import org.wso2.carbon.device.mgt.common.authorization.DeviceAccessAuthorizationService;
 import org.wso2.carbon.device.mgt.common.device.details.DeviceLocation;
+import org.wso2.carbon.device.mgt.common.operation.mgt.Activity;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
 import org.wso2.carbon.device.mgt.common.policy.mgt.Policy;
@@ -45,6 +48,8 @@ import org.wso2.carbon.device.mgt.common.search.SearchContext;
 import org.wso2.carbon.device.mgt.core.app.mgt.ApplicationManagementProviderService;
 import org.wso2.carbon.device.mgt.core.device.details.mgt.DeviceDetailsMgtException;
 import org.wso2.carbon.device.mgt.core.device.details.mgt.DeviceInformationManager;
+import org.wso2.carbon.device.mgt.core.operation.mgt.CommandOperation;
+import org.wso2.carbon.device.mgt.core.operation.mgt.ConfigOperation;
 import org.wso2.carbon.device.mgt.core.search.mgt.SearchManagerService;
 import org.wso2.carbon.device.mgt.core.search.mgt.SearchMgtException;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
@@ -52,6 +57,7 @@ import org.wso2.carbon.device.mgt.jaxrs.beans.DeviceCompliance;
 import org.wso2.carbon.device.mgt.jaxrs.beans.DeviceList;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
 import org.wso2.carbon.device.mgt.jaxrs.beans.OperationList;
+import org.wso2.carbon.device.mgt.jaxrs.beans.OperationRequest;
 import org.wso2.carbon.device.mgt.jaxrs.service.api.DeviceManagementService;
 import org.wso2.carbon.device.mgt.jaxrs.service.impl.util.RequestValidationUtil;
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
@@ -59,6 +65,8 @@ import org.wso2.carbon.policy.mgt.common.PolicyManagementException;
 import org.wso2.carbon.policy.mgt.core.PolicyManagerService;
 import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 
+import javax.security.auth.login.Configuration;
+import javax.validation.Valid;
 import javax.validation.constraints.Size;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -84,6 +92,27 @@ import java.util.List;
 public class DeviceManagementServiceImpl implements DeviceManagementService {
 
     private static final Log log = LogFactory.getLog(DeviceManagementServiceImpl.class);
+    public static final String DATE_FORMAT_NOW = "yyyy-MM-dd HH:mm:ss";
+
+    @GET
+    @Path("/{type}/{id}/status")
+    @Override
+    public Response isEnrolled(@PathParam("type") String type, @PathParam("id") String id) {
+        boolean result;
+        DeviceIdentifier deviceIdentifier = new DeviceIdentifier(id, type);
+        try {
+            result = DeviceMgtAPIUtils.getDeviceManagementService().isEnrolled(deviceIdentifier);
+            if (result) {
+                return Response.status(Response.Status.OK).build();
+            } else {
+                return Response.status(Response.Status.NO_CONTENT).build();
+            }
+        } catch (DeviceManagementException e) {
+            String msg = "Error occurred while checking enrollment status of the device.";
+            log.error(msg, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
+        }
+    }
 
     @GET
     @Override
@@ -91,12 +120,14 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
             @QueryParam("name") String name,
             @QueryParam("type") String type,
             @QueryParam("user") String user,
+            @QueryParam("userPattern") String userPattern,
             @QueryParam("role") String role,
             @QueryParam("ownership") String ownership,
             @QueryParam("status") String status,
             @QueryParam("groupId") int groupId,
             @QueryParam("since") String since,
             @HeaderParam("If-Modified-Since") String ifModifiedSince,
+            @QueryParam("requireDeviceInfo") boolean requireDeviceInfo,
             @QueryParam("offset") int offset,
             @QueryParam("limit") int limit) {
         try {
@@ -126,9 +157,6 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
             if (type != null && !type.isEmpty()) {
                 request.setDeviceType(type);
             }
-            if (user != null && !user.isEmpty()) {
-                request.setOwner(user);
-            }
             if (ownership != null && !ownership.isEmpty()) {
                 RequestValidationUtil.validateOwnershipType(ownership);
                 request.setOwnership(ownership);
@@ -151,6 +179,8 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
             if (deviceAccessAuthorizationService.isDeviceAdminUser()) {
                 if (user != null && !user.isEmpty()) {
                     request.setOwner(MultitenantUtils.getTenantAwareUsername(user));
+                } else if (userPattern != null && !userPattern.isEmpty()) {
+                    request.setOwnerPattern(userPattern);
                 }
             } else {
                 if (user != null && !user.isEmpty()) {
@@ -180,7 +210,12 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
                                     "string is provided in 'If-Modified-Since' header").build()).build();
                 }
                 request.setSince(sinceDate);
-                result = dms.getAllDevices(request);
+                if (requireDeviceInfo) {
+                    result = dms.getAllDevices(request);
+                } else {
+                    result = dms.getAllDevices(request, false);
+                }
+
                 if (result == null || result.getData() == null || result.getData().size() <= 0) {
                     return Response.status(Response.Status.NOT_MODIFIED).entity("No device is modified " +
                             "after the timestamp provided in 'If-Modified-Since' header").build();
@@ -196,14 +231,22 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
                                     "string is provided in 'since' filter").build()).build();
                 }
                 request.setSince(sinceDate);
-                result = dms.getAllDevices(request);
+                if (requireDeviceInfo) {
+                    result = dms.getAllDevices(request);
+                } else {
+                    result = dms.getAllDevices(request, false);
+                }
                 if (result == null || result.getData() == null || result.getData().size() <= 0) {
                     devices.setList(new ArrayList<Device>());
                     devices.setCount(0);
                     return Response.status(Response.Status.OK).entity(devices).build();
                 }
             } else {
-                result = dms.getAllDevices(request);
+                if (requireDeviceInfo) {
+                    result = dms.getAllDevices(request);
+                } else {
+                    result = dms.getAllDevices(request, false);
+                }
                 int resultCount = result.getRecordsTotal();
                 if (resultCount == 0) {
                     Response.status(Response.Status.OK).entity(devices).build();
@@ -229,7 +272,8 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
     @GET
     @Override
     @Path("/user-devices")
-    public Response getDeviceByUser(@QueryParam("offset") int offset,
+    public Response getDeviceByUser(@QueryParam("requireDeviceInfo") boolean requireDeviceInfo,
+                                    @QueryParam("offset") int offset,
                                     @QueryParam("limit") int limit) {
 
         RequestValidationUtil.validatePaginationParameters(offset, limit);
@@ -241,7 +285,11 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
         request.setOwner(currentUser);
 
         try {
-            result = DeviceMgtAPIUtils.getDeviceManagementService().getDevicesOfUser(request);
+            if (requireDeviceInfo) {
+                result = DeviceMgtAPIUtils.getDeviceManagementService().getDevicesOfUser(request);
+            } else {
+                result = DeviceMgtAPIUtils.getDeviceManagementService().getDevicesOfUser(request, false);
+            }
             devices.setList((List<Device>) result.getData());
             devices.setCount(result.getRecordsTotal());
             return Response.status(Response.Status.OK).entity(devices).build();
@@ -261,7 +309,7 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
                 DeviceMgtAPIUtils.getDeviceManagementService();
         try {
             DeviceIdentifier deviceIdentifier = new DeviceIdentifier(deviceId, deviceType);
-            Device persistedDevice = deviceManagementProviderService.getDevice(deviceIdentifier);
+            Device persistedDevice = deviceManagementProviderService.getDevice(deviceIdentifier, true);
             if (persistedDevice == null) {
                 return Response.status(Response.Status.NOT_FOUND).build();
             }
@@ -287,7 +335,7 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
         DeviceManagementProviderService deviceManagementProviderService = DeviceMgtAPIUtils.getDeviceManagementService();
         try {
             Device persistedDevice = deviceManagementProviderService.getDevice(new DeviceIdentifier
-                    (deviceId, deviceType));
+                    (deviceId, deviceType), true);
             persistedDevice.setName(device.getName());
             boolean response = deviceManagementProviderService.modifyEnrollment(persistedDevice);
             return Response.status(Response.Status.CREATED).entity(response).build();
@@ -534,7 +582,7 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
         RequestValidationUtil.validateDeviceIdentifier(type, id);
         PolicyManagerService policyManagementService = DeviceMgtAPIUtils.getPolicyManagementService();
         Policy policy;
-        NonComplianceData complianceData = null;
+        NonComplianceData complianceData;
         DeviceCompliance deviceCompliance = new DeviceCompliance();
 
         try {
@@ -586,7 +634,7 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
                 DeviceMgtAPIUtils.getDeviceManagementService();
         try {
             DeviceIdentifier deviceIdentifier = new DeviceIdentifier(id, type);
-            Device persistedDevice = deviceManagementProviderService.getDevice(deviceIdentifier);
+            Device persistedDevice = deviceManagementProviderService.getDevice(deviceIdentifier, false);
             if (persistedDevice == null) {
                 return Response.status(Response.Status.NOT_FOUND).build();
             }
@@ -598,6 +646,80 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
             log.error(msg);
             return Response.status(Response.Status.BAD_REQUEST).entity(
                     new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
+        }
+    }
+
+    @POST
+    @Path("/{type}/operations")
+    public Response addOperation(@PathParam("type") String type, @Valid OperationRequest operationRequest) {
+        try {
+            if (operationRequest == null || operationRequest.getDeviceIdentifiers() == null
+                    || operationRequest.getOperation() == null) {
+                String errorMessage = "Operation cannot be empty";
+                log.error(errorMessage);
+                return Response.status(Response.Status.BAD_REQUEST).build();
+            }
+            if (!DeviceMgtAPIUtils.getDeviceManagementService().getAvailableDeviceTypes().contains(type)) {
+                String errorMessage = "Device Type is invalid";
+                log.error(errorMessage);
+                return Response.status(Response.Status.BAD_REQUEST).build();
+            }
+            Operation.Type operationType = operationRequest.getOperation().getType();
+            if (operationType == Operation.Type.COMMAND || operationType == Operation.Type.CONFIG) {
+                DeviceIdentifier deviceIdentifier;
+                List<DeviceIdentifier> deviceIdentifiers = new ArrayList<>();
+                for (String deviceId : operationRequest.getDeviceIdentifiers()) {
+                    deviceIdentifier = new DeviceIdentifier();
+                    deviceIdentifier.setId(deviceId);
+                    deviceIdentifier.setType(type);
+                    deviceIdentifiers.add(deviceIdentifier);
+                }
+                Operation operation;
+                if (operationType == Operation.Type.COMMAND) {
+                    Operation commandOperation = operationRequest.getOperation();
+                    operation = new CommandOperation();
+                    operation.setType(Operation.Type.COMMAND);
+                    operation.setCode(commandOperation.getCode());
+                    operation.setEnabled(commandOperation.isEnabled());
+                    operation.setStatus(commandOperation.getStatus());
+
+                } else {
+                    Operation configOperation = operationRequest.getOperation();
+                    operation = new ConfigOperation();
+                    operation.setType(Operation.Type.CONFIG);
+                    operation.setCode(configOperation.getCode());
+                    operation.setEnabled(configOperation.isEnabled());
+                    operation.setPayLoad(configOperation.getPayLoad());
+                    operation.setStatus(configOperation.getStatus());
+                }
+                String date = new SimpleDateFormat(DATE_FORMAT_NOW).format(new Date());
+                operation.setCreatedTimeStamp(date);
+                Activity activity = DeviceMgtAPIUtils.getDeviceManagementService().addOperation(type, operation,
+                                                                                       deviceIdentifiers);
+                return Response.status(Response.Status.CREATED).entity(activity).build();
+            } else {
+                String message = "Only Command and Config operation is supported through this api";
+                return Response.status(Response.Status.NOT_ACCEPTABLE).entity(message).build();
+            }
+
+        } catch (InvalidDeviceException e) {
+            String errorMessage = "Invalid Device Identifiers found.";
+            log.error(errorMessage, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(
+                    new ErrorResponse.ErrorResponseBuilder().setMessage(errorMessage).build()).build();
+        } catch (OperationManagementException e) {
+            String errorMessage = "Issue in retrieving operation management service instance";
+            log.error(errorMessage, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(
+                    new ErrorResponse.ErrorResponseBuilder().setMessage(errorMessage).build()).build();
+        } catch (DeviceManagementException e) {
+            String errorMessage = "Issue in retrieving deivce management service instance";
+            log.error(errorMessage, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(
+                    new ErrorResponse.ErrorResponseBuilder().setMessage(errorMessage).build()).build();
+        } catch (InvalidConfigurationException e) {
+            log.error("failed to add operation", e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
     }
 }

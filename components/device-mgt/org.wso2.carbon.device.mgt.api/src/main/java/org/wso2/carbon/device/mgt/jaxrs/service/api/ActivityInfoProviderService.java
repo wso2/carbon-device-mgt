@@ -141,6 +141,93 @@ public interface ActivityInfoProviderService {
 
 
     @GET
+    @Path("/{id}/{devicetype}/{deviceid}")
+    @ApiOperation(
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "GET",
+            value = "Getting Details of an Activity for a specific device",
+            notes = "Retrieve the details of a specific activity/operation, such as the meta information of " +
+                    "an operation, including the responses from a given device",
+            tags = "Activity Info Provider",
+            extensions = {
+                    @Extension(properties = {
+                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:get-activity")
+                    })
+            }
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    code = 200,
+                    message = "OK. \n Successfully fetched the activity details.",
+                    response = Activity.class,
+                    responseHeaders = {
+                            @ResponseHeader(
+                                    name = "Content-Type",
+                                    description = "The content type of the body"),
+                            @ResponseHeader(
+                                    name = "ETag",
+                                    description = "Entity Tag of the response resource.\n" +
+                                            "Used by caches, or in conditional requests."),
+                            @ResponseHeader(
+                                    name = "Last-Modified",
+                                    description = "Date and time the resource was last modified.\n" +
+                                            "Used by caches, or in conditional requests."),
+                    }),
+            @ApiResponse(
+                    code = 304,
+                    message = "Not Modified. \n Empty body because the client already has the latest version of " +
+                            "the requested resource."),
+            @ApiResponse(
+                    code = 400,
+                    message = "Bad Request. \n Invalid request or validation error.",
+                    response = ErrorResponse.class),
+            @ApiResponse(
+                    code = 401,
+                    message = "Unauthorized. \n Unauthorized request."),
+            @ApiResponse(
+                    code = 404,
+                    message = "Not Found. \n No activity found with the given ID.",
+                    response = ErrorResponse.class),
+            @ApiResponse(
+                    code = 406,
+                    message = "Not Acceptable.\n The requested media type is not supported"),
+            @ApiResponse(
+                    code = 500,
+                    message = "Internal Server Error. \n Server error occurred while fetching the activity data.",
+                    response = ErrorResponse.class)
+    })
+    Response getActivityByDevice(
+            @ApiParam(
+                    name = "id",
+                    value = "Activity id of the operation/activity.",
+                    required = true,
+                    defaultValue = "ACTIVITY_1")
+            @PathParam("id")
+            @Size(max = 45)
+                    String id,
+            @ApiParam(
+                    name = "devicetype",
+                    value = "The device type name, such as ios, android, windows or fire-alarm.",
+                    required = true)
+            @PathParam("devicetype")
+            @Size(max = 45)
+                    String type,
+            @ApiParam(
+                    name = "deviceid",
+                    value = "The device identifier of the device you want ot get details.",
+                    required = true)
+            @PathParam("deviceid")
+            @Size(max = 45)
+                    String deviceid,
+            @ApiParam(
+                    name = "If-Modified-Since",
+                    value = "Checks if the requested variant was modified, since the specified date-time\n." +
+                            "Provide the value in the Java Date Format: EEE, d MMM yyyy HH:mm:ss Z\n." +
+                            "Example: Mon, 05 Jan 2014 15:10:00 +0200",
+                    required = false)
+            @HeaderParam("If-Modified-Since") String ifModifiedSince);
+
+    @GET
     @ApiOperation(
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",

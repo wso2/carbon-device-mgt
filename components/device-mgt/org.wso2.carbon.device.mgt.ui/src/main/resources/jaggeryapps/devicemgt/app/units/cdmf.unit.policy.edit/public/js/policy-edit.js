@@ -164,6 +164,12 @@ skipStep["policy-platform"] = function (policyPayloadObj) {
         $("#users-radio-btn").prop("checked", true);
         $("#users-select-field").show();
         $("#user-roles-select-field").hide();
+        $.each(currentlyEffected["users"], function (i, item) {
+            userInput.append($('<option>', {
+                value: item,
+                text : item
+            }));
+        });
         userInput.val(currentlyEffected["users"]).trigger("change");
     }
 
@@ -524,8 +530,72 @@ var updatePolicy = function (policy, state) {
     );
 };
 
+var formatRepo = function (user) {
+    if (user.loading) {
+        return user.text;
+    }
+    if (!user.username) {
+        return;
+    }
+    var markup = '<div class="clearfix">' +
+        '<div clas="col-sm-8">' +
+        '<div class="clearfix">' +
+        '<div class="col-sm-3">' + user.username + '</div>';
+    if (user.firstname) {
+        markup += '<div class="col-sm-3"><i class="fa fa-code-fork"></i> ' + user.firstname + '</div>';
+    }
+    if (user.emailAddress) {
+        markup += '<div class="col-sm-2"><i class="fa fa-star"></i> ' + user.emailAddress + '</div></div>';
+    }
+    markup += '</div></div>';
+    return markup;
+};
+
+var formatRepoSelection = function (user) {
+    return user.username || user.text;
+};
+
+
 $(document).ready(function () {
     // Adding initial state of wizard-steps.
+    $("#users-input").select2({
+        multiple: true,
+        tags: false,
+        ajax: {
+            url: context + "/api/invoker/execute/",
+            method: "POST",
+            dataType: 'json',
+            delay: 250,
+            id: function (user) {
+                return user.username;
+            },
+            data: function (params) {
+                var postData = {};
+                postData.requestMethod = "GET";
+                postData.requestURL = "/api/device-mgt/v1.0/users/search/usernames?filter=" + params.term;
+                postData.requestPayload = null;
+                return JSON.stringify(postData);
+            },
+            processResults: function (data) {
+                var newData = [];
+                $.each(data, function (index, value) {
+                    value.id = value.username;
+                    newData.push(value);
+                });
+                return {
+                    results: newData
+                };
+            },
+            cache: true
+        },
+        escapeMarkup: function (markup) {
+            return markup;
+        },
+        minimumInputLength: 1,
+        templateResult: formatRepo, // omitted for brevity, see the source of this page
+        templateSelection: formatRepoSelection // omitted for brevity, see the source of this page
+    });
+
     invokerUtil.get(
         "/api/device-mgt/v1.0/policies/" + getParameterByName("id"),
         // on success
@@ -571,16 +641,6 @@ $(document).ready(function () {
             $(this).val("NONE").trigger("change");
         } else {
             $("option[value=NONE]", this).prop("selected", false).parent().trigger("change");
-        }
-    });
-
-    $("#users-input").select2({
-        "tags": false
-    }).on("select2:select", function (e) {
-        if (e.params.data.id == "ANY") {
-            $(this).val("ANY").trigger("change");
-        } else {
-            $("option[value=ANY]", this).prop("selected", false).parent().trigger("change");
         }
     });
 

@@ -73,7 +73,6 @@ function loadOperationsLog(update) {
             },
             dataSrc: function(json) {
                 $("#operations-spinner").addClass("hidden");
-                $("#operations-log-container").empty();
                 return json.data;
             }
         },

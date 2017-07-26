@@ -79,7 +79,7 @@ deviceModule = function () {
                 var fromDate = new Date();
                 fromDate.setHours(fromDate.getHours() - 2);
                 var toDate = new Date();
-                var serviceUrl = devicemgtProps["httpsURL"] + '/api/device-mgt/v1.0/geo-services/stats/' + deviceType + '/' + deviceId + '?from=' + fromDate + '&to=' + toDate;
+                var serviceUrl = devicemgtProps["httpsURL"] + '/api/device-mgt/v1.0/geo-services/stats/' + deviceType + '/' + deviceId + '?from=' + fromDate.getTime() + '&to=' + toDate.getTime();
                 serviceInvokers.XMLHttp.get(serviceUrl,
                                             function (backendResponse) {
                                                 if (backendResponse.status === 200 && backendResponse.responseText) {

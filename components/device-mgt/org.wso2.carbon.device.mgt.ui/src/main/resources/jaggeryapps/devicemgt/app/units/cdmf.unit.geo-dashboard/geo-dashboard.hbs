@@ -530,11 +530,21 @@
         </div>
 
         <div id="dateRangePopup">
-            <div>
-                <label> From: <input id="timeFrom" type="text"> </label>
-                <label> To: <input id="timeTo" type="text"> </label>
-                <button type="button" class="btn btn-info btn-xs" onClick="focusOnHistorySpatialObject(document.getElementById('objectId').innerHTML, document.getElementById('timeFrom').value, document.getElementById('timeTo').value);return false;">Full History</button>
+            <div class="form-horizontal">
+                <div class="form-group">
+                    <label class="col-sm-3">From:</label>
+                    <div class="col-sm-9">
+                        <input id="timeFromCal" type="text">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-3">To:</label>
+                    <div class="col-sm-9">
+                        <input id="timeToCal" type="text">
+                    </div>
+                </div>
             </div>
+            <button type="button" class="btn btn-info btn-xs" onClick="focusOnHistorySpatialObject(document.getElementById('objectId').innerHTML, document.getElementById('timeFromCal').value, document.getElementById('timeToCal').value);return false;">Full History</button>
         </div>
 
         <div id="markerPopupStop" class="popover top">
@@ -707,7 +717,7 @@
     {{js "js/leaflet/Leaflet.fullscreen.min.js" }}
     {{js "js/leaflet/Marker.Rotate.js" }}
     {{js "js/leaflet/leaflet.draw.js" }}
-    {{js "js/jquery/jquery-ui.min.js" }}
+    {{!js "js/jquery/jquery-ui.min.js" }}
     <!-- Leaflet plugins libries -->
 
     {{js "js/firstTemp.js" }}
@@ -749,6 +759,10 @@
                                           'Add Geofence Exit Alert', 'glyphicon glyphicon-log-out', geoToolsMenu);
                 {{/if}}
             }
+
+            $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+                $('#dateRangePopup').dialog('close');
+            })
         });
     </script>
 {{/zone}}

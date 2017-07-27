@@ -43,6 +43,8 @@ public class Util {
         application.setId(rs.getInt("ID"));
         application.setName(rs.getString("NAME"));
         application.setUuid(rs.getString("UUID"));
+        application.setIdentifier(rs.getString("IDENTIFIER"));
+        application.setShortDescription(rs.getString("SHORT_DESCRIPTION"));
         application.setDescription(rs.getString("DESCRIPTION"));
         application.setIconName(rs.getString("ICON_NAME"));
         application.setBannerName(rs.getString("BANNER_NAME"));

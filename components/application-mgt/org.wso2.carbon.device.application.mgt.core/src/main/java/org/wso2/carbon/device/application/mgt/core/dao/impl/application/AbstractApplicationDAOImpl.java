@@ -38,11 +38,6 @@ public abstract class AbstractApplicationDAOImpl extends AbstractDAOImpl impleme
     private static final Log log = LogFactory.getLog(AbstractApplicationDAOImpl.class);
 
     @Override
-    public void deleteApplication(Application application) throws ApplicationManagementDAOException {
-
-    }
-
-    @Override
     public int getApplicationCount(Filter filter) throws ApplicationManagementDAOException {
         if(log.isDebugEnabled()){
             log.debug("Getting application count from the database");

@@ -36,7 +36,7 @@ public interface ApplicationDAO {
 
     Application editApplication(Application application) throws ApplicationManagementDAOException;
 
-    void deleteApplication(Application application) throws ApplicationManagementDAOException;
+    void deleteApplication(String uuid) throws ApplicationManagementDAOException;
 
     int getApplicationCount(Filter filter) throws ApplicationManagementDAOException;
 
@@ -44,7 +44,9 @@ public interface ApplicationDAO {
 
     void editProperties(Map<String, String> properties) throws ApplicationManagementDAOException;
 
-    void deleteProperties(List<String> propertyKeys) throws ApplicationManagementDAOException;
+    void deleteProperties(int applicationId) throws ApplicationManagementDAOException;
+
+    void deleteTags(int applicationId) throws ApplicationManagementDAOException;
 
     void changeLifeCycle(LifecycleState lifecycleState) throws ApplicationManagementDAOException;
 

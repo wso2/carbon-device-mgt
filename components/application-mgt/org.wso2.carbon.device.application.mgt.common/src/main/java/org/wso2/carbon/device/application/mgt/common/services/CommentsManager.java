@@ -18,5 +18,9 @@
  */
 package org.wso2.carbon.device.application.mgt.common.services;
 
-public interface CommentsManager{
+/**
+ * CommentsManager is responsible for handling all the add/update/delete/get operations related with
+ * {@link org.wso2.carbon.device.application.mgt.common.Comment}.
+ */
+public interface CommentsManager {
 }

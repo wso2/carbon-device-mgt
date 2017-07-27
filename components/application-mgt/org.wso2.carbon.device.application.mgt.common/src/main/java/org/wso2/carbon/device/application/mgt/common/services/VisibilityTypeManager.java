@@ -18,5 +18,9 @@
  */
 package org.wso2.carbon.device.application.mgt.common.services;
 
+/**
+ * VisibilityTypeManager is responsible for handling all the operations related to VisibilityType, this includes
+ * creating, updating and viewing the {@link org.wso2.carbon.device.application.mgt.common.Visibility.Type}
+ */
 public interface VisibilityTypeManager {
 }

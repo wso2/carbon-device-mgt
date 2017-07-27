@@ -20,6 +20,9 @@ package org.wso2.carbon.device.application.mgt.common;
 
 import java.util.Date;
 
+/**
+ * Represents subscription of an {@link Application}
+ */
 public class Subscription {
 
     private Visibility.Type type;

@@ -17,6 +17,9 @@
 */
 package org.wso2.carbon.device.application.mgt.common.exception;
 
+/**
+ * Exception caused during the platform management.
+ */
 public class PlatformManagementException extends ApplicationManagementException {
 
     public PlatformManagementException(String message, Throwable ex) {

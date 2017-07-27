@@ -17,6 +17,9 @@
 */
 package org.wso2.carbon.device.application.mgt.common;
 
+/**
+ * Represents the payment related information for the {@link Application}.
+ */
 public class Payment {
     private boolean freeApp;
 

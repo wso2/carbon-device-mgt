@@ -20,6 +20,9 @@ package org.wso2.carbon.device.application.mgt.common;
 
 import java.util.List;
 
+/**
+ * Represents a list of {@link Application}.
+ */
 public class ApplicationList {
 
     private List<Application> applications;

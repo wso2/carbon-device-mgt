@@ -37,7 +37,7 @@
     </session-config>
     <context-param>
         <param-name>doAuthentication</param-name>
-        <param-value>false</param-value>
+        <param-value>true</param-value>
     </context-param>
 
     <!--publish to apim-->
@@ -55,20 +55,8 @@
     </context-param>
 
     <filter>
-        <filter-name>CorsFilter</filter-name>
-        <filter-class>org.apache.catalina.filters.CorsFilter</filter-class>
-        <init-param>
-            <param-name>cors.allowed.origins</param-name>
-            <param-value>*</param-value>
-        </init-param>
-        <init-param>
-            <param-name>cors.allowed.methods</param-name>
-            <param-value>GET,POST,DELETE,PUT</param-value>
-        </init-param>
-        <init-param>
-            <param-name>cors.allowed.headers</param-name>
-            <param-value>Content-Type</param-value>
-        </init-param>
+        <filter-name>ApiOriginFilter</filter-name>
+        <filter-class>org.wso2.carbon.device.application.mgt.api.util.ApiOriginFilter</filter-class>
     </filter>
 
     <filter>
@@ -108,7 +96,7 @@
     </filter-mapping>
 
     <filter-mapping>
-        <filter-name>CorsFilter</filter-name>
+        <filter-name>ApiOriginFilter</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 

@@ -19,17 +19,43 @@
 package org.wso2.carbon.device.application.mgt.common.services;
 
 import org.wso2.carbon.device.application.mgt.common.Application;
-import org.wso2.carbon.device.application.mgt.common.Filter;
 import org.wso2.carbon.device.application.mgt.common.ApplicationList;
+import org.wso2.carbon.device.application.mgt.common.Filter;
 import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
 
-public interface ApplicationManager{
+/**
+ * This interface manages the application creation, deletion and editing of the application.
+ */
+public interface ApplicationManager {
 
-     public Application createApplication(Application application) throws ApplicationManagementException;
+    /**
+     * Creates an application.
+     * @param application Application that need to be created.
+     * @return Created application
+     * @throws ApplicationManagementException Application Management Exception
+     */
+    public Application createApplication(Application application) throws ApplicationManagementException;
 
-     public Application editApplication(Application application) throws ApplicationManagementException;
+    /**
+     * Updates an already existing application.
+     * @param application Application that need to be updated.
+     * @return Updated Application
+     * @throws ApplicationManagementException Application Management Exception
+     */
+    public Application editApplication(Application application) throws ApplicationManagementException;
 
-     public void deleteApplication(int uuid) throws ApplicationManagementException;
+    /**
+     * Delete an application identified by the unique ID.
+     * @param uuid Unique ID for tha application
+     * @throws ApplicationManagementException Application Management Exception
+     */
+    public void deleteApplication(int uuid) throws ApplicationManagementException;
 
-     public ApplicationList getApplications(Filter filter) throws ApplicationManagementException;
+    /**
+     * To get the applications based on the search filter.
+     * @param filter Search filter
+     * @return Applications that matches the given filter criteria.
+     * @throws ApplicationManagementException Application Management Exception
+     */
+    public ApplicationList getApplications(Filter filter) throws ApplicationManagementException;
 }

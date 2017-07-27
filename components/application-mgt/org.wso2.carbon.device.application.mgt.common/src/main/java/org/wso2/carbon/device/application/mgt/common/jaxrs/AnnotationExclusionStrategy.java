@@ -21,6 +21,9 @@ package org.wso2.carbon.device.application.mgt.common.jaxrs;
 import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
 
+/**
+ * This class is used to exclude certain fields when serializing and de-serializing based on the annotation.
+ */
 public class AnnotationExclusionStrategy implements ExclusionStrategy {
 
     @Override

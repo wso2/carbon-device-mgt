@@ -21,6 +21,9 @@ package org.wso2.carbon.device.application.mgt.common;
 import java.util.Date;
 import java.util.Map;
 
+/**
+ * This class holds the details when releasing an Application to application store.
+ */
 public class ApplicationRelease {
 
     private enum Channel {

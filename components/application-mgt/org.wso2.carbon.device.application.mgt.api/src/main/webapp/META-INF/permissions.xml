@@ -31,4 +31,16 @@
     <APIVersion></APIVersion>
     <!--Permission Tree Name-->
     <!--End of Permission Tree-->
+    <Permission>
+        <name>Get Application</name>
+        <path>/device-mgt/application/get</path>
+        <url>/application-mgt/applications</url>
+        <method>GET</method>
+    </Permission>
+    <Permission>
+        <name>Create Application</name>
+        <path>/device-mgt/application/create</path>
+        <url>/application-mgt/applications</url>
+        <method>POST</method>
+    </Permission>
 </PermissionConfiguration>

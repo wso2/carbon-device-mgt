@@ -25,6 +25,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Application represents the an Application in Application Store
+ */
 public class Application {
 
     @Exclude
@@ -70,7 +73,7 @@ public class Application {
 
     private Visibility visibility;
 
-    private User user;
+    private ApplicationUser user;
 
     public int getId() {
         return id;
@@ -240,11 +243,11 @@ public class Application {
         this.visibility = visibility;
     }
 
-    public User getUser() {
+    public ApplicationUser getUser() {
         return user;
     }
 
-    public void setUser(User user) {
+    public void setUser(ApplicationUser user) {
         this.user = user;
     }
 }

@@ -18,6 +18,8 @@
  */
 package org.wso2.carbon.device.application.mgt.core.impl;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.application.mgt.common.*;
 import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
 import org.wso2.carbon.device.application.mgt.common.exception.DBConnectionException;
@@ -34,32 +36,36 @@ import org.wso2.carbon.device.application.mgt.core.util.HelperUtil;
 import java.util.Date;
 
 public class ApplicationManagerImpl implements ApplicationManager {
-
-
     public static final String CREATED = "created";
+    private static Log log = LogFactory.getLog(ApplicationManagerImpl.class);
 
     @Override
     public Application createApplication(Application application) throws ApplicationManagementException {
-
         validateApplication(application, false);
 
         try {
             ConnectionManagerUtil.openConnection();
             ApplicationDAO applicationDAO = DAOFactory.getApplicationDAO();
-
             application.setUuid(HelperUtil.generateApplicationUuid());
-
             application.setCreatedAt(new Date());
             application.setModifiedAt(new Date());
 
+            if (log.isDebugEnabled()) {
+                log.debug("Creating Application " + application.getName() + " with UUID " + application.getUuid());
+            }
             LifecycleStateDAO lifecycleStateDAO = DAOFactory.getLifecycleStateDAO();
             LifecycleState lifecycleState = lifecycleStateDAO.getLifeCycleStateByIdentifier(CREATED);
             if (lifecycleState == null) {
-                throw new NotFoundException("Invalid lifecycle state.");
+                throw new NotFoundException("Invalid lifecycle state. There is no lifecycle state connected with "
+                        + "'CREATED'");
             }
 
+            if (log.isDebugEnabled()) {
+                log.debug("Life cycle state of the application " + application.getName() + " set as name - " +
+                        lifecycleState.getName() + " id - " + lifecycleState.getId() + " identifier - " +
+                        lifecycleState.getIdentifier());
+            }
             Lifecycle lifecycle = new Lifecycle();
-            lifecycle.setLifecycleState(lifecycleState);
             lifecycle.setLifecycleState(lifecycleState);
             lifecycle.setLifecycleStateModifiedAt(new Date());
             lifecycle.setGetLifecycleStateModifiedBy(application.getUser().getUserName());
@@ -68,10 +74,14 @@ public class ApplicationManagerImpl implements ApplicationManager {
             PlatformDAO platformDAO = DAOFactory.getPlatformDAO();
             Platform platform = platformDAO.getPlatform(application.getUser().getTenantId(), application.getPlatform().getIdentifier());
             if (platform == null) {
-                throw new NotFoundException("Invalid platform");
+                throw new NotFoundException("Invalid platform. No platform details found for " + application
+                        .getPlatform().getName());
+            }
+            if (log.isDebugEnabled()) {
+                log.debug("Application '" + application.getName() + "' platform is set to (platform name , platform "
+                        + "id)- ( " + platform.getName() + ", " + platform.getIdentifier() + ", " + platform.getId());
             }
             application.setPlatform(platform);
-
             return applicationDAO.createApplication(application);
         } finally {
             ConnectionManagerUtil.closeConnection();

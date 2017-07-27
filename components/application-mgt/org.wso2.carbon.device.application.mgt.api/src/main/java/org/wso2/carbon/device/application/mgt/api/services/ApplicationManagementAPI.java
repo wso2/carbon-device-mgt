@@ -76,7 +76,7 @@ import javax.ws.rs.core.Response;
         "such as get all the applications, add application, etc.")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public interface ApplicationManagementService {
+public interface ApplicationManagementAPI {
 
     public final static String SCOPE = "scope";
 

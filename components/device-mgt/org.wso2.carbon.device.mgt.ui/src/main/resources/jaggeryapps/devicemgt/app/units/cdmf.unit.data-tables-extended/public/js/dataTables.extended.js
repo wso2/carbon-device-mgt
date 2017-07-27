@@ -219,6 +219,7 @@ $.fn.datatables_extended = function(settings){
                         $(document).off('click','.viewEnabledIcon');
                         //--- End of EMM related codes
                     } else if ($(button).html() == 'Cancel'){
+                        $('.bulk-action-row').addClass('hidden');
                         thisTable.removeClass("table-selectable");
                         $(button).addClass("active").html('Select');
                         $(button).parent().next().children().addClass("disabled");

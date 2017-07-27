@@ -18,6 +18,9 @@
  */
 package org.wso2.carbon.device.application.mgt.core.impl;
 
+import com.sun.corba.se.spi.legacy.connection.Connection;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.application.mgt.common.*;
 import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
 import org.wso2.carbon.device.application.mgt.common.exception.DBConnectionException;
@@ -26,6 +29,7 @@ import org.wso2.carbon.device.application.mgt.core.dao.ApplicationDAO;
 import org.wso2.carbon.device.application.mgt.core.dao.LifecycleStateDAO;
 import org.wso2.carbon.device.application.mgt.core.dao.PlatformDAO;
 import org.wso2.carbon.device.application.mgt.core.dao.common.DAOFactory;
+import org.wso2.carbon.device.application.mgt.core.exception.ApplicationManagementDAOException;
 import org.wso2.carbon.device.application.mgt.core.exception.NotFoundException;
 import org.wso2.carbon.device.application.mgt.core.exception.ValidationException;
 import org.wso2.carbon.device.application.mgt.core.util.ConnectionManagerUtil;
@@ -35,7 +39,7 @@ import java.util.Date;
 
 public class ApplicationManagerImpl implements ApplicationManager {
 
-
+    private static final Log log = LogFactory.getLog(ApplicationManagerImpl.class);
     public static final String CREATED = "created";
 
     @Override
@@ -111,8 +115,26 @@ public class ApplicationManagerImpl implements ApplicationManager {
     }
 
     @Override
-    public void deleteApplication(int uuid) throws ApplicationManagementException {
+    public void deleteApplication(String uuid) throws ApplicationManagementException {
 
+        try {
+            ConnectionManagerUtil.openConnection();
+            ApplicationDAO applicationDAO = DAOFactory.getApplicationDAO();
+            int appId = applicationDAO.getApplicationId(uuid);
+            ConnectionManagerUtil.beginTransaction();
+            applicationDAO.deleteTags(appId);
+            applicationDAO.deleteProperties(appId);
+            applicationDAO.deleteApplication(uuid);
+            ConnectionManagerUtil.commitTransaction();
+
+        } catch (ApplicationManagementDAOException e) {
+            ConnectionManagerUtil.rollbackTransaction();
+            String msg = "Failed to delete application: " + uuid;
+            throw new ApplicationManagementException(msg, e);
+
+        } finally {
+            ConnectionManagerUtil.closeConnection();
+        }
     }
 
     @Override

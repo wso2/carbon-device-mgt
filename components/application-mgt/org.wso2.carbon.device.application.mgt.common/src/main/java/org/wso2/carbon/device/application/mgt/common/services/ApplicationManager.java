@@ -29,7 +29,7 @@ public interface ApplicationManager{
 
      public Application editApplication(Application application) throws ApplicationManagementException;
 
-     public void deleteApplication(int uuid) throws ApplicationManagementException;
+     public void deleteApplication(String uuid) throws ApplicationManagementException;
 
      public ApplicationList getApplications(Filter filter) throws ApplicationManagementException;
 }

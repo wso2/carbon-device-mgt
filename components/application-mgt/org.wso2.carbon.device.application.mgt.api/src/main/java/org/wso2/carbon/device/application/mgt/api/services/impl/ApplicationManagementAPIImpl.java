@@ -109,4 +109,20 @@ public class ApplicationManagementAPIImpl {
         return Response.status(Response.Status.OK).entity(application).build();
     }
 
+    @DELETE
+    @Path("applications/{appuuid}")
+    public Response deleteApplication(@PathParam("appuuid") String uuid) {
+        ApplicationManager applicationManager = APIUtil.getApplicationManager();
+        try {
+            applicationManager.deleteApplication(uuid);
+
+        } catch (ApplicationManagementException e) {
+            String msg = "Error occurred while deleting the application: " + uuid;
+            log.error(msg, e);
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+        String responseMsg = "Successfully deleted the application: " + uuid;
+        return Response.status(Response.Status.OK).entity(responseMsg).build();
+    }
+
 }

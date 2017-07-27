@@ -20,94 +20,82 @@ package org.wso2.carbon.device.application.mgt.api.services.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.context.PrivilegedCarbonContext;
-import org.wso2.carbon.device.application.mgt.api.services.ApplicationManagementService;
-import org.wso2.carbon.device.application.mgt.common.Application;
-import org.wso2.carbon.device.application.mgt.common.ApplicationList;
-import org.wso2.carbon.device.application.mgt.common.Filter;
-import org.wso2.carbon.device.application.mgt.common.ApplicationUser;
+import org.wso2.carbon.device.application.mgt.common.*;
 import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
 import org.wso2.carbon.device.application.mgt.common.services.ApplicationManager;
 import org.wso2.carbon.device.application.mgt.api.APIUtil;
 
 import javax.validation.Valid;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.HeaderParam;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
+import java.util.Date;
 
-@Path("/applications")
-public class ApplicationManagementServiceImpl implements ApplicationManagementService {
-    private static final int DEFAULT_LIMIT = 20;
+@Produces({"application/json"})
+@Consumes({"application/json"})
+public class ApplicationManagementAPIImpl {
+
+    public static final int DEFAULT_LIMIT = 20;
+
     public static final String APPLICATION_UPLOAD_EXTENSION = "ApplicationUploadExtension";
-    private static Log log = LogFactory.getLog(ApplicationManagementServiceImpl.class);
+
+    private static Log log = LogFactory.getLog(ApplicationManagementAPIImpl.class);
 
     @GET
-    @Override
-    public Response getApplications(@HeaderParam("If-Modified-Since") String ifModifiedSince,
-            @QueryParam("offset") int offset, @QueryParam("limit") int limit, @QueryParam("query") String searchQuery) {
+    @Consumes("application/json")
+    @Path("applications")
+    public Response getApplications(@QueryParam("offset") int offset, @QueryParam("limit") int limit,
+                                    @QueryParam("query") String searchQuery) {
         ApplicationManager applicationManager = APIUtil.getApplicationManager();
-        if (log.isDebugEnabled()) {
-            log.debug("Received a query for getting applications : offset - " + offset + " limit - " + limit + " "
-                    + "searchQuery - " + searchQuery);
-        }
         try {
             if (limit == 0) {
                 limit = DEFAULT_LIMIT;
-                if (log.isDebugEnabled()) {
-                    log.debug("Received a search query with the limit 0, hence using " + DEFAULT_LIMIT + " as limit "
-                            + "for getting applications");
-                }
             }
             Filter filter = new Filter();
             filter.setOffset(offset);
             filter.setLimit(limit);
             filter.setSearchQuery(searchQuery);
+
             ApplicationList applications = applicationManager.getApplications(filter);
             return Response.status(Response.Status.OK).entity(applications).build();
         } catch (ApplicationManagementException e) {
             String msg = "Error occurred while getting the application list";
             log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+            return Response.status(Response.Status.NOT_FOUND).build();
         }
     }
 
     @POST
     @Consumes("application/json")
+    @Path("applications")
     public Response createApplication(@Valid Application application) {
+
         ApplicationManager applicationManager = APIUtil.getApplicationManager();
 
         //TODO : Get username and tenantId
-        ApplicationUser applicationUser = new ApplicationUser(PrivilegedCarbonContext.getThreadLocalCarbonContext().getUsername(),
-                PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId(true));
-        application.setUser(applicationUser);
+        User user = new User("admin", -1234);
+        application.setUser(user);
 
-        if (log.isDebugEnabled()) {
-            log.debug("Create Application request received from the user : " + applicationUser.toString());
-        }
         try {
             application = applicationManager.createApplication(application);
+
         } catch (ApplicationManagementException e) {
             String msg = "Error occurred while creating the application";
             log.error(msg, e);
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
-        return Response.status(Response.Status.CREATED).entity(application).build();
+        return Response.status(Response.Status.OK).entity(application).build();
     }
+
 
     @PUT
     @Consumes("application/json")
     @Path("applications")
     public Response editApplication(@Valid Application application) {
+
         ApplicationManager applicationManager = APIUtil.getApplicationManager();
 
         //TODO : Get username and tenantId
-        ApplicationUser user = new ApplicationUser("admin", -1234);
+        User user = new User("admin", -1234);
         application.setUser(user);
 
         try {
@@ -120,5 +108,21 @@ public class ApplicationManagementServiceImpl implements ApplicationManagementSe
         }
         return Response.status(Response.Status.OK).entity(application).build();
     }
-}
 
+    @DELETE
+    @Path("applications/{appuuid}")
+    public Response deleteApplication(@PathParam("appuuid") String uuid) {
+        ApplicationManager applicationManager = APIUtil.getApplicationManager();
+        try {
+            applicationManager.deleteApplication(uuid);
+
+        } catch (ApplicationManagementException e) {
+            String msg = "Error occurred while deleting the application: " + uuid;
+            log.error(msg, e);
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+        String responseMsg = "Successfully deleted the application: " + uuid;
+        return Response.status(Response.Status.OK).entity(responseMsg).build();
+    }
+
+}

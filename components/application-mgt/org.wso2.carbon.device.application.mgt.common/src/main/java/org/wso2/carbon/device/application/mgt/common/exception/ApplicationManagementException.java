@@ -21,8 +21,9 @@ package org.wso2.carbon.device.application.mgt.common.exception;
 /**
  * Represents the exception thrown during application management.
  */
-public abstract class ApplicationManagementException extends Exception {
-    private String message;
+public class ApplicationManagementException extends Exception {
+
+    String message;
 
     public ApplicationManagementException(String message, Throwable throwable) {
         super(message, throwable);
@@ -37,7 +38,6 @@ public abstract class ApplicationManagementException extends Exception {
     public ApplicationManagementException() {
 
     }
-
     @Override
     public String getMessage() {
         return message;

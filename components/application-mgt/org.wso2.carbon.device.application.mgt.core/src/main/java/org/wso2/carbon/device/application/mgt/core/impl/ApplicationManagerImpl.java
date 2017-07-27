@@ -18,6 +18,7 @@
  */
 package org.wso2.carbon.device.application.mgt.core.impl;
 
+import com.sun.corba.se.spi.legacy.connection.Connection;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.application.mgt.common.*;
@@ -28,6 +29,7 @@ import org.wso2.carbon.device.application.mgt.core.dao.ApplicationDAO;
 import org.wso2.carbon.device.application.mgt.core.dao.LifecycleStateDAO;
 import org.wso2.carbon.device.application.mgt.core.dao.PlatformDAO;
 import org.wso2.carbon.device.application.mgt.core.dao.common.DAOFactory;
+import org.wso2.carbon.device.application.mgt.core.exception.ApplicationManagementDAOException;
 import org.wso2.carbon.device.application.mgt.core.exception.NotFoundException;
 import org.wso2.carbon.device.application.mgt.core.exception.ValidationException;
 import org.wso2.carbon.device.application.mgt.core.util.ConnectionManagerUtil;
@@ -36,36 +38,32 @@ import org.wso2.carbon.device.application.mgt.core.util.HelperUtil;
 import java.util.Date;
 
 public class ApplicationManagerImpl implements ApplicationManager {
+
+    private static final Log log = LogFactory.getLog(ApplicationManagerImpl.class);
     public static final String CREATED = "created";
-    private static Log log = LogFactory.getLog(ApplicationManagerImpl.class);
 
     @Override
     public Application createApplication(Application application) throws ApplicationManagementException {
+
         validateApplication(application, false);
 
         try {
             ConnectionManagerUtil.openConnection();
             ApplicationDAO applicationDAO = DAOFactory.getApplicationDAO();
+
             application.setUuid(HelperUtil.generateApplicationUuid());
+
             application.setCreatedAt(new Date());
             application.setModifiedAt(new Date());
 
-            if (log.isDebugEnabled()) {
-                log.debug("Creating Application " + application.getName() + " with UUID " + application.getUuid());
-            }
             LifecycleStateDAO lifecycleStateDAO = DAOFactory.getLifecycleStateDAO();
             LifecycleState lifecycleState = lifecycleStateDAO.getLifeCycleStateByIdentifier(CREATED);
             if (lifecycleState == null) {
-                throw new NotFoundException("Invalid lifecycle state. There is no lifecycle state connected with "
-                        + "'CREATED'");
+                throw new NotFoundException("Invalid lifecycle state.");
             }
 
-            if (log.isDebugEnabled()) {
-                log.debug("Life cycle state of the application " + application.getName() + " set as name - " +
-                        lifecycleState.getName() + " id - " + lifecycleState.getId() + " identifier - " +
-                        lifecycleState.getIdentifier());
-            }
             Lifecycle lifecycle = new Lifecycle();
+            lifecycle.setLifecycleState(lifecycleState);
             lifecycle.setLifecycleState(lifecycleState);
             lifecycle.setLifecycleStateModifiedAt(new Date());
             lifecycle.setGetLifecycleStateModifiedBy(application.getUser().getUserName());
@@ -74,14 +72,10 @@ public class ApplicationManagerImpl implements ApplicationManager {
             PlatformDAO platformDAO = DAOFactory.getPlatformDAO();
             Platform platform = platformDAO.getPlatform(application.getUser().getTenantId(), application.getPlatform().getIdentifier());
             if (platform == null) {
-                throw new NotFoundException("Invalid platform. No platform details found for " + application
-                        .getPlatform().getName());
-            }
-            if (log.isDebugEnabled()) {
-                log.debug("Application '" + application.getName() + "' platform is set to (platform name , platform "
-                        + "id)- ( " + platform.getName() + ", " + platform.getIdentifier() + ", " + platform.getId());
+                throw new NotFoundException("Invalid platform");
             }
             application.setPlatform(platform);
+
             return applicationDAO.createApplication(application);
         } finally {
             ConnectionManagerUtil.closeConnection();
@@ -121,8 +115,26 @@ public class ApplicationManagerImpl implements ApplicationManager {
     }
 
     @Override
-    public void deleteApplication(int uuid) throws ApplicationManagementException {
+    public void deleteApplication(String uuid) throws ApplicationManagementException {
 
+        try {
+            ConnectionManagerUtil.openConnection();
+            ApplicationDAO applicationDAO = DAOFactory.getApplicationDAO();
+            int appId = applicationDAO.getApplicationId(uuid);
+            ConnectionManagerUtil.beginTransaction();
+            applicationDAO.deleteTags(appId);
+            applicationDAO.deleteProperties(appId);
+            applicationDAO.deleteApplication(uuid);
+            ConnectionManagerUtil.commitTransaction();
+
+        } catch (ApplicationManagementDAOException e) {
+            ConnectionManagerUtil.rollbackTransaction();
+            String msg = "Failed to delete application: " + uuid;
+            throw new ApplicationManagementException(msg, e);
+
+        } finally {
+            ConnectionManagerUtil.closeConnection();
+        }
     }
 
     @Override

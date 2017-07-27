@@ -49,7 +49,7 @@ public interface ApplicationManager {
      * @param uuid Unique ID for tha application
      * @throws ApplicationManagementException Application Management Exception
      */
-    public void deleteApplication(int uuid) throws ApplicationManagementException;
+     public void deleteApplication(String uuid) throws ApplicationManagementException;
 
     /**
      * To get the applications based on the search filter.

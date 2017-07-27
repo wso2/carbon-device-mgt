@@ -146,6 +146,21 @@ public class H2ApplicationDAOImpl extends AbstractApplicationDAOImpl {
     }
 
     @Override
+    public void deleteApplication(String uuid) throws ApplicationManagementDAOException {
+
+    }
+
+    @Override
+    public void deleteProperties(int applicationId) throws ApplicationManagementDAOException {
+
+    }
+
+    @Override
+    public void deleteTags(int applicationId) throws ApplicationManagementDAOException {
+
+    }
+
+    @Override
     public Application editApplication(Application application) throws ApplicationManagementDAOException {
         return null;
     }
@@ -157,11 +172,6 @@ public class H2ApplicationDAOImpl extends AbstractApplicationDAOImpl {
 
     @Override
     public void editProperties(Map<String, String> properties) throws ApplicationManagementDAOException {
-
-    }
-
-    @Override
-    public void deleteProperties(List<String> propertyKeys) throws ApplicationManagementDAOException {
 
     }
 

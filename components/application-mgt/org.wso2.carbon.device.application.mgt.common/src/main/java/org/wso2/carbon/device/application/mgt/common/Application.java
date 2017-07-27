@@ -73,7 +73,7 @@ public class Application {
 
     private Visibility visibility;
 
-    private ApplicationUser user;
+    private User user;
 
     public int getId() {
         return id;
@@ -243,11 +243,11 @@ public class Application {
         this.visibility = visibility;
     }
 
-    public ApplicationUser getUser() {
+    public User getUser() {
         return user;
     }
 
-    public void setUser(ApplicationUser user) {
+    public void setUser(User user) {
         this.user = user;
     }
 }

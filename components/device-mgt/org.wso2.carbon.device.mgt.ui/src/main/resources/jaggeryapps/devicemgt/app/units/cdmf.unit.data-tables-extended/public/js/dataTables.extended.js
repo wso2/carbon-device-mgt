@@ -255,6 +255,11 @@ $.fn.datatables_extended = function(settings){
                 $('body').on('click', '[data-type=selectable]', function(){
                     var rowSelectedClass = 'DTTT_selected selected';
                     $(this).toggleClass(rowSelectedClass);
+                    if ($('.table-selectable .DTTT_selected').length > 0) {
+                        $('.bulk-action-row').removeClass('hidden');
+                    } else {
+                        $('.bulk-action-row').addClass('hidden');
+                    }
                     var button = this,
                         thisTable = $(this).closest('.dataTables_wrapper').find('.dataTable').dataTable();
 

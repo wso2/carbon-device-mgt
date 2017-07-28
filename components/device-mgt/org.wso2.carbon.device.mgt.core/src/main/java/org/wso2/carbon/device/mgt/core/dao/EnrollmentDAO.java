@@ -32,10 +32,16 @@ public interface EnrollmentDAO {
 
     int updateEnrollment(EnrolmentInfo enrolmentInfo) throws DeviceManagementDAOException;
 
+    boolean updateEnrollmentStatus(List<EnrolmentInfo> enrolmentInfos) throws DeviceManagementDAOException;
+
     int removeEnrollment(int deviceId, String currentOwner, int tenantId) throws DeviceManagementDAOException;
 
     boolean setStatus(int enrolmentId, String currentOwner, Status status,
                       int tenantId) throws DeviceManagementDAOException;
+
+    boolean setStatus(String currentOwner, Status status, int tenantId) throws DeviceManagementDAOException;
+
+    boolean setStatus(int enrolmentId, Status status, int tenantId) throws DeviceManagementDAOException;
 
     Status getStatus(int deviceId, String currentOwner, int tenantId) throws DeviceManagementDAOException;
 

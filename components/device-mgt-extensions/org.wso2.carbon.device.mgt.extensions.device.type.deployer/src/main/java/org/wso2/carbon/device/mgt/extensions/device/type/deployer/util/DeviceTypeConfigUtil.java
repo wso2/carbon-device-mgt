@@ -19,7 +19,7 @@
 package org.wso2.carbon.device.mgt.extensions.device.type.deployer.util;
 
 import org.w3c.dom.Document;
-import org.wso2.carbon.device.mgt.extensions.device.type.deployer.config.exception.DeviceTypeConfigurationException;
+import org.wso2.carbon.device.mgt.extensions.device.type.template.config.exception.DeviceTypeConfigurationException;
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;

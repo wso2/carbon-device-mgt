@@ -18,6 +18,9 @@
  */
 package org.wso2.carbon.device.application.mgt.common;
 
+/**
+ * This class represents the pagination details that will be used when fetching application details from database.
+ */
 public class Pagination {
 
     private int offset;

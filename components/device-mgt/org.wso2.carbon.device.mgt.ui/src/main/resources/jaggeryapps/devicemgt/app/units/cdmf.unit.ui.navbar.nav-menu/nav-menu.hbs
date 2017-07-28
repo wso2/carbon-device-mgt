@@ -30,10 +30,17 @@
             </a>
         </li>
     {{/if}}
-
+    {{#if permissions.IS_ADMIN}}
+        <li>
+            <a href="{{@app.context}}/device-types">
+                <i class="fw fw-devices"></i>
+                Device Type Management
+            </a>
+        </li>
+    {{/if}}
     {{#unless isCloud}}
     {{#if permissions.VIEW_DASHBOARD}}
-        <li>
+        <!--<li>
             <a href="javascript:statisticLoad('/portal/t/{{currentUser.domain}}/dashboards/device-statistics-dashboard/')">
                 <i class="fw fw-bar-chart"></i>Device Statistics
             </a>
@@ -57,7 +64,7 @@
                     </div>
                 </div>
             </div>
-        </li>
+        </li>-->
     {{/if}}
     {{/unless}}
 
@@ -87,7 +94,6 @@
         <li><a href="{{@app.context}}/policies"><i class="fw fw-policy"></i>Policy Management</a></li>
     {{/if}}
 
-    {{#unless isCloud}}
     {{#if permissions.TENANT_CONFIGURATION}}
         <li><a><i class="fw fw-settings"></i>Configuration Management</a>
             <ul>
@@ -99,7 +105,6 @@
             </ul>
         </li>
     {{/if}}
-    {{/unless}}
 
 
 

@@ -120,7 +120,7 @@ function triggerError(el,errorMsg){
 function displayErrors(message) {
     $('#error-msg').html(message.responseText);
     modalDialog.header('Unexpected error occurred!');
-    modalDialog.content('<h4 id="error-msg"></h4>');
+    modalDialog.content('<h4 id="error-msg">' + message.responseText + '</h4>');
     modalDialog.footer('<div class="buttons"><a href="#" id="group-unexpected-error-link" class="btn-operations">Ok' +
         '</a></div>');
     modalDialog.showAsError();

@@ -21,8 +21,12 @@ function onRequest(context) {
     var deviceType = context.uriParams.deviceType;
     var deviceName = request.getParameter("deviceName");
     var deviceId = request.getParameter("deviceId");
+	var unitName = utility.getTenantedDeviceUnitName(deviceType, "analytics-view");
+	if (!unitName) {
+		unitName = "cdmf.unit.default.device.type.analytics-view";
+	}
     return {
-        "deviceAnalyticsViewUnitName": utility.getTenantedDeviceUnitName(deviceType, "analytics-view"),
+        "deviceAnalyticsViewUnitName": unitName,
         "deviceType": deviceType,
         "deviceName": deviceName,
         "deviceId": deviceId

@@ -22,7 +22,7 @@
     <parent>
         <groupId>org.wso2.carbon.devicemgt</groupId>
         <artifactId>carbon-devicemgt</artifactId>
-        <version>2.0.63-SNAPSHOT</version>
+        <version>3.0.46-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
@@ -38,8 +38,6 @@
         <module>org.wso2.carbon.device.application.mgt.common</module>
         <module>org.wso2.carbon.device.application.mgt.api</module>
         <module>org.wso2.carbon.device.application.mgt.ui</module>
-        <!--<module>org.wso2.carbon.device.application.mgt.android.platform</module>-->
-
     </modules>
 
     <build>
@@ -61,5 +59,6 @@
             </plugins>
         </pluginManagement>
     </build>
+
 
 </project>

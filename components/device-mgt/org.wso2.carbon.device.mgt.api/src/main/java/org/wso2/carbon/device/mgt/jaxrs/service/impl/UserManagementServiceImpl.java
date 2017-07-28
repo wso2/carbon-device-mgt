@@ -22,7 +22,9 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.eclipse.wst.common.uriresolver.internal.util.URIEncoder;
+import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
+import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
 import org.wso2.carbon.device.mgt.core.DeviceManagementConstants;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.device.mgt.core.service.EmailMetaInfo;
@@ -41,6 +43,7 @@ import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
 import org.wso2.carbon.identity.user.store.count.UserStoreCountRetriever;
 import org.wso2.carbon.identity.user.store.count.exception.UserStoreCounterException;
 import org.wso2.carbon.user.api.Permission;
+import org.wso2.carbon.user.api.RealmConfiguration;
 import org.wso2.carbon.user.api.UserStoreException;
 import org.wso2.carbon.user.api.UserStoreManager;
 import org.wso2.carbon.utils.CarbonUtils;
@@ -304,13 +307,16 @@ public class UserManagementServiceImpl implements UserManagementService {
                         new ErrorResponse.ErrorResponseBuilder().setMessage("User '" +
                                 username + "' does not exist for removal.").build()).build();
             }
+            // Un-enroll all devices for the user
+            DeviceManagementProviderService deviceManagementService = DeviceMgtAPIUtils.getDeviceManagementService();
+            deviceManagementService.setStatus(username, EnrolmentInfo.Status.REMOVED);
 
             userStoreManager.deleteUser(username);
             if (log.isDebugEnabled()) {
                 log.debug("User '" + username + "' was successfully removed.");
             }
             return Response.status(Response.Status.OK).build();
-        } catch (UserStoreException e) {
+        } catch (DeviceManagementException | UserStoreException e) {
             String msg = "Exception in trying to remove user by username: " + username;
             log.error(msg, e);
             return Response.serverError().entity(
@@ -412,6 +418,15 @@ public class UserManagementServiceImpl implements UserManagementService {
     public Response getUserCount() {
         try {
             UserStoreCountRetriever userStoreCountRetrieverService = DeviceMgtAPIUtils.getUserStoreCountRetrieverService();
+            RealmConfiguration secondaryRealmConfiguration = CarbonContext.getThreadLocalCarbonContext().getUserRealm().
+                    getRealmConfiguration().getSecondaryRealmConfig();
+            
+            if (secondaryRealmConfiguration != null) {
+                if (!secondaryRealmConfiguration.isPrimary() && !Constants.JDBC_USERSTOREMANAGER.
+                        equals(secondaryRealmConfiguration.getUserStoreClass().getClass())) {
+                    return getUserCountViaUserStoreManager();
+                }
+            }
             if (userStoreCountRetrieverService != null) {
                 long count = userStoreCountRetrieverService.countUsers("");
                 if (count != -1) {
@@ -423,6 +438,10 @@ public class UserManagementServiceImpl implements UserManagementService {
         } catch (UserStoreCounterException e) {
             String msg =
                     "Error occurred while retrieving the count of users that exist within the current tenant";
+            log.error(msg, e);
+        } catch (UserStoreException e) {
+            String msg =
+                    "Error occurred while retrieving user stores.";
             log.error(msg, e);
         }
         return getUserCountViaUserStoreManager();

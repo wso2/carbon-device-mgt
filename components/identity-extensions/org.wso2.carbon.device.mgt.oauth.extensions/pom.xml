@@ -22,13 +22,13 @@
     <parent>
         <groupId>org.wso2.carbon.devicemgt</groupId>
         <artifactId>identity-extensions</artifactId>
-        <version>2.0.63-SNAPSHOT</version>
+        <version>3.0.46-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>org.wso2.carbon.device.mgt.oauth.extensions</artifactId>
-    <version>2.0.63-SNAPSHOT</version>
+    <version>3.0.46-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <name>WSO2 Carbon - OAuth Extensions</name>
     <url>http://wso2.org</url>
@@ -88,12 +88,16 @@
                         </Export-Package>
                         <Import-Package>
 							org.wso2.carbon.identity.oauth2.grant.jwt;version="${carbon.identity.jwt.grant.version.range}",
+                            org.apache.commons.lang,
                             org.apache.commons.logging,
                             org.osgi.service.component,
                             org.wso2.carbon.identity.application.common.model;version="${carbon.identity.framework.version.range}",
+                            org.wso2.carbon.identity.application.common;version="${carbon.identity.framework.version.range}",
+                            org.wso2.carbon.identity.application.mgt.*;version="${carbon.identity.framework.version.range}",
                             org.wso2.carbon.user.api,
                             org.wso2.carbon.user.core.service,
                             org.wso2.carbon.user.core.tenant,
+                            org.wso2.carbon.user.core.util,
                             org.json.simple,
                             javax.cache,
                             org.wso2.carbon.identity.core.util;version="${carbon.identity.framework.version.range}",
@@ -105,7 +109,8 @@
 							org.wso2.carbon.identity.application.authentication.framework.model;version="${carbon.identity.framework.version.range}",
 							org.wso2.carbon.identity.base;version="${carbon.identity.framework.version.range}",
 							org.wso2.carbon.identity.oauth2.*;version="${carbon.identity.framework.version.range}",
-							org.wso2.carbon.utils.multitenancy
+							org.wso2.carbon.utils.multitenancy,
+                            org.apache.oltu.oauth2.common.validators
                         </Import-Package>
                     </instructions>
                 </configuration>

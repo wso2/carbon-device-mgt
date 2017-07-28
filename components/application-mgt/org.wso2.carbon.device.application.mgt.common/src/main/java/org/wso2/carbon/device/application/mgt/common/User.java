@@ -18,6 +18,9 @@
  */
 package org.wso2.carbon.device.application.mgt.common;
 
+/**
+ * Represents an user of {@link Application}.
+ */
 public class User {
 
     private String userName;
@@ -43,5 +46,10 @@ public class User {
 
     public void setTenantId(int tenantId) {
         this.tenantId = tenantId;
+    }
+
+    @Override
+    public String toString() {
+        return "User-name : " + userName + "\t Tenant-ID : " + tenantId;
     }
 }

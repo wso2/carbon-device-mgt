@@ -29,5 +29,9 @@ function onRequest(context){
     });
 
     var deviceType = context.uriParams.deviceType;
-    return {"deviceViewUnitName": utility.getTenantedDeviceUnitName(deviceType, "device-view")};
+	var unitName = utility.getTenantedDeviceUnitName(deviceType, "device-view");
+	if (!unitName) {
+		unitName = "cdmf.unit.default.device.type.device-view";
+	}
+    return {"deviceViewUnitName": unitName};
 }

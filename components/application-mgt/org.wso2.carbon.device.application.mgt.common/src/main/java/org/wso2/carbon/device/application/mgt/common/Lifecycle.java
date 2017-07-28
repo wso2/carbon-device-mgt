@@ -19,6 +19,9 @@ package org.wso2.carbon.device.application.mgt.common;
 
 import java.util.Date;
 
+/**
+ * Represents an lifecycle of an {@link Application}.
+ */
 public class Lifecycle {
 
     private LifecycleState lifecycleState;

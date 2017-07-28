@@ -21,16 +21,18 @@ package org.wso2.carbon.policy.mgt.core.task;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.common.Device;
+import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
 import org.wso2.carbon.device.mgt.common.policy.mgt.PolicyMonitoringManager;
-import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
-import org.wso2.carbon.device.mgt.core.config.policy.PolicyConfiguration;
-import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
-import org.wso2.carbon.ntask.core.Task;
 import org.wso2.carbon.device.mgt.common.policy.mgt.monitor.PolicyComplianceException;
+import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
+import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderServiceImpl;
+import org.wso2.carbon.ntask.core.Task;
 import org.wso2.carbon.policy.mgt.core.internal.PolicyManagementDataHolder;
 import org.wso2.carbon.policy.mgt.core.mgt.MonitoringManager;
+import org.wso2.carbon.user.api.UserStoreException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,6 +43,8 @@ public class MonitoringTask implements Task {
     private static Log log = LogFactory.getLog(MonitoringTask.class);
 
     Map<String, String> properties;
+    private boolean executeForTenants = false;
+    private final String IS_CLOUD = "is.cloud";
 
 
     @Override
@@ -58,6 +62,61 @@ public class MonitoringTask implements Task {
         if (log.isDebugEnabled()) {
             log.debug("Monitoring task started to run.");
         }
+        if(System.getProperty(IS_CLOUD) != null && Boolean.parseBoolean(System.getProperty(IS_CLOUD))){
+            executeForTenants = true;
+        }
+        if(executeForTenants) {
+            this.executeforAllTenants();
+        } else {
+            this.executeTask();
+        }
+    }
+
+    /**
+     * Check whether Device platform (ex: android) is exist in the cdm-config.xml file before adding a
+     * Monitoring operation to a specific device type.
+     *
+     * @param deviceType available device types.
+     * @return return platform is exist(true) or not (false).
+     */
+
+    private boolean isPlatformExist(String deviceType) {
+        PolicyMonitoringManager policyMonitoringManager = PolicyManagementDataHolder.getInstance()
+                .getDeviceManagementService().getPolicyMonitoringManager(deviceType);
+        if (policyMonitoringManager != null) {
+            return true;
+        }
+        return false;
+    }
+
+    private void executeforAllTenants() {
+
+        if (log.isDebugEnabled()) {
+            log.debug("Monitoring task started to run for all tenants.");
+        }
+        try {
+            DeviceManagementProviderService deviceManagementService = new DeviceManagementProviderServiceImpl();
+            List<Integer> tenants = deviceManagementService.getDeviceEnrolledTenants();
+            for (Integer tenant : tenants) {
+                String tenantDomain = PolicyManagementDataHolder.getInstance().
+                        getRealmService().getTenantManager().getDomain(tenant);
+                try {
+                    PrivilegedCarbonContext.startTenantFlow();
+                    PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(tenantDomain);
+                    PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(tenant);
+                    this.executeTask();
+                } finally {
+                    PrivilegedCarbonContext.endTenantFlow();
+                }
+            }
+        } catch (UserStoreException e) {
+            log.error("Error occurred while trying to get the available tenants", e);
+        } catch (DeviceManagementException e) {
+            log.error("Error occurred while trying to get the available tenants from device manager service ", e);
+        }
+    }
+
+    private void executeTask(){
 
         MonitoringManager monitoringManager = PolicyManagementDataHolder.getInstance().getMonitoringManager();
         List<String> deviceTypes = new ArrayList<>();
@@ -83,7 +142,7 @@ public class MonitoringTask implements Task {
                     PolicyMonitoringManager monitoringService =
                             PolicyManagementDataHolder.getInstance().getDeviceManagementService()
                                     .getPolicyMonitoringManager(deviceType);
-                    List<Device> devices = deviceManagementProviderService.getAllDevices(deviceType);
+                    List<Device> devices = deviceManagementProviderService.getAllDevices(deviceType, false);
                     if (monitoringService != null && !devices.isEmpty()) {
                         List<Device> notifiableDevices = new ArrayList<>();
                         if (log.isDebugEnabled()) {
@@ -123,23 +182,5 @@ public class MonitoringTask implements Task {
         } else {
             log.info("No device types registered currently. So did not run the monitoring task.");
         }
-
-    }
-
-    /**
-     * Check whether Device platform (ex: android) is exist in the cdm-config.xml file before adding a
-     * Monitoring operation to a specific device type.
-     *
-     * @param deviceType available device types.
-     * @return return platform is exist(true) or not (false).
-     */
-
-    private boolean isPlatformExist(String deviceType) {
-        PolicyMonitoringManager policyMonitoringManager = PolicyManagementDataHolder.getInstance()
-                .getDeviceManagementService().getPolicyMonitoringManager(deviceType);
-        if (policyMonitoringManager != null) {
-            return true;
-        }
-        return false;
     }
 }

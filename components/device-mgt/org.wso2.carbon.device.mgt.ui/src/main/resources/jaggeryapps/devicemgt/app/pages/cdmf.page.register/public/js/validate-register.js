@@ -92,7 +92,7 @@ $(document).ready(function(){
             $(errorMsg).text("Password is a required field. It cannot be empty.");
             $(errorMsgWrapper).removeClass("hidden");
         } else if (password.length < 6) {
-            $(errorMsg).text("Password is a required field. It cannot be empty.");
+            $(errorMsg).text("Password should contain a minimum of 6 characters.");
             $(errorMsgWrapper).removeClass("hidden");
         } else if (password != passwordConfirmation) {
             $(errorMsg).text("Please enter the same password for confirmation.");

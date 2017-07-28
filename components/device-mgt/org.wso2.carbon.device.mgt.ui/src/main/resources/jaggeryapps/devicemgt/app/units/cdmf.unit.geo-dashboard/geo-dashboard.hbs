@@ -1,0 +1,756 @@
+{{!
+  Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+
+  WSO2 Inc. licenses this file to you under the Apache License,
+  Version 2.0 (the "License"); you may not use this file except
+  in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing,
+  software distributed under the License is distributed on an
+  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  KIND, either express or implied. See the License for the
+  specific language governing permissions and limitations
+  under the License.
+}}
+
+{{#zone "topCss"}}
+    {{css  "css/app.css" combine=false}}
+    {{css  "css/map.css" combine=false}}
+    {{css  "css/leaflet.css" combine=false}}
+    {{css  "css/L.Control.Locate.css" combine=false}}
+    {{css  "css/MarkerCluster.Default.css" combine=false}}
+    {{css  "css/leaflet_fullscreen/leaflet.fullscreen.css" combine=false}}
+    {{css  "css/leaflet/leaflet.draw.css" combine=false}}
+
+    {{css  "css/d3/c3.css" combine=false}}
+    {{css  "css/bootstrap-datepicker.min.css" combine=false}}
+
+    <style>
+        .datepicker-inline {
+            margin:0 auto;
+        }
+    </style>
+{{/zone}}
+
+{{#zone "content"}}
+    <div id="alerts-common"></div>
+{{/zone}}
+
+<span id="geo-charts" data-ws-endpoint="{{wsEndpoint}}" data-ws-token="{{wsToken}}" data-geo-public-uri="{{@unit.publicUri}}"
+      data-device-location="{{lastLocation}}"></span>
+
+<div class="map-wrapper">
+    {{#unless @unit.params.hideSearch}}
+        <div class="navbar-collapse collapse" style="display:inline-block;">
+            <ul class="nav navbar-nav-right">
+                <li>
+                    <form id="mapSearch" class="navbar-form" role="search"
+                          onsubmit="focusOnSpatialObject($(this).find('#searchbox').val());return false;">
+                        <div class="form-group has-feedback">
+                            <input autofocus="true" id="searchbox" type="text" placeholder="Search"
+                                   class="form-control typeahead">
+                            <span id="searchicon" class="fa fa-search form-control-feedback"></span>
+                        </div>
+                        <input style="visibility: hidden; position: fixed;" type="submit"/>
+                    </form>
+                </li>
+            </ul>
+        </div>
+    {{/unless}}
+
+    <div id="" style="height: 63vh;">
+        <!-- Sidebar -->
+        <div id="map"></div>
+        {{#if geoServicesEnabled}}
+        <div id="ws-alerts">
+            <i id="ws-alert-stream" class="fw fw-circle text-muted"></i> Alerts Stream&nbsp;
+            <i id="ws-spatial-stream" class="fw fw-circle text-muted"></i> Spatial Stream
+        </div>
+        {{/if}}
+    </div>
+
+    <div id="predictionResults" style="background: darkgray;display: none;border-radius: 13px;height: 94%;padding: 0"
+         class="col-md-2 pull-right">
+        <div class="panel-heading text-center">
+            <h4> Prediction Results For: <span id="predictionResultsID" class="text-info"></span>
+                <i id="objectInfoCloseButton" class="fa fa-times pull-right"
+                   onclick="$('#predictionResults').animate({width: ['toggle','swing']},200);toggeled = false;spatialObject = currentSpatialObjects[selectedSpatialObject];spatialObject.removePath();spatialObject.marker.closePopup();selectedSpatialObject = null;">
+                </i>
+            </h4>
+        </div>
+        <br>
+        <div class="panel panel-default" style="overflow: auto;box-shadow: 0 0 8px 0 #635749">
+            <div class="panel-heading text-center"><h4>Prediction</h4>
+            </div>
+            <br>
+            <div class="panel-body">
+                <div style="max-height: 100%;margin: 0;border: none;margin-left: -25px" id="prediction_chart_div"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="loading">
+        <div class="loading-indicator">
+            <div class="progress progress-striped active">
+                <div class="progress-bar progress-bar-info" style="width: 100%"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="aboutModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button class="close" type="button" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Welcome to the BootLeaf template!</h4>
+                </div>
+                <div class="modal-body">
+                    <ul class="nav nav-tabs" id="aboutTabs">
+                        <li class="active"><a href="#about" data-toggle="tab"><i class="fa fa-question-circle"></i>&nbsp;About
+                                                                                                                   the project</a></li>
+                        <li><a href="#contact" data-toggle="tab"><i class="fa fa-envelope"></i>&nbsp;Contact us</a></li>
+                        <li><a href="#disclaimer" data-toggle="tab"><i class="fa fa-exclamation-circle"></i>&nbsp;Disclaimer</a>
+                        </li>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-globe"></i>&nbsp;Metadata
+                                <b class="caret"></b></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="#boroughs-tab" data-toggle="tab">Boroughs</a></li>
+                                <li><a href="#subway-lines-tab" data-toggle="tab">Subway Lines</a></li>
+                                <li><a href="#theaters-tab" data-toggle="tab">Theaters</a></li>
+                                <li><a href="#museums-tab" data-toggle="tab">Museums</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <div class="tab-content" id="aboutTabsContent" style="padding-top: 10px;">
+                        <div class="tab-pane fade active in" id="about">
+                            <p>A simple, responsive template for building web mapping applications with <a
+                                    href="http://getbootstrap.com/">Bootstrap 3</a>, <a href="http://leafletjs.com/"
+                                                                                        target="_blank">Leaflet</a>, and <a
+                                    href="http://twitter.github.io/typeahead.js/" target="_blank">typeahead.js</a>. Open
+                               source, MIT licensed, and available on <a href="https://github.com/bmcbride/bootleaf"
+                                                                         target="_blank">GitHub</a>.</p>
+
+                            <div class="panel panel-primary">
+                                <div class="panel-heading">Features</div>
+                                <ul class="list-group">
+                                    <li class="list-group-item">Fullscreen mobile-friendly map template with responsive
+                                                                navbar and modal placeholders
+                                    </li>
+                                    <li class="list-group-item">jQuery loading of external GeoJSON files</li>
+                                    <li class="list-group-item">Logical multiple layer marker clustering via the <a
+                                            href="https://github.com/Leaflet/Leaflet.markercluster" target="_blank">leaflet
+                                                                                                                    marker cluster plugin</a></li>
+                                    <li class="list-group-item">Elegant client-side multi-layer feature search with
+                                                                autocomplete using <a href="http://twitter.github.io/typeahead.js/" target="_blank">typeahead.js</a>
+                                    </li>
+                                    <li class="list-group-item">Responsive sidebar feature list with sorting and filtering
+                                                                via <a href="http://listjs.com/" target="_blank">list.js</a></li>
+                                    <li class="list-group-item">Marker icons included in grouped layer control via the <a
+                                            href="https://github.com/ismyrnow/Leaflet.groupedlayercontrol" target="_blank">grouped
+                                                                                                                           layer control plugin</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div id="disclaimer" class="tab-pane fade text-danger">
+                            <p>The data provided on this site is for informational and planning purposes only.</p>
+
+                            <p>Absolutely no accuracy or completeness guarantee is implied or intended. All information on
+                               this map is subject to such variations and corrections as might result from a complete title
+                               search and/or accurate field survey.</p>
+                        </div>
+                        <div class="tab-pane fade" id="contact">
+                            <form id="contact-form">
+                                <div class="well well-sm">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="first-name">First Name:</label>
+                                                <input type="text" class="form-control" id="first-name">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="last-email">Last Name:</label>
+                                                <input type="text" class="form-control" id="last-email">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="email">Email:</label>
+                                                <input type="text" class="form-control" id="email">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-8">
+                                            <label for="message">Message:</label>
+                                            <textarea class="form-control" rows="8" id="message"></textarea>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <p>
+                                                <button type="submit" class="btn btn-primary pull-right"
+                                                        data-dismiss="modal">Submit
+                                                </button>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="tab-pane fade" id="boroughs-tab">
+                            <p>Borough data courtesy of <a
+                                    href="http://www.nyc.gov/html/dcp/html/bytes/meta_dis_nyboroughwi.shtml"
+                                    target="_blank">New York City Department of City Planning</a></p>
+                        </div>
+                        <div class="tab-pane fade" id="subway-lines-tab">
+                            <p><a href="http://spatialityblog.com/2010/07/08/mta-gis-data-update/#datalinks"
+                                  target="_blank">MTA Subway data</a> courtesy of the <a
+                                    href="http://www.urbanresearch.org/about/cur-components/cuny-mapping-service"
+                                    target="_blank">CUNY Mapping Service at the Center for Urban Research</a></p>
+                        </div>
+                        <div class="tab-pane fade" id="theaters-tab">
+                            <p>Theater data courtesy of <a
+                                    href="https://data.cityofnewyork.us/Recreation/Theaters/kdu2-865w" target="_blank">NYC
+                                                                                                                       Department of Information & Telecommunications (DoITT)</a></p>
+                        </div>
+                        <div class="tab-pane fade" id="museums-tab">
+                            <p>Museum data courtesy of <a
+                                    href="https://data.cityofnewyork.us/Recreation/Museums-and-Galleries/sat5-adpb"
+                                    target="_blank">NYC Department of Information & Telecommunications (DoITT)</a></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="attributionModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button class="close" type="button" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 id = "title" class="modal-title">
+                        WSO2 Geo Dashboard
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <div id="attribution"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="modal" id="addTileServer" tabindex="-1" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content" style="width:50%; margin:0 auto;">
+                <div class="modal-header"
+                     style="cursor: move;background: #f9f9f9;-webkit-box-shadow: inset 0px 0px 14px 1px rgba(0,0,0,0.2);-moz-box-shadow: inset 0px 0px 14px 1px rgba(0,0,0,0.2);box-shadow: inset 0px 0px 14px 1px rgba(0,0,0,0.2);">
+                    <button class="close" type="button" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">
+                        &lt;!&ndash; TODO: Trigger bootstrap tooltip $('#aboutTileUrl').tooltip(); to enable tooltip &ndash;&gt;
+                        Add tiler server URL <sup id="aboutTileUrl" style="cursor: pointer;" data-toggle="tooltip"
+                                                  title="What is a tile URL?"><i class="fa fa-question" style="color: #39F;"
+                                                                                 data-toggle="collapse"
+                                                                                 data-target="#collapseOne"></i></sup>
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <div id="urlInput">
+                        <div style="height: 0px;" id="collapseOne" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                <p>A string of the following form:</p>
+                                <pre><code class="javascript"><span class="string">'http://{s}.somedomain.com/blabla/{z}/{x}/{y}.png'</span></code></pre>
+                                <p><code class="javascript">{s}</code> means one of the available subdomains (used
+                                                                       sequentially to help with browser parallel requests per domain limitation; subdomain
+                                                                       values are specified in options; <code class="javascript">a</code>, <code
+                                            class="javascript">b</code> or <code class="javascript">c</code> by default, can
+                                                                       be omitted), <code class="javascript">{z}</code> — zoom level, <code class="javascript">{x}</code>
+                                                                       and <code class="javascript">{y}</code> — tile coordinates.</p>
+
+                                <p>You can use custom keys in the template, which will be <a
+                                        href="#util-template">evaluated</a> from TileLayer options, like this:</p>
+                                <pre><code class="javascript">L.tileLayer(<span class="string">'http://{s}.somedomain.com/{foo}/{z}/{x}/{y}.png'</span>,
+                                {foo: <span class="string">'bar'</span>});</code></pre>
+
+                            </div>
+                        </div>
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-addon"><i class="fa fa-italic"></i></span>
+                            <input autofocus="enable" id="tileName" type="text" class="form-control"
+                                   placeholder="Tile URL name">
+                        </div>
+                        <br>
+
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-addon"><i class="fa fa-globe"></i></span>
+                            <input id="tileUrl" class="form-control" type="text"
+                                   placeholder="http://{s}.somedomain.com/blabla/{z}/{x}/{y}.png">
+                            <span class="input-group-btn">
+                            <button class="btn btn-info" type="button" onclick="addTileUrl()"><i class="fa fa-plus"></i>
+                            </button>
+                        </span>
+                        </div>
+                        <br/>
+
+                        <div class="panel panel-default" style="width: 80%;">
+                            <div>
+                                <h4 class="panel-title" style="font-size: 12px;line-height: 1.5;">
+                                    <button style="text-align: left;" class="btn btn-default btn-xs btn-block collapsed"
+                                            onclick="$('.fa-chevron-right').toggleClass('fa-rotate-90')"
+                                            data-toggle="collapse" data-parent="#accordion" href="#tileUrlOptions">
+                                        <i class="fa fa-chevron-right"></i> Options
+                                    </button>
+                                </h4>
+                            </div>
+                            <div style="height: 0px;" id="tileUrlOptions" class="panel-collapse collapse">
+                                <div class="panel-body">
+
+                                    <div class="input-group input-group-sm col-sm-9">
+                                        <small class="text-primary">
+                                            <label class="col-sm-2 control-label" for="sub_domains">Sub-domains</label>
+                                        </small>
+                                        <input id="sub_domains" type="text" class="form-control"
+                                               placeholder="Enter sub-domains in CSV format">
+                                    </div>
+
+                                    <br/>
+
+                                    <div class="input-group input-group-sm col-sm-9">
+                                        <small class="text-primary">
+                                            <label class="col-sm-9 control-label" for="maxzoom">Max zoom level</label>
+                                        </small>
+                                        <input id="maxzoom" type="text" class="form-control"
+                                               placeholder="Number between(around) 1~19">
+                                    </div>
+                                    <br/>
+
+                                    <div class="input-group input-group-sm col-sm-9">
+                                        <small class="text-primary">
+                                            <label class="col-sm-2 control-label" for="data_attribution">Attribution</label>
+                                        </small>
+                                        <input id="data_attribution" type="text" class="form-control"
+                                               placeholder="Enter attribution">
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="modal" id="addWmsUrl" tabindex="-1" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content" style="width:50%; margin:0 auto;">
+                <div class="modal-header"
+                     style="cursor: move;background: #f9f9f9;-webkit-box-shadow: inset 0px 0px 14px 1px rgba(0,0,0,0.2);-moz-box-shadow: inset 0px 0px 14px 1px rgba(0,0,0,0.2);box-shadow: inset 0px 0px 14px 1px rgba(0,0,0,0.2);">
+                    <button class="close" type="button" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">
+                        <sup id="aboutWms" style="cursor: pointer;" data-toggle="tooltip"
+                             title="What WMS end-point"><i class="fa fa-question"
+                                                           style="color: #39F;"
+                                                           data-toggle="collapse"
+                                                           data-target="#wmsOverview"></i></sup>
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <div>
+                        <div style="height: 0px;" id="wmsOverview" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                The OpenGIS® Web Map Service Interface Standard (WMS) provides a simple HTTP interface for
+                                requesting geo-registered map images from one or more distributed geospatial databases.
+                                A WMS request defines the geographic layer(s) and area of interest to be processed.
+                                The response to the request is one or more geo-registered map images (returned as JPEG, PNG,
+                                etc) that can be displayed in a browser application.
+                                The interface also supports the ability to specify whether the returned images should be
+                                transparent so that layers from multiple servers can be combined or not.
+                            </div>
+                        </div>
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-addon"><i class="fa fa-italic"></i></span>
+                            <input autofocus="enable" id="serviceName" type="text" class="form-control"
+                                   placeholder="Service provider name">
+                        </div>
+
+                        <br>
+
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-addon"><i class="fa fa-align-justify"></i></span>
+                            <input autofocus="enable" id="layers" type="text" class="form-control"
+                                   placeholder="Service layers as comma seperated values">
+                        </div>
+                        <br>
+
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-addon">V.</span>
+                            <input autofocus="enable" id="wmsVersion" type="text" class="form-control"
+                                   placeholder="WMS version (i.e: 1.1.1 or 1.3.0)">
+                        </div>
+                        <br>
+
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-addon"><i class="fa fa-globe"></i></span>
+                            <input id="serviceEndPoint" class="form-control" type="text"
+                                   placeholder="http(s)://sedac.ciesin.columbia.edu/geoserver/wms">
+                            <span class="input-group-btn">
+                            <button class="btn btn-info" type="button" onclick="addWmsEndPoint()"><i
+                                    class="fa fa-plus"></i>
+                            </button>
+                        </span>
+                        </div>
+
+                        <br/>
+
+                        <div class="panel panel-default" style="width: 80%;">
+                            <div>
+                                <h4 class="panel-title" style="font-size: 12px;line-height: 1.5;">
+                                    <button style="text-align: left;" class="btn btn-default btn-xs btn-block collapsed"
+                                            onclick="$('.fa-chevron-right').toggleClass('fa-rotate-90')"
+                                            data-toggle="collapse" data-parent="#accordion" href="#wmsOptions">
+                                        <i class="fa fa-chevron-right"></i> Options
+                                    </button>
+                                </h4>
+                            </div>
+                            <div style="height: 0px;" id="wmsOptions" class="panel-collapse collapse">
+                                <div class="panel-body">
+
+                                    <div class="input-group input-group-sm col-sm-11">
+                                        <small class="text-primary">
+                                            <label class="col-sm-6 control-label" for="outputFormat">Output format</label>
+                                        </small>
+                                        <input id="outputFormat" type="text" class="form-control"
+                                               placeholder="Output format (i.e: image/png, image/jpeg, image/svg)">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="commonModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="editWithinGeoJSON" tabindex="-1" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button class="close" type="button" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">
+                    </h4>
+                    <div class="col-lg-5 col-md-6 col-centered">
+                        <h4>
+                            Adding GeoJson
+                            <br>
+                        </h4>
+                    </div>
+                </div>
+                <div class="modal-body">
+                    <div class="col-lg-8 col-md-8 col-centered">
+                        <div>
+                            <label for="importGeoJsonFile">Import GeoJson</label>
+                            <input id="importGeoJsonFile" type="file">
+                            <hr />
+                            <label for="enterGeoJson">Enter GeoJson</label>
+                            <textarea id="enterGeoJson" class="form-control" rows="10"></textarea>
+                        </div>
+                        <div class="pull-right">
+                            <button id="updateGeoJson" class="btn btn-primary" onclick="importGeoJson()">Import</button>
+                            <button type="button" class="btn btn-default" onclick="closeAll()">Cancel</button>
+                            <br />
+                            <br />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal" id="editExitGeoJSON" tabindex="-1" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button class="close" type="button" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">
+                    </h4>
+                    <div class="col-lg-5 col-md-6 col-centered">
+                        <h4>
+                            Adding GeoJson
+                            <br>
+                        </h4>
+                    </div>
+                </div>
+                <div class="modal-body">
+                    <div class="col-lg-8 col-md-8 col-centered">
+                        <div>
+                            <label for="importGeoJsonFile">Import GeoJson</label>
+                            <input id="importGeoJsonFile" type="file">
+                            <hr />
+                            <label for="enterGeoJson">Enter GeoJson</label>
+                            <textarea id="enterGeoJson" class="form-control" rows="10"></textarea>
+                        </div>
+                        <div class="pull-right">
+                            <button id="updateGeoJson" class="btn btn-primary" onclick="importGeoJson()">Import</button>
+                            <button type="button" class="btn btn-default" onclick="closeAll()">Cancel</button>
+                            <br />
+                            <br />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div style="display: none">
+        <div id="markerPopup" class="popover top">
+            <div class="arrow"></div>
+            <h3 class="popover-title">ID <span id="objectId"></span></h3>
+            <div class="popover-content">
+                <h6>Information</h6>
+                <p id="information" class="bg-primary" style="margin: 0px;padding: 0px;"></p>
+                {{#if geoServicesEnabled}}
+                <h6>Speed<span class="label label-primary pull-right"><span id="speed"></span> km/h</span></h6>
+                <h6>Heading<span id="heading" class="label label-primary pull-right"></span></h6>
+                <button type="button" class="btn btn-info btn-xs" onClick="toggleSpeedGraph();return false;">Speed Graph</button>
+                <button type="button" class="btn btn-info btn-xs" onClick="focusOnRecentHistorySpatialObject();return false;">Recent History</button>
+                <button type="button" class="btn btn-info btn-xs" onClick="popupDateRange();">Full History</button>
+                {{/if}}
+            </div>
+        </div>
+
+        <div id="dateRangePopup">
+            <div>
+                <label> From: <input id="timeFrom" type="text"> </label>
+                <label> To: <input id="timeTo" type="text"> </label>
+                <button type="button" class="btn btn-info btn-xs" onClick="focusOnHistorySpatialObject(document.getElementById('objectId').innerHTML, document.getElementById('timeFrom').value, document.getElementById('timeTo').value);return false;">Full History</button>
+            </div>
+        </div>
+
+        <div id="markerPopupStop" class="popover top">
+            <div class="arrow"></div>
+            <h3 class="popover-title">ID <span id="objectId"></span></h3>
+
+            <div class="popover-content">
+                <h6>Information</h6>
+
+                <p id="information" class="bg-primary" style="margin: 0px;padding: 0px;"></p>
+            </div>
+        </div>
+
+        <div id="areaPopup" class="popover top">
+            <div class="arrow"></div>
+            <h3 class="popover-title">ID <span id="objectId"></span></h3>
+            <div class="popover-content">
+                <h6>Severity</h6>
+
+                <p id="severity" class="bg-primary" style="margin: 0px;padding: 0px;"></p>
+            </div>
+            <div class="popover-content">
+                <h6>Information</h6>
+
+                <p id="information" class="bg-primary" style="margin: 0px;padding: 0px;"></p>
+            </div>
+        </div>
+
+        <div id="setWithinAlert">
+            <form role="form" style="width: auto;">
+                <div class="form-group">
+                    <label class="text-primary" for="areaName">Fence name</label>
+                    <input class="form-control" id="areaName" placeholder="Fence name" type="text">
+                    <span class="help-block">Name of the selected area(e.g. colombo)</span>
+                </div>
+                <div>
+                    <div class="btn-group btn-group-sm btn-group-justified">
+                        <div class="btn-group">
+                            <button id="addWithinAlert" onclick="setWithinAlert($(this).attr('leaflet_id'))" type="button"
+                                    class="btn btn-info btn-xs" data-toggle="tooltip" data-placement="left"
+                                    title="Save selected area for alerts">Save
+                            </button>
+                        </div>
+                        <div class="btn-group">
+                            <button id="editGeoJson"
+                                    onclick="$('#editWithinGeoJSON #updateGeoJson').attr('leaflet_id',$(this).attr('leaflet_id'));$('#editWithinGeoJSON textarea').text(JSON.stringify(map._layers[$(this).attr('leaflet_id')].toGeoJSON(),null, '\t'));$('#editWithinGeoJSON').modal('toggle')"
+                                    type="button" class="btn btn-default btn-xs">Edit
+                            </button>
+                        </div>
+                        <div class="btn-group">
+                            <a id="exportGeoJson" download="geoJson.json" href="#"
+                               onclick="exportToGeoJSON(this, JSON.stringify(map._layers[$(this).attr('leaflet_id')].toGeoJSON(),null, '\t'))"
+                               class="btn btn-default btn-xs" data-toggle="tooltip" data-placement="left"
+                               title="Export selected area as a geoJson file">Export</a>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div id="setExitAlert">
+            <form role="form" style="width: auto;">
+                <div class="form-group">
+                    <label class="text-primary" for="areaName">Fence name</label>
+                    <input class="form-control" id="areaName" placeholder="Fence name" type="text">
+                    <span class="help-block">Name of the selected area(e.g. colombo)</span>
+                </div>
+                <div>
+                    <div class="btn-group btn-group-sm btn-group-justified">
+                        <div class="btn-group">
+                            <button id="addExitAlert" onclick="setExitAlert($(this).attr('leaflet_id'))" type="button"
+                                    class="btn btn-info btn-xs" data-toggle="tooltip" data-placement="left"
+                                    title="Save selected area for alerts">Save
+                            </button>
+                        </div>
+                        <div class="btn-group">
+                            <button id="editGeoJson"
+                                    onclick="$('#editExitGeoJSON #updateGeoJson').attr('leaflet_id',$(this).attr('leaflet_id'));$('#editExitGeoJSON textarea').text(JSON.stringify(map._layers[$(this).attr('leaflet_id')].toGeoJSON(),null, '\t'));$('#editExitGeoJSON').modal('toggle')"
+                                    type="button" class="btn btn-default btn-xs">Edit
+                            </button>
+                        </div>
+                        <div class="btn-group">
+                            <a id="exportGeoJson" download="geoJson.json" href="#"
+                               onclick="exportToGeoJSON(this, JSON.stringify(map._layers[$(this).attr('leaflet_id')].toGeoJSON(),null, '\t'))"
+                               class="btn btn-default btn-xs" data-toggle="tooltip" data-placement="left"
+                               title="Export selected area as a geoJson file">Export</a>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div id="templateLoader"></div>
+        <div id="setStationeryAlert">
+            <form role="form" style="width: auto;">
+                <div class="form-group">
+                    <label class="text-primary" for="areaName">Fence name</label>
+                    <input class="form-control" id="areaName" placeholder="Stationery name" type="text">
+                    <span class="help-block">Name of the selected area(e.g. colombo)</span>
+
+                    <label class="text-primary" for="fRadius">Fluctuation radius</label>
+                    <input class="form-control" id="fRadius" onblur="reformatRadius(this.form.fRadius.value);" placeholder="m" type="text">
+
+                    <label class="text-primary" for="time">Time</label>
+                    <input class="form-control" id="time" placeholder="Seconds" type="text">
+                </div>
+                <div>
+                    <div class="btn-group btn-group-sm btn-group-justified">
+                        <div class="btn-group">
+                            <button id="addStationeryAlert" onclick="setStationeryAlert($(this).attr('leaflet_id'))" type="button"
+                                    class="btn btn-info btn-xs" data-toggle="tooltip" data-placement="left"
+                                    title="Save selected area for alerts">Save
+                            </button>
+                        </div>
+                        <div class="btn-group">
+                            <button id="editGeoJson"
+                                    onclick="$('#editWithinGeoJSON #updateGeoJson').attr('leaflet_id',$(this).attr('leaflet_id'));$('#editWithinGeoJSON textarea').text(JSON.stringify(map._layers[$(this).attr('leaflet_id')].toGeoJSON(),null, '\t'));$('#editWithinGeoJSON').modal('toggle')"
+                                    type="button" class="btn btn-default btn-xs">Edit
+                            </button>
+                        </div>
+                        <div class="btn-group">
+                            <a id="exportGeoJson" download="geoJson.json" href="#"
+                               onclick="exportToGeoJSON(this, JSON.stringify(map._layers[$(this).attr('leaflet_id')].toGeoJSON(),null, '\t'))"
+                               class="btn btn-default btn-xs" data-toggle="tooltip" data-placement="left"
+                               title="Export selected area as a geoJson file">Export</a>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div id="setTrafficAlert">
+            <form role="form" style="width: auto;">
+                <div class="form-group">
+                    <label class="text-primary" for="areaName">Fence name</label>
+                    <input class="form-control" id="areaName" placeholder="Area Name" type="text">
+                    <span class="help-block">Name of the selected area(e.g. colombo)</span>
+                </div>
+                <div>
+                    <div class="btn-group btn-group-sm btn-group-justified">
+                        <div class="btn-group">
+                            <button id="addTrafficAlert" onclick="setTrafficAlert($(this).attr('leaflet_id'))" type="button"
+                                    class="btn btn-info btn-xs" data-toggle="tooltip" data-placement="left"
+                                    title="Save selected area for alerts">Save
+                            </button>
+                        </div>
+                        <div class="btn-group">
+                            <button id="editGeoJson"
+                                    onclick="$('#editTrafficGeoJSON #updateGeoJson').attr('leaflet_id',$(this).attr('leaflet_id'));$('#editTrafficGeoJSON textarea').text(JSON.stringify(map._layers[$(this).attr('leaflet_id')].toGeoJSON(),null, '\t'));$('#editTrafficGeoJSON').modal('toggle')"
+                                    type="button" class="btn btn-default btn-xs">Edit
+                            </button>
+                        </div>
+                        <div class="btn-group">
+                            <a id="exportGeoJson" download="geoJson.json" href="#"
+                               onclick="exportToGeoJSON(this, JSON.stringify(map._layers[$(this).attr('leaflet_id')].toGeoJSON(),null, '\t'))"
+                               class="btn btn-default btn-xs" data-toggle="tooltip" data-placement="left"
+                               title="Export selected area as a geoJson file">Export</a>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{{#zone "bottomJs" }}
+    {{js "js/leaflet/leaflet.js" }}
+    {{js "js/leaflet/leaflet.markercluster.js" }}
+    {{js "js/leaflet/L.Control.Locate.js" }}
+    {{js "js/leaflet/L.Control.Focus.js" }}
+    {{js "js/leaflet/L.Control.GeoAlerts.js" }}
+    {{js "js/leaflet/leaflet.groupedlayercontrol.js" }}
+    {{js "js/leaflet/Leaflet.fullscreen.min.js" }}
+    {{js "js/leaflet/Marker.Rotate.js" }}
+    {{js "js/leaflet/leaflet.draw.js" }}
+    {{js "js/jquery/jquery-ui.min.js" }}
+    <!-- Leaflet plugins libries -->
+
+    {{js "js/firstTemp.js" }}
+
+    {{js "js/typeahead.bundle.min.js" }}
+
+    <!-- C3 charting library using D3 core -->
+    {{js "js/d3/d3.min.js" }}
+    {{js "js/d3/c3.min.js" }}
+    {{js "js/application_options.js"  }}
+    {{js "js/secondTemp.js" }}
+    {{js "js/geo_remote.js" }}
+    {{js "js/show_alert_in_map.js" }}
+    {{js "js/app.js" }}
+    {{js "js/websocket.js" }}
+    {{js "js/geo_fencing.js" }}
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var geoLocationLink = $(".initGeoLocationLink");
+            if (geoLocationLink) {
+                geoLocationLink.on('click', function () {
+                    initializeGeoLocation({{geoServicesEnabled}});
+                });
+                geoPublicUri = $("#geo-charts").data("geo-public-uri");
+                {{#if geoServicesEnabled}}
+                    var geoToolsMenu = $('#location-action-bar');
+                    var realtTime = createGeoToolListItem('javascript:enableRealTime()',
+                                                          'Return to Real Time View', 'fw fw-undo', geoToolsMenu);
+                    realtTime.css("display", "none");
+                    realtTime.attr("id", "realTimeShow");
+                    createGeoToolListItem(geoPublicUri + '/assets/html_templates/modal/speed_alert.html',
+                                          'Set Speed Alert', 'glyphicon glyphicon-dashboard', geoToolsMenu);
+                    createGeoToolListItem(geoPublicUri + '/assets/html_templates/modal/stationery_alert.html',
+                                          'Add Stationary Alert', 'glyphicon glyphicon-link', geoToolsMenu);
+                    createGeoToolListItem(geoPublicUri + '/assets/html_templates/modal/within_alert.html',
+                                          'Add Geofence Alert', 'glyphicon glyphicon-log-in', geoToolsMenu);
+                    createGeoToolListItem(geoPublicUri + '/assets/html_templates/modal/exit_alert.html',
+                                          'Add Geofence Exit Alert', 'glyphicon glyphicon-log-out', geoToolsMenu);
+                {{/if}}
+            }
+        });
+    </script>
+{{/zone}}
+
+

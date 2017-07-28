@@ -25,7 +25,8 @@ deviceModule = function () {
     var devicemgtProps = require("/app/modules/conf-reader/main.js")["conf"];
     var serviceInvokers = require("/app/modules/oauth/token-protected-service-invokers.js")["invokers"];
     var batchProvider = require("/app/modules/batch-provider-api.js")["batchProviders"];
-
+	var process = require("process");
+	var carbon = require("carbon");
     var publicMethods = {};
     var privateMethods = {};
 
@@ -66,38 +67,30 @@ deviceModule = function () {
         var carbonUser = session.get(constants["USER_SESSION_KEY"]);
         if (!carbonUser) {
             log.error("User object was not found in the session");
-            throw constants["ERRORS"]["USER_NOT_FOUND"];
+            userModule.logout(function () {
+                response.sendRedirect(devicemgtProps["appContext"] + "login");
+            });
         }
         var userName = carbonUser.username + "@" + carbonUser.domain;
-
-        var locationDataSet = [];
-        switch (deviceType) {
-            case 'android':
-                locationDataSet = batchProvider.getData(userName, deviceId, deviceType);
-                break;
-            case 'android_sense':
-                locationDataSet = batchProvider.getData(userName, deviceId, deviceType);
-                break;
-
-        }
-        var locationData = [];
-        var locationTimeData = [];
-        if (locationDataSet != null) {
-
-            for (var i = 0; i < locationDataSet.length; i++) {
-                var gpsReading = {};
-                var gpsReadingTimes = {};
-                gpsReading.lat = locationDataSet[i].latitude;
-                gpsReading.lng = locationDataSet[i].longitude;
-                if (deviceType == "android") {
-                    gpsReadingTimes.time = locationDataSet[i].timeStamp;
-                } else {
-                    gpsReadingTimes.time = locationDataSet[i].meta_timestamp;
-                }
-                locationData.push(gpsReading);
-                locationTimeData.push(gpsReadingTimes);
+        var locationHistory = [];
+        var geoServicesEnabled = devicemgtProps.serverConfig.geoLocationConfiguration.isEnabled;
+        if (geoServicesEnabled) {
+            try {
+                var fromDate = new Date();
+                fromDate.setHours(fromDate.getHours() - 2);
+                var toDate = new Date();
+                var serviceUrl = devicemgtProps["httpsURL"] + '/api/device-mgt/v1.0/geo-services/stats/' + deviceType + '/' + deviceId + '?from=' + fromDate + '&to=' + toDate;
+                serviceInvokers.XMLHttp.get(serviceUrl,
+                                            function (backendResponse) {
+                                                if (backendResponse.status === 200 && backendResponse.responseText) {
+                                                    locationHistory = JSON.parse(backendResponse.responseText);
+                                                }
+                                            });
+            } catch (e) {
+                log.error(e.message, e);
             }
         }
+
         var locationInfo = {};
         try {
             var url = devicemgtProps["httpsURL"] + "/api/device-mgt/v1.0/devices/" + deviceType + "/" + deviceId + "/location";
@@ -110,13 +103,11 @@ deviceModule = function () {
                         locationInfo.latitude = device.latitude;
                         locationInfo.longitude = device.longitude;
                         locationInfo.updatedOn = device.updatedTime;
-
                     }
                 });
         } catch (e) {
             log.error(e.message, e);
         }
-
 
         var utility = require('/app/modules/utility.js')["utility"];
         try {
@@ -192,27 +183,45 @@ deviceModule = function () {
                                 }
                             }
                         }
+
                         if (device["deviceInfo"]) {
                             filteredDeviceData["latestDeviceInfo"] = device["deviceInfo"];
+                        } else {
+                            filteredDeviceData["latestDeviceInfo"] = {};
+                            filteredDeviceData["latestDeviceInfo"]["location"] = {};
+                        }
 
-                            //location related verification and modifications
-                            // adding the location histry for the movement path.
-                            var locationHistory = {};
-                            locationHistory.locations = locationData;
-                            locationHistory.times = locationTimeData;
-                            filteredDeviceData["locationHistory"] = locationHistory;
+                        //location related verification and modifications
+                        // adding the location histry for the movement path.
+                        filteredDeviceData["locationHistory"] = locationHistory;
 
-                            //checking for the latest location information.
-                            if (filteredDeviceData.latestDeviceInfo.location && locationInfo) {
-                                var infoDate = new Date(filteredDeviceData.latestDeviceInfo.location.updatedTime);
-                                var locationDate = new Date(locationInfo.updatedOn);
-                                if (infoDate < locationDate) {
-                                    filteredDeviceData.latestDeviceInfo.location.longitude = locationInfo.longitude;
-                                    filteredDeviceData.latestDeviceInfo.location.latitude = locationInfo.latitude;
-                                }
+                        //checking for the latest location information based on historical data.
+                        if (locationHistory) {
+                            var infoDate;
+                            var locationDate;
+                            var historicalLatestLoc = locationHistory[locationHistory.length - 1];
+                            if (historicalLatestLoc && filteredDeviceData.latestDeviceInfo && filteredDeviceData.latestDeviceInfo.location) {
+                                infoDate = new Date(filteredDeviceData.latestDeviceInfo.location.updatedTime);
+                                locationDate = new Date(historicalLatestLoc.values.timeStamp);
+                            }
+                            if (infoDate < locationDate || filteredDeviceData.latestDeviceInfo.length === 0) {
+                                filteredDeviceData.latestDeviceInfo.location = {};
+                                filteredDeviceData.latestDeviceInfo.location.longitude = historicalLatestLoc.values.longitude;
+                                filteredDeviceData.latestDeviceInfo.location.latitude = historicalLatestLoc.values.latitude;
+                                filteredDeviceData.latestDeviceInfo.location.updatedTime = historicalLatestLoc.values.timeStamp;
                             }
                         }
 
+                        //checking for the latest location information.
+                        if (filteredDeviceData.latestDeviceInfo.location && locationInfo) {
+                            var infoDate = new Date(filteredDeviceData.latestDeviceInfo.location.updatedTime);
+                            var locationDate = new Date(locationInfo.updatedOn);
+                            if (infoDate < locationDate) {
+                                filteredDeviceData.latestDeviceInfo.location.longitude = locationInfo.longitude;
+                                filteredDeviceData.latestDeviceInfo.location.latitude = locationInfo.latitude;
+                                filteredDeviceData.latestDeviceInfo.location.updatedTime = locationInfo.updatedOn;
+                            }
+                        }
 
                         response["content"] = filteredDeviceData;
                         response["status"] = "success";
@@ -245,16 +254,22 @@ deviceModule = function () {
             var url;
             if (uiPermissions.LIST_DEVICES) {
                 url = devicemgtProps["httpsURL"] +
-                    devicemgtProps["backendRestEndpoints"]["deviceMgt"] + "/devices?offset=0&limit=1";
+                      devicemgtProps["backendRestEndpoints"]["deviceMgt"] + "/devices?offset=0&limit=1";
             } else if (uiPermissions.LIST_OWN_DEVICES) {
                 url = devicemgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"] +
-                    "/devices?offset=0&limit=1&user=" + carbonUser.username;
+                      "/devices?offset=0&limit=1&user=" + carbonUser.username;
             } else {
                 log.error("Access denied for user: " + carbonUser.username);
                 return -1;
             }
             return serviceInvokers.XMLHttp.get(
                 url, function (responsePayload) {
+                    if(!responsePayload["responseText"]){
+                        log.error("Error while fetching device count. API `" + url + "` returns HTTP: " + responsePayload["status"]);
+                        userModule.logout(function () {
+                            response.sendRedirect(devicemgtProps["appContext"] + "login");
+                        });
+                    }
                     return parse(responsePayload["responseText"])["count"];
                 },
                 function (responsePayload) {
@@ -264,9 +279,41 @@ deviceModule = function () {
             );
         } else {
             log.error("User object was not found in the session");
-            throw constants["ERRORS"]["USER_NOT_FOUND"];
+            userModule.logout(function () {
+                response.sendRedirect(devicemgtProps["appContext"] + "login");
+            });
         }
     };
+
+	publicMethods.getDeviceTypeCount = function () {
+		var carbonUser = session.get(constants.USER_SESSION_KEY);
+		if (carbonUser) {
+			var userModule = require("/app/modules/business-controllers/user.js")["userModule"];
+			var uiPermissions = userModule.getUIPermissions();
+			var url;
+			if (uiPermissions.LIST_OWN_DEVICES) {
+				url = devicemgtProps["httpsURL"] +
+					devicemgtProps["backendRestEndpoints"]["deviceMgt"] + "/device-types";
+			} else {
+				log.error("Access denied for user: " + carbonUser.username);
+				return -1;
+			}
+			return serviceInvokers.XMLHttp.get(
+				url, function (responsePayload) {
+					return parse(responsePayload["responseText"])["count"];
+				},
+				function (responsePayload) {
+					log.error(responsePayload["responseText"]);
+					return -1;
+				}
+			);
+		} else {
+			log.error("User object was not found in the session");
+            userModule.logout(function () {
+                response.sendRedirect(devicemgtProps["appContext"] + "login");
+            });
+		}
+	};
 
     publicMethods.getDeviceTypes = function () {
         var url = devicemgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"] + "/device-types";
@@ -276,6 +323,15 @@ deviceModule = function () {
         }
         return response;
     };
+
+	publicMethods.getDeviceTypesConfig = function () {
+		var url = devicemgtProps["httpsURL"] + devicemgtProps["backendRestEndpoints"]["deviceMgt"] + "/device-types/config";
+		var response = privateMethods.callBackend(url, constants["HTTP_GET"]);
+		if (response.status == "success") {
+			response.content = parse(response.content);
+		}
+		return response;
+	};
 
     /*
      @Updated
@@ -302,6 +358,9 @@ deviceModule = function () {
     publicMethods.getDevices = function (userName) {
         var url = devicemgtProps["httpsURL"] +
             devicemgtProps["backendRestEndpoints"]["deviceMgt"] + "/devices";
+        if (userName && userName !== "") {
+            url = url + "?user=" + userName;
+        }
         return serviceInvokers.XMLHttp.get(
             url, function (responsePayload) {
                 var devices = JSON.parse(responsePayload.responseText).devices;
@@ -316,5 +375,66 @@ deviceModule = function () {
             }
         );
     };
+
+	publicMethods.getDeviceAgentConfig = function (type, deviceId) {
+		var carbonUser = session.get(constants["USER_SESSION_KEY"]);
+		if (!carbonUser) {
+			log.error("User object was not found in the session");
+            userModule.logout(function () {
+                response.sendRedirect(devicemgtProps["appContext"] + "login");
+            });
+		}
+		var userName = carbonUser.username + "@" + carbonUser.domain;
+		var config = {};
+		config.type = type;
+		config.deviceId = deviceId;
+		// register a tenant based  app at API Manager
+		var applicationName = type.replace(" ", "") + "_" + carbonUser.domain;
+		var requestURL = (devicemgtProps["oauthProvider"]["appRegistration"]
+			["apiManagerClientAppRegistrationServiceURL"]).replace("/tenants","");
+		var payload = {applicationName:applicationName, tags:["device_agent"],
+			isAllowedToAllDomains:false, validityPeriod: 3600};
+
+		serviceInvokers.XMLHttp.post(
+			requestURL, payload, function (responsePayload) {
+				var app = JSON.parse(responsePayload.responseText);
+
+				config.clientId = app["client_id"];
+				config.clientSecret = app["client_secret"];
+				if (config.clientId && config.clientSecret) {
+					var JWTClientManagerServicePackagePath =
+						"org.wso2.carbon.identity.jwt.client.extension.service.JWTClientManagerService";
+					//noinspection JSUnresolvedFunction, JSUnresolvedVariable
+					var JWTClientManagerService = carbon.server.osgiService(JWTClientManagerServicePackagePath);
+					//noinspection JSUnresolvedFunction
+					var jwtClient = JWTClientManagerService.getJWTClient();
+					// returning access token by JWT grant type
+					var deviceScope = "device_" + type.replace(" ", "") + "_" + deviceId + " perm:device:enroll " +
+						"perm:device:disenroll perm:device:modify perm:devices:operations perm:device:publish-event";
+					var tokenInfo = jwtClient.getAccessToken(config.clientId, config.clientSecret,
+						userName, deviceScope);
+					config.accessToken = tokenInfo.getAccessToken();
+					config.refreshToken = tokenInfo.getRefreshToken();
+					if (config.accessToken == null) {
+						return null;
+					}
+					config.mqttGateway = "tcp://" + process.getProperty("mqtt.broker.host") + ":" + process.getProperty("mqtt.broker.port");
+					config.httpsGateway = "https://" + process.getProperty("iot.gateway.host") + ":" + process.getProperty("iot.gateway.https.port");
+					config.httpGateway = "http://" + process.getProperty("iot.gateway.host") + ":" + process.getProperty("iot.gateway.http.port");
+					return config;
+				} else {
+					return null;
+				}
+				return config;
+			},
+			function (responsePayload) {
+				log.error(responsePayload);
+				return null;
+			}
+		);
+		return config;
+
+	};
+
     return publicMethods;
 }();

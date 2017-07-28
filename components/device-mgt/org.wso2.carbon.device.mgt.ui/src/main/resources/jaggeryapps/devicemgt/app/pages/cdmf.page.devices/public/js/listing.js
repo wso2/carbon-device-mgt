@@ -155,7 +155,7 @@ function loadDevices(searchType, searchParam) {
         serviceURL = "/api/device-mgt/v1.0/devices";
     } else if (permissionsUtil.hasPermission("LIST_OWN_DEVICES")) {
         //Get authenticated users devices
-        serviceURL = "/api/device-mgt/v1.0/devices?username=" + currentUser;
+        serviceURL = "/api/device-mgt/v1.0/devices?user=" + currentUser;
     } else {
         $("#loading-content").remove();
         $('#device-table').addClass('hidden');
@@ -224,6 +224,22 @@ function loadDevices(searchType, searchParam) {
         return true;
     }
 
+    // Read "analyticsView" from config.json and return value if exists
+    function getAnalyticsView(type) {
+        var deviceTypes = deviceListing.data("deviceTypes");
+        for (var i = 0; i < deviceTypes.length; i++) {
+            if (deviceTypes[i].type == type) {
+                var analyticsView = deviceTypes[i].analyticsView;
+                if (analyticsEnabled == undefined) {
+                    // if undefined go to default analytics view
+                    return "none";
+                }
+                return analyticsView;
+            }
+        }
+        return "none";
+    }
+
     function groupingEnabled(type) {
         var deviceTypes = deviceListing.data("deviceTypes");
         for (var i = 0; i < deviceTypes.length; i++) {
@@ -266,7 +282,7 @@ function loadDevices(searchType, searchParam) {
         },
         {
             targets: 2,
-            data: 'user',
+            data: 'userPattern',
             class: 'remove-padding-top viewEnabledIcon'
         },
         {
@@ -297,7 +313,7 @@ function loadDevices(searchType, searchParam) {
         },
         {
             targets: 4,
-            data: 'deviceType',
+            data: 'type',
             class: 'remove-padding-top viewEnabledIcon',
             render: function (status, type, row, meta) {
                 return getDeviceTypeLabel(row.deviceType);
@@ -317,18 +333,26 @@ function loadDevices(searchType, searchParam) {
         },
         {
             targets: 6,
-            data: 'status',
+            data: 'action-buttons',
             class: 'text-right content-fill text-left-on-grid-view no-wrap tooltip-overflow-fix',
             render: function (status, type, row, meta) {
                 var deviceType = row.deviceType;
                 var deviceIdentifier = row.deviceIdentifier;
                 var html = '<span></span>';
-                var statURL = $("#device-listing").data("analitics-url");
+                var portalUrl = $("#device-listing").data("portal-url");
+                var serverUrl = $("#device-listing").data("server-url");
+                var userDomain = $("#device-listing").data("userDomain");
+                var statURL;
                 if (status != 'REMOVED') {
                     html = '';
 
                     if (analyticsEnabled(row.deviceType)) {
 
+                        // redirecting to respective analytics view depending on device configs
+                        switch (getAnalyticsView(deviceType)) {
+                            case "DAS" : { statURL =portalUrl + "/portal/t/"+ userDomain+ "/dashboards/android-iot/battery?owner=" +currentUser+"&deviceId=";break;}
+                            default : {statURL=context+ "/device/" + row.deviceType +"/analytics?deviceId="}
+                        }
 
                         html += '<a href="' + statURL  +
                             deviceIdentifier + '&deviceName=' + row.name + '" ' + 'data-click-event="remove-form"' +
@@ -380,13 +404,19 @@ function loadDevices(searchType, searchParam) {
     ];
 
     var fnCreatedRow = function (row, data, dataIndex) {
-        $(row).attr('data-type', 'selectable');
+
+        if(data.status != "REMOVED"){
+            $(row).attr('data-type', 'selectable');
+        }else{
+            $(row).attr('data-type', 'non-selectable');
+        }
+        
         $(row).attr('data-deviceid', htmlspecialchars(data.deviceIdentifier));
         $(row).attr('data-devicetype', htmlspecialchars(data.deviceType));
         $(row).attr('data-url', context + '/device/' + htmlspecialchars(data.deviceType) + '?id=' + htmlspecialchars(data.deviceIdentifier));
         var model = htmlspecialchars(getPropertyValue(data.properties, 'DEVICE_MODEL'));
         var vendor = htmlspecialchars(getPropertyValue(data.properties, 'VENDOR'));
-        var owner = htmlspecialchars(data.user);
+        var owner = htmlspecialchars(data.userPattern);
         var status = htmlspecialchars(data.status);
         var ownership = htmlspecialchars(data.ownership);
         var deviceType = htmlspecialchars(data.deviceType);
@@ -436,7 +466,7 @@ function loadDevices(searchType, searchParam) {
                 {
                     model: getPropertyValue(data.devices[index].properties, "DEVICE_MODEL"),
                     vendor: getPropertyValue(data.devices[index].properties, "VENDOR"),
-                    user: data.devices[index].enrolmentInfo.owner,
+                    userPattern: data.devices[index].enrolmentInfo.owner,
                     status: data.devices[index].enrolmentInfo.status,
                     ownership: data.devices[index].enrolmentInfo.ownership,
                     deviceType: data.devices[index].type,

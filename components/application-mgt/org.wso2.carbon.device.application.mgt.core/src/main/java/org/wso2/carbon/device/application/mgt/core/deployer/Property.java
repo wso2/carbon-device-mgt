@@ -21,6 +21,9 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlValue;
 
+/**
+ * Represents a property of the {@link Platform}.
+ */
 @XmlRootElement(name = "Property")
 public class Property {
 

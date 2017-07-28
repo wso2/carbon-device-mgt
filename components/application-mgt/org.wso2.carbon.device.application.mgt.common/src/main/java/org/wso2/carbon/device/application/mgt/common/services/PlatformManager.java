@@ -25,7 +25,7 @@ import java.util.List;
 
 /**
  * Platform manager is responsible for handling platforms, which will be used to as a registry of platforms.
- * And will be able to provide the platforms related informations to other classes which requires.
+ * And will be able to provide the platforms related information to other classes which requires.
  */
 public interface PlatformManager {
 
@@ -37,9 +37,11 @@ public interface PlatformManager {
 
     void register(String tenantDomain, Platform platform) throws PlatformManagementException;
 
-    void update(String tenantDomain, String oldPlatformIdentifier, Platform platform) throws PlatformManagementException;
+    void update(String tenantDomain, String oldPlatformIdentifier, Platform platform)
+            throws PlatformManagementException;
 
-    void unregister(String tenantDomain, String platformIdentifier, boolean isFileBased) throws PlatformManagementException;
+    void unregister(String tenantDomain, String platformIdentifier, boolean isFileBased)
+            throws PlatformManagementException;
 
     void addMapping(String tenantDomain, List<String> platformIdentifiers) throws PlatformManagementException;
 

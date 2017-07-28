@@ -22,7 +22,7 @@
     <parent>
         <artifactId>device-mgt-extensions</artifactId>
         <groupId>org.wso2.carbon.devicemgt</groupId>
-        <version>2.0.63-SNAPSHOT</version>
+        <version>3.0.46-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -112,7 +112,7 @@
                             org.w3c.dom,
                             org.wso2.carbon.context,
                             org.wso2.carbon.device.mgt.common.*,
-                            org.wso2.carbon.device.mgt.extensions.*,
+							org.wso2.carbon.device.mgt.extensions.device.type.template.*,
                             org.wso2.carbon.registry.api,
                             org.wso2.carbon.registry.core,
                             org.wso2.carbon.registry.core.*,

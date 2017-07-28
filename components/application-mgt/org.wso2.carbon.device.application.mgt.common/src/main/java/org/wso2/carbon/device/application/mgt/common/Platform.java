@@ -23,6 +23,9 @@ import org.wso2.carbon.device.application.mgt.common.jaxrs.Exclude;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Represents the platform of an {@link Application}.
+ */
 public class Platform {
 
     /**
@@ -175,6 +178,9 @@ public class Platform {
         return !(name == null || identifier == null);
     }
 
+    /**
+     * Represents a property of a {@link Platform}.
+     */
     public static class Property implements Cloneable {
 
         private String name;

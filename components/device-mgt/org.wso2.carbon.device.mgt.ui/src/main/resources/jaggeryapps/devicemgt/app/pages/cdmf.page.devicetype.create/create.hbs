@@ -1,0 +1,264 @@
+{{!
+  Copyright (c) 2017, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+
+  WSO2 Inc. licenses this file to you under the Apache License,
+  Version 2.0 (the "License"); you may not use this file except
+  in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing,
+  software distributed under the License is distributed on an
+  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  KIND, either express or implied. See the License for the
+  specific language governing permissions and limitations
+  under the License.
+}}
+{{unit "cdmf.unit.ui.title" pageTitle="Device Type Management"}}
+
+{{#zone "topCss"}}
+    {{css "css/devicetype.css"}}
+{{/zone}}
+
+{{#zone "breadcrumbs"}}
+    <li>
+        <a href="{{@app.context}}/">
+            <i class="icon fw fw-home"></i>
+        </a>
+    </li>
+    <li>
+        <!--suppress HtmlUnknownTarget -->
+        <a href="{{@app.context}}/device-types">
+            Device Types
+        </a>
+    </li>
+    <li>
+        <!--suppress HtmlUnknownTarget -->
+        <a href="{{@app.context}}/device-type/add">
+            Add
+        </a>
+    </li>
+{{/zone}}
+
+{{#zone "content"}}
+    {{#if canManage}}
+        <!-- content/body -->
+        <div class="row">
+            <div class="col-md-12">
+                <!-- content -->
+                <div id="devicetype-create-form" class="container col-centered wr-content">
+                <div class="wr-form">
+                    <p class="page-sub-title">Create Device Type</p>
+                    <hr/>
+                        <div class="">
+                            <div class="wr-steps">
+                                <div class="col-md-6 col-xs-6">
+                                    <div class="itm-wiz itm-wiz-current" data-step="policy-platform">
+                                        <div class="wiz-no">1</div>
+                                        <div class="wiz-lbl hidden-xs"><span>Create Device Type</span></div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 col-xs-6">
+                                    <div class="itm-wiz" data-step="policy-profile">
+                                        <div class="wiz-no">2</div>
+                                        <div class="wiz-lbl hidden-xs"><span>Create Device Event</span></div>
+                                    </div>
+                                </div>
+                                <br class="c-both"/>
+                            </div>
+                            <br/><br/>
+                            <hr/>
+
+                            <div id="devicetype-create-error-msg" class="alert alert-danger hidden" role="alert">
+                                <i class="icon fw fw-error"></i><span></span>
+                            </div>
+
+
+                            <label class="wr-input-label">
+                                Name *
+                            </label>
+                            <div class="wr-input-control">
+                                <input placeholder="E.g firealarm" aria-describedby="basic-addon1" type="text" id="deviceTypeName"
+                                   data-error-msg="invalid device type name" class="form-control"/>
+                            </div>
+
+                            <label class="wr-input-label">
+                                Description *
+                            </label>
+                            <div class="wr-input-control ">
+                                <textarea aria-describedby="basic-addon1" type="text" id="deviceTypeDescription"
+                                      data-error-msg="invalid device type description"
+                                      class="form-control" rows="3" cols="70"></textarea>
+                            </div>
+
+                            <label class="wr-input-label">
+                                Push Notification Transport
+                            </label>
+                            <div class="wr-input-control">
+                                <select id="pushNotification" class="form-control select">
+                                    <option>NONE</option>
+                                    <option>MQTT</option>
+                                </select>
+                            </div>
+
+                            <label class="wr-input-label" for="passcode-policy-min-length">
+                                Features (Definition of the operation from server to device)
+                                <span class="helper" title="E.g  name: fire alarm range control, code: alarm, description: this controls the alarm sound type and range of firealarm">
+                                    <span class="wr-help-tip glyphicon glyphicon-question-sign"></span>
+                                </span>
+                            </label>
+
+                            <div class="form-group feature_field_wrapper" name="deviceFeature">
+                                <div class="row">
+                                    <div class="col-xs-3">
+                                        <input type="text" class="form-control" id="feature-name" placeholder="name"/>
+                                    </div>
+                                    <div class="col-xs-4">
+                                        <input type="text" class="form-control" id="feature-code" placeholder="code"/>
+                                    </div>
+                                    <div class="col-xs-4">
+                                        <textarea aria-describedby="basic-addon1" type="text" id="feature-description"
+                                                  placeholder="description"
+                                                  data-error-msg="invalid feature description"
+                                                  class="form-control" rows="1" cols="30"></textarea>
+                                    </div>
+                                    <button type="button" class="wr-btn wr-btn-horizontal add_feature_button"><i class="fa fa-plus"></i></button>
+                                </div>
+                            </div>
+
+                            <label class="wr-input-label" for="passcode-policy-min-length">
+                                Attributes
+                                <span class="helper" title="E.g vendor, model_number ...">
+                                    <span class="wr-help-tip glyphicon glyphicon-question-sign"></span>
+                                </span>
+                            </label>
+
+                            <div class="form-group attribute_field_wrapper">
+                                <div class="row">
+                                    <div class="dontfloat">
+                                        <div class="col-xs-3">
+                                            <input type="text" class="form-control" name="attribute[]" />
+                                        </div>
+                                        <button type="button" class="wr-btn wr-btn-horizontal add_button"><i class="fa fa-plus"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="hidden-div">
+                                <div id="add-attribute-field" name="add-attribute-field">
+                                    <div class="row">
+                                        <div class="dontfloat feature-wrapper">
+                                            <div class="col-xs-3">
+                                                <input type="text" class="form-control" name="attribute[]" />
+                                            </div>
+                                            <button type="button" class="wr-btn wr-btn-horizontal wr-btn-secondary remove_button"><i class="fa fa-minus"></i></button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!--Commenting enrollment operation capability-->
+                            <!--<label class="wr-input-label" for="passcode-policy-min-length">-->
+                                <!--Enrolment Operation-->
+                                <!--<span class="helper" title="Triggers the operation after the enrolment, E.g alarm">-->
+                                    <!--<span class="wr-help-tip glyphicon glyphicon-question-sign"></span>-->
+                                <!--</span>-->
+                            <!--</label>-->
+
+                            <div class="form-group operation_field_wrapper hidden-div">
+                                <div class="row">
+                                    <div class="dontfloat">
+                                        <div class="col-xs-3">
+                                            <input type="text" class="form-control" name="operation[]" />
+                                        </div>
+                                        <button type="button" class="wr-btn wr-btn-horizontal add_operation_button"><i class="fa fa-plus"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="hidden-div">
+                                <div id="add-operation-field" name="add-operation-field">
+                                    <div class="row">
+                                        <div class="dontfloat feature-wrapper">
+                                            <div class="col-xs-3">
+                                                <input type="text" class="form-control" name="operation[]" />
+                                            </div>
+                                            <button type="button" class="wr-btn wr-btn-horizontal wr-btn-secondary remove_operation_button"><i class="fa fa-minus"></i></button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <span class="roleNameError hidden glyphicon glyphicon-remove form-control-feedback"></span>
+                            <label class="error roleNameEmpty hidden" for="summary">
+                                Device Type Name is required, should be in minimum 3 characters long and not include any
+                                whitespaces or "@" character or "/" character.
+                            </label>
+
+                        </div>
+
+                        <br>
+                        <button id="add-devicetype-btn" class="wr-btn">Add Device Type</button>
+                    </div>
+                </div>
+                <div id="devicetype-created-msg" class="container col-centered wr-content hidden">
+                    <div class="wr-form">
+                        <p class="page-sub-title">Devicetype was added successfully.</p>
+                        <b>"View Device Type List"</b> to complete the process and go back to the devie type list.
+                        <hr/>
+                        <button class="wr-btn" onclick="window.location.href='{{@app.context}}/device-types'">
+                            View Device Type List
+                        </button>
+                    </div>
+                </div>
+                <!-- modal -->
+                <div class="modal fade" id="modalDevice" tabindex="-1" role="dialog" aria-labelledby="modalDevice">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content clearfix">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fw fw-cancel"></i></button>
+                                <h3 class="modal-title" id="deviceModalLabel">Device Type Updated</h3>
+                            </div>
+                            <div class="modal-body add-margin-top-2x add-margin-bottom-2x">
+                                <p>One fine body…</p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-primary">Go To Enrolment Page</button>
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal fade" id="modalDeviceFailed" tabindex="-1" role="dialog" aria-labelledby="modalDeviceFailed">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content clearfix">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fw fw-cancel"></i></button>
+                                <h3 class="modal-title" id="deviceModalLabel">Device Type Update Failed</h3>
+                            </div>
+                            <div class="modal-body add-margin-top-2x add-margin-bottom-2x">
+                                <p>One fine body…</p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /modal -->
+                <!-- /content -->
+                <div id="app-context" data-app-context="{{@app.context}}" class="hidden"></div>
+            </div>
+        </div>
+        <!-- /content/body -->
+    {{else}}
+        <h1 class="page-sub-title">
+            Permission Denied
+        </h1>
+        <br>
+        You not authorized to create device type.
+        <br>
+    {{/if}}
+{{/zone}}
+
+{{#zone "bottomJs"}}
+    {{js "js/bottomJs.js"}}
+{{/zone}}

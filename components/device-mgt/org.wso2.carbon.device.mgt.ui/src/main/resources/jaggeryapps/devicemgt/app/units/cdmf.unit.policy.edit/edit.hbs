@@ -67,7 +67,7 @@
                                 </div>
                                 <div class="clearfix">
                                     <label class="wr-input-label">
-                                        Set a name * to your policy<br>
+                                        Set a name to your policy *<br>
                                         ( should be 1-to-30 characters long )
                                     </label>
                                     <div id="policy-name-field" class="form-group wr-input-control">
@@ -192,10 +192,10 @@
                                             </div>
                                         </div>
                                     {{/if}}
-                                    <label class="wr-input-label" title="">
+                                    <label class="wr-input-label" title="" style="display: none;">
                                         Set an action upon non-compliance
                                     </label>
-                                    <div class="wr-input-control">
+                                    <div class="wr-input-control" style="display: none;">
                                         <div class="cus-col-50">
                                             <select id="action-input" class="form-control">
                                                 <option value="enforce" data-action="enforce" selected>Enforce</option>
@@ -203,7 +203,7 @@
                                                 <option value="monitor" data-action="monitor">Monitor</option>
                                             </select>
                                         </div>
-                                        <br class="c-both"/>
+                                        <!--<br class="c-both"/>-->
                                     </div>
                                 </div>
                                 <div class="wr-input-control wr-btn-grp">

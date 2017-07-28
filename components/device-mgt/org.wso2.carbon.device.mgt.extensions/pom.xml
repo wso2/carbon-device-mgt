@@ -22,7 +22,7 @@
     <parent>
         <artifactId>device-mgt</artifactId>
         <groupId>org.wso2.carbon.devicemgt</groupId>
-        <version>2.0.63-SNAPSHOT</version>
+        <version>3.0.46-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -51,10 +51,6 @@
             <artifactId>org.wso2.carbon.device.mgt.common</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon.devicemgt</groupId>
-            <artifactId>org.wso2.carbon.device.mgt.core</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.apache.ws.commons.axiom.wso2</groupId>
             <artifactId>axiom</artifactId>
         </dependency>
@@ -62,10 +58,18 @@
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.utils</artifactId>
         </dependency>
+		<dependency>
+			<groupId>org.wso2.carbon</groupId>
+			<artifactId>org.wso2.carbon.ndatasource.core</artifactId>
+		</dependency>
     </dependencies>
 
     <build>
         <plugins>
+			<plugin>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>maven-scr-plugin</artifactId>
+			</plugin>
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
@@ -77,14 +81,14 @@
                         <Bundle-Version>${carbon.device.mgt.version}</Bundle-Version>
                         <Bundle-Description>Device Management Extensions Bundle</Bundle-Description>
                         <Export-Package>
+							!org.wso2.carbon.device.mgt.extensions.internal,
                             org.wso2.carbon.device.mgt.extensions.*
                         </Export-Package>
                         <Import-Package>
                             org.wso2.carbon.governance.api.*,
                             javax.xml.namespace;resolution:=optional,
-                            org.wso2.carbon.device.mgt.core.*,
                             org.wso2.carbon.context,
-                            org.wso2.carbon.device.mgt.common,
+                            org.wso2.carbon.device.mgt.common.*,
                             org.wso2.carbon.device.mgt.common.license.mgt,
                             org.wso2.carbon.registry.api,
                             org.wso2.carbon.registry.core,
@@ -93,8 +97,23 @@
                             org.wso2.carbon.base,
 							javax.xml.bind,
 							org.apache.commons.logging,
-							org.wso2.carbon.utils
+							org.wso2.carbon.utils,
+							javax.naming,
+							javax.sql,
+							javax.xml,
+							javax.xml.bind.annotation,
+							javax.xml.parsers;resolution:=optional,
+							org.apache.commons.lang,
+							org.osgi.service.component,
+							org.w3c.dom,
+							org.wso2.carbon.ndatasource.core,
+							org.wso2.carbon.registry.core.service,
+							org.wso2.carbon.utils.dbcreator,
+							org.wso2.carbon.utils.multitenancy,
+							org.osgi.framework
                         </Import-Package>
+						<DynamicImport-Package>org.wso2.carbon.device.mgt.extensions.pull.notification,
+							org.wso2.carbon.device.mgt.extensions.pull.notification.*</DynamicImport-Package>
                     </instructions>
                 </configuration>
             </plugin>

@@ -23,6 +23,7 @@ import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.dao.EnrollmentDAO;
 import org.wso2.carbon.device.mgt.core.dao.util.DeviceManagementDAOUtil;
+import org.wso2.carbon.device.mgt.core.operation.mgt.OperationMapping;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -70,7 +71,6 @@ public class EnrollmentDAOImpl implements EnrollmentDAO {
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet rs = null;
-        int status = -1;
         try {
             conn = this.getConnection();
             String sql = "UPDATE DM_ENROLMENT SET OWNERSHIP = ?, STATUS = ?, DATE_OF_LAST_UPDATE = ? WHERE DEVICE_ID = ?" +
@@ -83,7 +83,7 @@ public class EnrollmentDAOImpl implements EnrollmentDAO {
             stmt.setString(5, enrolmentInfo.getOwner());
             stmt.setInt(6, tenantId);
             stmt.setInt(7, enrolmentInfo.getId());
-            stmt.executeUpdate();
+            int status = stmt.executeUpdate();
             return status;
         } catch (SQLException e) {
             throw new DeviceManagementDAOException("Error occurred while updating enrolment configuration", e);
@@ -97,7 +97,6 @@ public class EnrollmentDAOImpl implements EnrollmentDAO {
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet rs = null;
-        int status = -1;
         try {
             conn = this.getConnection();
             String sql = "UPDATE DM_ENROLMENT SET OWNERSHIP = ?, STATUS = ?, DATE_OF_LAST_UPDATE = ? WHERE ID = ?";
@@ -106,13 +105,49 @@ public class EnrollmentDAOImpl implements EnrollmentDAO {
             stmt.setString(2, enrolmentInfo.getStatus().toString());
             stmt.setTimestamp(3, new Timestamp(new Date().getTime()));
             stmt.setInt(4, enrolmentInfo.getId());
-            stmt.executeUpdate();
+            int status = stmt.executeUpdate();
             return status;
         } catch (SQLException e) {
             throw new DeviceManagementDAOException("Error occurred while updating enrolment configuration", e);
         } finally {
             DeviceManagementDAOUtil.cleanupResources(stmt, rs);
         }
+    }
+
+    @Override
+    public boolean updateEnrollmentStatus(List<EnrolmentInfo> enrolmentInfos) throws DeviceManagementDAOException {
+        Connection conn;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        boolean status = false;
+        int updateStatus = -1;
+        try {
+            conn = this.getConnection();
+            String sql = "UPDATE DM_ENROLMENT SET STATUS = ? WHERE ID = ?";
+            stmt = conn.prepareStatement(sql);
+            if (conn.getMetaData().supportsBatchUpdates()) {
+                for (EnrolmentInfo enrolmentInfo : enrolmentInfos) {
+                    stmt.setString(1, enrolmentInfo.getStatus().toString());
+                    stmt.setInt(2, enrolmentInfo.getId());
+                    stmt.addBatch();
+                }
+                updateStatus = stmt.executeBatch().length;
+            } else {
+                for (EnrolmentInfo enrolmentInfo : enrolmentInfos) {
+                    stmt.setString(1, enrolmentInfo.getStatus().toString());
+                    stmt.setInt(2, enrolmentInfo.getId());
+                    updateStatus = stmt.executeUpdate();
+                }
+            }
+            if (updateStatus > 0) {
+                status = true;
+            }
+        } catch (SQLException e) {
+            throw new DeviceManagementDAOException("Error occurred while updating enrolment status of given device-list.", e);
+        } finally {
+            DeviceManagementDAOUtil.cleanupResources(stmt, rs);
+        }
+        return status;
     }
 
 
@@ -157,6 +192,47 @@ public class EnrollmentDAOImpl implements EnrollmentDAO {
             stmt.setInt(2, enrolmentID);
             stmt.setString(3, currentOwner);
             stmt.setInt(4, tenantId);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new DeviceManagementDAOException("Error occurred while setting the status of device enrolment", e);
+        } finally {
+            DeviceManagementDAOUtil.cleanupResources(stmt, null);
+        }
+        return true;
+    }
+
+    @Override
+    public boolean setStatus(String currentOwner, EnrolmentInfo.Status status,
+                             int tenantId) throws DeviceManagementDAOException {
+        Connection conn;
+        PreparedStatement stmt = null;
+        try {
+            conn = this.getConnection();
+            String sql = "UPDATE DM_ENROLMENT SET STATUS = ? WHERE OWNER = ? AND TENANT_ID = ?";
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, status.toString());
+            stmt.setString(2, currentOwner);
+            stmt.setInt(3, tenantId);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new DeviceManagementDAOException("Error occurred while setting the status of device enrolment", e);
+        } finally {
+            DeviceManagementDAOUtil.cleanupResources(stmt, null);
+        }
+        return true;
+    }
+
+    @Override
+    public boolean setStatus(int enrolmentID, EnrolmentInfo.Status status, int tenantId) throws DeviceManagementDAOException {
+        Connection conn;
+        PreparedStatement stmt = null;
+        try {
+            conn = this.getConnection();
+            String sql = "UPDATE DM_ENROLMENT SET STATUS = ? WHERE ID = ? AND TENANT_ID = ?";
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, status.toString());
+            stmt.setInt(2, enrolmentID);
+            stmt.setInt(3, tenantId);
             stmt.executeUpdate();
         } catch (SQLException e) {
             throw new DeviceManagementDAOException("Error occurred while setting the status of device enrolment", e);

@@ -1,0 +1,271 @@
+{{!
+  Copyright (c) 2017, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+
+  WSO2 Inc. licenses this file to you under the Apache License,
+  Version 2.0 (the "License"); you may not use this file except
+  in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing,
+  software distributed under the License is distributed on an
+  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  KIND, either express or implied. See the License for the
+  specific language governing permissions and limitations
+  under the License.
+}}
+{{unit "cdmf.unit.ui.title" pageTitle="Device Type Management"}}
+
+{{#zone "topCss"}}
+    {{css "css/devicetype.css"}}
+{{/zone}}
+
+{{#zone "breadcrumbs"}}
+    <li>
+        <a href="{{@app.context}}/">
+            <i class="icon fw fw-home"></i>
+        </a>
+    </li>
+    <li>
+        <!--suppress HtmlUnknownTarget -->
+        <a href="{{@app.context}}/device-types">
+            Device Types
+        </a>
+    </li>
+    <li>
+        <!--suppress HtmlUnknownTarget -->
+        <a href="{{@app.context}}/device-type/edit?type={{name}}">
+            Edit
+        </a>
+    </li>
+{{/zone}}
+
+{{#zone "content"}}
+    {{#if canManage}}
+        <!-- content/body -->
+        <div class="row">
+            <div class="col-md-12">
+                <!-- content -->
+                <div id="devicetype-create-form" class="container col-centered wr-content">
+                <div class="wr-form">
+                    <p class="page-sub-title">{{name}}</p>
+                    <hr/>
+                    <div class="row">
+                        <div class="col-lg-8">
+                            <div id="devicetype-create-error-msg" class="alert alert-danger hidden" role="alert">
+                                <i class="icon fw fw-error"></i><span></span>
+                            </div>
+                            <br>
+                            <input aria-describedby="basic-addon1" type="text" id="deviceTypeName"
+                                   data-error-msg="invalid device type name" class="form-control hidden-input" value="{{name}}"/>
+
+                            <div class="wr-input-control">
+                                <label class="wr-input-label">
+                                Description *
+                                </label>
+                                <br>
+                                <textarea aria-describedby="basic-addon1" type="text" id="deviceTypeDescription"
+                                          data-error-msg="invalid device type description"
+                                          class="form-control" rows="3" cols="70">{{type.deviceTypeMetaDefinition.description}}</textarea>
+                            </div>
+                            
+                            <div class="wr-input-control">
+                                <label class="wr-input-label">Push Notification Transport</label>
+                                <div class="wr-input-control">
+                                    <!--suppress HtmlFormInputWithoutLabel -->
+                                    <select id="pushNotification" class="form-control select">
+                                        {{#if type.deviceTypeMetaDefinition.pushNotificationConfig}}
+                                            <option>NONE</option>
+                                            {{#if_eq type.deviceTypeMetaDefinition.pushNotificationConfig.type "MQTT"}}
+                                                <option selected>MQTT</option>
+                                            {{/if_eq}}
+                                        {{else}}
+                                            <option selected>NONE</option>
+                                            <option>MQTT</option>
+                                        {{/if}}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <label class="wr-input-label">
+                                Features
+                            </label>
+                            <br>
+                            <div class="form-group feature_field_wrapper">
+                                {{#if type.deviceTypeMetaDefinition.features}}
+                                    {{#each type.deviceTypeMetaDefinition.features}}
+                                    <div class="row">
+                                        <div class="dontfloat feature-wrapper" name ="deviceFeature">
+                                            <div class="col-xs-3">
+                                                <input type="text" class="form-control" id="feature-name" placeholder="name" value="{{this.name}}"/>
+                                            </div>
+                                            <div class="col-xs-4">
+                                                <input type="text" class="form-control" id="feature-code" placeholder="code" value="{{this.code}}"/>
+                                            </div>
+                                            <div class="col-xs-4">
+                                            <textarea aria-describedby="basic-addon1" type="text" id="feature-description"
+                                                      placeholder="description" data-error-msg="invalid feature description" class="form-control" rows="1" cols="30">{{this.description}}</textarea>
+                                            </div>
+                                            <button type="button" class="wr-btn wr-btn-horizontal remove_feature_button"><i class="fa fa-minus"></i></button>
+                                        </div>
+                                    </div>  
+                                    {{/each}}
+                                {{/if}}
+                                <div class="row">
+                                    <div class="dontfloat feature-wrapper" name="deviceFeature">
+                                        <div class="col-xs-3">
+                                            <input type="text" class="form-control" id="feature-name" placeholder="name"/>
+                                        </div>
+                                        <div class="col-xs-4">
+                                            <input type="text" class="form-control" id="feature-code" placeholder="code"/>
+                                        </div>
+                                        <div class="col-xs-4">
+                                            <textarea aria-describedby="basic-addon1" type="text" id="feature-description"
+                                                      placeholder="description"
+                                                      data-error-msg="invalid feature description"
+                                                      class="form-control" rows="1" cols="30"></textarea>
+                                        </div>
+                                        <button type="button" class="wr-btn wr-btn-horizontal add_feature_button"><i class="fa fa-plus"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <br>
+                            <label class="wr-input-label">
+                                Attributes
+                            </label>
+                            <br>
+                            <div class="form-group attribute_field_wrapper">
+                                {{#if type.deviceTypeMetaDefinition.properties}}
+                                    {{#each type.deviceTypeMetaDefinition.properties}}
+                                    <div class="row">
+                                        <div class="dontfloat">
+                                            <div class="col-xs-3">
+                                                <input type="text" class="form-control" name="attribute[]" value="{{this}}" />
+                                            </div>
+                                            <button type="button" class="wr-btn wr-btn-horizontal wr-btn-secondary remove_button"><i class="fa fa-minus"></i></button>
+                                        </div>
+                                    </div>
+                                    {{/each}}
+                                {{/if}}
+                                <div class="row">
+                                    <div class="dontfloat feature-wrapper">
+                                        <div class="col-xs-3">
+                                            <input type="text" class="form-control" name="attribute[]" />
+                                        </div>
+                                        <button type="button" class="wr-btn wr-btn-horizontal add_button"><i class="fa fa-plus"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="hidden-div">
+                                <div id="add-attribute-field" name="add-attribute-field">
+                                    <div class="row">
+                                        <div class="dontfloat feature-wrapper">
+                                            <div class="col-xs-3">
+                                                <input type="text" class="form-control" name="attribute[]" />
+                                            </div>
+                                            <button type="button" class="wr-btn wr-btn-horizontal wr-btn-secondary remove_button"><i class="fa fa-minus"></i></button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!--<label class="wr-input-label">-->
+                                <!--Enrolment Operation-->
+                            <!--</label>-->
+                            <!--<br>-->
+
+                            <div class="form-group operation_field_wrapper hidden-div">
+                                {{#if type.deviceTypeMetaDefinition.initialOperationConfig}}
+                                    {{#each type.deviceTypeMetaDefinition.initialOperationConfig.operations}}
+                                    <div class="row">
+                                        <div class="dontfloat feature-wrapper">
+                                            <div class="col-xs-3">
+                                                <input type="text" class="form-control" name="operation[]" value="{{this}}"/>
+                                            </div>
+                                            <button type="button" class="wr-btn wr-btn-horizontal wr-btn-secondary remove_operation_button"><i class="fa fa-minus"></i></button>
+                                        </div>
+                                    </div>
+                                    {{/each}}
+                                {{/if}}
+                                <div class="row">
+                                    <div class="dontfloat feature-wrapper">
+                                        <div class="col-xs-3">
+                                            <input type="text" class="form-control" name="operation[]" />
+                                        </div>
+                                        <button type="button" class="wr-btn wr-btn-horizontal add_operation_button"><i class="fa fa-plus"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="hidden-div">
+                                <div id="add-operation-field" name="add-operation-field">
+                                    <div class="row">
+                                        <div class="dontfloat feature-wrapper">
+                                            <div class="col-xs-3">
+                                                <input type="text" class="form-control" name="operation[]" />
+                                            </div>
+                                            <button type="button" class="wr-btn wr-btn-horizontal wr-btn-secondary remove_operation_button"><i class="fa fa-minus"></i></button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <span class="roleNameError hidden glyphicon glyphicon-remove form-control-feedback"></span>
+                            <label class="error roleNameEmpty hidden" for="summary">
+                                Device Type Name is required, should be in minimum 3 characters long and not include any
+                                whitespaces or "@" character or "/" character.
+                            </label>
+
+                        </div>
+
+                        </div>
+                        <br>
+                        <button id="add-devicetype-btn" class="wr-btn">Update</button>
+                        <div id="devicetype-create-success-msg" class="alert hidden" role="alert">
+                            <i class="icon fw fw-success"></i><span></span>
+                        </div>
+                    </div>
+                </div>
+                <div id="devicetype-created-msg" class="container col-centered wr-content hidden">
+                    <div class="wr-form">
+                        <p class="page-sub-title">Devicetype was added successfully.</p>
+                        <b>"View Device Type List"</b> to complete the process and go back to the devie type list.
+                        <hr/>
+                        <button class="wr-btn" onclick="window.location.href='{{@app.context}}/device-types'">
+                            View Device Type List
+                        </button>
+                    </div>
+                </div>
+                <div class="modal fade" id="modalDevice" tabindex="-1" role="dialog" aria-labelledby="modalDevice">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content clearfix">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fw fw-cancel"></i></button>
+                                <h3 class="modal-title" id="deviceModalLabel">Device Type Definition Updated</h3>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-primary" onclick="location.href='{{@app.context}}/device/enroll'">Go To Enrolment Page</button>
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /content -->
+                <div id="app-context" data-app-context="{{@app.context}}" class="hidden"></div>
+            </div>
+        </div>
+        <!-- /content/body -->
+    {{else}}
+        <h1 class="page-sub-title">
+            Permission Denied
+        </h1>
+        <br>
+        You not authorized to edit device type.
+        <br>
+    {{/if}}
+{{/zone}}
+
+{{#zone "bottomJs"}}
+    {{js "js/bottomJs.js"}}
+{{/zone}}

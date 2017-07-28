@@ -25,11 +25,14 @@ import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManagementException;
 import org.wso2.carbon.device.mgt.common.authorization.DeviceAccessAuthorizationService;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.PlatformConfigurationManagementService;
+import org.wso2.carbon.device.mgt.common.geo.service.GeoLocationProviderService;
+import org.wso2.carbon.device.mgt.common.group.mgt.GroupManagementException;
 import org.wso2.carbon.device.mgt.common.notification.mgt.NotificationManagementService;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManager;
 import org.wso2.carbon.device.mgt.common.permission.mgt.PermissionManagerService;
 import org.wso2.carbon.device.mgt.common.spi.DeviceManagementService;
+import org.wso2.carbon.device.mgt.common.spi.DeviceTypeGeneratorService;
 import org.wso2.carbon.device.mgt.core.DeviceManagementConstants;
 import org.wso2.carbon.device.mgt.core.app.mgt.ApplicationManagementProviderService;
 import org.wso2.carbon.device.mgt.core.app.mgt.ApplicationManagerProviderServiceImpl;
@@ -42,6 +45,7 @@ import org.wso2.carbon.device.mgt.core.config.datasource.DataSourceConfig;
 import org.wso2.carbon.device.mgt.core.config.tenant.PlatformConfigurationManagementServiceImpl;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.dao.GroupManagementDAOFactory;
+import org.wso2.carbon.device.mgt.core.geo.service.GeoLocationProviderServiceImpl;
 import org.wso2.carbon.device.mgt.core.notification.mgt.NotificationManagementServiceImpl;
 import org.wso2.carbon.device.mgt.core.notification.mgt.dao.NotificationManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.operation.mgt.OperationManagerImpl;
@@ -55,6 +59,7 @@ import org.wso2.carbon.device.mgt.core.service.GroupManagementProviderService;
 import org.wso2.carbon.device.mgt.core.service.GroupManagementProviderServiceImpl;
 import org.wso2.carbon.device.mgt.core.task.DeviceTaskManagerService;
 import org.wso2.carbon.device.mgt.core.util.DeviceManagementSchemaInitializer;
+import org.wso2.carbon.device.mgt.core.util.DeviceManagerUtil;
 import org.wso2.carbon.email.sender.core.service.EmailSenderService;
 import org.wso2.carbon.ndatasource.core.DataSourceService;
 import org.wso2.carbon.registry.core.service.RegistryService;
@@ -105,6 +110,12 @@ import java.util.concurrent.TimeUnit;
  * policy="dynamic"
  * bind="setEmailSenderService"
  * unbind="unsetEmailSenderService"
+ * @scr.reference name="device.type.generator.service"
+ * interface="org.wso2.carbon.device.mgt.common.spi.DeviceTypeGeneratorService"
+ * cardinality="0..1"
+ * policy="dynamic"
+ * bind="setDeviceTypeGeneratorService"
+ * unbind="unsetDeviceTypeGeneratorService"
  */
 public class DeviceManagementServiceComponent {
 
@@ -150,6 +161,8 @@ public class DeviceManagementServiceComponent {
             GroupManagementDAOFactory.init(dsConfig);
             NotificationManagementDAOFactory.init(dsConfig);
             OperationManagementDAOFactory.init(dsConfig);
+            /*Initialize the device cache*/
+            DeviceManagerUtil.initializeDeviceCache();
 
             /* Initialize Operation Manager */
             this.initOperationsManager();
@@ -241,6 +254,21 @@ public class DeviceManagementServiceComponent {
 
         /* Registering Group Management Service */
         GroupManagementProviderService groupManagementProvider = new GroupManagementProviderServiceImpl();
+        String defaultGroups =
+                DeviceConfigurationManager.getInstance().getDeviceManagementConfig().getDefaultGroupsConfiguration();
+        List<String> groups = this.parseDefaultGroups(defaultGroups);
+        for(String group : groups){
+            try {
+                groupManagementProvider.createDefaultGroup(group);
+            } catch (GroupManagementException e) {
+                // Error is ignored, because error could be group already exist exception. Therefore it does not require
+                // to print the error.
+                if(log.isDebugEnabled()){
+                    log.error("Error occurred while adding the group");
+                }
+            }
+        }
+
         DeviceManagementDataHolder.getInstance().setGroupManagementProviderService(groupManagementProvider);
         bundleContext.registerService(GroupManagementProviderService.class.getName(), groupManagementProvider, null);
 
@@ -259,6 +287,10 @@ public class DeviceManagementServiceComponent {
         DeviceManagementDataHolder.getInstance().setDeviceAccessAuthorizationService(deviceAccessAuthorizationService);
         bundleContext.registerService(DeviceAccessAuthorizationService.class.getName(),
                 deviceAccessAuthorizationService, null);
+
+        /* Registering Geo Service */
+        GeoLocationProviderService geoService = new GeoLocationProviderServiceImpl();
+        bundleContext.registerService(GeoLocationProviderService.class.getName(), geoService, null);
 
 	     /* Registering App Management service */
         try {
@@ -293,6 +325,19 @@ public class DeviceManagementServiceComponent {
         if (log.isDebugEnabled()) {
             log.debug("Device management metadata repository schema has been successfully initialized");
         }
+    }
+
+    private List<String> parseDefaultGroups(String defaultGroups) {
+        List<String> defaultGroupsList = new ArrayList<>();
+        if (defaultGroups != null && !defaultGroups.isEmpty()) {
+            String gps[] = defaultGroups.split(",");
+            if (gps.length != 0) {
+                for(String group : gps){
+                    defaultGroupsList.add(group.trim());
+                }
+            }
+        }
+        return defaultGroupsList;
     }
 
     /**
@@ -434,6 +479,30 @@ public class DeviceManagementServiceComponent {
         if (log.isDebugEnabled()) {
         }
         DeviceManagementDataHolder.getInstance().setDeviceTaskManagerService(null);
+    }
+
+    /**
+     * sets DeviceTypeGeneratorService.
+     *
+     * @param deviceTypeGeneratorService An Instance of DeviceTypeGeneratorService
+     */
+    protected void setDeviceTypeGeneratorService(DeviceTypeGeneratorService deviceTypeGeneratorService) {
+        if (log.isDebugEnabled()) {
+            log.debug("Un setting Device DeviceTypeGeneratorService");
+        }
+        DeviceManagementDataHolder.getInstance().setDeviceTypeGeneratorService(deviceTypeGeneratorService);
+    }
+
+    /**
+     * sets DeviceTypeGeneratorService.
+     *
+     * @param deviceTypeGeneratorService An Instance of DeviceTypeGeneratorService
+     */
+    protected void unsetDeviceTypeGeneratorService(DeviceTypeGeneratorService deviceTypeGeneratorService) {
+        if (log.isDebugEnabled()) {
+            log.debug("Un setting Device DeviceTypeGeneratorService");
+        }
+        DeviceManagementDataHolder.getInstance().setDeviceTypeGeneratorService(null);
     }
 }
 

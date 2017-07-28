@@ -20,6 +20,7 @@ package org.wso2.carbon.device.mgt.jaxrs.service.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Activity;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
@@ -72,6 +73,43 @@ public class ActivityProviderServiceImpl implements ActivityInfoProviderService 
         }
     }
 
+
+    @GET
+    @Override
+    @Path("/{id}/{devicetype}/{deviceid}")
+    public Response getActivityByDevice(@PathParam("id")
+                                        @Size(max = 45) String id,
+                                        @PathParam("devicetype")
+                                        @Size(max = 45) String devicetype,
+                                        @PathParam("deviceid")
+                                        @Size(max = 45) String deviceid,
+                                        @HeaderParam("If-Modified-Since") String ifModifiedSince) {
+        Activity activity;
+        DeviceManagementProviderService dmService;
+        try {
+            RequestValidationUtil.validateActivityId(id);
+
+            DeviceIdentifier deviceIdentifier = new DeviceIdentifier();
+            deviceIdentifier.setId(deviceid);
+            deviceIdentifier.setType(devicetype);
+
+            dmService = DeviceMgtAPIUtils.getDeviceManagementService();
+            activity = dmService.getOperationByActivityIdAndDevice(id, deviceIdentifier);
+            if (activity == null) {
+                return Response.status(404).entity(
+                        new ErrorResponse.ErrorResponseBuilder().setMessage("No activity can be " +
+                                "found upon the provided activity id '" + id + "'").build()).build();
+            }
+            return Response.status(Response.Status.OK).entity(activity).build();
+        } catch (OperationManagementException e) {
+            String msg = "ErrorResponse occurred while fetching the activity for the supplied id.";
+            log.error(msg, e);
+            return Response.serverError().entity(
+                    new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
+        }
+    }
+
+
     @GET
     @Override
     public Response getActivities(@QueryParam("since") String since, @QueryParam("offset") int offset,
@@ -83,6 +121,10 @@ public class ActivityProviderServiceImpl implements ActivityInfoProviderService 
         long timestamp = 0;
         boolean isIfModifiedSinceSet = false;
         boolean isSinceSet = false;
+        if (log.isDebugEnabled()) {
+            log.debug("getActivities since: " + since + " , offset: " + offset + " ,limit: " + limit + " ," +
+                    "ifModifiedSince: " + ifModifiedSince);
+        }
         RequestValidationUtil.validatePaginationParameters(offset, limit);
         if (ifModifiedSince != null && !ifModifiedSince.isEmpty()) {
             Date ifSinceDate;
@@ -112,14 +154,32 @@ public class ActivityProviderServiceImpl implements ActivityInfoProviderService 
             timestamp = sinceTimestamp / 1000;
         }
 
+        if (timestamp == 0) {
+            //If timestamp is not sent by the user, a default value is set, that is equal to current time-12 hours.
+            long time = System.currentTimeMillis() / 1000;
+            timestamp = time - 42300;
+        }
+        if (log.isDebugEnabled()) {
+            log.debug("getActivities final timestamp " + timestamp);
+        }
+
         List<Activity> activities;
         ActivityList activityList = new ActivityList();
         DeviceManagementProviderService dmService;
         try {
+            if (log.isDebugEnabled()) {
+                log.debug("Calling database to get activities.");
+            }
             dmService = DeviceMgtAPIUtils.getDeviceManagementService();
             activities = dmService.getActivitiesUpdatedAfter(timestamp, limit, offset);
             activityList.setList(activities);
+            if (log.isDebugEnabled()) {
+                log.debug("Calling database to get activity count.");
+            }
             int count = dmService.getActivityCountUpdatedAfter(timestamp);
+            if (log.isDebugEnabled()) {
+                log.debug("Activity count: " + count);
+            }
             activityList.setCount(count);
             if (activities == null || activities.size() == 0) {
                 if (isIfModifiedSinceSet) {

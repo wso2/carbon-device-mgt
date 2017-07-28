@@ -17,55 +17,76 @@
  */
 
 function onRequest(context) {
-    var DTYPE_CONF_DEVICE_TYPE_KEY = "deviceType";
-    var DTYPE_CONF_DEVICE_TYPE_LABEL_KEY = "label";
+	var DTYPE_CONF_DEVICE_TYPE_KEY = "deviceType";
+	var DTYPE_CONF_DEVICE_TYPE_LABEL_KEY = "label";
 
-    var utility = require("/app/modules/utility.js").utility;
-    var userModule = require("/app/modules/business-controllers/user.js")["userModule"];
-    var deviceModule = require("/app/modules/business-controllers/device.js")["deviceModule"];
-    var groupModule = require("/app/modules/business-controllers/group.js")["groupModule"];
-    var types = {};
+	var utility = require("/app/modules/utility.js").utility;
+	var userModule = require("/app/modules/business-controllers/user.js")["userModule"];
+	var deviceModule = require("/app/modules/business-controllers/device.js")["deviceModule"];
+	var groupModule = require("/app/modules/business-controllers/group.js")["groupModule"];
+	var types = {};
 
-    types.isAuthorized = userModule.isAuthorized("/permission/admin/device-mgt/policies/manage");
-    types.isAuthorizedViewUsers = userModule.isAuthorized("/permission/admin/device-mgt/roles/view");
-    types.isAuthorizedViewRoles = userModule.isAuthorized("/permission/admin/device-mgt/users/view");
-    types.isAuthorizedViewGroups = userModule.isAuthorized("/permission/admin/device-mgt/groups/view");
-    types["types"] = [];
+	types.isAuthorized = userModule.isAuthorized("/permission/admin/device-mgt/policies/manage");
+	types.isAuthorizedViewUsers = userModule.isAuthorized("/permission/admin/device-mgt/roles/view");
+	types.isAuthorizedViewRoles = userModule.isAuthorized("/permission/admin/device-mgt/users/view");
+	types.isAuthorizedViewGroups = userModule.isAuthorized("/permission/admin/device-mgt/groups/view");
+	types["types"] = [];
 
-    var typesListResponse = deviceModule.getDeviceTypes();
-    if (typesListResponse["status"] == "success") {
-        for (var type in typesListResponse["content"]["deviceTypes"]) {
-            var content = {};
-            var deviceType = typesListResponse["content"]["deviceTypes"][type];
-            content["name"] = deviceType;
-            var configs = utility.getDeviceTypeConfig(deviceType);
-            var deviceTypeLabel = deviceType;
-            if (configs && configs[DTYPE_CONF_DEVICE_TYPE_KEY][DTYPE_CONF_DEVICE_TYPE_LABEL_KEY]) {
-                deviceTypeLabel = configs[DTYPE_CONF_DEVICE_TYPE_KEY][DTYPE_CONF_DEVICE_TYPE_LABEL_KEY];
-            }
-            var policyWizardSrc = "/app/units/" + utility.getTenantedDeviceUnitName(deviceType, "policy-wizard");
-            if (new File(policyWizardSrc).isExists()) {
-                content["icon"] = utility.getDeviceThumb(deviceType);
-                content["label"] = deviceTypeLabel;
-                var policyOperationsTemplateSrc = policyWizardSrc + "/public/templates/" + deviceType + "-policy-operations.hbs";
-                if (new File(policyOperationsTemplateSrc).isExists()) {
-                    content["template"] = "/public/cdmf.unit.device.type." + deviceType +
-                        ".policy-wizard/templates/" + deviceType + "-policy-operations.hbs";
-                }
-                var policyOperationsScriptSrc = policyWizardSrc + "/public/js/" + deviceType + "-policy-operations.js";
-                if (new File(policyOperationsScriptSrc).isExists()) {
-                    content["script"] = "/public/cdmf.unit.device.type." + deviceType +
-                        ".policy-wizard/js/" + deviceType + "-policy-operations.js";;
-                }
-                var policyOperationsStylesSrc = policyWizardSrc + "/public/css/" + deviceType + "-policy-operations.css";
-                if (new File(policyOperationsStylesSrc).isExists()) {
-                    content["style"] = "/public/cdmf.unit.device.type." + deviceType +
-                        ".policy-wizard/css/" + deviceType + "-policy-operations.css";;
-                }
-                types["types"].push(content);
-            }
-        }
-    }
+	var typesListResponse = deviceModule.getDeviceTypesConfig();
+	if (typesListResponse["status"] == "success") {
+		for (var type in typesListResponse["content"]) {
+			var content = {};
+			var deviceType = typesListResponse["content"][type].name;
+			content["name"] = deviceType;
+			var configs = utility.getDeviceTypeConfig(deviceType);
+			var deviceTypeLabel = deviceType;
+			if (configs && configs[DTYPE_CONF_DEVICE_TYPE_KEY][DTYPE_CONF_DEVICE_TYPE_LABEL_KEY]) {
+				deviceTypeLabel = configs[DTYPE_CONF_DEVICE_TYPE_KEY][DTYPE_CONF_DEVICE_TYPE_LABEL_KEY];
+			}
+			var policyWizardSrc = "/app/units/" + utility.getTenantedDeviceUnitName(deviceType, "policy-wizard");
+			content["icon"] = utility.getDeviceThumb(deviceType);
+			content["label"] = deviceTypeLabel;
+			if (new File(policyWizardSrc).isExists()) {
+				var policyOperationsTemplateSrc = policyWizardSrc + "/public/templates/" + deviceType + "-policy-operations.hbs";
+				if (new File(policyOperationsTemplateSrc).isExists()) {
+					content["template"] = "/public/cdmf.unit.device.type." + deviceType +
+						".policy-wizard/templates/" + deviceType + "-policy-operations.hbs";
+				}
+				var policyOperationsScriptSrc = policyWizardSrc + "/public/js/" + deviceType + "-policy-operations.js";
+				if (new File(policyOperationsScriptSrc).isExists()) {
+					content["script"] = "/public/cdmf.unit.device.type." + deviceType +
+						".policy-wizard/js/" + deviceType + "-policy-operations.js";;
+				}
+				var policyOperationsStylesSrc = policyWizardSrc + "/public/css/" + deviceType + "-policy-operations.css";
+				if (new File(policyOperationsStylesSrc).isExists()) {
+					content["style"] = "/public/cdmf.unit.device.type." + deviceType +
+						".policy-wizard/css/" + deviceType + "-policy-operations.css";;
+				}
+				types["types"].push(content);
+			} else {
+				if (!typesListResponse["content"][type].deviceTypeMetaDefinition) {
+					continue;
+				}
+				policyWizardSrc = "cdmf.unit.policy.create";
+				var policyOperationsTemplateSrc = policyWizardSrc + "/public/templates/" + deviceType + "-policy-operations.hbs";
+				if (new File(policyOperationsTemplateSrc).isExists()) {
+					content["template"] = "/public/cdmf.unit.device.type." + deviceType +
+						".policy-wizard/templates/" + deviceType + "-policy-operations.hbs";
+				}
+				var policyOperationsScriptSrc = policyWizardSrc + "/public/js/" + deviceType + "-policy-operations.js";
+				if (new File(policyOperationsScriptSrc).isExists()) {
+					content["script"] = "/public/cdmf.unit.device.type." + deviceType +
+						".policy-wizard/js/" + deviceType + "-policy-operations.js";;
+				}
+				var policyOperationsStylesSrc = policyWizardSrc + "/public/css/" + deviceType + "-policy-operations.css";
+				if (new File(policyOperationsStylesSrc).isExists()) {
+					content["style"] = "/public/cdmf.unit.device.type." + deviceType +
+						".policy-wizard/css/" + deviceType + "-policy-operations.css";;
+				}
+				types["types"].push(content);
+			}
+		}
+	}
 
     var roles = userModule.getRoles();
     if (roles["status"] == "success") {
@@ -74,6 +95,8 @@ function onRequest(context) {
     types["groups"] = groupModule.getGroups();
     var devicemgtProps = require("/app/modules/conf-reader/main.js")["conf"];
     types["isCloud"] = devicemgtProps.isCloud;
+    types["isDeviceOwnerEnabled"] = devicemgtProps.isDeviceOwnerEnabled;
 
-    return types;
+
+	return types;
 }

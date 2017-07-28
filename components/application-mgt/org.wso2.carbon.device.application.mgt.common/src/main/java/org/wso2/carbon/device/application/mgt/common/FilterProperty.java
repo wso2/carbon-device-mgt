@@ -19,8 +19,15 @@
 package org.wso2.carbon.device.application.mgt.common;
 
 //TODO
+
+/**
+ * FilterProperty defines the property that can be used to filter the Application.
+ */
 public class FilterProperty {
 
+    /**
+     * Operators that can be used in search.
+     */
     public enum Operator {
         EQUALS ("="),
         GRATER_THAN (">"),

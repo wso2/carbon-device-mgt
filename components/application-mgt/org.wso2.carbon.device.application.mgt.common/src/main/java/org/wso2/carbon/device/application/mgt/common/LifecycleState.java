@@ -18,6 +18,9 @@
  */
 package org.wso2.carbon.device.application.mgt.common;
 
+/**
+ * Represents a state in {@link Lifecycle}.
+ */
 public class LifecycleState {
 
     private int id;

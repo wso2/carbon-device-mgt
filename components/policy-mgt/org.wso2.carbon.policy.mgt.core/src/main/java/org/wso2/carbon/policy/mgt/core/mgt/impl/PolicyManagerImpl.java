@@ -23,13 +23,18 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
+import org.wso2.carbon.device.mgt.common.InvalidDeviceException;
 import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroup;
 import org.wso2.carbon.device.mgt.common.group.mgt.GroupManagementException;
+import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
+import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
 import org.wso2.carbon.device.mgt.common.policy.mgt.DeviceGroupWrapper;
 import org.wso2.carbon.device.mgt.common.policy.mgt.Policy;
 import org.wso2.carbon.device.mgt.common.policy.mgt.PolicyCriterion;
 import org.wso2.carbon.device.mgt.common.policy.mgt.Profile;
 import org.wso2.carbon.device.mgt.common.policy.mgt.ProfileFeature;
+import org.wso2.carbon.device.mgt.core.operation.mgt.CommandOperation;
+import org.wso2.carbon.device.mgt.core.operation.mgt.OperationMgtConstants;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderServiceImpl;
 import org.wso2.carbon.device.mgt.core.service.GroupManagementProviderService;
@@ -37,6 +42,10 @@ import org.wso2.carbon.device.mgt.core.service.GroupManagementProviderServiceImp
 import org.wso2.carbon.policy.mgt.common.*;
 import org.wso2.carbon.policy.mgt.core.cache.impl.PolicyCacheManagerImpl;
 import org.wso2.carbon.policy.mgt.core.dao.*;
+import org.wso2.carbon.policy.mgt.core.enforcement.PolicyDelegationException;
+import org.wso2.carbon.policy.mgt.core.enforcement.PolicyEnforcementDelegator;
+import org.wso2.carbon.policy.mgt.core.enforcement.PolicyEnforcementDelegatorImpl;
+import org.wso2.carbon.policy.mgt.core.internal.PolicyManagementDataHolder;
 import org.wso2.carbon.policy.mgt.core.mgt.PolicyManager;
 import org.wso2.carbon.policy.mgt.core.mgt.ProfileManager;
 import org.wso2.carbon.policy.mgt.core.mgt.bean.UpdatedPolicyDeviceListBean;
@@ -190,7 +199,7 @@ public class PolicyManagerImpl implements PolicyManager {
             policy.setProfileId(profileId);
             Timestamp currentTimestamp = new Timestamp(Calendar.getInstance().getTime().getTime());
             policy.getProfile().setUpdatedDate(currentTimestamp);
-
+            policy.setPriorityId(previousPolicy.getPriorityId());
             policyDAO.updatePolicy(policy);
             profileDAO.updateProfile(policy.getProfile());
 
@@ -317,6 +326,22 @@ public class PolicyManagerImpl implements PolicyManager {
     @Override
     public boolean deletePolicy(int policyId) throws PolicyManagementException {
         boolean bool;
+
+        List<Policy> policies = this.getPolicies();
+        Policy pol = null;
+        for (Policy p : policies) {
+            if (policyId == p.getId()) {
+                pol = p;
+            }
+        }
+        String deviceType = pol.getProfile().getDeviceType();
+        List<Policy> deviceTypePolicyList = this.getPoliciesOfDeviceType(deviceType);
+        if (deviceTypePolicyList.size() == 1) {
+            List<Device> devices = this.getPolicyAppliedDevicesIds(policyId);
+            List<DeviceIdentifier> deviceIdentifiers = this.convertDevices(devices);
+            this.addPolicyRevokeOperation(deviceIdentifiers);
+        }
+
         try {
             PolicyManagementDAOFactory.beginTransaction();
 
@@ -392,7 +417,7 @@ public class PolicyManagerImpl implements PolicyManager {
         DeviceManagementProviderService service = new DeviceManagementProviderServiceImpl();
         for (DeviceIdentifier deviceIdentifier : deviceIdentifierList) {
             try {
-                Device device = service.getDevice(deviceIdentifier);
+                Device device = service.getDevice(deviceIdentifier, false);
                 deviceList.add(device);
             } catch (DeviceManagementException e) {
                 throw new PolicyManagementException("Error occurred while retrieving device information", e);
@@ -641,7 +666,7 @@ public class PolicyManagerImpl implements PolicyManager {
         try {
 
             DeviceManagementProviderService service = new DeviceManagementProviderServiceImpl();
-            Device device = service.getDevice(deviceIdentifier);
+            Device device = service.getDevice(deviceIdentifier, false);
 
             PolicyManagementDAOFactory.openConnection();
             policyIdList = policyDAO.getPolicyIdsOfDevice(device);
@@ -807,7 +832,7 @@ public class PolicyManagerImpl implements PolicyManager {
         int deviceId = -1;
         try {
             DeviceManagementProviderService service = new DeviceManagementProviderServiceImpl();
-            Device device = service.getDevice(deviceIdentifier);
+            Device device = service.getDevice(deviceIdentifier, false);
             deviceId = device.getId();
 
             PolicyManagementDAOFactory.beginTransaction();
@@ -836,6 +861,7 @@ public class PolicyManagerImpl implements PolicyManager {
         List<String> changedDeviceTypes = new ArrayList<>();
         List<Policy> updatedPolicies = new ArrayList<>();
         List<Integer> updatedPolicyIds = new ArrayList<>();
+        boolean transactionDone = false;
         try {
             //HashMap<Integer, Integer> map = policyDAO.getUpdatedPolicyIdandDeviceTypeId();
 //            List<Policy> activePolicies = new ArrayList<>();
@@ -859,6 +885,7 @@ public class PolicyManagerImpl implements PolicyManager {
 //                }
             }
             PolicyManagementDAOFactory.beginTransaction();
+            transactionDone = true;
             policyDAO.markPoliciesAsUpdated(updatedPolicyIds);
             policyDAO.removeRecordsAboutUpdatedPolicies();
             PolicyManagementDAOFactory.commitTransaction();
@@ -866,7 +893,9 @@ public class PolicyManagerImpl implements PolicyManager {
             PolicyManagementDAOFactory.rollbackTransaction();
             throw new PolicyManagementException("Error occurred while applying the changes to policy operations.", e);
         } finally {
-            PolicyManagementDAOFactory.closeConnection();
+            if(transactionDone) {
+                PolicyManagementDAOFactory.closeConnection();
+            }
         }
         return new UpdatedPolicyDeviceListBean(updatedPolicies, updatedPolicyIds, changedDeviceTypes);
     }
@@ -879,7 +908,7 @@ public class PolicyManagerImpl implements PolicyManager {
         int deviceId = -1;
         try {
             DeviceManagementProviderService service = new DeviceManagementProviderServiceImpl();
-            Device device = service.getDevice(deviceIdentifier);
+            Device device = service.getDevice(deviceIdentifier, false);
             deviceId = device.getId();
             PolicyManagementDAOFactory.beginTransaction();
 
@@ -909,7 +938,7 @@ public class PolicyManagerImpl implements PolicyManager {
         int deviceId = -1;
         try {
             DeviceManagementProviderService service = new DeviceManagementProviderServiceImpl();
-            Device device = service.getDevice(deviceIdentifier);
+            Device device = service.getDevice(deviceIdentifier, false);
             deviceId = device.getId();
             PolicyManagementDAOFactory.beginTransaction();
 
@@ -937,7 +966,7 @@ public class PolicyManagerImpl implements PolicyManager {
         boolean exist;
         try {
             DeviceManagementProviderService service = new DeviceManagementProviderServiceImpl();
-            Device device = service.getDevice(deviceIdentifier);
+            Device device = service.getDevice(deviceIdentifier, false);
             PolicyManagementDAOFactory.openConnection();
             exist = policyDAO.checkPolicyAvailable(device.getId(), device.getEnrolmentInfo().getId());
         } catch (PolicyManagerDAOException e) {
@@ -958,7 +987,7 @@ public class PolicyManagerImpl implements PolicyManager {
     public boolean setPolicyApplied(DeviceIdentifier deviceIdentifier) throws PolicyManagementException {
         try {
             DeviceManagementProviderService service = new DeviceManagementProviderServiceImpl();
-            Device device = service.getDevice(deviceIdentifier);
+            Device device = service.getDevice(deviceIdentifier, false);
 
             PolicyManagementDAOFactory.openConnection();
             policyDAO.setPolicyApplied(device.getId(), device.getEnrolmentInfo().getId());
@@ -996,7 +1025,7 @@ public class PolicyManagerImpl implements PolicyManager {
         DeviceManagementProviderService service = new DeviceManagementProviderServiceImpl();
         Device device;
         try {
-            device = service.getDevice(deviceId);
+            device = service.getDevice(deviceId, false);
             if (device == null) {
                 if (log.isDebugEnabled()) {
                     log.debug("No device is found upon the device identifier '" + deviceId.getId() +
@@ -1043,6 +1072,46 @@ public class PolicyManagerImpl implements PolicyManager {
             wrapper.setOwner(deviceGroup.getOwner());
         }
         return groupWrappers;
+    }
+
+
+    private List<DeviceIdentifier> convertDevices(List<Device> devices) {
+        List<DeviceIdentifier> deviceIdentifiers = new ArrayList<>();
+        for (Device device : devices) {
+            DeviceIdentifier identifier = new DeviceIdentifier();
+            identifier.setId(device.getDeviceIdentifier());
+            identifier.setType(device.getType());
+            deviceIdentifiers.add(identifier);
+        }
+        return deviceIdentifiers;
+    }
+
+
+    private void addPolicyRevokeOperation(List<DeviceIdentifier> deviceIdentifiers) throws PolicyManagementException {
+        try {
+            String type = null;
+            if (deviceIdentifiers.size() > 0) {
+                type = deviceIdentifiers.get(0).getType();
+            }
+            PolicyManagementDataHolder.getInstance().getDeviceManagementService().addOperation(type,
+                    this.getPolicyRevokeOperation(), deviceIdentifiers);
+        } catch (InvalidDeviceException e) {
+            String msg = "Invalid DeviceIdentifiers found.";
+            log.error(msg, e);
+            throw new PolicyManagementException(msg, e);
+        } catch (OperationManagementException e) {
+            String msg = "Error occurred while adding the operation to device.";
+            log.error(msg, e);
+            throw new PolicyManagementException(msg, e);
+        }
+    }
+
+    private Operation getPolicyRevokeOperation() {
+        CommandOperation policyRevokeOperation = new CommandOperation();
+        policyRevokeOperation.setEnabled(true);
+        policyRevokeOperation.setCode(OperationMgtConstants.OperationCodes.POLICY_REVOKE);
+        policyRevokeOperation.setType(Operation.Type.COMMAND);
+        return policyRevokeOperation;
     }
 
 }

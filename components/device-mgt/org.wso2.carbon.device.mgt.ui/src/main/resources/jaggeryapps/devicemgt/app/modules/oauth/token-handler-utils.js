@@ -23,6 +23,7 @@ var utils = function () {
     var constants = require("/app/modules/constants.js");
     var carbon = require("carbon");
 	var authModule = require("/lib/modules/auth/auth.js").module;
+	var utility = require('/app/modules/utility.js').utility;
 
     //noinspection JSUnresolvedVariable
     var Base64 = Packages.org.apache.commons.codec.binary.Base64;
@@ -297,11 +298,17 @@ var utils = function () {
 			// returning access token by JWT grant type
 			var tokenInfo = jwtClient.getAccessToken(encodedClientAppCredentials,
 				endUsername, scopes);
-			var tokenData = {};
-			tokenData["accessToken"] = tokenInfo.getAccessToken();
-			tokenData["refreshToken"] = tokenInfo.getRefreshToken();
-			tokenData["scopes"] = tokenInfo.getScopes();
-			return tokenData;
+			if (tokenInfo) {
+				var tokenData = {};
+				tokenData["accessToken"] = tokenInfo.getAccessToken();
+				tokenData["refreshToken"] = tokenInfo.getRefreshToken();
+				tokenData["scopes"] = tokenInfo.getScopes();
+				return tokenData;
+			} else {
+				log.error("{/app/modules/oauth/token-handler-utils.js} Error in retrieving access token " +
+				"by jwt grant type - getTokenPairAndScopesByJWTGrantType()");
+				return null;
+			}
 		}
 	};
 
@@ -377,6 +384,23 @@ var utils = function () {
 
         }
     };
+
+	publicMethods["removeClientAppCredentials"] = function (tenantDomain) {
+		var cachedTenantBasedClientAppCredentialsMap = application.get(constants["CACHED_CREDENTIALS"]);
+		if (cachedTenantBasedClientAppCredentialsMap) {
+			if (cachedTenantBasedClientAppCredentialsMap[tenantDomain]) {
+				delete cachedTenantBasedClientAppCredentialsMap[tenantDomain];
+			}
+		}
+	};
+
+	publicMethods["getUniqueBrowserScope"] = function () {
+		var deviceScope = "device_" + utility.md5(request.getHeader("User-Agent") + "::" + request.getRemoteAddr());
+		deviceScope = deviceScope + " ";
+		return deviceScope;
+	};
+
+
 
     return publicMethods;
 }();

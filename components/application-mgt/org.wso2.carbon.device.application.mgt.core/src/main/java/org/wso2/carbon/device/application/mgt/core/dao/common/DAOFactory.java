@@ -18,9 +18,13 @@
  */
 package org.wso2.carbon.device.application.mgt.core.dao.common;
 
+import org.apache.axiom.om.OMElement;
+import org.apache.axiom.om.util.AXIOMUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.application.mgt.common.exception.UnsupportedDatabaseEngineException;
+import org.wso2.carbon.device.application.mgt.core.config.ConfigurationManager;
 import org.wso2.carbon.device.application.mgt.core.dao.ApplicationDAO;
 import org.wso2.carbon.device.application.mgt.core.dao.LifecycleStateDAO;
 import org.wso2.carbon.device.application.mgt.core.dao.PlatformDAO;
@@ -28,9 +32,20 @@ import org.wso2.carbon.device.application.mgt.core.dao.impl.application.H2Applic
 import org.wso2.carbon.device.application.mgt.core.dao.impl.application.MySQLApplicationDAOImpl;
 import org.wso2.carbon.device.application.mgt.core.dao.impl.lifecyclestate.GenericLifecycleStateImpl;
 import org.wso2.carbon.device.application.mgt.core.dao.impl.platform.GenericPlatformDAOImpl;
+import org.wso2.carbon.device.application.mgt.core.exception.ApplicationManagementDAOException;
+import org.wso2.carbon.device.application.mgt.core.internal.DataHolder;
+import org.wso2.carbon.device.application.mgt.core.util.ApplicationMgtDatabaseCreator;
 import org.wso2.carbon.device.application.mgt.core.util.Constants;
 import org.wso2.carbon.device.application.mgt.core.util.ConnectionManagerUtil;
+import org.wso2.carbon.ndatasource.core.CarbonDataSource;
+import org.wso2.carbon.ndatasource.core.DataSourceService;
+import org.wso2.carbon.utils.dbcreator.DatabaseCreator;
+import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 
+import javax.sql.DataSource;
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamException;
+import java.sql.SQLException;
 
 /**
  * This class intends to act as the primary entity that hides all DAO instantiation related complexities and logic so
@@ -86,6 +101,69 @@ public class DAOFactory {
             }
         }
         throw new IllegalStateException("Database engine has not initialized properly.");
+    }
+
+    /**
+     * This method initializes the databases by creating the database.
+     * @throws ApplicationManagementDAOException Exceptions thrown during the creation of the tables
+     */
+    public static void initDatabases() throws ApplicationManagementDAOException {
+        CarbonDataSource carbonDataSource = null;
+        DataSource dataSource = null;
+        String dataSourceName = ConfigurationManager.getInstance()
+                .getConfiguration().getDatasourceName();
+        DataSourceService service = DataHolder.getInstance().getDataSourceService();
+        PrivilegedCarbonContext.startTenantFlow();
+        PrivilegedCarbonContext.getThreadLocalCarbonContext()
+                .setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME, true);
+        try {
+            carbonDataSource = service.getDataSource(dataSourceName);
+            dataSource = (DataSource) carbonDataSource.getDSObject();
+            if (System.getProperty("setup") == null) {
+                if (log.isDebugEnabled()) {
+                    log.debug("Application Management Database schema initialization check was skipped since "
+                            + "\'setup\' variable was not given during startup");
+                }
+            } else {
+                DatabaseCreator databaseCreator = new ApplicationMgtDatabaseCreator(dataSource);
+                String validationQuery = getValidationQuery(
+                        (String) carbonDataSource.getDSMInfo().getDefinition().getDsXMLConfiguration());
+                if (!databaseCreator.isDatabaseStructureCreated(validationQuery)) {
+                    databaseCreator.createRegistryDatabase();
+                    if (log.isDebugEnabled()) {
+                        log.debug("Application Management tables are created in the database");
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            throw  new ApplicationManagementDAOException("Error while creating application-mgt database during the "
+                    + "startup ", e);
+        } catch (Exception e) {
+            throw  new ApplicationManagementDAOException("Error while creating application-mgt database in the "
+                    + "startup ", e);
+        }
+    }
+
+    /**
+     * To get the the validation query to make sure whether the tables exist already in application management databse
+     * @param dsXMLConfiguration Datasource XML configurations
+     * @return Validation query
+     */
+    private static String getValidationQuery(String dsXMLConfiguration) {
+        String DEFAULT_VALIDATION_QUERY = "SELECT 1";
+        try {
+            OMElement omElement = AXIOMUtil.stringToOM(dsXMLConfiguration);
+            return omElement.getFirstChildWithName(new QName("validationQuery")).getText();
+        } catch (XMLStreamException e) {
+            log.error("Error while reading the validation query from the data source configuration of "
+                    + "application-mgt (application-mgt-datasources.xml", e);
+            if (log.isDebugEnabled()) {
+                log.debug("Due to fail to read the validation query from application-mgt datasources, using the "
+                        + "default validation query : " + DEFAULT_VALIDATION_QUERY);
+            }
+            return DEFAULT_VALIDATION_QUERY;
+        }
+
     }
 }
 

@@ -79,7 +79,7 @@ deviceModule = function () {
                 var fromDate = new Date();
                 fromDate.setHours(fromDate.getHours() - 2);
                 var toDate = new Date();
-                var serviceUrl = devicemgtProps["httpsURL"] + '/api/device-mgt/v1.0/geo-services/stats/' + deviceType + '/' + deviceId + '?from=' + fromDate + '&to=' + toDate;
+                var serviceUrl = devicemgtProps["httpsURL"] + '/api/device-mgt/v1.0/geo-services/stats/' + deviceType + '/' + deviceId + '?from=' + fromDate.getTime() + '&to=' + toDate.getTime();
                 serviceInvokers.XMLHttp.get(serviceUrl,
                                             function (backendResponse) {
                                                 if (backendResponse.status === 200 && backendResponse.responseText) {
@@ -410,7 +410,7 @@ deviceModule = function () {
 					var jwtClient = JWTClientManagerService.getJWTClient();
 					// returning access token by JWT grant type
 					var deviceScope = "device_" + type.replace(" ", "") + "_" + deviceId + " perm:device:enroll " +
-						"perm:device:disenroll perm:device:modify perm:devices:operations perm:device:publish-event";
+						"perm:device:disenroll perm:device:modify perm:device:operations perm:device:publish-event";
 					var tokenInfo = jwtClient.getAccessToken(config.clientId, config.clientSecret,
 						userName, deviceScope);
 					config.accessToken = tokenInfo.getAccessToken();

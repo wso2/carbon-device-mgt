@@ -630,7 +630,7 @@ function initializeGeoLocation(geoFencingEnabled) {
                             + "deviceId=" + deviceId + "&deviceType=" + deviceType + "&websocketToken=" + wsToken;
         $("#proximity_alert").hide();
 
-        initialLoad();
+        initialLoad(geoFencingEnabled);
         InitSpatialObject(geoFencingEnabled);
 
         if (geoFencingEnabled) {

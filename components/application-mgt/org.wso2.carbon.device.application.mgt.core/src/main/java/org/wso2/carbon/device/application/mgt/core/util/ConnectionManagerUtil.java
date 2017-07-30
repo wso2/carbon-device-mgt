@@ -160,18 +160,19 @@ public class ConnectionManagerUtil {
         }
     }
 
-
     /**
-     * Resolve data source from the data source definition.
+     * Resolve the datasource from the datasource definition.
      *
-     * @param dataSourceName data source name
+     * @param dataSourceName Name of the datasource
+     * @return DataSource resolved by the datasource name
      */
-    public static void resolveDataSource(String dataSourceName) {
+    public static DataSource resolveDataSource(String dataSourceName) {
         try {
             dataSource = InitialContext.doLookup(dataSourceName);
         } catch (Exception e) {
             throw new RuntimeException("Error in looking up data source: " + e.getMessage(), e);
         }
+        return dataSource;
     }
 
 
@@ -183,4 +184,5 @@ public class ConnectionManagerUtil {
         }
         return null;
     }
+
 }

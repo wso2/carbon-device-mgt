@@ -19,6 +19,9 @@ package org.wso2.carbon.device.application.mgt.core.exception;
 
 import org.wso2.carbon.device.application.mgt.common.exception.PlatformManagementException;
 
+/**
+ * Exception that will be thrown when there is a issue during Platform level DAO operations.
+ */
 public class PlatformManagementDAOException extends PlatformManagementException {
 
     public PlatformManagementDAOException(String message, Throwable ex) {

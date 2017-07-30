@@ -74,8 +74,7 @@
                             org.apache.axis2.*,
                             org.wso2.carbon.user.core.*,
                             org.wso2.carbon.user.api.*,
-                            org.wso2.carbon.ndatasource.core,
-                            org.apache.axiom.om.*; version="${axiom.osgi.version.range}"
+                            org.wso2.carbon.ndatasource.core
                         </Import-Package>
                         <Export-Package>
                             !org.wso2.carbon.device.application.mgt.core.internal.*,

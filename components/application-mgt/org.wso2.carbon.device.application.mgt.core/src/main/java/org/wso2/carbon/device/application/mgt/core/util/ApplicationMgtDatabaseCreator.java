@@ -35,8 +35,8 @@ public class ApplicationMgtDatabaseCreator extends DatabaseCreator {
             CarbonUtils.getCarbonHome() + File.separator + "dbscripts" + File.separator + "cdm" + File.separator
                     + "application-mgt" + File.separator;
 
-    public ApplicationMgtDatabaseCreator(DataSource dataSource) {
-        super(dataSource);
+    public ApplicationMgtDatabaseCreator(String dataSourceName) {
+        super(ConnectionManagerUtil.resolveDataSource(dataSourceName));
     }
 
     protected String getDbScriptLocation(String databaseType) {

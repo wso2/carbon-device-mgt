@@ -29,7 +29,6 @@ import org.wso2.carbon.device.application.mgt.common.services.SubscriptionManage
 import org.wso2.carbon.device.application.mgt.common.services.VisibilityManager;
 import org.wso2.carbon.device.application.mgt.common.services.VisibilityTypeManager;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
-import org.wso2.carbon.ndatasource.core.DataSourceService;
 import org.wso2.carbon.user.core.service.RealmService;
 
 /**
@@ -62,8 +61,6 @@ public class DataHolder {
     private ApplicationUploadManager applicationUploadManager;
 
     private static final DataHolder applicationMgtDataHolder = new DataHolder();
-
-    private DataSourceService dataSourceService;
 
     private DataHolder() {
 
@@ -169,11 +166,4 @@ public class DataHolder {
         this.realmService = realmService;
     }
 
-    public void setDataSourceService(DataSourceService dataSourceService) {
-        this.dataSourceService = dataSourceService;
-    }
-
-    public DataSourceService getDataSourceService() {
-        return dataSourceService;
-    }
 }

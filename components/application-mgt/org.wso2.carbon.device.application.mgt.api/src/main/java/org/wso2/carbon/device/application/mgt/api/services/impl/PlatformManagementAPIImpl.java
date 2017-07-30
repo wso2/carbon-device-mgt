@@ -37,6 +37,9 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
+/**
+ * Implementation of PlatformManagement APIs.
+ */
 @Path("/platforms")
 public class PlatformManagementAPIImpl implements PlatformManagementAPI {
 
@@ -49,13 +52,13 @@ public class PlatformManagementAPIImpl implements PlatformManagementAPI {
     @GET
     @Override
     public Response getPlatforms(@QueryParam("status") String status) {
-        String tenantDomain = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantDomain(true);
+        int tenantID = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId(true);
 
         if (log.isDebugEnabled()) {
             log.debug("API request received for getting the platforms with the status " + status);
         }
         try {
-            List<Platform> platforms = APIUtil.getPlatformManager().getPlatforms(tenantDomain);
+            List<Platform> platforms = APIUtil.getPlatformManager().getPlatforms(tenantID);
             List<Platform> results;
             if (status != null) {
                 if (status.contentEquals(ALL_STATUS)) {
@@ -85,7 +88,7 @@ public class PlatformManagementAPIImpl implements PlatformManagementAPI {
             }
             return Response.status(Response.Status.OK).entity(results).build();
         } catch (PlatformManagementException e) {
-            log.error("Error while getting the platforms for tenant - " + tenantDomain, e);
+            log.error("Error while getting the platforms for tenant - " + tenantID, e);
             return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
         }
     }
@@ -94,9 +97,9 @@ public class PlatformManagementAPIImpl implements PlatformManagementAPI {
     @Override
     @Path("/{identifier}")
     public Response getPlatform(@PathParam("identifier") String id) {
-        String tenantDomain = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantDomain(true);
+        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId(true);
         try {
-            Platform platform = APIUtil.getPlatformManager().getPlatform(tenantDomain, id);
+            Platform platform = APIUtil.getPlatformManager().getPlatform(tenantId, id);
             return Response.status(Response.Status.OK).entity(platform).build();
         } catch (PlatformManagementDAOException e) {
             return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
@@ -108,11 +111,11 @@ public class PlatformManagementAPIImpl implements PlatformManagementAPI {
     @POST
     @Override
     public Response addPlatform(Platform platform) {
-        String tenantDomain = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantDomain(true);
+        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId(true);
         try {
             if (platform != null) {
                 if (platform.validate()) {
-                    APIUtil.getPlatformManager().register(tenantDomain, platform);
+                    APIUtil.getPlatformManager().register(tenantId, platform);
                     return Response.status(Response.Status.CREATED).build();
                 } else {
                     return APIUtil.getResponse("Invxalid payload! Platform ID and names are mandatory fields!",
@@ -131,12 +134,12 @@ public class PlatformManagementAPIImpl implements PlatformManagementAPI {
     @Path("/{identifier}")
     @Override
     public Response updatePlatform(Platform platform, @PathParam("identifier") @Size(max = 45) String id) {
-        String tenantDomain = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantDomain(true);
+        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId(true);
         try {
-            APIUtil.getPlatformManager().update(tenantDomain, id, platform);
+            APIUtil.getPlatformManager().update(tenantId, id, platform);
             return Response.status(Response.Status.OK).build();
         } catch (PlatformManagementException e) {
-            log.error("Error while updating the platform - " + id + " for tenant domain - " + tenantDomain, e);
+            log.error("Error while updating the platform - " + id + " for tenant domain - " + tenantId, e);
             return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
         }
     }

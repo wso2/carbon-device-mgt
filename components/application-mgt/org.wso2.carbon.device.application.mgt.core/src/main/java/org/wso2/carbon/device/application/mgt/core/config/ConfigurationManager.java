@@ -22,16 +22,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
 import org.wso2.carbon.device.application.mgt.common.exception.InvalidConfigurationException;
-import org.wso2.carbon.device.application.mgt.core.deployer.Platform;
-import org.wso2.carbon.device.application.mgt.core.deployer.Property;
-import org.wso2.carbon.device.application.mgt.core.internal.DataHolder;
 import org.wso2.carbon.device.application.mgt.core.util.Constants;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 public class ConfigurationManager {
 

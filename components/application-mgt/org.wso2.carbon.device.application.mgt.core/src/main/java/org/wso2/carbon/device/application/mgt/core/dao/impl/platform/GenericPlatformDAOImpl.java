@@ -249,7 +249,7 @@ public class GenericPlatformDAOImpl extends AbstractDAOImpl implements PlatformD
         try {
             ConnectionManagerUtil.beginTransaction();
             for (String platformIdentifier : platformIdentifiers) {
-                if (getTenantPlatformMapping(tenantId, platformIdentifier) != -1) {
+                if (getTenantPlatformMapping(tenantId, platformIdentifier) == -1) {
                     int platformId = getPlatformId(tenantId, platformIdentifier);
                     Connection connection = ConnectionManagerUtil.getConnection();
                     PreparedStatement preparedStatement = connection.prepareStatement(insertMapping);
@@ -285,8 +285,8 @@ public class GenericPlatformDAOImpl extends AbstractDAOImpl implements PlatformD
 
     private int getTenantPlatformMapping(int tenantId, String platformIdentifier) throws
             PlatformManagementDAOException {
-        String getMapping = "SELECT MAPPING.ID as ID FROM (SELECT ID FROM APPM_PLATFORM_TENANT_MAPPING WHERE "
-                + "TENANT_ID=?) MAPPING JOIN (SELECT ID FROM APPM_PLATFORM WHERE APPM_PLATFORM.IDENTIFIER=?) "
+        String getMapping = "SELECT MAPPING.ID as ID FROM (SELECT ID, PLATFORM_ID FROM APPM_PLATFORM_TENANT_MAPPING "
+                + "WHERE TENANT_ID=?) MAPPING JOIN (SELECT ID FROM APPM_PLATFORM WHERE APPM_PLATFORM.IDENTIFIER=?) "
                 + "PLATFORM ON MAPPING.PLATFORM_ID=PLATFORM.ID";
         try {
             Connection connection = ConnectionManagerUtil.getConnection();
@@ -300,7 +300,7 @@ public class GenericPlatformDAOImpl extends AbstractDAOImpl implements PlatformD
             return -1;
         } catch (DBConnectionException e) {
             throw new PlatformManagementDAOException(
-                    "Error occured while obtaining the connection to get the existing " + "Tenant - Platform Mapping.",
+                    "Error occurred while obtaining the connection to get the existing " + "Tenant - Platform Mapping.",
                     e);
         } catch (SQLException e) {
             throw new PlatformManagementDAOException("Error occured while executing the SQL query - " + getMapping, e);
@@ -462,21 +462,27 @@ public class GenericPlatformDAOImpl extends AbstractDAOImpl implements PlatformD
 
         try {
             conn = this.getConnection();
-            sql += "SELECT * ";
-            sql += "FROM APPM_PLATFORM ";
-            sql += "WHERE IDENTIFIER = ? ";
+            sql += "SELECT * FROM APPM_PLATFORM WHERE IDENTIFIER = ? AND TENANT_ID = ?";
 
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, identifier);
+            stmt.setInt(2, tenantId);
             rs = stmt.executeQuery();
 
             Platform platform = null;
 
             if (rs.next()) {
                 platform = new Platform();
-                platform.setId(rs.getInt("ID"));
-                platform.setName(rs.getString("NAME"));
+                platform.setFileBased(rs.getBoolean("FILE_BASED"));
+
                 platform.setIdentifier(rs.getString("IDENTIFIER"));
+                if (!platform.isFileBased()) {
+                    platform.setId(rs.getInt("ID"));
+                    platform.setName(rs.getString("NAME"));
+                    platform.setDescription(rs.getString("DESCRIPTION"));
+                    platform.setIconName(rs.getString("ICON_NAME"));
+                    platform.setShared(rs.getBoolean("IS_SHARED"));
+                }
             }
 
             return platform;

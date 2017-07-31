@@ -59,7 +59,7 @@ public class PlatformDeployer extends AbstractDeployer {
             JAXBContext jaxbContext = JAXBContext.newInstance(Platform.class);
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
             Platform platformConf = (Platform) unmarshaller.unmarshal(deploymentFile);
-            if (platformConf.getName().contentEquals(getPlatformID(deploymentFile.getName()))) {
+            if (platformConf.getId().contentEquals(getPlatformID(deploymentFile.getName()))) {
                 org.wso2.carbon.device.application.mgt.common.Platform platform = convert(platformConf);
                 DataHolder.getInstance().getPlatformManager()
                         .register(CarbonContext.getThreadLocalCarbonContext().getTenantId(), platform);
@@ -105,13 +105,16 @@ public class PlatformDeployer extends AbstractDeployer {
         platform.setDefaultTenantMapping(platformConfig.isTenantMapping());
         platform.setEnabled(false);
         List<org.wso2.carbon.device.application.mgt.common.Platform.Property> properties = new ArrayList<>();
-        for (Property propertyConfig : platformConfig.getProperties()) {
-            org.wso2.carbon.device.application.mgt.common.Platform.Property property =
-                    new org.wso2.carbon.device.application.mgt.common.Platform.Property();
-            property.setName(propertyConfig.getName());
-            property.setDefaultValue(propertyConfig.getDefaultValue());
-            property.setOptional(propertyConfig.isOptional());
-            properties.add(property);
+
+        if (platformConfig.getProperties() != null) {
+            for (Property propertyConfig : platformConfig.getProperties()) {
+                org.wso2.carbon.device.application.mgt.common.Platform.Property property =
+                        new org.wso2.carbon.device.application.mgt.common.Platform.Property();
+                property.setName(propertyConfig.getName());
+                property.setDefaultValue(propertyConfig.getDefaultValue());
+                property.setOptional(propertyConfig.isOptional());
+                properties.add(property);
+            }
         }
         platform.setProperties(properties);
         return platform;

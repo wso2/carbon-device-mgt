@@ -18,10 +18,23 @@
  */
 package org.wso2.carbon.device.application.mgt.core.internal;
 
-import org.wso2.carbon.device.application.mgt.common.services.*;
+import org.wso2.carbon.device.application.mgt.common.services.ApplicationManager;
+import org.wso2.carbon.device.application.mgt.common.services.ApplicationReleaseManager;
+import org.wso2.carbon.device.application.mgt.common.services.ApplicationUploadManager;
+import org.wso2.carbon.device.application.mgt.common.services.CategoryManager;
+import org.wso2.carbon.device.application.mgt.common.services.CommentsManager;
+import org.wso2.carbon.device.application.mgt.common.services.LifecycleStateManager;
+import org.wso2.carbon.device.application.mgt.common.services.PlatformManager;
+import org.wso2.carbon.device.application.mgt.common.services.SubscriptionManager;
+import org.wso2.carbon.device.application.mgt.common.services.VisibilityManager;
+import org.wso2.carbon.device.application.mgt.common.services.VisibilityTypeManager;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
+import org.wso2.carbon.ndatasource.core.DataSourceService;
 import org.wso2.carbon.user.core.service.RealmService;
 
+/**
+ * DataHolder is responsible for holding the references to OSGI Services.
+ */
 public class DataHolder {
 
     private DeviceManagementProviderService deviceManagementService;
@@ -49,6 +62,8 @@ public class DataHolder {
     private ApplicationUploadManager applicationUploadManager;
 
     private static final DataHolder applicationMgtDataHolder = new DataHolder();
+
+    private DataSourceService dataSourceService;
 
     private DataHolder() {
 
@@ -152,5 +167,13 @@ public class DataHolder {
 
     public void setRealmService(RealmService realmService) {
         this.realmService = realmService;
+    }
+
+    public void setDataSourceService(DataSourceService dataSourceService) {
+        this.dataSourceService = dataSourceService;
+    }
+
+    public DataSourceService getDataSourceService() {
+        return dataSourceService;
     }
 }

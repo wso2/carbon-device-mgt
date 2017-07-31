@@ -18,6 +18,9 @@
  */
 package org.wso2.carbon.device.application.mgt.common;
 
+/**
+ * Represents a comment for an {@link Application}.
+ */
 public class Comment {
 
     private String id;

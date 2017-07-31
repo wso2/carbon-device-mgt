@@ -17,6 +17,9 @@
  */
 package org.wso2.carbon.device.application.mgt.common.exception;
 
+/**
+ * Exception thrown due to Database Connection issues.
+ */
 public class DBConnectionException extends ApplicationManagementException {
 
     private static final long serialVersionUID = -3151279331929070297L;

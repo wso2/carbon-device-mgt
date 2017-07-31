@@ -26,12 +26,18 @@ import org.wso2.carbon.device.application.mgt.common.Platform;
 import org.wso2.carbon.device.application.mgt.common.exception.PlatformManagementException;
 import org.wso2.carbon.device.application.mgt.core.exception.PlatformManagementDAOException;
 
-import javax.validation.constraints.Size;
-import javax.ws.rs.*;
-import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;
+import javax.validation.constraints.Size;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Response;
 
+@Path("/platforms")
 public class PlatformManagementAPIImpl implements PlatformManagementAPI {
 
     private static final String ALL_STATUS = "ALL";
@@ -40,9 +46,14 @@ public class PlatformManagementAPIImpl implements PlatformManagementAPI {
 
     private static Log log = LogFactory.getLog(PlatformManagementAPIImpl.class);
 
+    @GET
     @Override
     public Response getPlatforms(@QueryParam("status") String status) {
         String tenantDomain = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantDomain(true);
+
+        if (log.isDebugEnabled()) {
+            log.debug("API request received for getting the platforms with the status " + status);
+        }
         try {
             List<Platform> platforms = APIUtil.getPlatformManager().getPlatforms(tenantDomain);
             List<Platform> results;
@@ -69,6 +80,9 @@ public class PlatformManagementAPIImpl implements PlatformManagementAPI {
             } else {
                 results = platforms;
             }
+            if (log.isDebugEnabled()) {
+                log.debug("Number of platforms with the status " + status + " : " + results.size());
+            }
             return Response.status(Response.Status.OK).entity(results).build();
         } catch (PlatformManagementException e) {
             log.error("Error while getting the platforms for tenant - " + tenantDomain, e);
@@ -91,6 +105,7 @@ public class PlatformManagementAPIImpl implements PlatformManagementAPI {
         }
     }
 
+    @POST
     @Override
     public Response addPlatform(Platform platform) {
         String tenantDomain = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantDomain(true);
@@ -100,10 +115,12 @@ public class PlatformManagementAPIImpl implements PlatformManagementAPI {
                     APIUtil.getPlatformManager().register(tenantDomain, platform);
                     return Response.status(Response.Status.CREATED).build();
                 } else {
-                    return APIUtil.getResponse("Invalid payload! Platform ID and names are mandatory fields!", Response.Status.BAD_REQUEST);
+                    return APIUtil.getResponse("Invxalid payload! Platform ID and names are mandatory fields!",
+                            Response.Status.BAD_REQUEST);
                 }
             } else {
-                return APIUtil.getResponse("Invalid payload! Platform needs to be passed as payload!", Response.Status.BAD_REQUEST);
+                return APIUtil.getResponse("Invalid payload! Platform needs to be passed as payload!",
+                        Response.Status.BAD_REQUEST);
             }
         } catch (PlatformManagementException e) {
             return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);

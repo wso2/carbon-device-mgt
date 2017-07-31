@@ -1,112 +1,138 @@
 {
-  "Logo": {
-    "name": "Cloud",
-    "url": "https://cloudmgt.cloud.wso2.com/cloudmgt",
-    "target": "_parent"
-  },
-  "Main": {
-    "Domain": {
-      "url": "#",
-      "icon": "fw fw-organization",
-      "isAdminOnly": false,
-      "target": "_parent",
-      "dropDown": {
-        "Organization": {
-          "url": "https://cloudmgt.cloud.wso2.com/cloudmgt/site/pages/organization.jag",
-          "icon": "fw fw-organization",
-          "dropDown": "false",
-          "target": "_self"
+    "Logo": {
+        "name": "Cloud",
+        "url": "https://cloudmgt.cloud.wso2.com/cloudmgt",
+        "target": "_parent"
+    },
+    "Main": {
+        "Domain": {
+            "url": "#",
+            "icon": "fw fw-organization",
+            "isAdminOnly": false,
+            "target": "_parent",
+            "dropDown": {
+                "Organization": {
+                    "url": "https://cloudmgt.cloud.wso2.com/cloudmgt/site/pages/organization.jag",
+                    "icon": "fw fw-organization",
+                    "dropDown": "false",
+                    "target": "_self"
+                },
+                "Members": {
+                    "url": "https://cloudmgt.cloud.wso2.com/cloudmgt/site/pages/user.jag",
+                    "icon": "fa fa-users",
+                    "dropDown": "false",
+                    "target": "_self"
+                }
+            }
         },
-        "Members": {
-          "url": "https://cloudmgt.cloud.wso2.com/cloudmgt/site/pages/user.jag",
-          "icon": "fa fa-users",
-          "dropDown": "false",
-          "target": "_self"
+        "Account": {
+            "url": "#",
+            "icon": "fw fw-resource",
+            "isAdminOnly": false,
+            "billingEnabled": true,
+            "billingApi": {
+                "username": "admin",
+                "password": "admin"
+            },
+            "cloudMgtHost" : "https://cloudmgt.cloudstaging.wso2.com",
+            "cloudMgtIndexPage": "https://cloudmgt.cloud.wso2.com/cloudmgt/site/pages/index.jag",
+            "dropDown": {
+                "Upgrade Now": {
+                    "url": "https://cloudmgt.cloud.wso2.com/cloudmgt/site/pages/payment-plans.jag?cloud-type=device_cloud",
+                    "icon": "fw fw-export",
+                    "dropDown": "true",
+                    "target": "_self"
+                },
+                "Request Extension": {
+                    "url": "https://cloudmgt.cloud.wso2.com/cloudmgt/site/pages/contact-us.jag?cloud-type=device_cloud&request-extension=true",
+                    "icon": "fa fa-mail",
+                    "dropDown": "true",
+                    "target": "_self"
+                }
+            }
+        },
+        "Support": {
+            "url": "https://cloudmgt.cloud.wso2.com/cloudmgt/site/pages/contact-us.jag?cloud-type=device_cloud",
+            "icon": "fw fw-mail",
+            "isAdminOnly": false,
+            "target": "_self",
+            "dropDown": "false"
+        },
+        "Documentation": {
+            "url": "#",
+            "icon": "fw fw-document",
+            "isAdminOnly": false,
+            "dropDown": {
+                "Device Cloud": {
+                    "id": "device_cloud",
+                    "url": "https://docs.wso2.com/display/DeviceCloud/WSO2+Device+Cloud+Documentation",
+                    "icon": "fw fw-mobile",
+                    "target": "_blank"
+                }
+            }
         }
-      }
     },
-    "Support": {
-      "url": "https://cloudmgt.cloud.wso2.com/cloudmgt/site/pages/contact-us.jag",
-      "icon": "fw fw-mail",
-      "isAdminOnly": false,
-      "target": "_self",
-      "dropDown": "false"
-    },
-    "Documentation": {
-      "url": "#",
-      "icon": "fw fw-document",
-      "isAdminOnly": false,
-      "dropDown": {
-        "Device Cloud": {
-          "id": "device_cloud",
-          "url": "https://docs.wso2.com/display/DeviceCloud/WSO2+Device+Cloud+Documentation",
-          "icon": "fw fw-mobile",
-          "target": "_self"
-        }
-      }
-    }
-  },
-  "User": {
-    "url": "#",
-    "icon": "fw fw-user",
-    "dropDown": {
-      "Profile": {
-        "url": "https://cloudmgt.cloud.wso2.com/cloudmgt/site/pages/user-profile.jag",
+    "User": {
+        "url": "#",
         "icon": "fw fw-user",
-        "dropDown": "true",
-        "target": "_self"
-      },
-      "Change Password": {
-        "url": "https://cloudmgt.cloud.wso2.com/cloudmgt/site/pages/change-password.jag",
-        "icon": "fw fw-lock",
-        "dropDown": "true",
-        "target": "_self"
-      },
-      "Logout": {
-        "url": "https://api.cloud.wso2.com/publisher/site/pages/logout.jag",
-        "icon": "fw fw-sign-out",
-        "dropDown": "true",
-        "target": "_self"
-      }
-    }
-  },
-  "Expand": {
-    "Clouds": {
-      "API Cloud": {
-        "id": "api_cloud",
-        "url": "https://api.cloud.wso2.com/publisher",
-        "icon": "fw fw-api fw-3x",
-        "dropDown": "true",
-        "target": "_self"
-      },
-      "Integration Cloud": {
-        "id": "integration_cloud",
-        "url": "https://integration.cloud.wso2.com/appmgt",
-        "icon": "fw fw-service fw-3x",
-        "dropDown": "true",
-        "target": "_self"
-      },
-      "Identity Cloud": {
-        "id": "integration_cloud",
-        "url": "https://identity.cloud.wso2.com/admin",
-        "icon": "fw fw-security fw-3x",
-        "dropDown": "true",
-        "target": "_self"
-      }
+        "dropDown": {
+            "Profile": {
+                "url": "https://cloudmgt.cloud.wso2.com/cloudmgt/site/pages/user-profile.jag",
+                "icon": "fw fw-user",
+                "dropDown": "true",
+                "target": "_self"
+            },
+            "Change Password": {
+                "url": "https://cloudmgt.cloud.wso2.com/cloudmgt/site/pages/change-password.jag",
+                "icon": "fw fw-lock",
+                "dropDown": "true",
+                "target": "_self"
+            },
+            "Logout": {
+                "url": "https://device.cloud.wso2.com/devicemgt/logout",
+                "icon": "fw fw-sign-out",
+                "dropDown": "true",
+                "target": "_self"
+            }
+        }
     },
-    "Actions": {
-      "Organization": {
-        "url": "https://cloudmgt.cloud.wso2.com/cloudmgt/site/pages/organization.jag",
-        "icon": "fw fw-organization  fw-3x",
-        "dropDown": "true",
-        "target": "_self"
-      },
-      "Members": {
-        "url": "https://cloudmgt.cloud.wso2.com/cloudmgt/site/pages/user.jag",
-        "icon": "fa fa-users  fa-3x",
-        "dropDown": "true",
-        "target": "_self"
-      }
+    "Expand": {
+        "Clouds": {
+            "API Cloud": {
+                "id": "api_cloud",
+                "url": "https://api.cloud.wso2.com/publisher",
+                "icon": "fw fw-api fw-3x",
+                "dropDown": "true",
+                "target": "_self"
+            },
+            "Integration Cloud": {
+                "id": "integration_cloud",
+                "url": "https://integration.cloud.wso2.com/appmgt",
+                "icon": "fw fw-service fw-3x",
+                "dropDown": "true",
+                "target": "_self"
+            },
+            "Identity Cloud": {
+                "id": "integration_cloud",
+                "url": "https://identity.cloud.wso2.com/admin",
+                "icon": "fw fw-security fw-3x",
+                "dropDown": "true",
+                "target": "_self"
+            }
+        },
+        "Actions": {
+            "Organization": {
+                "url": "https://cloudmgt.cloud.wso2.com/cloudmgt/site/pages/organization.jag",
+                "icon": "fw fw-organization  fw-3x",
+                "dropDown": "true",
+                "target": "_self"
+            },
+            "Members": {
+                "url": "https://cloudmgt.cloud.wso2.com/cloudmgt/site/pages/user.jag",
+                "icon": "fa fa-users  fa-3x",
+                "dropDown": "true",
+                "target": "_self"
+            }
+        }
     }
-  }
 }

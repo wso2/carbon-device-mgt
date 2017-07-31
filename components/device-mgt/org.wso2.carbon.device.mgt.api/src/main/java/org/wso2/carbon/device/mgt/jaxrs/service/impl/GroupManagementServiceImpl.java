@@ -173,7 +173,10 @@ public class GroupManagementServiceImpl implements GroupManagementService {
                     .manageGroupSharing(groupId, userRoles);
             return Response.status(Response.Status.OK).build();
         } catch (GroupManagementException e) {
-            String msg = "Error occurred while managing group share.";
+            String msg = "Error occurred while managing group share. ";
+            if (e.getErrorMessage() != null){
+                msg += e.getErrorMessage();
+            }
             log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         } catch (RoleDoesNotExistException e) {

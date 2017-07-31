@@ -119,7 +119,6 @@ public class QueryBuilderImpl implements QueryBuilder {
             log.debug("Property with OR Query : " + queries.get(Constants.PROP_OR));
             log.debug("Location related Query : " + queries.get(Constants.LOCATION));
         }
-
         return queries;
     }
 
@@ -342,10 +341,10 @@ public class QueryBuilderImpl implements QueryBuilder {
                     "DD.SSID, DD.CPU_USAGE, DD.TOTAL_RAM_MEMORY, DD.AVAILABLE_RAM_MEMORY, \n" +
                     "DD.PLUGGED_IN, DD.UPDATE_TIMESTAMP, DL.LATITUDE, DL.LONGITUDE, DL.STREET1, DL.STREET2, DL.CITY, DL.ZIP, \n" +
                     "DL.STATE, DL.COUNTRY, DL.UPDATE_TIMESTAMP AS DL_UPDATED_TIMESTAMP, DE.OWNER, DE.OWNERSHIP, DE.STATUS " +
-                    "AS DE_STATUS FROM DM_DEVICE_DETAIL AS DD INNER JOIN DM_DEVICE AS D ON  D.ID=DD.DEVICE_ID\n" +
-                    "LEFT JOIN DM_DEVICE_LOCATION AS DL ON DL.DEVICE_ID=D.ID \n" +
-                    "INNER JOIN DM_DEVICE_TYPE AS DT ON DT.ID=D.DEVICE_TYPE_ID\n" +
-                    "INNER JOIN DM_ENROLMENT AS DE ON D.ID=DE.DEVICE_ID\n" +
+                    "AS DE_STATUS FROM DM_DEVICE_DETAIL DD INNER JOIN DM_DEVICE D ON D.ID=DD.DEVICE_ID\n" +
+                    "LEFT JOIN DM_DEVICE_LOCATION DL ON DL.DEVICE_ID=D.ID \n" +
+                    "INNER JOIN DM_DEVICE_TYPE DT ON DT.ID=D.DEVICE_TYPE_ID\n" +
+                    "INNER JOIN DM_ENROLMENT DE ON D.ID=DE.DEVICE_ID\n" +
                     "WHERE D.TENANT_ID = ? ";
 
             ValueType type = new ValueType();
@@ -370,11 +369,11 @@ public class QueryBuilderImpl implements QueryBuilder {
                     "DD.PLUGGED_IN, DD.UPDATE_TIMESTAMP, DL.LATITUDE, DL.LONGITUDE, DL.STREET1, DL.STREET2, DL.CITY, DL.ZIP, \n" +
                     "DL.STATE, DL.COUNTRY, DL.UPDATE_TIMESTAMP AS DL_UPDATED_TIMESTAMP, DI.KEY_FIELD, DI.VALUE_FIELD, \n" +
                     "DE.OWNER, DE.OWNERSHIP, DE.STATUS AS DE_STATUS " +
-                    "FROM DM_DEVICE_DETAIL AS DD INNER JOIN DM_DEVICE AS D ON  D.ID=DD.DEVICE_ID\n" +
-                    "LEFT JOIN DM_DEVICE_LOCATION AS DL ON DL.DEVICE_ID=D.ID  \n" +
-                    "INNER JOIN DM_DEVICE_TYPE AS DT ON DT.ID=D.DEVICE_TYPE_ID\n" +
-                    "INNER JOIN DM_ENROLMENT AS DE ON D.ID=DE.DEVICE_ID\n" +
-                    "LEFT JOIN DM_DEVICE_INFO AS DI ON DI.DEVICE_ID=D.ID\n" +
+                    "FROM DM_DEVICE_DETAIL DD INNER JOIN DM_DEVICE D ON  D.ID=DD.DEVICE_ID\n" +
+                    "LEFT JOIN DM_DEVICE_LOCATION DL ON DL.DEVICE_ID=D.ID  \n" +
+                    "INNER JOIN DM_DEVICE_TYPE DT ON DT.ID=D.DEVICE_TYPE_ID\n" +
+                    "INNER JOIN DM_ENROLMENT DE ON D.ID=DE.DEVICE_ID\n" +
+                    "LEFT JOIN DM_DEVICE_INFO DI ON DI.DEVICE_ID=D.ID\n" +
                     "WHERE D.TENANT_ID = ? ";
 
             ValueType type = new ValueType();

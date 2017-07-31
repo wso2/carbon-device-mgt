@@ -17,6 +17,9 @@
  */
 package org.wso2.carbon.device.application.mgt.common.exception;
 
+/**
+ * Exception thrown due to an issue in TransactionManagement of Database.
+ */
 public class TransactionManagementException extends ApplicationManagementException {
 
     private static final long serialVersionUID = -3151279321929070297L;

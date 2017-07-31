@@ -1,4 +1,4 @@
-package org.wso2.carbon.device.application.mgt.api.services;/*
+/*
 *  Copyright (c) 2017, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
 *  WSO2 Inc. licenses this file to you under the Apache License,
 *  Version 2.0 (the "License"); you may not use this file except
@@ -16,22 +16,82 @@ package org.wso2.carbon.device.application.mgt.api.services;/*
 *
 */
 
-import io.swagger.annotations.*;
+package org.wso2.carbon.device.application.mgt.api.services;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.Extension;
+import io.swagger.annotations.ExtensionProperty;
+import io.swagger.annotations.Info;
+import io.swagger.annotations.SwaggerDefinition;
+import io.swagger.annotations.Tag;
+import org.wso2.carbon.apimgt.annotations.api.Scopes;
 import org.wso2.carbon.device.application.mgt.api.beans.ErrorResponse;
 import org.wso2.carbon.device.application.mgt.common.Platform;
 
 import javax.validation.constraints.Size;
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+/**
+ * API for handling platform related operations in application management.
+ */
+@SwaggerDefinition(
+        info = @Info(
+                version = "1.0.0",
+                title = "Platform Management Service",
+                extensions = {
+                        @Extension(properties = {
+                                @ExtensionProperty(name = "name", value = "PlatformManagementService"),
+                                @ExtensionProperty(name = "context", value = "/api/application-mgt/v1.0/platforms"),
+                        })
+                }
+        ),
+        tags = {
+                @Tag(name = "application_management", description = "Platform Management APIS related with "
+                        + "Application Management")
+        }
+)
+@Scopes (
+        scopes = {
+                @org.wso2.carbon.apimgt.annotations.api.Scope(
+                        name = "Get platform details",
+                        description = "Get platform details",
+                        key = "perm:platform:get",
+                        permissions = {"/device-mgt/platform/get"}
+                ),
+                @org.wso2.carbon.apimgt.annotations.api.Scope(
+                        name = "Add a platform",
+                        description = "Add a platform",
+                        key = "perm:platform:add",
+                        permissions = {"/device-mgt/platform/add"}
+                ),
+                @org.wso2.carbon.apimgt.annotations.api.Scope(
+                        name = "Update a platform",
+                        description = "Update a platform",
+                        key = "perm:platform:update",
+                        permissions = {"/device-mgt/platform/update"}
+                )
+        }
+)
 @Api(value = "Platform Management", description = "This API carries all platform management related operations " +
         "such as get all the available platform for a tenant, etc.")
+@Path("/platforms")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-@Path("/platforms")
 public interface PlatformManagementAPI {
-    public final static String SCOPE = "scope";
+    String SCOPE = "scope";
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -45,7 +105,7 @@ public interface PlatformManagementAPI {
             tags = "Platform Management",
             extensions = {
                     @Extension(properties = {
-                            @ExtensionProperty(name = SCOPE, value = "perm:get-platform")
+                            @ExtensionProperty(name = SCOPE, value = "perm:platform:get")
                     })
             }
     )
@@ -62,14 +122,12 @@ public interface PlatformManagementAPI {
                             response = ErrorResponse.class)
             })
     Response getPlatforms(
-            @ApiParam(
-                    name = "status",
-                    allowableValues = "ENABLED, DISABLED, ALL",
-                    value = "Provide the status of platform for that tenant:\n" +
-                            "- ENABLED: The platforms that are currently enabled for the tenant\n" +
-                            "- DISABLED: The platforms that can be used by the tenant but disabled to be used for tenant\n" +
-                            "- ALL: All the list of platforms that can be used by the tenant",
-                    required = false)
+            @ApiParam(name = "status", allowableValues = "ENABLED, DISABLED, ALL", value =
+                    "Provide the status of platform for that tenant:\n"
+                            + "- ENABLED: The platforms that are currently enabled for the tenant\n"
+                            + "- DISABLED: The platforms that can be used by the tenant but disabled "
+                            + "to be used for tenant\n"
+                            + "- ALL: All the list of platforms that can be used by the tenant", required = false)
             @QueryParam("status")
             @Size(max = 45)
                     String status
@@ -84,11 +142,11 @@ public interface PlatformManagementAPI {
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
             value = "get platform",
-            notes = "This will get application which was registered with {code}",
+            notes = "This will return the platform which is registered with {identifier}",
             tags = "Platform Management",
             extensions = {
                     @Extension(properties = {
-                            @ExtensionProperty(name = SCOPE, value = "perm:get-platform")
+                            @ExtensionProperty(name = SCOPE, value = "perm:platform:get")
                     })
             }
     )
@@ -124,7 +182,7 @@ public interface PlatformManagementAPI {
             tags = "Platform Management",
             extensions = {
                     @Extension(properties = {
-                            @ExtensionProperty(name = SCOPE, value = "perm:add-platform")
+                            @ExtensionProperty(name = SCOPE, value = "perm:platform:add")
                     })
             }
     )
@@ -162,7 +220,7 @@ public interface PlatformManagementAPI {
             tags = "Platform Management",
             extensions = {
                     @Extension(properties = {
-                            @ExtensionProperty(name = SCOPE, value = "perm:update-platform")
+                            @ExtensionProperty(name = SCOPE, value = "perm:platform:update")
                     })
             }
     )

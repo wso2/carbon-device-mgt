@@ -22,7 +22,7 @@
     <parent>
         <groupId>org.wso2.carbon.devicemgt</groupId>
         <artifactId>device-mgt</artifactId>
-        <version>2.0.63-SNAPSHOT</version>
+        <version>3.0.46-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -66,6 +66,7 @@
                             org.wso2.carbon.core,
                             org.wso2.carbon.utils.*,
                             org.wso2.carbon.device.mgt.common.*,
+                            org.wso2.carbon.device.mgt.analytics.data.publisher.service,
                             org.wso2.carbon.user.api,
                             org.wso2.carbon.user.core.*,
                             org.wso2.carbon.registry.core.service,
@@ -81,12 +82,15 @@
                             org.wso2.carbon.ntask.common,
                             org.apache.catalina,
                             org.apache.catalina.core,
-                            org.apache.commons.collections,
+                            org.apache.commons.collections;version="${commons-collections.version.range}",
                             org.wso2.carbon.email.sender.*,
                             io.swagger.annotations.*;resolution:=optional,
                             org.wso2.carbon,
                             org.wso2.carbon.base,
-							org.scannotation.*
+							org.scannotation.*,
+                            org.wso2.carbon.event.processor.stub,
+                            org.wso2.carbon.identity.jwt.client.extension.service,
+                            org.apache.commons.codec.binary
                         </Import-Package>
                         <Export-Package>
                             !org.wso2.carbon.device.mgt.core.internal,
@@ -132,6 +136,29 @@
         <dependency>
             <groupId>org.wso2.carbon.devicemgt</groupId>
             <artifactId>org.wso2.carbon.device.mgt.common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.devicemgt</groupId>
+            <artifactId>org.wso2.carbon.device.mgt.analytics.data.publisher</artifactId>
+            <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>javax.servlet</groupId>
+                    <artifactId>servlet-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.wso2.carbon.registry</groupId>
+                    <artifactId>org.wso2.carbon.registry.indexing</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.wso2.carbon.identity.framework</groupId>
+                    <artifactId>org.wso2.carbon.user.mgt</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon</groupId>
@@ -261,6 +288,20 @@
         <dependency>
             <groupId>org.wso2.carbon.devicemgt</groupId>
             <artifactId>org.wso2.carbon.apimgt.annotations</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.event-processing</groupId>
+            <artifactId>org.wso2.carbon.event.processor.stub</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.devicemgt</groupId>
+            <artifactId>org.wso2.carbon.identity.jwt.client.extension</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>commons-codec.wso2</groupId>
+            <artifactId>commons-codec</artifactId>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>

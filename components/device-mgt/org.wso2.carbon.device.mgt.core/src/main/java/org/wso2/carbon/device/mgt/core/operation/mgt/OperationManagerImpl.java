@@ -23,6 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
+import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
 import org.wso2.carbon.device.mgt.common.InvalidDeviceException;
 import org.wso2.carbon.device.mgt.common.MonitoringOperation;
@@ -151,7 +152,7 @@ public class OperationManagerImpl implements OperationManager {
                 // check whether device list is greater than batch size notification strategy has enable to send push
                 // notification using scheduler task
                 if (DeviceConfigurationManager.getInstance().getDeviceManagementConfig().
-                        getPushNotificationConfiguration().getSchedulerBatchSize() < authorizedDeviceList.size() &&
+                        getPushNotificationConfiguration().getSchedulerBatchSize() <= authorizedDeviceList.size() &&
                         notificationStrategy != null) {
                     isScheduled = notificationStrategy.getConfig().isScheduled();
                 }
@@ -193,6 +194,8 @@ public class OperationManagerImpl implements OperationManager {
                             if (log.isDebugEnabled()) {
                                 log.debug("Sending push notification to " + deviceId + " from add operation method.");
                             }
+                            operation.setId(operationId);
+                            operation.setActivityId(DeviceManagementConstants.OperationAttributes.ACTIVITY + operationId);
                             notificationStrategy.execute(new NotificationContext(deviceId, operation));
                             operationMappingDAO.updateOperationMapping(operationId, enrolmentId, org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.PushNotificationStatus.COMPLETED);
                         } catch (PushNotificationExecutionFailedException e) {
@@ -293,19 +296,11 @@ public class OperationManagerImpl implements OperationManager {
     }
 
     private Device getDevice(DeviceIdentifier deviceId) throws OperationManagementException {
-        int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
         try {
-            DeviceManagementDAOFactory.openConnection();
-            return deviceDAO.getDevice(deviceId, tenantId);
-        } catch (SQLException e) {
-            throw new OperationManagementException("Error occurred while opening a connection the data " +
-                                                   "source", e);
-        } catch (DeviceManagementDAOException e) {
-            OperationManagementDAOFactory.rollbackTransaction();
+            return DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().getDevice(deviceId, false);
+        } catch (DeviceManagementException e) {
             throw new OperationManagementException(
-                    "Error occurred while retrieving device info", e);
-        } finally {
-            DeviceManagementDAOFactory.closeConnection();
+                    "Error occurred while retrieving device info.", e);
         }
     }
 
@@ -418,12 +413,8 @@ public class OperationManagerImpl implements OperationManager {
         int enrolmentId = enrolmentInfo.getId();
         //Changing the enrollment status & attempt count if the device is marked as inactive or unreachable
         switch (enrolmentInfo.getStatus()) {
-            case ACTIVE:
-                this.resetAttemptCount(enrolmentId);
-                break;
             case INACTIVE:
             case UNREACHABLE:
-                this.resetAttemptCount(enrolmentId);
                 this.setEnrolmentStatus(enrolmentId, EnrolmentInfo.Status.ACTIVE);
                 break;
         }
@@ -479,12 +470,8 @@ public class OperationManagerImpl implements OperationManager {
         int enrolmentId = enrolmentInfo.getId();
         //Changing the enrollment status & attempt count if the device is marked as inactive or unreachable
         switch (enrolmentInfo.getStatus()) {
-            case ACTIVE:
-                this.resetAttemptCount(enrolmentId);
-                break;
             case INACTIVE:
             case UNREACHABLE:
-                this.resetAttemptCount(enrolmentId);
                 this.setEnrolmentStatus(enrolmentId, EnrolmentInfo.Status.ACTIVE);
                 break;
         }
@@ -554,7 +541,7 @@ public class OperationManagerImpl implements OperationManager {
                                                                        Operation.Status.valueOf(operation.getStatus().
                                                                        toString()));
             }
-            if (isUpdated && operation.getOperationResponse() != null) {
+            if (operation.getOperationResponse() != null) {
                 operationDAO.addOperationResponse(enrolmentId, operationId, operation.getOperationResponse());
             }
             OperationManagementDAOFactory.commitTransaction();
@@ -827,6 +814,28 @@ public class OperationManagerImpl implements OperationManager {
         }
     }
 
+    public Activity getOperationByActivityIdAndDevice(String activity, DeviceIdentifier deviceId) throws OperationManagementException {
+        // This parses the operation id from activity id (ex : ACTIVITY_23) and converts to the integer.
+        int operationId = Integer.parseInt(
+                activity.replace(DeviceManagementConstants.OperationAttributes.ACTIVITY, ""));
+        if (operationId == 0) {
+            throw new IllegalArgumentException("Operation ID cannot be null or zero (0).");
+        }
+
+        Device device = this.getDevice(deviceId);
+        try {
+            OperationManagementDAOFactory.openConnection();
+            return operationDAO.getActivityByDevice(operationId, device.getId());
+        } catch (SQLException e) {
+            throw new OperationManagementException("Error occurred while opening a connection to the data source.", e);
+        } catch (OperationManagementDAOException e) {
+            throw new OperationManagementException("Error occurred while retrieving the operation with activity Id '" +
+                    activity + " and device Id: " + deviceId.getId(), e);
+        } finally {
+            OperationManagementDAOFactory.closeConnection();
+        }
+    }
+
     @Override
     public List<Operation> getOperationUpdatedAfter(long timestamp) throws OperationManagementException {
         return null;
@@ -1038,24 +1047,6 @@ public class OperationManagerImpl implements OperationManager {
             DeviceManagementDAOFactory.closeConnection();
         }
         return updateStatus;
-    }
-
-    private boolean resetAttemptCount(int enrolmentId) throws OperationManagementException {
-        boolean resetStatus;
-        try {
-            OperationManagementDAOFactory.beginTransaction();
-            resetStatus = operationDAO.resetAttemptCount(enrolmentId);
-            OperationManagementDAOFactory.commitTransaction();
-        } catch (OperationManagementDAOException e) {
-            OperationManagementDAOFactory.rollbackTransaction();
-            throw new OperationManagementException("Error occurred while resetting attempt count of device id : '" +
-                                                   enrolmentId + "'", e);
-        } catch (TransactionManagementException e) {
-            throw new OperationManagementException("Error occurred while initiating a transaction", e);
-        } finally {
-            OperationManagementDAOFactory.closeConnection();
-        }
-        return resetStatus;
     }
 
     private boolean isTaskScheduledOperation(Operation operation, List<DeviceIdentifier> deviceIds) {

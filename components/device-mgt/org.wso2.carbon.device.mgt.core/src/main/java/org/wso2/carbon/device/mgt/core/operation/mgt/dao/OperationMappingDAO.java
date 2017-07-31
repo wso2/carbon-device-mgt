@@ -18,10 +18,12 @@
  */
 package org.wso2.carbon.device.mgt.core.operation.mgt.dao;
 
-import org.wso2.carbon.device.mgt.core.operation.mgt.OperationMapping;
 import org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation;
+import org.wso2.carbon.device.mgt.core.operation.mgt.OperationEnrolmentMapping;
+import org.wso2.carbon.device.mgt.core.operation.mgt.OperationMapping;
 
 import java.util.List;
+import java.util.Map;
 
 public interface OperationMappingDAO {
 
@@ -33,5 +35,31 @@ public interface OperationMappingDAO {
             OperationManagementDAOException;
     void updateOperationMapping(List<OperationMapping> operationMappingList) throws
             OperationManagementDAOException;
+
+    /**
+     * This method returns first pending/repeated operation available for each active enrolment of given device-type
+     * where the operation was created after the given timestamp.
+     *
+     * @param minDuration - Upper limit of Operation created time
+     * @param maxDuration - Lower limit of Operation created time
+     * @param deviceTypeId - Device Type Id of required devices
+     * @return List<OperationEnrolmentMapping> - List of OperationEnrolmentMapping objects containing required data
+     * @throws OperationManagementDAOException
+     */
+    List<OperationEnrolmentMapping> getFirstPendingOperationMappingsForActiveEnrolments(long minDuration,
+                                                                                        long maxDuration, int deviceTypeId)
+            throws OperationManagementDAOException;
+
+    /**
+     * This method returns the timestamp of last completed Operation for each active enrolment of given device-type
+     * where the operation was completed after the given timestamp.
+     *
+     * @param timeStamp - Timestamp of considered time-interval
+     * @param deviceTypeId - Device Type of required devices
+     * @return List<OperationEnrolmentMapping> - List of OperationEnrolmentMapping objects containing required data
+     * @throws OperationManagementDAOException
+     */
+    Map<Integer, Long> getLastConnectedTimeForActiveEnrolments(long timeStamp, int deviceTypeId)
+            throws OperationManagementDAOException;
 
 }

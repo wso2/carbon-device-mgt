@@ -19,10 +19,15 @@
 package org.wso2.carbon.device.application.mgt.common;
 
 import java.util.List;
-import java.util.Map;
 
+/**
+ * Filter represents a criteria that can be used for searching applications.
+ */
 public class Filter {
 
+    /**
+     * Order which the search results should be shown. Ascending or Descending.
+     */
     public enum SortingOrder {
         ASC, DESC
     }

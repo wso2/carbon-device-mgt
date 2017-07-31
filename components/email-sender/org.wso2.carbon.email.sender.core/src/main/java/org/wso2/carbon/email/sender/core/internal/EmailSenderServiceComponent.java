@@ -28,7 +28,8 @@ import org.wso2.carbon.utils.Axis2ConfigurationContextObserver;
 import org.wso2.carbon.utils.ConfigurationContextService;
 
 /**
- * @scr.component name="org.wso2.carbon.email.sender.EmailSenderServiceComponent" immediate="true"
+ * @scr.component name="org.wso2.carbon.email.sender.emailsendereervicecomponent"
+ * immediate="true"
  * @scr.reference name="registry.service"
  * interface="org.wso2.carbon.registry.core.service.RegistryService"
  * cardinality="1..1"

@@ -145,7 +145,7 @@ public class SQLServerOperationDAOImpl extends GenericOperationDAOImpl {
         List<Activity> activities = new ArrayList<>();
         try {
             Connection conn = OperationManagementDAOFactory.getConnection();
-            String sql = "SELECT opm.ENROLMENT_ID, opm.CREATED_TIMESTAMP, opm.UPDATED_TIMESTAMP, opm.OPERATION_ID,\n"
+            /*String sql = "SELECT opm.ENROLMENT_ID, opm.CREATED_TIMESTAMP, opm.UPDATED_TIMESTAMP, opm.OPERATION_ID,\n"
                     + "op.OPERATION_CODE, op.TYPE OPERATION_TYPE, opm.STATUS, en.DEVICE_ID,\n"
                     + "ops.RECEIVED_TIMESTAMP, ops.ID OP_RES_ID, ops.OPERATION_RESPONSE,\n"
                     + "de.DEVICE_IDENTIFICATION, dt.NAME DEVICE_TYPE\n" + "FROM DM_ENROLMENT_OP_MAPPING opm\n"
@@ -161,13 +161,61 @@ public class SQLServerOperationDAOImpl extends GenericOperationDAOImpl {
                 sql += "ORDER BY opm.OPERATION_ID OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
             } else {
                 sql += "ORDER BY opm.UPDATED_TIMESTAMP asc OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
-            }
+            }*/
+
+            int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
+
+            String sql = "SELECT " +
+                    "    opr.ENROLMENT_ID, " +
+                    "    opr.CREATED_TIMESTAMP, " +
+                    "    opr.UPDATED_TIMESTAMP, " +
+                    "    opr.OPERATION_ID, " +
+                    "    opr.OPERATION_CODE, " +
+                    "    opr.OPERATION_TYPE, " +
+                    "    opr.STATUS, " +
+                    "    opr.DEVICE_ID, " +
+                    "    opr.DEVICE_IDENTIFICATION, " +
+                    "    opr.DEVICE_TYPE, " +
+                    "    ops.RECEIVED_TIMESTAMP, " +
+                    "    ops.ID OP_RES_ID, " +
+                    "    ops.OPERATION_RESPONSE " +
+                    " FROM " +
+                    "    (SELECT " +
+                    "            opm.ID MAPPING_ID, " +
+                    "            opm.ENROLMENT_ID, " +
+                    "            opm.CREATED_TIMESTAMP, " +
+                    "            opm.UPDATED_TIMESTAMP, " +
+                    "            opm.OPERATION_ID, " +
+                    "            op.OPERATION_CODE, " +
+                    "            op.TYPE  OPERATION_TYPE, " +
+                    "            opm.STATUS, " +
+                    "            en.DEVICE_ID, " +
+                    "            de.DEVICE_IDENTIFICATION, " +
+                    "            dt.NAME  DEVICE_TYPE, " +
+                    "            de.TENANT_ID " +
+                    "    FROM" +
+                    "        DM_ENROLMENT_OP_MAPPING  opm " +
+                    "        INNER JOIN DM_OPERATION  op ON opm.OPERATION_ID = op.ID " +
+                    "        INNER JOIN DM_ENROLMENT  en ON opm.ENROLMENT_ID = en.ID " +
+                    "        INNER JOIN DM_DEVICE  de ON en.DEVICE_ID = de.ID " +
+                    "        INNER JOIN DM_DEVICE_TYPE  dt ON dt.ID = de.DEVICE_TYPE_ID " +
+                    "    WHERE " +
+                    "        opm.UPDATED_TIMESTAMP > ? " +
+                    "            AND de.TENANT_ID = ? " +
+                    "    ORDER BY opm.UPDATED_TIMESTAMP " +
+                    "    OFFSET ? ROWS FETCH NEXT ? ROWS ONLY) opr " +
+                    " LEFT JOIN DM_DEVICE_OPERATION_RESPONSE ops ON opr.MAPPING_ID = ops.EN_OP_MAP_ID " +
+                    " WHERE" +
+                    "    opr.UPDATED_TIMESTAMP > ? " +
+                    "    AND opr.TENANT_ID = ? ";
+
             stmt = conn.prepareStatement(sql);
             stmt.setLong(1, timestamp);
-            int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
             stmt.setInt(2, tenantId);
             stmt.setInt(3, offset);
             stmt.setInt(4, limit);
+            stmt.setLong(5, timestamp);
+            stmt.setInt(6, tenantId);
 
             rs = stmt.executeQuery();
 
@@ -277,14 +325,15 @@ public class SQLServerOperationDAOImpl extends GenericOperationDAOImpl {
         Map<Integer, List<OperationMapping>> operationMappingsTenantMap = new HashMap<>();
         try {
             Connection conn = OperationManagementDAOFactory.getConnection();
-            String sql = "SELECT op.ENROLMENT_ID, op.OPERATION_ID, dt.NAME ,d.TENANT_ID FROM DM_DEVICE d, " +
-                    "DM_ENROLMENT_OP_MAPPING op, DM_DEVICE_TYPE dt  WHERE op.STATUS = ? AND op" +
-                    ".PUSH_NOTIFICATION_STATUS = ? AND d.DEVICE_TYPE_ID = dt.ID " +
+            String sql = "SELECT op.ENROLMENT_ID, op.OPERATION_ID, d.DEVICE_IDENTIFICATION, dt.NAME as DEVICE_TYPE, d" +
+                    ".TENANT_ID FROM DM_DEVICE d, DM_ENROLMENT_OP_MAPPING op, DM_DEVICE_TYPE dt  WHERE op.STATUS = ? " +
+                    "AND op.PUSH_NOTIFICATION_STATUS = ? AND d.DEVICE_TYPE_ID = dt.ID " +
                     "AND d.ID=op.ENROLMENT_ID ORDER BY op.OPERATION_ID OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, opStatus.toString());
             stmt.setString(2, pushNotificationStatus.toString());
-            stmt.setInt(3, limit);
+            stmt.setInt(3, 0);
+            stmt.setInt(4, limit);
             rs = stmt.executeQuery();
             while (rs.next()) {
                 int tenantID = rs.getInt("TENANT_ID");
@@ -295,8 +344,11 @@ public class SQLServerOperationDAOImpl extends GenericOperationDAOImpl {
                 }
                 operationMapping = new OperationMapping();
                 operationMapping.setOperationId(rs.getInt("OPERATION_ID"));
-                operationMapping.setDeviceIdentifier(new DeviceIdentifier(String.valueOf(rs.getInt("ENROLMENT_ID")),
-                        rs.getString("NAME")));
+                DeviceIdentifier deviceIdentifier = new DeviceIdentifier();
+                deviceIdentifier.setId(rs.getString("DEVICE_IDENTIFICATION"));
+                deviceIdentifier.setType(rs.getString("DEVICE_TYPE"));
+                operationMapping.setDeviceIdentifier(deviceIdentifier);
+                operationMapping.setEnrollmentId(rs.getInt("ENROLMENT_ID"));
                 operationMapping.setTenantId(tenantID);
                 operationMappings.add(operationMapping);
             }

@@ -17,6 +17,9 @@
 */
 package org.wso2.carbon.device.application.mgt.common.exception;
 
+/**
+ * Exception thrown due to invalid configurations provided for Application Management.
+ */
 public class InvalidConfigurationException extends ApplicationManagementException {
 
     public InvalidConfigurationException(String message, Throwable throwable) {

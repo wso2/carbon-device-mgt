@@ -7837,7 +7837,7 @@ ul.sidebar-messages > li {
  * noty styles
  * ======================================================================== */
 #noty_topRight_layout_container {
-  position: absolute !important;
+  position: fixed !important;
 }
 
 #noty_topRight_layout_container, #noty_topLeft_layout_container {

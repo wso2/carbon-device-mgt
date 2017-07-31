@@ -19,15 +19,26 @@
 package org.wso2.carbon.device.application.mgt.core.internal;
 
 import org.apache.commons.logging.Log;
-import org.osgi.service.component.ComponentContext;
-import org.osgi.framework.BundleContext;
 import org.apache.commons.logging.LogFactory;
+import org.osgi.framework.BundleContext;
+import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.device.application.mgt.common.exception.InvalidConfigurationException;
-import org.wso2.carbon.device.application.mgt.common.services.*;
+import org.wso2.carbon.device.application.mgt.common.services.ApplicationManager;
+import org.wso2.carbon.device.application.mgt.common.services.ApplicationReleaseManager;
+import org.wso2.carbon.device.application.mgt.common.services.ApplicationUploadManager;
+import org.wso2.carbon.device.application.mgt.common.services.CategoryManager;
+import org.wso2.carbon.device.application.mgt.common.services.CommentsManager;
+import org.wso2.carbon.device.application.mgt.common.services.LifecycleStateManager;
+import org.wso2.carbon.device.application.mgt.common.services.PlatformManager;
+import org.wso2.carbon.device.application.mgt.common.services.SubscriptionManager;
+import org.wso2.carbon.device.application.mgt.common.services.VisibilityManager;
+import org.wso2.carbon.device.application.mgt.common.services.VisibilityTypeManager;
 import org.wso2.carbon.device.application.mgt.core.config.ConfigurationManager;
 import org.wso2.carbon.device.application.mgt.core.dao.common.DAOFactory;
+import org.wso2.carbon.device.application.mgt.core.exception.ApplicationManagementDAOException;
 import org.wso2.carbon.device.application.mgt.core.util.ApplicationManagementUtil;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
+import org.wso2.carbon.ndatasource.core.DataSourceService;
 import org.wso2.carbon.user.core.service.RealmService;
 
 import javax.naming.NamingException;
@@ -47,24 +58,31 @@ import javax.naming.NamingException;
  * policy="dynamic"
  * bind="setRealmService"
  * unbind="unsetRealmService"
+ * @scr.reference name="datasource.service"
+ * interface="org.wso2.carbon.ndatasource.core.DataSourceService"
+ * cardinality="1..1"
+ * policy="dynamic"
+ * bind="setDataSourceService"
+ * unbind="unsetDataSourceService"
  */
 public class ServiceComponent {
 
     private static Log log = LogFactory.getLog(ServiceComponent.class);
 
 
-    protected void activate(ComponentContext componentContext) throws NamingException {
+    protected void activate(ComponentContext componentContext) throws NamingException,
+            ApplicationManagementDAOException {
         BundleContext bundleContext = componentContext.getBundleContext();
         try {
-            String datasourceName = ConfigurationManager.getInstance()
-                    .getConfiguration().getDatasourceName();
+            String datasourceName = ConfigurationManager.getInstance().getConfiguration().getDatasourceName();
             DAOFactory.init(datasourceName);
 
             ApplicationManager applicationManager = ApplicationManagementUtil.getApplicationManagerInstance();
             DataHolder.getInstance().setApplicationManager(applicationManager);
             bundleContext.registerService(ApplicationManager.class.getName(), applicationManager, null);
 
-            ApplicationReleaseManager applicationReleaseManager = ApplicationManagementUtil.getApplicationReleaseManagerInstance();
+            ApplicationReleaseManager applicationReleaseManager = ApplicationManagementUtil
+                    .getApplicationReleaseManagerInstance();
             DataHolder.getInstance().setReleaseManager(applicationReleaseManager);
             bundleContext.registerService(ApplicationReleaseManager.class.getName(), applicationReleaseManager, null);
 
@@ -100,11 +118,8 @@ public class ServiceComponent {
             DataHolder.getInstance().setApplicationUploadManager(uploadManager);
             bundleContext.registerService(ApplicationUploadManager.class.getName(), uploadManager, null);
 
+            DAOFactory.init(datasourceName);
             log.info("ApplicationManagement core bundle has been successfully initialized");
-
-            if (log.isDebugEnabled()) {
-                log.debug("ApplicationManagement core bundle has been successfully initialized");
-            }
         } catch (InvalidConfigurationException e) {
             log.error("Error while activating Application Management core component. ", e);
         }
@@ -134,5 +149,13 @@ public class ServiceComponent {
 
     protected void unsetRealmService(RealmService realmService) {
         DataHolder.getInstance().setRealmService(null);
+    }
+
+    protected void setDataSourceService(DataSourceService dataSourceService) {
+        DataHolder.getInstance().setDataSourceService(dataSourceService);
+    }
+
+    protected void unsetDataSourceService(DataSourceService dataSourceService) {
+        DataHolder.getInstance().setDataSourceService(null);
     }
 }

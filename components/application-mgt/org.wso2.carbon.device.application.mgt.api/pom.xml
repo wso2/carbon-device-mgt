@@ -22,13 +22,13 @@
     <parent>
         <artifactId>application-mgt</artifactId>
         <groupId>org.wso2.carbon.devicemgt</groupId>
-        <version>2.0.63-SNAPSHOT</version>
+        <version>3.0.46-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>org.wso2.carbon.device.application.mgt.api</artifactId>
-    <version>2.0.63-SNAPSHOT</version>
+    <version>3.0.46-SNAPSHOT</version>
     <packaging>war</packaging>
     <name>WSO2 Carbon - Application Management API</name>
     <description>WSO2 Carbon - Application Management API</description>
@@ -36,13 +36,6 @@
 
     <build>
         <plugins>
-            <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>1.7</source>
-                    <target>1.7</target>
-                </configuration>
-            </plugin>
             <plugin>
                 <artifactId>maven-war-plugin</artifactId>
                 <configuration>
@@ -131,6 +124,10 @@
         <dependency>
             <groupId>org.codehaus.jackson</groupId>
             <artifactId>jackson-jaxrs</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-core-asl</artifactId>
         </dependency>
         <dependency>
             <groupId>javax.ws.rs</groupId>
@@ -228,5 +225,6 @@
             <groupId>javax.ws.rs</groupId>
             <artifactId>javax.ws.rs-api</artifactId>
         </dependency>
+
     </dependencies>
 </project>

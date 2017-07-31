@@ -410,7 +410,12 @@ public class MySQLApplicationDAOImpl extends AbstractApplicationDAOImpl {
 
     @Override
     public Application createApplication(Application application) throws ApplicationManagementDAOException {
-
+        if (log.isDebugEnabled()) {
+            log.debug("Request received in DAO Layer to create an application");
+            log.debug("Application Details : ");
+            log.debug("UUID : " +  application.getUuid() + " Name : " + application.getName() + " User name : " +
+            application.getUser().getUserName());
+        }
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;

@@ -1,0 +1,47 @@
+<div class="modal-header">
+    <button class="close" type="button" data-dismiss="modal" aria-hidden="true">&times;</button>
+    <h4 class="modal-title">
+        <div class="col-lg-5 col-md-6 col-centered">
+            <h4>
+                Set 'Within' alerts
+                <br>
+            </h4>
+        </div>
+    </h4>
+</div>
+<div class="modal-body">
+    <div class="row">
+        <div class="col-lg-8 col-md-8 col-centered">
+            <div class="">
+                <table class="table table-hover" id="within-alert">
+                    <thead>
+                    <tr>
+                        <th>Fence Name</th>
+                        <th>Query Name</th>
+                        <th>Created On</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <div class="alert alert-info fence-not-exist" role="alert">
+                        <strong>Oh snap!</strong> Can't find any geofence area, please draw a new area or try again.
+                    </div>
+
+                    </tbody>
+                </table>
+            </div>
+            <div class="pull-right">
+                <button style="background-color: #f4f4f4;" type="button" class="btn btn-default"
+                        onclick="openTools('WithIn')">Draw area
+                </button>
+                <button style="background-color: #f4f4f4;" type="button" class="btn  btn-default"
+                        onclick="$('#editWithinGeoJSON').modal('toggle')">Enter area
+                </button>
+                <br/>
+                <br/>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+<script src="/devicemgt/public/cdmf.unit.geo-dashboard/js/geo_within.js"></script>

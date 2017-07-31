@@ -50,6 +50,12 @@ $.fn.datatables_extended_serverside_paging = function (settings, url, dataFilter
 
     var deviceType;
     var ownership;
+	var searching = true;
+	if (options) {
+		if (typeof options.searching !== 'undefined') {
+			searching = options.searching;
+		}
+	}
 
     //--- End of EMM related codes
 
@@ -57,7 +63,7 @@ $.fn.datatables_extended_serverside_paging = function (settings, url, dataFilter
         $.extend({}, {
             serverSide: true,
             processing: false,
-            searching: true,
+            searching: searching,
             ordering: false,
             filter: false,
             bSortCellsTop: true,
@@ -168,10 +174,11 @@ $.fn.datatables_extended_serverside_paging = function (settings, url, dataFilter
                                 var titles = [];
                                 column.nodes().unique().sort().each(function (d, j) {
                                     var title = $(d).attr('data-display');
+                                    var searchVal = $(d).attr('data-search');
                                     if ($.inArray(title, titles) < 0) {
                                         titles.push(title);
                                         if (title !== undefined) {
-                                            select.append('<option value="' + title + '">' + title + '</option>')
+                                            select.append('<option value="' + searchVal + '">' + title + '</option>')
                                         }
                                     }
                                 });
@@ -186,7 +193,7 @@ $.fn.datatables_extended_serverside_paging = function (settings, url, dataFilter
                         $(filterColumn.eq(column.index()).empty()).html('<input type="text" class="form-control" placeholder="Search ' + title + '" />');
 
                         //noinspection SpellCheckingInspection
-                        filterColumn.eq(column.index()).find('input').on('keyup change', function () {
+                        filterColumn.eq(column.index()).find('input').on('keyup', function () {
                             column.search($(this).val()).draw();
                         });
                     }

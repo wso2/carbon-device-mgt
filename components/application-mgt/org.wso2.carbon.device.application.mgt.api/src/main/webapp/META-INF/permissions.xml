@@ -29,6 +29,40 @@
 -->
 <PermissionConfiguration>
     <APIVersion></APIVersion>
-    <!--Permission Tree Name-->
-    <!--End of Permission Tree-->
+
+    <!-- Application related permissions -->
+    <Permission>
+        <name>Get Application</name>
+        <path>/device-mgt/application/get</path>
+        <url>/application-mgt/applications</url>
+        <method>GET</method>
+    </Permission>
+    <Permission>
+        <name>Create Application</name>
+        <path>/device-mgt/application/create</path>
+        <url>/application-mgt/applications</url>
+        <method>POST</method>
+    </Permission>
+
+    <!-- Platform related permissions -->
+    <Permission>
+        <name>Get Platform</name>
+        <path>/device-mgt/platform/get</path>
+        <url>/application-mgt/platforms/*</url>
+        <method>GET</method>
+    </Permission>
+    <Permission>
+        <name>Add Platform</name>
+        <path>/device-mgt/platform/add</path>
+        <url>/application-mgt/platforms</url>
+        <method>POST</method>
+    </Permission>
+    <Permission>
+        <name>Update Platform</name>
+        <path>/device-mgt/platform/update</path>
+        <url>/application-mgt/platforms/*</url>
+        <method>PUT</method>
+    </Permission>
+
+
 </PermissionConfiguration>

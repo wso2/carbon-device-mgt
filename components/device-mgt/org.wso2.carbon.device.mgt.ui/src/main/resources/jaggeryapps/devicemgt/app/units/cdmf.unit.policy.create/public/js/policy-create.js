@@ -66,7 +66,7 @@ var disableInlineError = function (inputField, errorMsg, errorSign) {
  */
 function loadGroups(callback) {
     invokerUtil.get(
-        "/api/device-mgt/v1.0/groups",
+        "/api/device-mgt/v1.0/admin/groups",
         function (data) {
             data = JSON.parse(data);
             callback(data.deviceGroups);
@@ -146,7 +146,7 @@ stepForwardFrom["policy-platform"] = function (actionButton) {
 
     if (policyOperationsTemplateSrc) {
         $.template(policyOperationsTemplateCacheKey, context + policyOperationsTemplateSrc, function (template) {
-            var content = template({"iscloud" : $("#logged-in-user").data("iscloud")});
+            var content = template({"iscloud" : $("#logged-in-user").data("iscloud"), "isDeviceOwnerEnabled" : $("#logged-in-user").data("isdeviceownerenabled")});
             $("#device-type-policy-operations").html(content).removeClass("hidden");
             $(".policy-platform").addClass("hidden");
         });

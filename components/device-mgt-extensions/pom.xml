@@ -22,7 +22,7 @@
     <parent>
         <artifactId>carbon-devicemgt</artifactId>
         <groupId>org.wso2.carbon.devicemgt</groupId>
-        <version>2.0.63-SNAPSHOT</version>
+        <version>3.0.46-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
@@ -34,10 +34,12 @@
     <url>http://wso2.org</url>
 
     <modules>
+		<module>org.wso2.carbon.device.mgt.extensions.push.notification.provider.http</module>
         <module>org.wso2.carbon.device.mgt.extensions.push.notification.provider.fcm</module>
         <module>org.wso2.carbon.device.mgt.extensions.push.notification.provider.mqtt</module>
         <module>org.wso2.carbon.device.mgt.extensions.push.notification.provider.xmpp</module>
         <module>org.wso2.carbon.device.mgt.extensions.device.type.deployer</module>
+		<module>org.wso2.carbon.device.mgt.extensions.pull.notification</module>
     </modules>
 
 </project>

@@ -39,8 +39,6 @@
                     </div>
                     <div class="form-group">
                         <label for="password">Password *</label>
-                        <!-- Below line is added to stop autocomplete in firefox -->
-                        <input type="password" style="display:none">
                         <input type="password" name="password" class="form-control" autocomplete="off"
                                placeholder="Enter your password" required="required" />
                     </div>
@@ -52,7 +50,7 @@
                     {{/if}}
                     <div class="wr-input-control wr-btn-grp">
                         <button class="wr-btn btn-download-agent">
-                            Login
+                            Log in
                         </button>
                         <div id="register-link-wrapper" style="float: right; padding-top: 10px;">
                             <a href="{{@app.context}}/register" class="pull-right create-account">Create an account</a>

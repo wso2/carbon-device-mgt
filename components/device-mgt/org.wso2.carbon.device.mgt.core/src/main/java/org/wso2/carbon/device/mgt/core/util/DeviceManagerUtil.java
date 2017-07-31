@@ -21,10 +21,21 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Document;
 import org.wso2.carbon.base.MultitenantConstants;
-import org.wso2.carbon.device.mgt.common.*;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
+import org.wso2.carbon.device.mgt.analytics.data.publisher.service.EventsPublisherService;
+import org.wso2.carbon.device.mgt.common.Device;
+import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
+import org.wso2.carbon.device.mgt.common.DeviceManagementException;
+import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
+import org.wso2.carbon.device.mgt.common.GroupPaginationRequest;
+import org.wso2.carbon.device.mgt.common.PaginationRequest;
+import org.wso2.carbon.device.mgt.common.TransactionManagementException;
 import org.wso2.carbon.device.mgt.common.group.mgt.GroupManagementException;
 import org.wso2.carbon.device.mgt.common.notification.mgt.NotificationManagementException;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
+import org.wso2.carbon.device.mgt.common.type.mgt.DeviceTypeMetaDefinition;
+import org.wso2.carbon.device.mgt.core.DeviceManagementConstants;
+import org.wso2.carbon.device.mgt.core.cache.DeviceCacheKey;
 import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
 import org.wso2.carbon.device.mgt.core.config.DeviceManagementConfig;
 import org.wso2.carbon.device.mgt.core.config.datasource.DataSourceConfig;
@@ -43,17 +54,29 @@ import org.wso2.carbon.utils.CarbonUtils;
 import org.wso2.carbon.utils.ConfigurationContextService;
 import org.wso2.carbon.utils.NetworkUtils;
 
+import javax.cache.Cache;
+import javax.cache.CacheConfiguration;
+import javax.cache.CacheManager;
+import javax.cache.Caching;
 import javax.sql.DataSource;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
-import java.util.*;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 
 public final class DeviceManagerUtil {
 
     private static final Log log = LogFactory.getLog(DeviceManagerUtil.class);
+
+    private  static boolean isDeviceCacheInistialized = false;
 
     public static Document convertToDocument(File file) throws DeviceManagementException {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -108,7 +131,8 @@ public final class DeviceManagerUtil {
      * @param isSharedWithAllTenants is this device type shared with all tenants.
      * @return status of the operation
      */
-    public static boolean registerDeviceType(String typeName, int tenantId, boolean isSharedWithAllTenants)
+    public static boolean registerDeviceType(String typeName, int tenantId, boolean isSharedWithAllTenants
+            , DeviceTypeMetaDefinition deviceTypeDefinition)
             throws DeviceManagementException {
         boolean status;
         try {
@@ -118,7 +142,13 @@ public final class DeviceManagerUtil {
             if (deviceType == null) {
                 deviceType = new DeviceType();
                 deviceType.setName(typeName);
+                deviceType.setDeviceTypeMetaDefinition(deviceTypeDefinition);
                 deviceTypeDAO.addDeviceType(deviceType, tenantId, isSharedWithAllTenants);
+            } else {
+                if (deviceTypeDefinition != null) {
+                    deviceType.setDeviceTypeMetaDefinition(deviceTypeDefinition);
+                    deviceTypeDAO.updateDeviceType(deviceType, tenantId);
+                }
             }
             DeviceManagementDAOFactory.commitTransaction();
             status = true;
@@ -134,6 +164,31 @@ public final class DeviceManagerUtil {
             DeviceManagementDAOFactory.closeConnection();
         }
         return status;
+    }
+
+    /**
+     * Get the DeviceType information from Database.
+     *
+     * @param typeName device type
+     * @param tenantId provider tenant Id
+     * @return DeviceType which contains info about the device-type.
+     */
+    public static DeviceType getDeviceType(String typeName, int tenantId) throws DeviceManagementException {
+        DeviceType deviceType = null;
+        try {
+            DeviceManagementDAOFactory.openConnection();
+            DeviceTypeDAO deviceTypeDAO = DeviceManagementDAOFactory.getDeviceTypeDAO();
+            deviceType = deviceTypeDAO.getDeviceType(typeName, tenantId);
+        } catch (DeviceManagementDAOException e) {
+            throw new DeviceManagementException("Error occurred while fetching the device type '"
+                    + typeName + "'", e);
+        } catch (SQLException e) {
+            throw new DeviceManagementException("SQL Error occurred while fetching the device type '"
+                    + typeName + "'", e);
+        } finally {
+            DeviceManagementDAOFactory.closeConnection();
+        }
+        return deviceType;
     }
 
     /**
@@ -192,6 +247,7 @@ public final class DeviceManagerUtil {
                 switch (device.getEnrolmentInfo().getStatus()) {
                     case BLOCKED:
                     case REMOVED:
+                        break;
                     case SUSPENDED:
                         break;
                     default:
@@ -358,6 +414,17 @@ public final class DeviceManagerUtil {
         return limit;
     }
 
+    public static boolean isPublishLocationOperationResEnabled() throws DeviceManagementException {
+        DeviceManagementConfig deviceManagementConfig = DeviceConfigurationManager.getInstance().
+                getDeviceManagementConfig();
+        if (deviceManagementConfig != null) {
+            return deviceManagementConfig.getGeoLocationConfiguration().getPublishLocationOperationResponse();
+        } else {
+            throw new DeviceManagementException("Device-Mgt configuration has not initialized. Please check the " +
+                                                        "cdm-config.xml file.");
+        }
+    }
+
     public static DeviceIDHolder validateDeviceIdentifiers(List<DeviceIdentifier> deviceIDs) {
 
         List<String> errorDeviceIdList = new ArrayList<String>();
@@ -395,7 +462,8 @@ public final class DeviceManagerUtil {
     }
 
     public static boolean isValidDeviceIdentifier(DeviceIdentifier deviceIdentifier) throws DeviceManagementException {
-        Device device = DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().getDevice(deviceIdentifier);
+        Device device = DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().getDevice(deviceIdentifier,
+                false);
         if (device == null || device.getDeviceIdentifier() == null ||
                 device.getDeviceIdentifier().isEmpty() || device.getEnrolmentInfo() == null) {
             return false;
@@ -403,5 +471,70 @@ public final class DeviceManagerUtil {
             return false;
         }
         return true;
+    }
+
+    private static CacheManager getCacheManager() {
+        return Caching.getCacheManagerFactory().getCacheManager(DeviceManagementConstants.DM_CACHE_MANAGER);
+    }
+
+    public static EventsPublisherService getEventPublisherService() {
+        PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        EventsPublisherService eventsPublisherService =
+                (EventsPublisherService) ctx.getOSGiService(EventsPublisherService.class, null);
+        if (eventsPublisherService == null) {
+            String msg = "Event Publisher service has not initialized.";
+            log.error(msg);
+            throw new IllegalStateException(msg);
+        }
+        return eventsPublisherService;
+    }
+
+    public static void initializeDeviceCache() {
+        DeviceManagementConfig config = DeviceConfigurationManager.getInstance().getDeviceManagementConfig();
+        int deviceCacheExpiry = config.getDeviceCacheConfiguration().getExpiryTime();
+        CacheManager manager = getCacheManager();
+        if (config.getDeviceCacheConfiguration().isEnabled()) {
+            if(!isDeviceCacheInistialized) {
+                isDeviceCacheInistialized = true;
+                if (manager != null) {
+                    if (deviceCacheExpiry > 0) {
+                        manager.<DeviceCacheKey, Device>createCacheBuilder(DeviceManagementConstants.DEVICE_CACHE).
+                                setExpiry(CacheConfiguration.ExpiryType.MODIFIED, new CacheConfiguration.Duration(TimeUnit.SECONDS,
+                                        deviceCacheExpiry)).setExpiry(CacheConfiguration.ExpiryType.ACCESSED, new CacheConfiguration.
+                                Duration(TimeUnit.SECONDS, deviceCacheExpiry)).setStoreByValue(true).build();
+                    } else {
+                        manager.<DeviceCacheKey, Device>getCache(DeviceManagementConstants.DEVICE_CACHE);
+                    }
+                } else {
+                    if (deviceCacheExpiry > 0) {
+                        Caching.getCacheManager().
+                                <DeviceCacheKey, Device>createCacheBuilder(DeviceManagementConstants.DEVICE_CACHE).
+                                setExpiry(CacheConfiguration.ExpiryType.MODIFIED, new CacheConfiguration.Duration(TimeUnit.SECONDS,
+                                        deviceCacheExpiry)).setExpiry(CacheConfiguration.ExpiryType.ACCESSED, new CacheConfiguration.
+                                Duration(TimeUnit.SECONDS, deviceCacheExpiry)).setStoreByValue(true).build();
+                    } else {
+                        Caching.getCacheManager().<DeviceCacheKey, Device>getCache(DeviceManagementConstants.DEVICE_CACHE);
+                    }
+                }
+            }
+        }
+    }
+
+    public static Cache<DeviceCacheKey, Device> getDeviceCache() {
+        DeviceManagementConfig config = DeviceConfigurationManager.getInstance().getDeviceManagementConfig();
+        CacheManager manager = getCacheManager();
+        Cache<DeviceCacheKey, Device> deviceCache = null;
+        if (config.getDeviceCacheConfiguration().isEnabled()) {
+            if(!isDeviceCacheInistialized) {
+                initializeDeviceCache();
+            }
+            if (manager != null) {
+                deviceCache = manager.<DeviceCacheKey, Device>getCache(DeviceManagementConstants.DEVICE_CACHE);
+            } else {
+                deviceCache =  Caching.getCacheManager(DeviceManagementConstants.DM_CACHE_MANAGER).
+                        <DeviceCacheKey, Device>getCache(DeviceManagementConstants.DEVICE_CACHE);
+            }
+        }
+        return deviceCache;
     }
 }

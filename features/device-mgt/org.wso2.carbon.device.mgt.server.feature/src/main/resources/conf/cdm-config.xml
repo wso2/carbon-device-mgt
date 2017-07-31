@@ -34,9 +34,13 @@
             <Provider>org.wso2.carbon.device.mgt.extensions.push.notification.provider.fcm.FCMBasedPushNotificationProvider</Provider>
             <!--<Provider>org.wso2.carbon.device.mgt.mobile.impl.ios.apns.APNSBasedPushNotificationProvider</Provider>-->
             <Provider>org.wso2.carbon.device.mgt.extensions.push.notification.provider.mqtt.MQTTBasedPushNotificationProvider</Provider>
+			<Provider>org.wso2.carbon.device.mgt.extensions.push.notification.provider.http.HTTPBasedPushNotificationProvider</Provider>
             <Provider>org.wso2.carbon.device.mgt.extensions.push.notification.provider.xmpp.XMPPBasedPushNotificationProvider</Provider>
         </PushNotificationProviders>
     </PushNotificationConfiguration>
+	<PullNotificationConfiguration>
+		<Enabled>false</Enabled>
+	</PullNotificationConfiguration>
     <IdentityConfiguration>
         <ServerUrl>https://localhost:9443</ServerUrl>
         <AdminUsername>admin</AdminUsername>
@@ -54,11 +58,7 @@
         <!--Merged ->  Merged policy evaluation point -->
         <PolicyEvaluationPoint>Simple</PolicyEvaluationPoint>
     </PolicyConfiguration>
-    <!--<TaskConfiguration>-->
-        <!--<Enable>true</Enable>-->
-        <!--<Frequency>600000</Frequency>-->
-    <!--</TaskConfiguration>-->
-    <!-- Default Plengthsize configuration for paginated DM APIs-->
+    <!-- Default Page size configuration for paginated DM APIs-->
     <PaginationConfiguration>
         <DeviceListPageSize>20</DeviceListPageSize>
         <GroupListPageSize>20</GroupListPageSize>
@@ -66,5 +66,22 @@
         <ActivityListPageSize>20</ActivityListPageSize>
         <OperationListPageSize>20</OperationListPageSize>
     </PaginationConfiguration>
+    <!--This specifies whether to enable the DeviceStatus Task in this node. In clustered setup only master node
+     should  have to run this task.-->
+    <DeviceStatusTaskConfig>
+        <Enable>true</Enable>
+    </DeviceStatusTaskConfig>
+    <!--This controls the in-memory device cache which is local to this node. Setting it enable will activate the
+    device caching for upto configured expiry-time in seconds. In clustered setup all worker nodes can enable the
+    device-cache to improve performance. -->
+    <DeviceCacheConfiguration>
+        <Enable>true</Enable>
+        <ExpiryTime>600</ExpiryTime>
+    </DeviceCacheConfiguration>
+    <GeoLocationConfiguration>
+        <isEnabled>false</isEnabled>
+        <PublishLocationOperationResponse>false</PublishLocationOperationResponse>
+    </GeoLocationConfiguration>
+    <DefaultGroupsConfiguration>BYOD,COPE</DefaultGroupsConfiguration>
 </DeviceMgtConfiguration>
 

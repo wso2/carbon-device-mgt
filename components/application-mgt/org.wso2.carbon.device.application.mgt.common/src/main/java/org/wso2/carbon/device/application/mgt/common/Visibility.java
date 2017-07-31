@@ -18,7 +18,9 @@
  */
 package org.wso2.carbon.device.application.mgt.common;
 
-//TODO: move to app
+/**
+ * This class represents the visibility details of an Application.
+ */
 public class Visibility {
 
     private Type type;
@@ -61,6 +63,9 @@ public class Visibility {
         this.applicationRelease = applicationRelease;
     }
 
+    /**
+     * Type of the visibility of the application.
+     */
     public class Type {
 
         private String id;

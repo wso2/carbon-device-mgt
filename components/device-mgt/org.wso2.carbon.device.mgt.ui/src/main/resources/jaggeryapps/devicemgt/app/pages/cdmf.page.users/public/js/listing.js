@@ -82,6 +82,7 @@ $("a#invite-user-link").click(function () {
             usernameList,
             function () {
                 modalDialog.header("User invitation email for enrollment was successfully sent.");
+                modalDialog.content("");
                 modalDialog.footer('<div class="buttons"><a href="#" id="invite-user-success-link" ' +
                     'class="btn-operations">Ok </a></div>');
                 $("a#invite-user-success-link").click(function () {
@@ -134,8 +135,8 @@ function resetPassword(username) {
     $("a#reset-password-yes-link").click(function () {
         var newPassword = $("#basic-modal-view .new-password").val();
         var confirmedPassword = $("#basic-modal-view .confirmed-password").val();
-        var errorMsgWrapper = "#notification-error-msg";
-        var errorMsg = "#notification-error-msg span";
+        var errorMsgWrapper = ".modal #notification-error-msg";
+        var errorMsg = ".modal #notification-error-msg span";
         if (!newPassword) {
             $(errorMsg).text("New password is a required field. It cannot be empty.");
             $(errorMsgWrapper).removeClass("hidden");

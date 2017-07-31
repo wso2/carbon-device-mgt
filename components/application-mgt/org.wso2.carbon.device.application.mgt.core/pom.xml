@@ -21,13 +21,13 @@
     <parent>
         <groupId>org.wso2.carbon.devicemgt</groupId>
         <artifactId>application-mgt</artifactId>
-        <version>2.0.63-SNAPSHOT</version>
+        <version>3.0.46-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>org.wso2.carbon.device.application.mgt.core</artifactId>
-    <version>2.0.63-SNAPSHOT</version>
+    <version>3.0.46-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <name>WSO2 Carbon - Application Management Core</name>
     <description>WSO2 Carbon - Application Management Core</description>
@@ -73,7 +73,9 @@
                             org.wso2.carbon.device.mgt.common.*,
                             org.apache.axis2.*,
                             org.wso2.carbon.user.core.*,
-                            org.wso2.carbon.user.api.*
+                            org.wso2.carbon.user.api.*,
+                            org.wso2.carbon.ndatasource.core,
+                            org.apache.axiom.om.*; version="${axiom.osgi.version.range}"
                         </Import-Package>
                         <Export-Package>
                             !org.wso2.carbon.device.application.mgt.core.internal.*,
@@ -152,6 +154,10 @@
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.user.core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.ndatasource.core</artifactId>
         </dependency>
     </dependencies>
 </project>

@@ -22,14 +22,14 @@
     <parent>
         <groupId>org.wso2.carbon.devicemgt</groupId>
         <artifactId>device-mgt-feature</artifactId>
-        <version>2.0.63-SNAPSHOT</version>
+        <version>3.0.46-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>org.wso2.carbon.device.mgt.server.feature</artifactId>
     <packaging>pom</packaging>
-    <version>2.0.63-SNAPSHOT</version>
+    <version>3.0.46-SNAPSHOT</version>
     <name>WSO2 Carbon - Device Management Server Feature</name>
     <url>http://wso2.org</url>
     <description>This feature contains the core bundles required for Back-end Device Management functionality
@@ -57,14 +57,30 @@
             <groupId>org.wso2.orbit.org.apache.pdfbox</groupId>
             <artifactId>pdfbox</artifactId>
         </dependency>
+		<dependency>
+			<groupId>org.wso2.carbon.devicemgt</groupId>
+			<artifactId>org.wso2.carbon.device.mgt.extensions.pull.notification</artifactId>
+		</dependency>
         <dependency>
             <groupId>org.wso2.carbon.registry</groupId>
             <artifactId>org.wso2.carbon.registry.indexing</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon.analytics-common</groupId>
-            <artifactId>org.wso2.carbon.event.receiver.stub</artifactId>
-        </dependency>
+		<dependency>
+			<groupId>org.wso2.carbon.analytics-common</groupId>
+			<artifactId>org.wso2.carbon.event.receiver.stub</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.wso2.carbon.analytics-common</groupId>
+			<artifactId>org.wso2.carbon.event.stream.stub</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.wso2.carbon.analytics-common</groupId>
+			<artifactId>org.wso2.carbon.event.publisher.stub</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.wso2.carbon.analytics-common</groupId>
+			<artifactId>org.wso2.carbon.event.stream.persistence.stub</artifactId>
+		</dependency>
     </dependencies>
 
     <build>
@@ -129,6 +145,9 @@
 								<bundleDef>
 									org.wso2.carbon.devicemgt:org.wso2.carbon.device.mgt.url.printer:${carbon.device.mgt.version}
 								</bundleDef>
+								<bundleDef>
+									org.wso2.carbon.devicemgt:org.wso2.carbon.device.mgt.extensions.pull.notification:${carbon.device.mgt.version}
+								</bundleDef>
                                 <!--<bundleDef>-->
                                     <!--org.wso2.carbon.commons:org.wso2.carbon.email.verification-->
                                 <!--</bundleDef>-->
@@ -141,6 +160,15 @@
                                 <bundleDef>
                                     org.wso2.carbon.analytics-common:org.wso2.carbon.event.receiver.stub:${carbon.analytics.common.version}
                                 </bundleDef>
+								<bundleDef>
+									org.wso2.carbon.analytics-common:org.wso2.carbon.event.stream.stub:${carbon.analytics.common.version}
+								</bundleDef>
+								<bundleDef>
+									org.wso2.carbon.analytics-common:org.wso2.carbon.event.publisher.stub:${carbon.analytics.common.version}
+								</bundleDef>
+								<bundleDef>
+									org.wso2.carbon.analytics-common:org.wso2.carbon.event.stream.persistence.stub:${carbon.analytics.common.version}
+								</bundleDef>
                                 <!-- Below should be bundled with the email verification -->
                             </bundles>
                             <importBundles>

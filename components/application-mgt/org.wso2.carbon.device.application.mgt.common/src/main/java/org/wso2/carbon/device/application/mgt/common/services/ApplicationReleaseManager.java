@@ -18,11 +18,12 @@
  */
 package org.wso2.carbon.device.application.mgt.common.services;
 
-import org.wso2.carbon.device.application.mgt.common.Application;
-import org.wso2.carbon.device.application.mgt.common.ApplicationList;
-import org.wso2.carbon.device.application.mgt.common.Filter;
-import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
-
-public interface ApplicationReleaseManager{
+/**
+ * ApplicationReleaseManager is responsible for handling all the operations related with
+ * {@link org.wso2.carbon.device.application.mgt.common.ApplicationRelease} which involving addition, updation ,
+ * deletion and viewing.
+ *
+ */
+public interface ApplicationReleaseManager {
 
 }

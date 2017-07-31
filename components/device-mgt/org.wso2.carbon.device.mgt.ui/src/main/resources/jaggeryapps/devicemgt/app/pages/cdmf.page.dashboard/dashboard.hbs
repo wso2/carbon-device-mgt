@@ -191,6 +191,40 @@
                     </div>
                 </div>
             </div>
+            {{#if permissions.IS_ADMIN}}
+                <div class="col-md-3 wr-stats-board">
+                    <div class="wr-stats-board-tile">
+                        <div class="tile-name">Device Types</div>
+                        <div>
+                            <div class="tile-icon"><i class="fw fw-devices"></i></div>
+                            <div class="tile-stats">
+                                <span id="device-types-count">{{deviceTypeCount}}</span>
+                            <span class="tile-stats-free">
+                            <!--suppress HtmlUnknownTarget -->
+                                {{#if deviceTypeCount}}
+                                    <a href="{{@app.context}}/device-types">
+                                    <span class="fw-stack">
+                                        <i class="fw fw-circle-outline fw-stack-2x"></i>
+                                        <i class="fw fw-view fw-stack-1x"></i>
+                                    </span>
+                                        View
+                                    </a>
+                                {{/if}}
+                            <!--suppress HtmlUnknownTarget -->
+                            <a href="{{@app.context}}/device-type/add">
+                                <span class="fw-stack">
+                                    <i class="fw fw-circle-outline fw-stack-2x"></i>
+                                    <i class="fw fw-add fw-stack-1x"></i>
+                                </span>
+                                Add
+                            </a>
+                        </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {{/if}}
+
         {{else}}
             <h1 class="page-sub-title">
                 Permitted None

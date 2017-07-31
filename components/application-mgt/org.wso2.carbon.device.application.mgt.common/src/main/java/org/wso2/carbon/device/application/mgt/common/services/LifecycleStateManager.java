@@ -18,6 +18,9 @@
  */
 package org.wso2.carbon.device.application.mgt.common.services;
 
+/**
+ * This interface manages all the operations related with lifecycle state.
+ */
 public interface LifecycleStateManager {
 
 }

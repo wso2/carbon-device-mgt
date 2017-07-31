@@ -25,6 +25,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Application represents the an Application in Application Store
+ */
 public class Application {
 
     @Exclude

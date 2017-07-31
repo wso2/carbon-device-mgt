@@ -17,9 +17,11 @@
 */
 package org.wso2.carbon.device.application.mgt.core.impl;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.application.mgt.common.Platform;
-import org.wso2.carbon.device.application.mgt.common.services.PlatformManager;
 import org.wso2.carbon.device.application.mgt.common.exception.PlatformManagementException;
+import org.wso2.carbon.device.application.mgt.common.services.PlatformManager;
 import org.wso2.carbon.device.application.mgt.core.dao.common.DAOFactory;
 import org.wso2.carbon.device.application.mgt.core.internal.DataHolder;
 import org.wso2.carbon.user.api.Tenant;
@@ -34,6 +36,7 @@ import java.util.Map;
 
 public class PlatformManagerImpl implements PlatformManager {
     private Map<String, Map<String, Platform>> inMemoryStore;
+    private static Log log = LogFactory.getLog(PlatformManagerImpl.class);
 
     public PlatformManagerImpl() {
         this.inMemoryStore = new HashMap<>();
@@ -53,19 +56,38 @@ public class PlatformManagerImpl implements PlatformManager {
 
     @Override
     public List<Platform> getPlatforms(String tenantDomain) throws PlatformManagementException {
+        if (log.isDebugEnabled()) {
+            log.debug("Request for getting platforms received for the tenant domain " + tenantDomain + " at "
+                    + "PlatformManager level");
+        }
         List<Platform> platforms = DAOFactory.getPlatformDAO().getPlatforms(tenantDomain);
         int platformIndex = 0;
+
+        if (log.isDebugEnabled()) {
+            log.debug("Number of platforms received from DAO layer is  " + platforms.size() + " for the tenant "
+                    + tenantDomain);
+        }
         for (Platform platform : platforms) {
             if (platform.isFileBased()) {
-                Map<String, Platform> superTenantPlatforms = this.inMemoryStore.get(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
+                Map<String, Platform> superTenantPlatforms = this.inMemoryStore
+                        .get(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
                 Platform registeredPlatform = superTenantPlatforms.get(platform.getIdentifier());
                 if (registeredPlatform != null) {
                     platforms.set(platformIndex, new Platform(registeredPlatform));
+                    if (log.isDebugEnabled()) {
+                        log.debug("Platform Name - " + platform.getName() + ", IsRegistered - " + true);
+                    }
                 } else {
                     platforms.remove(platformIndex);
+                    if (log.isDebugEnabled()) {
+                        log.debug("Platform Name - " + platform.getName() + ", IsRegistered - " + false);
+                    }
                 }
             }
             platformIndex++;
+        }
+        if (log.isDebugEnabled()) {
+            log.debug("Number of effective platforms for the tenant " + tenantDomain + " : " + platforms.size());
         }
         return platforms;
     }

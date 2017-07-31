@@ -18,6 +18,8 @@
  */
 package org.wso2.carbon.device.application.mgt.core.dao.impl.platform;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.application.mgt.common.Platform;
 import org.wso2.carbon.device.application.mgt.common.exception.DBConnectionException;
 import org.wso2.carbon.device.application.mgt.common.exception.TransactionManagementException;
@@ -35,6 +37,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GenericPlatformDAOImpl extends AbstractDAOImpl implements PlatformDAO {
+    private static Log log = LogFactory.getLog(GenericPlatformDAOImpl.class);
 
     @Override
     public int register(String tenantDomain, Platform platform) throws PlatformManagementDAOException {
@@ -339,14 +342,22 @@ public class GenericPlatformDAOImpl extends AbstractDAOImpl implements PlatformD
 
     @Override
     public List<Platform> getPlatforms(String tenantDomain) throws PlatformManagementDAOException {
-        String selectQuery = "SELECT MAPPING.ID, PLATFORM.IDENTIFIER FROM (SELECT * FROM APPM_PLATFORM WHERE TENANT_DOMAIN=? OR IS_SHARED = TRUE AND FILE_BASED = FALSE) PLATFORM " +
-                "LEFT JOIN APPM_PLATFORM_TENANT_MAPPING MAPPING ON PLATFORM.ID = MAPPING.PLATFORM_ID";
+        if (log.isDebugEnabled()) {
+            log.debug("GetPlaforms request received for the tenantDomain " + tenantDomain);
+        }
+        String selectQuery =
+                "SELECT MAPPING.ID, PLATFORM.IDENTIFIER FROM (SELECT * FROM APPM_PLATFORM WHERE TENANT_DOMAIN=? OR "
+                        + "IS_SHARED = TRUE AND FILE_BASED = FALSE) PLATFORM LEFT JOIN APPM_PLATFORM_TENANT_MAPPING "
+                        + "MAPPING ON PLATFORM.ID = MAPPING.PLATFORM_ID";
         try {
             Connection connection = ConnectionManagerUtil.openConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(selectQuery);
             preparedStatement.setString(1, tenantDomain);
             ResultSet resultSet = preparedStatement.executeQuery();
             List<Platform> platforms = new ArrayList<>();
+            if (log.isDebugEnabled()) {
+                log.debug("Platform retrieved for the tenant domain " + tenantDomain);
+            }
             while (resultSet.next()) {
                 String identifier = resultSet.getString("PLATFORM.IDENTIFIER");
                 int mappingID = resultSet.getInt("MAPPING.ID");
@@ -357,12 +368,20 @@ public class GenericPlatformDAOImpl extends AbstractDAOImpl implements PlatformD
                     platform.setEnabled(false);
                 }
                 platforms.add(platform);
+                if (log.isDebugEnabled()) {
+                    log.debug("Platform Identifier - " + identifier + " isEnabled - " + platform.isEnabled());
+                }
+            }
+            if (log.isDebugEnabled()) {
+                log.debug("Number of platforms available for the tenant domain - " + tenantDomain + " :" + platforms
+                        .size());
             }
             return platforms;
         } catch (DBConnectionException e) {
-            throw new PlatformManagementDAOException("Error occured when loading the platforms for tenant - " + tenantDomain, e);
+            throw new PlatformManagementDAOException(
+                    "Error occured when loading the platforms for tenant - " + tenantDomain, e);
         } catch (SQLException e) {
-            throw new PlatformManagementDAOException("Error occured when executing query - " + selectQuery, e);
+            throw new PlatformManagementDAOException("Error occurred when executing query - " + selectQuery, e);
         } finally {
             ConnectionManagerUtil.closeConnection();
         }

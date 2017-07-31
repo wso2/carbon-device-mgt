@@ -37,6 +37,10 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
+/**
+ * PlatformDeployer is responsible for deploying platforms that are added in the filesystem.
+ * This will deploy the platforms that are added in <IOT_HOME>/repository/deployment/server/platforms directory.
+ */
 public class PlatformDeployer extends AbstractDeployer {
 
     private static final Log log = LogFactory.getLog(PlatformDeployer.class);
@@ -53,6 +57,7 @@ public class PlatformDeployer extends AbstractDeployer {
         }
     }
 
+    @Override
     public void deploy(DeploymentFileData deploymentFileData) throws DeploymentException {
         File deploymentFile = new File(deploymentFileData.getAbsolutePath());
         try {
@@ -63,6 +68,7 @@ public class PlatformDeployer extends AbstractDeployer {
                 org.wso2.carbon.device.application.mgt.common.Platform platform = convert(platformConf);
                 DataHolder.getInstance().getPlatformManager()
                         .register(CarbonContext.getThreadLocalCarbonContext().getTenantId(), platform);
+                log.info("Platform configuration : " + deploymentFile.getName() + " deployed successfully");
             } else {
                 log.error("Unable to deploy the platform - " + deploymentFile.getAbsolutePath()
                         + "!. Platform config file name - " + deploymentFile.getName()
@@ -75,13 +81,15 @@ public class PlatformDeployer extends AbstractDeployer {
         }
     }
 
+    @Override
     public void undeploy(String fileName) throws DeploymentException {
         String platformId = getPlatformID(fileName);
         try {
             DataHolder.getInstance().getPlatformManager()
                     .unregister(CarbonContext.getThreadLocalCarbonContext().getTenantId(), platformId, true);
+            log.info("Platform configuration : " + fileName + " un-deployed successfully");
         } catch (PlatformManagementException e) {
-            log.error("Error occurred while undeploying the platform - " + fileName);
+            log.error("Error occurred while un-deploying the platform - " + fileName);
         }
     }
 

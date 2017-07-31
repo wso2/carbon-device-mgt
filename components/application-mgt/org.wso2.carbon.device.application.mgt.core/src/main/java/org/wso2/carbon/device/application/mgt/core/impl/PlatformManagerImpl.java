@@ -226,9 +226,8 @@ public class PlatformManagerImpl implements PlatformManager {
             if (tenantPlatforms != null) {
                 this.inMemoryStore.remove(identifier);
             }
-        } else {
-            DAOFactory.getPlatformDAO().unregister(tenantId, identifier);
         }
+        DAOFactory.getPlatformDAO().unregister(tenantId, identifier);
     }
 
     @Override

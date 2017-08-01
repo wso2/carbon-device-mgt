@@ -24,6 +24,7 @@ import org.wso2.carbon.device.application.mgt.common.Platform;
 import org.wso2.carbon.device.application.mgt.common.exception.DBConnectionException;
 import org.wso2.carbon.device.application.mgt.common.exception.TransactionManagementException;
 import org.wso2.carbon.device.application.mgt.core.dao.PlatformDAO;
+import org.wso2.carbon.device.application.mgt.core.dao.common.Util;
 import org.wso2.carbon.device.application.mgt.core.dao.impl.AbstractDAOImpl;
 import org.wso2.carbon.device.application.mgt.core.exception.PlatformManagementDAOException;
 import org.wso2.carbon.device.application.mgt.core.util.ConnectionManagerUtil;
@@ -44,15 +45,15 @@ public class GenericPlatformDAOImpl extends AbstractDAOImpl implements PlatformD
 
     @Override
     public int register(int tenantId, Platform platform) throws PlatformManagementDAOException {
+        PreparedStatement preparedStatement = null;
         try {
-            ConnectionManagerUtil.beginTransaction();
             int platformId = getPlatformId(tenantId, platform.getIdentifier());
             if (platformId == -1) {
-                Connection connection = ConnectionManagerUtil.getConnection();
+                Connection connection = this.getConnection();
                 if (!platform.isFileBased()) {
                     String insertToPlatform = "INSERT INTO APPM_PLATFORM (IDENTIFIER, TENANT_ID, NAME, FILE_BASED,  "
                             + "DESCRIPTION, IS_SHARED, ICON_NAME)" + " VALUES (?, ?, ?, ?, ?, ?, ?)";
-                    PreparedStatement preparedStatement = connection.prepareStatement(insertToPlatform);
+                    preparedStatement = connection.prepareStatement(insertToPlatform);
                     preparedStatement.setString(1, platform.getIdentifier());
                     preparedStatement.setInt(2, tenantId);
                     preparedStatement.setString(3, platform.getName());
@@ -80,7 +81,7 @@ public class GenericPlatformDAOImpl extends AbstractDAOImpl implements PlatformD
                 } else {
                     String insertToPlatform =
                             "INSERT INTO APPM_PLATFORM (IDENTIFIER, TENANT_ID, FILE_BASED)" + " VALUES (?, ?, ?)";
-                    PreparedStatement preparedStatement = connection.prepareStatement(insertToPlatform);
+                    preparedStatement = connection.prepareStatement(insertToPlatform);
                     preparedStatement.setString(1, platform.getIdentifier());
                     preparedStatement.setInt(2, tenantId);
                     preparedStatement.setBoolean(3, true);
@@ -89,35 +90,24 @@ public class GenericPlatformDAOImpl extends AbstractDAOImpl implements PlatformD
                 if (platformId == -1) {
                     platformId = getPlatformId(tenantId, platform.getIdentifier());
                 }
-                ConnectionManagerUtil.commitTransaction();
                 return platformId;
             } else {
                 if (!platform.isFileBased()) {
-                    ConnectionManagerUtil.rollbackTransaction();
-                    throw new PlatformManagementDAOException("Platform - " + platform.getIdentifier()
-                            + " is already registered for tenant - " + tenantId);
+                    throw new PlatformManagementDAOException(
+                            "Platform - " + platform.getIdentifier() + " is already registered for tenant - "
+                                    + tenantId);
                 } else {
                     return platformId;
                 }
             }
         } catch (SQLException e) {
-            ConnectionManagerUtil.rollbackTransaction();
             throw new PlatformManagementDAOException("Error while executing the SQL query. ", e);
-        } catch (PlatformManagementDAOException ex) {
-            ConnectionManagerUtil.rollbackTransaction();
-            throw ex;
         } catch (DBConnectionException e) {
-            ConnectionManagerUtil.rollbackTransaction();
             throw new PlatformManagementDAOException(
                     "Unable to obtain the connection while trying to register the platform - " + platform
                             .getIdentifier() + " for tenant - " + tenantId, e);
-        } catch (TransactionManagementException e) {
-            ConnectionManagerUtil.rollbackTransaction();
-            throw new PlatformManagementDAOException(
-                    "Error occurred while performing the transaction on the database " + "for adding the platform - "
-                            + platform.getIdentifier() + " , tenant domain - " + tenantId);
         } finally {
-            ConnectionManagerUtil.closeConnection();
+            Util.cleanupResources(preparedStatement, null);
         }
     }
 
@@ -126,19 +116,39 @@ public class GenericPlatformDAOImpl extends AbstractDAOImpl implements PlatformD
             PlatformManagementDAOException {
         PreparedStatement preparedStatement = null;
         try {
-            ConnectionManagerUtil.beginTransaction();
             int platformId = getPlatformId(tenantId, oldPlatformIdentifier);
+            boolean isIdentifierNull = platform.getIdentifier() == null;
+            boolean isNameNull = platform.getName() == null;
+
             if (platformId != -1) {
-                Connection connection = ConnectionManagerUtil.getConnection();
+                Connection connection = this.getConnection();
                 if (!platform.isFileBased()) {
-                    String insertToPlatform = "UPDATE APPM_PLATFORM SET IDENTIFIER = ?, NAME =?, DESCRIPTION=?, "
-                            + "IS_SHARED=?, ICON_NAME=? WHERE ID = ?";
+                    String insertToPlatform = "UPDATE APPM_PLATFORM SET DESCRIPTION=?, IS_SHARED=?, ICON_NAME=?";
+                    if (!isIdentifierNull) {
+                        insertToPlatform += ",IDENTIFIER = ? ";
+                    }
+                    if (!isNameNull) {
+                        insertToPlatform += ", NAME =?";
+                    }
+                    insertToPlatform += " WHERE ID = ?";
                     preparedStatement = connection.prepareStatement(insertToPlatform);
-                    preparedStatement.setString(1, platform.getIdentifier());
-                    preparedStatement.setString(2, platform.getName());
-                    preparedStatement.setString(3, platform.getDescription());
-                    preparedStatement.setBoolean(4, platform.isShared());
-                    preparedStatement.setString(5, platform.getIconName());
+                    preparedStatement.setString(1, platform.getDescription());
+                    preparedStatement.setBoolean(2, platform.isShared());
+                    preparedStatement.setString(3, platform.getIconName());
+
+                    if (!isIdentifierNull && !isNameNull) {
+                        preparedStatement.setString(4, platform.getIdentifier());
+                        preparedStatement.setString(5, platform.getName());
+                        preparedStatement.setInt(6, platformId);
+                    } else if (isIdentifierNull && !isNameNull) {
+                        preparedStatement.setString(4, platform.getName());
+                        preparedStatement.setInt(5, platformId);
+                    } else if (!isIdentifierNull) {
+                        preparedStatement.setString(4, platform.getIdentifier());
+                        preparedStatement.setInt(5, platformId);
+                    } else {
+                        preparedStatement.setInt(4, platformId);
+                    }
                     preparedStatement.execute();
 
                     platformId = getPlatformId(tenantId, platform.getIdentifier());
@@ -150,13 +160,16 @@ public class GenericPlatformDAOImpl extends AbstractDAOImpl implements PlatformD
                     String insertPlatformProps =
                             "INSERT INTO APPM_PLATFORM_PROPERTIES (PLATFORM_ID, PROP_NAME, OPTIONAL,"
                                     + " DEFAULT_VALUE) VALUES ( ? , ?, ? , ?)";
-                    for (Platform.Property property : platform.getProperties()) {
-                        preparedStatement = connection.prepareStatement(insertPlatformProps);
-                        preparedStatement.setInt(1, platformId);
-                        preparedStatement.setString(2, property.getName());
-                        preparedStatement.setBoolean(3, property.isOptional());
-                        preparedStatement.setString(4, property.getDefaultValue());
-                        preparedStatement.execute();
+
+                    if (platform.getProperties() != null) {
+                        for (Platform.Property property : platform.getProperties()) {
+                            preparedStatement = connection.prepareStatement(insertPlatformProps);
+                            preparedStatement.setInt(1, platformId);
+                            preparedStatement.setString(2, property.getName());
+                            preparedStatement.setBoolean(3, property.isOptional());
+                            preparedStatement.setString(4, property.getDefaultValue());
+                            preparedStatement.execute();
+                        }
                     }
                 } else {
                     String insertToPlatform = "UPDATE APPM_PLATFORM SET IDENTIFIER = ? WHERE ID = ?";
@@ -164,31 +177,19 @@ public class GenericPlatformDAOImpl extends AbstractDAOImpl implements PlatformD
                     preparedStatement.setInt(1, platformId);
                     preparedStatement.execute();
                 }
-                ConnectionManagerUtil.commitTransaction();
             } else {
                 throw new PlatformManagementDAOException(
                         "Cannot find any platform that was registered with identifier - " + platform.getIdentifier()
                                 + " for tenant - " + tenantId);
             }
         } catch (SQLException e) {
-            ConnectionManagerUtil.rollbackTransaction();
             throw new PlatformManagementDAOException("Error while executing the SQL query. ", e);
-        } catch (PlatformManagementDAOException ex) {
-            ConnectionManagerUtil.rollbackTransaction();
-            throw ex;
         } catch (DBConnectionException e) {
-            ConnectionManagerUtil.rollbackTransaction();
             throw new PlatformManagementDAOException(
                     "Unable to obtain the connection while trying to register the platform - " + platform
                             .getIdentifier() + " for tenant - " + tenantId, e);
-        } catch (TransactionManagementException e) {
-            ConnectionManagerUtil.rollbackTransaction();
-            throw new PlatformManagementDAOException(
-                    "Error occurred while performing the transaction on the database " + "for adding the platform - "
-                            + platform.getIdentifier() + " , tenant domain - " + tenantId);
         } finally {
-            ConnectionManagerUtil.cleanupResources(preparedStatement, null);
-            ConnectionManagerUtil.closeConnection();
+            Util.cleanupResources(preparedStatement, null);
         }
     }
 
@@ -198,7 +199,7 @@ public class GenericPlatformDAOImpl extends AbstractDAOImpl implements PlatformD
         String query = "SELECT ID FROM APPM_PLATFORM WHERE (TENANT_ID=? AND IDENTIFIER=?) OR (IS_SHARED = TRUE AND "
                 + "IDENTIFIER=?)";
         try {
-            Connection connection = ConnectionManagerUtil.getConnection();
+            Connection connection = this.getConnection();
             preparedStatement = connection.prepareStatement(query);
             preparedStatement.setInt(1, tenantId);
             preparedStatement.setString(2, platformIdentifier);
@@ -213,47 +214,46 @@ public class GenericPlatformDAOImpl extends AbstractDAOImpl implements PlatformD
         } catch (SQLException e) {
             throw new PlatformManagementDAOException("Error in executing the query - " + query, e);
         } finally {
-            ConnectionManagerUtil.cleanupResources(preparedStatement, resultSet);
+            Util.cleanupResources(preparedStatement, resultSet);
         }
     }
 
 
     @Override
-    public void unregister(int tenantId, String platformIdenfier) throws PlatformManagementDAOException {
+    public void unregister(int tenantId, String platformIdenfier, boolean isFileBased) throws
+            PlatformManagementDAOException {
         PreparedStatement preparedStatement = null;
         try {
-            ConnectionManagerUtil.beginTransaction();
-            int platformId = getPlatformId(tenantId, platformIdenfier);
-            if (platformId != -1) {
-                Connection connection = ConnectionManagerUtil.getConnection();
-                String deletePlatform = "DELETE FROM APPM_PLATFORM WHERE ID = ?";
-                preparedStatement = connection.prepareStatement(deletePlatform);
-                preparedStatement.setInt(1, platformId);
-                preparedStatement.execute();
-                ConnectionManagerUtil.commitTransaction();
+            Platform platform = getPlatform(tenantId, platformIdenfier);
+
+            if (platform != null) {
+                if (isFileBased == platform.isFileBased()) {
+                    Connection connection = this.getConnection();
+                    String deletePlatform = "DELETE FROM APPM_PLATFORM WHERE ID = ?";
+                    preparedStatement = connection.prepareStatement(deletePlatform);
+                    preparedStatement.setInt(1, platform.getId());
+                    preparedStatement.execute();
+                } else {
+                    if (isFileBased) {
+                        throw new PlatformManagementDAOException("Platform with identifier - " + platformIdenfier
+                                + " is not a file based platform. Try to remove that using PlatformManagement APIs");
+                    } else {
+                        throw new PlatformManagementDAOException("Platform with identifier - " + platformIdenfier
+                                + " is a file based platform. Try to remove that by un-deploying the relevant file.");
+                    }
+                }
             } else {
-                throw new PlatformManagementDAOException("Platform identifier - " + platformIdenfier
-                        + " is already unregistered registered for tenant - " + tenantId);
+                throw new PlatformManagementDAOException(
+                        "Platform identifier - " + platformIdenfier + " is not registered for tenant - " + tenantId);
             }
-        } catch (TransactionManagementException e) {
-            ConnectionManagerUtil.rollbackTransaction();
-            throw new PlatformManagementDAOException(
-                    "Unable to start the transaction while trying to register the platform - " + platformIdenfier
-                            + " for tenant - " + tenantId, e);
         } catch (DBConnectionException e) {
-            ConnectionManagerUtil.rollbackTransaction();
             throw new PlatformManagementDAOException(
                     "Unable to obtain the connection while trying to register the platform - " + platformIdenfier
                             + " for tenant - " + tenantId, e);
         } catch (SQLException e) {
-            ConnectionManagerUtil.rollbackTransaction();
             throw new PlatformManagementDAOException("Error while executing the SQL query. ", e);
-        } catch (PlatformManagementDAOException ex) {
-            ConnectionManagerUtil.rollbackTransaction();
-            throw ex;
         } finally {
-            ConnectionManagerUtil.cleanupResources(preparedStatement, null);
-            ConnectionManagerUtil.closeConnection();
+            Util.cleanupResources(preparedStatement, null);
         }
     }
 
@@ -261,11 +261,10 @@ public class GenericPlatformDAOImpl extends AbstractDAOImpl implements PlatformD
         String insertMapping = "INSERT INTO APPM_PLATFORM_TENANT_MAPPING(TENANT_ID, PLATFORM_ID) VALUES (?, ?)";
         PreparedStatement preparedStatement = null;
         try {
-            ConnectionManagerUtil.beginTransaction();
             for (String platformIdentifier : platformIdentifiers) {
                 if (getTenantPlatformMapping(tenantId, platformIdentifier) == -1) {
                     int platformId = getPlatformId(tenantId, platformIdentifier);
-                    Connection connection = ConnectionManagerUtil.getConnection();
+                    Connection connection = this.getConnection();
                     preparedStatement = connection.prepareStatement(insertMapping);
                     preparedStatement.setInt(1, tenantId);
                     preparedStatement.setInt(2, platformId);
@@ -275,40 +274,30 @@ public class GenericPlatformDAOImpl extends AbstractDAOImpl implements PlatformD
                             + " - " + tenantId);
                 }
             }
-            ConnectionManagerUtil.commitTransaction();
-        } catch (TransactionManagementException e) {
-            ConnectionManagerUtil.rollbackTransaction();
-            throw new PlatformManagementDAOException(
-                    "Error occured while trying to add the mapping of platform - " + platformIdentifiers.toString()
-                            + " for tenant - " + tenantId, e);
         } catch (DBConnectionException e) {
-            ConnectionManagerUtil.rollbackTransaction();
             throw new PlatformManagementDAOException("Error occurred when getting the connection for the database. ",
                     e);
         } catch (SQLException e) {
-            ConnectionManagerUtil.rollbackTransaction();
             throw new PlatformManagementDAOException("Error occured while executing the SQL query - " + insertMapping,
                     e);
-        } catch (PlatformManagementDAOException ex) {
-            ConnectionManagerUtil.rollbackTransaction();
-            throw ex;
         } finally {
-            ConnectionManagerUtil.cleanupResources(preparedStatement, null);
-            ConnectionManagerUtil.closeConnection();
+            Util.cleanupResources(preparedStatement, null);
         }
     }
 
     private int getTenantPlatformMapping(int tenantId, String platformIdentifier) throws
             PlatformManagementDAOException {
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
         String getMapping = "SELECT MAPPING.ID as ID FROM (SELECT ID, PLATFORM_ID FROM APPM_PLATFORM_TENANT_MAPPING "
                 + "WHERE TENANT_ID=?) MAPPING JOIN (SELECT ID FROM APPM_PLATFORM WHERE APPM_PLATFORM.IDENTIFIER=?) "
                 + "PLATFORM ON MAPPING.PLATFORM_ID=PLATFORM.ID";
         try {
-            Connection connection = ConnectionManagerUtil.getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement(getMapping);
+            Connection connection = this.getConnection();
+            preparedStatement = connection.prepareStatement(getMapping);
             preparedStatement.setInt(1, tenantId);
             preparedStatement.setString(2, platformIdentifier);
-            ResultSet resultSet = preparedStatement.executeQuery();
+            resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
                 return resultSet.getInt("ID");
             }
@@ -319,6 +308,8 @@ public class GenericPlatformDAOImpl extends AbstractDAOImpl implements PlatformD
                     e);
         } catch (SQLException e) {
             throw new PlatformManagementDAOException("Error occured while executing the SQL query - " + getMapping, e);
+        } finally {
+            Util.cleanupResources(preparedStatement, resultSet);
         }
     }
 
@@ -327,32 +318,24 @@ public class GenericPlatformDAOImpl extends AbstractDAOImpl implements PlatformD
         String deleteMapping = "DELETE FROM APPM_PLATFORM_TENANT_MAPPING WHERE ID = ?";
         PreparedStatement preparedStatement = null;
         try {
-            ConnectionManagerUtil.beginTransaction();
             int mappingId = getTenantPlatformMapping(tenantId, platformIdentifier);
             if (mappingId != -1) {
-                Connection connection = ConnectionManagerUtil.getConnection();
+                Connection connection = this.getConnection();
                 preparedStatement = connection.prepareStatement(deleteMapping);
                 preparedStatement.setInt(1, mappingId);
                 preparedStatement.execute();
-                ConnectionManagerUtil.commitTransaction();
             } else {
                 throw new PlatformManagementDAOException(
                         "Platform - " + platformIdentifier + " is already unassigned for tenant - " + tenantId);
             }
-        } catch (TransactionManagementException | DBConnectionException e) {
-            ConnectionManagerUtil.rollbackTransaction();
+        } catch (DBConnectionException e) {
             throw new PlatformManagementDAOException(
                     "Error occurred while unassigning the platform - " + platformIdentifier + " for tenant - "
                             + tenantId);
         } catch (SQLException e) {
-            ConnectionManagerUtil.rollbackTransaction();
             throw new PlatformManagementDAOException("Error occurred while executing the query - " + deleteMapping);
-        } catch (PlatformManagementDAOException ex) {
-            ConnectionManagerUtil.rollbackTransaction();
-            throw ex;
         } finally {
-            ConnectionManagerUtil.cleanupResources(preparedStatement, null);
-            ConnectionManagerUtil.closeConnection();
+            Util.cleanupResources(preparedStatement, null);
         }
     }
 
@@ -362,21 +345,19 @@ public class GenericPlatformDAOImpl extends AbstractDAOImpl implements PlatformD
         int platformId = getPlatformId(MultitenantConstants.SUPER_TENANT_ID, platformIdentifier);
         String getMapping = "DELETE FROM APPM_PLATFORM_TENANT_MAPPING WHERE TENANT_ID != ? AND PLATFORM_ID=?";
         try {
-            ConnectionManagerUtil.openConnection();
-            Connection connection = ConnectionManagerUtil.getConnection();
+            Connection connection = this.getConnection();
             preparedStatement = connection.prepareStatement(getMapping);
             preparedStatement.setInt(1, MultitenantConstants.SUPER_TENANT_ID);
             preparedStatement.setInt(2, platformId);
             preparedStatement.execute();
         } catch (DBConnectionException e) {
             throw new PlatformManagementDAOException(
-                    "Error occurred while obtaining the connection to get the existing " + "Tenant - Platform Mapping.",
-                    e);
+                    "Error occurred while obtaining the connection to remove existing " + "Tenant - Platform Mapping"
+                            + " for the platform : " + platformIdentifier, e);
         } catch (SQLException e) {
             throw new PlatformManagementDAOException("Error occurred while executing the SQL query - " + getMapping, e);
         } finally {
-            ConnectionManagerUtil.cleanupResources(preparedStatement, null);
-            ConnectionManagerUtil.closeConnection();
+            Util.cleanupResources(preparedStatement, null);
         }
     }
 
@@ -394,7 +375,7 @@ public class GenericPlatformDAOImpl extends AbstractDAOImpl implements PlatformD
                         + "IS_SHARED = TRUE AND FILE_BASED = FALSE) PLATFORM LEFT JOIN APPM_PLATFORM_TENANT_MAPPING "
                         + "MAPPING ON PLATFORM.ID = MAPPING.PLATFORM_ID";
         try {
-            Connection connection = ConnectionManagerUtil.openConnection();
+            Connection connection = this.getConnection();
             preparedStatement = connection.prepareStatement(selectQuery);
             preparedStatement.setInt(1, tenantId);
             resultSet = preparedStatement.executeQuery();
@@ -427,8 +408,7 @@ public class GenericPlatformDAOImpl extends AbstractDAOImpl implements PlatformD
         } catch (SQLException e) {
             throw new PlatformManagementDAOException("Error occurred when executing query - " + selectQuery, e);
         } finally {
-            ConnectionManagerUtil.cleanupResources(preparedStatement,resultSet);
-            ConnectionManagerUtil.closeConnection();
+            Util.cleanupResources(preparedStatement,resultSet);
         }
     }
 
@@ -439,8 +419,7 @@ public class GenericPlatformDAOImpl extends AbstractDAOImpl implements PlatformD
                 "OR (IS_SHARED = TRUE AND IDENTIFIER=?) AND FILE_BASED = FALSE ) PLATFORM " +
                 "LEFT JOIN APPM_PLATFORM_PROPERTIES PROPS ON PLATFORM.ID = PROPS.PLATFORM_ID";
         try {
-            ConnectionManagerUtil.openConnection();
-            Connection connection = ConnectionManagerUtil.getConnection();
+            Connection connection = this.getConnection();
             preparedStatement = connection.prepareStatement(platformQuery);
             preparedStatement.setString(1, tenantDomain);
             preparedStatement.setString(2, platformIdentifier);
@@ -476,8 +455,7 @@ public class GenericPlatformDAOImpl extends AbstractDAOImpl implements PlatformD
         } catch (SQLException e) {
             throw new PlatformManagementDAOException("Error in executing the query - " + platformQuery, e);
         } finally {
-            ConnectionManagerUtil.cleanupResources(preparedStatement, resultSet);
-            ConnectionManagerUtil.closeConnection();
+            Util.cleanupResources(preparedStatement, resultSet);
         }
     }
 
@@ -518,7 +496,7 @@ public class GenericPlatformDAOImpl extends AbstractDAOImpl implements PlatformD
         }  catch (DBConnectionException e) {
             throw new PlatformManagementDAOException("Error occurred while obtaining the DB connection.", e);
         } finally {
-            ConnectionManagerUtil.cleanupResources(stmt, rs);
+            Util.cleanupResources(stmt, rs);
         }
     }
 }

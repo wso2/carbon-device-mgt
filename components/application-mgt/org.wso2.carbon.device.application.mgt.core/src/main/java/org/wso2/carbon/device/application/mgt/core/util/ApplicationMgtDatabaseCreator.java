@@ -20,10 +20,11 @@ package org.wso2.carbon.device.application.mgt.core.util;
 
 import java.io.File;
 
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.Log;
 import org.wso2.carbon.utils.CarbonUtils;
 import org.wso2.carbon.utils.dbcreator.DatabaseCreator;
+
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
 
 /**
  * ApplicationMgtDatabaseCreator is responsible for creating the Application Management related tables.

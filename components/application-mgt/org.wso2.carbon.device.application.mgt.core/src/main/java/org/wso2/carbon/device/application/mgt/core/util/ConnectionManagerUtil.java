@@ -27,8 +27,6 @@ import org.wso2.carbon.device.application.mgt.common.exception.TransactionManage
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class ConnectionManagerUtil {
@@ -185,29 +183,6 @@ public class ConnectionManagerUtil {
             log.error("Error occurred while retrieving config.datasource connection", e);
         }
         return null;
-    }
-
-    /**
-     * Cleanup resources used to transaction
-     *
-     * @param stmt Prepared statement used
-     * @param rs   Obtained results set
-     */
-    public static void cleanupResources(PreparedStatement stmt, ResultSet rs) {
-        if (rs != null) {
-            try {
-                rs.close();
-            } catch (SQLException e) {
-                log.warn("Error occurred while closing result set", e);
-            }
-        }
-        if (stmt != null) {
-            try {
-                stmt.close();
-            } catch (SQLException e) {
-                log.warn("Error occurred while closing prepared statement", e);
-            }
-        }
     }
 
 }

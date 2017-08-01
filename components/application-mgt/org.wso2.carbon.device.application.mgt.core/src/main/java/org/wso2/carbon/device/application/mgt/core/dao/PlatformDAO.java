@@ -32,7 +32,7 @@ public interface PlatformDAO {
 
     void update(int tenantId, String oldPlatformIdentifier, Platform platform) throws PlatformManagementDAOException;
 
-    void unregister(int tenantId, String platformIdentifier) throws PlatformManagementDAOException;
+    void unregister(int tenantId, String platformIdentifier, boolean isFileBased) throws PlatformManagementDAOException;
 
     void addMapping(int tenantId, List<String> platformIdentifiers) throws PlatformManagementDAOException;
 

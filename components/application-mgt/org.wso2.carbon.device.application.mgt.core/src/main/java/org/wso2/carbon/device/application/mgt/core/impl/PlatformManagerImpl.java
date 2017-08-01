@@ -20,10 +20,14 @@ package org.wso2.carbon.device.application.mgt.core.impl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.application.mgt.common.Platform;
+import org.wso2.carbon.device.application.mgt.common.exception.DBConnectionException;
 import org.wso2.carbon.device.application.mgt.common.exception.PlatformManagementException;
+import org.wso2.carbon.device.application.mgt.common.exception.TransactionManagementException;
 import org.wso2.carbon.device.application.mgt.common.services.PlatformManager;
 import org.wso2.carbon.device.application.mgt.core.dao.common.DAOFactory;
+import org.wso2.carbon.device.application.mgt.core.exception.PlatformManagementDAOException;
 import org.wso2.carbon.device.application.mgt.core.internal.DataHolder;
+import org.wso2.carbon.device.application.mgt.core.util.ConnectionManagerUtil;
 import org.wso2.carbon.user.api.Tenant;
 import org.wso2.carbon.user.api.TenantManager;
 import org.wso2.carbon.user.api.UserStoreException;
@@ -47,25 +51,49 @@ public class PlatformManagerImpl implements PlatformManager {
 
     @Override
     public void initialize(int tenantId) throws PlatformManagementException {
-        List<Platform> platforms = DAOFactory.getPlatformDAO().getPlatforms(tenantId);
-        List<String> platformIdentifiers = new ArrayList<>();
-        for (Platform platform : platforms) {
-            if (!platform.isEnabled() & platform.isDefaultTenantMapping()) {
-                platformIdentifiers.add(platform.getIdentifier());
+        try {
+            ConnectionManagerUtil.beginTransaction();
+            List<Platform> platforms = DAOFactory.getPlatformDAO().getPlatforms(tenantId);
+            List<String> platformIdentifiers = new ArrayList<>();
+            for (Platform platform : platforms) {
+                if (!platform.isEnabled() & platform.isDefaultTenantMapping()) {
+                    platformIdentifiers.add(platform.getIdentifier());
+                }
             }
+            DAOFactory.getPlatformDAO().addMapping(tenantId, platformIdentifiers);
+            ConnectionManagerUtil.commitTransaction();
+        } catch (TransactionManagementException e) {
+            ConnectionManagerUtil.rollbackTransaction();
+            throw new PlatformManagementDAOException(
+                    "Transaction Management Exception while initializing the " + "platforms for the tenant : "
+                            + tenantId, e);
+        } catch (DBConnectionException e) {
+            ConnectionManagerUtil.rollbackTransaction();
+            throw new PlatformManagementDAOException(
+                    "Database Connection Exception while initializing the " + "platforms for the tenant : " + tenantId,
+                    e);
+        } finally {
+            ConnectionManagerUtil.closeConnection();
         }
-        addMapping(tenantId, platformIdentifiers);
     }
 
     @Override
     public List<Platform> getPlatforms(int tenantId) throws PlatformManagementException {
+        int platformIndex = 0;
+        List<Platform> platforms;
         if (log.isDebugEnabled()) {
             log.debug("Request for getting platforms received for the tenant ID " + tenantId + " at "
                     + "PlatformManager level");
         }
-        List<Platform> platforms = DAOFactory.getPlatformDAO().getPlatforms(tenantId);
-        int platformIndex = 0;
-
+        try {
+            ConnectionManagerUtil.openConnection();
+            platforms = DAOFactory.getPlatformDAO().getPlatforms(tenantId);
+        } catch (DBConnectionException e) {
+            throw new PlatformManagementDAOException(
+                    "Database Connection Exception while getting the platforms for the tenant : " + tenantId, e);
+        } finally {
+            ConnectionManagerUtil.closeConnection();
+        }
         if (log.isDebugEnabled()) {
             log.debug("Number of platforms received from DAO layer is  " + platforms.size() + " for the tenant "
                     + tenantId);
@@ -90,8 +118,7 @@ public class PlatformManagerImpl implements PlatformManager {
             platformIndex++;
         }
         if (log.isDebugEnabled()) {
-            log.debug("Number of effective platforms for the tenant " + tenantId
-                    + " : " + platforms.size());
+            log.debug("Number of effective platforms for the tenant " + tenantId + " : " + platforms.size());
         }
         return platforms;
     }
@@ -100,15 +127,24 @@ public class PlatformManagerImpl implements PlatformManager {
     public Platform getPlatform(int tenantId, String identifier) throws PlatformManagementException {
         Platform platform = getPlatformFromInMemory(tenantId, identifier);
         if (platform == null) {
-            platform = DAOFactory.getPlatformDAO().getPlatform(tenantId, identifier);
-            if (platform != null) {
-                return platform;
+            try {
+                ConnectionManagerUtil.openConnection();
+                platform = DAOFactory.getPlatformDAO().getPlatform(tenantId, identifier);
+                if (platform != null) {
+                    return platform;
+                }
+            } catch (DBConnectionException e) {
+                throw new PlatformManagementDAOException(
+                        "Database Connection Exception while trying to get the " + "platform with the id :" + identifier
+                                + " for the tenant : " + tenantId, e);
+            } finally {
+                ConnectionManagerUtil.closeConnection();
             }
         } else {
             return new Platform(platform);
         }
-        throw new PlatformManagementException("No platform was found for tenant - " + tenantId +
-                " with Platform identifier - " + identifier);
+        throw new PlatformManagementException(
+                "No platform was found for tenant - " + tenantId + " with platform identifier - " + identifier);
     }
 
     private Platform getPlatformFromInMemory(int tenantId, String identifier) {
@@ -138,112 +174,212 @@ public class PlatformManagerImpl implements PlatformManager {
                     "Platform sharing is a restricted operation, therefore Platform - " + platform.getIdentifier()
                             + " cannot be shared by the tenant domain - " + tenantId);
         }
-        int platformId = DAOFactory.getPlatformDAO().register(tenantId, platform);
-        if (platform.isFileBased()) {
-            platform.setId(platformId);
-            Map<String, Platform> tenantPlatforms = this.inMemoryStore.get(tenantId);
-            if (tenantPlatforms == null) {
-                tenantPlatforms = new HashMap<>();
-                this.inMemoryStore.put(tenantId, tenantPlatforms);
-            }
-            if (tenantPlatforms.get(platform.getIdentifier()) == null) {
-                tenantPlatforms.put(platform.getIdentifier(), platform);
-            } else {
-                throw new PlatformManagementException(
-                        "Platform - " + platform.getIdentifier() + " is already registered!");
-            }
-        }
-        if (platform.isDefaultTenantMapping()) {
-            try {
-                if (platform.isShared()) {
-                    TenantManager tenantManager = DataHolder.getInstance().getRealmService().getTenantManager();
-                    Tenant[] tenants = tenantManager.getAllTenants();
-                    for (Tenant tenant : tenants) {
-                        addMapping(tenant.getId(), platform.getIdentifier());
-                    }
+        try {
+            ConnectionManagerUtil.beginTransaction();
+            int platformId = DAOFactory.getPlatformDAO().register(tenantId, platform);
+            if (platform.isFileBased()) {
+                platform.setId(platformId);
+                Map<String, Platform> tenantPlatforms = this.inMemoryStore.get(tenantId);
+                if (tenantPlatforms == null) {
+                    tenantPlatforms = new HashMap<>();
+                    this.inMemoryStore.put(tenantId, tenantPlatforms);
                 }
-                addMapping(tenantId, platform.getIdentifier());
-            } catch (UserStoreException e) {
-                throw new PlatformManagementException("Error occured while assigning the platforms for tenants!", e);
+                if (tenantPlatforms.get(platform.getIdentifier()) == null) {
+                    tenantPlatforms.put(platform.getIdentifier(), platform);
+                } else {
+                    ConnectionManagerUtil.rollbackTransaction();
+                    throw new PlatformManagementException(
+                            "Platform - " + platform.getIdentifier() + " is already registered!");
+                }
             }
+            if (platform.isDefaultTenantMapping()) {
+                try {
+                    if (platform.isShared()) {
+                        TenantManager tenantManager = DataHolder.getInstance().getRealmService().getTenantManager();
+                        Tenant[] tenants = tenantManager.getAllTenants();
+                        for (Tenant tenant : tenants) {
+                            DAOFactory.getPlatformDAO()
+                                    .addMapping(tenant.getId(), getListOfString(platform.getIdentifier()));
+                        }
+                    }
+                    DAOFactory.getPlatformDAO().addMapping(tenantId, getListOfString(platform.getIdentifier()));
+                } catch (UserStoreException e) {
+                    ConnectionManagerUtil.rollbackTransaction();
+                    throw new PlatformManagementException("Error occurred while assigning the platforms for tenants!",
+                            e);
+                }
+            }
+            ConnectionManagerUtil.commitTransaction();
+        } catch (TransactionManagementException e) {
+            ConnectionManagerUtil.rollbackTransaction();
+            throw new PlatformManagementDAOException(
+                    "Transaction Management Exception while trying to register a " + "platform with id " + platform
+                            .getIdentifier() + " for tenant " + tenantId);
+        } catch (DBConnectionException e) {
+            ConnectionManagerUtil.rollbackTransaction();
+            throw new PlatformManagementDAOException(
+                    "Database Connection Exception while trying to register a " + "platform with id " + platform
+                            .getIdentifier() + " for tenant " + tenantId);
+        } finally {
+            ConnectionManagerUtil.closeConnection();
         }
     }
 
     @Override
-    public void update(int tenantId, String oldPlatformIdentifier, Platform platform)
-            throws PlatformManagementException {
+    public void update(int tenantId, String oldPlatformIdentifier, Platform platform) throws
+            PlatformManagementException {
         if (platform.isShared() && tenantId != MultitenantConstants.SUPER_TENANT_ID) {
             throw new PlatformManagementException(
                     "Platform sharing is a restricted operation, therefore Platform - " + platform.getIdentifier()
                             + " cannot be shared by the tenant domain - " + tenantId);
         }
         Platform oldPlatform;
-        if (platform.isFileBased()) {
-            Map<String, Platform> tenantPlatforms = this.inMemoryStore.get(tenantId);
-            if (tenantPlatforms == null) {
-                throw new PlatformManagementException(
-                        "No platforms registered for the tenant - " + tenantId + " with platform identifier - "
-                                + platform.getIdentifier());
-            }
-            oldPlatform = tenantPlatforms.get(oldPlatformIdentifier);
-            if (oldPlatform == null) {
-                throw new PlatformManagementException(
-                        "No platforms registered for the tenant - " + tenantId + " with platform identifier - "
-                                + platform.getIdentifier());
-            } else {
-                DAOFactory.getPlatformDAO().update(tenantId, oldPlatformIdentifier, platform);
-                platform.setId(oldPlatform.getId());
-                tenantPlatforms.put(platform.getIdentifier(), platform);
-            }
-        } else {
-            oldPlatform = DAOFactory.getPlatformDAO().getPlatform(tenantId, oldPlatformIdentifier);
-            DAOFactory.getPlatformDAO().update(tenantId, oldPlatformIdentifier, platform);
-        }
-        if (platform.isDefaultTenantMapping() && !oldPlatform.isDefaultTenantMapping()) {
+
+        if (platform.getIdentifier() != null && !platform.getIdentifier().equals(oldPlatformIdentifier)) {
             try {
-                if (platform.isShared() && !oldPlatform.isShared()) {
-                    TenantManager tenantManager = DataHolder.getInstance().getRealmService().getTenantManager();
-                    Tenant[] tenants = tenantManager.getAllTenants();
-                    for (Tenant tenant : tenants) {
-                        addMapping(tenant.getId(), platform.getIdentifier());
-                    }
+                ConnectionManagerUtil.openConnection();
+                Platform existingPlatform = DAOFactory.getPlatformDAO().getPlatform(tenantId, platform.getIdentifier());
+
+                if (existingPlatform != null) {
+                    throw new PlatformManagementException(
+                            "Cannot update the identifier of the platform from '" + oldPlatformIdentifier + "' to '"
+                                    + platform.getIdentifier() + "'. Another platform exists "
+                                    + "already with the identifier '" + platform.getIdentifier() + "' for the tenant : "
+                                    + tenantId);
                 }
-                addMapping(tenantId, platform.getIdentifier());
-            } catch (UserStoreException e) {
-                throw new PlatformManagementException("Error occurred while assigning the platforms for tenants!", e);
+            } catch (DBConnectionException e) {
+                throw new PlatformManagementException(
+                        "Database Connection Exception while trying to update the " + "platform for the tenant : "
+                                + tenantId, e);
+            } finally {
+                ConnectionManagerUtil.closeConnection();
             }
         }
-        if (!platform.isShared() && oldPlatform.isShared()) {
-            DAOFactory.getPlatformDAO().removeMappingTenants(platform.getIdentifier());
+        try {
+            if (platform.isFileBased()) {
+                Map<String, Platform> tenantPlatforms = this.inMemoryStore.get(tenantId);
+                if (tenantPlatforms == null) {
+                    throw new PlatformManagementException(
+                            "No platforms registered for the tenant - " + tenantId + " with platform identifier - "
+                                    + platform.getIdentifier());
+                }
+                oldPlatform = tenantPlatforms.get(oldPlatformIdentifier);
+                if (oldPlatform == null) {
+                    throw new PlatformManagementException(
+                            "No platforms registered for the tenant - " + tenantId + " with platform identifier - "
+                                    + platform.getIdentifier());
+                } else {
+                    ConnectionManagerUtil.beginTransaction();
+                    DAOFactory.getPlatformDAO().update(tenantId, oldPlatformIdentifier, platform);
+                    platform.setId(oldPlatform.getId());
+                    tenantPlatforms.put(platform.getIdentifier(), platform);
+                }
+            } else {
+                ConnectionManagerUtil.beginTransaction();
+                oldPlatform = DAOFactory.getPlatformDAO().getPlatform(tenantId, oldPlatformIdentifier);
+                DAOFactory.getPlatformDAO().update(tenantId, oldPlatformIdentifier, platform);
+            }
+            if (platform.isDefaultTenantMapping() && !oldPlatform.isDefaultTenantMapping()) {
+                try {
+                    if (platform.isShared() && !oldPlatform.isShared()) {
+                        TenantManager tenantManager = DataHolder.getInstance().getRealmService().getTenantManager();
+                        Tenant[] tenants = tenantManager.getAllTenants();
+                        for (Tenant tenant : tenants) {
+                            DAOFactory.getPlatformDAO()
+                                    .addMapping(tenant.getId(), getListOfString(platform.getIdentifier()));
+
+                        }
+                    }
+                    DAOFactory.getPlatformDAO().addMapping(tenantId, getListOfString(platform.getIdentifier()));
+                } catch (UserStoreException e) {
+                    throw new PlatformManagementException("Error occurred while assigning the platforms for tenants!",
+                            e);
+                }
+            }
+            if (!platform.isShared() && oldPlatform.isShared()) {
+                DAOFactory.getPlatformDAO().removeMappingTenants(platform.getIdentifier());
+            }
+            ConnectionManagerUtil.commitTransaction();
+        } catch (TransactionManagementException e) {
+            ConnectionManagerUtil.rollbackTransaction();
+            throw new PlatformManagementDAOException(
+                    "Transaction Management Exception while trying to update " + "platform : " + oldPlatformIdentifier
+                            + " of tenant :" + tenantId);
+        } catch (DBConnectionException e) {
+            ConnectionManagerUtil.rollbackTransaction();
+            throw new PlatformManagementDAOException(
+                    "Database Connection Exception while trying to update " + "platform : " + oldPlatformIdentifier
+                            + " of tenant :" + tenantId);
+        } finally {
+            ConnectionManagerUtil.closeConnection();
         }
     }
 
+    private List<String> getListOfString(String platformIdentifier) {
+        List<String> identifiers = new ArrayList<>();
+        identifiers.add(platformIdentifier);
+        return identifiers;
+    }
+
     @Override
-    public void unregister(int tenantId, String identifier, boolean isFileBased) throws
-            PlatformManagementException {
-        if (isFileBased) {
-            Map<String, Platform> tenantPlatforms = this.inMemoryStore.get(tenantId);
-            if (tenantPlatforms != null) {
-                this.inMemoryStore.remove(identifier);
+    public void unregister(int tenantId, String identifier, boolean isFileBased) throws PlatformManagementException {
+        try {
+            ConnectionManagerUtil.beginTransaction();
+            DAOFactory.getPlatformDAO().unregister(tenantId, identifier, isFileBased);
+
+            if (isFileBased) {
+                Map<String, Platform> tenantPlatforms = this.inMemoryStore.get(tenantId);
+                if (tenantPlatforms != null) {
+                    tenantPlatforms.remove(identifier);
+                }
             }
+            ConnectionManagerUtil.commitTransaction();
+        } catch (TransactionManagementException e) {
+            ConnectionManagerUtil.rollbackTransaction();
+            throw new PlatformManagementDAOException(
+                    "Transaction Management Exception while trying to un-register " + "the platform with identifier : "
+                            + identifier + " tenant :" + tenantId, e);
+        } catch (DBConnectionException e) {
+            ConnectionManagerUtil.rollbackTransaction();
+            throw new PlatformManagementDAOException(
+                    "Database Connection Exception while trying to un-register " + "the platform with identifier : "
+                            + identifier + " tenant :" + tenantId, e);
+        } finally {
+            ConnectionManagerUtil.closeConnection();
         }
-        DAOFactory.getPlatformDAO().unregister(tenantId, identifier);
     }
 
     @Override
     public void addMapping(int tenantId, List<String> platformIdentifiers) throws PlatformManagementException {
-        DAOFactory.getPlatformDAO().addMapping(tenantId, platformIdentifiers);
+        try {
+            ConnectionManagerUtil.openConnection();
+            DAOFactory.getPlatformDAO().addMapping(tenantId, platformIdentifiers);
+        } catch (DBConnectionException e) {
+            throw new PlatformManagementDAOException(
+                    "Database Connection Exception while trying to add tenant " + "mapping for tenant ID : "
+                            + tenantId);
+        } finally {
+            ConnectionManagerUtil.closeConnection();
+        }
     }
 
     @Override
     public void addMapping(int tenantId, String platformIdentifier) throws PlatformManagementException {
         List<String> identifiers = new ArrayList<>();
         identifiers.add(platformIdentifier);
-        DAOFactory.getPlatformDAO().addMapping(tenantId, identifiers);
+        addMapping(tenantId, identifiers);
     }
 
     @Override
     public void removeMapping(int tenantId, String platformIdentifier) throws PlatformManagementException {
-        DAOFactory.getPlatformDAO().removeMapping(tenantId, platformIdentifier);
+        try {
+            ConnectionManagerUtil.openConnection();
+            DAOFactory.getPlatformDAO().removeMapping(tenantId, platformIdentifier);
+        } catch (DBConnectionException e) {
+            throw new PlatformManagementDAOException(
+                    "Database Connection Exception while trying to remove tenant mapping for tenant ID : " + tenantId);
+        } finally {
+            ConnectionManagerUtil.closeConnection();
+        }
     }
 }

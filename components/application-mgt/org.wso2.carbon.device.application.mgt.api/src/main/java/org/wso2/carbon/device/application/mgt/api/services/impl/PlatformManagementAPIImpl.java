@@ -29,6 +29,7 @@ import org.wso2.carbon.device.application.mgt.core.exception.PlatformManagementD
 import java.util.ArrayList;
 import java.util.List;
 import javax.validation.constraints.Size;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -102,8 +103,12 @@ public class PlatformManagementAPIImpl implements PlatformManagementAPI {
             Platform platform = APIUtil.getPlatformManager().getPlatform(tenantId, id);
             return Response.status(Response.Status.OK).entity(platform).build();
         } catch (PlatformManagementDAOException e) {
+            log.error("Error while trying the get the platform with the identifier : " + id + " for the tenant :"
+                    + tenantId, e);
             return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
         } catch (PlatformManagementException e) {
+            log.error("Error while trying the get the platform with the identifier : " + id + " for the tenant :"
+                    + tenantId, e);
             return APIUtil.getResponse(e, Response.Status.NOT_FOUND);
         }
     }
@@ -118,14 +123,17 @@ public class PlatformManagementAPIImpl implements PlatformManagementAPI {
                     APIUtil.getPlatformManager().register(tenantId, platform);
                     return Response.status(Response.Status.CREATED).build();
                 } else {
-                    return APIUtil.getResponse("Invxalid payload! Platform ID and names are mandatory fields!",
-                            Response.Status.BAD_REQUEST);
+                    return APIUtil
+                            .getResponse("Invalid payload! Platform 'identifier' and 'name' are mandatory fields!",
+                                    Response.Status.BAD_REQUEST);
                 }
             } else {
                 return APIUtil.getResponse("Invalid payload! Platform needs to be passed as payload!",
                         Response.Status.BAD_REQUEST);
             }
         } catch (PlatformManagementException e) {
+            log.error("Platform Management Exception while trying to add the platform with identifier : " + platform
+                    .getIdentifier() + " for the tenant : " + tenantId, e);
             return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
         }
     }
@@ -140,6 +148,21 @@ public class PlatformManagementAPIImpl implements PlatformManagementAPI {
             return Response.status(Response.Status.OK).build();
         } catch (PlatformManagementException e) {
             log.error("Error while updating the platform - " + id + " for tenant domain - " + tenantId, e);
+            return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @DELETE
+    @Path("/{identifier}")
+    @Override
+    public Response removePlatform(@PathParam("identifier") @Size(max = 45) String id) {
+        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId(true);
+        try {
+            APIUtil.getPlatformManager().unregister(tenantId, id, false);
+            return Response.status(Response.Status.OK).build();
+        } catch (PlatformManagementException e) {
+            log.error("Platform Management Exception while trying to un-register the platform with the identifier : "
+                    + id + " for the tenant : " + tenantId, e);
             return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
         }
     }

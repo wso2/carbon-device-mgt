@@ -195,7 +195,7 @@ public class MySQLApplicationDAOImpl extends AbstractApplicationDAOImpl {
         PreparedStatement stmt = null;
         ResultSet rs = null;
         try {
-            conn = this.getConnection();
+            conn = this.getDBConnection();
             String sql = "DELETE FROM APPM_APPLICATION WHERE UUID = ?";
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, uuid);
@@ -220,7 +220,7 @@ public class MySQLApplicationDAOImpl extends AbstractApplicationDAOImpl {
         int id = 0;
 
         try {
-            conn = this.getConnection();
+            conn = this.getDBConnection();
             sql += "SELECT ID FROM APPM_APPLICATION WHERE UUID = ?";
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, uuid);
@@ -360,7 +360,7 @@ public class MySQLApplicationDAOImpl extends AbstractApplicationDAOImpl {
         PreparedStatement stmt = null;
         ResultSet rs = null;
         try {
-            conn = this.getConnection();
+            conn = this.getDBConnection();
             String sql = "DELETE FROM APPM_APPLICATION_PROPERTY WHERE APPLICATION_ID = ?";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, applicationId);
@@ -382,7 +382,7 @@ public class MySQLApplicationDAOImpl extends AbstractApplicationDAOImpl {
         PreparedStatement stmt = null;
         ResultSet rs = null;
         try {
-            conn = this.getConnection();
+            conn = this.getDBConnection();
             String sql = "DELETE FROM APPM_APPLICATION_TAG WHERE APPLICATION_ID = ?";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, applicationId);

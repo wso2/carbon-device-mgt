@@ -116,24 +116,22 @@ public class ApplicationManagerImpl implements ApplicationManager {
 
     @Override
     public void deleteApplication(String uuid) throws ApplicationManagementException {
-
         try {
-            ConnectionManagerUtil.openConnection();
             ApplicationDAO applicationDAO = DAOFactory.getApplicationDAO();
             int appId = applicationDAO.getApplicationId(uuid);
-            ConnectionManagerUtil.beginTransaction();
+            ConnectionManagerUtil.beginDBTransaction();
             applicationDAO.deleteTags(appId);
             applicationDAO.deleteProperties(appId);
             applicationDAO.deleteApplication(uuid);
-            ConnectionManagerUtil.commitTransaction();
+            ConnectionManagerUtil.commitDBTransaction();
 
         } catch (ApplicationManagementDAOException e) {
-            ConnectionManagerUtil.rollbackTransaction();
+            ConnectionManagerUtil.rollbackDBTransaction();
             String msg = "Failed to delete application: " + uuid;
             throw new ApplicationManagementException(msg, e);
 
         } finally {
-            ConnectionManagerUtil.closeConnection();
+            ConnectionManagerUtil.closeDBConnection();
         }
     }
 

@@ -19,30 +19,31 @@
 package org.wso2.carbon.device.application.mgt.core.dao;
 
 import org.wso2.carbon.device.application.mgt.common.Platform;
-import org.wso2.carbon.device.application.mgt.core.exception.ApplicationManagementDAOException;
 import org.wso2.carbon.device.application.mgt.core.exception.PlatformManagementDAOException;
 
 import java.util.List;
 
+/**
+ * PlatformDAO defines set of DAO operations that are needed for Platform Management.
+ */
 public interface PlatformDAO {
 
-    int register(String tenantDomain, Platform platform) throws PlatformManagementDAOException;
+    int register(int tenantId, Platform platform) throws PlatformManagementDAOException;
 
-    void update(String tenantDomain, String oldPlatformIdentifier, Platform platform) throws PlatformManagementDAOException;
+    void update(int tenantId, String oldPlatformIdentifier, Platform platform) throws PlatformManagementDAOException;
 
-    void unregister(String tenantDomain, String platformIdentifier) throws PlatformManagementDAOException;
+    void unregister(int tenantId, String platformIdentifier, boolean isFileBased) throws PlatformManagementDAOException;
 
-    void addMapping(String tenantDomain, List<String> platformIdentifiers) throws PlatformManagementDAOException;
+    void addMapping(int tenantId, List<String> platformIdentifiers) throws PlatformManagementDAOException;
 
-    void removeMapping(String tenantDomain, String platformIdentifier) throws PlatformManagementDAOException;
+    void removeMapping(int tenantId, String platformIdentifier) throws PlatformManagementDAOException;
 
     void removeMappingTenants(String platformIdentifier) throws PlatformManagementDAOException;
 
-    List<Platform> getPlatforms(String tenantDomain) throws PlatformManagementDAOException;
+    List<Platform> getPlatforms(int tenantId) throws PlatformManagementDAOException;
 
     Platform getPlatform(String tenantDomain, String platformIdentifier) throws PlatformManagementDAOException;
 
     Platform getPlatform(int tenantId, String identifier) throws PlatformManagementDAOException;
-
 
 }

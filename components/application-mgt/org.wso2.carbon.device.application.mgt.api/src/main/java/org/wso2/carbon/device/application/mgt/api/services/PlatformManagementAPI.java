@@ -34,6 +34,7 @@ import org.wso2.carbon.device.application.mgt.common.Platform;
 
 import javax.validation.constraints.Size;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -82,6 +83,12 @@ import javax.ws.rs.core.Response;
                         description = "Update a platform",
                         key = "perm:platform:update",
                         permissions = {"/device-mgt/platform/update"}
+                ),
+                @org.wso2.carbon.apimgt.annotations.api.Scope(
+                        name = "Remove a platform",
+                        description = "Remove a platform",
+                        key = "perm:platform:remove",
+                        permissions = {"/device-mgt/platform/remove"}
                 )
         }
 )
@@ -243,6 +250,45 @@ public interface PlatformManagementAPI {
                     value = "The payload of the platform",
                     required = true)
                     Platform platform,
+            @ApiParam(
+                    name = "identifier",
+                    required = true)
+            @PathParam("identifier")
+            @Size(max = 45)
+                    String identifier
+    );
+
+    @DELETE
+    @Path("/{identifier}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(
+            consumes = MediaType.APPLICATION_JSON,
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "DELETE",
+            value = "Remove Platform",
+            notes = "This will remove the relevant platform.",
+            tags = "Platform Management",
+            extensions = {
+                    @Extension(properties = {
+                            @ExtensionProperty(name = SCOPE, value = "perm:platform:remove")
+                    })
+            }
+    )
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            code = 200,
+                            message = "OK. \n Successfully updated the platform"),
+                    @ApiResponse(
+                            code = 400,
+                            message = "Bad Request. \n Invalid request parameters passed."),
+                    @ApiResponse(
+                            code = 500,
+                            message = "Internal Server Error. \n Error occurred while getting the platform list.",
+                            response = ErrorResponse.class)
+            })
+    Response removePlatform(
             @ApiParam(
                     name = "identifier",
                     required = true)

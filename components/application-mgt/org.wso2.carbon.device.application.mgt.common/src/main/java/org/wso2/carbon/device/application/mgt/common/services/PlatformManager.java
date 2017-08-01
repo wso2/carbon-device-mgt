@@ -29,24 +29,24 @@ import java.util.List;
  */
 public interface PlatformManager {
 
-    void initialize(String tenantDomain) throws PlatformManagementException;
+    void initialize(int tenantId) throws PlatformManagementException;
 
-    List<Platform> getPlatforms(String tenantDomain) throws PlatformManagementException;
+    List<Platform> getPlatforms(int tenantId) throws PlatformManagementException;
 
-    Platform getPlatform(String tenantDomain, String platformIdentifier) throws PlatformManagementException;
+    Platform getPlatform(int tenantId, String platformIdentifier) throws PlatformManagementException;
 
-    void register(String tenantDomain, Platform platform) throws PlatformManagementException;
+    void register(int tenantId, Platform platform) throws PlatformManagementException;
 
-    void update(String tenantDomain, String oldPlatformIdentifier, Platform platform)
+    void update(int tenantId, String oldPlatformIdentifier, Platform platform)
             throws PlatformManagementException;
 
-    void unregister(String tenantDomain, String platformIdentifier, boolean isFileBased)
+    void unregister(int tenantId, String platformIdentifier, boolean isFileBased)
             throws PlatformManagementException;
 
-    void addMapping(String tenantDomain, List<String> platformIdentifiers) throws PlatformManagementException;
+    void addMapping(int tenantId, List<String> platformIdentifiers) throws PlatformManagementException;
 
-    void addMapping(String tenantDomain, String platformIdentifier) throws PlatformManagementException;
+    void addMapping(int tenantId, String platformIdentifier) throws PlatformManagementException;
 
-    void removeMapping(String tenantDomain, String platformIdentifier) throws PlatformManagementException;
+    void removeMapping(int tenantId, String platformIdentifier) throws PlatformManagementException;
 
 }

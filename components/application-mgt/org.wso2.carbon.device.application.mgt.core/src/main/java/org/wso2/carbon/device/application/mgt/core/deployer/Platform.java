@@ -17,11 +17,14 @@
 */
 package org.wso2.carbon.device.application.mgt.core.deployer;
 
+import java.util.List;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.util.List;
 
+/**
+ * Platform represents an Application Platform such as Android, IOS, etc.
+ */
 @XmlRootElement(name = "Platform")
 public class Platform {
 

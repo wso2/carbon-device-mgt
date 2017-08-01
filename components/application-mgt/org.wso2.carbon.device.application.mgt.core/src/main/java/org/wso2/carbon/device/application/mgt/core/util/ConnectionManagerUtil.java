@@ -41,10 +41,118 @@ public class ConnectionManagerUtil {
     private static ThreadLocal<TxState> currentTxState = new ThreadLocal<>();
     private static DataSource dataSource;
 
+    public static Connection getDBConnection() throws DBConnectionException {
+        Connection conn = currentConnection.get();
+        if (conn == null) {
+            try {
+                conn = dataSource.getConnection();
+                currentConnection.set(conn);
+            } catch (SQLException e) {
+                throw new DBConnectionException("Failed to get database connection.", e);
+            }
+        }
+        return conn;
+    }
+
+    public static void beginDBTransaction() throws TransactionManagementException, DBConnectionException {
+        Connection conn = currentConnection.get();
+        if (conn == null) {
+            conn = getDBConnection();
+        }
+
+        if (inTransaction(conn)) {
+            throw new IllegalTransactionStateException("Transaction has already been started.");
+        }
+
+        try {
+            conn.setAutoCommit(false);
+        } catch (SQLException e) {
+            throw new TransactionManagementException("Error occurred while starting a database transaction.", e);
+        }
+    }
+
+    public static void endDBTransaction() throws TransactionManagementException, DBConnectionException {
+        Connection conn = currentConnection.get();
+        if (conn == null) {
+            throw new IllegalTransactionStateException("Database connection is not active.");
+        }
+
+        if (!inTransaction(conn)) {
+            throw new IllegalTransactionStateException("Transaction has not been started.");
+        }
+
+        try {
+            conn.setAutoCommit(true);
+        } catch (SQLException e) {
+            throw new TransactionManagementException("Error occurred while ending database transaction.", e);
+        }
+    }
+
+    public static void commitDBTransaction() {
+        Connection conn = currentConnection.get();
+        if (conn == null) {
+            throw new IllegalTransactionStateException("Database connection is not active.");
+        }
+
+        if (!inTransaction(conn)) {
+            throw new IllegalTransactionStateException("Transaction has not been started.");
+        }
+
+        try {
+            conn.commit();
+        } catch (SQLException e) {
+            log.error("Error occurred while committing the transaction", e);
+        }
+    }
+
+    public static void rollbackDBTransaction() {
+        Connection conn = currentConnection.get();
+        if (conn == null) {
+            throw new IllegalTransactionStateException("Database connection is not active.");
+        }
+
+        if (!inTransaction(conn)) {
+            throw new IllegalTransactionStateException("Transaction has not been started.");
+        }
+
+        try {
+            conn.rollback();
+        } catch (SQLException e) {
+            log.warn("Error occurred while roll-backing the transaction", e);
+        }
+    }
+
+    public static void closeDBConnection() {
+        Connection conn = currentConnection.get();
+        if (conn == null) {
+            throw new IllegalTransactionStateException("Database connection is not active.");
+        }
+        try {
+            conn.close();
+        } catch (SQLException e) {
+            log.error("Error occurred while closing the connection", e);
+        }
+        currentConnection.remove();
+    }
+
+    private static boolean inTransaction(Connection conn) {
+        boolean inTransaction = true;
+        try {
+            if (conn.getAutoCommit()) {
+                inTransaction = false;
+            }
+        } catch (SQLException e) {
+            throw new IllegalTransactionStateException("Failed to get transaction state.");
+        }
+        return inTransaction;
+    }
+
+    @Deprecated
     public static ThreadLocal<Connection> getCurrentConnection() {
         return currentConnection;
     }
 
+    @Deprecated
     public static Connection openConnection() throws DBConnectionException {
         Connection conn = currentConnection.get();
         if (conn != null) {
@@ -63,6 +171,7 @@ public class ConnectionManagerUtil {
         return conn;
     }
 
+    @Deprecated
     public static Connection getConnection() throws DBConnectionException {
         Connection conn = currentConnection.get();
         if (conn == null) {
@@ -73,6 +182,7 @@ public class ConnectionManagerUtil {
         return conn;
     }
 
+    @Deprecated
     public static void beginTransaction() throws TransactionManagementException, DBConnectionException {
         Connection conn = currentConnection.get();
         if (conn != null) {
@@ -102,6 +212,7 @@ public class ConnectionManagerUtil {
         currentTxState.set(TxState.CONNECTION_BORROWED);
     }
 
+    @Deprecated
     public static void commitTransaction() {
         Connection conn = currentConnection.get();
         if (conn == null) {
@@ -116,6 +227,7 @@ public class ConnectionManagerUtil {
         }
     }
 
+    @Deprecated
     public static void rollbackTransaction() {
         Connection conn = currentConnection.get();
         if (conn == null) {
@@ -130,6 +242,7 @@ public class ConnectionManagerUtil {
         }
     }
 
+    @Deprecated
     public static void closeConnection() {
         if(currentTxState != null) {
             TxState txState = currentTxState.get();

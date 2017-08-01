@@ -35,12 +35,12 @@ var zoomLevel = 15;
 var tileSet = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
 var attribution = "&copy; <a href='https://openstreetmap.org/copyright'>OpenStreetMap</a> contributors";
 
-function initialLoad() {
+function initialLoad(geoFencingEnabled) {
     if (document.getElementById('map') == null) {
         setTimeout(initialLoad, 500); // give everything some time to render
     } else {
         initializeMap();
-        processAfterInitializationMap();
+        processAfterInitializationMap(geoFencingEnabled);
         $("#loading").hide();
     }
 }
@@ -111,7 +111,7 @@ var geoAlertsBar;
 var groupedOverlays;
 var layerControl;
 
-function processAfterInitializationMap() {
+function processAfterInitializationMap(geoFencingEnabled) {
     attributionControl = L.control({
         position: "bottomright"
     });
@@ -123,7 +123,9 @@ function processAfterInitializationMap() {
     map.addControl(L.control.fullscreen({position: 'bottomright'}));
 
     geoAlertsBar = L.control.geoAlerts({position: 'topright'});
-    map.addControl(geoAlertsBar);
+    if (geoFencingEnabled) {
+        map.addControl(geoAlertsBar);
+    }
 
     groupedOverlays = {
         "Web Map Service layers": {}
@@ -277,6 +279,7 @@ var getProviderData = function (timeFrom, timeTo) {
         var serviceUrl = '/api/device-mgt/v1.0/geo-services/stats/' + deviceType + '/' + deviceId + '?from=' + timeFrom + '&to=' + timeTo;
         invokerUtil.get(serviceUrl,
                         function (data) {
+                            if(data === ""){showCurrentLocation(tableData);}
                             tableData = JSON.parse(data);
                             if (tableData.length === 0) {
                             showCurrentLocation(tableData);
@@ -359,7 +362,8 @@ function notifyError(message) {
 }
 
 function enableRealTime() {
-    document.getElementById('realTimeShow').style.display = 'none';
+    $("#realTimeShow").hide();
+    $(".geo-alert").show();
     spatialObject = currentSpatialObjects[selectedSpatialObject];
     if (spatialObject) {
         spatialObject.removePath();
@@ -368,8 +372,13 @@ function enableRealTime() {
     selectedSpatialObject = null;
     clearFocus();
     clearMap();
-    document.getElementById('objectInfo').style.display = 'none';
     isBatchModeOn = false;
+    initializeGeoLocation(geoFencingEnabled);
+}
+
+function disableRealTime(){
+    $(".geo-alert").hide();
+    $("#realTimeShow").show();
 }
 
 var geoFencingEnabled = true;
@@ -456,7 +465,7 @@ function focusOnHistorySpatialObject(objectId, timeFrom, timeTo) {
         notifyError('No end time provided to show history. Please provide a suitable value' + timeTo);
     } else {
         $('#dateRangePopup').dialog('close');
-        document.getElementById('realTimeShow').style.display = 'block';
+        disableRealTime();
         isBatchModeOn = true;
         clearFocus(); // Clear current focus if any
         clearMap();
@@ -524,11 +533,13 @@ function clearFocus() {
     }
 }
 
-function createGeoToolListItem(link, text, icon, menuRoot) {
+function createGeoToolListItem(link, text, icon, menuRoot, noModal) {
     var listItem = $("<div/>", { class: 'action-btn filter'}).appendTo(menuRoot);
     var anchor = $("<a/>", {href: link, text: ' ' + text}).appendTo(listItem);
-    anchor.attr('data-toggle', 'modal');
-    anchor.attr('data-target', '#commonModal');
+    if(!noModal){
+        anchor.attr('data-toggle', 'modal');
+        anchor.attr('data-target', '#commonModal');
+    }
     $("<i/>", {class: icon}).prependTo(anchor);
     return listItem;
 }

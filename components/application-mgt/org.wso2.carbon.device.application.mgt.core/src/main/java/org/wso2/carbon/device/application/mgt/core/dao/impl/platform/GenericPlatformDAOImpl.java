@@ -171,10 +171,11 @@ public class GenericPlatformDAOImpl extends AbstractDAOImpl implements PlatformD
                             preparedStatement.execute();
                         }
                     }
-                } else {
+                } else if (!isIdentifierNull) {
                     String insertToPlatform = "UPDATE APPM_PLATFORM SET IDENTIFIER = ? WHERE ID = ?";
                     preparedStatement = connection.prepareStatement(insertToPlatform);
-                    preparedStatement.setInt(1, platformId);
+                    preparedStatement.setString(1, platform.getIdentifier());
+                    preparedStatement.setInt(2, platformId);
                     preparedStatement.execute();
                 }
             } else {

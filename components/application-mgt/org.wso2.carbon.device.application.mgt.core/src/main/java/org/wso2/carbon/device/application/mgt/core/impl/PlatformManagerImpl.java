@@ -233,50 +233,46 @@ public class PlatformManagerImpl implements PlatformManager {
                     "Platform sharing is a restricted operation, therefore Platform - " + platform.getIdentifier()
                             + " cannot be shared by the tenant domain - " + tenantId);
         }
-        Platform oldPlatform;
+        try {
+            ConnectionManagerUtil.beginTransaction();
+            Platform oldPlatform = DAOFactory.getPlatformDAO().getPlatform(tenantId, oldPlatformIdentifier);
 
-        if (platform.getIdentifier() != null && !platform.getIdentifier().equals(oldPlatformIdentifier)) {
-            try {
-                ConnectionManagerUtil.openConnection();
+            if (oldPlatform == null) {
+                ConnectionManagerUtil.rollbackTransaction();
+                throw new PlatformManagementException(
+                        "Cannot update platform. Platform with identifier : " + oldPlatformIdentifier
+                                + " does not exist.");
+            }
+            if (platform.getIdentifier() != null && !platform.getIdentifier().equals(oldPlatformIdentifier)) {
                 Platform existingPlatform = DAOFactory.getPlatformDAO().getPlatform(tenantId, platform.getIdentifier());
 
                 if (existingPlatform != null) {
+                    ConnectionManagerUtil.rollbackTransaction();
                     throw new PlatformManagementException(
                             "Cannot update the identifier of the platform from '" + oldPlatformIdentifier + "' to '"
                                     + platform.getIdentifier() + "'. Another platform exists "
                                     + "already with the identifier '" + platform.getIdentifier() + "' for the tenant : "
                                     + tenantId);
                 }
-            } catch (DBConnectionException e) {
-                throw new PlatformManagementException(
-                        "Database Connection Exception while trying to update the " + "platform for the tenant : "
-                                + tenantId, e);
-            } finally {
-                ConnectionManagerUtil.closeConnection();
             }
-        }
-        try {
+
             if (platform.isFileBased()) {
                 Map<String, Platform> tenantPlatforms = this.inMemoryStore.get(tenantId);
+
+                // File based configurations will be updated in the server start-up as well.So in that case, cache,
+                // will be empty.
                 if (tenantPlatforms == null) {
-                    throw new PlatformManagementException(
-                            "No platforms registered for the tenant - " + tenantId + " with platform identifier - "
-                                    + platform.getIdentifier());
+                    tenantPlatforms = new HashMap<>();
+                    this.inMemoryStore.put(tenantId, tenantPlatforms);
                 }
-                oldPlatform = tenantPlatforms.get(oldPlatformIdentifier);
-                if (oldPlatform == null) {
-                    throw new PlatformManagementException(
-                            "No platforms registered for the tenant - " + tenantId + " with platform identifier - "
-                                    + platform.getIdentifier());
-                } else {
-                    ConnectionManagerUtil.beginTransaction();
-                    DAOFactory.getPlatformDAO().update(tenantId, oldPlatformIdentifier, platform);
-                    platform.setId(oldPlatform.getId());
+                if (tenantPlatforms.get(platform.getIdentifier()) == null) {
                     tenantPlatforms.put(platform.getIdentifier(), platform);
                 }
+                DAOFactory.getPlatformDAO().update(tenantId, oldPlatformIdentifier, platform);
+                platform.setId(oldPlatform.getId());
+                tenantPlatforms.put(platform.getIdentifier(), platform);
+
             } else {
-                ConnectionManagerUtil.beginTransaction();
-                oldPlatform = DAOFactory.getPlatformDAO().getPlatform(tenantId, oldPlatformIdentifier);
                 DAOFactory.getPlatformDAO().update(tenantId, oldPlatformIdentifier, platform);
             }
             if (platform.isDefaultTenantMapping() && !oldPlatform.isDefaultTenantMapping()) {
@@ -292,6 +288,7 @@ public class PlatformManagerImpl implements PlatformManager {
                     }
                     DAOFactory.getPlatformDAO().addMapping(tenantId, getListOfString(platform.getIdentifier()));
                 } catch (UserStoreException e) {
+                    ConnectionManagerUtil.rollbackTransaction();
                     throw new PlatformManagementException("Error occurred while assigning the platforms for tenants!",
                             e);
                 }

@@ -109,11 +109,11 @@
     overflow: hidden;
     white-space: nowrap;
 }
-.device-id a{
-    font-size: 0.4em;
+.device-info a{
     position: absolute;
     margin: 0px 5px;
     right: -5px;
+    top:0px;
 }
 .device-info h4:last-child{
 	margin: 0px;

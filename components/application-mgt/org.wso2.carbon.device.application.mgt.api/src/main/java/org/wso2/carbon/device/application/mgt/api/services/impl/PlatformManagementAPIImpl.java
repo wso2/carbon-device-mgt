@@ -166,4 +166,24 @@ public class PlatformManagementAPIImpl implements PlatformManagementAPI {
             return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @PUT
+    @Path("update-status/{identifier}")
+    @Override
+    public Response updatePlatformStatus(@PathParam("identifier") @Size(max = 45) String id, @QueryParam("status")
+            String status) {
+        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId(true);
+        try {
+            APIUtil.getPlatformManager().updatePlatformStatus(tenantId, id, status);
+            return Response.status(Response.Status.OK).build();
+        } catch (PlatformManagementDAOException e) {
+            log.error("Platform Management Database Exception while trying to update the status of the platform with "
+                    + "the identifier : " + id + " for the tenant : " + tenantId, e);
+            return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
+        } catch (PlatformManagementException e) {
+            log.error("Platform Management Exception while trying to update the status of the platform with the "
+                    + "identifier : " + id + " for the tenant : " + tenantId, e);
+            return APIUtil.getResponse(e, Response.Status.NOT_FOUND);
+        }
+    }
 }

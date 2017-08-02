@@ -49,4 +49,9 @@ public interface PlatformManager {
 
     void removeMapping(int tenantId, String platformIdentifier) throws PlatformManagementException;
 
+    void updatePlatformStatus(int tenantId, String platformIdentifier, String status)
+            throws PlatformManagementException;
+
+    void removePlatforms(int tenantId) throws PlatformManagementException;
+
 }

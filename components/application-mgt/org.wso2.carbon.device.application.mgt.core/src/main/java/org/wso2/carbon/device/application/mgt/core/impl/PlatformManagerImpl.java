@@ -52,7 +52,7 @@ public class PlatformManagerImpl implements PlatformManager {
     @Override
     public void initialize(int tenantId) throws PlatformManagementException {
         try {
-            ConnectionManagerUtil.beginTransaction();
+            ConnectionManagerUtil.beginDBTransaction();
             List<Platform> platforms = DAOFactory.getPlatformDAO().getPlatforms(tenantId);
             List<String> platformIdentifiers = new ArrayList<>();
             for (Platform platform : platforms) {
@@ -61,19 +61,22 @@ public class PlatformManagerImpl implements PlatformManager {
                 }
             }
             DAOFactory.getPlatformDAO().addMapping(tenantId, platformIdentifiers);
-            ConnectionManagerUtil.commitTransaction();
+            ConnectionManagerUtil.commitDBTransaction();
         } catch (TransactionManagementException e) {
-            ConnectionManagerUtil.rollbackTransaction();
+            ConnectionManagerUtil.rollbackDBTransaction();
             throw new PlatformManagementDAOException(
                     "Transaction Management Exception while initializing the " + "platforms for the tenant : "
                             + tenantId, e);
         } catch (DBConnectionException e) {
-            ConnectionManagerUtil.rollbackTransaction();
+            ConnectionManagerUtil.rollbackDBTransaction();
             throw new PlatformManagementDAOException(
                     "Database Connection Exception while initializing the " + "platforms for the tenant : " + tenantId,
                     e);
+        } catch (PlatformManagementDAOException e) {
+            ConnectionManagerUtil.rollbackDBTransaction();
+            throw e;
         } finally {
-            ConnectionManagerUtil.closeConnection();
+            ConnectionManagerUtil.closeDBConnection();
         }
     }
 
@@ -86,13 +89,18 @@ public class PlatformManagerImpl implements PlatformManager {
                     + "PlatformManager level");
         }
         try {
-            ConnectionManagerUtil.openConnection();
+            ConnectionManagerUtil.beginDBTransaction();
             platforms = DAOFactory.getPlatformDAO().getPlatforms(tenantId);
-        } catch (DBConnectionException e) {
+            ConnectionManagerUtil.commitDBTransaction();
+        } catch (DBConnectionException | TransactionManagementException e) {
+            ConnectionManagerUtil.rollbackDBTransaction();
             throw new PlatformManagementDAOException(
                     "Database Connection Exception while getting the platforms for the tenant : " + tenantId, e);
+        } catch (PlatformManagementDAOException e) {
+            ConnectionManagerUtil.rollbackDBTransaction();
+            throw e;
         } finally {
-            ConnectionManagerUtil.closeConnection();
+            ConnectionManagerUtil.closeDBConnection();
         }
         if (log.isDebugEnabled()) {
             log.debug("Number of platforms received from DAO layer is  " + platforms.size() + " for the tenant "
@@ -128,17 +136,22 @@ public class PlatformManagerImpl implements PlatformManager {
         Platform platform = getPlatformFromInMemory(tenantId, identifier);
         if (platform == null) {
             try {
-                ConnectionManagerUtil.openConnection();
+                ConnectionManagerUtil.beginDBTransaction();
                 platform = DAOFactory.getPlatformDAO().getPlatform(tenantId, identifier);
+                ConnectionManagerUtil.commitDBTransaction();
                 if (platform != null) {
                     return platform;
                 }
-            } catch (DBConnectionException e) {
+            } catch (DBConnectionException | TransactionManagementException e) {
+                ConnectionManagerUtil.rollbackDBTransaction();
                 throw new PlatformManagementDAOException(
                         "Database Connection Exception while trying to get the " + "platform with the id :" + identifier
                                 + " for the tenant : " + tenantId, e);
+            } catch (PlatformManagementDAOException e) {
+                ConnectionManagerUtil.rollbackDBTransaction();
+                throw e;
             } finally {
-                ConnectionManagerUtil.closeConnection();
+                ConnectionManagerUtil.closeDBConnection();
             }
         } else {
             return new Platform(platform);
@@ -175,7 +188,7 @@ public class PlatformManagerImpl implements PlatformManager {
                             + " cannot be shared by the tenant domain - " + tenantId);
         }
         try {
-            ConnectionManagerUtil.beginTransaction();
+            ConnectionManagerUtil.beginDBTransaction();
             int platformId = DAOFactory.getPlatformDAO().register(tenantId, platform);
             if (platform.isFileBased()) {
                 platform.setId(platformId);
@@ -187,7 +200,7 @@ public class PlatformManagerImpl implements PlatformManager {
                 if (tenantPlatforms.get(platform.getIdentifier()) == null) {
                     tenantPlatforms.put(platform.getIdentifier(), platform);
                 } else {
-                    ConnectionManagerUtil.rollbackTransaction();
+                    ConnectionManagerUtil.rollbackDBTransaction();
                     throw new PlatformManagementException(
                             "Platform - " + platform.getIdentifier() + " is already registered!");
                 }
@@ -204,24 +217,27 @@ public class PlatformManagerImpl implements PlatformManager {
                     }
                     DAOFactory.getPlatformDAO().addMapping(tenantId, getListOfString(platform.getIdentifier()));
                 } catch (UserStoreException e) {
-                    ConnectionManagerUtil.rollbackTransaction();
+                    ConnectionManagerUtil.rollbackDBTransaction();
                     throw new PlatformManagementException("Error occurred while assigning the platforms for tenants!",
                             e);
                 }
             }
-            ConnectionManagerUtil.commitTransaction();
+            ConnectionManagerUtil.commitDBTransaction();
         } catch (TransactionManagementException e) {
-            ConnectionManagerUtil.rollbackTransaction();
+            ConnectionManagerUtil.rollbackDBTransaction();
             throw new PlatformManagementDAOException(
                     "Transaction Management Exception while trying to register a " + "platform with id " + platform
                             .getIdentifier() + " for tenant " + tenantId);
         } catch (DBConnectionException e) {
-            ConnectionManagerUtil.rollbackTransaction();
+            ConnectionManagerUtil.rollbackDBTransaction();
             throw new PlatformManagementDAOException(
                     "Database Connection Exception while trying to register a " + "platform with id " + platform
                             .getIdentifier() + " for tenant " + tenantId);
+        } catch (PlatformManagementDAOException e) {
+            ConnectionManagerUtil.rollbackDBTransaction();
+            throw e;
         } finally {
-            ConnectionManagerUtil.closeConnection();
+            ConnectionManagerUtil.closeDBConnection();
         }
     }
 
@@ -234,11 +250,11 @@ public class PlatformManagerImpl implements PlatformManager {
                             + " cannot be shared by the tenant domain - " + tenantId);
         }
         try {
-            ConnectionManagerUtil.beginTransaction();
+            ConnectionManagerUtil.beginDBTransaction();
             Platform oldPlatform = DAOFactory.getPlatformDAO().getPlatform(tenantId, oldPlatformIdentifier);
 
             if (oldPlatform == null) {
-                ConnectionManagerUtil.rollbackTransaction();
+                ConnectionManagerUtil.commitDBTransaction();
                 throw new PlatformManagementException(
                         "Cannot update platform. Platform with identifier : " + oldPlatformIdentifier
                                 + " does not exist.");
@@ -247,7 +263,7 @@ public class PlatformManagerImpl implements PlatformManager {
                 Platform existingPlatform = DAOFactory.getPlatformDAO().getPlatform(tenantId, platform.getIdentifier());
 
                 if (existingPlatform != null) {
-                    ConnectionManagerUtil.rollbackTransaction();
+                    ConnectionManagerUtil.commitDBTransaction();
                     throw new PlatformManagementException(
                             "Cannot update the identifier of the platform from '" + oldPlatformIdentifier + "' to '"
                                     + platform.getIdentifier() + "'. Another platform exists "
@@ -288,7 +304,7 @@ public class PlatformManagerImpl implements PlatformManager {
                     }
                     DAOFactory.getPlatformDAO().addMapping(tenantId, getListOfString(platform.getIdentifier()));
                 } catch (UserStoreException e) {
-                    ConnectionManagerUtil.rollbackTransaction();
+                    ConnectionManagerUtil.rollbackDBTransaction();
                     throw new PlatformManagementException("Error occurred while assigning the platforms for tenants!",
                             e);
                 }
@@ -296,19 +312,22 @@ public class PlatformManagerImpl implements PlatformManager {
             if (!platform.isShared() && oldPlatform.isShared()) {
                 DAOFactory.getPlatformDAO().removeMappingTenants(platform.getIdentifier());
             }
-            ConnectionManagerUtil.commitTransaction();
+            ConnectionManagerUtil.commitDBTransaction();
         } catch (TransactionManagementException e) {
-            ConnectionManagerUtil.rollbackTransaction();
+            ConnectionManagerUtil.rollbackDBTransaction();
             throw new PlatformManagementDAOException(
                     "Transaction Management Exception while trying to update " + "platform : " + oldPlatformIdentifier
                             + " of tenant :" + tenantId);
         } catch (DBConnectionException e) {
-            ConnectionManagerUtil.rollbackTransaction();
+            ConnectionManagerUtil.rollbackDBTransaction();
             throw new PlatformManagementDAOException(
                     "Database Connection Exception while trying to update " + "platform : " + oldPlatformIdentifier
                             + " of tenant :" + tenantId);
+        } catch (PlatformManagementDAOException e) {
+            ConnectionManagerUtil.rollbackDBTransaction();
+            throw e;
         } finally {
-            ConnectionManagerUtil.closeConnection();
+            ConnectionManagerUtil.closeDBConnection();
         }
     }
 
@@ -321,7 +340,7 @@ public class PlatformManagerImpl implements PlatformManager {
     @Override
     public void unregister(int tenantId, String identifier, boolean isFileBased) throws PlatformManagementException {
         try {
-            ConnectionManagerUtil.beginTransaction();
+            ConnectionManagerUtil.beginDBTransaction();
             DAOFactory.getPlatformDAO().unregister(tenantId, identifier, isFileBased);
 
             if (isFileBased) {
@@ -330,33 +349,41 @@ public class PlatformManagerImpl implements PlatformManager {
                     tenantPlatforms.remove(identifier);
                 }
             }
-            ConnectionManagerUtil.commitTransaction();
+            ConnectionManagerUtil.commitDBTransaction();
         } catch (TransactionManagementException e) {
-            ConnectionManagerUtil.rollbackTransaction();
+            ConnectionManagerUtil.rollbackDBTransaction();
             throw new PlatformManagementDAOException(
                     "Transaction Management Exception while trying to un-register " + "the platform with identifier : "
                             + identifier + " tenant :" + tenantId, e);
         } catch (DBConnectionException e) {
-            ConnectionManagerUtil.rollbackTransaction();
+            ConnectionManagerUtil.rollbackDBTransaction();
             throw new PlatformManagementDAOException(
                     "Database Connection Exception while trying to un-register " + "the platform with identifier : "
                             + identifier + " tenant :" + tenantId, e);
+        } catch (PlatformManagementDAOException e) {
+            ConnectionManagerUtil.rollbackDBTransaction();
+            throw e;
         } finally {
-            ConnectionManagerUtil.closeConnection();
+            ConnectionManagerUtil.closeDBConnection();
         }
     }
 
     @Override
     public void addMapping(int tenantId, List<String> platformIdentifiers) throws PlatformManagementException {
         try {
-            ConnectionManagerUtil.openConnection();
+            ConnectionManagerUtil.beginDBTransaction();
             DAOFactory.getPlatformDAO().addMapping(tenantId, platformIdentifiers);
-        } catch (DBConnectionException e) {
+            ConnectionManagerUtil.commitDBTransaction();
+        } catch (DBConnectionException | TransactionManagementException e) {
+            ConnectionManagerUtil.rollbackDBTransaction();
             throw new PlatformManagementDAOException(
                     "Database Connection Exception while trying to add tenant " + "mapping for tenant ID : "
                             + tenantId);
+        } catch (PlatformManagementDAOException e) {
+            ConnectionManagerUtil.rollbackDBTransaction();
+            throw e;
         } finally {
-            ConnectionManagerUtil.closeConnection();
+            ConnectionManagerUtil.closeDBConnection();
         }
     }
 
@@ -370,13 +397,86 @@ public class PlatformManagerImpl implements PlatformManager {
     @Override
     public void removeMapping(int tenantId, String platformIdentifier) throws PlatformManagementException {
         try {
-            ConnectionManagerUtil.openConnection();
+            ConnectionManagerUtil.beginDBTransaction();
             DAOFactory.getPlatformDAO().removeMapping(tenantId, platformIdentifier);
-        } catch (DBConnectionException e) {
+            ConnectionManagerUtil.commitDBTransaction();
+        } catch (DBConnectionException | TransactionManagementException e) {
+            ConnectionManagerUtil.rollbackDBTransaction();
             throw new PlatformManagementDAOException(
                     "Database Connection Exception while trying to remove tenant mapping for tenant ID : " + tenantId);
+        } catch (PlatformManagementDAOException e) {
+            ConnectionManagerUtil.rollbackDBTransaction();
+            throw e;
         } finally {
-            ConnectionManagerUtil.closeConnection();
+            ConnectionManagerUtil.closeDBConnection();
         }
     }
+
+    @Override
+    public void updatePlatformStatus(int tenantId, String platformIdentifier, String status)
+            throws PlatformManagementException {
+        try {
+            ConnectionManagerUtil.beginDBTransaction();
+            Platform platform = DAOFactory.getPlatformDAO().getPlatform(tenantId, platformIdentifier);
+
+            if (platform == null) {
+                ConnectionManagerUtil.commitDBTransaction();
+                throw new PlatformManagementException("Platform with identifier : " + platformIdentifier + " does not"
+                        + " exist for the tenant with id " + tenantId);
+            } else {
+                boolean isEnabledNewStatus = status.equalsIgnoreCase("ENABLED");
+
+                // If the platform is already in the same status. No need to enable the platform again
+                if (isEnabledNewStatus == platform.isEnabled()) {
+                    if (log.isDebugEnabled()) {
+                        log.debug("Platform with identifier : " + platformIdentifier + " is already in " +
+                                (isEnabledNewStatus ? "Enabled" : "Disabled") + " status. No need to update.");
+                    }
+                    ConnectionManagerUtil.commitDBTransaction();
+                    return;
+                } else {
+                    if (isEnabledNewStatus) {
+                        DAOFactory.getPlatformDAO().addMapping(tenantId, getListOfString(platform.getIdentifier()));
+                    } else {
+                        DAOFactory.getPlatformDAO().removeMapping(tenantId, platform.getIdentifier());
+                    }
+
+                    if (log.isDebugEnabled()) {
+                        log.debug("Platform with identifier : " + platformIdentifier + " successfully " +
+                                (isEnabledNewStatus ? "Enabled" : "Disabled"));
+                    }
+                }
+            }
+            ConnectionManagerUtil.commitDBTransaction();
+        } catch (TransactionManagementException | DBConnectionException ex) {
+            ConnectionManagerUtil.rollbackDBTransaction();
+            throw new PlatformManagementDAOException("Database exception while trying to update the status of platform "
+                    + "with identifier '" + platformIdentifier + "' for the tenant" + tenantId);
+        } catch (PlatformManagementDAOException e) {
+            ConnectionManagerUtil.rollbackDBTransaction();
+            throw e;
+        } finally {
+            ConnectionManagerUtil.closeDBConnection();
+        }
+
+    }
+
+    @Override
+    public void removePlatforms(int tenantId) throws PlatformManagementException {
+        try {
+            ConnectionManagerUtil.beginDBTransaction();
+            DAOFactory.getPlatformDAO().removePlatforms(tenantId);
+            ConnectionManagerUtil.commitDBTransaction();
+        } catch (TransactionManagementException | DBConnectionException e) {
+            ConnectionManagerUtil.rollbackDBTransaction();
+            throw new PlatformManagementDAOException("Database exception while trying to remove all the platforms for"
+                    + " the tenant " + tenantId);
+        } catch (PlatformManagementDAOException e) {
+            ConnectionManagerUtil.rollbackDBTransaction();
+            throw e;
+        } finally {
+            ConnectionManagerUtil.closeDBConnection();
+        }
+    }
+
 }

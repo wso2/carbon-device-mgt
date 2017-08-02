@@ -24,11 +24,14 @@ import org.wso2.carbon.device.application.mgt.common.exception.DBConnectionExcep
 import org.wso2.carbon.device.application.mgt.common.exception.IllegalTransactionStateException;
 import org.wso2.carbon.device.application.mgt.common.exception.TransactionManagementException;
 
-import javax.naming.InitialContext;
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
+import javax.naming.InitialContext;
+import javax.sql.DataSource;
 
+/**
+ * ConnectionManagerUtil is responsible for handling all the datasource connections utilities.
+ */
 public class ConnectionManagerUtil {
 
     private static final Log log = LogFactory.getLog(ConnectionManagerUtil.class);
@@ -58,9 +61,7 @@ public class ConnectionManagerUtil {
         Connection conn = currentConnection.get();
         if (conn == null) {
             conn = getDBConnection();
-        }
-
-        if (inTransaction(conn)) {
+        } else if (inTransaction(conn)) {
             throw new IllegalTransactionStateException("Transaction has already been started.");
         }
 
@@ -244,7 +245,7 @@ public class ConnectionManagerUtil {
 
     @Deprecated
     public static void closeConnection() {
-        if(currentTxState != null) {
+        if (currentTxState != null) {
             TxState txState = currentTxState.get();
 
             if (TxState.CONNECTION_NOT_BORROWED == txState) {
@@ -259,9 +260,9 @@ public class ConnectionManagerUtil {
 
             Connection conn = currentConnection.get();
             if (conn == null) {
-                throw new IllegalTransactionStateException("No connection is associated with the current transaction. " +
-                        "This might have ideally been caused by not properly initiating the transaction via " +
-                        "'beginTransaction'/'openConnection' methods");
+                throw new IllegalTransactionStateException("No connection is associated with the current transaction. "
+                        + "This might have ideally been caused by not properly initiating the transaction via "
+                        + "'beginTransaction'/'openConnection' methods");
             }
             try {
                 conn.close();
@@ -296,6 +297,20 @@ public class ConnectionManagerUtil {
             log.error("Error occurred while retrieving config.datasource connection", e);
         }
         return null;
+    }
+
+    /**
+     * To check whether particular database that is used for application management supports batch query execution.
+     *
+     * @return true if batch query is supported, otherwise false.
+     */
+    public static boolean isBatchQuerySupported() {
+        try {
+            return dataSource.getConnection().getMetaData().supportsBatchUpdates();
+        } catch (SQLException e) {
+            log.error("Error occurred while checking whether database supports batch updates", e);
+        }
+        return false;
     }
 
 }

@@ -46,4 +46,6 @@ public interface PlatformDAO {
 
     Platform getPlatform(int tenantId, String identifier) throws PlatformManagementDAOException;
 
+    void removePlatforms(int tenantId) throws PlatformManagementDAOException;
+
 }

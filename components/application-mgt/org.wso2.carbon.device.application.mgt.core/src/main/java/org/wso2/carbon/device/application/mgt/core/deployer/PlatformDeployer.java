@@ -74,7 +74,7 @@ public class PlatformDeployer extends AbstractDeployer {
                 org.wso2.carbon.device.application.mgt.common.Platform existingPlatform = platformManager
                         .getPlatform(tenantID, platform.getIdentifier());
                 if (existingPlatform != null && existingPlatform.isFileBased()) {
-                    platformManager.update(tenantID, platformConf.getId(),platform);
+                    platformManager.update(tenantID, platformConf.getId(), platform);
                     log.info("Platform configuration : " + deploymentFile.getName() + " updated successfully");
                 } else {
                     platformManager.register(CarbonContext.getThreadLocalCarbonContext().getTenantId(), platform);

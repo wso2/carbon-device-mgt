@@ -73,6 +73,31 @@ if (!user) {
         } else {
             result = 400;
         }
+    }else if (uriMatcher.match("/{context}/api/devices/sketch/generate_link")) {
+
+        if (!request.getContent()){
+            log.error("Request Payload Is Empty");
+            // HTTP status code 400 refers to - Bad request.
+            result = 400;
+        }else{
+            deviceType = request.getContent()["deviceType"];
+            queryString = "?deviceName=" + request.getContent()["deviceName"] +"&deviceType="+
+                request.getContent()["deviceType"]+"&sketchType="+request.getContent()["sketchType"];
+            deviceTypeConfig = utility.getDeviceTypeConfig(deviceType);
+            if (deviceTypeConfig && deviceTypeConfig.deviceType.downloadAgentUri) {
+
+                sketchDownloadEndPoint = devicemgtProps["httpsURL"] + "/" + deviceTypeConfig.deviceType.downloadAgentUri;
+
+                var requestUrl = sketchDownloadEndPoint + queryString
+                result =  "curl -k -o "+request.getContent()["deviceName"]+".zip -H \"Authorization: Bearer "
+                    +JSON.parse(session.get(constants["TOKEN_PAIR"])).accessToken+"\" " +"'"+requestUrl+"'";
+
+            } else {
+                // HTTP status code 400 refers to - Bad request.
+                result = 400;
+            }
+        }
+
     } else if (uriMatcher.match("/{context}/api/devices/all")) {
         result = deviceModule.getOwnDevices();
 

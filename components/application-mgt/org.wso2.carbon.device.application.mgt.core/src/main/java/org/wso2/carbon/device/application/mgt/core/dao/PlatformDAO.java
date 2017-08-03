@@ -48,4 +48,10 @@ public interface PlatformDAO {
 
     void removePlatforms(int tenantId) throws PlatformManagementDAOException;
 
+    int getSuperTenantAndOwnPlatforms(String platformIdentifier, int tenantId) throws PlatformManagementDAOException;
+
+    Platform getTenantOwnedPlatform(int tenantId, String platformIdentifier) throws PlatformManagementDAOException;
+
+    int getMultiTenantPlatforms(String identifier) throws PlatformManagementDAOException;
+
 }

@@ -101,6 +101,10 @@ public class PlatformManagementAPIImpl implements PlatformManagementAPI {
         int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId(true);
         try {
             Platform platform = APIUtil.getPlatformManager().getPlatform(tenantId, id);
+
+            if (platform == null) {
+                return Response.status(Response.Status.NOT_FOUND).entity("Platform not found").build();
+            }
             return Response.status(Response.Status.OK).entity(platform).build();
         } catch (PlatformManagementDAOException e) {
             log.error("Error while trying the get the platform with the identifier : " + id + " for the tenant :"

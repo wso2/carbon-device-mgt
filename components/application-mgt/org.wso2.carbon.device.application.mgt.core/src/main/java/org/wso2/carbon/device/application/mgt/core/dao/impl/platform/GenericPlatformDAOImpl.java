@@ -41,7 +41,8 @@ import java.util.List;
 public class GenericPlatformDAOImpl extends AbstractDAOImpl implements PlatformDAO {
     private static Log log = LogFactory.getLog(GenericPlatformDAOImpl.class);
 
-    @Override public int register(int tenantId, Platform platform) throws PlatformManagementDAOException {
+    @Override
+    public int register(int tenantId, Platform platform) throws PlatformManagementDAOException {
         PreparedStatement preparedStatement = null;
         try {
             int platformId = getPlatformId(tenantId, platform.getIdentifier());
@@ -113,7 +114,8 @@ public class GenericPlatformDAOImpl extends AbstractDAOImpl implements PlatformD
         }
     }
 
-    @Override public void update(int tenantId, String oldPlatformIdentifier, Platform platform)
+    @Override
+    public void update(int tenantId, String oldPlatformIdentifier, Platform platform)
             throws PlatformManagementDAOException {
         PreparedStatement preparedStatement = null;
         try {
@@ -200,8 +202,7 @@ public class GenericPlatformDAOImpl extends AbstractDAOImpl implements PlatformD
     private int getPlatformId(int tenantId, String platformIdentifier) throws PlatformManagementDAOException {
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
-        String query = "SELECT ID FROM APPM_PLATFORM WHERE (TENANT_ID=? AND IDENTIFIER=?) OR (IS_SHARED = TRUE AND "
-                + "IDENTIFIER=?)";
+        String query = SQLQueries.queryToGetPlatformId;
         try {
             Connection connection = this.getDBConnection();
             preparedStatement = connection.prepareStatement(query);
@@ -222,7 +223,8 @@ public class GenericPlatformDAOImpl extends AbstractDAOImpl implements PlatformD
         }
     }
 
-    @Override public void unregister(int tenantId, String platformIdenfier, boolean isFileBased)
+    @Override
+    public void unregister(int tenantId, String platformIdenfier, boolean isFileBased)
             throws PlatformManagementDAOException {
         PreparedStatement preparedStatement = null;
         try {
@@ -315,7 +317,8 @@ public class GenericPlatformDAOImpl extends AbstractDAOImpl implements PlatformD
         }
     }
 
-    @Override public void removeMapping(int tenantId, String platformIdentifier) throws PlatformManagementDAOException {
+    @Override
+    public void removeMapping(int tenantId, String platformIdentifier) throws PlatformManagementDAOException {
         String deleteMapping = "DELETE FROM APPM_PLATFORM_TENANT_MAPPING WHERE ID = ?";
         PreparedStatement preparedStatement = null;
         try {
@@ -340,7 +343,8 @@ public class GenericPlatformDAOImpl extends AbstractDAOImpl implements PlatformD
         }
     }
 
-    @Override public void removeMappingTenants(String platformIdentifier) throws PlatformManagementDAOException {
+    @Override
+    public void removeMappingTenants(String platformIdentifier) throws PlatformManagementDAOException {
         PreparedStatement preparedStatement = null;
         int platformId = getPlatformId(MultitenantConstants.SUPER_TENANT_ID, platformIdentifier);
         String getMapping = "DELETE FROM APPM_PLATFORM_TENANT_MAPPING WHERE TENANT_ID != ? AND PLATFORM_ID=?";
@@ -361,16 +365,15 @@ public class GenericPlatformDAOImpl extends AbstractDAOImpl implements PlatformD
         }
     }
 
-    @Override public List<Platform> getPlatforms(int tenantId) throws PlatformManagementDAOException {
+    @Override
+    public List<Platform> getPlatforms(int tenantId) throws PlatformManagementDAOException {
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
 
         if (log.isDebugEnabled()) {
             log.debug("GetPlaforms request received for the tenant ID " + tenantId);
         }
-        String selectQuery = "SELECT MAPPING.ID, PLATFORM.IDENTIFIER FROM (SELECT * FROM APPM_PLATFORM "
-                + "WHERE TENANT_ID=? OR IS_SHARED = TRUE ) PLATFORM LEFT JOIN APPM_PLATFORM_TENANT_MAPPING "
-                + "MAPPING ON PLATFORM.ID = MAPPING.PLATFORM_ID AND MAPPING.TENANT_ID = ?";
+        String selectQuery = SQLQueries.queryToGetPlatforms;
         try {
             Connection connection = this.getDBConnection();
             preparedStatement = connection.prepareStatement(selectQuery);
@@ -456,7 +459,8 @@ public class GenericPlatformDAOImpl extends AbstractDAOImpl implements PlatformD
         }
     }
 
-    @Override public Platform getPlatform(int tenantId, String identifier) throws PlatformManagementDAOException {
+    @Override
+    public Platform getPlatform(int tenantId, String identifier) throws PlatformManagementDAOException {
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -464,12 +468,7 @@ public class GenericPlatformDAOImpl extends AbstractDAOImpl implements PlatformD
 
         try {
             conn = this.getDBConnection();
-            sql = "SELECT MAPPING.ID, PLATFORM.IDENTIFIER, PLATFORM.FILE_BASED, PLATFORM.ID, PLATFORM.NAME, PLATFORM"
-                    + ".DESCRIPTION, PLATFORM.ICON_NAME, PLATFORM.IS_SHARED, PLATFORM.IS_DEFAULT_TENANT_MAPPING FROM "
-                    + "(SELECT * FROM APPM_PLATFORM WHERE IDENTIFIER= ? AND (TENANT_ID=? OR IS_SHARED = TRUE)) "
-                    + "PLATFORM LEFT JOIN APPM_PLATFORM_TENANT_MAPPING MAPPING ON PLATFORM.ID = MAPPING.PLATFORM_ID "
-                    + "AND MAPPING.TENANT_ID = ?";
-
+            sql = SQLQueries.queryToGetPlatform;
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, identifier);
             stmt.setInt(2, tenantId);
@@ -509,7 +508,8 @@ public class GenericPlatformDAOImpl extends AbstractDAOImpl implements PlatformD
         }
     }
 
-    @Override public void removePlatforms(int tenantId) throws PlatformManagementDAOException {
+    @Override
+    public void removePlatforms(int tenantId) throws PlatformManagementDAOException {
         PreparedStatement preparedStatement = null;
         String sql = "DELETE FROM APPM_PLATFORM WHERE TENANT_ID = ?";
 
@@ -529,12 +529,12 @@ public class GenericPlatformDAOImpl extends AbstractDAOImpl implements PlatformD
         }
     }
 
-    @Override public int getSuperTenantAndOwnPlatforms(String platformIdentifier, int tenantId)
+    @Override
+    public int getSuperTenantAndOwnPlatforms(String platformIdentifier, int tenantId)
             throws PlatformManagementDAOException {
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
-        String sql = "SELECT ID from APPM_PLATFORM where IDENTIFIER = ? AND (TENANT_ID = ? OR (TENANT_ID = ? AND "
-                + "IS_SHARED = true)";
+        String sql = SQLQueries.queryToGetSupertenantAndOwnPlatforms;
 
         try {
             Connection connection = this.getDBConnection();
@@ -558,10 +558,10 @@ public class GenericPlatformDAOImpl extends AbstractDAOImpl implements PlatformD
         } finally {
             Util.cleanupResources(preparedStatement, resultSet);
         }
-
     }
 
-    @Override public Platform getTenantOwnedPlatform(int tenantId, String platformIdentifier)
+    @Override
+    public Platform getTenantOwnedPlatform(int tenantId, String platformIdentifier)
             throws PlatformManagementDAOException {
         Connection conn;
         PreparedStatement stmt = null;

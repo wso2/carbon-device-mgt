@@ -548,7 +548,7 @@ public class PlatformManagerImpl implements PlatformManager {
                     "Error while checking platform sharing conditions for " + " platform identifier '" + platform
                             .getIdentifier() + "' for the tenant :" + tenantId);
         } finally {
-            ConnectionManagerUtil.rollbackDBTransaction();
+            ConnectionManagerUtil.closeDBConnection();
         }
     }
 

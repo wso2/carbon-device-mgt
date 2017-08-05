@@ -39,7 +39,7 @@ var invokers = function () {
     var constants = require("/app/modules/constants.js");
     var userModule = require("/app/modules/business-controllers/user.js")["userModule"];
     var tokenUtil = require("/app/modules/oauth/token-handlers.js")["handlers"];
-
+    var tokenHandler = require("/app/modules/oauth/token-handler-utils.js")["utils"];
     /**
      * This method reads the token pair from the session and return the access token.
      * If the token pair is not set in the session, this will return null.
@@ -259,10 +259,12 @@ var invokers = function () {
         var wsRequest = new ws.WSRequest();
         var options = [];
         if (devicemgtProps["isOAuthEnabled"]) {
-            var accessToken = privateMethods.getAccessToken();
+            var adminUsername = devicemgtProps["adminUser"];
+            var accessToken = tokenHandler.getJwtToken(adminUsername);
+            var decoded = tokenHandler.encode(accessToken);
             if (accessToken) {
                 var authenticationHeaderName = String(constants["AUTHORIZATION_HEADER"]);
-                var authenticationHeaderValue = String(constants["BEARER_PREFIX"] + accessToken);
+                var authenticationHeaderValue = String(constants["BEARER_PREFIX"] + decoded);
                 var headers = [];
                 var oAuthAuthenticationData = {};
                 oAuthAuthenticationData.name = authenticationHeaderName;

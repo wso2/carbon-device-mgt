@@ -45,6 +45,7 @@ if (!user) {
         } else {
             queryString = "?" + queryString;
         }
+
         var deviceType = request.getParameter("deviceType"); // need a better solution here
         deviceTypeConfig = utility.getDeviceTypeConfig(deviceType);
         if (deviceTypeConfig && deviceTypeConfig.deviceType.downloadAgentUri) {

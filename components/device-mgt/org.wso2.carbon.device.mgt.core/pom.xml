@@ -22,7 +22,7 @@
     <parent>
         <groupId>org.wso2.carbon.devicemgt</groupId>
         <artifactId>device-mgt</artifactId>
-        <version>3.0.60-SNAPSHOT</version>
+        <version>3.0.62-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -157,6 +157,10 @@
                 <exclusion>
                     <groupId>org.wso2.carbon.identity.framework</groupId>
                     <artifactId>org.wso2.carbon.user.mgt</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>commons-lang</groupId>
+                    <artifactId>commons-lang</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>

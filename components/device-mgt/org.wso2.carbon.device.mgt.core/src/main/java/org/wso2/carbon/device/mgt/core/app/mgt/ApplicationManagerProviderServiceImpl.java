@@ -18,6 +18,7 @@
 
 package org.wso2.carbon.device.mgt.core.app.mgt;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.CarbonContext;
@@ -31,6 +32,7 @@ import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManagementException;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Activity;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
+import org.wso2.carbon.device.mgt.core.DeviceManagementConstants;
 import org.wso2.carbon.device.mgt.core.app.mgt.config.AppManagementConfig;
 import org.wso2.carbon.device.mgt.core.dao.ApplicationDAO;
 import org.wso2.carbon.device.mgt.core.dao.ApplicationMappingDAO;
@@ -225,6 +227,14 @@ public class ApplicationManagerProviderServiceImpl implements ApplicationManagem
             List<Integer> applicationIds = new ArrayList<>();
 
             for (Application application : applications) {
+                /*
+                Truncating the application version if length of the version is greater than maximum allowed length.
+                 */
+                if (application.getVersion().length() >
+                        DeviceManagementConstants.OperationAttributes.APPLIST_VERSION_MAX_LENGTH) {
+                    application.setVersion(StringUtils.abbreviate(application.getVersion(),
+                            DeviceManagementConstants.OperationAttributes.APPLIST_VERSION_MAX_LENGTH));
+                }
                 if (!installedAppList.contains(application)) {
                     installedApp = applicationDAO.getApplication(application.getApplicationIdentifier(),
                             application.getVersion(), tenantId);

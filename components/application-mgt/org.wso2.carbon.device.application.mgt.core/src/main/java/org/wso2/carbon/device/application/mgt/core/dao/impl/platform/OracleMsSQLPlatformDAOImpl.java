@@ -25,9 +25,9 @@ import org.wso2.carbon.device.application.mgt.core.exception.PlatformManagementD
 import java.util.List;
 
 /**
- * Oracle specific implementation for Platform DAO.
+ * Oracle and MsSQL specific implementation for Platform DAO.
  */
-public class OraclePlatformDAOImpl extends GenericPlatformDAOImpl {
+public class OracleMsSQLPlatformDAOImpl extends GenericPlatformDAOImpl {
 
     @Override
     public int getSuperTenantAndOwnPlatforms(String platformIdentifier, int tenantId)

@@ -17,7 +17,62 @@
 */
 package org.wso2.carbon.device.application.mgt.core.impl;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.device.application.mgt.common.LifecycleState;
+import org.wso2.carbon.device.application.mgt.common.exception.DBConnectionException;
+import org.wso2.carbon.device.application.mgt.common.exception.LifecycleManagementException;
 import org.wso2.carbon.device.application.mgt.common.services.LifecycleStateManager;
+import org.wso2.carbon.device.application.mgt.core.dao.LifecycleStateDAO;
+import org.wso2.carbon.device.application.mgt.core.dao.common.DAOFactory;
+import org.wso2.carbon.device.application.mgt.core.exception.DAOException;
+import org.wso2.carbon.device.application.mgt.core.util.ConnectionManagerUtil;
+
+import java.util.List;
 
 public class LifecycleStateManagerImpl implements LifecycleStateManager {
+
+    private static final Log log = LogFactory.getLog(LifecycleStateManagerImpl.class);
+
+    @Override
+    public List<LifecycleState> getLifecycleStates() throws LifecycleManagementException {
+        List<LifecycleState> lifecycleStates = null;
+        try {
+            ConnectionManagerUtil.openDBConnection();
+            LifecycleStateDAO lifecycleStateDAO = DAOFactory.getLifecycleStateDAO();
+            lifecycleStates = lifecycleStateDAO.getLifecycleStates();
+        } catch (DAOException | DBConnectionException e) {
+            throw new LifecycleManagementException("Failed get lifecycle states.", e);
+        } finally {
+            ConnectionManagerUtil.closeDBConnection();
+        }
+        return lifecycleStates;
+    }
+
+    @Override
+    public void addLifecycleState(LifecycleState state) throws LifecycleManagementException {
+        try {
+            ConnectionManagerUtil.openDBConnection();
+            LifecycleStateDAO lifecycleStateDAO = DAOFactory.getLifecycleStateDAO();
+            lifecycleStateDAO.addLifecycleState(state);
+        } catch (DAOException | DBConnectionException e) {
+            throw new LifecycleManagementException("Failed to add lifecycle state", e);
+        } finally {
+            ConnectionManagerUtil.closeDBConnection();
+        }
+    }
+
+    @Override
+    public void deleteLifecycleState(String identifier) throws LifecycleManagementException {
+
+        try {
+            ConnectionManagerUtil.openDBConnection();
+            LifecycleStateDAO lifecycleStateDAO = DAOFactory.getLifecycleStateDAO();
+            lifecycleStateDAO.deleteLifecycleState(identifier);
+        } catch (DAOException | DBConnectionException e) {
+            throw new LifecycleManagementException("Failed to add lifecycle state: " + identifier, e);
+        } finally {
+            ConnectionManagerUtil.closeDBConnection();
+        }
+    }
 }

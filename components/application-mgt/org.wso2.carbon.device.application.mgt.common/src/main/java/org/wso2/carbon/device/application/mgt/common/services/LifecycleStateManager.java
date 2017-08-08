@@ -18,9 +18,19 @@
  */
 package org.wso2.carbon.device.application.mgt.common.services;
 
+import org.wso2.carbon.device.application.mgt.common.LifecycleState;
+import org.wso2.carbon.device.application.mgt.common.exception.LifecycleManagementException;
+
+import java.util.List;
+
 /**
  * This interface manages all the operations related with lifecycle state.
  */
 public interface LifecycleStateManager {
 
+    List<LifecycleState> getLifecycleStates() throws LifecycleManagementException;
+
+    void addLifecycleState(LifecycleState state) throws LifecycleManagementException;
+
+    void deleteLifecycleState(String identifier) throws LifecycleManagementException;
 }

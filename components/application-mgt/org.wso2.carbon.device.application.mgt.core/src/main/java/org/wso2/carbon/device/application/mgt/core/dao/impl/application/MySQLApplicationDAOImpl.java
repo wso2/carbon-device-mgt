@@ -376,6 +376,34 @@ public class MySQLApplicationDAOImpl extends AbstractApplicationDAOImpl {
     }
 
     @Override
+    public void changeLifecycle(String applicationUUID, String lifecycleIdentifier) throws ApplicationManagementDAOException {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        try {
+            conn = this.getDBConnection();
+            String sql = "UPDATE APPM_APPLICATION SET " +
+                    "LIFECYCLE_STATE_ID = (SELECT ID FROM APPM_LIFECYCLE_STATE WHERE IDENTIFIER = ?), " +
+                    "LIFECYCLE_STATE_MODIFIED_BY = ?, " +
+                    "LIFECYCLE_STATE_MODIFIED_AT = ? " +
+                    "WHERE UUID = ?";
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, lifecycleIdentifier);
+            stmt.setString(2, "admin");
+            stmt.setDate(3, new Date(System.currentTimeMillis()));
+            stmt.setString(4, applicationUUID);
+            stmt.executeUpdate();
+
+        } catch (DBConnectionException e) {
+            throw new ApplicationManagementDAOException("Error occurred while obtaining the DB connection.", e);
+        } catch (SQLException e) {
+            throw new ApplicationManagementDAOException("Error occurred while changing lifecycle of application: " + applicationUUID + " to: " + lifecycleIdentifier + " state.", e);
+        } finally {
+            Util.cleanupResources(stmt, rs);
+        }
+    }
+
+    @Override
     public void deleteTags(int applicationId) throws ApplicationManagementDAOException {
 
         Connection conn = null;

@@ -24,6 +24,7 @@ import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.application.mgt.api.beans.ErrorResponse;
 import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
 import org.wso2.carbon.device.application.mgt.common.services.ApplicationManager;
+import org.wso2.carbon.device.application.mgt.common.services.LifecycleStateManager;
 import org.wso2.carbon.device.application.mgt.common.services.PlatformManager;
 
 import javax.ws.rs.core.Response;
@@ -38,6 +39,7 @@ public class APIUtil {
 
     private static ApplicationManager applicationManager;
     private static PlatformManager platformManager;
+    private static LifecycleStateManager lifecycleStateManager;
 
     public static ApplicationManager getApplicationManager() {
         if (applicationManager == null) {
@@ -74,6 +76,24 @@ public class APIUtil {
             }
         }
         return platformManager;
+    }
+
+    public static LifecycleStateManager getLifecycleStateManager() {
+        if (lifecycleStateManager == null) {
+            synchronized (APIUtil.class) {
+                if (lifecycleStateManager == null) {
+                    PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+                    lifecycleStateManager =
+                            (LifecycleStateManager) ctx.getOSGiService(LifecycleStateManager.class, null);
+                    if (lifecycleStateManager == null) {
+                        String msg = "Lifecycle Manager service has not initialized.";
+                        log.error(msg);
+                        throw new IllegalStateException(msg);
+                    }
+                }
+            }
+        }
+        return lifecycleStateManager;
     }
 
     public static Response getResponse(ApplicationManagementException ex, Response.Status status) {

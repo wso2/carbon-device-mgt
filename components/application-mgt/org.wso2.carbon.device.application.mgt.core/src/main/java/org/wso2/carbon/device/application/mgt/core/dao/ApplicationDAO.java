@@ -52,4 +52,6 @@ public interface ApplicationDAO {
 
     void addRelease(ApplicationRelease release) throws ApplicationManagementDAOException;
 
+    void changeLifecycle(String applicationUUID, String lifecycleIdentifier) throws ApplicationManagementDAOException;
+
 }

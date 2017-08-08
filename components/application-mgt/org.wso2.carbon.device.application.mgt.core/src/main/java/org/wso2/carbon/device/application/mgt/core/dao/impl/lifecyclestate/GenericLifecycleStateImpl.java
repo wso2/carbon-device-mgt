@@ -24,11 +24,14 @@ import org.wso2.carbon.device.application.mgt.core.dao.LifecycleStateDAO;
 import org.wso2.carbon.device.application.mgt.core.dao.common.Util;
 import org.wso2.carbon.device.application.mgt.core.dao.impl.AbstractDAOImpl;
 import org.wso2.carbon.device.application.mgt.core.exception.ApplicationManagementDAOException;
+import org.wso2.carbon.device.application.mgt.core.exception.DAOException;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class GenericLifecycleStateImpl extends AbstractDAOImpl implements LifecycleStateDAO {
 
@@ -59,7 +62,6 @@ public class GenericLifecycleStateImpl extends AbstractDAOImpl implements Lifecy
                 lifecycleState.setIdentifier(rs.getString("IDENTIFIER"));
                 lifecycleState.setDescription(rs.getString("DESCRIPTION"));
             }
-
             return lifecycleState;
 
         } catch (SQLException e) {
@@ -69,7 +71,77 @@ public class GenericLifecycleStateImpl extends AbstractDAOImpl implements Lifecy
         } finally {
             Util.cleanupResources(stmt, rs);
         }
+    }
 
+    @Override
+    public List<LifecycleState> getLifecycleStates() throws DAOException {
+        List<LifecycleState> lifecycleStates = new ArrayList<>();
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        try {
+            conn = this.getDBConnection();
+            String sql = "SELECT IDENTIFIER, NAME, DESCRIPTION FROM APPM_LIFECYCLE_STATE";
+            stmt = conn.prepareStatement(sql);
+            rs = stmt.executeQuery();
+            while(rs.next()) {
+                LifecycleState lifecycleState = new LifecycleState();
+                lifecycleState.setIdentifier(rs.getString("IDENTIFIER"));
+                lifecycleState.setName(rs.getString("NAME"));
+                lifecycleState.setDescription(rs.getString("DESCRIPTION"));
+                lifecycleStates.add(lifecycleState);
+            }
+        } catch (DBConnectionException e) {
+            throw new DAOException("Error occurred while obtaining the DB connection.", e);
+        } catch (SQLException e) {
+            throw new DAOException("Error occurred while retrieving lifecycle states.", e);
+        } finally {
+            Util.cleanupResources(stmt, rs);
+        }
+        return lifecycleStates;
+    }
 
+    @Override
+    public void addLifecycleState(LifecycleState state) throws DAOException {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        try {
+            conn = this.getDBConnection();
+            String sql = "INSERT INTO APPM_LIFECYCLE_STATE ('NAME', 'IDENTIFIER', 'DESCRIPTION') VALUES (?, ?, ?)";
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, state.getName());
+            stmt.setString(2, state.getIdentifier());
+            stmt.setString(3, state.getDescription());
+            stmt.executeUpdate();
+
+        } catch (DBConnectionException e) {
+            throw new DAOException("Error occurred while obtaining the DB connection.", e);
+        } catch (SQLException e) {
+            throw new DAOException("Error occurred while adding lifecycle: " + state.getIdentifier(), e);
+        } finally {
+            Util.cleanupResources(stmt, rs);
+        }
+    }
+
+    @Override
+    public void deleteLifecycleState(String identifier) throws DAOException {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        try {
+            conn = this.getDBConnection();
+            String sql = "DELETE FROM APPM_LIFECYCLE_STATE WHERE IDENTIFIER = ?";
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, identifier);
+            stmt.executeUpdate();
+
+        } catch (DBConnectionException e) {
+            throw new DAOException("Error occurred while obtaining the DB connection.", e);
+        } catch (SQLException e) {
+            throw new DAOException("Error occurred while deleting lifecycle: " + identifier, e);
+        } finally {
+            Util.cleanupResources(stmt, rs);
+        }
     }
 }

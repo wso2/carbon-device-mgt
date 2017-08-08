@@ -34,7 +34,7 @@ public interface ApplicationManager {
      * @return Created application
      * @throws ApplicationManagementException Application Management Exception
      */
-    public Application createApplication(Application application) throws ApplicationManagementException;
+    Application createApplication(Application application) throws ApplicationManagementException;
 
     /**
      * Updates an already existing application.
@@ -42,14 +42,14 @@ public interface ApplicationManager {
      * @return Updated Application
      * @throws ApplicationManagementException Application Management Exception
      */
-    public Application editApplication(Application application) throws ApplicationManagementException;
+    Application editApplication(Application application) throws ApplicationManagementException;
 
     /**
      * Delete an application identified by the unique ID.
      * @param uuid Unique ID for tha application
      * @throws ApplicationManagementException Application Management Exception
      */
-     public void deleteApplication(String uuid) throws ApplicationManagementException;
+    void deleteApplication(String uuid) throws ApplicationManagementException;
 
     /**
      * To get the applications based on the search filter.
@@ -57,5 +57,7 @@ public interface ApplicationManager {
      * @return Applications that matches the given filter criteria.
      * @throws ApplicationManagementException Application Management Exception
      */
-    public ApplicationList getApplications(Filter filter) throws ApplicationManagementException;
+    ApplicationList getApplications(Filter filter) throws ApplicationManagementException;
+
+    void changeLifecycle(String applicationUUID, String lifecycleIdentifier) throws ApplicationManagementException;
 }

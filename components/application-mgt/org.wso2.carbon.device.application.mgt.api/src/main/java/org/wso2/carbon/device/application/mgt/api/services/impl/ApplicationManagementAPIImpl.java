@@ -64,6 +64,29 @@ public class ApplicationManagementAPIImpl {
         }
     }
 
+    @GET
+    @Consumes("application/json")
+    @Path("applications/{uuid}")
+    public Response getApplication(@PathParam("uuid") String uuid) {
+        ApplicationManager applicationManager = APIUtil.getApplicationManager();
+        return null;
+    }
+
+    @PUT
+    @Consumes("application/json")
+    @Path("applications/{uuid}/lifecycle")
+    public Response changeLifecycleState(@PathParam("uuid") String applicationUUID, @QueryParam("state") String state) {
+        ApplicationManager applicationManager = APIUtil.getApplicationManager();
+        try {
+            applicationManager.changeLifecycle(applicationUUID, state);
+        } catch (ApplicationManagementException e) {
+            String msg = "Error occurred while changing the lifecycle of application: " + applicationUUID;
+            log.error(msg, e);
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+        return Response.status(Response.Status.OK).entity("Successfully changed the lifecycle state of the application: " + applicationUUID).build();
+    }
+
     @POST
     @Consumes("application/json")
     @Path("applications")

@@ -41,15 +41,23 @@ public class ConnectionManagerUtil {
     private static ThreadLocal<TxState> currentTxState = new ThreadLocal<>();
     private static DataSource dataSource;
 
+    public static void openDBConnection() throws DBConnectionException {
+        Connection conn = currentConnection.get();
+        if (conn != null) {
+            throw new IllegalTransactionStateException("Database connection has already been obtained.");
+        }
+        try {
+            conn = dataSource.getConnection();
+        } catch (SQLException e) {
+            throw new DBConnectionException("Failed to get a database connection.", e);
+        }
+        currentConnection.set(conn);
+    }
+
     public static Connection getDBConnection() throws DBConnectionException {
         Connection conn = currentConnection.get();
         if (conn == null) {
-            try {
-                conn = dataSource.getConnection();
-                currentConnection.set(conn);
-            } catch (SQLException e) {
-                throw new DBConnectionException("Failed to get database connection.", e);
-            }
+            throw new IllegalTransactionStateException("Database connection is not active.");
         }
         return conn;
     }
@@ -57,7 +65,7 @@ public class ConnectionManagerUtil {
     public static void beginDBTransaction() throws TransactionManagementException, DBConnectionException {
         Connection conn = currentConnection.get();
         if (conn == null) {
-            conn = getDBConnection();
+            throw new IllegalTransactionStateException("Database connection is not active.");
         }
 
         if (inTransaction(conn)) {

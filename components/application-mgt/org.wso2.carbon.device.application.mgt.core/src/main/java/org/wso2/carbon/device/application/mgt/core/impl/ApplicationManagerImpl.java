@@ -148,6 +148,17 @@ public class ApplicationManagerImpl implements ApplicationManager {
 
     }
 
+    @Override
+    public void changeLifecycle(String applicationUUID, String lifecycleIdentifier) throws ApplicationManagementException {
+        try {
+            ConnectionManagerUtil.openDBConnection();
+            ApplicationDAO applicationDAO = DAOFactory.getApplicationDAO();
+            applicationDAO.changeLifecycle(applicationUUID, lifecycleIdentifier);
+        } finally {
+            ConnectionManagerUtil.closeDBConnection();
+        }
+    }
+
     private void validateApplication(Application application, boolean isEdit) throws ValidationException {
 
         if (application.getName() == null) {

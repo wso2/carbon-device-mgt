@@ -48,6 +48,11 @@ public class H2ApplicationDAOImpl extends AbstractApplicationDAOImpl {
     }
 
     @Override
+    public void changeLifecycle(String applicationUUID, String lifecycleIdentifier) throws ApplicationManagementDAOException {
+
+    }
+
+    @Override
     public ApplicationList getApplications(Filter filter) throws ApplicationManagementDAOException {
 
         if(log.isDebugEnabled()){

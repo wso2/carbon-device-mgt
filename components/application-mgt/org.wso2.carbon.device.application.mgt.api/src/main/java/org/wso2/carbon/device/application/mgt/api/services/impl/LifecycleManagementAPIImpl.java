@@ -38,13 +38,12 @@ import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;
 
-@Path("/lifecycle")
+@Path("/lifecycles")
 public class LifecycleManagementAPIImpl implements LifecycleManagementAPI {
 
     private static Log log = LogFactory.getLog(LifecycleManagementAPIImpl.class);
 
     @GET
-    @Path("/states")
     public Response getLifecycleStates() {
         LifecycleStateManager lifecycleStateManager = APIUtil.getLifecycleStateManager();
         List<LifecycleState> lifecycleStates = new ArrayList<>();
@@ -59,7 +58,6 @@ public class LifecycleManagementAPIImpl implements LifecycleManagementAPI {
     }
 
     @POST
-    @Path("/states")
     public Response addLifecycleState(LifecycleState state) {
         LifecycleStateManager lifecycleStateManager = APIUtil.getLifecycleStateManager();
         try {
@@ -73,7 +71,7 @@ public class LifecycleManagementAPIImpl implements LifecycleManagementAPI {
     }
 
     @DELETE
-    @Path("/states/{identifier}")
+    @Path("/{identifier}")
     public Response deleteLifecycleState(@PathParam("identifier") String identifier) {
         LifecycleStateManager lifecycleStateManager = APIUtil.getLifecycleStateManager();
         try {

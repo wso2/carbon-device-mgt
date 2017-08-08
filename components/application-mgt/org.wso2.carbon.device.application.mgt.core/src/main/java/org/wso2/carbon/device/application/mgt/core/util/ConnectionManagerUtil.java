@@ -44,6 +44,19 @@ public class ConnectionManagerUtil {
     private static ThreadLocal<TxState> currentTxState = new ThreadLocal<>();
     private static DataSource dataSource;
 
+    public static void openDBConnection() throws DBConnectionException {
+        Connection conn = currentConnection.get();
+        if (conn != null) {
+            throw new IllegalTransactionStateException("Database connection has already been obtained.");
+        }
+        try {
+            conn = dataSource.getConnection();
+        } catch (SQLException e) {
+            throw new DBConnectionException("Failed to get a database connection.", e);
+        }
+        currentConnection.set(conn);
+    }
+
     public static Connection getDBConnection() throws DBConnectionException {
         Connection conn = currentConnection.get();
         if (conn == null) {

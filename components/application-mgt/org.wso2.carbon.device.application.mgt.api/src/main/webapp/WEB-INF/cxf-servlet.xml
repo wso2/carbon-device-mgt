@@ -27,6 +27,7 @@ http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd">
         <jaxrs:serviceBeans>
             <ref bean="applicationMgtServiceBean"/>
             <ref bean="platformMgtServiceBean"/>
+            <ref bean="lifecycleMgtServiceBean"/>
         </jaxrs:serviceBeans>
         <jaxrs:providers>
             <ref bean="jsonProvider"/>
@@ -35,6 +36,7 @@ http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd">
 
     <bean id="applicationMgtServiceBean" class="org.wso2.carbon.device.application.mgt.api.services.impl.ApplicationManagementAPIImpl"/>
     <bean id="platformMgtServiceBean" class="org.wso2.carbon.device.application.mgt.api.services.impl.PlatformManagementAPIImpl" />
+    <bean id="lifecycleMgtServiceBean" class="org.wso2.carbon.device.application.mgt.api.services.impl.LifecycleManagementAPIImpl" />
     <bean id="jsonProvider" class="org.wso2.carbon.device.application.mgt.api.JSONMessageHandler"/>
 
 </beans>

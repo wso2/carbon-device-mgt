@@ -40,6 +40,7 @@ import org.wso2.carbon.device.application.mgt.core.util.ApplicationManagementUti
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.ndatasource.core.DataSourceService;
 import org.wso2.carbon.user.core.service.RealmService;
+import org.wso2.carbon.utils.Axis2ConfigurationContextObserver;
 
 import javax.naming.NamingException;
 
@@ -70,8 +71,7 @@ public class ServiceComponent {
     private static Log log = LogFactory.getLog(ServiceComponent.class);
 
 
-    protected void activate(ComponentContext componentContext) throws NamingException,
-            ApplicationManagementDAOException {
+    protected void activate(ComponentContext componentContext) throws NamingException {
         BundleContext bundleContext = componentContext.getBundleContext();
         try {
             String datasourceName = ConfigurationManager.getInstance().getConfiguration().getDatasourceName();
@@ -118,10 +118,16 @@ public class ServiceComponent {
             DataHolder.getInstance().setApplicationUploadManager(uploadManager);
             bundleContext.registerService(ApplicationUploadManager.class.getName(), uploadManager, null);
 
+            bundleContext.registerService(Axis2ConfigurationContextObserver.class.getName(),
+                    new PlatformManagementAxis2ConfigurationObserverImpl(), null);
+
             DAOFactory.init(datasourceName);
+            DAOFactory.initDatabases();
             log.info("ApplicationManagement core bundle has been successfully initialized");
         } catch (InvalidConfigurationException e) {
             log.error("Error while activating Application Management core component. ", e);
+        } catch (ApplicationManagementDAOException e) {
+            log.error("Error while activating Application Management core component.Failed to create the database ", e);
         }
     }
 
@@ -152,10 +158,12 @@ public class ServiceComponent {
     }
 
     protected void setDataSourceService(DataSourceService dataSourceService) {
-        DataHolder.getInstance().setDataSourceService(dataSourceService);
+        /*Not implemented. Not needed but to make sure the datasource service are registered, as it is needed create
+         databases. */
     }
 
     protected void unsetDataSourceService(DataSourceService dataSourceService) {
-        DataHolder.getInstance().setDataSourceService(null);
+        /*Not implemented. Not needed but to make sure the datasource service are registered, as it is needed to create
+         databases.*/
     }
 }

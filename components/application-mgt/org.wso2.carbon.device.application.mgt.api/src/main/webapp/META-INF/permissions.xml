@@ -63,6 +63,10 @@
         <url>/application-mgt/platforms/*</url>
         <method>PUT</method>
     </Permission>
-
-
+    <Permission>
+        <name>Remove Platform</name>
+        <path>/device-mgt/platform/remove</path>
+        <url>/application-mgt/platforms/*</url>
+        <method>DELETE</method>
+    </Permission>
 </PermissionConfiguration>

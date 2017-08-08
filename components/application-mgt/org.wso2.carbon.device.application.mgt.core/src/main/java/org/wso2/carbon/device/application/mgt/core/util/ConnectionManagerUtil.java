@@ -24,11 +24,14 @@ import org.wso2.carbon.device.application.mgt.common.exception.DBConnectionExcep
 import org.wso2.carbon.device.application.mgt.common.exception.IllegalTransactionStateException;
 import org.wso2.carbon.device.application.mgt.common.exception.TransactionManagementException;
 
-import javax.naming.InitialContext;
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
+import javax.naming.InitialContext;
+import javax.sql.DataSource;
 
+/**
+ * ConnectionManagerUtil is responsible for handling all the datasource connections utilities.
+ */
 public class ConnectionManagerUtil {
 
     private static final Log log = LogFactory.getLog(ConnectionManagerUtil.class);
@@ -41,23 +44,15 @@ public class ConnectionManagerUtil {
     private static ThreadLocal<TxState> currentTxState = new ThreadLocal<>();
     private static DataSource dataSource;
 
-    public static void openDBConnection() throws DBConnectionException {
-        Connection conn = currentConnection.get();
-        if (conn != null) {
-            throw new IllegalTransactionStateException("Database connection has already been obtained.");
-        }
-        try {
-            conn = dataSource.getConnection();
-        } catch (SQLException e) {
-            throw new DBConnectionException("Failed to get a database connection.", e);
-        }
-        currentConnection.set(conn);
-    }
-
     public static Connection getDBConnection() throws DBConnectionException {
         Connection conn = currentConnection.get();
         if (conn == null) {
-            throw new IllegalTransactionStateException("Database connection is not active.");
+            try {
+                conn = dataSource.getConnection();
+                currentConnection.set(conn);
+            } catch (SQLException e) {
+                throw new DBConnectionException("Failed to get database connection.", e);
+            }
         }
         return conn;
     }
@@ -65,10 +60,8 @@ public class ConnectionManagerUtil {
     public static void beginDBTransaction() throws TransactionManagementException, DBConnectionException {
         Connection conn = currentConnection.get();
         if (conn == null) {
-            throw new IllegalTransactionStateException("Database connection is not active.");
-        }
-
-        if (inTransaction(conn)) {
+            conn = getDBConnection();
+        } else if (inTransaction(conn)) {
             throw new IllegalTransactionStateException("Transaction has already been started.");
         }
 
@@ -252,7 +245,7 @@ public class ConnectionManagerUtil {
 
     @Deprecated
     public static void closeConnection() {
-        if(currentTxState != null) {
+        if (currentTxState != null) {
             TxState txState = currentTxState.get();
 
             if (TxState.CONNECTION_NOT_BORROWED == txState) {
@@ -267,9 +260,9 @@ public class ConnectionManagerUtil {
 
             Connection conn = currentConnection.get();
             if (conn == null) {
-                throw new IllegalTransactionStateException("No connection is associated with the current transaction. " +
-                        "This might have ideally been caused by not properly initiating the transaction via " +
-                        "'beginTransaction'/'openConnection' methods");
+                throw new IllegalTransactionStateException("No connection is associated with the current transaction. "
+                        + "This might have ideally been caused by not properly initiating the transaction via "
+                        + "'beginTransaction'/'openConnection' methods");
             }
             try {
                 conn.close();
@@ -281,18 +274,19 @@ public class ConnectionManagerUtil {
         }
     }
 
-
     /**
-     * Resolve data source from the data source definition.
+     * Resolve the datasource from the datasource definition.
      *
-     * @param dataSourceName data source name
+     * @param dataSourceName Name of the datasource
+     * @return DataSource resolved by the datasource name
      */
-    public static void resolveDataSource(String dataSourceName) {
+    public static DataSource resolveDataSource(String dataSourceName) {
         try {
             dataSource = InitialContext.doLookup(dataSourceName);
         } catch (Exception e) {
             throw new RuntimeException("Error in looking up data source: " + e.getMessage(), e);
         }
+        return dataSource;
     }
 
 
@@ -304,4 +298,19 @@ public class ConnectionManagerUtil {
         }
         return null;
     }
+
+    /**
+     * To check whether particular database that is used for application management supports batch query execution.
+     *
+     * @return true if batch query is supported, otherwise false.
+     */
+    public static boolean isBatchQuerySupported() {
+        try {
+            return dataSource.getConnection().getMetaData().supportsBatchUpdates();
+        } catch (SQLException e) {
+            log.error("Error occurred while checking whether database supports batch updates", e);
+        }
+        return false;
+    }
+
 }

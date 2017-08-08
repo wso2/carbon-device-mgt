@@ -68,6 +68,8 @@ public class Platform {
         this.iconName = platform.getIconName();
         this.fileBased = platform.isFileBased();
         this.shared = platform.isShared();
+        this.enabled = platform.isEnabled();
+        this.defaultTenantMapping = platform.isDefaultTenantMapping();
         if (platform.getProperties() != null) {
             this.properties = new ArrayList<>();
             for (Property property : platform.getProperties()) {

@@ -24,26 +24,34 @@ import org.apache.axis2.deployment.repository.util.DeploymentFileData;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.CarbonContext;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.application.mgt.common.exception.PlatformManagementException;
+import org.wso2.carbon.device.application.mgt.common.services.PlatformManager;
 import org.wso2.carbon.device.application.mgt.core.internal.DataHolder;
 import org.wso2.carbon.device.application.mgt.core.util.Constants;
 import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+
+/**
+ * PlatformDeployer is responsible for deploying platforms that are added in the filesystem.
+ * This will deploy the platforms that are added in <IOT_HOME>/repository/deployment/server/platforms directory.
+ */
 public class PlatformDeployer extends AbstractDeployer {
 
     private static final Log log = LogFactory.getLog(PlatformDeployer.class);
 
     @Override
     public void init(ConfigurationContext configurationContext) {
-        File deployementDir = new File(MultitenantUtils.getAxis2RepositoryPath(CarbonContext.getThreadLocalCarbonContext().
-                getTenantId()) + Constants.PLATFORMS_DEPLOYMENT_DIR_NAME);
+        File deployementDir = new File(
+                MultitenantUtils.getAxis2RepositoryPath(CarbonContext.getThreadLocalCarbonContext().
+                        getTenantId()) + Constants.PLATFORMS_DEPLOYMENT_DIR_NAME);
         if (!deployementDir.exists()) {
             if (!deployementDir.mkdir()) {
                 log.warn("Unable to create the deployment dir at: " + deployementDir.getPath());
@@ -51,18 +59,31 @@ public class PlatformDeployer extends AbstractDeployer {
         }
     }
 
+    @Override
     public void deploy(DeploymentFileData deploymentFileData) throws DeploymentException {
         File deploymentFile = new File(deploymentFileData.getAbsolutePath());
         try {
             JAXBContext jaxbContext = JAXBContext.newInstance(Platform.class);
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
             Platform platformConf = (Platform) unmarshaller.unmarshal(deploymentFile);
-            if (platformConf.getName().contentEquals(getPlatformID(deploymentFile.getName()))) {
+            if (platformConf.getId().contentEquals(getPlatformID(deploymentFile.getName()))) {
                 org.wso2.carbon.device.application.mgt.common.Platform platform = convert(platformConf);
-                DataHolder.getInstance().getPlatformManager().register(CarbonContext.getThreadLocalCarbonContext().getTenantDomain(), platform);
+                PlatformManager platformManager = DataHolder.getInstance().getPlatformManager();
+                int tenantID = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
+
+                org.wso2.carbon.device.application.mgt.common.Platform existingPlatform = platformManager
+                        .getPlatform(tenantID, platform.getIdentifier());
+                if (existingPlatform != null && existingPlatform.isFileBased()) {
+                    platformManager.update(tenantID, platformConf.getId(), platform);
+                    log.info("Platform configuration : " + deploymentFile.getName() + " updated successfully");
+                } else {
+                    platformManager.register(CarbonContext.getThreadLocalCarbonContext().getTenantId(), platform);
+                    log.info("Platform configuration : " + deploymentFile.getName() + " deployed successfully");
+                }
             } else {
-                log.error("Unable to deploy the platform - " + deploymentFile.getAbsolutePath() + "!. Platform config file name - "
-                        + deploymentFile.getName() + " should match with the 'id' provided within the platform configuration!");
+                log.error("Unable to deploy the platform - " + deploymentFile.getAbsolutePath()
+                        + "!. Platform config file name - " + deploymentFile.getName()
+                        + " should match with the 'id' provided within the platform configuration!");
             }
         } catch (JAXBException e) {
             log.error("Platform configuration file - " + deploymentFile.getAbsolutePath() + " is invalid!", e);
@@ -71,12 +92,15 @@ public class PlatformDeployer extends AbstractDeployer {
         }
     }
 
+    @Override
     public void undeploy(String fileName) throws DeploymentException {
         String platformId = getPlatformID(fileName);
         try {
-            DataHolder.getInstance().getPlatformManager().unregister(CarbonContext.getThreadLocalCarbonContext().getTenantDomain(), platformId, true);
+            DataHolder.getInstance().getPlatformManager()
+                    .unregister(CarbonContext.getThreadLocalCarbonContext().getTenantId(), platformId, true);
+            log.info("Platform configuration : " + fileName + " un-deployed successfully");
         } catch (PlatformManagementException e) {
-            log.error("Error occurred while undeploying the platform - " + fileName);
+            log.error("Error occurred while un-deploying the platform - " + fileName, e);
         }
     }
 
@@ -89,7 +113,8 @@ public class PlatformDeployer extends AbstractDeployer {
     }
 
     private org.wso2.carbon.device.application.mgt.common.Platform convert(Platform platformConfig) {
-        org.wso2.carbon.device.application.mgt.common.Platform platform = new org.wso2.carbon.device.application.mgt.common.Platform();
+        org.wso2.carbon.device.application.mgt.common.Platform platform =
+                new org.wso2.carbon.device.application.mgt.common.Platform();
         platform.setIdentifier(platformConfig.getId());
         platform.setName(platformConfig.getName());
         platform.setDescription(platformConfig.getDescription());
@@ -99,12 +124,16 @@ public class PlatformDeployer extends AbstractDeployer {
         platform.setDefaultTenantMapping(platformConfig.isTenantMapping());
         platform.setEnabled(false);
         List<org.wso2.carbon.device.application.mgt.common.Platform.Property> properties = new ArrayList<>();
-        for (Property propertyConfig : platformConfig.getProperties()) {
-            org.wso2.carbon.device.application.mgt.common.Platform.Property property = new org.wso2.carbon.device.application.mgt.common.Platform.Property();
-            property.setName(propertyConfig.getName());
-            property.setDefaultValue(propertyConfig.getDefaultValue());
-            property.setOptional(propertyConfig.isOptional());
-            properties.add(property);
+
+        if (platformConfig.getProperties() != null) {
+            for (Property propertyConfig : platformConfig.getProperties()) {
+                org.wso2.carbon.device.application.mgt.common.Platform.Property property =
+                        new org.wso2.carbon.device.application.mgt.common.Platform.Property();
+                property.setName(propertyConfig.getName());
+                property.setDefaultValue(propertyConfig.getDefaultValue());
+                property.setOptional(propertyConfig.isOptional());
+                properties.add(property);
+            }
         }
         platform.setProperties(properties);
         return platform;

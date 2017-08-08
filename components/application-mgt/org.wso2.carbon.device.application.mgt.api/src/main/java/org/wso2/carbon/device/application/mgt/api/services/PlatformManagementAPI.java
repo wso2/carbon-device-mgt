@@ -60,8 +60,8 @@ import javax.ws.rs.core.Response;
                 }
         ),
         tags = {
-                @Tag(name = "application_management", description = "Platform Management APIS related with "
-                        + "Application Management")
+                @Tag(name = "device_management, application_management", description = "Platform Management APIS "
+                        + "related with Application Management")
         }
 )
 @Scopes (
@@ -279,13 +279,10 @@ public interface PlatformManagementAPI {
             value = {
                     @ApiResponse(
                             code = 200,
-                            message = "OK. \n Successfully updated the platform"),
-                    @ApiResponse(
-                            code = 400,
-                            message = "Bad Request. \n Invalid request parameters passed."),
+                            message = "OK. \n Successfully deleted the platform"),
                     @ApiResponse(
                             code = 500,
-                            message = "Internal Server Error. \n Error occurred while getting the platform list.",
+                            message = "Internal Server Error. \n Error occurred while deleting the platform.",
                             response = ErrorResponse.class)
             })
     Response removePlatform(
@@ -295,6 +292,52 @@ public interface PlatformManagementAPI {
             @PathParam("identifier")
             @Size(max = 45)
                     String identifier
+    );
+
+    @PUT
+    @Path("update-status/{identifier}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(
+            consumes = MediaType.APPLICATION_JSON,
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "PUT",
+            value = "Update Platform status",
+            notes = "This will update the platform status for the tenant space",
+            tags = "Platform Management",
+            extensions = {
+                    @Extension(properties = {
+                            @ExtensionProperty(name = SCOPE, value = "perm:platform:update")
+                    })
+            }
+    )
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            code = 200,
+                            message = "OK. \n Successfully updated the platform."),
+                    @ApiResponse(
+                            code = 404,
+                            message = "Not found. \n Non-file based platform not found to update."),
+                    @ApiResponse(
+                            code = 500,
+                            message = "Internal Server Error. \n Error occurred while getting the platform list.",
+                            response = ErrorResponse.class)
+            })
+    Response updatePlatformStatus(
+            @ApiParam(
+                    name = "identifier",
+                    required = true)
+            @PathParam("identifier")
+            @Size(max = 45)
+                    String identifier,
+            @ApiParam(name = "status", allowableValues = "ENABLED, DISABLED", value =
+                    "Provide the status of platform for that tenant:\n"
+                            + "- ENABLED: The platforms that are currently enabled for the tenant\n"
+                            + "- DISABLED: The platforms that currently disabled "
+                            + "to be used for tenant\n", required = true)
+            @QueryParam("status")
+                    String status
     );
 
 }

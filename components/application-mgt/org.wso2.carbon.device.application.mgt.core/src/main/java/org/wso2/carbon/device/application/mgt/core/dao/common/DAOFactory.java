@@ -29,6 +29,7 @@ import org.wso2.carbon.device.application.mgt.core.dao.impl.application.H2Applic
 import org.wso2.carbon.device.application.mgt.core.dao.impl.application.MySQLApplicationDAOImpl;
 import org.wso2.carbon.device.application.mgt.core.dao.impl.lifecyclestate.GenericLifecycleStateImpl;
 import org.wso2.carbon.device.application.mgt.core.dao.impl.platform.GenericPlatformDAOImpl;
+import org.wso2.carbon.device.application.mgt.core.dao.impl.platform.OracleMsSQLPlatformDAOImpl;
 import org.wso2.carbon.device.application.mgt.core.exception.ApplicationManagementDAOException;
 import org.wso2.carbon.device.application.mgt.core.util.ApplicationMgtDatabaseCreator;
 import org.wso2.carbon.device.application.mgt.core.util.ConnectionManagerUtil;
@@ -72,7 +73,11 @@ public class DAOFactory {
             switch (databaseEngine) {
             case Constants.DataBaseTypes.DB_TYPE_H2:
             case Constants.DataBaseTypes.DB_TYPE_MYSQL:
+            case Constants.DataBaseTypes.DB_TYPE_POSTGRESQL:
                 return new GenericPlatformDAOImpl();
+            case Constants.DataBaseTypes.DB_TYPE_MSSQL:
+            case Constants.DataBaseTypes.DB_TYPE_ORACLE:
+                return new OracleMsSQLPlatformDAOImpl();
             default:
                 throw new UnsupportedDatabaseEngineException("Unsupported database engine : " + databaseEngine);
             }
@@ -111,9 +116,9 @@ public class DAOFactory {
                 DatabaseCreator databaseCreator = new ApplicationMgtDatabaseCreator(dataSourceName);
                 if (!databaseCreator.isDatabaseStructureCreated(validationQuery)) {
                     databaseCreator.createRegistryDatabase();
-                    if (log.isDebugEnabled()) {
-                        log.debug("Application Management tables are created in the database");
-                    }
+                    log.info("Application Management tables are created in the database");
+                } else {
+                    log.info("Application Management Database structure already exists. Not creating the database.");
                 }
             }
         } catch (SQLException e) {

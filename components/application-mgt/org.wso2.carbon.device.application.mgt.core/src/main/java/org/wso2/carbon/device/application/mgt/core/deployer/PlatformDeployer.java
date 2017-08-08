@@ -24,7 +24,9 @@ import org.apache.axis2.deployment.repository.util.DeploymentFileData;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.CarbonContext;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.application.mgt.common.exception.PlatformManagementException;
+import org.wso2.carbon.device.application.mgt.common.services.PlatformManager;
 import org.wso2.carbon.device.application.mgt.core.internal.DataHolder;
 import org.wso2.carbon.device.application.mgt.core.util.Constants;
 import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
@@ -66,9 +68,18 @@ public class PlatformDeployer extends AbstractDeployer {
             Platform platformConf = (Platform) unmarshaller.unmarshal(deploymentFile);
             if (platformConf.getId().contentEquals(getPlatformID(deploymentFile.getName()))) {
                 org.wso2.carbon.device.application.mgt.common.Platform platform = convert(platformConf);
-                DataHolder.getInstance().getPlatformManager()
-                        .register(CarbonContext.getThreadLocalCarbonContext().getTenantId(), platform);
-                log.info("Platform configuration : " + deploymentFile.getName() + " deployed successfully");
+                PlatformManager platformManager = DataHolder.getInstance().getPlatformManager();
+                int tenantID = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
+
+                org.wso2.carbon.device.application.mgt.common.Platform existingPlatform = platformManager
+                        .getPlatform(tenantID, platform.getIdentifier());
+                if (existingPlatform != null && existingPlatform.isFileBased()) {
+                    platformManager.update(tenantID, platformConf.getId(), platform);
+                    log.info("Platform configuration : " + deploymentFile.getName() + " updated successfully");
+                } else {
+                    platformManager.register(CarbonContext.getThreadLocalCarbonContext().getTenantId(), platform);
+                    log.info("Platform configuration : " + deploymentFile.getName() + " deployed successfully");
+                }
             } else {
                 log.error("Unable to deploy the platform - " + deploymentFile.getAbsolutePath()
                         + "!. Platform config file name - " + deploymentFile.getName()
@@ -89,7 +100,7 @@ public class PlatformDeployer extends AbstractDeployer {
                     .unregister(CarbonContext.getThreadLocalCarbonContext().getTenantId(), platformId, true);
             log.info("Platform configuration : " + fileName + " un-deployed successfully");
         } catch (PlatformManagementException e) {
-            log.error("Error occurred while un-deploying the platform - " + fileName);
+            log.error("Error occurred while un-deploying the platform - " + fileName, e);
         }
     }
 

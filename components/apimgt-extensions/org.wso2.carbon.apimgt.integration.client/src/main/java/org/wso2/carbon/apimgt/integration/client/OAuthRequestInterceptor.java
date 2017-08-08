@@ -101,6 +101,10 @@ public class OAuthRequestInterceptor implements RequestInterceptor {
                                                                       REQUIRED_SCOPE);
                 tenantBasedAccessTokenInfo.setExpiresIn(
                         System.currentTimeMillis() + (tenantBasedAccessTokenInfo.getExpiresIn() * 1000));
+                if (tenantBasedAccessTokenInfo.getScopes() == null) {
+                    throw new APIMClientOAuthException("Failed to retrieve scopes from access token");
+                }
+
                 if (tenantBasedAccessTokenInfo.getScopes().contains(APIM_SUBSCRIBE_SCOPE)) {
                     tenantUserTokenMap.put(username, tenantBasedAccessTokenInfo);
                 }

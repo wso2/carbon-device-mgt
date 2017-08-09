@@ -32,6 +32,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,6 +46,7 @@ public class ConfigOperationDAOImpl extends GenericOperationDAOImpl {
         PreparedStatement stmt = null;
         try {
             operationId = super.addOperation(operation);
+            operation.setCreatedTimeStamp(new Timestamp(new java.util.Date().getTime()).toString());
             Connection conn = OperationManagementDAOFactory.getConnection();
             stmt = conn.prepareStatement("INSERT INTO DM_CONFIG_OPERATION(OPERATION_ID, OPERATION_CONFIG) VALUES(?, ?)");
             stmt.setInt(1, operationId);

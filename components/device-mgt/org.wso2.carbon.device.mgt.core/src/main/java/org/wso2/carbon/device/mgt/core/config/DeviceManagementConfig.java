@@ -24,6 +24,7 @@ import org.wso2.carbon.device.mgt.core.config.pagination.PaginationConfiguration
 import org.wso2.carbon.device.mgt.core.config.policy.PolicyConfiguration;
 import org.wso2.carbon.device.mgt.core.config.pull.notification.PullNotificationConfiguration;
 import org.wso2.carbon.device.mgt.core.config.push.notification.PushNotificationConfiguration;
+import org.wso2.carbon.device.mgt.core.config.remote.session.RemoteSessionConfiguration;
 import org.wso2.carbon.device.mgt.core.config.status.task.DeviceStatusTaskConfig;
 import org.wso2.carbon.device.mgt.core.config.task.TaskConfiguration;
 
@@ -48,6 +49,8 @@ public final class DeviceManagementConfig {
     private DeviceCacheConfiguration deviceCacheConfiguration;
     private GeoLocationConfiguration geoLocationConfiguration;
     private String defaultGroupsConfiguration;
+    private RemoteSessionConfiguration remoteSessionConfiguration;
+
 
     @XmlElement(name = "ManagementRepository", required = true)
     public DeviceManagementConfigRepository getDeviceManagementConfigRepository() {
@@ -147,6 +150,14 @@ public final class DeviceManagementConfig {
 
     public void setDefaultGroupsConfiguration(String defaultGroupsConfiguration) {
         this.defaultGroupsConfiguration = defaultGroupsConfiguration;
+    }
+    @XmlElement(name = "RemoteSessionConfiguration", required = true)
+    public RemoteSessionConfiguration getRemoteSessionConfiguration() {
+        return remoteSessionConfiguration;
+    }
+
+    public void setRemoteSessionConfiguration(RemoteSessionConfiguration remoteSessionConfiguration) {
+        this.remoteSessionConfiguration = remoteSessionConfiguration;
     }
 }
 

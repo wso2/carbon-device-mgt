@@ -132,7 +132,7 @@ public class ConfigOperationDAOImpl extends GenericOperationDAOImpl {
             rs = stmt.executeQuery();
 
             if (rs.next()) {
-                byte[] operationDetails = rs.getBytes("OPERATION_DETAILS");
+                byte[] operationDetails = rs.getBytes("OPERATION_CONFIG");
                 bais = new ByteArrayInputStream(operationDetails);
                 ois = new ObjectInputStream(bais);
                 configOperation = (ConfigOperation) ois.readObject();

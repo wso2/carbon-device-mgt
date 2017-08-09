@@ -68,15 +68,21 @@ import javax.ws.rs.core.Response;
                 @Scope(
                         name = "View Analytics",
                         description = "",
-                        key = "perm:geo-service:analytics",
-                        permissions = {"/device-mgt/devices/owning-device/analytics"}
+                        key = "perm:geo-service:analytics-view",
+                        permissions = {"/device-mgt/devices/owning-device/view-analytics"}
+                ),
+                @Scope(
+                        name = "Manage Alerts",
+                        description = "",
+                        key = "perm:geo-service:alerts-manage",
+                        permissions = {"/device-mgt/devices/owning-device/manage-alerts"}
                 )
         }
 )
 @Path("/geo-services")
 @Api(value = "Geo Service",
      description = "This carries all the resources related to the geo service functionalities.")
-public interface GeoService {
+public interface GeoLocationBasedService {
     /**
      * Retrieve Analytics for the device type
      */
@@ -92,7 +98,7 @@ public interface GeoService {
             tags = "Geo Service Management",
             extensions = {
                     @Extension(properties = {
-                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:geo-service:analytics")
+                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:geo-service:analytics-view")
                     })
             }
     )
@@ -161,7 +167,7 @@ public interface GeoService {
             tags = "Geo Service Management",
             extensions = {
                     @Extension(properties = {
-                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:geo-service:analytics")
+                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:geo-service:alerts-manage")
                     })
             }
     )
@@ -226,7 +232,7 @@ public interface GeoService {
             tags = "Geo Service Management",
             extensions = {
                     @Extension(properties = {
-                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:geo-service:analytics")
+                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:geo-service:alerts-manage")
                     })
             }
     )
@@ -291,7 +297,7 @@ public interface GeoService {
             tags = "Geo Service Management",
             extensions = {
                     @Extension(properties = {
-                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:geo-service:analytics")
+                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:geo-service:alerts-manage")
                     })
             }
     )
@@ -355,7 +361,7 @@ public interface GeoService {
             tags = "Geo Service Management",
             extensions = {
                     @Extension(properties = {
-                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:geo-service:analytics")
+                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:geo-service:alerts-manage")
                     })
             }
     )
@@ -400,8 +406,8 @@ public interface GeoService {
                     String deviceType,
             @ApiParam(
                     name = "from",
-            value = "Get stats from what time",
-            required = true)
+                    value = "Get stats from what time",
+                    required = true)
             @QueryParam("from") long from,
             @ApiParam(
                     name = "to",
@@ -415,13 +421,13 @@ public interface GeoService {
             consumes = "application/json",
             produces = "application/json",
             httpMethod = "DELETE",
-            value = "Create Geo alerts for the device",
+            value = "Deletes Geo alerts for the device",
             notes = "",
             response = Response.class,
             tags = "Geo Service Management",
             extensions = {
                     @Extension(properties = {
-                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:geo-service:analytics")
+                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:geo-service:alerts-manage")
                     })
             }
     )

@@ -174,10 +174,11 @@ $.fn.datatables_extended_serverside_paging = function (settings, url, dataFilter
                                 var titles = [];
                                 column.nodes().unique().sort().each(function (d, j) {
                                     var title = $(d).attr('data-display');
+                                    var searchVal = $(d).attr('data-search');
                                     if ($.inArray(title, titles) < 0) {
                                         titles.push(title);
                                         if (title !== undefined) {
-                                            select.append('<option value="' + title + '">' + title + '</option>')
+                                            select.append('<option value="' + searchVal + '">' + title + '</option>')
                                         }
                                     }
                                 });
@@ -284,6 +285,7 @@ $.fn.datatables_extended_serverside_paging = function (settings, url, dataFilter
                         $(document).off('click', '.viewEnabledIcon');
                         //--- End of EMM related codes
                     } else if ($(button).html() == 'Cancel') {
+                        $('.bulk-action-row').addClass('hidden');
                         thisTable.removeClass("table-selectable");
                         $(button).addClass("active").html('Select');
                         $(button).parent().next().children().addClass("disabled");
@@ -321,6 +323,11 @@ $.fn.datatables_extended_serverside_paging = function (settings, url, dataFilter
                 $('body').on('click', '[data-type=selectable]', function () {
                     var rowSelectedClass = 'DTTT_selected selected';
                     $(this).toggleClass(rowSelectedClass);
+                    if ($('.table-selectable .DTTT_selected').length > 0) {
+                        $('.bulk-action-row').removeClass('hidden');
+                    } else {
+                        $('.bulk-action-row').addClass('hidden');
+                    }
                     var button = this,
                         thisTable = $(this).closest('.dataTables_wrapper').find('.dataTable').dataTable();
 

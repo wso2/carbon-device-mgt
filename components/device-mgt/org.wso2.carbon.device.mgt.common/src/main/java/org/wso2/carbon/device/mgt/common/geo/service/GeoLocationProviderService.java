@@ -26,26 +26,26 @@ import java.util.List;
  * This represents the Geo service functionality which should be implemented by
  * required GeoServiceManagers.
  */
-public interface GeoService {
+public interface GeoLocationProviderService {
 
-    List<GeoFence> getWithinAlerts(DeviceIdentifier identifier) throws GeoServiceException;
+    List<GeoFence> getWithinAlerts(DeviceIdentifier identifier) throws GeoLocationBasedServiceException;
 
-    List<GeoFence> getExitAlerts(DeviceIdentifier identifier) throws GeoServiceException;
+    List<GeoFence> getExitAlerts(DeviceIdentifier identifier) throws GeoLocationBasedServiceException;
 
     boolean createGeoAlert(Alert alert, DeviceIdentifier identifier, String alertType)
-            throws GeoServiceException;
+            throws GeoLocationBasedServiceException;
 
     boolean updateGeoAlert(Alert alert, DeviceIdentifier identifier, String alertType)
-            throws GeoServiceException;
+            throws GeoLocationBasedServiceException;
 
     boolean removeGeoAlert(String alertType, DeviceIdentifier identifier, String queryName)
-            throws GeoServiceException;
+            throws GeoLocationBasedServiceException;
 
-    String getSpeedAlerts(DeviceIdentifier identifier) throws GeoServiceException;
+    String getSpeedAlerts(DeviceIdentifier identifier) throws GeoLocationBasedServiceException;
 
-    String getProximityAlerts(DeviceIdentifier identifier) throws GeoServiceException;
+    String getProximityAlerts(DeviceIdentifier identifier) throws GeoLocationBasedServiceException;
 
-    List<GeoFence> getStationaryAlerts(DeviceIdentifier identifier) throws GeoServiceException;
+    List<GeoFence> getStationaryAlerts(DeviceIdentifier identifier) throws GeoLocationBasedServiceException;
 
-    List<GeoFence> getTrafficAlerts(DeviceIdentifier identifier) throws GeoServiceException;
+    List<GeoFence> getTrafficAlerts(DeviceIdentifier identifier) throws GeoLocationBasedServiceException;
 }

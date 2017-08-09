@@ -67,23 +67,28 @@ deviceModule = function () {
         var carbonUser = session.get(constants["USER_SESSION_KEY"]);
         if (!carbonUser) {
             log.error("User object was not found in the session");
-            throw constants["ERRORS"]["USER_NOT_FOUND"];
+            userModule.logout(function () {
+                response.sendRedirect(devicemgtProps["appContext"] + "login");
+            });
         }
         var userName = carbonUser.username + "@" + carbonUser.domain;
         var locationHistory = [];
-        try {
-            var fromDate = new Date();
-            fromDate.setHours(fromDate.getHours() - 2);
-            var toDate = new Date();
-            var serviceUrl = devicemgtProps["httpsURL"] + '/api/device-mgt/v1.0/geo-services/stats/' + deviceType + '/' + deviceId;
-            serviceInvokers.XMLHttp.get(serviceUrl,
-                                        function (backendResponse) {
-                                            if (backendResponse.status === 200 && backendResponse.responseText) {
-                                                locationHistory = JSON.parse(backendResponse.responseText);
-                                            }
-                                        });
-        } catch (e) {
-            log.error(e.message, e);
+        var geoServicesEnabled = devicemgtProps.serverConfig.geoLocationConfiguration.isEnabled;
+        if (geoServicesEnabled) {
+            try {
+                var fromDate = new Date();
+                fromDate.setHours(fromDate.getHours() - 2);
+                var toDate = new Date();
+                var serviceUrl = devicemgtProps["httpsURL"] + '/api/device-mgt/v1.0/geo-services/stats/' + deviceType + '/' + deviceId + '?from=' + fromDate.getTime() + '&to=' + toDate.getTime();
+                serviceInvokers.XMLHttp.get(serviceUrl,
+                                            function (backendResponse) {
+                                                if (backendResponse.status === 200 && backendResponse.responseText) {
+                                                    locationHistory = JSON.parse(backendResponse.responseText);
+                                                }
+                                            });
+            } catch (e) {
+                log.error(e.message, e);
+            }
         }
 
         var locationInfo = {};
@@ -261,7 +266,9 @@ deviceModule = function () {
                 url, function (responsePayload) {
                     if(!responsePayload["responseText"]){
                         log.error("Error while fetching device count. API `" + url + "` returns HTTP: " + responsePayload["status"]);
-                        throw constants["ERRORS"]["UNKNOWN_ERROR"];
+                        userModule.logout(function () {
+                            response.sendRedirect(devicemgtProps["appContext"] + "login");
+                        });
                     }
                     return parse(responsePayload["responseText"])["count"];
                 },
@@ -272,7 +279,9 @@ deviceModule = function () {
             );
         } else {
             log.error("User object was not found in the session");
-            throw constants["ERRORS"]["USER_NOT_FOUND"];
+            userModule.logout(function () {
+                response.sendRedirect(devicemgtProps["appContext"] + "login");
+            });
         }
     };
 
@@ -300,7 +309,9 @@ deviceModule = function () {
 			);
 		} else {
 			log.error("User object was not found in the session");
-			throw constants["ERRORS"]["USER_NOT_FOUND"];
+            userModule.logout(function () {
+                response.sendRedirect(devicemgtProps["appContext"] + "login");
+            });
 		}
 	};
 
@@ -369,7 +380,9 @@ deviceModule = function () {
 		var carbonUser = session.get(constants["USER_SESSION_KEY"]);
 		if (!carbonUser) {
 			log.error("User object was not found in the session");
-			throw constants["ERRORS"]["USER_NOT_FOUND"];
+            userModule.logout(function () {
+                response.sendRedirect(devicemgtProps["appContext"] + "login");
+            });
 		}
 		var userName = carbonUser.username + "@" + carbonUser.domain;
 		var config = {};
@@ -397,7 +410,7 @@ deviceModule = function () {
 					var jwtClient = JWTClientManagerService.getJWTClient();
 					// returning access token by JWT grant type
 					var deviceScope = "device_" + type.replace(" ", "") + "_" + deviceId + " perm:device:enroll " +
-						"perm:device:disenroll perm:device:modify perm:devices:operations perm:device:publish-event";
+						"perm:device:disenroll perm:device:modify perm:device:operations perm:device:publish-event";
 					var tokenInfo = jwtClient.getAccessToken(config.clientId, config.clientSecret,
 						userName, deviceScope);
 					config.accessToken = tokenInfo.getAccessToken();

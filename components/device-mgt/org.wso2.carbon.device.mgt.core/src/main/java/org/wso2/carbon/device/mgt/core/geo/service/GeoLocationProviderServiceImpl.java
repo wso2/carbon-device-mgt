@@ -39,8 +39,8 @@ import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.DeviceManagementConstants.GeoServices;
 import org.wso2.carbon.device.mgt.common.geo.service.Alert;
 import org.wso2.carbon.device.mgt.common.geo.service.GeoFence;
-import org.wso2.carbon.device.mgt.common.geo.service.GeoService;
-import org.wso2.carbon.device.mgt.common.geo.service.GeoServiceException;
+import org.wso2.carbon.device.mgt.common.geo.service.GeoLocationProviderService;
+import org.wso2.carbon.device.mgt.common.geo.service.GeoLocationBasedServiceException;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 import org.wso2.carbon.event.processor.stub.EventProcessorAdminServiceStub;
 import org.wso2.carbon.identity.jwt.client.extension.JWTClient;
@@ -78,9 +78,9 @@ import static org.wso2.carbon.device.mgt.common.DeviceManagementConstants.GeoSer
  * This class will read events, set alerts, read alerts related to geo-fencing and it will
  * use Registry as the persistence storage.
  */
-public class GeoServcieManagerImpl implements GeoService {
+public class GeoLocationProviderServiceImpl implements GeoLocationProviderService {
 
-    private static Log log = LogFactory.getLog(GeoServcieManagerImpl.class);
+    private static Log log = LogFactory.getLog(GeoLocationProviderServiceImpl.class);
 
     /**
      * required soap header for authorization
@@ -110,7 +110,7 @@ public class GeoServcieManagerImpl implements GeoService {
     private static final String SSLV3 = "SSLv3";
 
     @Override
-    public List<GeoFence> getWithinAlerts(DeviceIdentifier identifier) throws GeoServiceException {
+    public List<GeoFence> getWithinAlerts(DeviceIdentifier identifier) throws GeoLocationBasedServiceException {
 
         Registry registry = getGovernanceRegistry();
         String registryPath = GeoServices.REGISTRY_PATH_FOR_ALERTS +
@@ -151,14 +151,14 @@ public class GeoServcieManagerImpl implements GeoService {
             }
             return fences;
         } catch (RegistryException | IOException e) {
-            throw new GeoServiceException(
+            throw new GeoLocationBasedServiceException(
                     "Error occurred while getting the geo alerts for " + identifier.getType() + " with id: " +
                             identifier.getId(), e);
         }
     }
 
     @Override
-    public List<GeoFence> getExitAlerts(DeviceIdentifier identifier) throws GeoServiceException {
+    public List<GeoFence> getExitAlerts(DeviceIdentifier identifier) throws GeoLocationBasedServiceException {
 
         Registry registry = getGovernanceRegistry();
         String registryPath = GeoServices.REGISTRY_PATH_FOR_ALERTS +
@@ -199,7 +199,7 @@ public class GeoServcieManagerImpl implements GeoService {
             }
             return fences;
         } catch (RegistryException | IOException e) {
-            throw new GeoServiceException(
+            throw new GeoLocationBasedServiceException(
                     "Error occurred while getting the geo alerts for " + identifier.getType() + " with id: " +
                             identifier.getId(), e);
         }
@@ -207,18 +207,18 @@ public class GeoServcieManagerImpl implements GeoService {
 
     @Override
     public boolean createGeoAlert(Alert alert, DeviceIdentifier identifier, String alertType)
-            throws GeoServiceException {
+            throws GeoLocationBasedServiceException {
         return saveGeoAlert(alert, identifier, alertType, false);
     }
 
     @Override
     public boolean updateGeoAlert(Alert alert, DeviceIdentifier identifier, String alertType)
-            throws GeoServiceException {
+            throws GeoLocationBasedServiceException {
         return saveGeoAlert(alert, identifier, alertType, true);
     }
 
     public boolean saveGeoAlert(Alert alert, DeviceIdentifier identifier, String alertType, boolean isUpdate)
-            throws GeoServiceException {
+            throws GeoLocationBasedServiceException {
 
         Type type = new TypeToken<Map<String, String>>() {
         }.getType();
@@ -256,7 +256,7 @@ public class GeoServcieManagerImpl implements GeoService {
         } else if (GeoServices.ALERT_TYPE_TRAFFIC.equals(alertType)) {
             content = parseMap.get(GeoServices.GEO_FENCE_GEO_JSON);
         } else {
-            throw new GeoServiceException(
+            throw new GeoLocationBasedServiceException(
                     "Unrecognized execution plan type: " + alertType + " while creating geo alert");
         }
 
@@ -288,24 +288,24 @@ public class GeoServcieManagerImpl implements GeoService {
                 } else {
                     log.error("Execution plan validation failed: " + validationResponse);
                 }
-                throw new GeoServiceException(
+                throw new GeoLocationBasedServiceException(
                         "Error occurred while " + action + " geo " + alertType + " alert for " +
                                 identifier.getType() + " with id: " + identifier.getId());
             }
             return true;
         } catch (AxisFault axisFault) {
-            throw new GeoServiceException(
+            throw new GeoLocationBasedServiceException(
                     "Event processor admin service initialization failed while " + action + " geo alert '" +
                             alertType + "' for " + identifier.getType() + " " +
                             "device with id: " + identifier.getId(), axisFault
             );
         } catch (IOException e) {
-            throw new GeoServiceException(
+            throw new GeoLocationBasedServiceException(
                     "Event processor admin service failed while " + action + " geo alert '" +
                             alertType + "' for " + identifier.getType() + " " +
                             "device with id: " + identifier.getId(), e);
         } catch (JWTClientException e) {
-            throw new GeoServiceException(
+            throw new GeoLocationBasedServiceException(
                     "JWT token creation failed while " + action + " geo alert '" + alertType + "' for " +
                             identifier.getType() + " device with id:" + identifier.getId(), e);
         } finally {
@@ -314,7 +314,7 @@ public class GeoServcieManagerImpl implements GeoService {
     }
 
     private String getRegistryPath(String alertType, DeviceIdentifier identifier, String queryName)
-            throws GeoServiceException {
+            throws GeoLocationBasedServiceException {
         String path = "";
         if (GeoServices.ALERT_TYPE_WITHIN.equals(alertType)) {
             path = GeoServices.REGISTRY_PATH_FOR_ALERTS + GeoServices.ALERT_TYPE_WITHIN +
@@ -335,7 +335,7 @@ public class GeoServcieManagerImpl implements GeoService {
             path = GeoServices.REGISTRY_PATH_FOR_ALERTS + GeoServices.ALERT_TYPE_TRAFFIC +
                     "/" + identifier.getId() + "/" + queryName;
         } else {
-            throw new GeoServiceException(
+            throw new GeoLocationBasedServiceException(
                     "Unrecognized execution plan type: " + alertType);
         }
         return path;
@@ -351,7 +351,7 @@ public class GeoServcieManagerImpl implements GeoService {
 
     @Override
     public boolean removeGeoAlert(String alertType, DeviceIdentifier identifier, String queryName)
-            throws GeoServiceException {
+            throws GeoLocationBasedServiceException {
         removeFromRegistry(alertType, identifier, queryName);
         String executionPlanName = getExecutionPlanName(alertType, queryName, identifier.getId());
         EventProcessorAdminServiceStub eventprocessorStub = null;
@@ -360,14 +360,14 @@ public class GeoServcieManagerImpl implements GeoService {
             eventprocessorStub.undeployActiveExecutionPlan(executionPlanName);
             return true;
         } catch (IOException e) {
-            throw new GeoServiceException(
+            throw new GeoLocationBasedServiceException(
                     "Event processor admin service stub invocation failed while removing geo alert '" +
                             alertType +
                             "': " + executionPlanName + " for " +
                             identifier.getType() + " device with id:" + identifier.getId(), e
             );
         } catch (JWTClientException e) {
-            throw new GeoServiceException(
+            throw new GeoLocationBasedServiceException(
                     "JWT token creation failed while removing geo alert '" + alertType + "': " +
                             executionPlanName + " for " +
                             identifier.getType() + " device with id:" + identifier.getId(), e
@@ -378,13 +378,13 @@ public class GeoServcieManagerImpl implements GeoService {
     }
 
     private void removeFromRegistry(String alertType, DeviceIdentifier identifier, String queryName)
-            throws GeoServiceException {
+            throws GeoLocationBasedServiceException {
         String path = "unknown";
         try {
             path = getRegistryPath(alertType, identifier, queryName);
             getGovernanceRegistry().delete(path);
         } catch (RegistryException e) {
-            throw new GeoServiceException(
+            throw new GeoLocationBasedServiceException(
                     "Error occurred while removing " + alertType + " alert for " + identifier.getType() +
                             " device with id:" + identifier.getId() + " from the path: " + path);
         }
@@ -437,7 +437,7 @@ public class GeoServcieManagerImpl implements GeoService {
     }
 
     @Override
-    public String getSpeedAlerts(DeviceIdentifier identifier) throws GeoServiceException {
+    public String getSpeedAlerts(DeviceIdentifier identifier) throws GeoLocationBasedServiceException {
         try {
             Registry registry = getGovernanceRegistry();
             Resource resource = registry.get(GeoServices.REGISTRY_PATH_FOR_ALERTS +
@@ -455,7 +455,7 @@ public class GeoServcieManagerImpl implements GeoService {
     }
 
     @Override
-    public String getProximityAlerts(DeviceIdentifier identifier) throws GeoServiceException {
+    public String getProximityAlerts(DeviceIdentifier identifier) throws GeoLocationBasedServiceException {
         try {
             Registry registry = getGovernanceRegistry();
             Resource resource = registry.get(GeoServices.REGISTRY_PATH_FOR_ALERTS +
@@ -479,7 +479,7 @@ public class GeoServcieManagerImpl implements GeoService {
     }
 
     @Override
-    public List<GeoFence> getStationaryAlerts(DeviceIdentifier identifier) throws GeoServiceException {
+    public List<GeoFence> getStationaryAlerts(DeviceIdentifier identifier) throws GeoLocationBasedServiceException {
 
         Registry registry = getGovernanceRegistry();
         String registryPath = GeoServices.REGISTRY_PATH_FOR_ALERTS +
@@ -524,14 +524,14 @@ public class GeoServcieManagerImpl implements GeoService {
             }
             return fences;
         } catch (RegistryException | IOException e) {
-            throw new GeoServiceException(
+            throw new GeoLocationBasedServiceException(
                     "Error occurred while getting the geo alerts for " + identifier.getType() + " with id: " +
                             identifier.getId(), e);
         }
     }
 
     @Override
-    public List<GeoFence> getTrafficAlerts(DeviceIdentifier identifier) throws GeoServiceException {
+    public List<GeoFence> getTrafficAlerts(DeviceIdentifier identifier) throws GeoLocationBasedServiceException {
         Registry registry = getGovernanceRegistry();
         String registryPath = GeoServices.REGISTRY_PATH_FOR_ALERTS +
                 GeoServices.ALERT_TYPE_STATIONARY + "/" + identifier.getId() + "/";
@@ -571,30 +571,31 @@ public class GeoServcieManagerImpl implements GeoService {
             }
             return fences;
         } catch (RegistryException | IOException e) {
-            throw new GeoServiceException(
+            throw new GeoLocationBasedServiceException(
                     "Error occurred while getting the geo alerts for " + identifier.getType() + " with id: " +
                             identifier.getId(), e);
         }
     }
 
-    private Registry getGovernanceRegistry() throws GeoServiceException {
+    private Registry getGovernanceRegistry() throws GeoLocationBasedServiceException {
         try {
             int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
             return DeviceManagementDataHolder.getInstance().getRegistryService()
                     .getGovernanceSystemRegistry(
                             tenantId);
         } catch (RegistryException e) {
-            throw new GeoServiceException(
+            throw new GeoLocationBasedServiceException(
                     "Error in retrieving governance registry instance: " +
                             e.getMessage(), e);
         }
     }
 
-    private String parseTemplate(String alertType, Map<String, String> parseMap) throws GeoServiceException {
+    private String parseTemplate(String alertType, Map<String, String> parseMap) throws
+                                                                                 GeoLocationBasedServiceException {
         String templatePath = "alerts/Geo-ExecutionPlan-" + alertType + "_alert.siddhiql";
         InputStream resource = getClass().getClassLoader().getResourceAsStream(templatePath);
         if (resource == null) {
-            throw new GeoServiceException("Could not find template in path : " + templatePath);
+            throw new GeoLocationBasedServiceException("Could not find template in path : " + templatePath);
         }
         try {
             //Read template
@@ -606,13 +607,13 @@ public class GeoServcieManagerImpl implements GeoService {
             }
             return template;
         } catch (IOException e) {
-            throw new GeoServiceException(
+            throw new GeoLocationBasedServiceException(
                     "Error occurred while populating the template for the Within Alert", e);
         }
     }
 
     private void updateRegistry(String path, DeviceIdentifier identifier, Object content, Map<String, String> options)
-            throws GeoServiceException {
+            throws GeoLocationBasedServiceException {
         try {
 
             Registry registry = getGovernanceRegistry();
@@ -624,7 +625,7 @@ public class GeoServcieManagerImpl implements GeoService {
             }
             registry.put(path, newResource);
         } catch (RegistryException e) {
-            throw new GeoServiceException(
+            throw new GeoLocationBasedServiceException(
                     "Error occurred while setting the Within Alert for " + identifier.getType() + " with id: " +
                             identifier.getId(), e);
         }

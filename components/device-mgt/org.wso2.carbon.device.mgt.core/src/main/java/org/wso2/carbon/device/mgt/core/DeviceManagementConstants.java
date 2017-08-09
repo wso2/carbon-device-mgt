@@ -87,6 +87,7 @@ public final class DeviceManagementConstants {
     public static final class OperationAttributes {
         private OperationAttributes() {throw new AssertionError(); }
         public static final String ACTIVITY = "ACTIVITY_";
+        public static final int APPLIST_VERSION_MAX_LENGTH = 50;
     }
 
     public static final class PushNotifications {

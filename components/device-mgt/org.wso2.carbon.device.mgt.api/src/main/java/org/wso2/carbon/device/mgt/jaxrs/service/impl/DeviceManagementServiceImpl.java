@@ -50,6 +50,7 @@ import org.wso2.carbon.device.mgt.core.device.details.mgt.DeviceDetailsMgtExcept
 import org.wso2.carbon.device.mgt.core.device.details.mgt.DeviceInformationManager;
 import org.wso2.carbon.device.mgt.core.operation.mgt.CommandOperation;
 import org.wso2.carbon.device.mgt.core.operation.mgt.ConfigOperation;
+import org.wso2.carbon.device.mgt.core.operation.mgt.ProfileOperation;
 import org.wso2.carbon.device.mgt.core.search.mgt.SearchManagerService;
 import org.wso2.carbon.device.mgt.core.search.mgt.SearchMgtException;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
@@ -665,7 +666,7 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
                 return Response.status(Response.Status.BAD_REQUEST).build();
             }
             Operation.Type operationType = operationRequest.getOperation().getType();
-            if (operationType == Operation.Type.COMMAND || operationType == Operation.Type.CONFIG) {
+            if (operationType == Operation.Type.COMMAND || operationType == Operation.Type.CONFIG || operationType == Operation.Type.PROFILE) {
                 DeviceIdentifier deviceIdentifier;
                 List<DeviceIdentifier> deviceIdentifiers = new ArrayList<>();
                 for (String deviceId : operationRequest.getDeviceIdentifiers()) {
@@ -683,7 +684,7 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
                     operation.setEnabled(commandOperation.isEnabled());
                     operation.setStatus(commandOperation.getStatus());
 
-                } else {
+                } else if (operationType == Operation.Type.CONFIG) {
                     Operation configOperation = operationRequest.getOperation();
                     operation = new ConfigOperation();
                     operation.setType(Operation.Type.CONFIG);
@@ -691,6 +692,15 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
                     operation.setEnabled(configOperation.isEnabled());
                     operation.setPayLoad(configOperation.getPayLoad());
                     operation.setStatus(configOperation.getStatus());
+
+                } else {
+                    Operation profileOperation = operationRequest.getOperation();
+                    operation = new ProfileOperation();
+                    operation.setType(Operation.Type.PROFILE);
+                    operation.setCode(profileOperation.getCode());
+                    operation.setEnabled(profileOperation.isEnabled());
+                    operation.setPayLoad(profileOperation.getPayLoad());
+                    operation.setStatus(profileOperation.getStatus());
                 }
                 String date = new SimpleDateFormat(DATE_FORMAT_NOW).format(new Date());
                 operation.setCreatedTimeStamp(date);

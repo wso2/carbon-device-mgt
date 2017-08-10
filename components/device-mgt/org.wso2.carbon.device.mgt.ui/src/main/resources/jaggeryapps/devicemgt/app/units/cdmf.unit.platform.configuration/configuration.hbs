@@ -28,7 +28,7 @@
                 </h1>
                 <br>
                 {{#if isCloud}}
-                    iOS Mobile Management Related Specific Server Settings for the Tenant
+                    iOS Mobile Management Specific Server Settings for the Tenant
                 {{else}}
                     General and Platform Specific Server Settings for the Tenant
                 {{/if}}
@@ -40,7 +40,7 @@
                     <div class="row no-gutter">
                         <div class="wr-hidden-operations-nav col-lg-4">
 
-                            {{unless isCloud}}
+                            {{#unless isCloud}}
                                 <a id="generalConfigLink" href="javascript:void(0)" onclick="showAdvanceOperation('general', this)" class="selected">
                                     <span class="wr-hidden-operations-icon fw-stack">
                                         <i class="fw fw-settings fw-stack-2x"></i>
@@ -73,7 +73,7 @@
 
                         <div class="wr-hidden-operations-content col-lg-8">
                             <!-- general -->
-                            {{unless isCloud}}
+                            {{#unless isCloud}}
                                 <div class="wr-hidden-operation" data-operation="general" style="display: block">
                                     <div class="panel panel-default">
                                         <div id="general-config-heading" class="panel-heading" role="tab">

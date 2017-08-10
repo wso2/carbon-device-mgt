@@ -483,9 +483,8 @@ public class GenericPlatformDAOImpl extends AbstractDAOImpl implements PlatformD
                 platform.setIdentifier(rs.getString(2));
                 platform.setShared(rs.getBoolean(8));
                 platform.setDefaultTenantMapping(rs.getBoolean(9));
-
+                platform.setId(rs.getInt(4));
                 if (!platform.isFileBased()) {
-                    platform.setId(rs.getInt(4));
                     platform.setName(rs.getString(5));
                     platform.setDescription(rs.getString(6));
                     platform.setIconName(rs.getString(7));

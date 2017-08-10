@@ -44,10 +44,8 @@ public class GenericLifecycleStateImpl extends AbstractDAOImpl implements Lifecy
         String sql = "";
 
         try {
-            conn = this.getConnection();
-            sql += "SELECT * ";
-            sql += "FROM APPM_LIFECYCLE_STATE ";
-            sql += "WHERE IDENTIFIER = ? ";
+            conn = this.getDBConnection();
+            sql += "SELECT * FROM APPM_LIFECYCLE_STATE WHERE IDENTIFIER = ? ";
 
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, identifier);

@@ -20,4 +20,18 @@
             <class>org.wso2.carbon.device.application.mgt.core.deployer.PlatformDeployer</class>
         </deployer>
     </deployers>
+    <ManagementPermissions>
+        <ManagementPermission>
+            <DisplayName>Application</DisplayName>
+            <ResourceId>/permission/admin/manage/device-mgt/application</ResourceId>
+        </ManagementPermission>
+        <ManagementPermission>
+            <DisplayName>Create</DisplayName>
+            <ResourceId>/permission/admin/manage/device-mgt/application/create</ResourceId>
+        </ManagementPermission>
+        <ManagementPermission>
+            <DisplayName>Review</DisplayName>
+            <ResourceId>/permission/admin/manage/device-mgt/application/review</ResourceId>
+        </ManagementPermission>
+    </ManagementPermissions>
 </component>

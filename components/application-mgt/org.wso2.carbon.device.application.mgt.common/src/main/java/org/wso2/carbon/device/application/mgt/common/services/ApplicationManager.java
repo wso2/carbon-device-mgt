@@ -18,10 +18,10 @@
  */
 package org.wso2.carbon.device.application.mgt.common.services;
 
-import org.wso2.carbon.device.application.mgt.common.Application;
-import org.wso2.carbon.device.application.mgt.common.ApplicationList;
-import org.wso2.carbon.device.application.mgt.common.Filter;
+import org.wso2.carbon.device.application.mgt.common.*;
 import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
+
+import java.util.List;
 
 /**
  * This interface manages the application creation, deletion and editing of the application.
@@ -34,7 +34,7 @@ public interface ApplicationManager {
      * @return Created application
      * @throws ApplicationManagementException Application Management Exception
      */
-    Application createApplication(Application application) throws ApplicationManagementException;
+    public Application createApplication(Application application) throws ApplicationManagementException;
 
     /**
      * Updates an already existing application.
@@ -42,14 +42,14 @@ public interface ApplicationManager {
      * @return Updated Application
      * @throws ApplicationManagementException Application Management Exception
      */
-    Application editApplication(Application application) throws ApplicationManagementException;
+    public Application editApplication(Application application) throws ApplicationManagementException;
 
     /**
      * Delete an application identified by the unique ID.
      * @param uuid Unique ID for tha application
      * @throws ApplicationManagementException Application Management Exception
      */
-    void deleteApplication(String uuid) throws ApplicationManagementException;
+    public void deleteApplication(String uuid) throws ApplicationManagementException;
 
     /**
      * To get the applications based on the search filter.
@@ -57,7 +57,17 @@ public interface ApplicationManager {
      * @return Applications that matches the given filter criteria.
      * @throws ApplicationManagementException Application Management Exception
      */
-    ApplicationList getApplications(Filter filter) throws ApplicationManagementException;
+    public ApplicationList getApplications(Filter filter) throws ApplicationManagementException;
 
     void changeLifecycle(String applicationUUID, String lifecycleIdentifier) throws ApplicationManagementException;
+
+    /**
+     * To get the next possible life-cycle states for the application.
+     *
+     * @param applicationUUID UUID of the application.
+     * @return the List of possible states
+     * @throws ApplicationManagementException Application Management Exception
+     */
+    public List<LifecycleStateTransition> getLifeCycleStates(String applicationUUID)
+            throws ApplicationManagementException;
 }

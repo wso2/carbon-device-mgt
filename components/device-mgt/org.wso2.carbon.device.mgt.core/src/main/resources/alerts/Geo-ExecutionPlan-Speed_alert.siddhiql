@@ -18,3 +18,6 @@ insert into dataOut;
 from dataIn[speed < $speedAlertValue and id == "$deviceId"]
 select id , latitude, longitude,timeStamp, type ,speed, heading ,eventId , "NORMAL" as state, "This device movement is normal"  as information
 insert into dataOut;
+from dataIn[id != "$deviceId"]
+select id , latitude, longitude,timeStamp, type, speed, heading ,eventId , "NORMAL" as state, "" as information
+insert into dataOut;

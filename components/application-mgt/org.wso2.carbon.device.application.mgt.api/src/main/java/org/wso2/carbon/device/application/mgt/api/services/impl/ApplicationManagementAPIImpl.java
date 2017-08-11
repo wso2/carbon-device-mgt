@@ -20,10 +20,12 @@ package org.wso2.carbon.device.application.mgt.api.services.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.device.application.mgt.api.services.ApplicationManagementAPI;
 import org.wso2.carbon.device.application.mgt.common.*;
 import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
 import org.wso2.carbon.device.application.mgt.common.services.ApplicationManager;
 import org.wso2.carbon.device.application.mgt.api.APIUtil;
+import org.wso2.carbon.device.application.mgt.core.exception.ApplicationManagementDAOException;
 
 import javax.validation.Valid;
 import javax.ws.rs.*;
@@ -32,7 +34,8 @@ import java.util.Date;
 
 @Produces({"application/json"})
 @Consumes({"application/json"})
-public class ApplicationManagementAPIImpl {
+@Path("/applications")
+public class ApplicationManagementAPIImpl implements ApplicationManagementAPI{
 
     public static final int DEFAULT_LIMIT = 20;
 
@@ -42,7 +45,6 @@ public class ApplicationManagementAPIImpl {
 
     @GET
     @Consumes("application/json")
-    @Path("applications")
     public Response getApplications(@QueryParam("offset") int offset, @QueryParam("limit") int limit,
                                     @QueryParam("query") String searchQuery) {
         ApplicationManager applicationManager = APIUtil.getApplicationManager();
@@ -66,7 +68,7 @@ public class ApplicationManagementAPIImpl {
 
     @GET
     @Consumes("application/json")
-    @Path("applications/{uuid}")
+    @Path("/{uuid}")
     public Response getApplication(@PathParam("uuid") String uuid) {
         ApplicationManager applicationManager = APIUtil.getApplicationManager();
         return null;
@@ -74,7 +76,7 @@ public class ApplicationManagementAPIImpl {
 
     @PUT
     @Consumes("application/json")
-    @Path("applications/{uuid}/lifecycle")
+    @Path("/{uuid}/lifecycle")
     public Response changeLifecycleState(@PathParam("uuid") String applicationUUID, @QueryParam("state") String state) {
         ApplicationManager applicationManager = APIUtil.getApplicationManager();
         try {
@@ -84,35 +86,42 @@ public class ApplicationManagementAPIImpl {
             log.error(msg, e);
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
-        return Response.status(Response.Status.OK).entity("Successfully changed the lifecycle state of the application: " + applicationUUID).build();
+        return Response.status(Response.Status.OK)
+                .entity("Successfully changed the lifecycle state of the application: " + applicationUUID).build();
+    }
+
+    @GET
+    @Path("/{uuid}/lifecycle")
+    @Override
+    public Response getLifeCycleStates(String applicationUUID) {
+        ApplicationManager applicationManager = APIUtil.getApplicationManager();
+        try {
+            return Response.status(Response.Status.OK).entity(applicationManager.getLifeCycleStates(applicationUUID))
+                    .build();
+        } catch (ApplicationManagementException e) {
+            log.error("Application Management Exception while trying to get next states for the applications with "
+                    + "the application ID", e);
+            return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @POST
     @Consumes("application/json")
-    @Path("applications")
     public Response createApplication(@Valid Application application) {
-
         ApplicationManager applicationManager = APIUtil.getApplicationManager();
-
-        //TODO : Get username and tenantId
-        User user = new User("admin", -1234);
-        application.setUser(user);
-
         try {
             application = applicationManager.createApplication(application);
-
+            return Response.status(Response.Status.OK).entity(application).build();
         } catch (ApplicationManagementException e) {
             String msg = "Error occurred while creating the application";
             log.error(msg, e);
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
-        return Response.status(Response.Status.OK).entity(application).build();
     }
 
 
     @PUT
     @Consumes("application/json")
-    @Path("applications")
     public Response editApplication(@Valid Application application) {
 
         ApplicationManager applicationManager = APIUtil.getApplicationManager();
@@ -133,7 +142,7 @@ public class ApplicationManagementAPIImpl {
     }
 
     @DELETE
-    @Path("applications/{appuuid}")
+    @Path("/{appuuid}")
     public Response deleteApplication(@PathParam("appuuid") String uuid) {
         ApplicationManager applicationManager = APIUtil.getApplicationManager();
         try {
@@ -147,5 +156,4 @@ public class ApplicationManagementAPIImpl {
         String responseMsg = "Successfully deleted the application: " + uuid;
         return Response.status(Response.Status.OK).entity(responseMsg).build();
     }
-
 }

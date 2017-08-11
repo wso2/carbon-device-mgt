@@ -54,4 +54,7 @@ public interface ApplicationDAO {
 
     void changeLifecycle(String applicationUUID, String lifecycleIdentifier) throws ApplicationManagementDAOException;
 
+    List<LifecycleStateTransition> getNextLifeCycleStates(String applicationUUID, int tenantId) throws
+            ApplicationManagementDAOException;
+
 }

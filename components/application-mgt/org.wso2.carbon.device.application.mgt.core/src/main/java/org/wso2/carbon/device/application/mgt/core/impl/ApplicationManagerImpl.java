@@ -18,12 +18,18 @@
  */
 package org.wso2.carbon.device.application.mgt.core.impl;
 
-import com.sun.corba.se.spi.legacy.connection.Connection;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.device.application.mgt.common.*;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
+import org.wso2.carbon.device.application.mgt.common.Application;
+import org.wso2.carbon.device.application.mgt.common.ApplicationList;
+import org.wso2.carbon.device.application.mgt.common.Filter;
+import org.wso2.carbon.device.application.mgt.common.Lifecycle;
+import org.wso2.carbon.device.application.mgt.common.LifecycleState;
+import org.wso2.carbon.device.application.mgt.common.LifecycleStateTransition;
+import org.wso2.carbon.device.application.mgt.common.Platform;
+import org.wso2.carbon.device.application.mgt.common.User;
 import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
-import org.wso2.carbon.device.application.mgt.common.exception.DBConnectionException;
 import org.wso2.carbon.device.application.mgt.common.services.ApplicationManager;
 import org.wso2.carbon.device.application.mgt.core.dao.ApplicationDAO;
 import org.wso2.carbon.device.application.mgt.core.dao.LifecycleStateDAO;
@@ -36,32 +42,45 @@ import org.wso2.carbon.device.application.mgt.core.util.ConnectionManagerUtil;
 import org.wso2.carbon.device.application.mgt.core.util.HelperUtil;
 
 import java.util.Date;
+import java.util.List;
 
 public class ApplicationManagerImpl implements ApplicationManager {
 
     private static final Log log = LogFactory.getLog(ApplicationManagerImpl.class);
-    public static final String CREATED = "created";
+    public static final String CREATED = "CREATED";
 
     @Override
     public Application createApplication(Application application) throws ApplicationManagementException {
-
-        validateApplication(application, false);
-
+        application.setUser(new User(PrivilegedCarbonContext.getThreadLocalCarbonContext().getUsername(),
+                PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId(true)));
+        if (log.isDebugEnabled()) {
+            log.debug("Create Application received for the tenant : " + application.getUser().getTenantId() + " From"
+                    + " the user : " + application.getUser().getUserName());
+        }
+        validateApplication(application);
+        application.setUuid(HelperUtil.generateApplicationUuid());
+        application.setCreatedAt(new Date());
+        application.setModifiedAt(new Date());
         try {
-            ConnectionManagerUtil.openConnection();
-            ApplicationDAO applicationDAO = DAOFactory.getApplicationDAO();
+            ConnectionManagerUtil.beginDBTransaction();
 
-            application.setUuid(HelperUtil.generateApplicationUuid());
-
-            application.setCreatedAt(new Date());
-            application.setModifiedAt(new Date());
-
+            // Validating the platform
+            Platform platform = DAOFactory.getPlatformDAO()
+                    .getPlatform(application.getUser().getTenantId(), application.getPlatform().getIdentifier());
+            if (platform == null) {
+                throw new NotFoundException("Invalid platform");
+            }
+            application.setPlatform(platform);
+            if (log.isDebugEnabled()) {
+                log.debug("Application creation pre-conditions are met and the platform mentioned by identifier "
+                        + platform.getIdentifier() + " is found");
+            }
             LifecycleStateDAO lifecycleStateDAO = DAOFactory.getLifecycleStateDAO();
             LifecycleState lifecycleState = lifecycleStateDAO.getLifeCycleStateByIdentifier(CREATED);
             if (lifecycleState == null) {
+                ConnectionManagerUtil.commitDBTransaction();
                 throw new NotFoundException("Invalid lifecycle state.");
             }
-
             Lifecycle lifecycle = new Lifecycle();
             lifecycle.setLifecycleState(lifecycleState);
             lifecycle.setLifecycleState(lifecycleState);
@@ -69,20 +88,16 @@ public class ApplicationManagerImpl implements ApplicationManager {
             lifecycle.setGetLifecycleStateModifiedBy(application.getUser().getUserName());
             application.setCurrentLifecycle(lifecycle);
 
-            PlatformDAO platformDAO = DAOFactory.getPlatformDAO();
-            Platform platform = platformDAO.getPlatform(application.getUser().getTenantId(), application.getPlatform().getIdentifier());
-            if (platform == null) {
-                throw new NotFoundException("Invalid platform");
-            }
-            application.setPlatform(platform);
-
-            return applicationDAO.createApplication(application);
+            application = DAOFactory.getApplicationDAO().createApplication(application);
+            ConnectionManagerUtil.commitDBTransaction();
+            return application;
+        } catch (ApplicationManagementException e) {
+            ConnectionManagerUtil.rollbackDBTransaction();
+            throw e;
         } finally {
-            ConnectionManagerUtil.closeConnection();
+            ConnectionManagerUtil.closeDBConnection();
         }
-
     }
-
 
     @Override
     public Application editApplication(Application application) throws ApplicationManagementException {
@@ -159,7 +174,25 @@ public class ApplicationManagerImpl implements ApplicationManager {
         }
     }
 
-    private void validateApplication(Application application, boolean isEdit) throws ValidationException {
+    @Override
+    public List<LifecycleStateTransition> getLifeCycleStates(String applicationUUID)
+            throws ApplicationManagementException {
+        try {
+            int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId(true);
+            ConnectionManagerUtil.openDBConnection();
+            return DAOFactory.getApplicationDAO().getNextLifeCycleStates(applicationUUID, tenantId);
+        } finally {
+            ConnectionManagerUtil.closeDBConnection();
+        }
+    }
+
+    /**
+     * To validate the application
+     *
+     * @param application Application that need to be created
+     * @throws ValidationException Validation Exception
+     */
+    private void validateApplication(Application application) throws ValidationException {
 
         if (application.getName() == null) {
             throw new ValidationException("Application name cannot be empty");

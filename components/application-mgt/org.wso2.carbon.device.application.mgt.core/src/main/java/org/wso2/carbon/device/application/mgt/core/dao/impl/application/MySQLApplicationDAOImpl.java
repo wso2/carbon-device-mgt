@@ -355,10 +355,8 @@ public class MySQLApplicationDAOImpl extends AbstractApplicationDAOImpl {
 
     @Override
     public void deleteProperties(int applicationId) throws ApplicationManagementDAOException {
-
         Connection conn = null;
         PreparedStatement stmt = null;
-        ResultSet rs = null;
         try {
             conn = this.getDBConnection();
             String sql = "DELETE FROM APPM_APPLICATION_PROPERTY WHERE APPLICATION_ID = ?";
@@ -371,7 +369,7 @@ public class MySQLApplicationDAOImpl extends AbstractApplicationDAOImpl {
         } catch (SQLException e) {
             throw new ApplicationManagementDAOException("Error occurred while deleting properties of application: " + applicationId, e);
         } finally {
-            Util.cleanupResources(stmt, rs);
+            Util.cleanupResources(stmt, null);
         }
     }
 
@@ -401,6 +399,12 @@ public class MySQLApplicationDAOImpl extends AbstractApplicationDAOImpl {
         } finally {
             Util.cleanupResources(stmt, rs);
         }
+    }
+
+    @Override
+    public List<LifecycleStateTransition> getNextLifeCycleStates(String applicationUUID, int tenantId)
+            throws ApplicationManagementDAOException {
+        return null;
     }
 
     @Override
@@ -434,88 +438,4 @@ public class MySQLApplicationDAOImpl extends AbstractApplicationDAOImpl {
     public void addRelease(ApplicationRelease release) throws ApplicationManagementDAOException {
 
     }
-
-
-    @Override
-    public Application createApplication(Application application) throws ApplicationManagementDAOException {
-        if (log.isDebugEnabled()) {
-            log.debug("Request received in DAO Layer to create an application");
-            log.debug("Application Details : ");
-            log.debug("UUID : " +  application.getUuid() + " Name : " + application.getName() + " User name : " +
-            application.getUser().getUserName());
-        }
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-        String sql = "";
-
-
-        try {
-            conn = this.getConnection();
-
-            sql += "INSERT INTO APPM_APPLICATION (UUID, IDENTIFIER, NAME, SHORT_DESCRIPTION, DESCRIPTION, ICON_NAME, BANNER_NAME, " +
-                    "VIDEO_NAME, SCREENSHOTS, CREATED_BY, CREATED_AT, MODIFIED_AT, APPLICATION_CATEGORY_ID, " + "" +
-                    "PLATFORM_ID, TENANT_ID, LIFECYCLE_STATE_ID, LIFECYCLE_STATE_MODIFIED_AT, " +
-                    "LIFECYCLE_STATE_MODIFIED_BY) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-
-            stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-            stmt.setString(1, application.getUuid());
-            stmt.setString(2, application.getIdentifier());
-            stmt.setString(3, application.getName());
-            stmt.setString(4, application.getShortDescription());
-            stmt.setString(5, application.getDescription());
-            stmt.setString(6, application.getIconName());
-            stmt.setString(7, application.getBannerName());
-            stmt.setString(8, application.getVideoName());
-            stmt.setString(9, JSONUtil.listToJsonArrayString(application.getScreenshots()));
-            stmt.setString(10, application.getUser().getUserName());
-            stmt.setDate(11, new Date(application.getCreatedAt().getTime()));
-            stmt.setDate(12, new Date(application.getModifiedAt().getTime()));
-            stmt.setInt(13, application.getCategory().getId());
-            stmt.setInt(14, application.getPlatform().getId());
-            stmt.setInt(15, application.getUser().getTenantId());
-            stmt.setInt(16, application.getCurrentLifecycle().getLifecycleState().getId());
-            stmt.setDate(17, new Date(application.getCurrentLifecycle().getLifecycleStateModifiedAt().getTime()));
-            stmt.setString(18, application.getCurrentLifecycle().getGetLifecycleStateModifiedBy());
-            stmt.executeUpdate();
-
-            rs = stmt.getGeneratedKeys();
-            if (rs.next()) {
-                application.setId(rs.getInt(1));
-            }
-
-            if (application.getTags() != null && application.getTags().size() > 0) {
-                sql = "INSERT INTO APPM_APPLICATION_TAG (NAME, APPLICATION_ID) VALUES (?, ?); ";
-                stmt = conn.prepareStatement(sql);
-                for (String tag : application.getTags()) {
-                    stmt.setString(1, tag);
-                    stmt.setInt(2, application.getId());
-                    stmt.addBatch();
-                }
-                stmt.executeBatch();
-            }
-
-            if (application.getProperties() != null && application.getProperties().size() > 0) {
-                sql = "INSERT INTO APPM_APPLICATION_PROPERTY (PROP_KEY, PROP_VAL, APPLICATION_ID) VALUES (?, ?, ?); ";
-                stmt = conn.prepareStatement(sql);
-                Iterator it = application.getProperties().entrySet().iterator();
-                while (it.hasNext()) {
-                    Map.Entry<String, String> property = (Map.Entry) it.next();
-                    stmt.setString(1, property.getKey());
-                    stmt.setString(2, property.getValue());
-                    stmt.setInt(3, application.getId());
-                    stmt.addBatch();
-                }
-                stmt.executeBatch();
-            }
-
-        } catch (DBConnectionException e) {
-            throw new ApplicationManagementDAOException("Error occurred while obtaining the DB connection.", e);
-        } catch (SQLException e) {
-            throw new ApplicationManagementDAOException("Error occurred while adding the application", e);
-        }
-
-        return application;
-    }
-
 }

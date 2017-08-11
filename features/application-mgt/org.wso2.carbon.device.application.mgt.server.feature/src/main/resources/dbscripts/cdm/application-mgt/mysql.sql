@@ -37,7 +37,6 @@ FOREIGN KEY(PLATFORM_ID) REFERENCES APPM_PLATFORM(ID) ON DELETE CASCADE,
 PRIMARY KEY (ID, PLATFORM_ID, PROP_NAME)
 );
 
-
 -- -----------------------------------------------------
 -- Table `APPM_APPLICATION_CATEGORY`
 -- -----------------------------------------------------

@@ -38,7 +38,7 @@ import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
+import java.util.List;
 
 @SwaggerDefinition(
         info = @Info(
@@ -112,12 +112,6 @@ public interface ApplicationManagementAPI {
                             response = ErrorResponse.class)
             })
     Response getApplications(
-
-            @ApiParam(
-                    name = "If-Modified-Since",
-                    value = "Validates if the requested variant has not been modified since the time specified",
-                    required = false)
-            @HeaderParam("If-Modified-Since") String ifModifiedSince,
             @ApiParam(
                     name = "offset",
                     value = "Provide from which position apps should return",
@@ -176,4 +170,66 @@ public interface ApplicationManagementAPI {
                     required = true)
             @Valid Application application);
 
+    @PUT
+    @Consumes("application/json")
+    @Path("/{uuid}/lifecycle")
+    @ApiOperation(
+            consumes = MediaType.APPLICATION_JSON,
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "PUT",
+            value = "Change the life cycle state of the application",
+            notes = "This will change the life-cycle state of the application",
+            tags = "Application Management"
+    )
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            code = 200,
+                            message = "OK. \n Successfully changed application state."),
+                    @ApiResponse(
+                            code = 500,
+                            message = "Internal Server Error. \n Error occurred while getting the application list.",
+                            response = ErrorResponse.class)
+            })
+    Response changeLifecycleState(
+            @ApiParam(
+                    name = "UUID",
+                    value = "Unique identifier of the Application",
+                    required = true)
+            @PathParam("uuid") String applicationUUID,
+            @ApiParam(
+                    name = "state",
+                    value = "Lifecycle State that need to be changed to",
+                    required = true)
+            @QueryParam("state") String state);
+
+    @GET
+    @Consumes("application/json")
+    @Path("/{uuid}/lifecycle")
+    @ApiOperation(
+            consumes = MediaType.APPLICATION_JSON,
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "GET",
+            value = "Change the life cycle state of the application",
+            notes = "This will retrieve the next life cycle states of the application based on the user and the "
+                    + "current state",
+            tags = "Application Management"
+    )
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            code = 200,
+                            message = "OK. \n Successfully retrieved the lifecycle states.",
+                            response = List.class),
+                    @ApiResponse(
+                            code = 500,
+                            message = "Internal Server Error. \n Error occurred while getting the life-cycle states.",
+                            response = ErrorResponse.class)
+            })
+    Response getLifeCycleStates(
+            @ApiParam(
+                    name = "UUID",
+                    value = "Unique identifier of the Application",
+                    required = true)
+            @PathParam("uuid") String applicationUUID);
 }

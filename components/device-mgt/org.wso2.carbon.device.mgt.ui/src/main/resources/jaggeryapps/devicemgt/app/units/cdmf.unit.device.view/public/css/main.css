@@ -128,7 +128,7 @@
     cursor: pointer;
     position: relative;
     margin-left: 10px;
-    ma
+    margin-bottom: 10px;
 }
 .tab-actions .action{
     float: right;

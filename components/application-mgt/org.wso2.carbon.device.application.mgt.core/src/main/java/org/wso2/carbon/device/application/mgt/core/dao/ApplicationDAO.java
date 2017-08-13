@@ -18,12 +18,19 @@
  */
 package org.wso2.carbon.device.application.mgt.core.dao;
 
-import org.wso2.carbon.device.application.mgt.common.*;
+import org.wso2.carbon.device.application.mgt.common.Application;
+import org.wso2.carbon.device.application.mgt.common.ApplicationList;
+import org.wso2.carbon.device.application.mgt.common.ApplicationRelease;
+import org.wso2.carbon.device.application.mgt.common.Filter;
+import org.wso2.carbon.device.application.mgt.common.LifecycleStateTransition;
 import org.wso2.carbon.device.application.mgt.core.exception.ApplicationManagementDAOException;
 
 import java.util.List;
 import java.util.Map;
 
+/**
+ * ApplicationDAO is responsible for handling all the Database related operations related with Application Management.
+ */
 public interface ApplicationDAO {
 
     Application createApplication(Application application) throws ApplicationManagementDAOException;
@@ -48,11 +55,10 @@ public interface ApplicationDAO {
 
     void deleteTags(int applicationId) throws ApplicationManagementDAOException;
 
-    void changeLifeCycle(LifecycleState lifecycleState) throws ApplicationManagementDAOException;
-
     void addRelease(ApplicationRelease release) throws ApplicationManagementDAOException;
 
-    void changeLifecycle(String applicationUUID, String lifecycleIdentifier) throws ApplicationManagementDAOException;
+    void changeLifecycle(String applicationUUID, String lifecycleIdentifier, String username) throws
+            ApplicationManagementDAOException;
 
     List<LifecycleStateTransition> getNextLifeCycleStates(String applicationUUID, int tenantId) throws
             ApplicationManagementDAOException;

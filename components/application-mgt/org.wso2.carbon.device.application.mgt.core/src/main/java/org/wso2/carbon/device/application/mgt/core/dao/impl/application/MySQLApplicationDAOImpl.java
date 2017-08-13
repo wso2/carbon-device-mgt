@@ -134,60 +134,6 @@ public class MySQLApplicationDAOImpl extends AbstractApplicationDAOImpl {
         return applicationList;
     }
 
-    @Override
-    public Application getApplication(String uuid) throws ApplicationManagementDAOException {
-        if (log.isDebugEnabled()) {
-            log.debug("Getting application data from the database");
-        }
-
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-        String sql = "";
-        Application application = new Application();
-        try {
-
-            conn = this.getConnection();
-
-            sql += "SELECT SQL_CALC_FOUND_ROWS APP.*, APL.NAME AS APL_NAME, APL.IDENTIFIER AS APL_IDENTIFIER, ";
-            sql += "CAT.ID AS CAT_ID, CAT.NAME AS CAT_NAME ";
-            sql += "FROM APPM_APPLICATION AS APP ";
-            sql += "INNER JOIN APPM_PLATFORM AS APL ON APP.PLATFORM_ID = APL.ID ";
-            sql += "INNER JOIN APPM_APPLICATION_CATEGORY AS CAT ON APP.APPLICATION_CATEGORY_ID = CAT.ID ";
-            sql += "WHERE UUID = ?";
-
-            stmt = conn.prepareStatement(sql);
-            stmt.setString(1, uuid);
-            rs = stmt.executeQuery();
-
-            if (rs.next()) {
-                //Getting properties
-                sql = "SELECT * FROM APPM_APPLICATION_PROPERTY WHERE APPLICATION_ID=?";
-                stmt = conn.prepareStatement(sql);
-                stmt.setInt(1, rs.getInt("ID"));
-                ResultSet rsProperties = stmt.executeQuery();
-
-                //Getting tags
-                sql = "SELECT * FROM APPM_APPLICATION_TAG WHERE APPLICATION_ID=?";
-                stmt = conn.prepareStatement(sql);
-                stmt.setInt(1, rs.getInt("ID"));
-                ResultSet rsTags = stmt.executeQuery();
-
-                application = Util.loadApplication(rs, rsProperties, rsTags);
-                Util.cleanupResources(null, rsProperties);
-                Util.cleanupResources(null, rsTags);
-            }
-        } catch (SQLException e) {
-            throw new ApplicationManagementDAOException("Error occurred while getting application List", e);
-        } catch (JSONException e) {
-            throw new ApplicationManagementDAOException("Error occurred while parsing JSON", e);
-        } catch (DBConnectionException e) {
-            throw new ApplicationManagementDAOException("Error occurred while obtaining the DB connection.", e);
-        } finally {
-            Util.cleanupResources(stmt, rs);
-        }
-        return application;
-    }
 
     @Override
     public void deleteApplication(String uuid) throws ApplicationManagementDAOException {
@@ -374,40 +320,6 @@ public class MySQLApplicationDAOImpl extends AbstractApplicationDAOImpl {
     }
 
     @Override
-    public void changeLifecycle(String applicationUUID, String lifecycleIdentifier) throws ApplicationManagementDAOException {
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-        try {
-            conn = this.getDBConnection();
-            String sql = "UPDATE APPM_APPLICATION SET " +
-                    "LIFECYCLE_STATE_ID = (SELECT ID FROM APPM_LIFECYCLE_STATE WHERE IDENTIFIER = ?), " +
-                    "LIFECYCLE_STATE_MODIFIED_BY = ?, " +
-                    "LIFECYCLE_STATE_MODIFIED_AT = ? " +
-                    "WHERE UUID = ?";
-            stmt = conn.prepareStatement(sql);
-            stmt.setString(1, lifecycleIdentifier);
-            stmt.setString(2, "admin");
-            stmt.setDate(3, new Date(System.currentTimeMillis()));
-            stmt.setString(4, applicationUUID);
-            stmt.executeUpdate();
-
-        } catch (DBConnectionException e) {
-            throw new ApplicationManagementDAOException("Error occurred while obtaining the DB connection.", e);
-        } catch (SQLException e) {
-            throw new ApplicationManagementDAOException("Error occurred while changing lifecycle of application: " + applicationUUID + " to: " + lifecycleIdentifier + " state.", e);
-        } finally {
-            Util.cleanupResources(stmt, rs);
-        }
-    }
-
-    @Override
-    public List<LifecycleStateTransition> getNextLifeCycleStates(String applicationUUID, int tenantId)
-            throws ApplicationManagementDAOException {
-        return null;
-    }
-
-    @Override
     public void deleteTags(int applicationId) throws ApplicationManagementDAOException {
 
         Connection conn = null;
@@ -427,11 +339,6 @@ public class MySQLApplicationDAOImpl extends AbstractApplicationDAOImpl {
         } finally {
             Util.cleanupResources(stmt, rs);
         }
-    }
-
-    @Override
-    public void changeLifeCycle(LifecycleState lifecycleState) throws ApplicationManagementDAOException {
-
     }
 
     @Override

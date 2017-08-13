@@ -31,11 +31,12 @@ public class Constants {
     public static final String PLATFORMS_DEPLOYMENT_DIR_NAME = "platforms";
     public static final String PLATFORM_DEPLOYMENT_EXT = ".xml";
 
+    /**
+     * Database types supported by Application Management.
+     */
     public static final class DataBaseTypes {
-
         private DataBaseTypes() {
         }
-
         public static final String DB_TYPE_MYSQL = "MySQL";
         public static final String DB_TYPE_ORACLE = "Oracle";
         public static final String DB_TYPE_MSSQL = "Microsoft SQL Server";
@@ -43,4 +44,10 @@ public class Constants {
         public static final String DB_TYPE_H2 = "H2";
         public static final String DB_TYPE_POSTGRESQL = "PostgreSQL";
     }
+
+    /**
+     * Lifecycle states of the application life-cycle.
+     */
+    public static final String[] LIFE_CYCLES = {"CREATED", "IN REVIEW", "APPROVED", "REJECTED", "PUBLISHED",
+            "UNPUBLISHED", "RETIRED"};
 }

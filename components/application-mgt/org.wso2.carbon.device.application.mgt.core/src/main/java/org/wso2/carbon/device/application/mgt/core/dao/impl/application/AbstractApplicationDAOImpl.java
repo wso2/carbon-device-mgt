@@ -20,8 +20,10 @@ package org.wso2.carbon.device.application.mgt.core.dao.impl.application;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.json.JSONException;
 import org.wso2.carbon.device.application.mgt.common.Application;
 import org.wso2.carbon.device.application.mgt.common.Filter;
+import org.wso2.carbon.device.application.mgt.common.LifecycleStateTransition;
 import org.wso2.carbon.device.application.mgt.common.exception.DBConnectionException;
 import org.wso2.carbon.device.application.mgt.core.dao.ApplicationDAO;
 import org.wso2.carbon.device.application.mgt.core.dao.impl.AbstractDAOImpl;
@@ -31,7 +33,9 @@ import org.wso2.carbon.device.application.mgt.core.util.ConnectionManagerUtil;
 import org.wso2.carbon.device.application.mgt.core.util.JSONUtil;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 public abstract class AbstractApplicationDAOImpl extends AbstractDAOImpl implements ApplicationDAO {
@@ -181,5 +185,131 @@ public abstract class AbstractApplicationDAOImpl extends AbstractDAOImpl impleme
             Util.cleanupResources(stmt, rs);
         }
         return count;
+    }
+
+    @Override
+    public Application getApplication(String uuid) throws ApplicationManagementDAOException {
+        if (log.isDebugEnabled()) {
+            log.debug("Getting application with the UUID(" + uuid + ") from the database");
+        }
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        String sql = "";
+        Application application = null;
+        try {
+
+            conn = this.getDBConnection();
+            sql += "SELECT APP.*, APL.NAME AS APL_NAME, APL.IDENTIFIER AS APL_IDENTIFIER, "
+                    + "CAT.ID AS CAT_ID, CAT.NAME AS CAT_NAME FROM APPM_APPLICATION AS APP INNER JOIN APPM_PLATFORM AS "
+                    + "APL ON APP.PLATFORM_ID = APL.ID INNER JOIN APPM_APPLICATION_CATEGORY AS CAT ON "
+                    + "APP.APPLICATION_CATEGORY_ID = CAT.ID WHERE UUID = ?";
+
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, uuid);
+            rs = stmt.executeQuery();
+
+            if (log.isDebugEnabled()) {
+                log.debug("Successfully retrieved basic details of the application with the UUID " + uuid);
+            }
+
+            if (rs.next()) {
+                application = new Application();
+                //Getting properties
+                sql = "SELECT * FROM APPM_APPLICATION_PROPERTY WHERE APPLICATION_ID=?";
+                stmt = conn.prepareStatement(sql);
+                stmt.setInt(1, rs.getInt("ID"));
+                ResultSet rsProperties = stmt.executeQuery();
+
+                //Getting tags
+                sql = "SELECT * FROM APPM_APPLICATION_TAG WHERE APPLICATION_ID=?";
+                stmt = conn.prepareStatement(sql);
+                stmt.setInt(1, rs.getInt("ID"));
+                ResultSet rsTags = stmt.executeQuery();
+
+                application = Util.loadApplication(rs, rsProperties, rsTags);
+                Util.cleanupResources(null, rsProperties);
+                Util.cleanupResources(null, rsTags);
+            }
+        } catch (SQLException e) {
+            throw new ApplicationManagementDAOException("Error occurred while getting application List", e);
+        } catch (JSONException e) {
+            throw new ApplicationManagementDAOException("Error occurred while parsing JSON", e);
+        } catch (DBConnectionException e) {
+            throw new ApplicationManagementDAOException("Error occurred while obtaining the DB connection.", e);
+        } finally {
+            Util.cleanupResources(stmt, rs);
+        }
+        return application;
+    }
+
+    @Override
+    public void changeLifecycle(String applicationUUID, String lifecycleIdentifier, String userName) throws
+            ApplicationManagementDAOException {
+        if (log.isDebugEnabled()) {
+            log.debug("Change Life cycle status change " + lifecycleIdentifier + "request received to the DAO "
+                    + "level for the application with " + "the UUID '" + applicationUUID + "' from the user "
+                    + userName);
+        }
+        Connection conn;
+        PreparedStatement stmt = null;
+        try {
+            conn = this.getDBConnection();
+            String sql = "UPDATE APPM_APPLICATION SET "
+                    + "LIFECYCLE_STATE_ID = (SELECT ID FROM APPM_LIFECYCLE_STATE WHERE IDENTIFIER = ?), "
+                    + "LIFECYCLE_STATE_MODIFIED_BY = ?, LIFECYCLE_STATE_MODIFIED_AT = ? WHERE UUID = ?";
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, lifecycleIdentifier);
+            stmt.setString(2, userName);
+            stmt.setDate(3, new Date(System.currentTimeMillis()));
+            stmt.setString(4, applicationUUID);
+            stmt.executeUpdate();
+        } catch (DBConnectionException e) {
+            throw new ApplicationManagementDAOException("Error occurred while obtaining the DB connection.", e);
+        } catch (SQLException e) {
+            throw new ApplicationManagementDAOException(
+                    "Error occurred while changing lifecycle of application: " + applicationUUID + " to: "
+                            + lifecycleIdentifier + " state.", e);
+        } finally {
+            Util.cleanupResources(stmt, null);
+        }
+    }
+
+    @Override
+    public List<LifecycleStateTransition> getNextLifeCycleStates(String applicationUUID, int tenantId)
+            throws ApplicationManagementDAOException {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+
+        String sql = "SELECT STATE.NAME, TRANSITION.DESCRIPTION, TRANSITION.PERMISSION FROM ( SELECT * FROM "
+                + "APPM_LIFECYCLE_STATE ) STATE RIGHT JOIN (SELECT * FROM APPM_LIFECYCLE_STATE_TRANSITION WHERE "
+                + "INITIAL_STATE = (SELECT LIFECYCLE_STATE_ID FROM APPM_APPLICATION WHERE UUID = ?)) "
+                + "TRANSITION  ON TRANSITION.NEXT_STATE = STATE.ID";
+
+        try {
+            connection = this.getDBConnection();
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, applicationUUID);
+            resultSet = preparedStatement.executeQuery();
+
+            List<LifecycleStateTransition> lifecycleStateTransitions = new ArrayList<>();
+
+            while(resultSet.next()) {
+                LifecycleStateTransition lifecycleStateTransition = new LifecycleStateTransition();
+                lifecycleStateTransition.setDescription(resultSet.getString(2));
+                lifecycleStateTransition.setNextState(resultSet.getString(1));
+                lifecycleStateTransition.setPermission(resultSet.getString(3));
+                lifecycleStateTransitions.add(lifecycleStateTransition);
+            }
+            return lifecycleStateTransitions;
+        } catch (DBConnectionException e) {
+            throw new ApplicationManagementDAOException("Error while getting the DBConnection for getting the life "
+                    + "cycle states for the application with the UUID : " + applicationUUID, e);
+        } catch (SQLException e) {
+            throw new ApplicationManagementDAOException("SQL exception while executing the query '" + sql + "'.", e);
+        } finally {
+            Util.cleanupResources(preparedStatement, resultSet);
+        }
     }
 }

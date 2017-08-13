@@ -24,6 +24,7 @@ import org.json.JSONException;
 import org.wso2.carbon.device.application.mgt.common.Application;
 import org.wso2.carbon.device.application.mgt.common.Category;
 import org.wso2.carbon.device.application.mgt.common.Platform;
+import org.wso2.carbon.device.application.mgt.common.User;
 import org.wso2.carbon.device.application.mgt.core.util.JSONUtil;
 
 import java.sql.PreparedStatement;
@@ -54,6 +55,7 @@ public class Util {
         application.setScreenshots(JSONUtil.jsonArrayStringToList(rs.getString("SCREENSHOTS")));
         application.setCreatedAt(rs.getDate("CREATED_AT"));
         application.setModifiedAt(rs.getDate("MODIFIED_AT"));
+        application.setUser(new User(rs.getString("CREATED_AT"), rs.getInt("TENANT_ID")));
 
         Platform platform = new Platform();
         platform.setName(rs.getString("APL_NAME"));

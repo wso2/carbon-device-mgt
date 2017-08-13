@@ -74,7 +74,8 @@
                             org.apache.axis2.*,
                             org.wso2.carbon.user.core.*,
                             org.wso2.carbon.user.api.*,
-                            org.wso2.carbon.ndatasource.core
+                            org.wso2.carbon.ndatasource.core,
+                            org.wso2.carbon
                         </Import-Package>
                         <Export-Package>
                             !org.wso2.carbon.device.application.mgt.core.internal.*,
@@ -157,6 +158,10 @@
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.ndatasource.core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.core</artifactId>
         </dependency>
     </dependencies>
 </project>

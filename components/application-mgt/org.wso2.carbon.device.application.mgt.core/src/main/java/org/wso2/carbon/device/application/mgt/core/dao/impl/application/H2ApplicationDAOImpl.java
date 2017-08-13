@@ -43,49 +43,6 @@ public class H2ApplicationDAOImpl extends AbstractApplicationDAOImpl {
     private static final Log log = LogFactory.getLog(H2ApplicationDAOImpl.class);
 
     @Override
-    public void changeLifecycle(String applicationUUID, String lifecycleIdentifier) throws ApplicationManagementDAOException {
-
-    }
-
-    @Override
-    public List<LifecycleStateTransition> getNextLifeCycleStates(String applicationUUID, int tenantId)
-            throws ApplicationManagementDAOException {
-        Connection connection = null;
-        PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
-
-        String sql = "SELECT STATE.NAME, TRANSITION.DESCRIPTION, TRANSITION.PERMISSION FROM ( SELECT * FROM "
-                + "APPM_LIFECYCLE_STATE ) STATE RIGHT JOIN (SELECT * FROM APPM_LIFECYCLE_STATE_TRANSITION WHERE "
-                + "INITIAL_STATE = (SELECT LIFECYCLE_STATE_ID FROM APPM_APPLICATION WHERE UUID = ?)) "
-                + "TRANSITION  ON TRANSITION.NEXT_STATE = STATE.ID";
-
-        try {
-            connection = this.getDBConnection();
-            preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.setString(1, applicationUUID);
-            resultSet = preparedStatement.executeQuery();
-
-            List<LifecycleStateTransition> lifecycleStateTransitions = new ArrayList<>();
-
-            while(resultSet.next()) {
-                LifecycleStateTransition lifecycleStateTransition = new LifecycleStateTransition();
-                lifecycleStateTransition.setDescription(resultSet.getString(2));
-                lifecycleStateTransition.setNextState(resultSet.getString(1));
-                lifecycleStateTransition.setPermission(resultSet.getString(3));
-                lifecycleStateTransitions.add(lifecycleStateTransition);
-            }
-            return lifecycleStateTransitions;
-        } catch (DBConnectionException e) {
-            throw new ApplicationManagementDAOException("Error while getting the DBConnection for getting the life "
-                    + "cycle states for the application with the UUID : " + applicationUUID, e);
-        } catch (SQLException e) {
-            throw new ApplicationManagementDAOException("SQL exception while executing the query '" + sql + "'.", e);
-        } finally {
-            Util.cleanupResources(preparedStatement, resultSet);
-        }
-    }
-
-    @Override
     public ApplicationList getApplications(Filter filter) throws ApplicationManagementDAOException {
 
         if(log.isDebugEnabled()){
@@ -174,11 +131,6 @@ public class H2ApplicationDAOImpl extends AbstractApplicationDAOImpl {
     }
 
     @Override
-    public Application getApplication(String uuid) throws ApplicationManagementDAOException {
-        return null;
-    }
-
-    @Override
     public int getApplicationId(String uuid) throws ApplicationManagementDAOException {
         return 0;
     }
@@ -210,11 +162,6 @@ public class H2ApplicationDAOImpl extends AbstractApplicationDAOImpl {
 
     @Override
     public void editProperties(Map<String, String> properties) throws ApplicationManagementDAOException {
-
-    }
-
-    @Override
-    public void changeLifeCycle(LifecycleState lifecycleState) throws ApplicationManagementDAOException {
 
     }
 

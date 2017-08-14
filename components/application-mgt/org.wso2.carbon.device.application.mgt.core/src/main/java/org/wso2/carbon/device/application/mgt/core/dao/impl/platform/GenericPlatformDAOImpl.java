@@ -227,13 +227,14 @@ public class GenericPlatformDAOImpl extends AbstractDAOImpl implements PlatformD
     public void unregister(int tenantId, String platformIdenfier, boolean isFileBased)
             throws PlatformManagementDAOException {
         PreparedStatement preparedStatement = null;
+        String deletePlatform = null;
         try {
             Platform platform = getPlatform(tenantId, platformIdenfier);
 
             if (platform != null) {
                 if (isFileBased == platform.isFileBased()) {
                     Connection connection = this.getDBConnection();
-                    String deletePlatform = "DELETE FROM APPM_PLATFORM WHERE ID = ?";
+                    deletePlatform = "DELETE FROM APPM_PLATFORM WHERE ID = ?";
                     preparedStatement = connection.prepareStatement(deletePlatform);
                     preparedStatement.setInt(1, platform.getId());
                     preparedStatement.execute();
@@ -255,7 +256,8 @@ public class GenericPlatformDAOImpl extends AbstractDAOImpl implements PlatformD
                     "Unable to obtain the connection while trying to register the platform - " + platformIdenfier
                             + " for tenant - " + tenantId, e);
         } catch (SQLException e) {
-            throw new PlatformManagementDAOException("Error while executing the SQL query. ", e);
+            throw new PlatformManagementDAOException("Error while executing the SQL query : " + deletePlatform + " "
+                    + "while trying to un-register the platform with identifier " + platformIdenfier, e);
         } finally {
             Util.cleanupResources(preparedStatement, null);
         }

@@ -41,7 +41,7 @@ public interface ApplicationDAO {
 
     int getApplicationId(String uuid) throws ApplicationManagementDAOException;
 
-    Application editApplication(Application application) throws ApplicationManagementDAOException;
+    Application editApplication(Application application, int tenantId) throws ApplicationManagementDAOException;
 
     void deleteApplication(String uuid) throws ApplicationManagementDAOException;
 

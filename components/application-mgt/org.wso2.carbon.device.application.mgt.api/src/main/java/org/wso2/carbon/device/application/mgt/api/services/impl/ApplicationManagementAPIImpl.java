@@ -165,18 +165,13 @@ public class ApplicationManagementAPIImpl implements ApplicationManagementAPI {
     public Response editApplication(@Valid Application application) {
 
         ApplicationManager applicationManager = APIUtil.getApplicationManager();
-
-        //TODO : Get username and tenantId
-        User user = new User("admin", -1234);
-        application.setUser(user);
-
         try {
             application = applicationManager.editApplication(application);
 
         } catch (ApplicationManagementException e) {
             String msg = "Error occurred while creating the application";
             log.error(msg, e);
-            return Response.status(Response.Status.BAD_REQUEST).build();
+            return APIUtil.getResponse(e, Response.Status.BAD_REQUEST);
         }
         return Response.status(Response.Status.OK).entity(application).build();
     }
@@ -187,11 +182,10 @@ public class ApplicationManagementAPIImpl implements ApplicationManagementAPI {
         ApplicationManager applicationManager = APIUtil.getApplicationManager();
         try {
             applicationManager.deleteApplication(uuid);
-
         } catch (ApplicationManagementException e) {
             String msg = "Error occurred while deleting the application: " + uuid;
             log.error(msg, e);
-            return Response.status(Response.Status.BAD_REQUEST).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
         String responseMsg = "Successfully deleted the application: " + uuid;
         return Response.status(Response.Status.OK).entity(responseMsg).build();

@@ -89,7 +89,6 @@ public class ApplicationManagerImpl implements ApplicationManager {
             }
             Lifecycle lifecycle = new Lifecycle();
             lifecycle.setLifecycleState(lifecycleState);
-            lifecycle.setLifecycleState(lifecycleState);
             lifecycle.setLifecycleStateModifiedAt(new Date());
             lifecycle.setGetLifecycleStateModifiedBy(application.getUser().getUserName());
             application.setCurrentLifecycle(lifecycle);
@@ -107,50 +106,63 @@ public class ApplicationManagerImpl implements ApplicationManager {
 
     @Override
     public Application editApplication(Application application) throws ApplicationManagementException {
-
+        String userName = PrivilegedCarbonContext.getThreadLocalCarbonContext().getUsername();
+        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId(true);
         if (application.getUuid() == null) {
             throw new ValidationException("Application UUID cannot be empty");
         }
 
-        try {
-            ConnectionManagerUtil.openConnection();
-            ApplicationDAO applicationDAO = DAOFactory.getApplicationDAO();
-
-            if (application.getPlatform()!= null && application.getPlatform().getIdentifier() != null) {
-                PlatformDAO platformDAO = DAOFactory.getPlatformDAO();
-                Platform platform = platformDAO.getPlatform(application.getUser().getTenantId(), application.getPlatform()
-                        .getIdentifier());
-                application.setPlatform(platform);
-                if (platform == null) {
-                    throw new NotFoundException("Invalid platform");
-                }
-            }
-
-            application.setModifiedAt(new Date());
-
-            return applicationDAO.editApplication(application);
-        } finally {
-            ConnectionManagerUtil.closeConnection();
+        if (!isApplicationOwnerOrAdmin(application.getUuid(), userName, tenantId)) {
+            throw new ApplicationManagementException("User " + userName + " does not have permissions to edit the "
+                    + "application with the UUID " + application.getUuid());
         }
-
+        try {
+            ConnectionManagerUtil.beginDBTransaction();
+            if (application.getPlatform() != null && application.getPlatform().getIdentifier() != null) {
+                PlatformDAO platformDAO = DAOFactory.getPlatformDAO();
+                Platform platform = platformDAO
+                        .getPlatform(tenantId, application.getPlatform().getIdentifier());
+                if (platform == null) {
+                    ConnectionManagerUtil.commitDBTransaction();
+                    throw new NotFoundException(
+                            "Platform specified by identifier " + application.getPlatform().getIdentifier()
+                                    + " is not found. Please give a valid platform identifier.");
+                }
+                application.setPlatform(platform);
+            }
+            ApplicationDAO applicationDAO = DAOFactory.getApplicationDAO();
+            application.setModifiedAt(new Date());
+            Application modifiedApplication = applicationDAO.editApplication(application, tenantId);
+            ConnectionManagerUtil.commitDBTransaction();
+            return modifiedApplication;
+        } catch (ApplicationManagementDAOException e) {
+            ConnectionManagerUtil.rollbackDBTransaction();
+            throw e;
+        } finally {
+            ConnectionManagerUtil.closeDBConnection();
+        }
     }
 
     @Override
     public void deleteApplication(String uuid) throws ApplicationManagementException {
+        String userName = PrivilegedCarbonContext.getThreadLocalCarbonContext().getUsername();
+        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId(true);
+        if (!isApplicationOwnerOrAdmin(uuid, userName, tenantId)) {
+            throw new ApplicationManagementException("User '" + userName + "' of tenant - " + tenantId + " does have"
+                    + " the permission to delete the application with UUID " + uuid);
+        }
         try {
             ApplicationDAO applicationDAO = DAOFactory.getApplicationDAO();
-            int appId = applicationDAO.getApplicationId(uuid);
             ConnectionManagerUtil.beginDBTransaction();
+            int appId = applicationDAO.getApplicationId(uuid);
             applicationDAO.deleteTags(appId);
             applicationDAO.deleteProperties(appId);
             applicationDAO.deleteApplication(uuid);
             ConnectionManagerUtil.commitDBTransaction();
-
         } catch (ApplicationManagementDAOException e) {
             ConnectionManagerUtil.rollbackDBTransaction();
             String msg = "Failed to delete application: " + uuid;
             throw new ApplicationManagementException(msg, e);
-
         } finally {
             ConnectionManagerUtil.closeDBConnection();
         }

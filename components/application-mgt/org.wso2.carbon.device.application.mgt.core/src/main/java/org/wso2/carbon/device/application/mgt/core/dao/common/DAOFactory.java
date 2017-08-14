@@ -25,8 +25,7 @@ import org.wso2.carbon.device.application.mgt.core.config.ConfigurationManager;
 import org.wso2.carbon.device.application.mgt.core.dao.ApplicationDAO;
 import org.wso2.carbon.device.application.mgt.core.dao.LifecycleStateDAO;
 import org.wso2.carbon.device.application.mgt.core.dao.PlatformDAO;
-import org.wso2.carbon.device.application.mgt.core.dao.impl.application.H2ApplicationDAOImpl;
-import org.wso2.carbon.device.application.mgt.core.dao.impl.application.MySQLApplicationDAOImpl;
+import org.wso2.carbon.device.application.mgt.core.dao.impl.application.GenericApplicationDAOImpl;
 import org.wso2.carbon.device.application.mgt.core.dao.impl.lifecyclestate.GenericLifecycleStateImpl;
 import org.wso2.carbon.device.application.mgt.core.dao.impl.platform.GenericPlatformDAOImpl;
 import org.wso2.carbon.device.application.mgt.core.dao.impl.platform.OracleMsSQLPlatformDAOImpl;
@@ -58,9 +57,8 @@ public class DAOFactory {
         if (databaseEngine != null) {
             switch (databaseEngine) {
             case Constants.DataBaseTypes.DB_TYPE_H2:
-                return new H2ApplicationDAOImpl();
             case Constants.DataBaseTypes.DB_TYPE_MYSQL:
-                return new MySQLApplicationDAOImpl();
+                return new GenericApplicationDAOImpl();
             default:
                 throw new UnsupportedDatabaseEngineException("Unsupported database engine : " + databaseEngine);
             }

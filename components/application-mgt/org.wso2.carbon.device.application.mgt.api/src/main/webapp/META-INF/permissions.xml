@@ -43,6 +43,24 @@
         <url>/application-mgt/applications</url>
         <method>POST</method>
     </Permission>
+    <Permission>
+        <name>Edit Application</name>
+        <path>/device-mgt/application/update</path>
+        <url>/application-mgt/applications</url>
+        <method>PUT</method>
+    </Permission>
+    <Permission>
+        <name>Login to Application Management</name>
+        <path>/device-mgt/application-mgt/login</path>
+        <url>/application-mgt/applications</url>
+        <method>PUT</method>
+    </Permission>
+    <Permission>
+        <name>Login to Application Management</name>
+        <path>device-mgt/application/delete</path>
+        <url>/application-mgt/applications/*</url>
+        <method>DELETE</method>
+    </Permission>
 
     <!-- Platform related permissions -->
     <Permission>

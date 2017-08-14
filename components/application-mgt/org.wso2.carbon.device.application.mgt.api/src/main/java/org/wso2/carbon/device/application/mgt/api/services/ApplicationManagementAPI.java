@@ -52,7 +52,8 @@ import java.util.List;
                 }
         ),
         tags = {
-                @Tag(name = "application_management", description = "Application Management related APIs")
+                @Tag(name = "application_management, device_management", description = "Application Management related "
+                        + "APIs")
         }
 )
 @Scopes(
@@ -69,6 +70,25 @@ import java.util.List;
                         key = "perm:application:create",
                         permissions = {"/device-mgt/application/create"}
                 ),
+                @Scope(
+                        name = "Update an Application",
+                        description = "Update an application",
+                        key = "perm:application:update",
+                        permissions = {"/device-mgt/application/update"}
+                ),
+                @Scope(
+                        name = "Create an Application",
+                        description = "Create an application",
+                        key = "perm:application-mgt:login",
+                        permissions = {"/device-mgt/application-mgt/login"}
+                ),
+                @Scope(
+                        name = "Delete an Application",
+                        description = "Delete an application",
+                        key = "perm:application:delete",
+                        permissions = {"/device-mgt/application/delete"}
+                )
+
         }
 )
 @Path("/applications")
@@ -132,6 +152,80 @@ public interface ApplicationManagementAPI {
             @QueryParam("searchQuery") String searchQuery
     );
 
+    @GET
+    @Path("/{uuid}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(
+            consumes = MediaType.APPLICATION_JSON,
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "GET",
+            value = "get the application specified by the UUID",
+            notes = "This will get the application identified by the UUID, if exists",
+            tags = "Application Management",
+            extensions = {
+                    @Extension(properties = {
+                            @ExtensionProperty(name = SCOPE, value = "perm:application:get")
+                    })
+            }
+    )
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            code = 200,
+                            message = "OK. \n Successfully retrieved relevant application.",
+                            response = Application.class),
+                    @ApiResponse(
+                            code = 404,
+                            message = "Application not found"),
+                    @ApiResponse(
+                            code = 500,
+                            message = "Internal Server Error. \n Error occurred while getting relevant application.",
+                            response = ErrorResponse.class)
+            })
+    Response getApplication(
+            @ApiParam(
+                    name = "uuid",
+                    value = "UUID of the application",
+                    required = true)
+            @PathParam("uuid") String uuid
+    );
+
+    @PUT
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(
+            consumes = MediaType.APPLICATION_JSON,
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "PUT",
+            value = "Edit an application",
+            notes = "This will edit the new application",
+            tags = "Application Management",
+            extensions = {
+                    @Extension(properties = {
+                            @ExtensionProperty(name = SCOPE, value = "perm:application:update")
+                    })
+            }
+    )
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            code = 201,
+                            message = "OK. \n Successfully edited the application.",
+                            response = Application.class),
+                    @ApiResponse(
+                            code = 500,
+                            message = "Internal Server Error. \n Error occurred while editing the application.",
+                            response = ErrorResponse.class)
+            })
+    Response editApplication(
+            @ApiParam(
+                    name = "application",
+                    value = "The application that need to be edited.",
+                    required = true)
+            @Valid Application application);
+
+
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
@@ -157,7 +251,8 @@ public interface ApplicationManagementAPI {
                     @ApiResponse(
                             code = 304,
                             message = "Not Modified. \n " +
-                                    "Empty body because the client already has the latest version of the requested resource."),
+                                    "Empty body because the client already has the latest version of the requested "
+                                    + "resource."),
                     @ApiResponse(
                             code = 500,
                             message = "Internal Server Error. \n Error occurred while getting the application list.",
@@ -179,7 +274,12 @@ public interface ApplicationManagementAPI {
             httpMethod = "PUT",
             value = "Change the life cycle state of the application",
             notes = "This will change the life-cycle state of the application",
-            tags = "Application Management"
+            tags = "Application Management",
+            extensions = {
+                    @Extension(properties = {
+                            @ExtensionProperty(name = SCOPE, value = "perm:application-mgt:login")
+                    })
+            }
     )
     @ApiResponses(
             value = {
@@ -213,7 +313,12 @@ public interface ApplicationManagementAPI {
             value = "Change the life cycle state of the application",
             notes = "This will retrieve the next life cycle states of the application based on the user and the "
                     + "current state",
-            tags = "Application Management"
+            tags = "Application Management",
+            extensions = {
+                    @Extension(properties = {
+                            @ExtensionProperty(name = SCOPE, value = "perm:application-mgt:login")
+                    })
+            }
     )
     @ApiResponses(
             value = {
@@ -226,10 +331,44 @@ public interface ApplicationManagementAPI {
                             message = "Internal Server Error. \n Error occurred while getting the life-cycle states.",
                             response = ErrorResponse.class)
             })
-    Response getLifeCycleStates(
+    Response getNextLifeCycleStates(
             @ApiParam(
                     name = "UUID",
                     value = "Unique identifier of the Application",
                     required = true)
             @PathParam("uuid") String applicationUUID);
+
+    @DELETE
+    @Consumes("application/json")
+    @Path("/{appuuid}")
+    @ApiOperation(
+            consumes = MediaType.APPLICATION_JSON,
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "DELETE",
+            value = "Delete the application with the given UUID",
+            notes = "This will delete the application with the given UUID",
+            tags = "Application Management",
+            extensions = {
+                    @Extension(properties = {
+                            @ExtensionProperty(name = SCOPE, value = "perm:application:delete")
+                    })
+            }
+    )
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            code = 200,
+                            message = "OK. \n Successfully deleted the application identified by UUID.",
+                            response = List.class),
+                    @ApiResponse(
+                            code = 500,
+                            message = "Internal Server Error. \n Error occurred while deleteing the application.",
+                            response = ErrorResponse.class)
+            })
+    Response deleteApplication(
+            @ApiParam(
+                    name = "UUID",
+                    value = "Unique identifier of the Application",
+                    required = true)
+            @PathParam("appuuid") String applicationUUID);
 }

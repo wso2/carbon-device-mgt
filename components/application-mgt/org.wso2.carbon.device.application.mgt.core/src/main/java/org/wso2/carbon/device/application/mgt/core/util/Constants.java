@@ -22,6 +22,9 @@ import org.wso2.carbon.utils.CarbonUtils;
 
 import java.io.File;
 
+/**
+ * Application Management related constants.
+ */
 public class Constants {
 
     public static final String APPLICATION_CONFIG_XML_FILE = "application-mgt.xml";

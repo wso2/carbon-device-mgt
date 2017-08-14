@@ -24,10 +24,13 @@ import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManage
 import org.wso2.carbon.device.application.mgt.common.exception.InvalidConfigurationException;
 import org.wso2.carbon.device.application.mgt.core.util.Constants;
 
+import java.io.File;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
-import java.io.File;
 
+/**
+ * ConfigurationManager is responsible for the managing Application Management related configurations.
+ */
 public class ConfigurationManager {
 
     private static final Log log = LogFactory.getLog(ConfigurationManager.class);

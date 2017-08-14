@@ -18,5 +18,8 @@
  */
 package org.wso2.carbon.device.application.mgt.core.dao;
 
+/**
+ * This is responsible for Application Category related DAO operations.
+ */
 public interface CategoryDAO {
 }

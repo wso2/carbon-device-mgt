@@ -34,12 +34,23 @@ import org.wso2.carbon.device.application.mgt.api.beans.ErrorResponse;
 import org.wso2.carbon.device.application.mgt.common.Application;
 import org.wso2.carbon.device.application.mgt.common.ApplicationList;
 
+import java.util.List;
 import javax.validation.Valid;
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.List;
 
+/**
+ * APIs to handle application management related tasks.
+ */
 @SwaggerDefinition(
         info = @Info(
                 version = "1.0.0",
@@ -98,7 +109,7 @@ import java.util.List;
 @Consumes(MediaType.APPLICATION_JSON)
 public interface ApplicationManagementAPI {
 
-    public final static String SCOPE = "scope";
+    String SCOPE = "scope";
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -124,8 +135,8 @@ public interface ApplicationManagementAPI {
                             response = ApplicationList.class),
                     @ApiResponse(
                             code = 304,
-                            message = "Not Modified. \n " +
-                                    "Empty body because the client already has the latest version of the requested resource."),
+                            message = "Not Modified. Empty body because the client already has the latest version "
+                                    + "of the requested resource."),
                     @ApiResponse(
                             code = 500,
                             message = "Internal Server Error. \n Error occurred while getting the application list.",
@@ -134,21 +145,15 @@ public interface ApplicationManagementAPI {
     Response getApplications(
             @ApiParam(
                     name = "offset",
-                    value = "Provide from which position apps should return",
-                    required = false,
-                    defaultValue = "20")
+                    value = "Provide from which position apps should return", defaultValue = "20")
             @QueryParam("offset") int offset,
             @ApiParam(
                     name = "limit",
-                    value = "Provide how many apps it should return",
-                    required = false,
-                    defaultValue = "0")
+                    value = "Provide how many apps it should return", defaultValue = "0")
             @QueryParam("limit") int limit,
             @ApiParam(
                     name = "searchQuery",
-                    value = "Relevant search query to search on",
-                    required = false,
-                    defaultValue = "*")
+                    value = "Relevant search query to search on", defaultValue = "*")
             @QueryParam("searchQuery") String searchQuery
     );
 

@@ -21,21 +21,34 @@ package org.wso2.carbon.device.application.mgt.core.dao.impl.application;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONException;
-import org.wso2.carbon.device.application.mgt.common.*;
+import org.wso2.carbon.device.application.mgt.common.Application;
+import org.wso2.carbon.device.application.mgt.common.ApplicationList;
+import org.wso2.carbon.device.application.mgt.common.ApplicationRelease;
+import org.wso2.carbon.device.application.mgt.common.Filter;
+import org.wso2.carbon.device.application.mgt.common.LifecycleStateTransition;
+import org.wso2.carbon.device.application.mgt.common.Pagination;
 import org.wso2.carbon.device.application.mgt.common.exception.DBConnectionException;
 import org.wso2.carbon.device.application.mgt.core.dao.ApplicationDAO;
+import org.wso2.carbon.device.application.mgt.core.dao.common.Util;
 import org.wso2.carbon.device.application.mgt.core.dao.impl.AbstractDAOImpl;
 import org.wso2.carbon.device.application.mgt.core.exception.ApplicationManagementDAOException;
-import org.wso2.carbon.device.application.mgt.core.dao.common.Util;
 import org.wso2.carbon.device.application.mgt.core.util.ConnectionManagerUtil;
 import org.wso2.carbon.device.application.mgt.core.util.JSONUtil;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * This handles ApplicationDAO related operations.
+ */
 public class GenericApplicationDAOImpl extends AbstractDAOImpl implements ApplicationDAO {
 
     private static final Log log = LogFactory.getLog(GenericApplicationDAOImpl.class);
@@ -78,8 +91,7 @@ public class GenericApplicationDAOImpl extends AbstractDAOImpl implements Applic
             stmt.setInt(14, application.getPlatform().getId());
             stmt.setInt(15, application.getUser().getTenantId());
             stmt.setInt(16, application.getCurrentLifecycle().getLifecycleState().getId());
-            stmt.setDate(17, new Date(
-                    application.getCurrentLifecycle().getLifecycleStateModifiedAt().getTime()));
+            stmt.setDate(17, new Date(application.getCurrentLifecycle().getLifecycleStateModifiedAt().getTime()));
             stmt.setString(18, application.getCurrentLifecycle().getGetLifecycleStateModifiedBy());
             stmt.executeUpdate();
 
@@ -88,6 +100,7 @@ public class GenericApplicationDAOImpl extends AbstractDAOImpl implements Applic
                 application.setId(rs.getInt(1));
             }
             insertApplicationTagsAndProperties(application, stmt, conn, isBatchExecutionSupported);
+            return application;
         } catch (DBConnectionException e) {
             throw new ApplicationManagementDAOException("Error occurred while obtaining the DB connection.", e);
         } catch (SQLException e) {
@@ -95,14 +108,12 @@ public class GenericApplicationDAOImpl extends AbstractDAOImpl implements Applic
         } finally {
             Util.cleanupResources(stmt, rs);
         }
-
-        return application;
     }
 
 
     @Override
     public ApplicationList getApplications(Filter filter) throws ApplicationManagementDAOException {
-        if(log.isDebugEnabled()){
+        if (log.isDebugEnabled()) {
             log.debug("Getting application data from the database");
             log.debug(String.format("Filter: limit=%s, offset=%", filter.getLimit(), filter.getOffset()));
         }
@@ -185,7 +196,7 @@ public class GenericApplicationDAOImpl extends AbstractDAOImpl implements Applic
 
     @Override
     public int getApplicationCount(Filter filter) throws ApplicationManagementDAOException {
-        if(log.isDebugEnabled()){
+        if (log.isDebugEnabled()) {
             log.debug("Getting application count from the database");
             log.debug(String.format("Filter: limit=%s, offset=%", filter.getLimit(), filter.getOffset()));
         }
@@ -276,9 +287,10 @@ public class GenericApplicationDAOImpl extends AbstractDAOImpl implements Applic
                 Util.cleanupResources(null, rsProperties);
                 Util.cleanupResources(null, rsTags);
             }
+            return application;
         } catch (SQLException e) {
-            throw new ApplicationManagementDAOException("Error occurred while getting application details with UUID "
-                    + uuid, e);
+            throw new ApplicationManagementDAOException(
+                    "Error occurred while getting application details with UUID " + uuid, e);
         } catch (JSONException e) {
             throw new ApplicationManagementDAOException("Error occurred while parsing JSON", e);
         } catch (DBConnectionException e) {
@@ -286,7 +298,6 @@ public class GenericApplicationDAOImpl extends AbstractDAOImpl implements Applic
         } finally {
             Util.cleanupResources(stmt, rs);
         }
-        return application;
     }
 
     @Override
@@ -341,7 +352,7 @@ public class GenericApplicationDAOImpl extends AbstractDAOImpl implements Applic
 
             List<LifecycleStateTransition> lifecycleStateTransitions = new ArrayList<>();
 
-            while(resultSet.next()) {
+            while (resultSet.next()) {
                 LifecycleStateTransition lifecycleStateTransition = new LifecycleStateTransition();
                 lifecycleStateTransition.setDescription(resultSet.getString(2));
                 lifecycleStateTransition.setNextState(resultSet.getString(1));
@@ -361,9 +372,8 @@ public class GenericApplicationDAOImpl extends AbstractDAOImpl implements Applic
 
     @Override
     public Application editApplication(Application application, int tenantId) throws ApplicationManagementDAOException {
-        Connection conn = null;
+        Connection conn;
         PreparedStatement stmt = null;
-        ResultSet rs = null;
         String sql = "";
         boolean isBatchExecutionSupported = ConnectionManagerUtil.isBatchQuerySupported();
         try {
@@ -431,13 +441,14 @@ public class GenericApplicationDAOImpl extends AbstractDAOImpl implements Applic
             stmt.executeUpdate();
 
             insertApplicationTagsAndProperties(application, stmt, conn, isBatchExecutionSupported);
+            return application;
         } catch (DBConnectionException e) {
             throw new ApplicationManagementDAOException("Error occurred while obtaining the DB connection.", e);
         } catch (SQLException e) {
             throw new ApplicationManagementDAOException("Error occurred while adding the application", e);
+        } finally {
+            Util.cleanupResources(stmt, null);
         }
-
-        return application;
     }
 
     /**
@@ -509,7 +520,7 @@ public class GenericApplicationDAOImpl extends AbstractDAOImpl implements Applic
 
     @Override
     public void deleteProperties(int applicationId) throws ApplicationManagementDAOException {
-        Connection conn = null;
+        Connection conn;
         PreparedStatement stmt = null;
         try {
             conn = this.getDBConnection();
@@ -530,10 +541,8 @@ public class GenericApplicationDAOImpl extends AbstractDAOImpl implements Applic
 
     @Override
     public void deleteTags(int applicationId) throws ApplicationManagementDAOException {
-
-        Connection conn = null;
+        Connection conn;
         PreparedStatement stmt = null;
-        ResultSet rs = null;
         try {
             conn = this.getDBConnection();
             String sql = "DELETE FROM APPM_APPLICATION_TAG WHERE APPLICATION_ID = ?";
@@ -547,7 +556,7 @@ public class GenericApplicationDAOImpl extends AbstractDAOImpl implements Applic
             throw new ApplicationManagementDAOException(
                     "Error occurred while deleting tags of application: " + applicationId, e);
         } finally {
-            Util.cleanupResources(stmt, rs);
+            Util.cleanupResources(stmt, null);
         }
     }
 
@@ -556,13 +565,11 @@ public class GenericApplicationDAOImpl extends AbstractDAOImpl implements Applic
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
-        String sql = "";
-
+        String sql;
         int id = 0;
-
         try {
             conn = this.getDBConnection();
-            sql += "SELECT ID FROM APPM_APPLICATION WHERE UUID = ?";
+            sql = "SELECT ID FROM APPM_APPLICATION WHERE UUID = ?";
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, uuid);
             rs = stmt.executeQuery();
@@ -576,7 +583,6 @@ public class GenericApplicationDAOImpl extends AbstractDAOImpl implements Applic
         } finally {
             Util.cleanupResources(stmt, rs);
         }
-
         return id;
     }
 

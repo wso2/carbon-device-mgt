@@ -24,16 +24,17 @@ import org.json.JSONException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This utility class handles the JSON manipulation related tasks.
+ */
 public class JSONUtil {
 
     public static List<String> jsonArrayStringToList(String value) throws JSONException {
         JSONArray jsonArray = new JSONArray(value);
         List<String> list = new ArrayList<>();
-        if (jsonArray != null) {
-            int len = jsonArray.length();
-            for (int i = 0; i < len; i++) {
-                list.add(jsonArray.get(i).toString());
-            }
+        int len = jsonArray.length();
+        for (int i = 0; i < len; i++) {
+            list.add(jsonArray.get(i).toString());
         }
         return list;
     }

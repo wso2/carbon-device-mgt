@@ -25,7 +25,6 @@ import org.wso2.carbon.device.application.mgt.api.services.ApplicationManagement
 import org.wso2.carbon.device.application.mgt.common.Application;
 import org.wso2.carbon.device.application.mgt.common.ApplicationList;
 import org.wso2.carbon.device.application.mgt.common.Filter;
-import org.wso2.carbon.device.application.mgt.common.User;
 import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
 import org.wso2.carbon.device.application.mgt.common.services.ApplicationManager;
 import org.wso2.carbon.device.application.mgt.core.util.Constants;
@@ -43,7 +42,9 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
-
+/**
+ * Implementation of Application Management related APIs.
+ */
 @Produces({"application/json"})
 @Consumes({"application/json"})
 @Path("/applications")

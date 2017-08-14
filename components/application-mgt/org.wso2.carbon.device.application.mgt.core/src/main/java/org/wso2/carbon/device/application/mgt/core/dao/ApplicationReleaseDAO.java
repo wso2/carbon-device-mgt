@@ -18,6 +18,9 @@
  */
 package org.wso2.carbon.device.application.mgt.core.dao;
 
+/**
+ * This is responsible for Application Release related DAO operations.
+ */
 public interface ApplicationReleaseDAO {
 
 }

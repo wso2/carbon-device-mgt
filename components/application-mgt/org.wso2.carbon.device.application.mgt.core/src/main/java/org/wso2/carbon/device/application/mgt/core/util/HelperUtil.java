@@ -20,9 +20,12 @@ package org.wso2.carbon.device.application.mgt.core.util;
 
 import java.util.UUID;
 
+/**
+ * Utility methods used in the Application Management.
+ */
 public class HelperUtil {
 
-    public static String generateApplicationUuid(){
+    public static String generateApplicationUuid() {
         return UUID.randomUUID().toString();
     }
 

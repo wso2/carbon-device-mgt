@@ -18,13 +18,14 @@
  */
 package org.wso2.carbon.device.application.mgt.core.config;
 
-import org.wso2.carbon.device.application.mgt.core.deployer.Platform;
-
+import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.util.List;
 
+/**
+ * Represents the Application Management Configuration.
+ */
 @XmlRootElement(name = "ApplicationManagementConfiguration")
 public class Configuration {
 

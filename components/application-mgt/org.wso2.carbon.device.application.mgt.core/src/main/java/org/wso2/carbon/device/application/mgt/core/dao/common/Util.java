@@ -21,7 +21,12 @@ package org.wso2.carbon.device.application.mgt.core.dao.common;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONException;
-import org.wso2.carbon.device.application.mgt.common.*;
+import org.wso2.carbon.device.application.mgt.common.Application;
+import org.wso2.carbon.device.application.mgt.common.Category;
+import org.wso2.carbon.device.application.mgt.common.Lifecycle;
+import org.wso2.carbon.device.application.mgt.common.LifecycleState;
+import org.wso2.carbon.device.application.mgt.common.Platform;
+import org.wso2.carbon.device.application.mgt.common.User;
 import org.wso2.carbon.device.application.mgt.core.util.JSONUtil;
 
 import java.sql.PreparedStatement;

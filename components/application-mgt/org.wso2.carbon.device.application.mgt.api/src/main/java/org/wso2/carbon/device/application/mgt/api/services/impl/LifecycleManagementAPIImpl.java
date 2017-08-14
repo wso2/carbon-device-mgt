@@ -22,16 +22,12 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.application.mgt.api.APIUtil;
 import org.wso2.carbon.device.application.mgt.api.services.LifecycleManagementAPI;
 import org.wso2.carbon.device.application.mgt.common.LifecycleState;
-import org.wso2.carbon.device.application.mgt.common.User;
-import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
 import org.wso2.carbon.device.application.mgt.common.exception.LifecycleManagementException;
-import org.wso2.carbon.device.application.mgt.common.services.ApplicationManager;
 import org.wso2.carbon.device.application.mgt.common.services.LifecycleStateManager;
 
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;

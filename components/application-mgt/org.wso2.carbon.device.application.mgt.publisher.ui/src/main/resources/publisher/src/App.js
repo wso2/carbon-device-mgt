@@ -17,17 +17,36 @@
  */
 
 import React, { Component } from 'react';
+import {BrowserRouter as Router, Route, Switch, Redirect} from 'react-router-dom'
 import './App.css';
 
-class App extends Component {
+class Base extends Component {
+    constructor() {
+        super();
+        this.state = {
+
+        }
+    }
+
+    render() {
+        return ();
+    }
+}
+
+class Publisher extends Component {
   render() {
     return (
       <div className="App">
-        <div className="App-header">
-        </div>
+          <Router basename="publisher">
+              <Switch>
+                  <Route path="/login" component=""/>
+                  <Route path="/logout" component=""/>
+                  <Route component={Base}/>
+              </Switch>
+          </Router>
       </div>
     );
   }
 }
 
-export default App;
+export default Publisher;

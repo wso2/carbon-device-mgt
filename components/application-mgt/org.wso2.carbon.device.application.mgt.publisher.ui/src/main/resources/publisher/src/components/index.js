@@ -16,13 +16,6 @@
  * under the License.
  */
 
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import Publisher from './App';
-import { LocaleProvider } from 'antd';
-import registerServiceWorker from './registerServiceWorker';
-import enUS from 'antd/lib/locale-provider/en_US';
-
-ReactDOM.render(<LocaleProvider locale={enUS}><Publisher/></LocaleProvider>, document.getElementById('root'));
-registerServiceWorker();
+/**
+ * Contains all UI components related to Application, Login and Platform
+ */

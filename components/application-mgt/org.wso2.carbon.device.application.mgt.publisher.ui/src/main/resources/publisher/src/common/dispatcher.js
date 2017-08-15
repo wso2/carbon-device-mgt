@@ -16,13 +16,7 @@
  * under the License.
  */
 
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import Publisher from './App';
-import { LocaleProvider } from 'antd';
-import registerServiceWorker from './registerServiceWorker';
-import enUS from 'antd/lib/locale-provider/en_US';
+import {Dispatcher} from 'flux';
 
-ReactDOM.render(<LocaleProvider locale={enUS}><Publisher/></LocaleProvider>, document.getElementById('root'));
-registerServiceWorker();
+export default new Dispatcher();
+

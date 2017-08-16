@@ -15,12 +15,3 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
-import Login from './User/Login/Login'
-import BaseLayout from './Base/BaseLayout'
-
-/**
- * Contains all UI components related to Application, Login and Platform
- */
-
-export {Login, BaseLayout};

@@ -16,11 +16,11 @@
  * under the License.
  */
 
-import Login from './User/Login/Login'
-import BaseLayout from './Base/BaseLayout'
+import React, {Component} from 'react';
 
-/**
- * Contains all UI components related to Application, Login and Platform
- */
+class BaseLayout extends Component {
 
-export {Login, BaseLayout};
+
+}
+
+export default BaseLayout;

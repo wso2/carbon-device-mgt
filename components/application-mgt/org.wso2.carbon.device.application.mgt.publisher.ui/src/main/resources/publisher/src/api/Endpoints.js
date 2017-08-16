@@ -16,11 +16,6 @@
  * under the License.
  */
 
-import Login from './User/Login/Login'
-import BaseLayout from './Base/BaseLayout'
-
 /**
- * Contains all UI components related to Application, Login and Platform
- */
-
-export {Login, BaseLayout};
+ * Defines the list of App Manager APIs.
+ * */

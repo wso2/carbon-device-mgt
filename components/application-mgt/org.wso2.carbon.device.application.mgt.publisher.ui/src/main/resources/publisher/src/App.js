@@ -19,17 +19,35 @@
 import React, { Component } from 'react';
 import {BrowserRouter as Router, Route, Switch, Redirect} from 'react-router-dom'
 import './App.css';
+import {Login, BaseLayout} from './components'
 
 class Base extends Component {
     constructor() {
         super();
         this.state = {
-
+            user: ""
         }
     }
 
     render() {
-        return ();
+        if (this.state.user) {
+            return(<BaseLayout>
+                    <Switch>
+                        <Route path={"assets/apps"}/>
+                        <Route path={"assets/apps/:app"}/>
+                        <Route path={"assets/apps/create"}/>
+                        <Route path={"assets/apps/edit"}/>
+                        <Route path={"assets/platform/:platform"}/>
+                        <Route path={"assets/platform/create"}/>
+                        <Route path={"assets/platform/edit"}/>
+                        <Route path={"assets/reviews"}/>
+                        <Route path={"assets/reviews/:review"}/>
+                    </Switch>
+                </BaseLayout>
+            )
+        }
+
+        return (<Redirect to={"/login"}/>)
     }
 }
 
@@ -39,8 +57,8 @@ class Publisher extends Component {
       <div className="App">
           <Router basename="publisher">
               <Switch>
-                  <Route path="/login" component=""/>
-                  <Route path="/logout" component=""/>
+                  <Route path="/login" component={Login}/>
+                  <Route path="/logout" component={Login}/>
                   <Route component={Base}/>
               </Switch>
           </Router>

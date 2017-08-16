@@ -116,6 +116,11 @@ var invokers = function () {
         log.debug("Request payload if any : " + stringify(requestPayload));
         log.debug("Response status : " + xmlHttpRequest.status);
         log.debug("Response payload if any : " + xmlHttpRequest.responseText);
+        if (devicemgtProps["isCloud"]) {
+            log.info("Request : " + httpMethod + " " + endpoint);
+            log.info("Request payload if any : " + stringify(requestPayload));
+            log.info("Response status : " + xmlHttpRequest.status);
+        }
 
         if (xmlHttpRequest.status == 401) {
             if ((xmlHttpRequest.responseText == TOKEN_EXPIRED ||

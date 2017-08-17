@@ -36,6 +36,7 @@ class Login extends Component {
     handleLogin(event) {
         console.log(this.state);
 
+
         event.preventDefault();
     }
 
@@ -66,8 +67,11 @@ class Login extends Component {
     render() {
         return (
             <div>
+
+                {/*TODO: Style the components.*/}
+
                 <Card>
-                    <CardTitle title="Login to App Publisher"/>
+                    <CardTitle title="WSO2 IoT App Publisher"/>
 
                     <CardMedia>
                     </CardMedia>

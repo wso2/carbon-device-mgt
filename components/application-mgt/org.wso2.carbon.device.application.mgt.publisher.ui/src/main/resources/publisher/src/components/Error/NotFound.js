@@ -15,14 +15,27 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+import React, {Component} from 'react';
 
-import Login from './User/Login/Login'
-import BaseLayout from './Base/BaseLayout'
-import Create from './Application/Create'
-import NotFound from './Error/NotFound'
+class Error extends Component {
 
-/**
- * Contains all UI components related to Application, Login and Platform
- */
+    constructor() {
+        super();
+    }
 
-export {Login, BaseLayout, Create, NotFound};
+    componentWillMount() {
+        console.log("In Crate")
+    }
+
+    render() {
+
+        return (
+
+            <div>
+               404 not found
+            </div>
+        );
+    }
+}
+
+export default Error;

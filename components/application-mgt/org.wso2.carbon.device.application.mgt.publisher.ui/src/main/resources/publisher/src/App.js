@@ -16,34 +16,44 @@
  * under the License.
  */
 
-import React, { Component } from 'react';
-import {BrowserRouter as Router, Route, Switch, Redirect} from 'react-router-dom'
-import './App.css';
-import {Login, BaseLayout} from './components'
+import React, {Component} from 'react';
+import {BrowserRouter as Router, Redirect, Route, Switch} from 'react-router-dom'
+import './App.css'
+import {BaseLayout, Create, Login, NotFound} from './components'
+import createHistory from 'history/createBrowserHistory';
+
+const history = createHistory({basename:'/publisher'});
+
 
 class Base extends Component {
     constructor() {
         super();
         this.state = {
-            user: ""
+            user: "m"
         }
     }
 
     render() {
         if (this.state.user) {
-            return(<BaseLayout>
-                    <Switch>
-                        <Route path={"assets/apps"}/>
-                        <Route path={"assets/apps/:app"}/>
-                        <Route path={"assets/apps/create"}/>
-                        <Route path={"assets/apps/edit"}/>
-                        <Route path={"assets/platform/:platform"}/>
-                        <Route path={"assets/platform/create"}/>
-                        <Route path={"assets/platform/edit"}/>
-                        <Route path={"assets/reviews"}/>
-                        <Route path={"assets/reviews/:review"}/>
-                    </Switch>
-                </BaseLayout>
+            return(
+                <div className="container">
+                    <BaseLayout>
+                        <Switch>
+                            <Redirect exact path={"/"} to={"/assets"}/>
+                            <Route exact path={"/assets"} component={NotFound}/>
+                            <Route path={"/assets/apps"} component={Create}/>
+                            <Route path={"/assets/apps/:app"}/>
+                            <Route path={"/assets/apps/create"}/>
+                            <Route path={"/assets/apps/edit"}/>
+                            <Route path={"/assets/platform/:platform"}/>
+                            <Route path={"/assets/platform/create"}/>
+                            <Route path={"/assets/platform/edit"}/>
+                            <Route path={"/assets/reviews"}/>
+                            <Route path={"/assets/reviews/:review"}/>
+                            <Route component={NotFound} />
+                        </Switch>
+                    </BaseLayout>
+                </div>
             )
         }
 
@@ -55,7 +65,7 @@ class Publisher extends Component {
   render() {
     return (
       <div className="App">
-          <Router basename="publisher">
+          <Router basename="publisher" history={history}>
               <Switch>
                   <Route path="/login" component={Login}/>
                   <Route path="/logout" component={Login}/>

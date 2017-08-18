@@ -21,6 +21,8 @@ package org.wso2.carbon.device.application.mgt.core.dao;
 import org.wso2.carbon.device.application.mgt.common.ApplicationRelease;
 import org.wso2.carbon.device.application.mgt.core.exception.ApplicationManagementDAOException;
 
+import java.util.List;
+
 /**
  * This is responsible for Application Release related DAO operations.
  */
@@ -35,5 +37,23 @@ public interface ApplicationReleaseDAO {
      */
     ApplicationRelease createRelease(ApplicationRelease applicationRelease) throws
             ApplicationManagementDAOException;
+
+    /**
+     * To get a release details with the particular version.
+     * @param applicationUuid UUID of the application to get the release.
+     * @param versionName Name of the version
+     * @return ApplicationRelease for the particular version of the given application
+     * @throws ApplicationManagementDAOException Application Management DAO Exception.
+     */
+    ApplicationRelease getRelease(String applicationUuid, String versionName) throws ApplicationManagementDAOException;
+
+    /**
+     * To get all the releases of a particular application.
+     *
+     * @param applicationUUID Application UUID
+     * @return list of the application releases
+     * @throws ApplicationManagementDAOException Application Management DAO Exception.
+     */
+    List<ApplicationRelease> getApplicationReleases(String applicationUUID) throws ApplicationManagementDAOException;
 
 }

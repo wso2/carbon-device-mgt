@@ -28,11 +28,7 @@ import org.wso2.carbon.device.application.mgt.common.services.ApplicationStorage
 import org.wso2.carbon.device.application.mgt.core.internal.DataHolder;
 import org.wso2.carbon.device.application.mgt.core.util.Constants;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.util.List;
 
 /**
@@ -138,6 +134,40 @@ public class ApplicationStorageManagerImpl implements ApplicationStorageManager{
             }
         }
 
+    }
+
+    @Override
+    public InputStream getReleasedArtifacts(String applicationUUID, String versionName)
+            throws ApplicationStorageManagementException {
+        Application application;
+        try {
+            application = DataHolder.getInstance().getApplicationManager().getApplication(applicationUUID);
+        } catch (ApplicationManagementException e) {
+            throw new ApplicationStorageManagementException("Exception while retrieving the application details for "
+                    + "the application with UUID " + applicationUUID);
+        }
+        if (application == null) {
+            throw new ApplicationStorageManagementException("Application with UUID " + applicationUUID + " does not "
+                    + "exist. Cannot retrieve release artifacts for not existing application.");
+        }
+        String artifactPath = Constants.ARTIFACT_PATH + application.getId() + File.separator + versionName;
+
+        if (log.isDebugEnabled()) {
+            log.debug("ApplicationRelease artifacts are searched in the location " + artifactPath);
+        }
+
+        File binaryFile = new File(artifactPath);
+
+        if (!binaryFile.exists()) {
+            throw new ApplicationStorageManagementException("Binary file does not exist for this release");
+        } else {
+            try {
+                return new FileInputStream(artifactPath);
+            } catch (FileNotFoundException e) {
+                throw new ApplicationStorageManagementException("Binary file does not exist for the version " +
+                        versionName + " for the application ", e);
+            }
+        }
     }
 
     /**

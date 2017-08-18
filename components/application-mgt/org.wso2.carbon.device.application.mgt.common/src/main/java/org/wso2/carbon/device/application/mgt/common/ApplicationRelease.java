@@ -61,14 +61,6 @@ public class ApplicationRelease {
         this.id = id;
     }
 
-    public int getVersionId() {
-        return versionId;
-    }
-
-    public void setVersionId(int versionId) {
-        this.versionId = versionId;
-    }
-
     public String getVersionName() {
         return versionName;
     }
@@ -89,8 +81,8 @@ public class ApplicationRelease {
         return releaseChannel;
     }
 
-    public void setReleaseChannel(Channel releaseChannel) {
-        this.releaseChannel = releaseChannel;
+    public void setReleaseChannel(String releaseChannel) {
+        this.releaseChannel = Channel.valueOf(releaseChannel);
     }
 
     public String getReleaseDetails() {

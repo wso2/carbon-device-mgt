@@ -22,6 +22,7 @@ package org.wso2.carbon.device.application.mgt.common.services;
 import org.wso2.carbon.device.application.mgt.common.exception.ApplicationStorageManagementException;
 
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.List;
 
 /**
@@ -47,5 +48,15 @@ public interface ApplicationStorageManager {
      * @throws ApplicationStorageManagementException Application Storage Management Exception.
      */
     public void uploadReleaseArtifacts(String applicationUUID, String versionName, InputStream binaryFile) throws
+            ApplicationStorageManagementException;
+
+    /**
+     * To get released artifacts for the particular version of the application.
+     * @param applicationUUID UUID of the Application
+     * @param versionName Version of the release to be retrieved
+     * @return the artifact related with the Application Release.
+     * @throws ApplicationStorageManagementException Application Storage Management Exception.
+     */
+    public InputStream getReleasedArtifacts(String applicationUUID, String versionName) throws
             ApplicationStorageManagementException;
 }

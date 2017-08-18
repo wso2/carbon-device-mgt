@@ -23,12 +23,14 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.apache.cxf.jaxrs.ext.multipart.Multipart;
 import org.wso2.carbon.device.application.mgt.api.APIUtil;
+import org.wso2.carbon.device.application.mgt.api.FileStreamingOutput;
 import org.wso2.carbon.device.application.mgt.api.services.ApplicationManagementAPI;
 import org.wso2.carbon.device.application.mgt.common.Application;
 import org.wso2.carbon.device.application.mgt.common.ApplicationList;
 import org.wso2.carbon.device.application.mgt.common.ApplicationRelease;
 import org.wso2.carbon.device.application.mgt.common.Filter;
 import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
+import org.wso2.carbon.device.application.mgt.common.exception.ApplicationStorageManagementException;
 import org.wso2.carbon.device.application.mgt.common.services.ApplicationManager;
 import org.wso2.carbon.device.application.mgt.common.services.ApplicationReleaseManager;
 import org.wso2.carbon.device.application.mgt.common.services.ApplicationStorageManager;
@@ -44,6 +46,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.io.InputStream;
@@ -313,6 +316,51 @@ public class ApplicationManagementAPIImpl implements ApplicationManagementAPI {
             log.error(errorMessage, e);
             return APIUtil.getResponse(new ApplicationManagementException(errorMessage, e),
                     Response.Status.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Override
+    @GET
+    @Produces(MediaType.APPLICATION_OCTET_STREAM)
+    @Path("/release-artifacts/{uuid}/{version}")
+    public Response getApplicationReleaseArtifacts(@PathParam("uuid") String applicationUUID,
+            @PathParam("version") String version) {
+        ApplicationStorageManager applicationStorageManager = APIUtil.getApplicationStorageManager();
+        try {
+            InputStream binaryFile = applicationStorageManager.getReleasedArtifacts(applicationUUID, version);
+            FileStreamingOutput fileStreamingOutput = new FileStreamingOutput(binaryFile);
+            Response.ResponseBuilder response = Response.status(Response.Status.OK).entity(fileStreamingOutput);
+            response.header("Content-Disposition", "attachment; filename=\"" + version + "\"");
+            return response.build();
+        } catch (ApplicationStorageManagementException e) {
+            log.error("Error while retrieving the binary file of the applcation release for the application UUID " +
+                    applicationUUID + " and version " + version, e);
+            if (e.getMessage().contains("Binary file does not exist")) {
+                return APIUtil.getResponse(e, Response.Status.NOT_FOUND);
+            } else {
+                return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
+            }
+        }
+    }
+
+    @Override
+    @Path("/release/{uuid}")
+    @GET
+    public Response getApplicationReleases(@PathParam("uuid") String applicationUUID,
+            @QueryParam("version") String version) {
+        ApplicationReleaseManager applicationReleaseManager = APIUtil.getApplicationReleaseManager();
+        try {
+            if (version == null || version.isEmpty()) {
+                List<ApplicationRelease> applicationReleases = applicationReleaseManager.getReleases(applicationUUID);
+                return Response.status(Response.Status.OK).entity(applicationReleases).build();
+            } else {
+                ApplicationRelease applicationRelease = applicationReleaseManager.getRelease(applicationUUID, version);
+                return Response.status(Response.Status.OK).entity(applicationRelease).build();
+            }
+        } catch (ApplicationManagementException e) {
+            log.error("Error while getting all the application releases for the application with the UUID "
+                    + applicationUUID, e);
+            return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
         }
     }
 }

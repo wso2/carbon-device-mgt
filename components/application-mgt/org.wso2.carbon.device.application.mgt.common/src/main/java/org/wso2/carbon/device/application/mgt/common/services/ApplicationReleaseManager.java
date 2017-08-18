@@ -21,6 +21,8 @@ package org.wso2.carbon.device.application.mgt.common.services;
 import org.wso2.carbon.device.application.mgt.common.ApplicationRelease;
 import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
 
+import java.util.List;
+
 /**
  * ApplicationReleaseManager is responsible for handling all the operations related with
  * {@link org.wso2.carbon.device.application.mgt.common.ApplicationRelease} which involving addition, updation ,
@@ -38,6 +40,23 @@ public interface ApplicationReleaseManager {
      */
     public ApplicationRelease createRelease(String UUID, ApplicationRelease applicationRelease) throws
             ApplicationManagementException;
+
+    /**
+     * To get the application release of the Application/
+     * @param UUID UUID of the Application.
+     * @param version Version of the ApplicationRelease that need to be retrieved.
+     * @return ApplicationRelease related with particular Application UUID and version.
+     * @throws ApplicationManagementException ApplicationManagementException
+     */
+    public ApplicationRelease getRelease(String UUID, String version) throws ApplicationManagementException;
+
+    /**
+     * To get all the releases of a particular Application.
+     * @param UUID UUID of the Application to get all the releases.
+     * @return the List of the Application releases related with the particular Application.
+     * @throws ApplicationManagementException Application Management Exception.
+     */
+    public List<ApplicationRelease> getReleases(String UUID)  throws ApplicationManagementException;
 
     /**
      * To make a release as the default one for an application.

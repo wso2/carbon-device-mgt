@@ -32,6 +32,9 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -95,6 +98,111 @@ public class GenericApplicationReleaseDAOImpl extends AbstractDAOImpl implements
                             + applicationRelease.getApplication().getUuid(), e);
         } finally {
             Util.cleanupResources(statement, resultSet);
+        }
+    }
+
+    @Override
+    public ApplicationRelease getRelease(String applicationUuid, String versionName)
+            throws ApplicationManagementDAOException {
+        Connection connection;
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+        String sql = "SELECT * FROM APPM_APPLICATION_RELEASE WHERE VERSION_NAME = ?  AND APPM_APPLICATION_ID = "
+                + "(SELECT ID FROM APPM_APPLICATION WHERE UUID = ?)";
+        ApplicationRelease applicationRelease = null;
+        ResultSet rsProperties = null;
+
+        try {
+            connection = this.getDBConnection();
+            statement = connection.prepareStatement(sql);
+            statement.setString(1, versionName);
+            statement.setString(2, applicationUuid);
+            resultSet = statement.executeQuery();
+
+            if (resultSet.next()) {
+                applicationRelease = new ApplicationRelease();
+                applicationRelease.setVersionName(versionName);
+                applicationRelease.setDefault(resultSet.getBoolean("IS_DEFAULT"));
+                applicationRelease.setCreatedAt(resultSet.getDate("CREATED_AT"));
+                applicationRelease.setReleaseChannel(resultSet.getString("RELEASE_CHANNEL"));
+                applicationRelease.setReleaseDetails(resultSet.getString("RELEASE_DETAILS"));
+                applicationRelease.setResource(resultSet.getString("RESOURCE"));
+
+                sql = "SELECT * FROM APPM_RELEASE_PROPERTY WHERE APPLICATION_RELEASE_ID=?";
+                statement = connection.prepareStatement(sql);
+                statement.setInt(1, resultSet.getInt("ID"));
+                rsProperties = statement.executeQuery();
+
+                Map<String, String> properties = new HashMap<>();
+                while (rsProperties.next()) {
+                    properties.put(rsProperties.getString("PROP_KEY"),
+                            rsProperties.getString("PROP_VAL"));
+                }
+                applicationRelease.setProperties(properties);
+            }
+            return applicationRelease;
+        } catch (DBConnectionException e) {
+            throw new ApplicationManagementDAOException("Database connection exception while trying to gett the "
+                    + "release details of the application with UUID " + applicationUuid + " and version " +
+                    versionName, e);
+        } catch (SQLException e) {
+            throw new ApplicationManagementDAOException("Error while getting release details of the application " +
+                    applicationUuid +  " and version " + versionName + " , while executing the query " + sql, e);
+        } finally {
+            Util.cleanupResources(statement, resultSet);
+            Util.cleanupResources(null, rsProperties);
+        }
+    }
+
+    @Override
+    public List<ApplicationRelease> getApplicationReleases(String applicationUUID)
+            throws ApplicationManagementDAOException {
+        Connection connection;
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+        String sql = "SELECT * FROM APPM_APPLICATION_RELEASE WHERE APPM_APPLICATION_ID = (SELECT ID FROM "
+                + "APPM_APPLICATION WHERE UUID = ?)";
+        List<ApplicationRelease> applicationReleases = new ArrayList<>();
+        ResultSet rsProperties = null;
+
+        try {
+            connection = this.getDBConnection();
+            statement = connection.prepareStatement(sql);
+            statement.setString(1, applicationUUID);
+            resultSet = statement.executeQuery();
+
+            while (resultSet.next()) {
+                ApplicationRelease applicationRelease = new ApplicationRelease();
+                applicationRelease.setVersionName(resultSet.getString("VERSION_NAME"));
+                applicationRelease.setDefault(resultSet.getBoolean("IS_DEFAULT"));
+                applicationRelease.setCreatedAt(resultSet.getDate("CREATED_AT"));
+                applicationRelease.setReleaseChannel(resultSet.getString("RELEASE_CHANNEL"));
+                applicationRelease.setReleaseDetails(resultSet.getString("RELEASE_DETAILS"));
+                applicationRelease.setResource(resultSet.getString("RESOURCE"));
+
+                sql = "SELECT * FROM APPM_RELEASE_PROPERTY WHERE APPLICATION_RELEASE_ID= ?";
+                statement = connection.prepareStatement(sql);
+                statement.setInt(1, resultSet.getInt("ID"));
+                rsProperties = statement.executeQuery();
+
+                Map<String, String> properties = new HashMap<>();
+                while (rsProperties.next()) {
+                    properties.put(rsProperties.getString("PROP_KEY"), rsProperties.getString("PROP_VAL"));
+                }
+                applicationRelease.setProperties(properties);
+                applicationReleases.add(applicationRelease);
+            }
+            return applicationReleases;
+        } catch (DBConnectionException e) {
+            throw new ApplicationManagementDAOException("Database connection exception while trying to get the "
+                    + "release details of the application with UUID " + applicationUUID, e);
+        } catch (SQLException e) {
+            throw new ApplicationManagementDAOException(
+                    "Error while getting all the release details of the " + "application " + applicationUUID
+                            + ", while executing the query " + sql, e);
+        } finally {
+            Util.cleanupResources(statement, resultSet);
+            Util.cleanupResources(null, rsProperties);
         }
     }
 }

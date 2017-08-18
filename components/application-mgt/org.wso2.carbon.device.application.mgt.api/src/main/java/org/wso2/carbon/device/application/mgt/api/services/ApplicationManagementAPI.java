@@ -491,4 +491,83 @@ public interface ApplicationManagementAPI {
             @PathParam("uuid") String applicationUUID,
             @Multipart(value = "applicationRelease", type = "application/json") ApplicationRelease applicationRelease,
             @Multipart(value = "binaryFile") Attachment binaryFile);
+
+    @GET
+    @Path("/release-artifacts/{uuid}/{version}")
+    @Produces(MediaType.APPLICATION_OCTET_STREAM)
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @ApiOperation(
+            consumes = MediaType.APPLICATION_JSON,
+            produces = MediaType.APPLICATION_OCTET_STREAM,
+            httpMethod = "POST",
+            value = "Create an application release",
+            notes = "This will create a new application release",
+            tags = "Application Management",
+            extensions = {
+                    @Extension(properties = {
+                            @ExtensionProperty(name = SCOPE, value = "perm:application:get")
+                    })
+            }
+    )
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            code = 200,
+                            message = "OK. \n Successfully retrieved the Application release.",
+                            response = Attachment.class),
+                    @ApiResponse(
+                            code = 500,
+                            message = "Internal Server Error. \n Error occurred while releasing the application.",
+                            response = ErrorResponse.class)
+            })
+    Response getApplicationReleaseArtifacts(
+            @ApiParam(
+                    name = "UUID",
+                    value = "Unique identifier of the Application",
+                    required = true)
+            @PathParam("uuid") String applicationUUID,
+            @ApiParam(
+                    name = "Version",
+                    value = "Version of the Application release need to be retrieved",
+                    required = true)
+            @PathParam("version") String version);
+
+    @GET
+    @Path("/release/{uuid}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(
+            consumes = MediaType.APPLICATION_JSON,
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "GET",
+            value = "Get all the releases or specific release of an application",
+            notes = "This will retrieve the all the releases or specific release of an application",
+            tags = "Application Management",
+            extensions = {
+                    @Extension(properties = {
+                            @ExtensionProperty(name = SCOPE, value = "perm:application:get")
+                    })
+            }
+    )
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            code = 200,
+                            message = "OK. \n Successfully retrieved the Application release."),
+                    @ApiResponse(
+                            code = 500,
+                            message = "Internal Server Error. \n Error occurred while releasing the application.",
+                            response = ErrorResponse.class)
+            })
+    Response getApplicationReleases(
+            @ApiParam(
+                    name = "UUID",
+                    value = "Unique identifier of the Application",
+                    required = true)
+            @PathParam("uuid") String applicationUUID,
+            @ApiParam(
+                    name = "version",
+                    value = "Version of the application",
+                    required = false)
+            @QueryParam("version") String version);
 }

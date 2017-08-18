@@ -53,4 +53,6 @@ public class Constants {
      */
     public static final String[] LIFE_CYCLES = {"CREATED", "IN REVIEW", "APPROVED", "REJECTED", "PUBLISHED",
             "UNPUBLISHED", "RETIRED"};
+
+    public static String ARTIFACT_PATH = "";
 }

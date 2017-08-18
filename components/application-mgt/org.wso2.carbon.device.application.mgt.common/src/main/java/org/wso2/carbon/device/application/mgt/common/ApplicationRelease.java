@@ -18,6 +18,8 @@
  */
 package org.wso2.carbon.device.application.mgt.common;
 
+import org.wso2.carbon.device.application.mgt.common.jaxrs.Exclude;
+
 import java.util.Date;
 import java.util.Map;
 
@@ -30,6 +32,7 @@ public class ApplicationRelease {
         PRODUCTION, ALPHA, BETA
     }
 
+    @Exclude
     private int id;
 
     private int versionId;
@@ -45,10 +48,6 @@ public class ApplicationRelease {
     private Date createdAt;
 
     private Application application;
-
-    private Date lifecycleStateModifiedAt;
-
-    private String lifecycleStateModifiedBy;
 
     private Map<String, String> properties;
 
@@ -116,22 +115,6 @@ public class ApplicationRelease {
 
     public void setApplication(Application application) {
         this.application = application;
-    }
-
-    public Date getLifecycleStateModifiedAt() {
-        return lifecycleStateModifiedAt;
-    }
-
-    public void setLifecycleStateModifiedAt(Date lifecycleStateModifiedAt) {
-        this.lifecycleStateModifiedAt = lifecycleStateModifiedAt;
-    }
-
-    public String getLifecycleStateModifiedBy() {
-        return lifecycleStateModifiedBy;
-    }
-
-    public void setLifecycleStateModifiedBy(String lifecycleStateModifiedBy) {
-        this.lifecycleStateModifiedBy = lifecycleStateModifiedBy;
     }
 
     public Map<String, String> getProperties() {

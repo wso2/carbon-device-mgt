@@ -16,33 +16,18 @@
  *   under the License.
  *
  */
+
 package org.wso2.carbon.device.application.mgt.common.exception;
 
 /**
- * Represents the exception thrown during application management.
+ * Represents the exception thrown during storing and retrieving the artifacts.
  */
-public class ApplicationManagementException extends Exception {
-    private String message;
-
-    public ApplicationManagementException(String message, Throwable throwable) {
-        super(message, throwable);
-        setMessage(message);
+public class ApplicationStorageManagementException extends ApplicationManagementException{
+    public ApplicationStorageManagementException(String message, Throwable ex) {
+        super(message, ex);
     }
 
-    public ApplicationManagementException(String message) {
+    public ApplicationStorageManagementException(String message) {
         super(message);
-        setMessage(message);
-    }
-
-    public ApplicationManagementException() {
-
-    }
-    @Override
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
     }
 }

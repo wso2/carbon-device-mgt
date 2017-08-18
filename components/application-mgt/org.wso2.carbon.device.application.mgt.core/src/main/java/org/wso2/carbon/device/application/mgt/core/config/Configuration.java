@@ -33,6 +33,8 @@ public class Configuration {
 
     private List<Extension> extensions;
 
+    private Artifacts artifacts;
+
     @XmlElement(name = "DatasourceName", required = true)
     public String getDatasourceName() {
         return datasourceName;
@@ -50,6 +52,15 @@ public class Configuration {
 
     public void setExtensions(List<Extension> extensions) {
         this.extensions = extensions;
+    }
+
+    @XmlElement(name = "Artifacts")
+    public Artifacts getArtifacts() {
+        return artifacts;
+    }
+
+    public void setArtifacts(Artifacts artifacts) {
+        this.artifacts = artifacts;
     }
 }
 

@@ -21,6 +21,7 @@ package org.wso2.carbon.device.application.mgt.common.services;
 import org.wso2.carbon.device.application.mgt.common.*;
 import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
 
+import java.io.InputStream;
 import java.util.List;
 
 /**
@@ -87,5 +88,6 @@ public interface ApplicationManager {
      * @throws ApplicationManagementException Application Management Exception.
      */
     public Application getApplication(String uuid) throws ApplicationManagementException;
+
 
 }

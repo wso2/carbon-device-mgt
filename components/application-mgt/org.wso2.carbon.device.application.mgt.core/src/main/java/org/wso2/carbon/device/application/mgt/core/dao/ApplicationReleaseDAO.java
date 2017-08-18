@@ -18,9 +18,22 @@
  */
 package org.wso2.carbon.device.application.mgt.core.dao;
 
+import org.wso2.carbon.device.application.mgt.common.ApplicationRelease;
+import org.wso2.carbon.device.application.mgt.core.exception.ApplicationManagementDAOException;
+
 /**
  * This is responsible for Application Release related DAO operations.
  */
 public interface ApplicationReleaseDAO {
+
+    /**
+     * To create an Application release.
+     *
+     * @param applicationRelease Application Release that need to be created.
+     * @return Unique ID of the relevant release.
+     * @throws ApplicationManagementDAOException Application Management DAO Exception.
+     */
+    ApplicationRelease createRelease(ApplicationRelease applicationRelease) throws
+            ApplicationManagementDAOException;
 
 }

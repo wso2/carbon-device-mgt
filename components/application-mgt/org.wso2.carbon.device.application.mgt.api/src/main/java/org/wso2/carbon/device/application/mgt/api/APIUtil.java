@@ -23,9 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.application.mgt.api.beans.ErrorResponse;
 import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
-import org.wso2.carbon.device.application.mgt.common.services.ApplicationManager;
-import org.wso2.carbon.device.application.mgt.common.services.LifecycleStateManager;
-import org.wso2.carbon.device.application.mgt.common.services.PlatformManager;
+import org.wso2.carbon.device.application.mgt.common.services.*;
 
 import javax.ws.rs.core.Response;
 
@@ -40,6 +38,8 @@ public class APIUtil {
     private static ApplicationManager applicationManager;
     private static PlatformManager platformManager;
     private static LifecycleStateManager lifecycleStateManager;
+    private static ApplicationReleaseManager applicationReleaseManager;
+    private static ApplicationStorageManager applicationStorageManager;
 
     public static ApplicationManager getApplicationManager() {
         if (applicationManager == null) {
@@ -96,6 +96,50 @@ public class APIUtil {
         return lifecycleStateManager;
     }
 
+    /**
+     * To get the Application Release Manager from the osgi context.
+     *
+     * @return ApplicationRelease Manager instance in the current osgi context.
+     */
+    public static ApplicationReleaseManager getApplicationReleaseManager() {
+        if (applicationReleaseManager == null) {
+            synchronized (APIUtil.class) {
+                if (applicationReleaseManager == null) {
+                    PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+                    applicationReleaseManager = (ApplicationReleaseManager) ctx
+                            .getOSGiService(ApplicationReleaseManager.class, null);
+                    if (applicationReleaseManager == null) {
+                        String msg = "Application Release Manager service has not initialized.";
+                        log.error(msg);
+                        throw new IllegalStateException(msg);
+                    }
+                }
+            }
+        }
+        return applicationReleaseManager;
+    }
+
+    /**
+     * To get the Application Storage Manager from the osgi context.
+     * @return ApplicationStoreManager instance in the current osgi context.
+     */
+    public static ApplicationStorageManager getApplicationStorageManager() {
+        if (applicationStorageManager == null) {
+            synchronized (APIUtil.class) {
+                if (applicationStorageManager == null) {
+                    PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+                    applicationStorageManager = (ApplicationStorageManager) ctx
+                            .getOSGiService(ApplicationStorageManager.class, null);
+                    if (applicationStorageManager == null) {
+                        String msg = "Application Storage Manager service has not initialized.";
+                        log.error(msg);
+                        throw new IllegalStateException(msg);
+                    }
+                }
+            }
+        }
+        return applicationStorageManager;
+    }
     public static Response getResponse(ApplicationManagementException ex, Response.Status status) {
         return getResponse(ex.getMessage(), status);
     }

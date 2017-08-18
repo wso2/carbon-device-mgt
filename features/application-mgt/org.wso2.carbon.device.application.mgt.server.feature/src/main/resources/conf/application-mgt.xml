@@ -55,6 +55,13 @@
         <Extension name="VisibilityTypeManager">
             <ClassName>org.wso2.carbon.device.application.mgt.core.impl.VisibilityTypeManagerImpl</ClassName>
         </Extension>
+        <Extension name="ApplicationStorageManager">
+            <ClassName>org.wso2.carbon.device.application.mgt.core.impl.ApplicationStorageManagerImpl</ClassName>
+        </Extension>
     </Extensions>
 
+    <Artifacts>
+        <ImageLocation>${carbon.home}/repository/resources/mobileapps/images/</ImageLocation>
+        <BinaryLocation>${carbon.home}/repository/resources/mobileapps/binary/</BinaryLocation>
+    </Artifacts>
 </ApplicationManagementConfiguration>

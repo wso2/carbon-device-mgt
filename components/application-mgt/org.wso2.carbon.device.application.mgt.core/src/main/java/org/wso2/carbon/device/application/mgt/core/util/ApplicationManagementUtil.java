@@ -21,16 +21,7 @@ package org.wso2.carbon.device.application.mgt.core.util;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.application.mgt.common.exception.InvalidConfigurationException;
-import org.wso2.carbon.device.application.mgt.common.services.ApplicationManager;
-import org.wso2.carbon.device.application.mgt.common.services.ApplicationReleaseManager;
-import org.wso2.carbon.device.application.mgt.common.services.ApplicationUploadManager;
-import org.wso2.carbon.device.application.mgt.common.services.CategoryManager;
-import org.wso2.carbon.device.application.mgt.common.services.CommentsManager;
-import org.wso2.carbon.device.application.mgt.common.services.LifecycleStateManager;
-import org.wso2.carbon.device.application.mgt.common.services.PlatformManager;
-import org.wso2.carbon.device.application.mgt.common.services.SubscriptionManager;
-import org.wso2.carbon.device.application.mgt.common.services.VisibilityManager;
-import org.wso2.carbon.device.application.mgt.common.services.VisibilityTypeManager;
+import org.wso2.carbon.device.application.mgt.common.services.*;
 import org.wso2.carbon.device.application.mgt.core.config.ConfigurationManager;
 import org.wso2.carbon.device.application.mgt.core.config.Extension;
 
@@ -103,6 +94,13 @@ public class ApplicationManagementUtil {
         ConfigurationManager configurationManager = ConfigurationManager.getInstance();
         Extension extension = configurationManager.getExtension(Extension.Name.ApplicationUploadManager);
         return getInstance(extension, ApplicationUploadManager.class);
+    }
+
+    public static ApplicationStorageManager getApplicationStorageManagerInstance() throws
+            InvalidConfigurationException {
+        ConfigurationManager configurationManager = ConfigurationManager.getInstance();
+        Extension extension = configurationManager.getExtension(Extension.Name.ApplicationStorageManager);
+        return getInstance(extension, ApplicationStorageManager.class);
     }
 
     private static <T> T getInstance(Extension extension, Class<T> cls) throws InvalidConfigurationException {

@@ -20,16 +20,20 @@ package org.wso2.carbon.device.application.mgt.api.services.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.cxf.jaxrs.ext.multipart.Attachment;
+import org.apache.cxf.jaxrs.ext.multipart.Multipart;
 import org.wso2.carbon.device.application.mgt.api.APIUtil;
 import org.wso2.carbon.device.application.mgt.api.services.ApplicationManagementAPI;
 import org.wso2.carbon.device.application.mgt.common.Application;
 import org.wso2.carbon.device.application.mgt.common.ApplicationList;
+import org.wso2.carbon.device.application.mgt.common.ApplicationRelease;
 import org.wso2.carbon.device.application.mgt.common.Filter;
 import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
 import org.wso2.carbon.device.application.mgt.common.services.ApplicationManager;
+import org.wso2.carbon.device.application.mgt.common.services.ApplicationReleaseManager;
+import org.wso2.carbon.device.application.mgt.common.services.ApplicationStorageManager;
 import org.wso2.carbon.device.application.mgt.core.util.Constants;
 
-import java.util.Arrays;
 import javax.validation.Valid;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -41,12 +45,16 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Implementation of Application Management related APIs.
  */
 @Produces({"application/json"})
-@Consumes({"application/json"})
 @Path("/applications")
 public class ApplicationManagementAPIImpl implements ApplicationManagementAPI {
 
@@ -160,6 +168,92 @@ public class ApplicationManagementAPIImpl implements ApplicationManagementAPI {
         }
     }
 
+    @Override
+    @POST
+    @Path("upload-image-artifacts/{uuid}")
+    public Response uploadApplicationArtifacts(@PathParam("uuid") String applicationUUID,
+            @Multipart("icon")Attachment iconFile, @Multipart("banner") Attachment bannerFile, @Multipart
+            ("screenshot") List<Attachment> attachmentList) {
+        ApplicationStorageManager applicationStorageManager = APIUtil.getApplicationStorageManager();
+        try {
+            InputStream iconFileStream;
+            InputStream bannerFileStream;
+            List<InputStream> attachments = new ArrayList<>();
+
+            if (iconFile != null) {
+                iconFileStream = iconFile.getDataHandler().getInputStream();
+            } else {
+                throw new ApplicationManagementException(
+                        "Icon file is not uploaded for the application " + applicationUUID);
+            }
+            if (bannerFile != null) {
+                bannerFileStream = bannerFile.getDataHandler().getInputStream();
+            } else {
+                throw new ApplicationManagementException(
+                        "Banner file is not uploaded for the application " + applicationUUID);
+            }
+            if (attachmentList != null && !attachmentList.isEmpty()) {
+                for (Attachment screenshot : attachmentList) {
+                    attachments.add(screenshot.getDataHandler().getInputStream());
+                }
+            } else {
+                throw new ApplicationManagementException(
+                        "Screen-shot are not uploaded for the application " + applicationUUID);
+            }
+            applicationStorageManager
+                    .uploadImageArtifacts(applicationUUID, iconFileStream, bannerFileStream, attachments);
+            return Response.status(Response.Status.OK)
+                    .entity("Successfully uploaded artifacts for the application " + applicationUUID).build();
+        } catch (ApplicationManagementException e) {
+            String msg = "Error occurred while creating the application";
+            log.error(msg, e);
+            return APIUtil.getResponse(e, Response.Status.BAD_REQUEST);
+        } catch (IOException e) {
+            log.error("Exception while trying to read icon, banner files for the application " + applicationUUID);
+            return APIUtil.getResponse(new ApplicationManagementException(
+                            "Exception while trying to read icon, " + "banner files for the application " +
+                                    applicationUUID, e), Response.Status.BAD_REQUEST);
+        }
+    }
+
+    @Override
+    @PUT
+    @Path("upload-image-artifacts/{uuid}")
+    public Response updateApplicationArtifacts(@PathParam("uuid") String applicationUUID,
+            @Multipart("icon")Attachment iconFile, @Multipart("banner") Attachment bannerFile, @Multipart
+            ("screenshot") List<Attachment> attachmentList) {
+        ApplicationStorageManager applicationStorageManager = APIUtil.getApplicationStorageManager();
+        try {
+            InputStream iconFileStream = null;
+            InputStream bannerFileStream = null;
+            List<InputStream> attachments = new ArrayList<>();
+
+            if (iconFile != null) {
+                iconFileStream = iconFile.getDataHandler().getInputStream();
+            }
+            if (bannerFile != null) {
+                bannerFileStream = bannerFile.getDataHandler().getInputStream();
+            }
+            if (attachmentList != null) {
+                for (Attachment screenshot : attachmentList) {
+                    attachments.add(screenshot.getDataHandler().getInputStream());
+                }
+            }
+            applicationStorageManager
+                    .uploadImageArtifacts(applicationUUID, iconFileStream, bannerFileStream, attachments);
+            return Response.status(Response.Status.OK)
+                    .entity("Successfully updated artifacts for the application " + applicationUUID).build();
+        } catch (ApplicationManagementException e) {
+            String msg = "Error occurred while updating the artifact for the application " + applicationUUID;
+            log.error(msg, e);
+            return APIUtil.getResponse(e, Response.Status.BAD_REQUEST);
+        } catch (IOException e) {
+            log.error("Exception while trying to read icon, banner files for the application " + applicationUUID);
+            return APIUtil.getResponse(new ApplicationManagementException(
+                    "Exception while trying to read icon, banner files for the application " +
+                            applicationUUID, e), Response.Status.BAD_REQUEST);
+        }
+    }
 
     @PUT
     @Consumes("application/json")
@@ -190,5 +284,35 @@ public class ApplicationManagementAPIImpl implements ApplicationManagementAPI {
         }
         String responseMsg = "Successfully deleted the application: " + uuid;
         return Response.status(Response.Status.OK).entity(responseMsg).build();
+    }
+
+    @Override
+    @POST
+    @Path("/release/{uuid}")
+    public Response createApplicationRelease(@PathParam("uuid") String applicationUUID,
+            @Multipart("applicationRelease") ApplicationRelease applicationRelease,
+            @Multipart("binaryFile") Attachment binaryFile) {
+        ApplicationReleaseManager applicationReleaseManager = APIUtil.getApplicationReleaseManager();
+        ApplicationStorageManager applicationStorageManager = APIUtil.getApplicationStorageManager();
+        try {
+            applicationRelease = applicationReleaseManager.createRelease(applicationUUID, applicationRelease);
+
+            if (binaryFile != null) {
+                applicationStorageManager.uploadReleaseArtifacts(applicationUUID, applicationRelease.getVersionName(),
+                        binaryFile.getDataHandler().getInputStream());
+            }
+            return Response.status(Response.Status.CREATED).entity(applicationRelease).build();
+        } catch (ApplicationManagementException e) {
+            log.error("Error while creating an application release for the application with UUID " + applicationUUID,
+                    e);
+            return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
+        } catch (IOException e) {
+            String errorMessage =
+                    "Error while uploading binary file for the application release of the application with UUID "
+                            + applicationUUID;
+            log.error(errorMessage, e);
+            return APIUtil.getResponse(new ApplicationManagementException(errorMessage, e),
+                    Response.Status.INTERNAL_SERVER_ERROR);
+        }
     }
 }

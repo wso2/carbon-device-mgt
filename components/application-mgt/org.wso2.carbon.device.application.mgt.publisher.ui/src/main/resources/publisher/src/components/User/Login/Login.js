@@ -16,27 +16,40 @@
  * under the License.
  */
 
-import React, { Component } from 'react';
-import {Card, CardTitle, CardActions, CardMedia} from 'material-ui/Card';
+import React, {Component} from 'react';
+import {Redirect, Switch} from 'react-router-dom';
+import {Card, CardActions, CardMedia, CardTitle} from 'material-ui/Card';
 import RaisedButton from 'material-ui/RaisedButton';
-import { ValidatorForm, TextValidator} from 'react-material-ui-form-validator';
+import {TextValidator, ValidatorForm} from 'react-material-ui-form-validator';
 import Checkbox from 'material-ui/Checkbox';
+import qs from 'qs';
+
+//todo: remove the {TextValidator, ValidatorForm} and implement it manually.
 
 class Login extends Component {
     constructor() {
         super();
         this.state = {
+            isLoggedIn: true,
+            referrer: "/",
             userName: "",
             password: "",
             rememberMe: true
         }
     }
 
+    componentDidMount() {
+        let queryString = this.props.location.search;
+        console.log(queryString);
+        queryString = queryString.replace(/^\?/, '');
+        /* With QS version up we can directly use {ignoreQueryPrefix: true} option */
+        let params = qs.parse(queryString);
+        if (params.referrer) {
+            this.setState({referrer: params.referrer});
+        }
+    }
 
     handleLogin(event) {
-        console.log(this.state);
-
-
         event.preventDefault();
     }
 
@@ -45,7 +58,7 @@ class Login extends Component {
             {
                 userName: event.target.value
             }
-            );
+        );
     }
 
     onPasswordChange(event) {
@@ -65,56 +78,62 @@ class Login extends Component {
     }
 
     render() {
-        return (
-            <div>
 
-                {/*TODO: Style the components.*/}
+        if (!this.state.isLoggedIn) {
+            return (
+                <div>
 
-                <Card>
-                    <CardTitle title="WSO2 IoT App Publisher"/>
+                    {/*TODO: Style the components.*/}
 
-                    <CardMedia>
-                    </CardMedia>
+                    <Card>
+                        <CardTitle title="WSO2 IoT App Publisher"/>
 
-                    <CardActions>
-                        <ValidatorForm
-                            ref="form"
-                            onSubmit={this.handleLogin.bind(this)}
-                            onError={errors => console.log(errors)}>
+                        <CardActions>
+                            <ValidatorForm
+                                ref="form"
+                                onSubmit={this.handleLogin.bind(this)}
+                                onError={errors => console.log(errors)}>
 
-                            <TextValidator
-                                floatingLabelText="User Name"
-                                floatingLabelFixed={true}
-                                onChange={this.onUserNameChange.bind(this)}
-                                name="userName"
-                                validators={['required']}
-                                errorMessages={['User Name is required']}
-                                value={this.state.userName}
-                            />
-                            <br/>
-                            <TextValidator
-                                floatingLabelText="Password"
-                                floatingLabelFixed={true}
-                                onChange={this.onPasswordChange.bind(this)}
-                                name="password"
-                                type="password"
-                                value={this.state.password}
-                                validators={['required']}
-                                errorMessages={['Password is required']}
-                            />
-                            <br/>
-                            <Checkbox label="Remember me."
-                                      onCheck={this.rememberMe.bind(this)}
-                                      checked={this.state.rememberMe}/>
-                            <br/>
-                            <RaisedButton type="submit" label="Login"/>
-                        </ValidatorForm>
+                                <TextValidator
+                                    floatingLabelText="User Name"
+                                    floatingLabelFixed={true}
+                                    onChange={this.onUserNameChange.bind(this)}
+                                    name="userName"
+                                    validators={['required']}
+                                    errorMessages={['User Name is required']}
+                                    value={this.state.userName}
+                                />
+                                <br/>
+                                <TextValidator
+                                    floatingLabelText="Password"
+                                    floatingLabelFixed={true}
+                                    onChange={this.onPasswordChange.bind(this)}
+                                    name="password"
+                                    type="password"
+                                    value={this.state.password}
+                                    validators={['required']}
+                                    errorMessages={['Password is required']}
+                                />
+                                <br/>
+                                <Checkbox label="Remember me."
+                                          onCheck={this.rememberMe.bind(this)}
+                                          checked={this.state.rememberMe}/>
+                                <br/>
+                                <RaisedButton type="submit" label="Login"/>
+                            </ValidatorForm>
 
-                    </CardActions>
-                </Card>
-            </div>);
+                        </CardActions>
+                    </Card>
+                </div>);
+        } else {
+            return (
+                <Switch>
+                    <Redirect to={this.state.referrer}/>
+                </Switch>
+            );
+        }
+
     }
 }
-
 
 export default Login;

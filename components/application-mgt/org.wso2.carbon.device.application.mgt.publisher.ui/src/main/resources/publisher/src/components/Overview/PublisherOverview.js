@@ -15,15 +15,27 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+import React, {Component} from 'react';
 
-import Login from './User/Login/Login'
-import BaseLayout from './Base/BaseLayout'
-import Create from './Application/Create'
-import NotFound from './Error/NotFound'
-import PublisherOverview from './Overview/PublisherOverview'
+class PublisherOverview extends Component {
 
-/**
- * Contains all UI components related to Application, Login and Platform
- */
+    constructor() {
+        super();
+    }
 
-export {Login, BaseLayout, Create, NotFound, PublisherOverview};
+    componentWillMount() {
+        console.log("In Crate")
+    }
+
+    render() {
+
+        return (
+
+            <div>
+                Overview
+            </div>
+        );
+    }
+}
+
+export default PublisherOverview;

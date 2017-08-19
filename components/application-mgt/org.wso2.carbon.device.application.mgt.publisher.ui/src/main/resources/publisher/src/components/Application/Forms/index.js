@@ -16,14 +16,8 @@
  * under the License.
  */
 
-import Login from './User/Login/Login'
-import BaseLayout from './Base/BaseLayout'
-import Create from './Application/Create'
-import NotFound from './Error/NotFound'
-import PublisherOverview from './Overview/PublisherOverview'
+import Step1 from './Step1';
+import Step2 from './Step2';
+import Step3 from './Step3';
 
-/**
- * Contains all UI components related to Application, Login and Platform
- */
-
-export {Login, BaseLayout, Create, NotFound, PublisherOverview};
+export {Step1, Step2, Step3};

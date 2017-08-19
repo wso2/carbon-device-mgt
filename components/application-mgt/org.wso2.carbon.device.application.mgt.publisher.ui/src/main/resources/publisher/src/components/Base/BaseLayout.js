@@ -19,12 +19,17 @@
 import React, {Component} from 'react';
 import AppBar from 'material-ui/AppBar';
 import Drawer from 'material-ui/Drawer';
-import MenuItem from 'material-ui/MenuItem';
-import Menu from 'material-ui/Menu';
 import IconButton from 'material-ui/IconButton';
-import Notifications from 'material-ui/svg-icons/social/notifications';
+import NotificationsIcon from 'material-ui/svg-icons/social/notifications';
+import Apps from 'material-ui/svg-icons/navigation/apps';
+import DevicesOther from 'material-ui/svg-icons/hardware/devices-other';
 import ActionAccountCircle from 'material-ui/svg-icons/action/account-circle';
+import Dashboard from 'material-ui/svg-icons/action/dashboard';
+import Add from 'material-ui/svg-icons/content/add-circle';
+import Feedback from 'material-ui/svg-icons/action/feedback';
 import {withRouter} from 'react-router-dom'
+import Badge from 'material-ui/Badge';
+import {List, ListItem} from 'material-ui/List';
 
 
 /**
@@ -35,9 +40,48 @@ import {withRouter} from 'react-router-dom'
  * */
 class BaseLayout extends Component {
 
+    constructor() {
+        super();
+        this.state = {
+            notifications: 0,
+            user: 'Admin'
+        }
+    }
+
+    componentWillMount() {
+
+    }
+
     handleApplicationClick() {
-        console.log("Application");
-        window.location = '/publisher/assets/apps';
+        this.handleHistory('/assets/apps');
+    }
+
+    handleOverviewClick() {
+        this.handleHistory('/overview');
+    }
+
+    handleApplicationCreateClick() {
+        this.handleHistory('/assets/apps/create');
+    }
+
+    handlePlatformClick() {
+        this.handleHistory('/assets/platforms');
+    }
+
+    handlePlatformCreateClick() {
+        this.handleHistory('/assets/platforms/create');
+    }
+
+    handleReviewClick() {
+        this.handleHistory('/assets/reviews');
+    }
+
+    /**
+     * The method to update the history.
+     * to: The URL to route.
+     * */
+    handleHistory(to) {
+        this.props.history.push(to);
     }
 
     render() {
@@ -46,9 +90,15 @@ class BaseLayout extends Component {
                 <AppBar title="App Publisher"
                         iconElementRight={
                             <div>
-                                <IconButton>
-                                    <Notifications/>
-                                </IconButton>
+                                <Badge
+                                    badgeContent={this.state.notifications}
+                                    secondary={true}
+                                    badgeStyle={{top: 12, right: 12}}
+                                >
+                                    <IconButton tooltip="Notifications">
+                                        <NotificationsIcon/>
+                                    </IconButton>
+                                </Badge>
                                 <IconButton onClick={() => {
                                     console.log("Clicked")
                                 }}>
@@ -58,12 +108,41 @@ class BaseLayout extends Component {
                         }
                 />
                 <div>
-                    <Drawer containerStyle={{height: 'calc(100% - 64px)', width: '15%', top: 64}} open={true}>
-                        <Menu>
-                            <MenuItem onClick={this.handleApplicationClick.bind(this)}>Applications</MenuItem>
-                            <MenuItem>Platforms</MenuItem>
-                            <MenuItem>Reviews</MenuItem>
-                        </Menu>
+                    <Drawer containerStyle={{height: 'calc(100% - 64px)', width: '15%', top: '10%'}} open={true}>
+                        <List>
+                            <ListItem primaryText="Overview"
+                                      onClick={this.handleOverviewClick.bind(this)}
+                                      leftIcon={<Dashboard/>}/>
+                            <ListItem primaryText="Applications"
+                                      leftIcon={<Apps/>}
+                                      initiallyOpen={false}
+                                      primaryTogglesNestedList={true}
+                                      onClick={this.handleApplicationClick.bind(this)}
+                                      nestedItems={[
+                                          <ListItem
+                                              key={1}
+                                              primaryText="Create"
+                                              onClick={this.handleApplicationCreateClick.bind(this)}
+                                              leftIcon={<Add/>}
+                                          />]}
+                            />
+                            <ListItem primaryText="Platforms"
+                                      leftIcon={<DevicesOther/>}
+                                      initiallyOpen={false}
+                                      primaryTogglesNestedList={true}
+                                      onClick={this.handlePlatformClick.bind(this)}
+                                      nestedItems={[
+                                          <ListItem
+                                              key={1}
+                                              primaryText="Create"
+                                              onClick={this.handlePlatformCreateClick.bind(this)}
+                                              leftIcon={<Add/>}
+                                          />]}
+                            />
+                            <ListItem primaryText="Reviews"
+                                      onClick={this.handleReviewClick.bind(this)}
+                                      leftIcon={<Feedback/>}/>
+                        </List>
                     </Drawer>
                 </div>
                 <div style=

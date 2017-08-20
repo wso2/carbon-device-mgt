@@ -16,13 +16,48 @@
  * under the License.
  */
 
+import Chip from 'material-ui/Chip';
 import React, {Component} from 'react';
-import RaisedButton from 'material-ui/RaisedButton';
+import MenuItem from 'material-ui/MenuItem';
+import TextField from 'material-ui/TextField';
 import FlatButton from 'material-ui/FlatButton';
+import SelectField from 'material-ui/SelectField';
+import RaisedButton from 'material-ui/RaisedButton';
 
 class Step2 extends Component {
     constructor() {
         super();
+        this.state = {
+            tags: [],
+            defValue: "",
+            category: 1
+        };
+
+        this.styles = {
+            chip: {
+                margin: 4,
+            },
+            wrapper: {
+                display: 'flex',
+                flexWrap: 'wrap',
+            },
+        };
+
+    }
+
+    addTags(event) {
+        let tags = this.state.tags;
+        if (event.charCode === 13) {
+            event.preventDefault();
+            tags.push({key: Math.floor(Math.random() * 1000), value: event.target.value});
+            this.setState({tags, defValue: ""}, console.log(this.state.tags));
+        }
+    }
+
+    handleTagChange(event) {
+        let defaultValue = this.state.defValue;
+        defaultValue = event.target.value;
+        this.setState({defValue: defaultValue})
     }
 
     handleNext() {
@@ -33,27 +68,98 @@ class Step2 extends Component {
         this.props.handlePrev();
     }
 
+
+    handleRequestDelete = (key) => {
+        if (key === 3) {
+            alert('Why would you want to delete React?! :)');
+            return;
+        }
+
+        this.chipData = this.state.tags;
+        const chipToDelete = this.chipData.map((chip) => chip.key).indexOf(key);
+        this.chipData.splice(chipToDelete, 1);
+        this.setState({tags: this.chipData});
+    };
+
+    renderChip(data) {
+        console.log(data);
+        return (
+            <Chip
+                key={data.key}
+                onRequestDelete={() => this.handleRequestDelete(data.key)}
+                style={this.styles.chip}
+            >
+                {data.value}
+            </Chip>
+        );
+    }
+
     render() {
         const contentStyle = {margin: '0 16px'};
         return (
-                <div style={contentStyle}>
-                    Step2
+            <div style={contentStyle}>
+                <div>
                     <div>
-                        <div style={{marginTop: 12}}>
-                            <FlatButton
-                                label="< Back"
-                                disabled= {false}
-                                onClick={this.handlePrev.bind(this)}
-                                style={{marginRight: 12}}
-                            />
-                            <RaisedButton
-                                label="Next >"
-                                primary={true}
-                                onClick={this.handleNext.bind(this)}
-                            />
+                        <TextField
+                            hintText="Enter a title for your application."
+                            floatingLabelText="Title*"
+                            floatingLabelFixed={true}
+                        /><br/>
+                        <TextField
+                            hintText="Enter a short description for your application."
+                            floatingLabelText="Short Description*"
+                            floatingLabelFixed={true}
+                            multiLine={true}
+                            rows={2}
+                        /><br/>
+                        <TextField
+                            hintText="Enter the description."
+                            floatingLabelText="Description*"
+                            floatingLabelFixed={true}
+                            multiLine={true}
+                            rows={4}
+                        /><br/>
+                        <TextField
+                            hintText="Select the application visibility"
+                            floatingLabelText="Visibility*"
+                            floatingLabelFixed={true}
+                        /><br/>
+                        <TextField
+                            hintText="Enter application tags.."
+                            floatingLabelText="Tags*"
+                            floatingLabelFixed={true}
+                            value={this.state.defValue}
+                            onChange={this.handleTagChange.bind(this)}
+                            onKeyPress={this.addTags.bind(this)}
+                        /><br/>
+                        <div style={this.styles.wrapper}>
+                            {this.state.tags.map(this.renderChip, this)}
                         </div>
+                        <br/>
+                        <SelectField
+                            floatingLabelText="Category*"
+                            value={this.state.category}
+                            floatingLabelFixed={true}
+                        >
+                            <MenuItem value={1} primaryText="Business"/>
+                        </SelectField> <br/>
+                    </div>
+
+                    <div style={{marginTop: 12}}>
+                        <FlatButton
+                            label="< Back"
+                            disabled={false}
+                            onClick={this.handlePrev.bind(this)}
+                            style={{marginRight: 12}}
+                        />
+                        <RaisedButton
+                            label="Next >"
+                            primary={true}
+                            onClick={this.handleNext.bind(this)}
+                        />
                     </div>
                 </div>
+            </div>
         );
     }
 }

@@ -16,20 +16,20 @@
  * under the License.
  */
 
+import Badge from 'material-ui/Badge';
 import React, {Component} from 'react';
 import AppBar from 'material-ui/AppBar';
 import Drawer from 'material-ui/Drawer';
+import {withRouter} from 'react-router-dom';
 import IconButton from 'material-ui/IconButton';
-import NotificationsIcon from 'material-ui/svg-icons/social/notifications';
+import {List, ListItem} from 'material-ui/List';
 import Apps from 'material-ui/svg-icons/navigation/apps';
-import DevicesOther from 'material-ui/svg-icons/hardware/devices-other';
-import ActionAccountCircle from 'material-ui/svg-icons/action/account-circle';
-import Dashboard from 'material-ui/svg-icons/action/dashboard';
 import Add from 'material-ui/svg-icons/content/add-circle';
 import Feedback from 'material-ui/svg-icons/action/feedback';
-import {withRouter} from 'react-router-dom'
-import Badge from 'material-ui/Badge';
-import {List, ListItem} from 'material-ui/List';
+import Dashboard from 'material-ui/svg-icons/action/dashboard';
+import DevicesOther from 'material-ui/svg-icons/hardware/devices-other';
+import NotificationsIcon from 'material-ui/svg-icons/social/notifications';
+import ActionAccountCircle from 'material-ui/svg-icons/action/account-circle';
 
 
 /**

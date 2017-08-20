@@ -16,13 +16,13 @@
  * under the License.
  */
 
-import React, {Component} from 'react';
-import {Redirect, Switch} from 'react-router-dom';
-import {Card, CardActions, CardMedia, CardTitle} from 'material-ui/Card';
-import RaisedButton from 'material-ui/RaisedButton';
-import {TextValidator, ValidatorForm} from 'react-material-ui-form-validator';
-import Checkbox from 'material-ui/Checkbox';
 import qs from 'qs';
+import React, {Component} from 'react';
+import Checkbox from 'material-ui/Checkbox';
+import {Redirect, Switch} from 'react-router-dom';
+import RaisedButton from 'material-ui/RaisedButton';
+import {Card, CardActions, CardTitle} from 'material-ui/Card';
+import {TextValidator, ValidatorForm} from 'react-material-ui-form-validator';
 
 //todo: remove the {TextValidator, ValidatorForm} and implement it manually.
 

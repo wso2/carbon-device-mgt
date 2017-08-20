@@ -17,11 +17,11 @@
  */
 
 import React, {Component} from 'react';
-import RaisedButton from 'material-ui/RaisedButton';
-import FlatButton from 'material-ui/FlatButton';
-import TextField from 'material-ui/TextField';
-import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
+import TextField from 'material-ui/TextField';
+import FlatButton from 'material-ui/FlatButton';
+import SelectField from 'material-ui/SelectField';
+import RaisedButton from 'material-ui/RaisedButton';
 
 class Step1 extends Component {
     constructor() {
@@ -40,7 +40,7 @@ class Step1 extends Component {
     };
 
     setStepData() {
-        this.props.setData("step1", {step:"Dfds"});
+        this.props.setData("step1", {step: "Dfds"});
         this.handleNext.bind(this);
     }
 
@@ -73,31 +73,31 @@ class Step1 extends Component {
                                 hintText="Enter a title for your application."
                                 floatingLabelText="Title*"
                                 floatingLabelFixed={true}
-                            /><br />
+                            /><br/>
                             <SelectField
                                 floatingLabelText="Store Type*"
                                 value={this.state.store}
                                 floatingLabelFixed={true}
                                 onChange={this.onChangeStore.bind(this)}
                             >
-                                <MenuItem value={1} primaryText="Enterprise" />
-                                <MenuItem value={2} primaryText="Public" />
-                            </SelectField> <br />
+                                <MenuItem value={1} primaryText="Enterprise"/>
+                                <MenuItem value={2} primaryText="Public"/>
+                            </SelectField> <br/>
                             <SelectField
                                 floatingLabelText="Platform*"
                                 value={this.state.platform}
                                 floatingLabelFixed={true}
                                 onChange={this.onChangePlatform.bind(this)}
                             >
-                                <MenuItem value={1} primaryText="Android" />
-                                <MenuItem value={2} primaryText="iOS" />
-                                <MenuItem value={3} primaryText="Web" />
+                                <MenuItem value={1} primaryText="Android"/>
+                                <MenuItem value={2} primaryText="iOS"/>
+                                <MenuItem value={3} primaryText="Web"/>
                             </SelectField>
                         </div>
                         <div style={{marginTop: 12}}>
                             <FlatButton
                                 label="< Back"
-                                disabled= {true}
+                                disabled={true}
                                 onClick={this.handlePrev.bind(this)}
                                 style={{marginRight: 12}}
                             />

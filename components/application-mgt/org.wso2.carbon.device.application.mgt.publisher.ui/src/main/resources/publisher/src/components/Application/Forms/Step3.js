@@ -17,12 +17,20 @@
  */
 
 import React, {Component} from 'react';
-import RaisedButton from 'material-ui/RaisedButton';
+import Toggle from 'material-ui/Toggle';
+import MenuItem from 'material-ui/MenuItem';
+import TextField from 'material-ui/TextField';
 import FlatButton from 'material-ui/FlatButton';
+import SelectField from 'material-ui/SelectField';
+import RaisedButton from 'material-ui/RaisedButton';
 
 class Step3 extends Component {
     constructor() {
         super();
+        this.state = {
+            showForm: false,
+            releaseChannel: 1
+        }
     }
 
     handleFinish() {
@@ -33,27 +41,57 @@ class Step3 extends Component {
         this.props.handlePrev();
     }
 
+    handleToggle() {
+        let hide = this.state.showForm;
+        this.setState({showForm: !hide});
+    }
+
+
     render() {
         const contentStyle = {margin: '0 16px'};
         return (
-                <div style={contentStyle}>
-                    Step3
-                    <div>
-                        <div style={{marginTop: 12}}>
-                            <FlatButton
-                                label="< Back"
-                                disabled= {false}
-                                onClick={this.handlePrev.bind(this)}
-                                style={{marginRight: 12}}
-                            />
-                            <RaisedButton
-                                label="Finish"
-                                primary={true}
-                                onClick={this.handleFinish.bind(this)}
-                            />
-                        </div>
+            <div style={contentStyle}>
+                <div>
+                    <Toggle
+                        label="Release the Application"
+                        labelPosition="right"
+                        onToggle={this.handleToggle.bind(this)}
+                        defaultToggled={this.state.showForm}
+                    />
+
+                    {/*If toggle is true, the release form will be shown.*/}
+                    {!this.state.showForm ? <div></div> : <div>
+                        <SelectField
+                            floatingLabelText="Select Release Channel*"
+                            value={this.state.releaseChannel}
+                            floatingLabelFixed={true}
+                        >
+                            <MenuItem value={1} primaryText="Alpha"/>
+                            <MenuItem value={2} primaryText="Beta"/>
+                            <MenuItem value={3} primaryText="GA"/>
+                        </SelectField> <br/>
+                        <TextField
+                            hintText="1.0.0"
+                            floatingLabelText="Version*"
+                            floatingLabelFixed={true}
+                        /><br/>
+                    </div>}
+
+                    <div style={{marginTop: 12}}>
+                        <FlatButton
+                            label="< Back"
+                            disabled={false}
+                            onClick={this.handlePrev.bind(this)}
+                            style={{marginRight: 12}}
+                        />
+                        <RaisedButton
+                            label="Finish"
+                            primary={true}
+                            onClick={this.handleFinish.bind(this)}
+                        />
                     </div>
                 </div>
+            </div>
         );
     }
 }

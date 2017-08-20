@@ -24,6 +24,9 @@ import org.wso2.carbon.device.application.mgt.core.exception.DAOException;
 
 import java.util.List;
 
+/**
+ * This is responsible for all the DAO operations related to Lifecycle state.
+ */
 public interface LifecycleStateDAO {
 
     LifecycleState getLifeCycleStateByIdentifier(String identifier) throws ApplicationManagementDAOException;

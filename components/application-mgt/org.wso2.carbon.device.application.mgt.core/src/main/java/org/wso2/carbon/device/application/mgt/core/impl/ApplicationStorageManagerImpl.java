@@ -28,13 +28,19 @@ import org.wso2.carbon.device.application.mgt.common.services.ApplicationStorage
 import org.wso2.carbon.device.application.mgt.core.internal.DataHolder;
 import org.wso2.carbon.device.application.mgt.core.util.Constants;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.List;
 
 /**
  * This class contains the default concrete implementation of ApplicationStorage Management.
  */
-public class ApplicationStorageManagerImpl implements ApplicationStorageManager{
+public class ApplicationStorageManagerImpl implements ApplicationStorageManager {
     private static final Log log = LogFactory.getLog(ApplicationStorageManagerImpl.class);
 
     @Override
@@ -44,14 +50,15 @@ public class ApplicationStorageManagerImpl implements ApplicationStorageManager{
         try {
             application = DataHolder.getInstance().getApplicationManager().getApplication(applicationUUID);
         } catch (ApplicationManagementException e) {
-            throw new ApplicationStorageManagementException("Exception while retrieving the application details for "
-                    + "the application with UUID " + applicationUUID);
+            throw new ApplicationStorageManagementException(
+                    "Exception while retrieving the application details for " + "the application with UUID "
+                            + applicationUUID);
         }
         if (application == null) {
             throw new ApplicationStorageManagementException("Application with UUID " + applicationUUID + " does not "
                     + "exist. Cannot upload the artifacts to non-existing application.");
         }
-        String artifactDirectoryPath = Constants.ARTIFACT_PATH + application.getId();
+        String artifactDirectoryPath = Constants.artifactPath + application.getId();
         if (log.isDebugEnabled()) {
             log.debug("Artifact Directory Path for saving the artifacts related with application " + applicationUUID
                     + " is " + artifactDirectoryPath);
@@ -117,7 +124,7 @@ public class ApplicationStorageManagerImpl implements ApplicationStorageManager{
             throw new ApplicationStorageManagementException("Application with UUID " + applicationUUID + " does not "
                     + "exist. Cannot upload release artifacts for not existing application.");
         }
-        String artifactDirectoryPath = Constants.ARTIFACT_PATH + application.getId();
+        String artifactDirectoryPath = Constants.artifactPath + application.getId();
         if (log.isDebugEnabled()) {
             log.debug("Artifact Directory Path for saving the application release related artifacts related with "
                     + "application " + applicationUUID + " is " + artifactDirectoryPath);
@@ -150,7 +157,7 @@ public class ApplicationStorageManagerImpl implements ApplicationStorageManager{
             throw new ApplicationStorageManagementException("Application with UUID " + applicationUUID + " does not "
                     + "exist. Cannot retrieve release artifacts for not existing application.");
         }
-        String artifactPath = Constants.ARTIFACT_PATH + application.getId() + File.separator + versionName;
+        String artifactPath = Constants.artifactPath + application.getId() + File.separator + versionName;
 
         if (log.isDebugEnabled()) {
             log.debug("ApplicationRelease artifacts are searched in the location " + artifactPath);

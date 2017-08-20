@@ -34,29 +34,29 @@ public interface ApplicationReleaseManager {
     /**
      * To create an application release for an Application.
      *
-     * @param UUID UUID of the Application
+     * @param appicationUuid UUID of the Application
      * @param applicationRelease ApplicatonRelease that need to be be created.
      * @return the unique id of the application release, if the application release succeeded else -1
      */
-    public ApplicationRelease createRelease(String UUID, ApplicationRelease applicationRelease) throws
+    public ApplicationRelease createRelease(String appicationUuid, ApplicationRelease applicationRelease) throws
             ApplicationManagementException;
 
     /**
      * To get the application release of the Application/
-     * @param UUID UUID of the Application.
+     * @param applicationUuid UUID of the Application.
      * @param version Version of the ApplicationRelease that need to be retrieved.
      * @return ApplicationRelease related with particular Application UUID and version.
      * @throws ApplicationManagementException ApplicationManagementException
      */
-    public ApplicationRelease getRelease(String UUID, String version) throws ApplicationManagementException;
+    public ApplicationRelease getRelease(String applicationUuid, String version) throws ApplicationManagementException;
 
     /**
      * To get all the releases of a particular Application.
-     * @param UUID UUID of the Application to get all the releases.
+     * @param applicationUuid UUID of the Application to get all the releases.
      * @return the List of the Application releases related with the particular Application.
      * @throws ApplicationManagementException Application Management Exception.
      */
-    public List<ApplicationRelease> getReleases(String UUID)  throws ApplicationManagementException;
+    public List<ApplicationRelease> getReleases(String applicationUuid)  throws ApplicationManagementException;
 
     /**
      * To make a release as the default one for an application.

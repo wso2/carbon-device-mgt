@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Application represents the an Application in Application Store
+ * Application represents the an Application in Application Store.
  */
 public class Application {
 
@@ -253,7 +253,7 @@ public class Application {
 
     @Override
     public String toString() {
-        return "UUID : " + uuid + "\tIdentifier : " + identifier + "\tName : " + name + "\tShort Description : " +
-                shortDescription + "\tLifecycle State : " + currentLifecycle.getLifecycleState() ;
+        return "UUID : " + uuid + "\tIdentifier : " + identifier + "\tName : " + name + "\tShort Description : "
+                + shortDescription + "\tLifecycle State : " + currentLifecycle.getLifecycleState();
     }
 }

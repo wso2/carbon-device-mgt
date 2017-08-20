@@ -25,15 +25,18 @@ import org.wso2.carbon.device.application.mgt.common.LifecycleState;
 import org.wso2.carbon.device.application.mgt.common.exception.LifecycleManagementException;
 import org.wso2.carbon.device.application.mgt.common.services.LifecycleStateManager;
 
+import java.util.ArrayList;
+import java.util.List;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
-import java.util.ArrayList;
-import java.util.List;
 
+/**
+ * Lifecycle Management related jax-rs APIs.
+ */
 @Path("/lifecycles")
 public class LifecycleManagementAPIImpl implements LifecycleManagementAPI {
 

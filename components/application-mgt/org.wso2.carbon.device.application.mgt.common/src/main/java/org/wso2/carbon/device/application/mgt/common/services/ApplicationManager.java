@@ -18,10 +18,12 @@
  */
 package org.wso2.carbon.device.application.mgt.common.services;
 
-import org.wso2.carbon.device.application.mgt.common.*;
+import org.wso2.carbon.device.application.mgt.common.Application;
+import org.wso2.carbon.device.application.mgt.common.ApplicationList;
+import org.wso2.carbon.device.application.mgt.common.Filter;
+import org.wso2.carbon.device.application.mgt.common.LifecycleStateTransition;
 import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
 
-import java.io.InputStream;
 import java.util.List;
 
 /**
@@ -63,11 +65,11 @@ public interface ApplicationManager {
     /**
      * To change the lifecycle of the Application.
      *
-     * @param applicationUUID     UUID of the Application
+     * @param applicationUuid     UUID of the Application
      * @param lifecycleIdentifier New life-cycle that need to be changed.
      * @throws ApplicationManagementException Application Management Exception.
      */
-    public void changeLifecycle(String applicationUUID, String lifecycleIdentifier) throws
+    public void changeLifecycle(String applicationUuid, String lifecycleIdentifier) throws
             ApplicationManagementException;
 
     /**

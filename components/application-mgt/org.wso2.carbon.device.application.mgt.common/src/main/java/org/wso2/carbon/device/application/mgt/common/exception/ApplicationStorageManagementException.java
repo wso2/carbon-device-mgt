@@ -22,7 +22,7 @@ package org.wso2.carbon.device.application.mgt.common.exception;
 /**
  * Represents the exception thrown during storing and retrieving the artifacts.
  */
-public class ApplicationStorageManagementException extends ApplicationManagementException{
+public class ApplicationStorageManagementException extends ApplicationManagementException {
     public ApplicationStorageManagementException(String message, Throwable ex) {
         super(message, ex);
     }

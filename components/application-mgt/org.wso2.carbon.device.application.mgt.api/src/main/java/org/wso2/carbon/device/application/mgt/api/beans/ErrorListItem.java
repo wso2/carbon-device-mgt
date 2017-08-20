@@ -24,6 +24,9 @@ import io.swagger.annotations.ApiModelProperty;
 
 import javax.validation.constraints.NotNull;
 
+/**
+ * Represents a single error item in the error response.
+ */
 @ApiModel(description = "Error List Item")
 public class ErrorListItem {
 

@@ -30,6 +30,9 @@ import org.wso2.carbon.device.application.mgt.core.util.ConnectionManagerUtil;
 
 import java.util.List;
 
+/**
+ * Concrete implementation of Lifecycle state management.
+ */
 public class LifecycleStateManagerImpl implements LifecycleStateManager {
 
     private static final Log log = LogFactory.getLog(LifecycleStateManagerImpl.class);

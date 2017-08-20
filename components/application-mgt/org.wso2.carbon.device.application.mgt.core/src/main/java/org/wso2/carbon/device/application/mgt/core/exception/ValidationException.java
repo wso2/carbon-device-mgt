@@ -20,6 +20,9 @@ package org.wso2.carbon.device.application.mgt.core.exception;
 
 import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
 
+/**
+ * This exception will be thrown when the initial validation fails to perform an operation.
+ */
 public class ValidationException extends ApplicationManagementException {
 
     public ValidationException(String message, Throwable throwable) {

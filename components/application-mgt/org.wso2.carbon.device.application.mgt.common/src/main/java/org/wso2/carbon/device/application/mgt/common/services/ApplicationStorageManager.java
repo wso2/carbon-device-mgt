@@ -22,7 +22,6 @@ package org.wso2.carbon.device.application.mgt.common.services;
 import org.wso2.carbon.device.application.mgt.common.exception.ApplicationStorageManagementException;
 
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.List;
 
 /**

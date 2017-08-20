@@ -483,6 +483,7 @@ public interface ApplicationManagementAPI {
                             message = "Internal Server Error. \n Error occurred while releasing the application.",
                             response = ErrorResponse.class)
             })
+
     Response createApplicationRelease(
             @ApiParam(
                     name = "UUID",

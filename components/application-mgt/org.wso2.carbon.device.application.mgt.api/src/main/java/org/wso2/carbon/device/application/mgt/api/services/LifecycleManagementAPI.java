@@ -31,8 +31,8 @@ import org.wso2.carbon.apimgt.annotations.api.Scopes;
 import org.wso2.carbon.device.application.mgt.api.beans.ErrorResponse;
 import org.wso2.carbon.device.application.mgt.common.Application;
 import org.wso2.carbon.device.application.mgt.common.LifecycleState;
-import org.wso2.carbon.device.application.mgt.common.Platform;
 
+import java.util.List;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -40,8 +40,10 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.List;
 
+/**
+ * Lifecycle management related APIs.
+ */
 @SwaggerDefinition(
         info = @Info(
                 version = "1.0.0",
@@ -139,7 +141,8 @@ public interface LifecycleManagementAPI {
                     @ApiResponse(
                             code = 304,
                             message = "Not Modified. \n " +
-                                    "Empty body because the client already has the latest version of the requested resource."),
+                                    "Empty body because the client already has the latest version of the requested "
+                                    + "resource."),
                     @ApiResponse(
                             code = 500,
                             message = "Internal Server Error. \n Error occurred adding a lifecycle state.",

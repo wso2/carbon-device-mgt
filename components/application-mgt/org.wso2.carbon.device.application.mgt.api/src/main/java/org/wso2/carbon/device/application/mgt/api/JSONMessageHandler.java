@@ -23,6 +23,13 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.wso2.carbon.device.application.mgt.common.jaxrs.AnnotationExclusionStrategy;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
@@ -31,12 +38,12 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
-import java.io.*;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
+/**
+ * This provider is used to change a JSON object to complex object and inversely in request and response.
+ */
 @Provider
 @Produces(APPLICATION_JSON)
 @Consumes(APPLICATION_JSON)

@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Application represents the an Application in Application Store
+ * Application represents the an Application in Application Store.
  */
 public class Application {
 
@@ -249,5 +249,11 @@ public class Application {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    @Override
+    public String toString() {
+        return "UUID : " + uuid + "\tIdentifier : " + identifier + "\tName : " + name + "\tShort Description : "
+                + shortDescription + "\tLifecycle State : " + currentLifecycle.getLifecycleState();
     }
 }

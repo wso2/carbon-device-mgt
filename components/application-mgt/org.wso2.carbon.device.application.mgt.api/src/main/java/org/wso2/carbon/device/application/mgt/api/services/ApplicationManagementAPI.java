@@ -28,11 +28,14 @@ import io.swagger.annotations.ExtensionProperty;
 import io.swagger.annotations.Info;
 import io.swagger.annotations.SwaggerDefinition;
 import io.swagger.annotations.Tag;
+import org.apache.cxf.jaxrs.ext.multipart.Attachment;
+import org.apache.cxf.jaxrs.ext.multipart.Multipart;
 import org.wso2.carbon.apimgt.annotations.api.Scope;
 import org.wso2.carbon.apimgt.annotations.api.Scopes;
 import org.wso2.carbon.device.application.mgt.api.beans.ErrorResponse;
 import org.wso2.carbon.device.application.mgt.common.Application;
 import org.wso2.carbon.device.application.mgt.common.ApplicationList;
+import org.wso2.carbon.device.application.mgt.common.ApplicationRelease;
 
 import java.util.List;
 import javax.validation.Valid;
@@ -106,7 +109,6 @@ import javax.ws.rs.core.Response;
 @Api(value = "Application Management", description = "This API carries all application management related operations " +
         "such as get all the applications, add application, etc.")
 @Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
 public interface ApplicationManagementAPI {
 
     String SCOPE = "scope";
@@ -270,6 +272,82 @@ public interface ApplicationManagementAPI {
                     required = true)
             @Valid Application application);
 
+    @POST
+    @Path("upload-artifacts/{uuid}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @ApiOperation(
+            consumes = MediaType.MULTIPART_FORM_DATA,
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "POST",
+            value = "Upload artifacts",
+            notes = "This will create a new application",
+            tags = "Application Management",
+            extensions = {
+                    @Extension(properties = {
+                            @ExtensionProperty(name = SCOPE, value = "perm:application:create")
+                    })
+            }
+    )
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            code = 201,
+                            message = "OK. \n Successfully uploaded artifacts."),
+                    @ApiResponse(
+                            code = 500,
+                            message = "Internal Server Error. \n Error occurred while getting the application list.",
+                            response = ErrorResponse.class)
+            })
+    Response uploadApplicationArtifacts(
+            @ApiParam(
+                    name = "uuid",
+                    value = "UUID of the application",
+                    required = true)
+            @PathParam("uuid") String applicationUUID,
+            @Multipart(value = "icon") Attachment iconFile,
+            @Multipart(value = "banner") Attachment bannerFile,
+            @Multipart(value = "screenshot") List<Attachment> screenshots);
+
+    @PUT
+    @Path("upload-artifacts/{uuid}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @ApiOperation(
+            consumes = MediaType.MULTIPART_FORM_DATA,
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "POST",
+            value = "Upload artifacts",
+            notes = "This will create a new application",
+            tags = "Application Management",
+            extensions = {
+                    @Extension(properties = {
+                            @ExtensionProperty(name = SCOPE, value = "perm:application:create")
+                    })
+            }
+    )
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            code = 201,
+                            message = "OK. \n Successfully uploaded artifacts."),
+                    @ApiResponse(
+                            code = 500,
+                            message = "Internal Server Error. \n Error occurred while getting the application list.",
+                            response = ErrorResponse.class)
+            })
+    Response updateApplicationArtifacts(
+            @ApiParam(
+                    name = "uuid",
+                    value = "UUID of the application",
+                    required = true)
+            @PathParam("uuid") String applicationUUID,
+            @Multipart(value = "icon", required = false) Attachment iconFile,
+            @Multipart(value = "banner", required = false) Attachment bannerFile,
+            @Multipart(value = "screenshot", required = false) List<Attachment> screenshots);
+
+
+
     @PUT
     @Consumes("application/json")
     @Path("/{uuid}/lifecycle")
@@ -376,4 +454,121 @@ public interface ApplicationManagementAPI {
                     value = "Unique identifier of the Application",
                     required = true)
             @PathParam("appuuid") String applicationUUID);
+
+    @POST
+    @Path("/release/{uuid}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @ApiOperation(
+            consumes = MediaType.MULTIPART_FORM_DATA,
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "POST",
+            value = "Create an application release",
+            notes = "This will create a new application release",
+            tags = "Application Management",
+            extensions = {
+                    @Extension(properties = {
+                            @ExtensionProperty(name = SCOPE, value = "perm:application:create")
+                    })
+            }
+    )
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            code = 201,
+                            message = "OK. \n Successfully created an application release.",
+                            response = ApplicationRelease.class),
+                    @ApiResponse(
+                            code = 500,
+                            message = "Internal Server Error. \n Error occurred while releasing the application.",
+                            response = ErrorResponse.class)
+            })
+
+    Response createApplicationRelease(
+            @ApiParam(
+                    name = "UUID",
+                    value = "Unique identifier of the Application",
+                    required = true)
+            @PathParam("uuid") String applicationUUID,
+            @Multipart(value = "applicationRelease", type = "application/json") ApplicationRelease applicationRelease,
+            @Multipart(value = "binaryFile") Attachment binaryFile);
+
+    @GET
+    @Path("/release-artifacts/{uuid}/{version}")
+    @Produces(MediaType.APPLICATION_OCTET_STREAM)
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @ApiOperation(
+            consumes = MediaType.APPLICATION_JSON,
+            produces = MediaType.APPLICATION_OCTET_STREAM,
+            httpMethod = "POST",
+            value = "Create an application release",
+            notes = "This will create a new application release",
+            tags = "Application Management",
+            extensions = {
+                    @Extension(properties = {
+                            @ExtensionProperty(name = SCOPE, value = "perm:application:get")
+                    })
+            }
+    )
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            code = 200,
+                            message = "OK. \n Successfully retrieved the Application release.",
+                            response = Attachment.class),
+                    @ApiResponse(
+                            code = 500,
+                            message = "Internal Server Error. \n Error occurred while releasing the application.",
+                            response = ErrorResponse.class)
+            })
+    Response getApplicationReleaseArtifacts(
+            @ApiParam(
+                    name = "UUID",
+                    value = "Unique identifier of the Application",
+                    required = true)
+            @PathParam("uuid") String applicationUUID,
+            @ApiParam(
+                    name = "Version",
+                    value = "Version of the Application release need to be retrieved",
+                    required = true)
+            @PathParam("version") String version);
+
+    @GET
+    @Path("/release/{uuid}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(
+            consumes = MediaType.APPLICATION_JSON,
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "GET",
+            value = "Get all the releases or specific release of an application",
+            notes = "This will retrieve the all the releases or specific release of an application",
+            tags = "Application Management",
+            extensions = {
+                    @Extension(properties = {
+                            @ExtensionProperty(name = SCOPE, value = "perm:application:get")
+                    })
+            }
+    )
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            code = 200,
+                            message = "OK. \n Successfully retrieved the Application release."),
+                    @ApiResponse(
+                            code = 500,
+                            message = "Internal Server Error. \n Error occurred while releasing the application.",
+                            response = ErrorResponse.class)
+            })
+    Response getApplicationReleases(
+            @ApiParam(
+                    name = "UUID",
+                    value = "Unique identifier of the Application",
+                    required = true)
+            @PathParam("uuid") String applicationUUID,
+            @ApiParam(
+                    name = "version",
+                    value = "Version of the application",
+                    required = false)
+            @QueryParam("version") String version);
 }

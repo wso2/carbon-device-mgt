@@ -53,4 +53,9 @@ public class Constants {
      */
     public static final String[] LIFE_CYCLES = {"CREATED", "IN REVIEW", "APPROVED", "REJECTED", "PUBLISHED",
             "UNPUBLISHED", "RETIRED"};
+
+    /**
+     * Path to save the Application related artifacts.
+     */
+    public static String artifactPath = "";
 }

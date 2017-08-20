@@ -23,9 +23,11 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.application.mgt.common.exception.UnsupportedDatabaseEngineException;
 import org.wso2.carbon.device.application.mgt.core.config.ConfigurationManager;
 import org.wso2.carbon.device.application.mgt.core.dao.ApplicationDAO;
+import org.wso2.carbon.device.application.mgt.core.dao.ApplicationReleaseDAO;
 import org.wso2.carbon.device.application.mgt.core.dao.LifecycleStateDAO;
 import org.wso2.carbon.device.application.mgt.core.dao.PlatformDAO;
 import org.wso2.carbon.device.application.mgt.core.dao.impl.application.GenericApplicationDAOImpl;
+import org.wso2.carbon.device.application.mgt.core.dao.impl.application.release.GenericApplicationReleaseDAOImpl;
 import org.wso2.carbon.device.application.mgt.core.dao.impl.lifecyclestate.GenericLifecycleStateImpl;
 import org.wso2.carbon.device.application.mgt.core.dao.impl.platform.GenericPlatformDAOImpl;
 import org.wso2.carbon.device.application.mgt.core.dao.impl.platform.OracleMsSQLPlatformDAOImpl;
@@ -89,6 +91,23 @@ public class DAOFactory {
             case Constants.DataBaseTypes.DB_TYPE_H2:
             case Constants.DataBaseTypes.DB_TYPE_MYSQL:
                 return new GenericLifecycleStateImpl();
+            default:
+                throw new UnsupportedDatabaseEngineException("Unsupported database engine : " + databaseEngine);
+            }
+        }
+        throw new IllegalStateException("Database engine has not initialized properly.");
+    }
+
+    /**
+     * To get the instance of ApplicationReleaseDAOImplementation of the particular database engine.
+     * @return specific ApplicationReleaseDAOImplementation
+     */
+    public static ApplicationReleaseDAO getApplicationReleaseDAO() {
+        if (databaseEngine != null) {
+            switch (databaseEngine) {
+            case Constants.DataBaseTypes.DB_TYPE_H2:
+            case Constants.DataBaseTypes.DB_TYPE_MYSQL:
+                return new GenericApplicationReleaseDAOImpl();
             default:
                 throw new UnsupportedDatabaseEngineException("Unsupported database engine : " + databaseEngine);
             }

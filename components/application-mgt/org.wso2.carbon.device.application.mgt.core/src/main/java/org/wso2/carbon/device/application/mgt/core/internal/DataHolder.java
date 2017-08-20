@@ -20,7 +20,7 @@ package org.wso2.carbon.device.application.mgt.core.internal;
 
 import org.wso2.carbon.device.application.mgt.common.services.ApplicationManager;
 import org.wso2.carbon.device.application.mgt.common.services.ApplicationReleaseManager;
-import org.wso2.carbon.device.application.mgt.common.services.ApplicationUploadManager;
+import org.wso2.carbon.device.application.mgt.common.services.ApplicationStorageManager;
 import org.wso2.carbon.device.application.mgt.common.services.CategoryManager;
 import org.wso2.carbon.device.application.mgt.common.services.CommentsManager;
 import org.wso2.carbon.device.application.mgt.common.services.LifecycleStateManager;
@@ -58,7 +58,7 @@ public class DataHolder {
 
     private VisibilityManager visibilityManager;
 
-    private ApplicationUploadManager applicationUploadManager;
+    private ApplicationStorageManager applicationStorageManager;
 
     private static final DataHolder applicationMgtDataHolder = new DataHolder();
 
@@ -150,14 +150,6 @@ public class DataHolder {
         this.visibilityManager = visibilityManager;
     }
 
-    public void setApplicationUploadManager(ApplicationUploadManager applicationUploadManager) {
-        this.applicationUploadManager = applicationUploadManager;
-    }
-
-    public ApplicationUploadManager getApplicationUploadManager() {
-        return applicationUploadManager;
-    }
-
     public RealmService getRealmService() {
         return realmService;
     }
@@ -166,4 +158,11 @@ public class DataHolder {
         this.realmService = realmService;
     }
 
+    public void setApplicationStorageManager(ApplicationStorageManager applicationStorageManager) {
+        this.applicationStorageManager = applicationStorageManager;
+    }
+
+    public ApplicationStorageManager getApplicationStorageManager() {
+        return applicationStorageManager;
+    }
 }

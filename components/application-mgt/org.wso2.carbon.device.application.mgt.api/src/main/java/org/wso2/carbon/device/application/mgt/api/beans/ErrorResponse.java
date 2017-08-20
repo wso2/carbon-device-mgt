@@ -25,6 +25,10 @@ import io.swagger.annotations.ApiModelProperty;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This represents a response that need to be send back to the client, when the request cannot be completed
+ * successfully.
+ */
 @ApiModel(description = "Error Response")
 public class ErrorResponse {
 

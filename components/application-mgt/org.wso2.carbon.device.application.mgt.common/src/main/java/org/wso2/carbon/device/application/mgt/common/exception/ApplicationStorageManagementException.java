@@ -16,14 +16,18 @@
  *   under the License.
  *
  */
-package org.wso2.carbon.device.application.mgt.core.impl;
 
+package org.wso2.carbon.device.application.mgt.common.exception;
 
-import org.wso2.carbon.device.application.mgt.common.services.ApplicationUploadManager;
+/**
+ * Represents the exception thrown during storing and retrieving the artifacts.
+ */
+public class ApplicationStorageManagementException extends ApplicationManagementException {
+    public ApplicationStorageManagementException(String message, Throwable ex) {
+        super(message, ex);
+    }
 
-public class ApplicationUploadManagerImpl implements ApplicationUploadManager {
-
-    public ApplicationUploadManagerImpl(String uploadPath){
-
+    public ApplicationStorageManagementException(String message) {
+        super(message);
     }
 }

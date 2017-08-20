@@ -46,10 +46,14 @@ import org.wso2.carbon.user.api.UserRealm;
 import org.wso2.carbon.user.api.UserStoreException;
 import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * Default Concrete implementation of Application Management related implementations.
+ */
 public class ApplicationManagerImpl implements ApplicationManager {
 
     private static final Log log = LogFactory.getLog(ApplicationManagerImpl.class);
@@ -182,15 +186,15 @@ public class ApplicationManagerImpl implements ApplicationManager {
     }
 
     @Override
-    public void changeLifecycle(String applicationUUID, String lifecycleIdentifier) throws
+    public void changeLifecycle(String applicationUuid, String lifecycleIdentifier) throws
             ApplicationManagementException {
         boolean isAvailableNextState = false;
         String userName = PrivilegedCarbonContext.getThreadLocalCarbonContext().getUsername();
-        List<LifecycleStateTransition> nextLifeCycles = getLifeCycleStates(applicationUUID);
+        List<LifecycleStateTransition> nextLifeCycles = getLifeCycleStates(applicationUuid);
 
         for (LifecycleStateTransition lifecycleStateTransition : nextLifeCycles) {
             if (log.isDebugEnabled()) {
-                log.debug("Lifecycle state of the application " + applicationUUID + " can be changed to"
+                log.debug("Lifecycle state of the application " + applicationUuid + " can be changed to"
                                 + lifecycleStateTransition.getNextState());
             }
             if (lifecycleStateTransition.getNextState().equalsIgnoreCase(lifecycleIdentifier)) {
@@ -200,13 +204,13 @@ public class ApplicationManagerImpl implements ApplicationManager {
         }
         if (!isAvailableNextState) {
             throw new ApplicationManagementException("User " + userName + " does not have the permission to change "
-                    + "the lifecycle state of the application " + applicationUUID + " to lifecycle state "
+                    + "the lifecycle state of the application " + applicationUuid + " to lifecycle state "
                     + lifecycleIdentifier);
         }
         try {
             ConnectionManagerUtil.beginDBTransaction();
             ApplicationDAO applicationDAO = DAOFactory.getApplicationDAO();
-            applicationDAO.changeLifecycle(applicationUUID, lifecycleIdentifier, userName);
+            applicationDAO.changeLifecycle(applicationUuid, lifecycleIdentifier, userName);
             ConnectionManagerUtil.commitDBTransaction();
         } catch (ApplicationManagementDAOException e) {
             ConnectionManagerUtil.rollbackDBTransaction();
@@ -282,6 +286,12 @@ public class ApplicationManagerImpl implements ApplicationManager {
         }
     }
 
+    public void uploadArtifacts(String applicationUUID, InputStream iconFileStream, InputStream bannerFileStream,
+            List<InputStream> screenShotStreams)
+            throws ApplicationManagementException {
+
+    }
+
     /**
      * To check whether current user is application owner or admin.
      *
@@ -297,7 +307,8 @@ public class ApplicationManagerImpl implements ApplicationManager {
             }
         } catch (UserStoreException e) {
             throw new ApplicationManagementException("Userstore exception while checking whether user is an admin", e);
-        } try {
+        }
+        try {
             ConnectionManagerUtil.openDBConnection();
             Application application = DAOFactory.getApplicationDAO().getApplication(applicationUUID);
             return application.getUser().getUserName().equals(userName)

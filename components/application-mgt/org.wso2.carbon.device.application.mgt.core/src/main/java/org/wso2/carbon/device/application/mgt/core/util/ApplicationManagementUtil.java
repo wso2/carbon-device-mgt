@@ -23,7 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.application.mgt.common.exception.InvalidConfigurationException;
 import org.wso2.carbon.device.application.mgt.common.services.ApplicationManager;
 import org.wso2.carbon.device.application.mgt.common.services.ApplicationReleaseManager;
-import org.wso2.carbon.device.application.mgt.common.services.ApplicationUploadManager;
+import org.wso2.carbon.device.application.mgt.common.services.ApplicationStorageManager;
 import org.wso2.carbon.device.application.mgt.common.services.CategoryManager;
 import org.wso2.carbon.device.application.mgt.common.services.CommentsManager;
 import org.wso2.carbon.device.application.mgt.common.services.LifecycleStateManager;
@@ -99,10 +99,11 @@ public class ApplicationManagementUtil {
         return getInstance(extension, SubscriptionManager.class);
     }
 
-    public static ApplicationUploadManager getApplicationUploadManagerInstance() throws InvalidConfigurationException {
+    public static ApplicationStorageManager getApplicationStorageManagerInstance() throws
+            InvalidConfigurationException {
         ConfigurationManager configurationManager = ConfigurationManager.getInstance();
-        Extension extension = configurationManager.getExtension(Extension.Name.ApplicationUploadManager);
-        return getInstance(extension, ApplicationUploadManager.class);
+        Extension extension = configurationManager.getExtension(Extension.Name.ApplicationStorageManager);
+        return getInstance(extension, ApplicationStorageManager.class);
     }
 
     private static <T> T getInstance(Extension extension, Class<T> cls) throws InvalidConfigurationException {

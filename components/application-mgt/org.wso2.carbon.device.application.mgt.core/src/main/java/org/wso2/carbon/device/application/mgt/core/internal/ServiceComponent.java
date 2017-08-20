@@ -25,7 +25,7 @@ import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.device.application.mgt.common.exception.InvalidConfigurationException;
 import org.wso2.carbon.device.application.mgt.common.services.ApplicationManager;
 import org.wso2.carbon.device.application.mgt.common.services.ApplicationReleaseManager;
-import org.wso2.carbon.device.application.mgt.common.services.ApplicationUploadManager;
+import org.wso2.carbon.device.application.mgt.common.services.ApplicationStorageManager;
 import org.wso2.carbon.device.application.mgt.common.services.CategoryManager;
 import org.wso2.carbon.device.application.mgt.common.services.CommentsManager;
 import org.wso2.carbon.device.application.mgt.common.services.LifecycleStateManager;
@@ -37,6 +37,7 @@ import org.wso2.carbon.device.application.mgt.core.config.ConfigurationManager;
 import org.wso2.carbon.device.application.mgt.core.dao.common.DAOFactory;
 import org.wso2.carbon.device.application.mgt.core.exception.ApplicationManagementDAOException;
 import org.wso2.carbon.device.application.mgt.core.util.ApplicationManagementUtil;
+import org.wso2.carbon.device.application.mgt.core.util.Constants;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.ndatasource.core.DataSourceService;
 import org.wso2.carbon.user.core.service.RealmService;
@@ -77,6 +78,8 @@ public class ServiceComponent {
             String datasourceName = ConfigurationManager.getInstance().getConfiguration().getDatasourceName();
             DAOFactory.init(datasourceName);
 
+            Constants.artifactPath = ConfigurationManager.getInstance().getConfiguration().getArtifacts()
+                    .getBinaryLocation();
             ApplicationManager applicationManager = ApplicationManagementUtil.getApplicationManagerInstance();
             DataHolder.getInstance().setApplicationManager(applicationManager);
             bundleContext.registerService(ApplicationManager.class.getName(), applicationManager, null);
@@ -114,9 +117,10 @@ public class ServiceComponent {
             DataHolder.getInstance().setVisibilityTypeManager(visibilityTypeManager);
             bundleContext.registerService(VisibilityTypeManager.class.getName(), visibilityTypeManager, null);
 
-            ApplicationUploadManager uploadManager = ApplicationManagementUtil.getApplicationUploadManagerInstance();
-            DataHolder.getInstance().setApplicationUploadManager(uploadManager);
-            bundleContext.registerService(ApplicationUploadManager.class.getName(), uploadManager, null);
+            ApplicationStorageManager applicationStorageManager = ApplicationManagementUtil
+                    .getApplicationStorageManagerInstance();
+            DataHolder.getInstance().setApplicationStorageManager(applicationStorageManager);
+            bundleContext.registerService(ApplicationStorageManager.class.getName(), applicationStorageManager, null);
 
             bundleContext.registerService(Axis2ConfigurationContextObserver.class.getName(),
                     new PlatformManagementAxis2ConfigurationObserverImpl(), null);

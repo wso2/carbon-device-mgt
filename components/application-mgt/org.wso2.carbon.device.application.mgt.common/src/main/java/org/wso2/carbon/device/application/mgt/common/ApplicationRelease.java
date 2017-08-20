@@ -18,6 +18,8 @@
  */
 package org.wso2.carbon.device.application.mgt.common;
 
+import org.wso2.carbon.device.application.mgt.common.jaxrs.Exclude;
+
 import java.util.Date;
 import java.util.Map;
 
@@ -30,6 +32,7 @@ public class ApplicationRelease {
         PRODUCTION, ALPHA, BETA
     }
 
+    @Exclude
     private int id;
 
     private int versionId;
@@ -46,10 +49,6 @@ public class ApplicationRelease {
 
     private Application application;
 
-    private Date lifecycleStateModifiedAt;
-
-    private String lifecycleStateModifiedBy;
-
     private Map<String, String> properties;
 
     private boolean isDefault;
@@ -60,14 +59,6 @@ public class ApplicationRelease {
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public int getVersionId() {
-        return versionId;
-    }
-
-    public void setVersionId(int versionId) {
-        this.versionId = versionId;
     }
 
     public String getVersionName() {
@@ -90,8 +81,8 @@ public class ApplicationRelease {
         return releaseChannel;
     }
 
-    public void setReleaseChannel(Channel releaseChannel) {
-        this.releaseChannel = releaseChannel;
+    public void setReleaseChannel(String releaseChannel) {
+        this.releaseChannel = Channel.valueOf(releaseChannel);
     }
 
     public String getReleaseDetails() {
@@ -116,22 +107,6 @@ public class ApplicationRelease {
 
     public void setApplication(Application application) {
         this.application = application;
-    }
-
-    public Date getLifecycleStateModifiedAt() {
-        return lifecycleStateModifiedAt;
-    }
-
-    public void setLifecycleStateModifiedAt(Date lifecycleStateModifiedAt) {
-        this.lifecycleStateModifiedAt = lifecycleStateModifiedAt;
-    }
-
-    public String getLifecycleStateModifiedBy() {
-        return lifecycleStateModifiedBy;
-    }
-
-    public void setLifecycleStateModifiedBy(String lifecycleStateModifiedBy) {
-        this.lifecycleStateModifiedBy = lifecycleStateModifiedBy;
     }
 
     public Map<String, String> getProperties() {

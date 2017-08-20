@@ -33,6 +33,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Concrete implementation for Lifecycle related DB operations.
+ */
 public class GenericLifecycleStateImpl extends AbstractDAOImpl implements LifecycleStateDAO {
 
     @Override
@@ -82,7 +85,7 @@ public class GenericLifecycleStateImpl extends AbstractDAOImpl implements Lifecy
             String sql = "SELECT IDENTIFIER, NAME, DESCRIPTION FROM APPM_LIFECYCLE_STATE";
             stmt = conn.prepareStatement(sql);
             rs = stmt.executeQuery();
-            while(rs.next()) {
+            while (rs.next()) {
                 LifecycleState lifecycleState = new LifecycleState();
                 lifecycleState.setIdentifier(rs.getString("IDENTIFIER"));
                 lifecycleState.setName(rs.getString("NAME"));

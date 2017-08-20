@@ -18,6 +18,11 @@
  */
 package org.wso2.carbon.device.application.mgt.common.services;
 
+import org.wso2.carbon.device.application.mgt.common.ApplicationRelease;
+import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
+
+import java.util.List;
+
 /**
  * ApplicationReleaseManager is responsible for handling all the operations related with
  * {@link org.wso2.carbon.device.application.mgt.common.ApplicationRelease} which involving addition, updation ,
@@ -26,4 +31,45 @@ package org.wso2.carbon.device.application.mgt.common.services;
  */
 public interface ApplicationReleaseManager {
 
+    /**
+     * To create an application release for an Application.
+     *
+     * @param appicationUuid UUID of the Application
+     * @param applicationRelease ApplicatonRelease that need to be be created.
+     * @return the unique id of the application release, if the application release succeeded else -1
+     */
+    public ApplicationRelease createRelease(String appicationUuid, ApplicationRelease applicationRelease) throws
+            ApplicationManagementException;
+
+    /**
+     * To get the application release of the Application/
+     * @param applicationUuid UUID of the Application.
+     * @param version Version of the ApplicationRelease that need to be retrieved.
+     * @return ApplicationRelease related with particular Application UUID and version.
+     * @throws ApplicationManagementException ApplicationManagementException
+     */
+    public ApplicationRelease getRelease(String applicationUuid, String version) throws ApplicationManagementException;
+
+    /**
+     * To get all the releases of a particular Application.
+     * @param applicationUuid UUID of the Application to get all the releases.
+     * @return the List of the Application releases related with the particular Application.
+     * @throws ApplicationManagementException Application Management Exception.
+     */
+    public List<ApplicationRelease> getReleases(String applicationUuid)  throws ApplicationManagementException;
+
+    /**
+     * To make a release as the default one for an application.
+     *
+     * @param id ID of the ApplicationRelease, that need to be made default.
+     */
+    public void makeDefaultRelease(int id) throws ApplicationManagementException;
+
+    /**
+     * To update with a new release for an Application.
+     *
+     * @param applicationRelease ApplicationRelease
+     * @throws ApplicationManagementException Application Management Exception.
+     */
+    public void updateRelease(ApplicationRelease applicationRelease) throws ApplicationManagementException;
 }

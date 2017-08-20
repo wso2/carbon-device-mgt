@@ -23,6 +23,9 @@ import org.wso2.carbon.device.application.mgt.core.util.ConnectionManagerUtil;
 
 import java.sql.Connection;
 
+/**
+ * This class deals with getting the DB connection.
+ */
 public abstract class AbstractDAOImpl {
 
     protected Connection getDBConnection() throws DBConnectionException {

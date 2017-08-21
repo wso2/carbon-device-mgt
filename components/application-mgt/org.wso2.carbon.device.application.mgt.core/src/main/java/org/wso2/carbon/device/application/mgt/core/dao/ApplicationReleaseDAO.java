@@ -56,4 +56,28 @@ public interface ApplicationReleaseDAO {
      */
     List<ApplicationRelease> getApplicationReleases(String applicationUUID) throws ApplicationManagementDAOException;
 
+    /**
+     * To update an Application release.
+     * @param applicationRelease ApplicationRelease that need to be updated.
+     * @return the updated Application Release
+     * @throws ApplicationManagementDAOException Application Management DAO Exception
+     */
+    ApplicationRelease updateRelease(ApplicationRelease applicationRelease) throws ApplicationManagementDAOException;
+
+    /**
+     * To delete a particular release.
+     *
+     * @param id      ID of the Application which the release need to be deleted.
+     * @param version Version of the Application Release
+     * @throws ApplicationManagementDAOException Application Management DAO Exception.
+     */
+    void deleteRelease(int id, String version) throws ApplicationManagementDAOException;
+
+    /**
+     * To delete the propertied of a particular Application Release.
+     *
+     * @param id ID of the ApplicationRelease in which properties need to be deleted.
+     * @throws ApplicationManagementDAOException Application Management DAO Exception.
+     */
+    void deleteReleaseProperties(int id) throws ApplicationManagementDAOException;
 }

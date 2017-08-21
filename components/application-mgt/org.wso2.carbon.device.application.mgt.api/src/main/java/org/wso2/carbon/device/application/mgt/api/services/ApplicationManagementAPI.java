@@ -493,6 +493,45 @@ public interface ApplicationManagementAPI {
             @Multipart(value = "applicationRelease", type = "application/json") ApplicationRelease applicationRelease,
             @Multipart(value = "binaryFile") Attachment binaryFile);
 
+    @PUT
+    @Path("/release/{uuid}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @ApiOperation(
+            consumes = MediaType.MULTIPART_FORM_DATA,
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "PUT",
+            value = "Update an application release",
+            notes = "This will update a new application release",
+            tags = "Application Management",
+            extensions = {
+                    @Extension(properties = {
+                            @ExtensionProperty(name = SCOPE, value = "perm:application:update")
+                    })
+            }
+    )
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            code = 201,
+                            message = "OK. \n Successfully created an application release.",
+                            response = ApplicationRelease.class),
+                    @ApiResponse(
+                            code = 500,
+                            message = "Internal Server Error. \n Error occurred while releasing the application.",
+                            response = ErrorResponse.class)
+            })
+
+    Response updateApplicationRelease(
+            @ApiParam(
+                    name = "UUID",
+                    value = "Unique identifier of the Application",
+                    required = true)
+            @PathParam("uuid") String applicationUUID,
+            @Multipart(value = "applicationRelease", required = false, type = "application/json")
+                    ApplicationRelease applicationRelease,
+            @Multipart(value = "binaryFile", required = false) Attachment binaryFile);
+
     @GET
     @Path("/release-artifacts/{uuid}/{version}")
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
@@ -500,9 +539,9 @@ public interface ApplicationManagementAPI {
     @ApiOperation(
             consumes = MediaType.APPLICATION_JSON,
             produces = MediaType.APPLICATION_OCTET_STREAM,
-            httpMethod = "POST",
-            value = "Create an application release",
-            notes = "This will create a new application release",
+            httpMethod = "GET",
+            value = "Get an application release",
+            notes = "This will return the application release indicated by Application UUID and version",
             tags = "Application Management",
             extensions = {
                     @Extension(properties = {
@@ -570,5 +609,44 @@ public interface ApplicationManagementAPI {
                     name = "version",
                     value = "Version of the application",
                     required = false)
+            @QueryParam("version") String version);
+
+    @DELETE
+    @Path("/release/{uuid}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(
+            consumes = MediaType.APPLICATION_JSON,
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "DELETE",
+            value = "Delete the releases of a particular applicaion",
+            notes = "This will delete the releases or specific release of an application",
+            tags = "Application Management",
+            extensions = {
+                    @Extension(properties = {
+                            @ExtensionProperty(name = SCOPE, value = "perm:application:delete")
+                    })
+            }
+    )
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            code = 200,
+                            message = "OK. \n Successfully deleted the Application release."),
+                    @ApiResponse(
+                            code = 500,
+                            message = "Internal Server Error. \n Error occurred while deleting the release of a"
+                                    + "particular application.",
+                            response = ErrorResponse.class)
+            })
+    Response deleteApplicationRelease(
+            @ApiParam(
+                    name = "UUID",
+                    value = "Unique identifier of the Application",
+                    required = true)
+            @PathParam("uuid") String applicationUUID,
+            @ApiParam(
+                    name = "version",
+                    value = "Version of the application")
             @QueryParam("version") String version);
 }

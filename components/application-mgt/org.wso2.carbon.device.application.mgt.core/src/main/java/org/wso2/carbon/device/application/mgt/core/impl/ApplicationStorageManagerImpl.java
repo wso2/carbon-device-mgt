@@ -22,6 +22,7 @@ package org.wso2.carbon.device.application.mgt.core.impl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.application.mgt.common.Application;
+import org.wso2.carbon.device.application.mgt.common.ApplicationRelease;
 import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
 import org.wso2.carbon.device.application.mgt.common.exception.ApplicationStorageManagementException;
 import org.wso2.carbon.device.application.mgt.common.services.ApplicationStorageManager;
@@ -117,8 +118,9 @@ public class ApplicationStorageManagerImpl implements ApplicationStorageManager 
         try {
             application = DataHolder.getInstance().getApplicationManager().getApplication(applicationUUID);
         } catch (ApplicationManagementException e) {
-            throw new ApplicationStorageManagementException("Exception while retrieving the application details for "
-                    + "the application with UUID " + applicationUUID);
+            throw new ApplicationStorageManagementException(
+                    "Exception while retrieving the application details for " + "the application with UUID "
+                            + applicationUUID);
         }
         if (application == null) {
             throw new ApplicationStorageManagementException("Application with UUID " + applicationUUID + " does not "
@@ -150,8 +152,9 @@ public class ApplicationStorageManagerImpl implements ApplicationStorageManager 
         try {
             application = DataHolder.getInstance().getApplicationManager().getApplication(applicationUUID);
         } catch (ApplicationManagementException e) {
-            throw new ApplicationStorageManagementException("Exception while retrieving the application details for "
-                    + "the application with UUID " + applicationUUID);
+            throw new ApplicationStorageManagementException(
+                    "Exception while retrieving the application details for " + "the application with UUID "
+                            + applicationUUID);
         }
         if (application == null) {
             throw new ApplicationStorageManagementException("Application with UUID " + applicationUUID + " does not "
@@ -171,9 +174,69 @@ public class ApplicationStorageManagerImpl implements ApplicationStorageManager 
             try {
                 return new FileInputStream(artifactPath);
             } catch (FileNotFoundException e) {
-                throw new ApplicationStorageManagementException("Binary file does not exist for the version " +
-                        versionName + " for the application ", e);
+                throw new ApplicationStorageManagementException(
+                        "Binary file does not exist for the version " + versionName + " for the application ", e);
             }
+        }
+    }
+
+    @Override
+    public void deleteApplicationArtifacts(String applicationUUID) throws ApplicationStorageManagementException {
+        Application application;
+        try {
+            application = DataHolder.getInstance().getApplicationManager().getApplication(applicationUUID);
+        } catch (ApplicationManagementException e) {
+            throw new ApplicationStorageManagementException(
+                    "Exception while retrieving the application details for " + "the application with UUID "
+                            + applicationUUID);
+        }
+        if (application == null) {
+            throw new ApplicationStorageManagementException("Application with UUID " + applicationUUID + " does not "
+                    + "exist. Cannot delete the artifacts of a non-existing application.");
+        }
+        String artifactDirectoryPath = Constants.artifactPath + application.getId();
+        File artifactDirectory = new File(artifactDirectoryPath);
+
+        if (artifactDirectory.exists()) {
+            deleteDir(artifactDirectory);
+        }
+    }
+
+    @Override
+    public void deleteApplicationReleaseArtifacts(String applicationUUID, String version)
+            throws ApplicationStorageManagementException {
+        Application application;
+        try {
+            application = DataHolder.getInstance().getApplicationManager().getApplication(applicationUUID);
+        } catch (ApplicationManagementException e) {
+            throw new ApplicationStorageManagementException(
+                    "Exception while retrieving the application details for " + "the application with UUID "
+                            + applicationUUID);
+        }
+        if (application == null) {
+            throw new ApplicationStorageManagementException("Application with UUID " + applicationUUID + " does not "
+                    + "exist. Cannot delete the artifacts of a non-existing application.");
+        }
+        String artifactPath = Constants.artifactPath + application.getId() + File.separator + version;
+        File artifact = new File(artifactPath);
+
+        if (artifact.exists()) {
+            deleteDir(artifact);
+        }
+    }
+
+    @Override public void deleteAllApplicationReleaseArtifacts(String applicationUUID)
+            throws ApplicationStorageManagementException {
+        try {
+            List<ApplicationRelease> applicationReleases = DataHolder.getInstance().getReleaseManager()
+                    .getReleases(applicationUUID);
+            for (ApplicationRelease applicationRelease : applicationReleases) {
+                deleteApplicationReleaseArtifacts(applicationUUID, applicationRelease.getVersionName());
+            }
+        } catch (ApplicationManagementException e) {
+            throw new ApplicationStorageManagementException(
+                    "Application Management Exception while getting releases " + "for the application "
+                            + applicationUUID, e);
         }
     }
 
@@ -215,5 +278,20 @@ public class ApplicationStorageManagerImpl implements ApplicationStorageManager 
                         "Cannot create directories in the path to save the application related artifacts");
             }
         }
+    }
+
+    /**
+     * To delete a directory recursively
+     *
+     * @param artifactDirectory Artifact Directory that need to be deleted.
+     */
+    private void deleteDir(File artifactDirectory) {
+        File[] contents = artifactDirectory.listFiles();
+        if (contents != null) {
+            for (File file : contents) {
+                deleteDir(file);
+            }
+        }
+        artifactDirectory.delete();
     }
 }

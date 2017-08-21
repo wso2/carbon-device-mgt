@@ -279,15 +279,19 @@ public class ApplicationManagementAPIImpl implements ApplicationManagementAPI {
     @Path("/{appuuid}")
     public Response deleteApplication(@PathParam("appuuid") String uuid) {
         ApplicationManager applicationManager = APIUtil.getApplicationManager();
+        ApplicationStorageManager applicationStorageManager = APIUtil.getApplicationStorageManager();
+        ApplicationReleaseManager applicationReleaseManager = APIUtil.getApplicationReleaseManager();
         try {
+            applicationReleaseManager.deleteApplicationReleases(uuid);
+            applicationStorageManager.deleteApplicationArtifacts(uuid);
             applicationManager.deleteApplication(uuid);
+            String responseMsg = "Successfully deleted the application: " + uuid;
+            return Response.status(Response.Status.OK).entity(responseMsg).build();
         } catch (ApplicationManagementException e) {
             String msg = "Error occurred while deleting the application: " + uuid;
             log.error(msg, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+            return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
         }
-        String responseMsg = "Successfully deleted the application: " + uuid;
-        return Response.status(Response.Status.OK).entity(responseMsg).build();
     }
 
     @Override
@@ -321,6 +325,40 @@ public class ApplicationManagementAPIImpl implements ApplicationManagementAPI {
     }
 
     @Override
+    @PUT
+    @Path("/release/{uuid}")
+    public Response updateApplicationRelease(@PathParam("uuid") String applicationUUID, @Multipart
+            ("applicationRelease") ApplicationRelease applicationRelease, @Multipart("binaryFile") Attachment
+            binaryFile) {
+        ApplicationReleaseManager applicationReleaseManager = APIUtil.getApplicationReleaseManager();
+        ApplicationStorageManager applicationStorageManager = APIUtil.getApplicationStorageManager();
+        try {
+            if (applicationRelease != null) {
+                applicationRelease = applicationReleaseManager.updateRelease(applicationUUID, applicationRelease);
+            }
+            if (binaryFile != null) {
+                String version = applicationRelease == null ? null : applicationRelease.getVersionName();
+
+                if (version == null) {
+                    return Response.status(Response.Status.BAD_REQUEST).entity("Version cannot be null. Version is a "
+                            + "mandatory parameter to update the release artifacts").build();
+                }
+                applicationStorageManager
+                        .uploadReleaseArtifacts(applicationUUID, version, binaryFile.getDataHandler().getInputStream());
+            }
+            return Response.status(Response.Status.OK).entity(applicationRelease).build();
+        } catch (ApplicationManagementException e) {
+            log.error("Error while updating the application release of the application with UUID " + applicationUUID);
+            return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
+        } catch (IOException e) {
+            log.error("Error while updating the release artifacts of the application with UUID " + applicationUUID);
+            return APIUtil.getResponse(new ApplicationManagementException(
+                            "Error while updating the release artifacts of the application with UUID "
+                                    + applicationUUID), Response.Status.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Override
     @GET
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
     @Path("/release-artifacts/{uuid}/{version}")
@@ -334,7 +372,7 @@ public class ApplicationManagementAPIImpl implements ApplicationManagementAPI {
             response.header("Content-Disposition", "attachment; filename=\"" + version + "\"");
             return response.build();
         } catch (ApplicationStorageManagementException e) {
-            log.error("Error while retrieving the binary file of the applcation release for the application UUID " +
+            log.error("Error while retrieving the binary file of the application release for the application UUID " +
                     applicationUUID + " and version " + version, e);
             if (e.getMessage().contains("Binary file does not exist")) {
                 return APIUtil.getResponse(e, Response.Status.NOT_FOUND);
@@ -361,6 +399,33 @@ public class ApplicationManagementAPIImpl implements ApplicationManagementAPI {
         } catch (ApplicationManagementException e) {
             log.error("Error while getting all the application releases for the application with the UUID "
                     + applicationUUID, e);
+            return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Override
+    @DELETE
+    @Path("/release/{uuid}")
+    public Response deleteApplicationRelease(@PathParam("uuid") String applicationUUID,
+            @QueryParam("version") String version) {
+        ApplicationReleaseManager applicationReleaseManager = APIUtil.getApplicationReleaseManager();
+        ApplicationStorageManager applicationStorageManager = APIUtil.getApplicationStorageManager();
+        try {
+            if (version != null && !version.isEmpty()) {
+                applicationStorageManager.deleteApplicationReleaseArtifacts(applicationUUID, version);
+                applicationReleaseManager.deleteApplicationRelease(applicationUUID, version);
+                return Response.status(Response.Status.OK)
+                        .entity("Successfully deleted Application release with " + "version " + version
+                                + " for the application with UUID " + applicationUUID).build();
+            } else {
+                applicationStorageManager.deleteAllApplicationReleaseArtifacts(applicationUUID);
+                applicationReleaseManager.deleteApplicationReleases(applicationUUID);
+                return Response.status(Response.Status.OK)
+                        .entity("Successfully deleted Application releases for the " + "application with UUID "
+                                + applicationUUID).build();
+            }
+        } catch (ApplicationManagementException e) {
+            log.error("Error while deleting application release with the applicaion UUID " + applicationUUID, e);
             return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
         }
     }

@@ -68,8 +68,28 @@ public interface ApplicationReleaseManager {
     /**
      * To update with a new release for an Application.
      *
+     * @param applicationUuid    UUID of the Application
      * @param applicationRelease ApplicationRelease
+     * @return Updated Application Release.
      * @throws ApplicationManagementException Application Management Exception.
      */
-    public void updateRelease(ApplicationRelease applicationRelease) throws ApplicationManagementException;
+    public ApplicationRelease updateRelease(String applicationUuid, ApplicationRelease applicationRelease) throws
+            ApplicationManagementException;
+
+    /**
+     * To delete a particular release
+     *
+     * @param applicationUuid UUID of the Application, in which the ApplicationRelease need to be deleted.
+     * @param version         Version of the ApplicationRelease that need to be deleted.
+     * @throws ApplicationManagementException Application Management Exception.
+     */
+    public void deleteApplicationRelease(String applicationUuid, String version) throws ApplicationManagementException;
+
+    /**
+     * To delete all the application releases related with the the particular application.
+     *
+     * @param applicationUuid UUID of the application.
+     * @throws ApplicationManagementException Application Management Exception.
+     */
+    public void deleteApplicationReleases(String applicationUuid) throws ApplicationManagementException;
 }

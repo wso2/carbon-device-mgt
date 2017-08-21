@@ -33,7 +33,6 @@ $(document).ready(function() {
         loadPolicyCompliance();
     }
 
-
     $("#refresh-policy").click(function() {
         $('#policy-spinner').removeClass('hidden');
         loadPolicyCompliance();
@@ -42,6 +41,11 @@ $(document).ready(function() {
     $("#refresh-operations").click(function() {
         $('#operations-spinner').removeClass('hidden');
         loadOperationsLog(true);
+    });
+
+    $("#refresh-apps").click(function() {
+        $('#apps-spinner').removeClass('hidden');
+        loadApplicationsList();
     });
 
 });
@@ -266,4 +270,48 @@ function loadPolicyCompliance() {
             );
         }
     );
+}
+
+function loadApplicationsList() {
+    var applicationsList = $("#applications-list");
+    var applicationListingTemplate = applicationsList.attr("src");
+    var deviceId = applicationsList.data("device-id");
+    var deviceType = applicationsList.data("device-type");
+
+    $.template("application-list", applicationListingTemplate, function (template) {
+        var serviceURL = "/api/device-mgt/v1.0/devices/" + deviceType + "/" + deviceId + "/applications";
+        invokerUtil.get(
+            serviceURL,
+            // success-callback
+            function (data, textStatus, jqXHR) {
+                if (jqXHR.status == 200 && data) {
+                    data = JSON.parse(data);
+                    $("#apps-spinner").addClass("hidden");
+                    if (data.length > 0) {
+                        for (var i = 0; i < data.length; i++) {
+                            data[i]["name"] = decodeURIComponent(data[i]["name"]);
+                            data[i]["platform"] = deviceType;
+                        }
+
+                        var viewModel = {};
+                        viewModel["applications"] = data;
+                        viewModel["deviceType"] = deviceType;
+                        viewModel["deviceId"] = deviceId;
+                        viewModel["appContext"] = context;
+                        var content = template(viewModel);
+                        $("#applications-list-container").html(content);
+                        var iconSource = $("#applications-list-container").data("public-uri") + "/img/android_app_icon.png";
+                        $("#applications-list-container img").attr("src",iconSource);
+                    } else {
+                        $("#applications-list-container").html("<div class='message message-info'><h4><i class='icon fw fw-info'></i>No applications found.</h4>" +
+                            "<p>Please try refreshing the list in a while.</p></div>");
+                    }
+                }
+            },
+            // error-callback
+            function () {
+                $("#applications-list-container").html("<div class='panel-body'><br><p class='fw-warning'>&nbsp;Loading application list " +
+                    "was not successful. please try refreshing the list in a while.<p></div>");
+            });
+    });
 }

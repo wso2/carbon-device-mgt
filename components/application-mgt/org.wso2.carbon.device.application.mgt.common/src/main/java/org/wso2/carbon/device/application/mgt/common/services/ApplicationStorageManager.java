@@ -58,4 +58,29 @@ public interface ApplicationStorageManager {
      */
     public InputStream getReleasedArtifacts(String applicationUUID, String versionName) throws
             ApplicationStorageManagementException;
+
+    /**
+     * To delete all the artifacts related with a particular Application.
+     * @param applicationUUID UUID of the Application.
+     * @throws ApplicationStorageManagementException Application Storage Management Exception.
+     */
+    public void deleteApplicationArtifacts(String applicationUUID) throws ApplicationStorageManagementException;
+
+    /**
+     * To delete the artifacts related with particular Application Release.
+     *
+     * @param applicationUUID UUID of the Application.
+     * @param version         Version of ApplicationRelease that need to be deleted.
+     * @throws ApplicationStorageManagementException Application Storage Management Exception.
+     */
+    public void deleteApplicationReleaseArtifacts(String applicationUUID, String version)
+            throws ApplicationStorageManagementException;
+
+    /**
+     * To delete all release artifacts related with particular Application Release.
+     * @param applicationUUID UUID of the Application.
+     * @throws ApplicationStorageManagementException Application Storage Management Exception
+     */
+    public void deleteAllApplicationReleaseArtifacts(String applicationUUID) throws
+            ApplicationStorageManagementException;
 }

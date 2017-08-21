@@ -41,7 +41,8 @@ public class ApplicationReleaseManagerImpl implements ApplicationReleaseManager 
     @Override
     public ApplicationRelease createRelease(String appicationUuid, ApplicationRelease applicationRelease) throws
             ApplicationManagementException {
-        Application application = validateReleaseCreateRequest(appicationUuid, applicationRelease);
+        Application application = validateApplication(appicationUuid);
+        validateReleaseCreateRequest(appicationUuid, applicationRelease);
         if (log.isDebugEnabled()) {
             log.debug("Application release request is received for the application " + application.toString());
         }
@@ -63,7 +64,7 @@ public class ApplicationReleaseManagerImpl implements ApplicationReleaseManager 
     @Override
     public ApplicationRelease getRelease(String applicationUuid, String version) throws
             ApplicationManagementException {
-        Application application = validationGetReleaseRequest(applicationUuid);
+        Application application = validateApplication(applicationUuid);
         if (log.isDebugEnabled()) {
             log.debug("Application release retrieval request is received for the application " +
                     application.toString() + " and version " + version);
@@ -78,7 +79,7 @@ public class ApplicationReleaseManagerImpl implements ApplicationReleaseManager 
 
     @Override
     public List<ApplicationRelease> getReleases(String applicationUuid) throws ApplicationManagementException {
-        Application application = validationGetReleaseRequest(applicationUuid);
+        Application application = validateApplication(applicationUuid);
         if (log.isDebugEnabled()) {
             log.debug("Request is received to retrieve all the releases related with the application " +
                     application.toString());
@@ -97,8 +98,67 @@ public class ApplicationReleaseManagerImpl implements ApplicationReleaseManager 
     }
 
     @Override
-    public void updateRelease(ApplicationRelease applicationRelease) throws ApplicationManagementException {
+    public ApplicationRelease updateRelease(String applicationUuid, ApplicationRelease applicationRelease)
+            throws ApplicationManagementException {
+        Application application = validateApplication(applicationUuid);
+        ApplicationRelease oldApplicationRelease = null;
+        if (applicationRelease == null || applicationRelease.getVersionName() != null) {
+            throw new ApplicationManagementException(
+                    "Version is important to update the release of the application " + "with application UUID "
+                            + applicationUuid);
+        }
+        oldApplicationRelease = getRelease(applicationUuid, applicationRelease.getVersionName());
+        if (oldApplicationRelease == null) {
+            throw new ApplicationManagementException(
+                    "Application release for the application " + applicationUuid + " with version " + applicationRelease
+                            .getVersionName() + " does not exist. Cannot update the "
+                            + "release that is not existing.");
+        }
+        applicationRelease.setApplication(application);
+        try {
+            ConnectionManagerUtil.beginDBTransaction();
+            ApplicationRelease newApplicationRelease = DAOFactory.getApplicationReleaseDAO()
+                    .updateRelease(applicationRelease);
+            ConnectionManagerUtil.commitDBTransaction();
+            return newApplicationRelease;
+        } catch (ApplicationManagementDAOException e) {
+            ConnectionManagerUtil.rollbackDBTransaction();
+            throw e;
+        } finally {
+            ConnectionManagerUtil.closeDBConnection();
+        }
+    }
 
+    @Override
+    public void deleteApplicationRelease(String applicationUuid, String version)
+            throws ApplicationManagementException {
+        Application application = validateApplication(applicationUuid);
+        ApplicationRelease applicationRelease = getRelease(applicationUuid, version);
+        if (applicationRelease == null) {
+            throw new ApplicationManagementException(
+                    "Cannot delete a non-existing application release for the " + "application with UUID "
+                            + applicationUuid);
+        }
+        try {
+            ConnectionManagerUtil.beginDBTransaction();
+            DAOFactory.getApplicationReleaseDAO().deleteRelease(application.getId(), version);
+            DAOFactory.getApplicationReleaseDAO().deleteReleaseProperties(applicationRelease.getId());
+            ConnectionManagerUtil.commitDBTransaction();
+        } catch (ApplicationManagementDAOException e) {
+            ConnectionManagerUtil.rollbackDBTransaction();
+            throw e;
+        } finally {
+            ConnectionManagerUtil.closeDBConnection();
+        }
+    }
+
+    @Override
+    public void deleteApplicationReleases(String applicationUuid) throws ApplicationManagementException {
+        List<ApplicationRelease> applicationReleases = getReleases(applicationUuid);
+
+        for (ApplicationRelease applicationRelease : applicationReleases) {
+            deleteApplicationRelease(applicationUuid, applicationRelease.getVersionName());
+        }
     }
 
     /**
@@ -107,16 +167,15 @@ public class ApplicationReleaseManagerImpl implements ApplicationReleaseManager 
      * @param applicationUuid UUID of the Application.
      * @return Application related with the UUID
      */
-    private Application validationGetReleaseRequest(String applicationUuid) throws ApplicationManagementException {
+    private Application validateApplication(String applicationUuid) throws ApplicationManagementException {
         if (applicationUuid == null) {
             throw new ApplicationManagementException("Application UUID is null. Application UUID is a required "
-                    + "parameter to get the releases related to a particular application.");
+                    + "parameter to get the relevant application.");
         }
         Application application = DataHolder.getInstance().getApplicationManager().getApplication(applicationUuid);
         if (application == null) {
             throw new ApplicationManagementException(
-                    "Application with UUID " + applicationUuid + " does not exist. Cannot "
-                            + "retrieve the releases for a non-existing application.");
+                    "Application with UUID " + applicationUuid + " does not exist.");
         }
         return application;
     }
@@ -126,21 +185,10 @@ public class ApplicationReleaseManagerImpl implements ApplicationReleaseManager 
      *
      * @param applicationUuid    UUID of the Application.
      * @param applicationRelease ApplicationRelease that need to be created.
-     * @return the Application related with the particular Application Release
      * @throws ApplicationManagementException Application Management Exception.
      */
-    private Application validateReleaseCreateRequest(String applicationUuid, ApplicationRelease applicationRelease)
+    private void validateReleaseCreateRequest(String applicationUuid, ApplicationRelease applicationRelease)
             throws ApplicationManagementException {
-        if (applicationUuid == null) {
-            throw new ApplicationManagementException("Application UUID is null. Application UUID is a required "
-                    + "parameter to do the application release");
-        }
-        Application application = DataHolder.getInstance().getApplicationManager().getApplication(applicationUuid);
-        if (application == null) {
-            throw new ApplicationManagementException(
-                    "Application with UUID " + applicationUuid + " does not exist. Cannot "
-                            + "release an application that is not existing");
-        }
         if (applicationRelease == null || applicationRelease.getVersionName() == null) {
             throw new ApplicationManagementException("ApplicationRelease version name is a mandatory parameter for "
                     + "creating release. It cannot be found.");
@@ -151,6 +199,6 @@ public class ApplicationReleaseManagerImpl implements ApplicationReleaseManager 
                             + applicationRelease.getVersionName() + " already exists. Cannot create an "
                             + "application release with the same version.");
         }
-        return application;
     }
+
 }

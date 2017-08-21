@@ -49,10 +49,10 @@ CREATE TABLE IF NOT EXISTS `APPM_APPLICATION_CATEGORY` (
   ENGINE = InnoDB
   COMMENT = 'This table contains the data related to the application category';
 
-INSERT INTO APPM_APPLICATION_CATEGORY (NAME, DESCRIPTION, PUBLISHED) VALUES ('Enterprise', 'Enterprise level
-applications which the artifacts need to be provided', 1);
-INSERT INTO APPM_APPLICATION_CATEGORY (NAME, DESCRIPTION, PUBLISHED) VALUES ('Public', 'Public category in which the
-application need to be downloaded from the public application store', 1);
+INSERT INTO APPM_APPLICATION_CATEGORY (NAME, DESCRIPTION, PUBLISHED) VALUES ('Enterprise',
+'Enterprise level applications which the artifacts need to be provided', 1);
+INSERT INTO APPM_APPLICATION_CATEGORY (NAME, DESCRIPTION, PUBLISHED) VALUES ('Public',
+'Public category in which the application need to be downloaded from the public application store', 1);
 
 -- -----------------------------------------------------
 -- Table `APPM_LIFECYCLE_STATE`
@@ -65,8 +65,8 @@ CREATE TABLE IF NOT EXISTS APPM_LIFECYCLE_STATE (
   PRIMARY KEY (ID),
   UNIQUE INDEX APPM_LIFECYCLE_STATE_IDENTIFIER_UNIQUE (IDENTIFIER ASC));
 
-INSERT INTO APPM_LIFECYCLE_STATE (NAME, IDENTIFIER, DESCRIPTION) VALUES ('CREATED', 'CREATED', 'Application creation
-initial state');
+INSERT INTO APPM_LIFECYCLE_STATE (NAME, IDENTIFIER, DESCRIPTION) VALUES ('CREATED', 'CREATED',
+'Application creation initial state');
 INSERT INTO APPM_LIFECYCLE_STATE (NAME, IDENTIFIER, DESCRIPTION)
 VALUES ('IN REVIEW', 'IN REVIEW', 'Application is in in-review state');
 INSERT INTO APPM_LIFECYCLE_STATE (NAME, IDENTIFIER, DESCRIPTION)
@@ -188,7 +188,7 @@ CREATE TABLE IF NOT EXISTS `APPM_APPLICATION_PROPERTY` (
 -- Table `APPM_APPLICATION_RELEASE`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `APPM_APPLICATION_RELEASE` (
-  `ID` INT NOT NULL AUTO_INCREMENT,
+  `ID` INT NOT NULL AUTO_INCREMENT UNIQUE ,
   `VERSION_NAME` VARCHAR(100) NOT NULL,
   `RESOURCE` TEXT NULL,
   `RELEASE_CHANNEL` VARCHAR(50) NULL,

@@ -27,11 +27,7 @@ import org.wso2.carbon.device.application.mgt.core.dao.impl.AbstractDAOImpl;
 import org.wso2.carbon.device.application.mgt.core.exception.ApplicationManagementDAOException;
 import org.wso2.carbon.device.application.mgt.core.util.ConnectionManagerUtil;
 
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -51,11 +47,10 @@ public class GenericApplicationReleaseDAOImpl extends AbstractDAOImpl implements
         String sql = "insert into APPM_APPLICATION_RELEASE(VERSION_NAME, RESOURCE, RELEASE_CHANNEL ,"
                 + "RELEASE_DETAILS, CREATED_AT, APPM_APPLICATION_ID, IS_DEFAULT) values (?, ?, ?, ?, ?, ?, ?)";
         int index = 0;
-        boolean isBatchExecutionSupported = ConnectionManagerUtil.isBatchQuerySupported();
 
         try {
             connection = this.getDBConnection();
-            statement = connection.prepareStatement(sql);
+            statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             statement.setString(++index, applicationRelease.getVersionName());
             statement.setString(++index, applicationRelease.getResource());
             statement.setString(++index, String.valueOf(applicationRelease.getReleaseChannel()));
@@ -68,25 +63,7 @@ public class GenericApplicationReleaseDAOImpl extends AbstractDAOImpl implements
             if (resultSet.next()) {
                 applicationRelease.setId(resultSet.getInt(1));
             }
-
-            if (applicationRelease.getProperties() != null && applicationRelease.getProperties().size() != 0) {
-                sql = "INSERT INTO APPM_RELEASE_PROPERTY (PROP_KEY, PROP_VALUE, APPLICATION_RELEASE_ID) VALUES (?,?,?)";
-                statement = connection.prepareStatement(sql);
-                for (Object entry : applicationRelease.getProperties().entrySet()) {
-                    Map.Entry<String, String> property = (Map.Entry) entry;
-                    statement.setString(1, property.getKey());
-                    statement.setString(2, property.getValue());
-                    statement.setInt(3, applicationRelease.getId());
-                    if (isBatchExecutionSupported) {
-                        statement.addBatch();
-                    } else {
-                        statement.execute();
-                    }
-                }
-                if (isBatchExecutionSupported) {
-                    statement.executeBatch();
-                }
-            }
+            insertApplicationReleaseProperties(connection, applicationRelease);
             return applicationRelease;
         } catch (SQLException e) {
             throw new ApplicationManagementDAOException(
@@ -142,7 +119,7 @@ public class GenericApplicationReleaseDAOImpl extends AbstractDAOImpl implements
             }
             return applicationRelease;
         } catch (DBConnectionException e) {
-            throw new ApplicationManagementDAOException("Database connection exception while trying to gett the "
+            throw new ApplicationManagementDAOException("Database connection exception while trying to get the "
                     + "release details of the application with UUID " + applicationUuid + " and version " +
                     versionName, e);
         } catch (SQLException e) {
@@ -203,6 +180,118 @@ public class GenericApplicationReleaseDAOImpl extends AbstractDAOImpl implements
         } finally {
             Util.cleanupResources(statement, resultSet);
             Util.cleanupResources(null, rsProperties);
+        }
+    }
+
+    @Override
+    public ApplicationRelease updateRelease(ApplicationRelease applicationRelease)
+            throws ApplicationManagementDAOException {
+        Connection connection;
+        PreparedStatement statement = null;
+        String sql = "UPDATE APPM_APPLICATION_RELEASE SET RESOURCE = IFNULL (?, RESOURCE), RELEASE_CHANNEL = IFNULL "
+                + "(?, RELEASE_CHANNEL), RELEASE_DETAILS = IFNULL (?, RELEASE_DETAILS), IS_DEFAULT = IFNULL "
+                + "(?, IS_DEFAULT) WHERE  APPM_APPLICATION_ID = ? AND VERSION_NAME = ?";
+        try {
+            connection = this.getDBConnection();
+            statement = connection.prepareStatement(sql);
+            statement.setString(1, applicationRelease.getResource());
+            statement.setString(2, String.valueOf(applicationRelease.getReleaseChannel()));
+            statement.setString(3, applicationRelease.getReleaseDetails());
+            statement.setBoolean(4, applicationRelease.isDefault());
+            statement.setInt(5, applicationRelease.getApplication().getId());
+            statement.setString(6, applicationRelease.getVersionName());
+            statement.executeUpdate();
+
+            sql = "DELETE FROM APPM_RELEASE_PROPERTY WHERE APPLICATION_RELEASE_ID = ?";
+            statement = connection.prepareStatement(sql);
+            statement.setInt(1, applicationRelease.getId());
+            statement.executeUpdate();
+            insertApplicationReleaseProperties(connection, applicationRelease);
+            return applicationRelease;
+        } catch (DBConnectionException e) {
+            throw new ApplicationManagementDAOException("Database connection exception while trying to update the "
+                    + "Application release for the application with UUID " + applicationRelease.getApplication()
+                    .getUuid() + "  for the version " + applicationRelease.getVersionName(), e);
+        } catch (SQLException e) {
+            throw new ApplicationManagementDAOException(
+                    "SQL exception while updating the release, while executing the query " + sql, e);
+        } finally {
+            Util.cleanupResources(statement, null);
+        }
+    }
+
+    @Override
+    public void deleteRelease(int id, String version) throws ApplicationManagementDAOException {
+        Connection connection;
+        PreparedStatement statement = null;
+        String sql = "DELETE FROM APPM_APPLICATION_RELEASE WHERE APPM_APPLICATION_ID = ? AND VERSION_NAME = ?";
+        try {
+            connection = this.getDBConnection();
+            statement = connection.prepareStatement(sql);
+            statement.setInt(1, id);
+            statement.setString(2, version);
+            statement.executeUpdate();
+        } catch (DBConnectionException e) {
+            throw new ApplicationManagementDAOException(
+                    "Database connection exception while trying to delete the release with version " + version, e);
+        } catch (SQLException e) {
+            throw new ApplicationManagementDAOException(
+                    "SQL exception while deleting the release with version " + version + ",while executing the query "
+                            + "sql", e);
+        } finally {
+            Util.cleanupResources(statement, null);
+        }
+    }
+
+    @Override
+    public void deleteReleaseProperties(int id) throws ApplicationManagementDAOException {
+        Connection connection;
+        PreparedStatement statement = null;
+        String sql = "DELETE FROM APPM_RELEASE_PROPERTY WHERE APPLICATION_RELEASE_ID = ?";
+        try {
+            connection = this.getDBConnection();
+            statement = connection.prepareStatement(sql);
+            statement.setInt(1, id);
+            statement.executeUpdate();
+        } catch (DBConnectionException e) {
+            throw new ApplicationManagementDAOException(
+                    "Database connection exception while trying to delete the release properties ", e);
+        } catch (SQLException e) {
+            throw new ApplicationManagementDAOException(
+                    "SQL exception while deleting the properties of application release with the id " + id, e);
+        } finally {
+            Util.cleanupResources(statement, null);
+        }
+    }
+
+    /**
+     * To insert the application release properties.
+     * @param connection Database Connection
+     * @param applicationRelease Application Release the properties of which that need to be inserted.
+     * @throws SQLException SQL Exception.
+     */
+    private void insertApplicationReleaseProperties(Connection connection, ApplicationRelease applicationRelease)
+            throws SQLException {
+        String sql;
+        boolean isBatchExecutionSupported = ConnectionManagerUtil.isBatchQuerySupported();
+
+        if (applicationRelease.getProperties() != null && applicationRelease.getProperties().size() != 0) {
+            sql = "INSERT INTO APPM_RELEASE_PROPERTY (PROP_KEY, PROP_VALUE, APPLICATION_RELEASE_ID) VALUES (?,?,?)";
+            PreparedStatement statement = connection.prepareStatement(sql);
+            for (Object entry : applicationRelease.getProperties().entrySet()) {
+                Map.Entry<String, String> property = (Map.Entry) entry;
+                statement.setString(1, property.getKey());
+                statement.setString(2, property.getValue());
+                statement.setInt(3, applicationRelease.getId());
+                if (isBatchExecutionSupported) {
+                    statement.addBatch();
+                } else {
+                    statement.execute();
+                }
+            }
+            if (isBatchExecutionSupported) {
+                statement.executeBatch();
+            }
         }
     }
 }

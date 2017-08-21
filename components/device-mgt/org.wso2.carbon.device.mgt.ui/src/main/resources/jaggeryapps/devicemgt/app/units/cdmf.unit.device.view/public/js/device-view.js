@@ -49,18 +49,15 @@ $(document).ready(function() {
 function getLogStatusIcon(entry) {
     switch (entry) {
         case 'COMPLETED':
-            return 'fw-success'
-            break;
+            return 'fw-success';
         case 'PENDING':
-            return 'fw-pending'
-            break;
+            return 'fw-pending';
         case 'ERROR':
-            return 'fw-error'
-            break;
+            return 'fw-error';
         default:
             return 'fw-info'
     }
-};
+}
 
 function loadOperationsLog(update) {
     var operationsLogTable = "#operation-log";
@@ -182,18 +179,15 @@ function loadOperationsLog(update) {
         function getLogStatusIcon(entry) {
             switch (entry) {
                 case 'COMPLETED':
-                    return 'fw-success'
-                    break;
+                    return 'fw-success';
                 case 'PENDING':
-                    return 'fw-pending'
-                    break;
+                    return 'fw-pending';
                 case 'ERROR':
-                    return 'fw-error'
-                    break;
+                    return 'fw-error';
                 default:
                     return 'fw-info'
             }
-        };
+        }
     }
 }
 

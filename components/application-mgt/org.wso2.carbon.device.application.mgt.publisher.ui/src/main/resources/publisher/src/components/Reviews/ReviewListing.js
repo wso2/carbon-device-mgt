@@ -15,3 +15,24 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+import React, {Component} from 'react';
+
+/**
+ * Review Listing.
+ * */
+class ReviewListing extends Component {
+
+    constructor() {
+        super();
+    }
+
+    render() {
+        return (
+            <div>
+                Reviews List
+            </div>
+        );
+    }
+}
+
+export default ReviewListing;

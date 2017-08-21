@@ -24,6 +24,27 @@ import FlatButton from 'material-ui/FlatButton';
 import SelectField from 'material-ui/SelectField';
 import RaisedButton from 'material-ui/RaisedButton';
 
+/**
+ * The Second step of application create wizard.
+ * This contains following components.
+ *      * App Title
+ *      * Short Description
+ *      * Application Description
+ *      * Application Visibility
+ *      * Application Tags : {Used Material UI Chip component}
+ *      * Application Category.
+ *      * Platform Specific properties.
+ *      * Screenshots
+ *      * Banner
+ *      * Icon
+ *
+ * Parent Component: Create
+ * Props:
+ *      * handleNext : {type: function, Invokes handleNext function in Parent.}
+ *      * handlePrev : {type: function, Invokes handlePrev function in Parent}
+ *      * setData : {type: function, Invokes setStepData function in Parent}
+ *      * removeData : {type: Invokes removeStepData function in Parent}
+ * */
 class Step2 extends Component {
     constructor() {
         super();
@@ -45,6 +66,11 @@ class Step2 extends Component {
 
     }
 
+    /**
+     * Create a tag on Enter key press and set it to the state.
+     * Clears the tags text field.
+     * Chip gets two parameters: Key and value.
+     * */
     addTags(event) {
         let tags = this.state.tags;
         if (event.charCode === 13) {
@@ -54,33 +80,43 @@ class Step2 extends Component {
         }
     }
 
+    /**
+     *
+     * */
     handleTagChange(event) {
         let defaultValue = this.state.defValue;
         defaultValue = event.target.value;
         this.setState({defValue: defaultValue})
     }
 
+    /**
+     * Invokes the handleNext function in Create component.
+     * */
     handleNext() {
         this.props.handleNext();
     }
 
+    /**
+     * Invokes the handlePrev function in Create component.
+     * */
     handlePrev() {
         this.props.handlePrev();
     }
 
-
+    /**
+     * Handles Chip delete function.
+     * Removes the tag from state.tags
+     * */
     handleRequestDelete = (key) => {
-        if (key === 3) {
-            alert('Why would you want to delete React?! :)');
-            return;
-        }
-
         this.chipData = this.state.tags;
         const chipToDelete = this.chipData.map((chip) => chip.key).indexOf(key);
         this.chipData.splice(chipToDelete, 1);
         this.setState({tags: this.chipData});
     };
 
+    /**
+     * Creates Chip array from state.tags.
+     * */
     renderChip(data) {
         console.log(data);
         return (
@@ -143,8 +179,14 @@ class Step2 extends Component {
                         >
                             <MenuItem value={1} primaryText="Business"/>
                         </SelectField> <br/>
+                        {/*Platform Specific Properties.*/}
+                        <div style={{border: '1px'}}>
+                            fdfdfd
+                        </div>
                     </div>
 
+                    <br />
+                    <br />
                     <div style={{marginTop: 12}}>
                         <FlatButton
                             label="< Back"

@@ -15,3 +15,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
+import ReviewStore from './ReviewStore';
+import PlatformStore from './PlatformStore';
+import ApplicationStore from './ApplicationStore';
+
+
+export {ApplicationStore, PlatformStore, ReviewStore};

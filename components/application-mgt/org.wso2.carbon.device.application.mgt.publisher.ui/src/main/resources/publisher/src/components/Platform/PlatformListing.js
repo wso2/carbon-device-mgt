@@ -15,3 +15,24 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+import React, {Component} from 'react';
+
+/**
+ * Platform Listing component.
+ * */
+class PlatformListing extends Component {
+
+    constructor() {
+        super();
+    }
+
+    render() {
+        return (
+            <div>
+                Platform View
+            </div>
+        );
+    }
+}
+
+export default PlatformListing;

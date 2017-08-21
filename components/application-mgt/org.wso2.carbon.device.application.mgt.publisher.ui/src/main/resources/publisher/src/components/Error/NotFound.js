@@ -17,22 +17,19 @@
  */
 import React, {Component} from 'react';
 
+/**
+ * Error page.
+ * */
 class Error extends Component {
 
     constructor() {
         super();
     }
 
-    componentWillMount() {
-        console.log("In Crate")
-    }
-
     render() {
-
         return (
-
             <div>
-               404 not found
+                404 not found
             </div>
         );
     }

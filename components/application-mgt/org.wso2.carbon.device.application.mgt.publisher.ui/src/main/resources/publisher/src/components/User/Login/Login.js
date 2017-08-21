@@ -26,6 +26,15 @@ import {TextValidator, ValidatorForm} from 'react-material-ui-form-validator';
 
 //todo: remove the {TextValidator, ValidatorForm} and implement it manually.
 
+
+/**
+ * The Login Component.
+ *
+ * This component contains the Login form and methods to handle field change events.
+ * The user name and password will be set to the state and sent to the api.
+ *
+ * If the user is already logged in, it will redirect to the last point where the user was.
+ * */
 class Login extends Component {
     constructor() {
         super();
@@ -53,6 +62,9 @@ class Login extends Component {
         event.preventDefault();
     }
 
+    /**
+     * Handles the username field change event.
+     * */
     onUserNameChange(event) {
         this.setState(
             {
@@ -61,6 +73,9 @@ class Login extends Component {
         );
     }
 
+    /**
+     * Handles the password field change event.
+     * */
     onPasswordChange(event) {
         this.setState(
             {
@@ -69,12 +84,15 @@ class Login extends Component {
         );
     }
 
-    rememberMe() {
+    /**
+     * Handles the remember me check.
+     * */
+    handleRememberMe() {
         this.setState(
             {
                 rememberMe: !this.state.rememberMe
             }
-        )
+        );
     }
 
     render() {
@@ -87,13 +105,11 @@ class Login extends Component {
 
                     <Card>
                         <CardTitle title="WSO2 IoT App Publisher"/>
-
                         <CardActions>
                             <ValidatorForm
                                 ref="form"
                                 onSubmit={this.handleLogin.bind(this)}
                                 onError={errors => console.log(errors)}>
-
                                 <TextValidator
                                     floatingLabelText="User Name"
                                     floatingLabelFixed={true}
@@ -116,12 +132,11 @@ class Login extends Component {
                                 />
                                 <br/>
                                 <Checkbox label="Remember me."
-                                          onCheck={this.rememberMe.bind(this)}
+                                          onCheck={this.handleRememberMe.bind(this)}
                                           checked={this.state.rememberMe}/>
                                 <br/>
                                 <RaisedButton type="submit" label="Login"/>
                             </ValidatorForm>
-
                         </CardActions>
                     </Card>
                 </div>);
@@ -132,7 +147,6 @@ class Login extends Component {
                 </Switch>
             );
         }
-
     }
 }
 

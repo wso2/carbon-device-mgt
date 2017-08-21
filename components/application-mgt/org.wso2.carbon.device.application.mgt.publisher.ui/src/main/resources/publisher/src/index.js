@@ -16,12 +16,15 @@
  * under the License.
  */
 
-import React from 'react';
-import ReactDOM from 'react-dom';
 import './index.css';
+import React from 'react';
 import Publisher from './App';
+import ReactDOM from 'react-dom';
 import registerServiceWorker from './registerServiceWorker';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
+/**
+ * This is the base js file of the app. All the content will be rendered in the root element.
+ * */
 ReactDOM.render(<MuiThemeProvider><Publisher/></MuiThemeProvider>, document.getElementById('root'));
 registerServiceWorker();

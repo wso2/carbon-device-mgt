@@ -15,3 +15,16 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
+import React, {Component} from 'react';
+import {withRouter} from 'react-router-dom';
+
+/**
+ * Application view component.
+ * Shows the details of the application.
+ * */
+class ApplicationView extends Component{
+
+}
+
+export default withRouter(ApplicationView);

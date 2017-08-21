@@ -15,3 +15,24 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+import React, {Component} from 'react';
+
+/**
+ * Review details view.
+ * */
+class ReviewView extends Component {
+
+    constructor() {
+        super();
+    }
+
+    render() {
+        return (
+            <div>
+                Review
+            </div>
+        );
+    }
+}
+
+export default ReviewView;

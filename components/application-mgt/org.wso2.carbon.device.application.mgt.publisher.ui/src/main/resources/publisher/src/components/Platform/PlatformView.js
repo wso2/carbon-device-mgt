@@ -15,3 +15,24 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+import React, {Component} from 'react';
+
+/**
+ * Platform view component.
+ * */
+class PlatformView extends Component {
+
+    constructor() {
+        super();
+    }
+
+    render() {
+        return (
+            <div>
+                Platform View
+            </div>
+        );
+    }
+}
+
+export default PlatformView;

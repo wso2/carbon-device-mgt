@@ -20,15 +20,26 @@ import './App.css'
 import React, {Component} from 'react';
 import createHistory from 'history/createHashHistory';
 import {HashRouter as Router, Redirect, Route, Switch} from 'react-router-dom'
-import {BaseLayout, Create, Login, NotFound, PublisherOverview} from './components'
+import {BaseLayout, ApplicationCreate, Login, NotFound, PublisherOverview, PlatformCreate} from './components'
 
 const history = createHistory({basename: '/publisher'});
+
+/**
+ * This component defines the layout and the routes for the app.
+ * All the content will be loaded inside the Base component.
+ * The base component includes the Core layout and the routers according to which the content will be displayed.
+ *
+ * The Router and Route components.
+ *     The Router and Route is used for navigation.
+ *     We specify the component which needs to be rendered for an URL.
+ *     Ex: When navigate to publisher/overview, the overview component will be rendered inside the main layout.
+ * */
 
 class Base extends Component {
     constructor() {
         super();
         this.state = {
-            user: "s"
+            user: "admin"
         }
     }
 
@@ -40,15 +51,15 @@ class Base extends Component {
                         <Switch>
                             <Redirect exact path={"/"} to={"/overview"}/>
                             <Route exact path={"/overview"} component={PublisherOverview}/>
-                            {/*<Route path={"/assets/apps"} component={}/>*/}
-                            {/*<Route path={"/assets/apps/:app"} component={}/>*/}
-                            <Route path={"/assets/apps/create"} component={Create}/>
-                            {/*<Route path={"/assets/apps/edit/:app"} component="app edit"/>*/}
-                            <Route path={"/assets/platforms/:platform"}/>
-                            <Route path={"/assets/platforms/create"}/>
-                            <Route path={"/assets/platforms/edit/:platform"}/>
-                            <Route path={"/assets/reviews"}/>
-                            <Route path={"/assets/reviews/:review"}/>
+                            <Route exact path={"/assets/apps/create"} component={ApplicationCreate}/>
+                            <Route exact path={"/assets/platforms/create"} component={PlatformCreate}/>
+                            <Route exact path={"/assets/apps"} />
+                            <Route exact path={"/assets/apps/:app"} />
+                            <Route exact path={"/assets/apps/edit/:app"} />
+                            <Route exact path={"/assets/platforms/:platform"}/>
+                            <Route exact path={"/assets/platforms/edit/:platform"}/>
+                            <Route exact path={"/assets/reviews"}/>
+                            <Route exact path={"/assets/reviews/:review"}/>
                             <Route component={NotFound}/>
                         </Switch>
                     </BaseLayout>
@@ -60,6 +71,9 @@ class Base extends Component {
     }
 }
 
+/**
+ * This component is referred by the index.js to initiate the application.
+ * */
 class Publisher extends Component {
     render() {
         return (
@@ -75,5 +89,9 @@ class Publisher extends Component {
         );
     }
 }
+
+Publisher.propTypes = {
+    user: Object
+};
 
 export default Publisher;

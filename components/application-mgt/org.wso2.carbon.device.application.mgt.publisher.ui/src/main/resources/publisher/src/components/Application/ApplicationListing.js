@@ -15,3 +15,16 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
+import React, {Component} from 'react';
+import {withRouter} from 'react-router-dom';
+
+
+/**
+ * Application List Component.
+ * */
+class ApplicationListing extends Component{
+
+}
+
+export default withRouter(ApplicationListing);

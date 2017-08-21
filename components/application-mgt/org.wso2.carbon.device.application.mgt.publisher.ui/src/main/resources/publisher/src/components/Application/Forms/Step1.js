@@ -23,6 +23,19 @@ import FlatButton from 'material-ui/FlatButton';
 import SelectField from 'material-ui/SelectField';
 import RaisedButton from 'material-ui/RaisedButton';
 
+/**
+ * The first step of the application creation wizard.
+ * This contains following components:
+ *      * Application Title
+ *      * Store Type
+ *      * Application Platform
+ *
+ * Parent Component: Create
+ * Props:
+ *      1. handleNext: {type: function, Invokes handleNext function of parent component}
+ *      2. setData : {type: function, Sets current form data to the state of the parent component}
+ *      3. removeData: {type: function, Invokes the removeStepData function click of parent}
+ * */
 class Step1 extends Component {
     constructor() {
         super();
@@ -35,34 +48,47 @@ class Step1 extends Component {
         };
     }
 
+    /**
+     * Invokes the handleNext function in Create component.
+     * */
     handleNext = () => {
         this.props.handleNext();
     };
 
+    /**
+     * Persist the current form data to the state.
+     * */
     setStepData() {
         this.props.setData("step1", {step: "Dfds"});
         this.handleNext.bind(this);
     }
 
+    /**
+     * Handles Next button click.
+     *  Validates the form.
+     *  Sets the data to the state.
+     *  Invokes the handleNext method of Create component.
+     * */
     handleClick() {
         this.setStepData();
         this.handleNext();
     }
 
-    handlePrev() {
-        this.props.handlePrev();
-    }
-
+    /**
+     * Triggers when changing the Platform selection.
+     * */
     onChangePlatform = (event, index, value) => {
         this.setState({platform: value});
     };
 
+    /**
+     * Triggers when changing the Store selection.
+     * */
     onChangeStore = (event, index, value) => {
         this.setState({store: value});
     };
 
     render() {
-        const {finished, stepIndex} = this.state;
         const contentStyle = {margin: '0 16px'};
         return (
             <div>
@@ -94,13 +120,10 @@ class Step1 extends Component {
                                 <MenuItem value={3} primaryText="Web"/>
                             </SelectField>
                         </div>
+
+                        <br/>
+                        <br/>
                         <div style={{marginTop: 12}}>
-                            <FlatButton
-                                label="< Back"
-                                disabled={true}
-                                onClick={this.handlePrev.bind(this)}
-                                style={{marginRight: 12}}
-                            />
                             <RaisedButton
                                 label="Next >"
                                 primary={true}

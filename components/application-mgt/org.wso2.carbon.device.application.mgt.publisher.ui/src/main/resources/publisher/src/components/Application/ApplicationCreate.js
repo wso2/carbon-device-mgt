@@ -25,7 +25,16 @@ import RaisedButton from 'material-ui/RaisedButton';
 import {Card, CardActions, CardTitle} from 'material-ui/Card';
 import {Step, StepLabel, Stepper,} from 'material-ui/Stepper';
 
-class Create extends Component {
+
+/**
+ * The App Create Component.
+ *
+ * Application creation is handled through a Wizard. (We use Material UI Stepper.)
+ *
+ * In each step, data will be set to the state separately.
+ * When the wizard is completed, data will be arranged and sent to the api.
+ * */
+class ApplicationCreate extends Component {
     constructor() {
         super();
         this.setStepData.bind(this);
@@ -42,6 +51,9 @@ class Create extends Component {
         };
     }
 
+    /**
+     * Handles next button click event.
+     * */
     handleNext = () => {
         const {stepIndex} = this.state;
         this.setState({
@@ -50,14 +62,25 @@ class Create extends Component {
         });
     };
 
+    /**
+     * Handles form submit.
+     * */
     handleSubmit = () => {
         console.log(this.state.stepData);
     };
 
+    /**
+     * Handles cancel button click event.
+     * This will show a confirmation dialog to cancel the application creation process.
+     * */
     handleCancel = () => {
         this.setState({isDialogOpen: true});
     };
 
+    /**
+     * Handled [ < Prev ] button click.
+     * This clears the data in the current step and returns to the previous step.
+     * */
     handlePrev = () => {
         const {stepIndex} = this.state;
         if (stepIndex > 0) {
@@ -66,6 +89,9 @@ class Create extends Component {
         }
     };
 
+    /**
+     * Saves form data in each step in to the state.
+     * */
     setStepData = (step, data) => {
         console.log(step, data, this.state.stepData);
         let tmpStepData = this.state.stepData;
@@ -83,14 +109,31 @@ class Create extends Component {
         this.setState({stepData: tempData});
     };
 
+    /**
+     * Handles the Yes button in app creation cancellation dialog.
+     * Clears all the form data and reset the wizard.
+     * */
     handleYes = () => {
         this.setState({finished: false, stepIndex: 0, stepData: [], isDialogOpen: false});
     };
 
+    /**
+     * Handles No button in app creation cancellation dialog.
+     * Returns to the same step.
+     * */
     handleNo = () => {
         this.setState({isDialogOpen: false});
     };
 
+    /**
+     * Defines all the Steps in the stepper. (Wizard)
+     *
+     * Extension Point: If any extra steps needed, follow the instructions below.
+     *                   1. Create the required form ./Forms directory.
+     *                   2. Add defined case statements.
+     *                   3. Define the Step in render function.
+     *
+     * */
     getStepContent(stepIndex) {
         switch (stepIndex) {
             case 0:
@@ -117,6 +160,9 @@ class Create extends Component {
         const {finished, stepIndex} = this.state;
         const contentStyle = {margin: '0 16px'};
 
+        /**
+         * Defines the dialog box actions. [Yes][No]
+         * */
         const actions = [
             <FlatButton
                 label="Yes"
@@ -156,7 +202,7 @@ class Create extends Component {
                                 {finished ? (
                                     <div>
                                         <p>Create App?</p>
-                                        <form onSubmit={this.handleSubmit}>
+                                        <form>
                                             <RaisedButton primary={true} label="Create" onClick={this.handleSubmit}/>
                                             <FlatButton label="Cancel" onClick={this.handleCancel}/>
                                         </form>
@@ -182,4 +228,4 @@ class Create extends Component {
     }
 }
 
-export default withRouter(Create);
+export default withRouter(ApplicationCreate);

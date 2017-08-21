@@ -24,6 +24,28 @@ import FlatButton from 'material-ui/FlatButton';
 import SelectField from 'material-ui/SelectField';
 import RaisedButton from 'material-ui/RaisedButton';
 
+/**
+ * The Third step of application create wizard. {Application Release Step}
+ * This step is not compulsory.
+ *
+ * When click finish, user will prompt to confirm the application creation.
+ * User can go ahead and create the app or cancel.
+ *
+ * This contains following components:
+ *      * Toggle to select application release. Un-hides the Application Release form.
+ *
+ *     Application Release Form.
+ *      * Release Channel
+ *      * Application Version
+ *      * Upload component for application.
+ *
+ * Parent Component: Create
+ * Props:
+ *      * handleFinish : {type: function, Invokes handleNext function in Parent.}
+ *      * handlePrev : {type: function, Invokes handlePrev function in Parent}
+ *      * setData : {type: function, Invokes setStepData function in Parent}
+ *      * removeData : {type: Invokes removeStepData function in Parent}
+ * */
 class Step3 extends Component {
     constructor() {
         super();
@@ -33,14 +55,24 @@ class Step3 extends Component {
         }
     }
 
+    /**
+     * Handles finish button click.
+     * This invokes handleNext function in parent component.
+     * */
     handleFinish() {
         this.props.handleFinish();
     }
 
+    /**
+     * Invokes Prev button click.
+     * */
     handlePrev() {
         this.props.handlePrev();
     }
 
+    /**
+     * Handles release application selection.
+     * */
     handleToggle() {
         let hide = this.state.showForm;
         this.setState({showForm: !hide});
@@ -60,7 +92,7 @@ class Step3 extends Component {
                     />
 
                     {/*If toggle is true, the release form will be shown.*/}
-                    {!this.state.showForm ? <div></div> : <div>
+                    {!this.state.showForm ? <div/> : <div>
                         <SelectField
                             floatingLabelText="Select Release Channel*"
                             value={this.state.releaseChannel}

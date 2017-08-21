@@ -17,6 +17,13 @@
  */
 import React, {Component} from 'react';
 
+/**
+ *
+ * ***NEW***
+ * The Publisher overview component.
+ * This component could be used to view app analytics.
+ * i.e number of overall downloads, ratings ect.
+ * */
 class PublisherOverview extends Component {
 
     constructor() {
@@ -24,7 +31,6 @@ class PublisherOverview extends Component {
     }
 
     componentWillMount() {
-        console.log("In Crate")
     }
 
     render() {

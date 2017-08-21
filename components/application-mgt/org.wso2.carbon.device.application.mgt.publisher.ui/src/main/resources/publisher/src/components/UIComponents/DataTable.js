@@ -15,3 +15,24 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+import React, {Component} from 'react';
+
+/**
+ * Error page.
+ * */
+class DataTable extends Component {
+
+    constructor() {
+        super();
+    }
+
+    render() {
+        return (
+            <div>
+                Data Table
+            </div>
+        );
+    }
+}
+
+export default DataTable;

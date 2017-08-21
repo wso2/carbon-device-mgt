@@ -53,15 +53,6 @@
                                     </propertyDef>
                                 </properties>
                             </adviceFile>
-                            <bundles>
-
-                            </bundles>
-                            <importFeatures>
-
-                            </importFeatures>
-                            <importBundles>
-
-                            </importBundles>
                         </configuration>
                     </execution>
                 </executions>

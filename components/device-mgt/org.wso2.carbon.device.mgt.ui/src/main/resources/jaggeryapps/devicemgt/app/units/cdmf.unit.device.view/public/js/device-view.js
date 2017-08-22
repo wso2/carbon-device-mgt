@@ -46,6 +46,19 @@ $(document).ready(function() {
 
 });
 
+function getLogStatusIcon(entry) {
+    switch (entry) {
+        case 'COMPLETED':
+            return 'fw-success';
+        case 'PENDING':
+            return 'fw-pending';
+        case 'ERROR':
+            return 'fw-error';
+        default:
+            return 'fw-info'
+    }
+}
+
 function loadOperationsLog(update) {
     var operationsLogTable = "#operation-log";
     if (update) {
@@ -95,7 +108,7 @@ function loadOperationsLog(update) {
                 data: "status",
                 class: "text-right extended-log-data log-record-status",
                 render: function(data, type, full, meta) {
-                    return '<i class="icon fw fw-success"></i><span> ' + data + ' </span><i class="icon fw fw-down"></i>';
+                    return '<i class="icon fw ' + getLogStatusIcon(data) +  '"> </i><span> ' + data + ' </span><i class="icon fw fw-down"></i>';
                 },
                 width: "100%"
             }
@@ -166,11 +179,11 @@ function loadOperationsLog(update) {
         function getLogStatusIcon(entry) {
             switch (entry) {
                 case 'COMPLETED':
-                    return 'fw-success'
-                    break;
+                    return 'fw-success';
                 case 'PENDING':
-                    return 'fw-pending'
-                    break;
+                    return 'fw-pending';
+                case 'ERROR':
+                    return 'fw-error';
                 default:
                     return 'fw-info'
             }

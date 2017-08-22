@@ -16,6 +16,7 @@
  * under the License.
  */
 
+import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import Toggle from 'material-ui/Toggle';
 import MenuItem from 'material-ui/MenuItem';
@@ -51,7 +52,8 @@ class Step3 extends Component {
         super();
         this.state = {
             showForm: false,
-            releaseChannel: 1
+            releaseChannel: 1,
+            errors: {}
         }
     }
 
@@ -78,7 +80,6 @@ class Step3 extends Component {
         this.setState({showForm: !hide});
     }
 
-
     render() {
         const contentStyle = {margin: '0 16px'};
         return (
@@ -90,7 +91,6 @@ class Step3 extends Component {
                         onToggle={this.handleToggle.bind(this)}
                         defaultToggled={this.state.showForm}
                     />
-
                     {/*If toggle is true, the release form will be shown.*/}
                     {!this.state.showForm ? <div/> : <div>
                         <SelectField
@@ -105,6 +105,7 @@ class Step3 extends Component {
                         <TextField
                             hintText="1.0.0"
                             floatingLabelText="Version*"
+                            errorText={this.state.errors["title"]}
                             floatingLabelFixed={true}
                         /><br/>
                     </div>}
@@ -127,5 +128,12 @@ class Step3 extends Component {
         );
     }
 }
+
+Step3.propTypes = {
+    handleFinish: PropTypes.func,
+    handlePrev: PropTypes.func,
+    setData: PropTypes.func,
+    removeData: PropTypes.func
+};
 
 export default Step3;

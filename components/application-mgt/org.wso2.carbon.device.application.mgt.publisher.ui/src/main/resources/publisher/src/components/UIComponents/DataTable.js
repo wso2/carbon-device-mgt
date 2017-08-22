@@ -15,8 +15,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import React, {Component} from 'react';
 
+import React, {Component} from 'react';
+import PropTypes from 'prop-types';
+import {Table, TableBody} from 'material-ui/Table';
+import DataTableHeader from './DataTableHeader';
+import DataTableRow from './DataTableRow';
 /**
  * Error page.
  * */
@@ -28,11 +32,23 @@ class DataTable extends Component {
 
     render() {
         return (
-            <div>
-                Data Table
-            </div>
+            <Table>
+                <DataTableHeader>
+                    {this.props.headers.map((header) => {
+
+                    })}
+                </DataTableHeader>
+                <TableBody>
+
+                </TableBody>
+            </Table>
         );
     }
 }
+
+DataTable.prototypes = {
+    data: PropTypes.arrayOf(Object),
+    headers: PropTypes.arrayOf(String)
+};
 
 export default DataTable;

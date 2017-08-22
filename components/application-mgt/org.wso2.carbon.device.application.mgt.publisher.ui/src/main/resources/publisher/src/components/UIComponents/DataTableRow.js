@@ -15,17 +15,16 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+import React, {Component} from 'react';
+import PropTypes from 'prop-types';
 
-import Login from './User/Login/Login';
-import NotFound from './Error/NotFound';
-import BaseLayout from './Base/BaseLayout';
-import PlatformCreate from './Platform/PlatformCreate';
-import PublisherOverview from './Overview/PublisherOverview';
-import ApplicationCreate from './Application/ApplicationCreate';
-import ApplicationListing from './Application/ApplicationListing';
+class DataTableRow extends Component {
 
-/**
- * Contains all UI components related to Application, Login and Platform
- */
+}
 
-export {Login, BaseLayout, ApplicationCreate, ApplicationListing, NotFound, PublisherOverview, PlatformCreate};
+DataTableRow.propTypes = {
+    onClick: PropTypes.func,
+    data: PropTypes.object
+};
+
+export default DataTableRow;

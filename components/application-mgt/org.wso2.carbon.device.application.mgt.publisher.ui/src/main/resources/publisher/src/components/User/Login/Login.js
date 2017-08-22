@@ -17,6 +17,7 @@
  */
 
 import qs from 'qs';
+import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import Checkbox from 'material-ui/Checkbox';
 import {Redirect, Switch} from 'react-router-dom';

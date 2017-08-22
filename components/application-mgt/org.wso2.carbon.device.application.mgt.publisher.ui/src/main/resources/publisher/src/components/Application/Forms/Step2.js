@@ -16,7 +16,9 @@
  * under the License.
  */
 
+import PropTypes from 'prop-types';
 import Chip from 'material-ui/Chip';
+import Dropzone from 'react-dropzone';
 import React, {Component} from 'react';
 import MenuItem from 'material-ui/MenuItem';
 import TextField from 'material-ui/TextField';
@@ -51,7 +53,8 @@ class Step2 extends Component {
         this.state = {
             tags: [],
             defValue: "",
-            category: 1
+            category: 1,
+            errors: {}
         };
 
         this.styles = {
@@ -63,7 +66,6 @@ class Step2 extends Component {
                 flexWrap: 'wrap',
             },
         };
-
     }
 
     /**
@@ -138,17 +140,21 @@ class Step2 extends Component {
                     <div>
                         <TextField
                             hintText="Enter a title for your application."
+                            errorText={this.state.errors["title"]}
                             floatingLabelText="Title*"
                             floatingLabelFixed={true}
                         /><br/>
                         <TextField
                             hintText="Enter a short description for your application."
+                            errorText={this.state.errors["shortDesc"]}
                             floatingLabelText="Short Description*"
                             floatingLabelFixed={true}
                             multiLine={true}
                             rows={2}
+
                         /><br/>
                         <TextField
+                            errorText={this.state.errors["description"]}
                             hintText="Enter the description."
                             floatingLabelText="Description*"
                             floatingLabelFixed={true}
@@ -157,10 +163,11 @@ class Step2 extends Component {
                         /><br/>
                         <TextField
                             hintText="Select the application visibility"
-                            floatingLabelText="Visibility*"
+                            floatingLabelText="Visibility"
                             floatingLabelFixed={true}
                         /><br/>
                         <TextField
+                            errorText={this.state.errors["tags"]}
                             hintText="Enter application tags.."
                             floatingLabelText="Tags*"
                             floatingLabelFixed={true}
@@ -180,9 +187,27 @@ class Step2 extends Component {
                             <MenuItem value={1} primaryText="Business"/>
                         </SelectField> <br/>
                         {/*Platform Specific Properties.*/}
-                        <div style={{border: '1px'}}>
-                            fdfdfd
-                        </div>
+                        <div style={{border: 'solid #BDBDBD 1px'}}>
+                            <p style={{color:'#BDBDBD'}}>Platform Specific Properties</p>
+                        </div><br/>
+                        <div>
+                            <p style={{color:'#BDBDBD'}}>Screenshots*:</p>
+                            <Dropzone style={{width:'100px', height:'100px', border: 'dashed #BDBDBD 1px'}}>
+                                <p style={{margin: '40px 40px 40px 50px'}}>+</p>
+                            </Dropzone>
+                        </div><br/>
+                        <div>
+                            <p style={{color:'#BDBDBD'}}>Banner*:</p>
+                            <Dropzone style={{width:'100px', height:'100px', border: 'dashed #BDBDBD 1px'}}>
+                                <p style={{margin: '40px 40px 40px 50px'}}>+</p>
+                            </Dropzone>
+                        </div><br/>
+                        <div>
+                            <p style={{color:'#BDBDBD'}}>Icon*:</p>
+                            <Dropzone style={{width:'100px', height:'100px', border: 'dashed #BDBDBD 1px'}}>
+                                <p style={{margin: '40px 40px 40px 50px'}}>+</p>
+                            </Dropzone>
+                        </div><br/>
                     </div>
 
                     <br />
@@ -205,5 +230,12 @@ class Step2 extends Component {
         );
     }
 }
+
+Step2.prototypes = {
+    handleNext: PropTypes.func,
+    handlePrev: PropTypes.func,
+    setData: PropTypes.func,
+    removeData: PropTypes.func
+};
 
 export default Step2;

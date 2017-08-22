@@ -16,10 +16,10 @@
  * under the License.
  */
 
+import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import MenuItem from 'material-ui/MenuItem';
 import TextField from 'material-ui/TextField';
-import FlatButton from 'material-ui/FlatButton';
 import SelectField from 'material-ui/SelectField';
 import RaisedButton from 'material-ui/RaisedButton';
 
@@ -136,5 +136,11 @@ class Step1 extends Component {
         );
     }
 }
+
+Step1.propTypes = {
+    handleNext: PropTypes.func,
+    setData: PropTypes.func,
+    removeData: PropTypes.func
+};
 
 export default Step1;

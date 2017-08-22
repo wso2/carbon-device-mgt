@@ -16,6 +16,7 @@
  * under the License.
  */
 
+import PropTypes from 'prop-types';
 import Badge from 'material-ui/Badge';
 import React, {Component} from 'react';
 import AppBar from 'material-ui/AppBar';
@@ -159,6 +160,10 @@ class BaseLayout extends Component {
             </div>);
     }
 
+}
+
+BaseLayout.propTypes = {
+    children: PropTypes.element
 }
 
 export default withRouter(BaseLayout);

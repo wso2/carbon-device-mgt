@@ -16,6 +16,7 @@
  * under the License.
  */
 
+import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import Dialog from 'material-ui/Dialog';
 import {withRouter} from 'react-router-dom';
@@ -227,5 +228,7 @@ class ApplicationCreate extends Component {
             </div>);
     }
 }
+
+ApplicationCreate.propTypes = {};
 
 export default withRouter(ApplicationCreate);

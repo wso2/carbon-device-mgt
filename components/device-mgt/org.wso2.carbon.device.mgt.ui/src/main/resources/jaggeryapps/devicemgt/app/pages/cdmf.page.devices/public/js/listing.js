@@ -259,7 +259,7 @@ function loadDevices(searchType, searchParam) {
     var columns = [
         {
             targets: 0,
-            data: 'name',
+            data: 'namePattern',
             class: 'remove-padding icon-only content-fill viewEnabledIcon',
             render: function (data, type, row, meta) {
                 return '<div class="thumbnail icon"><img class="square-element text fw " src="'
@@ -471,7 +471,8 @@ function loadDevices(searchType, searchParam) {
                     ownership: data.devices[index].enrolmentInfo.ownership,
                     deviceType: data.devices[index].type,
                     deviceIdentifier: data.devices[index].deviceIdentifier,
-                    name: data.devices[index].name
+                    name: data.devices[index].name,
+                    namePattern: data.devices[index].name
                 }
             );
         });
@@ -504,8 +505,8 @@ function loadDevices(searchType, searchParam) {
              }
 
         }, {
-            "placeholder": "Search By Device Name",
-            "searchKey": "name"
+            "placeholder": "Top-Device-Name-Search",
+            "searchKey": "namePattern"
         }
     );
 
@@ -566,6 +567,9 @@ $(document).ready(function () {
             top: $('header').height()
         }
     });
+
+    //Hide the search by device-name input
+    $("input[placeholder='Top-Device-Name-Search']").hide();
 
 });
 

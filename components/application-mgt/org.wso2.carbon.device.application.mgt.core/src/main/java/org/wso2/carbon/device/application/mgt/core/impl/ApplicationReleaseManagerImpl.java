@@ -20,6 +20,7 @@ package org.wso2.carbon.device.application.mgt.core.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.application.mgt.common.Application;
 import org.wso2.carbon.device.application.mgt.common.ApplicationRelease;
 import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
@@ -64,6 +65,7 @@ public class ApplicationReleaseManagerImpl implements ApplicationReleaseManager 
     @Override
     public ApplicationRelease getRelease(String applicationUuid, String version) throws
             ApplicationManagementException {
+        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId(true);
         Application application = validateApplication(applicationUuid);
         if (log.isDebugEnabled()) {
             log.debug("Application release retrieval request is received for the application " +
@@ -71,7 +73,7 @@ public class ApplicationReleaseManagerImpl implements ApplicationReleaseManager 
         }
         try {
             ConnectionManagerUtil.openDBConnection();
-            return DAOFactory.getApplicationReleaseDAO().getRelease(applicationUuid, version);
+            return DAOFactory.getApplicationReleaseDAO().getRelease(applicationUuid, version, tenantId);
         } finally {
             ConnectionManagerUtil.closeDBConnection();
         }
@@ -79,6 +81,7 @@ public class ApplicationReleaseManagerImpl implements ApplicationReleaseManager 
 
     @Override
     public List<ApplicationRelease> getReleases(String applicationUuid) throws ApplicationManagementException {
+        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId(true);
         Application application = validateApplication(applicationUuid);
         if (log.isDebugEnabled()) {
             log.debug("Request is received to retrieve all the releases related with the application " +
@@ -86,15 +89,33 @@ public class ApplicationReleaseManagerImpl implements ApplicationReleaseManager 
         }
         try {
             ConnectionManagerUtil.openDBConnection();
-            return DAOFactory.getApplicationReleaseDAO().getApplicationReleases(applicationUuid);
+            return DAOFactory.getApplicationReleaseDAO().getApplicationReleases(applicationUuid, tenantId);
         } finally {
             ConnectionManagerUtil.closeDBConnection();
         }
     }
 
     @Override
-    public void makeDefaultRelease(int id) throws ApplicationManagementException {
+    public void changeDefaultRelease(String uuid, String version, boolean isDefault, String releaseChannel) throws
+            ApplicationManagementException {
+        Application application = validateApplication(uuid);
+        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId(true);
+        if (log.isDebugEnabled()) {
+            log.debug("Request received to change the default release for the release channel " + releaseChannel
+                    + "for the application " + application.toString());
+        }
 
+        try {
+            ConnectionManagerUtil.beginDBTransaction();
+            DAOFactory.getApplicationReleaseDAO()
+                    .changeReleaseDefault(uuid, version, isDefault, releaseChannel, tenantId);
+            ConnectionManagerUtil.commitDBTransaction();
+        } catch (ApplicationManagementDAOException e) {
+            ConnectionManagerUtil.rollbackDBTransaction();
+            throw e;
+        } finally {
+            ConnectionManagerUtil.closeDBConnection();
+        }
     }
 
     @Override

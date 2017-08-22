@@ -35,15 +35,15 @@ public interface ApplicationDAO {
 
     Application createApplication(Application application) throws ApplicationManagementDAOException;
 
-    ApplicationList getApplications(Filter filter) throws ApplicationManagementDAOException;
+    ApplicationList getApplications(Filter filter, int tenantId) throws ApplicationManagementDAOException;
 
-    Application getApplication(String uuid) throws ApplicationManagementDAOException;
+    Application getApplication(String uuid, int tenantId) throws ApplicationManagementDAOException;
 
-    int getApplicationId(String uuid) throws ApplicationManagementDAOException;
+    int getApplicationId(String uuid, int tenantId) throws ApplicationManagementDAOException;
 
     Application editApplication(Application application, int tenantId) throws ApplicationManagementDAOException;
 
-    void deleteApplication(String uuid) throws ApplicationManagementDAOException;
+    void deleteApplication(String uuid, int tenantId) throws ApplicationManagementDAOException;
 
     int getApplicationCount(Filter filter) throws ApplicationManagementDAOException;
 
@@ -57,10 +57,13 @@ public interface ApplicationDAO {
 
     void addRelease(ApplicationRelease release) throws ApplicationManagementDAOException;
 
-    void changeLifecycle(String applicationUUID, String lifecycleIdentifier, String username) throws
+    void changeLifecycle(String applicationUUID, String lifecycleIdentifier, String username, int tenantId) throws
             ApplicationManagementDAOException;
 
     List<LifecycleStateTransition> getNextLifeCycleStates(String applicationUUID, int tenantId) throws
+            ApplicationManagementDAOException;
+
+    void updateScreenShotCount(String applicationUUID, int tenantId, int count) throws
             ApplicationManagementDAOException;
 
 }

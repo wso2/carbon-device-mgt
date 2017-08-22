@@ -425,7 +425,50 @@ public class ApplicationManagementAPIImpl implements ApplicationManagementAPI {
                                 + applicationUUID).build();
             }
         } catch (ApplicationManagementException e) {
-            log.error("Error while deleting application release with the applicaion UUID " + applicationUUID, e);
+            log.error("Error while deleting application release with the application UUID " + applicationUUID, e);
+            return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Override
+    @GET
+    @Path("/image-artifacts/{uuid}")
+    public Response getApplicationImageArtifacts(@PathParam("uuid") String applicationUUID,
+            @QueryParam("name") String name, @QueryParam("count") int count) {
+        if (name == null || name.isEmpty()) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("Name should not be null. Name is mandatory to"
+                    + " retrieve the particular image artifact of the release").build();
+        }
+        ApplicationStorageManager applicationStorageManager = APIUtil.getApplicationStorageManager();
+        try {
+            InputStream imageArtifact = applicationStorageManager.getImageArtifact(applicationUUID, name, count);
+            FileStreamingOutput fileStreamingOutput = new FileStreamingOutput(imageArtifact);
+            Response.ResponseBuilder response = Response.status(Response.Status.OK).entity(fileStreamingOutput);
+            response.header("Content-Disposition", "attachment; filename=\"" + name + "\"");
+            return response.build();
+        } catch (ApplicationStorageManagementException e) {
+            log.error("Application Storage Management Exception while getting the image artifact " + name + " of "
+                    + "the application with UUID " + applicationUUID, e);
+            return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Override
+    @PUT
+    @Consumes("application/json")
+    @Path("/{uuid}/{version}/{channel}")
+    public Response updateDefaultVersion(@PathParam("uuid") String applicationUUID, @PathParam("version") String
+            version, @PathParam("channel") String channel, @QueryParam("isDefault") boolean isDefault) {
+        ApplicationReleaseManager applicationReleaseManager = APIUtil.getApplicationReleaseManager();
+        try {
+            applicationReleaseManager.changeDefaultRelease(applicationUUID, version, isDefault, channel);
+            return Response.status(Response.Status.OK)
+                    .entity("Successfully changed the default version for the " + "release channel " + channel
+                            + " for the application UUID " + applicationUUID).build();
+        } catch (ApplicationManagementException e) {
+            log.error("Application Release Management Exception while changing the default release for the release "
+                    + "channel " + channel + " for the application with UUID " + applicationUUID + " for the version "
+                    + version);
             return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
         }
     }

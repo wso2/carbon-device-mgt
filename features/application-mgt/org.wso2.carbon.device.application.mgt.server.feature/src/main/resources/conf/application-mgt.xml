@@ -61,7 +61,6 @@
     </Extensions>
 
     <Artifacts>
-        <ImageLocation>${carbon.home}/repository/resources/mobileapps/images/</ImageLocation>
-        <BinaryLocation>${carbon.home}/repository/resources/mobileapps/binary/</BinaryLocation>
+        <BinaryLocation>repository/resources/mobileapps/</BinaryLocation>
     </Artifacts>
 </ApplicationManagementConfiguration>

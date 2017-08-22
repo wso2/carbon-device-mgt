@@ -232,7 +232,6 @@ public interface ApplicationManagementAPI {
                     required = true)
             @Valid Application application);
 
-
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
@@ -649,4 +648,98 @@ public interface ApplicationManagementAPI {
                     name = "version",
                     value = "Version of the application")
             @QueryParam("version") String version);
+
+    @GET
+    @Path("/image-artifacts/{uuid}")
+    @Produces(MediaType.APPLICATION_OCTET_STREAM)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(
+            consumes = MediaType.APPLICATION_JSON,
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "DELETE",
+            value = "Delete the releases of a particular applicaion",
+            notes = "This will delete the releases or specific release of an application",
+            tags = "Application Management",
+            extensions = {
+                    @Extension(properties = {
+                            @ExtensionProperty(name = SCOPE, value = "perm:application:get")
+                    })
+            }
+    )
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            code = 200,
+                            message = "OK. \n Successfully deleted the Application release."),
+                    @ApiResponse(
+                            code = 500,
+                            message = "Internal Server Error. \n Error occurred while deleting the release of a"
+                                    + "particular application.",
+                            response = ErrorResponse.class)
+            })
+    Response getApplicationImageArtifacts(
+            @ApiParam(
+                    name = "UUID",
+                    value = "Unique identifier of the Application",
+                    required = true)
+            @PathParam("uuid") String applicationUUID,
+            @ApiParam(
+                    name = "name",
+                    value = "Name of the artifact to be retrieved",
+                    required = true)
+            @QueryParam("name") String name,
+            @ApiParam(
+                    name = "count",
+                    value = "Count of the screen-shot artifact to be retrieved",
+                    required = false)
+            @QueryParam("count") int count);
+
+    @PUT
+    @Consumes("application/json")
+    @Path("/{uuid}/{version}/{channel}")
+    @ApiOperation(
+            consumes = MediaType.APPLICATION_JSON,
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "PUT",
+            value = "Make the particular application release as default or not",
+            notes = "Make the particular application release as default or not",
+            tags = "Application Management",
+            extensions = {
+                    @Extension(properties = {
+                            @ExtensionProperty(name = SCOPE, value = "perm:application-mgt:login")
+                    })
+            }
+    )
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            code = 200,
+                            message = "OK. \n Successfully retrieved the lifecycle states.",
+                            response = List.class),
+                    @ApiResponse(
+                            code = 500,
+                            message = "Internal Server Error. \n Error occurred while getting the life-cycle states.",
+                            response = ErrorResponse.class)
+            })
+    Response updateDefaultVersion(
+            @ApiParam(
+                    name = "UUID",
+                    value = "Unique identifier of the Application",
+                    required = true)
+            @PathParam("uuid") String applicationUUID,
+            @ApiParam(
+                    name = "Version",
+                    value = "Version of the Application Release",
+                    required = true)
+            @PathParam("version") String version,
+            @ApiParam(
+                    name = "Release Channel",
+                    value = "Release Channel",
+                    required = true)
+            @PathParam("channel") String channel,
+            @ApiParam(
+                    name = "isDefault",
+                    value = "Whether to make it default or not",
+                    required = false)
+            @QueryParam("isDefault") boolean isDefault);
 }

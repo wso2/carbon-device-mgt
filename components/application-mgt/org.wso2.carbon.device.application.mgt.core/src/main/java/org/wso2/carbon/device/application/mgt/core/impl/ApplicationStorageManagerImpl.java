@@ -21,12 +21,18 @@ package org.wso2.carbon.device.application.mgt.core.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.application.mgt.common.Application;
 import org.wso2.carbon.device.application.mgt.common.ApplicationRelease;
 import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
 import org.wso2.carbon.device.application.mgt.common.exception.ApplicationStorageManagementException;
+import org.wso2.carbon.device.application.mgt.common.exception.DBConnectionException;
+import org.wso2.carbon.device.application.mgt.common.exception.TransactionManagementException;
 import org.wso2.carbon.device.application.mgt.common.services.ApplicationStorageManager;
+import org.wso2.carbon.device.application.mgt.core.dao.common.DAOFactory;
+import org.wso2.carbon.device.application.mgt.core.exception.ApplicationManagementDAOException;
 import org.wso2.carbon.device.application.mgt.core.internal.DataHolder;
+import org.wso2.carbon.device.application.mgt.core.util.ConnectionManagerUtil;
 import org.wso2.carbon.device.application.mgt.core.util.Constants;
 
 import java.io.File;
@@ -36,6 +42,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -47,18 +54,8 @@ public class ApplicationStorageManagerImpl implements ApplicationStorageManager 
     @Override
     public void uploadImageArtifacts(String applicationUUID, InputStream iconFileStream, InputStream bannerFileStream,
             List<InputStream> screenShotStreams) throws ApplicationStorageManagementException {
-        Application application;
-        try {
-            application = DataHolder.getInstance().getApplicationManager().getApplication(applicationUUID);
-        } catch (ApplicationManagementException e) {
-            throw new ApplicationStorageManagementException(
-                    "Exception while retrieving the application details for " + "the application with UUID "
-                            + applicationUUID);
-        }
-        if (application == null) {
-            throw new ApplicationStorageManagementException("Application with UUID " + applicationUUID + " does not "
-                    + "exist. Cannot upload the artifacts to non-existing application.");
-        }
+        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId(true);
+        Application application = validateApplication(applicationUUID);
         String artifactDirectoryPath = Constants.artifactPath + application.getId();
         if (log.isDebugEnabled()) {
             log.debug("Artifact Directory Path for saving the artifacts related with application " + applicationUUID
@@ -66,10 +63,8 @@ public class ApplicationStorageManagerImpl implements ApplicationStorageManager 
         }
         createArtifactDirectory(artifactDirectoryPath);
         if (iconFileStream != null) {
-            String iconName = application.getIconName();
-            iconName = (iconName == null) ? "icon" : iconName;
             try {
-                saveFile(iconFileStream, artifactDirectoryPath + File.separator + iconName);
+                saveFile(iconFileStream, artifactDirectoryPath + File.separator + Constants.IMAGE_ARTIFACTS[0]);
             } catch (IOException e) {
                 throw new ApplicationStorageManagementException(
                         "IO Exception while saving the icon file in the server for " + "the application "
@@ -77,10 +72,8 @@ public class ApplicationStorageManagerImpl implements ApplicationStorageManager 
             }
         }
         if (bannerFileStream != null) {
-            String bannerName = application.getBannerName();
-            bannerName = (bannerName == null) ? "banner" : bannerName;
             try {
-                saveFile(bannerFileStream, artifactDirectoryPath + File.separator + bannerName);
+                saveFile(bannerFileStream, artifactDirectoryPath + File.separator + Constants.IMAGE_ARTIFACTS[1]);
             } catch (IOException e) {
                 throw new ApplicationStorageManagementException(
                         "IO Exception while saving the banner file in the server for" + " the application "
@@ -88,18 +81,11 @@ public class ApplicationStorageManagerImpl implements ApplicationStorageManager 
             }
         }
         if (screenShotStreams != null) {
-            int count = 1;
+            int count = application.getScreenShotCount() + 1;
             String screenshotName;
-            List<String> screenShotNames = application.getScreenshots();
-            boolean isScreenShotNameExist = (screenShotNames == null || screenShotNames.isEmpty());
-            int screenShotNameLength = isScreenShotNameExist ? screenShotNames.size() : 0;
             for (InputStream screenshotStream : screenShotStreams) {
                 try {
-                    if (isScreenShotNameExist && count <= screenShotNameLength) {
-                        screenshotName = screenShotNames.get(count);
-                    } else {
-                        screenshotName = "screenshot_" + count;
-                    }
+                    screenshotName = Constants.IMAGE_ARTIFACTS[2] + count;
                     saveFile(screenshotStream, artifactDirectoryPath + File.separator + screenshotName);
                     count++;
                 } catch (IOException e) {
@@ -108,24 +94,30 @@ public class ApplicationStorageManagerImpl implements ApplicationStorageManager 
                             e);
                 }
             }
+            try {
+                ConnectionManagerUtil.beginDBTransaction();
+                DAOFactory.getApplicationDAO().updateScreenShotCount(applicationUUID, tenantId, count);
+                ConnectionManagerUtil.closeDBConnection();
+            } catch (TransactionManagementException e) {
+                throw new ApplicationStorageManagementException("Transaction Management exception while trying to "
+                        + "update the screen-shot count of the application " + applicationUUID + " for the tenant "
+                        + tenantId, e);
+            } catch (DBConnectionException e) {
+                throw new ApplicationStorageManagementException("Database connection management exception while "
+                        + "trying to update the screen-shot count for the application " + applicationUUID + " for the"
+                        + " tenant " + tenantId, e);
+            } catch (ApplicationManagementDAOException e) {
+                throw new ApplicationStorageManagementException("Application Management DAO exception while trying to"
+                        + " update the screen-shot count for the application " + applicationUUID + " for the tenant "
+                        + tenantId, e);
+            }
         }
     }
 
     @Override
     public void uploadReleaseArtifacts(String applicationUUID, String versionName, InputStream binaryFile)
             throws ApplicationStorageManagementException {
-        Application application;
-        try {
-            application = DataHolder.getInstance().getApplicationManager().getApplication(applicationUUID);
-        } catch (ApplicationManagementException e) {
-            throw new ApplicationStorageManagementException(
-                    "Exception while retrieving the application details for " + "the application with UUID "
-                            + applicationUUID);
-        }
-        if (application == null) {
-            throw new ApplicationStorageManagementException("Application with UUID " + applicationUUID + " does not "
-                    + "exist. Cannot upload release artifacts for not existing application.");
-        }
+        Application application = validateApplication(applicationUUID);
         String artifactDirectoryPath = Constants.artifactPath + application.getId();
         if (log.isDebugEnabled()) {
             log.debug("Artifact Directory Path for saving the application release related artifacts related with "
@@ -148,18 +140,7 @@ public class ApplicationStorageManagerImpl implements ApplicationStorageManager 
     @Override
     public InputStream getReleasedArtifacts(String applicationUUID, String versionName)
             throws ApplicationStorageManagementException {
-        Application application;
-        try {
-            application = DataHolder.getInstance().getApplicationManager().getApplication(applicationUUID);
-        } catch (ApplicationManagementException e) {
-            throw new ApplicationStorageManagementException(
-                    "Exception while retrieving the application details for " + "the application with UUID "
-                            + applicationUUID);
-        }
-        if (application == null) {
-            throw new ApplicationStorageManagementException("Application with UUID " + applicationUUID + " does not "
-                    + "exist. Cannot retrieve release artifacts for not existing application.");
-        }
+        Application application = validateApplication(applicationUUID);
         String artifactPath = Constants.artifactPath + application.getId() + File.separator + versionName;
 
         if (log.isDebugEnabled()) {
@@ -182,18 +163,7 @@ public class ApplicationStorageManagerImpl implements ApplicationStorageManager 
 
     @Override
     public void deleteApplicationArtifacts(String applicationUUID) throws ApplicationStorageManagementException {
-        Application application;
-        try {
-            application = DataHolder.getInstance().getApplicationManager().getApplication(applicationUUID);
-        } catch (ApplicationManagementException e) {
-            throw new ApplicationStorageManagementException(
-                    "Exception while retrieving the application details for " + "the application with UUID "
-                            + applicationUUID);
-        }
-        if (application == null) {
-            throw new ApplicationStorageManagementException("Application with UUID " + applicationUUID + " does not "
-                    + "exist. Cannot delete the artifacts of a non-existing application.");
-        }
+        Application application = validateApplication(applicationUUID);
         String artifactDirectoryPath = Constants.artifactPath + application.getId();
         File artifactDirectory = new File(artifactDirectoryPath);
 
@@ -205,18 +175,7 @@ public class ApplicationStorageManagerImpl implements ApplicationStorageManager 
     @Override
     public void deleteApplicationReleaseArtifacts(String applicationUUID, String version)
             throws ApplicationStorageManagementException {
-        Application application;
-        try {
-            application = DataHolder.getInstance().getApplicationManager().getApplication(applicationUUID);
-        } catch (ApplicationManagementException e) {
-            throw new ApplicationStorageManagementException(
-                    "Exception while retrieving the application details for " + "the application with UUID "
-                            + applicationUUID);
-        }
-        if (application == null) {
-            throw new ApplicationStorageManagementException("Application with UUID " + applicationUUID + " does not "
-                    + "exist. Cannot delete the artifacts of a non-existing application.");
-        }
+        Application application = validateApplication(applicationUUID);
         String artifactPath = Constants.artifactPath + application.getId() + File.separator + version;
         File artifact = new File(artifactPath);
 
@@ -225,8 +184,10 @@ public class ApplicationStorageManagerImpl implements ApplicationStorageManager 
         }
     }
 
-    @Override public void deleteAllApplicationReleaseArtifacts(String applicationUUID)
-            throws ApplicationStorageManagementException {
+    @Override
+    public void deleteAllApplicationReleaseArtifacts(String applicationUUID) throws
+            ApplicationStorageManagementException {
+        Application application = validateApplication(applicationUUID);
         try {
             List<ApplicationRelease> applicationReleases = DataHolder.getInstance().getReleaseManager()
                     .getReleases(applicationUUID);
@@ -237,6 +198,31 @@ public class ApplicationStorageManagerImpl implements ApplicationStorageManager 
             throw new ApplicationStorageManagementException(
                     "Application Management Exception while getting releases " + "for the application "
                             + applicationUUID, e);
+        }
+    }
+
+    @Override
+    public InputStream getImageArtifact(String applicationUUID, String name, int count) throws
+            ApplicationStorageManagementException {
+        Application application = validateApplication(applicationUUID);
+        validateImageArtifactNames(name);
+        String imageArtifactPath = Constants.artifactPath + application.getId() + File.separator + name.toLowerCase();
+
+        if (name.equalsIgnoreCase(Constants.IMAGE_ARTIFACTS[2])) {
+            imageArtifactPath += count;
+        }
+        File imageFile = new File(imageArtifactPath);
+        if (!imageFile.exists()) {
+            throw new ApplicationStorageManagementException(
+                    "Image artifact " + name + " does not exist for the " + "application with UUID " + applicationUUID);
+        } else {
+            try {
+                return new FileInputStream(imageArtifactPath);
+            } catch (FileNotFoundException e) {
+                throw new ApplicationStorageManagementException(
+                        "File not found exception while trying to get the image artifact " + name + " for the "
+                                + "application " + applicationUUID, e);
+            }
         }
     }
 
@@ -293,5 +279,45 @@ public class ApplicationStorageManagerImpl implements ApplicationStorageManager 
             }
         }
         artifactDirectory.delete();
+    }
+
+    /**
+     * To validate the image artifact names.
+     * @param name Name of the image artifact.
+     * @throws ApplicationStorageManagementException Application Storage Management Exception
+     */
+    private void validateImageArtifactNames(String name) throws ApplicationStorageManagementException {
+        if (name == null || name.isEmpty()) {
+            throw new ApplicationStorageManagementException("Image artifact name cannot be null or empty. It is a "
+                    + "required parameter");
+        }
+        if (!Arrays.asList(Constants.IMAGE_ARTIFACTS).contains(name.toLowerCase())) {
+            throw new ApplicationStorageManagementException("Provide artifact name is not valid. Please provide the "
+                    + "name among " + Arrays.toString(Constants.IMAGE_ARTIFACTS));
+        }
+    }
+
+    /**
+     * To validate the Application before storing and retrieving the artifacts of a particular application.
+     *
+     * @param uuid UUID of the Application
+     * @return {@link Application} if it is validated
+     * @throws ApplicationStorageManagementException Application Storage Management Exception will be thrown if a
+     *                                               valid application related with the specific UUID
+     *                                               could not be found.
+     */
+    private Application validateApplication(String uuid) throws ApplicationStorageManagementException {
+        Application application = null;
+        try {
+            application = DataHolder.getInstance().getApplicationManager().getApplication(uuid);
+        } catch (ApplicationManagementException e) {
+            throw new ApplicationStorageManagementException(
+                    "Exception while retrieving the application details for the application with UUID "
+                            + uuid);
+        }
+        if (application == null) {
+            throw new ApplicationStorageManagementException("Application with UUID " + uuid + " does not exist.");
+        }
+        return application;
     }
 }

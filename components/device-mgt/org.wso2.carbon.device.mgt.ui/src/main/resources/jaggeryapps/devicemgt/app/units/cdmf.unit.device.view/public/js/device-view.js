@@ -170,7 +170,7 @@ function loadOperationsLog(update) {
             responseMsg = activityStatus['0'].responses['0'].response;
         }
 
-        Object.entries(payload.activityStatus).forEach(
+        Object.entries(activityStatus).forEach(
             ([key, entry]) => {
                 logStream += '<div class="row log-entry">' +
                     '<div class="col-lg-8">' +

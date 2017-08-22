@@ -278,6 +278,7 @@ function setWithinAlert(leafletId) {
                          responseHandler, function (xhr) {
                 responseHandler(xhr.responseText, xhr.statusText, xhr);
             });
+        viewFenceByData(selectedAreaGeoJson, queryName, areaName, null, 'Within');
     }
 }
 
@@ -335,6 +336,7 @@ function setExitAlert(leafletId) {
                          responseHandler, function (xhr) {
                 responseHandler(xhr.responseText, xhr.statusText, xhr);
             });
+        viewFenceByData(selectedAreaGeoJson, queryName, areaName, null, 'Exit');
     }
 }
 
@@ -407,6 +409,7 @@ function setStationeryAlert(leafletId) {
                          responseHandler, function (xhr) {
                 responseHandler(xhr.responseText, xhr.statusText, xhr);
             });
+        viewFenceByData(selectedProcessedAreaGeoJson, queryName, areaName, time, 'Stationery');
     }
 
 

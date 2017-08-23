@@ -25,7 +25,7 @@ import java.util.List;
 
 /**
  * ApplicationReleaseManager is responsible for handling all the operations related with
- * {@link org.wso2.carbon.device.application.mgt.common.ApplicationRelease} which involving addition, updation ,
+ * {@link org.wso2.carbon.device.application.mgt.common.ApplicationRelease} which involving addition, updating ,
  * deletion and viewing.
  *
  */

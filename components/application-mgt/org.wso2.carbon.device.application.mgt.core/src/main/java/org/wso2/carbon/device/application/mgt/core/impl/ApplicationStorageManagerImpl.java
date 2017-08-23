@@ -96,20 +96,25 @@ public class ApplicationStorageManagerImpl implements ApplicationStorageManager 
             }
             try {
                 ConnectionManagerUtil.beginDBTransaction();
-                DAOFactory.getApplicationDAO().updateScreenShotCount(applicationUUID, tenantId, count);
-                ConnectionManagerUtil.closeDBConnection();
+                DAOFactory.getApplicationDAO().updateScreenShotCount(applicationUUID, tenantId, count - 1);
+                ConnectionManagerUtil.commitDBTransaction();
             } catch (TransactionManagementException e) {
+                ConnectionManagerUtil.rollbackDBTransaction();
                 throw new ApplicationStorageManagementException("Transaction Management exception while trying to "
                         + "update the screen-shot count of the application " + applicationUUID + " for the tenant "
                         + tenantId, e);
             } catch (DBConnectionException e) {
+                ConnectionManagerUtil.rollbackDBTransaction();
                 throw new ApplicationStorageManagementException("Database connection management exception while "
                         + "trying to update the screen-shot count for the application " + applicationUUID + " for the"
                         + " tenant " + tenantId, e);
             } catch (ApplicationManagementDAOException e) {
+                ConnectionManagerUtil.rollbackDBTransaction();
                 throw new ApplicationStorageManagementException("Application Management DAO exception while trying to"
                         + " update the screen-shot count for the application " + applicationUUID + " for the tenant "
                         + tenantId, e);
+            } finally {
+                ConnectionManagerUtil.closeDBConnection();
             }
         }
     }

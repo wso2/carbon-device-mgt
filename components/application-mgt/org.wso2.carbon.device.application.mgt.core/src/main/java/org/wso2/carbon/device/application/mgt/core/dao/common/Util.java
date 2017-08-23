@@ -27,7 +27,6 @@ import org.wso2.carbon.device.application.mgt.common.Lifecycle;
 import org.wso2.carbon.device.application.mgt.common.LifecycleState;
 import org.wso2.carbon.device.application.mgt.common.Platform;
 import org.wso2.carbon.device.application.mgt.common.User;
-import org.wso2.carbon.device.application.mgt.core.util.JSONUtil;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

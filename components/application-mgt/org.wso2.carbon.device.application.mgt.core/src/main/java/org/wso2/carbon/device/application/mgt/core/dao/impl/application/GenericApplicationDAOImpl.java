@@ -138,7 +138,7 @@ public class GenericApplicationDAOImpl extends AbstractDAOImpl implements Applic
                     + "LS.DESCRIPTION AS LS_DESCRIPTION FROM APPM_APPLICATION AS APP INNER JOIN APPM_PLATFORM AS "
                     + "APL ON APP.PLATFORM_ID = APL.ID INNER JOIN APPM_APPLICATION_CATEGORY AS CAT ON "
                     + "APP.APPLICATION_CATEGORY_ID = CAT.ID INNER JOIN APPM_LIFECYCLE_STATE AS "
-                    + "LS ON APP.LIFECYCLE_STATE_ID = LS.ID WHERE APP.TENANT_ID = ?";
+                    + "LS ON APP.LIFECYCLE_STATE_ID = LS.ID WHERE APP.TENANT_ID = ? ";
 
             if (filter.getSearchQuery() != null && !filter.getSearchQuery().isEmpty()) {
                 sql += "AND APP.NAME LIKE ? ";
@@ -181,11 +181,14 @@ public class GenericApplicationDAOImpl extends AbstractDAOImpl implements Applic
             applicationList.setApplications(applications);
             applicationList.setPagination(pagination);
         } catch (SQLException e) {
-            throw new ApplicationManagementDAOException("Error occurred while getting application List", e);
+            throw new ApplicationManagementDAOException("Error occurred while getting application list for the tenant"
+                    + " " + tenantId + ". While executing " + sql, e);
         } catch (JSONException e) {
-            throw new ApplicationManagementDAOException("Error occurred while parsing JSON", e);
+            throw new ApplicationManagementDAOException("Error occurred while parsing JSON, while getting application"
+                    + " list for the tenant " + tenantId, e);
         } catch (DBConnectionException e) {
-            throw new ApplicationManagementDAOException("Error occurred while obtaining the DB connection.", e);
+            throw new ApplicationManagementDAOException("Error occurred while obtaining the DB connection while "
+                    + "getting application list for the tenant " + tenantId, e);
         } finally {
             Util.cleanupResources(stmt, rs);
         }
@@ -385,7 +388,7 @@ public class GenericApplicationDAOImpl extends AbstractDAOImpl implements Applic
             statement.setInt(1, count);
             statement.setString(2, applicationUUID);
             statement.setInt(3, tenantId);
-
+            statement.executeUpdate();
         } catch (DBConnectionException e) {
             throw new ApplicationManagementDAOException("Database connection while trying to update the screen-shot "
                     + "count for the application with UUID " + applicationUUID + " for the tenant " + tenantId);

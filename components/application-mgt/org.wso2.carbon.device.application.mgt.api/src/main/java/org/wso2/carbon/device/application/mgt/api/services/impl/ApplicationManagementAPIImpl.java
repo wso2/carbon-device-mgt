@@ -433,6 +433,7 @@ public class ApplicationManagementAPIImpl implements ApplicationManagementAPI {
     @Override
     @GET
     @Path("/image-artifacts/{uuid}")
+    @Produces(MediaType.APPLICATION_OCTET_STREAM)
     public Response getApplicationImageArtifacts(@PathParam("uuid") String applicationUUID,
             @QueryParam("name") String name, @QueryParam("count") int count) {
         if (name == null || name.isEmpty()) {

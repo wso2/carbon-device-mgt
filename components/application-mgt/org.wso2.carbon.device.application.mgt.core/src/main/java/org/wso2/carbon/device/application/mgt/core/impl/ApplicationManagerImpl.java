@@ -46,7 +46,6 @@ import org.wso2.carbon.user.api.UserRealm;
 import org.wso2.carbon.user.api.UserStoreException;
 import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -158,10 +157,10 @@ public class ApplicationManagerImpl implements ApplicationManager {
         try {
             ApplicationDAO applicationDAO = DAOFactory.getApplicationDAO();
             ConnectionManagerUtil.beginDBTransaction();
-            int appId = applicationDAO.getApplicationId(uuid);
+            int appId = applicationDAO.getApplicationId(uuid, tenantId);
             applicationDAO.deleteTags(appId);
             applicationDAO.deleteProperties(appId);
-            applicationDAO.deleteApplication(uuid);
+            applicationDAO.deleteApplication(uuid, tenantId);
             ConnectionManagerUtil.commitDBTransaction();
         } catch (ApplicationManagementDAOException e) {
             ConnectionManagerUtil.rollbackDBTransaction();
@@ -174,15 +173,14 @@ public class ApplicationManagerImpl implements ApplicationManager {
 
     @Override
     public ApplicationList getApplications(Filter filter) throws ApplicationManagementException {
-
+        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId(true);
         try {
             ConnectionManagerUtil.openDBConnection();
             ApplicationDAO applicationDAO = DAOFactory.getApplicationDAO();
-            return applicationDAO.getApplications(filter);
+            return applicationDAO.getApplications(filter, tenantId);
         } finally {
             ConnectionManagerUtil.closeDBConnection();
         }
-
     }
 
     @Override
@@ -190,6 +188,7 @@ public class ApplicationManagerImpl implements ApplicationManager {
             ApplicationManagementException {
         boolean isAvailableNextState = false;
         String userName = PrivilegedCarbonContext.getThreadLocalCarbonContext().getUsername();
+        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId(true);
         List<LifecycleStateTransition> nextLifeCycles = getLifeCycleStates(applicationUuid);
 
         for (LifecycleStateTransition lifecycleStateTransition : nextLifeCycles) {
@@ -210,7 +209,7 @@ public class ApplicationManagerImpl implements ApplicationManager {
         try {
             ConnectionManagerUtil.beginDBTransaction();
             ApplicationDAO applicationDAO = DAOFactory.getApplicationDAO();
-            applicationDAO.changeLifecycle(applicationUuid, lifecycleIdentifier, userName);
+            applicationDAO.changeLifecycle(applicationUuid, lifecycleIdentifier, userName, tenantId);
             ConnectionManagerUtil.commitDBTransaction();
         } catch (ApplicationManagementDAOException e) {
             ConnectionManagerUtil.rollbackDBTransaction();
@@ -278,18 +277,13 @@ public class ApplicationManagerImpl implements ApplicationManager {
 
     @Override
     public Application getApplication(String uuid) throws ApplicationManagementException {
+        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId(true);
         try {
             ConnectionManagerUtil.openDBConnection();
-            return DAOFactory.getApplicationDAO().getApplication(uuid);
+            return DAOFactory.getApplicationDAO().getApplication(uuid, tenantId);
         } finally {
             ConnectionManagerUtil.closeDBConnection();
         }
-    }
-
-    public void uploadArtifacts(String applicationUUID, InputStream iconFileStream, InputStream bannerFileStream,
-            List<InputStream> screenShotStreams)
-            throws ApplicationManagementException {
-
     }
 
     /**
@@ -310,7 +304,7 @@ public class ApplicationManagerImpl implements ApplicationManager {
         }
         try {
             ConnectionManagerUtil.openDBConnection();
-            Application application = DAOFactory.getApplicationDAO().getApplication(applicationUUID);
+            Application application = DAOFactory.getApplicationDAO().getApplication(applicationUUID, tenantId);
             return application.getUser().getUserName().equals(userName)
                     && application.getUser().getTenantId() == tenantId;
         } finally {

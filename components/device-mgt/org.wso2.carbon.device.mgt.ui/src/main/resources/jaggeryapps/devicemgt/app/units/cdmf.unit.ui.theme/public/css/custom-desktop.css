@@ -1443,6 +1443,8 @@ footer a, footer a:hover {
 }
 
 .message h4 .icon {
+    display: block;
+    float: left;
     padding-bottom: 3px;
     margin-right: 5px;
 }

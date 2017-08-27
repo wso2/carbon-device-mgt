@@ -50,8 +50,8 @@ class Base extends Component {
                 <div className="container">
                     <BaseLayout>
                         <Switch>
-                            <Redirect exact path={"/"} to={"/overview"}/>
-                            <Route exact path={"/overview"} component={PublisherOverview}/>
+                            <Redirect exact path={"/"} to={"/assets/apps"}/>
+                            {/*<Route exact path={"/overview"} component={PublisherOverview}/>*/}
                             <Route exact path={"/assets/apps"} component={ApplicationListing}/>
                             <Route exact path={"/assets/apps/create"} component={ApplicationCreate}/>
                             <Route exact path={"/assets/platforms/create"} component={PlatformCreate}/>

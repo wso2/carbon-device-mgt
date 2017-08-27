@@ -16,6 +16,7 @@
  * under the License.
  */
 import React, {Component} from 'react';
+import DataTable from '../UIComponents/DataTable';
 
 /**
  *
@@ -39,6 +40,7 @@ class PublisherOverview extends Component {
 
             <div>
                 Overview
+
             </div>
         );
     }

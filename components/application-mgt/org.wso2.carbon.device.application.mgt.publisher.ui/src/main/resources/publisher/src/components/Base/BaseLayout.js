@@ -110,10 +110,7 @@ class BaseLayout extends Component {
                 <div>
                     <Drawer containerStyle={{height: 'calc(100% - 64px)', width: '15%', top: '10%'}} open={true}>
                         <List>
-                            <ListItem primaryText="Overview"
-                                      onClick={this.handleOverviewClick.bind(this)}
-                                      leftIcon={<Dashboard/>}/>
-                            <ListItem primaryText="Applications"
+                           <ListItem primaryText="Applications"
                                       leftIcon={<Apps/>}
                                       initiallyOpen={false}
                                       primaryTogglesNestedList={true}

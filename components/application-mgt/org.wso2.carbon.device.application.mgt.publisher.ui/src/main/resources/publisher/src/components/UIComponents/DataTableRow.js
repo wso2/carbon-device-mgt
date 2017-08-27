@@ -15,11 +15,47 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import React, {Component} from 'react';
-import PropTypes from 'prop-types';
 
+import PropTypes from 'prop-types';
+import React, {Component} from 'react';
+import {TableRow, TableRowColumn} from 'material-ui/Table';
+
+/**
+ * Data table row component.
+ * This component created a row in the data table according to the props.
+ * */
 class DataTableRow extends Component {
 
+    constructor() {
+        super();
+        this.state = {
+            dataItem: {}
+        }
+    }
+
+    componentWillMount() {
+        this.setState({dataItem: this.props.dataItem})
+    }
+
+    _handleClick() {
+        this.props.handleClick(this.state.dataItem.id);
+    }
+
+    render() {
+        const {dataItem} = this.state;
+        return (
+                <TableRow onClick={this._handleClick.bind(this)} >
+                    {Object.keys(dataItem).map((key) => {
+                        if (key !== 'id') {
+                            return <TableRowColumn style={{alignItems: 'center'}} key={key}>{dataItem[key]}</TableRowColumn>
+                        } else {
+                            return <TableRowColumn/>
+                        }
+
+                    } )}
+                </TableRow>
+        );
+    }
 }
 
 DataTableRow.propTypes = {

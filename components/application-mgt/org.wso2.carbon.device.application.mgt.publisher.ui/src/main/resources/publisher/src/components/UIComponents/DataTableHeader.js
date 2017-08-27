@@ -15,20 +15,61 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import React, {Component} from 'react';
-import PropTypes from 'prop-types';
 
+import PropTypes from 'prop-types';
+import React, {Component} from 'react';
+import FlatButton from 'material-ui/FlatButton';
+import {TableHeaderColumn} from 'material-ui/Table';
+
+/**
+ * Data Table header component.
+ * This component creates the header elements of the table.
+ * */
 class DataTableHeader extends Component {
 
+    constructor() {
+        super();
+    }
+
+    /**
+     * The onClick function of the table header.
+     * Invokes the function passed in the header object.
+     * */
+    _tableHeaderClick() {
+        this.props.header.sort();
+    }
+
+    render() {
+        let headerCell = null;
+
+        /**
+         * If the header is sortable, create a button with onClick handler.
+         * else create a span element with label as the table header.
+         * */
+        if (this.props.header.sortable) {
+            headerCell = <FlatButton label={this.props.header.label}
+                                    onClick={this._tableHeaderClick.bind(this)}
+                                    style={{color: '#bdbdbd'}}/>;
+        } else {
+            headerCell = <span style={{position: 'relative',
+                paddingLeft: '16px',
+                paddingRight: '16px',
+                textTransform: 'uppercase',
+                fontWeight: 'normal',
+                color: '#bdbdbd',
+                fontSize: '14px'}}>{this.props.header.label}</span>;
+        }
+
+        return (
+            <TableHeaderColumn style={{paddingLeft: '0px'}} key={this.props.header.id}>
+                {headerCell}
+            </TableHeaderColumn>
+        );
+    }
 }
 
 DataTableHeader.prototypes = {
-    /*sortable : bool
-    * text: string (The header text)
-    * */
-    label: PropTypes.string,
-    sortable: PropTypes.bool,
-    sort: PropTypes.func
+    header: PropTypes.object
 };
 
 export default DataTableHeader;

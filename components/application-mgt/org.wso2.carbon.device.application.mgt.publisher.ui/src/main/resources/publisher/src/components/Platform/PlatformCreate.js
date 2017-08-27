@@ -21,12 +21,12 @@ import Dropzone from 'react-dropzone';
 import React, {Component} from 'react';
 import Toggle from 'material-ui/Toggle';
 import MenuItem from 'material-ui/MenuItem';
-import Close from 'material-ui/svg-icons/navigation/close';
 import TextField from 'material-ui/TextField';
 import FlatButton from 'material-ui/FlatButton';
 import IconButton from 'material-ui/IconButton';
 import SelectField from 'material-ui/SelectField';
 import RaisedButton from 'material-ui/RaisedButton';
+import Close from 'material-ui/svg-icons/navigation/close';
 import {Card, CardActions, CardTitle} from 'material-ui/Card';
 import AddCircleOutline from 'material-ui/svg-icons/content/add-circle-outline';
 
@@ -52,7 +52,11 @@ class PlatformCreate extends Component {
         }
     }
 
-    handleToggle(event) {
+    /**
+     * Handles toggle button actions.
+     * One method is used for all the toggle buttons and, each toggle is identified by the id.
+     * */
+    _handleToggle(event) {
         switch (event.target.id) {
             case "enabled" : {
                 let enabled = this.state.enabled;
@@ -67,21 +71,24 @@ class PlatformCreate extends Component {
         }
     }
 
-    removeProperty(p) {
+    /**
+     * Remove the selected property from the property list.
+     * */
+    _removeProperty(property) {
         let properties = this.state.platformProperties;
-        properties.splice(properties.indexOf(p), 1);
+        properties.splice(properties.indexOf(property), 1);
         this.setState({platformProperties: properties});
     }
 
-    addProperty() {
-        let property = {key: Math.random(), value: "Temp Prop"};
-        let properties = this.state.platformProperties;
-        properties.push(property);
-        this.setState({platformProperties: properties});
+    /**
+     * Add a new platform property.
+     * TODO: Create a property object and send to the endpoint.
+     * */
+    _addProperty() {
+
     }
 
     render() {
-        console.log(this.state.platformProperties);
         return (
             <div className="middle" style={{width: '95%', height: '100%', marginTop: '1%'}}>
                 <Card>
@@ -109,7 +116,7 @@ class PlatformCreate extends Component {
                                     id="tenant"
                                     label="Shared with all Tenants"
                                     labelPosition="right"
-                                    onToggle={this.handleToggle.bind(this)}
+                                    onToggle={this._handleToggle.bind(this)}
                                     defaultToggled={this.state.allTenants}
                                 /> <br/>
                                 <Toggle
@@ -124,7 +131,7 @@ class PlatformCreate extends Component {
                                     <div id="property-container">
                                             {this.state.platformProperties.map((p) => {
                                                 return <div key={p.key}>{p.key} : {p.value}
-                                                    <IconButton onClick={this.removeProperty.bind(this, p)}>
+                                                    <IconButton onClick={this._removeProperty.bind(this, p)}>
                                                         <Close style={{height:'10px', width:'10px'}}/>
                                                     </IconButton>
                                                 </div>})}
@@ -143,7 +150,7 @@ class PlatformCreate extends Component {
                                         <MenuItem value={3} primaryText="Boolean"/>
                                         <MenuItem value={4} primaryText="File"/>
                                     </SelectField>
-                                    <IconButton onClick={this.addProperty.bind(this)}>
+                                    <IconButton onClick={this._addProperty.bind(this)}>
                                         <AddCircleOutline/>
                                     </IconButton>
                                     <br/>

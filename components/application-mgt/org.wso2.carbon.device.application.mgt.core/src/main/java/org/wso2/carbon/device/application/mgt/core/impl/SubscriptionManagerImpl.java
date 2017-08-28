@@ -17,7 +17,30 @@
 */
 package org.wso2.carbon.device.application.mgt.core.impl;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.device.application.mgt.common.DeviceIdentifier;
+import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
 import org.wso2.carbon.device.application.mgt.common.services.SubscriptionManager;
 
+import java.util.List;
+
 public class SubscriptionManagerImpl implements SubscriptionManager {
+
+    private static final Log log = LogFactory.getLog(SubscriptionManagerImpl.class);
+
+    @Override
+    public List<DeviceIdentifier> installApplicationForDevices(String applicationUUID, List<DeviceIdentifier> deviceList) throws ApplicationManagementException {
+        log.info("Install application: " + applicationUUID + " to: " + deviceList.size() + " devices.");
+        for (DeviceIdentifier device : deviceList) {
+            String deviceId = device.getId();
+
+        }
+        return deviceList;
+    }
+
+    @Override
+    public List<DeviceIdentifier> uninstallApplication(String applicationUUID, List<DeviceIdentifier> deviceList) throws ApplicationManagementException {
+        return null;
+    }
 }

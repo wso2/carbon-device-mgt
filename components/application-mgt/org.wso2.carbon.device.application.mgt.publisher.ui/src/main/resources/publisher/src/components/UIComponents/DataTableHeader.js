@@ -61,7 +61,7 @@ class DataTableHeader extends Component {
         }
 
         return (
-            <TableHeaderColumn style={{paddingLeft: '0px'}} key={this.props.header.id}>
+            <TableHeaderColumn key={this.props.header.id} style={{paddingLeft: '0px'}} >
                 {headerCell}
             </TableHeaderColumn>
         );

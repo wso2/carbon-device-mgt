@@ -88,7 +88,8 @@ class DataTable extends Component {
                              adjustForCheckbox={ false }>
                     <TableRow>
                         {headers.map((header) => {
-                                return (<DataTableHeader style={{display: 'flex'}} key={header.id} header={header}/>)
+                                return (<DataTableHeader key={header.data_id}
+                                                         style={{display: 'flex'}} header={header}/>)
                             }
                         )}
                     </TableRow>

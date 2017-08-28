@@ -47,13 +47,13 @@ class DataTableRow extends Component {
     render() {
         const {dataItem} = this.state;
         return (
-                <TableRow onClick={this._handleClick.bind(this)} >
+                <TableRow key={this.props.key} onClick={this._handleClick.bind(this)} >
                     {Object.keys(dataItem).map((key) => {
                         if (key !== 'id') {
                             return <TableRowColumn style={{alignItems: 'center'}}
                                                    key={key}>{dataItem[key]}</TableRowColumn>
                         } else {
-                            return <TableRowColumn/>
+                            return <TableRowColumn key={key}/>
                         }
 
                     } )}

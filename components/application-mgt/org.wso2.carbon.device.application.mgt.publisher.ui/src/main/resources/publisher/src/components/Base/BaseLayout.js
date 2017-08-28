@@ -161,6 +161,6 @@ class BaseLayout extends Component {
 
 BaseLayout.propTypes = {
     children: PropTypes.element
-}
+};
 
 export default withRouter(BaseLayout);

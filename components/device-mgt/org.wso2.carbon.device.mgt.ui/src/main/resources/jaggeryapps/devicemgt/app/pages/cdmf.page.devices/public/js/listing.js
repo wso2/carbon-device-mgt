@@ -501,7 +501,7 @@ function loadDevices(searchType, searchParam) {
              if ($('.advance-search').length < 1) {
                  $(this).closest('.dataTables_wrapper').find('div[id$=_filter] input')
                      .after('<a href="' + context + '/devices/search"' +
-                         ' class="advance-search add-padding-3x">Advance Search</a>');
+                         ' class="advance-search add-padding-3x">Advanced Search</a>');
              }
 
         }, {

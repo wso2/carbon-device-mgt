@@ -20,6 +20,7 @@ import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import DataTableRow from './DataTableRow';
 import DataTableHeader from './DataTableHeader';
+import RaisedButton from 'material-ui/RaisedButton';
 import {Table, TableBody, TableHeader, TableRow} from 'material-ui/Table';
 
 /**
@@ -73,7 +74,14 @@ class DataTable extends Component {
 
     render() {
         const {data, headers} = this.state;
-        if (data.length > 0) {
+
+        let noDataContent = null;
+
+        if (this.props.noDataMessage.type === 'button') {
+            noDataContent = <div><RaisedButton label={this.props.noDataMessage.text}/></div>
+        }
+
+        if (data) {
             return (<Table
                 selectable={ false }>
                 <TableHeader displaySelectAll={ false }
@@ -87,12 +95,15 @@ class DataTable extends Component {
                 </TableHeader>
                 <TableBody>
                     {data.map((dataItem) =>{
-                        return (<DataTableRow key={dataItem.id} dataItem={dataItem} handleClick={this._handleRowClick.bind(this)}/>)
+                        return (<DataTableRow key={dataItem.id}
+                                              dataItem={dataItem}
+                                              handleClick={this._handleRowClick.bind(this)}/>)
                     })}
                 </TableBody>
-            </Table>)}
+            </Table>)
+        }
 
-            return (<div>No apps</div>);
+        return (<div>{noDataContent}</div>);
 
     }
 }
@@ -101,7 +112,8 @@ DataTable.prototypes = {
     data: PropTypes.arrayOf(Object),
     headers: PropTypes.arrayOf(Object),
     sortData: PropTypes.func,
-    handleRowClick: PropTypes.func
+    handleRowClick: PropTypes.func,
+    noDataMessage: PropTypes.object
 };
 
 export default DataTable;

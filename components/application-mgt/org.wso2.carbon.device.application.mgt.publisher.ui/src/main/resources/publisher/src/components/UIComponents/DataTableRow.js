@@ -37,6 +37,9 @@ class DataTableRow extends Component {
         this.setState({dataItem: this.props.dataItem})
     }
 
+    /**
+     * Triggers the click event on the data table row.
+     * */
     _handleClick() {
         this.props.handleClick(this.state.dataItem.id);
     }
@@ -47,7 +50,8 @@ class DataTableRow extends Component {
                 <TableRow onClick={this._handleClick.bind(this)} >
                     {Object.keys(dataItem).map((key) => {
                         if (key !== 'id') {
-                            return <TableRowColumn style={{alignItems: 'center'}} key={key}>{dataItem[key]}</TableRowColumn>
+                            return <TableRowColumn style={{alignItems: 'center'}}
+                                                   key={key}>{dataItem[key]}</TableRowColumn>
                         } else {
                             return <TableRowColumn/>
                         }

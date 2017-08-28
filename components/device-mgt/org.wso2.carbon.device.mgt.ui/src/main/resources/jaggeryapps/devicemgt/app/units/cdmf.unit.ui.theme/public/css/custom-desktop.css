@@ -6876,10 +6876,11 @@ select > option:hover {
 }
 
 .dynamic-search-param {
-    background-color: lightgrey;
+    background-color: #ffffff;
     padding: 25px;
-    border: 5px solid navy;
+    border: 1px solid #bdbdbd;
     margin: 25px;
+    border-radius: 10px;
 }
 
 .close-button-div {

@@ -63,6 +63,12 @@ class DataTable extends Component {
         this.setState({data: this.props.data, headers: this.props.headers})
     }
 
+    shouldComponentUpdate(nextProps, nextState) {
+        console.log("next Props", nextProps.data);
+        this.setState({data: nextProps.data});
+        return true;
+    }
+
     /**
      * Triggers when user click on table row.
      * This method invokes the parent method handleRowClick, which is passed via props.
@@ -74,6 +80,8 @@ class DataTable extends Component {
 
     render() {
         const {data, headers} = this.state;
+
+        console.log(data);
 
         let noDataContent = null;
 

@@ -111,14 +111,27 @@ class ApplicationListing extends Component {
 
     componentWillMount() {
         //Fetch all the applications from backend and create application objects.
+        this.setState({data: this.data});
     }
 
     /**
      * Handles the search action.
      * When typing in the search bar, this method will be invoked.
      * */
-    _searchApplications(word) {
-        let searchedData = [];
+    _searchApplications(event, word) {
+        let searchedData;
+            if (word){
+                searchedData = this.data.filter((dataItem) => {
+                        return dataItem.applicationName.includes(word);
+                    });
+            } else {
+                console.log("no")
+                console.log(this.data)
+                searchedData = this.data;
+            }
+
+        this.setState({data: searchedData}, console.log("Searched data ", this.state.data));
+
     }
 
     /**
@@ -155,7 +168,7 @@ class ApplicationListing extends Component {
 
                     </CardActions>
                     <DataTable headers={this.headers}
-                               data={this.data}
+                               data={this.state.data}
                                handleRowClick={this._onRowClick.bind(this)}
                                noDataMessage={{type: 'button', text: 'Create Application'}}/>
                 </Card>

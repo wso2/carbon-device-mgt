@@ -48,7 +48,16 @@ class PlatformCreate extends Component {
             enabled: true,
             allTenants: false,
             files: [],
-            platformProperties: [{key:"Enabled", value: "Boolean"}, {key:"Access Token", value:"String"}]
+            platformProperties: [],
+            selectedProperty: 0,
+            name: "",
+            description: "",
+            property: "",
+            propertyTypes: [
+                {key: 0, value: 'String'},
+                {key: 1, value: 'Number'},
+                {key: 2, value: 'Boolean'},
+                {key: 3, value: 'File'}]
         }
     }
 
@@ -72,6 +81,14 @@ class PlatformCreate extends Component {
     }
 
     /**
+     * Triggers the onChange action on property type selection.
+     * */
+    _onPropertySelect = (event, index, value) => {
+        console.log(this.state.propertyTypes[value]);
+        this.setState({selectedProperty: value});
+    };
+
+    /**
      * Remove the selected property from the property list.
      * */
     _removeProperty(property) {
@@ -82,78 +99,154 @@ class PlatformCreate extends Component {
 
     /**
      * Add a new platform property.
-     * TODO: Create a property object and send to the endpoint.
      * */
     _addProperty() {
+        let property = this.state.property;
+        let selected = this.state.selectedProperty;
+
+        this.setState({platformProperties:
+            this.state.platformProperties.concat([
+                {
+                    key: property,
+                    value: this.state.propertyTypes[selected].value
+                }]),
+            property: "",
+            selectedProperty: 0});
+    }
+
+    /**
+     * Triggers in onChange event of text fields.
+     * Text fields are identified by their ids and the value will be persisted in the component state.
+     * */
+    _onTextChange = (event, value) => {
+        let property = this.state.property;
+        let name = this.state.name;
+        let description = this.state.description;
+
+        switch (event.target.id) {
+            case "name": {
+                name = value;
+                this.setState({name: name});
+                break;
+            }
+
+            case "description": {
+                description = value;
+                this.setState({description: description});
+                break;
+            }
+
+            case "property": {
+                property = value;
+                this.setState({property: property});
+                break;
+            }
+        }
+    };
+
+    _onCreatePlatform() {
 
     }
 
+    _clearForm() {
+        this.setState({enabled: true,
+            allTenants: false,
+            files: [],
+            platformProperties: [],
+            selectedProperty: 0,
+            name: "",
+            description: "",
+            property: "",})
+    }
+
     render() {
+        const {
+            platformProperties,
+            allTenants,
+            enabled,
+            selectedProperty,
+            propertyTypes,
+            name,
+            description,
+            property} = this.state;
+
         return (
             <div className="middle" style={{width: '95%', height: '100%', marginTop: '1%'}}>
                 <Card>
                     <CardTitle title="Create Platform"/>
 
-                    {/**
-                     * The stepper goes here.
-                     */}
                     <CardActions>
                         <div style={{width: '100%', margin: 'auto', paddingLeft: '10px'}}>
                             <form>
                                 <TextField
                                     hintText="Enter the Platform Name."
+                                    id="name"
                                     floatingLabelText="Name*"
                                     floatingLabelFixed={true}
+                                    value={name}
+                                    onChange={this._onTextChange.bind(this)}
                                 /><br/>
                                 <TextField
+                                    id="description"
                                     hintText="Enter the Platform Description."
                                     floatingLabelText="Description*"
                                     floatingLabelFixed={true}
                                     multiLine={true}
                                     rows={2}
+                                    value={description}
+                                    onChange={this._onTextChange.bind(this)}
                                 /><br/><br/>
                                 <Toggle
                                     id="tenant"
                                     label="Shared with all Tenants"
                                     labelPosition="right"
                                     onToggle={this._handleToggle.bind(this)}
-                                    defaultToggled={this.state.allTenants}
+                                    toggled={allTenants}
                                 /> <br/>
                                 <Toggle
                                     id="enabled"
                                     label="Enabled"
                                     labelPosition="right"
-                                    onToggle={this.handleToggle.bind(this)}
-                                    defaultToggled={this.state.enabled}
+                                    onToggle={this._handleToggle.bind(this)}
+                                    toggled={enabled}
                                 /> <br/>
                                 <div>
-                                    <p style={{color: '#BDBDBD'}}>Platform Properties</p>
+                                    <p style={{color: '#BaBaBa'}}>Platform Properties</p>
                                     <div id="property-container">
-                                            {this.state.platformProperties.map((p) => {
-                                                return <div key={p.key}>{p.key} : {p.value}
-                                                    <IconButton onClick={this._removeProperty.bind(this, p)}>
-                                                        <Close style={{height:'10px', width:'10px'}}/>
-                                                    </IconButton>
-                                                </div>})}
+                                        {platformProperties.map((p) => {
+                                            return <div key={p.key}>{p.key} : {p.value}
+                                                <IconButton onClick={this._removeProperty.bind(this, p)}>
+                                                    <Close style={{height: '10px', width: '10px'}}/>
+                                                </IconButton>
+                                            </div>
+                                        })}
                                     </div>
-                                    <TextField
-                                        hintText=""
-                                        floatingLabelText="Platform Property*"
-                                        floatingLabelFixed={true}
-                                    /> <em/>
-                                    <SelectField
-                                        floatingLabelText="Property Type"
-                                        value={this.state.store}
-                                        floatingLabelFixed={true}>
-                                        <MenuItem value={1} primaryText="String"/>
-                                        <MenuItem value={2} primaryText="Number"/>
-                                        <MenuItem value={3} primaryText="Boolean"/>
-                                        <MenuItem value={4} primaryText="File"/>
-                                    </SelectField>
-                                    <IconButton onClick={this._addProperty.bind(this)}>
-                                        <AddCircleOutline/>
-                                    </IconButton>
-                                    <br/>
+                                    <div style={{display: 'flex'}}>
+                                        <TextField
+                                            id="property"
+                                            hintText="Property Name"
+                                            floatingLabelText="Platform Property*"
+                                            floatingLabelFixed={true}
+                                            value={this.state.property}
+                                            onChange={this._onTextChange.bind(this)}
+                                        /> <em/>
+                                        <SelectField
+                                            style={{flex: '1 1 23% 1', margin: '0 1%'}}
+                                            floatingLabelText="Property Type"
+                                            value={selectedProperty}
+                                            floatingLabelFixed={true}
+                                            onChange={this._onPropertySelect.bind(this)}>
+                                            {propertyTypes.map((type) => {
+                                                return  <MenuItem key={type.key}
+                                                                  value={type.key}
+                                                                  primaryText={type.value}/>
+                                            })}
+                                        </SelectField>
+                                        <IconButton onClick={this._addProperty.bind(this)}>
+                                            <AddCircleOutline/>
+                                        </IconButton>
+                                        <br/>
+                                    </div>
                                 </div>
                                 <div>
                                     <p style={{color: '#BDBDBD'}}>Platform Icon*:</p>
@@ -162,8 +255,9 @@ class PlatformCreate extends Component {
                                     </Dropzone>
                                 </div>
                                 <br/>
-                                <RaisedButton primary={true} label="Create"/>
-                                <FlatButton label="Cancel"/>
+                                <RaisedButton primary={true} label="Create"
+                                              onClick={this._onCreatePlatform.bind(this)}/>
+                                <FlatButton label="Cancel" onClick={this._clearForm.bind(this)}/>
                             </form>
                         </div>
                     </CardActions>

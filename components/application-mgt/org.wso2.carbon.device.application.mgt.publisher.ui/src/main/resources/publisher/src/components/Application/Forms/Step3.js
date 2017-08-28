@@ -61,21 +61,21 @@ class Step3 extends Component {
      * Handles finish button click.
      * This invokes handleNext function in parent component.
      * */
-    handleFinish() {
+    _handleFinish() {
         this.props.handleFinish();
     }
 
     /**
      * Invokes Prev button click.
      * */
-    handlePrev() {
+    _handlePrev() {
         this.props.handlePrev();
     }
 
     /**
      * Handles release application selection.
      * */
-    handleToggle() {
+    _handleToggle() {
         let hide = this.state.showForm;
         this.setState({showForm: !hide});
     }
@@ -88,7 +88,7 @@ class Step3 extends Component {
                     <Toggle
                         label="Release the Application"
                         labelPosition="right"
-                        onToggle={this.handleToggle.bind(this)}
+                        onToggle={this._handleToggle.bind(this)}
                         defaultToggled={this.state.showForm}
                     />
                     {/*If toggle is true, the release form will be shown.*/}
@@ -114,13 +114,13 @@ class Step3 extends Component {
                         <FlatButton
                             label="< Back"
                             disabled={false}
-                            onClick={this.handlePrev.bind(this)}
+                            onClick={this._handlePrev.bind(this)}
                             style={{marginRight: 12}}
                         />
                         <RaisedButton
                             label="Finish"
                             primary={true}
-                            onClick={this.handleFinish.bind(this)}
+                            onClick={this._handleFinish.bind(this)}
                         />
                     </div>
                 </div>

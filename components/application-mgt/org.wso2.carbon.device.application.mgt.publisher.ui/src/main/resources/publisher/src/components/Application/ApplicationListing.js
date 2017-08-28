@@ -39,43 +39,43 @@ class ApplicationListing extends Component {
         }
     }
 
-    // data = [
-    //     {
-    //         id: Math.random(),
-    //         applicationName:"Cne",
-    //         platform:'Android',
-    //         category:"Public",
-    //         status: "Created"
-    //     },
-    //     {
-    //         id: Math.random(),
-    //         applicationName:"Gone",
-    //         platform:'IOS',
-    //         category:"Public",
-    //         status: "Created"
-    //     },
-    //     {
-    //         id: Math.random(),
-    //         applicationName:"Ane",
-    //         platform:'Android',
-    //         category:"Public",
-    //         status: "Created"
-    //     },
-    //     {
-    //         id: Math.random(),
-    //         applicationName:"one",
-    //         platform:'Android',
-    //         category:"Public",
-    //         status: "Created"
-    //     },
-    //     {
-    //         id: Math.random(),
-    //         applicationName:"one",
-    //         platform:'Android',
-    //         category:"Public",
-    //         status: "Created"
-    //     },
-    // ];
+    data = [
+        {
+            id: Math.random(),
+            applicationName:"Cne",
+            platform:'Android',
+            category:"Public",
+            status: "Created"
+        },
+        {
+            id: Math.random(),
+            applicationName:"Gone",
+            platform:'IOS',
+            category:"Public",
+            status: "Created"
+        },
+        {
+            id: Math.random(),
+            applicationName:"Ane",
+            platform:'Android',
+            category:"Public",
+            status: "Created"
+        },
+        {
+            id: Math.random(),
+            applicationName:"one",
+            platform:'Android',
+            category:"Public",
+            status: "Created"
+        },
+        {
+            id: Math.random(),
+            applicationName:"one",
+            platform:'Android',
+            category:"Public",
+            status: "Created"
+        },
+    ];
 
     headers = [
         {
@@ -156,7 +156,8 @@ class ApplicationListing extends Component {
                     </CardActions>
                     <DataTable headers={this.headers}
                                data={this.data}
-                               handleRowClick={this._onRowClick.bind(this)}/>
+                               handleRowClick={this._onRowClick.bind(this)}
+                               noDataMessage={{type: 'button', text: 'Create Application'}}/>
                 </Card>
 
             </div>);

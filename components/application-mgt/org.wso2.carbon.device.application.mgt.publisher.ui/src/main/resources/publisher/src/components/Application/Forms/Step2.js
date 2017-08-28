@@ -73,19 +73,19 @@ class Step2 extends Component {
      * Clears the tags text field.
      * Chip gets two parameters: Key and value.
      * */
-    addTags(event) {
+    _addTags(event) {
         let tags = this.state.tags;
         if (event.charCode === 13) {
             event.preventDefault();
             tags.push({key: Math.floor(Math.random() * 1000), value: event.target.value});
-            this.setState({tags, defValue: ""}, console.log(this.state.tags));
+            this.setState({tags, defValue: ""});
         }
     }
 
     /**
-     *
+     * Set the value for tag.
      * */
-    handleTagChange(event) {
+    _handleTagChange(event) {
         let defaultValue = this.state.defValue;
         defaultValue = event.target.value;
         this.setState({defValue: defaultValue})
@@ -94,14 +94,14 @@ class Step2 extends Component {
     /**
      * Invokes the handleNext function in Create component.
      * */
-    handleNext() {
+    _handleNext() {
         this.props.handleNext();
     }
 
     /**
      * Invokes the handlePrev function in Create component.
      * */
-    handlePrev() {
+    _handlePrev() {
         this.props.handlePrev();
     }
 
@@ -109,7 +109,7 @@ class Step2 extends Component {
      * Handles Chip delete function.
      * Removes the tag from state.tags
      * */
-    handleRequestDelete = (key) => {
+    _handleRequestDelete = (key) => {
         this.chipData = this.state.tags;
         const chipToDelete = this.chipData.map((chip) => chip.key).indexOf(key);
         this.chipData.splice(chipToDelete, 1);
@@ -119,12 +119,11 @@ class Step2 extends Component {
     /**
      * Creates Chip array from state.tags.
      * */
-    renderChip(data) {
-        console.log(data);
+    _renderChip(data) {
         return (
             <Chip
                 key={data.key}
-                onRequestDelete={() => this.handleRequestDelete(data.key)}
+                onRequestDelete={() => this._handleRequestDelete(data.key)}
                 style={this.styles.chip}
             >
                 {data.value}
@@ -172,11 +171,11 @@ class Step2 extends Component {
                             floatingLabelText="Tags*"
                             floatingLabelFixed={true}
                             value={this.state.defValue}
-                            onChange={this.handleTagChange.bind(this)}
-                            onKeyPress={this.addTags.bind(this)}
+                            onChange={this._handleTagChange.bind(this)}
+                            onKeyPress={this._addTags.bind(this)}
                         /><br/>
                         <div style={this.styles.wrapper}>
-                            {this.state.tags.map(this.renderChip, this)}
+                            {this.state.tags.map(this._renderChip, this)}
                         </div>
                         <br/>
                         <SelectField
@@ -216,13 +215,13 @@ class Step2 extends Component {
                         <FlatButton
                             label="< Back"
                             disabled={false}
-                            onClick={this.handlePrev.bind(this)}
+                            onClick={this._handlePrev.bind(this)}
                             style={{marginRight: 12}}
                         />
                         <RaisedButton
                             label="Next >"
                             primary={true}
-                            onClick={this.handleNext.bind(this)}
+                            onClick={this._handleNext.bind(this)}
                         />
                     </div>
                 </div>

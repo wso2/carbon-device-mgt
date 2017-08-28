@@ -17,11 +17,18 @@
  */
 
 import './App.css';
-import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import createHistory from 'history/createHashHistory';
 import {HashRouter as Router, Redirect, Route, Switch} from 'react-router-dom'
-import {BaseLayout, ApplicationCreate, ApplicationListing, Login, NotFound, PublisherOverview, PlatformCreate} from './components'
+import {
+    ApplicationCreate,
+    ApplicationListing,
+    BaseLayout,
+    Login,
+    NotFound,
+    PlatformCreate,
+    PlatformListing
+} from './components';
 
 const history = createHistory({basename: '/publisher'});
 
@@ -51,9 +58,9 @@ class Base extends Component {
                     <BaseLayout>
                         <Switch>
                             <Redirect exact path={"/"} to={"/assets/apps"}/>
-                            {/*<Route exact path={"/overview"} component={PublisherOverview}/>*/}
                             <Route exact path={"/assets/apps"} component={ApplicationListing}/>
                             <Route exact path={"/assets/apps/create"} component={ApplicationCreate}/>
+                            <Route exact path={"/assets/platforms"} component={PlatformListing}/>
                             <Route exact path={"/assets/platforms/create"} component={PlatformCreate}/>
                             <Route exact path={"/assets/apps/:app"} />
                             <Route exact path={"/assets/apps/edit/:app"} />
@@ -67,7 +74,6 @@ class Base extends Component {
                 </div>
             )
         }
-
         return (<Redirect to={"/login"}/>)
     }
 }
@@ -90,7 +96,5 @@ class Publisher extends Component {
         );
     }
 }
-
-Publisher.propTypes = {};
 
 export default Publisher;

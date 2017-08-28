@@ -51,16 +51,16 @@ class Step1 extends Component {
     /**
      * Invokes the handleNext function in Create component.
      * */
-    handleNext = () => {
+    _handleNext = () => {
         this.props.handleNext();
     };
 
     /**
      * Persist the current form data to the state.
      * */
-    setStepData() {
+    _setStepData() {
         this.props.setData("step1", {step: "Dfds"});
-        this.handleNext.bind(this);
+        this._handleNext.bind(this);
     }
 
     /**
@@ -69,22 +69,22 @@ class Step1 extends Component {
      *  Sets the data to the state.
      *  Invokes the handleNext method of Create component.
      * */
-    handleClick() {
-        this.setStepData();
-        this.handleNext();
+    _handleClick() {
+        this._setStepData();
+        this._handleNext();
     }
 
     /**
      * Triggers when changing the Platform selection.
      * */
-    onChangePlatform = (event, index, value) => {
+    _onChangePlatform = (event, index, value) => {
         this.setState({platform: value});
     };
 
     /**
      * Triggers when changing the Store selection.
      * */
-    onChangeStore = (event, index, value) => {
+    _onChangeStore = (event, index, value) => {
         this.setState({store: value});
     };
 
@@ -104,7 +104,7 @@ class Step1 extends Component {
                                 floatingLabelText="Store Type*"
                                 value={this.state.store}
                                 floatingLabelFixed={true}
-                                onChange={this.onChangeStore.bind(this)}
+                                onChange={this._onChangeStore.bind(this)}
                             >
                                 <MenuItem value={1} primaryText="Enterprise"/>
                                 <MenuItem value={2} primaryText="Public"/>
@@ -113,7 +113,7 @@ class Step1 extends Component {
                                 floatingLabelText="Platform*"
                                 value={this.state.platform}
                                 floatingLabelFixed={true}
-                                onChange={this.onChangePlatform.bind(this)}
+                                onChange={this._onChangePlatform.bind(this)}
                             >
                                 <MenuItem value={1} primaryText="Android"/>
                                 <MenuItem value={2} primaryText="iOS"/>
@@ -127,7 +127,7 @@ class Step1 extends Component {
                             <RaisedButton
                                 label="Next >"
                                 primary={true}
-                                onClick={this.handleClick.bind(this)}
+                                onClick={this._handleClick.bind(this)}
                             />
                         </div>
                     </div>

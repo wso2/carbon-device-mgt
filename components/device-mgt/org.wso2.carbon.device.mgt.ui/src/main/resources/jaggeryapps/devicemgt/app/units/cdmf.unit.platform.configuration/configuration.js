@@ -18,6 +18,7 @@
 
 function onRequest(context) {
     var utility = require("/app/modules/utility.js").utility;
+    var mdmProps = require("/app/modules/conf-reader/main.js")["conf"];
     var deviceModule = require("/app/modules/business-controllers/device.js")["deviceModule"];
     //get all device types
     var isAuthorized = false;
@@ -49,6 +50,7 @@ function onRequest(context) {
     }
     return {
         "deviceTypes": deviceTypesArray,
-        "isAuthorized": isAuthorized
+        "isAuthorized": isAuthorized,
+        "isCloud": mdmProps["isCloud"]
     };
 }

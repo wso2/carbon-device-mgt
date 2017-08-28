@@ -75,6 +75,7 @@ function onRequest(context) {
             //change menu item name
             delete viewModal.Main.Account.color;
             delete viewModal.Main.Account["Request Extension"];
+            viewModal.Main.Account.label = "Account";
         } else if (!billingInfo.isPaidAccount) {
             var accountContent = "Account";
             if (billingInfo.billingPlanStatus === status.ACTIVE || billingInfo.billingPlanStatus === status.EXTENDED) {
@@ -92,7 +93,7 @@ function onRequest(context) {
             } else if (billingInfo.billingPlanStatus === status.INACTIVE) {
                 isExpired = false;
                 isTrial = true;
-                accountContent = "Trial " + (trialPeriod) + " days tade";
+                accountContent = "Trial " + (trialPeriod) + " days to upgrade";
             }
             //change menu item name
             viewModal.Main.Account.label = accountContent;

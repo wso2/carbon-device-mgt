@@ -50,11 +50,12 @@ import java.util.List;
  */
 public class ApplicationManagerProviderServiceImpl implements ApplicationManagementProviderService {
 
-    private static final String GET_APP_LIST_URL = "store/apis/assets/mobileapp?domain=carbon.super&page=1";
-    private static final Log log = LogFactory.getLog(ApplicationManagerProviderServiceImpl.class);
     private DeviceDAO deviceDAO;
     private ApplicationDAO applicationDAO;
     private ApplicationMappingDAO applicationMappingDAO;
+
+    private static final String GET_APP_LIST_URL = "store/apis/assets/mobileapp?domain=carbon.super&page=1";
+    private static final Log log = LogFactory.getLog(ApplicationManagerProviderServiceImpl.class);
 
     public ApplicationManagerProviderServiceImpl(AppManagementConfig appManagementConfig) {
         this.deviceDAO = DeviceManagementDAOFactory.getDeviceDAO();
@@ -233,7 +234,7 @@ public class ApplicationManagerProviderServiceImpl implements ApplicationManagem
                 } else if (application.getVersion().length() >
                            DeviceManagementConstants.OperationAttributes.APPLIST_VERSION_MAX_LENGTH) {
                     application.setVersion(StringUtils.abbreviate(application.getVersion(),
-                                                                  DeviceManagementConstants.OperationAttributes.APPLIST_VERSION_MAX_LENGTH));
+                            DeviceManagementConstants.OperationAttributes.APPLIST_VERSION_MAX_LENGTH));
                 }
                 if (!installedAppList.contains(application)) {
                     installedApp = applicationDAO.getApplication(application.getApplicationIdentifier(),
@@ -296,7 +297,7 @@ public class ApplicationManagerProviderServiceImpl implements ApplicationManagem
         if (device == null) {
             if (log.isDebugEnabled()) {
                 log.debug("No device is found upon the device identifier '" + deviceId.getId() +
-                        "' and type '" + deviceId.getType() + "'. Therefore returning null");
+                        "' and type '" + deviceId.getType() + "'. Therefore returning empty app list");
             }
             return new ArrayList<>();
         }

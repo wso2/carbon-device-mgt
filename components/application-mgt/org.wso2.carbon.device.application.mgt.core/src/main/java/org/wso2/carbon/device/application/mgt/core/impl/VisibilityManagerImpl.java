@@ -17,7 +17,30 @@
 */
 package org.wso2.carbon.device.application.mgt.core.impl;
 
+import org.wso2.carbon.device.application.mgt.common.Visibility;
 import org.wso2.carbon.device.application.mgt.common.services.VisibilityManager;
 
-public class VisibilityManagerImpl implements VisibilityManager{
+/**
+ * This is the defaut implementation for the visibility manager.
+ */
+public class VisibilityManagerImpl implements VisibilityManager {
+    @Override
+    public void addVisibilityMapping(String applicationId, Visibility visibility) {
+
+    }
+
+    @Override
+    public Visibility getVisibility(String applicationId) {
+        return null;
+    }
+
+    @Override
+    public void updateVisibilityMapping(String applicationId, Visibility visibility) {
+
+    }
+
+    @Override
+    public void removeVisibilityMapping(String applicationId) {
+
+    }
 }

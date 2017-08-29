@@ -18,9 +18,18 @@
 
 package org.wso2.carbon.device.application.mgt.common.services;
 
+import org.wso2.carbon.device.application.mgt.common.Visibility;
+
 /**
- * This interface manages all the operations related with Application Visibility.
+ * This interface manages all the operations related with Application Visibility, and in the case of the restr
  */
 public interface VisibilityManager {
 
+    void addVisibilityMapping(String applicationId, Visibility visibility);
+
+    Visibility getVisibility(String applicationId);
+
+    void updateVisibilityMapping(String applicationId, Visibility visibility);
+
+    void removeVisibilityMapping(String applicationId);
 }

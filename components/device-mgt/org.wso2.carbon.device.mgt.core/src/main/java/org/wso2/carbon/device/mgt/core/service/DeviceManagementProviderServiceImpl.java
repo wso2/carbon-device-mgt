@@ -160,6 +160,9 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
     @Override
     public boolean enrollDevice(Device device) throws DeviceManagementException {
+        if (log.isDebugEnabled()) {
+            log.debug("Enrolling the device " + device.getId() + "of type " + device.getType());
+        }
         boolean status = false;
         DeviceIdentifier deviceIdentifier = new DeviceIdentifier(device.getDeviceIdentifier(), device.getType());
 
@@ -228,9 +231,17 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                         }
                     } catch (DeviceManagementDAOException e) {
                         DeviceManagementDAOFactory.rollbackTransaction();
-                        throw new DeviceManagementException("Error occurred while adding enrolment related metadata", e);
+                        String msg = "Error occurred while adding enrolment related metadata";
+                        log.error(msg, e);
+                        throw new DeviceManagementException(msg, e);
                     } catch (TransactionManagementException e) {
-                        throw new DeviceManagementException("Error occurred while initiating transaction", e);
+                        String msg = "Error occurred while initiating transaction";
+                        log.error(msg);
+                        throw new DeviceManagementException(msg, e);
+                    } catch (Exception e) {
+                        String msg = "Error occurred";
+                        log.error(msg, e);
+                        throw new DeviceManagementException(msg, e);
                     } finally {
                         DeviceManagementDAOFactory.closeConnection();
                     }
@@ -246,10 +257,18 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                 DeviceManagementDAOFactory.commitTransaction();
             } catch (DeviceManagementDAOException e) {
                 DeviceManagementDAOFactory.rollbackTransaction();
-                throw new DeviceManagementException("Error occurred while adding metadata of '" + device.getType() +
-                        "' device carrying the identifier '" + device.getDeviceIdentifier() + "'", e);
+                String msg = "Error occurred while adding metadata of '" + device.getType() +
+                        "' device carrying the identifier '" + device.getDeviceIdentifier() + "'";
+                log.error(msg, e);
+                throw new DeviceManagementException(msg, e);
             } catch (TransactionManagementException e) {
-                throw new DeviceManagementException("Error occurred while initiating transaction", e);
+                String msg = "Error occurred while initiating transaction";
+                log.error(msg, e);
+                throw new DeviceManagementException(msg, e);
+            } catch (Exception e) {
+                String msg = "Error occurred";
+                log.error(msg, e);
+                throw new DeviceManagementException(msg, e);
             } finally {
                 DeviceManagementDAOFactory.closeConnection();
             }
@@ -266,7 +285,6 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         if (status) {
             addDeviceToGroups(deviceIdentifier, device.getEnrolmentInfo().getOwnership());
             addInitialOperations(deviceIdentifier, device.getType());
-
         }
         return status;
     }
@@ -274,6 +292,9 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
     @Override
     public boolean modifyEnrollment(Device device) throws DeviceManagementException {
+        if (log.isDebugEnabled()) {
+            log.debug("Modifying enrollment for device " + device.getDeviceIdentifier() + " of type " + device.getType());
+        }
         DeviceManager deviceManager = this.getDeviceManager(device.getType());
         DeviceIdentifier deviceIdentifier = new DeviceIdentifier(device.getDeviceIdentifier(), device.getType());
         if (deviceManager == null) {
@@ -301,10 +322,17 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             this.removeDeviceFromCache(deviceIdentifier);
         } catch (DeviceManagementDAOException e) {
             DeviceManagementDAOFactory.rollbackTransaction();
-            throw new DeviceManagementException("Error occurred while modifying the device " +
-                    "'" + device.getId() + "'", e);
+            String msg = "Error occurred while modifying the device '" + device.getId() + "'";
+            log.error(msg);
+            throw new DeviceManagementException(msg, e);
         } catch (TransactionManagementException e) {
-            throw new DeviceManagementException("Error occurred while initiating transaction", e);
+            String msg = "Error occurred while initiating transaction";
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
+        } catch (Exception e) {
+            String msg = "Error occurred";
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
         } finally {
             DeviceManagementDAOFactory.closeConnection();
         }
@@ -318,10 +346,18 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             DeviceManagementDAOFactory.openConnection();
             enrolmentInfos = enrollmentDAO.getEnrollmentsOfUser(deviceId, user, this.getTenantId());
         } catch (DeviceManagementDAOException e) {
-            throw new DeviceManagementException("Error occurred while obtaining the enrollment information device for" +
-                    "id '" + deviceId + "' and user : " + user, e);
+            String msg = "Error occurred while obtaining the enrollment information device for id '" + deviceId
+                    + "' and user : " + user;
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
         } catch (SQLException e) {
-            throw new DeviceManagementException("Error occurred while opening a connection to the data source", e);
+            String msg = "Error occurred while opening a connection to the data source";
+            log.error(msg);
+            throw new DeviceManagementException(msg, e);
+        } catch (Exception e) {
+            String msg = "Error occurred";
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
         } finally {
             DeviceManagementDAOFactory.closeConnection();
         }
@@ -330,6 +366,9 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
     @Override
     public boolean disenrollDevice(DeviceIdentifier deviceId) throws DeviceManagementException {
+        if (log.isDebugEnabled()) {
+            log.debug("Dis-enrolling device " + deviceId.getId() + " of type " + deviceId.getType());
+        }
         DeviceManager deviceManager = this.getDeviceManager(deviceId.getType());
         if (deviceManager == null) {
             if (log.isDebugEnabled()) {
@@ -362,15 +401,22 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             DeviceManagementDAOFactory.beginTransaction();
             enrollmentDAO.updateEnrollment(device.getId(), device.getEnrolmentInfo(), tenantId);
             deviceDAO.updateDevice(device, tenantId);
-
             DeviceManagementDAOFactory.commitTransaction();
             this.removeDeviceFromCache(deviceId);
         } catch (DeviceManagementDAOException e) {
             DeviceManagementDAOFactory.rollbackTransaction();
-            throw new DeviceManagementException("Error occurred while dis-enrolling '" + deviceId.getType() +
-                    "' device with the identifier '" + deviceId.getId() + "'", e);
+            String msg = "Error occurred while dis-enrolling '" + deviceId.getType() +
+                    "' device with the identifier '" + deviceId.getId() + "'";
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
         } catch (TransactionManagementException e) {
-            throw new DeviceManagementException("Error occurred while initiating transaction", e);
+            String msg = "Error occurred while initiating transaction";
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
+        } catch (Exception e) {
+            String msg = "Error occurred";
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
         } finally {
             DeviceManagementDAOFactory.closeConnection();
         }
@@ -419,6 +465,9 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
     @Override
     public List<Device> getAllDevices(String deviceType, boolean requireDeviceInfo) throws DeviceManagementException {
+        if (log.isDebugEnabled()) {
+            log.debug("Getting all devices of type " + deviceType);
+        }
         List<Device> allDevices;
         try {
             DeviceManagementDAOFactory.openConnection();
@@ -430,14 +479,21 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                 return null;
             }
         } catch (DeviceManagementDAOException e) {
-            throw new DeviceManagementException("Error occurred while retrieving all devices of type '" +
-                    deviceType + "' that are being managed within the scope of current tenant", e);
+            String msg = "Error occurred while retrieving all devices of type '" +
+                    deviceType + "' that are being managed within the scope of current tenant";
+            log.error(msg);
+            throw new DeviceManagementException(msg, e);
         } catch (SQLException e) {
-            throw new DeviceManagementException("Error occurred while opening a connection to the data source", e);
+            String msg = "Error occurred while opening a connection to the data source";
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
+        } catch (Exception e) {
+            String msg = "Error occurred";
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
         } finally {
             DeviceManagementDAOFactory.closeConnection();
         }
-
         if (requireDeviceInfo) {
             return this.getAllDeviceInfo(allDevices);
         }
@@ -451,15 +507,25 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
     @Override
     public List<Device> getAllDevices(boolean requireDeviceInfo) throws DeviceManagementException {
+        if (log.isDebugEnabled()) {
+            log.debug("Getting all devices");
+        }
         List<Device> allDevices;
         try {
             DeviceManagementDAOFactory.openConnection();
             allDevices = deviceDAO.getDevices(this.getTenantId());
         } catch (DeviceManagementDAOException e) {
-            throw new DeviceManagementException("Error occurred while retrieving device list pertaining to " +
-                    "the current tenant", e);
+            String msg = "Error occurred while retrieving device list pertaining to the current tenant";
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
         } catch (SQLException e) {
-            throw new DeviceManagementException("Error occurred while opening a connection to the data source", e);
+            String msg = "Error occurred while opening a connection to the data source";
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
+        } catch (Exception e) {
+            String msg = "Error occurred";
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
         } finally {
             DeviceManagementDAOFactory.closeConnection();
         }
@@ -477,15 +543,25 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
     @Override
     public List<Device> getDevices(Date since, boolean requireDeviceInfo) throws DeviceManagementException {
+        if (log.isDebugEnabled()) {
+            log.debug("Getting all devices since date " + since.toString());
+        }
         List<Device> allDevices;
         try {
             DeviceManagementDAOFactory.openConnection();
             allDevices = deviceDAO.getDevices(since.getTime(), this.getTenantId());
         } catch (DeviceManagementDAOException e) {
-            throw new DeviceManagementException("Error occurred while retrieving device list pertaining to " +
-                    "the current tenant", e);
+            String msg = "Error occurred while retrieving device list pertaining to the current tenant";
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
         } catch (SQLException e) {
-            throw new DeviceManagementException("Error occurred while opening a connection to the data source", e);
+            String msg = "Error occurred while opening a connection to the data source";
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
+        } catch (Exception e) {
+            String msg = "Error occurred";
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
         } finally {
             DeviceManagementDAOFactory.closeConnection();
         }
@@ -503,6 +579,9 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
     @Override
     public PaginationResult getDevicesByType(PaginationRequest request, boolean requireDeviceInfo) throws DeviceManagementException {
+        if (log.isDebugEnabled()) {
+            log.debug("Get devices with pagination");
+        }
         PaginationResult paginationResult = new PaginationResult();
         List<Device> allDevices = new ArrayList<>();
         int count = 0;
@@ -514,10 +593,18 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             allDevices = deviceDAO.getDevices(request, tenantId);
             count = deviceDAO.getDeviceCountByType(deviceType, tenantId);
         } catch (DeviceManagementDAOException e) {
-            throw new DeviceManagementException("Error occurred while retrieving device list pertaining to " +
-                    "the current tenant of type " + deviceType, e);
+            String msg = "Error occurred while retrieving device list pertaining to the current tenant of type "
+                    + deviceType;
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
         } catch (SQLException e) {
-            throw new DeviceManagementException("Error occurred while opening a connection to the data source", e);
+            String msg = "Error occurred while opening a connection to the data source";
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
+        } catch (Exception e) {
+            String msg = "Error occurred";
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
         } finally {
             DeviceManagementDAOFactory.closeConnection();
         }
@@ -540,6 +627,9 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
     @Override
     public PaginationResult getAllDevices(PaginationRequest request, boolean requireDeviceInfo) throws DeviceManagementException {
+        if (log.isDebugEnabled()) {
+            log.debug("Get devices with pagination");
+        }
         List<Device> devicesForRoles = null;
         PaginationResult paginationResult = new PaginationResult();
         List<Device> allDevices = new ArrayList<>();
@@ -560,10 +650,17 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                 allDevices = deviceDAO.getDevices(request, tenantId);
                 count = deviceDAO.getDeviceCount(request, tenantId);
             } catch (DeviceManagementDAOException e) {
-                throw new DeviceManagementException("Error occurred while retrieving device list pertaining to " +
-                        "the current tenant", e);
+                String msg = "Error occurred while retrieving device list pertaining to the current tenant";
+                log.error(msg, e);
+                throw new DeviceManagementException(msg, e);
             } catch (SQLException e) {
-                throw new DeviceManagementException("Error occurred while opening a connection to the data source", e);
+                String msg = "Error occurred while opening a connection to the data source";
+                log.error(msg, e);
+                throw new DeviceManagementException(msg, e);
+            } catch (Exception e) {
+                String msg = "Error occurred";
+                log.error(msg, e);
+                throw new DeviceManagementException(msg, e);
             } finally {
                 DeviceManagementDAOFactory.closeConnection();
             }
@@ -580,6 +677,9 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
     @Override
     public Device getDevice(DeviceIdentifier deviceId, boolean requireDeviceInfo) throws DeviceManagementException {
+        if (log.isDebugEnabled()) {
+            log.debug("Get device by device id " + deviceId.getId() + " of type " + deviceId.getType());
+        }
         int tenantId = this.getTenantId();
         Device device = this.getDeviceFromCache(deviceId);
         if (device == null) {
@@ -596,10 +696,17 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                 }
                 this.addDeviceToCache(deviceId, device);
             } catch (DeviceManagementDAOException e) {
-                throw new DeviceManagementException("Error occurred while obtaining the device for id " +
-                        "'" + deviceId.getId() + "'", e);
+                String msg = "Error occurred while obtaining the device for '" + deviceId.getId() + "'";
+                log.error(msg, e);
+                throw new DeviceManagementException(msg, e);
             } catch (SQLException e) {
-                throw new DeviceManagementException("Error occurred while opening a connection to the data source", e);
+                String msg = "Error occurred while opening a connection to the data source";
+                log.error(msg);
+                throw new DeviceManagementException(msg, e);
+            } catch (Exception e) {
+                String msg = "Error occurred";
+                log.error(msg, e);
+                throw new DeviceManagementException(msg, e);
             } finally {
                 DeviceManagementDAOFactory.closeConnection();
             }
@@ -612,6 +719,9 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
     @Override
     public void sendEnrolmentInvitation(String templateName, EmailMetaInfo metaInfo) throws DeviceManagementException {
+        if (log.isDebugEnabled()) {
+            log.debug("Send enrollment invitation");
+        }
         Map<String, TypedValue<Class<?>, Object>> params = new HashMap<>();
         Properties props = metaInfo.getProperties();
         Enumeration e = props.propertyNames();
@@ -629,12 +739,21 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                             metaInfo.getRecipients()).build();
             DeviceManagementDataHolder.getInstance().getEmailSenderService().sendEmail(ctx);
         } catch (EmailSendingFailedException ex) {
-            throw new DeviceManagementException("Error occurred while sending enrollment invitation", ex);
+            String msg = "Error occurred while sending enrollment invitation";
+            log.error(msg, ex);
+            throw new DeviceManagementException(msg, ex);
+        } catch (Exception ex) {
+            String msg = "Error occurred";
+            log.error(msg, ex);
+            throw new DeviceManagementException(msg, ex);
         }
     }
 
     @Override
     public void sendRegistrationEmail(EmailMetaInfo metaInfo) throws DeviceManagementException {
+        if (log.isDebugEnabled()) {
+            log.debug("Send registration email");
+        }
         Map<String, TypedValue<Class<?>, Object>> params = new HashMap<>();
         params.put(org.wso2.carbon.device.mgt.core.DeviceManagementConstants.EmailAttributes.FIRST_NAME,
                 new TypedValue<Class<?>, Object>(String.class, metaInfo.getProperty("first-name")));
@@ -657,12 +776,21 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                             metaInfo.getRecipients()).build();
             DeviceManagementDataHolder.getInstance().getEmailSenderService().sendEmail(ctx);
         } catch (EmailSendingFailedException e) {
-            throw new DeviceManagementException("Error occurred while sending user registration notification", e);
+            String msg = "Error occurred while sending user registration notification";
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
+        } catch (Exception e) {
+            String msg = "Error occurred";
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
         }
     }
 
     @Override
     public HashMap<Integer, Device> getTenantedDevice(DeviceIdentifier deviceIdentifier) throws DeviceManagementException {
+        if (log.isDebugEnabled()) {
+            log.debug("Get tenanted device with id " + deviceIdentifier.getId() + " of type " + deviceIdentifier.getType());
+        }
         HashMap<Integer, Device> deviceHashMap;
         try {
             DeviceManagementDAOFactory.openConnection();
@@ -675,10 +803,17 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                 return null;
             }
         } catch (DeviceManagementDAOException e) {
-            throw new DeviceManagementException("Error occurred while obtaining the device for id " +
-                    "'" + deviceIdentifier.getId() + "'", e);
+            String msg = "Error occurred while obtaining the device for id '" + deviceIdentifier.getId() + "'";
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
         } catch (SQLException e) {
-            throw new DeviceManagementException("Error occurred while opening a connection to the data source", e);
+            String msg = "Error occurred while opening a connection to the data source";
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
+        } catch (Exception e) {
+            String msg = "Error occurred";
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
         } finally {
             DeviceManagementDAOFactory.closeConnection();
         }
@@ -692,6 +827,9 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
     @Override
     public Device getDeviceWithTypeProperties(DeviceIdentifier deviceId) throws DeviceManagementException {
+        if (log.isDebugEnabled()) {
+            log.debug("Get tenanted device with type properties");
+        }
         Device device = this.getDevice(deviceId, false);
 
         DeviceManager deviceManager = this.getDeviceManager(device.getType());
@@ -718,6 +856,10 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
     @Override
     public Device getDevice(DeviceIdentifier deviceId, Date since, boolean requireDeviceInfo) throws DeviceManagementException {
+        if (log.isDebugEnabled()) {
+            log.debug("Get device since " + since.toString() + " with identifier " + deviceId.getId() + " and type "
+                    + deviceId.getType());
+        }
         Device device;
         try {
             DeviceManagementDAOFactory.openConnection();
@@ -730,10 +872,17 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                 return null;
             }
         } catch (DeviceManagementDAOException e) {
-            throw new DeviceManagementException("Error occurred while obtaining the device for id " +
-                    "'" + deviceId.getId() + "'", e);
+            String msg = "Error occurred while obtaining the device for id '" + deviceId.getId() + "'";
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
         } catch (SQLException e) {
-            throw new DeviceManagementException("Error occurred while opening a connection to the data source", e);
+            String msg = "Error occurred while opening a connection to the data source";
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
+        } catch (Exception e) {
+            String msg = "Error occurred";
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
         } finally {
             DeviceManagementDAOFactory.closeConnection();
         }
@@ -751,6 +900,9 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     @Override
     public Device getDevice(DeviceIdentifier deviceId, EnrolmentInfo.Status status, boolean requireDeviceInfo)
             throws DeviceManagementException {
+        if (log.isDebugEnabled()) {
+            log.debug("Get device with identifier " + deviceId.getId() + " and type " + deviceId.getType());
+        }
         Device device;
         try {
             DeviceManagementDAOFactory.openConnection();
@@ -763,22 +915,31 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                 return null;
             }
         } catch (DeviceManagementDAOException e) {
-            throw new DeviceManagementException("Error occurred while obtaining the device for id " +
-                    "'" + deviceId.getId() + "'", e);
+            String msg = "Error occurred while obtaining the device for id '" + deviceId.getId() + "'";
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
         } catch (SQLException e) {
-            throw new DeviceManagementException("Error occurred while opening a connection to the data source", e);
+            String msg = "Error occurred while opening a connection to the data source";
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
+        } catch (Exception e) {
+            String msg = "Error occurred";
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
         } finally {
             DeviceManagementDAOFactory.closeConnection();
         }
         if (requireDeviceInfo) {
             device = this.getAllDeviceInfo(device);
         }
-
         return device;
     }
 
     @Override
     public List<String> getAvailableDeviceTypes() throws DeviceManagementException {
+        if (log.isDebugEnabled()) {
+            log.debug("Get available device types");
+        }
         List<DeviceType> deviceTypesProvidedByTenant;
         List<String> publicSharedDeviceTypesInDB;
         List<String> deviceTypesResponse = new ArrayList<>();
@@ -814,9 +975,17 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
             }
         } catch (DeviceManagementDAOException e) {
-            throw new DeviceManagementException("Error occurred while obtaining the device types.", e);
+            String msg = "Error occurred while obtaining the device types.";
+            log.info(msg, e);
+            throw new DeviceManagementException(msg, e);
         } catch (SQLException e) {
-            throw new DeviceManagementException("Error occurred while opening a connection to the data source", e);
+            String msg = "Error occurred while opening a connection to the data source";
+            log.info(msg, e);
+            throw new DeviceManagementException(msg, e);
+        } catch (Exception e) {
+            String msg = "Error occurred";
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
         } finally {
             DeviceManagementDAOFactory.closeConnection();
         }
@@ -825,6 +994,9 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
     @Override
     public boolean updateDeviceInfo(DeviceIdentifier deviceId, Device device) throws DeviceManagementException {
+        if (log.isDebugEnabled()) {
+            log.debug("Update device info of device " + deviceId.getId());
+        }
         DeviceManager deviceManager = this.getDeviceManager(deviceId.getType());
         if (deviceManager == null) {
             if (log.isDebugEnabled()) {
@@ -838,6 +1010,9 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
     @Override
     public boolean setOwnership(DeviceIdentifier deviceId, String ownershipType) throws DeviceManagementException {
+        if (log.isDebugEnabled()) {
+            log.debug("Set ownership of device " + deviceId.getId());
+        }
         DeviceManager deviceManager = this.getDeviceManager(deviceId.getType());
         if (deviceManager == null) {
             if (log.isDebugEnabled()) {
@@ -865,6 +1040,9 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     @Override
     public boolean setStatus(DeviceIdentifier deviceId, String currentOwner,
                              EnrolmentInfo.Status status) throws DeviceManagementException {
+        if (log.isDebugEnabled()) {
+            log.debug("Set status of device " + deviceId.getId());
+        }
         try {
             boolean success = false;
             int tenantId = this.getTenantId();
@@ -879,9 +1057,17 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             return success;
         } catch (DeviceManagementDAOException e) {
             DeviceManagementDAOFactory.rollbackTransaction();
-            throw new DeviceManagementException("Error occurred while setting enrollment status", e);
+            String msg = "Error occurred while setting enrollment status";
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
         } catch (TransactionManagementException e) {
-            throw new DeviceManagementException("Error occurred while initiating transaction", e);
+            String msg = "Error occurred while initiating transaction";
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
+        } catch (Exception e) {
+            String msg = "Error occurred";
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
         } finally {
             DeviceManagementDAOFactory.closeConnection();
         }
@@ -890,6 +1076,9 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     @Override
     public boolean setStatus(String currentOwner,
                              EnrolmentInfo.Status status) throws DeviceManagementException {
+        if (log.isDebugEnabled()) {
+            log.debug("Update enrollment with status");
+        }
         try {
             boolean success = false;
             int tenantId = this.getTenantId();
@@ -899,9 +1088,17 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             return success;
         } catch (DeviceManagementDAOException e) {
             DeviceManagementDAOFactory.rollbackTransaction();
-            throw new DeviceManagementException("Error occurred while setting enrollment status", e);
+            String msg = "Error occurred while setting enrollment status";
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
         } catch (TransactionManagementException e) {
-            throw new DeviceManagementException("Error occurred while initiating transaction", e);
+            String msg = "Error occurred while initiating transaction";
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
+        } catch (Exception e) {
+            String msg = "Error occurred";
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
         } finally {
             DeviceManagementDAOFactory.closeConnection();
         }
@@ -923,6 +1120,9 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
     @Override
     public License getLicense(String deviceType, String languageCode) throws DeviceManagementException {
+        if (log.isDebugEnabled()) {
+            log.debug("Get the licence for device type " + deviceType);
+        }
         DeviceManager deviceManager = this.getDeviceManager(deviceType);
         License license;
         if (deviceManager == null) {
@@ -941,13 +1141,22 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             }
             return license;
         } catch (LicenseManagementException e) {
-            throw new DeviceManagementException("Error occurred while retrieving license configured for " +
-                    "device type '" + deviceType + "' and language code '" + languageCode + "'", e);
+            String msg = "Error occurred while retrieving license configured for " +
+                    "device type '" + deviceType + "' and language code '" + languageCode + "'";
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
+        } catch (Exception e) {
+            String msg = "Error occurred";
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
         }
     }
 
     @Override
     public void addLicense(String deviceType, License license) throws DeviceManagementException {
+        if (log.isDebugEnabled()) {
+            log.debug("Add the licence for device type " + deviceType);
+        }
         DeviceManager deviceManager = this.getDeviceManager(deviceType);
         if (deviceManager == null) {
             if (log.isDebugEnabled()) {
@@ -959,8 +1168,13 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         try {
             deviceManager.addLicense(license);
         } catch (LicenseManagementException e) {
-            throw new DeviceManagementException("Error occurred while adding license for " +
-                    "device type '" + deviceType + "'", e);
+            String msg = "Error occurred while adding license for device type '" + deviceType + "'";
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
+        } catch (Exception e) {
+            String msg = "Error occurred";
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
         }
     }
 
@@ -1092,15 +1306,26 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
     @Override
     public List<Device> getDevicesOfUser(String username, boolean requireDeviceInfo) throws DeviceManagementException {
+        if (log.isDebugEnabled()) {
+            log.debug("Get devices of user with username " + username);
+        }
         List<Device> userDevices;
         try {
             DeviceManagementDAOFactory.openConnection();
             userDevices = deviceDAO.getDevicesOfUser(username, this.getTenantId());
         } catch (DeviceManagementDAOException e) {
-            throw new DeviceManagementException("Error occurred while retrieving the list of devices that " +
-                    "belong to the user '" + username + "'", e);
+            String msg = "Error occurred while retrieving the list of devices that " +
+                    "belong to the user '" + username + "'";
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
         } catch (SQLException e) {
-            throw new DeviceManagementException("Error occurred while opening a connection to the data source", e);
+            String msg = "Error occurred while opening a connection to the data source";
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
+        } catch (Exception e) {
+            String msg = "Error occurred";
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
         } finally {
             DeviceManagementDAOFactory.closeConnection();
         }
@@ -1113,21 +1338,32 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
     @Override
     public List<Device> getDevicesOfUser(String username, String deviceType) throws DeviceManagementException {
-        return  this.getDevicesOfUser(username, deviceType, true);
+        return this.getDevicesOfUser(username, deviceType, true);
     }
 
     @Override
     public List<Device> getDevicesOfUser(String username, String deviceType, boolean requireDeviceInfo) throws
             DeviceManagementException {
+        if (log.isDebugEnabled()) {
+            log.debug("Get devices of user with username " + username);
+        }
         List<Device> userDevices;
         try {
             DeviceManagementDAOFactory.openConnection();
             userDevices = deviceDAO.getDevicesOfUser(username, deviceType, this.getTenantId());
         } catch (DeviceManagementDAOException e) {
-            throw new DeviceManagementException("Error occurred while retrieving the list of devices that " +
-                    "belong to the user '" + username + "'", e);
+            String msg = "Error occurred while retrieving the list of devices that " +
+                    "belong to the user '" + username + "'";
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
         } catch (SQLException e) {
-            throw new DeviceManagementException("Error occurred while opening a connection to the data source", e);
+            String msg = "Error occurred while opening a connection to the data source";
+            log.error(msg);
+            throw new DeviceManagementException(msg, e);
+        } catch (Exception e) {
+            String msg = "Error occurred";
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
         } finally {
             DeviceManagementDAOFactory.closeConnection();
         }
@@ -1146,6 +1382,9 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     @Override
     public PaginationResult getDevicesOfUser(PaginationRequest request, boolean requireDeviceInfo)
             throws DeviceManagementException {
+        if (log.isDebugEnabled()) {
+            log.debug("Get paginated results of devices of user " + request.getOwner());
+        }
         PaginationResult result = new PaginationResult();
         int deviceCount = 0;
         int tenantId = this.getTenantId();
@@ -1157,10 +1396,17 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             userDevices = deviceDAO.getDevicesOfUser(request, tenantId);
             deviceCount = deviceDAO.getDeviceCountByUser(username, tenantId);
         } catch (DeviceManagementDAOException e) {
-            throw new DeviceManagementException("Error occurred while retrieving the list of devices that " +
-                    "belong to the user '" + username + "'", e);
+            String msg = "Error occurred while retrieving the list of devices that belong to the user '" + username + "'";
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
         } catch (SQLException e) {
-            throw new DeviceManagementException("Error occurred while opening a connection to the data source", e);
+            String msg = "Error occurred while opening a connection to the data source";
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
+        } catch (Exception e) {
+            String msg = "Error occurred";
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
         } finally {
             DeviceManagementDAOFactory.closeConnection();
         }
@@ -1185,6 +1431,9 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     @Override
     public PaginationResult getDevicesByOwnership(PaginationRequest request, boolean requireDeviceInfo)
             throws DeviceManagementException {
+        if (log.isDebugEnabled()) {
+            log.debug("Get devices by ownership " + request.getOwnership());
+        }
         PaginationResult result = new PaginationResult();
         List<Device> allDevices;
         int deviceCount = 0;
@@ -1196,10 +1445,17 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             allDevices = deviceDAO.getDevicesByOwnership(request, tenantId);
             deviceCount = deviceDAO.getDeviceCountByOwnership(ownerShip, tenantId);
         } catch (DeviceManagementDAOException e) {
-            throw new DeviceManagementException(
-                    "Error occurred while fetching the list of devices that matches to ownership : '" + ownerShip + "'", e);
+            String msg = "Error occurred while fetching the list of devices that matches to ownership : '" + ownerShip + "'";
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
         } catch (SQLException e) {
-            throw new DeviceManagementException("Error occurred while opening a connection to the data source", e);
+            String msg = "Error occurred while opening a connection to the data source";
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
+        } catch (Exception e) {
+            String msg = "Error occurred";
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
         } finally {
             DeviceManagementDAOFactory.closeConnection();
         }
@@ -1221,6 +1477,9 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
     @Override
     public List<Device> getAllDevicesOfRole(String role, boolean requireDeviceInfo) throws DeviceManagementException {
+        if (log.isDebugEnabled()) {
+            log.debug("Get devices of role " + role);
+        }
         List<Device> devices = new ArrayList<>();
         String[] users;
         int tenantId = this.getTenantId();
@@ -1228,8 +1487,13 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             users = DeviceManagementDataHolder.getInstance().getRealmService().getTenantUserRealm(tenantId)
                     .getUserStoreManager().getUserListOfRole(role);
         } catch (UserStoreException e) {
-            throw new DeviceManagementException("Error occurred while obtaining the users, who are assigned " +
-                    "with the role '" + role + "'", e);
+            String msg = "Error occurred while obtaining the users, who are assigned with the role '" + role + "'";
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
+        } catch (Exception e) {
+            String msg = "Error occurred";
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
         }
 
         List<Device> userDevices;
@@ -1239,7 +1503,13 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                 DeviceManagementDAOFactory.openConnection();
                 userDevices = deviceDAO.getDevicesOfUser(user, tenantId);
             } catch (DeviceManagementDAOException | SQLException e) {
-                log.error("Error occurred while obtaining the devices of user '" + user + "'", e);
+                String msg = "Error occurred while obtaining the devices of user '" + user + "'";
+                log.error(msg, e);
+                throw new DeviceManagementException(msg, e);
+            } catch (Exception e) {
+                String msg = "Error occurred";
+                log.error(msg, e);
+                throw new DeviceManagementException(msg, e);
             } finally {
                 DeviceManagementDAOFactory.closeConnection();
             }
@@ -1252,14 +1522,24 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
     @Override
     public int getDeviceCount(String username) throws DeviceManagementException {
+        if (log.isDebugEnabled()) {
+            log.debug("Getting device count of the user " + username);
+        }
         try {
             DeviceManagementDAOFactory.openConnection();
             return deviceDAO.getDeviceCount(username, this.getTenantId());
         } catch (DeviceManagementDAOException e) {
-            throw new DeviceManagementException("Error occurred while retrieving the device count of user '"
-                    + username + "'", e);
+            String msg = "Error occurred while retrieving the device count of user '" + username + "'";
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
         } catch (SQLException e) {
-            throw new DeviceManagementException("Error occurred while opening a connection to the data source", e);
+            String msg = "Error occurred while opening a connection to the data source";
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
+        } catch (Exception e) {
+            String msg = "Error occurred";
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
         } finally {
             DeviceManagementDAOFactory.closeConnection();
         }
@@ -1267,13 +1547,24 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
     @Override
     public int getDeviceCount() throws DeviceManagementException {
+        if (log.isDebugEnabled()) {
+            log.debug("Get devices count");
+        }
         try {
             DeviceManagementDAOFactory.openConnection();
             return deviceDAO.getDeviceCount(this.getTenantId());
         } catch (DeviceManagementDAOException e) {
-            throw new DeviceManagementException("Error occurred while retrieving the device count", e);
+            String msg = "Error occurred while retrieving the device count";
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
         } catch (SQLException e) {
-            throw new DeviceManagementException("Error occurred while opening a connection to the data source", e);
+            String msg = "Error occurred while opening a connection to the data source";
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
+        } catch (Exception e) {
+            String msg = "Error occurred";
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
         } finally {
             DeviceManagementDAOFactory.closeConnection();
         }
@@ -1282,6 +1573,9 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     @Override
     public List<Device> getDevicesByNameAndType(PaginationRequest request, boolean requireDeviceInfo)
             throws DeviceManagementException {
+        if (log.isDebugEnabled()) {
+            log.debug("Get devices by name " + request.getDeviceName() + " and type " + request.getDeviceType());
+        }
         List<Device> devices = new ArrayList<>();
         List<Device> allDevices;
         int limit = DeviceManagerUtil.validateDeviceListPageSize(request.getRowCount());
@@ -1289,11 +1583,21 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             DeviceManagementDAOFactory.openConnection();
             allDevices = deviceDAO.getDevicesByNameAndType(request.getDeviceName(), request.getDeviceType(),
                     this.getTenantId(), request.getStartIndex(), limit);
+            List<Device> filterd = null;
+            filterd.get(0);
         } catch (DeviceManagementDAOException e) {
-            throw new DeviceManagementException("Error occurred while fetching the list of devices that matches to '"
-                    + request.getDeviceName() + "'", e);
+            String msg = "Error occurred while fetching the list of devices that matches to '"
+                    + request.getDeviceName() + "'";
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
         } catch (SQLException e) {
-            throw new DeviceManagementException("Error occurred while opening a connection to the data source", e);
+            String msg = "Error occurred while opening a connection to the data source";
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
+        } catch (Exception e) {
+            String msg = "Error occurred";
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
         } finally {
             DeviceManagementDAOFactory.closeConnection();
         }
@@ -1312,6 +1616,9 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     @Override
     public PaginationResult getDevicesByName(PaginationRequest request, boolean requireDeviceInfo) throws
             DeviceManagementException {
+        if (log.isDebugEnabled()) {
+            log.debug("Get devices by name " + request.getDeviceName());
+        }
         PaginationResult result = new PaginationResult();
         int tenantId = this.getTenantId();
         List<Device> allDevices = new ArrayList<>();
@@ -1324,10 +1631,17 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             result.setRecordsTotal(deviceCount);
             result.setRecordsFiltered(deviceCount);
         } catch (DeviceManagementDAOException e) {
-            throw new DeviceManagementException("Error occurred while fetching the list of devices that matches to '"
-                    + deviceName + "'", e);
+            String msg = "Error occurred while fetching the list of devices that matches to '" + deviceName + "'";
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
         } catch (SQLException e) {
-            throw new DeviceManagementException("Error occurred while opening a connection to the data source", e);
+            String msg = "Error occurred while opening a connection to the data source";
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
+        } catch (Exception e) {
+            String msg = "Error occurred";
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
         } finally {
             DeviceManagementDAOFactory.closeConnection();
         }
@@ -1342,6 +1656,9 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     @Override
     public void updateDeviceEnrolmentInfo(Device device, EnrolmentInfo.Status status) throws DeviceManagementException {
         try {
+            if (log.isDebugEnabled()) {
+                log.debug("Updating enrolment for device " + device.getDeviceIdentifier() + " of type " + device.getType());
+            }
             DeviceManagementDAOFactory.beginTransaction();
             device.getEnrolmentInfo().setDateOfLastUpdate(new Date().getTime());
             device.getEnrolmentInfo().setStatus(status);
@@ -1349,10 +1666,18 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             DeviceManagementDAOFactory.commitTransaction();
         } catch (DeviceManagementDAOException e) {
             DeviceManagementDAOFactory.rollbackTransaction();
-            throw new DeviceManagementException("Error occurred update device enrolment status : '" +
-                    device.getId() + "'", e);
+            String msg = "Error occurred while updating device enrolment status for " + device.getDeviceIdentifier() +
+                    " of type " + device.getType();
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
         } catch (TransactionManagementException e) {
-            throw new DeviceManagementException("Error occurred while initiating transaction", e);
+            String msg = "Error occurred while initiating transaction";
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
+        } catch (Exception e) {
+            String msg = "Error occurred";
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
         } finally {
             DeviceManagementDAOFactory.closeConnection();
         }
@@ -1360,21 +1685,34 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
     @Override
     public void registerDeviceManagementService(DeviceManagementService deviceManagementService) {
+        if (log.isDebugEnabled()) {
+            log.debug("Registering device management service");
+        }
         try {
             pluginRepository.addDeviceManagementProvider(deviceManagementService);
         } catch (DeviceManagementException e) {
-            log.error("Error occurred while registering device management plugin '" +
-                    deviceManagementService.getType() + "'", e);
+            String msg = "Error occurred while registering device management plugin '" +
+                    deviceManagementService.getType() + "'";
+            log.error(msg, e);
+        } catch (Exception e) {
+            String msg = "Error occurred";
+            log.error(msg, e);
         }
     }
 
     @Override
     public void unregisterDeviceManagementService(DeviceManagementService deviceManagementService) {
+        if (log.isDebugEnabled()) {
+            log.debug("Unregister a device management service");
+        }
         try {
             pluginRepository.removeDeviceManagementProvider(deviceManagementService);
         } catch (DeviceManagementException e) {
             log.error("Error occurred while un-registering device management plugin '" +
                     deviceManagementService.getType() + "'", e);
+        } catch (Exception e) {
+            String msg = "Error occurred";
+            log.error(msg, e);
         }
     }
 
@@ -1386,6 +1724,9 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     @Override
     public List<Device> getDevicesByStatus(EnrolmentInfo.Status status, boolean requireDeviceInfo) throws
             DeviceManagementException {
+        if (log.isDebugEnabled()) {
+            log.debug("get devices by status");
+        }
         List<Device> allDevices;
         try {
             DeviceManagementDAOFactory.openConnection();
@@ -1394,7 +1735,13 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             throw new DeviceManagementException(
                     "Error occurred while fetching the list of devices that matches to status: '" + status + "'", e);
         } catch (SQLException e) {
-            throw new DeviceManagementException("Error occurred while opening a connection to the data source", e);
+            String msg = "Error occurred while opening a connection to the data source";
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
+        } catch (Exception e) {
+            String msg = "Error occurred";
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
         } finally {
             DeviceManagementDAOFactory.closeConnection();
         }
@@ -1412,6 +1759,9 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     @Override
     public PaginationResult getDevicesByStatus(PaginationRequest request, boolean requireDeviceInfo)
             throws DeviceManagementException {
+        if (log.isDebugEnabled()) {
+            log.debug("get devices by status with pagination");
+        }
         PaginationResult result = new PaginationResult();
         List<Device> allDevices = new ArrayList<>();
         int tenantId = this.getTenantId();
@@ -1424,10 +1774,17 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             result.setRecordsTotal(deviceCount);
             result.setRecordsFiltered(deviceCount);
         } catch (DeviceManagementDAOException e) {
-            throw new DeviceManagementException(
-                    "Error occurred while fetching the list of devices that matches to status: '" + status + "'", e);
+            String msg = "Error occurred while fetching the list of devices that matches to status: '" + status + "'";
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
         } catch (SQLException e) {
-            throw new DeviceManagementException("Error occurred while opening a connection to the data source", e);
+            String msg = "Error occurred while opening a connection to the data source";
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
+        } catch (Exception e) {
+            String msg = "Error occurred";
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
         } finally {
             DeviceManagementDAOFactory.closeConnection();
         }
@@ -1470,6 +1827,9 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     @Override
     public boolean changeDeviceStatus(DeviceIdentifier deviceIdentifier, EnrolmentInfo.Status newStatus)
             throws DeviceManagementException {
+        if (log.isDebugEnabled()) {
+            log.debug("Change device status of " + deviceIdentifier.getId());
+        }
         boolean isDeviceUpdated = false;
         Device device = getDevice(deviceIdentifier, false);
         int deviceId = device.getId();
@@ -1494,14 +1854,24 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
     @Override
     public List<Integer> getDeviceEnrolledTenants() throws DeviceManagementException {
+        if (log.isDebugEnabled()) {
+            log.debug("get device enrolled tenants");
+        }
         try {
             DeviceManagementDAOFactory.openConnection();
             return deviceDAO.getDeviceEnrolledTenants();
         } catch (DeviceManagementDAOException e) {
-            throw new DeviceManagementException("Error occurred while retrieving the tenants " +
-                    "which have device enrolled.", e);
+            String msg = "Error occurred while retrieving the tenants which have device enrolled.";
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
         } catch (SQLException e) {
-            throw new DeviceManagementException("Error occurred while opening a connection to the data source", e);
+            String msg = "Error occurred while opening a connection to the data source";
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
+        } catch (Exception e) {
+            String msg = "Error occurred";
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
         } finally {
             DeviceManagementDAOFactory.closeConnection();
         }
@@ -1509,6 +1879,9 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
     private boolean updateEnrollment(int deviceId, EnrolmentInfo enrolmentInfo, int tenantId)
             throws DeviceManagementException {
+        if (log.isDebugEnabled()) {
+            log.debug("Update enrollment of device " + deviceId);
+        }
         boolean isUpdatedEnrollment = false;
         boolean isAutoCommit = true;
         try {
@@ -1520,10 +1893,18 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                 isUpdatedEnrollment = true;
             }
         } catch (SQLException e) {
-            throw new DeviceManagementException("Error occurred while opening a connection to the data source", e);
+            String msg = "Error occurred while opening a connection to the data source";
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
         } catch (DeviceManagementDAOException e) {
-            throw new DeviceManagementException("Error occurred while updating the enrollment information device for" +
-                    "id '" + deviceId + "' .", e);
+            String msg = "Error occurred while updating the enrollment information device for" +
+                    "id '" + deviceId + "' .";
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
+        } catch (Exception e) {
+            String msg = "Error occurred";
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
         } finally {
             try {
                 DeviceManagementDAOFactory.getConnection().setAutoCommit(isAutoCommit);
@@ -1562,6 +1943,9 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
      */
     private void addDeviceToGroups(DeviceIdentifier deviceIdentifier, EnrolmentInfo.OwnerShip ownership)
             throws DeviceManagementException {
+        if (log.isDebugEnabled()) {
+            log.debug("Add device " + deviceIdentifier.getId() + " to default group");
+        }
         GroupManagementProviderService groupManagementProviderService = new GroupManagementProviderServiceImpl();
         try {
             DeviceGroup defaultGroup = createDefaultGroup(groupManagementProviderService, ownership.toString());
@@ -1571,14 +1955,24 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                 groupManagementProviderService.addDevices(defaultGroup.getGroupId(), deviceIdentifiers);
             }
         } catch (DeviceNotFoundException e) {
-            throw new DeviceManagementException("Unable to find the device with the id: '" + deviceIdentifier.getId(),
-                    e);
+            String msg = "Unable to find the device with the id: '" + deviceIdentifier.getId();
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
         } catch (GroupManagementException e) {
-            throw new DeviceManagementException("An error occurred when adding the device to the group.", e);
+            String msg = "An error occurred when adding the device to the group.";
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
+        } catch (Exception e) {
+            String msg = "Error occurred";
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
         }
     }
 
     private void addInitialOperations(DeviceIdentifier deviceIdentifier, String deviceType) throws DeviceManagementException {
+        if (log.isDebugEnabled()) {
+            log.debug("Add initial operations to the device " + deviceIdentifier.getId());
+        }
         DeviceManagementProviderService deviceManagementProviderService = DeviceManagementDataHolder.getInstance().
                 getDeviceManagementProvider();
         DeviceManagementService deviceManagementService =
@@ -1597,11 +1991,17 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                     try {
                         deviceManagementProviderService.addOperation(deviceType, operation, deviceIdentifiers);
                     } catch (OperationManagementException e) {
-                        throw new DeviceManagementException("Unable to add the operation for the device with the id: '"
-                                                                    + deviceIdentifier.getId(), e);
+                        String msg = "Unable to add the operation for the device with the id: '" + deviceIdentifier.getId();
+                        log.error(msg, e);
+                        throw new DeviceManagementException(msg, e);
                     } catch (InvalidDeviceException e) {
-                        throw new DeviceManagementException("Unable to find the device with the id: '"
-                                                                    + deviceIdentifier.getId(), e);
+                        String msg = "Unable to find the device with the id: '" + deviceIdentifier.getId();
+                        log.error(msg, e);
+                        throw new DeviceManagementException(msg, e);
+                    } catch (Exception e) {
+                        String msg = "Error occurred";
+                        log.error(msg, e);
+                        throw new DeviceManagementException(msg, e);
                     }
                 }
             }
@@ -1618,6 +2018,9 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
      */
     private DeviceGroup createDefaultGroup(GroupManagementProviderService service, String groupName)
             throws GroupManagementException {
+        if (log.isDebugEnabled()) {
+            log.debug("Create default group with name " + groupName);
+        }
         DeviceGroup defaultGroup = service.getGroup(groupName);
         if (defaultGroup == null) {
             defaultGroup = new DeviceGroup(groupName);
@@ -1628,10 +2031,13 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                 service.createGroup(defaultGroup, DeviceGroupConstants.Roles.DEFAULT_ADMIN_ROLE,
                         DeviceGroupConstants.Permissions.DEFAULT_ADMIN_PERMISSIONS);
             } catch (GroupAlreadyExistException e) {
-                if (log.isDebugEnabled()) {
-                    log.debug("Default group: " + defaultGroup.getName() + " already exists. Skipping group creation.",
-                            e);
-                }
+                String msg = "Default group: " + defaultGroup.getName() + " already exists. Skipping group creation.";
+                log.error(msg);
+                throw new GroupManagementException(msg, e);
+            } catch (Exception e) {
+                String msg = "Error occurred";
+                log.error(msg, e);
+                throw new GroupManagementException(msg, e);
             }
             return service.getGroup(groupName);
         } else {
@@ -1648,14 +2054,25 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
     @Override
     public DeviceType getDeviceType(String deviceType) throws DeviceManagementException {
+        if (log.isDebugEnabled()) {
+            log.debug("get device type " + deviceType);
+        }
         try {
             DeviceManagementDAOFactory.openConnection();
             int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
             return deviceTypeDAO.getDeviceType(deviceType, tenantId);
         } catch (DeviceManagementDAOException e) {
-            throw new DeviceManagementException("Error occurred while obtaining the device type " + deviceType, e);
+            String msg = "Error occurred while obtaining the device type " + deviceType;
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
         } catch (SQLException e) {
-            throw new DeviceManagementException("Error occurred while opening a connection to the data source", e);
+            String msg = "Error occurred while opening a connection to the data source";
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
+        } catch (Exception e) {
+            String msg = "Error occurred";
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
         } finally {
             DeviceManagementDAOFactory.closeConnection();
         }
@@ -1663,15 +2080,25 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
     @Override
     public List<DeviceType> getDeviceTypes() throws DeviceManagementException {
+        if (log.isDebugEnabled()) {
+            log.debug("Get device types");
+        }
         int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
         try {
             DeviceManagementDAOFactory.openConnection();
             return deviceTypeDAO.getDeviceTypes(tenantId);
         } catch (DeviceManagementDAOException e) {
-            throw new DeviceManagementException("Error occurred while obtaining the device types for tenant "
-                                                        + tenantId, e);
+            String msg = "Error occurred while obtaining the device types for tenant " + tenantId;
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
         } catch (SQLException e) {
-            throw new DeviceManagementException("Error occurred while opening a connection to the data source", e);
+            String msg = "Error occurred while opening a connection to the data source";
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
+        } catch (Exception e) {
+            String msg = "Error occurred";
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
         } finally {
             DeviceManagementDAOFactory.closeConnection();
         }
@@ -1680,28 +2107,34 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     @Override
     public void notifyPullNotificationSubscriber(DeviceIdentifier deviceIdentifier, Operation operation)
             throws PullNotificationExecutionFailedException {
+        if (log.isDebugEnabled()) {
+            log.debug("Notify pull notification subscriber");
+        }
         DeviceManagementService dms =
                 pluginRepository.getDeviceManagementService(deviceIdentifier.getType(), this.getTenantId());
         if (dms == null) {
             String message = "Device type '" + deviceIdentifier.getType() + "' does not have an associated device management " +
                     "plugin registered within the framework";
-            if (log.isDebugEnabled()) {
-                log.debug(message);
-            }
+            log.error(message);
             throw new PullNotificationExecutionFailedException(message);
         }
         PullNotificationSubscriber pullNotificationSubscriber = dms.getPullNotificationSubscriber();
         if (pullNotificationSubscriber == null) {
-            throw new PullNotificationExecutionFailedException("Pull Notification Subscriber is not configured " +
-                                                                       "for device type" + deviceIdentifier.getType());
+            String message = "Pull Notification Subscriber is not configured " +
+                    "for device type" + deviceIdentifier.getType();
+            log.error(message);
+            throw new PullNotificationExecutionFailedException(message);
         }
         pullNotificationSubscriber.execute(deviceIdentifier, operation);
     }
 
     /**
-     *  Returns all the device-info including location of the given device.
+     * Returns all the device-info including location of the given device.
      */
-    private DeviceInfo getDeviceInfo(Device device) {
+    private DeviceInfo getDeviceInfo(Device device) throws DeviceManagementException {
+        if (log.isDebugEnabled()) {
+            log.debug("Get device info of device " + device.getId() + " of type " + device.getType());
+        }
         DeviceInfo info = null;
         try {
             DeviceManagementDAOFactory.openConnection();
@@ -1711,10 +2144,17 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                 info.setLocation(location);
             }
         } catch (DeviceDetailsMgtDAOException e) {
-            log.error("Error occurred while retrieving advance info of '" + device.getType() +
-                    "' that carries the id '" + device.getDeviceIdentifier() + "'");
+            String msg = "Error occurred while retrieving advance info of '" + device.getType() +
+                    "' that carries the id '" + device.getDeviceIdentifier() + "'";
+            log.error(msg);
+            throw new DeviceManagementException(msg, e);
         } catch (SQLException e) {
-            log.error("Error occurred while opening a connection to the data source", e);
+            String msg = "Error occurred while opening a connection to the data source";
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
+        } catch (Exception e) {
+            String msg = "Error occurred";
+            log.error(msg, e);
         } finally {
             DeviceManagementDAOFactory.closeConnection();
         }
@@ -1722,9 +2162,12 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     }
 
     /**
-     *  Returns all the installed apps of the given device.
+     * Returns all the installed apps of the given device.
      */
     private List<Application> getInstalledApplications(Device device) {
+        if (log.isDebugEnabled()) {
+            log.debug("Get installed applications of device " + device.getId() + " of type " + device.getType());
+        }
         List<Application> applications = new ArrayList<>();
         try {
             DeviceManagementDAOFactory.openConnection();
@@ -1735,6 +2178,9 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                     "which carries the id '" + device.getId() + "'", e);
         } catch (SQLException e) {
             log.error("Error occurred while opening a connection to the data source", e);
+        } catch (Exception e) {
+            String msg = "Error occurred";
+            log.error(msg, e);
         } finally {
             DeviceManagementDAOFactory.closeConnection();
         }
@@ -1742,17 +2188,18 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     }
 
     /**
-     *  Returns all the available information (device-info, location, applications and plugin-db data)
-     *  of the given device list.
+     * Returns all the available information (device-info, location, applications and plugin-db data)
+     * of the given device list.
      */
-    private List<Device> getAllDeviceInfo(List<Device> allDevices)
-            throws DeviceManagementException {
+    private List<Device> getAllDeviceInfo(List<Device> allDevices) throws DeviceManagementException {
+        if (log.isDebugEnabled()) {
+            log.debug("Get all device info of devices");
+        }
         List<Device> devices = new ArrayList<>();
         if (allDevices != null) {
             for (Device device : allDevices) {
                 device.setDeviceInfo(this.getDeviceInfo(device));
                 device.setApplications(this.getInstalledApplications(device));
-
                 DeviceManager deviceManager = this.getDeviceManager(device.getType());
                 if (deviceManager == null) {
                     if (log.isDebugEnabled()) {
@@ -1775,10 +2222,13 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     }
 
     /**
-     *  Returns all the available information (device-info, location, applications and plugin-db data)
-     *  of a given device.
+     * Returns all the available information (device-info, location, applications and plugin-db data)
+     * of a given device.
      */
     private Device getAllDeviceInfo(Device device) throws DeviceManagementException {
+        if (log.isDebugEnabled()) {
+            log.debug("Get all device info of device " + device.getId() + " of type " + device.getType());
+        }
         device.setDeviceInfo(this.getDeviceInfo(device));
         device.setApplications(this.getInstalledApplications(device));
 

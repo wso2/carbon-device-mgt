@@ -65,6 +65,9 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
     @Override
     public void createGroup(DeviceGroup deviceGroup, String defaultRole, String[] defaultPermissions)
             throws GroupManagementException, GroupAlreadyExistException {
+        if (log.isDebugEnabled()) {
+            log.debug("Creating group" + deviceGroup.getName());
+        }
         if (deviceGroup == null) {
             throw new GroupManagementException("DeviceGroup cannot be null.", new NullPointerException());
         }
@@ -80,10 +83,17 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
             }
         } catch (GroupManagementDAOException e) {
             GroupManagementDAOFactory.rollbackTransaction();
-            throw new GroupManagementException("Error occurred while adding deviceGroup " +
-                    "'" + deviceGroup.getName() + "' to database.", e);
+            String msg = "Error occurred while adding deviceGroup '" + deviceGroup.getName() + "' to database.";
+            log.error(msg, e);
+            throw new GroupManagementException(msg, e);
         } catch (TransactionManagementException e) {
-            throw new GroupManagementException("Error occurred while initiating transaction.", e);
+            String msg = "Error occurred while initiating transaction.";
+            log.error(msg, e);
+            throw new GroupManagementException(msg, e);
+        } catch (Exception e) {
+            String msg = "Error occurred";
+            log.error(msg, e);
+            throw new GroupManagementException(msg, e);
         } finally {
             GroupManagementDAOFactory.closeConnection();
         }
@@ -99,6 +109,9 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
     @Override
     public void updateGroup(DeviceGroup deviceGroup, int groupId)
             throws GroupManagementException, GroupAlreadyExistException {
+        if (log.isDebugEnabled()) {
+            log.debug("update group" + deviceGroup.getName());
+        }
         if (deviceGroup == null) {
             throw new GroupManagementException("DeviceGroup cannot be null.", new NullPointerException());
         }
@@ -114,10 +127,17 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
             }
         } catch (GroupManagementDAOException e) {
             GroupManagementDAOFactory.rollbackTransaction();
-            throw new GroupManagementException("Error occurred while modifying deviceGroup " +
-                    "'" + deviceGroup.getName() + "'.", e);
+            String msg = "Error occurred while modifying deviceGroup '" + deviceGroup.getName() + "'.";
+            log.error(msg, e);
+            throw new GroupManagementException(msg, e);
         } catch (TransactionManagementException e) {
-            throw new GroupManagementException("Error occurred while initiating transaction.", e);
+            String msg = "Error occurred while initiating transaction.";
+            log.error(msg, e);
+            throw new GroupManagementException(msg, e);
+        } catch (Exception e) {
+            String msg = "Error occurred";
+            log.error(msg, e);
+            throw new GroupManagementException(msg, e);
         } finally {
             GroupManagementDAOFactory.closeConnection();
         }
@@ -128,6 +148,9 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
      */
     @Override
     public boolean deleteGroup(int groupId) throws GroupManagementException {
+        if (log.isDebugEnabled()) {
+            log.debug("Delete group " +groupId );
+        }
         DeviceGroup deviceGroup = getGroup(groupId);
         if (deviceGroup == null) {
             return false;
@@ -142,9 +165,17 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
             return true;
         } catch (GroupManagementDAOException e) {
             GroupManagementDAOFactory.rollbackTransaction();
-            throw new GroupManagementException("Error occurred while removing group data.", e);
+            String msg = "Error occurred while removing group data.";
+            log.error(msg,e);
+            throw new GroupManagementException(msg, e);
         } catch (TransactionManagementException e) {
-            throw new GroupManagementException("Error occurred while initiating transaction.", e);
+            String msg = "Error occurred while initiating transaction.";
+            log.error(msg,e);
+            throw new GroupManagementException(msg, e);
+        } catch (Exception e) {
+            String msg = "Error occurred";
+            log.error(msg, e);
+            throw new GroupManagementException(msg, e);
         } finally {
             GroupManagementDAOFactory.closeConnection();
         }
@@ -155,14 +186,25 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
      */
     @Override
     public DeviceGroup getGroup(int groupId) throws GroupManagementException {
+        if (log.isDebugEnabled()) {
+            log.debug("Get group by id " + groupId);
+        }
         DeviceGroup deviceGroup;
         try {
             GroupManagementDAOFactory.openConnection();
             deviceGroup = this.groupDAO.getGroup(groupId, CarbonContext.getThreadLocalCarbonContext().getTenantId());
         } catch (GroupManagementDAOException e) {
-            throw new GroupManagementException("Error occurred while obtaining group '" + groupId + "'", e);
+            String msg = "Error occurred while obtaining group '" + groupId + "'";
+            log.error(msg,e);
+            throw new GroupManagementException(msg, e);
         } catch (SQLException e) {
-            throw new GroupManagementException("Error occurred while opening a connection to the data source.", e);
+            String msg = "Error occurred while opening a connection to the data source.";
+            log.error(msg,e);
+            throw new GroupManagementException(msg, e);
+        } catch (Exception e) {
+            String msg = "Error occurred";
+            log.error(msg, e);
+            throw new GroupManagementException(msg, e);
         } finally {
             GroupManagementDAOFactory.closeConnection();
         }
@@ -174,14 +216,25 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
      */
     @Override
     public DeviceGroup getGroup(String groupName) throws GroupManagementException {
+        if (log.isDebugEnabled()) {
+            log.debug("Get group by name " + groupName);
+        }
         DeviceGroup deviceGroup;
         try {
             GroupManagementDAOFactory.openConnection();
             deviceGroup = this.groupDAO.getGroup(groupName, CarbonContext.getThreadLocalCarbonContext().getTenantId());
         } catch (GroupManagementDAOException e) {
-            throw new GroupManagementException("Error occurred while obtaining group with name: '" + groupName + "'", e);
+            String msg = "Error occurred while obtaining group with name: '" + groupName + "'";
+            log.error(msg,e);
+            throw new GroupManagementException(msg, e);
         } catch (SQLException e) {
-            throw new GroupManagementException("Error occurred while opening a connection to the data source.", e);
+            String msg= "Error occurred while opening a connection to the data source.";
+            log.error(msg,e);
+            throw new GroupManagementException(msg, e);
+        } catch (Exception e) {
+            String msg = "Error occurred";
+            log.error(msg, e);
+            throw new GroupManagementException(msg, e);
         } finally {
             GroupManagementDAOFactory.closeConnection();
         }
@@ -190,15 +243,26 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
 
     @Override
     public List<DeviceGroup> getGroups() throws GroupManagementException {
+        if (log.isDebugEnabled()) {
+            log.debug("Get groups");
+        }
         List<DeviceGroup> deviceGroups = new ArrayList<>();
         try {
             int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
             GroupManagementDAOFactory.openConnection();
             deviceGroups = this.groupDAO.getGroups(tenantId);
         } catch (GroupManagementDAOException e) {
-            throw new GroupManagementException("Error occurred while retrieving all groups in tenant", e);
+            String msg = "Error occurred while retrieving all groups in tenant";
+            log.error(msg,e);
+            throw new GroupManagementException(msg, e);
         } catch (SQLException e) {
-            throw new GroupManagementException("Error occurred while opening a connection to the data source.", e);
+            String msg = "Error occurred while opening a connection to the data source.";
+            log.error(msg);
+            throw new GroupManagementException(msg, e);
+        } catch (Exception e) {
+            String msg = "Error occurred";
+            log.error(msg, e);
+            throw new GroupManagementException(msg, e);
         } finally {
             GroupManagementDAOFactory.closeConnection();
         }
@@ -207,6 +271,9 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
 
     @Override
     public PaginationResult getGroups(GroupPaginationRequest request) throws GroupManagementException {
+        if (log.isDebugEnabled()) {
+            log.debug("Get groups with pagination");
+        }
         request = DeviceManagerUtil.validateGroupListPageSize(request);
         List<DeviceGroup> deviceGroups = new ArrayList<>();
         try {
@@ -214,9 +281,17 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
             GroupManagementDAOFactory.openConnection();
             deviceGroups = this.groupDAO.getGroups(request, tenantId);
         } catch (GroupManagementDAOException e) {
-            throw new GroupManagementException("Error occurred while retrieving all groups in tenant", e);
+            String msg = "Error occurred while retrieving all groups in tenant";
+            log.error(msg,e);
+            throw new GroupManagementException(msg, e);
         } catch (SQLException e) {
-            throw new GroupManagementException("Error occurred while opening a connection to the data source.", e);
+            String msg = "Error occurred while opening a connection to the data source.";
+            log.error(msg,e);
+            throw new GroupManagementException(msg, e);
+        } catch (Exception e) {
+            String msg = "Error occurred";
+            log.error(msg, e);
+            throw new GroupManagementException(msg, e);
         } finally {
             GroupManagementDAOFactory.closeConnection();
         }
@@ -228,6 +303,9 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
 
     @Override
     public List<DeviceGroup> getGroups(String username) throws GroupManagementException {
+        if (log.isDebugEnabled()) {
+            log.debug("Get groups of owner "+username);
+        }
         Map<Integer, DeviceGroup> groups = new HashMap<>();
         UserStoreManager userStoreManager;
         try {
@@ -245,11 +323,20 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
                 groups.put(deviceGroup.getGroupId(), deviceGroup);
             }
         } catch (UserStoreException e) {
-            throw new GroupManagementException("Error occurred while getting user store manager.", e);
+            String msg = "Error occurred while getting user store manager.";
+            log.error(msg,e);
+            throw new GroupManagementException(msg, e);
         } catch (SQLException e) {
-            throw new GroupManagementException("Error occurred while retrieving all groups accessible to user.", e);
+            String msg = "Error occurred while retrieving all groups accessible to user.";
+            log.error(msg,e);
+            throw new GroupManagementException(msg, e);
         } catch (GroupManagementDAOException e) {
+            log.error(e);
             throw new GroupManagementException(e);
+        } catch (Exception e) {
+            String msg = "Error occurred";
+            log.error(msg, e);
+            throw new GroupManagementException(msg, e);
         } finally {
             GroupManagementDAOFactory.closeConnection();
         }
@@ -257,6 +344,9 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
     }
 
     private List<Integer> getGroupIds(String username) throws GroupManagementException {
+        if (log.isDebugEnabled()) {
+            log.debug("Get groups Ids of owner "+username);
+        }
         UserStoreManager userStoreManager;
         List<Integer> deviceGroupIds = new ArrayList<>();
         try {
@@ -268,11 +358,20 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
             deviceGroupIds = this.groupDAO.getOwnGroupIds(username, tenantId);
             deviceGroupIds.addAll(this.groupDAO.getGroupIds(roleList, tenantId));
         } catch (UserStoreException e) {
-            throw new GroupManagementException("Error occurred while getting user store manager.", e);
+            String msg = "Error occurred while getting user store manager.";
+            log.error(msg,e);
+            throw new GroupManagementException(msg, e);
         } catch (SQLException e) {
-            throw new GroupManagementException("Error occurred while retrieving all groups accessible to user.", e);
+            String msg = "Error occurred while retrieving all groups accessible to user.";
+            log.error(msg,e);
+            throw new GroupManagementException(msg, e);
         } catch (GroupManagementDAOException e) {
+            log.error(e);
             throw new GroupManagementException(e);
+        } catch (Exception e) {
+            String msg = "Error occurred";
+            log.error(msg, e);
+            throw new GroupManagementException(msg, e);
         } finally {
             GroupManagementDAOFactory.closeConnection();
         }
@@ -282,6 +381,9 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
     @Override
     public PaginationResult getGroups(String currentUser, GroupPaginationRequest request)
             throws GroupManagementException {
+        if (log.isDebugEnabled()) {
+            log.debug("Get all groups of user "+currentUser);
+        }
         request = DeviceManagerUtil.validateGroupListPageSize(request);
         List<Integer> allDeviceGroupIdsOfUser = getGroupIds(currentUser);
         List<DeviceGroup> allMatchingGroups = new ArrayList<>();
@@ -290,9 +392,17 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
             GroupManagementDAOFactory.openConnection();
             allMatchingGroups = this.groupDAO.getGroups(request, allDeviceGroupIdsOfUser, tenantId);
         } catch (GroupManagementDAOException e) {
-            throw new GroupManagementException("Error occurred while retrieving all groups in tenant", e);
+            String msg = "Error occurred while retrieving all groups in tenant";
+            log.error(msg,e);
+            throw new GroupManagementException(msg, e);
         } catch (SQLException e) {
-            throw new GroupManagementException("Error occurred while opening a connection to the data source.", e);
+            String msg = "Error occurred while opening a connection to the data source.";
+            log.error(msg,e);
+            throw new GroupManagementException(msg, e);
+        } catch (Exception e) {
+            String msg = "Error occurred";
+            log.error(msg, e);
+            throw new GroupManagementException(msg, e);
         } finally {
             GroupManagementDAOFactory.closeConnection();
         }
@@ -304,28 +414,50 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
 
     @Override
     public int getGroupCount() throws GroupManagementException {
+        if (log.isDebugEnabled()) {
+            log.debug("Get groups count");
+        }
         try {
             int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
             GroupManagementDAOFactory.openConnection();
             return groupDAO.getGroupCount(tenantId);
         } catch (GroupManagementDAOException e) {
-            throw new GroupManagementException("Error occurred while retrieving all groups in tenant", e);
+            String msg = "Error occurred while retrieving all groups in tenant";
+            log.error(msg,e);
+            throw new GroupManagementException(msg, e);
         } catch (SQLException e) {
-            throw new GroupManagementException("Error occurred while opening a connection to the data source.", e);
+            String msg= "Error occurred while opening a connection to the data source.";
+            log.error(msg,e);
+            throw new GroupManagementException(msg, e);
+        } catch (Exception e) {
+            String msg = "Error occurred";
+            log.error(msg, e);
+            throw new GroupManagementException(msg, e);
         } finally {
             GroupManagementDAOFactory.closeConnection();
         }
     }
 
     private int getGroupCount(GroupPaginationRequest request) throws GroupManagementException {
+        if (log.isDebugEnabled()) {
+            log.debug("Get groups count");
+        }
         try {
             int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
             GroupManagementDAOFactory.openConnection();
             return groupDAO.getGroupCount(request, tenantId);
         } catch (GroupManagementDAOException e) {
-            throw new GroupManagementException("Error occurred while retrieving all groups in tenant", e);
+            String msg = "Error occurred while retrieving all groups in tenant";
+            log.error(msg,e);
+            throw new GroupManagementException(msg, e);
         } catch (SQLException e) {
-            throw new GroupManagementException("Error occurred while opening a connection to the data source.", e);
+            String msg = "Error occurred while opening a connection to the data source.";
+            log.error(msg,e);
+            throw new GroupManagementException(msg, e);
+        } catch (Exception e) {
+            String msg = "Error occurred";
+            log.error(msg, e);
+            throw new GroupManagementException(msg, e);
         } finally {
             GroupManagementDAOFactory.closeConnection();
         }
@@ -336,6 +468,9 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
      */
     @Override
     public int getGroupCount(String username) throws GroupManagementException {
+        if (log.isDebugEnabled()) {
+            log.debug("Get groups count of "+username);
+        }
         UserStoreManager userStoreManager;
         int count;
         try {
@@ -348,11 +483,21 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
             count += groupDAO.getGroupsCount(roleList, tenantId);
             return count;
         } catch (UserStoreException e) {
-            throw new GroupManagementException("Error occurred while getting user store manager.", e);
+            String msg = "Error occurred while getting user store manager.";
+            log.error(msg,e);
+            throw new GroupManagementException(msg, e);
         } catch (GroupManagementDAOException e) {
-            throw new GroupManagementException("Error occurred while retrieving group count of user '" + username + "'", e);
+            String msg = "Error occurred while retrieving group count of user '" + username + "'";
+            log.error(msg,e);
+            throw new GroupManagementException(msg, e);
         } catch (SQLException e) {
-            throw new GroupManagementException("Error occurred while opening a connection to the data source.", e);
+            String msg = "Error occurred while opening a connection to the data source.";
+            log.error(msg,e);
+            throw new GroupManagementException(msg, e);
+        } catch (Exception e) {
+            String msg = "Error occurred";
+            log.error(msg, e);
+            throw new GroupManagementException(msg, e);
         } finally {
             GroupManagementDAOFactory.closeConnection();
         }
@@ -364,41 +509,52 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
     @Override
     public void manageGroupSharing(int groupId, List<String> newRoles)
             throws GroupManagementException, RoleDoesNotExistException {
-            int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
-            UserStoreManager userStoreManager;
-            try {
-                userStoreManager =
-                        DeviceManagementDataHolder.getInstance().getRealmService().getTenantUserRealm(
-                                tenantId).getUserStoreManager();
-                List<String> currentUserRoles = getRoles(groupId);
-                GroupManagementDAOFactory.beginTransaction();
-                if (newRoles != null) {
-                    for (String role : newRoles) {
-                        if (!userStoreManager.isExistingRole(role)) {
-                            throw new RoleDoesNotExistException("Role '" + role + "' does not exists in the user store.");
-                        }
-                        // Removing role from current user roles of the group will return true if role exist.
-                        // So we don't need to add it to the db again.
-                        if (!currentUserRoles.remove(role)) {
-                            // If group doesn't have the role, it is adding to the db.
-                            groupDAO.addRole(groupId, role, tenantId);
-                        }
+        if (log.isDebugEnabled()) {
+            log.debug("Group sharing for group "+groupId);
+        }
+        int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+        UserStoreManager userStoreManager;
+        try {
+            userStoreManager =
+                    DeviceManagementDataHolder.getInstance().getRealmService().getTenantUserRealm(
+                            tenantId).getUserStoreManager();
+            List<String> currentUserRoles = getRoles(groupId);
+            GroupManagementDAOFactory.beginTransaction();
+            if (newRoles != null) {
+                for (String role : newRoles) {
+                    if (!userStoreManager.isExistingRole(role)) {
+                        throw new RoleDoesNotExistException("Role '" + role + "' does not exists in the user store.");
+                    }
+                    // Removing role from current user roles of the group will return true if role exist.
+                    // So we don't need to add it to the db again.
+                    if (!currentUserRoles.remove(role)) {
+                        // If group doesn't have the role, it is adding to the db.
+                        groupDAO.addRole(groupId, role, tenantId);
                     }
                 }
-                for (String role : currentUserRoles) {
-                    // Removing old roles from db which are not available in the new roles list.
-                    groupDAO.removeRole(groupId, role, tenantId);
-                }
-                GroupManagementDAOFactory.commitTransaction();
-            } catch (GroupManagementDAOException e) {
-                GroupManagementDAOFactory.rollbackTransaction();
-                throw new GroupManagementException(e);
-            } catch (UserStoreException e) {
-                throw new GroupManagementException("User store error in updating sharing roles.", e);
-            } catch (TransactionManagementException e) {
-                throw new GroupManagementException(e);
-            } finally {
-                GroupManagementDAOFactory.closeConnection();
+            }
+            for (String role : currentUserRoles) {
+                // Removing old roles from db which are not available in the new roles list.
+                groupDAO.removeRole(groupId, role, tenantId);
+            }
+            GroupManagementDAOFactory.commitTransaction();
+        } catch (GroupManagementDAOException e) {
+            GroupManagementDAOFactory.rollbackTransaction();
+            log.error(e);
+            throw new GroupManagementException(e);
+        } catch (UserStoreException e) {
+            String msg = "User store error in updating sharing roles.";
+            log.error(msg,e);
+            throw new GroupManagementException(msg, e);
+        } catch (TransactionManagementException e) {
+            log.error(e);
+            throw new GroupManagementException(e);
+        } catch (Exception e) {
+            String msg = "Error occurred";
+            log.error(msg, e);
+            throw new GroupManagementException(msg, e);
+        } finally {
+            GroupManagementDAOFactory.closeConnection();
         }
     }
 
@@ -407,14 +563,25 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
      */
     @Override
     public List<String> getRoles(int groupId) throws GroupManagementException {
+        if (log.isDebugEnabled()) {
+            log.debug("Group roles for group "+groupId);
+        }
         try {
             int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
             GroupManagementDAOFactory.openConnection();
             return groupDAO.getRoles(groupId, tenantId);
         } catch (GroupManagementDAOException e) {
-            throw new GroupManagementException("Error occurred while retrieving all groups in tenant", e);
+            String msg = "Error occurred while retrieving all groups in tenant";
+            log.error(msg,e);
+            throw new GroupManagementException(msg, e);
         } catch (SQLException e) {
-            throw new GroupManagementException("Error occurred while opening a connection to the data source.", e);
+            String msg = "Error occurred while opening a connection to the data source.";
+            log.error(msg,e);
+            throw new GroupManagementException(msg, e);
+        } catch (Exception e) {
+            String msg = "Error occurred";
+            log.error(msg, e);
+            throw new GroupManagementException(msg, e);
         } finally {
             GroupManagementDAOFactory.closeConnection();
         }
@@ -426,6 +593,9 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
     @Override
     public List<Device> getDevices(int groupId, int startIndex, int rowCount)
             throws GroupManagementException {
+        if (log.isDebugEnabled()) {
+            log.debug("Group devices of group "+groupId);
+        }
         int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
         List<Device> devices;
         try {
@@ -433,11 +603,21 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
             GroupManagementDAOFactory.openConnection();
             devices = this.groupDAO.getDevices(groupId, startIndex, rowCount, tenantId);
         } catch (GroupManagementDAOException e) {
-            throw new GroupManagementException("Error occurred while getting devices in group.", e);
+            String msg = "Error occurred while getting devices in group.";
+            log.error(msg,e);
+            throw new GroupManagementException(msg, e);
         } catch (SQLException e) {
-            throw new GroupManagementException("Error occurred while opening a connection to the data source.", e);
+            String msg = "Error occurred while opening a connection to the data source.";
+            log.error(msg,e);
+            throw new GroupManagementException(msg, e);
         } catch (DeviceManagementException e) {
-            throw new GroupManagementException("Error occurred while validating the limit of the devices to be returned", e);
+            String msg = "Error occurred while validating the limit of the devices to be returned";
+            log.error(msg,e);
+            throw new GroupManagementException(msg, e);
+        } catch (Exception e) {
+            String msg = "Error occurred";
+            log.error(msg, e);
+            throw new GroupManagementException(msg, e);
         } finally {
             GroupManagementDAOFactory.closeConnection();
         }
@@ -449,13 +629,24 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
      */
     @Override
     public int getDeviceCount(int groupId) throws GroupManagementException {
+        if (log.isDebugEnabled()) {
+            log.debug("Group devices count of group "+groupId);
+        }
         try {
             GroupManagementDAOFactory.openConnection();
             return groupDAO.getDeviceCount(groupId, CarbonContext.getThreadLocalCarbonContext().getTenantId());
         } catch (GroupManagementDAOException e) {
-            throw new GroupManagementException("Error occurred while retrieving all groups in tenant", e);
+            String msg = "Error occurred while retrieving all groups in tenant";
+            log.error(msg,e);
+            throw new GroupManagementException(msg, e);
         } catch (SQLException e) {
-            throw new GroupManagementException("Error occurred while opening a connection to the data source.", e);
+            String msg = "Error occurred while opening a connection to the data source.";
+            log.error(msg,e);
+            throw new GroupManagementException(msg, e);
+        } catch (Exception e) {
+            String msg = "Error occurred";
+            log.error(msg, e);
+            throw new GroupManagementException(msg, e);
         } finally {
             GroupManagementDAOFactory.closeConnection();
         }
@@ -467,6 +658,9 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
     @Override
     public void addDevices(int groupId, List<DeviceIdentifier> deviceIdentifiers)
             throws GroupManagementException, DeviceNotFoundException {
+        if (log.isDebugEnabled()) {
+            log.debug("Group devices to the group "+groupId);
+        }
         Device device;
         try {
             int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
@@ -483,12 +677,22 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
             }
             GroupManagementDAOFactory.commitTransaction();
         } catch (DeviceManagementException e) {
-            throw new GroupManagementException("Error occurred while retrieving device.", e);
+            String msg = "Error occurred while retrieving device.";
+            log.error(msg,e);
+            throw new GroupManagementException(msg, e);
         } catch (GroupManagementDAOException e) {
             GroupManagementDAOFactory.rollbackTransaction();
-            throw new GroupManagementException("Error occurred while adding device to group.", e);
+            String msg = "Error occurred while adding device to group.";
+            log.error(msg,e);
+            throw new GroupManagementException(msg, e);
         } catch (TransactionManagementException e) {
-            throw new GroupManagementException("Error occurred while initiating transaction.", e);
+            String msg = "Error occurred while initiating transaction.";
+            log.error(msg,e);
+            throw new GroupManagementException(msg, e);
+        } catch (Exception e) {
+            String msg = "Error occurred";
+            log.error(msg, e);
+            throw new GroupManagementException(msg, e);
         } finally {
             GroupManagementDAOFactory.closeConnection();
         }
@@ -500,6 +704,9 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
     @Override
     public void removeDevice(int groupId, List<DeviceIdentifier> deviceIdentifiers)
             throws GroupManagementException, DeviceNotFoundException {
+        if (log.isDebugEnabled()) {
+            log.debug("Remove devices from the group "+groupId);
+        }
         Device device;
         try {
             int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
@@ -514,12 +721,22 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
             }
             GroupManagementDAOFactory.commitTransaction();
         } catch (DeviceManagementException e) {
-            throw new GroupManagementException("Error occurred while retrieving device.", e);
+            String msg = "Error occurred while retrieving device.";
+            log.error(msg,e);
+            throw new GroupManagementException(msg, e);
         } catch (TransactionManagementException e) {
-            throw new GroupManagementException("Error occurred while initiating transaction.", e);
+            String msg = "Error occurred while initiating transaction.";
+            log.error(msg,e);
+            throw new GroupManagementException(msg, e);
         } catch (GroupManagementDAOException e) {
             GroupManagementDAOFactory.rollbackTransaction();
-            throw new GroupManagementException("Error occurred while adding device to group.", e);
+            String msg = "Error occurred while adding device to group.";
+            log.error(msg,e);
+            throw new GroupManagementException(msg, e);
+        } catch (Exception e) {
+            String msg = "Error occurred";
+            log.error(msg, e);
+            throw new GroupManagementException(msg, e);
         } finally {
             GroupManagementDAOFactory.closeConnection();
         }
@@ -530,6 +747,9 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
      */
     @Override
     public List<DeviceGroup> getGroups(String username, String permission) throws GroupManagementException {
+        if (log.isDebugEnabled()) {
+            log.debug("Get groups of user "+username);
+        }
         List<DeviceGroup> deviceGroups = getGroups(username);
         Map<Integer, DeviceGroup> permittedDeviceGroups = new HashMap<>();
         UserRealm userRealm;
@@ -546,13 +766,22 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
                 }
             }
         } catch (UserStoreException e) {
-            throw new GroupManagementException("Error occurred while getting user realm.", e);
+            String msg = "Error occurred while getting user realm.";
+            log.error(msg,e);
+            throw new GroupManagementException(msg, e);
+        } catch (Exception e) {
+            String msg = "Error occurred";
+            log.error(msg, e);
+            throw new GroupManagementException(msg, e);
         }
         return new ArrayList<>(permittedDeviceGroups.values());
     }
 
     @Override
     public List<DeviceGroup> getGroups(DeviceIdentifier deviceIdentifier) throws GroupManagementException {
+        if (log.isDebugEnabled()) {
+            log.debug("Get groups of device "+deviceIdentifier.getId());
+        }
         DeviceManagementProviderService managementProviderService = new DeviceManagementProviderServiceImpl();
         try {
             Device device = managementProviderService.getDevice(deviceIdentifier, false);
@@ -560,11 +789,21 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
             return groupDAO.getGroups(device.getId(),
                     PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId());
         } catch (DeviceManagementException e) {
-            throw new GroupManagementException("Error occurred while retrieving the device details.", e);
+            String msg = "Error occurred while retrieving the device details.";
+            log.error(msg,e);
+            throw new GroupManagementException(msg, e);
         } catch (GroupManagementDAOException e) {
-            throw new GroupManagementException("Error occurred while retrieving device groups.", e);
+            String msg = "Error occurred while retrieving device groups.";
+            log.error(msg,e);
+            throw new GroupManagementException(msg, e);
         } catch (SQLException e) {
-            throw new GroupManagementException("Error occurred while opening database connection.", e);
+            String msg = "Error occurred while opening database connection.";
+            log.error(msg,e);
+            throw new GroupManagementException(msg, e);
+        } catch (Exception e) {
+            String msg = "Error occurred";
+            log.error(msg, e);
+            throw new GroupManagementException(msg, e);
         } finally {
             GroupManagementDAOFactory.closeConnection();
         }
@@ -575,7 +814,9 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
      */
     @Override
     public DeviceGroup createDefaultGroup(String groupName) throws GroupManagementException {
-
+        if (log.isDebugEnabled()) {
+            log.debug("Create default group "+groupName);
+        }
         DeviceGroup defaultGroup = this.getGroup(groupName);
         if (defaultGroup == null) {
             defaultGroup = new DeviceGroup(groupName);
@@ -586,10 +827,13 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
                 this.createGroup(defaultGroup, DeviceGroupConstants.Roles.DEFAULT_ADMIN_ROLE,
                         DeviceGroupConstants.Permissions.DEFAULT_ADMIN_PERMISSIONS);
             } catch (GroupAlreadyExistException e) {
-                if (log.isDebugEnabled()) {
-                    log.debug("Default group: " + defaultGroup.getName() + " already exists. Skipping group creation.",
-                            e);
-                }
+                String msg = "Default group: " + defaultGroup.getName() + " already exists. Skipping group creation.";
+                log.error(msg,e);
+                throw new GroupManagementException(msg,e);
+            } catch (Exception e) {
+                String msg = "Error occurred";
+                log.error(msg, e);
+                throw new GroupManagementException(msg, e);
             }
             return this.getGroup(groupName);
         } else {

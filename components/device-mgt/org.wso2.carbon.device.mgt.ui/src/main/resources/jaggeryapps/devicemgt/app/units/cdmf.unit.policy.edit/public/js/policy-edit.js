@@ -495,7 +495,7 @@ var updatePolicy = function (policy, state) {
                             if (jqXHR.status == 200) {
                                 $(".add-policy").addClass("hidden");
                                 $(".policy-message").removeClass("hidden");
-                                setTimeout(function(){
+                                setTimeout(function() {
                                     window.location.href = "/devicemgt/policies";
                                 }, 1000);
                             }
@@ -516,7 +516,7 @@ var updatePolicy = function (policy, state) {
                                 $(".add-policy").addClass("hidden");
                                 $(".policy-naming").addClass("hidden");
                                 $(".policy-message").removeClass("hidden");
-                                setTimeout(function(){
+                                setTimeout(function() {
                                     window.location.href = "/devicemgt/policies";
                                 }, 1000);
                             }

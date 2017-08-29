@@ -47,7 +47,7 @@ $(function () {
                 if (resp.status == 201) {
                     $("#group-create-form").addClass("hidden");
                     $("#group-created-msg").removeClass("hidden");
-                    setTimeout(function(){
+                    setTimeout(function() {
                         window.location.href = "/devicemgt/groups";
                     }, 1000);
                 } else {

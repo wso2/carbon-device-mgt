@@ -226,7 +226,7 @@ $(document).ready(function () {
         var firstname = firstnameInput.val();
         var lastname = lastnameInput.val();
         var emailAddress = $("input#emailAddress").val();
-        var roles ;
+        var roles;
         if ($("#roles").length > 0) {
             roles = $("select#roles").val();
         }
@@ -287,7 +287,7 @@ $(document).ready(function () {
                         modalDialog.content($("#modal-content-user-created").html());
                         modalDialog.footer('<div class="buttons"> ' +
                             '<a href="/devicemgt/users" id="reset-password-yes-link" class="btn-operations"> OK' +
-                            ' </a></div>');
+                            '</a></div>');
                         modalDialog.show();
                         generateQRCode("#user-created-msg .qr-code");
 

@@ -501,7 +501,7 @@ function loadDevices(searchType, searchParam) {
              if ($('.advance-search').length < 1) {
                  $(this).closest('.dataTables_wrapper').find('div[id$=_filter] input')
                      .after('<a href="' + context + '/devices/search"' +
-                         ' class="advance-search add-padding-3x">Advance Search</a>');
+                         ' class="advance-search add-padding-3x">Advanced Search</a>');
              }
 
         }, {
@@ -895,7 +895,7 @@ function removeDevices(deviceIdentifiers) {
     var serviceURL = "/api/device-mgt/v1.0/devices/type/" + deviceIdentifiers[0].type + "/id/" + deviceIdentifiers[0].id;
     invokerUtil.delete(serviceURL, function (message) {
         if (deviceIdentifiers.length > 1) {
-            deviceIdentifiers.slice(1, deviceIdentifiers.length);
+            deviceIdentifiers.shift();
             removeDevices(deviceIdentifiers);
         } else {
             $(modalPopupContent).html($('#remove-device-200-content').html());

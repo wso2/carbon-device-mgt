@@ -184,6 +184,8 @@ $(document).ready(function () {
                     // Refreshing with success message
                     $("#role-create-form").addClass("hidden");
                     $("#role-created-msg").removeClass("hidden");
+                    setTimeout(function(){}, 1000);
+                    window.location.href = "/devicemgt/roles";
                 }
             }, function (data) {
                 var payload = JSON.parse(data.responseText);

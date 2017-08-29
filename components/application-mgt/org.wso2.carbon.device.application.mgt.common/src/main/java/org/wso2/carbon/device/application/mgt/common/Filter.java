@@ -46,6 +46,8 @@ public class Filter {
 
     private String sortBy;
 
+    private String userName;
+
     public int getLimit() {
         return limit;
     }
@@ -102,12 +104,19 @@ public class Filter {
         this.sortBy = sortBy;
     }
 
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
     public boolean hasCondition() {
         if (filterProperties != null || searchQuery != null || filter != null) {
             return true;
         }
         return false;
     }
-
 
 }

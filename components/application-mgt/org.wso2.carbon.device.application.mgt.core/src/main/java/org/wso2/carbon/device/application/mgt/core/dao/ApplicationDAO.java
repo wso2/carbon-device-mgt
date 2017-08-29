@@ -37,7 +37,7 @@ public interface ApplicationDAO {
 
     ApplicationList getApplications(Filter filter, int tenantId) throws ApplicationManagementDAOException;
 
-    Application getApplication(String uuid, int tenantId) throws ApplicationManagementDAOException;
+    Application getApplication(String uuid, int tenantId, String userName) throws ApplicationManagementDAOException;
 
     int getApplicationId(String uuid, int tenantId) throws ApplicationManagementDAOException;
 

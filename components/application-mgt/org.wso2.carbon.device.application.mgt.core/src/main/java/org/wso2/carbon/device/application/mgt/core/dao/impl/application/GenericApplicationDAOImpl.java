@@ -140,12 +140,17 @@ public class GenericApplicationDAOImpl extends AbstractDAOImpl implements Applic
                     + "APP.APPLICATION_CATEGORY_ID = CAT.ID INNER JOIN APPM_LIFECYCLE_STATE AS "
                     + "LS ON APP.LIFECYCLE_STATE_ID = LS.ID WHERE APP.TENANT_ID = ? ";
 
+            String userName = filter.getUserName();
+            if (!userName.equals("ALL")) {
+                sql += " AND APP.CREATED_BY = ? ";
+            }
             if (filter.getSearchQuery() != null && !filter.getSearchQuery().isEmpty()) {
                 sql += "AND APP.NAME LIKE ? ";
             }
             sql += "LIMIT ?,?;";
 
             stmt = conn.prepareStatement(sql);
+            stmt.setString(++index, userName);
             stmt.setInt(++index, tenantId);
             if (filter.getSearchQuery() != null && !filter.getSearchQuery().isEmpty()) {
                 stmt.setString(++index, "%" + filter.getSearchQuery() + "%");
@@ -244,7 +249,8 @@ public class GenericApplicationDAOImpl extends AbstractDAOImpl implements Applic
     }
 
     @Override
-    public Application getApplication(String uuid, int tenantId) throws ApplicationManagementDAOException {
+    public Application getApplication(String uuid, int tenantId, String userName) throws
+            ApplicationManagementDAOException {
         if (log.isDebugEnabled()) {
             log.debug("Getting application with the UUID(" + uuid + ") from the database");
         }
@@ -261,11 +267,17 @@ public class GenericApplicationDAOImpl extends AbstractDAOImpl implements Applic
                     + "LS.DESCRIPTION AS LS_DESCRIPTION FROM APPM_APPLICATION AS APP INNER JOIN APPM_PLATFORM AS "
                     + "APL ON APP.PLATFORM_ID = APL.ID INNER JOIN APPM_APPLICATION_CATEGORY AS CAT ON "
                     + "APP.APPLICATION_CATEGORY_ID = CAT.ID INNER JOIN APPM_LIFECYCLE_STATE AS "
-                    + "LS ON APP.LIFECYCLE_STATE_ID = LS.ID WHERE UUID = ? AND APP.TENANT_ID = ?";
+                    + "LS ON APP.LIFECYCLE_STATE_ID = LS.ID WHERE UUID = ? AND APP.TENANT_ID = ? ";
+
 
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, uuid);
             stmt.setInt(2, tenantId);
+
+            if (!userName.equals("ALL")) {
+                sql += "AND APP.CREATED_BY = ?";
+                stmt.setString(3, userName);
+            }
             rs = stmt.executeQuery();
 
             if (log.isDebugEnabled()) {

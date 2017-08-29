@@ -174,6 +174,18 @@ public class ApplicationManagerImpl implements ApplicationManager {
     @Override
     public ApplicationList getApplications(Filter filter) throws ApplicationManagementException {
         int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId(true);
+        String userName = PrivilegedCarbonContext.getThreadLocalCarbonContext().getUsername();
+
+        try {
+            if (isAuthorized(userName, tenantId, CarbonConstants.UI_ADMIN_PERMISSION_COLLECTION)) {
+                userName = "ALL";
+            }
+        } catch (UserStoreException e) {
+            throw new ApplicationManagementException("User-store exception while checking whether the user " +
+                    userName + " of tenant " + tenantId + " has the publisher permission");
+        }
+        filter.setUserName(userName);
+
         try {
             ConnectionManagerUtil.openDBConnection();
             ApplicationDAO applicationDAO = DAOFactory.getApplicationDAO();
@@ -278,9 +290,19 @@ public class ApplicationManagerImpl implements ApplicationManager {
     @Override
     public Application getApplication(String uuid) throws ApplicationManagementException {
         int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId(true);
+        String userName = PrivilegedCarbonContext.getThreadLocalCarbonContext().getUsername();
+
+        try {
+            if (isAuthorized(userName, tenantId, CarbonConstants.UI_ADMIN_PERMISSION_COLLECTION)) {
+                userName = "ALL";
+            }
+        } catch (UserStoreException e) {
+            throw new ApplicationManagementException(
+                    "User-store exception while getting application with the UUID " + uuid);
+        }
         try {
             ConnectionManagerUtil.openDBConnection();
-            return DAOFactory.getApplicationDAO().getApplication(uuid, tenantId);
+            return DAOFactory.getApplicationDAO().getApplication(uuid, tenantId, userName);
         } finally {
             ConnectionManagerUtil.closeDBConnection();
         }
@@ -304,7 +326,7 @@ public class ApplicationManagerImpl implements ApplicationManager {
         }
         try {
             ConnectionManagerUtil.openDBConnection();
-            Application application = DAOFactory.getApplicationDAO().getApplication(applicationUUID, tenantId);
+            Application application = DAOFactory.getApplicationDAO().getApplication(applicationUUID, tenantId,userName);
             return application.getUser().getUserName().equals(userName)
                     && application.getUser().getTenantId() == tenantId;
         } finally {

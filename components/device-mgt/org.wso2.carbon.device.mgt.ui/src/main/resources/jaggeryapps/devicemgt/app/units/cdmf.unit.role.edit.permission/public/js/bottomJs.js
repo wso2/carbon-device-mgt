@@ -184,8 +184,10 @@ $(document).ready(function () {
                     // Refreshing with success message
                     $("#role-create-form").addClass("hidden");
                     $("#role-created-msg").removeClass("hidden");
-                    setTimeout(function(){}, 1000);
-                    window.location.href = "/devicemgt/roles";
+                    setTimeout(function(){
+                        window.location.href = "/devicemgt/roles";
+                        }, 1000);
+
                 }
             }, function (data) {
                 var payload = JSON.parse(data.responseText);

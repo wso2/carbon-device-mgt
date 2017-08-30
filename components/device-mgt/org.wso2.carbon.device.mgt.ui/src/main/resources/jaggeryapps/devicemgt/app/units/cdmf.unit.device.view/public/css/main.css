@@ -142,6 +142,7 @@
 }
 .tab-actions {
 	margin: 0px;
+    margin-bottom: 10px;
 }
 .tab-actions .action-prop{
     padding: 10px;

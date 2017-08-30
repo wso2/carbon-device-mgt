@@ -259,7 +259,7 @@ function loadDevices(searchType, searchParam) {
     var columns = [
         {
             targets: 0,
-            data: 'name',
+            data: 'namePattern',
             class: 'remove-padding icon-only content-fill viewEnabledIcon',
             render: function (data, type, row, meta) {
                 return '<div class="thumbnail icon"><img class="square-element text fw " src="'
@@ -471,7 +471,8 @@ function loadDevices(searchType, searchParam) {
                     ownership: data.devices[index].enrolmentInfo.ownership,
                     deviceType: data.devices[index].type,
                     deviceIdentifier: data.devices[index].deviceIdentifier,
-                    name: data.devices[index].name
+                    name: data.devices[index].name,
+                    namePattern: data.devices[index].name
                 }
             );
         });
@@ -500,12 +501,12 @@ function loadDevices(searchType, searchParam) {
              if ($('.advance-search').length < 1) {
                  $(this).closest('.dataTables_wrapper').find('div[id$=_filter] input')
                      .after('<a href="' + context + '/devices/search"' +
-                         ' class="advance-search add-padding-3x">Advance Search</a>');
+                         ' class="advance-search add-padding-3x">Advanced Search</a>');
              }
 
         }, {
-            "placeholder": "Search By Device Name",
-            "searchKey": "name"
+            "placeholder": "Top-Device-Name-Search",
+            "searchKey": "namePattern"
         }
     );
 
@@ -566,6 +567,9 @@ $(document).ready(function () {
             top: $('header').height()
         }
     });
+
+    //Hide the search by device-name input
+    $("input[placeholder='Top-Device-Name-Search']").hide();
 
 });
 
@@ -891,7 +895,7 @@ function removeDevices(deviceIdentifiers) {
     var serviceURL = "/api/device-mgt/v1.0/devices/type/" + deviceIdentifiers[0].type + "/id/" + deviceIdentifiers[0].id;
     invokerUtil.delete(serviceURL, function (message) {
         if (deviceIdentifiers.length > 1) {
-            deviceIdentifiers.slice(1, deviceIdentifiers.length);
+            deviceIdentifiers.shift();
             removeDevices(deviceIdentifiers);
         } else {
             $(modalPopupContent).html($('#remove-device-200-content').html());

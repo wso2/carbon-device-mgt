@@ -2,6 +2,7 @@
   "appContext": "/devicemgt/",
   "isCloud": false,
   "isDeviceOwnerEnabled": false,
+  "managerHTTPSURL": "https://%iot.manager.host%:%iot.manager.https.port%",
   "httpsURL": "https://%iot.gateway.host%:%iot.gateway.https.port%",
   "httpURL": "http://%iot.gateway.host%:%iot.gateway.http.port%",
   "wssURL": "https://%iot.analytics.host%:%iot.analytics.https.port%",

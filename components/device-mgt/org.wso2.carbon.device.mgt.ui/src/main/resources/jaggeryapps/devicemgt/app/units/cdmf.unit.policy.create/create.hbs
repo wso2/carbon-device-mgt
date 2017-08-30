@@ -38,23 +38,10 @@
 
                 <div class="col-centered policy-message hidden">
                     <div class="wr-form">
-                        <h1 id="policy-message-page-wizard-title" class="page-sub-title">Policy creation is
-                            successful.</h1>
-                        <br>Please click <b>"Add Another Policy"</b>, if you wish to add another policy or click
-                        <b>"View policy list"</b> to complete the process and go back to the policy list.
+                        <h1 id="policy-message-page-wizard-title" class="page-sub-title">
+                            Policy creation is successful.</h1>
+                        <br>You will be redirected to Policy Listing Page in a moment.
                         <hr>
-                        <button class="wr-btn wizard-stepper" data-current="policy-message"
-                                data-direct="{{@app.context}}/policies/">
-                            View policy list
-                        </button>
-                        <!--suppress HtmlUnknownTarget -->
-                        <a href="{{@app.context}}/policy/add" class="cu-btn-inner">
-                        <span class="fw-stack">
-                            <i class="fw fw-circle-outline fw-stack-2x"></i>
-                            <i class="fw fw-add fw-stack-1x"></i>
-                        </span>
-                            Add another policy
-                        </a>
                     </div>
                 </div>
 
@@ -82,9 +69,7 @@
                                             <!--suppress HtmlFormInputWithoutLabel -->
                                             <input id="policy-name-input" class="form-control" type="text" value=""/>
                                             <label class="error nameEmpty hidden" for="summary">Policy name is required
-                                                &
-                                                Should be be 1-to-30
-                                                characters long.</label>
+                                                and should be 1-to-30 characters long.</label>
                                         </div>
                                         <br class="c-both"/>
                                     </div>
@@ -285,7 +270,7 @@
                                 </div>
                                 {{#unless types}}
                                     <h3><i class="icon fw fw-warning"></i> No compatible device types have been installed.
-                                        Install device types to add policies.</h3>
+                                                                           Install device types to add policies.</h3>
                                 {{/unless}}
                                 <div class="row wr-tile-buttons-list">
                                     <div class="wr-input-control">

@@ -24,7 +24,6 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
-import org.wso2.carbon.device.mgt.common.DeviceManagementConstants;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
 import org.wso2.carbon.device.mgt.common.Feature;
@@ -66,7 +65,6 @@ import org.wso2.carbon.policy.mgt.common.PolicyManagementException;
 import org.wso2.carbon.policy.mgt.core.PolicyManagerService;
 import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 
-import javax.security.auth.login.Configuration;
 import javax.validation.Valid;
 import javax.validation.constraints.Size;
 import javax.ws.rs.Consumes;
@@ -92,8 +90,8 @@ import java.util.List;
 @Consumes(MediaType.APPLICATION_JSON)
 public class DeviceManagementServiceImpl implements DeviceManagementService {
 
-    private static final Log log = LogFactory.getLog(DeviceManagementServiceImpl.class);
     public static final String DATE_FORMAT_NOW = "yyyy-MM-dd HH:mm:ss";
+    private static final Log log = LogFactory.getLog(DeviceManagementServiceImpl.class);
 
     @GET
     @Path("/{type}/{id}/status")
@@ -499,15 +497,13 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
             @QueryParam("offset") int offset,
             @QueryParam("limit") int limit) {
         List<Application> applications;
-        //ApplicationList appList;
         ApplicationManagementProviderService amc;
         try {
             RequestValidationUtil.validateDeviceIdentifier(type, id);
 
             amc = DeviceMgtAPIUtils.getAppManagementService();
             applications = amc.getApplicationListForDevice(new DeviceIdentifier(id, type));
-
-            //TODO: return app list
+            return Response.status(Response.Status.OK).entity(applications).build();
         } catch (ApplicationManagementException e) {
             String msg = "Error occurred while fetching the apps of the '" + type + "' device, which carries " +
                     "the id '" + id + "'";
@@ -515,7 +511,6 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
             return Response.serverError().entity(
                     new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
         }
-        return Response.status(Response.Status.OK).entity(applications).build();
     }
 
     @GET

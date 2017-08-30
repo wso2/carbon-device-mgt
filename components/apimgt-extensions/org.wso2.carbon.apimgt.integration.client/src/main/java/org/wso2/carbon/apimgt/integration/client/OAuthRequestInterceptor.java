@@ -55,7 +55,6 @@ public class OAuthRequestInterceptor implements RequestInterceptor {
     private static final long DEFAULT_REFRESH_TIME_OFFSET_IN_MILLIS = 100000;
     private DCRClient dcrClient;
     private static OAuthApplication oAuthApplication;
-    private static Map<String, AccessTokenInfo> tenantUserTokenMap = new HashMap<>();
     private static final Log log = LogFactory.getLog(OAuthRequestInterceptor.class);
 
     /**
@@ -89,7 +88,7 @@ public class OAuthRequestInterceptor implements RequestInterceptor {
             if (!tenantDomain.equals(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME)) {
                 username = username + "@" + tenantDomain;
             }
-            AccessTokenInfo tenantBasedAccessTokenInfo = tenantUserTokenMap.get(username);
+            AccessTokenInfo tenantBasedAccessTokenInfo = IntegrationClientServiceImpl.getTenantUserTokenMap().get(username);
             if ((tenantBasedAccessTokenInfo == null ||
                     ((System.currentTimeMillis() + DEFAULT_REFRESH_TIME_OFFSET_IN_MILLIS) >
                             tenantBasedAccessTokenInfo.getExpiresIn()))) {
@@ -106,7 +105,7 @@ public class OAuthRequestInterceptor implements RequestInterceptor {
                 }
 
                 if (tenantBasedAccessTokenInfo.getScopes().contains(APIM_SUBSCRIBE_SCOPE)) {
-                    tenantUserTokenMap.put(username, tenantBasedAccessTokenInfo);
+                    IntegrationClientServiceImpl.getTenantUserTokenMap().put(username, tenantBasedAccessTokenInfo);
                 }
 
             }

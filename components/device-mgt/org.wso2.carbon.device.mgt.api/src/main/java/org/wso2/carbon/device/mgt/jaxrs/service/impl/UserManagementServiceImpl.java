@@ -562,7 +562,7 @@ public class UserManagementServiceImpl implements UserManagementService {
             }
         } catch (DeviceManagementException e) {
             String msg = "Error occurred while inviting user to enrol their device";
-            if (e.getMessage() != null) {
+            if (e.getMessage() != null && !e.getMessage().isEmpty()) {
                 msg = e.getMessage();
             }
             log.error(msg, e);

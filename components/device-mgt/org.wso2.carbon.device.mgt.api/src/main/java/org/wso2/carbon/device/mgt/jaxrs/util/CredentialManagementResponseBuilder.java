@@ -20,7 +20,10 @@ package org.wso2.carbon.device.mgt.jaxrs.util;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.apimgt.integration.client.IntegrationClientServiceImpl;
+import org.wso2.carbon.apimgt.integration.client.service.IntegrationClientService;
 import org.wso2.carbon.context.CarbonContext;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
 import org.wso2.carbon.device.mgt.jaxrs.beans.OldPasswordResetWrapper;
 import org.wso2.carbon.device.mgt.jaxrs.beans.PasswordResetWrapper;
@@ -63,6 +66,9 @@ public class CredentialManagementResponseBuilder {
             username = CarbonContext.getThreadLocalCarbonContext().getUsername();
             userStoreManager.updateCredential(username, credentials.getNewPassword(),
                     credentials.getOldPassword());
+            IntegrationClientServiceImpl integrationClientService = (IntegrationClientServiceImpl) PrivilegedCarbonContext.
+                    getThreadLocalCarbonContext().getOSGiService(IntegrationClientService.class, null);
+            integrationClientService.getTenantUserTokenMap().remove(username);
             return Response.status(Response.Status.OK).entity("UserImpl password by username: " +
                     username + " was successfully changed.").build();
         } catch (UserStoreException e) {

@@ -158,7 +158,7 @@ function resetPassword(username) {
                 domain = username.substr(0, username.indexOf('/'));
                 username = username.substr(username.indexOf('/') + 1);
             }
-            var resetPasswordServiceURL = apiBasePath + "/admin/users/" + username + "/credentials";
+            var resetPasswordServiceURL = apiBasePath + "/admin/users/" + encodeURIComponent(username) + "/credentials";
             if (domain) {
                 resetPasswordServiceURL += '?domain=' + encodeURIComponent(domain);
             }

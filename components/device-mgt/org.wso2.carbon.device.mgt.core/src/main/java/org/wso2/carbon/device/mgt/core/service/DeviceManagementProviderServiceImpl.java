@@ -629,7 +629,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                             metaInfo.getRecipients()).build();
             DeviceManagementDataHolder.getInstance().getEmailSenderService().sendEmail(ctx);
         } catch (EmailSendingFailedException ex) {
-            throw new DeviceManagementException("Error occurred while sending enrollment invitation", ex);
+            throw new DeviceManagementException("Error occurred while sending enrollment invitation." + ex.getMessage(), ex);
         }
     }
 

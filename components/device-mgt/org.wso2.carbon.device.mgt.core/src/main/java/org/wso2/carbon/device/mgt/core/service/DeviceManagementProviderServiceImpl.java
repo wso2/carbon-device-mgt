@@ -837,7 +837,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                             metaInfo.getRecipients()).build();
             DeviceManagementDataHolder.getInstance().getEmailSenderService().sendEmail(ctx);
         } catch (EmailSendingFailedException e) {
-            String msg = "Error occurred while sending user registration notification";
+            String msg = "Error occurred while sending user registration notification." + e.getMessage();
             log.error(msg, e);
             throw new DeviceManagementException(msg, e);
         } catch (Exception e) {

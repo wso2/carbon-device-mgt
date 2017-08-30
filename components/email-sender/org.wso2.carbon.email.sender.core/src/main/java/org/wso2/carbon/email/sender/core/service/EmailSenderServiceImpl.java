@@ -65,8 +65,13 @@ public class EmailSenderServiceImpl implements EmailSenderService {
         for (String recipient : emailCtx.getRecipients()) {
             ContentProviderInfo info = emailCtx.getContentProviderInfo();
             EmailData emailData;
+            String transportSenderName = "mailto";
             try {
                 emailData = contentProvider.getContent(info.getTemplate(), info.getParams());
+                if(EmailSenderDataHolder.getInstance().getConfigurationContextService()
+                        .getServerConfigContext().getAxisConfiguration().getTransportOut(transportSenderName) == null){
+                    throw new EmailSendingFailedException("Email transport is not configured.");
+                }
             } catch (ContentProcessingInterruptedException e) {
                 throw new EmailSendingFailedException("Error occurred while retrieving email content to be " +
                         "sent for recipient '" + recipient + "'", e);

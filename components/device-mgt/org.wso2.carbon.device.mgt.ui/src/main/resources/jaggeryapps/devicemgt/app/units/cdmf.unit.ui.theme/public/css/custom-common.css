@@ -294,3 +294,19 @@ ul#noty_topRight_layout_container li{
 a.new-notification {
     text-transform: capitalize;
 }
+
+/**
+* This is to fix the issue https://github.com/wso2/product-iots/issues/1354.
+* Proper fix should be given for this.
+*/
+.modal {
+    z-index: 1000;
+}
+
+.modal-backdrop {
+    z-index: 999;
+}
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice {
+    color: #0f0f0f;
+}

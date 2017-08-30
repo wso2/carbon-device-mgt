@@ -170,6 +170,7 @@ public class GenericOperationDAOImpl implements OperationDAO {
             throws OperationManagementDAOException {
         PreparedStatement stmt = null;
         ResultSet rs = null;
+        boolean result = false;
         try {
             Connection connection = OperationManagementDAOFactory.getConnection();
             String query = "SELECT EOM.ID FROM DM_ENROLMENT_OP_MAPPING EOM INNER JOIN DM_OPERATION DM "
@@ -181,13 +182,16 @@ public class GenericOperationDAOImpl implements OperationDAO {
             stmt.setString(3, Operation.Status.PENDING.toString());
             // This will return only one result always.
             rs = stmt.executeQuery();
-            return true;
+            if (rs.next()) {
+                result = true;
+            }
         } catch (SQLException e) {
             throw new OperationManagementDAOException(
                     "Error occurred while update device mapping operation status " + "metadata", e);
         } finally {
             OperationManagementDAOUtil.cleanupResources(stmt, rs);
         }
+        return result;
     }
 
     @Override

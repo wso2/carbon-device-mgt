@@ -65,8 +65,14 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
     @Override
     public void createGroup(DeviceGroup deviceGroup, String defaultRole, String[] defaultPermissions)
             throws GroupManagementException, GroupAlreadyExistException {
-        if (log.isDebugEnabled()) {
-            log.debug("Creating group" + deviceGroup.getName());
+        if (deviceGroup != null) {
+            if (log.isDebugEnabled()) {
+                log.debug("Creating group '" + deviceGroup.getName() + "'");
+            }
+        } else {
+            String msg = "received incomplete data for createGroup";
+            log.error(msg);
+            throw new GroupManagementException(msg);
         }
         if (deviceGroup == null) {
             throw new GroupManagementException("DeviceGroup cannot be null.", new NullPointerException());
@@ -109,8 +115,14 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
     @Override
     public void updateGroup(DeviceGroup deviceGroup, int groupId)
             throws GroupManagementException, GroupAlreadyExistException {
-        if (log.isDebugEnabled()) {
-            log.debug("update group" + deviceGroup.getName());
+        if (deviceGroup != null) {
+            if (log.isDebugEnabled()) {
+                log.debug("update group '" + deviceGroup.getName() + "'");
+            }
+        } else {
+            String msg = "received incomplete data for updateGroup";
+            log.error(msg);
+            throw new GroupManagementException(msg);
         }
         if (deviceGroup == null) {
             throw new GroupManagementException("DeviceGroup cannot be null.", new NullPointerException());
@@ -149,7 +161,7 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
     @Override
     public boolean deleteGroup(int groupId) throws GroupManagementException {
         if (log.isDebugEnabled()) {
-            log.debug("Delete group " + groupId);
+            log.debug("Delete group: " + groupId);
         }
         DeviceGroup deviceGroup = getGroup(groupId);
         if (deviceGroup == null) {
@@ -187,7 +199,7 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
     @Override
     public DeviceGroup getGroup(int groupId) throws GroupManagementException {
         if (log.isDebugEnabled()) {
-            log.debug("Get group by id " + groupId);
+            log.debug("Get group by id: " + groupId);
         }
         DeviceGroup deviceGroup;
         try {
@@ -216,8 +228,14 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
      */
     @Override
     public DeviceGroup getGroup(String groupName) throws GroupManagementException {
-        if (log.isDebugEnabled()) {
-            log.debug("Get group by name " + groupName);
+        if (groupName != null) {
+            if (log.isDebugEnabled()) {
+                log.debug("Get group by name '" + groupName + "'");
+            }
+        } else {
+            String msg = "received empty groupName for getGroup";
+            log.error(msg);
+            throw new GroupManagementException(msg);
         }
         DeviceGroup deviceGroup;
         try {
@@ -271,8 +289,14 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
 
     @Override
     public PaginationResult getGroups(GroupPaginationRequest request) throws GroupManagementException {
-        if (log.isDebugEnabled()) {
-            log.debug("Get groups with pagination");
+        if (request != null) {
+            if (log.isDebugEnabled()) {
+                log.debug("Get groups with pagination " + request.toString());
+            }
+        } else {
+            String msg = "received incomplete data for getGroup";
+            log.error(msg);
+            throw new GroupManagementException(msg);
         }
         request = DeviceManagerUtil.validateGroupListPageSize(request);
         List<DeviceGroup> deviceGroups = new ArrayList<>();
@@ -303,8 +327,14 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
 
     @Override
     public List<DeviceGroup> getGroups(String username) throws GroupManagementException {
-        if (log.isDebugEnabled()) {
-            log.debug("Get groups of owner " + username);
+        if (username != null) {
+            if (log.isDebugEnabled()) {
+                log.debug("Get groups of owner '" + username + "'");
+            }
+        } else {
+            String msg = "received null user name for getGroups";
+            log.error(msg);
+            throw new GroupManagementException(msg);
         }
         Map<Integer, DeviceGroup> groups = new HashMap<>();
         UserStoreManager userStoreManager;
@@ -344,8 +374,14 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
     }
 
     private List<Integer> getGroupIds(String username) throws GroupManagementException {
-        if (log.isDebugEnabled()) {
-            log.debug("Get groups Ids of owner " + username);
+        if (username != null) {
+            if (log.isDebugEnabled()) {
+                log.debug("Get groups Ids of owner '" + username + "'");
+            }
+        } else {
+            String msg = "received empty user name for getGroupIds";
+            log.error(msg);
+            throw new GroupManagementException(msg);
         }
         UserStoreManager userStoreManager;
         List<Integer> deviceGroupIds = new ArrayList<>();
@@ -381,8 +417,13 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
     @Override
     public PaginationResult getGroups(String currentUser, GroupPaginationRequest request)
             throws GroupManagementException {
+        if (currentUser == null || request == null) {
+            String msg = "received incomplete date for getGroups";
+            log.error(msg);
+            throw new GroupManagementException(msg);
+        }
         if (log.isDebugEnabled()) {
-            log.debug("Get all groups of user " + currentUser);
+            log.debug("Get all groups of user '" + currentUser + "' pagination request " + request.toString());
         }
         request = DeviceManagerUtil.validateGroupListPageSize(request);
         List<Integer> allDeviceGroupIdsOfUser = getGroupIds(currentUser);
@@ -439,8 +480,13 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
     }
 
     private int getGroupCount(GroupPaginationRequest request) throws GroupManagementException {
+        if (request == null) {
+            String msg = "received empty request for getGroupCount";
+            log.error(msg);
+            throw new GroupManagementException(msg);
+        }
         if (log.isDebugEnabled()) {
-            log.debug("Get groups count");
+            log.debug("Get groups count, pagination request " + request.toString());
         }
         try {
             int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
@@ -468,8 +514,13 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
      */
     @Override
     public int getGroupCount(String username) throws GroupManagementException {
+        if (username == null) {
+            String msg = "received empty user name for getGroupCount";
+            log.error(msg);
+            throw new GroupManagementException(msg);
+        }
         if (log.isDebugEnabled()) {
-            log.debug("Get groups count of " + username);
+            log.debug("Get groups count of '" + username + "'");
         }
         UserStoreManager userStoreManager;
         int count;
@@ -510,7 +561,7 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
     public void manageGroupSharing(int groupId, List<String> newRoles)
             throws GroupManagementException, RoleDoesNotExistException {
         if (log.isDebugEnabled()) {
-            log.debug("Group sharing for group " + groupId);
+            log.debug("Manage group sharing for group: " + groupId);
         }
         int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
         UserStoreManager userStoreManager;
@@ -564,7 +615,7 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
     @Override
     public List<String> getRoles(int groupId) throws GroupManagementException {
         if (log.isDebugEnabled()) {
-            log.debug("Group roles for group " + groupId);
+            log.debug("Group roles for group: " + groupId);
         }
         try {
             int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
@@ -594,7 +645,7 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
     public List<Device> getDevices(int groupId, int startIndex, int rowCount)
             throws GroupManagementException {
         if (log.isDebugEnabled()) {
-            log.debug("Group devices of group " + groupId);
+            log.debug("Group devices of group: " + groupId + " start index " + startIndex + " row count " + rowCount);
         }
         int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
         List<Device> devices;
@@ -630,7 +681,7 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
     @Override
     public int getDeviceCount(int groupId) throws GroupManagementException {
         if (log.isDebugEnabled()) {
-            log.debug("Group devices count of group " + groupId);
+            log.debug("Group devices count of group: " + groupId);
         }
         try {
             GroupManagementDAOFactory.openConnection();
@@ -659,7 +710,7 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
     public void addDevices(int groupId, List<DeviceIdentifier> deviceIdentifiers)
             throws GroupManagementException, DeviceNotFoundException {
         if (log.isDebugEnabled()) {
-            log.debug("Group devices to the group " + groupId);
+            log.debug("Group devices to the group: " + groupId);
         }
         Device device;
         try {
@@ -705,7 +756,7 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
     public void removeDevice(int groupId, List<DeviceIdentifier> deviceIdentifiers)
             throws GroupManagementException, DeviceNotFoundException {
         if (log.isDebugEnabled()) {
-            log.debug("Remove devices from the group " + groupId);
+            log.debug("Remove devices from the group: " + groupId);
         }
         Device device;
         try {
@@ -748,7 +799,7 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
     @Override
     public List<DeviceGroup> getGroups(String username, String permission) throws GroupManagementException {
         if (log.isDebugEnabled()) {
-            log.debug("Get groups of user " + username);
+            log.debug("Get groups of user '" + username + "'");
         }
         List<DeviceGroup> deviceGroups = getGroups(username);
         Map<Integer, DeviceGroup> permittedDeviceGroups = new HashMap<>();
@@ -779,6 +830,11 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
 
     @Override
     public List<DeviceGroup> getGroups(DeviceIdentifier deviceIdentifier) throws GroupManagementException {
+        if (deviceIdentifier == null) {
+            String msg = "received empty device identifier for getGroups";
+            log.error(msg);
+            throw new GroupManagementException(msg);
+        }
         if (log.isDebugEnabled()) {
             log.debug("Get groups of device " + deviceIdentifier.getId());
         }

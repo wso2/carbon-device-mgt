@@ -160,8 +160,14 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
     @Override
     public boolean enrollDevice(Device device) throws DeviceManagementException {
-        if (log.isDebugEnabled()) {
-            log.debug("Enrolling the device " + device.getId() + "of type " + device.getType());
+        if (device != null) {
+            if (log.isDebugEnabled()) {
+                log.debug("Enrolling the device " + device.getId() + "of type '" + device.getType() + "'");
+            }
+        } else {
+            String msg = "required values are not set for device enrollment";
+            log.error(msg);
+            throw new DeviceManagementException(msg);
         }
         boolean status = false;
         DeviceIdentifier deviceIdentifier = new DeviceIdentifier(device.getDeviceIdentifier(), device.getType());
@@ -292,9 +298,16 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
     @Override
     public boolean modifyEnrollment(Device device) throws DeviceManagementException {
-        if (log.isDebugEnabled()) {
-            log.debug("Modifying enrollment for device " + device.getDeviceIdentifier() + " of type " + device.getType());
+        if (device != null) {
+            if (log.isDebugEnabled()) {
+                log.debug("Modifying enrollment for device: " + device.getId() + " of type '" + device.getType() + "'");
+            }
+        } else {
+            String msg = "required values are not set to modify device enrollment";
+            log.error(msg);
+            throw new DeviceManagementException(msg);
         }
+
         DeviceManager deviceManager = this.getDeviceManager(device.getType());
         DeviceIdentifier deviceIdentifier = new DeviceIdentifier(device.getDeviceIdentifier(), device.getType());
         if (deviceManager == null) {
@@ -366,8 +379,14 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
     @Override
     public boolean disenrollDevice(DeviceIdentifier deviceId) throws DeviceManagementException {
-        if (log.isDebugEnabled()) {
-            log.debug("Dis-enrolling device " + deviceId.getId() + " of type " + deviceId.getType());
+        if (deviceId != null) {
+            if (log.isDebugEnabled()) {
+                log.debug("Dis-enrolling device: " + deviceId.getId() + " of type '" + deviceId.getType() + "'");
+            }
+        } else {
+            String msg = "required values are not set to dis-enroll device";
+            log.error(msg);
+            throw new DeviceManagementException(msg);
         }
         DeviceManager deviceManager = this.getDeviceManager(deviceId.getType());
         if (deviceManager == null) {
@@ -465,8 +484,14 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
     @Override
     public List<Device> getAllDevices(String deviceType, boolean requireDeviceInfo) throws DeviceManagementException {
-        if (log.isDebugEnabled()) {
-            log.debug("Getting all devices of type " + deviceType);
+        if (deviceType != null) {
+            if (log.isDebugEnabled()) {
+                log.debug("Getting all devices of type '" + deviceType + "' and requiredDeviceInfo: " + requireDeviceInfo);
+            }
+        } else {
+            String msg = "Device type is empty for method getAllDevices";
+            log.error(msg);
+            throw new DeviceManagementException(msg);
         }
         List<Device> allDevices;
         try {
@@ -508,7 +533,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     @Override
     public List<Device> getAllDevices(boolean requireDeviceInfo) throws DeviceManagementException {
         if (log.isDebugEnabled()) {
-            log.debug("Getting all devices");
+            log.debug("Getting all devices with requiredDeviceInfo: " + requireDeviceInfo);
         }
         List<Device> allDevices;
         try {
@@ -543,8 +568,15 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
     @Override
     public List<Device> getDevices(Date since, boolean requireDeviceInfo) throws DeviceManagementException {
-        if (log.isDebugEnabled()) {
-            log.debug("Getting all devices since date " + since.toString());
+        if (since != null) {
+            if (log.isDebugEnabled()) {
+                log.debug("Getting all devices since date '" + since.toString() + "' and required device info: "
+                        + requireDeviceInfo);
+            }
+        } else {
+            String msg = "Given date is empty for method getDevices";
+            log.error(msg);
+            throw new DeviceManagementException(msg);
         }
         List<Device> allDevices;
         try {
@@ -579,8 +611,14 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
     @Override
     public PaginationResult getDevicesByType(PaginationRequest request, boolean requireDeviceInfo) throws DeviceManagementException {
-        if (log.isDebugEnabled()) {
-            log.debug("Get devices with pagination");
+        if (request != null) {
+            if (log.isDebugEnabled()) {
+                log.debug("Get devices with pagination " + request.toString() + " and required deviceinfo: " + requireDeviceInfo);
+            }
+        } else {
+            String msg = "received incomplete pagination request for getDevicesByType";
+            log.error(msg);
+            throw new DeviceManagementException(msg);
         }
         PaginationResult paginationResult = new PaginationResult();
         List<Device> allDevices = new ArrayList<>();
@@ -627,8 +665,14 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
     @Override
     public PaginationResult getAllDevices(PaginationRequest request, boolean requireDeviceInfo) throws DeviceManagementException {
-        if (log.isDebugEnabled()) {
-            log.debug("Get devices with pagination");
+        if (request != null) {
+            if (log.isDebugEnabled()) {
+                log.debug("Get devices with pagination " + request.toString() + " and requiredDeviceInfo: " + requireDeviceInfo);
+            }
+        } else {
+            String msg = "received incomplete pagination request for method getAllDevices";
+            log.error(msg);
+            throw new DeviceManagementException(msg);
         }
         List<Device> devicesForRoles = null;
         PaginationResult paginationResult = new PaginationResult();
@@ -677,8 +721,15 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
     @Override
     public Device getDevice(DeviceIdentifier deviceId, boolean requireDeviceInfo) throws DeviceManagementException {
-        if (log.isDebugEnabled()) {
-            log.debug("Get device by device id " + deviceId.getId() + " of type " + deviceId.getType());
+        if (deviceId != null) {
+            if (log.isDebugEnabled()) {
+                log.debug("Get device by device id :" + deviceId.getId() + " of type '" + deviceId.getType()
+                        + "' and requiredDeviceInfo: " + requireDeviceInfo);
+            }
+        } else {
+            String msg = "received null device identifier for method getDevice";
+            log.error(msg);
+            throw new DeviceManagementException(msg);
         }
         int tenantId = this.getTenantId();
         Device device = this.getDeviceFromCache(deviceId);
@@ -719,8 +770,14 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
     @Override
     public void sendEnrolmentInvitation(String templateName, EmailMetaInfo metaInfo) throws DeviceManagementException {
-        if (log.isDebugEnabled()) {
-            log.debug("Send enrollment invitation");
+        if (metaInfo != null) {
+            if (log.isDebugEnabled()) {
+                log.debug("Send enrollment invitation, templateName '" + templateName + "'");
+            }
+        } else {
+            String msg = "received incomplete data to method sendEnrolmentInvitation";
+            log.error(msg);
+            throw new DeviceManagementException(msg);
         }
         Map<String, TypedValue<Class<?>, Object>> params = new HashMap<>();
         Properties props = metaInfo.getProperties();
@@ -751,8 +808,14 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
     @Override
     public void sendRegistrationEmail(EmailMetaInfo metaInfo) throws DeviceManagementException {
-        if (log.isDebugEnabled()) {
-            log.debug("Send registration email");
+        if (metaInfo != null) {
+            if (log.isDebugEnabled()) {
+                log.debug("Send registration email");
+            }
+        } else {
+            String msg = "received incomplete request for sendRegistrationEmail";
+            log.error(msg);
+            throw new DeviceManagementException(msg);
         }
         Map<String, TypedValue<Class<?>, Object>> params = new HashMap<>();
         params.put(org.wso2.carbon.device.mgt.core.DeviceManagementConstants.EmailAttributes.FIRST_NAME,
@@ -788,8 +851,15 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
     @Override
     public HashMap<Integer, Device> getTenantedDevice(DeviceIdentifier deviceIdentifier) throws DeviceManagementException {
-        if (log.isDebugEnabled()) {
-            log.debug("Get tenanted device with id " + deviceIdentifier.getId() + " of type " + deviceIdentifier.getType());
+        if (deviceIdentifier != null) {
+            if (log.isDebugEnabled()) {
+                log.debug("Get tenanted device with id: " + deviceIdentifier.getId() + " of type '" +
+                        deviceIdentifier.getType() + "'");
+            }
+        } else {
+            String msg = "received null deviceIdentifier for getTenantedDevice";
+            log.error(msg);
+            throw new DeviceManagementException(msg);
         }
         HashMap<Integer, Device> deviceHashMap;
         try {
@@ -827,8 +897,14 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
     @Override
     public Device getDeviceWithTypeProperties(DeviceIdentifier deviceId) throws DeviceManagementException {
-        if (log.isDebugEnabled()) {
-            log.debug("Get tenanted device with type properties");
+        if (deviceId != null) {
+            if (log.isDebugEnabled()) {
+                log.debug("Get tenanted device with type properties, deviceId: " + deviceId.getId());
+            }
+        } else {
+            String msg = "received null deviceIdentifier for getDeviceWithTypeProperties";
+            log.error(msg);
+            throw new DeviceManagementException(msg);
         }
         Device device = this.getDevice(deviceId, false);
 
@@ -856,9 +932,15 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
     @Override
     public Device getDevice(DeviceIdentifier deviceId, Date since, boolean requireDeviceInfo) throws DeviceManagementException {
-        if (log.isDebugEnabled()) {
-            log.debug("Get device since " + since.toString() + " with identifier " + deviceId.getId() + " and type "
-                    + deviceId.getType());
+        if (deviceId != null && since != null) {
+            if (log.isDebugEnabled()) {
+                log.debug("Get device since '" + since.toString() + "' with identifier: " + deviceId.getId()
+                        + " and type '" + deviceId.getType() + "'");
+            }
+        } else {
+            String msg = "received incomplete data for getDevice";
+            log.error(msg);
+            throw new DeviceManagementException(msg);
         }
         Device device;
         try {
@@ -900,8 +982,14 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     @Override
     public Device getDevice(DeviceIdentifier deviceId, EnrolmentInfo.Status status, boolean requireDeviceInfo)
             throws DeviceManagementException {
-        if (log.isDebugEnabled()) {
-            log.debug("Get device with identifier " + deviceId.getId() + " and type " + deviceId.getType());
+        if (deviceId != null) {
+            if (log.isDebugEnabled()) {
+                log.debug("Get device with identifier: " + deviceId.getId() + " and type '" + deviceId.getType() + "'");
+            }
+        } else {
+            String msg = "received null deviceIdentifier for getDevice";
+            log.error(msg);
+            throw new DeviceManagementException(msg);
         }
         Device device;
         try {
@@ -994,8 +1082,14 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
     @Override
     public boolean updateDeviceInfo(DeviceIdentifier deviceId, Device device) throws DeviceManagementException {
-        if (log.isDebugEnabled()) {
-            log.debug("Update device info of device " + deviceId.getId());
+        if (deviceId != null && device != null) {
+            if (log.isDebugEnabled()) {
+                log.debug("Update device info of device: " + deviceId.getId());
+            }
+        } else {
+            String msg = "received incomplete data for updateDeviceInfo";
+            log.error(msg);
+            throw new DeviceManagementException(msg);
         }
         DeviceManager deviceManager = this.getDeviceManager(deviceId.getType());
         if (deviceManager == null) {
@@ -1010,8 +1104,14 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
     @Override
     public boolean setOwnership(DeviceIdentifier deviceId, String ownershipType) throws DeviceManagementException {
-        if (log.isDebugEnabled()) {
-            log.debug("Set ownership of device " + deviceId.getId());
+        if (deviceId != null) {
+            if (log.isDebugEnabled()) {
+                log.debug("Set ownership of device: " + deviceId.getId() + " ownership type '" + ownershipType + "'");
+            }
+        } else {
+            String msg = "received incomplete data for setOwnership";
+            log.error(msg);
+            throw new DeviceManagementException(msg);
         }
         DeviceManager deviceManager = this.getDeviceManager(deviceId.getType());
         if (deviceManager == null) {
@@ -1040,8 +1140,14 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     @Override
     public boolean setStatus(DeviceIdentifier deviceId, String currentOwner,
                              EnrolmentInfo.Status status) throws DeviceManagementException {
-        if (log.isDebugEnabled()) {
-            log.debug("Set status of device " + deviceId.getId());
+        if (deviceId != null) {
+            if (log.isDebugEnabled()) {
+                log.debug("Set status of device: " + deviceId.getId());
+            }
+        } else {
+            String msg = "received null deviceIdentifier for setStatus";
+            log.error(msg);
+            throw new DeviceManagementException(msg);
         }
         try {
             boolean success = false;
@@ -1120,8 +1226,14 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
     @Override
     public License getLicense(String deviceType, String languageCode) throws DeviceManagementException {
-        if (log.isDebugEnabled()) {
-            log.debug("Get the licence for device type " + deviceType);
+        if (deviceType != null && languageCode != null) {
+            if (log.isDebugEnabled()) {
+                log.debug("Get the licence for device type '" + deviceType + "' languageCode '" + languageCode + "'");
+            }
+        } else {
+            String msg = "received incomplete data for getLicence";
+            log.error(msg);
+            throw new DeviceManagementException(msg);
         }
         DeviceManager deviceManager = this.getDeviceManager(deviceType);
         License license;
@@ -1154,8 +1266,14 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
     @Override
     public void addLicense(String deviceType, License license) throws DeviceManagementException {
-        if (log.isDebugEnabled()) {
-            log.debug("Add the licence for device type " + deviceType);
+        if (deviceType != null && license != null) {
+            if (log.isDebugEnabled()) {
+                log.debug("Add the licence for device type '" + deviceType + "'");
+            }
+        } else {
+            String msg = "received incomplete data for addLicence";
+            log.error(msg);
+            throw new DeviceManagementException(msg);
         }
         DeviceManager deviceManager = this.getDeviceManager(deviceType);
         if (deviceManager == null) {
@@ -1306,8 +1424,13 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
     @Override
     public List<Device> getDevicesOfUser(String username, boolean requireDeviceInfo) throws DeviceManagementException {
+        if (username == null) {
+            String msg = "username null in getDevicesOfUser";
+            log.error(msg);
+            throw new DeviceManagementException(msg);
+        }
         if (log.isDebugEnabled()) {
-            log.debug("Get devices of user with username " + username);
+            log.debug("Get devices of user with username '" + username + "' and requiredDeviceInfo " + requireDeviceInfo);
         }
         List<Device> userDevices;
         try {
@@ -1344,8 +1467,15 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     @Override
     public List<Device> getDevicesOfUser(String username, String deviceType, boolean requireDeviceInfo) throws
             DeviceManagementException {
-        if (log.isDebugEnabled()) {
-            log.debug("Get devices of user with username " + username);
+        if (username != null && deviceType != null) {
+            if (log.isDebugEnabled()) {
+                log.debug("Get '" + deviceType + "' devices of user with username '" + username + "' requiredDeviceInfo: "
+                        + requireDeviceInfo);
+            }
+        } else {
+            String msg = "received incomplete data for getDevicesOfUser";
+            log.error(msg);
+            throw new DeviceManagementException(msg);
         }
         List<Device> userDevices;
         try {
@@ -1382,8 +1512,15 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     @Override
     public PaginationResult getDevicesOfUser(PaginationRequest request, boolean requireDeviceInfo)
             throws DeviceManagementException {
-        if (log.isDebugEnabled()) {
-            log.debug("Get paginated results of devices of user " + request.getOwner());
+        if (request != null) {
+            if (log.isDebugEnabled()) {
+                log.debug("Get paginated results of devices of user " + request.toString() + " and requiredDeviceInfo: "
+                        + requireDeviceInfo);
+            }
+        } else {
+            String msg = "received incomplete pagination request for getDevicesOfUser";
+            log.error(msg);
+            throw new DeviceManagementException(msg);
         }
         PaginationResult result = new PaginationResult();
         int deviceCount = 0;
@@ -1431,8 +1568,14 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     @Override
     public PaginationResult getDevicesByOwnership(PaginationRequest request, boolean requireDeviceInfo)
             throws DeviceManagementException {
-        if (log.isDebugEnabled()) {
-            log.debug("Get devices by ownership " + request.getOwnership());
+        if (request != null) {
+            if (log.isDebugEnabled()) {
+                log.debug("Get devices by ownership " + request.toString());
+            }
+        } else {
+            String msg = "received incomplete data for getDevicesByOwnership";
+            log.error(msg);
+            throw new DeviceManagementException(msg);
         }
         PaginationResult result = new PaginationResult();
         List<Device> allDevices;
@@ -1477,8 +1620,14 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
     @Override
     public List<Device> getAllDevicesOfRole(String role, boolean requireDeviceInfo) throws DeviceManagementException {
-        if (log.isDebugEnabled()) {
-            log.debug("Get devices of role " + role);
+        if (role != null) {
+            if (log.isDebugEnabled()) {
+                log.debug("Get devices of role '" + role + "' and requiredDeviceInfo: " + requireDeviceInfo);
+            }
+        } else {
+            String msg = "received empty role for the method getAllDevicesOfRole";
+            log.error(msg);
+            throw new DeviceManagementException(msg);
         }
         List<Device> devices = new ArrayList<>();
         String[] users;
@@ -1522,8 +1671,14 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
     @Override
     public int getDeviceCount(String username) throws DeviceManagementException {
-        if (log.isDebugEnabled()) {
-            log.debug("Getting device count of the user " + username);
+        if (username != null) {
+            if (log.isDebugEnabled()) {
+                log.debug("Getting device count of the user '" + username + "'");
+            }
+        } else {
+            String msg = "received empty username for getDeviceCount";
+            log.error(msg);
+            throw new DeviceManagementException(msg);
         }
         try {
             DeviceManagementDAOFactory.openConnection();
@@ -1573,8 +1728,14 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     @Override
     public List<Device> getDevicesByNameAndType(PaginationRequest request, boolean requireDeviceInfo)
             throws DeviceManagementException {
-        if (log.isDebugEnabled()) {
-            log.debug("Get devices by name " + request.getDeviceName() + " and type " + request.getDeviceType());
+        if (request != null) {
+            if (log.isDebugEnabled()) {
+                log.debug("Get devices by name " + request.toString() + " and requiredDeviceInfo: " + requireDeviceInfo);
+            }
+        } else {
+            String msg = "received incomplete data for getDevicesByNameAndType";
+            log.error(msg);
+            throw new DeviceManagementException(msg);
         }
         List<Device> devices = new ArrayList<>();
         List<Device> allDevices;
@@ -1616,8 +1777,14 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     @Override
     public PaginationResult getDevicesByName(PaginationRequest request, boolean requireDeviceInfo) throws
             DeviceManagementException {
-        if (log.isDebugEnabled()) {
-            log.debug("Get devices by name " + request.getDeviceName());
+        if (request != null) {
+            if (log.isDebugEnabled()) {
+                log.debug("Get devices by name " + request.toString() + " requiredDeviceInfo: " + requireDeviceInfo);
+            }
+        } else {
+            String msg = "received incomplete data for getDevicesByName";
+            log.error(msg);
+            throw new DeviceManagementException(msg);
         }
         PaginationResult result = new PaginationResult();
         int tenantId = this.getTenantId();
@@ -1656,8 +1823,14 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     @Override
     public void updateDeviceEnrolmentInfo(Device device, EnrolmentInfo.Status status) throws DeviceManagementException {
         try {
-            if (log.isDebugEnabled()) {
-                log.debug("Updating enrolment for device " + device.getDeviceIdentifier() + " of type " + device.getType());
+            if (device != null && status != null) {
+                if (log.isDebugEnabled()) {
+                    log.debug("Updating enrolment for device: " + device.getId() + " of type '" + device.getType() + "'");
+                }
+            } else {
+                String msg = "received incomplete data for updateDeviceEnrolmentInfo";
+                log.error(msg);
+                throw new DeviceManagementException(msg);
             }
             DeviceManagementDAOFactory.beginTransaction();
             device.getEnrolmentInfo().setDateOfLastUpdate(new Date().getTime());
@@ -1725,7 +1898,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     public List<Device> getDevicesByStatus(EnrolmentInfo.Status status, boolean requireDeviceInfo) throws
             DeviceManagementException {
         if (log.isDebugEnabled()) {
-            log.debug("get devices by status");
+            log.debug("get devices by status and requiredDeviceInfo: " + requireDeviceInfo);
         }
         List<Device> allDevices;
         try {
@@ -1759,11 +1932,18 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     @Override
     public PaginationResult getDevicesByStatus(PaginationRequest request, boolean requireDeviceInfo)
             throws DeviceManagementException {
-        if (log.isDebugEnabled()) {
-            log.debug("get devices by status with pagination");
+        if (request != null) {
+            if (log.isDebugEnabled()) {
+                log.debug("get devices by status " + request.toString() + " and requiredDeviceInfo: "
+                        + requireDeviceInfo);
+            }
+        } else {
+            String msg = "received incomplete data for getDevicesByStatus";
+            log.error(msg);
+            throw new DeviceManagementException(msg);
         }
         PaginationResult result = new PaginationResult();
-        List<Device> allDevices = new ArrayList<>();
+        List<Device> allDevices;
         int tenantId = this.getTenantId();
         String status = request.getStatus();
         request = DeviceManagerUtil.validateDeviceListPageSize(request);
@@ -1827,8 +2007,15 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     @Override
     public boolean changeDeviceStatus(DeviceIdentifier deviceIdentifier, EnrolmentInfo.Status newStatus)
             throws DeviceManagementException {
-        if (log.isDebugEnabled()) {
-            log.debug("Change device status of " + deviceIdentifier.getId());
+        if (deviceIdentifier != null) {
+            if (log.isDebugEnabled()) {
+                log.debug("Change device status of device: " + deviceIdentifier.getId() + " of type '"
+                        + deviceIdentifier.getType() + "'");
+            }
+        } else {
+            String msg = "received incomplete data for getDevicesByStatus";
+            log.error(msg);
+            throw new DeviceManagementException(msg);
         }
         boolean isDeviceUpdated = false;
         Device device = getDevice(deviceIdentifier, false);
@@ -1880,7 +2067,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     private boolean updateEnrollment(int deviceId, EnrolmentInfo enrolmentInfo, int tenantId)
             throws DeviceManagementException {
         if (log.isDebugEnabled()) {
-            log.debug("Update enrollment of device " + deviceId);
+            log.debug("Update enrollment of device: " + deviceId);
         }
         boolean isUpdatedEnrollment = false;
         boolean isAutoCommit = true;
@@ -1943,8 +2130,14 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
      */
     private void addDeviceToGroups(DeviceIdentifier deviceIdentifier, EnrolmentInfo.OwnerShip ownership)
             throws DeviceManagementException {
-        if (log.isDebugEnabled()) {
-            log.debug("Add device " + deviceIdentifier.getId() + " to default group");
+        if (deviceIdentifier != null) {
+            if (log.isDebugEnabled()) {
+                log.debug("Add device:" + deviceIdentifier.getId() + " to default group");
+            }
+        } else {
+            String msg = "received incomplete data for addDeviceToGroup";
+            log.error(msg);
+            throw new DeviceManagementException(msg);
         }
         GroupManagementProviderService groupManagementProviderService = new GroupManagementProviderServiceImpl();
         try {
@@ -1970,8 +2163,15 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     }
 
     private void addInitialOperations(DeviceIdentifier deviceIdentifier, String deviceType) throws DeviceManagementException {
-        if (log.isDebugEnabled()) {
-            log.debug("Add initial operations to the device " + deviceIdentifier.getId());
+        if (deviceIdentifier != null && deviceType != null) {
+            if (log.isDebugEnabled()) {
+                log.debug("Add initial operations to the device:" + deviceIdentifier.getId() + " of type '"
+                        + deviceType + "'");
+            }
+        } else {
+            String msg = "received incomplete data for getDevicesByStatus";
+            log.error(msg);
+            throw new DeviceManagementException(msg);
         }
         DeviceManagementProviderService deviceManagementProviderService = DeviceManagementDataHolder.getInstance().
                 getDeviceManagementProvider();
@@ -2018,8 +2218,14 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
      */
     private DeviceGroup createDefaultGroup(GroupManagementProviderService service, String groupName)
             throws GroupManagementException {
-        if (log.isDebugEnabled()) {
-            log.debug("Create default group with name " + groupName);
+        if (service != null && groupName != null) {
+            if (log.isDebugEnabled()) {
+                log.debug("Create default group with name '" + groupName + "'");
+            }
+        } else {
+            String msg = "received incomplete data for createDefaultGroup";
+            log.error(msg);
+            throw new GroupManagementException(msg);
         }
         DeviceGroup defaultGroup = service.getGroup(groupName);
         if (defaultGroup == null) {
@@ -2054,8 +2260,14 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
     @Override
     public DeviceType getDeviceType(String deviceType) throws DeviceManagementException {
-        if (log.isDebugEnabled()) {
-            log.debug("get device type " + deviceType);
+        if (deviceType != null) {
+            if (log.isDebugEnabled()) {
+                log.debug("get device type '" + deviceType + "'");
+            }
+        } else {
+            String msg = "received null deviceType for getDeviceType";
+            log.error(msg);
+            throw new DeviceManagementException(msg);
         }
         try {
             DeviceManagementDAOFactory.openConnection();
@@ -2113,8 +2325,8 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         DeviceManagementService dms =
                 pluginRepository.getDeviceManagementService(deviceIdentifier.getType(), this.getTenantId());
         if (dms == null) {
-            String message = "Device type '" + deviceIdentifier.getType() + "' does not have an associated device management " +
-                    "plugin registered within the framework";
+            String message = "Device type '" + deviceIdentifier.getType() + "' does not have an associated " +
+                    "device management plugin registered within the framework";
             log.error(message);
             throw new PullNotificationExecutionFailedException(message);
         }
@@ -2132,8 +2344,14 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
      * Returns all the device-info including location of the given device.
      */
     private DeviceInfo getDeviceInfo(Device device) throws DeviceManagementException {
-        if (log.isDebugEnabled()) {
-            log.debug("Get device info of device " + device.getId() + " of type " + device.getType());
+        if (device != null) {
+            if (log.isDebugEnabled()) {
+                log.debug("Get device info of device: " + device.getId() + " of type '" + device.getType() + "'");
+            }
+        } else {
+            String msg = "received incomplete data for getDeviceInfo";
+            log.error(msg);
+            throw new DeviceManagementException(msg);
         }
         DeviceInfo info = null;
         try {
@@ -2166,7 +2384,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
      */
     private List<Application> getInstalledApplications(Device device) {
         if (log.isDebugEnabled()) {
-            log.debug("Get installed applications of device " + device.getId() + " of type " + device.getType());
+            log.debug("Get installed applications of device: " + device.getId() + " of type '" + device.getType() + "'");
         }
         List<Application> applications = new ArrayList<>();
         try {
@@ -2192,8 +2410,14 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
      * of the given device list.
      */
     private List<Device> getAllDeviceInfo(List<Device> allDevices) throws DeviceManagementException {
-        if (log.isDebugEnabled()) {
-            log.debug("Get all device info of devices");
+        if (allDevices.size() > 0) {
+            if (log.isDebugEnabled()) {
+                log.debug("Get all device info of devices, num of devices: " + allDevices.size());
+            }
+        } else {
+            String msg = "received empty device list for getAllDeviceInfo";
+            log.error(msg);
+            throw new DeviceManagementException(msg);
         }
         List<Device> devices = new ArrayList<>();
         if (allDevices != null) {
@@ -2226,8 +2450,14 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
      * of a given device.
      */
     private Device getAllDeviceInfo(Device device) throws DeviceManagementException {
-        if (log.isDebugEnabled()) {
-            log.debug("Get all device info of device " + device.getId() + " of type " + device.getType());
+        if (device != null) {
+            if (log.isDebugEnabled()) {
+                log.debug("Get all device info of device: " + device.getId() + " of type '" + device.getType() + "'");
+            }
+        } else {
+            String msg = "received empty device for getAllDeviceInfo";
+            log.error(msg);
+            throw new DeviceManagementException(msg);
         }
         device.setDeviceInfo(this.getDeviceInfo(device));
         device.setApplications(this.getInstalledApplications(device));

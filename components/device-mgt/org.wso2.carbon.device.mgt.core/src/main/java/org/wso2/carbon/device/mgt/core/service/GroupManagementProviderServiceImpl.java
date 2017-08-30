@@ -65,14 +65,13 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
     @Override
     public void createGroup(DeviceGroup deviceGroup, String defaultRole, String[] defaultPermissions)
             throws GroupManagementException, GroupAlreadyExistException {
-        if (deviceGroup != null) {
-            if (log.isDebugEnabled()) {
-                log.debug("Creating group '" + deviceGroup.getName() + "'");
-            }
-        } else {
-            String msg = "received incomplete data for createGroup";
+        if (deviceGroup == null) {
+            String msg = "Received incomplete data for createGroup";
             log.error(msg);
             throw new GroupManagementException(msg);
+        }
+        if (log.isDebugEnabled()) {
+            log.debug("Creating group '" + deviceGroup.getName() + "'");
         }
         if (deviceGroup == null) {
             throw new GroupManagementException("DeviceGroup cannot be null.", new NullPointerException());
@@ -97,7 +96,7 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
             log.error(msg, e);
             throw new GroupManagementException(msg, e);
         } catch (Exception e) {
-            String msg = "Error occurred";
+            String msg = "Error occurred in creating group '" + deviceGroup.getName() + "'";
             log.error(msg, e);
             throw new GroupManagementException(msg, e);
         } finally {
@@ -115,14 +114,13 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
     @Override
     public void updateGroup(DeviceGroup deviceGroup, int groupId)
             throws GroupManagementException, GroupAlreadyExistException {
-        if (deviceGroup != null) {
-            if (log.isDebugEnabled()) {
-                log.debug("update group '" + deviceGroup.getName() + "'");
-            }
-        } else {
-            String msg = "received incomplete data for updateGroup";
+        if (deviceGroup == null) {
+            String msg = "Received incomplete data for updateGroup";
             log.error(msg);
             throw new GroupManagementException(msg);
+        }
+        if (log.isDebugEnabled()) {
+            log.debug("update group '" + deviceGroup.getName() + "'");
         }
         if (deviceGroup == null) {
             throw new GroupManagementException("DeviceGroup cannot be null.", new NullPointerException());
@@ -147,7 +145,7 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
             log.error(msg, e);
             throw new GroupManagementException(msg, e);
         } catch (Exception e) {
-            String msg = "Error occurred";
+            String msg = "Error occurred in updating group '" + deviceGroup.getName() + "'";
             log.error(msg, e);
             throw new GroupManagementException(msg, e);
         } finally {
@@ -185,7 +183,7 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
             log.error(msg, e);
             throw new GroupManagementException(msg, e);
         } catch (Exception e) {
-            String msg = "Error occurred";
+            String msg = "Error occurred in deleting group: " + groupId;
             log.error(msg, e);
             throw new GroupManagementException(msg, e);
         } finally {
@@ -214,7 +212,7 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
             log.error(msg, e);
             throw new GroupManagementException(msg, e);
         } catch (Exception e) {
-            String msg = "Error occurred";
+            String msg = "Error occurred in getGroup for groupId: " + groupId;
             log.error(msg, e);
             throw new GroupManagementException(msg, e);
         } finally {
@@ -228,14 +226,13 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
      */
     @Override
     public DeviceGroup getGroup(String groupName) throws GroupManagementException {
-        if (groupName != null) {
-            if (log.isDebugEnabled()) {
-                log.debug("Get group by name '" + groupName + "'");
-            }
-        } else {
-            String msg = "received empty groupName for getGroup";
+        if (groupName == null) {
+            String msg = "Received empty groupName for getGroup";
             log.error(msg);
             throw new GroupManagementException(msg);
+        }
+        if (log.isDebugEnabled()) {
+            log.debug("Get group by name '" + groupName + "'");
         }
         DeviceGroup deviceGroup;
         try {
@@ -250,7 +247,7 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
             log.error(msg, e);
             throw new GroupManagementException(msg, e);
         } catch (Exception e) {
-            String msg = "Error occurred";
+            String msg = "Error occurred in getGroup with name " + groupName;
             log.error(msg, e);
             throw new GroupManagementException(msg, e);
         } finally {
@@ -278,7 +275,7 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
             log.error(msg);
             throw new GroupManagementException(msg, e);
         } catch (Exception e) {
-            String msg = "Error occurred";
+            String msg = "Error occurred in getGroups";
             log.error(msg, e);
             throw new GroupManagementException(msg, e);
         } finally {
@@ -289,14 +286,13 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
 
     @Override
     public PaginationResult getGroups(GroupPaginationRequest request) throws GroupManagementException {
-        if (request != null) {
-            if (log.isDebugEnabled()) {
-                log.debug("Get groups with pagination " + request.toString());
-            }
-        } else {
-            String msg = "received incomplete data for getGroup";
+        if (request == null) {
+            String msg = "Received incomplete data for getGroup";
             log.error(msg);
             throw new GroupManagementException(msg);
+        }
+        if (log.isDebugEnabled()) {
+            log.debug("Get groups with pagination " + request.toString());
         }
         request = DeviceManagerUtil.validateGroupListPageSize(request);
         List<DeviceGroup> deviceGroups = new ArrayList<>();
@@ -313,7 +309,7 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
             log.error(msg, e);
             throw new GroupManagementException(msg, e);
         } catch (Exception e) {
-            String msg = "Error occurred";
+            String msg = "Error occurred in getGroups";
             log.error(msg, e);
             throw new GroupManagementException(msg, e);
         } finally {
@@ -327,14 +323,13 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
 
     @Override
     public List<DeviceGroup> getGroups(String username) throws GroupManagementException {
-        if (username != null) {
-            if (log.isDebugEnabled()) {
-                log.debug("Get groups of owner '" + username + "'");
-            }
-        } else {
-            String msg = "received null user name for getGroups";
+        if (username == null || username.isEmpty()) {
+            String msg = "Received null user name for getGroups";
             log.error(msg);
             throw new GroupManagementException(msg);
+        }
+        if (log.isDebugEnabled()) {
+            log.debug("Get groups of owner '" + username + "'");
         }
         Map<Integer, DeviceGroup> groups = new HashMap<>();
         UserStoreManager userStoreManager;
@@ -364,7 +359,7 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
             log.error(e);
             throw new GroupManagementException(e);
         } catch (Exception e) {
-            String msg = "Error occurred";
+            String msg = "Error occurred in getGroups for " + username;
             log.error(msg, e);
             throw new GroupManagementException(msg, e);
         } finally {
@@ -374,14 +369,13 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
     }
 
     private List<Integer> getGroupIds(String username) throws GroupManagementException {
-        if (username != null) {
-            if (log.isDebugEnabled()) {
-                log.debug("Get groups Ids of owner '" + username + "'");
-            }
-        } else {
-            String msg = "received empty user name for getGroupIds";
+        if (username == null || username.isEmpty()) {
+            String msg = "Received empty user name for getGroupIds";
             log.error(msg);
             throw new GroupManagementException(msg);
+        }
+        if (log.isDebugEnabled()) {
+            log.debug("Get groups Ids of owner '" + username + "'");
         }
         UserStoreManager userStoreManager;
         List<Integer> deviceGroupIds = new ArrayList<>();
@@ -405,7 +399,7 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
             log.error(e);
             throw new GroupManagementException(e);
         } catch (Exception e) {
-            String msg = "Error occurred";
+            String msg = "Error occurred in getGroups for username '" + username + "'";
             log.error(msg, e);
             throw new GroupManagementException(msg, e);
         } finally {
@@ -418,7 +412,7 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
     public PaginationResult getGroups(String currentUser, GroupPaginationRequest request)
             throws GroupManagementException {
         if (currentUser == null || request == null) {
-            String msg = "received incomplete date for getGroups";
+            String msg = "Received incomplete date for getGroups";
             log.error(msg);
             throw new GroupManagementException(msg);
         }
@@ -441,7 +435,7 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
             log.error(msg, e);
             throw new GroupManagementException(msg, e);
         } catch (Exception e) {
-            String msg = "Error occurred";
+            String msg = "Error occurred in getGroups";
             log.error(msg, e);
             throw new GroupManagementException(msg, e);
         } finally {
@@ -481,7 +475,7 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
 
     private int getGroupCount(GroupPaginationRequest request) throws GroupManagementException {
         if (request == null) {
-            String msg = "received empty request for getGroupCount";
+            String msg = "Received empty request for getGroupCount";
             log.error(msg);
             throw new GroupManagementException(msg);
         }
@@ -501,7 +495,7 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
             log.error(msg, e);
             throw new GroupManagementException(msg, e);
         } catch (Exception e) {
-            String msg = "Error occurred";
+            String msg = "Error occurred in getGroupCount";
             log.error(msg, e);
             throw new GroupManagementException(msg, e);
         } finally {
@@ -514,8 +508,8 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
      */
     @Override
     public int getGroupCount(String username) throws GroupManagementException {
-        if (username == null) {
-            String msg = "received empty user name for getGroupCount";
+        if (username == null || username.isEmpty()) {
+            String msg = "Received empty user name for getGroupCount";
             log.error(msg);
             throw new GroupManagementException(msg);
         }
@@ -546,7 +540,7 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
             log.error(msg, e);
             throw new GroupManagementException(msg, e);
         } catch (Exception e) {
-            String msg = "Error occurred";
+            String msg = "Error occurred in getGroupCount for username '" + username + "'";
             log.error(msg, e);
             throw new GroupManagementException(msg, e);
         } finally {
@@ -601,7 +595,7 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
             log.error(e);
             throw new GroupManagementException(e);
         } catch (Exception e) {
-            String msg = "Error occurred";
+            String msg = "Error occurred in manageGroupSharing for groupId: " + groupId;
             log.error(msg, e);
             throw new GroupManagementException(msg, e);
         } finally {
@@ -630,7 +624,7 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
             log.error(msg, e);
             throw new GroupManagementException(msg, e);
         } catch (Exception e) {
-            String msg = "Error occurred";
+            String msg = "Error occurred in getRoles for groupId: " + groupId;
             log.error(msg, e);
             throw new GroupManagementException(msg, e);
         } finally {
@@ -666,7 +660,7 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
             log.error(msg, e);
             throw new GroupManagementException(msg, e);
         } catch (Exception e) {
-            String msg = "Error occurred";
+            String msg = "Error occurred in getDevices for groupId: " + groupId;
             log.error(msg, e);
             throw new GroupManagementException(msg, e);
         } finally {
@@ -695,7 +689,7 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
             log.error(msg, e);
             throw new GroupManagementException(msg, e);
         } catch (Exception e) {
-            String msg = "Error occurred";
+            String msg = "Error occurred in getDeviceCount for groupId: " + groupId;
             log.error(msg, e);
             throw new GroupManagementException(msg, e);
         } finally {
@@ -741,7 +735,7 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
             log.error(msg, e);
             throw new GroupManagementException(msg, e);
         } catch (Exception e) {
-            String msg = "Error occurred";
+            String msg = "Error occurred in addDevices for groupId " + groupId;
             log.error(msg, e);
             throw new GroupManagementException(msg, e);
         } finally {
@@ -785,7 +779,7 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
             log.error(msg, e);
             throw new GroupManagementException(msg, e);
         } catch (Exception e) {
-            String msg = "Error occurred";
+            String msg = "Error occurred in removeDevice for groupId: " + groupId;
             log.error(msg, e);
             throw new GroupManagementException(msg, e);
         } finally {
@@ -821,7 +815,7 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
             log.error(msg, e);
             throw new GroupManagementException(msg, e);
         } catch (Exception e) {
-            String msg = "Error occurred";
+            String msg = "Error occurred in getGroups for username '" + username + "'";
             log.error(msg, e);
             throw new GroupManagementException(msg, e);
         }
@@ -831,7 +825,7 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
     @Override
     public List<DeviceGroup> getGroups(DeviceIdentifier deviceIdentifier) throws GroupManagementException {
         if (deviceIdentifier == null) {
-            String msg = "received empty device identifier for getGroups";
+            String msg = "Received empty device identifier for getGroups";
             log.error(msg);
             throw new GroupManagementException(msg);
         }
@@ -857,7 +851,7 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
             log.error(msg, e);
             throw new GroupManagementException(msg, e);
         } catch (Exception e) {
-            String msg = "Error occurred";
+            String msg = "Error occurred in getGroups";
             log.error(msg, e);
             throw new GroupManagementException(msg, e);
         } finally {
@@ -887,7 +881,7 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
                 log.error(msg, e);
                 throw new GroupManagementException(msg, e);
             } catch (Exception e) {
-                String msg = "Error occurred";
+                String msg = "Error occurred in createDefaultGroup for groupName '" + groupName + "'";
                 log.error(msg, e);
                 throw new GroupManagementException(msg, e);
             }

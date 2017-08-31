@@ -95,15 +95,35 @@
     {{/if}}
 
     {{#if permissions.TENANT_CONFIGURATION}}
-        <li><a><i class="fw fw-settings"></i>Configuration Management</a>
-            <ul>
-                <li><a href="{{@app.context}}/platform-configuration"><i class="fw fw-service"></i>Platform Configurations</a>
-                </li>
-                <!-- todo change the permission and get the related permission -->
-                <li><a href="{{@app.context}}/certificates"><i class="fw fw-security-policy"></i>Certificate Configurations</a>
-                </li>
-            </ul>
-        </li>
+        {{#if isCloud}}
+
+            <li>
+                <a href="{{@app.context}}/platform-configuration"><i class="fw fw-service"></i>
+                    Platform Configurations
+                </a>
+            </li>
+
+
+        {{else}}
+
+            <li>
+                <a><i class="fw fw-settings"></i>Configuration Management</a>
+                <ul>
+                    <li>
+                        <a href="{{@app.context}}/platform-configuration"><i class="fw fw-service"></i>
+                            Platform Configurations
+                        </a>
+                    </li>
+                    <!-- todo change the permission and get the related permission -->
+                    <li>
+                        <a href="{{@app.context}}/certificates"><i class="fw fw-security-policy"></i>
+                            Certificate Configurations
+                        </a>
+                    </li>
+                </ul>
+            </li>
+
+        {{/if}}
     {{/if}}
 
 

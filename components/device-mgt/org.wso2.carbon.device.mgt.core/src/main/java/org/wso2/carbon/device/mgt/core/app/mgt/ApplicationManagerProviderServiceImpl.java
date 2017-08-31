@@ -198,17 +198,17 @@ public class ApplicationManagerProviderServiceImpl implements ApplicationManagem
     public void updateApplicationListInstalledInDevice(
             DeviceIdentifier deviceIdentifier,
             List<Application> applications) throws ApplicationManagementException {
+        if (log.isDebugEnabled()) {
+            log.debug("Updating application list for device: " + deviceIdentifier.toString());
+        }
         List<Application> installedAppList = getApplicationListForDevice(deviceIdentifier);
         try {
             Device device = DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().getDevice(deviceIdentifier,
                     false);
             int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
-            if (log.isDebugEnabled()) {
-                log.debug("Device:" + device.getId() + ":identifier:" + deviceIdentifier.getId());
-            }
 
             if (log.isDebugEnabled()) {
-                log.debug("num of apps installed:" + installedAppList.size());
+                log.debug("Number of apps installed:" + installedAppList.size());
             }
             List<Application> appsToAdd = new ArrayList<>();
             List<Integer> appIdsToRemove = new ArrayList<>(installedAppList.size());
@@ -227,11 +227,12 @@ public class ApplicationManagerProviderServiceImpl implements ApplicationManagem
             List<Integer> applicationIds = new ArrayList<>();
 
             for (Application application : applications) {
-                /*
-                Truncating the application version if length of the version is greater than maximum allowed length.
-                 */
-                if (application.getVersion().length() >
-                        DeviceManagementConstants.OperationAttributes.APPLIST_VERSION_MAX_LENGTH) {
+                // Adding N/A if application doesn't have a version. Also truncating the application version,
+                // if length of the version is greater than maximum allowed length.
+                if (application.getVersion() == null) {
+                    application.setVersion("N/A");
+                } else if (application.getVersion().length() >
+                           DeviceManagementConstants.OperationAttributes.APPLIST_VERSION_MAX_LENGTH) {
                     application.setVersion(StringUtils.abbreviate(application.getVersion(),
                             DeviceManagementConstants.OperationAttributes.APPLIST_VERSION_MAX_LENGTH));
                 }
@@ -258,24 +259,34 @@ public class ApplicationManagerProviderServiceImpl implements ApplicationManagem
             if (log.isDebugEnabled()) {
                 log.debug("num of remove app Ids:" + appIdsToRemove.size());
             }
-
             DeviceManagementDAOFactory.commitTransaction();
         } catch (DeviceManagementDAOException e) {
             DeviceManagementDAOFactory.rollbackTransaction();
-            throw new ApplicationManagementException("Error occurred saving application list to the device", e);
+            String msg = "Error occurred saving application list of the device " + deviceIdentifier.toString();
+            log.error(msg, e);
+            throw new ApplicationManagementException(msg, e);
         } catch (TransactionManagementException e) {
-            throw new ApplicationManagementException("Error occurred while initializing transaction", e);
+            String msg = "Error occurred while initializing transaction for saving application list to the device "
+                         + deviceIdentifier.toString();
+            log.error(msg, e);
+            throw new ApplicationManagementException(msg, e);
         } catch (DeviceManagementException e) {
-            throw new ApplicationManagementException("Error occurred obtaining the device object.", e);
+            String msg = "Error occurred obtaining the device object for device " + deviceIdentifier.toString();
+            log.error(msg, e);
+            throw new ApplicationManagementException(msg, e);
+        } catch (Exception e) {
+            String msg = "Exception occurred saving application list of the device " + deviceIdentifier.toString();
+            log.error(msg, e);
+            throw new ApplicationManagementException(msg, e);
         } finally {
             DeviceManagementDAOFactory.closeConnection();
         }
     }
 
     @Override
-    public List<Application> getApplicationListForDevice(
-            DeviceIdentifier deviceId) throws ApplicationManagementException {
-        Device device = null;
+    public List<Application> getApplicationListForDevice(DeviceIdentifier deviceId)
+            throws ApplicationManagementException {
+        Device device;
         try {
             device = DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().getDevice(deviceId,
                     false);
@@ -286,18 +297,26 @@ public class ApplicationManagerProviderServiceImpl implements ApplicationManagem
         if (device == null) {
             if (log.isDebugEnabled()) {
                 log.debug("No device is found upon the device identifier '" + deviceId.getId() +
-                        "' and type '" + deviceId.getType() + "'. Therefore returning null");
+                        "' and type '" + deviceId.getType() + "'. Therefore returning empty app list");
             }
-            return null;
+            return new ArrayList<>();
         }
         try {
             DeviceManagementDAOFactory.openConnection();
             return applicationDAO.getInstalledApplications(device.getId());
         } catch (DeviceManagementDAOException e) {
-            throw new ApplicationManagementException("Error occurred while fetching the Application List of '" +
-                    deviceId.getType() + "' device carrying the identifier'" + deviceId.getId(), e);
+            String msg = "Error occurred while fetching the Application List of device " + deviceId.toString();
+            log.error(msg, e);
+            throw new ApplicationManagementException(msg, e);
         } catch (SQLException e) {
-            throw new ApplicationManagementException("Error occurred while opening a connection to the data source", e);
+            String msg = "Error occurred while opening a connection to the data source to get application " +
+                         "list of the device " + deviceId.toString();
+            log.error(msg, e);
+            throw new ApplicationManagementException(msg, e);
+        } catch (Exception e) {
+            String msg = "Exception occurred getting application list of the device " + deviceId.toString();
+            log.error(msg, e);
+            throw new ApplicationManagementException(msg, e);
         }  finally {
             DeviceManagementDAOFactory.closeConnection();
         }

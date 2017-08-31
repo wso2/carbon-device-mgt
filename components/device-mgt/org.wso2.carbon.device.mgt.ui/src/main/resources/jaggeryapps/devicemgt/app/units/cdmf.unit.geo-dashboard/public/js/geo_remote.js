@@ -264,6 +264,7 @@ function setWithinAlert(leafletId) {
             } else {
                 var ptrn = /(?:<am\:description>)(.*)(?:<\/am\:description>)/g;
                 var errorTxt;
+                var result = (ptrn.exec(data));
                 if (result) {
                     errorTxt = result.length > 1 ? result[1] : data;
                 } else {
@@ -277,6 +278,7 @@ function setWithinAlert(leafletId) {
                          responseHandler, function (xhr) {
                 responseHandler(xhr.responseText, xhr.statusText, xhr);
             });
+        viewFenceByData(selectedAreaGeoJson, queryName, areaName, null, 'Within');
     }
 }
 
@@ -320,6 +322,7 @@ function setExitAlert(leafletId) {
             } else {
                 var ptrn = /(?:<am\:description>)(.*)(?:<\/am\:description>)/g;
                 var errorTxt;
+                var result = (ptrn.exec(data));
                 if (result) {
                     errorTxt = result.length > 1 ? result[1] : data;
                 } else {
@@ -333,6 +336,7 @@ function setExitAlert(leafletId) {
                          responseHandler, function (xhr) {
                 responseHandler(xhr.responseText, xhr.statusText, xhr);
             });
+        viewFenceByData(selectedAreaGeoJson, queryName, areaName, null, 'Exit');
     }
 }
 
@@ -391,6 +395,7 @@ function setStationeryAlert(leafletId) {
             } else {
                 var ptrn = /(?:<am\:description>)(.*)(?:<\/am\:description>)/g;
                 var errorTxt;
+                var result = (ptrn.exec(data));
                 if (result) {
                     errorTxt = result.length > 1 ? result[1] : data;
                 } else {
@@ -404,6 +409,7 @@ function setStationeryAlert(leafletId) {
                          responseHandler, function (xhr) {
                 responseHandler(xhr.responseText, xhr.statusText, xhr);
             });
+        viewFenceByData(selectedProcessedAreaGeoJson, queryName, areaName, time, 'Stationery');
     }
 
 
@@ -499,6 +505,7 @@ function setTrafficAlert(leafletId) {
             } else {
                 var ptrn = /(?:<am\:description>)(.*)(?:<\/am\:description>)/g;
                 var errorTxt;
+                var result = (ptrn.exec(data));
                 if (result) {
                     errorTxt = result.length > 1 ? result[1] : data;
                 } else {
@@ -603,6 +610,7 @@ function setProximityAlert() {
             } else {
                 var ptrn = /(?:<am\:description>)(.*)(?:<\/am\:description>)/g;
                 var errorTxt;
+                var result = (ptrn.exec(data));
                 if (result) {
                     errorTxt = result.length > 1 ? result[1] : data;
                 } else {

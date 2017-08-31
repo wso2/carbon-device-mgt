@@ -363,7 +363,9 @@ public class UserManagementServiceImpl implements UserManagementService {
         }
 
         RequestValidationUtil.validatePaginationParameters(offset, limit);
-
+        if (limit == 0){
+            limit = Constants.DEFAULT_PAGE_LIMIT;
+        }
         List<BasicUserInfo> userList, offsetList;
         String appliedFilter = ((filter == null) || filter.isEmpty() ? "*" : filter + "*");
         // to get whole set of users, appliedLimit is set to -1

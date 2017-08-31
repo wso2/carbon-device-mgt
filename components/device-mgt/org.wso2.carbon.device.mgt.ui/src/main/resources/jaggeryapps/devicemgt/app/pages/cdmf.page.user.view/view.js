@@ -48,7 +48,13 @@ function onRequest(context) {
         canView = true;
     }
 
+    var canEdit = false;
+    if (userModule.isAuthorized("/permission/admin/device-mgt/users/edit")) {
+        canEdit = true;
+    }
+
     var isCloud =  deviceMgtProps.isCloud;
 
-    return {"exists": isExsistingUser, "user": user, "userRoles": userRoles, "devices": devices, "canView": canView, "isCloud" : isCloud};
+    return {"exists": isExsistingUser, "user": user, "userRoles": userRoles, "devices": devices, "canEdit": canEdit,
+            "canView": canView, "isCloud" : isCloud};
 }

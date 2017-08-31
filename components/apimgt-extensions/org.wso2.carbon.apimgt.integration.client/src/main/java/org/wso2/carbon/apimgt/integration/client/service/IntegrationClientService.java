@@ -26,6 +26,9 @@ import org.wso2.carbon.apimgt.integration.client.store.StoreClient;
  */
 public interface IntegrationClientService {
 
+
+    void resetUserInfo(String username, String tenantDomain);
+
     /**
      *
      * @return API Store Client.

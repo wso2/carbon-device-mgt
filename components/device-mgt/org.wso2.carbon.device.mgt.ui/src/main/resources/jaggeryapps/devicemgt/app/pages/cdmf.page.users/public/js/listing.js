@@ -293,7 +293,10 @@ function loadUsers() {
 
     //noinspection JSUnusedLocalSymbols
     var fnCreatedRow = function (nRow, aData, iDataIndex) {
-        $(nRow).attr('data-type', 'selectable');
+        var adminUser = $("#user-table").data("user");
+        if (adminUser !== aData["filter"]) {
+            $(nRow).attr('data-type', 'selectable');
+        }
         $(nRow).attr('data-username', aData["filter"]);
     };
 

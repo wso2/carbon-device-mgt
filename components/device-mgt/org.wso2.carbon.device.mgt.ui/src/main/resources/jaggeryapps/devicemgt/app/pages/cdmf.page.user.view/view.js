@@ -46,9 +46,9 @@ function onRequest(context) {
         canView = true;
     }
 
-    //TODO: Remove hardcoded admin user name.
     var canEdit = false;
-    if (userModule.isAuthorized("/permission/admin/device-mgt/users/edit") && userName !== 'admin') {
+    if (userModule.isAuthorized("/permission/admin/device-mgt/users/edit") &&
+        userName !== deviceMgtProps['adminUser'].split("@")[0]) {
         canEdit = true;
     }
 

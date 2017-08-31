@@ -150,6 +150,9 @@ function loadRoles() {
 
                 var innerhtml = '';
 
+                //TODO: Remove the hardcoded admin role name.
+                var isAdmin = data.name === 'admin';
+
                 var editLink = '<a onclick="javascript:loadRoleBasedActionURL(\'edit\', \'' + data.name + '\')" ' +
                     'data-role="' + data.name + '" ' +
                     'data-click-event="edit-form" ' +
@@ -196,7 +199,7 @@ function loadRoles() {
                     '<span class="hidden-xs hidden-on-grid-view">Remove</span>' +
                     '</a>';
 
-                if (!isCloud) {
+                if (!isCloud && !isAdmin) {
                     innerhtml = editLink + editPermissionLink + removeLink;
                 }
                 return innerhtml;

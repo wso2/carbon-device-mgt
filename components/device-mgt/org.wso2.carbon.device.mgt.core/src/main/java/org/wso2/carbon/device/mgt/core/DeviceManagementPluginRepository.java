@@ -350,7 +350,9 @@ public class DeviceManagementPluginRepository implements DeviceManagerStartupLis
         if (deviceStatusTaskPluginConfig != null && deviceStatusTaskPluginConfig.isRequireStatusMonitoring()) {
             try {
                 DeviceManagementDataHolder.getInstance().removeDeviceStatusTaskPluginConfig(deviceType);
-                deviceStatusTaskManagerService.stopTask(deviceType, deviceStatusTaskPluginConfig);
+                if (deviceStatusTaskManagerService != null) {
+                    deviceStatusTaskManagerService.stopTask(deviceType, deviceStatusTaskPluginConfig);
+                }
             } catch (DeviceStatusTaskException e) {
                 throw new DeviceManagementException("Error occurred while stopping Device Status task service for '" +
                         deviceManagementService.getType() + "'", e);

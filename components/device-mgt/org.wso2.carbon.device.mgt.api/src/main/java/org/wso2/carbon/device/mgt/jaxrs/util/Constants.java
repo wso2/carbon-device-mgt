@@ -30,6 +30,7 @@ public class Constants {
     public static final String DEFAULT_STREAM_VERSION = "1.0.0";
 	public static final String SCOPE = "scope";
 	public static final String JDBC_USERSTOREMANAGER = "org.wso2.carbon.user.core.jdbc.JDBCUserStoreManager";
+	public static final int DEFAULT_PAGE_LIMIT = 10;
 
 
 	public final class ErrorMessages {

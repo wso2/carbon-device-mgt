@@ -150,6 +150,8 @@ function loadRoles() {
 
                 var innerhtml = '';
 
+                var isAdminRole = $("#role-table").data("role") === data.name;
+
                 var editLink = '<a onclick="javascript:loadRoleBasedActionURL(\'edit\', \'' + data.name + '\')" ' +
                     'data-role="' + data.name + '" ' +
                     'data-click-event="edit-form" ' +
@@ -196,7 +198,7 @@ function loadRoles() {
                     '<span class="hidden-xs hidden-on-grid-view">Remove</span>' +
                     '</a>';
 
-                if (!isCloud) {
+                if (!isCloud && !isAdminRole) {
                     innerhtml = editLink + editPermissionLink + removeLink;
                 }
                 return innerhtml;

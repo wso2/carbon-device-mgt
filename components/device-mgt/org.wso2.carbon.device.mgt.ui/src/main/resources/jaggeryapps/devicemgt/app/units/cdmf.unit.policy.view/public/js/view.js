@@ -66,6 +66,7 @@ var displayPolicy = function (policyPayloadObj) {
         $("#roles-row").addClass("hidden");
     }
 
+    var policyId = policyPayloadObj["id"];
     var deviceType = policy["platform"];
     var policyOperations = $("#policy-operations");
     var policyViewTemplateSrc = $(policyOperations).data("template");
@@ -110,6 +111,23 @@ var displayPolicy = function (policyPayloadObj) {
     if (!hasPolicyProfileScript) {
         populateGenericProfileOperations(policyPayloadObj["profile"]["profileFeaturesList"]);
     }
+
+    var policyEditContent =
+        "<a href=" + context + "/policy/edit?id=" + policyId + "&deviceType=" + deviceType + "\n" +
+            "data-id=" + policyId +
+            "data-toggle=\"tooltip\"\n" +
+            "data-original-title=\"Edit\"\n" +
+            "data-click-event=\"remove-form\"\n" +
+            "class=\"btn remove-margin padding-reduce-on-grid-view policy-update-link\">" +
+            "<span class=\"fw-stack\">" +
+                "<i class=\"fw fw-circle-outline fw-stack-2x\"></i>" +
+                "<i class=\"fw fw-edit fw-stack-1x\"></i>" +
+            "</span>" +
+            " Edit" +
+        "</a>";
+
+    $("#policy-edit").html(policyEditContent);
+
 };
 
 /**

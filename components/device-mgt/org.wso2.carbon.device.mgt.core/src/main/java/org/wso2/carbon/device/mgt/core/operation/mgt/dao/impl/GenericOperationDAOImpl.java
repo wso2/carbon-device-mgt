@@ -182,16 +182,7 @@ public class GenericOperationDAOImpl implements OperationDAO {
             stmt.setString(3, Operation.Status.PENDING.toString());
             // This will return only one result always.
             rs = stmt.executeQuery();
-            int id = 0;
             if (rs.next()) {
-                id = rs.getInt("ID");
-            }
-            if (id != 0) {
-                stmt = connection.prepareStatement(
-                        "UPDATE DM_ENROLMENT_OP_MAPPING SET UPDATED_TIMESTAMP = ?  " + "WHERE ID = ?");
-                stmt.setLong(1, System.currentTimeMillis() / 1000);
-                stmt.setInt(2, id);
-                stmt.executeUpdate();
                 result = true;
             }
         } catch (SQLException e) {

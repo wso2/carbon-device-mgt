@@ -22,22 +22,35 @@ import feign.RequestInterceptor;
 import org.wso2.carbon.apimgt.integration.client.publisher.PublisherClient;
 import org.wso2.carbon.apimgt.integration.client.service.IntegrationClientService;
 import org.wso2.carbon.apimgt.integration.client.store.StoreClient;
-import org.wso2.carbon.identity.jwt.client.extension.dto.AccessTokenInfo;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class IntegrationClientServiceImpl implements IntegrationClientService {
 
-    private static StoreClient storeClient;
-    private static PublisherClient publisherClient;
-    private static Map<String, AccessTokenInfo> tenantUserTokenMap = new HashMap<>();
+    private static IntegrationClientServiceImpl instance;
+    private StoreClient storeClient;
+    private PublisherClient publisherClient;
+    private OAuthRequestInterceptor oAuthRequestInterceptor;
 
-    public IntegrationClientServiceImpl() {
-        RequestInterceptor oAuthRequestInterceptor = new OAuthRequestInterceptor();
+    private IntegrationClientServiceImpl() {
+        oAuthRequestInterceptor = new OAuthRequestInterceptor();
         storeClient = new StoreClient(oAuthRequestInterceptor);
         publisherClient = new PublisherClient(oAuthRequestInterceptor);
     }
+
+    public static IntegrationClientServiceImpl getInstance() {
+        if (instance == null) {
+            synchronized (IntegrationClientService.class) {
+                if (instance == null) {
+                    instance = new IntegrationClientServiceImpl();
+                }
+            }
+        }
+        return instance;
+    }
+
+    public void resetUserInfo(String userName, String tenantDomain) {
+        oAuthRequestInterceptor.removeToken(userName, tenantDomain);
+    }
+
     @Override
     public StoreClient getStoreClient() {
         return storeClient;
@@ -46,9 +59,5 @@ public class IntegrationClientServiceImpl implements IntegrationClientService {
     @Override
     public PublisherClient getPublisherClient() {
         return publisherClient;
-    }
-
-    public static Map<String, AccessTokenInfo> getTenantUserTokenMap() {
-        return tenantUserTokenMap;
     }
 }

@@ -20,8 +20,6 @@ package org.wso2.carbon.device.mgt.jaxrs.util;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.apimgt.integration.client.IntegrationClientServiceImpl;
-import org.wso2.carbon.apimgt.integration.client.service.IntegrationClientService;
 import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
@@ -56,7 +54,7 @@ public class CredentialManagementResponseBuilder {
             RequestValidationUtil.validateCredentials(credentials);
             if (!validateCredential(credentials.getNewPassword())) {
                 String errorMsg = DeviceMgtAPIUtils.getRealmService().getBootstrapRealmConfiguration()
-                                                   .getUserStoreProperty(PASSWORD_VALIDATION_ERROR_MSG_TAG);
+                        .getUserStoreProperty(PASSWORD_VALIDATION_ERROR_MSG_TAG);
                 return Response.status(Response.Status.BAD_REQUEST).entity(
                         new ErrorResponse.ErrorResponseBuilder().setMessage(errorMsg).build()).build();
             }
@@ -66,9 +64,8 @@ public class CredentialManagementResponseBuilder {
             username = CarbonContext.getThreadLocalCarbonContext().getUsername();
             userStoreManager.updateCredential(username, credentials.getNewPassword(),
                     credentials.getOldPassword());
-            IntegrationClientServiceImpl integrationClientService = (IntegrationClientServiceImpl) PrivilegedCarbonContext.
-                    getThreadLocalCarbonContext().getOSGiService(IntegrationClientService.class, null);
-            integrationClientService.getTenantUserTokenMap().remove(username);
+            DeviceMgtAPIUtils.getIntegrationClientService().resetUserInfo(username,
+                    PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantDomain());
             return Response.status(Response.Status.OK).entity("UserImpl password by username: " +
                     username + " was successfully changed.").build();
         } catch (UserStoreException e) {
@@ -111,6 +108,8 @@ public class CredentialManagementResponseBuilder {
                         new ErrorResponse.ErrorResponseBuilder().setMessage(errorMsg).build()).build();
             }
             userStoreManager.updateCredentialByAdmin(username, credentials.getNewPassword());
+            DeviceMgtAPIUtils.getIntegrationClientService().resetUserInfo(username,
+                    PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantDomain());
             return Response.status(Response.Status.OK).entity("UserImpl password by username: " +
                     username + " was successfully changed.").build();
         } catch (UserStoreException e) {

@@ -129,4 +129,12 @@ public class PaginationRequest {
     public void setOwnerPattern(String ownerPattern) {
         this.ownerPattern = ownerPattern;
     }
+
+    @Override
+    public String toString() {
+        return "Device type '" + this.deviceType + "' Device Name '" + this.deviceName + "' row count: " + this.rowCount
+                + " Owner role '" + this.ownerRole + "' owner pattern '" + this.ownerPattern + "' ownership "
+                + this.ownership + "' Status '" + this.status + "' owner '" + this.owner + "' groupId: " + this.groupId
+                + " start index: " + this.startIndex;
+    }
 }

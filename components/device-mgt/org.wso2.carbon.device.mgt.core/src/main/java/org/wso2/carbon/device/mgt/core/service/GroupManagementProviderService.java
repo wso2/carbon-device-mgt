@@ -23,10 +23,7 @@ import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.DeviceNotFoundException;
 import org.wso2.carbon.device.mgt.common.GroupPaginationRequest;
 import org.wso2.carbon.device.mgt.common.PaginationResult;
-import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroup;
-import org.wso2.carbon.device.mgt.common.group.mgt.GroupAlreadyExistException;
-import org.wso2.carbon.device.mgt.common.group.mgt.GroupManagementException;
-import org.wso2.carbon.device.mgt.common.group.mgt.RoleDoesNotExistException;
+import org.wso2.carbon.device.mgt.common.group.mgt.*;
 
 import java.util.List;
 
@@ -53,7 +50,7 @@ public interface GroupManagementProviderService {
      * @param groupId of the group.
      * @throws GroupManagementException
      */
-    void updateGroup(DeviceGroup deviceGroup, int groupId) throws GroupManagementException, GroupAlreadyExistException;
+    void updateGroup(DeviceGroup deviceGroup, int groupId) throws GroupManagementException, GroupNotExistException;
 
     /**
      * Delete existing device group.

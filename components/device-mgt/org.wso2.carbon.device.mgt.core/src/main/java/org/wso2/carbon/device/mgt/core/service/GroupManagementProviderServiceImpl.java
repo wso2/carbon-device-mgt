@@ -73,9 +73,6 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
         if (log.isDebugEnabled()) {
             log.debug("Creating group '" + deviceGroup.getName() + "'");
         }
-        if (deviceGroup == null) {
-            throw new GroupManagementException("DeviceGroup cannot be null.", new NullPointerException());
-        }
         int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
         try {
             GroupManagementDAOFactory.beginTransaction();
@@ -95,6 +92,8 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
             String msg = "Error occurred while initiating transaction.";
             log.error(msg, e);
             throw new GroupManagementException(msg, e);
+        } catch (GroupAlreadyExistException ex) {
+            throw ex;
         } catch (Exception e) {
             String msg = "Error occurred in creating group '" + deviceGroup.getName() + "'";
             log.error(msg, e);
@@ -113,7 +112,7 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
      */
     @Override
     public void updateGroup(DeviceGroup deviceGroup, int groupId)
-            throws GroupManagementException, GroupAlreadyExistException {
+            throws GroupManagementException, GroupNotExistException {
         if (deviceGroup == null) {
             String msg = "Received incomplete data for updateGroup";
             log.error(msg);
@@ -122,30 +121,29 @@ public class GroupManagementProviderServiceImpl implements GroupManagementProvid
         if (log.isDebugEnabled()) {
             log.debug("update group '" + deviceGroup.getName() + "'");
         }
-        if (deviceGroup == null) {
-            throw new GroupManagementException("DeviceGroup cannot be null.", new NullPointerException());
-        }
         try {
             int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
             GroupManagementDAOFactory.beginTransaction();
-            DeviceGroup existingGroup = this.groupDAO.getGroup(deviceGroup.getName(), tenantId);
-            if (existingGroup == null || existingGroup.getGroupId() == groupId) {
+            DeviceGroup existingGroup = this.groupDAO.getGroup(groupId, tenantId);
+            if (existingGroup != null) {
                 this.groupDAO.updateGroup(deviceGroup, groupId, tenantId);
                 GroupManagementDAOFactory.commitTransaction();
             } else {
-                throw new GroupAlreadyExistException("Group exist with name " + deviceGroup.getName());
+                throw new GroupNotExistException("Group with ID - '" + groupId + "' doesn't exists!");
             }
         } catch (GroupManagementDAOException e) {
             GroupManagementDAOFactory.rollbackTransaction();
-            String msg = "Error occurred while modifying deviceGroup '" + deviceGroup.getName() + "'.";
+            String msg = "Error occurred while modifying device group with ID - '" + groupId + "'.";
             log.error(msg, e);
             throw new GroupManagementException(msg, e);
         } catch (TransactionManagementException e) {
             String msg = "Error occurred while initiating transaction.";
             log.error(msg, e);
             throw new GroupManagementException(msg, e);
+        } catch (GroupNotExistException ex) {
+            throw ex;
         } catch (Exception e) {
-            String msg = "Error occurred in updating group '" + deviceGroup.getName() + "'";
+            String msg = "Error occurred in updating the device group with ID - '" + groupId + "'.";
             log.error(msg, e);
             throw new GroupManagementException(msg, e);
         } finally {

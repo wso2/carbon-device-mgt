@@ -70,13 +70,15 @@ public class EmailSenderServiceImpl implements EmailSenderService {
                 emailData = contentProvider.getContent(info.getTemplate(), info.getParams());
                 if(EmailSenderDataHolder.getInstance().getConfigurationContextService()
                         .getServerConfigContext().getAxisConfiguration().getTransportOut(transportSenderName) == null){
-                    throw new EmailSendingFailedException("Email transport is not configured.");
+                    log.warn("Email invitation is not sent as the email is not configured.");
+                } else {
+                    threadPoolExecutor.submit(new EmailSender(recipient, emailData.getSubject(), emailData.getBody()));
                 }
             } catch (ContentProcessingInterruptedException e) {
                 throw new EmailSendingFailedException("Error occurred while retrieving email content to be " +
                         "sent for recipient '" + recipient + "'", e);
             }
-            threadPoolExecutor.submit(new EmailSender(recipient, emailData.getSubject(), emailData.getBody()));
+
         }
     }
 

@@ -2330,8 +2330,14 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             DeviceManagementDAOFactory.openConnection();
             info = deviceInfoDAO.getDeviceInformation(device.getId());
             DeviceLocation location = deviceInfoDAO.getDeviceLocation(device.getId());
-            if (info != null) {
-                info.setLocation(location);
+            if (location != null) {
+                //There are some cases where the device-info is not updated properly. Hence returning a null value.
+                if (info != null) {
+                    info.setLocation(location);
+                } else {
+                    info = new DeviceInfo();
+                    info.setLocation(location);
+                }
             }
         } catch (DeviceDetailsMgtDAOException e) {
             String msg = "Error occurred while retrieving advance info of '" + device.getType() +

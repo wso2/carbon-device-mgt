@@ -45,6 +45,7 @@ public class EmailSenderServiceImpl implements EmailSenderService {
 
     private static ThreadPoolExecutor threadPoolExecutor;
     private EmailContentProvider contentProvider;
+    private static final String TRANSPORT_SENDER_NAME = "mailto";
 
     static {
         EmailSenderConfig config = EmailSenderConfig.getInstance();
@@ -60,23 +61,35 @@ public class EmailSenderServiceImpl implements EmailSenderService {
         this.contentProvider = EmailContentProviderFactory.getContentProvider();
     }
 
+    private boolean isMailServerConfigured() {
+        if(EmailSenderDataHolder.getInstance().getConfigurationContextService()
+                .getServerConfigContext().getAxisConfiguration().getTransportOut(TRANSPORT_SENDER_NAME) != null) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     @Override
-    public void sendEmail(EmailContext emailCtx) throws EmailSendingFailedException {
-        for (String recipient : emailCtx.getRecipients()) {
-            ContentProviderInfo info = emailCtx.getContentProviderInfo();
-            EmailData emailData;
-            String transportSenderName = "mailto";
-            try {
-                emailData = contentProvider.getContent(info.getTemplate(), info.getParams());
-                if(EmailSenderDataHolder.getInstance().getConfigurationContextService()
-                        .getServerConfigContext().getAxisConfiguration().getTransportOut(transportSenderName) == null){
-                    throw new EmailSendingFailedException("Email transport is not configured.");
+    public void sendEmail(EmailContext emailCtx) throws EmailSendingFailedException,
+            EmailTransportNotConfiguredException {
+        if (this.isMailServerConfigured()) {
+            for (String recipient : emailCtx.getRecipients()) {
+                ContentProviderInfo info = emailCtx.getContentProviderInfo();
+                EmailData emailData;
+                try {
+                    emailData = contentProvider.getContent(info.getTemplate(), info.getParams());
+                    threadPoolExecutor.submit(new EmailSender(recipient, emailData.getSubject(), emailData.getBody()));
+                } catch (ContentProcessingInterruptedException e) {
+                    throw new EmailSendingFailedException("Error occurred while retrieving email content to be " +
+                            "sent for recipient '" + recipient + "'", e);
                 }
-            } catch (ContentProcessingInterruptedException e) {
-                throw new EmailSendingFailedException("Error occurred while retrieving email content to be " +
-                        "sent for recipient '" + recipient + "'", e);
             }
-            threadPoolExecutor.submit(new EmailSender(recipient, emailData.getSubject(), emailData.getBody()));
+        } else {
+            String msg = "Email sender transport is not configured. Please configure the 'mailto' sender" +
+                    " transport in axis2.xml.";
+            log.warn(msg);
+            throw new EmailTransportNotConfiguredException(msg);
         }
     }
 

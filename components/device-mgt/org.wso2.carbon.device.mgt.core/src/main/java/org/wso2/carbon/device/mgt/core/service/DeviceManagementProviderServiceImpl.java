@@ -1734,15 +1734,12 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         if (log.isDebugEnabled()) {
             log.debug("Get devices by name " + request.toString() + " and requiredDeviceInfo: " + requireDeviceInfo);
         }
-        List<Device> devices = new ArrayList<>();
         List<Device> allDevices;
         int limit = DeviceManagerUtil.validateDeviceListPageSize(request.getRowCount());
         try {
             DeviceManagementDAOFactory.openConnection();
             allDevices = deviceDAO.getDevicesByNameAndType(request.getDeviceName(), request.getDeviceType(),
                     this.getTenantId(), request.getStartIndex(), limit);
-            List<Device> filterd = null;
-            filterd.get(0);
         } catch (DeviceManagementDAOException e) {
             String msg = "Error occurred while fetching the list of devices that matches to '"
                     + request.getDeviceName() + "'";

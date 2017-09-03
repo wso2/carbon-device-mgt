@@ -24,4 +24,6 @@ public interface EmailSenderService {
 
     void sendEmail(EmailContext emailCtx) throws EmailSendingFailedException;
 
+    boolean mailConfigurationStatus(String transportSenderName);
+
 }

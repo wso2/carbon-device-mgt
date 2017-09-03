@@ -806,6 +806,11 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     }
 
     @Override
+    public boolean isMailConfigured(String transportSenderName) throws DeviceManagementException {
+        return DeviceManagementDataHolder.getInstance().getEmailSenderService().mailConfigurationStatus(transportSenderName);
+    }
+
+    @Override
     public void sendRegistrationEmail(EmailMetaInfo metaInfo) throws DeviceManagementException {
         if (metaInfo == null) {
             String msg = "Received incomplete request for sendRegistrationEmail";

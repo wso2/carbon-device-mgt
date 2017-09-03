@@ -85,6 +85,7 @@ public class UserManagementServiceImpl implements UserManagementService {
 
     private static final String DEFAULT_DEVICE_USER = "Internal/devicemgt-user";
     private static final String DEFAULT_DEVICE_ADMIN = "Internal/devicemgt-admin";
+    boolean mailConfiguration = false;
 
     // Permissions that are given for a normal device user.
     private static final Permission[] PERMISSIONS_FOR_DEVICE_USER = {
@@ -213,6 +214,21 @@ public class UserManagementServiceImpl implements UserManagementService {
             return Response.serverError().entity(
                     new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
         }
+    }
+
+    @GET
+    @Path("/is-mail-configured")
+    @Override
+    public Response isMailConfigured() {
+        DeviceManagementProviderService dms = DeviceMgtAPIUtils.getDeviceManagementService();
+        String transportSenderName = "mailto";
+        try {
+            mailConfiguration = dms.isMailConfigured(transportSenderName);
+        } catch (DeviceManagementException e) {
+            log.error("Failed to fetch the mail configured status of " + transportSenderName, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(mailConfiguration).build();
+        }
+        return Response.status(Response.Status.OK).entity(mailConfiguration).build();
     }
 
     @PUT
@@ -562,14 +578,16 @@ public class UserManagementServiceImpl implements UserManagementService {
                 props.setProperty("username", username);
 
                 EmailMetaInfo metaInfo = new EmailMetaInfo(recipient, props);
-                dms.sendEnrolmentInvitation(DeviceManagementConstants.EmailAttributes.USER_ENROLLMENT_TEMPLATE,
-                        metaInfo);
+                this.isMailConfigured();
+                if (mailConfiguration) {
+                    dms.sendEnrolmentInvitation(DeviceManagementConstants.EmailAttributes.USER_ENROLLMENT_TEMPLATE,
+                            metaInfo);
+                } else {
+                    log.warn("Mail is not configured hence invitation cannot be sent.");
+                }
             }
         } catch (DeviceManagementException e) {
             String msg = "Error occurred while inviting user to enrol their device";
-            if (e.getMessage() != null && !e.getMessage().isEmpty()) {
-                msg = e.getMessage();
-            }
             log.error(msg, e);
             return Response.serverError().entity(
                     new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();

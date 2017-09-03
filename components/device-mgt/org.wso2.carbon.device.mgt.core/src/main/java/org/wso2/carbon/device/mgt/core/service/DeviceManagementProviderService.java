@@ -438,6 +438,8 @@ public interface DeviceManagementProviderService {
 
     void sendEnrolmentInvitation(String templateName, EmailMetaInfo metaInfo) throws DeviceManagementException;
 
+    boolean isMailConfigured(String transportSenderName) throws DeviceManagementException;
+
     void sendRegistrationEmail(EmailMetaInfo metaInfo) throws DeviceManagementException;
 
     FeatureManager getFeatureManager(String deviceType) throws DeviceManagementException;

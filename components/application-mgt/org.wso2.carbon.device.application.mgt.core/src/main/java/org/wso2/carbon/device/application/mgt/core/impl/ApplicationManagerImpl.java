@@ -326,7 +326,8 @@ public class ApplicationManagerImpl implements ApplicationManager {
         }
         try {
             ConnectionManagerUtil.openDBConnection();
-            Application application = DAOFactory.getApplicationDAO().getApplication(applicationUUID, tenantId,userName);
+            Application application = DAOFactory.getApplicationDAO()
+                    .getApplication(applicationUUID, tenantId, userName);
             return application.getUser().getUserName().equals(userName)
                     && application.getUser().getTenantId() == tenantId;
         } finally {

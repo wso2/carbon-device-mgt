@@ -147,16 +147,20 @@ public class GenericApplicationDAOImpl extends AbstractDAOImpl implements Applic
             if (filter.getSearchQuery() != null && !filter.getSearchQuery().isEmpty()) {
                 sql += "AND APP.NAME LIKE ? ";
             }
-            sql += "LIMIT ?,?;";
+            sql += "LIMIT ? OFFSET ?;";
 
             stmt = conn.prepareStatement(sql);
-            stmt.setString(++index, userName);
             stmt.setInt(++index, tenantId);
+
+            if (!userName.equals("ALL")) {
+                stmt.setString(++index, userName);
+            }
             if (filter.getSearchQuery() != null && !filter.getSearchQuery().isEmpty()) {
                 stmt.setString(++index, "%" + filter.getSearchQuery() + "%");
             }
-            stmt.setInt(++index, filter.getOffset());
+
             stmt.setInt(++index, filter.getLimit());
+            stmt.setInt(++index, filter.getOffset());
 
             rs = stmt.executeQuery();
 
@@ -421,26 +425,26 @@ public class GenericApplicationDAOImpl extends AbstractDAOImpl implements Applic
         try {
             conn = this.getDBConnection();
             int index = 0;
-            sql += "UPDATE APPM_APPLICATION SET NAME = IFNULL (?, NAME), SHORT_DESCRIPTION = IFNULL "
-                    + "(?, SHORT_DESCRIPTION), DESCRIPTION = IFNULL (?, DESCRIPTION), SCREEN_SHOT_COUNT = IFNULL (?, "
-                    + "SCREEN_SHOT_COUNT), VIDEO_NAME = IFNULL (?, VIDEO_NAME), "
-                    + "MODIFIED_AT = IFNULL (?, MODIFIED_AT), ";
+            sql += "UPDATE APPM_APPLICATION SET NAME = COALESCE (?, NAME), SHORT_DESCRIPTION = COALESCE "
+                    + "(?, SHORT_DESCRIPTION), DESCRIPTION = COALESCE (?, DESCRIPTION), SCREEN_SHOT_COUNT = "
+                    + "COALESCE (?, SCREEN_SHOT_COUNT), VIDEO_NAME = COALESCE (?, VIDEO_NAME), MODIFIED_AT = COALESCE "
+                    + "(?, MODIFIED_AT), ";
 
             if (application.getPayment() != null) {
-                sql += " IS_FREE = IFNULL (?, IS_FREE), ";
+                sql += " IS_FREE = COALESCE (?, IS_FREE), ";
                 if (application.getPayment().getPaymentCurrency() != null) {
-                    sql += "PAYMENT_CURRENCY = IFNULL (?, PAYMENT_CURRENCY), ";
+                    sql += "PAYMENT_CURRENCY = COALESCE (?, PAYMENT_CURRENCY), ";
                 }
-                sql += "PAYMENT_PRICE = IFNULL (?, PAYMENT_PRICE), ";
+                sql += "PAYMENT_PRICE = COALESCE (?, PAYMENT_PRICE), ";
             }
             if (application.getCategory() != null && application.getCategory().getId() != 0) {
-                sql += "APPLICATION_CATEGORY_ID = IFNULL (?, APPLICATION_CATEGORY_ID), ";
+                sql += "APPLICATION_CATEGORY_ID = COALESCE (?, APPLICATION_CATEGORY_ID), ";
             }
             if (application.getPlatform() != null && application.getPlatform().getId() != 0) {
-                sql += "PLATFORM_ID = IFNULL (?, PLATFORM_ID), ";
+                sql += "PLATFORM_ID = COALESCE (?, PLATFORM_ID), ";
             }
 
-            sql += "TENANT_ID = IFNULL (?, TENANT_ID) WHERE UUID = ?";
+            sql += "TENANT_ID = COALESCE (?, TENANT_ID) WHERE UUID = ?";
 
             stmt = conn.prepareStatement(sql);
             stmt.setString(++index, application.getName());

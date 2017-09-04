@@ -572,7 +572,7 @@ public class UserManagementServiceImpl implements UserManagementService {
 
                 EmailMetaInfo metaInfo = new EmailMetaInfo(recipient, props);
                 dms.sendEnrolmentInvitation(DeviceManagementConstants.EmailAttributes.USER_ENROLLMENT_TEMPLATE,
-                                            metaInfo);
+                        metaInfo);
             }
         } catch (DeviceManagementException e) {
             String msg = "Error occurred while inviting user to enrol their device";

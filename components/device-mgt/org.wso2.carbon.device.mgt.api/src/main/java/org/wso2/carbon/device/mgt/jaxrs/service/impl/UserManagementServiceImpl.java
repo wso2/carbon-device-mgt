@@ -86,6 +86,7 @@ public class UserManagementServiceImpl implements UserManagementService {
     private static final String DEFAULT_DEVICE_USER = "Internal/devicemgt-user";
     private static final String DEFAULT_DEVICE_ADMIN = "Internal/devicemgt-admin";
     boolean mailConfiguration = false;
+    private static final String transportSenderName = "mailto";
 
     // Permissions that are given for a normal device user.
     private static final Permission[] PERMISSIONS_FOR_DEVICE_USER = {
@@ -156,7 +157,11 @@ public class UserManagementServiceImpl implements UserManagementService {
             props.setProperty("password", initialUserPassword);
 
             EmailMetaInfo metaInfo = new EmailMetaInfo(recipient, props);
-            dms.sendRegistrationEmail(metaInfo);
+            if(DeviceMgtAPIUtils.getDeviceManagementService().isMailConfigured(transportSenderName)){
+                dms.sendRegistrationEmail(metaInfo);
+            } else {
+                log.warn("Mail is not configured hence invitation cannot be sent.");
+            }
             return Response.created(new URI(API_BASE_PATH + "/" + URIEncoder.encode(userInfo.getUsername(), "UTF-8")))
                     .entity(
                             createdUserInfo).build();
@@ -221,7 +226,6 @@ public class UserManagementServiceImpl implements UserManagementService {
     @Override
     public Response isMailConfigured() {
         DeviceManagementProviderService dms = DeviceMgtAPIUtils.getDeviceManagementService();
-        String transportSenderName = "mailto";
         try {
             mailConfiguration = dms.isMailConfigured(transportSenderName);
         } catch (DeviceManagementException e) {
@@ -578,8 +582,7 @@ public class UserManagementServiceImpl implements UserManagementService {
                 props.setProperty("username", username);
 
                 EmailMetaInfo metaInfo = new EmailMetaInfo(recipient, props);
-                this.isMailConfigured();
-                if (mailConfiguration) {
+                if(DeviceMgtAPIUtils.getDeviceManagementService().isMailConfigured(transportSenderName)){
                     dms.sendEnrolmentInvitation(DeviceManagementConstants.EmailAttributes.USER_ENROLLMENT_TEMPLATE,
                             metaInfo);
                 } else {

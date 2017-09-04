@@ -220,19 +220,14 @@ $.fn.datatables_extended_serverside_paging = function (settings, url, dataFilter
                 }
 
                 var mailConfig = false;
-
-                invokerUtil.get(apiBasePath + "/users/is-mail-configured",
-
-                    function (data) {
-                        if (data) {
-                            mailConfig = data;
-                        }
+                var mailConfigAPIUrl = apiBasePath + "/users/is-mail-configured";
+                invokerUtil.get(mailConfigAPIUrl, function (data) {
+                    if (data) {
+                        mailConfig = data;
                     }
-                    //console.log("sucees call");
-                    // mailConfig = true
-                    , function () {
-                        mailConfig = false;
-                    });
+                }, function () {
+                    mailConfig = false;
+                });
 
                 function getAdvanceToolBar() {
                     if (table.hasClass('sorting-enabled')) {
@@ -243,7 +238,7 @@ $.fn.datatables_extended_serverside_paging = function (settings, url, dataFilter
                             '<li><button data-click-event="toggle-list-view" data-view="list" class="btn btn-default"><i class="fw fw-list"></i></button></li>' +
                             '<li><button class="btn btn-default" data-toggle="dropdown"><i class="fw fw-sort"></i></button>' + dropdownmenu[0].outerHTML + '</li>' +
                             '</ul>'
-                    } else if (!mailConfig) {
+                    } else if (mailConfig == "true") {
                         return '<ul class="nav nav-pills navbar-right remove-margin" role="tablist">' +
                             '<li><button data-click-event="toggle-list-view" data-view="grid" class="btn btn-default"><i class="fw fw-grid"></i></button></li>' +
                             '<li><button data-click-event="toggle-list-view" data-view="list" class="btn btn-default"><i class="fw fw-list"></i></button></li>' +

@@ -67,23 +67,18 @@ public class EmailSenderServiceImpl implements EmailSenderService {
             EmailData emailData;
             try {
                 emailData = contentProvider.getContent(info.getTemplate(), info.getParams());
-                threadPoolExecutor.submit(new EmailSender(recipient, emailData.getSubject(), emailData.getBody()));
             } catch (ContentProcessingInterruptedException e) {
                 throw new EmailSendingFailedException("Error occurred while retrieving email content to be " +
                         "sent for recipient '" + recipient + "'", e);
             }
-
+            threadPoolExecutor.submit(new EmailSender(recipient, emailData.getSubject(), emailData.getBody()));
         }
     }
 
     @Override
     public boolean mailConfigurationStatus(String transportSenderName) {
-        if (EmailSenderDataHolder.getInstance().getConfigurationContextService()
-                .getServerConfigContext().getAxisConfiguration().getTransportOut(transportSenderName) == null) {
-            return false;
-        } else {
-            return true;
-        }
+        return (EmailSenderDataHolder.getInstance().getConfigurationContextService()
+                .getServerConfigContext().getAxisConfiguration().getTransportOut(transportSenderName) != null);
     }
 
     public static class EmailSender implements Runnable {

@@ -60,6 +60,7 @@ public class DAOFactory {
             switch (databaseEngine) {
             case Constants.DataBaseTypes.DB_TYPE_H2:
             case Constants.DataBaseTypes.DB_TYPE_MYSQL:
+            case Constants.DataBaseTypes.DB_TYPE_POSTGRESQL:
                 return new GenericApplicationDAOImpl();
             default:
                 throw new UnsupportedDatabaseEngineException("Unsupported database engine : " + databaseEngine);
@@ -90,6 +91,7 @@ public class DAOFactory {
             switch (databaseEngine) {
             case Constants.DataBaseTypes.DB_TYPE_H2:
             case Constants.DataBaseTypes.DB_TYPE_MYSQL:
+            case Constants.DataBaseTypes.DB_TYPE_POSTGRESQL:
                 return new GenericLifecycleStateImpl();
             default:
                 throw new UnsupportedDatabaseEngineException("Unsupported database engine : " + databaseEngine);
@@ -107,6 +109,7 @@ public class DAOFactory {
             switch (databaseEngine) {
             case Constants.DataBaseTypes.DB_TYPE_H2:
             case Constants.DataBaseTypes.DB_TYPE_MYSQL:
+            case Constants.DataBaseTypes.DB_TYPE_POSTGRESQL:
                 return new GenericApplicationReleaseDAOImpl();
             default:
                 throw new UnsupportedDatabaseEngineException("Unsupported database engine : " + databaseEngine);

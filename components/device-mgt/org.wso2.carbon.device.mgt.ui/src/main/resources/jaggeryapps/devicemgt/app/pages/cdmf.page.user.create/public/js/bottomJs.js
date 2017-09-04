@@ -256,6 +256,9 @@ $(document).ready(function () {
         } else if (!emailIsValid(emailAddress)) {
             $(errorMsg).text("Provided email is invalid.");
             $(errorMsgWrapper).removeClass("hidden");
+        } else if (!roles) {
+            $(errorMsg).text("Role is a required field. It cannot be empty.");
+            $(errorMsgWrapper).removeClass("hidden");
         } else {
             var addUserFormData = {};
 

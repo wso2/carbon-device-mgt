@@ -26,6 +26,7 @@ import org.wso2.carbon.device.mgt.common.InvalidDeviceException;
 import org.wso2.carbon.device.mgt.common.MonitoringOperation;
 import org.wso2.carbon.device.mgt.common.PaginationRequest;
 import org.wso2.carbon.device.mgt.common.PaginationResult;
+import org.wso2.carbon.device.mgt.common.configuration.mgt.ConfigurationManagementException;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.PlatformConfiguration;
 import org.wso2.carbon.device.mgt.common.license.mgt.License;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Activity;
@@ -436,9 +437,10 @@ public interface DeviceManagementProviderService {
 
     HashMap<Integer, Device> getTenantedDevice(DeviceIdentifier deviceIdentifier) throws DeviceManagementException;
 
-    void sendEnrolmentInvitation(String templateName, EmailMetaInfo metaInfo) throws DeviceManagementException;
+    void sendEnrolmentInvitation(String templateName, EmailMetaInfo metaInfo) throws DeviceManagementException,
+            ConfigurationManagementException;
 
-    void sendRegistrationEmail(EmailMetaInfo metaInfo) throws DeviceManagementException;
+    void sendRegistrationEmail(EmailMetaInfo metaInfo) throws DeviceManagementException, ConfigurationManagementException;
 
     FeatureManager getFeatureManager(String deviceType) throws DeviceManagementException;
 

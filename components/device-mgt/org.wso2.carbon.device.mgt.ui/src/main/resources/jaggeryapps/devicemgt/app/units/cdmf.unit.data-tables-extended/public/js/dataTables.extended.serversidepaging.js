@@ -220,6 +220,7 @@ $.fn.datatables_extended_serverside_paging = function (settings, url, dataFilter
                 }
 
                 var mailConfig = false;
+                var apiBasePath = "/api/device-mgt/v1.0";
                 var mailConfigAPIUrl = apiBasePath + "/users/is-mail-configured";
                 invokerUtil.get(mailConfigAPIUrl, function (data) {
                     if (data) {

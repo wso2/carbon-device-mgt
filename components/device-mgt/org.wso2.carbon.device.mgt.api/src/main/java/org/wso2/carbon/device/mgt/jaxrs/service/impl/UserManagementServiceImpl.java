@@ -167,9 +167,8 @@ public class UserManagementServiceImpl implements UserManagementService {
             }
             userInfoWrapper.setBasicUserInfo(createdUserInfo);
             userInfoWrapper.setMessage(message);
-            return Response.created(new URI(API_BASE_PATH + "/" + URIEncoder.encode(userInfo.getUsername(), "UTF-8")))
-                    .entity(
-                    userInfoWrapper).build();
+            return Response.created(new URI(API_BASE_PATH + "/" + URIEncoder.encode(userInfo.getUsername(),
+                    "UTF-8"))).entity(userInfoWrapper).build();
         } catch (UserStoreException e) {
             String msg = "Error occurred while trying to add user '" + userInfo.getUsername() + "' to the " +
                     "underlying user management system";
@@ -189,8 +188,7 @@ public class UserManagementServiceImpl implements UserManagementService {
             return Response.serverError().entity(
                     new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
         } catch (DeviceManagementException e) {
-            String msg = "Error occurred while sending registration email to the user " +
-                    userInfo.getUsername();
+            String msg = "Error occurred while sending registration email to the user " + userInfo.getUsername();
             log.error(msg, e);
             return Response.serverError().entity(
                     new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();

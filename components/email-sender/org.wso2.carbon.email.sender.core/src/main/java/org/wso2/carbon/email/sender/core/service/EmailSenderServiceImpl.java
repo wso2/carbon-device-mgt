@@ -62,8 +62,8 @@ public class EmailSenderServiceImpl implements EmailSenderService {
     }
 
     private boolean isMailServerConfigured() {
-        if(EmailSenderDataHolder.getInstance().getConfigurationContextService()
-                .getServerConfigContext().getAxisConfiguration().getTransportOut(TRANSPORT_SENDER_NAME) != null) {
+        if(EmailSenderDataHolder.getInstance().getConfigurationContextService().getServerConfigContext().
+                getAxisConfiguration().getTransportOut(TRANSPORT_SENDER_NAME) != null) {
             return true;
         } else {
             return false;
@@ -141,7 +141,5 @@ public class EmailSenderServiceImpl implements EmailSenderService {
                         "'", e);
             }
         }
-
     }
-
 }

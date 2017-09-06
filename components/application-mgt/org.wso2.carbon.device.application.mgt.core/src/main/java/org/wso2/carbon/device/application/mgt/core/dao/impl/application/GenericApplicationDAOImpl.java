@@ -63,6 +63,7 @@ public class GenericApplicationDAOImpl extends AbstractDAOImpl implements Applic
         PreparedStatement stmt = null;
         ResultSet rs = null;
         String sql = "";
+        String generatedColumns[] = { "ID" };
         boolean isBatchExecutionSupported = ConnectionManagerUtil.isBatchQuerySupported();
         int index = 0;
         try {
@@ -73,7 +74,7 @@ public class GenericApplicationDAOImpl extends AbstractDAOImpl implements Applic
                     + "LIFECYCLE_STATE_MODIFIED_AT, LIFECYCLE_STATE_MODIFIED_BY) VALUES "
                     + "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-            stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            stmt = conn.prepareStatement(sql, generatedColumns);
             stmt.setString(++index, application.getUuid());
             stmt.setString(++index, application.getIdentifier());
             stmt.setString(++index, application.getName());
@@ -133,35 +134,7 @@ public class GenericApplicationDAOImpl extends AbstractDAOImpl implements Applic
 
         try {
             conn = this.getDBConnection();
-            sql += "SELECT APP.*, APL.NAME AS APL_NAME, APL.IDENTIFIER AS APL_IDENTIFIER, "
-                    + "CAT.ID AS CAT_ID, CAT.NAME AS CAT_NAME,  LS.NAME AS LS_NAME, LS.IDENTIFIER AS LS_IDENTIFIER, "
-                    + "LS.DESCRIPTION AS LS_DESCRIPTION FROM APPM_APPLICATION AS APP INNER JOIN APPM_PLATFORM AS "
-                    + "APL ON APP.PLATFORM_ID = APL.ID INNER JOIN APPM_APPLICATION_CATEGORY AS CAT ON "
-                    + "APP.APPLICATION_CATEGORY_ID = CAT.ID INNER JOIN APPM_LIFECYCLE_STATE AS "
-                    + "LS ON APP.LIFECYCLE_STATE_ID = LS.ID WHERE APP.TENANT_ID = ? ";
-
-            String userName = filter.getUserName();
-            if (!userName.equals("ALL")) {
-                sql += " AND APP.CREATED_BY = ? ";
-            }
-            if (filter.getSearchQuery() != null && !filter.getSearchQuery().isEmpty()) {
-                sql += "AND APP.NAME LIKE ? ";
-            }
-            sql += "LIMIT ? OFFSET ?;";
-
-            stmt = conn.prepareStatement(sql);
-            stmt.setInt(++index, tenantId);
-
-            if (!userName.equals("ALL")) {
-                stmt.setString(++index, userName);
-            }
-            if (filter.getSearchQuery() != null && !filter.getSearchQuery().isEmpty()) {
-                stmt.setString(++index, "%" + filter.getSearchQuery() + "%");
-            }
-
-            stmt.setInt(++index, filter.getLimit());
-            stmt.setInt(++index, filter.getOffset());
-
+            stmt = this.generateGetApplicationsStatement(filter, conn, tenantId);
             rs = stmt.executeQuery();
 
             int length = 0;
@@ -202,6 +175,51 @@ public class GenericApplicationDAOImpl extends AbstractDAOImpl implements Applic
             Util.cleanupResources(stmt, rs);
         }
         return applicationList;
+    }
+
+    /**
+     * This method is used to generate the statement that is used to get the applications with the given filter.
+     *
+     * @param filter   Filter to filter out the applications.
+     * @param conn     Database Connection.
+     * @param tenantId ID of the tenant to retrieve the applications.
+     * @return the statement for getting applications that are belong to a particular filter.
+     * @throws SQLException SQL Exception
+     */
+    protected PreparedStatement generateGetApplicationsStatement(Filter filter, Connection conn,
+            int tenantId) throws SQLException {
+        int index = 0;
+        String sql = "SELECT APP.*, APL.NAME AS APL_NAME, APL.IDENTIFIER AS APL_IDENTIFIER, CAT.ID AS CAT_ID, "
+                + "CAT.NAME AS CAT_NAME,  LS.NAME AS LS_NAME, LS.IDENTIFIER AS LS_IDENTIFIER, "
+                + "LS.DESCRIPTION AS LS_DESCRIPTION " + "FROM APPM_APPLICATION APP " + "INNER JOIN APPM_PLATFORM APL "
+                + "ON APP.PLATFORM_ID = APL.ID " + "INNER JOIN APPM_APPLICATION_CATEGORY CAT "
+                + "ON APP.APPLICATION_CATEGORY_ID = CAT.ID " + "INNER JOIN APPM_LIFECYCLE_STATE LS "
+                + "ON APP.LIFECYCLE_STATE_ID = LS.ID WHERE APP.TENANT_ID = ? ";
+
+        String userName = filter.getUserName();
+        if (!userName.equals("ALL")) {
+            sql += " AND APP.CREATED_BY = ? ";
+        }
+        if (filter.getSearchQuery() != null && !filter.getSearchQuery().isEmpty()) {
+            sql += "AND APP.NAME LIKE ? ";
+        }
+
+        sql += "LIMIT ? OFFSET ?";
+
+        PreparedStatement stmt = conn.prepareStatement(sql);
+        stmt.setInt(++index, tenantId);
+
+        if (!userName.equals("ALL")) {
+            stmt.setString(++index, userName);
+        }
+        if (filter.getSearchQuery() != null && !filter.getSearchQuery().isEmpty()) {
+            stmt.setString(++index, "%" + filter.getSearchQuery() + "%");
+        }
+
+        stmt.setInt(++index, filter.getLimit());
+        stmt.setInt(++index, filter.getOffset());
+
+        return stmt;
     }
 
     @Override
@@ -266,13 +284,17 @@ public class GenericApplicationDAOImpl extends AbstractDAOImpl implements Applic
         try {
 
             conn = this.getDBConnection();
-            sql += "SELECT APP.*, APL.NAME AS APL_NAME, APL.IDENTIFIER AS APL_IDENTIFIER, "
-                    + "CAT.ID AS CAT_ID, CAT.NAME AS CAT_NAME,  LS.NAME AS LS_NAME, LS.IDENTIFIER AS LS_IDENTIFIER, "
-                    + "LS.DESCRIPTION AS LS_DESCRIPTION FROM APPM_APPLICATION AS APP INNER JOIN APPM_PLATFORM AS "
-                    + "APL ON APP.PLATFORM_ID = APL.ID INNER JOIN APPM_APPLICATION_CATEGORY AS CAT ON "
-                    + "APP.APPLICATION_CATEGORY_ID = CAT.ID INNER JOIN APPM_LIFECYCLE_STATE AS "
-                    + "LS ON APP.LIFECYCLE_STATE_ID = LS.ID WHERE UUID = ? AND APP.TENANT_ID = ? ";
-
+            sql += "SELECT APP.*, APL.NAME AS APL_NAME, APL.IDENTIFIER AS APL_IDENTIFIER, CAT.ID AS CAT_ID, "
+                    + "CAT.NAME AS CAT_NAME,  LS.NAME AS LS_NAME, LS.IDENTIFIER AS LS_IDENTIFIER, "
+                    + "LS.DESCRIPTION AS LS_DESCRIPTION "
+                    + "FROM APPM_APPLICATION APP "
+                    + "INNER JOIN APPM_PLATFORM APL "
+                        + "ON APP.PLATFORM_ID = APL.ID "
+                    + "INNER JOIN APPM_APPLICATION_CATEGORY CAT "
+                        + "ON APP.APPLICATION_CATEGORY_ID = CAT.ID "
+                    + "INNER JOIN APPM_LIFECYCLE_STATE LS "
+                        + " ON APP.LIFECYCLE_STATE_ID = LS.ID "
+                    + "WHERE UUID = ? AND APP.TENANT_ID = ? ";
 
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, uuid);
@@ -308,7 +330,8 @@ public class GenericApplicationDAOImpl extends AbstractDAOImpl implements Applic
             return application;
         } catch (SQLException e) {
             throw new ApplicationManagementDAOException(
-                    "Error occurred while getting application details with UUID " + uuid, e);
+                    "Error occurred while getting application details with UUID " + uuid + " While executing query "
+                            + sql, e);
         } catch (JSONException e) {
             throw new ApplicationManagementDAOException("Error occurred while parsing JSON", e);
         } catch (DBConnectionException e) {
@@ -360,7 +383,7 @@ public class GenericApplicationDAOImpl extends AbstractDAOImpl implements Applic
         ResultSet resultSet = null;
 
         String sql = "SELECT STATE.NAME, TRANSITION.DESCRIPTION, TRANSITION.PERMISSION FROM ( SELECT * FROM "
-                + "APPM_LIFECYCLE_STATE ) STATE RIGHT JOIN (SELECT * FROM APPM_LIFECYCLE_STATE_TRANSITION WHERE "
+                + "APPM_LIFECYCLE_STATE ) STATE RIGHT JOIN (SELECT * FROM APPM_LC_STATE_TRANSITION WHERE "
                 + "INITIAL_STATE = (SELECT LIFECYCLE_STATE_ID FROM APPM_APPLICATION WHERE UUID = ? AND TENANT_ID = ?)) "
                 + "TRANSITION  ON TRANSITION.NEXT_STATE = STATE.ID";
 

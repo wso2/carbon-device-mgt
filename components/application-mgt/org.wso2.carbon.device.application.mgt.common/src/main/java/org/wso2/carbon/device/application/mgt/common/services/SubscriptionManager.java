@@ -37,6 +37,24 @@ public interface SubscriptionManager {
     List<DeviceIdentifier> installApplicationForDevices(String applicationUUID, List<DeviceIdentifier> deviceList) throws ApplicationManagementException;
 
     /**
+     * To install an application to given list of users.
+     * @param applicationUUID Application ID
+     * @param userList User list
+     * @return User list which the application has been installed
+     * @throws ApplicationManagementException Application Management Exception
+     */
+    List<String> installApplicationForUsers(String applicationUUID, List<String> userList) throws ApplicationManagementException;
+
+    /**
+     * To install an application to given list of users.
+     * @param applicationUUID Application ID
+     * @param roleList Role list
+     * @return Role list which the application has been installed
+     * @throws ApplicationManagementException Application Management Exception
+     */
+    List<String> installApplicationForRoles(String applicationUUID, List<String> roleList) throws ApplicationManagementException;
+
+    /**
      * To uninstall an application from a given list of devices.
      * @param applicationUUID Application ID
      * @param deviceList Device list

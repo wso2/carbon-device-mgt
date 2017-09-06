@@ -161,6 +161,11 @@ public class ConnectionManagerUtil {
         return inTransaction;
     }
 
+    public static boolean isTransactionStarted() throws DBConnectionException {
+        Connection connection = getDBConnection();
+        return inTransaction(connection);
+    }
+
     @Deprecated
     public static ThreadLocal<Connection> getCurrentConnection() {
         return currentConnection;

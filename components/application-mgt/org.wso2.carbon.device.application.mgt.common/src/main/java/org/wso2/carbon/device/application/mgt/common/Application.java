@@ -35,8 +35,6 @@ public class Application {
 
     private String uuid;
 
-    private String identifier;
-
     private String name;
 
     private String shortDescription;
@@ -117,14 +115,6 @@ public class Application {
 
     public void setUuid(String uuid) {
         this.uuid = uuid;
-    }
-
-    public String getIdentifier() {
-        return identifier;
-    }
-
-    public void setIdentifier(String identifier) {
-        this.identifier = identifier;
     }
 
     public String getName() {
@@ -233,7 +223,7 @@ public class Application {
 
     @Override
     public String toString() {
-        return "UUID : " + uuid + "\tIdentifier : " + identifier + "\tName : " + name + "\tShort Description : "
+        return "UUID : " + uuid + "\tName : " + name + "\tShort Description : "
                 + shortDescription + "\tLifecycle State : " + currentLifecycle.getLifecycleState();
     }
 }

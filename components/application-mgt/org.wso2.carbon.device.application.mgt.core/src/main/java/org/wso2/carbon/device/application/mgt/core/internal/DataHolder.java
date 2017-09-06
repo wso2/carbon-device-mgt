@@ -27,7 +27,6 @@ import org.wso2.carbon.device.application.mgt.common.services.LifecycleStateMana
 import org.wso2.carbon.device.application.mgt.common.services.PlatformManager;
 import org.wso2.carbon.device.application.mgt.common.services.SubscriptionManager;
 import org.wso2.carbon.device.application.mgt.common.services.VisibilityManager;
-import org.wso2.carbon.device.application.mgt.common.services.VisibilityTypeManager;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.user.core.service.RealmService;
 
@@ -51,8 +50,6 @@ public class DataHolder {
     private LifecycleStateManager lifecycleStateManager;
 
     private PlatformManager platformManager;
-
-    private VisibilityTypeManager visibilityTypeManager;
 
     private SubscriptionManager subscriptionManager;
 
@@ -124,14 +121,6 @@ public class DataHolder {
 
     public void setPlatformManager(PlatformManager platformManager) {
         this.platformManager = platformManager;
-    }
-
-    public VisibilityTypeManager getVisibilityTypeManager() {
-        return visibilityTypeManager;
-    }
-
-    public void setVisibilityTypeManager(VisibilityTypeManager visibilityTypeManager) {
-        this.visibilityTypeManager = visibilityTypeManager;
     }
 
     public SubscriptionManager getSubscriptionManager() {

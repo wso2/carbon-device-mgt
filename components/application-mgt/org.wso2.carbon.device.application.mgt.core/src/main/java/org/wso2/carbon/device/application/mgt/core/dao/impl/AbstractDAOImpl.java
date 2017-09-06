@@ -31,9 +31,4 @@ public abstract class AbstractDAOImpl {
     protected Connection getDBConnection() throws DBConnectionException {
         return ConnectionManagerUtil.getDBConnection();
     }
-
-    @Deprecated
-    protected Connection getConnection() throws DBConnectionException {
-        return ConnectionManagerUtil.getConnection();
-    }
 }

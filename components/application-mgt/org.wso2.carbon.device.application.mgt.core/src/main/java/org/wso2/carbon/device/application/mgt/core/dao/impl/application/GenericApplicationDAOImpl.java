@@ -67,7 +67,7 @@ public class GenericApplicationDAOImpl extends AbstractDAOImpl implements Applic
         int index = 0;
         try {
             conn = this.getDBConnection();
-            sql += "INSERT INTO APPM_APPLICATION (UUID, IDENTIFIER, NAME, SHORT_DESCRIPTION, DESCRIPTION, "
+            sql += "INSERT INTO APPM_APPLICATION (UUID, NAME, SHORT_DESCRIPTION, DESCRIPTION, "
                     + "VIDEO_NAME, SCREEN_SHOT_COUNT, CREATED_BY, CREATED_AT, MODIFIED_AT, "
                     + "APPLICATION_CATEGORY_ID, PLATFORM_ID, TENANT_ID, LIFECYCLE_STATE_ID, "
                     + "LIFECYCLE_STATE_MODIFIED_AT, LIFECYCLE_STATE_MODIFIED_BY) VALUES "
@@ -75,7 +75,6 @@ public class GenericApplicationDAOImpl extends AbstractDAOImpl implements Applic
 
             stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             stmt.setString(++index, application.getUuid());
-            stmt.setString(++index, application.getIdentifier());
             stmt.setString(++index, application.getName());
             stmt.setString(++index, application.getShortDescription());
             stmt.setString(++index, application.getDescription());
@@ -133,7 +132,7 @@ public class GenericApplicationDAOImpl extends AbstractDAOImpl implements Applic
 
         try {
             conn = this.getDBConnection();
-            sql += "SELECT APP.*, APL.NAME AS APL_NAME, APL.IDENTIFIER AS APL_IDENTIFIER, "
+            sql += "SELECT APP.*, APL.NAME AS APL_NAME, "
                     + "CAT.ID AS CAT_ID, CAT.NAME AS CAT_NAME,  LS.NAME AS LS_NAME, LS.IDENTIFIER AS LS_IDENTIFIER, "
                     + "LS.DESCRIPTION AS LS_DESCRIPTION FROM APPM_APPLICATION AS APP INNER JOIN APPM_PLATFORM AS "
                     + "APL ON APP.PLATFORM_ID = APL.ID INNER JOIN APPM_APPLICATION_CATEGORY AS CAT ON "
@@ -222,7 +221,7 @@ public class GenericApplicationDAOImpl extends AbstractDAOImpl implements Applic
         }
 
         try {
-            conn = this.getConnection();
+            conn = this.getDBConnection();
             sql += "SELECT COUNT(APP.ID) AS APP_COUNT ";
             sql += "FROM APPM_APPLICATION AS APP ";
             sql += "INNER JOIN APPM_PLATFORM AS APL ON APP.PLATFORM_ID = APL.ID ";
@@ -266,7 +265,7 @@ public class GenericApplicationDAOImpl extends AbstractDAOImpl implements Applic
         try {
 
             conn = this.getDBConnection();
-            sql += "SELECT APP.*, APL.NAME AS APL_NAME, APL.IDENTIFIER AS APL_IDENTIFIER, "
+            sql += "SELECT APP.*, APL.NAME AS APL_NAME, "
                     + "CAT.ID AS CAT_ID, CAT.NAME AS CAT_NAME,  LS.NAME AS LS_NAME, LS.IDENTIFIER AS LS_IDENTIFIER, "
                     + "LS.DESCRIPTION AS LS_DESCRIPTION FROM APPM_APPLICATION AS APP INNER JOIN APPM_PLATFORM AS "
                     + "APL ON APP.PLATFORM_ID = APL.ID INNER JOIN APPM_APPLICATION_CATEGORY AS CAT ON "

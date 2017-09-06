@@ -32,7 +32,6 @@ import org.wso2.carbon.device.application.mgt.common.services.LifecycleStateMana
 import org.wso2.carbon.device.application.mgt.common.services.PlatformManager;
 import org.wso2.carbon.device.application.mgt.common.services.SubscriptionManager;
 import org.wso2.carbon.device.application.mgt.common.services.VisibilityManager;
-import org.wso2.carbon.device.application.mgt.common.services.VisibilityTypeManager;
 import org.wso2.carbon.device.application.mgt.core.config.ConfigurationManager;
 import org.wso2.carbon.device.application.mgt.core.dao.common.DAOFactory;
 import org.wso2.carbon.device.application.mgt.core.exception.ApplicationManagementDAOException;
@@ -112,10 +111,6 @@ public class ServiceComponent {
             VisibilityManager visibilityManager = ApplicationManagementUtil.getVisibilityManagerInstance();
             DataHolder.getInstance().setVisibilityManager(visibilityManager);
             bundleContext.registerService(VisibilityManager.class.getName(), visibilityManager, null);
-
-            VisibilityTypeManager visibilityTypeManager = ApplicationManagementUtil.getVisibilityTypeManagerInstance();
-            DataHolder.getInstance().setVisibilityTypeManager(visibilityTypeManager);
-            bundleContext.registerService(VisibilityTypeManager.class.getName(), visibilityTypeManager, null);
 
             ApplicationStorageManager applicationStorageManager = ApplicationManagementUtil
                     .getApplicationStorageManagerInstance();

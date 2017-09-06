@@ -18,5 +18,23 @@
  */
 package org.wso2.carbon.device.application.mgt.core.dao;
 
+import org.wso2.carbon.device.application.mgt.common.Visibility;
+import org.wso2.carbon.device.application.mgt.core.exception.VisibilityManagementDAOException;
+
+import java.util.List;
+
+/**
+ * This interface provides the list of operations that are performed in the database layer with respect to the visibility.
+ */
 public interface VisibilityDAO {
+
+    int getVisibilityID(Visibility.Type visibilityType) throws VisibilityManagementDAOException;
+
+    void add(int applicationID, int visibilityTypeID, List<String> allowedList)
+            throws VisibilityManagementDAOException;
+
+    void delete(int applicationId) throws VisibilityManagementDAOException;
+
+    Visibility get(int applicationID) throws VisibilityManagementDAOException;
+
 }

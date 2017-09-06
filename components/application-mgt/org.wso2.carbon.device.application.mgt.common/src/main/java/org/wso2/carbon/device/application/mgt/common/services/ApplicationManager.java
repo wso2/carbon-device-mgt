@@ -37,7 +37,7 @@ public interface ApplicationManager {
      * @return Created application
      * @throws ApplicationManagementException Application Management Exception
      */
-    public Application createApplication(Application application) throws ApplicationManagementException;
+    Application createApplication(Application application) throws ApplicationManagementException;
 
     /**
      * Updates an already existing application.
@@ -45,14 +45,14 @@ public interface ApplicationManager {
      * @return Updated Application
      * @throws ApplicationManagementException Application Management Exception
      */
-    public Application editApplication(Application application) throws ApplicationManagementException;
+    Application editApplication(Application application) throws ApplicationManagementException;
 
     /**
      * Delete an application identified by the unique ID.
      * @param uuid Unique ID for tha application
      * @throws ApplicationManagementException Application Management Exception
      */
-    public void deleteApplication(String uuid) throws ApplicationManagementException;
+    void deleteApplication(String uuid) throws ApplicationManagementException;
 
     /**
      * To get the applications based on the search filter.
@@ -60,7 +60,7 @@ public interface ApplicationManager {
      * @return Applications that matches the given filter criteria.
      * @throws ApplicationManagementException Application Management Exception
      */
-    public ApplicationList getApplications(Filter filter) throws ApplicationManagementException;
+    ApplicationList getApplications(Filter filter) throws ApplicationManagementException;
 
     /**
      * To change the lifecycle of the Application.
@@ -69,7 +69,7 @@ public interface ApplicationManager {
      * @param lifecycleIdentifier New life-cycle that need to be changed.
      * @throws ApplicationManagementException Application Management Exception.
      */
-    public void changeLifecycle(String applicationUuid, String lifecycleIdentifier) throws
+    void changeLifecycle(String applicationUuid, String lifecycleIdentifier) throws
             ApplicationManagementException;
 
     /**
@@ -79,7 +79,7 @@ public interface ApplicationManager {
      * @return the List of possible states
      * @throws ApplicationManagementException Application Management Exception
      */
-    public List<LifecycleStateTransition> getLifeCycleStates(String applicationUUID)
+    List<LifecycleStateTransition> getLifeCycleStates(String applicationUUID)
             throws ApplicationManagementException;
 
     /**
@@ -89,7 +89,5 @@ public interface ApplicationManager {
      * @return the Application identified by the UUID
      * @throws ApplicationManagementException Application Management Exception.
      */
-    public Application getApplication(String uuid) throws ApplicationManagementException;
-
-
+    Application getApplication(String uuid) throws ApplicationManagementException;
 }

@@ -35,23 +35,23 @@ public interface VisibilityManager {
      * Update (if there is already existing configuration for the application)
      * the visibility related configuration for the application
      *
-     * @param applicationUUID The ID of the application
+     * @param applicationID The ID of the application
      * @param visibility    The visibility configuration for the particular application.
      */
-    void put(String applicationUUID, Visibility visibility) throws VisibilityManagementException;
+    Visibility put(int applicationID, Visibility visibility) throws VisibilityManagementException;
 
     /**
      * Returns the Visibility configuration of the provided applicationUUID.
      *
-     * @param applicationUUID The ID of the application
+     * @param applicationID The ID of the application
      * @return Visibility configuration
      */
-    Visibility get(String applicationUUID) throws VisibilityManagementException;
+    Visibility get(int applicationID) throws VisibilityManagementException;
 
     /**
      * Remove the visibility configuration mapping for the provided application.
      *
-     * @param applicationUUID The ID of the application
+     * @param applicationID The ID of the application
      */
-    void remove(String applicationUUID) throws VisibilityManagementException;
+    void remove(int applicationID) throws VisibilityManagementException;
 }

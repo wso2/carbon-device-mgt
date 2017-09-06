@@ -7,7 +7,6 @@
 -- -----------------------------------------------------
 CREATE TABLE APPM_PLATFORM (
 ID INT UNIQUE,
-IDENTIFIER VARCHAR (100) NOT NULL,
 TENANT_ID INT NOT NULL ,
 NAME VARCHAR (255),
 FILE_BASED NUMBER (1),

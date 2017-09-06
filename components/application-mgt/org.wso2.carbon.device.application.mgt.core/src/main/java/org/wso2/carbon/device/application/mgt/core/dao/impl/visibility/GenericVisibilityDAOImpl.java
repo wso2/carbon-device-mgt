@@ -51,11 +51,11 @@ public class GenericVisibilityDAOImpl extends AbstractDAOImpl implements Visibil
             }
             return -1;
         } catch (DBConnectionException e) {
-            throw new VisibilityManagementDAOException("Error occured while obtaining the connection " +
-                    "for the visibility management of applicatons");
+            throw new VisibilityManagementDAOException("Error occurred while obtaining the connection " +
+                    "for the visibility management of applications", e);
         } catch (SQLException e) {
-            throw new VisibilityManagementDAOException("Error occured when trying to get the ID of the" +
-                    " visibility type - " + visibilityType.toString());
+            throw new VisibilityManagementDAOException("Error occurred when trying to get the ID of the" +
+                    " visibility type - " + visibilityType.toString(), e);
         } finally {
             Util.cleanupResources(stmt, resultSet);
         }
@@ -67,7 +67,7 @@ public class GenericVisibilityDAOImpl extends AbstractDAOImpl implements Visibil
         PreparedStatement stmt = null;
         try {
             Connection connection = getDBConnection();
-            String sql = "INSERT INTO APPM_VISIBILITY (?, ?, ?)";
+            String sql = "INSERT INTO APPM_VISIBILITY (VALUE, RESOURCE_TYPE_ID, APPLICATION_ID) VALUES (?, ?, ?)";
             stmt = connection.prepareStatement(sql);
             if (allowedList == null) {
                 stmt.setString(1, null);
@@ -84,11 +84,11 @@ public class GenericVisibilityDAOImpl extends AbstractDAOImpl implements Visibil
                 stmt.executeBatch();
             }
         } catch (DBConnectionException e) {
-            throw new VisibilityManagementDAOException("Error occured while obtaining the connection " +
-                    "for adding the visibility mapping for the application ID - " + applicationID);
+            throw new VisibilityManagementDAOException("Error occurred while obtaining the connection " +
+                    "for adding the visibility mapping for the application ID - " + applicationID, e);
         } catch (SQLException e) {
-            throw new VisibilityManagementDAOException("Error occured while adding the visibility mapping " +
-                    "for the application ID - " + applicationID);
+            throw new VisibilityManagementDAOException("Error occurred while adding the visibility mapping " +
+                    "for the application ID - " + applicationID, e);
         } finally {
             Util.cleanupResources(stmt, null);
         }
@@ -104,11 +104,11 @@ public class GenericVisibilityDAOImpl extends AbstractDAOImpl implements Visibil
             stmt.setInt(1, applicationId);
             stmt.execute();
         } catch (DBConnectionException e) {
-            throw new VisibilityManagementDAOException("Error occured while obtaining the connection " +
-                    "for deleting the visibility mapping for the application ID - " + applicationId);
+            throw new VisibilityManagementDAOException("Error occurred while obtaining the connection " +
+                    "for deleting the visibility mapping for the application ID - " + applicationId, e);
         } catch (SQLException e) {
-            throw new VisibilityManagementDAOException("Error occured while deleting the visibility mapping " +
-                    "for the application ID - " + applicationId);
+            throw new VisibilityManagementDAOException("Error occurred while deleting the visibility mapping " +
+                    "for the application ID - " + applicationId, e);
         } finally {
             Util.cleanupResources(stmt, null);
         }
@@ -144,11 +144,11 @@ public class GenericVisibilityDAOImpl extends AbstractDAOImpl implements Visibil
             }
             return visibility;
         } catch (DBConnectionException e) {
-            throw new VisibilityManagementDAOException("Error occured while obtaining the connection " +
-                    "for getting the visibility mapping for the application ID - " + applicationId);
+            throw new VisibilityManagementDAOException("Error occurred while obtaining the connection " +
+                    "for getting the visibility mapping for the application ID - " + applicationId, e);
         } catch (SQLException e) {
-            throw new VisibilityManagementDAOException("Error occured while getting the visibility mapping " +
-                    "for the application ID - " + applicationId);
+            throw new VisibilityManagementDAOException("Error occurred while getting the visibility mapping " +
+                    "for the application ID - " + applicationId, e);
         } finally {
             Util.cleanupResources(stmt, resultSet);
         }

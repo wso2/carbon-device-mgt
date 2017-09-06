@@ -17,16 +17,12 @@
 */
 package org.wso2.carbon.device.application.mgt.core.impl;
 
-import org.wso2.carbon.device.application.mgt.common.Application;
 import org.wso2.carbon.device.application.mgt.common.Visibility;
 import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
-import org.wso2.carbon.device.application.mgt.common.exception.DBConnectionException;
-import org.wso2.carbon.device.application.mgt.common.exception.TransactionManagementException;
 import org.wso2.carbon.device.application.mgt.common.exception.VisibilityManagementException;
 import org.wso2.carbon.device.application.mgt.common.services.VisibilityManager;
 import org.wso2.carbon.device.application.mgt.core.dao.VisibilityDAO;
 import org.wso2.carbon.device.application.mgt.core.dao.common.DAOFactory;
-import org.wso2.carbon.device.application.mgt.core.internal.DataHolder;
 import org.wso2.carbon.device.application.mgt.core.util.ConnectionManagerUtil;
 
 /**
@@ -35,36 +31,35 @@ import org.wso2.carbon.device.application.mgt.core.util.ConnectionManagerUtil;
 public class VisibilityManagerImpl implements VisibilityManager {
 
     @Override
-    public void put(String applicationUUID, Visibility visibility) throws VisibilityManagementException {
+    public Visibility put(int applicationID, Visibility visibility) throws VisibilityManagementException {
+        if (visibility == null){
+            visibility = new Visibility();
+            visibility.setType(Visibility.Type.PUBLIC);
+        }
         if (visibility.getAllowedList() == null && !visibility.getType().equals(Visibility.Type.PUBLIC)) {
             throw new VisibilityManagementException("Visibility is configured for '" + visibility.getType()
                     + "' but doesn't have any allowed list provided!");
         }
         boolean isTransactionStarted = false;
         try {
-            Application application = DataHolder.getInstance().getApplicationManager().getApplication(applicationUUID);
-            if (application != null) {
-                isTransactionStarted = ConnectionManagerUtil.isTransactionStarted();
-                if (!isTransactionStarted) {
-                    ConnectionManagerUtil.beginDBTransaction();
-                }
-                int id = application.getId();
-                VisibilityDAO visibilityDAO = DAOFactory.getVisibilityDAO();
-                int visibilityTypeId = visibilityDAO.getVisibilityID(visibility.getType());
-                visibilityDAO.delete(id);
-                visibilityDAO.add(id, visibilityTypeId, visibility.getAllowedList());
-                if (!isTransactionStarted) {
-                    ConnectionManagerUtil.commitDBTransaction();
-                }
-            } else {
-                throw new VisibilityManagementException("No application was found with application UUID - " + applicationUUID);
+            isTransactionStarted = ConnectionManagerUtil.isTransactionStarted();
+            if (!isTransactionStarted) {
+                ConnectionManagerUtil.beginDBTransaction();
             }
+            VisibilityDAO visibilityDAO = DAOFactory.getVisibilityDAO();
+            int visibilityTypeId = visibilityDAO.getVisibilityID(visibility.getType());
+            visibilityDAO.delete(applicationID);
+            visibilityDAO.add(applicationID, visibilityTypeId, visibility.getAllowedList());
+            if (!isTransactionStarted) {
+                ConnectionManagerUtil.commitDBTransaction();
+            }
+            return visibility;
         } catch (ApplicationManagementException e) {
-            if (!isTransactionStarted){
+            if (!isTransactionStarted) {
                 ConnectionManagerUtil.rollbackDBTransaction();
             }
-            throw new VisibilityManagementException("Problem occured when trying to fetch the application with UUID - "
-                    + applicationUUID, e);
+            throw new VisibilityManagementException("Problem occured when trying to fetch the application with ID - "
+                    + applicationID, e);
         } finally {
             if (!isTransactionStarted) {
                 ConnectionManagerUtil.closeDBConnection();
@@ -73,47 +68,39 @@ public class VisibilityManagerImpl implements VisibilityManager {
     }
 
     @Override
-    public Visibility get(String applicationUUID) throws VisibilityManagementException {
+    public Visibility get(int applicationID) throws VisibilityManagementException {
         try {
-            Application application = DataHolder.getInstance().getApplicationManager().getApplication(applicationUUID);
-            if (application != null) {
-                int id = application.getId();
-                VisibilityDAO visibilityDAO = DAOFactory.getVisibilityDAO();
-                return visibilityDAO.get(id);
-            } else {
-                throw new VisibilityManagementException("No application was found with application UUID - " + applicationUUID);
+            VisibilityDAO visibilityDAO = DAOFactory.getVisibilityDAO();
+            Visibility visibility =  visibilityDAO.get(applicationID);
+            if (visibility.getType() == null && (visibility.getAllowedList() == null || visibility.getAllowedList().isEmpty())){
+                visibility.setType(Visibility.Type.PUBLIC);
             }
+            return visibility;
         } catch (ApplicationManagementException e) {
-            throw new VisibilityManagementException("Problem occured when trying to fetch the application with UUID - "
-                    + applicationUUID, e);
+            throw new VisibilityManagementException("Problem occured when trying to fetch the application with ID - "
+                    + applicationID, e);
         }
     }
 
     @Override
-    public void remove(String applicationUUID) throws VisibilityManagementException {
+    public void remove(int applicationID) throws VisibilityManagementException {
         boolean isTransactionStarted = false;
         try {
-            Application application = DataHolder.getInstance().getApplicationManager().getApplication(applicationUUID);
-            if (application != null) {
-                isTransactionStarted = ConnectionManagerUtil.isTransactionStarted();
-                if (!isTransactionStarted) {
-                    ConnectionManagerUtil.beginDBTransaction();
-                }
-                int id = application.getId();
-                VisibilityDAO visibilityDAO = DAOFactory.getVisibilityDAO();
-                visibilityDAO.delete(id);
-                if (!isTransactionStarted) {
-                    ConnectionManagerUtil.commitDBTransaction();
-                }
-            } else {
-                throw new VisibilityManagementException("No application was found with application UUID - " + applicationUUID);
+            isTransactionStarted = ConnectionManagerUtil.isTransactionStarted();
+            if (!isTransactionStarted) {
+                ConnectionManagerUtil.beginDBTransaction();
+            }
+            VisibilityDAO visibilityDAO = DAOFactory.getVisibilityDAO();
+            visibilityDAO.delete(applicationID);
+            if (!isTransactionStarted) {
+                ConnectionManagerUtil.commitDBTransaction();
             }
         } catch (ApplicationManagementException e) {
-            if (!isTransactionStarted){
+            if (!isTransactionStarted) {
                 ConnectionManagerUtil.rollbackDBTransaction();
             }
-            throw new VisibilityManagementException("Problem occurred when trying to fetch the application with UUID - "
-                    + applicationUUID, e);
+            throw new VisibilityManagementException("Problem occurred when trying to fetch the application with ID - "
+                    + applicationID, e);
         } finally {
             if (!isTransactionStarted) {
                 ConnectionManagerUtil.closeDBConnection();

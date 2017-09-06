@@ -22,19 +22,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.CarbonConstants;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
-import org.wso2.carbon.device.application.mgt.common.Application;
-import org.wso2.carbon.device.application.mgt.common.ApplicationList;
-import org.wso2.carbon.device.application.mgt.common.Filter;
-import org.wso2.carbon.device.application.mgt.common.Lifecycle;
-import org.wso2.carbon.device.application.mgt.common.LifecycleState;
-import org.wso2.carbon.device.application.mgt.common.LifecycleStateTransition;
-import org.wso2.carbon.device.application.mgt.common.Platform;
-import org.wso2.carbon.device.application.mgt.common.User;
+import org.wso2.carbon.device.application.mgt.common.*;
 import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
 import org.wso2.carbon.device.application.mgt.common.services.ApplicationManager;
 import org.wso2.carbon.device.application.mgt.core.dao.ApplicationDAO;
 import org.wso2.carbon.device.application.mgt.core.dao.LifecycleStateDAO;
-import org.wso2.carbon.device.application.mgt.core.dao.PlatformDAO;
 import org.wso2.carbon.device.application.mgt.core.dao.common.DAOFactory;
 import org.wso2.carbon.device.application.mgt.core.exception.ApplicationManagementDAOException;
 import org.wso2.carbon.device.application.mgt.core.exception.NotFoundException;
@@ -71,14 +63,15 @@ public class ApplicationManagerImpl implements ApplicationManager {
         application.setCreatedAt(new Date());
         application.setModifiedAt(new Date());
         try {
-            ConnectionManagerUtil.beginDBTransaction();
+            Platform platform = DataHolder.getInstance().getPlatformManager().getPlatform(application.getUser()
+                    .getTenantId(), application.getPlatform().getIdentifier());
 
-            // Validating the platform
-            Platform platform = DataHolder.getInstance().getPlatformManager()
-                    .getPlatform(application.getUser().getTenantId(), application.getPlatform().getIdentifier());
             if (platform == null) {
                 throw new NotFoundException("Invalid platform");
             }
+            ConnectionManagerUtil.beginDBTransaction();
+
+            // Validating the platform
             application.setPlatform(platform);
             if (log.isDebugEnabled()) {
                 log.debug("Application creation pre-conditions are met and the platform mentioned by identifier "
@@ -97,6 +90,7 @@ public class ApplicationManagerImpl implements ApplicationManager {
             application.setCurrentLifecycle(lifecycle);
 
             application = DAOFactory.getApplicationDAO().createApplication(application);
+            DataHolder.getInstance().getVisibilityManager().put(application.getId(), application.getVisibility());
             ConnectionManagerUtil.commitDBTransaction();
             return application;
         } catch (ApplicationManagementException e) {
@@ -120,24 +114,27 @@ public class ApplicationManagerImpl implements ApplicationManager {
                     + "application with the UUID " + application.getUuid());
         }
         try {
-            ConnectionManagerUtil.beginDBTransaction();
             if (application.getPlatform() != null && application.getPlatform().getIdentifier() != null) {
                 Platform platform = DataHolder.getInstance().getPlatformManager()
                         .getPlatform(tenantId, application.getPlatform().getIdentifier());
                 if (platform == null) {
-                    ConnectionManagerUtil.commitDBTransaction();
                     throw new NotFoundException(
                             "Platform specified by identifier " + application.getPlatform().getIdentifier()
                                     + " is not found. Please give a valid platform identifier.");
                 }
                 application.setPlatform(platform);
+                ConnectionManagerUtil.beginDBTransaction();
+                ApplicationDAO applicationDAO = DAOFactory.getApplicationDAO();
+                application.setModifiedAt(new Date());
+                Application modifiedApplication = applicationDAO.editApplication(application, tenantId);
+                Visibility visibility = DataHolder.getInstance().getVisibilityManager().put(application.getId(),
+                        application.getVisibility());
+                modifiedApplication.setVisibility(visibility);
+                ConnectionManagerUtil.commitDBTransaction();
+                return modifiedApplication;
+            } else {
+                throw new NotFoundException("Platform information not available with the application!");
             }
-            ApplicationDAO applicationDAO = DAOFactory.getApplicationDAO();
-            application.setModifiedAt(new Date());
-            Application modifiedApplication = applicationDAO.editApplication(application, tenantId);
-            DataHolder.getInstance().getVisibilityManager().put(application.getUuid(), application.getVisibility());
-            ConnectionManagerUtil.commitDBTransaction();
-            return modifiedApplication;
         } catch (ApplicationManagementDAOException e) {
             ConnectionManagerUtil.rollbackDBTransaction();
             throw e;
@@ -160,8 +157,8 @@ public class ApplicationManagerImpl implements ApplicationManager {
             int appId = applicationDAO.getApplicationId(uuid, tenantId);
             applicationDAO.deleteTags(appId);
             applicationDAO.deleteProperties(appId);
+            DataHolder.getInstance().getVisibilityManager().remove(appId);
             applicationDAO.deleteApplication(uuid, tenantId);
-            DataHolder.getInstance().getVisibilityManager().remove(uuid);
             ConnectionManagerUtil.commitDBTransaction();
         } catch (ApplicationManagementDAOException e) {
             ConnectionManagerUtil.rollbackDBTransaction();
@@ -192,7 +189,7 @@ public class ApplicationManagerImpl implements ApplicationManager {
             ApplicationDAO applicationDAO = DAOFactory.getApplicationDAO();
             ApplicationList applicationList = applicationDAO.getApplications(filter, tenantId);
             for (Application application : applicationList.getApplications()) {
-                application.setVisibility(DataHolder.getInstance().getVisibilityManager().get(application.getUuid()));
+                application.setVisibility(DataHolder.getInstance().getVisibilityManager().get(application.getId()));
             }
             return applicationList;
         } finally {
@@ -307,8 +304,10 @@ public class ApplicationManagerImpl implements ApplicationManager {
         }
         try {
             ConnectionManagerUtil.openDBConnection();
-            Application application =  DAOFactory.getApplicationDAO().getApplication(uuid, tenantId, userName);
-            application.setVisibility(DataHolder.getInstance().getVisibilityManager().get(uuid));
+            Application application = DAOFactory.getApplicationDAO().getApplication(uuid, tenantId, userName);
+            if (application != null) {
+                application.setVisibility(DataHolder.getInstance().getVisibilityManager().get(application.getId()));
+            }
             return application;
         } finally {
             ConnectionManagerUtil.closeDBConnection();

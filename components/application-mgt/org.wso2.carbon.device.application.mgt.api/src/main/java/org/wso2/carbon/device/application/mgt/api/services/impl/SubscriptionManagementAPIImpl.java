@@ -45,7 +45,7 @@ public class SubscriptionManagementAPIImpl implements SubscriptionManagementAPI{
     @Override
     public Response installApplication(@ApiParam(name = "installationDetails", value = "The application ID and list" +
             " the devices/users/roles", required = true) @Valid InstallationDetails installationDetails) {
-        Object response = null;
+        Object response;
         SubscriptionManager subscriptionManager = APIUtil.getSubscriptionManager();
         try {
             String applicationUUTD = installationDetails.getApplicationUUID();
@@ -60,6 +60,7 @@ public class SubscriptionManagementAPIImpl implements SubscriptionManagementAPI{
                 response = subscriptionManager.installApplicationForRoles(applicationUUTD, roleList);
             } else {
                 response = "Missing request data!";
+                return Response.status(Response.Status.BAD_REQUEST).entity(response).build();
             }
             return Response.status(Response.Status.OK).entity(response).build();
         } catch (ApplicationManagementException e) {

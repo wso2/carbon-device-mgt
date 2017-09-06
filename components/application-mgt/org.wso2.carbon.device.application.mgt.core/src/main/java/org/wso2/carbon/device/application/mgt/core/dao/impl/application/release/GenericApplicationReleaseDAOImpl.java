@@ -27,7 +27,12 @@ import org.wso2.carbon.device.application.mgt.core.dao.impl.AbstractDAOImpl;
 import org.wso2.carbon.device.application.mgt.core.exception.ApplicationManagementDAOException;
 import org.wso2.carbon.device.application.mgt.core.util.ConnectionManagerUtil;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -44,6 +49,10 @@ public class GenericApplicationReleaseDAOImpl extends AbstractDAOImpl implements
         Connection connection;
         PreparedStatement statement = null;
         ResultSet resultSet = null;
+
+        if (applicationRelease.isDefault()) {
+
+        }
         String sql = "insert into APPM_APPLICATION_RELEASE(VERSION_NAME, RESOURCE, RELEASE_CHANNEL ,"
                 + "RELEASE_DETAILS, CREATED_AT, APPM_APPLICATION_ID, IS_DEFAULT) values (?, ?, ?, ?, ?, ?, ?)";
         int index = 0;
@@ -79,13 +88,13 @@ public class GenericApplicationReleaseDAOImpl extends AbstractDAOImpl implements
     }
 
     @Override
-    public ApplicationRelease getRelease(String applicationUuid, String versionName)
+    public ApplicationRelease getRelease(String applicationUuid, String versionName, int tenantId)
             throws ApplicationManagementDAOException {
         Connection connection;
         PreparedStatement statement = null;
         ResultSet resultSet = null;
         String sql = "SELECT * FROM APPM_APPLICATION_RELEASE WHERE VERSION_NAME = ?  AND APPM_APPLICATION_ID = "
-                + "(SELECT ID FROM APPM_APPLICATION WHERE UUID = ?)";
+                + "(SELECT ID FROM APPM_APPLICATION WHERE UUID = ? and TENANT_ID = ?)";
         ApplicationRelease applicationRelease = null;
         ResultSet rsProperties = null;
 
@@ -94,6 +103,7 @@ public class GenericApplicationReleaseDAOImpl extends AbstractDAOImpl implements
             statement = connection.prepareStatement(sql);
             statement.setString(1, versionName);
             statement.setString(2, applicationUuid);
+            statement.setInt(3, tenantId);
             resultSet = statement.executeQuery();
 
             if (resultSet.next()) {
@@ -132,13 +142,13 @@ public class GenericApplicationReleaseDAOImpl extends AbstractDAOImpl implements
     }
 
     @Override
-    public List<ApplicationRelease> getApplicationReleases(String applicationUUID)
+    public List<ApplicationRelease> getApplicationReleases(String applicationUUID, int tenantId)
             throws ApplicationManagementDAOException {
         Connection connection;
         PreparedStatement statement = null;
         ResultSet resultSet = null;
         String sql = "SELECT * FROM APPM_APPLICATION_RELEASE WHERE APPM_APPLICATION_ID = (SELECT ID FROM "
-                + "APPM_APPLICATION WHERE UUID = ?)";
+                + "APPM_APPLICATION WHERE UUID = ? AND TENANT_ID = ?)";
         List<ApplicationRelease> applicationReleases = new ArrayList<>();
         ResultSet rsProperties = null;
 
@@ -146,6 +156,7 @@ public class GenericApplicationReleaseDAOImpl extends AbstractDAOImpl implements
             connection = this.getDBConnection();
             statement = connection.prepareStatement(sql);
             statement.setString(1, applicationUUID);
+            statement.setInt(2, tenantId);
             resultSet = statement.executeQuery();
 
             while (resultSet.next()) {
@@ -264,6 +275,40 @@ public class GenericApplicationReleaseDAOImpl extends AbstractDAOImpl implements
         }
     }
 
+    @Override
+    public void changeReleaseDefault(String uuid, String version, boolean isDefault, String releaseChannel,
+            int tenantId) throws ApplicationManagementDAOException {
+        Connection connection;
+        PreparedStatement statement = null;
+        String sql = "UPDATE APPM_APPLICATION_RELEASE SET IS_DEFAULT = ? AND RELEASE_CHANNEL = ? WHERE "
+                + "APPM_APPLICATION_ID = (SELECT ID from APPM_APPLICATION WHERE UUID = ? AND TENANT_ID = ?) "
+                + "AND VERSION_NAME = ?";
+
+        try {
+            if (isDefault) {
+                removeDefaultReleases(uuid, releaseChannel, tenantId);
+            }
+            connection = this.getDBConnection();
+            statement = connection.prepareStatement(sql);
+            statement.setBoolean(1, isDefault);
+            statement.setString(2, releaseChannel.toUpperCase());
+            statement.setString(3, uuid);
+            statement.setInt(4, tenantId);
+            statement.setString(5, version);
+            statement.executeUpdate();
+        } catch (DBConnectionException e) {
+            throw new ApplicationManagementDAOException(
+                    "Database Connection exception while try to change the " + "default release of the release channel "
+                            + releaseChannel + " for the application " + uuid, e);
+        } catch (SQLException e) {
+            throw new ApplicationManagementDAOException(
+                    "SQL Exception while trying to change the default release of " + "the release channel "
+                            + releaseChannel + " for the application " + uuid, e);
+        } finally {
+            Util.cleanupResources(statement, null);
+        }
+    }
+
     /**
      * To insert the application release properties.
      * @param connection Database Connection
@@ -292,6 +337,32 @@ public class GenericApplicationReleaseDAOImpl extends AbstractDAOImpl implements
             if (isBatchExecutionSupported) {
                 statement.executeBatch();
             }
+        }
+    }
+
+    /**
+     * To make all the releases of particular release channel as non-default ones.
+     *
+     * @param uuid UUID of the Application.
+     * @param releaseChannel ReleaseChannel for which we need to make all the releases as non-default ones.
+     * @param tenantId ID of the tenant.
+     * @throws DBConnectionException Database Connection Exception.
+     * @throws SQLException SQL Exception.
+     */
+    private void removeDefaultReleases(String uuid, String releaseChannel, int tenantId)
+            throws DBConnectionException, SQLException {
+        PreparedStatement statement = null;
+        try {
+            Connection connection = this.getDBConnection();
+            String sql = "UPDATE APPM_APPLICATION_RELEASE SET IS_DEFAULT = FALSE WHERE APPM_APPLICATION_ID = (SELECT "
+                    + "ID from APPM_APPLICATION WHERE UUID = ? AND TENANT_ID = ?) AND RELEASE_CHANNEL = ?";
+            statement = connection.prepareStatement(sql);
+            statement.setString(1, uuid);
+            statement.setInt(2, tenantId);
+            statement.setString(3, releaseChannel.toUpperCase());
+            statement.executeUpdate();
+        } finally {
+            Util.cleanupResources(statement, null);
         }
     }
 }

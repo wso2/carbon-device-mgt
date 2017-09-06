@@ -27,7 +27,6 @@ import org.wso2.carbon.device.application.mgt.common.Lifecycle;
 import org.wso2.carbon.device.application.mgt.common.LifecycleState;
 import org.wso2.carbon.device.application.mgt.common.Platform;
 import org.wso2.carbon.device.application.mgt.common.User;
-import org.wso2.carbon.device.application.mgt.core.util.JSONUtil;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -63,10 +62,8 @@ public class Util {
         application.setIdentifier(rs.getString("IDENTIFIER"));
         application.setShortDescription(rs.getString("SHORT_DESCRIPTION"));
         application.setDescription(rs.getString("DESCRIPTION"));
-        application.setIconName(rs.getString("ICON_NAME"));
-        application.setBannerName(rs.getString("BANNER_NAME"));
+        application.setScreenShotCount(rs.getInt("SCREEN_SHOT_COUNT"));
         application.setVideoName(rs.getString("VIDEO_NAME"));
-        application.setScreenshots(JSONUtil.jsonArrayStringToList(rs.getString("SCREENSHOTS")));
         application.setCreatedAt(rs.getDate("CREATED_AT"));
         application.setModifiedAt(rs.getDate("MODIFIED_AT"));
         application.setUser(new User(rs.getString("CREATED_BY"), rs.getInt("TENANT_ID")));

@@ -43,13 +43,7 @@ public class Application {
 
     private String description;
 
-    private String iconName;
-
-    private String bannerName;
-
     private String videoName;
-
-    private List<String> screenshots;
 
     private List<String> tags;
 
@@ -72,6 +66,8 @@ public class Application {
     private List<ApplicationRelease> releases;
 
     private Visibility visibility;
+
+    private int screenShotCount;
 
     private User user;
 
@@ -155,36 +151,12 @@ public class Application {
         this.description = description;
     }
 
-    public String getIconName() {
-        return iconName;
-    }
-
-    public void setIconName(String iconName) {
-        this.iconName = iconName;
-    }
-
-    public String getBannerName() {
-        return bannerName;
-    }
-
-    public void setBannerName(String bannerName) {
-        this.bannerName = bannerName;
-    }
-
     public String getVideoName() {
         return videoName;
     }
 
     public void setVideoName(String videoName) {
         this.videoName = videoName;
-    }
-
-    public List<String> getScreenshots() {
-        return screenshots;
-    }
-
-    public void setScreenshots(List<String> screenshots) {
-        this.screenshots = screenshots;
     }
 
     public List<String> getTags() {
@@ -249,6 +221,14 @@ public class Application {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public void setScreenShotCount (int screenShotCount) {
+        this.screenShotCount = screenShotCount;
+    }
+
+    public int getScreenShotCount() {
+        return screenShotCount;
     }
 
     @Override

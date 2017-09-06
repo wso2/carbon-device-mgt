@@ -83,4 +83,16 @@ public interface ApplicationStorageManager {
      */
     public void deleteAllApplicationReleaseArtifacts(String applicationUUID) throws
             ApplicationStorageManagementException;
+
+    /**
+     * To get particular image artifact of the application.
+     *
+     * @param applicationUUID UUID of the application, to retrieve the image artifact.
+     * @param name            Name of the artifact - icon/banner/screenshot
+     * @param count           Position of a parameter to get the image artifact.
+     * @return the relevant image artifact.
+     * @throws ApplicationStorageManagementException Application Storage Management Exception.
+     */
+    public InputStream getImageArtifact(String applicationUUID, String name, int count) throws
+            ApplicationStorageManagementException;
 }

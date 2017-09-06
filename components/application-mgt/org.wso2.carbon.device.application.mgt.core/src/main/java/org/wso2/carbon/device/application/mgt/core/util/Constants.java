@@ -58,4 +58,9 @@ public class Constants {
      * Path to save the Application related artifacts.
      */
     public static String artifactPath = "";
+
+    /**
+     * Name of the image artifacts that are saved in the file system.
+     */
+    public static final String[] IMAGE_ARTIFACTS = {"icon", "banner", "screenshot"};
 }

@@ -87,4 +87,12 @@
         <url>/application-mgt/platforms/*</url>
         <method>DELETE</method>
     </Permission>
+
+    <!-- Subscription related permissions -->
+    <Permission>
+        <name>Install Application</name>
+        <path>/device-mgt/subscription/install</path>
+        <url>/application-mgt/subscription</url>
+        <method>POST</method>
+    </Permission>
 </PermissionConfiguration>

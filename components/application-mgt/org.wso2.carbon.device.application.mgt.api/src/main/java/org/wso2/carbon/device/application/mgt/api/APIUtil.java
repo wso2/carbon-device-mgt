@@ -28,6 +28,7 @@ import org.wso2.carbon.device.application.mgt.common.services.ApplicationRelease
 import org.wso2.carbon.device.application.mgt.common.services.ApplicationStorageManager;
 import org.wso2.carbon.device.application.mgt.common.services.LifecycleStateManager;
 import org.wso2.carbon.device.application.mgt.common.services.PlatformManager;
+import org.wso2.carbon.device.application.mgt.common.services.SubscriptionManager;
 
 import javax.ws.rs.core.Response;
 
@@ -44,6 +45,7 @@ public class APIUtil {
     private static LifecycleStateManager lifecycleStateManager;
     private static ApplicationReleaseManager applicationReleaseManager;
     private static ApplicationStorageManager applicationStorageManager;
+    private static SubscriptionManager subscriptionManager;
 
     public static ApplicationManager getApplicationManager() {
         if (applicationManager == null) {
@@ -156,5 +158,28 @@ public class APIUtil {
         }
         errorMessage.setCode(status.getStatusCode());
         return Response.status(status).entity(errorMessage).build();
+    }
+
+    /**
+     * To get the Subscription Manager from the osgi context.
+     * @return SubscriptionManager instance in the current osgi context.
+     */
+    public static SubscriptionManager getSubscriptionManager() {
+        if (subscriptionManager == null) {
+            synchronized (APIUtil.class) {
+                if (subscriptionManager == null) {
+                    PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+                    subscriptionManager =
+                            (SubscriptionManager) ctx.getOSGiService(SubscriptionManager.class, null);
+                    if (subscriptionManager == null) {
+                        String msg = "Subscription Manager service has not initialized.";
+                        log.error(msg);
+                        throw new IllegalStateException(msg);
+                    }
+                }
+            }
+        }
+
+        return subscriptionManager;
     }
 }

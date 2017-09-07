@@ -213,7 +213,7 @@ public class Application {
         this.user = user;
     }
 
-    public void setScreenShotCount (int screenShotCount) {
+    public void setScreenShotCount(int screenShotCount) {
         this.screenShotCount = screenShotCount;
     }
 
@@ -223,7 +223,11 @@ public class Application {
 
     @Override
     public String toString() {
-        return "UUID : " + uuid + "\tName : " + name + "\tShort Description : "
-                + shortDescription + "\tLifecycle State : " + currentLifecycle.getLifecycleState();
+        String app = "UUID : " + uuid + "\tName : " + name + "\tShort Description : "
+                + shortDescription;
+        if (currentLifecycle != null) {
+            app += "\tLifecycle State : " + currentLifecycle.getLifecycleState();
+        }
+        return app;
     }
 }

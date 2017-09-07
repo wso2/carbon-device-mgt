@@ -18,8 +18,6 @@
  */
 package org.wso2.carbon.device.application.mgt.common;
 
-import java.util.List;
-
 /**
  * Filter represents a criteria that can be used for searching applications.
  */
@@ -36,11 +34,9 @@ public class Filter {
 
     private int offset;
 
-    private String filter;
-
-    private List<FilterProperty> filterProperties;
-
     private String searchQuery;
+
+    private boolean isFullMatch;
 
     private SortingOrder sortingOrder;
 
@@ -62,22 +58,6 @@ public class Filter {
 
     public void setOffset(int offset) {
         this.offset = offset;
-    }
-
-    public String getFilter() {
-        return filter;
-    }
-
-    public void setFilter(String filter) {
-        this.filter = filter;
-    }
-
-    public List<FilterProperty> getFilterProperties() {
-        return filterProperties;
-    }
-
-    public void setFilterProperties(List<FilterProperty> filterProperties) {
-        this.filterProperties = filterProperties;
     }
 
     public String getSearchQuery() {
@@ -112,11 +92,16 @@ public class Filter {
         this.userName = userName;
     }
 
+    public boolean isFullMatch() {
+        return isFullMatch;
+    }
+
+    public void setFullMatch(boolean fullMatch) {
+        isFullMatch = fullMatch;
+    }
+
     public boolean hasCondition() {
-        if (filterProperties != null || searchQuery != null || filter != null) {
-            return true;
-        }
-        return false;
+        return searchQuery != null;
     }
 
 }

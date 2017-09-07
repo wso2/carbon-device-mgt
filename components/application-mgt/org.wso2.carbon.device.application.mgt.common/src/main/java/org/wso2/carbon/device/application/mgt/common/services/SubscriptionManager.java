@@ -34,7 +34,9 @@ public interface SubscriptionManager {
      * @return DeviceList which the application has been installed
      * @throws ApplicationManagementException Application Management Exception
      */
-    List<DeviceIdentifier> installApplicationForDevices(String applicationUUID, List<DeviceIdentifier> deviceList) throws ApplicationManagementException;
+    List<DeviceIdentifier> installApplicationForDevices(String applicationUUID,
+                                                        List<DeviceIdentifier> deviceList)
+            throws ApplicationManagementException;
 
     /**
      * To install an application to given list of users.
@@ -43,7 +45,9 @@ public interface SubscriptionManager {
      * @return User list which the application has been installed
      * @throws ApplicationManagementException Application Management Exception
      */
-    List<String> installApplicationForUsers(String applicationUUID, List<String> userList) throws ApplicationManagementException;
+    List<String> installApplicationForUsers(String applicationUUID,
+                                            List<String> userList)
+            throws ApplicationManagementException;
 
     /**
      * To install an application to given list of users.
@@ -52,7 +56,9 @@ public interface SubscriptionManager {
      * @return Role list which the application has been installed
      * @throws ApplicationManagementException Application Management Exception
      */
-    List<String> installApplicationForRoles(String applicationUUID, List<String> roleList) throws ApplicationManagementException;
+    List<String> installApplicationForRoles(String applicationUUID,
+                                            List<String> roleList)
+            throws ApplicationManagementException;
 
     /**
      * To uninstall an application from a given list of devices.
@@ -61,6 +67,8 @@ public interface SubscriptionManager {
      * @return DeviceList which the application has been uninstalled
      * @throws ApplicationManagementException Application Management Exception
      */
-    List<DeviceIdentifier> uninstallApplication(String applicationUUID, List<DeviceIdentifier> deviceList) throws ApplicationManagementException;
+    List<DeviceIdentifier> uninstallApplication(String applicationUUID,
+                                                List<DeviceIdentifier> deviceList)
+            throws ApplicationManagementException;
 
 }

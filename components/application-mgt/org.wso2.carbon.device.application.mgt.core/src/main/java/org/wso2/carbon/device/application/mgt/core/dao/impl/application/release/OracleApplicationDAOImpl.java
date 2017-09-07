@@ -33,7 +33,7 @@ public class OracleApplicationDAOImpl extends GenericApplicationDAOImpl {
 
     @Override
     protected PreparedStatement generateGetApplicationsStatement(Filter filter, Connection conn,
-            int tenantId) throws SQLException {
+                                                                 int tenantId) throws SQLException {
         int index = 0;
         String sql = "SELECT APP.*, APL.NAME AS APL_NAME, APL.IDENTIFIER AS APL_IDENTIFIER, CAT.ID AS CAT_ID, "
                 + "CAT.NAME AS CAT_NAME,  LS.NAME AS LS_NAME, LS.IDENTIFIER AS LS_IDENTIFIER, "
@@ -47,11 +47,14 @@ public class OracleApplicationDAOImpl extends GenericApplicationDAOImpl {
             sql += " AND APP.CREATED_BY = ? ";
         }
         if (filter.getSearchQuery() != null && !filter.getSearchQuery().isEmpty()) {
-            sql += "AND APP.NAME LIKE ? ";
+            sql += "AND LOWER (APP.NAME) ";
+            if (filter.isFullMatch()) {
+                sql += "= ?";
+            } else {
+                sql += "LIKE ?";
+            }
         }
-
         sql += " ORDER BY APP.ID OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
-
         PreparedStatement stmt = conn.prepareStatement(sql);
         stmt.setInt(++index, tenantId);
 
@@ -59,7 +62,11 @@ public class OracleApplicationDAOImpl extends GenericApplicationDAOImpl {
             stmt.setString(++index, userName);
         }
         if (filter.getSearchQuery() != null && !filter.getSearchQuery().isEmpty()) {
-            stmt.setString(++index, "%" + filter.getSearchQuery() + "%");
+            if (filter.isFullMatch()) {
+                stmt.setString(++index, filter.getSearchQuery().toLowerCase());
+            } else {
+                stmt.setString(++index, "%" + filter.getSearchQuery().toLowerCase() + "%");
+            }
         }
         stmt.setInt(++index, filter.getOffset());
         stmt.setInt(++index, filter.getLimit());

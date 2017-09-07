@@ -27,6 +27,7 @@ import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManage
 import org.wso2.carbon.device.application.mgt.common.services.ApplicationReleaseManager;
 import org.wso2.carbon.device.application.mgt.core.dao.common.DAOFactory;
 import org.wso2.carbon.device.application.mgt.core.exception.ApplicationManagementDAOException;
+import org.wso2.carbon.device.application.mgt.core.exception.NotFoundException;
 import org.wso2.carbon.device.application.mgt.core.internal.DataHolder;
 import org.wso2.carbon.device.application.mgt.core.util.ConnectionManagerUtil;
 
@@ -195,7 +196,7 @@ public class ApplicationReleaseManagerImpl implements ApplicationReleaseManager 
         }
         Application application = DataHolder.getInstance().getApplicationManager().getApplication(applicationUuid);
         if (application == null) {
-            throw new ApplicationManagementException(
+            throw new NotFoundException(
                     "Application with UUID " + applicationUuid + " does not exist.");
         }
         return application;

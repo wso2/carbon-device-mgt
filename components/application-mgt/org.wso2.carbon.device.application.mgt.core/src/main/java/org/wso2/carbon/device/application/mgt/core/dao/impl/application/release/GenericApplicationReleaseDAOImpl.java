@@ -32,7 +32,6 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -41,7 +40,7 @@ import java.util.Map;
 /**
  * GenericApplicationReleaseDAOImpl holds the implementation of ApplicationRelease related DAO operations.
  */
-public class GenericApplicationReleaseDAOImpl extends AbstractDAOImpl implements ApplicationReleaseDAO  {
+public class GenericApplicationReleaseDAOImpl extends AbstractDAOImpl implements ApplicationReleaseDAO {
 
     @Override
     public ApplicationRelease createRelease(ApplicationRelease applicationRelease) throws
@@ -56,7 +55,7 @@ public class GenericApplicationReleaseDAOImpl extends AbstractDAOImpl implements
         String sql = "insert into APPM_APPLICATION_RELEASE(VERSION_NAME, RELEASE_RESOURCE, RELEASE_CHANNEL ,"
                 + "RELEASE_DETAILS, CREATED_AT, APPM_APPLICATION_ID, IS_DEFAULT) values (?, ?, ?, ?, ?, ?, ?)";
         int index = 0;
-        String generatedColumns[] = { "ID" };
+        String generatedColumns[] = {"ID"};
         try {
             connection = this.getDBConnection();
             statement = connection.prepareStatement(sql, generatedColumns);
@@ -134,7 +133,7 @@ public class GenericApplicationReleaseDAOImpl extends AbstractDAOImpl implements
                     versionName, e);
         } catch (SQLException e) {
             throw new ApplicationManagementDAOException("Error while getting release details of the application " +
-                    applicationUuid +  " and version " + versionName + " , while executing the query " + sql, e);
+                    applicationUuid + " and version " + versionName + " , while executing the query " + sql, e);
         } finally {
             Util.cleanupResources(statement, resultSet);
             Util.cleanupResources(null, rsProperties);
@@ -199,9 +198,9 @@ public class GenericApplicationReleaseDAOImpl extends AbstractDAOImpl implements
             throws ApplicationManagementDAOException {
         Connection connection;
         PreparedStatement statement = null;
-        String sql = "UPDATE APPM_APPLICATION_RELEASE SET RELEASE_RESOURCE = IFNULL (?, RELEASE_RESOURCE), RELEASE_CHANNEL = IFNULL "
-                + "(?, RELEASE_CHANNEL), RELEASE_DETAILS = IFNULL (?, RELEASE_DETAILS), IS_DEFAULT = IFNULL "
-                + "(?, IS_DEFAULT) WHERE  APPM_APPLICATION_ID = ? AND VERSION_NAME = ?";
+        String sql = "UPDATE APPM_APPLICATION_RELEASE SET RELEASE_RESOURCE = IFNULL (?, RELEASE_RESOURCE)," +
+                " RELEASE_CHANNEL = IFNULL (?, RELEASE_CHANNEL), RELEASE_DETAILS = IFNULL (?, RELEASE_DETAILS), " +
+                "IS_DEFAULT = IFNULL (?, IS_DEFAULT) WHERE  APPM_APPLICATION_ID = ? AND VERSION_NAME = ?";
         try {
             connection = this.getDBConnection();
             statement = connection.prepareStatement(sql);
@@ -277,7 +276,7 @@ public class GenericApplicationReleaseDAOImpl extends AbstractDAOImpl implements
 
     @Override
     public void changeReleaseDefault(String uuid, String version, boolean isDefault, String releaseChannel,
-            int tenantId) throws ApplicationManagementDAOException {
+                                     int tenantId) throws ApplicationManagementDAOException {
         Connection connection;
         PreparedStatement statement = null;
         String sql = "UPDATE APPM_APPLICATION_RELEASE SET IS_DEFAULT = ? AND RELEASE_CHANNEL = ? WHERE "
@@ -311,7 +310,8 @@ public class GenericApplicationReleaseDAOImpl extends AbstractDAOImpl implements
 
     /**
      * To insert the application release properties.
-     * @param connection Database Connection
+     *
+     * @param connection         Database Connection
      * @param applicationRelease Application Release the properties of which that need to be inserted.
      * @throws SQLException SQL Exception.
      */
@@ -343,11 +343,11 @@ public class GenericApplicationReleaseDAOImpl extends AbstractDAOImpl implements
     /**
      * To make all the releases of particular release channel as non-default ones.
      *
-     * @param uuid UUID of the Application.
+     * @param uuid           UUID of the Application.
      * @param releaseChannel ReleaseChannel for which we need to make all the releases as non-default ones.
-     * @param tenantId ID of the tenant.
+     * @param tenantId       ID of the tenant.
      * @throws DBConnectionException Database Connection Exception.
-     * @throws SQLException SQL Exception.
+     * @throws SQLException          SQL Exception.
      */
     private void removeDefaultReleases(String uuid, String releaseChannel, int tenantId)
             throws DBConnectionException, SQLException {

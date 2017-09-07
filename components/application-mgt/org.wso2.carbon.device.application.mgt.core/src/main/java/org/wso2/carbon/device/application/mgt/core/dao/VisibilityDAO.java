@@ -24,7 +24,9 @@ import org.wso2.carbon.device.application.mgt.core.exception.VisibilityManagemen
 import java.util.List;
 
 /**
- * This interface provides the list of operations that are performed in the database layer with respect to the visibility.
+ * This interface provides the list of operations that are performed in the database
+ * layer with respect to the visibility.
+ * 
  */
 public interface VisibilityDAO {
 

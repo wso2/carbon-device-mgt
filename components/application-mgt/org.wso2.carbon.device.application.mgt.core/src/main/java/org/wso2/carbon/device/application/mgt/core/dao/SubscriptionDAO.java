@@ -18,5 +18,9 @@
  */
 package org.wso2.carbon.device.application.mgt.core.dao;
 
+/**
+ * This interface provides the list of operations that are supported with subscription database.
+ *
+ */
 public interface SubscriptionDAO {
 }

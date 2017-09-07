@@ -19,5 +19,8 @@ package org.wso2.carbon.device.application.mgt.core.impl;
 
 import org.wso2.carbon.device.application.mgt.common.services.CommentsManager;
 
+/**
+ * This class is the default implementation for the Managing the comments.
+ */
 public class CommentsManagerImpl implements CommentsManager {
 }

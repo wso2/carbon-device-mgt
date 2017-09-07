@@ -32,7 +32,7 @@ public class VisibilityManagerImpl implements VisibilityManager {
 
     @Override
     public Visibility put(int applicationID, Visibility visibility) throws VisibilityManagementException {
-        if (visibility == null){
+        if (visibility == null) {
             visibility = new Visibility();
             visibility.setType(Visibility.Type.PUBLIC);
         }
@@ -71,8 +71,9 @@ public class VisibilityManagerImpl implements VisibilityManager {
     public Visibility get(int applicationID) throws VisibilityManagementException {
         try {
             VisibilityDAO visibilityDAO = DAOFactory.getVisibilityDAO();
-            Visibility visibility =  visibilityDAO.get(applicationID);
-            if (visibility.getType() == null && (visibility.getAllowedList() == null || visibility.getAllowedList().isEmpty())){
+            Visibility visibility = visibilityDAO.get(applicationID);
+            if (visibility.getType() == null && (visibility.getAllowedList() == null ||
+                    visibility.getAllowedList().isEmpty())) {
                 visibility.setType(Visibility.Type.PUBLIC);
             }
             return visibility;

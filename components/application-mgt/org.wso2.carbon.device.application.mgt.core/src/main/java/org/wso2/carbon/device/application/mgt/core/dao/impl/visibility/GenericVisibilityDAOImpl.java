@@ -117,12 +117,12 @@ public class GenericVisibilityDAOImpl extends AbstractDAOImpl implements Visibil
     public Visibility get(int applicationId) throws VisibilityManagementDAOException {
         PreparedStatement stmt = null;
         ResultSet resultSet = null;
-        final String VISIBILITY_TYPE = "VISIBILITY_TYPE";
-        final String ALLOWED_VAL = "ALLOWED_VAL";
+        final String visibilityTypeColumn = "VISIBILITY_TYPE";
+        final String allowedValColumn = "ALLOWED_VAL";
         try {
             Connection connection = getDBConnection();
-            String sql = "SELECT APPM_VISIBILITY.VALUE as " + ALLOWED_VAL + ", APPM_RESOURCE_TYPE.NAME AS " +
-                    VISIBILITY_TYPE + " FROM APPM_VISIBILITY JOIN APPM_RESOURCE_TYPE " +
+            String sql = "SELECT APPM_VISIBILITY.VALUE as " + allowedValColumn + ", APPM_RESOURCE_TYPE.NAME AS " +
+                    visibilityTypeColumn + " FROM APPM_VISIBILITY JOIN APPM_RESOURCE_TYPE " +
                     "ON APPM_VISIBILITY.RESOURCE_TYPE_ID = APPM_RESOURCE_TYPE.ID " +
                     "WHERE APPM_VISIBILITY.APPLICATION_ID = ?";
             stmt = connection.prepareStatement(sql);
@@ -132,14 +132,14 @@ public class GenericVisibilityDAOImpl extends AbstractDAOImpl implements Visibil
             List<String> allowedVal = new ArrayList<>();
             while (resultSet.next()) {
                 if (visibility.getType() == null) {
-                    visibility.setType(Visibility.Type.valueOf(resultSet.getString(VISIBILITY_TYPE)));
+                    visibility.setType(Visibility.Type.valueOf(resultSet.getString(visibilityTypeColumn)));
                 }
-                String val = resultSet.getString(ALLOWED_VAL);
+                String val = resultSet.getString(allowedValColumn);
                 if (val != null) {
                     allowedVal.add(val);
                 }
             }
-            if (!allowedVal.isEmpty()){
+            if (!allowedVal.isEmpty()) {
                 visibility.setAllowedList(allowedVal);
             }
             return visibility;

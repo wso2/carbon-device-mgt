@@ -18,5 +18,8 @@
  */
 package org.wso2.carbon.device.application.mgt.core.dao;
 
+/**
+ * This interface specifies the database access operations performed for comments.
+ */
 public interface CommentDAO {
 }

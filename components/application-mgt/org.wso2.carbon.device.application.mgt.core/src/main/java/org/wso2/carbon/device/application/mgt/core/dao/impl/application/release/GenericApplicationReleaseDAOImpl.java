@@ -53,13 +53,13 @@ public class GenericApplicationReleaseDAOImpl extends AbstractDAOImpl implements
         if (applicationRelease.isDefault()) {
 
         }
-        String sql = "insert into APPM_APPLICATION_RELEASE(VERSION_NAME, RESOURCE, RELEASE_CHANNEL ,"
+        String sql = "insert into APPM_APPLICATION_RELEASE(VERSION_NAME, RELEASE_RESOURCE, RELEASE_CHANNEL ,"
                 + "RELEASE_DETAILS, CREATED_AT, APPM_APPLICATION_ID, IS_DEFAULT) values (?, ?, ?, ?, ?, ?, ?)";
         int index = 0;
-
+        String generatedColumns[] = { "ID" };
         try {
             connection = this.getDBConnection();
-            statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            statement = connection.prepareStatement(sql, generatedColumns);
             statement.setString(++index, applicationRelease.getVersionName());
             statement.setString(++index, applicationRelease.getResource());
             statement.setString(++index, String.valueOf(applicationRelease.getReleaseChannel()));
@@ -113,7 +113,7 @@ public class GenericApplicationReleaseDAOImpl extends AbstractDAOImpl implements
                 applicationRelease.setCreatedAt(resultSet.getDate("CREATED_AT"));
                 applicationRelease.setReleaseChannel(resultSet.getString("RELEASE_CHANNEL"));
                 applicationRelease.setReleaseDetails(resultSet.getString("RELEASE_DETAILS"));
-                applicationRelease.setResource(resultSet.getString("RESOURCE"));
+                applicationRelease.setResource(resultSet.getString("RELEASE_RESOURCE"));
 
                 sql = "SELECT * FROM APPM_RELEASE_PROPERTY WHERE APPLICATION_RELEASE_ID=?";
                 statement = connection.prepareStatement(sql);
@@ -166,7 +166,7 @@ public class GenericApplicationReleaseDAOImpl extends AbstractDAOImpl implements
                 applicationRelease.setCreatedAt(resultSet.getDate("CREATED_AT"));
                 applicationRelease.setReleaseChannel(resultSet.getString("RELEASE_CHANNEL"));
                 applicationRelease.setReleaseDetails(resultSet.getString("RELEASE_DETAILS"));
-                applicationRelease.setResource(resultSet.getString("RESOURCE"));
+                applicationRelease.setResource(resultSet.getString("RELEASE_RESOURCE"));
 
                 sql = "SELECT * FROM APPM_RELEASE_PROPERTY WHERE APPLICATION_RELEASE_ID= ?";
                 statement = connection.prepareStatement(sql);
@@ -199,7 +199,7 @@ public class GenericApplicationReleaseDAOImpl extends AbstractDAOImpl implements
             throws ApplicationManagementDAOException {
         Connection connection;
         PreparedStatement statement = null;
-        String sql = "UPDATE APPM_APPLICATION_RELEASE SET RESOURCE = IFNULL (?, RESOURCE), RELEASE_CHANNEL = IFNULL "
+        String sql = "UPDATE APPM_APPLICATION_RELEASE SET RELEASE_RESOURCE = IFNULL (?, RELEASE_RESOURCE), RELEASE_CHANNEL = IFNULL "
                 + "(?, RELEASE_CHANNEL), RELEASE_DETAILS = IFNULL (?, RELEASE_DETAILS), IS_DEFAULT = IFNULL "
                 + "(?, IS_DEFAULT) WHERE  APPM_APPLICATION_ID = ? AND VERSION_NAME = ?";
         try {

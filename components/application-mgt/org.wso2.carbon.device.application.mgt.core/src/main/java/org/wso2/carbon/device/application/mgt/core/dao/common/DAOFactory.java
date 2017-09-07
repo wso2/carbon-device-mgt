@@ -29,6 +29,7 @@ import org.wso2.carbon.device.application.mgt.core.dao.VisibilityDAO;
 import org.wso2.carbon.device.application.mgt.core.dao.PlatformDAO;
 import org.wso2.carbon.device.application.mgt.core.dao.impl.application.GenericApplicationDAOImpl;
 import org.wso2.carbon.device.application.mgt.core.dao.impl.application.release.GenericApplicationReleaseDAOImpl;
+import org.wso2.carbon.device.application.mgt.core.dao.impl.application.release.OracleApplicationDAOImpl;
 import org.wso2.carbon.device.application.mgt.core.dao.impl.lifecyclestate.GenericLifecycleStateImpl;
 import org.wso2.carbon.device.application.mgt.core.dao.impl.platform.GenericPlatformDAOImpl;
 import org.wso2.carbon.device.application.mgt.core.dao.impl.platform.OracleMsSQLPlatformDAOImpl;
@@ -64,6 +65,8 @@ public class DAOFactory {
             case Constants.DataBaseTypes.DB_TYPE_MYSQL:
             case Constants.DataBaseTypes.DB_TYPE_POSTGRESQL:
                 return new GenericApplicationDAOImpl();
+            case Constants.DataBaseTypes.DB_TYPE_ORACLE:
+                return new OracleApplicationDAOImpl();
             default:
                 throw new UnsupportedDatabaseEngineException("Unsupported database engine : " + databaseEngine);
             }
@@ -94,6 +97,7 @@ public class DAOFactory {
             case Constants.DataBaseTypes.DB_TYPE_H2:
             case Constants.DataBaseTypes.DB_TYPE_MYSQL:
             case Constants.DataBaseTypes.DB_TYPE_POSTGRESQL:
+            case Constants.DataBaseTypes.DB_TYPE_ORACLE:
                 return new GenericLifecycleStateImpl();
             default:
                 throw new UnsupportedDatabaseEngineException("Unsupported database engine : " + databaseEngine);
@@ -112,6 +116,7 @@ public class DAOFactory {
             case Constants.DataBaseTypes.DB_TYPE_H2:
             case Constants.DataBaseTypes.DB_TYPE_MYSQL:
             case Constants.DataBaseTypes.DB_TYPE_POSTGRESQL:
+            case Constants.DataBaseTypes.DB_TYPE_ORACLE:
                 return new GenericApplicationReleaseDAOImpl();
             default:
                 throw new UnsupportedDatabaseEngineException("Unsupported database engine : " + databaseEngine);

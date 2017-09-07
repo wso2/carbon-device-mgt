@@ -77,7 +77,6 @@ class DataTable extends Component {
         this.props.handleRowClick(id);
     }
 
-
     render() {
         const {data, headers} = this.state;
 
@@ -111,9 +110,7 @@ class DataTable extends Component {
                 </TableBody>
             </Table>)
         }
-
         return (<div>{noDataContent}</div>);
-
     }
 }
 

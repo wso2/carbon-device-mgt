@@ -44,8 +44,14 @@ class Step1 extends Component {
             stepIndex: 0,
             store: 1,
             platform: 1,
-            stepData: []
+            stepData: [],
+            title: "",
+            titleError: ""
         };
+    }
+
+    componentWillMount() {
+        //Get the list of available platforms and set to the state.
     }
 
     /**
@@ -59,8 +65,11 @@ class Step1 extends Component {
      * Persist the current form data to the state.
      * */
     _setStepData() {
-        this.props.setData("step1", {step: "Dfds"});
-        this._handleNext.bind(this);
+        var step = {
+            store: this.state.store,
+            platform: this.state.platform
+        };
+        this.props.setData("step1", {step: step});
     }
 
     /**
@@ -71,13 +80,13 @@ class Step1 extends Component {
      * */
     _handleClick() {
         this._setStepData();
-        this._handleNext();
     }
 
     /**
      * Triggers when changing the Platform selection.
      * */
     _onChangePlatform = (event, index, value) => {
+        console.log(value);
         this.setState({platform: value});
     };
 
@@ -88,6 +97,13 @@ class Step1 extends Component {
         this.setState({store: value});
     };
 
+    /**
+     * Triggers when user types on Title text field.
+     * */
+    _onChangeTitle = (event, value) => {
+        this.setState({title: value});
+    };
+
     render() {
         const contentStyle = {margin: '0 16px'};
         return (
@@ -95,11 +111,6 @@ class Step1 extends Component {
                 <div style={contentStyle}>
                     <div>
                         <div>
-                            <TextField
-                                hintText="Enter a title for your application."
-                                floatingLabelText="Title*"
-                                floatingLabelFixed={true}
-                            /><br/>
                             <SelectField
                                 floatingLabelText="Store Type*"
                                 value={this.state.store}
@@ -117,7 +128,7 @@ class Step1 extends Component {
                             >
                                 <MenuItem value={1} primaryText="Android"/>
                                 <MenuItem value={2} primaryText="iOS"/>
-                                <MenuItem value={3} primaryText="Web"/>
+                                <MenuItem value={{name: "Web", id:3}} primaryText="Web"/>
                             </SelectField>
                         </div>
 

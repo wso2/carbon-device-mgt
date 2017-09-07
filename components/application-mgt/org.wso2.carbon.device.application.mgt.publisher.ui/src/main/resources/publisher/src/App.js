@@ -18,8 +18,8 @@
 
 import './App.css';
 import React, {Component} from 'react';
-import createHistory from 'history/createHashHistory';
-import {HashRouter as Router, Redirect, Route, Switch} from 'react-router-dom'
+import createHistory from 'history/createBrowserHistory';
+import {BrowserRouter as Router, Redirect, Route, Switch} from 'react-router-dom'
 import {
     ApplicationCreate,
     ApplicationListing,
@@ -41,6 +41,9 @@ const history = createHistory({basename: '/publisher'});
  *     The Router and Route is used for navigation.
  *     We specify the component which needs to be rendered for an URL.
  *     Ex: When navigate to publisher/overview, the overview component will be rendered inside the main layout.
+ *
+ * HashRouter is used because the other router types need the server to serve those urls. In hashRouter, server does
+ * not want to serve the URL.
  * */
 
 class Base extends Component {
@@ -63,9 +66,9 @@ class Base extends Component {
                             <Route exact path={"/assets/platforms"} component={PlatformListing}/>
                             <Route exact path={"/assets/platforms/create"} component={PlatformCreate}/>
                             <Route exact path={"/assets/apps/:app"} />
-                            <Route exact path={"/assets/apps/edit/:app"} />
+                            <Route exact path={"/assets/apps/:app/edit"} />
                             <Route exact path={"/assets/platforms/:platform"}/>
-                            <Route exact path={"/assets/platforms/edit/:platform"}/>
+                            <Route exact path={"/assets/platforms/:platform/edit"}/>
                             <Route exact path={"/assets/reviews"}/>
                             <Route exact path={"/assets/reviews/:review"}/>
                             <Route component={NotFound}/>
@@ -80,6 +83,9 @@ class Base extends Component {
 
 /**
  * This component is referred by the index.js to initiate the application.
+ * TODO: Currently the URL shows like https://localhost:9443/publisher/#/publisher/assets/apps/create. this needs to
+ * be fixed as https://localhost:9443/publisher/#/assets/apps/create
+ *
  * */
 class Publisher extends Component {
     render() {

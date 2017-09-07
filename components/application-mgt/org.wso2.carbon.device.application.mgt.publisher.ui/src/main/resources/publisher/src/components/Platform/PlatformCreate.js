@@ -26,6 +26,8 @@ import FlatButton from 'material-ui/FlatButton';
 import IconButton from 'material-ui/IconButton';
 import SelectField from 'material-ui/SelectField';
 import RaisedButton from 'material-ui/RaisedButton';
+import Clear from 'material-ui/svg-icons/content/clear';
+import {GridList, GridTile} from 'material-ui/GridList';
 import Close from 'material-ui/svg-icons/navigation/close';
 import {Card, CardActions, CardTitle} from 'material-ui/Card';
 import AddCircleOutline from 'material-ui/svg-icons/content/add-circle-outline';
@@ -53,6 +55,7 @@ class PlatformCreate extends Component {
             name: "",
             description: "",
             property: "",
+            icon: [],
             propertyTypes: [
                 {key: 0, value: 'String'},
                 {key: 1, value: 'Number'},
@@ -148,6 +151,16 @@ class PlatformCreate extends Component {
 
     }
 
+    /**
+     * Remove the uploaded icon.
+     * */
+    _removeIcon(event) {
+        this.setState({icon: []});
+    }
+
+    /**
+     * Clears the user entered values in the form.
+     * */
     _clearForm() {
         this.setState({enabled: true,
             allTenants: false,
@@ -249,10 +262,32 @@ class PlatformCreate extends Component {
                                     </div>
                                 </div>
                                 <div>
+                                    {/*<p style={{color: '#f44336'}}>{this.state.errors["Icon"]}</p>*/}
                                     <p style={{color: '#BDBDBD'}}>Platform Icon*:</p>
-                                    <Dropzone style={{width: '100px', height: '100px', border: 'dashed #BDBDBD 1px'}}>
-                                        <p style={{margin: '40px 40px 40px 50px', color: '#BDBDBD'}}>+</p>
-                                    </Dropzone>
+                                    <GridList style={{
+                                        display: 'flex',
+                                        flexWrap: 'nowrap',
+                                        overflowX: 'auto',
+                                    }} cols={1.1}>
+                                        {this.state.icon.map((tile) => (
+                                            <GridTile key={Math.floor(Math.random() * 1000)}
+                                                      title={tile.name}
+                                                      actionIcon={
+                                                          <IconButton onClick={this._removeIcon.bind(this)}>
+                                                              <Clear />
+                                                          </IconButton>}>
+                                                <img src={tile.preview}/>
+                                            </GridTile>
+                                        ))}
+                                        {this.state.icon.length === 0 ?
+                                            <Dropzone style={
+                                                {width: '150px', height: '150px', border: 'dashed #BDBDBD 1px'}
+                                            }
+                                                      accept="image/jpeg, image/png"
+                                                      onDrop={(icon, rejected) => {this.setState({icon, rejected})}}>
+                                                <p style={{margin: '70px 40px 70px 70px'}}>+</p>
+                                            </Dropzone> : <div />}
+                                    </GridList>
                                 </div>
                                 <br/>
                                 <RaisedButton primary={true} label="Create"
@@ -268,11 +303,6 @@ class PlatformCreate extends Component {
 }
 
 PlatformCreate.prototypes = {
-    enabled: PropTypes.bool,
-    allTenants: PropTypes.bool,
-    files: PropTypes.array,
-    platformProperties: PropTypes.object,
-    handleToggle: PropTypes.func
 };
 
 export default PlatformCreate;

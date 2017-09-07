@@ -16,12 +16,11 @@
  * under the License.
  */
 
-import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import Dialog from 'material-ui/Dialog';
 import {withRouter} from 'react-router-dom';
-import {Step1, Step2, Step3} from './Forms';
 import FlatButton from 'material-ui/FlatButton';
+import {Step1, Step2, Step3} from './CreateSteps';
 import RaisedButton from 'material-ui/RaisedButton';
 import {Card, CardActions, CardTitle} from 'material-ui/Card';
 import {Step, StepLabel, Stepper,} from 'material-ui/Stepper';
@@ -56,6 +55,7 @@ class ApplicationCreate extends Component {
      * Handles next button click event.
      * */
     handleNext = () => {
+        console.log("Handle Next");
         const {stepIndex} = this.state;
         this.setState({
             stepIndex: stepIndex + 1,
@@ -98,7 +98,7 @@ class ApplicationCreate extends Component {
         let tmpStepData = this.state.stepData;
         tmpStepData.push({step: step, data: data});
 
-        this.setState({stepData: tmpStepData})
+        this.setState({stepData: tmpStepData}, this.handleNext())
     };
 
     /**
@@ -180,7 +180,7 @@ class ApplicationCreate extends Component {
 
         return (
             <div className="middle" style={{width: '95%', height: '100%', marginTop: '1%'}}>
-                <Card>
+                <Card style={{maxHeight: '700px', overflow: 'auto'}}>
                     <CardTitle title="Create Application"/>
 
                     {/**

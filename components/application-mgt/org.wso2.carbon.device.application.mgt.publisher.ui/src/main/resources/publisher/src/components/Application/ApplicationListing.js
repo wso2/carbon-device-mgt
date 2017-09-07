@@ -125,8 +125,6 @@ class ApplicationListing extends Component {
                         return dataItem.applicationName.includes(word);
                     });
             } else {
-                console.log("no")
-                console.log(this.data)
                 searchedData = this.data;
             }
 
@@ -153,7 +151,7 @@ class ApplicationListing extends Component {
     }
 
     _onRowClick(id) {
-        console.log(id)
+        this.props.history.push("apps/"+id);
     }
 
     render() {

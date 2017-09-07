@@ -15,12 +15,23 @@
 * under the License.
 *
 */
-package org.wso2.carbon.device.application.mgt.core.impl;
-
-import org.wso2.carbon.device.application.mgt.common.services.CommentsManager;
+package org.wso2.carbon.device.application.mgt.common.exception;
 
 /**
- * This class is the default implementation for the Managing the comments.
+ * This specialized exception is thrown by the Visibility Manager during unexpected behaviour
+ * or unsupported parameters.
  */
-public class CommentsManagerImpl implements CommentsManager {
+public class VisibilityManagementException extends ApplicationManagementException {
+
+    public VisibilityManagementException(String msg, Exception nestedEx) {
+        super(msg, nestedEx);
+    }
+
+    public VisibilityManagementException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public VisibilityManagementException(String msg) {
+        super(msg);
+    }
 }

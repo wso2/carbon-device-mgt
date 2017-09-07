@@ -39,7 +39,6 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -68,15 +67,14 @@ public class GenericApplicationDAOImpl extends AbstractDAOImpl implements Applic
         int index = 0;
         try {
             conn = this.getDBConnection();
-            sql += "INSERT INTO APPM_APPLICATION (UUID, IDENTIFIER, NAME, SHORT_DESCRIPTION, DESCRIPTION, "
+            sql += "INSERT INTO APPM_APPLICATION (UUID, NAME, SHORT_DESCRIPTION, DESCRIPTION, "
                     + "VIDEO_NAME, SCREEN_SHOT_COUNT, CREATED_BY, CREATED_AT, MODIFIED_AT, "
                     + "APPLICATION_CATEGORY_ID, PLATFORM_ID, TENANT_ID, LIFECYCLE_STATE_ID, "
                     + "LIFECYCLE_STATE_MODIFIED_AT, LIFECYCLE_STATE_MODIFIED_BY) VALUES "
-                    + "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                    + "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
             stmt = conn.prepareStatement(sql, generatedColumns);
             stmt.setString(++index, application.getUuid());
-            stmt.setString(++index, application.getIdentifier());
             stmt.setString(++index, application.getName());
             stmt.setString(++index, application.getShortDescription());
             stmt.setString(++index, application.getDescription());
@@ -240,7 +238,7 @@ public class GenericApplicationDAOImpl extends AbstractDAOImpl implements Applic
         }
 
         try {
-            conn = this.getConnection();
+            conn = this.getDBConnection();
             sql += "SELECT COUNT(APP.ID) AS APP_COUNT ";
             sql += "FROM APPM_APPLICATION AS APP ";
             sql += "INNER JOIN APPM_PLATFORM AS APL ON APP.PLATFORM_ID = APL.ID ";

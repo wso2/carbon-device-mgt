@@ -30,11 +30,11 @@ import org.wso2.carbon.device.application.mgt.common.LifecycleState;
 import org.wso2.carbon.device.application.mgt.common.LifecycleStateTransition;
 import org.wso2.carbon.device.application.mgt.common.Platform;
 import org.wso2.carbon.device.application.mgt.common.User;
+import org.wso2.carbon.device.application.mgt.common.Visibility;
 import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
 import org.wso2.carbon.device.application.mgt.common.services.ApplicationManager;
 import org.wso2.carbon.device.application.mgt.core.dao.ApplicationDAO;
 import org.wso2.carbon.device.application.mgt.core.dao.LifecycleStateDAO;
-import org.wso2.carbon.device.application.mgt.core.dao.PlatformDAO;
 import org.wso2.carbon.device.application.mgt.core.dao.common.DAOFactory;
 import org.wso2.carbon.device.application.mgt.core.exception.ApplicationManagementDAOException;
 import org.wso2.carbon.device.application.mgt.core.exception.NotFoundException;
@@ -71,14 +71,15 @@ public class ApplicationManagerImpl implements ApplicationManager {
         application.setCreatedAt(new Date());
         application.setModifiedAt(new Date());
         try {
-            ConnectionManagerUtil.beginDBTransaction();
+            Platform platform = DataHolder.getInstance().getPlatformManager().getPlatform(application.getUser()
+                    .getTenantId(), application.getPlatform().getIdentifier());
 
-            // Validating the platform
-            Platform platform = DAOFactory.getPlatformDAO()
-                    .getPlatform(application.getUser().getTenantId(), application.getPlatform().getIdentifier());
             if (platform == null) {
                 throw new NotFoundException("Invalid platform");
             }
+            ConnectionManagerUtil.beginDBTransaction();
+
+            // Validating the platform
             application.setPlatform(platform);
             if (log.isDebugEnabled()) {
                 log.debug("Application creation pre-conditions are met and the platform mentioned by identifier "
@@ -97,6 +98,7 @@ public class ApplicationManagerImpl implements ApplicationManager {
             application.setCurrentLifecycle(lifecycle);
 
             application = DAOFactory.getApplicationDAO().createApplication(application);
+            DataHolder.getInstance().getVisibilityManager().put(application.getId(), application.getVisibility());
             ConnectionManagerUtil.commitDBTransaction();
             return application;
         } catch (ApplicationManagementException e) {
@@ -120,24 +122,27 @@ public class ApplicationManagerImpl implements ApplicationManager {
                     + "application with the UUID " + application.getUuid());
         }
         try {
-            ConnectionManagerUtil.beginDBTransaction();
             if (application.getPlatform() != null && application.getPlatform().getIdentifier() != null) {
-                PlatformDAO platformDAO = DAOFactory.getPlatformDAO();
-                Platform platform = platformDAO
+                Platform platform = DataHolder.getInstance().getPlatformManager()
                         .getPlatform(tenantId, application.getPlatform().getIdentifier());
                 if (platform == null) {
-                    ConnectionManagerUtil.commitDBTransaction();
                     throw new NotFoundException(
                             "Platform specified by identifier " + application.getPlatform().getIdentifier()
                                     + " is not found. Please give a valid platform identifier.");
                 }
                 application.setPlatform(platform);
+                ConnectionManagerUtil.beginDBTransaction();
+                ApplicationDAO applicationDAO = DAOFactory.getApplicationDAO();
+                application.setModifiedAt(new Date());
+                Application modifiedApplication = applicationDAO.editApplication(application, tenantId);
+                Visibility visibility = DataHolder.getInstance().getVisibilityManager().put(application.getId(),
+                        application.getVisibility());
+                modifiedApplication.setVisibility(visibility);
+                ConnectionManagerUtil.commitDBTransaction();
+                return modifiedApplication;
+            } else {
+                throw new NotFoundException("Platform information not available with the application!");
             }
-            ApplicationDAO applicationDAO = DAOFactory.getApplicationDAO();
-            application.setModifiedAt(new Date());
-            Application modifiedApplication = applicationDAO.editApplication(application, tenantId);
-            ConnectionManagerUtil.commitDBTransaction();
-            return modifiedApplication;
         } catch (ApplicationManagementDAOException e) {
             ConnectionManagerUtil.rollbackDBTransaction();
             throw e;
@@ -160,6 +165,7 @@ public class ApplicationManagerImpl implements ApplicationManager {
             int appId = applicationDAO.getApplicationId(uuid, tenantId);
             applicationDAO.deleteTags(appId);
             applicationDAO.deleteProperties(appId);
+            DataHolder.getInstance().getVisibilityManager().remove(appId);
             applicationDAO.deleteApplication(uuid, tenantId);
             ConnectionManagerUtil.commitDBTransaction();
         } catch (ApplicationManagementDAOException e) {
@@ -189,7 +195,11 @@ public class ApplicationManagerImpl implements ApplicationManager {
         try {
             ConnectionManagerUtil.openDBConnection();
             ApplicationDAO applicationDAO = DAOFactory.getApplicationDAO();
-            return applicationDAO.getApplications(filter, tenantId);
+            ApplicationList applicationList = applicationDAO.getApplications(filter, tenantId);
+            for (Application application : applicationList.getApplications()) {
+                application.setVisibility(DataHolder.getInstance().getVisibilityManager().get(application.getId()));
+            }
+            return applicationList;
         } finally {
             ConnectionManagerUtil.closeDBConnection();
         }
@@ -206,7 +216,7 @@ public class ApplicationManagerImpl implements ApplicationManager {
         for (LifecycleStateTransition lifecycleStateTransition : nextLifeCycles) {
             if (log.isDebugEnabled()) {
                 log.debug("Lifecycle state of the application " + applicationUuid + " can be changed to"
-                                + lifecycleStateTransition.getNextState());
+                        + lifecycleStateTransition.getNextState());
             }
             if (lifecycleStateTransition.getNextState().equalsIgnoreCase(lifecycleIdentifier)) {
                 isAvailableNextState = true;
@@ -302,7 +312,11 @@ public class ApplicationManagerImpl implements ApplicationManager {
         }
         try {
             ConnectionManagerUtil.openDBConnection();
-            return DAOFactory.getApplicationDAO().getApplication(uuid, tenantId, userName);
+            Application application = DAOFactory.getApplicationDAO().getApplication(uuid, tenantId, userName);
+            if (application != null) {
+                application.setVisibility(DataHolder.getInstance().getVisibilityManager().get(application.getId()));
+            }
+            return application;
         } finally {
             ConnectionManagerUtil.closeDBConnection();
         }
@@ -344,12 +358,13 @@ public class ApplicationManagerImpl implements ApplicationManager {
      * @return true if the current user has the permission, otherwise false.
      * @throws UserStoreException UserStoreException
      */
-    private boolean isAuthorized (String username, int tenantId, String permission) throws UserStoreException {
+    private boolean isAuthorized(String username, int tenantId, String permission) throws UserStoreException {
         UserRealm userRealm = DataHolder.getInstance().getRealmService().getTenantUserRealm(tenantId);
         return userRealm != null && userRealm.getAuthorizationManager() != null && userRealm.getAuthorizationManager()
                 .isUserAuthorized(MultitenantUtils.getTenantAwareUsername(username),
                         permission, CarbonConstants.UI_PERMISSION_ACTION);
     }
+
     /**
      * To validate the application
      *

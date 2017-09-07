@@ -15,9 +15,21 @@
 * under the License.
 *
 */
-package org.wso2.carbon.device.application.mgt.core.impl;
+package org.wso2.carbon.device.application.mgt.core.exception;
 
-import org.wso2.carbon.device.application.mgt.common.services.VisibilityTypeManager;
+import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
 
-public class VisibilityTypeManagerImpl implements VisibilityTypeManager {
+/**
+ * This is the specialized exception which is thrown when there are database level problems encountered
+ * when performing the visibility management
+ */
+public class VisibilityManagementDAOException extends ApplicationManagementException {
+
+    public VisibilityManagementDAOException(String message, Throwable throwable) {
+        super(message, throwable);
+    }
+
+    public VisibilityManagementDAOException(String message) {
+        super(message, new Exception());
+    }
 }

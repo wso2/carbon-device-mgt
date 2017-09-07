@@ -25,12 +25,17 @@ import org.wso2.carbon.device.application.mgt.common.services.SubscriptionManage
 
 import java.util.List;
 
+/**
+ * This is the default implementation for the Subscription Manager.
+ */
 public class SubscriptionManagerImpl implements SubscriptionManager {
 
     private static final Log log = LogFactory.getLog(SubscriptionManagerImpl.class);
 
     @Override
-    public List<DeviceIdentifier> installApplicationForDevices(String applicationUUID, List<DeviceIdentifier> deviceList) throws ApplicationManagementException {
+    public List<DeviceIdentifier> installApplicationForDevices(String applicationUUID,
+                                                               List<DeviceIdentifier> deviceList)
+            throws ApplicationManagementException {
         log.info("Install application: " + applicationUUID + " to: " + deviceList.size() + " devices.");
         for (DeviceIdentifier device : deviceList) {
             String deviceId = device.getId();
@@ -42,7 +47,8 @@ public class SubscriptionManagerImpl implements SubscriptionManager {
     }
 
     @Override
-    public List<String> installApplicationForUsers(String applicationUUID, List<String> userList) throws ApplicationManagementException {
+    public List<String> installApplicationForUsers(String applicationUUID, List<String> userList)
+            throws ApplicationManagementException {
         log.info("Install application: " + applicationUUID + " to: " + userList.size() + " users.");
         for (String user : userList) {
             //Todo: implementation
@@ -51,7 +57,8 @@ public class SubscriptionManagerImpl implements SubscriptionManager {
     }
 
     @Override
-    public List<String> installApplicationForRoles(String applicationUUID, List<String> roleList) throws ApplicationManagementException {
+    public List<String> installApplicationForRoles(String applicationUUID, List<String> roleList)
+            throws ApplicationManagementException {
         log.info("Install application: " + applicationUUID + " to: " + roleList.size() + " users.");
         for (String role : roleList) {
             //Todo: implementation
@@ -60,7 +67,9 @@ public class SubscriptionManagerImpl implements SubscriptionManager {
     }
 
     @Override
-    public List<DeviceIdentifier> uninstallApplication(String applicationUUID, List<DeviceIdentifier> deviceList) throws ApplicationManagementException {
+    public List<DeviceIdentifier> uninstallApplication(String applicationUUID,
+                                                       List<DeviceIdentifier> deviceList)
+            throws ApplicationManagementException {
         return null;
     }
 }

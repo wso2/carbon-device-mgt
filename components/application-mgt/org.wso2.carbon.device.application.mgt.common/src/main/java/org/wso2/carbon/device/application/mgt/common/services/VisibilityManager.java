@@ -18,9 +18,40 @@
 
 package org.wso2.carbon.device.application.mgt.common.services;
 
+import org.wso2.carbon.device.application.mgt.common.Visibility;
+import org.wso2.carbon.device.application.mgt.common.exception.VisibilityManagementException;
+
+import java.sql.Connection;
+
 /**
  * This interface manages all the operations related with Application Visibility.
+ * This will be invoking the necessary backend calls for the data bases layer
+ * and provide the functional implementation.
  */
 public interface VisibilityManager {
 
+    /**
+     * Add (if there is no visibility configuration for the application) or
+     * Update (if there is already existing configuration for the application)
+     * the visibility related configuration for the application
+     *
+     * @param applicationID The ID of the application
+     * @param visibility    The visibility configuration for the particular application.
+     */
+    Visibility put(int applicationID, Visibility visibility) throws VisibilityManagementException;
+
+    /**
+     * Returns the Visibility configuration of the provided applicationUUID.
+     *
+     * @param applicationID The ID of the application
+     * @return Visibility configuration
+     */
+    Visibility get(int applicationID) throws VisibilityManagementException;
+
+    /**
+     * Remove the visibility configuration mapping for the provided application.
+     *
+     * @param applicationID The ID of the application
+     */
+    void remove(int applicationID) throws VisibilityManagementException;
 }

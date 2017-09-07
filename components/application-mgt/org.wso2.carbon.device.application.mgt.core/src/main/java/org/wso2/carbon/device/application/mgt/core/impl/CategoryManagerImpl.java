@@ -22,6 +22,10 @@ import org.wso2.carbon.device.application.mgt.common.Filter;
 import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
 import org.wso2.carbon.device.application.mgt.common.services.CategoryManager;
 
+/**
+ * This class is the default implementation for the CategoryManager.
+ *
+ */
 public class CategoryManagerImpl implements CategoryManager {
 
     @Override

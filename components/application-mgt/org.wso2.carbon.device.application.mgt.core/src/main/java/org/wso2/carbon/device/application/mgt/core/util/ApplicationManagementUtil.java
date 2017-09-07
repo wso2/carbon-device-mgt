@@ -30,7 +30,6 @@ import org.wso2.carbon.device.application.mgt.common.services.LifecycleStateMana
 import org.wso2.carbon.device.application.mgt.common.services.PlatformManager;
 import org.wso2.carbon.device.application.mgt.common.services.SubscriptionManager;
 import org.wso2.carbon.device.application.mgt.common.services.VisibilityManager;
-import org.wso2.carbon.device.application.mgt.common.services.VisibilityTypeManager;
 import org.wso2.carbon.device.application.mgt.core.config.ConfigurationManager;
 import org.wso2.carbon.device.application.mgt.core.config.Extension;
 
@@ -79,12 +78,6 @@ public class ApplicationManagementUtil {
         ConfigurationManager configurationManager = ConfigurationManager.getInstance();
         Extension extension = configurationManager.getExtension(Extension.Name.PlatformManager);
         return getInstance(extension, PlatformManager.class);
-    }
-
-    public static VisibilityTypeManager getVisibilityTypeManagerInstance() throws InvalidConfigurationException {
-        ConfigurationManager configurationManager = ConfigurationManager.getInstance();
-        Extension extension = configurationManager.getExtension(Extension.Name.VisibilityTypeManager);
-        return getInstance(extension, VisibilityTypeManager.class);
     }
 
     public static VisibilityManager getVisibilityManagerInstance() throws InvalidConfigurationException {

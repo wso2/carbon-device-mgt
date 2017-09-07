@@ -62,7 +62,7 @@ public class GenericApplicationDAOImpl extends AbstractDAOImpl implements Applic
         PreparedStatement stmt = null;
         ResultSet rs = null;
         String sql = "";
-        String generatedColumns[] = { "ID" };
+        String generatedColumns[] = {"ID"};
         boolean isBatchExecutionSupported = ConnectionManagerUtil.isBatchQuerySupported();
         int index = 0;
         try {
@@ -121,7 +121,6 @@ public class GenericApplicationDAOImpl extends AbstractDAOImpl implements Applic
         ApplicationList applicationList = new ApplicationList();
         List<Application> applications = new ArrayList<>();
         Pagination pagination = new Pagination();
-        int index = 0;
 
         if (filter == null) {
             throw new ApplicationManagementDAOException("Filter need to be instantiated");
@@ -185,13 +184,13 @@ public class GenericApplicationDAOImpl extends AbstractDAOImpl implements Applic
      * @throws SQLException SQL Exception
      */
     protected PreparedStatement generateGetApplicationsStatement(Filter filter, Connection conn,
-            int tenantId) throws SQLException {
+                                                                 int tenantId) throws SQLException {
         int index = 0;
         String sql = "SELECT APP.*, APL.NAME AS APL_NAME, APL.IDENTIFIER AS APL_IDENTIFIER, CAT.ID AS CAT_ID, "
                 + "CAT.NAME AS CAT_NAME,  LS.NAME AS LS_NAME, LS.IDENTIFIER AS LS_IDENTIFIER, "
-                + "LS.DESCRIPTION AS LS_DESCRIPTION " + "FROM APPM_APPLICATION APP " + "INNER JOIN APPM_PLATFORM APL "
-                + "ON APP.PLATFORM_ID = APL.ID " + "INNER JOIN APPM_APPLICATION_CATEGORY CAT "
-                + "ON APP.APPLICATION_CATEGORY_ID = CAT.ID " + "INNER JOIN APPM_LIFECYCLE_STATE LS "
+                + "LS.DESCRIPTION AS LS_DESCRIPTION FROM APPM_APPLICATION APP INNER JOIN APPM_PLATFORM APL "
+                + "ON APP.PLATFORM_ID = APL.ID INNER JOIN APPM_APPLICATION_CATEGORY CAT "
+                + "ON APP.APPLICATION_CATEGORY_ID = CAT.ID INNER JOIN APPM_LIFECYCLE_STATE LS "
                 + "ON APP.LIFECYCLE_STATE_ID = LS.ID WHERE APP.TENANT_ID = ? ";
 
         String userName = filter.getUserName();
@@ -199,7 +198,12 @@ public class GenericApplicationDAOImpl extends AbstractDAOImpl implements Applic
             sql += " AND APP.CREATED_BY = ? ";
         }
         if (filter.getSearchQuery() != null && !filter.getSearchQuery().isEmpty()) {
-            sql += "AND APP.NAME LIKE ? ";
+            sql += "AND LOWER (APP.NAME) ";
+            if (filter.isFullMatch()) {
+                sql += "= ?";
+            } else {
+                sql += "LIKE ?";
+            }
         }
 
         sql += "LIMIT ? OFFSET ?";
@@ -211,7 +215,11 @@ public class GenericApplicationDAOImpl extends AbstractDAOImpl implements Applic
             stmt.setString(++index, userName);
         }
         if (filter.getSearchQuery() != null && !filter.getSearchQuery().isEmpty()) {
-            stmt.setString(++index, "%" + filter.getSearchQuery() + "%");
+            if (filter.isFullMatch()) {
+                stmt.setString(++index, filter.getSearchQuery().toLowerCase());
+            } else {
+                stmt.setString(++index, "%" + filter.getSearchQuery().toLowerCase() + "%");
+            }
         }
 
         stmt.setInt(++index, filter.getLimit());
@@ -245,14 +253,14 @@ public class GenericApplicationDAOImpl extends AbstractDAOImpl implements Applic
             sql += "INNER JOIN APPM_APPLICATION_CATEGORY AS CAT ON APP.APPLICATION_CATEGORY_ID = CAT.ID ";
 
             if (filter.getSearchQuery() != null && !filter.getSearchQuery().isEmpty()) {
-                sql += "WHERE APP.NAME LIKE ? ";
+                sql += "WHERE LOWER (APP.NAME) LIKE ? ";
             }
             sql += ";";
 
             stmt = conn.prepareStatement(sql);
             int index = 0;
             if (filter.getSearchQuery() != null && !filter.getSearchQuery().isEmpty()) {
-                stmt.setString(++index, "%" + filter.getSearchQuery() + "%");
+                stmt.setString(++index, "%" + filter.getSearchQuery().toLowerCase() + "%");
             }
             rs = stmt.executeQuery();
             if (rs.next()) {
@@ -287,11 +295,11 @@ public class GenericApplicationDAOImpl extends AbstractDAOImpl implements Applic
                     + "LS.DESCRIPTION AS LS_DESCRIPTION "
                     + "FROM APPM_APPLICATION APP "
                     + "INNER JOIN APPM_PLATFORM APL "
-                        + "ON APP.PLATFORM_ID = APL.ID "
+                    + "ON APP.PLATFORM_ID = APL.ID "
                     + "INNER JOIN APPM_APPLICATION_CATEGORY CAT "
-                        + "ON APP.APPLICATION_CATEGORY_ID = CAT.ID "
+                    + "ON APP.APPLICATION_CATEGORY_ID = CAT.ID "
                     + "INNER JOIN APPM_LIFECYCLE_STATE LS "
-                        + " ON APP.LIFECYCLE_STATE_ID = LS.ID "
+                    + " ON APP.LIFECYCLE_STATE_ID = LS.ID "
                     + "WHERE UUID = ? AND APP.TENANT_ID = ? ";
 
             stmt = conn.prepareStatement(sql);
@@ -521,7 +529,7 @@ public class GenericApplicationDAOImpl extends AbstractDAOImpl implements Applic
      *
      * @param application Application in which the properties and tags need to be inserted
      */
-    private void insertApplicationTagsAndProperties (Application application, PreparedStatement stmt, Connection
+    private void insertApplicationTagsAndProperties(Application application, PreparedStatement stmt, Connection
             conn, boolean isBatchExecutionSupported) throws SQLException {
         String sql;
         if (application.getTags() != null && application.getTags().size() > 0) {
@@ -632,7 +640,7 @@ public class GenericApplicationDAOImpl extends AbstractDAOImpl implements Applic
         PreparedStatement stmt = null;
         ResultSet rs = null;
         String sql;
-        int id = 0;
+        int id = -1;
         try {
             conn = this.getDBConnection();
             sql = "SELECT ID FROM APPM_APPLICATION WHERE UUID = ? AND TENANT_ID = ?";

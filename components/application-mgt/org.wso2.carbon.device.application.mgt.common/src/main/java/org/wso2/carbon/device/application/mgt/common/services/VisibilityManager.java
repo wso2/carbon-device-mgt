@@ -21,8 +21,6 @@ package org.wso2.carbon.device.application.mgt.common.services;
 import org.wso2.carbon.device.application.mgt.common.Visibility;
 import org.wso2.carbon.device.application.mgt.common.exception.VisibilityManagementException;
 
-import java.sql.Connection;
-
 /**
  * This interface manages all the operations related with Application Visibility.
  * This will be invoking the necessary backend calls for the data bases layer

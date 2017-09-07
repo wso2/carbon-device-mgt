@@ -121,33 +121,37 @@ public class ApplicationManagerImpl implements ApplicationManager {
             throw new ApplicationManagementException("User " + userName + " does not have permissions to edit the "
                     + "application with the UUID " + application.getUuid());
         }
-        try {
-            if (application.getPlatform() != null && application.getPlatform().getIdentifier() != null) {
-                Platform platform = DataHolder.getInstance().getPlatformManager()
-                        .getPlatform(tenantId, application.getPlatform().getIdentifier());
-                if (platform == null) {
-                    throw new NotFoundException(
-                            "Platform specified by identifier " + application.getPlatform().getIdentifier()
-                                    + " is not found. Please give a valid platform identifier.");
+        if (this.getApplication(application.getUuid()) != null) {
+            try {
+                if (application.getPlatform() != null && application.getPlatform().getIdentifier() != null) {
+                    Platform platform = DataHolder.getInstance().getPlatformManager()
+                            .getPlatform(tenantId, application.getPlatform().getIdentifier());
+                    if (platform == null) {
+                        throw new NotFoundException(
+                                "Platform specified by identifier " + application.getPlatform().getIdentifier()
+                                        + " is not found. Please give a valid platform identifier.");
+                    }
+                    application.setPlatform(platform);
+                    ConnectionManagerUtil.beginDBTransaction();
+                    ApplicationDAO applicationDAO = DAOFactory.getApplicationDAO();
+                    application.setModifiedAt(new Date());
+                    Application modifiedApplication = applicationDAO.editApplication(application, tenantId);
+                    Visibility visibility = DataHolder.getInstance().getVisibilityManager().put(application.getId(),
+                            application.getVisibility());
+                    modifiedApplication.setVisibility(visibility);
+                    ConnectionManagerUtil.commitDBTransaction();
+                    return modifiedApplication;
+                } else {
+                    throw new NotFoundException("Platform information not available with the application!");
                 }
-                application.setPlatform(platform);
-                ConnectionManagerUtil.beginDBTransaction();
-                ApplicationDAO applicationDAO = DAOFactory.getApplicationDAO();
-                application.setModifiedAt(new Date());
-                Application modifiedApplication = applicationDAO.editApplication(application, tenantId);
-                Visibility visibility = DataHolder.getInstance().getVisibilityManager().put(application.getId(),
-                        application.getVisibility());
-                modifiedApplication.setVisibility(visibility);
-                ConnectionManagerUtil.commitDBTransaction();
-                return modifiedApplication;
-            } else {
-                throw new NotFoundException("Platform information not available with the application!");
+            } catch (ApplicationManagementDAOException e) {
+                ConnectionManagerUtil.rollbackDBTransaction();
+                throw e;
+            } finally {
+                ConnectionManagerUtil.closeDBConnection();
             }
-        } catch (ApplicationManagementDAOException e) {
-            ConnectionManagerUtil.rollbackDBTransaction();
-            throw e;
-        } finally {
-            ConnectionManagerUtil.closeDBConnection();
+        } else {
+            throw new NotFoundException("No applications found with application UUID - " + application.getUuid());
         }
     }
 
@@ -163,10 +167,12 @@ public class ApplicationManagerImpl implements ApplicationManager {
             ApplicationDAO applicationDAO = DAOFactory.getApplicationDAO();
             ConnectionManagerUtil.beginDBTransaction();
             int appId = applicationDAO.getApplicationId(uuid, tenantId);
-            applicationDAO.deleteTags(appId);
-            applicationDAO.deleteProperties(appId);
-            DataHolder.getInstance().getVisibilityManager().remove(appId);
-            applicationDAO.deleteApplication(uuid, tenantId);
+            if (appId != -1) {
+                applicationDAO.deleteTags(appId);
+                applicationDAO.deleteProperties(appId);
+                DataHolder.getInstance().getVisibilityManager().remove(appId);
+                applicationDAO.deleteApplication(uuid, tenantId);
+            }
             ConnectionManagerUtil.commitDBTransaction();
         } catch (ApplicationManagementDAOException e) {
             ConnectionManagerUtil.rollbackDBTransaction();
@@ -388,6 +394,27 @@ public class ApplicationManagerImpl implements ApplicationManager {
 
         if (application.getPlatform() == null || application.getPlatform().getIdentifier() == null) {
             throw new ValidationException("Platform identifier cannot be empty");
+        }
+        try {
+            validateApplicationExistence(application);
+        } catch (ApplicationManagementException e) {
+            throw new ValidationException("Error occured while validating whether there is already an application " +
+                    "registered with same name.", e);
+        }
+    }
+
+    private void validateApplicationExistence(Application application) throws ApplicationManagementException {
+        Filter filter = new Filter();
+        filter.setFullMatch(true);
+        filter.setSearchQuery(application.getName().trim());
+        filter.setOffset(0);
+        filter.setLimit(1);
+
+        ApplicationList applicationList = getApplications(filter);
+        if (applicationList != null && applicationList.getApplications() != null &&
+                !applicationList.getApplications().isEmpty()) {
+            throw new ValidationException("Already an application registered with same name - "
+                    + applicationList.getApplications().get(0).getName());
         }
     }
 }

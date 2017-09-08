@@ -16,6 +16,7 @@
  * under the License.
  */
 
+import PropTypes from 'prop-types';
 import Badge from 'material-ui/Badge';
 import React, {Component} from 'react';
 import AppBar from 'material-ui/AppBar';
@@ -109,10 +110,7 @@ class BaseLayout extends Component {
                 <div>
                     <Drawer containerStyle={{height: 'calc(100% - 64px)', width: '15%', top: '10%'}} open={true}>
                         <List>
-                            <ListItem primaryText="Overview"
-                                      onClick={this.handleOverviewClick.bind(this)}
-                                      leftIcon={<Dashboard/>}/>
-                            <ListItem primaryText="Applications"
+                           <ListItem primaryText="Applications"
                                       leftIcon={<Apps/>}
                                       initiallyOpen={false}
                                       primaryTogglesNestedList={true}
@@ -160,5 +158,9 @@ class BaseLayout extends Component {
     }
 
 }
+
+BaseLayout.propTypes = {
+    children: PropTypes.element
+};
 
 export default withRouter(BaseLayout);

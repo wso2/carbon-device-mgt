@@ -122,5 +122,4 @@
         <npm.build.command>build_prod</npm.build.command>
         <npm.working.dir>./src/main/</npm.working.dir>
     </properties>
-    
 </project>

@@ -16,10 +16,10 @@
  * under the License.
  */
 
+import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import MenuItem from 'material-ui/MenuItem';
 import TextField from 'material-ui/TextField';
-import FlatButton from 'material-ui/FlatButton';
 import SelectField from 'material-ui/SelectField';
 import RaisedButton from 'material-ui/RaisedButton';
 
@@ -44,23 +44,32 @@ class Step1 extends Component {
             stepIndex: 0,
             store: 1,
             platform: 1,
-            stepData: []
+            stepData: [],
+            title: "",
+            titleError: ""
         };
+    }
+
+    componentWillMount() {
+        //Get the list of available platforms and set to the state.
     }
 
     /**
      * Invokes the handleNext function in Create component.
      * */
-    handleNext = () => {
+    _handleNext = () => {
         this.props.handleNext();
     };
 
     /**
      * Persist the current form data to the state.
      * */
-    setStepData() {
-        this.props.setData("step1", {step: "Dfds"});
-        this.handleNext.bind(this);
+    _setStepData() {
+        var step = {
+            store: this.state.store,
+            platform: this.state.platform
+        };
+        this.props.setData("step1", {step: step});
     }
 
     /**
@@ -69,23 +78,30 @@ class Step1 extends Component {
      *  Sets the data to the state.
      *  Invokes the handleNext method of Create component.
      * */
-    handleClick() {
-        this.setStepData();
-        this.handleNext();
+    _handleClick() {
+        this._setStepData();
     }
 
     /**
      * Triggers when changing the Platform selection.
      * */
-    onChangePlatform = (event, index, value) => {
+    _onChangePlatform = (event, index, value) => {
+        console.log(value);
         this.setState({platform: value});
     };
 
     /**
      * Triggers when changing the Store selection.
      * */
-    onChangeStore = (event, index, value) => {
+    _onChangeStore = (event, index, value) => {
         this.setState({store: value});
+    };
+
+    /**
+     * Triggers when user types on Title text field.
+     * */
+    _onChangeTitle = (event, value) => {
+        this.setState({title: value});
     };
 
     render() {
@@ -95,16 +111,11 @@ class Step1 extends Component {
                 <div style={contentStyle}>
                     <div>
                         <div>
-                            <TextField
-                                hintText="Enter a title for your application."
-                                floatingLabelText="Title*"
-                                floatingLabelFixed={true}
-                            /><br/>
                             <SelectField
                                 floatingLabelText="Store Type*"
                                 value={this.state.store}
                                 floatingLabelFixed={true}
-                                onChange={this.onChangeStore.bind(this)}
+                                onChange={this._onChangeStore.bind(this)}
                             >
                                 <MenuItem value={1} primaryText="Enterprise"/>
                                 <MenuItem value={2} primaryText="Public"/>
@@ -113,11 +124,11 @@ class Step1 extends Component {
                                 floatingLabelText="Platform*"
                                 value={this.state.platform}
                                 floatingLabelFixed={true}
-                                onChange={this.onChangePlatform.bind(this)}
+                                onChange={this._onChangePlatform.bind(this)}
                             >
                                 <MenuItem value={1} primaryText="Android"/>
                                 <MenuItem value={2} primaryText="iOS"/>
-                                <MenuItem value={3} primaryText="Web"/>
+                                <MenuItem value={{name: "Web", id:3}} primaryText="Web"/>
                             </SelectField>
                         </div>
 
@@ -127,7 +138,7 @@ class Step1 extends Component {
                             <RaisedButton
                                 label="Next >"
                                 primary={true}
-                                onClick={this.handleClick.bind(this)}
+                                onClick={this._handleClick.bind(this)}
                             />
                         </div>
                     </div>
@@ -136,5 +147,11 @@ class Step1 extends Component {
         );
     }
 }
+
+Step1.propTypes = {
+    handleNext: PropTypes.func,
+    setData: PropTypes.func,
+    removeData: PropTypes.func
+};
 
 export default Step1;

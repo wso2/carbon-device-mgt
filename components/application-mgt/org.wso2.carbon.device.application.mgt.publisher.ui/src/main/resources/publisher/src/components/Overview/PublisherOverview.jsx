@@ -16,23 +16,34 @@
  * under the License.
  */
 import React, {Component} from 'react';
+import DataTable from '../UIComponents/DataTable';
 
 /**
- * Platform Create component
+ *
+ * ***NEW***
+ * The Publisher overview component.
+ * This component could be used to view app analytics.
+ * i.e number of overall downloads, ratings ect.
  * */
-class PlatformCreate extends Component {
+class PublisherOverview extends Component {
 
     constructor() {
         super();
     }
 
+    componentWillMount() {
+    }
+
     render() {
+
         return (
+
             <div>
-                Create Platform
+                Overview
+
             </div>
         );
     }
 }
 
-export default PlatformCreate;
+export default PublisherOverview;

@@ -25,8 +25,8 @@
       manifest.json provides metadata used when your web app is added to the
       homescreen on Android. See https://developers.google.com/web/fundamentals/engage-and-retain/web-app-manifest/
     -->
-    <link rel="manifest" href="%PUBLIC_URL%/publisher/manifest.json">
-    <link rel="shortcut icon" href="%PUBLIC_URL%/publisher/images/favicon.png">
+    <link rel="manifest" href="manifest.json">
+    <link rel="shortcut icon" href="images/favicon.png">
     <!--
       Notice the use of %PUBLIC_URL% in the tags above.
       It will be replaced with the URL of the `public` folder during the build.
@@ -39,6 +39,7 @@
     <title>WSO2 IoT App Publisher</title>
   </head>
   <body>
+    <script src='./dist/index.js'></script>
     <noscript>
       You need to enable JavaScript to run this app.
     </noscript>

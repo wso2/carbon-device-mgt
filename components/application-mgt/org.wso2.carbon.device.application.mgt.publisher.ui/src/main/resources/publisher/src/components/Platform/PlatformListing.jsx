@@ -97,8 +97,8 @@ class PlatformListing extends Component {
                                handleRowClick={this._onRowClick.bind(this)}
                                noDataMessage={{type: 'button', text: 'Create Platform'}}/>
                 </Card>
-
-            </div>);
+            </div>
+        );
     }
 }
 

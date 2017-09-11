@@ -15,3 +15,17 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
+scopes = 'perm:application:get perm:application:create perm:application:update perm:application-mgt:login' +
+    ' perm:application:delete perm:platform:add perm:platform:remove perm:roles:view perm:devices:view';
+
+TOKEN_ENDPOINT = '/token';
+DYNAMIC_CLIENT_REGISTER_ENDPOINT = '/api-application-registration/register';
+
+appManagerEndpoints = {
+  GET_ALL_APPS: '/api/application-mgt/v1.0/applications/1.0.0/',
+  CREATE_APP: '/api/application-mgt/v1.0/applications/1.0.0/',
+  UPLOAD_IMAGES: '/api/application-mgt/v1.0/applications/1.0.0/upload-image-artifacts/', //+appId
+};
+
+

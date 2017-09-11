@@ -15,3 +15,31 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+'use strict';
+
+import Axios from 'axios';
+
+/**
+ * Handles all tasks related to Authentication and Authorization.
+ * Generate access tokens, verify the user has necessary permissions etc.
+ * */
+class AuthHandler {
+
+    /**
+     * Generate client id and client secret to generate access tokens.
+     * */
+    login(userName, password) {
+        Axios.post("https://localhost:9443/auth/application-mgt/v1.0/auth/tokens?userName=admin&password=admin").then()
+    }
+
+    isLoggedIn() {
+
+    }
+
+    getloggedInUser() {
+
+    }
+
+
+
+}

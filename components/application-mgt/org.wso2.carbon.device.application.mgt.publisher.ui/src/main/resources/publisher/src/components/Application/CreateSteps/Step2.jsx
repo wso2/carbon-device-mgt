@@ -56,16 +56,16 @@ class Step2 extends Component {
         super();
         this.state = {
             tags: [],
+            icon: [],
+            title: "",
+            errors: {},
+            banner: [],
             defValue: "",
             category: 0,
             visibility: 0,
-            errors: {},
-            title: "",
-            shortDescription: "",
             description: "",
-            banner: [],
             screenshots: [],
-            icon: []
+            shortDescription: ""
         };
         this.scriptId = "application-create-step2";
     }
@@ -243,13 +243,14 @@ class Step2 extends Component {
      * */
     _setStepData() {
         let stepData = {
-            title: this.state.title,
-            description: this.state.description,
-            shortDescription: this.state.shortDescription,
             tags: this.state.tags,
+            icon: this.state.icon,
+            title: this.state.title,
             banner: this.state.banner,
+            category: this.state.category,
             screenshots: this.state.screenshots,
-            icon: this.state.icon
+            description: this.state.description,
+            shortDescription: this.state.shortDescription
         };
 
         this.props.setData("step2", {step: stepData});
@@ -346,7 +347,7 @@ class Step2 extends Component {
                         <TextField
                             id="tags"
                             errorText={this.state.errors["tags"]}
-                            hintText="Enter application tags.."
+                            hintText="Enter Application tags.."
                             floatingLabelText="Tags*"
                             floatingLabelFixed={true}
                             value={this.state.defValue}

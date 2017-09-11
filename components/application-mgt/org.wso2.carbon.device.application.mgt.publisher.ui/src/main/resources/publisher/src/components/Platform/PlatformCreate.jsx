@@ -17,6 +17,8 @@
  */
 
 import PropTypes from 'prop-types';
+import Axios from 'axios';
+import Chip from 'material-ui/Chip';
 import Dropzone from 'react-dropzone';
 import React, {Component} from 'react';
 import Toggle from 'material-ui/Toggle';
@@ -48,6 +50,8 @@ class PlatformCreate extends Component {
     constructor() {
         super();
         this.state = {
+            tags: [],
+            defValue: "",
             enabled: true,
             allTenants: false,
             files: [],
@@ -103,6 +107,55 @@ class PlatformCreate extends Component {
         console.log(this.state.propertyTypes[value]);
         this.setState({selectedProperty: value});
     };
+
+    /**
+     * Handles Chip delete function.
+     * Removes the tag from state.tags
+     * */
+    _handleTagDelete = (key) => {
+        this.chipData = this.state.tags;
+        const chipToDelete = this.chipData.map((chip) => chip.key).indexOf(key);
+        this.chipData.splice(chipToDelete, 1);
+        this.setState({tags: this.chipData});
+    };
+
+    /**
+     * Create a tag on Enter key press and set it to the state.
+     * Clears the tags text field.
+     * Chip gets two parameters: Key and value.
+     * */
+    _addTags(event) {
+        let tags = this.state.tags;
+        if (event.charCode === 13) {
+            event.preventDefault();
+            tags.push({key: Math.floor(Math.random() * 1000), value: event.target.value});
+            this.setState({tags, defValue: ""});
+        }
+    }
+
+    /**
+     * Creates Chip array from state.tags.
+     * */
+    _renderChip(data) {
+        return (
+            <Chip
+                key={data.key}
+                onRequestDelete={() => this._handleTagDelete(data.key)}
+                style={this.styles.chip}
+            >
+                {data.value}
+            </Chip>
+        );
+    }
+
+    /**
+     * Set the value for tag.
+     * */
+    _handleTagChange(event) {
+        let defaultValue = this.state.defValue;
+        defaultValue = event.target.value;
+        this.setState({defValue: defaultValue})
+    }
 
     /**
      * Remove the selected property from the property list.
@@ -161,6 +214,10 @@ class PlatformCreate extends Component {
     };
 
     _onCreatePlatform() {
+        //Call the platform create api.
+        let platform = {};
+
+
 
     }
 
@@ -193,6 +250,8 @@ class PlatformCreate extends Component {
             selectedProperty,
             propertyTypes,
             name,
+            tags,
+            defValue,
             description,
             property} = this.state;
 
@@ -236,6 +295,19 @@ class PlatformCreate extends Component {
                                     onToggle={this._handleToggle.bind(this)}
                                     toggled={enabled}
                                 /> <br/>
+                                <TextField
+                                    id="tags"
+                                    hintText="Enter Platform tags.."
+                                    floatingLabelText="Tags*"
+                                    floatingLabelFixed={true}
+                                    value={defValue}
+                                    onChange={this._handleTagChange.bind(this)}
+                                    onKeyPress={this._addTags.bind(this)}
+                                /><br/>
+                                <div style={this.styles.wrapper}>
+                                    {tags.map(this._renderChip, this)}
+                                </div>
+                                <br/>
                                 <div>
                                     <p className="createplatformproperties">Platform Properties</p>
                                     <div id="property-container">

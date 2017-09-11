@@ -16,7 +16,7 @@
  * under the License.
  */
 
-import './App.css';
+import './App.scss';
 import React, {Component} from 'react';
 import createHistory from 'history/createBrowserHistory';
 import {BrowserRouter as Router, Redirect, Route, Switch} from 'react-router-dom'
@@ -54,12 +54,21 @@ class Base extends Component {
     constructor() {
         super();
         this.state = {
-            user: "admin"
+            user: "s"
         }
+    }
+
+    componentWillMount() {
+
+    }
+
+    componentDidMount() {
+
     }
 
     render() {
         if (this.state.user) {
+            console.log("Have User.");
             return (
                 <div className="container">
                     <BaseLayout>
@@ -69,8 +78,8 @@ class Base extends Component {
                             <Route exact path={"/assets/apps/create"} component={ApplicationCreate}/>
                             <Route exact path={"/assets/platforms"} component={PlatformListing}/>
                             <Route exact path={"/assets/platforms/create"} component={PlatformCreate}/>
-                            <Route exact path={"/assets/apps/:app"} />
-                            <Route exact path={"/assets/apps/:app/edit"} />
+                            <Route exact path={"/assets/apps/:app"}/>
+                            <Route exact path={"/assets/apps/:app/edit"}/>
                             <Route exact path={"/assets/platforms/:platform"}/>
                             <Route exact path={"/assets/platforms/:platform/edit"}/>
                             <Route exact path={"/assets/reviews"}/>
@@ -80,8 +89,11 @@ class Base extends Component {
                     </BaseLayout>
                 </div>
             )
+        } else {
+            console.log("No user");
+            return (<Redirect to={"/login"}/>)
         }
-        return (<Redirect to={"/login"}/>)
+
     }
 }
 

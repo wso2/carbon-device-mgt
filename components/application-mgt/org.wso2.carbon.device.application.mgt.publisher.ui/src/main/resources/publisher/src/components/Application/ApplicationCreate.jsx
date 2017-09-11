@@ -18,6 +18,7 @@
 
 import React, {Component} from 'react';
 import Dialog from 'material-ui/Dialog';
+import Endpoint from '../../api/Endpoints';
 import {withRouter} from 'react-router-dom';
 import FlatButton from 'material-ui/FlatButton';
 import {Step1, Step2, Step3} from './CreateSteps';
@@ -80,6 +81,8 @@ class ApplicationCreate extends Component {
      * */
     handleSubmit = () => {
         console.log(this.state.stepData);
+        Endpoint.createApplication(this.state.stepData);
+
     };
 
     /**
@@ -164,10 +167,9 @@ class ApplicationCreate extends Component {
                               setData={this.setStepData}
                               removeData={this.removeStepData}/>;
             default:
-                return 'You\'re a long way from home sonny jim!';
+                return <div></div>;
         }
     }
-
 
     render() {
         const {finished, stepIndex} = this.state;
@@ -188,7 +190,6 @@ class ApplicationCreate extends Component {
                 onClick={this.handleNo}
             />,
         ];
-
 
         return (
             <div className="middle createapplicationmiddle">

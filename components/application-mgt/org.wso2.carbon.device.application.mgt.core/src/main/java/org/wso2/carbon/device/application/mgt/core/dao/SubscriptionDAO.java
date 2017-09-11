@@ -22,5 +22,8 @@ package org.wso2.carbon.device.application.mgt.core.dao;
  * This interface provides the list of operations that are supported with subscription database.
  *
  */
+import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
+
 public interface SubscriptionDAO {
+    int addDeviceApplicationMapping(String deviceIdentifier, String applicationUUID, boolean installed) throws ApplicationManagementException;
 }

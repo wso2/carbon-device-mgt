@@ -95,4 +95,16 @@
         <url>/application-mgt/subscription</url>
         <method>POST</method>
     </Permission>
+    <Permission>
+        <name>Uninstall Application</name>
+        <path>/device-mgt/subscription/uninstall</path>
+        <url>/application-mgt/subscription</url>
+        <method>POST</method>
+    </Permission>
+    <Permission>
+        <name>Get Application</name>
+        <path>/device-mgt/subscription/getApplication</path>
+        <url>/application-mgt/subscription</url>
+        <method>GET</method>
+    </Permission>
 </PermissionConfiguration>

@@ -22,7 +22,12 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.application.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
 import org.wso2.carbon.device.application.mgt.common.services.SubscriptionManager;
+import org.wso2.carbon.device.application.mgt.core.dao.common.DAOFactory;
+import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
+import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
 
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -37,13 +42,29 @@ public class SubscriptionManagerImpl implements SubscriptionManager {
                                                                List<DeviceIdentifier> deviceList)
             throws ApplicationManagementException {
         log.info("Install application: " + applicationUUID + " to: " + deviceList.size() + " devices.");
+        List<DeviceIdentifier> failedDeviceList = new ArrayList<>(deviceList);
         for (DeviceIdentifier device : deviceList) {
-            String deviceId = device.getId();
-            //Todo: implementation, validations
-            //Todo: generating one time download link for the application and put install operation to device.
-            //Todo: Store the mappings in DB.
+            org.wso2.carbon.device.mgt.common.DeviceIdentifier deviceIdentifier = new org.wso2.carbon.device.mgt
+                    .common.DeviceIdentifier(device.getId(), device.getType());
+            try {
+                DeviceManagementDAOFactory.openConnection();
+                if (DeviceManagementDAOFactory.getDeviceDAO().getDevice(deviceIdentifier).isEmpty()) {
+                    log.error("Device with ID: " + device.getId() + " not found to install the application.");
+                } else {
+                    if (log.isDebugEnabled()) {
+                        log.debug("Installing application to : " + device.getId());
+                    }
+                    //Todo: generating one time download link for the application and put install operation to device.
+                    DAOFactory.getSubscriptionDAO().addDeviceApplicationMapping(device.getId(), applicationUUID, false);
+                    failedDeviceList.remove(device);
+                }
+            } catch (DeviceManagementDAOException | SQLException e) {
+                throw new ApplicationManagementException("Error locating device.", e);
+            } finally {
+                DeviceManagementDAOFactory.closeConnection();
+            }
         }
-        return deviceList;
+        return failedDeviceList;
     }
 
     @Override
@@ -52,6 +73,7 @@ public class SubscriptionManagerImpl implements SubscriptionManager {
         log.info("Install application: " + applicationUUID + " to: " + userList.size() + " users.");
         for (String user : userList) {
             //Todo: implementation
+            //Todo: get the device list and call installApplicationForDevices
         }
         return userList;
     }
@@ -62,6 +84,7 @@ public class SubscriptionManagerImpl implements SubscriptionManager {
         log.info("Install application: " + applicationUUID + " to: " + roleList.size() + " users.");
         for (String role : roleList) {
             //Todo: implementation
+            //Todo: get the device list and call installApplicationForDevices
         }
         return roleList;
     }

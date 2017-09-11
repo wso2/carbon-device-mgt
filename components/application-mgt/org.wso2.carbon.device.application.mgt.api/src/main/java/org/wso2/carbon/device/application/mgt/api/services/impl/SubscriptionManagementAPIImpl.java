@@ -31,6 +31,8 @@ import javax.validation.Valid;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Variant;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -45,23 +47,25 @@ public class SubscriptionManagementAPIImpl implements SubscriptionManagementAPI{
     @Override
     public Response installApplication(@ApiParam(name = "installationDetails", value = "The application ID and list" +
             " the devices/users/roles", required = true) @Valid InstallationDetails installationDetails) {
-        Object response;
+        Object result;
         SubscriptionManager subscriptionManager = APIUtil.getSubscriptionManager();
         try {
-            String applicationUUTD = installationDetails.getApplicationUUID();
+            String applicationUUID = installationDetails.getApplicationUUID();
             if (!installationDetails.getDeviceIdentifiers().isEmpty()) {
                 List<DeviceIdentifier> deviceList = installationDetails.getDeviceIdentifiers();
-                response = subscriptionManager.installApplicationForDevices(applicationUUTD, deviceList);
+                result = subscriptionManager.installApplicationForDevices(applicationUUID, deviceList);
             } else if (!installationDetails.getUserNameList().isEmpty()) {
                 List<String> userList = installationDetails.getUserNameList();
-                response = subscriptionManager.installApplicationForUsers(applicationUUTD, userList);
+                result = subscriptionManager.installApplicationForUsers(applicationUUID, userList);
             } else if (!installationDetails.getRoleNameList().isEmpty()) {
                 List<String> roleList = installationDetails.getRoleNameList();
-                response = subscriptionManager.installApplicationForRoles(applicationUUTD, roleList);
+                result = subscriptionManager.installApplicationForRoles(applicationUUID, roleList);
             } else {
-                response = "Missing request data!";
-                return Response.status(Response.Status.BAD_REQUEST).entity(response).build();
+                result = "Missing request data!";
+                return Response.status(Response.Status.BAD_REQUEST).entity(result).build();
             }
+            HashMap<String, Object> response = new HashMap<>();
+            response.put("failedDevices", result);
             return Response.status(Response.Status.OK).entity(response).build();
         } catch (ApplicationManagementException e) {
             String msg = "Error occurred while installing the application";

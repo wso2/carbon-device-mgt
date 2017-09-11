@@ -24,10 +24,7 @@ import org.wso2.carbon.device.application.mgt.common.Application;
 import org.wso2.carbon.device.application.mgt.common.InstallationDetails;
 
 import javax.validation.Valid;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -111,7 +108,88 @@ public interface SubscriptionManagementAPI {
     Response installApplication(
             @ApiParam(
                     name = "installationDetails",
-                    value = "The application ID and list the devices/users/roles",
+                    value = "The application ID and list of devices/users/roles",
                     required = true)
             @Valid InstallationDetails installationDetails);
+
+    @POST
+    @Path("/uninstall-application")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(
+            consumes = MediaType.APPLICATION_JSON,
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "POST",
+            value = "Uninstall an application",
+            notes = "This will uninstall an application to a given list of devices/users/roles",
+            tags = "Subscription Management",
+            extensions = {
+                    @Extension(properties = {
+                            @ExtensionProperty(name = SCOPE, value = "perm:subscription:uninstall")
+                    })
+            }
+    )
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            code = 200,
+                            message = "OK. \n Successfully uninstalled the application.",
+                            response = Application.class),
+                    @ApiResponse(
+                            code = 304,
+                            message = "Not Modified. \n " +
+                                    "Empty body because the application is already uninstalled."),
+                    @ApiResponse(
+                            code = 500,
+                            message = "Internal Server Error. \n Error occurred while installing the application.",
+                            response = ErrorResponse.class)
+            })
+    Response uninstallApplication(
+            @ApiParam(
+                    name = "installationDetails",
+                    value = "The application ID and list of devices/users/roles",
+                    required = true)
+            @Valid InstallationDetails installationDetails);
+
+    @GET
+    @Path("/application/{applicationUUID}/device/{deviceId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(
+            consumes = MediaType.APPLICATION_JSON,
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "GET",
+            value = "Get an application",
+            notes = "This will return an application to a given valid token",
+            tags = "Subscription Management",
+            extensions = {
+                    @Extension(properties = {
+                            @ExtensionProperty(name = SCOPE, value = "perm:subscription:getApplication")
+                    })
+            }
+    )
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            code = 200,
+                            message = "OK. \n Successfully installed the application.",
+                            response = Application.class),
+                    @ApiResponse(
+                            code = 304,
+                            message = "Not Modified. \n " +
+                                    "Empty body because the application is already installed."),
+                    @ApiResponse(
+                            code = 500,
+                            message = "Internal Server Error. \n Error occurred while fetching the application.",
+                            response = ErrorResponse.class)
+            })
+    Response getApplication(
+            @ApiParam(
+                    name = "applicationUUID",
+                    value = "Application ID")
+            @QueryParam("applicationUUID") String applicationUUID,
+            @ApiParam(
+                    name = "deviceId",
+                    value = "The device ID")
+            @QueryParam("deviceId") String deviceId);
 }

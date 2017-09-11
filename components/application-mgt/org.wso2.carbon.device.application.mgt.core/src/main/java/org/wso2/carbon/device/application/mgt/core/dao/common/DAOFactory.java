@@ -26,6 +26,7 @@ import org.wso2.carbon.device.application.mgt.core.dao.ApplicationDAO;
 import org.wso2.carbon.device.application.mgt.core.dao.ApplicationReleaseDAO;
 import org.wso2.carbon.device.application.mgt.core.dao.LifecycleStateDAO;
 import org.wso2.carbon.device.application.mgt.core.dao.PlatformDAO;
+import org.wso2.carbon.device.application.mgt.core.dao.SubscriptionDAO;
 import org.wso2.carbon.device.application.mgt.core.dao.VisibilityDAO;
 import org.wso2.carbon.device.application.mgt.core.dao.impl.application.GenericApplicationDAOImpl;
 import org.wso2.carbon.device.application.mgt.core.dao.impl.application.release.GenericApplicationReleaseDAOImpl;
@@ -34,6 +35,7 @@ import org.wso2.carbon.device.application.mgt.core.dao.impl.lifecyclestate.Gener
 import org.wso2.carbon.device.application.mgt.core.dao.impl.platform.GenericPlatformDAOImpl;
 import org.wso2.carbon.device.application.mgt.core.dao.impl.platform.OracleMsSQLPlatformDAOImpl;
 import org.wso2.carbon.device.application.mgt.core.dao.impl.visibility.GenericVisibilityDAOImpl;
+import org.wso2.carbon.device.application.mgt.core.dao.impl.subscription.GenericSubscriptionDAOImpl;
 import org.wso2.carbon.device.application.mgt.core.exception.ApplicationManagementDAOException;
 import org.wso2.carbon.device.application.mgt.core.util.ApplicationMgtDatabaseCreator;
 import org.wso2.carbon.device.application.mgt.core.util.ConnectionManagerUtil;
@@ -137,6 +139,24 @@ public class DAOFactory {
                 case Constants.DataBaseTypes.DB_TYPE_H2:
                 case Constants.DataBaseTypes.DB_TYPE_MYSQL:
                     return new GenericVisibilityDAOImpl();
+                default:
+                    throw new UnsupportedDatabaseEngineException("Unsupported database engine : " + databaseEngine);
+            }
+        }
+        throw new IllegalStateException("Database engine has not initialized properly.");
+    }
+
+    /**
+     * To get the instance of SubscriptionDAOImplementation of the particular database engine.
+     * @return GenericSubscriptionDAOImpl
+     */
+    public static SubscriptionDAO getSubscriptionDAO() {
+        if (databaseEngine != null) {
+            switch (databaseEngine) {
+                case Constants.DataBaseTypes.DB_TYPE_H2:
+                case Constants.DataBaseTypes.DB_TYPE_MYSQL:
+                case Constants.DataBaseTypes.DB_TYPE_POSTGRESQL:
+                    return new GenericSubscriptionDAOImpl();
                 default:
                     throw new UnsupportedDatabaseEngineException("Unsupported database engine : " + databaseEngine);
             }

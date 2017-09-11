@@ -29,7 +29,7 @@ public class DeviceIdentifier {
             name = "id",
             value = "Identity of the device.",
             required = true,
-            example = "123456")
+            example = "d24f870f390352a4")
     private String id;
 
     @ApiModelProperty(

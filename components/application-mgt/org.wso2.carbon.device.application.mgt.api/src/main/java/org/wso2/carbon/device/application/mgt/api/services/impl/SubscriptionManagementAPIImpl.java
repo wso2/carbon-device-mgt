@@ -64,9 +64,22 @@ public class SubscriptionManagementAPIImpl implements SubscriptionManagementAPI{
             }
             return Response.status(Response.Status.OK).entity(response).build();
         } catch (ApplicationManagementException e) {
-            String msg = "Error occurred while creating the application";
+            String msg = "Error occurred while installing the application";
             log.error(msg, e);
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
+    }
+
+    @Override
+    public Response uninstallApplication(@ApiParam(name = "installationDetails", value = "The application ID and list" +
+            " of devices/users/roles", required = true) @Valid InstallationDetails installationDetails) {
+        return null;
+    }
+
+    @Override
+    public Response getApplication(@ApiParam(name = "applicationUUID", value = "Application ID") String
+                                               applicationUUID, @ApiParam(name = "deviceId", value = "The device ID")
+            String deviceId) {
+        return null;
     }
 }

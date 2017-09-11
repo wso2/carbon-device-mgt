@@ -30,26 +30,40 @@ public class GenericSubscriptionDAOImpl extends AbstractDAOImpl implements Subsc
     private static Log log = LogFactory.getLog(GenericSubscriptionDAOImpl.class);
 
     @Override
-    public int addDeviceApplicationMapping(String deviceIdentifier, String applicationUUID, boolean installed) throws ApplicationManagementException {
+    public int addDeviceApplicationMapping(String deviceIdentifier, String applicationUUID, boolean installed) throws
+            ApplicationManagementException {
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet rs = null;
         int mappingId = -1;
         try {
             conn = this.getDBConnection();
-            String sql = "INSERT INTO APPM_DEVICE_APPLICATION_MAPPING (DEVICE_IDENTIFIER, APPLICATION_UUID, " +
-                    "INSTALLED) VALUES (?, ?, ?)";
-            stmt = conn.prepareStatement(sql, new String[] {"id"});
+            String sql = "SELECT ID FROM APPM_DEVICE_APPLICATION_MAPPING WHERE DEVICE_IDENTIFIER = ? AND " +
+                    "APPLICATION_UUID = ?";
+            stmt = conn.prepareStatement(sql);
             stmt.setString(1, deviceIdentifier);
             stmt.setString(2, applicationUUID);
-            stmt.setBoolean(3, installed);
-            stmt.executeUpdate();
+            rs = stmt.executeQuery();
 
-            rs = stmt.getGeneratedKeys();
-            if (rs.next()) {
-                mappingId = rs.getInt(1);
+            if (!rs.next()) {
+                sql = "INSERT INTO APPM_DEVICE_APPLICATION_MAPPING (DEVICE_IDENTIFIER, APPLICATION_UUID, " +
+                        "INSTALLED) VALUES (?, ?, ?)";
+                stmt = conn.prepareStatement(sql, new String[]{"id"});
+                stmt.setString(1, deviceIdentifier);
+                stmt.setString(2, applicationUUID);
+                stmt.setBoolean(3, installed);
+                stmt.executeUpdate();
+
+                rs = stmt.getGeneratedKeys();
+                if (rs.next()) {
+                    mappingId = rs.getInt(1);
+                }
+                return mappingId;
+            } else {
+                log.warn("Device[" + deviceIdentifier + "] application[" + applicationUUID + "] mapping already " +
+                        "exists in the DB");
+                return -1;
             }
-            return mappingId;
         } catch (SQLException e) {
             throw new ApplicationManagementException("Error occurred while adding device application mapping to DB", e);
         } finally {

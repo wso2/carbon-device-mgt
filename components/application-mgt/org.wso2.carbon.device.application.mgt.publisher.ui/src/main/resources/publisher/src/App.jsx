@@ -34,6 +34,19 @@ import {
 const history = createHistory({basename: '/publisher'});
 
 /**
+ * User can define the themes in the config.json. The themes will be loaded based on the user preference.
+ */
+const theme = require("./config.json").theme;
+let muiTheme = null;
+if (theme.current === "default") {
+    let defaultTheme = require("material-ui/styles/baseThemes/" + theme.default);
+    muiTheme = getMuiTheme(defaultTheme.default);
+} else {
+    let customTheme = require("./themes/" + theme.custom);
+    muiTheme = getMuiTheme(customTheme.default);
+}
+
+/**
  * This component defines the layout and the routes for the app.
  * All the content will be loaded inside the Base component.
  * The base component includes the Core layout and the routers according to which the content will be displayed.
@@ -46,16 +59,6 @@ const history = createHistory({basename: '/publisher'});
  * HashRouter is used because the other router types need the server to serve those urls. In hashRouter, server does
  * not want to serve the URL.
  * */
-const theme = require("./config.json").theme;
-let muiTheme = null;
-if (theme.current === "default") {
-    let defaultTheme = require("material-ui/styles/baseThemes/" + theme.default);
-    muiTheme = getMuiTheme(defaultTheme.default);
-} else {
-    let customTheme = require("./themes/" + theme.custom);
-    muiTheme = getMuiTheme(customTheme.default);
-}
-
 class Base extends Component {
     constructor() {
         super();

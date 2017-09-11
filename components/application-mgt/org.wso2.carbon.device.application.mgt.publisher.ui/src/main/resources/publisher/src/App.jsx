@@ -71,7 +71,6 @@ class Base extends Component {
         if (this.state.user) {
             return (
                 <div className="container">
-                    <MuiThemeProvider muiTheme={muiTheme}>
                     <BaseLayout>
                         <Switch>
                             <Redirect exact path={"/"} to={"/assets/apps"}/>
@@ -88,7 +87,6 @@ class Base extends Component {
                             <Route component={NotFound}/>
                         </Switch>
                     </BaseLayout>
-                    </MuiThemeProvider>
                 </div>
             )
         }
@@ -106,6 +104,7 @@ class Publisher extends Component {
     render() {
         return (
             <div className="App">
+                <MuiThemeProvider muiTheme={muiTheme}>
                 <Router basename="publisher" history={history}>
                     <Switch>
                         <Route path="/login" component={Login}/>
@@ -113,6 +112,7 @@ class Publisher extends Component {
                         <Route component={Base}/>
                     </Switch>
                 </Router>
+                </MuiThemeProvider>
             </div>
         );
     }

@@ -20,6 +20,8 @@ import './App.css';
 import React, {Component} from 'react';
 import createHistory from 'history/createBrowserHistory';
 import {BrowserRouter as Router, Redirect, Route, Switch} from 'react-router-dom'
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import {
     ApplicationCreate,
     ApplicationListing,
@@ -29,7 +31,6 @@ import {
     PlatformCreate,
     PlatformListing
 } from './components';
-
 const history = createHistory({basename: '/publisher'});
 
 /**
@@ -45,6 +46,15 @@ const history = createHistory({basename: '/publisher'});
  * HashRouter is used because the other router types need the server to serve those urls. In hashRouter, server does
  * not want to serve the URL.
  * */
+const theme = require("./config.json").theme;
+let muiTheme = null;
+if (theme.current === "default") {
+    let defaultTheme = require("material-ui/styles/baseThemes/" + theme.default);
+    muiTheme = getMuiTheme(defaultTheme.default);
+} else {
+    let customTheme = require("./themes/" + theme.custom);
+    muiTheme = getMuiTheme(customTheme.default);
+}
 
 class Base extends Component {
     constructor() {
@@ -58,6 +68,7 @@ class Base extends Component {
         if (this.state.user) {
             return (
                 <div className="container">
+                    <MuiThemeProvider muiTheme={muiTheme}>
                     <BaseLayout>
                         <Switch>
                             <Redirect exact path={"/"} to={"/assets/apps"}/>
@@ -74,6 +85,7 @@ class Base extends Component {
                             <Route component={NotFound}/>
                         </Switch>
                     </BaseLayout>
+                    </MuiThemeProvider>
                 </div>
             )
         }

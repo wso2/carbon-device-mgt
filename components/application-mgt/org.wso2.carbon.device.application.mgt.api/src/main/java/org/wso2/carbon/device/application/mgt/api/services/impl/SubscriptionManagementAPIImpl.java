@@ -31,7 +31,6 @@ import javax.validation.Valid;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Variant;
 import java.util.HashMap;
 import java.util.List;
 

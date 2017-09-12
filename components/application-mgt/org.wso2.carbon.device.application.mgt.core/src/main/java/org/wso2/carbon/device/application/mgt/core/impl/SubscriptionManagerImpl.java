@@ -33,7 +33,6 @@ import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * This is the default implementation for the Subscription Manager.

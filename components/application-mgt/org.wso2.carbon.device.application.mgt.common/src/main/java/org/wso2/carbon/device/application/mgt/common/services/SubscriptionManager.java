@@ -42,10 +42,10 @@ public interface SubscriptionManager {
      * To install an application to given list of users.
      * @param applicationUUID Application ID
      * @param userList User list
-     * @return Failed User List which the application was unable to install
+     * @return Failed Device List which the application was unable to install
      * @throws ApplicationManagementException Application Management Exception
      */
-    List<String> installApplicationForUsers(String applicationUUID,
+    List<DeviceIdentifier> installApplicationForUsers(String applicationUUID,
                                             List<String> userList)
             throws ApplicationManagementException;
 
@@ -53,10 +53,10 @@ public interface SubscriptionManager {
      * To install an application to given list of users.
      * @param applicationUUID Application ID
      * @param roleList Role list
-     * @return Failed Role List which the application was unable to install
+     * @return Failed Device List which the application was unable to install
      * @throws ApplicationManagementException Application Management Exception
      */
-    List<String> installApplicationForRoles(String applicationUUID,
+    List<DeviceIdentifier> installApplicationForRoles(String applicationUUID,
                                             List<String> roleList)
             throws ApplicationManagementException;
 

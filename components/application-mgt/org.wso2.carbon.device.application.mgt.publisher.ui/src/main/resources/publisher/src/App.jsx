@@ -31,7 +31,7 @@ import {
     PlatformCreate,
     PlatformListing
 } from './components';
-import Theme from './themes/theme';
+import Theme from './theme';
 
 
 const history = createHistory({basename: '/publisher'});
@@ -40,8 +40,8 @@ const history = createHistory({basename: '/publisher'});
  *Loading the theme files based on the the user-preference.
  */
 let muiTheme = null;
-let selected = Theme.selectedTheme;
-if (Theme.currentTheme === "default") {
+let selected = Theme.currentTheme;
+if (Theme.currentThemeType === "default") {
     let defaultTheme = require("material-ui/styles/baseThemes/" + selected);
     muiTheme = getMuiTheme(defaultTheme.default);
 } else {

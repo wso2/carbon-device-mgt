@@ -20,7 +20,6 @@ import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import FlatButton from 'material-ui/FlatButton';
 import {TableHeaderColumn} from 'material-ui/Table';
-import Theme from '../../themes/theme';
 
 /**
  * Data Table header component.
@@ -33,16 +32,17 @@ class DataTableHeader extends Component {
     }
 
     componentWillMount() {
-        let selected = Theme.selectedTheme;
-        if (Theme.currentTheme === "default") {
-            require("../../themes/default/data-table.css");
-        } else {
-            try {
-                require("../../themes/" + selected + "/data-table.css");
-            } catch (ex) {
-                // If the particular customized file does not exist, use the default one.
-                require("../../themes/default/data-table.css");
-            }
+        //Using the particular style specific to user selected theme.
+        const theme = require("../../theme").default;
+        const selected =
+            (theme.currentThemeType === theme.defaultThemeType) ? theme.defaultThemeType : theme.currentTheme;
+        const dataTableCss = "data-table.css";
+
+        try {
+            require("../../" + theme.themeFolder + "/" + selected + "/" + dataTableCss);
+        } catch (ex){
+            // If the particular customized file does not exist, use the default one.
+            require("../../" + theme.themeFolder + "/" + theme.defaultThemeType + "/" + dataTableCss);
         }
     }
 

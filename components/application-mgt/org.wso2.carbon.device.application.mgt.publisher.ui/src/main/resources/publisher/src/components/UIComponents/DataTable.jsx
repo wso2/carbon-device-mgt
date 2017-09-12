@@ -22,7 +22,6 @@ import DataTableRow from './DataTableRow';
 import DataTableHeader from './DataTableHeader';
 import RaisedButton from 'material-ui/RaisedButton';
 import {Table, TableBody, TableHeader, TableRow} from 'material-ui/Table';
-import Theme from '../../themes/theme';
 
 /**
  * The Custom Table Component.
@@ -62,16 +61,18 @@ class DataTable extends Component {
 
     componentWillMount() {
         this.setState({data: this.props.data, headers: this.props.headers});
-        let selected = Theme.selectedTheme;
-        if (Theme.currentTheme === "default") {
-            require("../../themes/default/data-table.css");
-        } else {
-            try {
-                require("../../themes/" + selected + "/data-table.css");
-            } catch (ex) {
-                // If the particular customized file does not exist, use the default one.
-                require("../../themes/default/data-table.css");
-            }
+
+        //Using the particular style specific to user selected theme.
+        const theme = require("../../theme").default;
+        const selected =
+            (theme.currentThemeType === theme.defaultThemeType) ? theme.defaultThemeType : theme.currentTheme;
+        const dataTableCss = "data-table.css";
+
+        try {
+            require("../../" + theme.themeFolder + "/" + selected + "/" + dataTableCss);
+        } catch (ex){
+            // If the particular customized file does not exist, use the default one.
+            require("../../" + theme.themeFolder + "/" + theme.defaultThemeType + "/" + dataTableCss);
         }
     }
 

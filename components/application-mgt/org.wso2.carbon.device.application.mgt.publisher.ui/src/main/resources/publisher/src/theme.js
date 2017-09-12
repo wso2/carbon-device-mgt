@@ -22,12 +22,14 @@
  */
 class Theme {
     constructor() {
-        const theme = require("../config.json").theme;
-        this.currentTheme = theme.type;
-        if (this.currentTheme === "default") {
-            this.selectedTheme = theme.value;
+        const theme = require("./config.json").theme;
+        this.currentThemeType = theme.type;
+        this.defaultThemeType = "default";
+        this.themeFolder = "themes";
+        if (this.currentThemeType === this.defaultThemeType) {
+            this.currentTheme = theme.value;
         } else {
-            this.selectedTheme = theme.value;
+            this.currentTheme = theme.value;
         }
     }
 }

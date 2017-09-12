@@ -31,7 +31,6 @@ import {GridList, GridTile} from 'material-ui/GridList';
 import Close from 'material-ui/svg-icons/navigation/close';
 import {Card, CardActions, CardTitle} from 'material-ui/Card';
 import AddCircleOutline from 'material-ui/svg-icons/content/add-circle-outline';
-import Theme from '../../themes/theme';
 
 /**
  * Platform Create component.
@@ -66,16 +65,17 @@ class PlatformCreate extends Component {
     }
 
     componentWillMount() {
-        let selected = Theme.selectedTheme;
-        if (Theme.currentTheme === "default") {
-            require("../../themes/default/platform-create.css");
-        } else {
-            try {
-                require("../../themes/" + selected + "/platform-create.css");
-            } catch (ex) {
-                // If the particular customized file does not exist, use the default one.
-                require("../../themes/default/platform-create.css");
-            }
+        //Using the particular style specific to user selected theme.
+        const theme = require("../../theme").default;
+        const selected =
+            (theme.currentThemeType === theme.defaultThemeType) ? theme.defaultThemeType : theme.currentTheme;
+        const platformCreateCss = "platform-create.css";
+
+        try {
+            require("../../" + theme.themeFolder + "/" + selected + "/" + platformCreateCss);
+        } catch (ex){
+            // If the particular customized file does not exist, use the default one.
+            require("../../" + theme.themeFolder + "/" + theme.defaultThemeType + "/" + platformCreateCss);
         }
     }
 

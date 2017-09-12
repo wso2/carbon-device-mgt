@@ -31,7 +31,6 @@ import Dashboard from 'material-ui/svg-icons/action/dashboard';
 import DevicesOther from 'material-ui/svg-icons/hardware/devices-other';
 import NotificationsIcon from 'material-ui/svg-icons/social/notifications';
 import ActionAccountCircle from 'material-ui/svg-icons/action/account-circle';
-import Theme from '../../themes/theme';
 
 
 /**
@@ -51,16 +50,17 @@ class BaseLayout extends Component {
     }
 
     componentWillMount() {
-        let selected = Theme.selectedTheme;
-        if (Theme.currentTheme === "default") {
-          require("../../themes/default/basic-layout.css");
-        } else {
-            try {
-                require("../../themes/" + selected + "/basic-layout.css");
-            } catch (ex){
-                // If the particular customized file does not exist, use the default one.
-                require("../../themes/default/basic-layout.css");
-            }
+        //Using the particular style specific to user selected theme.
+        const theme = require("../../theme").default;
+        const selected =
+            (theme.currentThemeType === theme.defaultThemeType) ? theme.defaultThemeType : theme.currentTheme;
+        const basicLayoutCss = "basic-layout.css";
+
+        try {
+            require("../../" + theme.themeFolder + "/" + selected + "/" + basicLayoutCss);
+        } catch (ex){
+            // If the particular customized file does not exist, use the default one.
+            require("../../" + theme.themeFolder + "/" + theme.defaultThemeType + "/" + basicLayoutCss);
         }
     }
 

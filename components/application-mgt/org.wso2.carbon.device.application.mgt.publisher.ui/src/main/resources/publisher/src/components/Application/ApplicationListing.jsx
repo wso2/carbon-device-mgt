@@ -21,7 +21,6 @@ import {withRouter} from 'react-router-dom';
 import TextField from 'material-ui/TextField';
 import DataTable from '../UIComponents/DataTable';
 import {Card, CardActions, CardTitle} from 'material-ui/Card';
-import Theme from '../../themes/theme';
 
 /**
  * The App Create Component.
@@ -114,16 +113,17 @@ class ApplicationListing extends Component {
         //Fetch all the applications from backend and create application objects.
         this.setState({data: this.data});
 
-        let selected = Theme.selectedTheme;
-        if (Theme.currentTheme === "default") {
-            require("../../themes/default/application-listing.css");
-        } else {
-            try {
-                require("../../themes/" + selected + "/application-listing.css");
-            } catch (ex) {
-                // If the particular customized file does not exist, use the default one.
-                require("../../themes/default/application-listing.css");
-            }
+        //Using the particular style specific to user selected theme.
+        const theme = require("../../theme").default;
+        const selected =
+            (theme.currentThemeType === theme.defaultThemeType) ? theme.defaultThemeType : theme.currentTheme;
+        const applicationListingCss = "application-listing.css";
+
+        try {
+            require("../../" + theme.themeFolder + "/" + selected + "/" + applicationListingCss);
+        } catch (ex){
+            // If the particular customized file does not exist, use the default one.
+            require("../../" + theme.themeFolder + "/" + theme.defaultThemeType + "/" + applicationListingCss);
         }
     }
 

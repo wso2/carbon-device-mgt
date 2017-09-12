@@ -24,7 +24,6 @@ import TextField from 'material-ui/TextField';
 import FlatButton from 'material-ui/FlatButton';
 import SelectField from 'material-ui/SelectField';
 import RaisedButton from 'material-ui/RaisedButton';
-import Theme from '../../../themes/theme';
 
 /**
  * The Third step of application create wizard. {Application Release Step}
@@ -59,16 +58,17 @@ class Step3 extends Component {
     }
 
     componentWillMount() {
-        let selected = Theme.selectedTheme;
-        if (Theme.currentTheme === "default") {
-            require("../../../themes/default/application-create-step3.css");
-        } else {
-            try {
-                require("../../../themes/" + selected + "/application-create-step3.css");
-            } catch (ex){
-                // If the particular customized file does not exist, use the default one.
-                require("../../../themes/default/application-create-step3.css");
-            }
+        //Using the particular style specific to user selected theme.
+        const theme = require("../../../theme").default;
+        const selected =
+            (theme.currentThemeType === theme.defaultThemeType) ? theme.defaultThemeType : theme.currentTheme;
+        const applicationCreationStepCss = "application-create-step1.css";
+
+        try {
+            require("../../../" + theme.themeFolder + "/" + selected + "/" + applicationCreationStepCss);
+        } catch (ex){
+            // If the particular customized file does not exist, use the default one.
+            require("../../../" + theme.themeFolder + "/" + theme.defaultThemeType + "/" + applicationCreationStepCss);
         }
     }
 

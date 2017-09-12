@@ -28,7 +28,6 @@ import SelectField from 'material-ui/SelectField';
 import RaisedButton from 'material-ui/RaisedButton';
 import Clear from 'material-ui/svg-icons/content/clear';
 import {GridList, GridTile} from 'material-ui/GridList';
-import Theme from '../../../themes/theme';
 
 /**
  * The Second step of application create wizard.
@@ -70,16 +69,17 @@ class Step2 extends Component {
     }
 
     componentWillMount() {
-        let selected = Theme.selectedTheme;
-        if (Theme.currentTheme === "default") {
-            require("../../../themes/default/application-create-step2.css");
-        } else {
-            try {
-                require("../../../themes/" + selected + "/application-create-step2.css");
-            } catch (ex){
-                // If the particular customized file does not exist, use the default one.
-                require("../../../themes/default/application-create-step2.css");
-            }
+        //Using the particular style specific to user selected theme.
+        const theme = require("../../../theme").default;
+        const selected =
+            (theme.currentThemeType === theme.defaultThemeType) ? theme.defaultThemeType : theme.currentTheme;
+        const applicationCreationStepCss = "application-create-step2.css";
+
+        try {
+            require("../../../" + theme.themeFolder + "/" + selected + "/" + applicationCreationStepCss);
+        } catch (ex){
+            // If the particular customized file does not exist, use the default one.
+            require("../../../" + theme.themeFolder + "/" + theme.defaultThemeType + "/" + applicationCreationStepCss);
         }
     }
 

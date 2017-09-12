@@ -22,9 +22,6 @@ import MenuItem from 'material-ui/MenuItem';
 import TextField from 'material-ui/TextField';
 import SelectField from 'material-ui/SelectField';
 import RaisedButton from 'material-ui/RaisedButton';
-import Theme from '../../../themes/theme';
-
-
 
 /**
  * The first step of the application creation wizard.
@@ -54,16 +51,17 @@ class Step1 extends Component {
     }
 
     componentWillMount() {
-        let selected = Theme.selectedTheme;
-        if (Theme.currentTheme === "default") {
-            require("../../../themes/default/application-create-step1.css");
-        } else {
-            try {
-                require("../../../themes/" + selected + "/application-create-step1.css");
-            } catch (ex){
-                // If the particular customized file does not exist, use the default one.
-                require("../../../themes/default/application-create-step1.css");
-            }
+        //Using the particular style specific to user selected theme.
+        const theme = require("../../../theme").default;
+        const selected =
+            (theme.currentThemeType === theme.defaultThemeType) ? theme.defaultThemeType : theme.currentTheme;
+        const applicationCreationStepCss = "application-create-step1.css";
+
+        try {
+            require("../../../" + theme.themeFolder + "/" + selected + "/" + applicationCreationStepCss);
+        } catch (ex){
+            // If the particular customized file does not exist, use the default one.
+            require("../../../" + theme.themeFolder + "/" + theme.defaultThemeType + "/" + applicationCreationStepCss);
         }
         //Get the list of available platforms and set to the state.
     }

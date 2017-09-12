@@ -21,7 +21,6 @@ import {withRouter} from 'react-router-dom';
 import TextField from 'material-ui/TextField';
 import DataTable from '../UIComponents/DataTable';
 import {Card, CardActions, CardTitle} from 'material-ui/Card';
-import Theme from '../../themes/theme';
 
 /**
  * The App Create Component.
@@ -41,16 +40,17 @@ class PlatformListing extends Component {
     }
 
     componentWillMount() {
-        let selected = Theme.selectedTheme;
-        if (Theme.currentTheme === "default") {
-            require("../../themes/default/platform-listing.css");
-        } else {
-            try {
-                require("../../themes/" + selected + "/platform-listing.css");
-            } catch (ex) {
-                // If the particular customized file does not exist, use the default one.
-                require("../../themes/default/platform-listing.css");
-            }
+        //Using the particular style specific to user selected theme.
+        const theme = require("../../theme").default;
+        const selected =
+            (theme.currentThemeType === theme.defaultThemeType) ? theme.defaultThemeType : theme.currentTheme;
+        const platformListingCss = "platform-listing.css";
+
+        try {
+            require("../../" + theme.themeFolder + "/" + selected + "/" + platformListingCss);
+        } catch (ex){
+            // If the particular customized file does not exist, use the default one.
+            require("../../" + theme.themeFolder + "/" + theme.defaultThemeType + "/" + platformListingCss);
         }
         //Fetch all the applications from backend and create application objects.
     }

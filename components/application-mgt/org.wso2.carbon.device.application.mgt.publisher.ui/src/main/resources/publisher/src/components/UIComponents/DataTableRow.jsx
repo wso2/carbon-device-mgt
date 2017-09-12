@@ -19,7 +19,6 @@
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {TableRow, TableRowColumn} from 'material-ui/Table';
-import Theme from '../../themes/theme';
 
 /**
  * Data table row component.
@@ -36,16 +35,18 @@ class DataTableRow extends Component {
 
     componentWillMount() {
         this.setState({dataItem: this.props.dataItem});
-        let selected = Theme.selectedTheme;
-        if (Theme.currentTheme === "default") {
-            require("../../themes/default/data-table.css");
-        } else {
-            try {
-                require("../../themes/" + selected + "/data-table.css");
-            } catch (ex) {
-                // If the particular customized file does not exist, use the default one.
-                require("../../themes/default/data-table.css");
-            }
+
+        //Using the particular style specific to user selected theme.
+        const theme = require("../../theme").default;
+        const selected =
+            (theme.currentThemeType === theme.defaultThemeType) ? theme.defaultThemeType : theme.currentTheme;
+        const dataTableCss = "data-table.css";
+
+        try {
+            require("../../" + theme.themeFolder + "/" + selected + "/" + dataTableCss);
+        } catch (ex){
+            // If the particular customized file does not exist, use the default one.
+            require("../../" + theme.themeFolder + "/" + theme.defaultThemeType + "/" + dataTableCss);
         }
     }
 

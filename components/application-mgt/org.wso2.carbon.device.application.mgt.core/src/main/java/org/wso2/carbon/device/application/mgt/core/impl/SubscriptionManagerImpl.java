@@ -40,8 +40,6 @@ import java.util.List;
 public class SubscriptionManagerImpl implements SubscriptionManager {
 
     private static final Log log = LogFactory.getLog(SubscriptionManagerImpl.class);
-    final private String ANDROID = "android";
-    final private String IOS = "ios";
 
     @Override
     public List<DeviceIdentifier> installApplicationForDevices(String applicationUUID,
@@ -101,8 +99,7 @@ public class SubscriptionManagerImpl implements SubscriptionManager {
     private List<DeviceIdentifier> installApplication(String applicationUUID, List<DeviceIdentifier> deviceList)
             throws ApplicationManagementException {
         List<DeviceIdentifier> failedDeviceList = new ArrayList<>(deviceList);
-        List<org.wso2.carbon.device.mgt.common.DeviceIdentifier> androidDevices = new ArrayList<>();
-        List<org.wso2.carbon.device.mgt.common.DeviceIdentifier> iosDevices = new ArrayList<>();
+        List<org.wso2.carbon.device.mgt.common.DeviceIdentifier> activeDeviceList = new ArrayList<>();
         for (DeviceIdentifier device : deviceList) {
             org.wso2.carbon.device.mgt.common.DeviceIdentifier deviceIdentifier = new org.wso2.carbon.device.mgt
                     .common.DeviceIdentifier(device.getId(), device.getType());
@@ -114,11 +111,7 @@ public class SubscriptionManagerImpl implements SubscriptionManager {
                     if (log.isDebugEnabled()) {
                         log.debug("Prepare application install to : " + device.getId());
                     }
-                    if (device.getType().equals(ANDROID)) {
-                        androidDevices.add(deviceIdentifier);
-                    } else {
-                        iosDevices.add(deviceIdentifier);
-                    }
+                    activeDeviceList.add(deviceIdentifier);
                     DAOFactory.getSubscriptionDAO().addDeviceApplicationMapping(device.getId(), applicationUUID, false);
                     failedDeviceList.remove(device);
                 }

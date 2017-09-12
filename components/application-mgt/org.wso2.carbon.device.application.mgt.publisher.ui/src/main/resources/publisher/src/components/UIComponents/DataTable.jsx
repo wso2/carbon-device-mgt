@@ -83,7 +83,7 @@ class DataTable extends Component {
      * Triggers when user click on table row.
      * This method invokes the parent method handleRowClick, which is passed via props.
      * */
-    _handleRowClick(id) {
+    handleRowClick(id) {
         this.props.handleRowClick(id);
     }
 
@@ -100,22 +100,29 @@ class DataTable extends Component {
 
         if (data) {
             return (<Table
-                selectable={ false }>
-                <TableHeader displaySelectAll={ false }
-                             adjustForCheckbox={ false }>
+                selectable={false}>
+                <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
                     <TableRow>
                         {headers.map((header) => {
-                                return (<DataTableHeader key={header.data_id} className="datatableRowColumn"
-                                                         header={header}/>)
-                            }
+                                return (
+                                    <DataTableHeader
+                                        key={header.data_id}
+                                        className="datatableRowColumn"
+                                        header={header}
+                                    />
+                                )}
                         )}
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {data.map((dataItem) =>{
-                        return (<DataTableRow key={dataItem.id}
-                                              dataItem={dataItem}
-                                              handleClick={this._handleRowClick.bind(this)}/>)
+                    {data.map((dataItem) => {
+                        return (
+                            <DataTableRow
+                                key={dataItem.id}
+                                dataItem={dataItem}
+                                handleClick={this.handleRowClick.bind(this)}
+                            />
+                        )
                     })}
                 </TableBody>
             </Table>)

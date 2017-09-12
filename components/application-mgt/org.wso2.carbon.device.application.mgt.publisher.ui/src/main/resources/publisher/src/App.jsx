@@ -18,6 +18,7 @@
 
 import './App.scss';
 import React, {Component} from 'react';
+import AuthHandler from './api/authHandler';
 import createHistory from 'history/createBrowserHistory';
 import {BrowserRouter as Router, Redirect, Route, Switch} from 'react-router-dom'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
@@ -54,12 +55,19 @@ class Base extends Component {
     constructor() {
         super();
         this.state = {
-            user: "s"
+            user: null
+
         }
     }
 
     componentWillMount() {
+        let user = AuthHandler.getUser();
 
+        if (user) {
+            if (!AuthHandler.isTokenExpired()) {
+                this.setState({user: user});
+            }
+        }
     }
 
     componentDidMount() {
@@ -67,7 +75,7 @@ class Base extends Component {
     }
 
     render() {
-        if (this.state.user) {
+        if (this.state.user !== null) {
             console.log("Have User.");
             return (
                 <div className="container">

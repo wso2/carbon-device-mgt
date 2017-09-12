@@ -41,7 +41,7 @@ class DataTableRow extends Component {
         /**
          *Loading the theme files based on the the user-preference.
          */
-       Theme.insertThemingScripts(this.scriptId);
+        Theme.insertThemingScripts(this.scriptId);
     }
 
     componentWillUnmount() {
@@ -51,24 +51,32 @@ class DataTableRow extends Component {
     /**
      * Triggers the click event on the data table row.
      * */
-    _handleClick() {
+    handleClick() {
         this.props.handleClick(this.state.dataItem.id);
     }
 
     render() {
         const {dataItem} = this.state;
         return (
-                <TableRow key={this.props.key} onClick={this._handleClick.bind(this)} >
-                    {Object.keys(dataItem).map((key) => {
-                        if (key !== 'id') {
-                            return <TableRowColumn className = "datatableRowColumn"
-                                                   key={key}>{dataItem[key]}</TableRowColumn>
-                        } else {
-                            return <TableRowColumn key={key}/>
-                        }
+            <TableRow
+                key={this.props.key}
+                onClick={this.handleClick.bind(this)}
+            >
+                {Object.keys(dataItem).map((key) => {
+                    if (key !== 'id') {
+                        return (
+                            <TableRowColumn
+                                className="datatableRowColumn"
+                                key={key}
+                            >
+                                {dataItem[key]}
+                            </TableRowColumn>)
+                    } else {
+                        return <TableRowColumn key={key}/>
+                    }
 
-                    } )}
-                </TableRow>
+                })}
+            </TableRow>
         );
     }
 }

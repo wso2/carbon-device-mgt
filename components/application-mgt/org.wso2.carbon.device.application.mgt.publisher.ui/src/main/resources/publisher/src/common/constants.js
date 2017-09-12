@@ -16,16 +16,30 @@
  * under the License.
  */
 
-scopes = 'perm:application:get perm:application:create perm:application:update perm:application-mgt:login' +
-    ' perm:application:delete perm:platform:add perm:platform:remove perm:roles:view perm:devices:view';
+export default class Constants {
 
-TOKEN_ENDPOINT = '/token';
-DYNAMIC_CLIENT_REGISTER_ENDPOINT = '/api-application-registration/register';
+    static scopes = 'perm:application:get perm:application:create perm:application:update perm:application-mgt:login' +
+        ' perm:application:delete perm:platform:add perm:platform:remove perm:roles:view perm:devices:view';
 
-appManagerEndpoints = {
-  GET_ALL_APPS: '/api/application-mgt/v1.0/applications/1.0.0/',
-  CREATE_APP: '/api/application-mgt/v1.0/applications/1.0.0/',
-  UPLOAD_IMAGES: '/api/application-mgt/v1.0/applications/1.0.0/upload-image-artifacts/', //+appId
-};
+    static TOKEN_ENDPOINT = '/token';
+    static DYNAMIC_CLIENT_REGISTER_ENDPOINT = '/api-application-registration/register';
+
+    static appManagerEndpoints = {
+        GET_ALL_APPS: 'https://localhost:8243/api/application-mgt/v1.0/applications/1.0.0/',
+        CREATE_APP: 'https://localhost:8243/api/application-mgt/v1.0/applications/1.0.0/',
+        UPLOAD_IMAGES: '/api/application-mgt/v1.0/applications/1.0.0/upload-image-artifacts/', //+appId
+    };
+
+    static platformManagerEndpoints = {
+        CREATE_PLATFORM: 'https://localhost:8243/api/application-mgt/v1.0/platforms/1.0.0/'
+    }
+
+    static userConstants = {
+        WSO2_USER: 'wso2_user',
+        PARTIAL_TOKEN: 'WSO2_IOT_TOKEN'
+    }
+
+}
+
 
 

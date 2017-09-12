@@ -17,6 +17,7 @@
  */
 
 import React, {Component} from 'react';
+import EndPoint from '../../api/endpoints';
 import {withRouter} from 'react-router-dom';
 import TextField from 'material-ui/TextField';
 import DataTable from '../UIComponents/DataTable';
@@ -44,37 +45,37 @@ class ApplicationListing extends Component {
     data = [
         {
             id: Math.random(),
-            applicationName:"Cne",
-            platform:'Android',
-            category:"Public",
+            applicationName: "Cne",
+            platform: 'Android',
+            category: "Public",
             status: "Created"
         },
         {
             id: Math.random(),
-            applicationName:"Gone",
-            platform:'IOS',
-            category:"Public",
+            applicationName: "Gone",
+            platform: 'IOS',
+            category: "Public",
             status: "Created"
         },
         {
             id: Math.random(),
-            applicationName:"Ane",
-            platform:'Android',
-            category:"Public",
+            applicationName: "Ane",
+            platform: 'Android',
+            category: "Public",
             status: "Created"
         },
         {
             id: Math.random(),
-            applicationName:"one",
-            platform:'Android',
-            category:"Public",
+            applicationName: "one",
+            platform: 'Android',
+            category: "Public",
             status: "Created"
         },
         {
             id: Math.random(),
-            applicationName:"one",
-            platform:'Android',
-            category:"Public",
+            applicationName: "one",
+            platform: 'Android',
+            category: "Public",
             status: "Created"
         },
     ];
@@ -84,19 +85,21 @@ class ApplicationListing extends Component {
             data_id: "image",
             data_type: "image",
             sortable: false,
-            label: ""},
+            label: ""
+        },
         {
             data_id: "applicationName",
             data_type: "string",
             sortable: true,
             label: "Application Name",
-            sort: this._sortData.bind(this)
+            sort: this.sortData.bind(this)
         },
         {
             data_id: "platform",
             data_type: "image_array",
             sortable: false,
-            label: "Platform"},
+            label: "Platform"
+        },
         {
             data_id: "category",
             data_type: "string",
@@ -125,36 +128,41 @@ class ApplicationListing extends Component {
         Theme.removeThemingScripts(this.scriptId);
     }
 
+    componentDidMount() {
+        let getApps = EndPoint.getApplications();
+        getApps.then(response => {
+            console.log(response);
+        })
+    }
 
     /**
      * Handles the search action.
      * When typing in the search bar, this method will be invoked.
      * */
-    _searchApplications(event, word) {
+    searchApplications(event, word) {
         let searchedData;
-            if (word){
-                searchedData = this.data.filter((dataItem) => {
-                        return dataItem.applicationName.includes(word);
-                    });
-            } else {
-                searchedData = this.data;
-            }
+        if (word) {
+            searchedData = this.data.filter((dataItem) => {
+                return dataItem.applicationName.includes(word);
+            });
+        } else {
+            searchedData = this.data;
+        }
 
         this.setState({data: searchedData}, console.log("Searched data ", this.state.data));
-
     }
 
     /**
      * Handles sort data function and toggles the asc state.
      * asc: true : sort in ascending order.
      * */
-    _sortData() {
+    sortData() {
         let isAsc = this.state.asc;
-        let datas = isAsc?this.data.sort(this._compare):this.data.reverse();
+        let datas = isAsc ? this.data.sort(this.compare) : this.data.reverse();
         this.setState({data: datas, asc: !isAsc});
     }
 
-    _compare(a, b) {
+    compare(a, b) {
         if (a.applicationName < b.applicationName)
             return -1;
         if (a.applicationName > b.applicationName)
@@ -162,8 +170,8 @@ class ApplicationListing extends Component {
         return 0;
     }
 
-    _onRowClick(id) {
-        this.props.history.push("apps/"+id);
+    onRowClick(id) {
+        this.props.history.push("apps/" + id);
     }
 
     render() {
@@ -171,18 +179,17 @@ class ApplicationListing extends Component {
             <div className="middle applicationListingMiddle">
                 <Card className="applicationListingCard">
                     <TextField hintText="Search" className="applicationListingSearch"
-                               onChange={this._searchApplications.bind(this)}/>
+                               onChange={this.searchApplications.bind(this)}/>
                     <CardTitle title="Applications" className="applicationListTitle"/>
-                    <CardActions>
-
-                    </CardActions>
-                    <DataTable headers={this.headers}
-                               data={this.state.data}
-                               handleRowClick={this._onRowClick.bind(this)}
-                               noDataMessage={{type: 'button', text: 'Create Application'}}/>
+                    <DataTable
+                        headers={this.headers}
+                        data={this.state.data}
+                        handleRowClick={this.onRowClick.bind(this)}
+                        noDataMessage={{type: 'button', text: 'Create Application'}}
+                    />
                 </Card>
-
-            </div>);
+            </div>
+        );
     }
 }
 

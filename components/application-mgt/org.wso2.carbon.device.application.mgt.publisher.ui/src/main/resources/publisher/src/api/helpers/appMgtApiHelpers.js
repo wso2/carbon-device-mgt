@@ -26,24 +26,31 @@ export default class Helper {
     /**
      * Generate application object from form data passed.
      * @param appData: Application data from the application creation form.
+     * @return {Object, Object}: The application object and the set of images related to the application.
      * */
     static buildApplication(appData) {
 
         let application = {};
         let images = {};
 
-        for (var step in appData) {
+        for (let step in appData) {
             let tmpData = appData[step].data.step;
-            for (var prop in tmpData) {
+            for (let prop in tmpData) {
                 if (prop === 'banner' || prop === 'screenshots' || prop === 'icon') {
                     images[prop] = tmpData[prop];
+                } else if(prop === 'tags') {
+                    let tags = [];
+                    let tagsFromStep = tmpData[prop];
+                    for (let tag in tagsFromStep) {
+                        console.log(tag);
+                        tags.push(tagsFromStep[tag].value);
+                    }
+                    application[prop] = tags;
                 } else {
                     application[prop] = tmpData[prop];
                 }
             }
         }
-
-        console.log(application, images);
+        return {application, images};
     }
-
 }

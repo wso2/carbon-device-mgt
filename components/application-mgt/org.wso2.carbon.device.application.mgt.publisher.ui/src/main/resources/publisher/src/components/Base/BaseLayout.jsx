@@ -97,67 +97,74 @@ class BaseLayout extends Component {
         return (
 
             <div>
-                <AppBar title="App Publisher"
-                        iconElementRight={
-                            <div>
-                                <Badge
-                                    badgeContent={this.state.notifications}
-                                    secondary={true}
-                                    badgeStyle={{top: 12, right: 12}}
-                                >
-                                    <IconButton tooltip="Notifications">
-                                        <NotificationsIcon/>
-                                    </IconButton>
-                                </Badge>
-                                <IconButton onClick={() => {
-                                    console.log("Clicked")
-                                }}>
-                                    <ActionAccountCircle/>
+                <AppBar
+                    title="App Publisher"
+                    iconElementRight={
+                        <div>
+                            <Badge
+                                badgeContent={this.state.notifications}
+                                secondary={true}
+                                badgeStyle={{top: 12, right: 12}}
+                            >
+                                <IconButton tooltip="Notifications">
+                                    <NotificationsIcon/>
                                 </IconButton>
-                            </div>
-                        }
+                            </Badge>
+                            <IconButton onClick={() => {
+                                console.log("Clicked")
+                            }}>
+                                <ActionAccountCircle/>
+                            </IconButton>
+                        </div>
+                    }
                 />
                 <div>
                     <Drawer containerStyle={{height: 'calc(100% - 64px)', width: '15%', top: '10%'}} open={true}>
                         <List>
-                           <ListItem primaryText="Applications"
-                                      leftIcon={<Apps/>}
-                                      initiallyOpen={false}
-                                      primaryTogglesNestedList={true}
-                                      onClick={this.handleApplicationClick.bind(this)}
-                                      nestedItems={[
-                                          <ListItem
-                                              key={1}
-                                              primaryText="Create"
-                                              onClick={this.handleApplicationCreateClick.bind(this)}
-                                              leftIcon={<Add/>}
-                                          />]}
+                            <ListItem
+                                primaryText="Applications"
+                                leftIcon={<Apps/>}
+                                initiallyOpen={false}
+                                primaryTogglesNestedList={true}
+                                onClick={this.handleApplicationClick.bind(this)}
+                                nestedItems={[
+                                    <ListItem
+                                        key={1}
+                                        primaryText="Create"
+                                        onClick={this.handleApplicationCreateClick.bind(this)}
+                                        leftIcon={<Add/>}
+                                    />
+                                ]}
                             />
-                            <ListItem primaryText="Platforms"
-                                      leftIcon={<DevicesOther/>}
-                                      initiallyOpen={false}
-                                      primaryTogglesNestedList={true}
-                                      onClick={this.handlePlatformClick.bind(this)}
-                                      nestedItems={[
-                                          <ListItem
-                                              key={1}
-                                              primaryText="Create"
-                                              onClick={this.handlePlatformCreateClick.bind(this)}
-                                              leftIcon={<Add/>}
-                                          />]}
+                            <ListItem
+                                primaryText="Platforms"
+                                leftIcon={<DevicesOther/>}
+                                initiallyOpen={false}
+                                primaryTogglesNestedList={true}
+                                onClick={this.handlePlatformClick.bind(this)}
+                                nestedItems={[
+                                    <ListItem
+                                        key={1}
+                                        primaryText="Create"
+                                        onClick={this.handlePlatformCreateClick.bind(this)}
+                                        leftIcon={<Add/>}
+                                    />
+                                ]}
                             />
-                            <ListItem primaryText="Reviews"
-                                      onClick={this.handleReviewClick.bind(this)}
-                                      leftIcon={<Feedback/>}/>
+                            <ListItem
+                                primaryText="Reviews"
+                                onClick={this.handleReviewClick.bind(this)}
+                                leftIcon={<Feedback/>}
+                            />
                         </List>
                     </Drawer>
                 </div>
                 <div className="basicLayoutDiv">
                     {this.props.children}
                 </div>
-            </div>);
+            </div>
+        );
     }
-
 }
 
 BaseLayout.propTypes = {

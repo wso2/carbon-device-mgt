@@ -22,6 +22,7 @@ import React, {Component} from 'react';
 import Checkbox from 'material-ui/Checkbox';
 import TextField from 'material-ui/TextField';
 import {Redirect, Switch} from 'react-router-dom';
+import AuthHandler from '../../../api/authHandler';
 import RaisedButton from 'material-ui/RaisedButton';
 import {Card, CardActions, CardTitle} from 'material-ui/Card';
 
@@ -65,15 +66,15 @@ class Login extends Component {
         // }
     }
 
-    _handleLogin(event) {
+    handleLogin(event) {
         event.preventDefault();
-        this._validateForm();
+        this.validateForm();
     }
 
     /**
      * Handles the username field change event.
      * */
-    _onUserNameChange(event, value) {
+    onUserNameChange(event, value) {
         this.setState(
             {
                 userName: value
@@ -84,7 +85,7 @@ class Login extends Component {
     /**
      * Handles the password field change event.
      * */
-    _onPasswordChange(event, value) {
+    onPasswordChange(event, value) {
         this.setState(
             {
                 password: value
@@ -95,7 +96,7 @@ class Login extends Component {
     /**
      * Handles the remember me check.
      * */
-    _handleRememberMe() {
+    handleRememberMe() {
         this.setState(
             {
                 rememberMe: !this.state.rememberMe
@@ -106,17 +107,32 @@ class Login extends Component {
     /**
      * Validate the login form.
      * */
-    _validateForm() {
+    validateForm() {
         let errors = {};
+        let validationFailed = true;
         if (!this.state.password) {
             errors["passwordError"] = "Password is Required";
+            validationFailed = true;
+        } else {
+            validationFailed = false;
         }
 
         if (!this.state.userName) {
             errors["userNameError"] = "User Name is Required";
+            validationFailed = true;
+        } else {
+            validationFailed = false;
         }
 
-        this.setState({errors: errors}, console.log(errors));
+        if (validationFailed) {
+            this.setState({errors: errors}, console.log(errors));
+        } else {
+            let loginPromis = AuthHandler.login(this.state.userName, this.state.password);
+            loginPromis.then(response => {
+                console.log(AuthHandler.getUser());
+                this.setState({isLoggedIn: AuthHandler.getUser()});
+            })
+        }
     }
 
     render() {
@@ -124,13 +140,12 @@ class Login extends Component {
         if (!this.state.isLoggedIn) {
             return (
                 <div>
-
                     {/*TODO: Style the components.*/}
 
                     <Card>
                         <CardTitle title="WSO2 IoT App Publisher"/>
                         <CardActions>
-                            <form onSubmit={this._handleLogin.bind(this)}>
+                            <form onSubmit={this.handleLogin.bind(this)}>
                                 <TextField
                                     hintText="Enter the User Name."
                                     id="username"
@@ -138,8 +153,9 @@ class Login extends Component {
                                     floatingLabelText="User Name*"
                                     floatingLabelFixed={true}
                                     value={this.state.userName}
-                                    onChange={this._onUserNameChange.bind(this)}
-                                /><br/>
+                                    onChange={this.onUserNameChange.bind(this)}
+                                />
+                                <br/>
                                 <TextField
                                     hintText="Enter the Password."
                                     id="password"
@@ -148,11 +164,14 @@ class Login extends Component {
                                     floatingLabelText="Password*"
                                     floatingLabelFixed={true}
                                     value={this.state.password}
-                                    onChange={this._onPasswordChange.bind(this)}
-                                /><br/>
-                                <Checkbox label="Remember me."
-                                          onCheck={this._handleRememberMe.bind(this)}
-                                          checked={this.state.rememberMe}/>
+                                    onChange={this.onPasswordChange.bind(this)}
+                                />
+                                <br/>
+                                <Checkbox
+                                    label="Remember me."
+                                    onCheck={this.handleRememberMe.bind(this)}
+                                    checked={this.state.rememberMe}
+                                />
                                 <br/>
                                 <RaisedButton type="submit" label="Login"/>
                             </form>

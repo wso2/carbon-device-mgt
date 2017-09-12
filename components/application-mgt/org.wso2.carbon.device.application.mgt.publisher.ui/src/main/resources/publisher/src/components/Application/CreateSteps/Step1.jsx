@@ -39,11 +39,13 @@ import Theme from '../../../theme';
 class Step1 extends Component {
     constructor() {
         super();
+        this.platforms = [{identifier: 1}, {identifier: 2}, {identifier: 3}];
+        this.stores = [{identifier: 5}, {identifier: 2}, {identifier: 3}];
         this.state = {
             finished: false,
             stepIndex: 0,
             store: 1,
-            platform: 1,
+            platform: 0,
             stepData: [],
             title: "",
             titleError: ""
@@ -65,17 +67,17 @@ class Step1 extends Component {
     /**
      * Invokes the handleNext function in Create component.
      * */
-    _handleNext = () => {
+    handleNext() {
         this.props.handleNext();
     };
 
     /**
      * Persist the current form data to the state.
      * */
-    _setStepData() {
-        var step = {
+    setStepData() {
+        let step = {
             store: this.state.store,
-            platform: this.state.platform
+            platform: this.platforms[this.state.platform]
         };
         this.props.setData("step1", {step: step});
     }
@@ -86,14 +88,14 @@ class Step1 extends Component {
      *  Sets the data to the state.
      *  Invokes the handleNext method of Create component.
      * */
-    _handleClick() {
-        this._setStepData();
+    handleClick() {
+        this.setStepData();
     }
 
     /**
      * Triggers when changing the Platform selection.
      * */
-    _onChangePlatform = (event, index, value) => {
+    onChangePlatform(event, index, value) {
         console.log(value);
         this.setState({platform: value});
     };
@@ -101,15 +103,8 @@ class Step1 extends Component {
     /**
      * Triggers when changing the Store selection.
      * */
-    _onChangeStore = (event, index, value) => {
+    onChangeStore(event, index, value) {
         this.setState({store: value});
-    };
-
-    /**
-     * Triggers when user types on Title text field.
-     * */
-    _onChangeTitle = (event, value) => {
-        this.setState({title: value});
     };
 
     render() {
@@ -122,30 +117,30 @@ class Step1 extends Component {
                                 floatingLabelText="Store Type*"
                                 value={this.state.store}
                                 floatingLabelFixed={true}
-                                onChange={this._onChangeStore.bind(this)}
+                                onChange={this.onChangeStore.bind(this)}
                             >
-                                <MenuItem value={1} primaryText="Enterprise"/>
-                                <MenuItem value={2} primaryText="Public"/>
-                            </SelectField> <br/>
+                                <MenuItem value={0} primaryText="Enterprise"/>
+                                <MenuItem value={1} primaryText="Public"/>
+                            </SelectField>
+                            <br/>
                             <SelectField
                                 floatingLabelText="Platform*"
                                 value={this.state.platform}
                                 floatingLabelFixed={true}
-                                onChange={this._onChangePlatform.bind(this)}
+                                onChange={this.onChangePlatform.bind(this)}
                             >
-                                <MenuItem value={1} primaryText="Android"/>
-                                <MenuItem value={2} primaryText="iOS"/>
-                                <MenuItem value={{name: "Web", id:3}} primaryText="Web"/>
+                                <MenuItem value={0} primaryText="Android"/>
+                                <MenuItem value={1} primaryText="iOS"/>
+                                <MenuItem value={2} primaryText="Web"/>
                             </SelectField>
                         </div>
-
                         <br/>
                         <br/>
                         <div className="nextButton">
                             <RaisedButton
                                 label="Next >"
                                 primary={true}
-                                onClick={this._handleClick.bind(this)}
+                                onClick={this.handleClick.bind(this)}
                             />
                         </div>
                     </div>

@@ -31,6 +31,8 @@ import Dashboard from 'material-ui/svg-icons/action/dashboard';
 import DevicesOther from 'material-ui/svg-icons/hardware/devices-other';
 import NotificationsIcon from 'material-ui/svg-icons/social/notifications';
 import ActionAccountCircle from 'material-ui/svg-icons/action/account-circle';
+import Theme from '../../themes/theme';
+
 
 /**
  * Base Layout:
@@ -49,7 +51,17 @@ class BaseLayout extends Component {
     }
 
     componentWillMount() {
-
+        let selected = Theme.selectedTheme;
+        if (Theme.currentTheme === "default") {
+          require("../../themes/default/basic-layout.css");
+        } else {
+            try {
+                require("../../themes/" + selected + "/basic-layout.css");
+            } catch (ex){
+                // If the particular customized file does not exist, use the default one.
+                require("../../themes/default/basic-layout.css");
+            }
+        }
     }
 
     handleApplicationClick() {
@@ -142,16 +154,7 @@ class BaseLayout extends Component {
                         </List>
                     </Drawer>
                 </div>
-                <div style=
-                         {
-                             {
-                                 height: 'calc(100% - 64px)',
-                                 marginLeft: '16%',
-                                 width: 'calc(100%-15%)',
-                                 top: 64,
-                                 left: "-100px"
-                             }
-                         }>
+                <div className="basicLayoutDiv">
                     {this.props.children}
                 </div>
             </div>);

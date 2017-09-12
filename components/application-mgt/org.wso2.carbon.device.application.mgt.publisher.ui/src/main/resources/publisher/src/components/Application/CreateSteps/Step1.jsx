@@ -22,6 +22,9 @@ import MenuItem from 'material-ui/MenuItem';
 import TextField from 'material-ui/TextField';
 import SelectField from 'material-ui/SelectField';
 import RaisedButton from 'material-ui/RaisedButton';
+import Theme from '../../../themes/theme';
+
+
 
 /**
  * The first step of the application creation wizard.
@@ -51,6 +54,17 @@ class Step1 extends Component {
     }
 
     componentWillMount() {
+        let selected = Theme.selectedTheme;
+        if (Theme.currentTheme === "default") {
+            require("../../../themes/default/application-create-step1.css");
+        } else {
+            try {
+                require("../../../themes/" + selected + "/application-create-step1.css");
+            } catch (ex){
+                // If the particular customized file does not exist, use the default one.
+                require("../../../themes/default/application-create-step1.css");
+            }
+        }
         //Get the list of available platforms and set to the state.
     }
 
@@ -105,10 +119,9 @@ class Step1 extends Component {
     };
 
     render() {
-        const contentStyle = {margin: '0 16px'};
         return (
             <div>
-                <div style={contentStyle}>
+                <div className="creatediv">
                     <div>
                         <div>
                             <SelectField
@@ -134,7 +147,7 @@ class Step1 extends Component {
 
                         <br/>
                         <br/>
-                        <div style={{marginTop: 12}}>
+                        <div className="nextButton">
                             <RaisedButton
                                 label="Next >"
                                 primary={true}

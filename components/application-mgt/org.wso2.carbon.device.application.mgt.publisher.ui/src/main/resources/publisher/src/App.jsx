@@ -31,18 +31,21 @@ import {
     PlatformCreate,
     PlatformListing
 } from './components';
+import Theme from './themes/theme';
+
+
 const history = createHistory({basename: '/publisher'});
 
 /**
- * User can define the themes in the config.json. The themes will be loaded based on the user preference.
+ *Loading the theme files based on the the user-preference.
  */
-const theme = require("./config.json").theme;
 let muiTheme = null;
-if (theme.current === "default") {
-    let defaultTheme = require("material-ui/styles/baseThemes/" + theme.default);
+let selected = Theme.selectedTheme;
+if (Theme.currentTheme === "default") {
+    let defaultTheme = require("material-ui/styles/baseThemes/" + selected);
     muiTheme = getMuiTheme(defaultTheme.default);
 } else {
-    let customTheme = require("./themes/" + theme.custom);
+    let customTheme = require("./themes/" + selected + "/theme.js");
     muiTheme = getMuiTheme(customTheme.default);
 }
 

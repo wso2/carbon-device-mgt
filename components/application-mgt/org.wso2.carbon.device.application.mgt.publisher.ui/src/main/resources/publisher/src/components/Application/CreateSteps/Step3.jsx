@@ -24,6 +24,7 @@ import TextField from 'material-ui/TextField';
 import FlatButton from 'material-ui/FlatButton';
 import SelectField from 'material-ui/SelectField';
 import RaisedButton from 'material-ui/RaisedButton';
+import Theme from '../../../themes/theme';
 
 /**
  * The Third step of application create wizard. {Application Release Step}
@@ -57,6 +58,20 @@ class Step3 extends Component {
         }
     }
 
+    componentWillMount() {
+        let selected = Theme.selectedTheme;
+        if (Theme.currentTheme === "default") {
+            require("../../../themes/default/application-create-step3.css");
+        } else {
+            try {
+                require("../../../themes/" + selected + "/application-create-step3.css");
+            } catch (ex){
+                // If the particular customized file does not exist, use the default one.
+                require("../../../themes/default/application-create-step3.css");
+            }
+        }
+    }
+
     /**
      * Handles finish button click.
      * This invokes handleNext function in parent component.
@@ -81,9 +96,8 @@ class Step3 extends Component {
     }
 
     render() {
-        const contentStyle = {margin: '0 16px'};
         return (
-            <div style={contentStyle}>
+            <div className="applicationCreateStepMiddle">
                 <div>
                     <Toggle
                         label="Release the Application"
@@ -110,13 +124,9 @@ class Step3 extends Component {
                         /><br/>
                     </div>}
 
-                    <div style={{marginTop: 12}}>
-                        <FlatButton
-                            label="< Back"
-                            disabled={false}
-                            onClick={this._handlePrev.bind(this)}
-                            style={{marginRight: 12}}
-                        />
+                    <div className="applicationCreateBackAndFinish">
+                        <FlatButton label="< Back" disabled={false} onClick={this._handlePrev.bind(this)}
+                                    className="applicationCreateFinish"/>
                         <RaisedButton
                             label="Finish"
                             primary={true}

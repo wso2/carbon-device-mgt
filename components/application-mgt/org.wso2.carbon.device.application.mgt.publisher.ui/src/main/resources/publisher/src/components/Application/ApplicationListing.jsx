@@ -21,6 +21,7 @@ import {withRouter} from 'react-router-dom';
 import TextField from 'material-ui/TextField';
 import DataTable from '../UIComponents/DataTable';
 import {Card, CardActions, CardTitle} from 'material-ui/Card';
+import Theme from '../../themes/theme';
 
 /**
  * The App Create Component.
@@ -112,6 +113,18 @@ class ApplicationListing extends Component {
     componentWillMount() {
         //Fetch all the applications from backend and create application objects.
         this.setState({data: this.data});
+
+        let selected = Theme.selectedTheme;
+        if (Theme.currentTheme === "default") {
+            require("../../themes/default/application-listing.css");
+        } else {
+            try {
+                require("../../themes/" + selected + "/application-listing.css");
+            } catch (ex) {
+                // If the particular customized file does not exist, use the default one.
+                require("../../themes/default/application-listing.css");
+            }
+        }
     }
 
     /**
@@ -156,12 +169,11 @@ class ApplicationListing extends Component {
 
     render() {
         return (
-            <div className="middle" style={{width: '95%', height: '100%', marginTop: '1%'}}>
-                <Card style={{display: 'flex', flexWrap: 'wrap'}}>
-                    <TextField hintText="Search"
-                               style={{float:'right', paddingRight: '2px'}}
+            <div className="middle applicationListingMiddle">
+                <Card className="applicationListingCard">
+                    <TextField hintText="Search" className="applicationListingSearch"
                                onChange={this._searchApplications.bind(this)}/>
-                    <CardTitle title="Applications" style={{display: 'flex', flexWrap: 'wrap'}}/>
+                    <CardTitle title="Applications" className="applicationListTitle"/>
                     <CardActions>
 
                     </CardActions>

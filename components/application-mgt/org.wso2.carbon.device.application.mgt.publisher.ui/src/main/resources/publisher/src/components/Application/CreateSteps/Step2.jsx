@@ -28,6 +28,7 @@ import SelectField from 'material-ui/SelectField';
 import RaisedButton from 'material-ui/RaisedButton';
 import Clear from 'material-ui/svg-icons/content/clear';
 import {GridList, GridTile} from 'material-ui/GridList';
+import Theme from '../../../themes/theme';
 
 /**
  * The Second step of application create wizard.
@@ -66,18 +67,21 @@ class Step2 extends Component {
             screenshots: [],
             icon: []
         };
-
-        this.styles = {
-            chip: {
-                margin: 4,
-            },
-            wrapper: {
-                display: 'flex',
-                flexWrap: 'wrap',
-            },
-        };
     }
 
+    componentWillMount() {
+        let selected = Theme.selectedTheme;
+        if (Theme.currentTheme === "default") {
+            require("../../../themes/default/application-create-step2.css");
+        } else {
+            try {
+                require("../../../themes/" + selected + "/application-create-step2.css");
+            } catch (ex){
+                // If the particular customized file does not exist, use the default one.
+                require("../../../themes/default/application-create-step2.css");
+            }
+        }
+    }
 
     /**
      * Create a tag on Enter key press and set it to the state.
@@ -142,8 +146,7 @@ class Step2 extends Component {
             <Chip
                 key={data.key}
                 onRequestDelete={() => this._handleRequestDelete(data.key)}
-                style={this.styles.chip}
-            >
+                className="applicationCreateChip">
                 {data.value}
             </Chip>
         );
@@ -299,9 +302,8 @@ class Step2 extends Component {
 
     render() {
         console.log(this.state.visibilityComponent);
-        const contentStyle = {margin: '0 16px'};
         return (
-            <div style={contentStyle}>
+            <div className="createStep2Content">
                 <div>
                     <div>
                         <TextField
@@ -353,7 +355,7 @@ class Step2 extends Component {
                             onChange={this._handleTagChange.bind(this)}
                             onKeyPress={this._addTags.bind(this)}
                         /><br/>
-                        <div style={this.styles.wrapper}>
+                        <div className="applicationCreateWrapper">
                             {this.state.tags.map(this._renderChip, this)}
                         </div>
                         <br/>
@@ -365,18 +367,14 @@ class Step2 extends Component {
                             <MenuItem value={0} primaryText="Business"/>
                         </SelectField> <br/>
                         {/*Platform Specific Properties.*/}
-                        <div style={{border: 'solid #BDBDBD 1px'}}>
-                            <p style={{color: '#BDBDBD'}}>Platform Specific Properties</p>
+                        <div className="platformSpecificPropertyDiv">
+                            <p className="platformSpecificPropertyP">Platform Specific Properties</p>
                         </div>
                         <br/>
                         <div>
-                            <p style={{color: '#f44336'}}>{this.state.errors["Banner"]}</p>
-                            <p style={{color: '#BDBDBD'}}>Banner*:</p>
-                            <GridList style={{
-                                display: 'flex',
-                                flexWrap: 'nowrap',
-                                overflowX: 'auto',
-                            }} cols={1.1}>
+                            <p className="applicationCreateBannerError">{this.state.errors["Banner"]}</p>
+                            <p className="applicationCreateBannerTitle">Banner*:</p>
+                            <GridList className="applicationCreateGrid" cols={1.1}>
                                 {this.state.banner.map((tile) => (
                                     <GridTile key={Math.floor(Math.random() * 1000)}
                                               title={tile.name}
@@ -387,12 +385,11 @@ class Step2 extends Component {
                                         <img src={tile.preview}/></GridTile>
                                 ))}
                                 {this.state.banner.length === 0 ?
-                                    <Dropzone style={{width: '300px', height: '150px', border: 'dashed #BDBDBD 1px'}}
-                                              accept="image/jpeg, image/png"
+                                    <Dropzone className="applicationCreateBannerDropZone" accept="image/jpeg, image/png"
                                               onDrop={(banner, rejected) => {
                                                   this.setState({banner, rejected});
                                               }}>
-                                    <p style={{margin: '70px 40px 40px 150px'}}>+</p>
+                                    <p className="applicationCreateBannerp">+</p>
                                 </Dropzone> : <div />}
 
                             </GridList>
@@ -400,13 +397,9 @@ class Step2 extends Component {
                         </div>
                         <br/>
                         <div>
-                            <p style={{color: '#f44336'}}>{this.state.errors["Screenshots"]}</p>
-                            <p style={{color: '#BDBDBD'}}>Screenshots*:</p>
-                            <GridList style={{
-                                display: 'flex',
-                                flexWrap: 'nowrap',
-                                overflowX: 'auto',
-                            }} cols={1.1}>
+                            <p className="applicationCreateScreenshotError">{this.state.errors["Screenshots"]}</p>
+                            <p className="applicationCreateScreenshotTitle">Screenshots*:</p>
+                            <GridList className = "applicationCreateScreenshotGrid" cols={1.1}>
                                 {this.state.screenshots.map((file) => (
                                     <GridTile key={Math.floor(Math.random() * 1000)}
                                               title={file[0].name}
@@ -417,7 +410,7 @@ class Step2 extends Component {
                                         <img src={file[0].preview}/></GridTile>
                                 ))}
                                 {this.state.screenshots.length < 3 ?
-                                    <Dropzone style={{width: '150px', height: '150px', border: 'dashed #BDBDBD 1px'}}
+                                    <Dropzone className="applicationCreateScreenshotDropZone"
                                               accept="image/jpeg, image/png"
                                               onDrop={(screenshots, rejected) => {
                                                   let tmpScreenshots = this.state.screenshots;
@@ -425,19 +418,15 @@ class Step2 extends Component {
                                                   this.setState({
                                                       screenshots: tmpScreenshots});
                                               }}>
-                                    <p style={{margin: '70px 40px 70px 70px'}}>+</p>
+                                    <p className="applicationCreateScreenshotp">+</p>
                                 </Dropzone> : <div />}
                             </GridList>
                         </div>
                         <br/>
                         <div>
-                            <p style={{color: '#f44336'}}>{this.state.errors["Icon"]}</p>
-                            <p style={{color: '#BDBDBD'}}>Icon*:</p>
-                            <GridList style={{
-                                display: 'flex',
-                                flexWrap: 'nowrap',
-                                overflowX: 'auto',
-                            }} cols={1.1}>
+                            <p className="applcationCreateIconError">{this.state.errors["Icon"]}</p>
+                            <p className="applicationCreateIconTitle">Icon*:</p>
+                            <GridList className="applicationCreateIconGrid" cols={1.1}>
                                 {this.state.icon.map((tile) => (
                                     <GridTile key={Math.floor(Math.random() * 1000)}
                                               title={tile.name}
@@ -448,10 +437,10 @@ class Step2 extends Component {
                                         <img src={tile.preview}/></GridTile>
                                 ))}
                                 {this.state.icon.length === 0 ?
-                                    <Dropzone style={{width: '150px', height: '150px', border: 'dashed #BDBDBD 1px'}}
+                                    <Dropzone className="applicationCreateIconDropZone"
                                               accept="image/jpeg, image/png"
                                               onDrop={(icon, rejected) => {this.setState({icon, rejected});}}>
-                                    <p style={{margin: '70px 40px 70px 70px'}}>+</p>
+                                    <p className="applicationCreateIconp">+</p>
                                 </Dropzone> : <div />}
                             </GridList>
                         </div>
@@ -460,12 +449,12 @@ class Step2 extends Component {
 
                     <br/>
                     <br/>
-                    <div style={{marginTop: 12}}>
+                    <div className="applicationCreateBackAndNext">
                         <FlatButton
                             label="< Back"
                             disabled={false}
                             onClick={this._handlePrev.bind(this)}
-                            style={{marginRight: 12}}
+                            className="applicationCreateBack"
                         />
                         <RaisedButton
                             label="Next >"

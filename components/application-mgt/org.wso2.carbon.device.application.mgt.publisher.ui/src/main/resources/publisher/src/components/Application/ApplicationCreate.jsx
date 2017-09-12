@@ -24,7 +24,7 @@ import {Step1, Step2, Step3} from './CreateSteps';
 import RaisedButton from 'material-ui/RaisedButton';
 import {Card, CardActions, CardTitle} from 'material-ui/Card';
 import {Step, StepLabel, Stepper,} from 'material-ui/Stepper';
-
+import Theme from '../../themes/theme';
 
 /**
  * The App Create Component.
@@ -49,6 +49,20 @@ class ApplicationCreate extends Component {
             stepData: [],
             isDialogOpen: false
         };
+    }
+
+    componentWillMount() {
+        let selected = Theme.selectedTheme;
+        if (Theme.currentTheme === "default") {
+            require("../../themes/default/application-create.css");
+        } else {
+            try {
+                require("../../themes/" + selected + "/application-create.css");
+            } catch (ex){
+                // If the particular customized file does not exist, use the default one.
+                require("../../themes/default/application-create.css");
+            }
+        }
     }
 
     /**
@@ -179,15 +193,15 @@ class ApplicationCreate extends Component {
 
 
         return (
-            <div className="middle" style={{width: '95%', height: '100%', marginTop: '1%'}}>
-                <Card style={{maxHeight: '700px', overflow: 'auto'}}>
+            <div className="middle createapplicationmiddle">
+                <Card className="creataapplicationcard">
                     <CardTitle title="Create Application"/>
 
                     {/**
                      * The stepper goes here.
                      */}
                     <CardActions>
-                        <div style={{width: '100%', margin: 'auto'}}>
+                        <div className="createapplicationcardaction">
                             <Stepper activeStep={stepIndex}>
                                 <Step>
                                     <StepLabel>Select Application Platform</StepLabel>
@@ -199,7 +213,7 @@ class ApplicationCreate extends Component {
                                     <StepLabel>Release</StepLabel>
                                 </Step>
                             </Stepper>
-                            <div style={contentStyle}>
+                            <div className="createapplicationcontent">
                                 {finished ? (
                                     <div>
                                         <p>Create App?</p>

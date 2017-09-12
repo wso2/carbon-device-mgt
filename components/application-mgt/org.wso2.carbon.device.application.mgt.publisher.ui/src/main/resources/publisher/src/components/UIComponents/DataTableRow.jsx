@@ -19,6 +19,7 @@
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {TableRow, TableRowColumn} from 'material-ui/Table';
+import Theme from '../../themes/theme';
 
 /**
  * Data table row component.
@@ -34,7 +35,18 @@ class DataTableRow extends Component {
     }
 
     componentWillMount() {
-        this.setState({dataItem: this.props.dataItem})
+        this.setState({dataItem: this.props.dataItem});
+        let selected = Theme.selectedTheme;
+        if (Theme.currentTheme === "default") {
+            require("../../themes/default/data-table.css");
+        } else {
+            try {
+                require("../../themes/" + selected + "/data-table.css");
+            } catch (ex) {
+                // If the particular customized file does not exist, use the default one.
+                require("../../themes/default/data-table.css");
+            }
+        }
     }
 
     /**
@@ -50,7 +62,7 @@ class DataTableRow extends Component {
                 <TableRow key={this.props.key} onClick={this._handleClick.bind(this)} >
                     {Object.keys(dataItem).map((key) => {
                         if (key !== 'id') {
-                            return <TableRowColumn style={{alignItems: 'center'}}
+                            return <TableRowColumn className = "datatableRowColumn"
                                                    key={key}>{dataItem[key]}</TableRowColumn>
                         } else {
                             return <TableRowColumn key={key}/>

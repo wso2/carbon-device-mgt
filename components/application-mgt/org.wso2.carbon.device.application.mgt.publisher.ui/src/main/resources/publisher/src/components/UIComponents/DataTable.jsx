@@ -22,6 +22,7 @@ import DataTableRow from './DataTableRow';
 import DataTableHeader from './DataTableHeader';
 import RaisedButton from 'material-ui/RaisedButton';
 import {Table, TableBody, TableHeader, TableRow} from 'material-ui/Table';
+import Theme from '../../themes/theme';
 
 /**
  * The Custom Table Component.
@@ -60,7 +61,18 @@ class DataTable extends Component {
     };
 
     componentWillMount() {
-        this.setState({data: this.props.data, headers: this.props.headers})
+        this.setState({data: this.props.data, headers: this.props.headers});
+        let selected = Theme.selectedTheme;
+        if (Theme.currentTheme === "default") {
+            require("../../themes/default/data-table.css");
+        } else {
+            try {
+                require("../../themes/" + selected + "/data-table.css");
+            } catch (ex) {
+                // If the particular customized file does not exist, use the default one.
+                require("../../themes/default/data-table.css");
+            }
+        }
     }
 
     shouldComponentUpdate(nextProps, nextState) {
@@ -95,8 +107,8 @@ class DataTable extends Component {
                              adjustForCheckbox={ false }>
                     <TableRow>
                         {headers.map((header) => {
-                                return (<DataTableHeader key={header.data_id}
-                                                         style={{display: 'flex'}} header={header}/>)
+                                return (<DataTableHeader key={header.data_id} className="datatableRowColumn"
+                                                         header={header}/>)
                             }
                         )}
                     </TableRow>

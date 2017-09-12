@@ -31,6 +31,7 @@ import {GridList, GridTile} from 'material-ui/GridList';
 import Close from 'material-ui/svg-icons/navigation/close';
 import {Card, CardActions, CardTitle} from 'material-ui/Card';
 import AddCircleOutline from 'material-ui/svg-icons/content/add-circle-outline';
+import Theme from '../../themes/theme';
 
 /**
  * Platform Create component.
@@ -61,6 +62,20 @@ class PlatformCreate extends Component {
                 {key: 1, value: 'Number'},
                 {key: 2, value: 'Boolean'},
                 {key: 3, value: 'File'}]
+        }
+    }
+
+    componentWillMount() {
+        let selected = Theme.selectedTheme;
+        if (Theme.currentTheme === "default") {
+            require("../../themes/default/platform-create.css");
+        } else {
+            try {
+                require("../../themes/" + selected + "/platform-create.css");
+            } catch (ex) {
+                // If the particular customized file does not exist, use the default one.
+                require("../../themes/default/platform-create.css");
+            }
         }
     }
 
@@ -184,12 +199,12 @@ class PlatformCreate extends Component {
             property} = this.state;
 
         return (
-            <div className="middle" style={{width: '95%', height: '100%', marginTop: '1%'}}>
+            <div className="middle createplatformmiddle">
                 <Card>
                     <CardTitle title="Create Platform"/>
 
                     <CardActions>
-                        <div style={{width: '100%', margin: 'auto', paddingLeft: '10px'}}>
+                        <div className="createplatformcardaction">
                             <form>
                                 <TextField
                                     hintText="Enter the Platform Name."
@@ -224,17 +239,17 @@ class PlatformCreate extends Component {
                                     toggled={enabled}
                                 /> <br/>
                                 <div>
-                                    <p style={{color: '#BaBaBa'}}>Platform Properties</p>
+                                    <p className="createplatformproperties">Platform Properties</p>
                                     <div id="property-container">
                                         {platformProperties.map((p) => {
                                             return <div key={p.key}>{p.key} : {p.value}
                                                 <IconButton onClick={this._removeProperty.bind(this, p)}>
-                                                    <Close style={{height: '10px', width: '10px'}}/>
+                                                    <Close className="createplatformpropertyclose"/>
                                                 </IconButton>
                                             </div>
                                         })}
                                     </div>
-                                    <div style={{display: 'flex'}}>
+                                    <div className="createplatformproperty">
                                         <TextField
                                             id="property"
                                             hintText="Property Name"
@@ -244,7 +259,7 @@ class PlatformCreate extends Component {
                                             onChange={this._onTextChange.bind(this)}
                                         /> <em/>
                                         <SelectField
-                                            style={{flex: '1 1 23% 1', margin: '0 1%'}}
+                                            className="createplatformpropertyselect"
                                             floatingLabelText="Property Type"
                                             value={selectedProperty}
                                             floatingLabelFixed={true}
@@ -262,13 +277,8 @@ class PlatformCreate extends Component {
                                     </div>
                                 </div>
                                 <div>
-                                    {/*<p style={{color: '#f44336'}}>{this.state.errors["Icon"]}</p>*/}
-                                    <p style={{color: '#BDBDBD'}}>Platform Icon*:</p>
-                                    <GridList style={{
-                                        display: 'flex',
-                                        flexWrap: 'nowrap',
-                                        overflowX: 'auto',
-                                    }} cols={1.1}>
+                                    <p className="createplatformiconp">Platform Icon*:</p>
+                                    <GridList className="createplatformicon" cols={1.1}>
                                         {this.state.icon.map((tile) => (
                                             <GridTile key={Math.floor(Math.random() * 1000)}
                                                       title={tile.name}
@@ -280,12 +290,10 @@ class PlatformCreate extends Component {
                                             </GridTile>
                                         ))}
                                         {this.state.icon.length === 0 ?
-                                            <Dropzone style={
-                                                {width: '150px', height: '150px', border: 'dashed #BDBDBD 1px'}
-                                            }
+                                            <Dropzone className="createplatformdropzone"
                                                       accept="image/jpeg, image/png"
                                                       onDrop={(icon, rejected) => {this.setState({icon, rejected})}}>
-                                                <p style={{margin: '70px 40px 70px 70px'}}>+</p>
+                                                <p className="createplatformdropzonep">+</p>
                                             </Dropzone> : <div />}
                                     </GridList>
                                 </div>

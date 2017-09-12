@@ -20,6 +20,7 @@ import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import FlatButton from 'material-ui/FlatButton';
 import {TableHeaderColumn} from 'material-ui/Table';
+import Theme from '../../themes/theme';
 
 /**
  * Data Table header component.
@@ -29,6 +30,20 @@ class DataTableHeader extends Component {
 
     constructor() {
         super();
+    }
+
+    componentWillMount() {
+        let selected = Theme.selectedTheme;
+        if (Theme.currentTheme === "default") {
+            require("../../themes/default/data-table.css");
+        } else {
+            try {
+                require("../../themes/" + selected + "/data-table.css");
+            } catch (ex) {
+                // If the particular customized file does not exist, use the default one.
+                require("../../themes/default/data-table.css");
+            }
+        }
     }
 
     /**
@@ -48,20 +63,13 @@ class DataTableHeader extends Component {
          * */
         if (this.props.header.sortable) {
             headerCell = <FlatButton label={this.props.header.label}
-                                    onClick={this._tableHeaderClick.bind(this)}
-                                    style={{color: '#bdbdbd'}}/>;
+                                    onClick={this._tableHeaderClick.bind(this)} className="sortableHeaderCell"/>;
         } else {
-            headerCell = <span style={{position: 'relative',
-                paddingLeft: '16px',
-                paddingRight: '16px',
-                textTransform: 'uppercase',
-                fontWeight: 'normal',
-                color: '#bdbdbd',
-                fontSize: '14px'}}>{this.props.header.label}</span>;
+            headerCell = <span className="notsortableHeaderCell">{this.props.header.label}</span>;
         }
 
         return (
-            <TableHeaderColumn key={this.props.header.id} style={{paddingLeft: '0px'}} >
+            <TableHeaderColumn key={this.props.header.id} className="datatableHeaderColumn" >
                 {headerCell}
             </TableHeaderColumn>
         );

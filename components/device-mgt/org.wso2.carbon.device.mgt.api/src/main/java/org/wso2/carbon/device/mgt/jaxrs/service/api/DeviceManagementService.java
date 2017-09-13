@@ -32,7 +32,6 @@ import io.swagger.annotations.Tag;
 import org.wso2.carbon.apimgt.annotations.api.Scope;
 import org.wso2.carbon.apimgt.annotations.api.Scopes;
 import org.wso2.carbon.device.mgt.common.Device;
-import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
 import org.wso2.carbon.device.mgt.common.Feature;
 import org.wso2.carbon.device.mgt.common.app.mgt.Application;
@@ -43,7 +42,6 @@ import org.wso2.carbon.device.mgt.common.policy.mgt.monitor.NonComplianceData;
 import org.wso2.carbon.device.mgt.common.search.SearchContext;
 import org.wso2.carbon.device.mgt.jaxrs.beans.DeviceList;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
-import org.wso2.carbon.device.mgt.jaxrs.beans.OperationList;
 import org.wso2.carbon.device.mgt.jaxrs.beans.OperationRequest;
 import org.wso2.carbon.device.mgt.jaxrs.util.Constants;
 
@@ -61,7 +59,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.List;
 
 /**
  * Device related REST-API. This can be used to manipulated device related details.
@@ -380,7 +377,8 @@ public interface DeviceManagementService {
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "GET",
             value = "Getting Details of a Device",
-            notes = "Get the details of a device by specifying the device type and device identifier.",
+            notes = "Get the details of a device by specifying the device type and device identifier and optionally " +
+                    "the owner.",
             tags = "Device Management",
             extensions = {
                 @Extension(properties = {
@@ -432,22 +430,29 @@ public interface DeviceManagementService {
                     required = true)
             @PathParam("type")
             @Size(max = 45)
-            String type,
+                    String type,
             @ApiParam(
                     name = "id",
                     value = "The device identifier of the device you want ot get details.",
                     required = true)
             @PathParam("id")
             @Size(max = 45)
-            String id,
+                    String id,
             @ApiParam(
-                    name = "If-Modified-Since",
-                    value = "Checks if the requested variant was modified, since the specified date-time. \n" +
-                            "Provide the value in the following format: EEE, d MMM yyyy HH:mm:ss Z. \n" +
-                            "Example: Mon, 05 Jan 2014 15:10:00 +0200",
+                    name = "owner",
+                    value = "The owner of the device you want ot get details.",
                     required = false)
+            @QueryParam("owner")
+            @Size(max = 100)
+            String owner,
+            @ApiParam(
+            name = "If-Modified-Since",
+            value = "Checks if the requested variant was modified, since the specified date-time. \n" +
+                    "Provide the value in the following format: EEE, d MMM yyyy HH:mm:ss Z. \n" +
+                    "Example: Mon, 05 Jan 2014 15:10:00 +0200",
+            required = false)
             @HeaderParam("If-Modified-Since")
-            String ifModifiedSince);
+                    String ifModifiedSince);
 
     @PUT
     @Path("/{type}/{id}")

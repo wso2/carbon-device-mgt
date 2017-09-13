@@ -42,7 +42,7 @@
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon.devicemgt</groupId>
-            <artifactId>org.wso2.carbon.device.application.mgt.ui.feature</artifactId>
+            <artifactId>org.wso2.carbon.device.application.mgt.publisher.ui.feature</artifactId>
             <type>zip</type>
         </dependency>
         <dependency>

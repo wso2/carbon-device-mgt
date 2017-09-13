@@ -56,16 +56,17 @@ class Base extends Component {
         super();
         this.state = {
             user: null
-
         }
     }
 
     componentWillMount() {
         let user = AuthHandler.getUser();
-
         if (user) {
             if (!AuthHandler.isTokenExpired()) {
                 this.setState({user: user});
+            } else {
+                console.log("expired!");
+                this.setState({user: null});
             }
         }
     }
@@ -79,7 +80,7 @@ class Base extends Component {
             console.log("Have User.");
             return (
                 <div className="container">
-                    <BaseLayout>
+                    <BaseLayout user={this.state.user}>
                         <Switch>
                             <Redirect exact path={"/"} to={"/assets/apps"}/>
                             <Route exact path={"/assets/apps"} component={ApplicationListing}/>

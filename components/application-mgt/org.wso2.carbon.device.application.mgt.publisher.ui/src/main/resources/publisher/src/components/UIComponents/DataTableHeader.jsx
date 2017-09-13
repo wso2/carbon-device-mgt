@@ -30,6 +30,7 @@ class DataTableHeader extends Component {
 
     constructor() {
         super();
+        this.tableHeaderClick = this.tableHeaderClick.bind(this);
         this.scriptId = "data-table";
     }
 
@@ -42,6 +43,7 @@ class DataTableHeader extends Component {
 
     componentWillUnmount() {
         Theme.removeThemingScripts(this.scriptId);
+
     }
 
     /**
@@ -63,9 +65,9 @@ class DataTableHeader extends Component {
             headerCell =
                 <FlatButton
                     label={this.props.header.label}
-                    onClick={this.tableHeaderClick.bind(this)}
+                    onClick={this.tableHeaderClick}
                     className="sortableHeaderCell"
-                />;
+                />
         } else {
             headerCell = <span className="notsortableHeaderCell">{this.props.header.label}</span>;
         }

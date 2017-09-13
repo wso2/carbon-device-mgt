@@ -33,7 +33,6 @@ export default class User {
         this._clientId = clientId;
         this._clientSecret = clientSecret;
         this._expires = validityPeriod;
-        this._createdTime = Date.now();
         User._instance = this;
     }
 
@@ -61,6 +60,14 @@ export default class User {
         return Utils.getCookie(Constants.userConstants.PARTIAL_TOKEN);
     }
 
+    getClientId() {
+        return this._clientId;
+    }
+
+    getClientSecret() {
+        return this._clientSecret;
+    }
+
     /**
      * Store the JavaScript accessible access token segment in cookie storage
      * @param {String} newToken : Part of the access token which needs when accessing REST API
@@ -72,11 +79,11 @@ export default class User {
     }
 
     /**
-     *
-     * @param type
-     */
-    checkPermission(type) {
-        throw ("Not implemented!");
+     * Get the user name of logged in user.
+     * @return String: User name
+     * */
+    getUserName() {
+        return this._userName;
     }
 
     /**
@@ -98,7 +105,6 @@ export default class User {
      * @returns {User} : An instance of User(this) class.
      */
     static fromJson(userJson) {
-
         const _user = new User(userJson.name);
         _user._clientId = userJson.clientId;
         _user._clientSecret = userJson.clientSecret;

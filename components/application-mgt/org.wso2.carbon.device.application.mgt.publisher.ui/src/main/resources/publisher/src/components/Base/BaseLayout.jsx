@@ -21,7 +21,11 @@ import Badge from 'material-ui/Badge';
 import React, {Component} from 'react';
 import AppBar from 'material-ui/AppBar';
 import Drawer from 'material-ui/Drawer';
+import IconMenu from 'material-ui/IconMenu';
+import MenuItem from 'material-ui/MenuItem';
 import {withRouter} from 'react-router-dom';
+import AuthHandler from "../../api/authHandler";
+import FlatButton from 'material-ui/FlatButton';
 import IconButton from 'material-ui/IconButton';
 import {List, ListItem} from 'material-ui/List';
 import Apps from 'material-ui/svg-icons/navigation/apps';
@@ -48,6 +52,7 @@ class BaseLayout extends Component {
             user: 'Admin'
         };
         this.scriptId = "basic-layout";
+        this.logout = this.logout.bind(this);
     }
 
     componentWillMount() {
@@ -93,6 +98,10 @@ class BaseLayout extends Component {
         this.props.history.push(to);
     }
 
+    logout(event, index, value) {
+        AuthHandler.logout();
+    }
+
     render() {
         return (
 
@@ -110,11 +119,22 @@ class BaseLayout extends Component {
                                     <NotificationsIcon/>
                                 </IconButton>
                             </Badge>
-                            <IconButton onClick={() => {
-                                console.log("Clicked")
-                            }}>
-                                <ActionAccountCircle/>
-                            </IconButton>
+                            <IconMenu
+                                iconButtonElement={<FlatButton
+                                    icon={<ActionAccountCircle/>}
+                                    label="sdfdsf"
+                                />}
+                                anchorOrigin={{horizontal: 'left', vertical: 'top'}}
+                                targetOrigin={{horizontal: 'left', vertical: 'top'}}
+                                onChange={this.logout}
+                            >
+                                <MenuItem value={0} primaryText="Logout" />
+                            </IconMenu>
+                            {/*<FlatButton*/}
+                                {/*icon={<ActionAccountCircle/>}*/}
+                                {/*onClick={() => {console.log("Clicked")}}*/}
+                                {/*label={this.props.user.getUserName()}*/}
+                            {/*/>*/}
                         </div>
                     }
                 />

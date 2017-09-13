@@ -36,8 +36,9 @@ class AuthHandler {
      * */
     static login(userName, password) {
         const headers = {"Content-type": "application/json"};
-        let login_promise = Axios.post("https://localhost:9443/auth/application-mgt/v1.0/auth/login?userName=admin&password=admin",
-            null, {headers: headers});
+        let login_promise =
+                Axios.post(Constants.userConstants.LOGIN_URL+"?userName=" + userName+ "&password=" + password,
+                null, {headers: headers});
 
         login_promise.then(response => {
                 console.log(response);
@@ -51,6 +52,8 @@ class AuthHandler {
                 const user = new User(userName, clientId, clientSecret, validityPeriod);
                 console.log(user);
                 user.setAuthToken(WSO2_IOT_TOKEN, validityPeriod);
+                let expiresIn = Date.now() + (validityPeriod * 1000);
+                localStorage.setItem("expiresIn", expiresIn);
                 AuthHandler.setUser(user);
             }
         );
@@ -67,8 +70,22 @@ class AuthHandler {
         if (!user instanceof User) {
             throw "Invalid user object";
         }
+        user.created = Date.now();
         localStorage.setItem(Constants.userConstants.WSO2_USER, JSON.stringify(user.toJson()));
         /* TODO: IMHO it's better to get this key (`wso2_user`) from configs */
+    }
+
+    static unauthorizedErrorHandler(error_response) {
+        if (error_response.status !== 401) { /* Skip unrelated response code to handle in unauthorizedErrorHandler*/
+            throw error_response;
+            /* re throwing the error since we don't handle it here and propagate to downstream error handlers in catch chain*/
+        }
+        let message = "The session has expired" + ".<br/> You will be redirect to the login page ...";
+        if (true) {
+            alert(message);
+        } else {
+            throw error_response;
+        }
     }
 
     /**
@@ -89,8 +106,27 @@ class AuthHandler {
 
     }
 
-    logout() {
+    static logout() {
+        const user = AuthHandler.getUser();
+        const clientId = user.getClientId();
+        const clientSecret = user.getClientSecret();
+        const token = user.getAuthToken();
+        const headers = {"Content-type": "application/json"};
 
+        let login_promise = Axios.post(Constants.userConstants.LOGOUT_URL+"?token=" + token + "&clientId=" + clientId
+            + "&clientSecret=" + clientSecret,
+            null, {headers: headers});
+        login_promise.then(
+            (response) => {
+                Utils.delete_cookie(Constants.userConstants.PARTIAL_TOKEN);
+                localStorage.removeItem(Constants.userConstants.WSO2_USER);
+                window.location = "/";
+            }
+        ).catch(
+            (err) => {
+                AuthHandler.unauthorizedErrorHandler(err);
+            }
+        )
     }
 
     /**
@@ -98,9 +134,17 @@ class AuthHandler {
      * @return boolean: True if expired. False otherwise.
      * */
     static isTokenExpired() {
-        const userData = AuthHandler.getUser().getAuthToken();
-        return (Date.now() - userData._createdTime) > userData._expires;
+        const expiresIn = localStorage.getItem("expiresIn");
+        return (expiresIn < Date.now());
     }
+
+    static createAuthenticationHeaders(contentType) {
+        return {
+            "Authorization": "Bearer " + AuthHandler.getUser().getAuthToken(),
+            "Content-Type": contentType,
+        };
+
+    };
 }
 
 export default AuthHandler;

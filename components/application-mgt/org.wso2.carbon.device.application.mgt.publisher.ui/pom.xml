@@ -19,15 +19,19 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-
     <parent>
         <groupId>org.wso2.carbon.devicemgt</groupId>
         <artifactId>application-mgt</artifactId>
         <version>3.0.46-SNAPSHOT</version>
     </parent>
+
+    <modelVersion>4.0.0</modelVersion>
     <artifactId>org.wso2.carbon.device.application.mgt.publisher.ui</artifactId>
     <version>3.0.46-SNAPSHOT</version>
+    <packaging>war</packaging>
+    <name>WSO2 Carbon - Application Management Publisher UI</name>
+    <description>WSO2 Carbon - Application Management Publisher UI React Application</description>
+    <url>http://wso2.org</url>
 
     <build>
         <plugins>

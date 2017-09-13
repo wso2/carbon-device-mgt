@@ -23,6 +23,7 @@ import TextField from 'material-ui/TextField';
 import DataTable from '../UIComponents/DataTable';
 import {Card, CardActions, CardTitle} from 'material-ui/Card';
 import Theme from '../../theme';
+import AuthHandler from "../../api/authHandler";
 
 /**
  * The App Create Component.
@@ -35,51 +36,21 @@ import Theme from '../../theme';
 class ApplicationListing extends Component {
     constructor() {
         super();
+        this.searchApplications = this.searchApplications.bind(this);
+        this.onRowClick = this.onRowClick.bind(this);
+        this.setData = this.setData.bind(this);
+        this.sortData = this.sortData.bind(this);
+        this.compare = this.compare.bind(this);
         this.state = {
-            data: [],
+            searchedApplications: [],
+            applications: [],
             asc: true
         };
         this.scriptId = "application-listing";
     }
 
-    data = [
-        {
-            id: Math.random(),
-            applicationName: "Cne",
-            platform: 'Android',
-            category: "Public",
-            status: "Created"
-        },
-        {
-            id: Math.random(),
-            applicationName: "Gone",
-            platform: 'IOS',
-            category: "Public",
-            status: "Created"
-        },
-        {
-            id: Math.random(),
-            applicationName: "Ane",
-            platform: 'Android',
-            category: "Public",
-            status: "Created"
-        },
-        {
-            id: Math.random(),
-            applicationName: "one",
-            platform: 'Android',
-            category: "Public",
-            status: "Created"
-        },
-        {
-            id: Math.random(),
-            applicationName: "one",
-            platform: 'Android',
-            category: "Public",
-            status: "Created"
-        },
-    ];
-
+    data = [];
+    //
     headers = [
         {
             data_id: "image",
@@ -92,7 +63,7 @@ class ApplicationListing extends Component {
             data_type: "string",
             sortable: true,
             label: "Application Name",
-            sort: this.sortData.bind(this)
+            sort: this.sortData
         },
         {
             data_id: "platform",
@@ -126,30 +97,99 @@ class ApplicationListing extends Component {
 
     componentWillUnmount() {
         Theme.removeThemingScripts(this.scriptId);
+        // this.setState({data: this.data});
     }
 
     componentDidMount() {
         let getApps = EndPoint.getApplications();
         getApps.then(response => {
-            console.log(response);
-        })
+            let apps = this.setData(response.data.applications);
+            console.log(apps);
+            this.setState({searchedApplications: apps});
+            // console.log(this.setState({data: response.data}), console.log(this.state));
+        }).catch(err => {
+            AuthHandler.unauthorizedErrorHandler(err);
+        });
+    }
+
+    setData(applications) {
+        // {
+        //     id: Math.random(),
+        //         applicationName: "one",
+        //     platform: 'Android',
+        //     category: "Public",
+        //     status: "Created"
+        // }
+
+        //
+        //     "uuid":"f59ca462-7fa0-4cef-8536-96c17905e587",
+        //         "name":"sdkfsdkf",
+        //         "shortDescription":"shdkfhsd[f sfs;df dsf","description":"khsdkhfkjdss hfdsff\nsdf\ndsf",
+        //         "tags":["dsfds","f","dsfs"],
+        //         "platform":{
+        //         "name":"jdslkjfljs",
+        //             "description":"ljlksdjlfjdsljf",
+        //             "identifier":"sdjflsjdfjlkj",
+        //             "fileBased":false,
+        //             "shared":false,
+        //             "enabled":false,
+        //             "defaultTenantMapping":false
+        //     },
+        //
+        //     "category":{
+        //         "id":1
+        //     },
+        //
+        //     "createdAt":"Tue, 12 Sep 2017 18:53:54 IST",
+        //         "modifiedAt":"Tue, 12 Sep 2017 18:53:54 IST",
+        //         "currentLifecycle":{
+        //         "lifecycleState":{
+        //             "id":1,
+        //                 "name":"CREATED",
+        //                 "identifier":"CREATED",
+        //                 "description":"Application creation initial state"
+        //         },
+        //
+        //         "lifecycleStateModifiedAt":"Tue, 12 Sep 2017 18:53:54 IST",
+        //             "getLifecycleStateModifiedBy":"admin"},
+        //     "screenShotCount":0,
+        //         "user":{
+        //         "userName":"admin",
+        //             "tenantId":-1234
+        //     }
+        // }
+
+        let apps = [];
+        for (let app in applications) {
+            let application = {};
+            application.id = applications[app].uuid;
+            application.applicationName = applications[app].name;
+            application.platform = applications[app].platform.name;
+            application.category = applications[app].category.id;
+            application.status = applications[app].currentLifecycle.lifecycleState.name;
+            apps.push(application);
+        }
+
+        this.setState({searchedApplications: apps});
     }
 
     /**
      * Handles the search action.
      * When typing in the search bar, this method will be invoked.
+     * @param event: The event triggered from typing in the search box.
+     * @param searchText: The text that typed in the search box.
      * */
-    searchApplications(event, word) {
+    searchApplications(event, searchText) {
         let searchedData;
-        if (word) {
-            searchedData = this.data.filter((dataItem) => {
-                return dataItem.applicationName.includes(word);
+        if (searchText) {
+            searchedData = this.state.applications.filter((dataItem) => {
+                return dataItem.applicationName.includes(searchText);
             });
         } else {
-            searchedData = this.data;
+            searchedData = this.state.applications;
         }
 
-        this.setState({data: searchedData}, console.log("Searched data ", this.state.data));
+        this.setState({searchedApplications: searchedData}, console.log("Searched data ", this.state.searchedApplications));
     }
 
     /**
@@ -157,9 +197,10 @@ class ApplicationListing extends Component {
      * asc: true : sort in ascending order.
      * */
     sortData() {
+        console.log(this.state);
         let isAsc = this.state.asc;
-        let datas = isAsc ? this.data.sort(this.compare) : this.data.reverse();
-        this.setState({data: datas, asc: !isAsc});
+        let sortedData = isAsc ? this.state.searchedApplications.sort(this.compare) : this.data.reverse();
+        this.setState({searchedApplications: sortedData, asc: !isAsc});
     }
 
     compare(a, b) {
@@ -171,20 +212,27 @@ class ApplicationListing extends Component {
     }
 
     onRowClick(id) {
-        this.props.history.push("apps/" + id);
+        EndPoint.getApplication(id).then(response => {
+            console.log(response);
+        }).catch(err => {
+            console.log(err)
+        });
+        // this.props.history.push("apps/" + id);
     }
 
     render() {
         return (
             <div className="middle applicationListingMiddle">
                 <Card className="applicationListingCard">
-                    <TextField hintText="Search" className="applicationListingSearch"
-                               onChange={this.searchApplications.bind(this)}/>
+                    <TextField
+                        hintText="Search"
+                        className="applicationListingSearch"
+                        onChange={this.searchApplications}/>
                     <CardTitle title="Applications" className="applicationListTitle"/>
                     <DataTable
                         headers={this.headers}
-                        data={this.state.data}
-                        handleRowClick={this.onRowClick.bind(this)}
+                        data={this.state.searchedApplications}
+                        handleRowClick={this.onRowClick}
                         noDataMessage={{type: 'button', text: 'Create Application'}}
                     />
                 </Card>

@@ -27,7 +27,7 @@ import Helper from './helpers/appMgtApiHelpers';
 export default class Endpoint {
 
     /* =================================================================
-     * Application related apis
+     *               Application related apis
      * */
 
     /**
@@ -38,37 +38,33 @@ export default class Endpoint {
      * From applicationData, the proper application object will be created and send it to the api.
      * */
     static createApplication(applicationData) {
-
         let app = Helper.buildApplication(applicationData).application;
+        const headers = AuthHandler.createAuthenticationHeaders("application/json");
+        return Axios.post(Constants.appManagerEndpoints.CREATE_APP, app, {headers: headers});
+    }
+
+    /**
+     * Upload the image artifacts (banner, icon, screenshots) related to the application.
+     * @param appId: The application uuid of the application which the images should be uploaded to.
+     * */
+    static uploadImageArtifacts(appId) {
         let user = AuthHandler.getUser();
-        console.log(user.idToken);
-        const headers = {
-            "Authorization": 'Bearer ' + user.getAuthToken(),
-            "Content-Type": "application/json",
-        };
-
-        Axios.post(Constants.appManagerEndpoints.CREATE_APP, app, {headers: headers}).then(
-            function (response) {
-                console.log(response);
-            }
-        ).catch(function (err) {
-            console.log(err);
-        });
-
+        const headers = AuthHandler.createAuthenticationHeaders("multipart/form-data");
+        return Axios.post(Constants.appManagerEndpoints.UPLOAD_IMAGES + appId, appId, {headers: headers});
     }
 
     /**
      * Method to handle application release process.
      * */
-    static releaseApplication() {
+    static releaseApplication(appId) {
 
     }
 
     /**
-     * Promote the current state of the application.
+     * Promote the current life cycle state of the application.
      * @param appId: The uuid of the application which the state should be updated.
      * */
-    static updateState(appId) {
+    static updateLifeCycleState(appId) {
 
     }
 
@@ -76,7 +72,7 @@ export default class Endpoint {
      * Get the next possible state, which the application can be promoted to.
      * @param appId: The application uuid.
      */
-    static getNextState(appId) {
+    static getNextLifeCycleState(appId) {
 
     }
 
@@ -85,7 +81,14 @@ export default class Endpoint {
      * @param applicationData: The modified application data.
      * */
     static editApplication(applicationData) {
+        let app = Helper.buildApplication(applicationData).application;
+        const headers = AuthHandler.createAuthenticationHeaders("application/json");
+        return Axios.put(Constants.appManagerEndpoints.CREATE_APP, app, {headers: headers});
+    }
 
+    static editApplicationArtofacts(appId) {
+        const headers = AuthHandler.createAuthenticationHeaders("application/json");
+        return Axios.put(Constants.appManagerEndpoints.CREATE_APP, appId, {headers: headers});
     }
 
     /**
@@ -95,12 +98,7 @@ export default class Endpoint {
     static getApplications() {
         let user = AuthHandler.getUser();
         console.log("Get all applications", user.getAuthToken());
-        const headers = {
-            "Authorization": 'Bearer ' + user.getAuthToken(),
-            'Accept': 'application/json',
-            "Content-Type": "application/json",
-        };
-
+        const headers = AuthHandler.createAuthenticationHeaders("application/json");
         return Axios.get(Constants.appManagerEndpoints.GET_ALL_APPS, {headers: headers});
     }
 
@@ -109,7 +107,10 @@ export default class Endpoint {
      * @param appId: The application Id.
      * */
     static getApplication(appId) {
-
+        let user = AuthHandler.getUser();
+        console.log("Get Application",appId, user.getAuthToken());
+        const headers = AuthHandler.createAuthenticationHeaders("application/json");
+        return Axios.get(Constants.appManagerEndpoints.GET_ALL_APPS + appId, {headers: headers});
     }
 
     /**
@@ -123,11 +124,8 @@ export default class Endpoint {
     /*
      *              End of Application management apis.
      * =================================================================
-     * */
-
-    /*
      * =================================================================
-     * Platform related apis
+     *                   Platform related apis
      * */
 
     /**
@@ -135,13 +133,7 @@ export default class Endpoint {
      * @param platformData: The platform data object.
      * */
     static createPlatform(platformData) {
-
-        const headers = {
-            "Authorization": 'Bearer ' + AuthHandler.getUser().getAuthToken(),
-            'Accept': 'application/json',
-            "Content-Type": "application/json",
-        };
-
+        const headers = AuthHandler.createAuthenticationHeaders("application/json");
         Axios.post(Constants.platformManagerEndpoints.CREATE_PLATFORM, platformData, {headers: headers}).then(
             function (response) {
                 console.log(response);
@@ -149,14 +141,14 @@ export default class Endpoint {
         ).catch(function (err) {
             console.log(err);
         });
-
     }
 
     /**
      * Get available platforms
      * */
     static getPlatforms() {
-
+        const headers = AuthHandler.createAuthenticationHeaders("application/json");
+        return Axios.get(Constants.platformManagerEndpoints.GET_ENABLED_PLATFORMS, {headers: headers});
     }
 
     /**
@@ -164,7 +156,8 @@ export default class Endpoint {
      * @param platformId: The identifier of the platform
      * */
     static getPlatform(platformId) {
-
+        const headers = AuthHandler.createAuthenticationHeaders("application/json");
+        return Axios.get(Constants.platformManagerEndpoints.GET_PLATFORM + platformId, {headers: headers});
     }
 
     /**
@@ -172,12 +165,12 @@ export default class Endpoint {
      * @param platformId: The id of the platform which is to be deleted.
      * */
     static deletePlatform(platformId) {
-
+        const headers = AuthHandler.createAuthenticationHeaders("application/json");
+        return Axios.delete(Constants.platformManagerEndpoints.GET_PLATFORM + platformId, {headers: headers});
     }
 
     /*
-    * End of Platform management apis.
+    *              End of Platform management apis.
     * =================================================================
     * */
-
 }

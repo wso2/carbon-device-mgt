@@ -53,6 +53,7 @@ class DataTable extends Component {
 
     constructor() {
         super();
+        this.handleRowClick = this.handleRowClick.bind(this);
         this.state = {
             data: [],
             headers: [],
@@ -120,7 +121,7 @@ class DataTable extends Component {
                             <DataTableRow
                                 key={dataItem.id}
                                 dataItem={dataItem}
-                                handleClick={this.handleRowClick.bind(this)}
+                                handleClick={this.handleRowClick}
                             />
                         )
                     })}

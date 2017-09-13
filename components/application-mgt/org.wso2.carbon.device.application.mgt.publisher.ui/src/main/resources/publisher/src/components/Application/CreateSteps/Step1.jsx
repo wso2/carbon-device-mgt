@@ -22,6 +22,8 @@ import MenuItem from 'material-ui/MenuItem';
 import SelectField from 'material-ui/SelectField';
 import RaisedButton from 'material-ui/RaisedButton';
 import Theme from '../../../theme';
+import Endpoint from "../../../api/endpoints";
+import AuthHandler from "../../../api/authHandler";
 
 /**
  * The first step of the application creation wizard.
@@ -39,13 +41,15 @@ import Theme from '../../../theme';
 class Step1 extends Component {
     constructor() {
         super();
-        this.platforms = [{identifier: 1}, {identifier: 2}, {identifier: 3}];
-        this.stores = [{identifier: 5}, {identifier: 2}, {identifier: 3}];
+        this.setPlatforms = this.setPlatforms.bind(this);
+        this.platforms = [];
         this.state = {
             finished: false,
             stepIndex: 0,
             store: 1,
-            platform: 0,
+            platformSelectedIndex: 0,
+            platform: "",
+            platforms: [],
             stepData: [],
             title: "",
             titleError: ""
@@ -63,22 +67,40 @@ class Step1 extends Component {
     componentWillUnmount() {
         Theme.removeThemingScripts(this.scriptId);
     }
+    componentDidMount() {
+        //Get the list of available platforms and set to the state.
+        Endpoint.getPlatforms().then(response => {
+            console.log(response);
+            this.setPlatforms(response.data);
+        }).catch(err => {
+            AuthHandler.unauthorizedErrorHandler(err);
+        })
+    }
 
     /**
-     * Invokes the handleNext function in Create component.
+     * Extract the platforms from the response data and populate the state.
+     * @param platforms: The array returned as the response.
      * */
-    handleNext() {
-        this.props.handleNext();
-    };
+    setPlatforms(platforms) {
+        let tmpPlatforms = [];
+        for (let index in platforms) {
+            let platform = {};
+            platform = platforms[index];
+            tmpPlatforms.push(platform);
+        }
+        this.setState({platforms: tmpPlatforms, platformSelectedIndex: 0, platform: tmpPlatforms[0].identifier})
+    }
 
     /**
      * Persist the current form data to the state.
      * */
     setStepData() {
+        console.log(this.state.platforms);
         let step = {
             store: this.state.store,
-            platform: this.platforms[this.state.platform]
+            platform: this.state.platforms[this.state.platformSelectedIndex]
         };
+        console.log(step);
         this.props.setData("step1", {step: step});
     }
 
@@ -96,8 +118,8 @@ class Step1 extends Component {
      * Triggers when changing the Platform selection.
      * */
     onChangePlatform(event, index, value) {
-        console.log(value);
-        this.setState({platform: value});
+        console.log(this.state.platforms[index]);
+        this.setState({platform: this.state.platforms[index].identifier, platformSelectedIndex: index});
     };
 
     /**
@@ -129,9 +151,17 @@ class Step1 extends Component {
                                 floatingLabelFixed={true}
                                 onChange={this.onChangePlatform.bind(this)}
                             >
-                                <MenuItem value={0} primaryText="Android"/>
-                                <MenuItem value={1} primaryText="iOS"/>
-                                <MenuItem value={2} primaryText="Web"/>
+                                {this.state.platforms.length > 0 ? this.state.platforms.map(platform => {
+                                    return (
+                                        <MenuItem
+                                            key={Math.random()}
+                                            value={platform.identifier}
+                                            primaryText={platform.name}
+                                        />
+                                    )
+                                }) : <div/>}
+
+
                             </SelectField>
                         </div>
                         <br/>

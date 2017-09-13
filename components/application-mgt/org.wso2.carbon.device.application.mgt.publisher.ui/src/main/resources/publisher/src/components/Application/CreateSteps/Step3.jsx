@@ -51,6 +51,10 @@ import Theme from '../../../theme';
 class Step3 extends Component {
     constructor() {
         super();
+        this.handleToggle = this.handleToggle.bind(this);
+        this.handlePrev = this.handlePrev.bind(this);
+        this.handleToggle = this.handleToggle.bind(this);
+        this.handleFinish = this.handleFinish.bind(this);
         this.state = {
             showForm: false,
             releaseChannel: 1,
@@ -100,7 +104,7 @@ class Step3 extends Component {
                     <Toggle
                         label="Release the Application"
                         labelPosition="right"
-                        onToggle={this.handleToggle.bind(this)}
+                        onToggle={this.handleToggle}
                         defaultToggled={this.state.showForm}
                     />
                     {/*If toggle is true, the release form will be shown.*/}
@@ -127,13 +131,13 @@ class Step3 extends Component {
                         <FlatButton
                             label="< Back"
                             disabled={false}
-                            onClick={this.handlePrev.bind(this)}
-                            className="applicationCreateFinish"/>
-
+                            onClick={this.handlePrev}
+                            className="applicationCreateFinish"
+                        />
                         <RaisedButton
                             label="Finish"
                             primary={true}
-                            onClick={this.handleFinish.bind(this)}
+                            onClick={this.handleFinish}
                         />
 
                     </div>

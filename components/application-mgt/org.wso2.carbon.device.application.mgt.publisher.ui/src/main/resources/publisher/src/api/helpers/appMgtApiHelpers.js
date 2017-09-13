@@ -39,13 +39,7 @@ export default class Helper {
                 if (prop === 'banner' || prop === 'screenshots' || prop === 'icon') {
                     images[prop] = tmpData[prop];
                 } else if(prop === 'tags') {
-                    let tags = [];
-                    let tagsFromStep = tmpData[prop];
-                    for (let tag in tagsFromStep) {
-                        console.log(tag);
-                        tags.push(tagsFromStep[tag].value);
-                    }
-                    application[prop] = tags;
+                    application[prop] = Helper.stringifyTags(tmpData[prop]);
                 } else {
                     application[prop] = tmpData[prop];
                 }
@@ -53,4 +47,15 @@ export default class Helper {
         }
         return {application, images};
     }
+
+    static stringifyTags(tags) {
+        let tmpTags = [];
+        for (let tag in tags) {
+            console.log(tag);
+            tmpTags.push(tags[tag].value);
+        }
+
+        return tmpTags;
+    }
+
 }

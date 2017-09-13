@@ -232,6 +232,7 @@ class PlatformCreate extends Component {
         platform.icon = this.state.icon;
         platform.enabled = this.state.enabled;
         platform.allTenants = this.state.allTenants;
+        platform.defaultTenantMapping = true;
 
         Endpoint.createPlatform(platform);
 

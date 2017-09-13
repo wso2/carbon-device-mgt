@@ -39,12 +39,14 @@ class ApplicationCreate extends Component {
     constructor() {
         super();
         this.scriptId = "application-create";
-        this.setStepData.bind(this);
-        this.removeStepData.bind(this);
-        this.handleSubmit.bind(this);
-        this.handleCancel.bind(this);
-        this.handleYes.bind(this);
-        this.handleNo.bind(this);
+        this.setStepData = this.setStepData.bind(this);
+        this.removeStepData = this.removeStepData.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleCancel = this.handleCancel.bind(this);
+        this.handleYes = this.handleYes.bind(this);
+        this.handleNo = this.handleNo.bind(this);
+        this.handlePrev = this.handlePrev.bind(this);
+        this.handleNext = this.handleNext.bind(this);
         this.state = {
             finished: false,
             stepIndex: 0,
@@ -80,8 +82,18 @@ class ApplicationCreate extends Component {
      * Handles form submit.
      * */
     handleSubmit() {
-        console.log(this.state.stepData);
-        Endpoint.createApplication(this.state.stepData);
+        let stepData = this.state.stepData;
+        let applicationCreationPromise = Endpoint.createApplication(stepData);
+        applicationCreationPromise.then(response => {
+                console.log(response);
+                let uploadArtifactsPromise = Endpoint.uploadImageArtifacts(response.data.uuid);
+                this.handleYes();
+            }
+        ).catch(
+            function (err) {
+                console.log(err);
+            }
+        );
 
     };
 
@@ -107,6 +119,8 @@ class ApplicationCreate extends Component {
 
     /**
      * Saves form data in each step in to the state.
+     * @param step: The step number of the step data.
+     * @param data: The form data of the step.
      * */
     setStepData(step, data) {
         console.log(step, data, this.state.stepData);
@@ -153,25 +167,31 @@ class ApplicationCreate extends Component {
     getStepContent(stepIndex) {
         switch (stepIndex) {
             case 0:
-                return <Step1
-                    handleNext={this.handleNext}
-                    setData={this.setStepData}
-                    removeData={this.removeStepData}
-                />;
+                return (
+                    <Step1
+                        handleNext={this.handleNext}
+                        setData={this.setStepData}
+                        removeData={this.removeStepData}
+                    />
+                );
             case 1:
-                return <Step2
-                    handleNext={this.handleNext}
-                    handlePrev={this.handlePrev}
-                    setData={this.setStepData}
-                    removeData={this.removeStepData}
-                />;
+                return (
+                    <Step2
+                        handleNext={this.handleNext}
+                        handlePrev={this.handlePrev}
+                        setData={this.setStepData}
+                        removeData={this.removeStepData}
+                    />
+                );
             case 2:
-                return <Step3
-                    handleFinish={this.handleNext}
-                    handlePrev={this.handlePrev}
-                    setData={this.setStepData}
-                    removeData={this.removeStepData}
-                />;
+                return (
+                    <Step3
+                        handleFinish={this.handleNext}
+                        handlePrev={this.handlePrev}
+                        setData={this.setStepData}
+                        removeData={this.removeStepData}
+                    />
+                );
             default:
                 return <div/>;
         }

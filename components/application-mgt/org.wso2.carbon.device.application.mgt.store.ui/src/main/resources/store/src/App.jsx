@@ -63,18 +63,15 @@ class Base extends Component {
 
     render() {
         this.setState();
-        if (this.state.user) {
-            return (
-                <div className="container">
-                    <BaseLayout state={this.state}>
-                        <Switch>
-                            <Route component={NotFound}/>
-                        </Switch>
-                    </BaseLayout>
-                </div>
-            )
-        }
-        return (<Redirect to={"/login"}/>)
+        return (
+            <div className="container">
+                <BaseLayout state={this.state}>
+                    <Switch>
+                        <Route component={NotFound}/>
+                    </Switch>
+                </BaseLayout>
+            </div>
+        )
     }
 
     setState() {

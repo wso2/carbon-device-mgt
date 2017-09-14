@@ -21,16 +21,12 @@ import Badge from 'material-ui/Badge';
 import React, {Component} from 'react';
 import AppBar from 'material-ui/AppBar';
 import Drawer from 'material-ui/Drawer';
-import {withRouter} from 'react-router-dom';
 import IconButton from 'material-ui/IconButton';
 import {List, ListItem} from 'material-ui/List';
 import Apps from 'material-ui/svg-icons/navigation/apps';
-import Add from 'material-ui/svg-icons/content/add-circle';
-import Feedback from 'material-ui/svg-icons/action/feedback';
-import DevicesOther from 'material-ui/svg-icons/hardware/devices-other';
 import NotificationsIcon from 'material-ui/svg-icons/social/notifications';
 import ActionAccountCircle from 'material-ui/svg-icons/action/account-circle';
-import FlatButton from 'material-ui/FlatButton';
+import { Link } from 'react-router-dom';
 
 /**
  * Base Layout:
@@ -71,7 +67,7 @@ class BaseLayout extends Component {
             );
         } else {
             return (
-                <FlatButton label="Login"/>
+                <Link to='/login'> Login</Link>
             );
         }
     }
@@ -82,7 +78,7 @@ class BaseLayout extends Component {
                 <Badge
                     badgeContent={this.state.notifications}
                     secondary={true}
-                    badgeStyle={{top: 12, right: 12}} >
+                    badgeStyle={{top: 12, right: 12}}>
                     <IconButton tooltip="Notifications">
                         <NotificationsIcon/>
                     </IconButton>

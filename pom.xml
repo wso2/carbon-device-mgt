@@ -193,7 +193,7 @@
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.devicemgt</groupId>
-                <artifactId>org.wso2.carbon.device.application.mgt.ui</artifactId>
+                <artifactId>org.wso2.carbon.device.application.mgt.publisher.ui</artifactId>
                 <version>${carbon.device.mgt.version}</version>
             </dependency>
             <dependency>

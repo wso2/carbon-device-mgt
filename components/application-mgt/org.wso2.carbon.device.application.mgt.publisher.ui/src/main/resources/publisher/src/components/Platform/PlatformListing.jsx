@@ -37,49 +37,19 @@ class PlatformListing extends Component {
         this.state = {
             data: [],
             asc: true
-        }
+        };
+        this.scriptId = "platform-listing";
     }
 
     componentWillMount() {
-        console.log(Theme.currentThemeType);
         /**
          *Loading the theme files based on the the user-preference.
          */
-        const selected =
-            (Theme.currentThemeType === Theme.defaultThemeType) ? Theme.defaultThemeType : Theme.currentTheme;
-        const platformListingCss = "platform-listing.css";
-        const platformListingId = "platform-listing";
-        let themePath  =  "/" + Theme.themeFolder + "/" + selected + "/" + platformListingCss;
-        let themeFilefig = Theme.loadThemeFiles(themePath);
-        let styleSheet = document.getElementById(platformListingId);
-        let head = document.getElementsByTagName("head")[0];
-        let link = document.createElement("link");
-        link.type = Theme.styleSheetType;
-        link.id = platformListingId;
-        link.rel = Theme.styleSheetRel;
-
-        if (styleSheet !== null) {
-            styleSheet.disabled = true;
-            styleSheet.parentNode.removeChild(styleSheet);
-        }
-
-        themeFilefig.then(function () {
-            link.href = Theme.baseURL + "/" + Theme.appContext + themePath;
-            head.appendChild(link);
-        }).catch(function () {
-            // If there is no customized css file, load the default one.
-            themePath = "/" + Theme.themeFolder + "/" + Theme.defaultThemeType + "/" + platformListingCss;
-            link.href = Theme.baseURL + "/" + Theme.appContext + themePath;
-            head.appendChild(link);
-        });
+        Theme.insertThemingScripts(this.scriptId);
     }
 
     componentWillUnmount() {
-        let styleSheet = document.getElementById("platform-listing");
-        if (styleSheet !== null) {
-            styleSheet.disabled = true;
-            styleSheet.parentNode.removeChild(styleSheet);
-        }
+        Theme.removeThemingScripts(this.scriptId);
     }
 
     /**

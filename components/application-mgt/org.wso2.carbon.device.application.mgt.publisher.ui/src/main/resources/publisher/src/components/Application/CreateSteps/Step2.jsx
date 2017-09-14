@@ -67,47 +67,18 @@ class Step2 extends Component {
             screenshots: [],
             icon: []
         };
+        this.scriptId = "application-create-step2";
     }
 
     componentWillMount() {
         /**
          *Loading the theme files based on the the user-preference.
          */
-        const selected =
-            (Theme.currentThemeType === Theme.defaultThemeType) ? Theme.defaultThemeType : Theme.currentTheme;
-        const applicationCreateStep2Css = "application-create-step2.css";
-        const applicationCreateStep2Id = "application-create-step2";
-        let themePath  =  "/" + Theme.themeFolder + "/" + selected + "/" + applicationCreateStep2Css;
-        let themeFilefig = Theme.loadThemeFiles(themePath);
-        let styleSheet = document.getElementById(applicationCreateStep2Id);
-        let head = document.getElementsByTagName("head")[0];
-        let link = document.createElement("link");
-        link.type = Theme.styleSheetType;
-        link.href = Theme.baseURL + "/" + Theme.appContext + themePath;
-        link.id = applicationCreateStep2Id;
-        link.rel = Theme.styleSheetRel;
-
-        if (styleSheet !== null) {
-            styleSheet.disabled = true;
-            styleSheet.parentNode.removeChild(styleSheet);
-        }
-
-        themeFilefig.then(function() {
-            head.appendChild(link);
-        }).catch(function () {
-            // If there is no customized css file, load the default one.
-            themePath = "/" + Theme.themeFolder + "/" + Theme.defaultThemeType + "/" + applicationCreateStep2Css;
-            link.href = Theme.baseURL + "/" + Theme.appContext + themePath;
-
-        });
+        Theme.insertThemingScripts(this.scriptId);
     }
 
     componentWillUnmount() {
-        let styleSheet = document.getElementById("application-create-step2");
-        if (styleSheet !== null) {
-            styleSheet.disabled = true;
-            styleSheet.parentNode.removeChild(styleSheet);
-        }
+        Theme.removeThemingScripts(this.scriptId);
     }
 
     /**

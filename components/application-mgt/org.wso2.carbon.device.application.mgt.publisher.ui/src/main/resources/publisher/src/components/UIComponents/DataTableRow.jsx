@@ -31,7 +31,8 @@ class DataTableRow extends Component {
         super();
         this.state = {
             dataItem: {}
-        }
+        };
+        this.scriptId = "data-table";
     }
 
     componentWillMount() {
@@ -40,40 +41,11 @@ class DataTableRow extends Component {
         /**
          *Loading the theme files based on the the user-preference.
          */
-        const selected =
-            (Theme.currentThemeType === Theme.defaultThemeType) ? Theme.defaultThemeType : Theme.currentThemeType;
-        const dataTableCss = "data-table.css";
-        const dataTableId = "data-table";
-        let themePath  =  "/" + Theme.themeFolder + "/" + selected + "/" + dataTableCss;
-        let themeFilefig = Theme.loadThemeFiles(themePath);
-        let styleSheet = document.getElementById(dataTableId);
-        let head = document.getElementsByTagName("head")[0];
-        let link = document.createElement("link");
-        link.type = Theme.styleSheetType;
-        link.href = Theme.baseURL + "/" + Theme.appContext + themePath;
-        link.id = dataTableId;
-        link.rel = Theme.styleSheetRel;
-        if (styleSheet !== null) {
-            styleSheet.disabled = true;
-            styleSheet.parentNode.removeChild(styleSheet);
-        }
-
-        themeFilefig.then(function() {
-            head.appendChild(link);
-        }).catch(function () {
-            // If there is no customized css file, load the default one.
-            themePath = "/" + Theme.themeFolder + "/" + Theme.defaultThemeType + "/" + dataTableCss;
-            link.href = Theme.baseURL + "/" + Theme.appContext + themePath;
-            head.appendChild(link);
-        });
+       Theme.insertThemingScripts(this.scriptId);
     }
 
     componentWillUnmount() {
-        let styleSheet = document.getElementById("data-table");
-        if (styleSheet !== null) {
-            styleSheet.disabled = true;
-            styleSheet.parentNode.removeChild(styleSheet);
-        }
+        Theme.removeThemingScripts(this.scriptId);
     }
 
     /**

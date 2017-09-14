@@ -48,46 +48,18 @@ class Step1 extends Component {
             title: "",
             titleError: ""
         };
+        this.scriptId = "application-create-step1";
     }
 
     componentWillMount() {
         /**
          *Loading the theme files based on the the user-preference.
          */
-        const selected =
-            (Theme.currentThemeType === Theme.defaultThemeType) ? Theme.defaultThemeType : Theme.currentTheme;
-        const applicationCreateStep1Css = "application-create-step1.css";
-        const applicationCreateStep1Id = "application-create-step1";
-        let themePath  =  "/" + Theme.themeFolder + "/" + selected + "/" + applicationCreateStep1Css;
-        let themeFilefig = Theme.loadThemeFiles(themePath);
-        let styleSheet = document.getElementById(applicationCreateStep1Id);
-        let head = document.getElementsByTagName("head")[0];
-        let link = document.createElement("link");
-        link.type = Theme.styleSheetType;
-        link.href = Theme.baseURL + "/" + Theme.appContext + themePath;
-        link.id = applicationCreateStep1Id;
-        link.rel = Theme.styleSheetRel;
-        if (styleSheet !== null) {
-            styleSheet.disabled = true;
-            styleSheet.parentNode.removeChild(styleSheet);
-        }
-
-        themeFilefig.then(function () {
-            head.appendChild(link);
-        }).catch(function () {
-            // If there is no customized css file, load the default one.
-            themePath = "/" + Theme.themeFolder + "/" + Theme.defaultThemeType + "/" + applicationCreateStep1Css;
-            link.href = Theme.baseURL + "/" + Theme.appContext + themePath;
-            head.appendChild(link);
-        });
+       Theme.insertThemingScripts(this.scriptId);
     }
 
     componentWillUnmount() {
-        let styleSheet = document.getElementById("application-create-step1");
-        if (styleSheet !== null) {
-            styleSheet.disabled = true;
-            styleSheet.parentNode.removeChild(styleSheet);
-        }
+        Theme.removeThemingScripts(this.scriptId);
     }
 
     /**

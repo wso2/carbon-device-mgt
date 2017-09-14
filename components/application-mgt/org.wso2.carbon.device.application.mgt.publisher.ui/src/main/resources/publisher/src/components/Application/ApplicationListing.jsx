@@ -37,7 +37,8 @@ class ApplicationListing extends Component {
         this.state = {
             data: [],
             asc: true
-        }
+        };
+        this.scriptId = "application-listing";
     }
 
     data = [
@@ -113,43 +114,15 @@ class ApplicationListing extends Component {
     componentWillMount() {
         //Fetch all the applications from backend and create application objects.
         this.setState({data: this.data});
+
         /**
          *Loading the theme files based on the the user-preference.
          */
-        const selected =
-            (Theme.currentThemeType === Theme.defaultThemeType) ? Theme.defaultThemeType : Theme.currentTheme;
-        const applicationListingCss = "application-listing.css";
-        const applicationListingId = "application-listing";
-        let themePath  =  "/" + Theme.themeFolder + "/" + selected + "/" + applicationListingCss;
-        let themeFilefig = Theme.loadThemeFiles(themePath);
-        let styleSheet = document.getElementById(applicationListingId);
-        let head = document.getElementsByTagName("head")[0];
-        let link = document.createElement("link");
-        link.type = Theme.styleSheetType;
-        link.href = Theme.baseURL + "/" + Theme.appContext + themePath;
-        link.id = applicationListingId;
-        link.rel = Theme.styleSheetRel;
-
-        if (styleSheet !== null) {
-            styleSheet.disabled = true;
-            styleSheet.parentNode.removeChild(styleSheet);
-        }
-        themeFilefig.then(function () {
-            head.appendChild(link);
-        }).catch(function () {
-            // If there is no customized css file, load the default one.
-            themePath = "/" + Theme.themeFolder + "/" + Theme.defaultThemeType + "/" + applicationListingCss;
-            link.href = Theme.baseURL + "/" + Theme.appContext + themePath;
-            head.appendChild(link);
-        });
+        Theme.insertThemingScripts(this.scriptId);
     }
 
     componentWillUnmount() {
-        let styleSheet = document.getElementById("application-listing");
-        if (styleSheet !== null) {
-            styleSheet.disabled = true;
-            styleSheet.parentNode.removeChild(styleSheet);
-        }
+        Theme.removeThemingScripts(this.scriptId);
     }
 
 

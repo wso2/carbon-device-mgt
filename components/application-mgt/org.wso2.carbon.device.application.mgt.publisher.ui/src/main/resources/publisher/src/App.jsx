@@ -125,6 +125,8 @@ class Publisher extends Component {
 
         Theme.currentThemeType = this.state.selectedType;
         Theme.currentTheme = this.state.selectedTheme;
+        Theme.selectedTheme =
+            (Theme.currentThemeType === Theme.defaultThemeType) ? Theme.defaultThemeType : Theme.currentTheme;
 
         if (this.state.selectedType === "default") {
             let defaultTheme = require("material-ui/styles/baseThemes/" + this.state.selectedTheme);

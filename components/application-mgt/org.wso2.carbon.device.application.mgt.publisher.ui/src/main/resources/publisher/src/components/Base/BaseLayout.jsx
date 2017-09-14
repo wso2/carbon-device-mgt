@@ -46,50 +46,19 @@ class BaseLayout extends Component {
         this.state = {
             notifications: 0,
             user: 'Admin'
-        }
+        };
+        this.scriptId = "basic-layout";
     }
 
     componentWillMount() {
         /**
          *Loading the theme files based on the the user-preference.
          */
-        console.log(Theme.currentThemeType);
-        const selected =
-            (Theme.currentThemeType === Theme.defaultThemeType) ? Theme.defaultThemeType : Theme.currentTheme;
-        const basicLayoutCss = "basic-layout.css";
-        const basicLayoutId = "basic-layout";
-        let themePath  =  "/" + Theme.themeFolder + "/" + selected + "/" + basicLayoutCss;
-        let themeFilefig = Theme.loadThemeFiles(themePath);
-        let styleSheet = document.getElementById(basicLayoutId);
-        let head = document.getElementsByTagName("head")[0];
-        let link = document.createElement("link");
-        link.type = Theme.styleSheetType;
-        link.href = Theme.baseURL + "/" + Theme.appContext + themePath;
-        link.id = basicLayoutId;
-        link.rel = Theme.styleSheetRel;
-
-        if (styleSheet !== null) {
-            styleSheet.disabled = true;
-            styleSheet.parentNode.removeChild(styleSheet);
-        }
-
-        themeFilefig.then(function() {
-            head.appendChild(link);
-        }).catch(function () {
-            // If there is no customized css file, load the default one.
-            themePath = "/" + Theme.themeFolder + "/" + Theme.defaultThemeType + "/" + basicLayoutCss;
-            link.href = Theme.baseURL + "/" + Theme.appContext + themePath;
-            head.appendChild(link);
-        });
-
+        Theme.insertThemingScripts(this.scriptId);
     }
 
     componentWillUnmount() {
-        let styleSheet = document.getElementById("basic-layout");
-        if (styleSheet !== null) {
-            styleSheet.disabled = true;
-            styleSheet.parentNode.removeChild(styleSheet);
-        }
+        Theme.removeThemingScripts(this.scriptId)
     }
 
     handleApplicationClick() {

@@ -37,6 +37,7 @@ import Theme from '../../theme';
 class ApplicationCreate extends Component {
     constructor() {
         super();
+        this.scriptId = "application-create";
         this.setStepData.bind(this);
         this.removeStepData.bind(this);
         this.handleSubmit.bind(this);
@@ -55,41 +56,11 @@ class ApplicationCreate extends Component {
         /**
          *Loading the theme files based on the the user-preference.
          */
-        const selected =
-            (Theme.currentThemeType === Theme.defaultThemeType) ? Theme.defaultThemeType : Theme.currentTheme;
-        const applicationCreateStepCss = "application-create.css";
-        const applicationCreateStepId = "application-create";
-        let themePath  =  "/" + Theme.themeFolder + "/" + selected + "/" + applicationCreateStepCss;
-        let themeFilefig = Theme.loadThemeFiles(themePath);
-        let styleSheet = document.getElementById(applicationCreateStepId);
-        let head = document.getElementsByTagName("head")[0];
-        let link = document.createElement("link");
-        link.type = Theme.styleSheetType;
-        link.href = Theme.baseURL + "/" + Theme.appContext + themePath;
-        link.id = applicationCreateStepId;
-        link.rel = Theme.styleSheetRel;
-
-        if (styleSheet !== null) {
-            styleSheet.disabled = true;
-            styleSheet.parentNode.removeChild(styleSheet);
-        }
-        themeFilefig.then(function () {
-            head.appendChild(link);
-        }).catch(function () {
-            // If there is no customized css file, load the default one.
-            themePath = "/" + Theme.themeFolder + "/" + Theme.defaultThemeType + "/" + applicationCreateStepCss;
-            link.href = Theme.baseURL + "/" + Theme.appContext + themePath;
-            head.appendChild(link);
-
-        });
+        Theme.insertThemingScripts(this.scriptId);
     }
 
     componentWillUnmount() {
-        let styleSheet = document.getElementById("application-create");
-        if (styleSheet !== null) {
-            styleSheet.disabled = true;
-            styleSheet.parentNode.removeChild(styleSheet);
-        }
+        Theme.removeThemingScripts(this.scriptId);
     }
 
     /**

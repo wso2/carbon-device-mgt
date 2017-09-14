@@ -30,12 +30,15 @@ class Theme {
         this.themeFolder =  "themes";
         this.styleSheetType = "text/css";
         this.styleSheetRel = "stylesheet";
+        this.selectedTheme = this.defaultThemeType;
 
         //TODO Need to get the app context properly when the server is ready
         this.baseURL = window.location.origin;
         this.appContext = window.location.pathname.split("/")[1];
         this.loadThemeConfigs.bind(this);
         this.loadThemeFiles.bind(this);
+        this.insertThemingScripts.bind(this);
+        this.removeThemingScripts.bind(this);
     }
 
     /**
@@ -62,6 +65,44 @@ class Theme {
             timeout: 2000
         });
         return httpClient.get();
+    }
+
+    /**
+     * To insert the css files to the document.
+     * @param scriptId ID of the script that need to be inserted
+     */
+    insertThemingScripts(scriptId) {
+        const script = scriptId + ".css";
+        let themePath  =  "/" + this.themeFolder + "/" + this.selectedTheme + "/" + script;
+        let themeFile = this.loadThemeFiles(themePath);
+        let head = document.getElementsByTagName("head")[0];
+        let link = document.createElement("link");
+        link.type = this.styleSheetType;
+        link.href = this.baseURL + "/" + this.appContext + themePath;
+        link.id = scriptId;
+        link.rel = this.styleSheetRel;
+        this.removeThemingScripts(scriptId);
+
+        themeFile.then(function () {
+            head.appendChild(link);
+        }).catch(error => {
+            // If there is no customized css file, load the default one.
+            themePath = "/" + this.themeFolder + "/" + this.defaultThemeType + "/" + script;
+            link.href = this.baseURL + "/" + this.appContext + themePath;
+            head.appendChild(link);
+        });
+    }
+
+    /**
+     * To remove the css scripts that are inserted before.
+     * @param scriptId Id of the script that need to be removed
+     */
+    removeThemingScripts(scriptId) {
+        let styleSheet = document.getElementById(scriptId);
+        if (styleSheet !== null) {
+            styleSheet.disabled = true;
+            styleSheet.parentNode.removeChild(styleSheet);
+        }
     }
 
 }

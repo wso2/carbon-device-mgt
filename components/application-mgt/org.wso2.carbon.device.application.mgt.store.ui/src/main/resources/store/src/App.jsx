@@ -55,18 +55,18 @@ if (theme.current === "default") {
  * not want to serve the URL.
  * */
 class Base extends Component {
+
     constructor() {
         super();
-        this.state = {
-            user: "admin"
-        }
+        this.state = {};
     }
 
     render() {
+        this.setState();
         if (this.state.user) {
             return (
                 <div className="container">
-                    <BaseLayout>
+                    <BaseLayout state={this.state}>
                         <Switch>
                             <Route component={NotFound}/>
                         </Switch>
@@ -75,6 +75,14 @@ class Base extends Component {
             )
         }
         return (<Redirect to={"/login"}/>)
+    }
+
+    setState() {
+        if (this.props.location.state){
+            this.state = this.props.location.state;
+        } else {
+            this.state = {};
+        }
     }
 }
 
@@ -85,17 +93,22 @@ class Base extends Component {
  *
  * */
 class Store extends Component {
+
+    constructor() {
+        super();
+    }
+
     render() {
         return (
             <div className="App">
                 <MuiThemeProvider muiTheme={muiTheme}>
-                <Router basename="publisher" history={history}>
-                    <Switch>
-                        <Route path="/login" component={Login}/>
-                        <Route path="/logout" component={Login}/>
-                        <Route component={Base}/>
-                    </Switch>
-                </Router>
+                    <Router basename="store" history={history}>
+                        <Switch>
+                            <Route path="/login" component={Login}/>
+                            <Route path="/logout" component={Login}/>
+                            <Route component={Base}/>
+                        </Switch>
+                    </Router>
                 </MuiThemeProvider>
             </div>
         );

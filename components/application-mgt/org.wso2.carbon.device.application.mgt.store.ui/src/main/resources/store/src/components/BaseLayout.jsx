@@ -30,6 +30,7 @@ import Feedback from 'material-ui/svg-icons/action/feedback';
 import DevicesOther from 'material-ui/svg-icons/hardware/devices-other';
 import NotificationsIcon from 'material-ui/svg-icons/social/notifications';
 import ActionAccountCircle from 'material-ui/svg-icons/action/account-circle';
+import FlatButton from 'material-ui/FlatButton';
 
 /**
  * Base Layout:
@@ -39,12 +40,9 @@ import ActionAccountCircle from 'material-ui/svg-icons/action/account-circle';
  * */
 class BaseLayout extends Component {
 
-    constructor() {
-        super();
-        this.state = {
-            notifications: 0,
-            user: 'Admin'
-        }
+    constructor(props) {
+        super(props);
+        this.state = this.props.state;
     }
 
     componentWillMount() {
@@ -55,25 +53,6 @@ class BaseLayout extends Component {
         this.handleHistory('/assets/apps');
     }
 
-    handleOverviewClick() {
-        this.handleHistory('/overview');
-    }
-
-    handleApplicationCreateClick() {
-        this.handleHistory('/assets/apps/create');
-    }
-
-    handlePlatformClick() {
-        this.handleHistory('/assets/platforms');
-    }
-
-    handlePlatformCreateClick() {
-        this.handleHistory('/assets/platforms/create');
-    }
-
-    handleReviewClick() {
-        this.handleHistory('/assets/reviews');
-    }
 
     /**
      * The method to update the history.
@@ -83,33 +62,51 @@ class BaseLayout extends Component {
         this.props.history.push(to);
     }
 
+    handleUserLogin() {
+        if (this.state.user) {
+            return (
+                <IconButton tooltip={this.state.user}>
+                    <ActionAccountCircle/>
+                </IconButton>
+            );
+        } else {
+            return (
+                <FlatButton label="Login"/>
+            );
+        }
+    }
+
+    handleNotification() {
+        if (this.state.user) {
+            return (
+                <Badge
+                    badgeContent={this.state.notifications}
+                    secondary={true}
+                    badgeStyle={{top: 12, right: 12}} >
+                    <IconButton tooltip="Notifications">
+                        <NotificationsIcon/>
+                    </IconButton>
+                </Badge>
+            );
+        }
+    }
+
     render() {
         return (
             <div>
-                <AppBar title="App Publisher"
+                <AppBar title="App Store"
                         iconElementRight={
                             <div>
-                                <Badge
-                                    badgeContent={this.state.notifications}
-                                    secondary={true}
-                                    badgeStyle={{top: 12, right: 12}}
-                                >
-                                    <IconButton tooltip="Notifications">
-                                        <NotificationsIcon/>
-                                    </IconButton>
-                                </Badge>
-                                <IconButton onClick={() => {
-                                    console.log("Clicked")
-                                }}>
-                                    <ActionAccountCircle/>
-                                </IconButton>
+                                {this.handleNotification()}
+                                {this.handleUserLogin()}
                             </div>
                         }
                 />
                 <div>
-                    <Drawer containerStyle={{height: 'calc(100% - 64px)', width: '15%', top: '10%'}} open={true}>
+                    <Drawer containerStyle={{height: 'calc(100% - 64px)', width: '15%', top: '13%', left: '1%'}}
+                            open={true}>
                         <List>
-                           <ListItem primaryText="Applications"
+                            <ListItem primaryText="Applications"
                                       leftIcon={<Apps/>}
                                       initiallyOpen={false}
                                       primaryTogglesNestedList={true}
@@ -117,27 +114,10 @@ class BaseLayout extends Component {
                                       nestedItems={[
                                           <ListItem
                                               key={1}
-                                              primaryText="Create"
-                                              onClick={this.handleApplicationCreateClick.bind(this)}
-                                              leftIcon={<Add/>}
+                                              primaryText="Business" //TODO: categoryies ...
+                                              leftIcon={<List/>}
                                           />]}
                             />
-                            <ListItem primaryText="Platforms"
-                                      leftIcon={<DevicesOther/>}
-                                      initiallyOpen={false}
-                                      primaryTogglesNestedList={true}
-                                      onClick={this.handlePlatformClick.bind(this)}
-                                      nestedItems={[
-                                          <ListItem
-                                              key={1}
-                                              primaryText="Create"
-                                              onClick={this.handlePlatformCreateClick.bind(this)}
-                                              leftIcon={<Add/>}
-                                          />]}
-                            />
-                            <ListItem primaryText="Reviews"
-                                      onClick={this.handleReviewClick.bind(this)}
-                                      leftIcon={<Feedback/>}/>
                         </List>
                     </Drawer>
                 </div>
@@ -158,8 +138,11 @@ class BaseLayout extends Component {
 
 }
 
-BaseLayout.propTypes = {
+BaseLayout
+    .propTypes = {
     children: PropTypes.element
 };
 
-export default BaseLayout;
+export
+default
+BaseLayout;

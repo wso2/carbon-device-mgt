@@ -19,10 +19,12 @@
 import qs from 'qs';
 import React, {Component} from 'react';
 import Checkbox from 'material-ui/Checkbox';
-import {Redirect, Switch} from 'react-router-dom';
+import {Redirect, Route} from 'react-router-dom';
 import RaisedButton from 'material-ui/RaisedButton';
 import {Card, CardActions, CardTitle} from 'material-ui/Card';
 import {TextValidator, ValidatorForm} from 'react-material-ui-form-validator';
+import Store from '../App';
+
 
 //todo: remove the {TextValidator, ValidatorForm} and implement it manually.
 
@@ -39,10 +41,9 @@ class Login extends Component {
     constructor() {
         super();
         this.state = {
-            isLoggedIn: true,
+            isLoggedIn: false,
             referrer: "/",
             userName: "",
-            password: "",
             rememberMe: true
         }
     }
@@ -60,6 +61,15 @@ class Login extends Component {
 
     handleLogin(event) {
         event.preventDefault();
+        //TODO: send authentication request.
+        let location = {
+            pathname: this.state.referrer,
+            state: {
+                notifications: 0,
+                user: this.state.userName
+            }
+        };
+        this.props.history.push(location);
     }
 
     /**
@@ -95,16 +105,21 @@ class Login extends Component {
         );
     }
 
-    render() {
+    handleSuccessfulLogin() {
+        return (
+            <Redirect to='/store'/>
+        );
+    }
 
-        if (!this.state.isLoggedIn) {
+    render() {
+        if (!(this.state.isLoggedIn && this.state.userName)) {
             return (
                 <div>
 
                     {/*TODO: Style the components.*/}
 
                     <Card>
-                        <CardTitle title="WSO2 IoT App Publisher"/>
+                        <CardTitle title="WSO2 IoT App Store"/>
                         <CardActions>
                             <ValidatorForm
                                 ref="form"
@@ -141,11 +156,7 @@ class Login extends Component {
                     </Card>
                 </div>);
         } else {
-            return (
-                <Switch>
-                    <Redirect to={this.state.referrer}/>
-                </Switch>
-            );
+            this.handleSuccessfulLogin();
         }
     }
 }

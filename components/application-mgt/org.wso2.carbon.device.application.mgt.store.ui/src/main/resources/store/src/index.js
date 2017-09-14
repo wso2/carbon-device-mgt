@@ -5,5 +5,4 @@ import './index.css';
 
 
 ReactDOM.render(<Store />, document.getElementById('root'));
-console.log('Hello World!');
 

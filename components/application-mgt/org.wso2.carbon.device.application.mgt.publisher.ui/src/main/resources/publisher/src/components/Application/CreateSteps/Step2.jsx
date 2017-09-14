@@ -78,7 +78,7 @@ class Step2 extends Component {
         const applicationCreateStep2Css = "application-create-step2.css";
         const applicationCreateStep2Id = "application-create-step2";
         let themePath  =  "/" + Theme.themeFolder + "/" + selected + "/" + applicationCreateStep2Css;
-        let promisedConfig = Theme.loadThemeFiles(themePath);
+        let themeFilefig = Theme.loadThemeFiles(themePath);
         let styleSheet = document.getElementById(applicationCreateStep2Id);
         let head = document.getElementsByTagName("head")[0];
         let link = document.createElement("link");
@@ -92,7 +92,7 @@ class Step2 extends Component {
             styleSheet.parentNode.removeChild(styleSheet);
         }
 
-        promisedConfig.then(function() {
+        themeFilefig.then(function() {
             head.appendChild(link);
         }).catch(function () {
             // If there is no customized css file, load the default one.

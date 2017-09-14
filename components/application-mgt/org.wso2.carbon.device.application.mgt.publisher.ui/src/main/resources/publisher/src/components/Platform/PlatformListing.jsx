@@ -50,7 +50,7 @@ class PlatformListing extends Component {
         const platformListingCss = "platform-listing.css";
         const platformListingId = "platform-listing";
         let themePath  =  "/" + Theme.themeFolder + "/" + selected + "/" + platformListingCss;
-        let promisedConfig = Theme.loadThemeFiles(themePath);
+        let themeFilefig = Theme.loadThemeFiles(themePath);
         let styleSheet = document.getElementById(platformListingId);
         let head = document.getElementsByTagName("head")[0];
         let link = document.createElement("link");
@@ -63,7 +63,7 @@ class PlatformListing extends Component {
             styleSheet.parentNode.removeChild(styleSheet);
         }
 
-        promisedConfig.then(function () {
+        themeFilefig.then(function () {
             link.href = Theme.baseURL + "/" + Theme.appContext + themePath;
             head.appendChild(link);
         }).catch(function () {

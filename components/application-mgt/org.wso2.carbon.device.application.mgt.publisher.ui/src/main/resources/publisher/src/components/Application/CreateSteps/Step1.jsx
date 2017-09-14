@@ -59,7 +59,7 @@ class Step1 extends Component {
         const applicationCreateStep1Css = "application-create-step1.css";
         const applicationCreateStep1Id = "application-create-step1";
         let themePath  =  "/" + Theme.themeFolder + "/" + selected + "/" + applicationCreateStep1Css;
-        let promisedConfig = Theme.loadThemeFiles(themePath);
+        let themeFilefig = Theme.loadThemeFiles(themePath);
         let styleSheet = document.getElementById(applicationCreateStep1Id);
         let head = document.getElementsByTagName("head")[0];
         let link = document.createElement("link");
@@ -72,7 +72,7 @@ class Step1 extends Component {
             styleSheet.parentNode.removeChild(styleSheet);
         }
 
-        promisedConfig.then(function () {
+        themeFilefig.then(function () {
             head.appendChild(link);
         }).catch(function () {
             // If there is no customized css file, load the default one.

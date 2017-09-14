@@ -74,7 +74,7 @@ class PlatformCreate extends Component {
         const platformCreateCss = "platform-create.css";
         const platformCreateId = "application-listing";
         let themePath  =  "/" + Theme.themeFolder + "/" + selected + "/" + platformCreateCss;
-        let promisedConfig = Theme.loadThemeFiles(themePath);
+        let themeFilefig = Theme.loadThemeFiles(themePath);
         let styleSheet = document.getElementById(platformCreateId);
         let head = document.getElementsByTagName("head")[0];
         let link = document.createElement("link");
@@ -88,7 +88,7 @@ class PlatformCreate extends Component {
             styleSheet.parentNode.removeChild(styleSheet);
         }
 
-        promisedConfig.then(function(){
+        themeFilefig.then(function(){
             head.appendChild(link);
         }).catch(function () {
             // If there is no customized css file, load the default one.

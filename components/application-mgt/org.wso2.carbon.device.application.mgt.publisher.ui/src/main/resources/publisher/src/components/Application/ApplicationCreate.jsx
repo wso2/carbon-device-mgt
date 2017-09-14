@@ -60,7 +60,7 @@ class ApplicationCreate extends Component {
         const applicationCreateStepCss = "application-create.css";
         const applicationCreateStepId = "application-create";
         let themePath  =  "/" + Theme.themeFolder + "/" + selected + "/" + applicationCreateStepCss;
-        let promisedConfig = Theme.loadThemeFiles(themePath);
+        let themeFilefig = Theme.loadThemeFiles(themePath);
         let styleSheet = document.getElementById(applicationCreateStepId);
         let head = document.getElementsByTagName("head")[0];
         let link = document.createElement("link");
@@ -73,7 +73,7 @@ class ApplicationCreate extends Component {
             styleSheet.disabled = true;
             styleSheet.parentNode.removeChild(styleSheet);
         }
-        promisedConfig.then(function () {
+        themeFilefig.then(function () {
             head.appendChild(link);
         }).catch(function () {
             // If there is no customized css file, load the default one.

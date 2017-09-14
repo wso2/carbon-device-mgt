@@ -121,7 +121,7 @@ class ApplicationListing extends Component {
         const applicationListingCss = "application-listing.css";
         const applicationListingId = "application-listing";
         let themePath  =  "/" + Theme.themeFolder + "/" + selected + "/" + applicationListingCss;
-        let promisedConfig = Theme.loadThemeFiles(themePath);
+        let themeFilefig = Theme.loadThemeFiles(themePath);
         let styleSheet = document.getElementById(applicationListingId);
         let head = document.getElementsByTagName("head")[0];
         let link = document.createElement("link");
@@ -134,7 +134,7 @@ class ApplicationListing extends Component {
             styleSheet.disabled = true;
             styleSheet.parentNode.removeChild(styleSheet);
         }
-        promisedConfig.then(function () {
+        themeFilefig.then(function () {
             head.appendChild(link);
         }).catch(function () {
             // If there is no customized css file, load the default one.

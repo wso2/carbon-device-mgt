@@ -67,7 +67,7 @@ class Step3 extends Component {
         const applicationCreateStep3Css = "application-create-step3.css";
         const applicationCreateStep3Id = "application-create-step3";
         let themePath  =  "/" + Theme.themeFolder + "/" + selected + "/" + applicationCreateStep3Css;
-        let promisedConfig = Theme.loadThemeFiles(themePath);
+        let themeFilefig = Theme.loadThemeFiles(themePath);
         let styleSheet = document.getElementById(applicationCreateStep3Id);
         let head = document.getElementsByTagName("head")[0];
         let link = document.createElement("link");
@@ -81,7 +81,7 @@ class Step3 extends Component {
             styleSheet.parentNode.removeChild(styleSheet);
         }
 
-        promisedConfig.then(function() {
+        themeFilefig.then(function() {
             head.appendChild(link);
         }).catch(function () {
             // If there is no customized css file, load the default one.

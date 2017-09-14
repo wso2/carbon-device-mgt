@@ -106,13 +106,17 @@ class Publisher extends Component {
         /**
          *Loading the theme files based on the the user-preference.
          */
-        let promisedConfig = Theme.loadThemeProperties();
-        promisedConfig.then(this.setTheme).catch(function (error) {
+        let themeConfig = Theme.loadThemeConfigs();
+        themeConfig.then(this.setTheme).catch(function (error) {
             console.log(error);
 
         });
     }
 
+    /**
+     * To set the theme based on the configuration file.
+     * @param response Configuration file data.
+     */
     setTheme(response) {
         this.setState({
             selectedType: response.data.theme.type,

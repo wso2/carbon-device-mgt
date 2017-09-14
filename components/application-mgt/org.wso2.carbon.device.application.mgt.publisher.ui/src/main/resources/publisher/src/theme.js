@@ -34,15 +34,15 @@ class Theme {
         //TODO Need to get the app context properly when the server is ready
         this.baseURL = window.location.origin;
         this.appContext = window.location.pathname.split("/")[1];
-        this.loadThemeProperties.bind(this);
+        this.loadThemeConfigs.bind(this);
         this.loadThemeFiles.bind(this);
     }
 
     /**
-     * To load the theme files from the configuration file.
+     * To load the theme related configurations from the configuration file.
      * @returns the http response.
      */
-    loadThemeProperties () {
+    loadThemeConfigs () {
         let httpClient = axios.create({
             baseURL: this.baseURL + "/" + this.appContext + "/config.json",
             timeout: 2000

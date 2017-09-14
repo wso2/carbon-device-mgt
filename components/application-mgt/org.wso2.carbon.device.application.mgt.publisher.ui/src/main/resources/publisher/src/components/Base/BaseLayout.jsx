@@ -59,7 +59,7 @@ class BaseLayout extends Component {
         const basicLayoutCss = "basic-layout.css";
         const basicLayoutId = "basic-layout";
         let themePath  =  "/" + Theme.themeFolder + "/" + selected + "/" + basicLayoutCss;
-        let promisedConfig = Theme.loadThemeFiles(themePath);
+        let themeFilefig = Theme.loadThemeFiles(themePath);
         let styleSheet = document.getElementById(basicLayoutId);
         let head = document.getElementsByTagName("head")[0];
         let link = document.createElement("link");
@@ -73,7 +73,7 @@ class BaseLayout extends Component {
             styleSheet.parentNode.removeChild(styleSheet);
         }
 
-        promisedConfig.then(function() {
+        themeFilefig.then(function() {
             head.appendChild(link);
         }).catch(function () {
             // If there is no customized css file, load the default one.

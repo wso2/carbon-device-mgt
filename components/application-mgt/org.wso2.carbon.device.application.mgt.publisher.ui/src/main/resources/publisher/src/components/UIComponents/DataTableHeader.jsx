@@ -20,6 +20,11 @@ import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import FlatButton from 'material-ui/FlatButton';
 import {TableHeaderColumn} from 'material-ui/Table';
+<<<<<<< HEAD
+import Theme from '../../theme';
+=======
+import Theme from '../../themes/theme';
+>>>>>>> parent of 8f3d11f... refactoring theming support
 
 /**
  * Data Table header component.
@@ -32,17 +37,57 @@ class DataTableHeader extends Component {
     }
 
     componentWillMount() {
-        //Using the particular style specific to user selected theme.
-        const theme = require("../../theme").default;
+<<<<<<< HEAD
+        /**
+         *Loading the theme files based on the the user-preference.
+         */
         const selected =
-            (theme.currentThemeType === theme.defaultThemeType) ? theme.defaultThemeType : theme.currentTheme;
+            (Theme.currentThemeType === Theme.defaultThemeType) ? Theme.defaultThemeType : Theme.currentTheme;
         const dataTableCss = "data-table.css";
+        const dataTableId = "data-table";
+        let themePath  =  "/" + Theme.themeFolder + "/" + selected + "/" + dataTableCss;
+        let promisedConfig = Theme.loadThemeFiles(themePath);
+        let styleSheet = document.getElementById(dataTableId);
+        let head = document.getElementsByTagName("head")[0];
+        let link = document.createElement("link");
+        link.type = Theme.styleSheetType;
+        link.href = Theme.baseURL + "/" + Theme.appContext + themePath;
+        link.id = dataTableId;
+        link.rel = Theme.styleSheetRel;
+        if (styleSheet !== null) {
+            styleSheet.disabled = true;
+            styleSheet.parentNode.removeChild(styleSheet);
+        }
 
-        try {
-            require("../../" + theme.themeFolder + "/" + selected + "/" + dataTableCss);
-        } catch (ex){
-            // If the particular customized file does not exist, use the default one.
-            require("../../" + theme.themeFolder + "/" + theme.defaultThemeType + "/" + dataTableCss);
+        promisedConfig.then(function() {
+            head.appendChild(link);
+        }).catch(function () {
+            // If there is no customized css file, load the default one.
+            themePath = "/" + Theme.themeFolder + "/" + Theme.defaultThemeType + "/" + dataTableCss;
+            link.href = Theme.baseURL + "/" + Theme.appContext + themePath;
+            head.appendChild(link);
+        });
+
+
+    }
+
+    componentWillUnmount() {
+        let styleSheet = document.getElementById("data-table");
+        if (styleSheet !== null) {
+            styleSheet.disabled = true;
+            styleSheet.parentNode.removeChild(styleSheet);
+=======
+        let selected = Theme.selectedTheme;
+        if (Theme.currentTheme === "default") {
+            require("../../themes/default/data-table.css");
+        } else {
+            try {
+                require("../../themes/" + selected + "/data-table.css");
+            } catch (ex) {
+                // If the particular customized file does not exist, use the default one.
+                require("../../themes/default/data-table.css");
+            }
+>>>>>>> parent of 8f3d11f... refactoring theming support
         }
     }
 

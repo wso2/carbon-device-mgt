@@ -58,7 +58,12 @@ const config = {
                 }]
             }
         ]
+    },
+    resolve: {
+        // you can now require('file') instead of require('file.coffee')
+        extensions: ['.jsx', '.js']
     }
+
 };
 
 if (process.env.NODE_ENV === "development") {

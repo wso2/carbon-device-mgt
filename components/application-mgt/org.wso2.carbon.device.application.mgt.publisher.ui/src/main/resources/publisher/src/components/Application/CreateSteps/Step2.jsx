@@ -28,6 +28,11 @@ import SelectField from 'material-ui/SelectField';
 import RaisedButton from 'material-ui/RaisedButton';
 import Clear from 'material-ui/svg-icons/content/clear';
 import {GridList, GridTile} from 'material-ui/GridList';
+<<<<<<< HEAD
+import Theme from '../../../theme';
+=======
+import Theme from '../../../themes/theme';
+>>>>>>> parent of 8f3d11f... refactoring theming support
 
 /**
  * The Second step of application create wizard.
@@ -69,17 +74,56 @@ class Step2 extends Component {
     }
 
     componentWillMount() {
-        //Using the particular style specific to user selected theme.
-        const theme = require("../../../theme").default;
+<<<<<<< HEAD
+        /**
+         *Loading the theme files based on the the user-preference.
+         */
         const selected =
-            (theme.currentThemeType === theme.defaultThemeType) ? theme.defaultThemeType : theme.currentTheme;
-        const applicationCreationStepCss = "application-create-step2.css";
+            (Theme.currentThemeType === Theme.defaultThemeType) ? Theme.defaultThemeType : Theme.currentTheme;
+        const applicationCreateStep2Css = "application-create-step2.css";
+        const applicationCreateStep2Id = "application-create-step2";
+        let themePath  =  "/" + Theme.themeFolder + "/" + selected + "/" + applicationCreateStep2Css;
+        let promisedConfig = Theme.loadThemeFiles(themePath);
+        let styleSheet = document.getElementById(applicationCreateStep2Id);
+        let head = document.getElementsByTagName("head")[0];
+        let link = document.createElement("link");
+        link.type = Theme.styleSheetType;
+        link.href = Theme.baseURL + "/" + Theme.appContext + themePath;
+        link.id = applicationCreateStep2Id;
+        link.rel = Theme.styleSheetRel;
 
-        try {
-            require("../../../" + theme.themeFolder + "/" + selected + "/" + applicationCreationStepCss);
-        } catch (ex){
-            // If the particular customized file does not exist, use the default one.
-            require("../../../" + theme.themeFolder + "/" + theme.defaultThemeType + "/" + applicationCreationStepCss);
+        if (styleSheet !== null) {
+            styleSheet.disabled = true;
+            styleSheet.parentNode.removeChild(styleSheet);
+        }
+
+        promisedConfig.then(function() {
+            head.appendChild(link);
+        }).catch(function () {
+            // If there is no customized css file, load the default one.
+            themePath = "/" + Theme.themeFolder + "/" + Theme.defaultThemeType + "/" + applicationCreateStep2Css;
+            link.href = Theme.baseURL + "/" + Theme.appContext + themePath;
+
+        });
+    }
+
+    componentWillUnmount() {
+        let styleSheet = document.getElementById("application-create-step2");
+        if (styleSheet !== null) {
+            styleSheet.disabled = true;
+            styleSheet.parentNode.removeChild(styleSheet);
+=======
+        let selected = Theme.selectedTheme;
+        if (Theme.currentTheme === "default") {
+            require("../../../themes/default/application-create-step2.css");
+        } else {
+            try {
+                require("../../../themes/" + selected + "/application-create-step2.css");
+            } catch (ex){
+                // If the particular customized file does not exist, use the default one.
+                require("../../../themes/default/application-create-step2.css");
+            }
+>>>>>>> parent of 8f3d11f... refactoring theming support
         }
     }
 

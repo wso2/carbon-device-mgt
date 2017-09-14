@@ -31,6 +31,11 @@ import {GridList, GridTile} from 'material-ui/GridList';
 import Close from 'material-ui/svg-icons/navigation/close';
 import {Card, CardActions, CardTitle} from 'material-ui/Card';
 import AddCircleOutline from 'material-ui/svg-icons/content/add-circle-outline';
+<<<<<<< HEAD
+import Theme from '../../theme';
+=======
+import Theme from '../../themes/theme';
+>>>>>>> parent of 8f3d11f... refactoring theming support
 
 /**
  * Platform Create component.
@@ -65,17 +70,56 @@ class PlatformCreate extends Component {
     }
 
     componentWillMount() {
-        //Using the particular style specific to user selected theme.
-        const theme = require("../../theme").default;
+<<<<<<< HEAD
+        /**
+         *Loading the theme files based on the the user-preference.
+         */
         const selected =
-            (theme.currentThemeType === theme.defaultThemeType) ? theme.defaultThemeType : theme.currentTheme;
+            (Theme.currentThemeType === Theme.defaultThemeType) ? Theme.defaultThemeType : Theme.currentTheme;
         const platformCreateCss = "platform-create.css";
+        const platformCreateId = "application-listing";
+        let themePath  =  "/" + Theme.themeFolder + "/" + selected + "/" + platformCreateCss;
+        let promisedConfig = Theme.loadThemeFiles(themePath);
+        let styleSheet = document.getElementById(platformCreateId);
+        let head = document.getElementsByTagName("head")[0];
+        let link = document.createElement("link");
+        link.type = Theme.styleSheetType;
+        link.href = Theme.baseURL + "/" + Theme.appContext + themePath;
+        link.id = platformCreateId;
+        link.rel = Theme.styleSheetRel;
 
-        try {
-            require("../../" + theme.themeFolder + "/" + selected + "/" + platformCreateCss);
-        } catch (ex){
-            // If the particular customized file does not exist, use the default one.
-            require("../../" + theme.themeFolder + "/" + theme.defaultThemeType + "/" + platformCreateCss);
+        if (styleSheet !== null) {
+            styleSheet.disabled = true;
+            styleSheet.parentNode.removeChild(styleSheet);
+        }
+
+        promisedConfig.then(function(){
+            head.appendChild(link);
+        }).catch(function () {
+            // If there is no customized css file, load the default one.
+            themePath = "/" + Theme.themeFolder + "/" + Theme.defaultThemeType + "/" + platformCreateCss;
+            link.href = Theme.baseURL + "/" + Theme.appContext + themePath;
+            head.appendChild(link);
+        });
+    }
+
+    componentWillUnmount() {
+        let styleSheet = document.getElementById("platform-create");
+        if (styleSheet !== null) {
+            styleSheet.disabled = true;
+            styleSheet.parentNode.removeChild(styleSheet);
+=======
+        let selected = Theme.selectedTheme;
+        if (Theme.currentTheme === "default") {
+            require("../../themes/default/platform-create.css");
+        } else {
+            try {
+                require("../../themes/" + selected + "/platform-create.css");
+            } catch (ex) {
+                // If the particular customized file does not exist, use the default one.
+                require("../../themes/default/platform-create.css");
+            }
+>>>>>>> parent of 8f3d11f... refactoring theming support
         }
     }
 

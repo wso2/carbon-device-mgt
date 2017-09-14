@@ -24,6 +24,11 @@ import {Step1, Step2, Step3} from './CreateSteps';
 import RaisedButton from 'material-ui/RaisedButton';
 import {Card, CardActions, CardTitle} from 'material-ui/Card';
 import {Step, StepLabel, Stepper,} from 'material-ui/Stepper';
+<<<<<<< HEAD
+import Theme from '../../theme';
+=======
+import Theme from '../../themes/theme';
+>>>>>>> parent of 8f3d11f... refactoring theming support
 
 /**
  * The App Create Component.
@@ -51,17 +56,56 @@ class ApplicationCreate extends Component {
     }
 
     componentWillMount() {
-        //Using the particular style specific to user selected theme.
-        const theme = require("../../theme").default;
+<<<<<<< HEAD
+        /**
+         *Loading the theme files based on the the user-preference.
+         */
         const selected =
-            (theme.currentThemeType === theme.defaultThemeType) ? theme.defaultThemeType : theme.currentTheme;
-        const applicationCreateCss = "application-create.css";
+            (Theme.currentThemeType === Theme.defaultThemeType) ? Theme.defaultThemeType : Theme.currentTheme;
+        const applicationCreateStepCss = "application-create.css";
+        const applicationCreateStepId = "application-create";
+        let themePath  =  "/" + Theme.themeFolder + "/" + selected + "/" + applicationCreateStepCss;
+        let promisedConfig = Theme.loadThemeFiles(themePath);
+        let styleSheet = document.getElementById(applicationCreateStepId);
+        let head = document.getElementsByTagName("head")[0];
+        let link = document.createElement("link");
+        link.type = Theme.styleSheetType;
+        link.href = Theme.baseURL + "/" + Theme.appContext + themePath;
+        link.id = applicationCreateStepId;
+        link.rel = Theme.styleSheetRel;
 
-        try {
-            require("../../" + theme.themeFolder + "/" + selected + "/" + applicationCreateCss);
-        } catch (ex){
-            // If the particular customized file does not exist, use the default one.
-            require("../../" + theme.themeFolder + "/" + theme.defaultThemeType + "/" + applicationCreateCss);
+        if (styleSheet !== null) {
+            styleSheet.disabled = true;
+            styleSheet.parentNode.removeChild(styleSheet);
+        }
+        promisedConfig.then(function () {
+            head.appendChild(link);
+        }).catch(function () {
+            // If there is no customized css file, load the default one.
+            themePath = "/" + Theme.themeFolder + "/" + Theme.defaultThemeType + "/" + applicationCreateStepCss;
+            link.href = Theme.baseURL + "/" + Theme.appContext + themePath;
+            head.appendChild(link);
+
+        });
+    }
+
+    componentWillUnmount() {
+        let styleSheet = document.getElementById("application-create");
+        if (styleSheet !== null) {
+            styleSheet.disabled = true;
+            styleSheet.parentNode.removeChild(styleSheet);
+=======
+        let selected = Theme.selectedTheme;
+        if (Theme.currentTheme === "default") {
+            require("../../themes/default/application-create.css");
+        } else {
+            try {
+                require("../../themes/" + selected + "/application-create.css");
+            } catch (ex){
+                // If the particular customized file does not exist, use the default one.
+                require("../../themes/default/application-create.css");
+            }
+>>>>>>> parent of 8f3d11f... refactoring theming support
         }
     }
 

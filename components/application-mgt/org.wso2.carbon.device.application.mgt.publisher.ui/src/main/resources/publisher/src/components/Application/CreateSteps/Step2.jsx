@@ -28,11 +28,7 @@ import SelectField from 'material-ui/SelectField';
 import RaisedButton from 'material-ui/RaisedButton';
 import Clear from 'material-ui/svg-icons/content/clear';
 import {GridList, GridTile} from 'material-ui/GridList';
-<<<<<<< HEAD
 import Theme from '../../../theme';
-=======
-import Theme from '../../../themes/theme';
->>>>>>> parent of 8f3d11f... refactoring theming support
 
 /**
  * The Second step of application create wizard.
@@ -74,7 +70,6 @@ class Step2 extends Component {
     }
 
     componentWillMount() {
-<<<<<<< HEAD
         /**
          *Loading the theme files based on the the user-preference.
          */
@@ -112,18 +107,6 @@ class Step2 extends Component {
         if (styleSheet !== null) {
             styleSheet.disabled = true;
             styleSheet.parentNode.removeChild(styleSheet);
-=======
-        let selected = Theme.selectedTheme;
-        if (Theme.currentTheme === "default") {
-            require("../../../themes/default/application-create-step2.css");
-        } else {
-            try {
-                require("../../../themes/" + selected + "/application-create-step2.css");
-            } catch (ex){
-                // If the particular customized file does not exist, use the default one.
-                require("../../../themes/default/application-create-step2.css");
-            }
->>>>>>> parent of 8f3d11f... refactoring theming support
         }
     }
 

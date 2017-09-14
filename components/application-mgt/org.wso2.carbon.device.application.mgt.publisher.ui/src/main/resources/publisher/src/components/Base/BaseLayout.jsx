@@ -30,11 +30,7 @@ import Feedback from 'material-ui/svg-icons/action/feedback';
 import DevicesOther from 'material-ui/svg-icons/hardware/devices-other';
 import NotificationsIcon from 'material-ui/svg-icons/social/notifications';
 import ActionAccountCircle from 'material-ui/svg-icons/action/account-circle';
-<<<<<<< HEAD
 import Theme from '../../theme';
-=======
-import Theme from '../../themes/theme';
->>>>>>> parent of 8f3d11f... refactoring theming support
 
 
 /**
@@ -54,7 +50,6 @@ class BaseLayout extends Component {
     }
 
     componentWillMount() {
-<<<<<<< HEAD
         /**
          *Loading the theme files based on the the user-preference.
          */
@@ -94,18 +89,6 @@ class BaseLayout extends Component {
         if (styleSheet !== null) {
             styleSheet.disabled = true;
             styleSheet.parentNode.removeChild(styleSheet);
-=======
-        let selected = Theme.selectedTheme;
-        if (Theme.currentTheme === "default") {
-          require("../../themes/default/basic-layout.css");
-        } else {
-            try {
-                require("../../themes/" + selected + "/basic-layout.css");
-            } catch (ex){
-                // If the particular customized file does not exist, use the default one.
-                require("../../themes/default/basic-layout.css");
-            }
->>>>>>> parent of 8f3d11f... refactoring theming support
         }
     }
 

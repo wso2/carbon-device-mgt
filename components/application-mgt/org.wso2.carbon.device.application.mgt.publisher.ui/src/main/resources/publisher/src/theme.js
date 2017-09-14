@@ -24,7 +24,6 @@ import axios from 'axios';
  */
 class Theme {
     constructor() {
-<<<<<<< HEAD:components/application-mgt/org.wso2.carbon.device.application.mgt.publisher.ui/src/main/resources/publisher/src/theme.js
         this.defaultThemeType =  "default";
         this.currentThemeType =  this.defaultThemeType;
         this.currentTheme = "lightBaseTheme";
@@ -37,15 +36,6 @@ class Theme {
         this.appContext = window.location.pathname.split("/")[1];
         this.loadThemeProperties.bind(this);
         this.loadThemeFiles.bind(this);
-=======
-        const theme = require("../config.json").theme;
-        this.currentTheme = theme.type;
-        if (this.currentTheme === "default") {
-            this.selectedTheme = theme.value;
-        } else {
-            this.selectedTheme = theme.value;
-        }
->>>>>>> parent of 8f3d11f... refactoring theming support:components/application-mgt/org.wso2.carbon.device.application.mgt.publisher.ui/src/main/resources/publisher/src/themes/theme.js
     }
 
     loadThemeProperties () {

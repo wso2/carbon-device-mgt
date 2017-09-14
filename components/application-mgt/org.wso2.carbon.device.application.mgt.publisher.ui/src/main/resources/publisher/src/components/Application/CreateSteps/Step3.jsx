@@ -24,11 +24,7 @@ import TextField from 'material-ui/TextField';
 import FlatButton from 'material-ui/FlatButton';
 import SelectField from 'material-ui/SelectField';
 import RaisedButton from 'material-ui/RaisedButton';
-<<<<<<< HEAD
 import Theme from '../../../theme';
-=======
-import Theme from '../../../themes/theme';
->>>>>>> parent of 8f3d11f... refactoring theming support
 
 /**
  * The Third step of application create wizard. {Application Release Step}
@@ -63,7 +59,6 @@ class Step3 extends Component {
     }
 
     componentWillMount() {
-<<<<<<< HEAD
         /**
          *Loading the theme files based on the the user-preference.
          */
@@ -101,18 +96,6 @@ class Step3 extends Component {
         if (styleSheet !== null) {
             styleSheet.disabled = true;
             styleSheet.parentNode.removeChild(styleSheet);
-=======
-        let selected = Theme.selectedTheme;
-        if (Theme.currentTheme === "default") {
-            require("../../../themes/default/application-create-step3.css");
-        } else {
-            try {
-                require("../../../themes/" + selected + "/application-create-step3.css");
-            } catch (ex){
-                // If the particular customized file does not exist, use the default one.
-                require("../../../themes/default/application-create-step3.css");
-            }
->>>>>>> parent of 8f3d11f... refactoring theming support
         }
     }
 

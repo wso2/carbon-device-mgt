@@ -19,11 +19,7 @@
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {TableRow, TableRowColumn} from 'material-ui/Table';
-<<<<<<< HEAD
 import Theme from '../../theme';
-=======
-import Theme from '../../themes/theme';
->>>>>>> parent of 8f3d11f... refactoring theming support
 
 /**
  * Data table row component.
@@ -40,13 +36,12 @@ class DataTableRow extends Component {
 
     componentWillMount() {
         this.setState({dataItem: this.props.dataItem});
-<<<<<<< HEAD
 
         /**
          *Loading the theme files based on the the user-preference.
          */
         const selected =
-            (Theme.currentThemeType === Theme.defaultThemeType) ? Theme.defaultThemeType : Theme.currentTheme;
+            (Theme.currentThemeType === Theme.defaultThemeType) ? Theme.defaultThemeType : Theme.currentThemeType;
         const dataTableCss = "data-table.css";
         const dataTableId = "data-table";
         let themePath  =  "/" + Theme.themeFolder + "/" + selected + "/" + dataTableCss;
@@ -78,18 +73,6 @@ class DataTableRow extends Component {
         if (styleSheet !== null) {
             styleSheet.disabled = true;
             styleSheet.parentNode.removeChild(styleSheet);
-=======
-        let selected = Theme.selectedTheme;
-        if (Theme.currentTheme === "default") {
-            require("../../themes/default/data-table.css");
-        } else {
-            try {
-                require("../../themes/" + selected + "/data-table.css");
-            } catch (ex) {
-                // If the particular customized file does not exist, use the default one.
-                require("../../themes/default/data-table.css");
-            }
->>>>>>> parent of 8f3d11f... refactoring theming support
         }
     }
 

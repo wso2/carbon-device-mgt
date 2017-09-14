@@ -24,11 +24,7 @@ import {Step1, Step2, Step3} from './CreateSteps';
 import RaisedButton from 'material-ui/RaisedButton';
 import {Card, CardActions, CardTitle} from 'material-ui/Card';
 import {Step, StepLabel, Stepper,} from 'material-ui/Stepper';
-<<<<<<< HEAD
 import Theme from '../../theme';
-=======
-import Theme from '../../themes/theme';
->>>>>>> parent of 8f3d11f... refactoring theming support
 
 /**
  * The App Create Component.
@@ -56,7 +52,6 @@ class ApplicationCreate extends Component {
     }
 
     componentWillMount() {
-<<<<<<< HEAD
         /**
          *Loading the theme files based on the the user-preference.
          */
@@ -94,18 +89,6 @@ class ApplicationCreate extends Component {
         if (styleSheet !== null) {
             styleSheet.disabled = true;
             styleSheet.parentNode.removeChild(styleSheet);
-=======
-        let selected = Theme.selectedTheme;
-        if (Theme.currentTheme === "default") {
-            require("../../themes/default/application-create.css");
-        } else {
-            try {
-                require("../../themes/" + selected + "/application-create.css");
-            } catch (ex){
-                // If the particular customized file does not exist, use the default one.
-                require("../../themes/default/application-create.css");
-            }
->>>>>>> parent of 8f3d11f... refactoring theming support
         }
     }
 

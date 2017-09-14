@@ -31,26 +31,11 @@ import {
     PlatformCreate,
     PlatformListing
 } from './components';
-import Theme from './themes/theme';
+import Theme from './theme';
 
 
 const history = createHistory({basename: '/publisher'});
 
-<<<<<<< HEAD
-=======
-/**
- *Loading the theme files based on the the user-preference.
- */
-let muiTheme = null;
-let selected = Theme.selectedTheme;
-if (Theme.currentTheme === "default") {
-    let defaultTheme = require("material-ui/styles/baseThemes/" + selected);
-    muiTheme = getMuiTheme(defaultTheme.default);
-} else {
-    let customTheme = require("./themes/" + selected + "/theme.js");
-    muiTheme = getMuiTheme(customTheme.default);
-}
->>>>>>> parent of 8f3d11f... refactoring theming support
 
 /**
  * This component defines the layout and the routes for the app.

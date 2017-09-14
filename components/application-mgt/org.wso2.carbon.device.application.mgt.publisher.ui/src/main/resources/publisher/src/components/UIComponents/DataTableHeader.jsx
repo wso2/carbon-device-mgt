@@ -20,11 +20,7 @@ import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import FlatButton from 'material-ui/FlatButton';
 import {TableHeaderColumn} from 'material-ui/Table';
-<<<<<<< HEAD
 import Theme from '../../theme';
-=======
-import Theme from '../../themes/theme';
->>>>>>> parent of 8f3d11f... refactoring theming support
 
 /**
  * Data Table header component.
@@ -37,7 +33,6 @@ class DataTableHeader extends Component {
     }
 
     componentWillMount() {
-<<<<<<< HEAD
         /**
          *Loading the theme files based on the the user-preference.
          */
@@ -76,18 +71,6 @@ class DataTableHeader extends Component {
         if (styleSheet !== null) {
             styleSheet.disabled = true;
             styleSheet.parentNode.removeChild(styleSheet);
-=======
-        let selected = Theme.selectedTheme;
-        if (Theme.currentTheme === "default") {
-            require("../../themes/default/data-table.css");
-        } else {
-            try {
-                require("../../themes/" + selected + "/data-table.css");
-            } catch (ex) {
-                // If the particular customized file does not exist, use the default one.
-                require("../../themes/default/data-table.css");
-            }
->>>>>>> parent of 8f3d11f... refactoring theming support
         }
     }
 

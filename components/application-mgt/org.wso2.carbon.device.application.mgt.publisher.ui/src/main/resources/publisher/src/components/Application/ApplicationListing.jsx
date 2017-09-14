@@ -21,11 +21,7 @@ import {withRouter} from 'react-router-dom';
 import TextField from 'material-ui/TextField';
 import DataTable from '../UIComponents/DataTable';
 import {Card, CardActions, CardTitle} from 'material-ui/Card';
-<<<<<<< HEAD
 import Theme from '../../theme';
-=======
-import Theme from '../../themes/theme';
->>>>>>> parent of 8f3d11f... refactoring theming support
 
 /**
  * The App Create Component.
@@ -117,7 +113,6 @@ class ApplicationListing extends Component {
     componentWillMount() {
         //Fetch all the applications from backend and create application objects.
         this.setState({data: this.data});
-<<<<<<< HEAD
         /**
          *Loading the theme files based on the the user-preference.
          */
@@ -154,19 +149,6 @@ class ApplicationListing extends Component {
         if (styleSheet !== null) {
             styleSheet.disabled = true;
             styleSheet.parentNode.removeChild(styleSheet);
-=======
-
-        let selected = Theme.selectedTheme;
-        if (Theme.currentTheme === "default") {
-            require("../../themes/default/application-listing.css");
-        } else {
-            try {
-                require("../../themes/" + selected + "/application-listing.css");
-            } catch (ex) {
-                // If the particular customized file does not exist, use the default one.
-                require("../../themes/default/application-listing.css");
-            }
->>>>>>> parent of 8f3d11f... refactoring theming support
         }
     }
 

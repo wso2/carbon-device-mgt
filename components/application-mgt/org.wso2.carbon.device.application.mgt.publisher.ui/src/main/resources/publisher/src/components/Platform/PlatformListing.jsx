@@ -21,11 +21,7 @@ import {withRouter} from 'react-router-dom';
 import TextField from 'material-ui/TextField';
 import DataTable from '../UIComponents/DataTable';
 import {Card, CardActions, CardTitle} from 'material-ui/Card';
-<<<<<<< HEAD
 import Theme from '../../theme';
-=======
-import Theme from '../../themes/theme';
->>>>>>> parent of 8f3d11f... refactoring theming support
 
 /**
  * The App Create Component.
@@ -45,7 +41,6 @@ class PlatformListing extends Component {
     }
 
     componentWillMount() {
-<<<<<<< HEAD
         console.log(Theme.currentThemeType);
         /**
          *Loading the theme files based on the the user-preference.
@@ -84,18 +79,6 @@ class PlatformListing extends Component {
         if (styleSheet !== null) {
             styleSheet.disabled = true;
             styleSheet.parentNode.removeChild(styleSheet);
-=======
-        let selected = Theme.selectedTheme;
-        if (Theme.currentTheme === "default") {
-            require("../../themes/default/platform-listing.css");
-        } else {
-            try {
-                require("../../themes/" + selected + "/platform-listing.css");
-            } catch (ex) {
-                // If the particular customized file does not exist, use the default one.
-                require("../../themes/default/platform-listing.css");
-            }
->>>>>>> parent of 8f3d11f... refactoring theming support
         }
     }
 

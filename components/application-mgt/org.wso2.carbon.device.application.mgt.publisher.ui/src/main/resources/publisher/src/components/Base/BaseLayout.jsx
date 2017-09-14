@@ -27,10 +27,11 @@ import {List, ListItem} from 'material-ui/List';
 import Apps from 'material-ui/svg-icons/navigation/apps';
 import Add from 'material-ui/svg-icons/content/add-circle';
 import Feedback from 'material-ui/svg-icons/action/feedback';
-import Dashboard from 'material-ui/svg-icons/action/dashboard';
 import DevicesOther from 'material-ui/svg-icons/hardware/devices-other';
 import NotificationsIcon from 'material-ui/svg-icons/social/notifications';
 import ActionAccountCircle from 'material-ui/svg-icons/action/account-circle';
+import Theme from '../../theme';
+
 
 /**
  * Base Layout:
@@ -45,11 +46,19 @@ class BaseLayout extends Component {
         this.state = {
             notifications: 0,
             user: 'Admin'
-        }
+        };
+        this.scriptId = "basic-layout";
     }
 
     componentWillMount() {
+        /**
+         *Loading the theme files based on the the user-preference.
+         */
+        Theme.insertThemingScripts(this.scriptId);
+    }
 
+    componentWillUnmount() {
+        Theme.removeThemingScripts(this.scriptId)
     }
 
     handleApplicationClick() {
@@ -86,6 +95,7 @@ class BaseLayout extends Component {
 
     render() {
         return (
+
             <div>
                 <AppBar title="App Publisher"
                         iconElementRight={
@@ -142,16 +152,7 @@ class BaseLayout extends Component {
                         </List>
                     </Drawer>
                 </div>
-                <div style=
-                         {
-                             {
-                                 height: 'calc(100% - 64px)',
-                                 marginLeft: '16%',
-                                 width: 'calc(100%-15%)',
-                                 top: 64,
-                                 left: "-100px"
-                             }
-                         }>
+                <div className="basicLayoutDiv">
                     {this.props.children}
                 </div>
             </div>);

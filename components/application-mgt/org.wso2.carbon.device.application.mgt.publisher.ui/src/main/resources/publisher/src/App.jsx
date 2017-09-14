@@ -31,20 +31,11 @@ import {
     PlatformCreate,
     PlatformListing
 } from './components';
+import Theme from './theme';
+
+
 const history = createHistory({basename: '/publisher'});
 
-/**
- * User can define the themes in the config.json. The themes will be loaded based on the user preference.
- */
-const theme = require("./config.json").theme;
-let muiTheme = null;
-if (theme.current === "default") {
-    let defaultTheme = require("material-ui/styles/baseThemes/" + theme.default);
-    muiTheme = getMuiTheme(defaultTheme.default);
-} else {
-    let customTheme = require("./themes/" + theme.custom);
-    muiTheme = getMuiTheme(customTheme.default);
-}
 
 /**
  * This component defines the layout and the routes for the app.
@@ -101,10 +92,59 @@ class Base extends Component {
  *
  * */
 class Publisher extends Component {
+    constructor() {
+        super();
+        this.state = {
+            muiTheme: null,
+            selectedType: null,
+            selectedTheme: null
+        };
+        this.setTheme = this.setTheme.bind(this);
+    }
+
+    componentDidMount() {
+        /**
+         *Loading the theme files based on the the user-preference.
+         */
+        let themeConfig = Theme.loadThemeConfigs();
+        themeConfig.then(this.setTheme).catch(function (error) {
+            console.log(error);
+
+        });
+    }
+
+    /**
+     * To set the theme based on the configuration file.
+     * @param response Configuration file data.
+     */
+    setTheme(response) {
+        this.setState({
+            selectedType: response.data.theme.type,
+            selectedTheme: response.data.theme.value
+        });
+
+        Theme.currentThemeType = this.state.selectedType;
+        Theme.currentTheme = this.state.selectedTheme;
+        Theme.selectedTheme =
+            (Theme.currentThemeType === Theme.defaultThemeType) ? Theme.defaultThemeType : Theme.currentTheme;
+
+        if (this.state.selectedType === "default") {
+            let defaultTheme = require("material-ui/styles/baseThemes/" + this.state.selectedTheme);
+            this.setState({
+                muiTheme : getMuiTheme(defaultTheme.default)
+            });
+        } else {
+            let customTheme = require("./themes/" + this.state.selectedTheme);
+            this.setState({
+                muiTheme : getMuiTheme(customTheme.default)
+            });
+        }
+
+    }
     render() {
         return (
             <div className="App">
-                <MuiThemeProvider muiTheme={muiTheme}>
+                <MuiThemeProvider muiTheme={this.state.muiTheme}>
                 <Router basename="publisher" history={history}>
                     <Switch>
                         <Route path="/login" component={Login}/>

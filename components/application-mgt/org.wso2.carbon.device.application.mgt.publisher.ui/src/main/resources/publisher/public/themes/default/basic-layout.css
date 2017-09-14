@@ -16,24 +16,10 @@
  * under the License.
  */
 
-/**
- * This a sample custom theme file. In config.json, if the following changes are done, this theme will be applied.
- * {
- *     "theme" : {
- *       "type" : "custom",
- *       "value" : "custom-theme"
- *     }
- *   }
- */
-import {
-    indigo500, indigo700, redA200,
-} from 'material-ui/styles/colors';
-
-export default {
-    palette: {
-        primary1Color: indigo500,
-        primary2Color: indigo700,
-        accent1Color: redA200,
-        pickerHeaderColor: indigo500,
-    },
-};
+.basicLayoutDiv {
+    height: calc(100% - 64px);
+    margin-left: 16%;
+    width: calc(100% - 15%);
+    top: 64px;
+    left: -100px;
+}

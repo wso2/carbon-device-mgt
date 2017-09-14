@@ -21,6 +21,7 @@ import {withRouter} from 'react-router-dom';
 import TextField from 'material-ui/TextField';
 import DataTable from '../UIComponents/DataTable';
 import {Card, CardActions, CardTitle} from 'material-ui/Card';
+import Theme from '../../theme';
 
 /**
  * The App Create Component.
@@ -36,11 +37,19 @@ class PlatformListing extends Component {
         this.state = {
             data: [],
             asc: true
-        }
+        };
+        this.scriptId = "platform-listing";
     }
 
     componentWillMount() {
-        //Fetch all the applications from backend and create application objects.
+        /**
+         *Loading the theme files based on the the user-preference.
+         */
+        Theme.insertThemingScripts(this.scriptId);
+    }
+
+    componentWillUnmount() {
+        Theme.removeThemingScripts(this.scriptId);
     }
 
     /**
@@ -75,12 +84,11 @@ class PlatformListing extends Component {
 
     render() {
         return (
-            <div className="middle" style={{width: '95%', height: '100%', marginTop: '1%'}}>
-                <Card style={{display: 'flex', flexWrap: 'wrap'}}>
-                    <TextField hintText="Search"
-                               style={{float:'right', paddingRight: '2px'}}
-                               onChange={this._searchApplications.bind(this)}/>
-                    <CardTitle title="Platforms" style={{display: 'flex', flexWrap: 'wrap'}}/>
+            <div className= 'middle listingplatformmiddle'>
+                <Card className='listingplatformcard'>
+                    <TextField hintText="Search" onChange={this._searchApplications.bind(this)}
+                               className='listingplatformsearch'/>
+                    <CardTitle title="Platforms" className='listingplatformTitle'/>
                     <CardActions>
 
                     </CardActions>

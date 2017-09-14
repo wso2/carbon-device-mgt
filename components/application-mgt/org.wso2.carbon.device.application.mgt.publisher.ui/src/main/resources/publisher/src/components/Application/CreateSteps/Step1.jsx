@@ -19,9 +19,9 @@
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import MenuItem from 'material-ui/MenuItem';
-import TextField from 'material-ui/TextField';
 import SelectField from 'material-ui/SelectField';
 import RaisedButton from 'material-ui/RaisedButton';
+import Theme from '../../../theme';
 
 /**
  * The first step of the application creation wizard.
@@ -48,10 +48,18 @@ class Step1 extends Component {
             title: "",
             titleError: ""
         };
+        this.scriptId = "application-create-step1";
     }
 
     componentWillMount() {
-        //Get the list of available platforms and set to the state.
+        /**
+         *Loading the theme files based on the the user-preference.
+         */
+       Theme.insertThemingScripts(this.scriptId);
+    }
+
+    componentWillUnmount() {
+        Theme.removeThemingScripts(this.scriptId);
     }
 
     /**
@@ -105,10 +113,9 @@ class Step1 extends Component {
     };
 
     render() {
-        const contentStyle = {margin: '0 16px'};
         return (
             <div>
-                <div style={contentStyle}>
+                <div className="creatediv">
                     <div>
                         <div>
                             <SelectField
@@ -134,7 +141,7 @@ class Step1 extends Component {
 
                         <br/>
                         <br/>
-                        <div style={{marginTop: 12}}>
+                        <div className="nextButton">
                             <RaisedButton
                                 label="Next >"
                                 primary={true}

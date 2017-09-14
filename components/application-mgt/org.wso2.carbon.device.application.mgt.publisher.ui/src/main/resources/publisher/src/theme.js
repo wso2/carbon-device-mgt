@@ -38,6 +38,10 @@ class Theme {
         this.loadThemeFiles.bind(this);
     }
 
+    /**
+     * To load the theme files from the configuration file.
+     * @returns the http response.
+     */
     loadThemeProperties () {
         let httpClient = axios.create({
             baseURL: this.baseURL + "/" + this.appContext + "/config.json",
@@ -47,14 +51,11 @@ class Theme {
         return httpClient.get();
     }
 
-    loadTheme () {
-        let httpClient = axios.create({
-            baseURL: this.baseURL + "/" + this.appContext + "/themes/custom-theme/theme.js",
-            timeout: 2000
-        });
-        return httpClient.get();
-    }
-
+    /**
+     * To load the particular theme file from the path.
+     * @param path Path to load the theme files
+     * @returns Http response from the particular file.
+     */
     loadThemeFiles (path) {
         let httpClient = axios.create({
             baseURL: this.baseURL + "/" + this.appContext +  path,

@@ -22,7 +22,7 @@ import MenuItem from 'material-ui/MenuItem';
 import SelectField from 'material-ui/SelectField';
 import RaisedButton from 'material-ui/RaisedButton';
 import Theme from '../../../theme';
-import Endpoint from "../../../api/endpoints";
+import PlatformMgtApi from "../../../api/platformMgtApi";
 import AuthHandler from "../../../api/authHandler";
 
 /**
@@ -69,7 +69,7 @@ class Step1 extends Component {
     }
     componentDidMount() {
         //Get the list of available platforms and set to the state.
-        Endpoint.getPlatforms().then(response => {
+        PlatformMgtApi.getPlatforms().then(response => {
             console.log(response);
             this.setPlatforms(response.data);
         }).catch(err => {
@@ -95,7 +95,7 @@ class Step1 extends Component {
      * Persist the current form data to the state.
      * */
     setStepData() {
-        console.log(this.state.platforms);
+        console.log("Platforms",this.state.platforms);
         let step = {
             store: this.state.store,
             platform: this.state.platforms[this.state.platformSelectedIndex]

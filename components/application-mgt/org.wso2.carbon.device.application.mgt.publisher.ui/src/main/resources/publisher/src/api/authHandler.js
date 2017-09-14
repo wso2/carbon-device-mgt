@@ -57,8 +57,6 @@ class AuthHandler {
                 AuthHandler.setUser(user);
             }
         );
-
-
         return login_promise;
     };
 

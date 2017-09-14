@@ -17,6 +17,8 @@
  */
 
 'use strict';
+
+//TODO: Replace the server address with response from auth endpoint and remove hardcoded ids etc.
 export default class Constants {
 
     static scopes = 'perm:application:get perm:application:create perm:application:update perm:application-mgt:login' +
@@ -25,7 +27,8 @@ export default class Constants {
     static appManagerEndpoints = {
         GET_ALL_APPS: 'https://localhost:8243/api/application-mgt/v1.0/applications/1.0.0/',
         CREATE_APP: 'https://localhost:8243/api/application-mgt/v1.0/applications/1.0.0/',
-        UPLOAD_IMAGES: '/api/application-mgt/v1.0/applications/1.0.0/upload-artifacts/', //+appId
+        UPLOAD_IMAGE_ARTIFACTS: 'https://localhost:8243/api/application-mgt/v1.0/applications/1.0.0/upload-image-artifacts/', //+appId
+        GET_IMAGE_ARTIFACTS: "https://localhost:8243/api/application-mgt/v1.0/applications/1.0.0/image-artifacts/"
     };
 
     static platformManagerEndpoints = {

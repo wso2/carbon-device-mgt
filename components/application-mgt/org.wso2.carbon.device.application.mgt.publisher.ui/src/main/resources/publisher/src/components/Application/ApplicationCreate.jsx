@@ -18,7 +18,7 @@
 
 import React, {Component} from 'react';
 import Dialog from 'material-ui/Dialog';
-import Endpoint from '../../api/endpoints';
+import ApplicationMgtApi from '../../api/applicationMgtApi';
 import {withRouter} from 'react-router-dom';
 import FlatButton from 'material-ui/FlatButton';
 import {Step1, Step2, Step3} from './CreateSteps';
@@ -83,10 +83,8 @@ class ApplicationCreate extends Component {
      * */
     handleSubmit() {
         let stepData = this.state.stepData;
-        let applicationCreationPromise = Endpoint.createApplication(stepData);
-        applicationCreationPromise.then(response => {
-                console.log(response);
-                let uploadArtifactsPromise = Endpoint.uploadImageArtifacts(response.data.uuid);
+        let applicationCreationPromise = ApplicationMgtApi.createApplication(stepData);
+        applicationCreationPromise.then( response => {
                 this.handleYes();
             }
         ).catch(

@@ -17,7 +17,7 @@
  */
 
 import React, {Component} from 'react';
-import EndPoint from '../../api/endpoints';
+import ApplicationMgtApi from '../../api/applicationMgtApi';
 import {withRouter} from 'react-router-dom';
 import TextField from 'material-ui/TextField';
 import DataTable from '../UIComponents/DataTable';
@@ -49,8 +49,6 @@ class ApplicationListing extends Component {
         this.scriptId = "application-listing";
     }
 
-    data = [];
-    //
     headers = [
         {
             data_id: "image",
@@ -86,8 +84,6 @@ class ApplicationListing extends Component {
     ];
 
     componentWillMount() {
-        //Fetch all the applications from backend and create application objects.
-        this.setState({data: this.data});
 
         /**
          *Loading the theme files based on the the user-preference.
@@ -101,7 +97,7 @@ class ApplicationListing extends Component {
     }
 
     componentDidMount() {
-        let getApps = EndPoint.getApplications();
+        let getApps = ApplicationMgtApi.getApplications();
         getApps.then(response => {
             let apps = this.setData(response.data.applications);
             console.log(apps);
@@ -112,53 +108,10 @@ class ApplicationListing extends Component {
         });
     }
 
+    /**
+     * Extract application from application list and update the state.
+     * */
     setData(applications) {
-        // {
-        //     id: Math.random(),
-        //         applicationName: "one",
-        //     platform: 'Android',
-        //     category: "Public",
-        //     status: "Created"
-        // }
-
-        //
-        //     "uuid":"f59ca462-7fa0-4cef-8536-96c17905e587",
-        //         "name":"sdkfsdkf",
-        //         "shortDescription":"shdkfhsd[f sfs;df dsf","description":"khsdkhfkjdss hfdsff\nsdf\ndsf",
-        //         "tags":["dsfds","f","dsfs"],
-        //         "platform":{
-        //         "name":"jdslkjfljs",
-        //             "description":"ljlksdjlfjdsljf",
-        //             "identifier":"sdjflsjdfjlkj",
-        //             "fileBased":false,
-        //             "shared":false,
-        //             "enabled":false,
-        //             "defaultTenantMapping":false
-        //     },
-        //
-        //     "category":{
-        //         "id":1
-        //     },
-        //
-        //     "createdAt":"Tue, 12 Sep 2017 18:53:54 IST",
-        //         "modifiedAt":"Tue, 12 Sep 2017 18:53:54 IST",
-        //         "currentLifecycle":{
-        //         "lifecycleState":{
-        //             "id":1,
-        //                 "name":"CREATED",
-        //                 "identifier":"CREATED",
-        //                 "description":"Application creation initial state"
-        //         },
-        //
-        //         "lifecycleStateModifiedAt":"Tue, 12 Sep 2017 18:53:54 IST",
-        //             "getLifecycleStateModifiedBy":"admin"},
-        //     "screenShotCount":0,
-        //         "user":{
-        //         "userName":"admin",
-        //             "tenantId":-1234
-        //     }
-        // }
-
         let apps = [];
         for (let app in applications) {
             let application = {};
@@ -212,7 +165,7 @@ class ApplicationListing extends Component {
     }
 
     onRowClick(id) {
-        EndPoint.getApplication(id).then(response => {
+        ApplicationMgtApi.getApplication(id).then(response => {
             console.log(response);
         }).catch(err => {
             console.log(err)

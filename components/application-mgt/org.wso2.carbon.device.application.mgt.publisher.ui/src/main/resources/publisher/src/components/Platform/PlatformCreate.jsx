@@ -27,13 +27,13 @@ import FlatButton from 'material-ui/FlatButton';
 import IconButton from 'material-ui/IconButton';
 import SelectField from 'material-ui/SelectField';
 import RaisedButton from 'material-ui/RaisedButton';
+import PlatformMgtApi from '../../api/platformMgtApi';
 import Clear from 'material-ui/svg-icons/content/clear';
 import {GridList, GridTile} from 'material-ui/GridList';
 import Close from 'material-ui/svg-icons/navigation/close';
 import {Card, CardActions, CardTitle} from 'material-ui/Card';
 import AddCircleOutline from 'material-ui/svg-icons/content/add-circle-outline';
 import Theme from '../../theme';
-import Endpoint from '../../api/endpoints';
 
 /**
  * Platform Create component.
@@ -221,6 +221,9 @@ class PlatformCreate extends Component {
         }
     };
 
+    /**
+     * Create platform object and call the create platform api.
+     * */
     onCreatePlatform() {
         //Call the platform create api.
         let platform = {};
@@ -234,8 +237,7 @@ class PlatformCreate extends Component {
         platform.allTenants = this.state.allTenants;
         platform.defaultTenantMapping = true;
 
-        Endpoint.createPlatform(platform);
-
+        PlatformMgtApi.createPlatform(platform);
 
     }
 

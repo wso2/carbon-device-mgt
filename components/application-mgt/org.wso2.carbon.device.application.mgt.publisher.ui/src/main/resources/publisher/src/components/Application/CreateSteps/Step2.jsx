@@ -380,7 +380,7 @@ class Step2 extends Component {
                             onKeyPress={this.addTags.bind(this)}
                         />
                         <br/>
-                        <div style={this.styles.wrapper}>
+                        <div className="applicationCreateWrapper">
                             {this.state.tags.map(this.renderChip, this)}
                         </div>
                         <br/>

@@ -92,7 +92,6 @@ class ApplicationCreate extends Component {
                 console.log(err);
             }
         );
-
     };
 
     /**
@@ -197,7 +196,6 @@ class ApplicationCreate extends Component {
 
     render() {
         const {finished, stepIndex} = this.state;
-        const contentStyle = {margin: '0 16px'};
 
         /**
          * Defines the dialog box actions. [Yes][No]

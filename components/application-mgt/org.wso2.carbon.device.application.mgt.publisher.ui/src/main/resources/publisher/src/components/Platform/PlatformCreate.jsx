@@ -49,6 +49,17 @@ class PlatformCreate extends Component {
 
     constructor() {
         super();
+        this.onCreatePlatform = this.onCreatePlatform.bind(this);
+        this.handleToggle = this.handleToggle.bind(this);
+        this.addProperty = this.addProperty.bind(this);
+        this.addTags = this.addTags.bind(this);
+        this.clearForm = this.clearForm.bind(this);
+        this.onPropertySelect = this.onPropertySelect.bind(this);
+        this.handleTagChange = this.handleTagChange.bind(this);
+        this.removeIcon = this.removeIcon.bind(this);
+        this.onTextChange = this.onTextChange.bind(this);
+        this.renderChip = this.renderChip.bind(this);
+        this.removeProperty = this.removeProperty.bind(this);
         this.state = {
             tags: [],
             defValue: "",
@@ -224,8 +235,9 @@ class PlatformCreate extends Component {
     /**
      * Create platform object and call the create platform api.
      * */
-    onCreatePlatform() {
+    onCreatePlatform(event) {
         //Call the platform create api.
+        event.preventDefault();
         let platform = {};
         platform.identifier = this.state.identifier;
         platform.name = this.state.name;
@@ -245,13 +257,15 @@ class PlatformCreate extends Component {
      * Remove the uploaded icon.
      * */
     removeIcon(event) {
+        event.preventDefault();
         this.setState({icon: []});
     }
 
     /**
      * Clears the user entered values in the form.
      * */
-    clearForm() {
+    clearForm(event) {
+        event.preventDefault();
         this.setState({
             enabled: true,
             allTenants: false,
@@ -292,7 +306,7 @@ class PlatformCreate extends Component {
                                     floatingLabelText="Identifier*"
                                     floatingLabelFixed={true}
                                     value={identifier}
-                                    onChange={this.onTextChange.bind(this)}
+                                    onChange={this.onTextChange}
                                 />
                                 <br/>
                                 <TextField
@@ -301,7 +315,7 @@ class PlatformCreate extends Component {
                                     floatingLabelText="Name*"
                                     floatingLabelFixed={true}
                                     value={name}
-                                    onChange={this.onTextChange.bind(this)}
+                                    onChange={this.onTextChange}
                                 />
                                 <br/>
                                 <TextField
@@ -312,7 +326,7 @@ class PlatformCreate extends Component {
                                     multiLine={true}
                                     rows={2}
                                     value={description}
-                                    onChange={this.onTextChange.bind(this)}
+                                    onChange={this.onTextChange}
                                 />
                                 <br/>
                                 <br/>
@@ -320,7 +334,7 @@ class PlatformCreate extends Component {
                                     id="tenant"
                                     label="Shared with all Tenants"
                                     labelPosition="right"
-                                    onToggle={this.handleToggle.bind(this)}
+                                    onToggle={this.handleToggle}
                                     toggled={allTenants}
                                 />
                                 <br/>
@@ -328,7 +342,7 @@ class PlatformCreate extends Component {
                                     id="enabled"
                                     label="Enabled"
                                     labelPosition="right"
-                                    onToggle={this.handleToggle.bind(this)}
+                                    onToggle={this.handleToggle}
                                     toggled={enabled}
                                 />
                                 <br/>
@@ -338,11 +352,11 @@ class PlatformCreate extends Component {
                                     floatingLabelText="Tags*"
                                     floatingLabelFixed={true}
                                     value={defValue}
-                                    onChange={this.handleTagChange.bind(this)}
-                                    onKeyPress={this.addTags.bind(this)}
+                                    onChange={this.handleTagChange}
+                                    onKeyPress={this.addTags}
                                 />
                                 <br/>
-                                <div style={this.styles.wrapper}>
+                                <div className="createPlatformTagWrapper">
                                     {tags.map(this.renderChip, this)}
                                 </div>
                                 <br/>
@@ -364,21 +378,21 @@ class PlatformCreate extends Component {
                                             floatingLabelText="Platform Property*"
                                             floatingLabelFixed={true}
                                             value={this.state.property}
-                                            onChange={this.onTextChange.bind(this)}
+                                            onChange={this.onTextChange}
                                         /> <em/>
                                         <SelectField
                                             className="createplatformpropertyselect"
                                             floatingLabelText="Property Type"
                                             value={selectedProperty}
                                             floatingLabelFixed={true}
-                                            onChange={this.onPropertySelect.bind(this)}>
+                                            onChange={this.onPropertySelect}>
                                             {propertyTypes.map((type) => {
                                                 return <MenuItem key={type.key}
                                                                  value={type.key}
                                                                  primaryText={type.value}/>
                                             })}
                                         </SelectField>
-                                        <IconButton onClick={this.addProperty.bind(this)}>
+                                        <IconButton onClick={this.addProperty}>
                                             <AddCircleOutline/>
                                         </IconButton>
                                         <br/>
@@ -392,7 +406,7 @@ class PlatformCreate extends Component {
                                                 key={Math.floor(Math.random() * 1000)}
                                                 title={tile.name}
                                                 actionIcon={
-                                                    <IconButton onClick={this.removeIcon.bind(this)}>
+                                                    <IconButton onClick={this.removeIcon}>
                                                         <Clear/>
                                                     </IconButton>}>
                                                 <img src={tile.preview}/>
@@ -413,8 +427,8 @@ class PlatformCreate extends Component {
                                 <br/>
                                 <RaisedButton
                                     primary={true} label="Create"
-                                    onClick={this.onCreatePlatform.bind(this)}/>
-                                <FlatButton label="Cancel" onClick={this.clearForm.bind(this)}/>
+                                    onClick={this.onCreatePlatform}/>
+                                <FlatButton label="Cancel" onClick={this.clearForm}/>
                             </form>
                         </div>
                     </CardActions>

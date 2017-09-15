@@ -16,6 +16,7 @@
  * under the License.
  */
 
+import Theme from '../../theme';
 import PropTypes from 'prop-types';
 import Badge from 'material-ui/Badge';
 import React, {Component} from 'react';
@@ -34,7 +35,6 @@ import Feedback from 'material-ui/svg-icons/action/feedback';
 import DevicesOther from 'material-ui/svg-icons/hardware/devices-other';
 import NotificationsIcon from 'material-ui/svg-icons/social/notifications';
 import ActionAccountCircle from 'material-ui/svg-icons/action/account-circle';
-import Theme from '../../theme';
 
 
 /**

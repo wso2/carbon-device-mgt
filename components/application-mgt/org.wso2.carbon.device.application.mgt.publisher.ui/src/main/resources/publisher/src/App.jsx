@@ -17,6 +17,7 @@
  */
 
 import './App.scss';
+import Theme from './theme';
 import React, {Component} from 'react';
 import AuthHandler from './api/authHandler';
 import createHistory from 'history/createBrowserHistory';
@@ -24,19 +25,17 @@ import {BrowserRouter as Router, Redirect, Route, Switch} from 'react-router-dom
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import {
-    ApplicationCreate,
-    ApplicationListing,
-    BaseLayout,
-    Login,
-    NotFound,
-    PlatformCreate,
-    PlatformListing
+ApplicationCreate,
+ApplicationListing,
+BaseLayout,
+Login,
+NotFound,
+PlatformCreate,
+PlatformListing
 } from './components';
-import Theme from './theme';
 
 
 const history = createHistory({basename: '/publisher'});
-
 
 /**
  * This component defines the layout and the routes for the app.

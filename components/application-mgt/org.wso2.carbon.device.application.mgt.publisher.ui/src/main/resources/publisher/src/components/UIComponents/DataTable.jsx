@@ -16,13 +16,13 @@
  * under the License.
  */
 
+import Theme from '../../theme';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import DataTableRow from './DataTableRow';
 import DataTableHeader from './DataTableHeader';
 import RaisedButton from 'material-ui/RaisedButton';
 import {Table, TableBody, TableHeader, TableRow} from 'material-ui/Table';
-import Theme from '../../theme';
 
 /**
  * The Custom Table Component.

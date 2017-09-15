@@ -16,6 +16,7 @@
  * under the License.
  */
 
+import Theme from '../../theme';
 import PropTypes from 'prop-types';
 import Chip from 'material-ui/Chip';
 import Dropzone from 'react-dropzone';
@@ -33,7 +34,6 @@ import {GridList, GridTile} from 'material-ui/GridList';
 import Close from 'material-ui/svg-icons/navigation/close';
 import {Card, CardActions, CardTitle} from 'material-ui/Card';
 import AddCircleOutline from 'material-ui/svg-icons/content/add-circle-outline';
-import Theme from '../../theme';
 
 /**
  * Platform Create component.

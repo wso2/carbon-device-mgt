@@ -26,9 +26,6 @@ import AuthHandler from '../../../api/authHandler';
 import RaisedButton from 'material-ui/RaisedButton';
 import {Card, CardActions, CardTitle} from 'material-ui/Card';
 
-//todo: remove the {TextValidator, ValidatorForm} and implement it manually.
-
-
 /**
  * The Login Component.
  *

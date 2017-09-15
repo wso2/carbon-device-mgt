@@ -16,11 +16,11 @@
  * under the License.
  */
 
+import Theme from '../../theme';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import FlatButton from 'material-ui/FlatButton';
 import {TableHeaderColumn} from 'material-ui/Table';
-import Theme from '../../theme';
 
 /**
  * Data Table header component.

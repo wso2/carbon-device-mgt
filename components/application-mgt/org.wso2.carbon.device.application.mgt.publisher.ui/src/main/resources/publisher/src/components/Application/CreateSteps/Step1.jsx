@@ -16,14 +16,14 @@
  * under the License.
  */
 
+import Theme from '../../../theme';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import MenuItem from 'material-ui/MenuItem';
 import SelectField from 'material-ui/SelectField';
-import RaisedButton from 'material-ui/RaisedButton';
-import Theme from '../../../theme';
-import PlatformMgtApi from "../../../api/platformMgtApi";
 import AuthHandler from "../../../api/authHandler";
+import RaisedButton from 'material-ui/RaisedButton';
+import PlatformMgtApi from "../../../api/platformMgtApi";
 
 /**
  * The first step of the application creation wizard.

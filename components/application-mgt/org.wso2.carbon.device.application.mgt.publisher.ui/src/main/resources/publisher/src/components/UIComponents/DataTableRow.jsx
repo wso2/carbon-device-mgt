@@ -16,10 +16,10 @@
  * under the License.
  */
 
+import Theme from '../../theme';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {TableRow, TableRowColumn} from 'material-ui/Table';
-import Theme from '../../theme';
 
 /**
  * Data table row component.

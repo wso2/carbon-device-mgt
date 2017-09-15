@@ -17,6 +17,7 @@
  */
 
 import PropTypes from 'prop-types';
+import Theme from '../../../theme';
 import Chip from 'material-ui/Chip';
 import Dropzone from 'react-dropzone';
 import React, {Component} from 'react';
@@ -28,7 +29,6 @@ import SelectField from 'material-ui/SelectField';
 import RaisedButton from 'material-ui/RaisedButton';
 import Clear from 'material-ui/svg-icons/content/clear';
 import {GridList, GridTile} from 'material-ui/GridList';
-import Theme from '../../../theme';
 
 /**
  * The Second step of application create wizard.

@@ -16,16 +16,16 @@
  * under the License.
  */
 
+import Theme from '../../theme';
 import React, {Component} from 'react';
 import Dialog from 'material-ui/Dialog';
-import ApplicationMgtApi from '../../api/applicationMgtApi';
 import {withRouter} from 'react-router-dom';
 import FlatButton from 'material-ui/FlatButton';
 import {Step1, Step2, Step3} from './CreateSteps';
 import RaisedButton from 'material-ui/RaisedButton';
+import ApplicationMgtApi from '../../api/applicationMgtApi';
 import {Card, CardActions, CardTitle} from 'material-ui/Card';
 import {Step, StepLabel, Stepper,} from 'material-ui/Stepper';
-import Theme from '../../theme';
 
 /**
  * The App Create Component.

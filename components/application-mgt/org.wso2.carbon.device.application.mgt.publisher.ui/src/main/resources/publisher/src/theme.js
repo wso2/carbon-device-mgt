@@ -35,10 +35,10 @@ class Theme {
         //TODO Need to get the app context properly when the server is ready
         this.baseURL = window.location.origin;
         this.appContext = window.location.pathname.split("/")[1];
-        this.loadThemeConfigs.bind(this);
-        this.loadThemeFiles.bind(this);
-        this.insertThemingScripts.bind(this);
-        this.removeThemingScripts.bind(this);
+        this.loadThemeConfigs = this.loadThemeConfigs.bind(this);
+        this.loadThemeFiles = this.loadThemeFiles.bind(this);
+        this.insertThemingScripts =  this.insertThemingScripts.bind(this);
+        this.removeThemingScripts = this.removeThemingScripts.bind(this);
     }
 
     /**

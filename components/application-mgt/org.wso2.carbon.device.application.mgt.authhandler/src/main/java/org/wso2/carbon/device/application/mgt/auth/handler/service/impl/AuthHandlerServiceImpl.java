@@ -67,12 +67,14 @@ public class AuthHandlerServiceImpl implements AuthHandlerService {
             }
     };
 
-    private Client disableHostnameVerification = new Client.Default(getTrustedSSLSocketFactory(), new HostnameVerifier() {
-        @Override
-        public boolean verify(String s, SSLSession sslSession) {
-            return true;
-        }
-    });
+    private Client disableHostnameVerification = new Client.Default(getTrustedSSLSocketFactory(),
+            new HostnameVerifier() {
+                @Override
+                public boolean verify(String s, SSLSession sslSession) {
+                    return true;
+                }
+            }
+    );
 
     @POST
     @Path("/login")
@@ -116,20 +118,20 @@ public class AuthHandlerServiceImpl implements AuthHandlerService {
     @Path("/refresh")
     @Produces(MediaType.APPLICATION_JSON)
     @Override
-    public Response refresh(@QueryParam("refresh_token") String refresh_token, @QueryParam("clientId") String clientId,
+    public Response refresh(@QueryParam("refreshToken") String refreshToken, @QueryParam("clientId") String clientId,
                             @QueryParam("clientSecret") String clientSecret) {
         try {
             TokenIssuerService tokenIssuerService = Feign.builder().client(disableHostnameVerification)
                     .requestInterceptor(new BasicAuthRequestInterceptor(clientId, clientSecret))
                     .contract(new JAXRSContract()).encoder(new JacksonEncoder()).decoder(new JacksonDecoder())
                     .target(TokenIssuerService.class, Constants.TOKEN_ENDPOINT);
-            AccessTokenInfo accessTokenInfo = tokenIssuerService.getRefreshToken(Constants.REFRESH_GRANT_TYPE, refresh_token);
+            AccessTokenInfo accessTokenInfo = tokenIssuerService.getRefreshToken(Constants.REFRESH_GRANT_TYPE,
+                    refreshToken);
             return Response.status(200).entity(new JSONObject(accessTokenInfo)).build();
         } catch (Exception e) {
             return Response.status(500).build();
         }
     }
-
 
 
     @POST

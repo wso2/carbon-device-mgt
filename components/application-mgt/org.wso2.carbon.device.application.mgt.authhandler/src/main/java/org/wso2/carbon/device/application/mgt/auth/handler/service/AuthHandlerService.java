@@ -40,7 +40,7 @@ public interface AuthHandlerService {
     @Path("/refresh")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    Response refresh(@QueryParam("refresh_token") String refresh_token, @QueryParam("clientId") String clientId,
+    Response refresh(@QueryParam("refreshToken") String refreshToken, @QueryParam("clientId") String clientId,
                      @QueryParam("clientSecret") String clientSecret);
 
     @POST

@@ -27,23 +27,23 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class ApiApplicationKey {
     @XmlElement
-    private String client_id;
+    private String clientId;
     @XmlElement
-    private String client_secret;
+    private String clientSecret;
 
     public String getConsumerKey() {
-        return this.client_id;
+        return this.clientId;
     }
 
-    public void setClient_id(String consumerKey) {
-        this.client_id = consumerKey;
+    public void setClientId(String consumerKey) {
+        this.clientId = consumerKey;
     }
 
     public String getConsumerSecret() {
-        return this.client_secret;
+        return this.clientSecret;
     }
 
-    public void setClient_secret(String consumerSecret) {
-        this.client_secret = consumerSecret;
+    public void setClientSecret(String consumerSecret) {
+        this.clientSecret = consumerSecret;
     }
 }

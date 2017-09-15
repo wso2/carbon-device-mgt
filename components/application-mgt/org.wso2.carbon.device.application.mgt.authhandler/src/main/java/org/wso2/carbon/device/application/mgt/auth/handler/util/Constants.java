@@ -18,6 +18,7 @@
 
 package org.wso2.carbon.device.application.mgt.auth.handler.util;
 
+//TODO: Remove hardcoded localhost and ports
 public class Constants {
     public static String SCOPES = "perm:application:get perm:application:create perm:application:update " +
             "perm:application-mgt:login perm:application:delete perm:platform:add perm:platform:remove " +

@@ -18,7 +18,7 @@
 
 import React, {Component} from 'react';
 import createHistory from 'history/createBrowserHistory';
-import {BrowserRouter as Router, Redirect, Route, Switch} from 'react-router-dom'
+import {BrowserRouter as Router, Route, Switch} from 'react-router-dom'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import Login from './components/Login';
@@ -36,9 +36,6 @@ let muiTheme = null;
 if (theme.current === "default") {
     let defaultTheme = require("material-ui/styles/baseThemes/" + theme.default);
     muiTheme = getMuiTheme(defaultTheme.default);
-} else {
-    let customTheme = require("./themes/" + theme.custom);
-    muiTheme = getMuiTheme(customTheme.default);
 }
 
 /**
@@ -55,8 +52,6 @@ if (theme.current === "default") {
  * not want to serve the URL.
  * */
 class Base extends Component {
-
-
     render() {
         return (
             <div className="container">

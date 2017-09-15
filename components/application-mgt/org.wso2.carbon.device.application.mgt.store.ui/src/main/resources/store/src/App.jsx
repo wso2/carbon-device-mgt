@@ -56,16 +56,11 @@ if (theme.current === "default") {
  * */
 class Base extends Component {
 
-    constructor() {
-        super();
-        this.state = {};
-    }
 
     render() {
-        this.setState();
         return (
             <div className="container">
-                <BaseLayout state={this.state}>
+                <BaseLayout state={this.props.state} updateState={this.props.updateState}>
                     <Switch>
                         <Route component={NotFound}/>
                     </Switch>
@@ -73,15 +68,11 @@ class Base extends Component {
             </div>
         )
     }
-
-    setState() {
-        if (this.props.location.state){
-            this.state = this.props.location.state;
-        } else {
-            this.state = {};
-        }
-    }
 }
+
+Base.propTypes = {
+    updateState: React.PropTypes.func.isRequired
+};
 
 /**
  * This component is referred by the index.js to initiate the application.
@@ -93,6 +84,11 @@ class Store extends Component {
 
     constructor() {
         super();
+        if (!this.state) {
+            this.state = {};
+            this.state.store = {};
+        }
+        this.updateState = this.updateState.bind(this);
     }
 
     render() {
@@ -101,14 +97,21 @@ class Store extends Component {
                 <MuiThemeProvider muiTheme={muiTheme}>
                     <Router basename="store" history={history}>
                         <Switch>
-                            <Route path="/login" component={Login}/>
-                            <Route path="/logout" component={Login}/>
-                            <Route component={Base}/>
+                            <Route path="/login"
+                                   render={routeProps => <Login {...routeProps} updateState={this.updateState} state={this.state}/>}/>
+                            <Route path="/logout"
+                                   render={routeProps => <Base {...routeProps} updateState={this.updateState} state={this.state}/>}/>
+                            <Route
+                                render={routeProps => <Base {...routeProps} updateState={this.updateState} state={this.state}/>}/>
                         </Switch>
                     </Router>
                 </MuiThemeProvider>
             </div>
         );
+    }
+
+    updateState(data) {
+        this.setState(data);
     }
 }
 

@@ -26,7 +26,7 @@ import {List, ListItem} from 'material-ui/List';
 import Apps from 'material-ui/svg-icons/navigation/apps';
 import NotificationsIcon from 'material-ui/svg-icons/social/notifications';
 import ActionAccountCircle from 'material-ui/svg-icons/action/account-circle';
-import { Link } from 'react-router-dom';
+import {Link, withRouter} from 'react-router-dom';
 
 /**
  * Base Layout:
@@ -35,15 +35,6 @@ import { Link } from 'react-router-dom';
  * Middle content.
  * */
 class BaseLayout extends Component {
-
-    constructor(props) {
-        super(props);
-        this.state = this.props.state;
-    }
-
-    componentWillMount() {
-
-    }
 
     handleApplicationClick() {
         this.handleHistory('/assets/apps');
@@ -59,9 +50,9 @@ class BaseLayout extends Component {
     }
 
     handleUserLogin() {
-        if (this.state.user) {
+        if (this.props.state.store.user) {
             return (
-                <IconButton tooltip={this.state.user}>
+                <IconButton tooltip={this.props.state.store.user}>
                     <ActionAccountCircle/>
                 </IconButton>
             );
@@ -73,10 +64,10 @@ class BaseLayout extends Component {
     }
 
     handleNotification() {
-        if (this.state.user) {
+        if (this.props.state.store.user) {
             return (
                 <Badge
-                    badgeContent={this.state.notifications}
+                    badgeContent={this.props.state.store.notifications}
                     secondary={true}
                     badgeStyle={{top: 12, right: 12}}>
                     <IconButton tooltip="Notifications">
@@ -134,11 +125,8 @@ class BaseLayout extends Component {
 
 }
 
-BaseLayout
-    .propTypes = {
+BaseLayout.propTypes = {
     children: PropTypes.element
 };
 
-export
-default
-BaseLayout;
+export default withRouter(BaseLayout);

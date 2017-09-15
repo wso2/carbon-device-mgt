@@ -61,14 +61,18 @@ class Login extends Component {
 
     handleLogin(event) {
         event.preventDefault();
+        console.log(this.props);
         //TODO: send authentication request.
         let location = {
-            pathname: this.state.referrer,
-            state: {
-                notifications: 0,
-                user: this.state.userName
+            pathname: this.state.referrer
+        };
+        let storeState = {
+            store : {
+                user: this.state.userName,
+                notifications: 0
             }
         };
+        this.props.updateState(storeState);
         this.props.history.push(location);
     }
 

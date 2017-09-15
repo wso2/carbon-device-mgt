@@ -18,7 +18,7 @@
 
 import React, {Component} from 'react';
 import createHistory from 'history/createBrowserHistory';
-import {BrowserRouter as Router, Redirect, Route, Switch} from 'react-router-dom'
+import {BrowserRouter as Router, Route, Switch} from 'react-router-dom'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import Login from './components/Login';
@@ -36,9 +36,6 @@ let muiTheme = null;
 if (theme.current === "default") {
     let defaultTheme = require("material-ui/styles/baseThemes/" + theme.default);
     muiTheme = getMuiTheme(defaultTheme.default);
-} else {
-    let customTheme = require("./themes/" + theme.custom);
-    muiTheme = getMuiTheme(customTheme.default);
 }
 
 /**
@@ -55,17 +52,10 @@ if (theme.current === "default") {
  * not want to serve the URL.
  * */
 class Base extends Component {
-
-    constructor() {
-        super();
-        this.state = {};
-    }
-
     render() {
-        this.setState();
         return (
             <div className="container">
-                <BaseLayout state={this.state}>
+                <BaseLayout state={this.props.state} updateState={this.props.updateState}>
                     <Switch>
                         <Route component={NotFound}/>
                     </Switch>
@@ -73,15 +63,11 @@ class Base extends Component {
             </div>
         )
     }
-
-    setState() {
-        if (this.props.location.state){
-            this.state = this.props.location.state;
-        } else {
-            this.state = {};
-        }
-    }
 }
+
+Base.propTypes = {
+    updateState: React.PropTypes.func.isRequired
+};
 
 /**
  * This component is referred by the index.js to initiate the application.
@@ -93,6 +79,11 @@ class Store extends Component {
 
     constructor() {
         super();
+        if (!this.state) {
+            this.state = {};
+            this.state.store = {};
+        }
+        this.updateState = this.updateState.bind(this);
     }
 
     render() {
@@ -101,14 +92,21 @@ class Store extends Component {
                 <MuiThemeProvider muiTheme={muiTheme}>
                     <Router basename="store" history={history}>
                         <Switch>
-                            <Route path="/login" component={Login}/>
-                            <Route path="/logout" component={Login}/>
-                            <Route component={Base}/>
+                            <Route path="/login"
+                                   render={routeProps => <Login {...routeProps} updateState={this.updateState} state={this.state}/>}/>
+                            <Route path="/logout"
+                                   render={routeProps => <Base {...routeProps} updateState={this.updateState} state={this.state}/>}/>
+                            <Route
+                                render={routeProps => <Base {...routeProps} updateState={this.updateState} state={this.state}/>}/>
                         </Switch>
                     </Router>
                 </MuiThemeProvider>
             </div>
         );
+    }
+
+    updateState(data) {
+        this.setState(data);
     }
 }
 

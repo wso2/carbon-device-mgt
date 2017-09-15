@@ -62,12 +62,12 @@ class DataTable extends Component {
     };
 
     componentWillMount() {
-        this.setState({data: this.props.data, headers: this.props.headers});
+        console.log("Will mount", this.props.data); //TODO: Remove this
+        this.setState({data: this.props.data, headers: this.props.headers}, Theme.insertThemingScripts(this.scriptId));
 
         /**
          *Loading the theme files based on the the user-preference.
          */
-        Theme.insertThemingScripts(this.scriptId);
     }
 
     componentWillUnmount() {
@@ -75,7 +75,6 @@ class DataTable extends Component {
     }
 
     shouldComponentUpdate(nextProps, nextState) {
-        console.log("next Props", nextProps.data);
         this.setState({data: nextProps.data});
         return true;
     }
@@ -91,6 +90,7 @@ class DataTable extends Component {
     render() {
         const {data, headers} = this.state;
 
+        //TODO: Remove this
         console.log(data);
 
         let noDataContent = null;

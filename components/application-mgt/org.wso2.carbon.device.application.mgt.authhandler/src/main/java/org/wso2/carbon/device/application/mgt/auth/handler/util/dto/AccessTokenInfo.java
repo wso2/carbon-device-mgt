@@ -30,54 +30,54 @@ import javax.xml.bind.annotation.XmlRootElement;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class AccessTokenInfo {
 
-    @XmlElement(required = true, name = "tokenType")
-    private String tokenType;
+    @XmlElement(required = true, name = "token_type")
+    private String token_type;
 
-    @XmlElement(required = true, name = "expiresIn")
-    private String expiresIn;
+    @XmlElement(required = true, name = "expires_in")
+    private String expires_in;
 
-    @XmlElement(required = true, name = "refreshToken")
-    private String refreshToken;
+    @XmlElement(required = true, name = "refresh_token")
+    private String refresh_token;
 
-    @XmlElement(required = true, name = "accessToken")
-    private String accessToken;
+    @XmlElement(required = true, name = "access_token")
+    private String access_token;
 
     public AccessTokenInfo() {}
 
-    public String getTokenType() {
-        return tokenType;
+    public String getToken_type() {
+        return token_type;
     }
 
-    public void setTokenType(String tokenType) {
-        this.tokenType = tokenType;
+    public void setToken_type(String token_type) {
+        this.token_type = token_type;
     }
 
-    public String getExpiresIn() {
-        return expiresIn;
+    public String getExpires_in() {
+        return expires_in;
     }
 
-    public void setExpiresIn(String expiresIn) {
-        this.expiresIn = expiresIn;
+    public void setExpires_in(String expires_in) {
+        this.expires_in = expires_in;
     }
 
-    public String getRefreshToken() {
-        return refreshToken;
+    public String getRefresh_token() {
+        return refresh_token;
     }
 
-    public void setRefreshToken(String refreshToken) {
-        this.refreshToken = refreshToken;
+    public void setRefresh_token(String refresh_token) {
+        this.refresh_token = refresh_token;
     }
 
-    public String getAccessToken() {
-        return accessToken;
+    public String getAccess_token() {
+        return access_token;
     }
 
-    public void setAccessToken(String accessToken) {
-        this.accessToken = accessToken;
+    public void setAccess_token(String access_token) {
+        this.access_token = access_token;
     }
 
     @Override
     public String toString() {
-        return accessToken + " " + tokenType + " " + refreshToken + " ";
+        return access_token + " " + token_type + " " + refresh_token + " ";
     }
 }

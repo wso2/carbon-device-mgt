@@ -20,7 +20,9 @@ import Theme from '../../theme';
 import React, {Component} from 'react';
 import {withRouter} from 'react-router-dom';
 import TextField from 'material-ui/TextField';
+import AuthHandler from "../../api/authHandler";
 import DataTable from '../UIComponents/DataTable';
+import PlatformMgtApi from "../../api/platformMgtApi";
 import {Card, CardActions, CardTitle} from 'material-ui/Card';
 
 /**
@@ -34,12 +36,41 @@ import {Card, CardActions, CardTitle} from 'material-ui/Card';
 class PlatformListing extends Component {
     constructor() {
         super();
+        this.setPlatforms = this.setPlatforms.bind(this);
         this.state = {
-            data: [],
+            platforms: [],
             asc: true
         };
         this.scriptId = "platform-listing";
     }
+
+    headers = [
+        {
+            data_id: "image",
+            data_type: "image",
+            sortable: false,
+            label: ""
+        },
+        {
+            data_id: "platformName",
+            data_type: String,
+            sortable: true,
+            label: "Platform Name",
+            sort: this.sortData
+        },
+        {
+            data_id: "enabled",
+            data_type: String,
+            sortable: false,
+            label: "Enabled"
+        },
+        {
+            data_id: "fileBased",
+            data_type: String,
+            sortable: false,
+            label: "File Based"
+        }
+    ];
 
     componentWillMount() {
         /**
@@ -50,6 +81,38 @@ class PlatformListing extends Component {
 
     componentWillUnmount() {
         Theme.removeThemingScripts(this.scriptId);
+    }
+
+    componentDidMount() {
+        let platformsPromise = PlatformMgtApi.getPlatforms();
+        platformsPromise.then(
+            response => {
+                let platforms = this.setPlatforms(response.data);
+                this.setState({platforms: platforms});
+            }
+        ).catch(
+            err => {
+                AuthHandler.unauthorizedErrorHandler(err);
+            }
+        )
+    }
+
+    /**
+     * Create platform objects from the response which can be displayed in the table.
+     * */
+    setPlatforms(platforms) {
+        let tmpPlatforms = [];
+
+        for (let index in platforms) {
+            let platform = {};
+            platform.id = platforms[index].identifier;
+            platform.platformName = platforms[index].name;
+            platform.enabled = platforms[index].enabled.toString();
+            platform.fileBased = platforms[index].fileBased.toString();
+            tmpPlatforms.push(platform)
+        }
+
+        return tmpPlatforms;
     }
 
     /**
@@ -79,6 +142,7 @@ class PlatformListing extends Component {
     }
 
     onRowClick(id) {
+        //TODO: Remove this
         console.log(id)
     }
 
@@ -94,7 +158,7 @@ class PlatformListing extends Component {
                     </CardActions>
                     <DataTable
                         headers={this.headers}
-                        data={this.data}
+                        data={this.state.platforms}
                         handleRowClick={this.onRowClick.bind(this)}
                         noDataMessage={{type: 'button', text: 'Create Platform'}}/>
                 </Card>

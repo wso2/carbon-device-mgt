@@ -106,7 +106,6 @@ public class AuthHandlerServiceImpl implements AuthHandlerService {
             JSONObject loginInfo = new JSONObject(accessTokenInfo);
             loginInfo.append(Constants.USER_NAME, userName);
             loginInfo.append(Constants.APPLICATION_INFO, new JSONObject(apiApplicationKey));
-            System.out.println(loginInfo);
             return Response.status(200).entity(loginInfo.toString()).build();
         } catch (Exception e) {
             //return Response.status(500).build();

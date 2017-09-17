@@ -490,7 +490,7 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
             deviceInfo = informationManager.getDeviceInfo(deviceIdentifier);
 
         } catch (DeviceDetailsMgtException e) {
-            String msg = "Error occurred while getting the device information.";
+            String msg = "Error occurred while getting the device information of id : " + id + " type : " + type ;
             log.error(msg, e);
             return Response.serverError().entity(
                     new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();

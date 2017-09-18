@@ -15,25 +15,24 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+import React, {Component} from 'react';
 
 /**
- * This a sample custom theme file. In config.json, if the following changes are done, this theme will be applied.
- * {
- *     "theme" : {
- *       "type" : "custom",
- *       "value" : "custom-theme"
- *     }
- *   }
- */
-import {
-    indigo500, indigo700, redA200,
-} from 'material-ui/styles/colors';
+ * Error page.
+ * */
+class Error extends Component {
 
-export default {
-    palette: {
-        primary1Color: indigo500,
-        primary2Color: indigo700,
-        accent1Color: redA200,
-        pickerHeaderColor: indigo500,
-    },
-};
+    constructor() {
+        super();
+    }
+
+    render() {
+        return (
+            <div>
+                404 not found
+            </div>
+        );
+    }
+}
+
+export default Error;

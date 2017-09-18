@@ -77,6 +77,7 @@
     <DeviceCacheConfiguration>
         <Enable>true</Enable>
         <ExpiryTime>600</ExpiryTime>
+        <Capacity>10000</Capacity>
     </DeviceCacheConfiguration>
     <CertificateCacheConfiguration>
         <Enable>true</Enable>

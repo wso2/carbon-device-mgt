@@ -65,8 +65,7 @@ function openTools(id) {
     	}
 		console.log("removed drawnItems");
     }
-    
-    
+
     closeAll();
     noty({text: "Please draw the required area on the map", type: "information"});
 
@@ -106,7 +105,6 @@ function openTools(id) {
         });
     removeAllControl = new L.Control.RemoveAll();
     map.addControl(removeAllControl);
-
 
     // Initialise the FeatureGroup to store editable layers
     drawnItems = new L.FeatureGroup();
@@ -168,7 +166,6 @@ function openTools(id) {
                                          });
     } else if(id=="Stationery"){
         // Initialise the draw control and pass it the FeatureGroup of editable layers
-
         drawControl = new L.Control.Draw({
             draw: {
                 polygon: {
@@ -252,11 +249,7 @@ function openTools(id) {
         });
         console.log("prediction tool opened");
     }
-
     map.addControl(drawControl);
-	
-   
-
 }
 
 function createPopup(layer,id) {
@@ -427,7 +420,6 @@ function viewFence(geoFenceElement,id) {
             // transparent the layer .leaflet-popup-content-wrapper
             $(geometryShape._popup._container.childNodes[0]).css("background", "rgba(255,255,255,0.8)");
         });
-    } else if (id=="Traffic") {
     }
     closeAll();
 }
@@ -499,7 +491,6 @@ function viewFenceByData(geoJson, queryName, areaName, stationeryTime, id) {
             // transparent the layer .leaflet-popup-content-wrapper
             $(geometryShape._popup._container.childNodes[0]).css("background", "rgba(255,255,255,0.8)");
         });
-    } else if (id=="Traffic") {
     }
     closeAll();
 }

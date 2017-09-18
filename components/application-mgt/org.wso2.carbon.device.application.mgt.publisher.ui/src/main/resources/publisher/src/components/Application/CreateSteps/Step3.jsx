@@ -51,6 +51,10 @@ import Theme from '../../../theme';
 class Step3 extends Component {
     constructor() {
         super();
+        this.handleToggle = this.handleToggle.bind(this);
+        this.handlePrev = this.handlePrev.bind(this);
+        this.handleToggle = this.handleToggle.bind(this);
+        this.handleFinish = this.handleFinish.bind(this);
         this.state = {
             showForm: false,
             releaseChannel: 1,
@@ -63,7 +67,7 @@ class Step3 extends Component {
         /**
          *Loading the theme files based on the the user-preference.
          */
-       Theme.insertThemingScripts(this.scriptId);
+        Theme.insertThemingScripts(this.scriptId);
     }
 
     componentWillUnmount() {
@@ -74,21 +78,21 @@ class Step3 extends Component {
      * Handles finish button click.
      * This invokes handleNext function in parent component.
      * */
-    _handleFinish() {
+    handleFinish() {
         this.props.handleFinish();
     }
 
     /**
      * Invokes Prev button click.
      * */
-    _handlePrev() {
+    handlePrev() {
         this.props.handlePrev();
     }
 
     /**
      * Handles release application selection.
      * */
-    _handleToggle() {
+    handleToggle() {
         let hide = this.state.showForm;
         this.setState({showForm: !hide});
     }
@@ -100,36 +104,42 @@ class Step3 extends Component {
                     <Toggle
                         label="Release the Application"
                         labelPosition="right"
-                        onToggle={this._handleToggle.bind(this)}
+                        onToggle={this.handleToggle}
                         defaultToggled={this.state.showForm}
                     />
                     {/*If toggle is true, the release form will be shown.*/}
-                    {!this.state.showForm ? <div/> : <div>
-                        <SelectField
-                            floatingLabelText="Select Release Channel*"
-                            value={this.state.releaseChannel}
-                            floatingLabelFixed={true}
-                        >
-                            <MenuItem value={1} primaryText="Alpha"/>
-                            <MenuItem value={2} primaryText="Beta"/>
-                            <MenuItem value={3} primaryText="GA"/>
-                        </SelectField> <br/>
-                        <TextField
-                            hintText="1.0.0"
-                            floatingLabelText="Version*"
-                            errorText={this.state.errors["title"]}
-                            floatingLabelFixed={true}
-                        /><br/>
-                    </div>}
-
+                    {!this.state.showForm ? <div/> :
+                        <div>
+                            <SelectField
+                                floatingLabelText="Select Release Channel*"
+                                value={this.state.releaseChannel}
+                                floatingLabelFixed={true}
+                            >
+                                <MenuItem value={1} primaryText="Alpha"/>
+                                <MenuItem value={2} primaryText="Beta"/>
+                                <MenuItem value={3} primaryText="GA"/>
+                            </SelectField>
+                            <br/>
+                            <TextField
+                                hintText="1.0.0"
+                                floatingLabelText="Version*"
+                                errorText={this.state.errors["title"]}
+                                floatingLabelFixed={true}
+                            /><br/>
+                        </div>}
                     <div className="applicationCreateBackAndFinish">
-                        <FlatButton label="< Back" disabled={false} onClick={this._handlePrev.bind(this)}
-                                    className="applicationCreateFinish"/>
+                        <FlatButton
+                            label="< Back"
+                            disabled={false}
+                            onClick={this.handlePrev}
+                            className="applicationCreateFinish"
+                        />
                         <RaisedButton
                             label="Finish"
                             primary={true}
-                            onClick={this._handleFinish.bind(this)}
+                            onClick={this.handleFinish}
                         />
+
                     </div>
                 </div>
             </div>

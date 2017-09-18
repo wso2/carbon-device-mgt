@@ -16,11 +16,11 @@
  * under the License.
  */
 
+import Theme from '../../theme';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import FlatButton from 'material-ui/FlatButton';
 import {TableHeaderColumn} from 'material-ui/Table';
-import Theme from '../../theme';
 
 /**
  * Data Table header component.
@@ -30,6 +30,7 @@ class DataTableHeader extends Component {
 
     constructor() {
         super();
+        this.tableHeaderClick = this.tableHeaderClick.bind(this);
         this.scriptId = "data-table";
     }
 
@@ -42,13 +43,14 @@ class DataTableHeader extends Component {
 
     componentWillUnmount() {
         Theme.removeThemingScripts(this.scriptId);
+
     }
 
     /**
      * The onClick function of the table header.
      * Invokes the function passed in the header object.
      * */
-    _tableHeaderClick() {
+    tableHeaderClick() {
         this.props.header.sort();
     }
 
@@ -60,14 +62,18 @@ class DataTableHeader extends Component {
          * else create a span element with label as the table header.
          * */
         if (this.props.header.sortable) {
-            headerCell = <FlatButton label={this.props.header.label}
-                                    onClick={this._tableHeaderClick.bind(this)} className="sortableHeaderCell"/>;
+            headerCell =
+                <FlatButton
+                    label={this.props.header.label}
+                    onClick={this.tableHeaderClick}
+                    className="sortableHeaderCell"
+                />
         } else {
             headerCell = <span className="notsortableHeaderCell">{this.props.header.label}</span>;
         }
 
         return (
-            <TableHeaderColumn key={this.props.header.id} className="datatableHeaderColumn" >
+            <TableHeaderColumn key={this.props.header.id} className="datatableHeaderColumn">
                 {headerCell}
             </TableHeaderColumn>
         );

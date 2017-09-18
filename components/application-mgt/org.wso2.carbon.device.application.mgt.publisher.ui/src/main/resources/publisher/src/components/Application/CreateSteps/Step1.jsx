@@ -16,12 +16,14 @@
  * under the License.
  */
 
+import Theme from '../../../theme';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import MenuItem from 'material-ui/MenuItem';
 import SelectField from 'material-ui/SelectField';
+import AuthHandler from "../../../api/authHandler";
 import RaisedButton from 'material-ui/RaisedButton';
-import Theme from '../../../theme';
+import PlatformMgtApi from "../../../api/platformMgtApi";
 
 /**
  * The first step of the application creation wizard.
@@ -39,11 +41,15 @@ import Theme from '../../../theme';
 class Step1 extends Component {
     constructor() {
         super();
+        this.setPlatforms = this.setPlatforms.bind(this);
+        this.platforms = [];
         this.state = {
             finished: false,
             stepIndex: 0,
             store: 1,
-            platform: 1,
+            platformSelectedIndex: 0,
+            platform: "",
+            platforms: [],
             stepData: [],
             title: "",
             titleError: ""
@@ -61,22 +67,40 @@ class Step1 extends Component {
     componentWillUnmount() {
         Theme.removeThemingScripts(this.scriptId);
     }
+    componentDidMount() {
+        //Get the list of available platforms and set to the state.
+        PlatformMgtApi.getPlatforms().then(response => {
+            console.log(response);
+            this.setPlatforms(response.data);
+        }).catch(err => {
+            AuthHandler.unauthorizedErrorHandler(err);
+        })
+    }
 
     /**
-     * Invokes the handleNext function in Create component.
+     * Extract the platforms from the response data and populate the state.
+     * @param platforms: The array returned as the response.
      * */
-    _handleNext = () => {
-        this.props.handleNext();
-    };
+    setPlatforms(platforms) {
+        let tmpPlatforms = [];
+        for (let index in platforms) {
+            let platform = {};
+            platform = platforms[index];
+            tmpPlatforms.push(platform);
+        }
+        this.setState({platforms: tmpPlatforms, platformSelectedIndex: 0, platform: tmpPlatforms[0].identifier})
+    }
 
     /**
      * Persist the current form data to the state.
      * */
-    _setStepData() {
-        var step = {
+    setStepData() {
+        console.log("Platforms",this.state.platforms);
+        let step = {
             store: this.state.store,
-            platform: this.state.platform
+            platform: this.state.platforms[this.state.platformSelectedIndex]
         };
+        console.log(step);
         this.props.setData("step1", {step: step});
     }
 
@@ -86,30 +110,23 @@ class Step1 extends Component {
      *  Sets the data to the state.
      *  Invokes the handleNext method of Create component.
      * */
-    _handleClick() {
-        this._setStepData();
+    handleClick() {
+        this.setStepData();
     }
 
     /**
      * Triggers when changing the Platform selection.
      * */
-    _onChangePlatform = (event, index, value) => {
-        console.log(value);
-        this.setState({platform: value});
+    onChangePlatform(event, index, value) {
+        console.log(this.state.platforms[index]);
+        this.setState({platform: this.state.platforms[index].identifier, platformSelectedIndex: index});
     };
 
     /**
      * Triggers when changing the Store selection.
      * */
-    _onChangeStore = (event, index, value) => {
+    onChangeStore(event, index, value) {
         this.setState({store: value});
-    };
-
-    /**
-     * Triggers when user types on Title text field.
-     * */
-    _onChangeTitle = (event, value) => {
-        this.setState({title: value});
     };
 
     render() {
@@ -122,30 +139,38 @@ class Step1 extends Component {
                                 floatingLabelText="Store Type*"
                                 value={this.state.store}
                                 floatingLabelFixed={true}
-                                onChange={this._onChangeStore.bind(this)}
+                                onChange={this.onChangeStore.bind(this)}
                             >
-                                <MenuItem value={1} primaryText="Enterprise"/>
-                                <MenuItem value={2} primaryText="Public"/>
-                            </SelectField> <br/>
+                                <MenuItem value={0} primaryText="Enterprise"/>
+                                <MenuItem value={1} primaryText="Public"/>
+                            </SelectField>
+                            <br/>
                             <SelectField
                                 floatingLabelText="Platform*"
                                 value={this.state.platform}
                                 floatingLabelFixed={true}
-                                onChange={this._onChangePlatform.bind(this)}
+                                onChange={this.onChangePlatform.bind(this)}
                             >
-                                <MenuItem value={1} primaryText="Android"/>
-                                <MenuItem value={2} primaryText="iOS"/>
-                                <MenuItem value={{name: "Web", id:3}} primaryText="Web"/>
+                                {this.state.platforms.length > 0 ? this.state.platforms.map(platform => {
+                                    return (
+                                        <MenuItem
+                                            key={Math.random()}
+                                            value={platform.identifier}
+                                            primaryText={platform.name}
+                                        />
+                                    )
+                                }) : <div/>}
+
+
                             </SelectField>
                         </div>
-
                         <br/>
                         <br/>
                         <div className="nextButton">
                             <RaisedButton
                                 label="Next >"
                                 primary={true}
-                                onClick={this._handleClick.bind(this)}
+                                onClick={this.handleClick.bind(this)}
                             />
                         </div>
                     </div>

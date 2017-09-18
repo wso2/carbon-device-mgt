@@ -16,13 +16,13 @@
  * under the License.
  */
 
+import Theme from '../../theme';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import DataTableRow from './DataTableRow';
 import DataTableHeader from './DataTableHeader';
 import RaisedButton from 'material-ui/RaisedButton';
 import {Table, TableBody, TableHeader, TableRow} from 'material-ui/Table';
-import Theme from '../../theme';
 
 /**
  * The Custom Table Component.
@@ -53,6 +53,7 @@ class DataTable extends Component {
 
     constructor() {
         super();
+        this.handleRowClick = this.handleRowClick.bind(this);
         this.state = {
             data: [],
             headers: [],
@@ -83,7 +84,7 @@ class DataTable extends Component {
      * Triggers when user click on table row.
      * This method invokes the parent method handleRowClick, which is passed via props.
      * */
-    _handleRowClick(id) {
+    handleRowClick(id) {
         this.props.handleRowClick(id);
     }
 
@@ -100,22 +101,29 @@ class DataTable extends Component {
 
         if (data) {
             return (<Table
-                selectable={ false }>
-                <TableHeader displaySelectAll={ false }
-                             adjustForCheckbox={ false }>
+                selectable={false}>
+                <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
                     <TableRow>
                         {headers.map((header) => {
-                                return (<DataTableHeader key={header.data_id} className="datatableRowColumn"
-                                                         header={header}/>)
-                            }
+                                return (
+                                    <DataTableHeader
+                                        key={header.data_id}
+                                        className="datatableRowColumn"
+                                        header={header}
+                                    />
+                                )}
                         )}
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {data.map((dataItem) =>{
-                        return (<DataTableRow key={dataItem.id}
-                                              dataItem={dataItem}
-                                              handleClick={this._handleRowClick.bind(this)}/>)
+                    {data.map((dataItem) => {
+                        return (
+                            <DataTableRow
+                                key={dataItem.id}
+                                dataItem={dataItem}
+                                handleClick={this.handleRowClick}
+                            />
+                        )
                     })}
                 </TableBody>
             </Table>)

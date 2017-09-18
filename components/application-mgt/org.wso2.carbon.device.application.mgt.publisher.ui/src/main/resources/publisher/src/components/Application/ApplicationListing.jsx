@@ -16,12 +16,14 @@
  * under the License.
  */
 
+import Theme from '../../theme';
 import React, {Component} from 'react';
 import {withRouter} from 'react-router-dom';
 import TextField from 'material-ui/TextField';
+import AuthHandler from "../../api/authHandler";
 import DataTable from '../UIComponents/DataTable';
+import ApplicationMgtApi from '../../api/applicationMgtApi';
 import {Card, CardActions, CardTitle} from 'material-ui/Card';
-import Theme from '../../theme';
 
 /**
  * The App Create Component.
@@ -34,69 +36,39 @@ import Theme from '../../theme';
 class ApplicationListing extends Component {
     constructor() {
         super();
+        this.searchApplications = this.searchApplications.bind(this);
+        this.onRowClick = this.onRowClick.bind(this);
+        this.setData = this.setData.bind(this);
+        this.sortData = this.sortData.bind(this);
+        this.compare = this.compare.bind(this);
         this.state = {
-            data: [],
+            searchedApplications: [],
+            applications: [],
             asc: true
         };
         this.scriptId = "application-listing";
     }
-
-    data = [
-        {
-            id: Math.random(),
-            applicationName:"Cne",
-            platform:'Android',
-            category:"Public",
-            status: "Created"
-        },
-        {
-            id: Math.random(),
-            applicationName:"Gone",
-            platform:'IOS',
-            category:"Public",
-            status: "Created"
-        },
-        {
-            id: Math.random(),
-            applicationName:"Ane",
-            platform:'Android',
-            category:"Public",
-            status: "Created"
-        },
-        {
-            id: Math.random(),
-            applicationName:"one",
-            platform:'Android',
-            category:"Public",
-            status: "Created"
-        },
-        {
-            id: Math.random(),
-            applicationName:"one",
-            platform:'Android',
-            category:"Public",
-            status: "Created"
-        },
-    ];
 
     headers = [
         {
             data_id: "image",
             data_type: "image",
             sortable: false,
-            label: ""},
+            label: ""
+        },
         {
             data_id: "applicationName",
             data_type: "string",
             sortable: true,
             label: "Application Name",
-            sort: this._sortData.bind(this)
+            sort: this.sortData
         },
         {
             data_id: "platform",
             data_type: "image_array",
             sortable: false,
-            label: "Platform"},
+            label: "Platform"
+        },
         {
             data_id: "category",
             data_type: "string",
@@ -112,8 +84,6 @@ class ApplicationListing extends Component {
     ];
 
     componentWillMount() {
-        //Fetch all the applications from backend and create application objects.
-        this.setState({data: this.data});
 
         /**
          *Loading the theme files based on the the user-preference.
@@ -123,38 +93,70 @@ class ApplicationListing extends Component {
 
     componentWillUnmount() {
         Theme.removeThemingScripts(this.scriptId);
+        // this.setState({data: this.data});
     }
 
+    componentDidMount() {
+        let getApps = ApplicationMgtApi.getApplications();
+        getApps.then(response => {
+            let apps = this.setData(response.data.applications);
+            console.log(apps);
+            this.setState({searchedApplications: apps});
+            // console.log(this.setState({data: response.data}), console.log(this.state));
+        }).catch(err => {
+            AuthHandler.unauthorizedErrorHandler(err);
+        });
+    }
+
+    /**
+     * Extract application from application list and update the state.
+     * */
+    setData(applications) {
+        let apps = [];
+        for (let app in applications) {
+            let application = {};
+            application.id = applications[app].uuid;
+            application.applicationName = applications[app].name;
+            application.platform = applications[app].platform.name;
+            application.category = applications[app].category.id;
+            application.status = applications[app].currentLifecycle.lifecycleState.name;
+            apps.push(application);
+        }
+
+        this.setState({searchedApplications: apps});
+    }
 
     /**
      * Handles the search action.
      * When typing in the search bar, this method will be invoked.
+     * @param event: The event triggered from typing in the search box.
+     * @param searchText: The text that typed in the search box.
      * */
-    _searchApplications(event, word) {
+    searchApplications(event, searchText) {
         let searchedData;
-            if (word){
-                searchedData = this.data.filter((dataItem) => {
-                        return dataItem.applicationName.includes(word);
-                    });
-            } else {
-                searchedData = this.data;
-            }
+        if (searchText) {
+            searchedData = this.state.applications.filter((dataItem) => {
+                return dataItem.applicationName.includes(searchText);
+            });
+        } else {
+            searchedData = this.state.applications;
+        }
 
-        this.setState({data: searchedData}, console.log("Searched data ", this.state.data));
-
+        this.setState({searchedApplications: searchedData}, console.log("Searched data ", this.state.searchedApplications));
     }
 
     /**
      * Handles sort data function and toggles the asc state.
      * asc: true : sort in ascending order.
      * */
-    _sortData() {
+    sortData() {
+        console.log(this.state);
         let isAsc = this.state.asc;
-        let datas = isAsc?this.data.sort(this._compare):this.data.reverse();
-        this.setState({data: datas, asc: !isAsc});
+        let sortedData = isAsc ? this.state.searchedApplications.sort(this.compare) : this.data.reverse();
+        this.setState({searchedApplications: sortedData, asc: !isAsc});
     }
 
-    _compare(a, b) {
+    compare(a, b) {
         if (a.applicationName < b.applicationName)
             return -1;
         if (a.applicationName > b.applicationName)
@@ -162,27 +164,33 @@ class ApplicationListing extends Component {
         return 0;
     }
 
-    _onRowClick(id) {
-        this.props.history.push("apps/"+id);
+    onRowClick(id) {
+        ApplicationMgtApi.getApplication(id).then(response => {
+            console.log(response);
+        }).catch(err => {
+            console.log(err)
+        });
+        // this.props.history.push("apps/" + id);
     }
 
     render() {
         return (
             <div className="middle applicationListingMiddle">
                 <Card className="applicationListingCard">
-                    <TextField hintText="Search" className="applicationListingSearch"
-                               onChange={this._searchApplications.bind(this)}/>
+                    <TextField
+                        hintText="Search"
+                        className="applicationListingSearch"
+                        onChange={this.searchApplications}/>
                     <CardTitle title="Applications" className="applicationListTitle"/>
-                    <CardActions>
-
-                    </CardActions>
-                    <DataTable headers={this.headers}
-                               data={this.state.data}
-                               handleRowClick={this._onRowClick.bind(this)}
-                               noDataMessage={{type: 'button', text: 'Create Application'}}/>
+                    <DataTable
+                        headers={this.headers}
+                        data={this.state.searchedApplications}
+                        handleRowClick={this.onRowClick}
+                        noDataMessage={{type: 'button', text: 'Create Application'}}
+                    />
                 </Card>
-
-            </div>);
+            </div>
+        );
     }
 }
 

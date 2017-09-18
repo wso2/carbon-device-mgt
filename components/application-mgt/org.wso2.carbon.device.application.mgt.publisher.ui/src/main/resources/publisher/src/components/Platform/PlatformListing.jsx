@@ -16,12 +16,12 @@
  * under the License.
  */
 
+import Theme from '../../theme';
 import React, {Component} from 'react';
 import {withRouter} from 'react-router-dom';
 import TextField from 'material-ui/TextField';
 import DataTable from '../UIComponents/DataTable';
 import {Card, CardActions, CardTitle} from 'material-ui/Card';
-import Theme from '../../theme';
 
 /**
  * The App Create Component.
@@ -56,7 +56,7 @@ class PlatformListing extends Component {
      * Handles the search action.
      * When typing in the search bar, this method will be invoked.
      * */
-    _searchApplications(word) {
+    searchApplications(word) {
         let searchedData = [];
     }
 
@@ -64,13 +64,13 @@ class PlatformListing extends Component {
      * Handles sort data function and toggles the asc state.
      * asc: true : sort in ascending order.
      * */
-    _sortData() {
+    sortData() {
         let isAsc = this.state.asc;
-        let datas = isAsc?this.data.sort(this._compare):this.data.reverse();
+        let datas = isAsc ? this.data.sort(this.compare) : this.data.reverse();
         this.setState({data: datas, asc: !isAsc});
     }
 
-    _compare(a, b) {
+    compare(a, b) {
         if (a.applicationName < b.applicationName)
             return -1;
         if (a.applicationName > b.applicationName)
@@ -78,27 +78,28 @@ class PlatformListing extends Component {
         return 0;
     }
 
-    _onRowClick(id) {
+    onRowClick(id) {
         console.log(id)
     }
 
     render() {
         return (
-            <div className= 'middle listingplatformmiddle'>
+            <div className='middle listingplatformmiddle'>
                 <Card className='listingplatformcard'>
-                    <TextField hintText="Search" onChange={this._searchApplications.bind(this)}
+                    <TextField hintText="Search" onChange={this.searchApplications.bind(this)}
                                className='listingplatformsearch'/>
                     <CardTitle title="Platforms" className='listingplatformTitle'/>
                     <CardActions>
 
                     </CardActions>
-                    <DataTable headers={this.headers}
-                               data={this.data}
-                               handleRowClick={this._onRowClick.bind(this)}
-                               noDataMessage={{type: 'button', text: 'Create Platform'}}/>
+                    <DataTable
+                        headers={this.headers}
+                        data={this.data}
+                        handleRowClick={this.onRowClick.bind(this)}
+                        noDataMessage={{type: 'button', text: 'Create Platform'}}/>
                 </Card>
-
-            </div>);
+            </div>
+        );
     }
 }
 

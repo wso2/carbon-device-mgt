@@ -20,13 +20,11 @@ import qs from 'qs';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import Checkbox from 'material-ui/Checkbox';
+import TextField from 'material-ui/TextField';
 import {Redirect, Switch} from 'react-router-dom';
+import AuthHandler from '../../../api/authHandler';
 import RaisedButton from 'material-ui/RaisedButton';
 import {Card, CardActions, CardTitle} from 'material-ui/Card';
-import {TextValidator, ValidatorForm} from 'react-material-ui-form-validator';
-
-//todo: remove the {TextValidator, ValidatorForm} and implement it manually.
-
 
 /**
  * The Login Component.
@@ -40,36 +38,43 @@ class Login extends Component {
     constructor() {
         super();
         this.state = {
-            isLoggedIn: true,
+            isLoggedIn: false,
             referrer: "/",
             userName: "",
             password: "",
-            rememberMe: true
+            rememberMe: true,
+            errors: {}
         }
     }
 
+    componentWillMount() {
+        console.log("IN Login")
+    }
+
     componentDidMount() {
-        let queryString = this.props.location.search;
-        console.log(queryString);
-        queryString = queryString.replace(/^\?/, '');
-        /* With QS version up we can directly use {ignoreQueryPrefix: true} option */
-        let params = qs.parse(queryString);
-        if (params.referrer) {
-            this.setState({referrer: params.referrer});
-        }
+        console.log("in Login")
+        // let queryString = this.props.location.search;
+        // console.log(queryString);
+        // queryString = queryString.replace(/^\?/, '');
+        // /* With QS version up we can directly use {ignoreQueryPrefix: true} option */
+        // let params = qs.parse(queryString);
+        // if (params.referrer) {
+        //     this.setState({referrer: params.referrer});
+        // }
     }
 
     handleLogin(event) {
         event.preventDefault();
+        this.validateForm();
     }
 
     /**
      * Handles the username field change event.
      * */
-    onUserNameChange(event) {
+    onUserNameChange(event, value) {
         this.setState(
             {
-                userName: event.target.value
+                userName: value
             }
         );
     }
@@ -77,10 +82,10 @@ class Login extends Component {
     /**
      * Handles the password field change event.
      * */
-    onPasswordChange(event) {
+    onPasswordChange(event, value) {
         this.setState(
             {
-                password: event.target.value
+                password: value
             }
         );
     }
@@ -96,48 +101,77 @@ class Login extends Component {
         );
     }
 
+    /**
+     * Validate the login form.
+     * */
+    validateForm() {
+        let errors = {};
+        let validationFailed = true;
+        if (!this.state.password) {
+            errors["passwordError"] = "Password is Required";
+            validationFailed = true;
+        } else {
+            validationFailed = false;
+        }
+
+        if (!this.state.userName) {
+            errors["userNameError"] = "User Name is Required";
+            validationFailed = true;
+        } else {
+            validationFailed = false;
+        }
+
+        if (validationFailed) {
+            this.setState({errors: errors}, console.log(errors));
+        } else {
+            let loginPromis = AuthHandler.login(this.state.userName, this.state.password);
+            loginPromis.then(response => {
+                console.log(AuthHandler.getUser());
+                this.setState({isLoggedIn: AuthHandler.getUser()});
+            })
+        }
+    }
+
     render() {
 
         if (!this.state.isLoggedIn) {
             return (
                 <div>
-
                     {/*TODO: Style the components.*/}
 
                     <Card>
                         <CardTitle title="WSO2 IoT App Publisher"/>
                         <CardActions>
-                            <ValidatorForm
-                                ref="form"
-                                onSubmit={this.handleLogin.bind(this)}
-                                onError={errors => console.log(errors)}>
-                                <TextValidator
-                                    floatingLabelText="User Name"
+                            <form onSubmit={this.handleLogin.bind(this)}>
+                                <TextField
+                                    hintText="Enter the User Name."
+                                    id="username"
+                                    errorText={this.state.errors["userNameError"]}
+                                    floatingLabelText="User Name*"
                                     floatingLabelFixed={true}
-                                    onChange={this.onUserNameChange.bind(this)}
-                                    name="userName"
-                                    validators={['required']}
-                                    errorMessages={['User Name is required']}
                                     value={this.state.userName}
+                                    onChange={this.onUserNameChange.bind(this)}
                                 />
                                 <br/>
-                                <TextValidator
-                                    floatingLabelText="Password"
-                                    floatingLabelFixed={true}
-                                    onChange={this.onPasswordChange.bind(this)}
-                                    name="password"
+                                <TextField
+                                    hintText="Enter the Password."
+                                    id="password"
                                     type="password"
+                                    errorText={this.state.errors["passwordError"]}
+                                    floatingLabelText="Password*"
+                                    floatingLabelFixed={true}
                                     value={this.state.password}
-                                    validators={['required']}
-                                    errorMessages={['Password is required']}
+                                    onChange={this.onPasswordChange.bind(this)}
                                 />
                                 <br/>
-                                <Checkbox label="Remember me."
-                                          onCheck={this.handleRememberMe.bind(this)}
-                                          checked={this.state.rememberMe}/>
+                                <Checkbox
+                                    label="Remember me."
+                                    onCheck={this.handleRememberMe.bind(this)}
+                                    checked={this.state.rememberMe}
+                                />
                                 <br/>
                                 <RaisedButton type="submit" label="Login"/>
-                            </ValidatorForm>
+                            </form>
                         </CardActions>
                     </Card>
                 </div>);

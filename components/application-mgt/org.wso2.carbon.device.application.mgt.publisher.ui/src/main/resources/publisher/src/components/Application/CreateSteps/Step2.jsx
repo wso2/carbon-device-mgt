@@ -17,6 +17,7 @@
  */
 
 import PropTypes from 'prop-types';
+import Theme from '../../../theme';
 import Chip from 'material-ui/Chip';
 import Dropzone from 'react-dropzone';
 import React, {Component} from 'react';
@@ -28,7 +29,6 @@ import SelectField from 'material-ui/SelectField';
 import RaisedButton from 'material-ui/RaisedButton';
 import Clear from 'material-ui/svg-icons/content/clear';
 import {GridList, GridTile} from 'material-ui/GridList';
-import Theme from '../../../theme';
 
 /**
  * The Second step of application create wizard.
@@ -56,16 +56,17 @@ class Step2 extends Component {
         super();
         this.state = {
             tags: [],
+            icon: [],
+            title: "",
+            errors: {},
+            banner: [],
             defValue: "",
             category: 0,
             visibility: 0,
-            errors: {},
-            title: "",
-            shortDescription: "",
             description: "",
-            banner: [],
             screenshots: [],
-            icon: []
+            identifier: "",
+            shortDescription: ""
         };
         this.scriptId = "application-create-step2";
     }
@@ -86,19 +87,19 @@ class Step2 extends Component {
      * Clears the tags text field.
      * Chip gets two parameters: Key and value.
      * */
-    _addTags(event) {
+    addTags(event) {
         let tags = this.state.tags;
         if (event.charCode === 13) {
             event.preventDefault();
             tags.push({key: Math.floor(Math.random() * 1000), value: event.target.value});
-            this.setState({tags, defValue: ""});
+            this.setState({tags, defValue: ""}, console.log(tags));
         }
     }
 
     /**
      * Set the value for tag.
      * */
-    _handleTagChange(event) {
+    handleTagChange(event) {
         let defaultValue = this.state.defValue;
         defaultValue = event.target.value;
         this.setState({defValue: defaultValue})
@@ -107,21 +108,21 @@ class Step2 extends Component {
     /**
      * Invokes the handleNext function in Create component.
      * */
-    _handleNext() {
+    handleNext() {
         let fields = [{name: "Title", value: this.state.title},
             {name: "Short Description", value: this.state.shortDescription},
             {name: "Description", value: this.state.description},
             {name: "Banner", value: this.state.banner},
             {name: "Screenshots", value: this.state.screenshots},
+            {name: "Identifier", value: this.state.identifier},
             {name: "Icon", value: this.state.icon}];
-        this._validate(fields);
-        // this.props.handleNext();
+        this.validate(fields);
     }
 
     /**
      * Invokes the handlePrev function in Create component.
      * */
-    _handlePrev() {
+    handlePrev() {
         this.props.handlePrev();
     }
 
@@ -129,7 +130,7 @@ class Step2 extends Component {
      * Handles Chip delete function.
      * Removes the tag from state.tags
      * */
-    _handleRequestDelete = (key) => {
+    handleRequestDelete(key) {
         this.chipData = this.state.tags;
         const chipToDelete = this.chipData.map((chip) => chip.key).indexOf(key);
         this.chipData.splice(chipToDelete, 1);
@@ -139,18 +140,18 @@ class Step2 extends Component {
     /**
      * Creates Chip array from state.tags.
      * */
-    _renderChip(data) {
+    renderChip(data) {
         return (
             <Chip
                 key={data.key}
-                onRequestDelete={() => this._handleRequestDelete(data.key)}
+                onRequestDelete={() => this.handleRequestDelete(data.key)}
                 className="applicationCreateChip">
                 {data.value}
             </Chip>
         );
     }
 
-    _onVisibilitySelect = (event, index, value) => {
+    onVisibilitySelect(event, index, value) {
         console.log(value);
         let comp = <SelectField> <MenuItem value={0} primaryText="Public"/>
             <MenuItem value={1} primaryText="Roles"/>
@@ -167,12 +168,21 @@ class Step2 extends Component {
     /**
      * Validate the form.
      * */
-    _validate(fields) {
+    validate(fields) {
         let errors = {};
         let errorsPresent = false;
         fields.forEach(function (field) {
             switch (field.name) {
                 case 'Title': {
+                    if (field.value === "") {
+                        errors[field.name] = field.name + " is required!";
+                        errorsPresent = true;
+                    } else {
+                        errorsPresent = false;
+                    }
+                    break;
+                }
+                case 'Identifier': {
                     if (field.value === "") {
                         errors[field.name] = field.name + " is required!";
                         errorsPresent = true;
@@ -219,7 +229,7 @@ class Step2 extends Component {
                 }
                 case 'Screenshots': {
                     if (field.value.length < 3) {
-                        errors[field.name] = "3 " +field.name + " are required!";
+                        errors[field.name] = "3 " + field.name + " are required!";
                         errorsPresent = true;
                     } else {
                         errorsPresent = false;
@@ -229,40 +239,40 @@ class Step2 extends Component {
             }
         });
 
-        console.log(errorsPresent);
         if (!errorsPresent) {
-            this._setStepData();
+            this.setStepData();
         } else {
             this.setState({errors: errors}, console.log(errors));
         }
-
     }
 
     /**
      * Creates an object with the current step data and persist in the parent.
      * */
-    _setStepData() {
+    setStepData() {
         let stepData = {
-            title: this.state.title,
-            description: this.state.description,
-            shortDescription: this.state.shortDescription,
+            icon: this.state.icon,
+            name: this.state.name,
             tags: this.state.tags,
             banner: this.state.banner,
+            category: this.categories[this.state.category],
+            identifier: this.state.identifier,
             screenshots: this.state.screenshots,
-            icon: this.state.icon
+            description: this.state.description,
+            shortDescription: this.state.shortDescription
         };
 
         this.props.setData("step2", {step: stepData});
-    }
+    };
 
     /**
      * Set text field values to state.
      * */
-    _onTextFieldChange(event, value) {
+    onTextFieldChange(event, value) {
         let field = event.target.id;
         switch (field) {
-            case "title": {
-                this.setState({title: value});
+            case "name": {
+                this.setState({name: value});
                 break;
             }
             case "shortDescription": {
@@ -273,30 +283,34 @@ class Step2 extends Component {
                 this.setState({description: value});
                 break;
             }
+            case "identifier": {
+                this.setState({identifier: value});
+                break;
+            }
         }
-    }
+    };
 
     /**
      * Removed user uploaded banner.
      * */
-    _removeBanner(event, d) {
+    removeBanner(event, d) {
         console.log(event, d);
         this.setState({banner: []});
-    }
+    };
 
     /**
      * Removes uploaded icon.
      * */
-    _removeIcon(event) {
+    removeIcon(event) {
         this.setState({icon: []});
-    }
+    };
 
     /**
      * Removes selected screenshot.
      * */
-    _removeScreenshot(event) {
+    removeScreenshot(event) {
         console.log(event.target)
-    }
+    };
 
     render() {
         console.log(this.state.visibilityComponent);
@@ -305,13 +319,23 @@ class Step2 extends Component {
                 <div>
                     <div>
                         <TextField
-                            id="title"
-                            hintText="Enter a title for your application."
+                            id="name"
+                            hintText="Enter a name for your application."
                             errorText={this.state.errors["Title"]}
-                            floatingLabelText="Title*"
+                            floatingLabelText="Name*"
                             floatingLabelFixed={true}
-                            onChange={this._onTextFieldChange.bind(this)}
-                        /><br/>
+                            onChange={this.onTextFieldChange.bind(this)}
+                        />
+                        <br/>
+                        <TextField
+                            id="identifier"
+                            hintText="Unique Identifier for Application."
+                            errorText={this.state.errors["Identifier"]}
+                            floatingLabelText="Identifier*"
+                            floatingLabelFixed={true}
+                            onChange={this.onTextFieldChange.bind(this)}
+                        />
+                        <br/>
                         <TextField
                             id="shortDescription"
                             hintText="Enter a short description for your application."
@@ -320,9 +344,9 @@ class Step2 extends Component {
                             floatingLabelFixed={true}
                             multiLine={true}
                             rows={2}
-                            onChange={this._onTextFieldChange.bind(this)}
-
-                        /><br/>
+                            onChange={this.onTextFieldChange.bind(this)}
+                        />
+                        <br/>
                         <TextField
                             id="description"
                             errorText={this.state.errors["Description"]}
@@ -331,30 +355,33 @@ class Step2 extends Component {
                             floatingLabelFixed={true}
                             multiLine={true}
                             rows={4}
-                            onChange={this._onTextFieldChange.bind(this)}
-                        /><br/>
+                            onChange={this.onTextFieldChange.bind(this)}
+                        />
+                        <br/>
                         <SelectField
                             floatingLabelText="Visibility*"
                             value={this.state.visibility}
                             floatingLabelFixed={true}
-                            onChange={this._onVisibilitySelect.bind(this)}
+                            onChange={this.onVisibilitySelect.bind(this)}
                         >
                             <MenuItem value={0} primaryText="Public"/>
                             <MenuItem value={1} primaryText="Roles"/>
                             <MenuItem value={2} primaryText="Devices"/>
-                        </SelectField><br/>
+                        </SelectField>
+                        <br/>
                         <TextField
                             id="tags"
                             errorText={this.state.errors["tags"]}
-                            hintText="Enter application tags.."
+                            hintText="Enter Application tags.."
                             floatingLabelText="Tags*"
                             floatingLabelFixed={true}
                             value={this.state.defValue}
-                            onChange={this._handleTagChange.bind(this)}
-                            onKeyPress={this._addTags.bind(this)}
-                        /><br/>
+                            onChange={this.handleTagChange.bind(this)}
+                            onKeyPress={this.addTags.bind(this)}
+                        />
+                        <br/>
                         <div className="applicationCreateWrapper">
-                            {this.state.tags.map(this._renderChip, this)}
+                            {this.state.tags.map(this.renderChip, this)}
                         </div>
                         <br/>
                         <SelectField
@@ -363,7 +390,8 @@ class Step2 extends Component {
                             floatingLabelFixed={true}
                         >
                             <MenuItem value={0} primaryText="Business"/>
-                        </SelectField> <br/>
+                        </SelectField>
+                        <br/>
                         {/*Platform Specific Properties.*/}
                         <div className="platformSpecificPropertyDiv">
                             <p className="platformSpecificPropertyP">Platform Specific Properties</p>
@@ -374,50 +402,58 @@ class Step2 extends Component {
                             <p className="applicationCreateBannerTitle">Banner*:</p>
                             <GridList className="applicationCreateGrid" cols={1.1}>
                                 {this.state.banner.map((tile) => (
-                                    <GridTile key={Math.floor(Math.random() * 1000)}
-                                              title={tile.name}
-                                              actionIcon={
-                                                  <IconButton onClick={this._removeBanner.bind(this)}>
-                                                        <Clear />
-                                                  </IconButton>}>
-                                        <img src={tile.preview}/></GridTile>
+                                    <GridTile
+                                        key={Math.floor(Math.random() * 1000)}
+                                        title={tile.name}
+                                        actionIcon={
+                                            <IconButton onClick={this.removeBanner.bind(this)}>
+                                                <Clear/>
+                                            </IconButton>}>
+                                        <img src={tile.preview}/>
+                                    </GridTile>
                                 ))}
                                 {this.state.banner.length === 0 ?
-                                    <Dropzone className="applicationCreateBannerDropZone" accept="image/jpeg, image/png"
-                                              onDrop={(banner, rejected) => {
-                                                  this.setState({banner, rejected});
-                                              }}>
-                                    <p className="applicationCreateBannerp">+</p>
-                                </Dropzone> : <div />}
-
+                                    <Dropzone
+                                        className="applicationCreateBannerDropZone"
+                                        accept="image/jpeg, image/png"
+                                        onDrop={(banner, rejected) => {
+                                            this.setState({banner, rejected});
+                                        }}
+                                    >
+                                        <p className="applicationCreateBannerp">+</p>
+                                    </Dropzone> : <div/>
+                                }
                             </GridList>
-
                         </div>
                         <br/>
                         <div>
                             <p className="applicationCreateScreenshotError">{this.state.errors["Screenshots"]}</p>
                             <p className="applicationCreateScreenshotTitle">Screenshots*:</p>
-                            <GridList className = "applicationCreateScreenshotGrid" cols={1.1}>
+                            <GridList className="applicationCreateScreenshotGrid" cols={1.1}>
                                 {this.state.screenshots.map((file) => (
-                                    <GridTile key={Math.floor(Math.random() * 1000)}
-                                              title={file[0].name}
-                                              actionIcon={
-                                                  <IconButton onClick={this._removeScreenshot.bind(this)}>
-                                                      <Clear/>
-                                                  </IconButton>}>
+                                    <GridTile
+                                        key={Math.floor(Math.random() * 1000)}
+                                        title={file[0].name}
+                                        actionIcon={
+                                            <IconButton onClick={this.removeScreenshot.bind(this)}>
+                                                <Clear/>
+                                            </IconButton>}>
                                         <img src={file[0].preview}/></GridTile>
                                 ))}
                                 {this.state.screenshots.length < 3 ?
-                                    <Dropzone className="applicationCreateScreenshotDropZone"
-                                              accept="image/jpeg, image/png"
-                                              onDrop={(screenshots, rejected) => {
-                                                  let tmpScreenshots = this.state.screenshots;
-                                                  tmpScreenshots.push(screenshots);
-                                                  this.setState({
-                                                      screenshots: tmpScreenshots});
-                                              }}>
-                                    <p className="applicationCreateScreenshotp">+</p>
-                                </Dropzone> : <div />}
+                                    <Dropzone
+                                        className="applicationCreateScreenshotDropZone"
+                                        accept="image/jpeg, image/png"
+                                        onDrop={(screenshots, rejected) => {
+                                            let tmpScreenshots = this.state.screenshots;
+                                            tmpScreenshots.push(screenshots);
+                                            this.setState({
+                                                screenshots: tmpScreenshots
+                                            });
+                                        }}
+                                    >
+                                        <p className="applicationCreateScreenshotp">+</p>
+                                    </Dropzone> : <div/>}
                             </GridList>
                         </div>
                         <br/>
@@ -426,38 +462,43 @@ class Step2 extends Component {
                             <p className="applicationCreateIconTitle">Icon*:</p>
                             <GridList className="applicationCreateIconGrid" cols={1.1}>
                                 {this.state.icon.map((tile) => (
-                                    <GridTile key={Math.floor(Math.random() * 1000)}
-                                              title={tile.name}
-                                              actionIcon={
-                                                  <IconButton onClick={this._removeIcon.bind(this)}>
-                                                      <Clear />
-                                                  </IconButton>}>
-                                        <img src={tile.preview}/></GridTile>
+                                    <GridTile
+                                        key={Math.floor(Math.random() * 1000)}
+                                        title={tile.name}
+                                        actionIcon={
+                                            <IconButton onClick={this.removeIcon.bind(this)}>
+                                                <Clear/>
+                                            </IconButton>}>
+                                        <img src={tile.preview}/>
+                                    </GridTile>
                                 ))}
                                 {this.state.icon.length === 0 ?
-                                    <Dropzone className="applicationCreateIconDropZone"
-                                              accept="image/jpeg, image/png"
-                                              onDrop={(icon, rejected) => {this.setState({icon, rejected});}}>
-                                    <p className="applicationCreateIconp">+</p>
-                                </Dropzone> : <div />}
+                                    <Dropzone
+                                        className="applicationCreateIconDropZone"
+                                        accept="image/jpeg, image/png"
+                                        onDrop={(icon, rejected) => {
+                                            this.setState({icon, rejected});
+                                        }}
+                                    >
+                                        <p className="applicationCreateIconp">+</p>
+                                    </Dropzone> : <div/>}
                             </GridList>
                         </div>
                         <br/>
                     </div>
-
                     <br/>
                     <br/>
                     <div className="applicationCreateBackAndNext">
                         <FlatButton
                             label="< Back"
                             disabled={false}
-                            onClick={this._handlePrev.bind(this)}
-                            className="applicationCreateBack"
+                            onClick={this.handlePrev.bind(this)}
+                            style={{marginRight: 12}}
                         />
                         <RaisedButton
                             label="Next >"
                             primary={true}
-                            onClick={this._handleNext.bind(this)}
+                            onClick={this.handleNext.bind(this)}
                         />
                     </div>
                 </div>

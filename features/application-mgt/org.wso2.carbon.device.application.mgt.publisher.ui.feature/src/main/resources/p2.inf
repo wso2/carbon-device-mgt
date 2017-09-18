@@ -1,5 +1,4 @@
 instructions.configure = \
 org.eclipse.equinox.p2.touchpoint.natives.mkdir(path:${installFolder}/../../deployment/server/webapps);\
 org.eclipse.equinox.p2.touchpoint.natives.mkdir(path:${installFolder}/../../deployment/server/webapps/publisher/);\
-org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.wso2.carbon.device.application
-.mgt.publisher.ui_${feature.version}/publisher/public/,target:${installFolder}/../../deployment/server/webapps/publisher/,overwrite:true);\
+org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.wso2.carbon.device.application.mgt.publisher.ui_${feature.version}/publisher/public/,target:${installFolder}/../../deployment/server/webapps/publisher/,overwrite:true);\

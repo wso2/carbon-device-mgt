@@ -35,10 +35,10 @@
 
     <modules>
         <module>org.wso2.carbon.device.application.mgt.api.feature</module>
+        <module>org.wso2.carbon.device.application.mgt.server.feature</module>
+        <module>org.wso2.carbon.device.application.mgt.publisher.ui.feature</module>
         <!--<module>org.wso2.carbon.device.application.mgt.ui.feature</module>-->
         <module>org.wso2.carbon.device.application.mgt.feature</module>
         <!--<module>org.wso2.carbon.device.application.mgt.extensions.feature</module>-->
-        <module>org.wso2.carbon.device.application.mgt.server.feature</module>
-        <module>org.wso2.carbon.device.application.mgt.publisher.ui.feature</module>
     </modules>
 </project>

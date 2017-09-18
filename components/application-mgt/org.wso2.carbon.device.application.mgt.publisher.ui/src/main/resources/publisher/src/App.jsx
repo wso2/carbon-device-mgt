@@ -16,26 +16,26 @@
  * under the License.
  */
 
-import './App.css';
+import './App.scss';
+import Theme from './theme';
 import React, {Component} from 'react';
+import AuthHandler from './api/authHandler';
 import createHistory from 'history/createBrowserHistory';
 import {BrowserRouter as Router, Redirect, Route, Switch} from 'react-router-dom'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import {
-    ApplicationCreate,
-    ApplicationListing,
-    BaseLayout,
-    Login,
-    NotFound,
-    PlatformCreate,
-    PlatformListing
+ApplicationCreate,
+ApplicationListing,
+BaseLayout,
+Login,
+NotFound,
+PlatformCreate,
+PlatformListing
 } from './components';
-import Theme from './theme';
 
 
 const history = createHistory({basename: '/publisher'});
-
 
 /**
  * This component defines the layout and the routes for the app.
@@ -54,23 +54,40 @@ class Base extends Component {
     constructor() {
         super();
         this.state = {
-            user: "admin"
+            user: null
         }
     }
 
+    componentWillMount() {
+        let user = AuthHandler.getUser();
+        if (user) {
+            if (!AuthHandler.isTokenExpired()) {
+                this.setState({user: user});
+            } else {
+                console.log("expired!");
+                this.setState({user: null});
+            }
+        }
+    }
+
+    componentDidMount() {
+
+    }
+
     render() {
-        if (this.state.user) {
+        if (this.state.user !== null) {
+            console.log("Have User.");
             return (
                 <div className="container">
-                    <BaseLayout>
+                    <BaseLayout user={this.state.user}>
                         <Switch>
                             <Redirect exact path={"/"} to={"/assets/apps"}/>
                             <Route exact path={"/assets/apps"} component={ApplicationListing}/>
                             <Route exact path={"/assets/apps/create"} component={ApplicationCreate}/>
                             <Route exact path={"/assets/platforms"} component={PlatformListing}/>
                             <Route exact path={"/assets/platforms/create"} component={PlatformCreate}/>
-                            <Route exact path={"/assets/apps/:app"} />
-                            <Route exact path={"/assets/apps/:app/edit"} />
+                            <Route exact path={"/assets/apps/:app"}/>
+                            <Route exact path={"/assets/apps/:app/edit"}/>
                             <Route exact path={"/assets/platforms/:platform"}/>
                             <Route exact path={"/assets/platforms/:platform/edit"}/>
                             <Route exact path={"/assets/reviews"}/>
@@ -80,8 +97,11 @@ class Base extends Component {
                     </BaseLayout>
                 </div>
             )
+        } else {
+            console.log("No user");
+            return (<Redirect to={"/login"}/>)
         }
-        return (<Redirect to={"/login"}/>)
+
     }
 }
 

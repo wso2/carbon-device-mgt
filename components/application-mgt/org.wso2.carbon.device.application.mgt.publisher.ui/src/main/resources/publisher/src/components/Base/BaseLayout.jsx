@@ -16,12 +16,17 @@
  * under the License.
  */
 
+import Theme from '../../theme';
 import PropTypes from 'prop-types';
 import Badge from 'material-ui/Badge';
 import React, {Component} from 'react';
 import AppBar from 'material-ui/AppBar';
 import Drawer from 'material-ui/Drawer';
+import IconMenu from 'material-ui/IconMenu';
+import MenuItem from 'material-ui/MenuItem';
 import {withRouter} from 'react-router-dom';
+import AuthHandler from "../../api/authHandler";
+import FlatButton from 'material-ui/FlatButton';
 import IconButton from 'material-ui/IconButton';
 import {List, ListItem} from 'material-ui/List';
 import Apps from 'material-ui/svg-icons/navigation/apps';
@@ -30,7 +35,6 @@ import Feedback from 'material-ui/svg-icons/action/feedback';
 import DevicesOther from 'material-ui/svg-icons/hardware/devices-other';
 import NotificationsIcon from 'material-ui/svg-icons/social/notifications';
 import ActionAccountCircle from 'material-ui/svg-icons/action/account-circle';
-import Theme from '../../theme';
 
 
 /**
@@ -48,6 +52,7 @@ class BaseLayout extends Component {
             user: 'Admin'
         };
         this.scriptId = "basic-layout";
+        this.logout = this.logout.bind(this);
     }
 
     componentWillMount() {
@@ -93,71 +98,93 @@ class BaseLayout extends Component {
         this.props.history.push(to);
     }
 
+    logout(event, index, value) {
+        AuthHandler.logout();
+    }
+
     render() {
         return (
 
             <div>
-                <AppBar title="App Publisher"
-                        iconElementRight={
-                            <div>
-                                <Badge
-                                    badgeContent={this.state.notifications}
-                                    secondary={true}
-                                    badgeStyle={{top: 12, right: 12}}
-                                >
-                                    <IconButton tooltip="Notifications">
-                                        <NotificationsIcon/>
-                                    </IconButton>
-                                </Badge>
-                                <IconButton onClick={() => {
-                                    console.log("Clicked")
-                                }}>
-                                    <ActionAccountCircle/>
+                <AppBar
+                    title="App Publisher"
+                    iconElementRight={
+                        <div>
+                            <Badge
+                                badgeContent={this.state.notifications}
+                                secondary={true}
+                                badgeStyle={{top: 12, right: 12}}
+                            >
+                                <IconButton tooltip="Notifications">
+                                    <NotificationsIcon/>
                                 </IconButton>
-                            </div>
-                        }
+                            </Badge>
+                            <IconMenu
+                                iconButtonElement={<FlatButton
+                                    icon={<ActionAccountCircle/>}
+                                    label="sdfdsf"
+                                />}
+                                anchorOrigin={{horizontal: 'left', vertical: 'top'}}
+                                targetOrigin={{horizontal: 'left', vertical: 'top'}}
+                                onChange={this.logout}
+                            >
+                                <MenuItem value={0} primaryText="Logout" />
+                            </IconMenu>
+                            {/*<FlatButton*/}
+                                {/*icon={<ActionAccountCircle/>}*/}
+                                {/*onClick={() => {console.log("Clicked")}}*/}
+                                {/*label={this.props.user.getUserName()}*/}
+                            {/*/>*/}
+                        </div>
+                    }
                 />
                 <div>
                     <Drawer containerStyle={{height: 'calc(100% - 64px)', width: '15%', top: '10%'}} open={true}>
                         <List>
-                           <ListItem primaryText="Applications"
-                                      leftIcon={<Apps/>}
-                                      initiallyOpen={false}
-                                      primaryTogglesNestedList={true}
-                                      onClick={this.handleApplicationClick.bind(this)}
-                                      nestedItems={[
-                                          <ListItem
-                                              key={1}
-                                              primaryText="Create"
-                                              onClick={this.handleApplicationCreateClick.bind(this)}
-                                              leftIcon={<Add/>}
-                                          />]}
+                            <ListItem
+                                primaryText="Applications"
+                                leftIcon={<Apps/>}
+                                initiallyOpen={false}
+                                primaryTogglesNestedList={true}
+                                onClick={this.handleApplicationClick.bind(this)}
+                                nestedItems={[
+                                    <ListItem
+                                        key={1}
+                                        primaryText="Create"
+                                        onClick={this.handleApplicationCreateClick.bind(this)}
+                                        leftIcon={<Add/>}
+                                    />
+                                ]}
                             />
-                            <ListItem primaryText="Platforms"
-                                      leftIcon={<DevicesOther/>}
-                                      initiallyOpen={false}
-                                      primaryTogglesNestedList={true}
-                                      onClick={this.handlePlatformClick.bind(this)}
-                                      nestedItems={[
-                                          <ListItem
-                                              key={1}
-                                              primaryText="Create"
-                                              onClick={this.handlePlatformCreateClick.bind(this)}
-                                              leftIcon={<Add/>}
-                                          />]}
+                            <ListItem
+                                primaryText="Platforms"
+                                leftIcon={<DevicesOther/>}
+                                initiallyOpen={false}
+                                primaryTogglesNestedList={true}
+                                onClick={this.handlePlatformClick.bind(this)}
+                                nestedItems={[
+                                    <ListItem
+                                        key={1}
+                                        primaryText="Create"
+                                        onClick={this.handlePlatformCreateClick.bind(this)}
+                                        leftIcon={<Add/>}
+                                    />
+                                ]}
                             />
-                            <ListItem primaryText="Reviews"
-                                      onClick={this.handleReviewClick.bind(this)}
-                                      leftIcon={<Feedback/>}/>
+                            <ListItem
+                                primaryText="Reviews"
+                                onClick={this.handleReviewClick.bind(this)}
+                                leftIcon={<Feedback/>}
+                            />
                         </List>
                     </Drawer>
                 </div>
                 <div className="basicLayoutDiv">
                     {this.props.children}
                 </div>
-            </div>);
+            </div>
+        );
     }
-
 }
 
 BaseLayout.propTypes = {

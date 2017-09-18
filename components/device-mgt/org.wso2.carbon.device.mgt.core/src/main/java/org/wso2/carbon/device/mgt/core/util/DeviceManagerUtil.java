@@ -21,6 +21,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Document;
 import org.wso2.carbon.base.MultitenantConstants;
+import org.wso2.carbon.caching.impl.CacheImpl;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.analytics.data.publisher.service.EventsPublisherService;
 import org.wso2.carbon.device.mgt.common.Device;
@@ -492,6 +493,7 @@ public final class DeviceManagerUtil {
     public static void initializeDeviceCache() {
         DeviceManagementConfig config = DeviceConfigurationManager.getInstance().getDeviceManagementConfig();
         int deviceCacheExpiry = config.getDeviceCacheConfiguration().getExpiryTime();
+        long deviceCacheCapacity = config.getDeviceCacheConfiguration().getCapacity();
         CacheManager manager = getCacheManager();
         if (config.getDeviceCacheConfiguration().isEnabled()) {
             if(!isDeviceCacheInitialized) {
@@ -502,6 +504,10 @@ public final class DeviceManagerUtil {
                                 setExpiry(CacheConfiguration.ExpiryType.MODIFIED, new CacheConfiguration.Duration(TimeUnit.SECONDS,
                                         deviceCacheExpiry)).setExpiry(CacheConfiguration.ExpiryType.ACCESSED, new CacheConfiguration.
                                 Duration(TimeUnit.SECONDS, deviceCacheExpiry)).setStoreByValue(true).build();
+                        if(deviceCacheCapacity > 0 ) {
+                            ((CacheImpl)(manager.<DeviceCacheKey, Device>getCache(DeviceManagementConstants.DEVICE_CACHE))).
+                                    setCapacity(deviceCacheCapacity);
+                        }
                     } else {
                         manager.<DeviceCacheKey, Device>getCache(DeviceManagementConstants.DEVICE_CACHE);
                     }
@@ -512,6 +518,8 @@ public final class DeviceManagerUtil {
                                 setExpiry(CacheConfiguration.ExpiryType.MODIFIED, new CacheConfiguration.Duration(TimeUnit.SECONDS,
                                         deviceCacheExpiry)).setExpiry(CacheConfiguration.ExpiryType.ACCESSED, new CacheConfiguration.
                                 Duration(TimeUnit.SECONDS, deviceCacheExpiry)).setStoreByValue(true).build();
+                        ((CacheImpl)(manager.<DeviceCacheKey, Device>getCache(DeviceManagementConstants.DEVICE_CACHE))).
+                                setCapacity(deviceCacheCapacity);
                     } else {
                         Caching.getCacheManager().<DeviceCacheKey, Device>getCache(DeviceManagementConstants.DEVICE_CACHE);
                     }

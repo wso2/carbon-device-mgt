@@ -41,8 +41,18 @@ require("/lib/error-pages-router.js");
     }
 
     if (authModule.isSsoEnabled()) {
-        // SSO is enabled.
-        authModule.renderSsoIntermediatePage("login", response);
+        var isAuthenticated = false;
+        if (authModule.isBackchannelEnabled()) {
+            var authCookie = request.getCookie("commonAuthId");
+            var samlssoTokenId = request.getCookie("samlssoTokenId");
+            if (authModule.canBackchannelAuthenticate(authCookie, samlssoTokenId)) {
+                isAuthenticated = authModule.backchannelLogin(authCookie, samlssoTokenId);
+            }
+        }
+        if (!isAuthenticated) {
+            // SSO is enabled.
+            authModule.renderSsoIntermediatePage("login", response);
+        }
     } else {
         // Generic login process is enabled.
         authModule.login(request, response);

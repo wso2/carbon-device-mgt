@@ -121,9 +121,10 @@ var handlers = function () {
         }
     };
 
-	publicMethods["setupTokenPairByJWTGrantType"] = function (username, samlToken) {
+	publicMethods["setupTokenPairByJWTGrantType"] = function (username, backchannelauth ,samlToken) {
 		//samlToken is used to validate then if the user is a valid user then token is issued with JWT Grant Type.
-		if (!username || !samlToken) {
+        //By pass this samlToken validation if back channel authenticated
+        if (!!username || !(samlToken || backchannelauth)) {
 			throw new Error("{/app/modules/oauth/token-handlers.js} Could not set up access token pair by " +
 			"saml grant type. Either username of logged in user, samlToken or both are missing " +
 			"as input - setupTokenPairBySamlGrantType(x, y)");
@@ -146,7 +147,7 @@ var handlers = function () {
 
 				// accessTokenPair will include current access token as well as current refresh token
 				tokenData = tokenUtil.
-					getTokenPairAndScopesByJWTGrantType(samlToken, encodedClientAppCredentials, stringOfScopes);
+					getTokenPairAndScopesByJWTGrantType(backchannelauth, samlToken, encodedClientAppCredentials, stringOfScopes);
 				if (!tokenData) {
 					throw new Error("{/app/modules/oauth/token-handlers.js} Could not set up token. Error in token " +
 					"retrieval - setupTokenPairBySamlGrantType(x, y)");

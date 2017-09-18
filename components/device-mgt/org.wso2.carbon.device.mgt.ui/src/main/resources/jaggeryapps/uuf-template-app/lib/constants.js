@@ -108,5 +108,8 @@ var constants = {
     CACHE_KEY_SSO_SESSIONS: "sso_sessions",
     CACHE_KEY_HANDLEBARS_ROOT: "_UUF_HANDLEBARS_ROOT",
     // URL Query Params
-    URL_PARAM_REFERER: "referer"
+    URL_PARAM_REFERER: "referer",
+    //Backchannel configs
+    SAML_SSO_URL: "samlSSOURL",
+    RETURN_TO_URL: "returnToURL"
 };

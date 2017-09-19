@@ -19,11 +19,14 @@
 
 package org.wso2.carbon.device.application.mgt.core.impl;
 
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.application.mgt.common.Application;
 import org.wso2.carbon.device.application.mgt.common.ApplicationRelease;
+import org.wso2.carbon.device.application.mgt.common.ImageArtifact;
 import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
 import org.wso2.carbon.device.application.mgt.common.exception.ApplicationStorageManagementException;
 import org.wso2.carbon.device.application.mgt.common.exception.DBConnectionException;
@@ -42,6 +45,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.List;
 
@@ -207,7 +211,7 @@ public class ApplicationStorageManagerImpl implements ApplicationStorageManager 
     }
 
     @Override
-    public InputStream getImageArtifact(String applicationUUID, String name, int count) throws
+    public ImageArtifact getImageArtifact(String applicationUUID, String name, int count) throws
             ApplicationStorageManagementException {
         Application application = validateApplication(applicationUUID);
         validateImageArtifactNames(name);
@@ -222,11 +226,19 @@ public class ApplicationStorageManagerImpl implements ApplicationStorageManager 
                     "Image artifact " + name + " does not exist for the " + "application with UUID " + applicationUUID);
         } else {
             try {
-                return new FileInputStream(imageArtifactPath);
+                ImageArtifact imageArtifact = new ImageArtifact();
+                imageArtifact.setName(imageFile.getName());
+                imageArtifact.setType(Files.probeContentType(imageFile.toPath()));
+                byte[] imageBytes = IOUtils.toByteArray(new FileInputStream(imageArtifactPath));
+                imageArtifact.setEncodedImage(Base64.encodeBase64URLSafeString(imageBytes));
+                return imageArtifact;
             } catch (FileNotFoundException e) {
                 throw new ApplicationStorageManagementException(
                         "File not found exception while trying to get the image artifact " + name + " for the "
                                 + "application " + applicationUUID, e);
+            } catch (IOException e) {
+                throw new ApplicationStorageManagementException("IO Exception while trying to detect the image "
+                        + "artifact " + name + " for the application " + applicationUUID, e);
             }
         }
     }

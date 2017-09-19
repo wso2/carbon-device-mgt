@@ -19,6 +19,7 @@
 
 package org.wso2.carbon.device.application.mgt.common.services;
 
+import org.wso2.carbon.device.application.mgt.common.ImageArtifact;
 import org.wso2.carbon.device.application.mgt.common.exception.ApplicationStorageManagementException;
 
 import java.io.InputStream;
@@ -93,6 +94,6 @@ public interface ApplicationStorageManager {
      * @return the relevant image artifact.
      * @throws ApplicationStorageManagementException Application Storage Management Exception.
      */
-    public InputStream getImageArtifact(String applicationUUID, String name, int count) throws
+    public ImageArtifact getImageArtifact(String applicationUUID, String name, int count) throws
             ApplicationStorageManagementException;
 }

@@ -29,6 +29,7 @@ import org.wso2.carbon.device.application.mgt.common.Application;
 import org.wso2.carbon.device.application.mgt.common.ApplicationList;
 import org.wso2.carbon.device.application.mgt.common.ApplicationRelease;
 import org.wso2.carbon.device.application.mgt.common.Filter;
+import org.wso2.carbon.device.application.mgt.common.ImageArtifact;
 import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
 import org.wso2.carbon.device.application.mgt.common.exception.ApplicationStorageManagementException;
 import org.wso2.carbon.device.application.mgt.common.services.ApplicationManager;
@@ -452,7 +453,7 @@ public class ApplicationManagementAPIImpl implements ApplicationManagementAPI {
     @Override
     @GET
     @Path("/image-artifacts/{uuid}")
-    @Produces(MediaType.APPLICATION_OCTET_STREAM)
+    @Produces(MediaType.APPLICATION_JSON)
     public Response getApplicationImageArtifacts(@PathParam("uuid") String applicationUUID,
                                                  @QueryParam("name") String name, @QueryParam("count") int count) {
         if (name == null || name.isEmpty()) {
@@ -461,10 +462,8 @@ public class ApplicationManagementAPIImpl implements ApplicationManagementAPI {
         }
         ApplicationStorageManager applicationStorageManager = APIUtil.getApplicationStorageManager();
         try {
-            InputStream imageArtifact = applicationStorageManager.getImageArtifact(applicationUUID, name, count);
-            FileStreamingOutput fileStreamingOutput = new FileStreamingOutput(imageArtifact);
-            Response.ResponseBuilder response = Response.status(Response.Status.OK).entity(fileStreamingOutput);
-            response.header("Content-Disposition", "attachment; filename=\"" + name + "\"");
+            ImageArtifact imageArtifact = applicationStorageManager.getImageArtifact(applicationUUID, name, count);
+            Response.ResponseBuilder response = Response.status(Response.Status.OK).entity(imageArtifact);
             return response.build();
         } catch (ApplicationStorageManagementException e) {
             log.error("Application Storage Management Exception while getting the image artifact " + name + " of "

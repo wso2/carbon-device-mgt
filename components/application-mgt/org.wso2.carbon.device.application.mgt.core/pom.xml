@@ -75,7 +75,9 @@
                             org.wso2.carbon.user.core.*,
                             org.wso2.carbon.user.api.*,
                             org.wso2.carbon.ndatasource.core,
-                            org.wso2.carbon
+                            org.wso2.carbon,
+                            org.apache.commons.io,
+                            org.apache.commons.codec.binary;version="[1.4.0, 2.0.0)"
                         </Import-Package>
                         <Export-Package>
                             !org.wso2.carbon.device.application.mgt.core.internal.*,

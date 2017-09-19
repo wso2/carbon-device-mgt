@@ -37,7 +37,6 @@ public class ImageArtifact {
     }
 
     public String getName() {
-
         return name;
     }
 

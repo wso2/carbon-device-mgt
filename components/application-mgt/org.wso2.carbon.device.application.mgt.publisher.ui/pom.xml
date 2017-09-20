@@ -28,7 +28,6 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>org.wso2.carbon.device.application.mgt.publisher.ui</artifactId>
     <version>3.0.46-SNAPSHOT</version>
-    <packaging>pom</packaging>
     <name>WSO2 Carbon - Application Management Publisher UI</name>
     <description>WSO2 Carbon - Application Management Publisher UI React Application</description>
     <url>http://wso2.org</url>

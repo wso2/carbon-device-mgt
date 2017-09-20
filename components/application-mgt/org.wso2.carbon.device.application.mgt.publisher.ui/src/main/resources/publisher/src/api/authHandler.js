@@ -43,9 +43,9 @@ class AuthHandler {
         login_promise.then(response => {
                 console.log(response);
                 const userName = response.data.userName;
-                const validityPeriod = response.data.expiresIn; // In seconds
-                const WSO2_IOT_TOKEN = response.data.accessToken;
-                const refreshToken = response.data.refreshToken;
+                const validityPeriod = response.data.expires_in; // In seconds
+                const WSO2_IOT_TOKEN = response.data.access_token;
+                const refreshToken = response.data.refresh_token;
                 const clientId = response.data.application_info[0].consumerKey;
                 const clientSecret = response.data.application_info[0].consumerSecret;
 

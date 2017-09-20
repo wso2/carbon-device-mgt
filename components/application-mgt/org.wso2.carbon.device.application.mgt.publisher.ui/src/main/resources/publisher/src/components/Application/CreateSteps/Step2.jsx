@@ -18,17 +18,10 @@
 
 import PropTypes from 'prop-types';
 import Theme from '../../../theme';
-import Chip from 'material-ui/Chip';
-import Dropzone from 'react-dropzone';
 import React, {Component} from 'react';
 import MenuItem from 'material-ui/MenuItem';
-import TextField from 'material-ui/TextField';
-import FlatButton from 'material-ui/FlatButton';
-import IconButton from 'material-ui/IconButton';
 import SelectField from 'material-ui/SelectField';
-import RaisedButton from 'material-ui/RaisedButton';
-import Clear from 'material-ui/svg-icons/content/clear';
-import {GridList, GridTile} from 'material-ui/GridList';
+import {Badge, FormGroup, Input, Label} from 'reactstrap';
 
 /**
  * The Second step of application create wizard.
@@ -40,9 +33,6 @@ import {GridList, GridTile} from 'material-ui/GridList';
  *      * Application Tags : {Used Material UI Chip component}
  *      * Application Category.
  *      * Platform Specific properties.
- *      * Screenshots
- *      * Banner
- *      * Icon
  *
  * Parent Component: Create
  * Props:
@@ -130,26 +120,13 @@ class Step2 extends Component {
      * Handles Chip delete function.
      * Removes the tag from state.tags
      * */
-    handleRequestDelete(key) {
+    handleRequestDelete(event) {
         this.chipData = this.state.tags;
-        const chipToDelete = this.chipData.map((chip) => chip.key).indexOf(key);
+        console.log(event.target);
+        const chipToDelete = this.chipData.map((chip) => chip.value).indexOf(event.target.value);
         this.chipData.splice(chipToDelete, 1);
         this.setState({tags: this.chipData});
     };
-
-    /**
-     * Creates Chip array from state.tags.
-     * */
-    renderChip(data) {
-        return (
-            <Chip
-                key={data.key}
-                onRequestDelete={() => this.handleRequestDelete(data.key)}
-                className="applicationCreateChip">
-                {data.value}
-            </Chip>
-        );
-    }
 
     onVisibilitySelect(event, index, value) {
         console.log(value);
@@ -251,15 +228,10 @@ class Step2 extends Component {
      * */
     setStepData() {
         let stepData = {
-            icon: this.state.icon,
-            name: this.state.name,
-            tags: this.state.tags,
-            banner: this.state.banner,
-            category: this.categories[this.state.category],
-            identifier: this.state.identifier,
-            screenshots: this.state.screenshots,
-            description: this.state.description,
-            shortDescription: this.state.shortDescription
+            // name: this.state.name,
+            // tags: this.state.tags,
+            // category: this.categories[this.state.category],
+            // description: this.state.description
         };
 
         this.props.setData("step2", {step: stepData});
@@ -290,216 +262,76 @@ class Step2 extends Component {
         }
     };
 
-    /**
-     * Removed user uploaded banner.
-     * */
-    removeBanner(event, d) {
-        console.log(event, d);
-        this.setState({banner: []});
-    };
-
-    /**
-     * Removes uploaded icon.
-     * */
-    removeIcon(event) {
-        this.setState({icon: []});
-    };
-
-    /**
-     * Removes selected screenshot.
-     * */
-    removeScreenshot(event) {
-        console.log(event.target)
-    };
-
     render() {
         console.log(this.state.visibilityComponent);
         return (
             <div className="createStep2Content">
                 <div>
                     <div>
-                        <TextField
-                            id="name"
-                            hintText="Enter a name for your application."
-                            errorText={this.state.errors["Title"]}
-                            floatingLabelText="Name*"
-                            floatingLabelFixed={true}
-                            onChange={this.onTextFieldChange.bind(this)}
-                        />
-                        <br/>
-                        <TextField
-                            id="identifier"
-                            hintText="Unique Identifier for Application."
-                            errorText={this.state.errors["Identifier"]}
-                            floatingLabelText="Identifier*"
-                            floatingLabelFixed={true}
-                            onChange={this.onTextFieldChange.bind(this)}
-                        />
-                        <br/>
-                        <TextField
-                            id="shortDescription"
-                            hintText="Enter a short description for your application."
-                            errorText={this.state.errors["Short Description"]}
-                            floatingLabelText="Short Description*"
-                            floatingLabelFixed={true}
-                            multiLine={true}
-                            rows={2}
-                            onChange={this.onTextFieldChange.bind(this)}
-                        />
-                        <br/>
-                        <TextField
-                            id="description"
-                            errorText={this.state.errors["Description"]}
-                            hintText="Enter the description."
-                            floatingLabelText="Description*"
-                            floatingLabelFixed={true}
-                            multiLine={true}
-                            rows={4}
-                            onChange={this.onTextFieldChange.bind(this)}
-                        />
-                        <br/>
-                        <SelectField
-                            floatingLabelText="Visibility*"
-                            value={this.state.visibility}
-                            floatingLabelFixed={true}
-                            onChange={this.onVisibilitySelect.bind(this)}
-                        >
-                            <MenuItem value={0} primaryText="Public"/>
-                            <MenuItem value={1} primaryText="Roles"/>
-                            <MenuItem value={2} primaryText="Devices"/>
-                        </SelectField>
-                        <br/>
-                        <TextField
-                            id="tags"
-                            errorText={this.state.errors["tags"]}
-                            hintText="Enter Application tags.."
-                            floatingLabelText="Tags*"
-                            floatingLabelFixed={true}
-                            value={this.state.defValue}
-                            onChange={this.handleTagChange.bind(this)}
-                            onKeyPress={this.addTags.bind(this)}
-                        />
-                        <br/>
-                        <div className="applicationCreateWrapper">
-                            {this.state.tags.map(this.renderChip, this)}
-                        </div>
-                        <br/>
-                        <SelectField
-                            floatingLabelText="Category*"
-                            value={this.state.category}
-                            floatingLabelFixed={true}
-                        >
-                            <MenuItem value={0} primaryText="Business"/>
-                        </SelectField>
-                        <br/>
-                        {/*Platform Specific Properties.*/}
-                        <div className="platformSpecificPropertyDiv">
-                            <p className="platformSpecificPropertyP">Platform Specific Properties</p>
-                        </div>
-                        <br/>
-                        <div>
-                            <p className="applicationCreateBannerError">{this.state.errors["Banner"]}</p>
-                            <p className="applicationCreateBannerTitle">Banner*:</p>
-                            <GridList className="applicationCreateGrid" cols={1.1}>
-                                {this.state.banner.map((tile) => (
-                                    <GridTile
-                                        key={Math.floor(Math.random() * 1000)}
-                                        title={tile.name}
-                                        actionIcon={
-                                            <IconButton onClick={this.removeBanner.bind(this)}>
-                                                <Clear/>
-                                            </IconButton>}>
-                                        <img src={tile.preview}/>
-                                    </GridTile>
-                                ))}
-                                {this.state.banner.length === 0 ?
-                                    <Dropzone
-                                        className="applicationCreateBannerDropZone"
-                                        accept="image/jpeg, image/png"
-                                        onDrop={(banner, rejected) => {
-                                            this.setState({banner, rejected});
-                                        }}
-                                    >
-                                        <p className="applicationCreateBannerp">+</p>
-                                    </Dropzone> : <div/>
-                                }
-                            </GridList>
-                        </div>
-                        <br/>
-                        <div>
-                            <p className="applicationCreateScreenshotError">{this.state.errors["Screenshots"]}</p>
-                            <p className="applicationCreateScreenshotTitle">Screenshots*:</p>
-                            <GridList className="applicationCreateScreenshotGrid" cols={1.1}>
-                                {this.state.screenshots.map((file) => (
-                                    <GridTile
-                                        key={Math.floor(Math.random() * 1000)}
-                                        title={file[0].name}
-                                        actionIcon={
-                                            <IconButton onClick={this.removeScreenshot.bind(this)}>
-                                                <Clear/>
-                                            </IconButton>}>
-                                        <img src={file[0].preview}/></GridTile>
-                                ))}
-                                {this.state.screenshots.length < 3 ?
-                                    <Dropzone
-                                        className="applicationCreateScreenshotDropZone"
-                                        accept="image/jpeg, image/png"
-                                        onDrop={(screenshots, rejected) => {
-                                            let tmpScreenshots = this.state.screenshots;
-                                            tmpScreenshots.push(screenshots);
-                                            this.setState({
-                                                screenshots: tmpScreenshots
-                                            });
-                                        }}
-                                    >
-                                        <p className="applicationCreateScreenshotp">+</p>
-                                    </Dropzone> : <div/>}
-                            </GridList>
-                        </div>
-                        <br/>
-                        <div>
-                            <p className="applcationCreateIconError">{this.state.errors["Icon"]}</p>
-                            <p className="applicationCreateIconTitle">Icon*:</p>
-                            <GridList className="applicationCreateIconGrid" cols={1.1}>
-                                {this.state.icon.map((tile) => (
-                                    <GridTile
-                                        key={Math.floor(Math.random() * 1000)}
-                                        title={tile.name}
-                                        actionIcon={
-                                            <IconButton onClick={this.removeIcon.bind(this)}>
-                                                <Clear/>
-                                            </IconButton>}>
-                                        <img src={tile.preview}/>
-                                    </GridTile>
-                                ))}
-                                {this.state.icon.length === 0 ?
-                                    <Dropzone
-                                        className="applicationCreateIconDropZone"
-                                        accept="image/jpeg, image/png"
-                                        onDrop={(icon, rejected) => {
-                                            this.setState({icon, rejected});
-                                        }}
-                                    >
-                                        <p className="applicationCreateIconp">+</p>
-                                    </Dropzone> : <div/>}
-                            </GridList>
-                        </div>
-                        <br/>
-                    </div>
-                    <br/>
-                    <br/>
-                    <div className="applicationCreateBackAndNext">
-                        <FlatButton
-                            label="< Back"
-                            disabled={false}
-                            onClick={this.handlePrev.bind(this)}
-                            style={{marginRight: 12}}
-                        />
-                        <RaisedButton
-                            label="Next >"
-                            primary={true}
-                            onClick={this.handleNext.bind(this)}
-                        />
+                        <FormGroup>
+                            <Label for="app-title">Title*</Label>
+                            <Input
+                                required type="text"
+                                name="appName"
+                                id="app-title"
+                            />
+                        </FormGroup>
+                        <FormGroup>
+                            <Label for="app-description">Description*</Label>
+                            <Input
+                                required type="textarea"
+                                name="appDescription"
+                                id="app-description"
+                            />
+                        </FormGroup>
+                        <FormGroup>
+                            <Label for="app-category">Category</Label>
+                            <Input
+                                type="select"
+                                name="category"
+                                id="app-category"
+                            >
+                                <option>Business</option>
+                            </Input>
+                        </FormGroup>
+                        <FormGroup>
+                            <Label for="app-visibility">Visibility</Label>
+                            <Input
+                                type="select"
+                                name="visibility"
+                                id="app-visibility"
+                            >
+                                <option>Devices</option>
+                                <option>Roles</option>
+                                <option>Groups</option>
+                            </Input>
+                        </FormGroup>
+                        <FormGroup>
+                            <Label for="app-tags">Tags*</Label>
+                            <Input
+                                required
+                                type="text"
+                                value={this.state.defValue}
+                                name="app-tags"
+                                id="app-tags"
+                                onChange={this.handleTagChange.bind(this)}
+                                onKeyPress={this.addTags.bind(this)}
+                            />
+                            <div id="batch-content">
+                                {this.state.tags.map(tag => {
+                                        return (
+                                            <Badge
+                                                style={{margin: '0 2px 0 2px'}}
+                                                value={tag.value}
+                                                onClick={this.handleRequestDelete.bind(this)}
+                                            >
+                                                {tag.value}
+                                            </Badge>
+                                        )
+                                    }
+                                )}
+                            </div>
+                        </FormGroup>
                     </div>
                 </div>
             </div>

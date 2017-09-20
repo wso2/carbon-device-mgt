@@ -18,13 +18,54 @@
 
 import React, {Component} from 'react';
 import {withRouter} from 'react-router-dom';
+import IconButton from 'material-ui/IconButton'
+import Create from 'material-ui/svg-icons/content/create';
 
 /**
  * Application view component.
  * Shows the details of the application.
  * */
 class ApplicationView extends Component{
+    constructor() {
+        super();
+        this.state = {
+            application: {}
+        }
+    }
 
+    componentWillReceiveProps(props, nextProps) {
+        this.setState({application: props.application});
+        console.log(props.application, nextProps)
+    }
+
+    componentDidMount() {
+        //Download image artifacts.
+        // this.setState({application: this.props.application});
+    }
+
+    handleEdit() {
+        this.props.history.push("/assets/apps/edit/" + this.state.application.uuid);
+    }
+
+    render() {
+        const platform = this.state.application;
+        console.log(platform);
+
+        return (
+            <div>
+
+                <label>Application Name : {this.state.application.name}</label>
+                <br/>
+                <label>Description: {this.state.application.description}</label>
+                <br/>
+
+                <IconButton onClick={this.handleEdit.bind(this)}>
+                    <Create/>
+                </IconButton>
+
+            </div>
+        );
+    }
 }
 
 export default withRouter(ApplicationView);

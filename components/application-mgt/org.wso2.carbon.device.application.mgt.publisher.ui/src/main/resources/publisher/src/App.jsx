@@ -25,13 +25,14 @@ import {BrowserRouter as Router, Redirect, Route, Switch} from 'react-router-dom
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import {
-ApplicationCreate,
-ApplicationListing,
-BaseLayout,
-Login,
-NotFound,
-PlatformCreate,
-PlatformListing
+    ApplicationCreate,
+    ApplicationListing,
+    BaseLayout,
+    Login,
+    NotFound,
+    PlatformCreate,
+    PlatformListing,
+    ApplicationEdit
 } from './components';
 
 
@@ -78,7 +79,7 @@ class Base extends Component {
         if (this.state.user !== null) {
             console.log("Have User.");
             return (
-                <div className="container">
+                <div>
                     <BaseLayout user={this.state.user}>
                         <Switch>
                             <Redirect exact path={"/"} to={"/assets/apps"}/>
@@ -86,8 +87,8 @@ class Base extends Component {
                             <Route exact path={"/assets/apps/create"} component={ApplicationCreate}/>
                             <Route exact path={"/assets/platforms"} component={PlatformListing}/>
                             <Route exact path={"/assets/platforms/create"} component={PlatformCreate}/>
-                            <Route exact path={"/assets/apps/:app"}/>
-                            <Route exact path={"/assets/apps/:app/edit"}/>
+                            {/*<Route exact path={"/assets/apps/:app"}/>*/}
+                            <Route exact path={"/assets/apps/edit/:app"} component={ApplicationEdit}/>
                             <Route exact path={"/assets/platforms/:platform"}/>
                             <Route exact path={"/assets/platforms/:platform/edit"}/>
                             <Route exact path={"/assets/reviews"}/>
@@ -151,27 +152,28 @@ class Publisher extends Component {
         if (this.state.selectedType === "default") {
             let defaultTheme = require("material-ui/styles/baseThemes/" + this.state.selectedTheme);
             this.setState({
-                muiTheme : getMuiTheme(defaultTheme.default)
+                muiTheme: getMuiTheme(defaultTheme.default)
             });
         } else {
             let customTheme = require("./themes/" + this.state.selectedTheme);
             this.setState({
-                muiTheme : getMuiTheme(customTheme.default)
+                muiTheme: getMuiTheme(customTheme.default)
             });
         }
 
     }
+
     render() {
         return (
             <div className="App">
-                <MuiThemeProvider muiTheme={this.state.muiTheme}>
-                <Router basename="publisher" history={history}>
-                    <Switch>
-                        <Route path="/login" component={Login}/>
-                        <Route path="/logout" component={Login}/>
-                        <Route component={Base}/>
-                    </Switch>
-                </Router>
+                <MuiThemeProvider>
+                    <Router basename="publisher" history={history}>
+                        <Switch>
+                            <Route path="/login" component={Login}/>
+                            <Route path="/logout" component={Login}/>
+                            <Route component={Base}/>
+                        </Switch>
+                    </Router>
                 </MuiThemeProvider>
             </div>
         );

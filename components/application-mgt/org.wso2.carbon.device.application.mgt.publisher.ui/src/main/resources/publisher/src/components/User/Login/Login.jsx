@@ -16,15 +16,10 @@
  * under the License.
  */
 
-import qs from 'qs';
-import PropTypes from 'prop-types';
 import React, {Component} from 'react';
-import Checkbox from 'material-ui/Checkbox';
-import TextField from 'material-ui/TextField';
 import {Redirect, Switch} from 'react-router-dom';
 import AuthHandler from '../../../api/authHandler';
-import RaisedButton from 'material-ui/RaisedButton';
-import {Card, CardActions, CardTitle} from 'material-ui/Card';
+import {Button, Card, CardBlock, CardSubtitle, CardTitle, Col, Form, FormGroup, Input, Label} from 'reactstrap';
 
 /**
  * The Login Component.
@@ -72,9 +67,10 @@ class Login extends Component {
      * Handles the username field change event.
      * */
     onUserNameChange(event, value) {
+        console.log(event.target.value);
         this.setState(
             {
-                userName: value
+                userName: event.target.value
             }
         );
     }
@@ -85,7 +81,7 @@ class Login extends Component {
     onPasswordChange(event, value) {
         this.setState(
             {
-                password: value
+                password: event.target.value
             }
         );
     }
@@ -136,43 +132,32 @@ class Login extends Component {
 
         if (!this.state.isLoggedIn) {
             return (
-                <div>
+                <div style={{width: '50%', margin: '0 auto'}}>
                     {/*TODO: Style the components.*/}
+                    <Card id="login-card">
+                    <CardBlock>
+                        <CardTitle>WSO2 IoT APP Publisher</CardTitle>
+                        <Form onSubmit={this.handleLogin.bind(this)}>
+                            <FormGroup row>
+                                <Label for="userName" sm={2}>User Name:</Label>
+                                <Col sm={10}>
+                                    <Input type="text" name="userName" id="userName" placeholder="User Name" onChange={this.onUserNameChange.bind(this)}/>
+                                </Col>
 
-                    <Card>
-                        <CardTitle title="WSO2 IoT App Publisher"/>
-                        <CardActions>
-                            <form onSubmit={this.handleLogin.bind(this)}>
-                                <TextField
-                                    hintText="Enter the User Name."
-                                    id="username"
-                                    errorText={this.state.errors["userNameError"]}
-                                    floatingLabelText="User Name*"
-                                    floatingLabelFixed={true}
-                                    value={this.state.userName}
-                                    onChange={this.onUserNameChange.bind(this)}
-                                />
-                                <br/>
-                                <TextField
-                                    hintText="Enter the Password."
-                                    id="password"
-                                    type="password"
-                                    errorText={this.state.errors["passwordError"]}
-                                    floatingLabelText="Password*"
-                                    floatingLabelFixed={true}
-                                    value={this.state.password}
-                                    onChange={this.onPasswordChange.bind(this)}
-                                />
-                                <br/>
-                                <Checkbox
-                                    label="Remember me."
-                                    onCheck={this.handleRememberMe.bind(this)}
-                                    checked={this.state.rememberMe}
-                                />
-                                <br/>
-                                <RaisedButton type="submit" label="Login"/>
-                            </form>
-                        </CardActions>
+                            </FormGroup>
+                            <FormGroup row>
+                                <Label for="password" sm={2}>Password:</Label>
+                                <Col sm={10}>
+                                    <Input type="password" name="text" id="password" placeholder="Password" onChange={this.onPasswordChange.bind(this)}/>
+                                </Col>
+                            </FormGroup>
+                            <FormGroup check row>
+                                <Col sm={{ size: 10, offset: 2 }}>
+                                    <Button type="submit" id="login-btn">Submit</Button>
+                                </Col>
+                            </FormGroup>
+                        </Form>
+                    </CardBlock>
                     </Card>
                 </div>);
         } else {

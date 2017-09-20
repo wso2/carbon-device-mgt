@@ -16,17 +16,20 @@
  * under the License.
  */
 
-import Login from './User/Login/Login';
-import NotFound from './Error/NotFound';
-import BaseLayout from './Base/BaseLayout';
-import PlatformCreate from './Platform/PlatformCreate';
-import PlatformListing from './Platform/PlatformListing';
-import ApplicationCreate from './Application/ApplicationCreate';
-import ApplicationListing from './Application/ApplicationListing';
-import ApplicationEdit from './Application/Edit/ApplicationEditBaseLayout';
+import React, {Component} from 'react';
+import './switch.css';
 
-/**
- * Contains all UI components related to Application, Login and Platform
- */
+class Switch extends Component {
 
-export {Login, BaseLayout, ApplicationCreate, ApplicationListing, PlatformListing, NotFound, PlatformCreate, ApplicationEdit};
+    render() {
+        const {height, width} = this.props;
+        return (
+            <label className="switch">
+                <input type="checkbox" onChange={this.props.onChange}/>
+                <span className="slider round"></span>
+            </label>
+        )
+    }
+}
+
+export default Switch;

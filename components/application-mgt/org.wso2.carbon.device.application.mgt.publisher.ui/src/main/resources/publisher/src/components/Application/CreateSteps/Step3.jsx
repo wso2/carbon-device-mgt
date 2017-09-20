@@ -17,33 +17,25 @@
  */
 
 import PropTypes from 'prop-types';
-import React, {Component} from 'react';
-import Toggle from 'material-ui/Toggle';
-import MenuItem from 'material-ui/MenuItem';
-import TextField from 'material-ui/TextField';
-import FlatButton from 'material-ui/FlatButton';
-import SelectField from 'material-ui/SelectField';
-import RaisedButton from 'material-ui/RaisedButton';
 import Theme from '../../../theme';
+import Chip from 'material-ui/Chip';
+import Dropzone from 'react-dropzone';
+import React, {Component} from 'react';
+import MenuItem from 'material-ui/MenuItem';
+import SelectField from 'material-ui/SelectField';
+import {FormGroup, Label} from 'reactstrap';
+
 
 /**
- * The Third step of application create wizard. {Application Release Step}
- * This step is not compulsory.
- *
- * When click finish, user will prompt to confirm the application creation.
- * User can go ahead and create the app or cancel.
- *
- * This contains following components:
- *      * Toggle to select application release. Un-hides the Application Release form.
- *
- *     Application Release Form.
- *      * Release Channel
- *      * Application Version
- *      * Upload component for application.
+ * The Third step of application create wizard.
+ * This contains following components.
+ *      * Screenshots
+ *      * Banner
+ *      * Icon
  *
  * Parent Component: Create
  * Props:
- *      * handleFinish : {type: function, Invokes handleNext function in Parent.}
+ *      * handleNext : {type: function, Invokes handleNext function in Parent.}
  *      * handlePrev : {type: function, Invokes handlePrev function in Parent}
  *      * setData : {type: function, Invokes setStepData function in Parent}
  *      * removeData : {type: Invokes removeStepData function in Parent}
@@ -51,16 +43,21 @@ import Theme from '../../../theme';
 class Step3 extends Component {
     constructor() {
         super();
-        this.handleToggle = this.handleToggle.bind(this);
-        this.handlePrev = this.handlePrev.bind(this);
-        this.handleToggle = this.handleToggle.bind(this);
-        this.handleFinish = this.handleFinish.bind(this);
         this.state = {
-            showForm: false,
-            releaseChannel: 1,
-            errors: {}
+            tags: [],
+            icon: [],
+            title: "",
+            errors: {},
+            banner: [],
+            defValue: "",
+            category: 0,
+            visibility: 0,
+            description: "",
+            screenshots: [],
+            identifier: "",
+            shortDescription: ""
         };
-        this.scriptId = "application-create-step3";
+        this.scriptId = "application-create-step2";
     }
 
     componentWillMount() {
@@ -75,71 +72,328 @@ class Step3 extends Component {
     }
 
     /**
-     * Handles finish button click.
-     * This invokes handleNext function in parent component.
+     * Create a tag on Enter key press and set it to the state.
+     * Clears the tags text field.
+     * Chip gets two parameters: Key and value.
      * */
-    handleFinish() {
-        this.props.handleFinish();
+    addTags(event) {
+        let tags = this.state.tags;
+        if (event.charCode === 13) {
+            event.preventDefault();
+            tags.push({key: Math.floor(Math.random() * 1000), value: event.target.value});
+            this.setState({tags, defValue: ""}, console.log(tags));
+        }
     }
 
     /**
-     * Invokes Prev button click.
+     * Set the value for tag.
+     * */
+    handleTagChange(event) {
+        let defaultValue = this.state.defValue;
+        defaultValue = event.target.value;
+        this.setState({defValue: defaultValue})
+    }
+
+    /**
+     * Invokes the handleNext function in Create component.
+     * */
+    handleNext() {
+        let fields = [{name: "Title", value: this.state.title},
+            {name: "Short Description", value: this.state.shortDescription},
+            {name: "Description", value: this.state.description},
+            {name: "Banner", value: this.state.banner},
+            {name: "Screenshots", value: this.state.screenshots},
+            {name: "Identifier", value: this.state.identifier},
+            {name: "Icon", value: this.state.icon}];
+        this.validate(fields);
+    }
+
+    /**
+     * Invokes the handlePrev function in Create component.
      * */
     handlePrev() {
         this.props.handlePrev();
     }
 
     /**
-     * Handles release application selection.
+     * Handles Chip delete function.
+     * Removes the tag from state.tags
      * */
-    handleToggle() {
-        let hide = this.state.showForm;
-        this.setState({showForm: !hide});
+    handleRequestDelete(event) {
+        this.chipData = this.state.tags;
+        console.log(event.target);
+        const chipToDelete = this.chipData.map((chip) => chip.value).indexOf(event.target.value);
+        this.chipData.splice(chipToDelete, 1);
+        this.setState({tags: this.chipData});
+    };
+
+    /**
+     * Creates Chip array from state.tags.
+     * */
+    renderChip(data) {
+        return (
+            <Chip
+                key={data.key}
+                onRequestDelete={() => this.handleRequestDelete(data.key)}
+                className="applicationCreateChip">
+                {data.value}
+            </Chip>
+        );
     }
 
-    render() {
-        return (
-            <div className="applicationCreateStepMiddle">
-                <div>
-                    <Toggle
-                        label="Release the Application"
-                        labelPosition="right"
-                        onToggle={this.handleToggle}
-                        defaultToggled={this.state.showForm}
-                    />
-                    {/*If toggle is true, the release form will be shown.*/}
-                    {!this.state.showForm ? <div/> :
-                        <div>
-                            <SelectField
-                                floatingLabelText="Select Release Channel*"
-                                value={this.state.releaseChannel}
-                                floatingLabelFixed={true}
-                            >
-                                <MenuItem value={1} primaryText="Alpha"/>
-                                <MenuItem value={2} primaryText="Beta"/>
-                                <MenuItem value={3} primaryText="GA"/>
-                            </SelectField>
-                            <br/>
-                            <TextField
-                                hintText="1.0.0"
-                                floatingLabelText="Version*"
-                                errorText={this.state.errors["title"]}
-                                floatingLabelFixed={true}
-                            /><br/>
-                        </div>}
-                    <div className="applicationCreateBackAndFinish">
-                        <FlatButton
-                            label="< Back"
-                            disabled={false}
-                            onClick={this.handlePrev}
-                            className="applicationCreateFinish"
-                        />
-                        <RaisedButton
-                            label="Finish"
-                            primary={true}
-                            onClick={this.handleFinish}
-                        />
+    onVisibilitySelect(event, index, value) {
+        console.log(value);
+        let comp = <SelectField> <MenuItem value={0} primaryText="Public"/>
+            <MenuItem value={1} primaryText="Roles"/>
+            <MenuItem value={2} primaryText="Devices"/> </SelectField>;
+        if (value === 1) {
+            this.setState({visibilityComponent: comp});
+        } else if (value === 2) {
 
+        } else {
+
+        }
+    };
+
+    /**
+     * Validate the form.
+     * */
+    validate(fields) {
+        let errors = {};
+        let errorsPresent = false;
+        fields.forEach(function (field) {
+            switch (field.name) {
+                case 'Title': {
+                    if (field.value === "") {
+                        errors[field.name] = field.name + " is required!";
+                        errorsPresent = true;
+                    } else {
+                        errorsPresent = false;
+                    }
+                    break;
+                }
+                case 'Identifier': {
+                    if (field.value === "") {
+                        errors[field.name] = field.name + " is required!";
+                        errorsPresent = true;
+                    } else {
+                        errorsPresent = false;
+                    }
+                    break;
+                }
+                case 'Short Description': {
+                    if (field.value === "") {
+                        errors[field.name] = field.name + " is required!";
+                        errorsPresent = true;
+                    } else {
+                        errorsPresent = false;
+                    }
+                    break;
+                }
+                case 'Description': {
+                    if (field.value === "") {
+                        errors[field.name] = field.name + " is required!";
+                        errorsPresent = true;
+                    } else {
+                        errorsPresent = false;
+                    }
+                    break;
+                }
+                case 'Banner': {
+                    if (field.value.length === 0) {
+                        errors[field.name] = field.name + " is required!";
+                        errorsPresent = true;
+                    } else {
+                        errorsPresent = false;
+                    }
+                    break;
+                }
+                case 'Icon': {
+                    if (field.value.length === 0) {
+                        errors[field.name] = field.name + " is required!";
+                        errorsPresent = true;
+                    } else {
+                        errorsPresent = false;
+                    }
+                    break;
+                }
+                case 'Screenshots': {
+                    if (field.value.length < 3) {
+                        errors[field.name] = "3 " + field.name + " are required!";
+                        errorsPresent = true;
+                    } else {
+                        errorsPresent = false;
+                    }
+                    break;
+                }
+            }
+        });
+
+        if (!errorsPresent) {
+            this.setStepData();
+        } else {
+            this.setState({errors: errors}, console.log(errors));
+        }
+    }
+
+    /**
+     * Creates an object with the current step data and persist in the parent.
+     * */
+    setStepData() {
+        let stepData = {
+            icon: this.state.icon,
+            name: this.state.name,
+            tags: this.state.tags,
+            banner: this.state.banner,
+            category: this.categories[this.state.category],
+            identifier: this.state.identifier,
+            screenshots: this.state.screenshots,
+            description: this.state.description,
+            shortDescription: this.state.shortDescription
+        };
+
+        this.props.setData("step2", {step: stepData});
+    };
+
+    /**
+     * Set text field values to state.
+     * */
+    onTextFieldChange(event, value) {
+        let field = event.target.id;
+        switch (field) {
+            case "name": {
+                this.setState({name: value});
+                break;
+            }
+            case "shortDescription": {
+                this.setState({shortDescription: value});
+                break;
+            }
+            case "description": {
+                this.setState({description: value});
+                break;
+            }
+            case "identifier": {
+                this.setState({identifier: value});
+                break;
+            }
+        }
+    };
+
+    /**
+     * Removed user uploaded banner.
+     * */
+    removeBanner(event, d) {
+        console.log(event, d);
+        this.setState({banner: []});
+    };
+
+    /**
+     * Removes uploaded icon.
+     * */
+    removeIcon(event) {
+        this.setState({icon: []});
+    };
+
+    /**
+     * Removes selected screenshot.
+     * */
+    removeScreenshot(event) {
+        console.log(event.target)
+    };
+
+    render() {
+        console.log(this.state.visibilityComponent);
+        return (
+            <div className="createStep2Content">
+                <div>
+                    <div>
+                        <div>
+                            <FormGroup>
+                                <Label for="app-screenshots">Screenshots*</Label>
+                                <span className="image-sub-title"> (600 X 800 32 bit PNG)</span>
+                                <div id="screenshot-container">
+                                    {this.state.screenshots.map((tile) => (
+                                        <button id="img-btn-screenshot" style={{height: '210px', width: '410px'}}
+                                                onMouseEnter={() => {
+                                                    console.log("Mouse Entered")
+                                                }}>
+                                            {console.log(tile[0].preview)}
+                                            <img style={{height: '200px', width: '400px'}} src={tile[0].preview}/>
+                                        </button>
+                                    ))}
+                                    {this.state.screenshots.length < 3 ?
+                                        <Dropzone
+                                            className="applicationCreateScreenshotDropZone"
+                                            accept="image/jpeg, image/png"
+                                            onDrop={(screenshots, rejected) => {
+                                                let tmpScreenshots = this.state.screenshots;
+                                                tmpScreenshots.push(screenshots);
+                                                console.log(screenshots);
+                                                this.setState({
+                                                    screenshots: tmpScreenshots
+                                                });
+                                            }}
+                                        >
+                                            <p className="applicationCreateScreenshotp">+</p>
+                                        </Dropzone> : <div/>}
+                                </div>
+                            </FormGroup>
+                        </div>
+                        <div style={{display: 'flex'}}>
+                            <div style={{float: 'left', marginRight: '15px'}}>
+                                <FormGroup>
+                                    <Label for="app-icon">Icon*</Label>
+                                    <span className="image-sub-title"> (512 X 512 32 bit PNG)</span>
+                                    <div id="app-icon-container">
+                                        {this.state.icon.map((tile) => (
+                                            <button onMouseEnter={() => {
+                                                console.log("Mouse Entered")
+                                            }}>
+                                                <img style={{height: '200px', width: '200px'}} src={tile.preview}/>
+                                            </button>
+                                        ))}
+                                    </div>
+
+                                    {this.state.icon.length === 0 ?
+                                        <Dropzone
+                                            className="applicationCreateIconDropZone"
+                                            accept="image/jpeg, image/png"
+                                            onDrop={(icon, rejected) => {
+                                                this.setState({icon, rejected});
+                                            }}
+                                        >
+                                            <p className="applicationCreateIconp">+</p>
+                                        </Dropzone> : <div/>}
+                                </FormGroup>
+                            </div>
+                            <div style={{marginLeft: '15px'}}>
+                                <FormGroup>
+                                    <Label for="app-banner">Banner*</Label>
+                                    <span className="image-sub-title"> (1000 X 400 32 bit PNG)</span>
+                                    <div id="app-banner-container">
+                                        {this.state.banner.map((tile) => (
+                                            <button onMouseEnter={() => {
+                                                console.log("Mouse Entered")
+                                            }}>
+                                                <img style={{height: '200px', width: '400px'}} src={tile.preview}/>
+                                            </button>
+                                        ))}
+                                        {this.state.banner.length === 0 ?
+                                            <Dropzone
+                                                className="applicationCreateBannerDropZone"
+                                                accept="image/jpeg, image/png"
+                                                onDrop={(banner, rejected) => {
+                                                    this.setState({banner, rejected});
+                                                }}
+                                            >
+                                                <p className="applicationCreateBannerp">+</p>
+                                            </Dropzone> : <div/>
+                                        }
+                                    </div>
+                                </FormGroup>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -147,8 +401,8 @@ class Step3 extends Component {
     }
 }
 
-Step3.propTypes = {
-    handleFinish: PropTypes.func,
+Step3.prototypes = {
+    handleNext: PropTypes.func,
     handlePrev: PropTypes.func,
     setData: PropTypes.func,
     removeData: PropTypes.func

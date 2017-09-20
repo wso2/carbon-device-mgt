@@ -16,25 +16,15 @@
  * under the License.
  */
 
-import Theme from '../../theme';
 import PropTypes from 'prop-types';
-import Badge from 'material-ui/Badge';
 import React, {Component} from 'react';
-import AppBar from 'material-ui/AppBar';
-import Drawer from 'material-ui/Drawer';
-import IconMenu from 'material-ui/IconMenu';
-import MenuItem from 'material-ui/MenuItem';
 import {withRouter} from 'react-router-dom';
 import AuthHandler from "../../api/authHandler";
-import FlatButton from 'material-ui/FlatButton';
-import IconButton from 'material-ui/IconButton';
-import {List, ListItem} from 'material-ui/List';
-import Apps from 'material-ui/svg-icons/navigation/apps';
-import Add from 'material-ui/svg-icons/content/add-circle';
-import Feedback from 'material-ui/svg-icons/action/feedback';
-import DevicesOther from 'material-ui/svg-icons/hardware/devices-other';
+import '../../css/font-wso2.css';
 import NotificationsIcon from 'material-ui/svg-icons/social/notifications';
 import ActionAccountCircle from 'material-ui/svg-icons/action/account-circle';
+import ApplicationCreate from '../Application/ApplicationCreate';
+import {Button, Input, InputGroup,} from 'reactstrap';
 
 
 /**
@@ -49,45 +39,21 @@ class BaseLayout extends Component {
         super();
         this.state = {
             notifications: 0,
-            user: 'Admin'
+            user: 'Admin',
+            openModal: false
         };
         this.scriptId = "basic-layout";
         this.logout = this.logout.bind(this);
-    }
-
-    componentWillMount() {
-        /**
-         *Loading the theme files based on the the user-preference.
-         */
-        Theme.insertThemingScripts(this.scriptId);
-    }
-
-    componentWillUnmount() {
-        Theme.removeThemingScripts(this.scriptId)
     }
 
     handleApplicationClick() {
         this.handleHistory('/assets/apps');
     }
 
-    handleOverviewClick() {
-        this.handleHistory('/overview');
-    }
-
-    handleApplicationCreateClick() {
-        this.handleHistory('/assets/apps/create');
-    }
-
-    handlePlatformClick() {
-        this.handleHistory('/assets/platforms');
-    }
-
-    handlePlatformCreateClick() {
-        this.handleHistory('/assets/platforms/create');
-    }
-
-    handleReviewClick() {
-        this.handleHistory('/assets/reviews');
+    handleApplicationCreateClick(event) {
+        event.preventDefault();
+        event.stopPropagation();
+        this.setState({openModal: true});
     }
 
     /**
@@ -104,84 +70,44 @@ class BaseLayout extends Component {
 
     render() {
         return (
-
-            <div>
-                <AppBar
-                    title="App Publisher"
-                    iconElementRight={
-                        <div>
-                            <Badge
-                                badgeContent={this.state.notifications}
-                                secondary={true}
-                                badgeStyle={{top: 12, right: 12}}
-                            >
-                                <IconButton tooltip="Notifications">
-                                    <NotificationsIcon/>
-                                </IconButton>
-                            </Badge>
-                            <IconMenu
-                                iconButtonElement={<FlatButton
-                                    icon={<ActionAccountCircle/>}
-                                    label="sdfdsf"
-                                />}
-                                anchorOrigin={{horizontal: 'left', vertical: 'top'}}
-                                targetOrigin={{horizontal: 'left', vertical: 'top'}}
-                                onChange={this.logout}
-                            >
-                                <MenuItem value={0} primaryText="Logout" />
-                            </IconMenu>
-                            {/*<FlatButton*/}
-                                {/*icon={<ActionAccountCircle/>}*/}
-                                {/*onClick={() => {console.log("Clicked")}}*/}
-                                {/*label={this.props.user.getUserName()}*/}
-                            {/*/>*/}
+            <div id="container">
+                <div id="header-content">
+                    <div id="header">
+                        <span id="header-text">
+                            WSO2 IoT App Publisher
+                        </span>
+                        <div id="header-btn">
+                            <Button id="btn"><NotificationsIcon/></Button>
+                            <Button id="btn"><ActionAccountCircle/></Button>
                         </div>
-                    }
-                />
-                <div>
-                    <Drawer containerStyle={{height: 'calc(100% - 64px)', width: '15%', top: '10%'}} open={true}>
-                        <List>
-                            <ListItem
-                                primaryText="Applications"
-                                leftIcon={<Apps/>}
-                                initiallyOpen={false}
-                                primaryTogglesNestedList={true}
-                                onClick={this.handleApplicationClick.bind(this)}
-                                nestedItems={[
-                                    <ListItem
-                                        key={1}
-                                        primaryText="Create"
-                                        onClick={this.handleApplicationCreateClick.bind(this)}
-                                        leftIcon={<Add/>}
-                                    />
-                                ]}
+                    </div>
+                    <div id="search-box">
+                        <InputGroup>
+                            <Input id="search"
+                                   name="search"
+                                   placeholder={'Search for Applications'}
+                                   onChange={(event) => console.log(event.target.value)}
                             />
-                            <ListItem
-                                primaryText="Platforms"
-                                leftIcon={<DevicesOther/>}
-                                initiallyOpen={false}
-                                primaryTogglesNestedList={true}
-                                onClick={this.handlePlatformClick.bind(this)}
-                                nestedItems={[
-                                    <ListItem
-                                        key={1}
-                                        primaryText="Create"
-                                        onClick={this.handlePlatformCreateClick.bind(this)}
-                                        leftIcon={<Add/>}
-                                    />
-                                ]}
-                            />
-                            <ListItem
-                                primaryText="Reviews"
-                                onClick={this.handleReviewClick.bind(this)}
-                                leftIcon={<Feedback/>}
-                            />
-                        </List>
-                    </Drawer>
+                        </InputGroup>
+                    </div>
                 </div>
-                <div className="basicLayoutDiv">
+                <div id="add-btn-container">
+                    <Button id="add-btn"
+                            onClick={this.handleApplicationCreateClick.bind(this)}
+                    >
+                        <h3>
+                            <strong>+</strong>
+                        </h3>
+                    </Button>
+                </div>
+                <div className="application-content"
+                     style={this.state.style}
+                >
                     {this.props.children}
                 </div>
+                <ApplicationCreate
+                    open={this.state.openModal}
+                />
             </div>
         );
     }

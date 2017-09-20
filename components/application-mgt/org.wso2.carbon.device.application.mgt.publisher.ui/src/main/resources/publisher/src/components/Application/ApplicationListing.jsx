@@ -19,11 +19,10 @@
 import Theme from '../../theme';
 import React, {Component} from 'react';
 import {withRouter} from 'react-router-dom';
-import TextField from 'material-ui/TextField';
 import AuthHandler from "../../api/authHandler";
-import DataTable from '../UIComponents/DataTable';
 import ApplicationMgtApi from '../../api/applicationMgtApi';
-import {Card, CardActions, CardTitle} from 'material-ui/Card';
+import {Table} from 'reactstrap';
+import Drawer from '../UIComponents/Drawer/Drawer'
 
 /**
  * The App Create Component.
@@ -41,10 +40,15 @@ class ApplicationListing extends Component {
         this.setData = this.setData.bind(this);
         this.sortData = this.sortData.bind(this);
         this.compare = this.compare.bind(this);
+        this.handleButtonClick = this.handleButtonClick.bind(this);
         this.state = {
             searchedApplications: [],
             applications: [],
-            asc: true
+            asc: true,
+            open: false,
+            application: {},
+            drawer: {},
+            appListStyle: {}
         };
         this.scriptId = "application-listing";
     }
@@ -80,7 +84,40 @@ class ApplicationListing extends Component {
             data_type: "string",
             sortable: false,
             label: "Status"
+        },
+        {
+            data_id: "edit",
+            data_type: "button",
+            sortable: false,
+            label: ""
         }
+    ];
+
+
+    applications = [
+        {
+            id: "3242342ffww3423",
+            applicationName: "Facebook",
+            platform: "android",
+            category: "Business",
+            status: "Published"
+        },
+        {
+            icon: "http://dl1.cbsistatic.com/i/r/2016/08/08/0e67e43a-5a45-41ab-b81d-acfba8708044/resize/736x552/0c0ee669677b5060a0fa1bfb0c7873b4/android-logo-promo-470.png",
+            id: "324234233423423",
+            applicationName: "Twitter",
+            platform: "android",
+            category: "Business",
+            status: "Created"
+        },
+        {
+            icon: "https://www.greenfoot.org/images/logos/macos.png",
+            id: "3242d3423423423",
+            applicationName: "Massenger",
+            platform: "android",
+            category: "Business",
+            status: "In Review"
+        },
     ];
 
     componentWillMount() {
@@ -89,14 +126,6 @@ class ApplicationListing extends Component {
          *Loading the theme files based on the the user-preference.
          */
         Theme.insertThemingScripts(this.scriptId);
-    }
-
-    componentWillUnmount() {
-        Theme.removeThemingScripts(this.scriptId);
-        // this.setState({data: this.data});
-    }
-
-    componentDidMount() {
         let getApps = ApplicationMgtApi.getApplications();
         getApps.then(response => {
             let apps = this.setData(response.data.applications);
@@ -106,6 +135,15 @@ class ApplicationListing extends Component {
         }).catch(err => {
             AuthHandler.unauthorizedErrorHandler(err);
         });
+    }
+
+    componentWillUnmount() {
+        Theme.removeThemingScripts(this.scriptId);
+        // this.setState({data: this.data});
+    }
+
+    componentDidMount() {
+
     }
 
     /**
@@ -165,32 +203,80 @@ class ApplicationListing extends Component {
         return 0;
     }
 
-    onRowClick(id) {
+    onRowClick() {
+        console.log("sfsdfsdf");
+        let style = {
+            width: '250px',
+            marginLeft: '250px'
+        };
+
+        let appListStyle = {
+            marginRight: '250px',
+        }
+
+        this.setState({drawer: style, appListStyle: appListStyle});
+
+
         //TODO: Remove console logs.
-        ApplicationMgtApi.getApplication(id).then(response => {
-            console.log(response);
-        }).catch(err => {
-            console.log(err)
-        });
+        // ApplicationMgtApi.getApplication(id).then(response => {
+        //     console.log(response);
+        //     this.setState({open: true, application:response.data})
+        // }).catch(err => {
+        //     console.log(err)
+        // });
         // this.props.history.push("apps/" + id);
+    }
+
+    handleButtonClick(id) {
+        console.log("Application Listing", id);
+        this.props.history.push("apps/" + id);
     }
 
     render() {
         return (
-            <div className="middle applicationListingMiddle">
-                <Card className="applicationListingCard">
-                    <TextField
-                        hintText="Search"
-                        className="applicationListingSearch"
-                        onChange={this.searchApplications}/>
-                    <CardTitle title="Applications" className="applicationListTitle"/>
-                    <DataTable
-                        headers={this.headers}
-                        data={this.state.searchedApplications}
-                        handleRowClick={this.onRowClick}
-                        noDataMessage={{type: 'button', text: 'Create Application'}}
-                    />
-                </Card>
+
+            <div id="application-list" style={this.state.appListStyle}>
+                <Table striped hover>
+                    <thead>
+                    <tr>
+                        <th></th>
+                        {/* TODO: Remove console.log and add sort method. */}
+                        <th onClick={() => {console.log("sort")}}>Application Name</th>
+                        <th>Category</th>
+                        <th>Platform</th>
+                        <th>Status</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {this.applications.map(
+                        (application) => {
+                            return (
+                                <tr key={application.id} onClick={this.onRowClick}>
+                                    <td>
+                                        {/* TODO: Move this styles to css. */}
+                                        <img
+                                            src={application.icon}
+                                            height='50px'
+                                            width='50px'
+                                            style={{border: 'solid 1px black', borderRadius: "100%"}}
+                                        /></td>
+                                    <td>{application.applicationName}</td>
+                                    <td>{application.category}</td>
+                                    <td>{application.platform}</td>
+                                    <td>{application.status}</td>
+                                    <td><i>Edit</i></td>
+                                </tr>
+                            )
+                        }
+                    )}
+                    </tbody>
+                </Table>
+                <Drawer style={this.state.drawer}>
+                    <div id="application-view">
+
+                    </div>
+                </Drawer>
             </div>
         );
     }

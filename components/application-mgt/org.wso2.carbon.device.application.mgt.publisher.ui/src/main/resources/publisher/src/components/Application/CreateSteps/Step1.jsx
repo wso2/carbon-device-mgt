@@ -19,11 +19,9 @@
 import Theme from '../../../theme';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
-import MenuItem from 'material-ui/MenuItem';
-import SelectField from 'material-ui/SelectField';
 import AuthHandler from "../../../api/authHandler";
-import RaisedButton from 'material-ui/RaisedButton';
 import PlatformMgtApi from "../../../api/platformMgtApi";
+import {FormGroup, Input, Label} from 'reactstrap';
 
 /**
  * The first step of the application creation wizard.
@@ -42,6 +40,8 @@ class Step1 extends Component {
     constructor() {
         super();
         this.setPlatforms = this.setPlatforms.bind(this);
+        this.setStepData = this.setStepData.bind(this);
+        this.cancel = this.cancel.bind(this);
         this.platforms = [];
         this.state = {
             finished: false,
@@ -61,12 +61,13 @@ class Step1 extends Component {
         /**
          *Loading the theme files based on the the user-preference.
          */
-       Theme.insertThemingScripts(this.scriptId);
+        Theme.insertThemingScripts(this.scriptId);
     }
 
     componentWillUnmount() {
         Theme.removeThemingScripts(this.scriptId);
     }
+
     componentDidMount() {
         //Get the list of available platforms and set to the state.
         PlatformMgtApi.getPlatforms().then(response => {
@@ -88,14 +89,14 @@ class Step1 extends Component {
             platform = platforms[index];
             tmpPlatforms.push(platform);
         }
-        this.setState({platforms: tmpPlatforms, platformSelectedIndex: 0, platform: tmpPlatforms[0].identifier})
+        this.setState({platforms: tmpPlatforms, platformSelectedIndex: 0, platform: tmpPlatforms[0].name})
     }
 
     /**
      * Persist the current form data to the state.
      * */
     setStepData() {
-        console.log("Platforms",this.state.platforms);
+        console.log("Platforms", this.state.platforms);
         let step = {
             store: this.state.store,
             platform: this.state.platforms[this.state.platformSelectedIndex]
@@ -104,77 +105,54 @@ class Step1 extends Component {
         this.props.setData("step1", {step: step});
     }
 
-    /**
-     * Handles Next button click.
-     *  Validates the form.
-     *  Sets the data to the state.
-     *  Invokes the handleNext method of Create component.
-     * */
-    handleClick() {
-        this.setStepData();
+    cancel() {
+
     }
 
     /**
      * Triggers when changing the Platform selection.
      * */
-    onChangePlatform(event, index, value) {
-        console.log(this.state.platforms[index]);
-        this.setState({platform: this.state.platforms[index].identifier, platformSelectedIndex: index});
+    onChangePlatform(event) {
+        console.log(event.target.value, this.state.platforms);
+        let id = event.target.value;
+        let selectedPlatform = this.state.platforms.filter((platform) => {
+            return platform.identifier === id;
+        });
+        console.log(selectedPlatform);
+
+        this.setState({platform: selectedPlatform});
     };
 
     /**
      * Triggers when changing the Store selection.
      * */
-    onChangeStore(event, index, value) {
-        this.setState({store: value});
+    onChangeStore(event) {
+        console.log(event.target.value);
+        this.setState({store: event.target.value});
     };
 
     render() {
         return (
             <div>
-                <div className="creatediv">
-                    <div>
-                        <div>
-                            <SelectField
-                                floatingLabelText="Store Type*"
-                                value={this.state.store}
-                                floatingLabelFixed={true}
-                                onChange={this.onChangeStore.bind(this)}
-                            >
-                                <MenuItem value={0} primaryText="Enterprise"/>
-                                <MenuItem value={1} primaryText="Public"/>
-                            </SelectField>
-                            <br/>
-                            <SelectField
-                                floatingLabelText="Platform*"
-                                value={this.state.platform}
-                                floatingLabelFixed={true}
-                                onChange={this.onChangePlatform.bind(this)}
-                            >
-                                {this.state.platforms.length > 0 ? this.state.platforms.map(platform => {
-                                    return (
-                                        <MenuItem
-                                            key={Math.random()}
-                                            value={platform.identifier}
-                                            primaryText={platform.name}
-                                        />
-                                    )
-                                }) : <div/>}
 
-
-                            </SelectField>
-                        </div>
-                        <br/>
-                        <br/>
-                        <div className="nextButton">
-                            <RaisedButton
-                                label="Next >"
-                                primary={true}
-                                onClick={this.handleClick.bind(this)}
-                            />
-                        </div>
-                    </div>
-                </div>
+                <FormGroup>
+                    <Label for="store">Store Type</Label>
+                    <Input type="select" name="store" id="store" className="input-custom"
+                           onChange={this.onChangeStore.bind(this)}>
+                        <option>Enterprise</option>
+                        <option>Public</option>
+                    </Input>
+                </FormGroup>
+                <FormGroup>
+                    <Label for="store">Platform</Label>
+                    <Input type="select" name="store" id="store" onChange={this.onChangePlatform.bind(this)}>
+                        {this.state.platforms.length > 0 ? this.state.platforms.map(platform => {
+                            return (
+                                <option value={platform.identifier}>{platform.name}</option>
+                            )
+                        }) : <option>No Platforms</option>}
+                    </Input>
+                </FormGroup>
             </div>
         );
     }

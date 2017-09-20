@@ -16,17 +16,28 @@
  * under the License.
  */
 
-import Login from './User/Login/Login';
-import NotFound from './Error/NotFound';
-import BaseLayout from './Base/BaseLayout';
-import PlatformCreate from './Platform/PlatformCreate';
-import PlatformListing from './Platform/PlatformListing';
-import ApplicationCreate from './Application/ApplicationCreate';
-import ApplicationListing from './Application/ApplicationListing';
-import ApplicationEdit from './Application/Edit/ApplicationEditBaseLayout';
+import PropTypes from 'prop-types';
+import React, {Component} from 'react';
+import './drawer.css';
 
-/**
- * Contains all UI components related to Application, Login and Platform
- */
 
-export {Login, BaseLayout, ApplicationCreate, ApplicationListing, PlatformListing, NotFound, PlatformCreate, ApplicationEdit};
+
+class Drawer extends Component {
+
+    render() {
+        return (
+            <div>
+                <div id="mySidenav" className="sidenav" style={this.props.style}>
+                    {this.props.children}
+                </div>
+            </div>
+        );
+    }
+}
+
+Drawer.propTypes = {
+    style: PropTypes.object,
+    children: PropTypes.node
+};
+
+export default Drawer;

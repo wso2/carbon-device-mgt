@@ -54,6 +54,7 @@ class DataTable extends Component {
     constructor() {
         super();
         this.handleRowClick = this.handleRowClick.bind(this);
+        this.handleBtnClick = this.handleBtnClick.bind(this);
         this.state = {
             data: [],
             headers: [],
@@ -75,6 +76,10 @@ class DataTable extends Component {
     }
 
     shouldComponentUpdate(nextProps, nextState) {
+        if (!nextProps.data) {
+            this.setState({data: nextState.data});
+            return true;
+        }
         this.setState({data: nextProps.data});
         return true;
     }
@@ -85,6 +90,10 @@ class DataTable extends Component {
      * */
     handleRowClick(id) {
         this.props.handleRowClick(id);
+    }
+
+    handleBtnClick(id) {
+        this.props.handleButtonClick(id);
     }
 
     render() {
@@ -121,6 +130,7 @@ class DataTable extends Component {
                             <DataTableRow
                                 key={dataItem.id}
                                 dataItem={dataItem}
+                                handleButtonClick={this.handleBtnClick}
                                 handleClick={this.handleRowClick}
                             />
                         )

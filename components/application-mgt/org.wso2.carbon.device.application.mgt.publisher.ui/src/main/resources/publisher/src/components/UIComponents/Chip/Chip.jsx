@@ -16,17 +16,20 @@
  * under the License.
  */
 
-import Login from './User/Login/Login';
-import NotFound from './Error/NotFound';
-import BaseLayout from './Base/BaseLayout';
-import PlatformCreate from './Platform/PlatformCreate';
-import PlatformListing from './Platform/PlatformListing';
-import ApplicationCreate from './Application/ApplicationCreate';
-import ApplicationListing from './Application/ApplicationListing';
-import ApplicationEdit from './Application/Edit/ApplicationEditBaseLayout';
+import React, {Component} from 'react';
+import './chip.css';
 
-/**
- * Contains all UI components related to Application, Login and Platform
- */
+class Chip extends Component {
 
-export {Login, BaseLayout, ApplicationCreate, ApplicationListing, PlatformListing, NotFound, PlatformCreate, ApplicationEdit};
+    render() {
+        return (
+            <div className="chip">
+                {this.props.image?<img src={this.props.image} alt="Person" width="96" height="96" />:<div/>}
+                {this.props.text}
+                <span className="close-btn" >&times;</span>
+            </div>
+        )
+    }
+}
+
+export default Chip;

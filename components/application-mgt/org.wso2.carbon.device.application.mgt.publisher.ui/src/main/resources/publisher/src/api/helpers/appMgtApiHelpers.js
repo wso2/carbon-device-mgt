@@ -48,6 +48,9 @@ export default class Helper {
         return {application, images};
     }
 
+    /**
+     * Creates a String array from tags array.
+     * */
     static stringifyTags(tags) {
         let tmpTags = [];
         for (let tag in tags) {

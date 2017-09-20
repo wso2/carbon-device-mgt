@@ -77,7 +77,7 @@
                             org.wso2.carbon.ndatasource.core,
                             org.wso2.carbon,
                             org.apache.commons.io,
-                            org.apache.commons.codec.binary;version=${commons-codec.wso2.osgi.version.range}
+                            org.apache.commons.codec.binary;version="${commons-codec.wso2.osgi.version.range}"
                         </Import-Package>
                         <Export-Package>
                             !org.wso2.carbon.device.application.mgt.core.internal.*,

@@ -22,7 +22,8 @@ import {withRouter} from 'react-router-dom';
 import AuthHandler from "../../api/authHandler";
 import ApplicationMgtApi from '../../api/applicationMgtApi';
 import {Table} from 'reactstrap';
-import Drawer from '../UIComponents/Drawer/Drawer'
+import Drawer from '../UIComponents/Drawer/Drawer';
+import ApplicationEdit from './Edit/Base/ApplicationEditBaseLayout';
 
 /**
  * The App Create Component.
@@ -236,42 +237,46 @@ class ApplicationListing extends Component {
         return (
 
             <div id="application-list" style={this.state.appListStyle}>
-                <Table striped hover>
-                    <thead>
-                    <tr>
-                        <th></th>
-                        {/* TODO: Remove console.log and add sort method. */}
-                        <th onClick={() => {console.log("sort")}}>Application Name</th>
-                        <th>Category</th>
-                        <th>Platform</th>
-                        <th>Status</th>
-                        <th></th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {this.applications.map(
-                        (application) => {
-                            return (
-                                <tr key={application.id} onClick={this.onRowClick}>
-                                    <td>
-                                        {/* TODO: Move this styles to css. */}
-                                        <img
-                                            src={application.icon}
-                                            height='50px'
-                                            width='50px'
-                                            style={{border: 'solid 1px black', borderRadius: "100%"}}
-                                        /></td>
-                                    <td>{application.applicationName}</td>
-                                    <td>{application.category}</td>
-                                    <td>{application.platform}</td>
-                                    <td>{application.status}</td>
-                                    <td><i>Edit</i></td>
-                                </tr>
-                            )
-                        }
-                    )}
-                    </tbody>
-                </Table>
+                {/*<Table striped hover>*/}
+                    {/*<thead>*/}
+                    {/*<tr>*/}
+                        {/*<th></th>*/}
+                        {/*/!* TODO: Remove console.log and add sort method. *!/*/}
+                        {/*<th onClick={() => {console.log("sort")}}>Application Name</th>*/}
+                        {/*<th>Category</th>*/}
+                        {/*<th>Platform</th>*/}
+                        {/*<th>Status</th>*/}
+                        {/*<th></th>*/}
+                    {/*</tr>*/}
+                    {/*</thead>*/}
+                    {/*<tbody>*/}
+                    {/*{this.applications.map(*/}
+                        {/*(application) => {*/}
+                            {/*return (*/}
+                                {/*<tr key={application.id} onClick={this.onRowClick}>*/}
+                                    {/*<td>*/}
+                                        {/*/!* TODO: Move this styles to css. *!/*/}
+                                        {/*<img*/}
+                                            {/*src={application.icon}*/}
+                                            {/*height='50px'*/}
+                                            {/*width='50px'*/}
+                                            {/*style={{border: 'solid 1px black', borderRadius: "100%"}}*/}
+                                        {/*/></td>*/}
+                                    {/*<td>{application.applicationName}</td>*/}
+                                    {/*<td>{application.category}</td>*/}
+                                    {/*<td>{application.platform}</td>*/}
+                                    {/*<td>{application.status}</td>*/}
+                                    {/*<td><i>Edit</i></td>*/}
+                                {/*</tr>*/}
+                            {/*)*/}
+                        {/*}*/}
+                    {/*)}*/}
+                    {/*</tbody>*/}
+                {/*</Table>*/}
+
+                <ApplicationEdit/>
+
+
                 <Drawer style={this.state.drawer}>
                     <div id="application-view">
 

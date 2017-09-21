@@ -1,0 +1,32 @@
+.release-content {
+    height: 180px;
+    width: 95%;
+    border: dashed 1px #626262;
+    border-radius: 2%;
+    position: relative;
+    background-color: #e8e8e8;
+}
+
+.release-content:after {
+    content: "";
+    letter-spacing: 4px;
+}
+
+.release {
+    margin: 30px 10px 20px 30px;
+}
+
+.no-release-content {
+    position: absolute;
+    margin-top: 10px;
+    left: 40%;
+}
+
+.button-add:hover {
+    cursor: pointer;
+}
+
+.release-inner {
+    margin-top: 5%;
+}
+

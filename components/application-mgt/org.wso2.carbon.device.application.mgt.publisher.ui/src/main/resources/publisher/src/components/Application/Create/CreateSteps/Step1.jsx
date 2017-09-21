@@ -16,11 +16,10 @@
  * under the License.
  */
 
-import Theme from '../../../theme';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
-import AuthHandler from "../../../api/authHandler";
-import PlatformMgtApi from "../../../api/platformMgtApi";
+import AuthHandler from "../../../../api/authHandler";
+import PlatformMgtApi from "../../../../api/platformMgtApi";
 import {FormGroup, Input, Label} from 'reactstrap';
 
 /**
@@ -55,17 +54,6 @@ class Step1 extends Component {
             titleError: ""
         };
         this.scriptId = "application-create-step1";
-    }
-
-    componentWillMount() {
-        /**
-         *Loading the theme files based on the the user-preference.
-         */
-        Theme.insertThemingScripts(this.scriptId);
-    }
-
-    componentWillUnmount() {
-        Theme.removeThemingScripts(this.scriptId);
     }
 
     componentDidMount() {

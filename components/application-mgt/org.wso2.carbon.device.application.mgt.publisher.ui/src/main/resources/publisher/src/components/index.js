@@ -18,12 +18,12 @@
 
 import Login from './User/Login/Login';
 import NotFound from './Error/NotFound';
-import BaseLayout from './Base/BaseLayout';
+import BaseLayout from './AppPublisherBase/BaseLayout';
 import PlatformCreate from './Platform/PlatformCreate';
 import PlatformListing from './Platform/PlatformListing';
-import ApplicationCreate from './Application/ApplicationCreate';
+import ApplicationCreate from './Application/Create/ApplicationCreate';
 import ApplicationListing from './Application/ApplicationListing';
-import ApplicationEdit from './Application/Edit/ApplicationEditBaseLayout';
+import ApplicationEdit from './Application/Edit/Base/ApplicationEditBaseLayout';
 
 /**
  * Contains all UI components related to Application, Login and Platform

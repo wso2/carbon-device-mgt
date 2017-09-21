@@ -18,15 +18,8 @@
 
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
-import Toggle from 'material-ui/Toggle';
-import MenuItem from 'material-ui/MenuItem';
-import TextField from 'material-ui/TextField';
-import FlatButton from 'material-ui/FlatButton';
-import SelectField from 'material-ui/SelectField';
-import RaisedButton from 'material-ui/RaisedButton';
-import Theme from '../../../theme';
-import {Button, Form, FormGroup, Label, Input, FormText, Badge, Collapse} from 'reactstrap';
-import Switch from '../../UIComponents/Switch/Switch'
+import {Collapse, FormGroup, Input, Label} from 'reactstrap';
+import Switch from '../../../UIComponents/Switch/Switch'
 
 /**
  * The Third step of application create wizard. {Application Release Step}
@@ -63,17 +56,6 @@ class Step4 extends Component {
             errors: {}
         };
         this.scriptId = "application-create-step3";
-    }
-
-    componentWillMount() {
-        /**
-         *Loading the theme files based on the the user-preference.
-         */
-        Theme.insertThemingScripts(this.scriptId);
-    }
-
-    componentWillUnmount() {
-        Theme.removeThemingScripts(this.scriptId);
     }
 
     /**

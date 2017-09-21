@@ -17,21 +17,21 @@
  */
 
 import PropTypes from 'prop-types';
-import Theme from '../../../theme';
-import Chip from 'material-ui/Chip';
-import Dropzone from 'react-dropzone';
 import React, {Component} from 'react';
 import MenuItem from 'material-ui/MenuItem';
 import SelectField from 'material-ui/SelectField';
-import {FormGroup, Label} from 'reactstrap';
-
+import {Badge, FormGroup, Input, Label} from 'reactstrap';
 
 /**
- * The Third step of application create wizard.
+ * The Second step of application create wizard.
  * This contains following components.
- *      * Screenshots
- *      * Banner
- *      * Icon
+ *      * App Title
+ *      * Short Description
+ *      * Application Description
+ *      * Application Visibility
+ *      * Application Tags : {Used Material UI Chip component}
+ *      * Application Category.
+ *      * Platform Specific properties.
  *
  * Parent Component: Create
  * Props:
@@ -40,7 +40,7 @@ import {FormGroup, Label} from 'reactstrap';
  *      * setData : {type: function, Invokes setStepData function in Parent}
  *      * removeData : {type: Invokes removeStepData function in Parent}
  * */
-class Step3 extends Component {
+class Step2 extends Component {
     constructor() {
         super();
         this.state = {
@@ -58,17 +58,6 @@ class Step3 extends Component {
             shortDescription: ""
         };
         this.scriptId = "application-create-step2";
-    }
-
-    componentWillMount() {
-        /**
-         *Loading the theme files based on the the user-preference.
-         */
-        Theme.insertThemingScripts(this.scriptId);
-    }
-
-    componentWillUnmount() {
-        Theme.removeThemingScripts(this.scriptId);
     }
 
     /**
@@ -126,20 +115,6 @@ class Step3 extends Component {
         this.chipData.splice(chipToDelete, 1);
         this.setState({tags: this.chipData});
     };
-
-    /**
-     * Creates Chip array from state.tags.
-     * */
-    renderChip(data) {
-        return (
-            <Chip
-                key={data.key}
-                onRequestDelete={() => this.handleRequestDelete(data.key)}
-                className="applicationCreateChip">
-                {data.value}
-            </Chip>
-        );
-    }
 
     onVisibilitySelect(event, index, value) {
         console.log(value);
@@ -241,15 +216,10 @@ class Step3 extends Component {
      * */
     setStepData() {
         let stepData = {
-            icon: this.state.icon,
-            name: this.state.name,
-            tags: this.state.tags,
-            banner: this.state.banner,
-            category: this.categories[this.state.category],
-            identifier: this.state.identifier,
-            screenshots: this.state.screenshots,
-            description: this.state.description,
-            shortDescription: this.state.shortDescription
+            // name: this.state.name,
+            // tags: this.state.tags,
+            // category: this.categories[this.state.category],
+            // description: this.state.description
         };
 
         this.props.setData("step2", {step: stepData});
@@ -280,120 +250,76 @@ class Step3 extends Component {
         }
     };
 
-    /**
-     * Removed user uploaded banner.
-     * */
-    removeBanner(event, d) {
-        console.log(event, d);
-        this.setState({banner: []});
-    };
-
-    /**
-     * Removes uploaded icon.
-     * */
-    removeIcon(event) {
-        this.setState({icon: []});
-    };
-
-    /**
-     * Removes selected screenshot.
-     * */
-    removeScreenshot(event) {
-        console.log(event.target)
-    };
-
     render() {
         console.log(this.state.visibilityComponent);
         return (
             <div className="createStep2Content">
                 <div>
                     <div>
-                        <div>
-                            <FormGroup>
-                                <Label for="app-screenshots">Screenshots*</Label>
-                                <span className="image-sub-title"> (600 X 800 32 bit PNG)</span>
-                                <div id="screenshot-container">
-                                    {this.state.screenshots.map((tile) => (
-                                        <button id="img-btn-screenshot" style={{height: '210px', width: '410px'}}
-                                                onMouseEnter={() => {
-                                                    console.log("Mouse Entered")
-                                                }}>
-                                            {console.log(tile[0].preview)}
-                                            <img style={{height: '200px', width: '400px'}} src={tile[0].preview}/>
-                                        </button>
-                                    ))}
-                                    {this.state.screenshots.length < 3 ?
-                                        <Dropzone
-                                            className="applicationCreateScreenshotDropZone"
-                                            accept="image/jpeg, image/png"
-                                            onDrop={(screenshots, rejected) => {
-                                                let tmpScreenshots = this.state.screenshots;
-                                                tmpScreenshots.push(screenshots);
-                                                console.log(screenshots);
-                                                this.setState({
-                                                    screenshots: tmpScreenshots
-                                                });
-                                            }}
-                                        >
-                                            <p className="applicationCreateScreenshotp">+</p>
-                                        </Dropzone> : <div/>}
-                                </div>
-                            </FormGroup>
-                        </div>
-                        <div style={{display: 'flex'}}>
-                            <div style={{float: 'left', marginRight: '15px'}}>
-                                <FormGroup>
-                                    <Label for="app-icon">Icon*</Label>
-                                    <span className="image-sub-title"> (512 X 512 32 bit PNG)</span>
-                                    <div id="app-icon-container">
-                                        {this.state.icon.map((tile) => (
-                                            <button onMouseEnter={() => {
-                                                console.log("Mouse Entered")
-                                            }}>
-                                                <img style={{height: '200px', width: '200px'}} src={tile.preview}/>
-                                            </button>
-                                        ))}
-                                    </div>
-
-                                    {this.state.icon.length === 0 ?
-                                        <Dropzone
-                                            className="applicationCreateIconDropZone"
-                                            accept="image/jpeg, image/png"
-                                            onDrop={(icon, rejected) => {
-                                                this.setState({icon, rejected});
-                                            }}
-                                        >
-                                            <p className="applicationCreateIconp">+</p>
-                                        </Dropzone> : <div/>}
-                                </FormGroup>
-                            </div>
-                            <div style={{marginLeft: '15px'}}>
-                                <FormGroup>
-                                    <Label for="app-banner">Banner*</Label>
-                                    <span className="image-sub-title"> (1000 X 400 32 bit PNG)</span>
-                                    <div id="app-banner-container">
-                                        {this.state.banner.map((tile) => (
-                                            <button onMouseEnter={() => {
-                                                console.log("Mouse Entered")
-                                            }}>
-                                                <img style={{height: '200px', width: '400px'}} src={tile.preview}/>
-                                            </button>
-                                        ))}
-                                        {this.state.banner.length === 0 ?
-                                            <Dropzone
-                                                className="applicationCreateBannerDropZone"
-                                                accept="image/jpeg, image/png"
-                                                onDrop={(banner, rejected) => {
-                                                    this.setState({banner, rejected});
-                                                }}
+                        <FormGroup>
+                            <Label for="app-title">Title*</Label>
+                            <Input
+                                required type="text"
+                                name="appName"
+                                id="app-title"
+                            />
+                        </FormGroup>
+                        <FormGroup>
+                            <Label for="app-description">Description*</Label>
+                            <Input
+                                required type="textarea"
+                                name="appDescription"
+                                id="app-description"
+                            />
+                        </FormGroup>
+                        <FormGroup>
+                            <Label for="app-category">Category</Label>
+                            <Input
+                                type="select"
+                                name="category"
+                                id="app-category"
+                            >
+                                <option>Business</option>
+                            </Input>
+                        </FormGroup>
+                        <FormGroup>
+                            <Label for="app-visibility">Visibility</Label>
+                            <Input
+                                type="select"
+                                name="visibility"
+                                id="app-visibility"
+                            >
+                                <option>Devices</option>
+                                <option>Roles</option>
+                                <option>Groups</option>
+                            </Input>
+                        </FormGroup>
+                        <FormGroup>
+                            <Label for="app-tags">Tags*</Label>
+                            <Input
+                                required
+                                type="text"
+                                value={this.state.defValue}
+                                name="app-tags"
+                                id="app-tags"
+                                onChange={this.handleTagChange.bind(this)}
+                                onKeyPress={this.addTags.bind(this)}
+                            />
+                            <div id="batch-content">
+                                {this.state.tags.map(tag => {
+                                        return (
+                                            <Badge
+                                                style={{margin: '0 2px 0 2px'}}
+                                                value={tag.value}
+                                                onClick={this.handleRequestDelete.bind(this)}
                                             >
-                                                <p className="applicationCreateBannerp">+</p>
-                                            </Dropzone> : <div/>
-                                        }
-                                    </div>
-                                </FormGroup>
+                                                {tag.value}
+                                            </Badge>
+                                        )
+                                    }
+                                )}
                             </div>
-                        </div>
+                        </FormGroup>
                     </div>
                 </div>
             </div>
@@ -401,11 +327,11 @@ class Step3 extends Component {
     }
 }
 
-Step3.prototypes = {
+Step2.prototypes = {
     handleNext: PropTypes.func,
     handlePrev: PropTypes.func,
     setData: PropTypes.func,
     removeData: PropTypes.func
 };
 
-export default Step3;
+export default Step2;

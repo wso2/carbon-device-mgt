@@ -16,7 +16,7 @@
  * under the License.
  */
 
-import Theme from '../../theme';
+import Theme from '../../../theme';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import DataTableRow from './DataTableRow';

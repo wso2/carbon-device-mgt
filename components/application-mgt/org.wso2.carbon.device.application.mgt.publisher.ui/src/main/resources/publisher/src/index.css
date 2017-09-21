@@ -80,7 +80,10 @@ body {
     left: 110px;
     top: 20px;
     height: 25px;
-    border: hidden;
+    outline: none;
+    border: none;
+    border-bottom: solid 1px black;
+    border-radius: 0%;
 }
 
 #application-list {

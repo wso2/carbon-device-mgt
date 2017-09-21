@@ -21,7 +21,7 @@ import React, {Component} from 'react';
 import {withRouter} from 'react-router-dom';
 import TextField from 'material-ui/TextField';
 import AuthHandler from "../../api/authHandler";
-import DataTable from '../UIComponents/DataTable';
+import DataTable from '../UIComponents/DataTable/DataTable';
 import PlatformMgtApi from "../../api/platformMgtApi";
 import {Card, CardActions, CardTitle} from 'material-ui/Card';
 

@@ -16,22 +16,14 @@
  * under the License.
  */
 
-import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 
-class ApplicationEdit extends Component {
+class ReleaseContent extends Component {
 
-    constructor() {
-        super();
-    }
 
-    render() {
-        return(
-            <div id="application-edit-base">
 
-            </div>
-        )
-    }
+
 }
 
-export default ApplicationEdit;
+
+export default ReleaseContent;

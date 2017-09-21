@@ -23,7 +23,7 @@ import AuthHandler from "../../api/authHandler";
 import '../../css/font-wso2.css';
 import NotificationsIcon from 'material-ui/svg-icons/social/notifications';
 import ActionAccountCircle from 'material-ui/svg-icons/action/account-circle';
-import ApplicationCreate from '../Application/ApplicationCreate';
+import ApplicationCreate from '../Application/Create/ApplicationCreate';
 import {Button, Input, InputGroup,} from 'reactstrap';
 
 

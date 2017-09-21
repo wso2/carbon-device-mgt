@@ -16,18 +16,12 @@
  * under the License.
  */
 
-import Theme from '../../theme';
 import React, {Component} from 'react';
-import Dialog from 'material-ui/Dialog';
 import {withRouter} from 'react-router-dom';
-import FlatButton from 'material-ui/FlatButton';
-import AuthHandler from "../../api/authHandler";
-import {Step1, Step2, Step3, Step4} from './CreateSteps';
-import RaisedButton from 'material-ui/RaisedButton';
-import ApplicationMgtApi from '../../api/applicationMgtApi';
-import {Card, CardActions, CardTitle} from 'material-ui/Card';
-import {Step, StepLabel, Stepper,} from 'material-ui/Stepper';
-import {Button, Modal, InputGroup, ModalHeader, ModalBody, ModalFooter, Input, Label, Form, FormGroup} from 'reactstrap';
+import AuthHandler from "../../../api/authHandler";
+import {Step1, Step2, Step3, Step4} from './CreateSteps/index';
+import ApplicationMgtApi from '../../../api/applicationMgtApi';
+import {Button, Modal, ModalBody, ModalFooter, ModalHeader} from 'reactstrap';
 
 /**
  * The App Create Component.
@@ -221,13 +215,18 @@ class ApplicationCreate extends Component {
             <div id="create-application-modal">
                 <Modal isOpen={this.state.open} toggle={this.toggle} id="app-create-modal"
                        backdrop={'static'}>
-                    <ModalHeader toggle={this.toggle}><i style={{cursor: 'pointer'}} onClick={this.handlePrev}><strong>{'< '}</strong></i>Create Application</ModalHeader>
+                    <ModalHeader toggle={this.toggle}>Create Application</ModalHeader>
                     <ModalBody id="modal-body-content">
                         {this.getStepContent(this.state.stepIndex)}
                     </ModalBody>
                     <ModalFooter>
+                        {this.state.stepIndex === 0?
+                            <div/> : <Button color="primary" onClick={this.handlePrev}>Back</Button>}
                         <Button color="secondary" onClick={this.close}>Cancel</Button>
-                        <Button color="primary" onClick={this.handleNext}>Continue</Button>{' '}
+                        {this.state.finished?
+                            <Button color="primary" onClick={this.handleSubmit}>Finish</Button>
+                            : <Button color="primary" onClick={this.handleNext}>Continue</Button> }
+
                     </ModalFooter>
                 </Modal>
             </div>);

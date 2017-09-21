@@ -27,7 +27,7 @@ class PackageManager extends Component {
 
     render() {
         return(
-            <div>
+            <div id="package-mgt-content">
 
             </div>
         )

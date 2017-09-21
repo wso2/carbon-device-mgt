@@ -16,15 +16,32 @@
  * under the License.
  */
 
+import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import './release-mgt.css';
 import {Button, Col, Row} from "reactstrap";
+import CreateRelease from "../Create/CreateRelease";
 
 class ReleaseManager extends Component {
 
     constructor() {
         super();
         this.getNoReleaseContent = this.getNoReleaseContent.bind(this);
+        this.createRelease = this.createRelease.bind(this);
+        this.handleBackPress = this.handleBackPress.bind(this);
+        this.state = {
+            createRelease: false,
+            onGoing: ""
+        }
+    }
+
+    createRelease(event) {
+        event.preventDefault();
+        this.setState({createRelease: true, onGoing: event.target.value})
+    }
+
+    handleBackPress() {
+        this.setState({createRelease: false});
     }
 
     /**
@@ -40,7 +57,14 @@ class ReleaseManager extends Component {
                 </Row>
                 <Row>
                     <Col sm="12" md={{size: 8, offset: 5}}>
-                        <Button className="button-add" id={release.toLowerCase()}>Create a Release</Button>
+                        <Button
+                            className="button-add"
+                            id={release.toLowerCase()}
+                            value={release}
+                            onClick={this.createRelease}
+                        >
+                            Create a Release
+                        </Button>
                     </Col>
                 </Row>
             </div>
@@ -49,45 +73,51 @@ class ReleaseManager extends Component {
 
     render() {
         return (
-            <div id="release-mgt-content">
-                <Row>
-                    <Col sm="12">
-                        <div className="release" id="production">
-                            <span>Production Releases</span>
-                            <div className="release-content">
-                                <div className="release-inner">
-
-                                    {this.getNoReleaseContent("Production")}
-
+            <div>
+                {this.state.createRelease ?
+                    <CreateRelease
+                        channel={this.state.onGoing}
+                        handleBack={this.handleBackPress}
+                    /> :
+                    <div id="release-mgt-content">
+                        <Row>
+                            <Col sm="12">
+                                <div className="release" id="production">
+                                    <span>Production Releases</span>
+                                    <div className="release-content">
+                                        <div className="release-inner">
+                                            {this.getNoReleaseContent("Production")}
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
-                    </Col>
-                </Row>
-                <Row>
-                    <Col sm="12">
-                        <div className="release" id="beta">
-                            <span>Beta Releases</span>
-                            <div className="release-content">
-                                <div className="release-inner">
-                                    {this.getNoReleaseContent("Beta")}
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col sm="12">
+                                <div className="release" id="beta">
+                                    <span>Beta Releases</span>
+                                    <div className="release-content">
+                                        <div className="release-inner">
+                                            {this.getNoReleaseContent("Beta")}
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
-                    </Col>
-                </Row>
-                <Row>
-                    <Col sm="12">
-                        <div className="release" id="alpha">
-                            <span>Alpha Releases</span>
-                            <div className="release-content">
-                                <div className="release-inner">
-                                    {this.getNoReleaseContent("Alpha")}
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col sm="12">
+                                <div className="release" id="alpha">
+                                    <span>Alpha Releases</span>
+                                    <div className="release-content">
+                                        <div className="release-inner">
+                                            {this.getNoReleaseContent("Alpha")}
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
-                    </Col>
-                </Row>
+                            </Col>
+                        </Row>
+                    </div>
+                }
             </div>
         )
     }

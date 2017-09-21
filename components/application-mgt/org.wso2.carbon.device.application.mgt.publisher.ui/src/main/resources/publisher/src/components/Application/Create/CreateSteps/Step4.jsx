@@ -18,7 +18,7 @@
 
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
-import {Collapse, FormGroup, Input, Label} from 'reactstrap';
+import {Collapse, FormGroup, Input, Label, FormText} from 'reactstrap';
 import Switch from '../../../UIComponents/Switch/Switch'
 
 /**
@@ -88,32 +88,42 @@ class Step4 extends Component {
                     <FormGroup>
                         <div id="app-release-switch-content">
                             <div id="app-release-switch-label">
-                                <Label for="app-release-switch"><strong>Add Release to Application</strong></Label>
+                                <Label for="app-release-switch">
+                                    <strong>
+                                        Add Release to Application
+                                    </strong>
+                                </Label>
                             </div>
                             <div id="app-release-switch-switch">
-                                <Switch id="app-release-switch" onChange={this.handleToggle.bind(this)}/>
+                                <Switch
+                                    id="app-release-switch"
+                                    onChange={this.handleToggle.bind(this)}
+                                />
                             </div>
                         </div>
                     </FormGroup>
                     <br/>
                     <div>
-                            <span style={{color: '#BBBBBB', width: '100%', justify: 'left'}}>
+                            <FormText color="muted">
                                 <i>Info: </i>
                                 Enabling this will create a release for the current Application.
                                 To upload the Application, please visit to the Release management section of
                                 Application Edit View.
-                            </span>
+                            </FormText>
                     </div>
                     {/*If toggle is true, the release form will be shown.*/}
                     <Collapse isOpen={this.state.showForm}>
                         <FormGroup>
                             <Label for="release-channel">Release Channel</Label>
-                            <Input id="input-custom" type="select" mid="release-channel" style={{
-                                width: '200px',
-                                border: 'none',
-                                borderRadius: '0',
-                                borderBottom: 'solid 1px #BDBDBD'
-                            }}>
+                            <Input
+                                type="select"
+                                id="release-channel"
+                                style={{
+                                    width: '200px',
+                                    border: 'none',
+                                    borderRadius: '0',
+                                    borderBottom: 'solid 1px #BDBDBD'
+                                }}>
                                 <option>GA</option>
                                 <option>Alpha</option>
                                 <option>Beta</option>
@@ -121,7 +131,12 @@ class Step4 extends Component {
                         </FormGroup>
                         <FormGroup>
                             <Label for="version">Version*</Label>
-                            <Input type="text" id="version input-custom" placeholder="v1.0" required/>
+                            <Input
+                                type="text"
+                                id="version input-custom"
+                                placeholder="v1.0"
+                                required
+                            />
                         </FormGroup>
                     </Collapse>
                 </div>

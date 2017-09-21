@@ -70,7 +70,6 @@ class ApplicationCreate extends Component {
         this.setState({stepIndex: nextStep}, console.log(this.state.stepIndex));
     }
 
-
     /**
      * Handles next button click event.
      * */
@@ -220,13 +219,12 @@ class ApplicationCreate extends Component {
                         {this.getStepContent(this.state.stepIndex)}
                     </ModalBody>
                     <ModalFooter>
-                        {this.state.stepIndex === 0?
-                            <div/> : <Button color="primary" onClick={this.handlePrev}>Back</Button>}
+                        {this.state.stepIndex === 0? <div/> :
+                            <Button color="primary" onClick={this.handlePrev}>Back</Button>}
                         <Button color="secondary" onClick={this.close}>Cancel</Button>
-                        {this.state.finished?
-                            <Button color="primary" onClick={this.handleSubmit}>Finish</Button>
-                            : <Button color="primary" onClick={this.handleNext}>Continue</Button> }
-
+                        {this.state.finished ?
+                            <Button color="primary" onClick={this.handleSubmit}>Finish</Button> :
+                            <Button color="primary" onClick={this.handleNext}>Continue</Button>}
                     </ModalFooter>
                 </Modal>
             </div>);

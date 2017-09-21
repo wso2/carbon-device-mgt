@@ -42,7 +42,6 @@ class BaseLayout extends Component {
             user: 'Admin',
             openModal: false
         };
-        this.scriptId = "basic-layout";
         this.logout = this.logout.bind(this);
     }
 
@@ -83,31 +82,30 @@ class BaseLayout extends Component {
                     </div>
                     <div id="search-box">
                         <InputGroup>
-                            <Input id="search"
-                                   name="search"
-                                   placeholder={'Search for Applications'}
-                                   onChange={(event) => console.log(event.target.value)}
+                            <Input
+                                id="search"
+                                name="search"
+                                placeholder={'Search for Applications'}
+                                onChange={(event) => console.log(event.target.value)}
                             />
                         </InputGroup>
                     </div>
-                </div>
-                <div id="add-btn-container">
-                    <Button id="add-btn"
+                    <div id="add-btn-container">
+                        <Button
+                            id="add-btn"
                             onClick={this.handleApplicationCreateClick.bind(this)}
-                    >
-                        <h3>
-                            <strong>+</strong>
-                        </h3>
-                    </Button>
+                        >
+                            <h3>
+                                <strong>+</strong>
+                            </h3>
+                        </Button>
+                    </div>
                 </div>
-                <div className="application-content"
-                     style={this.state.style}
-                >
+
+                <div id="application-content" style={this.state.style}>
                     {this.props.children}
                 </div>
-                <ApplicationCreate
-                    open={this.state.openModal}
-                />
+                <ApplicationCreate open={this.state.openModal}/>
             </div>
         );
     }

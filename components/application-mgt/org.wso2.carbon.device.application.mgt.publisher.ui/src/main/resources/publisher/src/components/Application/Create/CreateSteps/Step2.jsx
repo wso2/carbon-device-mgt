@@ -259,7 +259,8 @@ class Step2 extends Component {
                         <FormGroup>
                             <Label for="app-title">Title*</Label>
                             <Input
-                                required type="text"
+                                required
+                                type="text"
                                 name="appName"
                                 id="app-title"
                             />
@@ -267,7 +268,8 @@ class Step2 extends Component {
                         <FormGroup>
                             <Label for="app-description">Description*</Label>
                             <Input
-                                required type="textarea"
+                                required
+                                type="textarea"
                                 name="appDescription"
                                 id="app-description"
                             />

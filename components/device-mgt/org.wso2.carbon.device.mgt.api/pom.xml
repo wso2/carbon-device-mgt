@@ -205,11 +205,6 @@
 		</dependency>
         <dependency>
             <groupId>org.wso2.carbon.devicemgt</groupId>
-            <artifactId>org.wso2.carbon.apimgt.integration.client</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon.devicemgt</groupId>
             <artifactId>org.wso2.carbon.device.mgt.core</artifactId>
             <scope>provided</scope>
             <exclusions>
@@ -358,16 +353,6 @@
             <version>${carbon.identity.framework.version}</version>
             <scope>provided</scope>
         </dependency>
-		<dependency>
-			<groupId>org.wso2.carbon.analytics</groupId>
-			<artifactId>org.wso2.carbon.analytics.datasource.commons</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.wso2.carbon.analytics</groupId>
-			<artifactId>org.wso2.carbon.analytics.api</artifactId>
-			<scope>provided</scope>
-		</dependency>
 		<dependency>
 			<groupId>org.wso2.carbon.analytics</groupId>
 			<artifactId>org.wso2.carbon.analytics.dataservice.commons</artifactId>

@@ -52,6 +52,7 @@
         <module>features/email-sender</module>
         <module>features/jwt-client</module>
 	    <module>features/device-mgt-extensions</module>
+        <module>components/test-coverage</module>
     </modules>
 
     <dependencyManagement>
@@ -1691,6 +1692,11 @@
                     <artifactId>carbon-p2-plugin</artifactId>
                     <version>${carbon.p2.plugin.version}</version>
                 </plugin>
+                <plugin>
+                    <groupId>org.jacoco</groupId>
+                    <artifactId>jacoco-maven-plugin</artifactId>
+                    <version>${jacoco.maven.plugin.version}</version>
+                </plugin>
             </plugins>
         </pluginManagement>
     </build>
@@ -1969,6 +1975,11 @@
 		<commons.codec.verision.range>(1.9,2.0]</commons.codec.verision.range>
 		<javassist.version>3.12.1.GA</javassist.version>
         <maven.javadoc.skip>true</maven.javadoc.skip>
+
+        <!-- jacoco plugin version -->
+        <jacoco.maven.plugin.version>0.7.8</jacoco.maven.plugin.version>
+        <jacoco.ant.verision>0.7.5.201505241946</jacoco.ant.verision>
+        <ant.contrib.version>1.0b3</ant.contrib.version>
     </properties>
 
 </project>

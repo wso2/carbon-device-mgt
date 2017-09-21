@@ -29,14 +29,6 @@ function InitiateViewOption(url) {
 }
 
 /*
- * Setting-up global variables.
- */
-var deviceCheckbox = "#ast-container .ctrl-wr-asset .itm-select input[type='checkbox']";
-var assetContainer = "#ast-container";
-
-var deviceListing, currentUser,name;
-
-/*
  * DOM ready functions.
  */
 $(document).ready(function () {
@@ -52,12 +44,6 @@ $(document).ready(function () {
 
     name = getParameterByName("name");
 
-
-    /* Adding selected class for selected topics */
-    $(deviceCheckbox).each(function () {
-        addDeviceSelectedClass(this);
-    });
-
     /* for device list sorting drop down */
     $(".ctrl-filter-type-switcher").popover({
         html: true,
@@ -67,30 +53,16 @@ $(document).ready(function () {
     });
 });
 
-/*
- * Add selected style class to the parent element function.
- *
- * @param checkbox: Selected checkbox
- */
-function addDeviceSelectedClass(checkbox) {
-    if ($(checkbox).is(":checked")) {
-        $(checkbox).closest(".ctrl-wr-asset").addClass("selected device-select");
-    } else {
-        $(checkbox).closest(".ctrl-wr-asset").removeClass("selected device-select");
-    }
-}
-
 function loadTopics(searchType, searchParam) {
 
     var serviceURL;
     if ($.hasPermission("VIEW_TOPICS")) {
         serviceURL = "/api/mqtt-topics/v1.0/admin/topics";
-        console.log("serviceURL------"+serviceURL);
     } else {
         $("#loading-content").remove();
-        $('#device-table').addClass('hidden');
-        $('#device-listing-status-msg').text('Permission denied.');
-        $("#device-listing-status").removeClass(' hidden');
+        $('#topics-table').addClass('hidden');
+        $('#topics-listing-status-msg').text('Permission denied.');
+        $("#topics-listing-status").removeClass(' hidden');
         return;
     }
 
@@ -205,22 +177,15 @@ function loadTopics(searchType, searchParam) {
         });
 
         var json = {
-            "recordsTotal": Object.keys(data).length,
-            "recordsFiltered": Object.keys(data).length,
+            "recordsTotal": data.count,
+            "recordsFiltered": data.count,
             "data": objects
         };
-        var table = $('#device-grid1').DataTable();
-
-
-
-        setInterval( function () {
-            table.ajax.reload();
-        }, 300000 );
 
         return JSON.stringify(json);
     };
 
-    $('#device-grid1').datatables_extended_serverside_paging(
+    $('#topics-grid').datatables_extended_serverside_paging(
         null,
         serviceURL,
         dataFilter,
@@ -228,10 +193,8 @@ function loadTopics(searchType, searchParam) {
         fnCreatedRow,
         function () {
             $(".icon .text").res_text(0.2);
-            $('#device-grid1').removeClass('hidden');
+            $('#topics-grid').removeClass('hidden');
             $("#loading-content").remove();
-
-
         }, {
             "placeholder": "Search By Topic Name",
             "searchKey": "name"

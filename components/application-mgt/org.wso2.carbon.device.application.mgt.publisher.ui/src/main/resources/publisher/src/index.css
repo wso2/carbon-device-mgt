@@ -114,6 +114,7 @@ body {
 
 #application-list {
     margin-top: 20px;
+    transition: margin-right .5s;
 }
 
 .applicationCreateBannerDropZone {

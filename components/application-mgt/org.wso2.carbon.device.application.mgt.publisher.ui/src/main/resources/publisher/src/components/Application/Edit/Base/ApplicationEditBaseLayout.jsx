@@ -16,11 +16,11 @@
  * under the License.
  */
 
-import React, {Component} from 'react';
 import './baseLayout.css';
-import ReleaseManager from '../../Release/ReleaseMgtBase/ReleaseManager';
 import {Col, Row} from "reactstrap";
+import React, {Component} from 'react';
 import GeneralInfo from "../GeneralInfo";
+import ReleaseManager from '../../Release/ReleaseMgtBase/ReleaseManager';
 
 class ApplicationEdit extends Component {
 

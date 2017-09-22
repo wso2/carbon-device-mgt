@@ -16,29 +16,41 @@
  * under the License.
  */
 
-import PropTypes from 'prop-types';
-import React, {Component} from 'react';
-import './drawer.css';
 
-/**
- * Custom React component for Application View.
- * */
-class Drawer extends Component {
-
-    render() {
-        return (
-            <div>
-                <div id="app-view" className="app-view-drawer" style={this.props.style}>
-                    {this.props.children}
-                </div>
-            </div>
-        );
-    }
+#application-view-content {
+    width: 100%;
 }
 
-Drawer.propTypes = {
-    style: PropTypes.object,
-    children: PropTypes.node
-};
+#application-view-row {
+    margin: 10px 10px 20px 20px;
+}
 
-export default Drawer;
+#app-icon {
+    height: 100px;
+    width: 100px;
+    border: solid 1px black;
+    border-radius: 50%;
+}
+
+.app-updated-date {
+    color: #888888;
+    font-style: italic;
+}
+
+.app-install-count {
+    font-style: italic;
+}
+
+.app-details-tbl {
+    outline: none;
+    border-color: #2196F3;
+}
+
+.app-details-tbl tr {
+    margin: 20px 0 0 0;
+}
+
+.app-details-tbl td {
+    margin-left: 10px;
+    max-width: 400px;
+}

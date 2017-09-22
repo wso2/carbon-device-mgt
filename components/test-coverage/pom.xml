@@ -1,0 +1,514 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (c) 2017, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+  ~
+  ~ WSO2 Inc. licenses this file to you under the Apache License,
+  ~ Version 2.0 (the "License"); you may not use this file except
+  ~ in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing,
+  ~ software distributed under the License is distributed on an
+  ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~ KIND, either express or implied. See the License for the
+  ~ specific language governing permissions and limitations
+  ~ under the License.
+  -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>carbon-devicemgt</artifactId>
+        <groupId>org.wso2.carbon.devicemgt</groupId>
+        <version>3.0.113-SNAPSHOT</version>
+        <relativePath>../../pom.xml</relativePath>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>test-coverage</artifactId>
+    <name>WSO2 Carbon - Unit Test Coverage Generation</name>
+    <properties>
+        <target>target</target>
+        <coverge-report>coverage-reports</coverge-report>
+        <individual.test.report.name>jacoco-unit.exec</individual.test.report.name>
+        <classes>classes</classes>
+        <source>src/main/java</source>
+
+        <!-- certificate mgt component related properties -->
+        <certificate.mgt>certificate-mgt</certificate.mgt>
+        <certificate.mgt.api>${basedir}/../${certificate.mgt}/org.wso2.carbon.certificate.mgt.api</certificate.mgt.api>
+        <certificate.mgt.cert.admin>
+            ${basedir}/../${certificate.mgt}/org.wso2.carbon.certificate.mgt.cert.admin.api
+        </certificate.mgt.cert.admin>
+        <certificate.mgt.core>
+            ${basedir}/../${certificate.mgt}/org.wso2.carbon.certificate.mgt.core
+        </certificate.mgt.core>
+
+        <!-- Device mgt component related properties -->
+        <device.mgt>device-mgt</device.mgt>
+        <device.mgt.core>${basedir}/../${device.mgt}/org.wso2.carbon.device.mgt.core</device.mgt.core>
+        <device.mgt.common>${basedir}/../${device.mgt}/org.wso2.carbon.device.mgt.common</device.mgt.common>
+        <device.mgt.api>${basedir}/../${device.mgt}/org.wso2.carbon.device.mgt.api</device.mgt.api>
+        <device.mgt.extensions>${basedir}/../${device.mgt}/org.wso2.carbon.device.mgt.extensions</device.mgt.extensions>
+        <device.mgt.analytics.dashboard>
+            ${basedir}/../${device.mgt}/org.wso2.carbon.device.mgt.analytics.dashboard
+        </device.mgt.analytics.dashboard>
+        <device.mgt.analytics.data>${basedir}/../${device.mgt}/org.wso2.carbon.device.mgt.analytics.data.publisher
+        </device.mgt.analytics.data>
+        <device.mgt.url.printer>
+            ${basedir}/../${device.mgt}/org.wso2.carbon.device.mgt.url.printer
+        </device.mgt.url.printer>
+
+        <!-- api-mgt extensions component related properties -->
+        <api.extensions>apimgt-extensions</api.extensions>
+        <api.extension.application>
+            ${basedir}/../${api.extensions}/org.wso2.carbon.apimgt.application.extension
+        </api.extension.application>
+        <api.extension.application.api>
+            ${basedir}/../${api.extensions}/org.wso2.carbon.apimgt.application.extension.api
+        </api.extension.application.api>
+        <api.extension.handlers>${basedir}/../${api.extensions}/org.wso2.carbon.apimgt.handlers</api.extension.handlers>
+        <api.extension.client>
+            ${basedir}/../${api.extensions}/org.wso2.carbon.apimgt.integration.client
+        </api.extension.client>
+        <api.extension.webapp>
+            ${basedir}/../${api.extensions}/org.wso2.carbon.apimgt.webapp.publisher
+        </api.extension.webapp>
+
+        <!-- device-mgt extensions component related properties -->
+        <device.extensions>device-mgt-extensions</device.extensions>
+        <device.extensions.deployer>
+            ${basedir}/../${device.extensions}/org.wso2.carbon.device.mgt.extensions.device.type.deployer
+        </device.extensions.deployer>
+        <device.extensions.pull>
+            ${basedir}/../${device.extensions}/org.wso2.carbon.device.mgt.extensions.pull.notification
+        </device.extensions.pull>
+        <device.extensions.fcm>
+            ${basedir}/../${device.extensions}/org.wso2.carbon.device.mgt.extensions.push.notification.provider.fcm
+        </device.extensions.fcm>
+        <device.extensions.http>
+            ${basedir}/../${device.extensions}/org.wso2.carbon.device.mgt.extensions.push.notification.provider.http
+        </device.extensions.http>
+        <device.extensions.mqtt>
+            ${basedir}/../${device.extensions}/org.wso2.carbon.device.mgt.extensions.push.notification.provider.mqtt
+        </device.extensions.mqtt>
+        <device.extensions.xmpp>
+            ${basedir}/../${device.extensions}/org.wso2.carbon.device.mgt.extensions.push.notification.provider.xmpp
+        </device.extensions.xmpp>
+
+        <!-- Email Sender component related properties -->
+        <email.sender.core>${basedir}/../email-sender/org.wso2.carbon.email.sender.core</email.sender.core>
+
+        <!-- identity extensions component related properties -->
+        <identity.extensions>identity-extensions</identity.extensions>
+        <identity.oauth.extension>
+            ${basedir}/../${identity.extensions}/org.wso2.carbon.device.mgt.oauth.extensions
+        </identity.oauth.extension>
+        <identity.backend.extension>
+            ${basedir}/../${identity.extensions}/org.wso2.carbon.identity.authenticator.backend.oauth
+        </identity.backend.extension>
+        <identity.jwt.extension>
+            ${basedir}/../${identity.extensions}/org.wso2.carbon.identity.jwt.client.extension
+        </identity.jwt.extension>
+
+        <!-- Policy Management component related properties -->
+        <policy.mgt>policy-mgt</policy.mgt>
+        <policy.mgt.complex.point>
+            ${basedir}/../${policy.mgt}/org.wso2.carbon.complex.policy.decision.point
+        </policy.mgt.complex.point>
+        <policy.mgt.decision.point>
+            ${basedir}/../${policy.mgt}/org.wso2.carbon.policy.decision.point
+        </policy.mgt.decision.point>
+        <policy.mgt.information.point>
+            ${basedir}/../${policy.mgt}/org.wso2.carbon.policy.information.point
+        </policy.mgt.information.point>
+        <policy.mgt.common>${basedir}/../${policy.mgt}/org.wso2.carbon.policy.mgt.common</policy.mgt.common>
+        <policy.mgt.core>${basedir}/../${policy.mgt}/org.wso2.carbon.policy.mgt.core</policy.mgt.core>
+
+        <!-- Webapp authenticator framework component related properties -->
+        <webapp.authenticatore.frmework>
+            ${basedir}/../webapp-authenticator-framework/org.wso2.carbon.webapp.authenticator.framework
+        </webapp.authenticatore.frmework>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+
+                        <configuration>
+                            <target name="mergeReports">
+                                <taskdef resource="net/sf/antcontrib/antcontrib.properties"
+                                         classpathref="maven.plugin.classpath"/>
+                                <if>
+                                    <and>
+                                        <available
+                                                file="${certificate.mgt.core}/${target}/${coverge-report}/${individual.test.report.name}"/>
+                                        <available
+                                                file="${device.mgt.core}/${target}/${coverge-report}/${individual.test.report.name}"/>
+                                        <available
+                                                file="${email.sender.core}/${target}/${coverge-report}/${individual.test.report.name}"/>
+                                        <available
+                                                file="${policy.mgt.core}/${target}/${coverge-report}/${individual.test.report.name}"/>
+                                        <available
+                                                file="${webapp.authenticatore.frmework}/${target}/${coverge-report}/${individual.test.report.name}"/>
+                                        <!-- After adding the test cases need to list the exec files here-->
+
+                                    </and>
+                                    <then>
+                                        <taskdef name="report" classname="org.jacoco.ant.ReportTask">
+                                            <classpath path="${basedir}/target/jacoco-jars/org.jacoco.ant.jar"/>
+                                        </taskdef>
+                                        <mkdir dir="${basedir}/target/coverage-report"/>
+                                        <report>
+                                            <executiondata>
+                                                <fileset dir="${certificate.mgt.core}/${target}/${coverge-report}">
+                                                    <include name="${individual.test.report.name}"/>
+                                                </fileset>
+                                                <fileset dir="${device.mgt.core}/${target}/${coverge-report}">
+                                                    <include name="${individual.test.report.name}"/>
+                                                </fileset>
+                                                <fileset dir="${email.sender.core}/${target}/${coverge-report}">
+                                                    <include name="${individual.test.report.name}"/>
+                                                </fileset>
+                                                <fileset dir="${policy.mgt.core}/${target}/${coverge-report}">
+                                                    <include name="${individual.test.report.name}"/>
+                                                </fileset>
+                                                <fileset
+                                                        dir="${webapp.authenticatore.frmework}/${target}/${coverge-report}">
+                                                    <include name="${individual.test.report.name}"/>
+                                                </fileset>
+                                                <!-- Need to list the newly added exec files here -->
+                                            </executiondata>
+                                            <structure name="Carbon Device Management Component Coverage Report">
+                                                <group name="certificate-mgt">
+                                                    <group name="org.wso2.carbon.certificate.mgt.core">
+                                                        <classfiles>
+                                                            <fileset
+                                                                    dir="${certificate.mgt.core}/${target}/${classes}"/>
+                                                        </classfiles>
+                                                        <sourcefiles encoding="UTF-8">
+                                                            <fileset dir="${certificate.mgt.core}/${source}"/>
+                                                        </sourcefiles>
+                                                    </group>
+                                                    <group name="org.wso2.carbon.certificate.mgt.api">
+                                                        <classfiles>
+                                                            <fileset dir="${certificate.mgt.api}/${target}/${classes}"/>
+                                                        </classfiles>
+                                                        <sourcefiles encoding="UTF-8">
+                                                            <fileset dir="${certificate.mgt.api}/${source}"/>
+                                                        </sourcefiles>
+                                                    </group>
+                                                    <group name="org.wso2.carbon.certificate.mgt.cert.admin.api">
+                                                        <classfiles>
+                                                            <fileset
+                                                                    dir="${certificate.mgt.cert.admin}/${target}/${classes}"/>
+                                                        </classfiles>
+                                                        <sourcefiles encoding="UTF-8">
+                                                            <fileset dir="${certificate.mgt.cert.admin}/${source}"/>
+                                                        </sourcefiles>
+                                                    </group>
+                                                </group>
+                                                <group name="device-mgt">
+                                                    <group name="org.wso2.carbon.device.mgt.analytics.dashboard">
+                                                        <classfiles>
+                                                            <fileset
+                                                                    dir="${device.mgt.analytics.dashboard}/${target}/${classes}"/>
+                                                        </classfiles>
+                                                        <sourcefiles encoding="UTF-8">
+                                                            <fileset dir="${device.mgt.analytics.dashboard}/${source}"/>
+                                                        </sourcefiles>
+                                                    </group>
+                                                    <group name="org.wso2.carbon.device.mgt.analytics.data.publisher">
+                                                        <classfiles>
+                                                            <fileset
+                                                                    dir="${device.mgt.analytics.data}/${target}/${classes}"/>
+                                                        </classfiles>
+                                                        <sourcefiles encoding="UTF-8">
+                                                            <fileset dir="${device.mgt.analytics.data}/${source}"/>
+                                                        </sourcefiles>
+                                                    </group>
+                                                    <group name="org.wso2.carbon.device.mgt.api">
+                                                        <classfiles>
+                                                            <fileset dir="${device.mgt.api}/${target}/${classes}"/>
+                                                        </classfiles>
+                                                        <sourcefiles encoding="UTF-8">
+                                                            <fileset dir="${device.mgt.api}/${source}"/>
+                                                        </sourcefiles>
+                                                    </group>
+                                                    <group name="org.wso2.carbon.device.mgt.common">
+                                                        <classfiles>
+                                                            <fileset dir="${device.mgt.common}/${target}/${classes}"/>
+                                                        </classfiles>
+                                                        <sourcefiles encoding="UTF-8">
+                                                            <fileset dir="${device.mgt.common}/${source}"/>
+                                                        </sourcefiles>
+                                                    </group>
+                                                    <group name="org.wso2.carbon.device.mgt.core">
+                                                        <classfiles>
+                                                            <fileset dir="${device.mgt.core}/${target}/${classes}"/>
+                                                        </classfiles>
+                                                        <sourcefiles encoding="UTF-8">
+                                                            <fileset dir="${device.mgt.core}/${source}"/>
+                                                        </sourcefiles>
+                                                    </group>
+                                                    <group name="org.wso2.carbon.device.mgt.extensions">
+                                                        <classfiles>
+                                                            <fileset
+                                                                    dir="${device.mgt.extensions}/${target}/${classes}"/>
+                                                        </classfiles>
+                                                        <sourcefiles encoding="UTF-8">
+                                                            <fileset dir="${device.mgt.extensions}/${source}"/>
+                                                        </sourcefiles>
+                                                    </group>
+                                                    <group name="org.wso2.carbon.device.mgt.url.printer">
+                                                        <classfiles>
+                                                            <fileset
+                                                                    dir="${device.mgt.url.printer}/${target}/${classes}"/>
+                                                        </classfiles>
+                                                        <sourcefiles encoding="UTF-8">
+                                                            <fileset dir="${device.mgt.url.printer}/${source}"/>
+                                                        </sourcefiles>
+
+                                                    </group>
+                                                </group>
+                                                <group name="apimgt-extensions">
+                                                    <group name="org.wso2.carbon.apimgt.integration.client">
+                                                        <classfiles>
+                                                            <fileset
+                                                                    dir="${api.extension.client}/${target}/${classes}"/>
+                                                        </classfiles>
+                                                        <sourcefiles encoding="UTF-8">
+                                                            <fileset dir="${api.extension.client}/${source}"/>
+                                                        </sourcefiles>
+                                                    </group>
+                                                    <group name="org.wso2.carbon.apimgt.application.extension">
+                                                        <classfiles>
+                                                            <fileset
+                                                                    dir="${api.extension.application}/${target}/${classes}"/>
+                                                        </classfiles>
+                                                        <sourcefiles encoding="UTF-8">
+                                                            <fileset dir="${api.extension.application}/${source}"/>
+                                                        </sourcefiles>
+                                                    </group>
+                                                    <group name="org.wso2.carbon.apimgt.application.extension.api">
+                                                        <classfiles>
+                                                            <fileset
+                                                                    dir="${api.extension.application.api}/${target}/${classes}"/>
+                                                        </classfiles>
+                                                        <sourcefiles encoding="UTF-8">
+                                                            <fileset dir="${api.extension.application.api}/${source}"/>
+                                                        </sourcefiles>
+                                                    </group>
+                                                    <group name="org.wso2.carbon.apimgt.handlers">
+                                                        <classfiles>
+                                                            <fileset
+                                                                    dir="${api.extension.handlers}/${target}/${classes}"/>
+                                                        </classfiles>
+                                                        <sourcefiles encoding="UTF-8">
+                                                            <fileset dir="${api.extension.handlers}/${source}"/>
+                                                        </sourcefiles>
+                                                    </group>
+                                                    <group name="org.wso2.carbon.apimgt.webapp.publisher">
+                                                        <classfiles>
+                                                            <fileset
+                                                                    dir="${api.extension.webapp}/${target}/${classes}"/>
+                                                        </classfiles>
+                                                        <sourcefiles encoding="UTF-8">
+                                                            <fileset dir="${api.extension.webapp}/${source}"/>
+                                                        </sourcefiles>
+                                                    </group>
+                                                </group>
+                                                <group name="device-mgt-extensions">
+                                                    <group name="org.wso2.carbon.device.mgt.extensions.device.type.deployer">
+                                                        <classfiles>
+                                                            <fileset
+                                                                    dir="${device.extensions.deployer}/${target}/${classes}"/>
+                                                        </classfiles>
+                                                        <sourcefiles encoding="UTF-8">
+                                                            <fileset dir="${device.extensions.deployer}/${source}"/>
+                                                        </sourcefiles>
+                                                    </group>
+                                                    <group name="org.wso2.carbon.device.mgt.extensions.push.notification.provider.fcm">
+                                                        <classfiles>
+                                                            <fileset
+                                                                    dir="${device.extensions.fcm}/${target}/${classes}"/>
+                                                        </classfiles>
+                                                        <sourcefiles encoding="UTF-8">
+                                                            <fileset dir="${device.extensions.fcm}/${source}"/>
+                                                        </sourcefiles>
+                                                    </group>
+                                                    <group name="org.wso2.carbon.device.mgt.extensions.push.notification.provider.http">
+                                                        <classfiles>
+                                                            <fileset
+                                                                    dir="${device.extensions.http}/${target}/${classes}"/>
+                                                        </classfiles>
+                                                        <sourcefiles encoding="UTF-8">
+                                                            <fileset dir="${device.extensions.http}/${source}"/>
+                                                        </sourcefiles>
+                                                    </group>
+                                                    <group name="org.wso2.carbon.device.mgt.extensions.push.notification.provider.mqtt">
+                                                        <classfiles>
+                                                            <fileset
+                                                                    dir="${device.extensions.mqtt}/${target}/${classes}"/>
+                                                        </classfiles>
+                                                        <sourcefiles encoding="UTF-8">
+                                                            <fileset dir="${device.extensions.mqtt}/${source}"/>
+                                                        </sourcefiles>
+                                                    </group>
+                                                    <group name="org.wso2.carbon.device.mgt.extensions.push.notification.provider.xmpp">
+                                                        <classfiles>
+                                                            <fileset
+                                                                    dir="${device.extensions.xmpp}/${target}/${classes}"/>
+                                                        </classfiles>
+                                                        <sourcefiles encoding="UTF-8">
+                                                            <fileset dir="${device.extensions.xmpp}/${source}"/>
+                                                        </sourcefiles>
+                                                    </group>
+                                                    <group name="org.wso2.carbon.device.mgt.extensions.pull.notification">
+                                                        <classfiles>
+                                                            <fileset
+                                                                    dir="${device.extensions.pull}/${target}/${classes}"/>
+                                                        </classfiles>
+                                                        <sourcefiles encoding="UTF-8">
+                                                            <fileset dir="${device.extensions.pull}/${source}"/>
+                                                        </sourcefiles>
+                                                    </group>
+                                                </group>
+                                                <group name="email-sender">
+                                                    <classfiles>
+                                                        <fileset dir="${email.sender.core}/${target}/${classes}"/>
+                                                    </classfiles>
+                                                    <sourcefiles encoding="UTF-8">
+                                                        <fileset dir="${email.sender.core}/${source}"/>
+                                                    </sourcefiles>
+                                                </group>
+
+                                                <group name="identity-extensions">
+                                                    <group name="org.wso2.carbon.device.mgt.oauth.extensions">
+                                                        <classfiles>
+                                                            <fileset
+                                                                    dir="${identity.oauth.extension}/${target}/${classes}"/>
+                                                        </classfiles>
+                                                        <sourcefiles encoding="UTF-8">
+                                                            <fileset dir="${identity.oauth.extension}/${source}"/>
+                                                        </sourcefiles>
+                                                    </group>
+                                                    <group name="org.wso2.carbon.identity.authenticator.backend.oauth">
+                                                        <classfiles>
+                                                            <fileset
+                                                                    dir="${identity.backend.extension}/${target}/${classes}"/>
+                                                        </classfiles>
+                                                        <sourcefiles encoding="UTF-8">
+                                                            <fileset dir="${identity.backend.extension}/${source}"/>
+                                                        </sourcefiles>
+                                                    </group>
+                                                    <group name="org.wso2.carbon.identity.jwt.client.extension">
+                                                        <classfiles>
+                                                            <fileset
+                                                                    dir="${identity.jwt.extension}/${target}/${classes}"/>
+                                                        </classfiles>
+                                                        <sourcefiles encoding="UTF-8">
+                                                            <fileset dir="${identity.jwt.extension}/${source}"/>
+                                                        </sourcefiles>
+                                                    </group>
+                                                </group>
+                                                <group name="policy-mgt">
+                                                    <group name="org.wso2.carbon.complex.policy.decision.point">
+                                                        <classfiles>
+                                                            <fileset
+                                                                    dir="${policy.mgt.complex.point}/${target}/${classes}"/>
+                                                        </classfiles>
+                                                        <sourcefiles encoding="UTF-8">
+                                                            <fileset dir="${policy.mgt.complex.point}/${source}"/>
+                                                        </sourcefiles>
+                                                    </group>
+                                                    <group name="org.wso2.carbon.policy.decision.point">
+                                                        <classfiles>
+                                                            <fileset
+                                                                    dir="${policy.mgt.decision.point}/${target}/${classes}"/>
+                                                        </classfiles>
+                                                        <sourcefiles encoding="UTF-8">
+                                                            <fileset dir="${policy.mgt.decision.point}/${source}"/>
+                                                        </sourcefiles>
+                                                    </group>
+                                                    <group name="org.wso2.carbon.policy.information.point">
+                                                        <classfiles>
+                                                            <fileset
+                                                                    dir="${policy.mgt.information.point}/${target}/${classes}"/>
+                                                        </classfiles>
+                                                        <sourcefiles encoding="UTF-8">
+                                                            <fileset dir="${policy.mgt.information.point}/${source}"/>
+
+                                                        </sourcefiles>
+                                                    </group>
+                                                    <group name="org.wso2.carbon.policy.mgt.common">
+                                                        <classfiles>
+                                                            <fileset dir="${policy.mgt.common}/${target}/${classes}"/>
+                                                        </classfiles>
+                                                        <sourcefiles encoding="UTF-8">
+                                                            <fileset dir="${policy.mgt.common}/${source}"/>
+                                                        </sourcefiles>
+                                                    </group>
+                                                    <group name="org.wso2.carbon.policy.mgt.core">
+                                                        <classfiles>
+                                                            <fileset dir="${policy.mgt.core}/${target}/${classes}"/>
+                                                        </classfiles>
+                                                        <sourcefiles encoding="UTF-8">
+                                                            <fileset dir="${policy.mgt.core}/${source}"/>
+                                                        </sourcefiles>
+                                                    </group>
+                                                </group>
+
+
+                                                <group name="webapp-authentictor-framework">
+                                                    <classfiles>
+                                                        <fileset
+                                                                dir="${webapp.authenticatore.frmework}/${target}/${classes}"/>
+                                                    </classfiles>
+                                                    <sourcefiles encoding="UTF-8">
+                                                        <fileset dir="${webapp.authenticatore.frmework}/${source}"/>
+                                                    </sourcefiles>
+                                                </group>
+                                            </structure>
+
+                                            <html destdir="${basedir}/target/coverage-report/site"/>
+                                        </report>
+                                    </then>
+                                </if>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.jacoco</groupId>
+                        <artifactId>org.jacoco.ant</artifactId>
+                        <version>${jacoco.ant.verision}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>ant-contrib</groupId>
+                        <artifactId>ant-contrib</artifactId>
+                        <version>${ant.contrib.version}</version>
+                        <exclusions>
+                            <exclusion>
+                                <groupId>ant</groupId>
+                                <artifactId>ant</artifactId>
+                            </exclusion>
+                        </exclusions>
+                    </dependency>
+                </dependencies>
+            </plugin>
+        </plugins>
+    </build>
+</project>

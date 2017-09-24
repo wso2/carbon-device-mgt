@@ -21,7 +21,7 @@
     width: 0; /* 0 width - change this with JavaScript */
     position: fixed; /* Stay in place */
     z-index: 1; /* Stay on top */
-    top: 10%;
+    top: 5%;
     right: 0%;
     background-color: #b5b5b5;
     overflow-x: hidden; /* Disable horizontal scroll */
@@ -48,6 +48,16 @@
     right: 25px;
     font-size: 36px;
     margin-left: 50px;
+}
+
+.drawer-close-btn {
+    height: 40px;
+    width: 30px;
+}
+
+.drawer-close-btn:hover {
+    cursor: pointer;
+    color: #818181;
 }
 
 /* Style page content - use this if you want to push the page content to the right when you open the side navigation */

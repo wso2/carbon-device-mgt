@@ -16,9 +16,8 @@
  * under the License.
  */
 
-import PropTypes from 'prop-types';
 import React, {Component} from 'react';
-import {FormGroup, Input, Label, Badge, Button} from 'reactstrap';
+import {Badge, Button, FormGroup, Input, Label} from 'reactstrap';
 import Dropzone from 'react-dropzone';
 import './generalInfo.css';
 
@@ -36,7 +35,7 @@ class GeneralInfo extends Component {
     }
 
     render() {
-        return(
+        return (
             <div className="app-edit-general-info">
                 <form>
                     <FormGroup>
@@ -151,18 +150,17 @@ class GeneralInfo extends Component {
                                             <img style={{height: '200px', width: '200px'}} src={tile.preview}/>
                                         </button>
                                     ))}
+                                    {this.state.icon.length === 0 ?
+                                        <Dropzone
+                                            className="applicationCreateIconDropZone"
+                                            accept="image/jpeg, image/png"
+                                            onDrop={(icon, rejected) => {
+                                                this.setState({icon, rejected});
+                                            }}
+                                        >
+                                            <p className="applicationCreateIconp">+</p>
+                                        </Dropzone> : <div/>}
                                 </div>
-
-                                {this.state.icon.length === 0 ?
-                                    <Dropzone
-                                        className="applicationCreateIconDropZone"
-                                        accept="image/jpeg, image/png"
-                                        onDrop={(icon, rejected) => {
-                                            this.setState({icon, rejected});
-                                        }}
-                                    >
-                                        <p className="applicationCreateIconp">+</p>
-                                    </Dropzone> : <div/>}
                             </FormGroup>
                         </div>
                         <div style={{marginLeft: '15px'}}>

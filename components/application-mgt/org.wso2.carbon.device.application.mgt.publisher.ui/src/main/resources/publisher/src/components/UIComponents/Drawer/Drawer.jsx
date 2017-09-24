@@ -19,16 +19,30 @@
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import './drawer.css';
+import {Row} from "reactstrap";
 
 /**
  * Custom React component for Application View.
  * */
 class Drawer extends Component {
 
+    constructor() {
+        super();
+        this.closeDrawer = this.closeDrawer.bind(this);
+    }
+
+    /**
+     * Closes the drawer.
+     * */
+    closeDrawer() {
+        this.props.onClose();
+    }
+
     render() {
         return (
             <div>
                 <div id="app-view" className="app-view-drawer" style={this.props.style}>
+                    <a onClick={this.closeDrawer} className="drawer-close-btn">&times;</a>
                     {this.props.children}
                 </div>
             </div>
@@ -38,7 +52,8 @@ class Drawer extends Component {
 
 Drawer.propTypes = {
     style: PropTypes.object,
-    children: PropTypes.node
+    children: PropTypes.node,
+    onClose: PropTypes.func
 };
 
 export default Drawer;

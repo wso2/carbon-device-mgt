@@ -17,21 +17,30 @@
  */
 
 import React, {Component} from 'react';
-import './input.css';
+import {Col, Row} from "reactstrap";
+import './notification.css';
 
-class Input2 extends Component {
+class NotificationItem extends Component {
+    constructor() {
+        super();
+    }
 
     render() {
         return (
-            <div className="custom-input">
-                <input type="text" required/>
-                <span className="highlight"></span>
-                <span className="under-line"></span>
-                <label>Name</label>
+            <div>
+                <Row>
+                    <Col>
+                        <div className="notification-app-icon small">
+                            <img/>
+                        </div>
+                    </Col>
+                    <Col>
+                        <p>Your application, Facebook has been published.</p>
+                    </Col>
+                </Row>
             </div>
-        )
+        );
     }
-
 }
 
-export default Input2;
+export default NotificationItem;

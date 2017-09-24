@@ -23,6 +23,7 @@ import React, {Component} from 'react';
 import MenuItem from 'material-ui/MenuItem';
 import SelectField from 'material-ui/SelectField';
 import {FormGroup, Label} from 'reactstrap';
+import AppImage from "../../../UIComponents/AppImage/AppImage";
 
 
 /**
@@ -303,13 +304,9 @@ class Step3 extends Component {
                                 <span className="image-sub-title"> (600 X 800 32 bit PNG)</span>
                                 <div id="screenshot-container">
                                     {this.state.screenshots.map((tile) => (
-                                        <button id="img-btn-screenshot" style={{height: '210px', width: '410px'}}
-                                                onMouseEnter={() => {
-                                                    console.log("Mouse Entered")
-                                                }}>
-                                            {console.log(tile[0].preview)}
-                                            <img style={{height: '200px', width: '400px'}} src={tile[0].preview}/>
-                                        </button>
+                                        <div id="app-image-screenshot">
+                                            <AppImage image={tile[0].preview}/>
+                                        </div>
                                     ))}
                                     {this.state.screenshots.length < 3 ?
                                         <Dropzone
@@ -336,13 +333,10 @@ class Step3 extends Component {
                                     <span className="image-sub-title"> (512 X 512 32 bit PNG)</span>
                                     <div id="app-icon-container">
                                         {this.state.icon.map((tile) => (
-                                            <button onMouseEnter={() => {
-                                                console.log("Mouse Entered")
-                                            }}>
-                                                <img style={{height: '200px', width: '200px'}} src={tile.preview}/>
-                                            </button>
+                                            <div id="app-image-icon">
+                                                <AppImage image={tile.preview}/>
+                                            </div>
                                         ))}
-                                    </div>
 
                                     {this.state.icon.length === 0 ?
                                         <Dropzone
@@ -354,6 +348,7 @@ class Step3 extends Component {
                                         >
                                             <p className="applicationCreateIconp">+</p>
                                         </Dropzone> : <div/>}
+                                    </div>
                                 </FormGroup>
                             </div>
                             <div style={{marginLeft: '15px'}}>
@@ -362,11 +357,9 @@ class Step3 extends Component {
                                     <span className="image-sub-title"> (1000 X 400 32 bit PNG)</span>
                                     <div id="app-banner-container">
                                         {this.state.banner.map((tile) => (
-                                            <button onMouseEnter={() => {
-                                                console.log("Mouse Entered")
-                                            }}>
-                                                <img style={{height: '200px', width: '400px'}} src={tile.preview}/>
-                                            </button>
+                                            <div id="app-image-banner">
+                                                <AppImage image={tile.preview}/>
+                                            </div>
                                         ))}
                                         {this.state.banner.length === 0 ?
                                             <Dropzone

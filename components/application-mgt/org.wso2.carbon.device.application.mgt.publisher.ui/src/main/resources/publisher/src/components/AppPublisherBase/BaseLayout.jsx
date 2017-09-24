@@ -24,7 +24,8 @@ import '../../css/font-wso2.css';
 import NotificationsIcon from 'material-ui/svg-icons/social/notifications';
 import ActionAccountCircle from 'material-ui/svg-icons/action/account-circle';
 import ApplicationCreate from '../Application/Create/ApplicationCreate';
-import {Button, Input, InputGroup,} from 'reactstrap';
+import {Button, Input, InputGroup, Popover, PopoverContent, PopoverTitle,} from 'reactstrap';
+import NotificationItem from '../UIComponents/Notifications/NotificationItem';
 
 
 /**
@@ -76,8 +77,8 @@ class BaseLayout extends Component {
                             WSO2 IoT App Publisher
                         </span>
                         <div id="header-btn">
-                            <Button id="btn"><NotificationsIcon/></Button>
-                            <Button id="btn"><ActionAccountCircle/></Button>
+                            <Button className="btn-notification" id="btn"><NotificationsIcon/></Button>
+                            <Button className="btn-account" id="btn"><ActionAccountCircle/></Button>
                         </div>
                     </div>
                     <div id="search-box">
@@ -106,6 +107,12 @@ class BaseLayout extends Component {
                     {this.props.children}
                 </div>
                 <ApplicationCreate open={this.state.openModal}/>
+                {/*<Popover style={{right: '20px'}} target="btn" isOpen={true} placement="bottom">*/}
+                    {/*<PopoverTitle>Dismiss All</PopoverTitle>*/}
+                    {/*<PopoverContent>*/}
+                        {/*<NotificationItem/>*/}
+                    {/*</PopoverContent>*/}
+                {/*</Popover>*/}
             </div>
         );
     }

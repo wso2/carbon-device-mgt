@@ -21,9 +21,11 @@ import React, {Component} from 'react';
 import {withRouter} from 'react-router-dom';
 import AuthHandler from "../../api/authHandler";
 import ApplicationMgtApi from '../../api/applicationMgtApi';
-import {Button, Table} from 'reactstrap';
+import {Button, Row, Table} from 'reactstrap';
 import Drawer from '../UIComponents/Drawer/Drawer';
 import ApplicationView from './View/ApplicationView';
+import NotificationView from "../UIComponents/Notifications/NotificationView";
+import AppImage from "../UIComponents/AppImage/AppImage";
 
 /**
  * The App Create Component.
@@ -49,7 +51,9 @@ class ApplicationListing extends Component {
             open: false,
             application: {},
             drawer: {},
-            appListStyle: {}
+            appListStyle: {},
+            image: [{id: "1", src: "https://www.greenfoot.org/images/logos/macos.png"},
+                {id: "2", src:"http://dl1.cbsistatic.com/i/r/2016/08/08/0e67e43a-5a45-41ab-b81d-acfba8708044/resize/736x552/0c0ee669677b5060a0fa1bfb0c7873b4/android-logo-promo-470.png"}]
         };
         this.scriptId = "application-listing";
     }
@@ -212,7 +216,7 @@ class ApplicationListing extends Component {
 
         let appListStyle = {
             marginRight: '500px',
-        }
+        };
 
         this.setState({drawer: style, appListStyle: appListStyle});
 
@@ -230,6 +234,32 @@ class ApplicationListing extends Component {
     handleButtonClick() {
         console.log("Application Listing");
         this.props.history.push("apps/edit/fdsfdsf343");
+    }
+
+        remove(imageId) {
+        let tmp = this.state.image;
+
+        console.log(imageId);
+
+        let rem = tmp.filter((image) => {
+            return image.id !== imageId
+
+        });
+        console.log(rem);
+
+        this.setState({image: rem});
+    }
+
+    closeDrawer() {
+        let style = {
+            width: '0',
+            marginLeft: '0'
+        };
+
+        let appListStyle = {
+            marginRight: '0',
+        };
+        this.setState({drawer: style, appListStyle: appListStyle});
     }
 
     render() {
@@ -260,7 +290,8 @@ class ApplicationListing extends Component {
                                             height='50px'
                                             width='50px'
                                             style={{border: 'solid 1px black', borderRadius: "100%"}}
-                                        /></td>
+                                        />
+                                    </td>
                                     <td>{application.applicationName}</td>
                                     <td>{application.category}</td>
                                     <td>{application.platform}</td>
@@ -273,10 +304,7 @@ class ApplicationListing extends Component {
                     </tbody>
                 </Table>
 
-                {/*<ApplicationEdit/>*/}
-
-
-                <Drawer style={this.state.drawer}>
+                <Drawer onClose={this.closeDrawer.bind(this)} style={this.state.drawer}>
                     <ApplicationView/>
                 </Drawer>
             </div>

@@ -136,6 +136,12 @@ import java.util.List;
                         permissions = {"/login"}
                 ),
                 @Scope(
+                        name = "Mail configuration status",
+                        description = "Getting mail configuration status",
+                        key = "perm:users:is-mail-configured",
+                        permissions = {"/device-mgt/users/view"}
+                ),
+                @Scope(
                         name = "Sending Enrollment Invitations to Users",
                         description = "Sending Enrollment Invitations to Users",
                         key = "perm:users:send-invitation",
@@ -277,6 +283,7 @@ public interface UserManagementService {
                             "Example: Mon, 05 Jan 2014 15:10:00 +0200",
                     required = false)
             @HeaderParam("If-Modified-Since") String ifModifiedSince);
+
 
     @PUT
     @Path("/{username}")
@@ -520,6 +527,33 @@ public interface UserManagementService {
                     required = false,
                     defaultValue = "5")
             @QueryParam("limit") int limit);
+
+    @GET
+    @Path("/is-mail-configured")
+    @ApiOperation(
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "GET",
+            value = "Getting mail configuration status",
+            response = BasicUserInfo.class,
+            tags = "User Management",
+            extensions = {
+                    @Extension(properties = {
+                            @ExtensionProperty(name = Constants.SCOPE, value = "perm:users:is-mail-configured")
+                    })
+            }
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    code = 200,
+                    message = "OK. \n Successfully fetched the detail.",
+                    response = BasicUserInfo.class),
+            @ApiResponse(
+                    code = 500,
+                    message = "Internal Server ErrorResponse. \n Server error occurred while" +
+                            " fetching the detail.",
+                    response = ErrorResponse.class)
+    })
+    Response isMailConfigured();
 
     @GET
     @Path("/count")

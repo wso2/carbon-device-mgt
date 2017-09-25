@@ -25,4 +25,6 @@ public interface EmailSenderService {
 
     void sendEmail(EmailContext emailCtx) throws EmailSendingFailedException, EmailTransportNotConfiguredException;
 
+    boolean mailConfigurationStatus(String transportSenderName);
+
 }

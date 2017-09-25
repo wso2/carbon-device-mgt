@@ -50,12 +50,12 @@ $.fn.datatables_extended_serverside_paging = function (settings, url, dataFilter
 
     var deviceType;
     var ownership;
-	var searching = true;
-	if (options) {
-		if (typeof options.searching !== 'undefined') {
-			searching = options.searching;
-		}
-	}
+    var searching = true;
+    if (options) {
+        if (typeof options.searching !== 'undefined') {
+            searching = options.searching;
+        }
+    }
 
     //--- End of EMM related codes
 
@@ -219,6 +219,17 @@ $.fn.datatables_extended_serverside_paging = function (settings, url, dataFilter
                     });
                 }
 
+                var mailConfig = false;
+                var apiBasePath = "/api/device-mgt/v1.0";
+                var mailConfigAPIUrl = apiBasePath + "/users/is-mail-configured";
+                invokerUtil.get(mailConfigAPIUrl, function (data) {
+                    if (data) {
+                        mailConfig = data;
+                    }
+                }, function () {
+                    mailConfig = false;
+                });
+
                 function getAdvanceToolBar() {
                     if (table.hasClass('sorting-enabled')) {
                         return '<ul class="nav nav-pills navbar-right remove-margin" role="tablist">' +
@@ -227,6 +238,11 @@ $.fn.datatables_extended_serverside_paging = function (settings, url, dataFilter
                             '<li><button data-click-event="toggle-list-view" data-view="grid" class="btn btn-default"><i class="fw fw-grid"></i></button></li>' +
                             '<li><button data-click-event="toggle-list-view" data-view="list" class="btn btn-default"><i class="fw fw-list"></i></button></li>' +
                             '<li><button class="btn btn-default" data-toggle="dropdown"><i class="fw fw-sort"></i></button>' + dropdownmenu[0].outerHTML + '</li>' +
+                            '</ul>'
+                    } else if (mailConfig === "true" && url === "/api/device-mgt/v1.0/users") {
+                        return '<ul class="nav nav-pills navbar-right remove-margin" role="tablist">' +
+                            '<li><button data-click-event="toggle-list-view" data-view="grid" class="btn btn-default"><i class="fw fw-grid"></i></button></li>' +
+                            '<li><button data-click-event="toggle-list-view" data-view="list" class="btn btn-default"><i class="fw fw-list"></i></button></li>' +
                             '</ul>'
                     } else {
                         return '<ul class="nav nav-pills navbar-right remove-margin" role="tablist">' +

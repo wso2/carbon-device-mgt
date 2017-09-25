@@ -108,6 +108,7 @@
     "perm:policies:get-details",
     "perm:users:add",
     "perm:users:details",
+    "perm:users:is-mail-configured",
     "perm:users:count",
     "perm:users:delete",
     "perm:users:roles",

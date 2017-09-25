@@ -21,6 +21,7 @@ import React, {Component} from 'react';
 import Dialog from 'material-ui/Dialog';
 import {withRouter} from 'react-router-dom';
 import FlatButton from 'material-ui/FlatButton';
+import AuthHandler from "../../api/authHandler";
 import {Step1, Step2, Step3} from './CreateSteps';
 import RaisedButton from 'material-ui/RaisedButton';
 import ApplicationMgtApi from '../../api/applicationMgtApi';
@@ -70,7 +71,7 @@ class ApplicationCreate extends Component {
      * Handles next button click event.
      * */
     handleNext() {
-        console.log("Handle Next");
+        console.log("Handle Next"); //TODO: Remove this
         const {stepIndex} = this.state;
         this.setState({
             stepIndex: stepIndex + 1,
@@ -89,7 +90,7 @@ class ApplicationCreate extends Component {
             }
         ).catch(
             function (err) {
-                console.log(err);
+                AuthHandler.unauthorizedErrorHandler(err);
             }
         );
     };
@@ -120,7 +121,7 @@ class ApplicationCreate extends Component {
      * @param data: The form data of the step.
      * */
     setStepData(step, data) {
-        console.log(step, data, this.state.stepData);
+        console.log(step, data, this.state.stepData); //TODO: Remove this
         let tmpStepData = this.state.stepData;
         tmpStepData.push({step: step, data: data});
 

@@ -100,7 +100,7 @@ class ApplicationListing extends Component {
         let getApps = ApplicationMgtApi.getApplications();
         getApps.then(response => {
             let apps = this.setData(response.data.applications);
-            console.log(apps);
+            console.log(apps); //TODO: Remove this.
             this.setState({searchedApplications: apps});
             // console.log(this.setState({data: response.data}), console.log(this.state));
         }).catch(err => {
@@ -142,6 +142,7 @@ class ApplicationListing extends Component {
             searchedData = this.state.applications;
         }
 
+        //TODO: Remove the console log.
         this.setState({searchedApplications: searchedData}, console.log("Searched data ", this.state.searchedApplications));
     }
 
@@ -165,6 +166,7 @@ class ApplicationListing extends Component {
     }
 
     onRowClick(id) {
+        //TODO: Remove console logs.
         ApplicationMgtApi.getApplication(id).then(response => {
             console.log(response);
         }).catch(err => {

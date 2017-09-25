@@ -18,6 +18,11 @@
  */
 package org.wso2.carbon.device.application.mgt.core.util;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
+import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
+
 import java.util.UUID;
 
 /**
@@ -25,8 +30,30 @@ import java.util.UUID;
  */
 public class HelperUtil {
 
+    private static Log log = LogFactory.getLog(HelperUtil.class);
+
+    private static DeviceManagementProviderService deviceManagementProviderService;
+
     public static String generateApplicationUuid() {
         return UUID.randomUUID().toString();
+    }
+
+    public static DeviceManagementProviderService getDeviceManagementProviderService() {
+        if (deviceManagementProviderService == null) {
+            synchronized (HelperUtil.class) {
+                if (deviceManagementProviderService == null) {
+                    PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+                    deviceManagementProviderService = (DeviceManagementProviderService) ctx
+                            .getOSGiService(DeviceManagementProviderService.class, null);
+                    if (deviceManagementProviderService == null) {
+                        String msg = "Device management provider service has not initialized.";
+                        log.error(msg);
+                        throw new IllegalStateException(msg);
+                    }
+                }
+            }
+        }
+        return deviceManagementProviderService;
     }
 
 }

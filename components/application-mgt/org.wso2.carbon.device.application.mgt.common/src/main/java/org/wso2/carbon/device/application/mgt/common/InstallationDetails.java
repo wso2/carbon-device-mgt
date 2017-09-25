@@ -28,6 +28,11 @@ public class InstallationDetails {
             required = true)
     private String applicationUUID;
     @ApiModelProperty(
+            name = "versionName",
+            value = "Version name",
+            required = true)
+    private String versionName;
+    @ApiModelProperty(
             name = "userNameList",
             value = "List of user names.",
             required = true)
@@ -52,6 +57,14 @@ public class InstallationDetails {
 
     public void setApplicationUUID(String applicationUUID) {
         this.applicationUUID = applicationUUID;
+    }
+
+    public String getVersionName() {
+        return versionName;
+    }
+
+    public void setVersionName(String versionName) {
+        this.versionName = versionName;
     }
 
     public List<String> getUserNameList() {

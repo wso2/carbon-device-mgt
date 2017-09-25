@@ -1,0 +1,355 @@
+2017-09-11 11:17:06,019 INFO o.a.j.u.JMeterUtils: Setting Locale to en_US
+2017-09-11 11:17:06,029 INFO o.a.j.JMeter: Loading user properties from: /home/wso2/programs/jmeter/apache-jmeter-3.2/bin/user.properties
+2017-09-11 11:17:06,030 INFO o.a.j.JMeter: Loading system properties from: /home/wso2/programs/jmeter/apache-jmeter-3.2/bin/system.properties
+2017-09-11 11:17:06,036 INFO o.a.j.JMeter: Copyright (c) 1998-2017 The Apache Software Foundation
+2017-09-11 11:17:06,036 INFO o.a.j.JMeter: Version 3.2 r1790748
+2017-09-11 11:17:06,036 INFO o.a.j.JMeter: java.version=1.8.0_131
+2017-09-11 11:17:06,036 INFO o.a.j.JMeter: java.vm.name=Java HotSpot(TM) 64-Bit Server VM
+2017-09-11 11:17:06,036 INFO o.a.j.JMeter: os.name=Linux
+2017-09-11 11:17:06,036 INFO o.a.j.JMeter: os.arch=amd64
+2017-09-11 11:17:06,036 INFO o.a.j.JMeter: os.version=4.10.0-33-generic
+2017-09-11 11:17:06,036 INFO o.a.j.JMeter: file.encoding=UTF-8
+2017-09-11 11:17:06,036 INFO o.a.j.JMeter: Max memory     =536870912
+2017-09-11 11:17:06,036 INFO o.a.j.JMeter: Available Processors =4
+2017-09-11 11:17:06,040 INFO o.a.j.JMeter: Default Locale=English (United States)
+2017-09-11 11:17:06,041 INFO o.a.j.JMeter: JMeter  Locale=English (United States)
+2017-09-11 11:17:06,041 INFO o.a.j.JMeter: JMeterHome=/home/wso2/programs/jmeter/apache-jmeter-3.2
+2017-09-11 11:17:06,041 INFO o.a.j.JMeter: user.dir  =/home/wso2/projects/wso2/iot/chathura/device-mgt/carbon-device-mgt
+2017-09-11 11:17:06,041 INFO o.a.j.JMeter: PWD       =/home/wso2/projects/wso2/iot/chathura/device-mgt/carbon-device-mgt
+2017-09-11 11:17:06,041 INFO o.a.j.JMeter: IP: 127.0.1.1 Name: laptop1 FullName: laptop1
+2017-09-11 11:17:06,302 INFO o.a.j.g.a.LookAndFeelCommand: Using look and feel: javax.swing.plaf.metal.MetalLookAndFeel [Metal, CrossPlatform]
+2017-09-11 11:17:06,305 INFO o.a.j.JMeter: Loaded icon properties from org/apache/jmeter/images/icon.properties
+2017-09-11 11:17:06,714 INFO o.a.j.e.u.CompoundVariable: Note: Function class names must contain the string: '.functions.'
+2017-09-11 11:17:06,714 INFO o.a.j.e.u.CompoundVariable: Note: Function class names must not contain the string: '.gui.'
+2017-09-11 11:17:07,644 INFO o.a.j.g.u.MenuFactory: Skipping org.apache.jmeter.assertions.BSFAssertion
+2017-09-11 11:17:08,197 INFO o.a.j.g.u.MenuFactory: Skipping org.apache.jmeter.extractor.BSFPostProcessor
+2017-09-11 11:17:08,237 INFO o.a.j.g.u.MenuFactory: Skipping org.apache.jmeter.modifiers.BSFPreProcessor
+2017-09-11 11:17:08,271 INFO o.a.j.p.h.s.HTTPSamplerBase: Parser for text/html is org.apache.jmeter.protocol.http.parser.LagartoBasedHtmlParser
+2017-09-11 11:17:08,271 INFO o.a.j.p.h.s.HTTPSamplerBase: Parser for application/xhtml+xml is org.apache.jmeter.protocol.http.parser.LagartoBasedHtmlParser
+2017-09-11 11:17:08,271 INFO o.a.j.p.h.s.HTTPSamplerBase: Parser for application/xml is org.apache.jmeter.protocol.http.parser.LagartoBasedHtmlParser
+2017-09-11 11:17:08,272 INFO o.a.j.p.h.s.HTTPSamplerBase: Parser for text/xml is org.apache.jmeter.protocol.http.parser.LagartoBasedHtmlParser
+2017-09-11 11:17:08,272 INFO o.a.j.p.h.s.HTTPSamplerBase: Parser for text/vnd.wap.wml is org.apache.jmeter.protocol.http.parser.RegexpHTMLParser
+2017-09-11 11:17:08,272 INFO o.a.j.p.h.s.HTTPSamplerBase: Parser for text/css is org.apache.jmeter.protocol.http.parser.CssParser
+2017-09-11 11:17:08,616 INFO o.a.j.e.KeyToolUtils: keytool found at 'keytool'
+2017-09-11 11:17:08,617 INFO o.a.j.p.h.p.ProxyControl: HTTP(S) Test Script Recorder SSL Proxy will use keys that support embedded 3rd party resources in file /home/wso2/programs/jmeter/apache-jmeter-3.2/bin/proxyserver.jks
+2017-09-11 11:17:08,755 INFO o.a.j.g.u.MenuFactory: Skipping org.apache.jmeter.protocol.java.sampler.BSFSampler
+2017-09-11 11:17:08,797 INFO o.a.j.s.FileServer: Default base='/home/wso2/projects/wso2/iot/chathura/device-mgt/carbon-device-mgt'
+2017-09-11 11:17:08,876 INFO o.a.j.g.u.MenuFactory: Skipping org.apache.jmeter.protocol.mongodb.config.MongoSourceElement
+2017-09-11 11:17:08,876 INFO o.a.j.g.u.MenuFactory: Skipping org.apache.jmeter.protocol.mongodb.sampler.MongoScriptSampler
+2017-09-11 11:17:08,989 INFO o.a.j.g.u.MenuFactory: Skipping org.apache.jmeter.timers.BSFTimer
+2017-09-11 11:17:09,023 INFO o.a.j.g.u.MenuFactory: Skipping org.apache.jmeter.visualizers.BSFListener
+2017-09-11 11:17:09,177 INFO o.a.j.s.SampleResult: Note: Sample TimeStamps are START times
+2017-09-11 11:17:09,178 INFO o.a.j.s.SampleResult: sampleresult.default.encoding is set to ISO-8859-1
+2017-09-11 11:17:09,178 INFO o.a.j.s.SampleResult: sampleresult.useNanoTime=true
+2017-09-11 11:17:09,178 INFO o.a.j.s.SampleResult: sampleresult.nanoThreadSleep=5000
+2017-09-11 11:17:16,343 INFO o.a.j.g.a.Load: Loading file: /home/wso2/projects/wso2/iot/chathura/product-iots/product-iots/modules/integration/tests-integration/src/test/resources/jmeter-scripts/ApplicationManagementAPI.jmx
+2017-09-11 11:17:16,344 INFO o.a.j.s.FileServer: Set new base='/home/wso2/projects/wso2/iot/chathura/product-iots/product-iots/modules/integration/tests-integration/src/test/resources/jmeter-scripts'
+2017-09-11 11:17:16,441 INFO o.a.j.s.SaveService: Testplan (JMX) version: 2.2. Testlog (JTL) version: 2.2
+2017-09-11 11:17:16,456 INFO o.a.j.s.SaveService: Using SaveService properties file encoding UTF-8
+2017-09-11 11:17:16,458 INFO o.a.j.s.SaveService: Using SaveService properties version 3.2
+2017-09-11 11:17:16,461 INFO o.a.j.s.SaveService: Loading file: /home/wso2/projects/wso2/iot/chathura/product-iots/product-iots/modules/integration/tests-integration/src/test/resources/jmeter-scripts/ApplicationManagementAPI.jmx
+2017-09-11 11:17:16,491 INFO o.a.j.p.h.c.CookieManager: Settings: Delete null: true Check: true Allow variable: true Save: false Prefix: COOKIE_
+2017-09-11 11:17:16,491 INFO o.a.j.u.NameUpdater: Upgrading class org.apache.jmeter.protocol.http.sampler.SoapSampler to org.apache.jmeter.config.ConfigTestElement
+2017-09-11 11:17:16,491 INFO o.a.j.u.NameUpdater: Upgrading class org.apache.jmeter.protocol.http.control.gui.SoapSamplerGui to org.apache.jmeter.config.gui.ObsoleteGui
+2017-09-11 11:17:16,492 INFO o.a.j.u.NameUpdater: Upgrading class org.apache.jmeter.protocol.http.control.gui.SoapSamplerGui to org.apache.jmeter.config.gui.ObsoleteGui
+2017-09-11 11:17:16,503 INFO o.a.j.u.NameUpdater: Upgrading class org.apache.jmeter.protocol.http.control.gui.SoapSamplerGui to org.apache.jmeter.config.gui.ObsoleteGui
+2017-09-11 11:17:16,504 INFO o.a.j.u.NameUpdater: Upgrading class org.apache.jmeter.protocol.http.control.gui.SoapSamplerGui to org.apache.jmeter.config.gui.ObsoleteGui
+2017-09-11 11:17:17,087 INFO o.a.j.s.FileServer: Set new base='/home/wso2/projects/wso2/iot/chathura/product-iots/product-iots/modules/integration/tests-integration/src/test/resources/jmeter-scripts'
+2017-09-11 11:18:36,250 INFO o.a.j.e.StandardJMeterEngine: Running the test!
+2017-09-11 11:18:36,251 INFO o.a.j.s.SampleEvent: List of sample_variables: []
+2017-09-11 11:18:36,251 INFO o.a.j.s.SampleEvent: List of sample_variables: []
+2017-09-11 11:18:36,266 INFO o.a.j.g.u.JMeterMenuBar: setRunning(true, *local*)
+2017-09-11 11:18:36,378 INFO o.a.j.e.StandardJMeterEngine: Starting ThreadGroup: 1 : Application Management - Super Tenant
+2017-09-11 11:18:36,378 INFO o.a.j.e.StandardJMeterEngine: Starting 1 threads for group Application Management - Super Tenant.
+2017-09-11 11:18:36,378 INFO o.a.j.e.StandardJMeterEngine: Thread will continue on error
+2017-09-11 11:18:36,378 INFO o.a.j.t.ThreadGroup: Starting thread group... number=1 threads=1 ramp-up=1 perThread=1000.0 delayedStart=false
+2017-09-11 11:18:36,418 INFO o.a.j.t.ThreadGroup: Started thread group number 1
+2017-09-11 11:18:36,418 INFO o.a.j.e.StandardJMeterEngine: All thread groups have been started
+2017-09-11 11:18:36,424 INFO o.a.j.t.JMeterThread: Thread started: Application Management - Super Tenant 1-1
+2017-09-11 11:18:36,464 INFO o.a.j.p.h.s.HTTPHCAbstractImpl: Local host = laptop1
+2017-09-11 11:18:36,467 INFO o.a.j.p.h.s.HTTPHC4Impl: HTTP request retry count = 0
+2017-09-11 11:18:36,521 INFO o.a.j.p.h.s.LazySchemeSocketFactory: Setting up HTTPS TrustAll Socket Factory
+2017-09-11 11:18:36,525 INFO o.a.j.u.JsseSSLManager: Using default SSL protocol: TLS
+2017-09-11 11:18:36,525 INFO o.a.j.u.JsseSSLManager: SSL session context: per-thread
+2017-09-11 11:18:36,705 INFO o.a.j.u.SSLManager: JmeterKeyStore Location:  type JKS
+2017-09-11 11:18:36,705 INFO o.a.j.u.SSLManager: KeyStore created OK
+2017-09-11 11:18:36,705 WARN o.a.j.u.SSLManager: Keystore file not found, loading empty keystore
+2017-09-11 11:18:40,414 INFO o.a.j.s.FileServer: Stored: /home/wso2/projects/wso2/iot/chathura/product-iots/product-iots/modules/integration/tests-integration/src/test/resources/jmeter-scripts/image.png
+2017-09-11 11:18:40,915 INFO o.a.j.t.JMeterThread: Thread is done: Application Management - Super Tenant 1-1
+2017-09-11 11:18:40,916 INFO o.a.j.t.JMeterThread: Thread finished: Application Management - Super Tenant 1-1
+2017-09-11 11:18:40,916 INFO o.a.j.e.StandardJMeterEngine: Notifying test listeners of end of test
+2017-09-11 11:18:40,917 INFO o.a.j.g.u.JMeterMenuBar: setRunning(false, *local*)
+2017-09-11 11:41:19,241 INFO o.a.j.e.StandardJMeterEngine: Running the test!
+2017-09-11 11:41:19,242 INFO o.a.j.s.SampleEvent: List of sample_variables: []
+2017-09-11 11:41:19,247 INFO o.a.j.g.u.JMeterMenuBar: setRunning(true, *local*)
+2017-09-11 11:41:19,371 INFO o.a.j.e.StandardJMeterEngine: Starting ThreadGroup: 1 : Application Management - Super Tenant
+2017-09-11 11:41:19,371 INFO o.a.j.e.StandardJMeterEngine: Starting 1 threads for group Application Management - Super Tenant.
+2017-09-11 11:41:19,371 INFO o.a.j.e.StandardJMeterEngine: Thread will continue on error
+2017-09-11 11:41:19,372 INFO o.a.j.t.ThreadGroup: Starting thread group... number=1 threads=1 ramp-up=1 perThread=1000.0 delayedStart=false
+2017-09-11 11:41:19,403 INFO o.a.j.t.ThreadGroup: Started thread group number 1
+2017-09-11 11:41:19,403 INFO o.a.j.e.StandardJMeterEngine: All thread groups have been started
+2017-09-11 11:41:19,408 INFO o.a.j.t.JMeterThread: Thread started: Application Management - Super Tenant 1-1
+2017-09-11 11:41:25,273 INFO o.a.j.s.FileServer: Stored: /home/wso2/projects/wso2/iot/chathura/product-iots/product-iots/modules/integration/tests-integration/src/test/resources/jmeter-scripts/image.png
+2017-09-11 11:41:26,162 INFO o.a.j.t.JMeterThread: Thread is done: Application Management - Super Tenant 1-1
+2017-09-11 11:41:26,163 INFO o.a.j.t.JMeterThread: Thread finished: Application Management - Super Tenant 1-1
+2017-09-11 11:41:26,163 INFO o.a.j.e.StandardJMeterEngine: Notifying test listeners of end of test
+2017-09-11 11:41:26,163 INFO o.a.j.g.u.JMeterMenuBar: setRunning(false, *local*)
+2017-09-11 11:46:37,551 INFO o.a.j.e.StandardJMeterEngine: Running the test!
+2017-09-11 11:46:37,551 INFO o.a.j.s.SampleEvent: List of sample_variables: []
+2017-09-11 11:46:37,555 INFO o.a.j.g.u.JMeterMenuBar: setRunning(true, *local*)
+2017-09-11 11:46:37,677 INFO o.a.j.e.StandardJMeterEngine: Starting ThreadGroup: 1 : Application Management - Super Tenant
+2017-09-11 11:46:37,677 INFO o.a.j.e.StandardJMeterEngine: Starting 1 threads for group Application Management - Super Tenant.
+2017-09-11 11:46:37,677 INFO o.a.j.e.StandardJMeterEngine: Thread will continue on error
+2017-09-11 11:46:37,678 INFO o.a.j.t.ThreadGroup: Starting thread group... number=1 threads=1 ramp-up=1 perThread=1000.0 delayedStart=false
+2017-09-11 11:46:37,703 INFO o.a.j.t.ThreadGroup: Started thread group number 1
+2017-09-11 11:46:37,703 INFO o.a.j.e.StandardJMeterEngine: All thread groups have been started
+2017-09-11 11:46:37,704 INFO o.a.j.t.JMeterThread: Thread started: Application Management - Super Tenant 1-1
+2017-09-11 11:46:40,303 INFO o.a.j.s.FileServer: Stored: /home/wso2/projects/wso2/iot/chathura/product-iots/product-iots/modules/integration/tests-integration/src/test/resources/jmeter-scripts/image.png
+2017-09-11 11:46:41,107 INFO o.a.j.t.JMeterThread: Thread is done: Application Management - Super Tenant 1-1
+2017-09-11 11:46:41,107 INFO o.a.j.t.JMeterThread: Thread finished: Application Management - Super Tenant 1-1
+2017-09-11 11:46:41,108 INFO o.a.j.e.StandardJMeterEngine: Notifying test listeners of end of test
+2017-09-11 11:46:41,108 INFO o.a.j.g.u.JMeterMenuBar: setRunning(false, *local*)
+2017-09-11 11:49:20,026 INFO o.a.j.e.StandardJMeterEngine: Running the test!
+2017-09-11 11:49:20,026 INFO o.a.j.s.SampleEvent: List of sample_variables: []
+2017-09-11 11:49:20,029 INFO o.a.j.g.u.JMeterMenuBar: setRunning(true, *local*)
+2017-09-11 11:49:20,136 INFO o.a.j.e.StandardJMeterEngine: Starting ThreadGroup: 1 : Application Management - Super Tenant
+2017-09-11 11:49:20,136 INFO o.a.j.e.StandardJMeterEngine: Starting 1 threads for group Application Management - Super Tenant.
+2017-09-11 11:49:20,137 INFO o.a.j.e.StandardJMeterEngine: Thread will continue on error
+2017-09-11 11:49:20,137 INFO o.a.j.t.ThreadGroup: Starting thread group... number=1 threads=1 ramp-up=1 perThread=1000.0 delayedStart=false
+2017-09-11 11:49:20,165 INFO o.a.j.t.ThreadGroup: Started thread group number 1
+2017-09-11 11:49:20,166 INFO o.a.j.e.StandardJMeterEngine: All thread groups have been started
+2017-09-11 11:49:20,167 INFO o.a.j.t.JMeterThread: Thread started: Application Management - Super Tenant 1-1
+2017-09-11 11:51:01,448 INFO o.a.j.s.FileServer: Stored: /home/wso2/projects/wso2/iot/chathura/product-iots/product-iots/modules/integration/tests-integration/src/test/resources/jmeter-scripts/image.png
+2017-09-11 11:53:08,769 INFO o.a.j.t.JMeterThread: Thread is done: Application Management - Super Tenant 1-1
+2017-09-11 11:53:08,769 INFO o.a.j.t.JMeterThread: Thread finished: Application Management - Super Tenant 1-1
+2017-09-11 11:53:08,770 INFO o.a.j.e.StandardJMeterEngine: Notifying test listeners of end of test
+2017-09-11 11:53:08,771 INFO o.a.j.g.u.JMeterMenuBar: setRunning(false, *local*)
+2017-09-11 11:57:09,607 INFO o.a.j.e.StandardJMeterEngine: Running the test!
+2017-09-11 11:57:09,609 INFO o.a.j.s.SampleEvent: List of sample_variables: []
+2017-09-11 11:57:09,613 INFO o.a.j.g.u.JMeterMenuBar: setRunning(true, *local*)
+2017-09-11 11:57:09,736 INFO o.a.j.e.StandardJMeterEngine: Starting ThreadGroup: 1 : Application Management - Super Tenant
+2017-09-11 11:57:09,736 INFO o.a.j.e.StandardJMeterEngine: Starting 1 threads for group Application Management - Super Tenant.
+2017-09-11 11:57:09,736 INFO o.a.j.e.StandardJMeterEngine: Thread will continue on error
+2017-09-11 11:57:09,736 INFO o.a.j.t.ThreadGroup: Starting thread group... number=1 threads=1 ramp-up=1 perThread=1000.0 delayedStart=false
+2017-09-11 11:57:09,761 INFO o.a.j.t.ThreadGroup: Started thread group number 1
+2017-09-11 11:57:09,761 INFO o.a.j.e.StandardJMeterEngine: All thread groups have been started
+2017-09-11 11:57:09,762 INFO o.a.j.t.JMeterThread: Thread started: Application Management - Super Tenant 1-1
+2017-09-11 11:57:19,936 INFO o.a.j.s.FileServer: Stored: /home/wso2/projects/wso2/iot/chathura/product-iots/product-iots/modules/integration/tests-integration/src/test/resources/jmeter-scripts/image.png
+2017-09-11 11:57:20,432 INFO o.a.j.t.JMeterThread: Thread is done: Application Management - Super Tenant 1-1
+2017-09-11 11:57:20,432 INFO o.a.j.t.JMeterThread: Thread finished: Application Management - Super Tenant 1-1
+2017-09-11 11:57:20,433 INFO o.a.j.e.StandardJMeterEngine: Notifying test listeners of end of test
+2017-09-11 11:57:20,433 INFO o.a.j.g.u.JMeterMenuBar: setRunning(false, *local*)
+2017-09-11 11:59:08,030 INFO o.a.j.e.StandardJMeterEngine: Running the test!
+2017-09-11 11:59:08,031 INFO o.a.j.s.SampleEvent: List of sample_variables: []
+2017-09-11 11:59:08,031 INFO o.a.j.g.u.JMeterMenuBar: setRunning(true, *local*)
+2017-09-11 11:59:08,164 INFO o.a.j.e.StandardJMeterEngine: Starting ThreadGroup: 1 : Application Management - Super Tenant
+2017-09-11 11:59:08,164 INFO o.a.j.e.StandardJMeterEngine: Starting 1 threads for group Application Management - Super Tenant.
+2017-09-11 11:59:08,164 INFO o.a.j.e.StandardJMeterEngine: Thread will continue on error
+2017-09-11 11:59:08,164 INFO o.a.j.t.ThreadGroup: Starting thread group... number=1 threads=1 ramp-up=1 perThread=1000.0 delayedStart=false
+2017-09-11 11:59:08,178 INFO o.a.j.t.ThreadGroup: Started thread group number 1
+2017-09-11 11:59:08,178 INFO o.a.j.e.StandardJMeterEngine: All thread groups have been started
+2017-09-11 11:59:08,179 INFO o.a.j.t.JMeterThread: Thread started: Application Management - Super Tenant 1-1
+2017-09-11 11:59:10,634 INFO o.a.j.s.FileServer: Stored: /home/wso2/projects/wso2/iot/chathura/product-iots/product-iots/modules/integration/tests-integration/src/test/resources/jmeter-scripts/image.png
+2017-09-11 11:59:10,712 INFO o.a.j.t.JMeterThread: Thread is done: Application Management - Super Tenant 1-1
+2017-09-11 11:59:10,712 INFO o.a.j.t.JMeterThread: Thread finished: Application Management - Super Tenant 1-1
+2017-09-11 11:59:10,713 INFO o.a.j.e.StandardJMeterEngine: Notifying test listeners of end of test
+2017-09-11 11:59:10,713 INFO o.a.j.g.u.JMeterMenuBar: setRunning(false, *local*)
+2017-09-11 12:01:02,024 INFO o.a.j.e.StandardJMeterEngine: Running the test!
+2017-09-11 12:01:02,024 INFO o.a.j.s.SampleEvent: List of sample_variables: []
+2017-09-11 12:01:02,026 INFO o.a.j.g.u.JMeterMenuBar: setRunning(true, *local*)
+2017-09-11 12:01:02,140 INFO o.a.j.e.StandardJMeterEngine: Starting ThreadGroup: 1 : Application Management - Super Tenant
+2017-09-11 12:01:02,140 INFO o.a.j.e.StandardJMeterEngine: Starting 1 threads for group Application Management - Super Tenant.
+2017-09-11 12:01:02,140 INFO o.a.j.e.StandardJMeterEngine: Thread will continue on error
+2017-09-11 12:01:02,140 INFO o.a.j.t.ThreadGroup: Starting thread group... number=1 threads=1 ramp-up=1 perThread=1000.0 delayedStart=false
+2017-09-11 12:01:02,156 INFO o.a.j.t.ThreadGroup: Started thread group number 1
+2017-09-11 12:01:02,156 INFO o.a.j.e.StandardJMeterEngine: All thread groups have been started
+2017-09-11 12:01:02,156 INFO o.a.j.t.JMeterThread: Thread started: Application Management - Super Tenant 1-1
+2017-09-11 12:01:04,482 INFO o.a.j.s.FileServer: Stored: /home/wso2/projects/wso2/iot/chathura/product-iots/product-iots/modules/integration/tests-integration/src/test/resources/jmeter-scripts/image.png
+2017-09-11 12:01:04,525 INFO o.a.j.t.JMeterThread: Thread is done: Application Management - Super Tenant 1-1
+2017-09-11 12:01:04,525 INFO o.a.j.t.JMeterThread: Thread finished: Application Management - Super Tenant 1-1
+2017-09-11 12:01:04,526 INFO o.a.j.e.StandardJMeterEngine: Notifying test listeners of end of test
+2017-09-11 12:01:04,526 INFO o.a.j.g.u.JMeterMenuBar: setRunning(false, *local*)
+2017-09-11 12:03:39,895 INFO o.a.j.e.StandardJMeterEngine: Running the test!
+2017-09-11 12:03:39,896 INFO o.a.j.s.SampleEvent: List of sample_variables: []
+2017-09-11 12:03:39,897 INFO o.a.j.g.u.JMeterMenuBar: setRunning(true, *local*)
+2017-09-11 12:03:40,008 INFO o.a.j.e.StandardJMeterEngine: Starting ThreadGroup: 1 : Application Management - Super Tenant
+2017-09-11 12:03:40,008 INFO o.a.j.e.StandardJMeterEngine: Starting 1 threads for group Application Management - Super Tenant.
+2017-09-11 12:03:40,008 INFO o.a.j.e.StandardJMeterEngine: Thread will continue on error
+2017-09-11 12:03:40,008 INFO o.a.j.t.ThreadGroup: Starting thread group... number=1 threads=1 ramp-up=1 perThread=1000.0 delayedStart=false
+2017-09-11 12:03:40,018 INFO o.a.j.t.ThreadGroup: Started thread group number 1
+2017-09-11 12:03:40,018 INFO o.a.j.t.JMeterThread: Thread started: Application Management - Super Tenant 1-1
+2017-09-11 12:03:40,020 INFO o.a.j.e.StandardJMeterEngine: All thread groups have been started
+2017-09-11 12:03:42,312 INFO o.a.j.t.JMeterThread: Thread is done: Application Management - Super Tenant 1-1
+2017-09-11 12:03:42,312 INFO o.a.j.t.JMeterThread: Thread finished: Application Management - Super Tenant 1-1
+2017-09-11 12:03:42,312 INFO o.a.j.e.StandardJMeterEngine: Notifying test listeners of end of test
+2017-09-11 12:03:42,312 INFO o.a.j.g.u.JMeterMenuBar: setRunning(false, *local*)
+2017-09-11 12:07:13,180 INFO o.a.j.e.StandardJMeterEngine: Running the test!
+2017-09-11 12:07:13,180 INFO o.a.j.s.SampleEvent: List of sample_variables: []
+2017-09-11 12:07:13,181 INFO o.a.j.g.u.JMeterMenuBar: setRunning(true, *local*)
+2017-09-11 12:07:13,321 INFO o.a.j.e.StandardJMeterEngine: Starting ThreadGroup: 1 : Application Management - Super Tenant
+2017-09-11 12:07:13,321 INFO o.a.j.e.StandardJMeterEngine: Starting 1 threads for group Application Management - Super Tenant.
+2017-09-11 12:07:13,321 INFO o.a.j.e.StandardJMeterEngine: Thread will continue on error
+2017-09-11 12:07:13,321 INFO o.a.j.t.ThreadGroup: Starting thread group... number=1 threads=1 ramp-up=1 perThread=1000.0 delayedStart=false
+2017-09-11 12:07:13,332 INFO o.a.j.t.ThreadGroup: Started thread group number 1
+2017-09-11 12:07:13,332 INFO o.a.j.e.StandardJMeterEngine: All thread groups have been started
+2017-09-11 12:07:13,332 INFO o.a.j.t.JMeterThread: Thread started: Application Management - Super Tenant 1-1
+2017-09-11 12:07:15,869 INFO o.a.j.s.FileServer: Stored: /home/wso2/projects/wso2/iot/chathura/product-iots/product-iots/modules/integration/tests-integration/src/test/resources/jmeter-scripts/image.png
+2017-09-11 12:07:15,910 INFO o.a.j.t.JMeterThread: Thread is done: Application Management - Super Tenant 1-1
+2017-09-11 12:07:15,910 INFO o.a.j.t.JMeterThread: Thread finished: Application Management - Super Tenant 1-1
+2017-09-11 12:07:15,910 INFO o.a.j.e.StandardJMeterEngine: Notifying test listeners of end of test
+2017-09-11 12:07:15,911 INFO o.a.j.g.u.JMeterMenuBar: setRunning(false, *local*)
+2017-09-11 14:23:30,019 INFO o.a.j.e.StandardJMeterEngine: Running the test!
+2017-09-11 14:23:30,024 INFO o.a.j.s.SampleEvent: List of sample_variables: []
+2017-09-11 14:23:30,032 INFO o.a.j.g.u.JMeterMenuBar: setRunning(true, *local*)
+2017-09-11 14:23:30,562 INFO o.a.j.e.StandardJMeterEngine: Starting ThreadGroup: 1 : Application Management - Super Tenant
+2017-09-11 14:23:30,562 INFO o.a.j.e.StandardJMeterEngine: Starting 1 threads for group Application Management - Super Tenant.
+2017-09-11 14:23:30,562 INFO o.a.j.e.StandardJMeterEngine: Thread will continue on error
+2017-09-11 14:23:30,562 INFO o.a.j.t.ThreadGroup: Starting thread group... number=1 threads=1 ramp-up=1 perThread=1000.0 delayedStart=false
+2017-09-11 14:23:30,589 INFO o.a.j.t.ThreadGroup: Started thread group number 1
+2017-09-11 14:23:30,589 INFO o.a.j.e.StandardJMeterEngine: All thread groups have been started
+2017-09-11 14:23:30,590 INFO o.a.j.t.JMeterThread: Thread started: Application Management - Super Tenant 1-1
+2017-09-11 14:23:33,752 INFO o.a.j.t.JMeterThread: Thread is done: Application Management - Super Tenant 1-1
+2017-09-11 14:23:33,753 INFO o.a.j.t.JMeterThread: Thread finished: Application Management - Super Tenant 1-1
+2017-09-11 14:23:33,753 INFO o.a.j.e.StandardJMeterEngine: Notifying test listeners of end of test
+2017-09-11 14:23:33,754 INFO o.a.j.g.u.JMeterMenuBar: setRunning(false, *local*)
+2017-09-11 14:24:35,246 INFO o.a.j.e.StandardJMeterEngine: Running the test!
+2017-09-11 14:24:35,246 INFO o.a.j.s.SampleEvent: List of sample_variables: []
+2017-09-11 14:24:35,247 INFO o.a.j.g.u.JMeterMenuBar: setRunning(true, *local*)
+2017-09-11 14:24:35,361 INFO o.a.j.e.StandardJMeterEngine: Starting ThreadGroup: 1 : Application Management - Super Tenant
+2017-09-11 14:24:35,361 INFO o.a.j.e.StandardJMeterEngine: Starting 1 threads for group Application Management - Super Tenant.
+2017-09-11 14:24:35,362 INFO o.a.j.e.StandardJMeterEngine: Thread will continue on error
+2017-09-11 14:24:35,362 INFO o.a.j.t.ThreadGroup: Starting thread group... number=1 threads=1 ramp-up=1 perThread=1000.0 delayedStart=false
+2017-09-11 14:24:35,380 INFO o.a.j.t.ThreadGroup: Started thread group number 1
+2017-09-11 14:24:35,380 INFO o.a.j.e.StandardJMeterEngine: All thread groups have been started
+2017-09-11 14:24:35,381 INFO o.a.j.t.JMeterThread: Thread started: Application Management - Super Tenant 1-1
+2017-09-11 14:24:37,901 INFO o.a.j.t.JMeterThread: Thread is done: Application Management - Super Tenant 1-1
+2017-09-11 14:24:37,901 INFO o.a.j.t.JMeterThread: Thread finished: Application Management - Super Tenant 1-1
+2017-09-11 14:24:37,901 INFO o.a.j.e.StandardJMeterEngine: Notifying test listeners of end of test
+2017-09-11 14:24:37,901 INFO o.a.j.g.u.JMeterMenuBar: setRunning(false, *local*)
+2017-09-11 14:26:47,180 INFO o.a.j.e.StandardJMeterEngine: Running the test!
+2017-09-11 14:26:47,180 INFO o.a.j.s.SampleEvent: List of sample_variables: []
+2017-09-11 14:26:47,182 INFO o.a.j.g.u.JMeterMenuBar: setRunning(true, *local*)
+2017-09-11 14:26:47,302 INFO o.a.j.e.StandardJMeterEngine: Starting ThreadGroup: 1 : Application Management - Super Tenant
+2017-09-11 14:26:47,302 INFO o.a.j.e.StandardJMeterEngine: Starting 1 threads for group Application Management - Super Tenant.
+2017-09-11 14:26:47,302 INFO o.a.j.e.StandardJMeterEngine: Thread will continue on error
+2017-09-11 14:26:47,303 INFO o.a.j.t.ThreadGroup: Starting thread group... number=1 threads=1 ramp-up=1 perThread=1000.0 delayedStart=false
+2017-09-11 14:26:47,316 INFO o.a.j.t.ThreadGroup: Started thread group number 1
+2017-09-11 14:26:47,316 INFO o.a.j.e.StandardJMeterEngine: All thread groups have been started
+2017-09-11 14:26:47,317 INFO o.a.j.t.JMeterThread: Thread started: Application Management - Super Tenant 1-1
+2017-09-11 14:26:49,859 INFO o.a.j.t.JMeterThread: Thread is done: Application Management - Super Tenant 1-1
+2017-09-11 14:26:49,859 INFO o.a.j.t.JMeterThread: Thread finished: Application Management - Super Tenant 1-1
+2017-09-11 14:26:49,859 INFO o.a.j.e.StandardJMeterEngine: Notifying test listeners of end of test
+2017-09-11 14:26:49,859 INFO o.a.j.g.u.JMeterMenuBar: setRunning(false, *local*)
+2017-09-11 14:30:37,092 INFO o.a.j.e.StandardJMeterEngine: Running the test!
+2017-09-11 14:30:37,092 INFO o.a.j.s.SampleEvent: List of sample_variables: []
+2017-09-11 14:30:37,093 INFO o.a.j.g.u.JMeterMenuBar: setRunning(true, *local*)
+2017-09-11 14:30:37,207 INFO o.a.j.e.StandardJMeterEngine: Starting ThreadGroup: 1 : Application Management - Super Tenant
+2017-09-11 14:30:37,207 INFO o.a.j.e.StandardJMeterEngine: Starting 1 threads for group Application Management - Super Tenant.
+2017-09-11 14:30:37,207 INFO o.a.j.e.StandardJMeterEngine: Thread will continue on error
+2017-09-11 14:30:37,207 INFO o.a.j.t.ThreadGroup: Starting thread group... number=1 threads=1 ramp-up=1 perThread=1000.0 delayedStart=false
+2017-09-11 14:30:37,220 INFO o.a.j.t.ThreadGroup: Started thread group number 1
+2017-09-11 14:30:37,220 INFO o.a.j.e.StandardJMeterEngine: All thread groups have been started
+2017-09-11 14:30:37,221 INFO o.a.j.t.JMeterThread: Thread started: Application Management - Super Tenant 1-1
+2017-09-11 14:30:39,716 INFO o.a.j.t.JMeterThread: Thread is done: Application Management - Super Tenant 1-1
+2017-09-11 14:30:39,716 INFO o.a.j.t.JMeterThread: Thread finished: Application Management - Super Tenant 1-1
+2017-09-11 14:30:39,717 INFO o.a.j.e.StandardJMeterEngine: Notifying test listeners of end of test
+2017-09-11 14:30:39,717 INFO o.a.j.g.u.JMeterMenuBar: setRunning(false, *local*)
+2017-09-11 14:43:17,010 INFO o.a.j.s.FileServer: Set new base='/home/wso2/projects/wso2/iot/testing/appm/scripts'
+2017-09-11 14:51:18,349 INFO o.a.j.e.StandardJMeterEngine: Running the test!
+2017-09-11 14:51:18,351 INFO o.a.j.s.SampleEvent: List of sample_variables: []
+2017-09-11 14:51:18,352 INFO o.a.j.g.u.JMeterMenuBar: setRunning(true, *local*)
+2017-09-11 14:51:18,479 INFO o.a.j.e.StandardJMeterEngine: Starting ThreadGroup: 1 : TokenGen
+2017-09-11 14:51:18,479 INFO o.a.j.e.StandardJMeterEngine: Starting 1 threads for group TokenGen.
+2017-09-11 14:51:18,479 INFO o.a.j.e.StandardJMeterEngine: Thread will continue on error
+2017-09-11 14:51:18,480 INFO o.a.j.t.ThreadGroup: Starting thread group... number=1 threads=1 ramp-up=1 perThread=1000.0 delayedStart=false
+2017-09-11 14:51:18,485 INFO o.a.j.t.ThreadGroup: Started thread group number 1
+2017-09-11 14:51:18,485 INFO o.a.j.e.StandardJMeterEngine: All thread groups have been started
+2017-09-11 14:51:18,485 INFO o.a.j.t.JMeterThread: Thread started: TokenGen 1-1
+2017-09-11 14:51:20,803 INFO o.a.j.t.JMeterThread: Thread is done: TokenGen 1-1
+2017-09-11 14:51:20,803 INFO o.a.j.t.JMeterThread: Thread finished: TokenGen 1-1
+2017-09-11 14:51:20,804 INFO o.a.j.e.StandardJMeterEngine: Notifying test listeners of end of test
+2017-09-11 14:51:20,804 INFO o.a.j.g.u.JMeterMenuBar: setRunning(false, *local*)
+2017-09-11 14:53:40,651 INFO o.a.j.e.StandardJMeterEngine: Running the test!
+2017-09-11 14:53:40,652 INFO o.a.j.s.SampleEvent: List of sample_variables: []
+2017-09-11 14:53:40,654 INFO o.a.j.g.u.JMeterMenuBar: setRunning(true, *local*)
+2017-09-11 14:53:40,790 INFO o.a.j.e.StandardJMeterEngine: Starting ThreadGroup: 1 : UnitTests
+2017-09-11 14:53:40,790 INFO o.a.j.e.StandardJMeterEngine: Starting 1 threads for group UnitTests.
+2017-09-11 14:53:40,790 INFO o.a.j.e.StandardJMeterEngine: Thread will continue on error
+2017-09-11 14:53:40,791 INFO o.a.j.t.ThreadGroup: Starting thread group... number=1 threads=1 ramp-up=1 perThread=1000.0 delayedStart=false
+2017-09-11 14:53:40,791 INFO o.a.j.t.ThreadGroup: Started thread group number 1
+2017-09-11 14:53:40,791 INFO o.a.j.e.StandardJMeterEngine: All thread groups have been started
+2017-09-11 14:53:40,791 INFO o.a.j.t.JMeterThread: Thread started: UnitTests 1-1
+2017-09-11 14:53:41,079 INFO o.a.j.t.JMeterThread: Thread is done: UnitTests 1-1
+2017-09-11 14:53:41,079 INFO o.a.j.t.JMeterThread: Thread finished: UnitTests 1-1
+2017-09-11 14:53:41,081 INFO o.a.j.e.StandardJMeterEngine: Notifying test listeners of end of test
+2017-09-11 14:53:41,081 INFO o.a.j.g.u.JMeterMenuBar: setRunning(false, *local*)
+2017-09-11 14:54:28,012 INFO o.a.j.e.StandardJMeterEngine: Running the test!
+2017-09-11 14:54:28,012 INFO o.a.j.s.SampleEvent: List of sample_variables: []
+2017-09-11 14:54:28,013 INFO o.a.j.g.u.JMeterMenuBar: setRunning(true, *local*)
+2017-09-11 14:54:28,123 INFO o.a.j.e.StandardJMeterEngine: Starting ThreadGroup: 1 : UnitTests
+2017-09-11 14:54:28,123 INFO o.a.j.e.StandardJMeterEngine: Starting 1 threads for group UnitTests.
+2017-09-11 14:54:28,124 INFO o.a.j.e.StandardJMeterEngine: Thread will continue on error
+2017-09-11 14:54:28,124 INFO o.a.j.t.ThreadGroup: Starting thread group... number=1 threads=1 ramp-up=1 perThread=1000.0 delayedStart=false
+2017-09-11 14:54:28,128 INFO o.a.j.t.ThreadGroup: Started thread group number 1
+2017-09-11 14:54:28,128 INFO o.a.j.e.StandardJMeterEngine: All thread groups have been started
+2017-09-11 14:54:28,128 INFO o.a.j.t.JMeterThread: Thread started: UnitTests 1-1
+2017-09-11 14:54:28,385 INFO o.a.j.t.JMeterThread: Thread is done: UnitTests 1-1
+2017-09-11 14:54:28,385 INFO o.a.j.t.JMeterThread: Thread finished: UnitTests 1-1
+2017-09-11 14:54:28,385 INFO o.a.j.e.StandardJMeterEngine: Notifying test listeners of end of test
+2017-09-11 14:54:28,385 INFO o.a.j.g.u.JMeterMenuBar: setRunning(false, *local*)
+2017-09-11 14:56:06,132 INFO o.a.j.e.StandardJMeterEngine: Running the test!
+2017-09-11 14:56:06,132 INFO o.a.j.s.SampleEvent: List of sample_variables: []
+2017-09-11 14:56:06,133 INFO o.a.j.g.u.JMeterMenuBar: setRunning(true, *local*)
+2017-09-11 14:56:06,249 INFO o.a.j.e.StandardJMeterEngine: Starting ThreadGroup: 1 : UnitTests
+2017-09-11 14:56:06,249 INFO o.a.j.e.StandardJMeterEngine: Starting 1 threads for group UnitTests.
+2017-09-11 14:56:06,249 INFO o.a.j.e.StandardJMeterEngine: Thread will continue on error
+2017-09-11 14:56:06,249 INFO o.a.j.t.ThreadGroup: Starting thread group... number=1 threads=1 ramp-up=1 perThread=1000.0 delayedStart=false
+2017-09-11 14:56:06,254 INFO o.a.j.t.ThreadGroup: Started thread group number 1
+2017-09-11 14:56:06,254 INFO o.a.j.e.StandardJMeterEngine: All thread groups have been started
+2017-09-11 14:56:06,254 INFO o.a.j.t.JMeterThread: Thread started: UnitTests 1-1
+2017-09-11 14:56:06,349 INFO o.a.j.t.JMeterThread: Thread is done: UnitTests 1-1
+2017-09-11 14:56:06,349 INFO o.a.j.t.JMeterThread: Thread finished: UnitTests 1-1
+2017-09-11 14:56:06,350 INFO o.a.j.e.StandardJMeterEngine: Notifying test listeners of end of test
+2017-09-11 14:56:06,350 INFO o.a.j.g.u.JMeterMenuBar: setRunning(false, *local*)
+2017-09-11 15:05:21,190 INFO o.a.j.e.StandardJMeterEngine: Running the test!
+2017-09-11 15:05:21,191 INFO o.a.j.s.SampleEvent: List of sample_variables: []
+2017-09-11 15:05:21,192 INFO o.a.j.g.u.JMeterMenuBar: setRunning(true, *local*)
+2017-09-11 15:05:21,335 INFO o.a.j.e.StandardJMeterEngine: Starting ThreadGroup: 1 : UnitTests
+2017-09-11 15:05:21,335 INFO o.a.j.e.StandardJMeterEngine: Starting 1 threads for group UnitTests.
+2017-09-11 15:05:21,336 INFO o.a.j.e.StandardJMeterEngine: Thread will continue on error
+2017-09-11 15:05:21,336 INFO o.a.j.t.ThreadGroup: Starting thread group... number=1 threads=1 ramp-up=1 perThread=1000.0 delayedStart=false
+2017-09-11 15:05:21,336 INFO o.a.j.t.ThreadGroup: Started thread group number 1
+2017-09-11 15:05:21,336 INFO o.a.j.e.StandardJMeterEngine: All thread groups have been started
+2017-09-11 15:05:21,337 INFO o.a.j.t.JMeterThread: Thread started: UnitTests 1-1
+2017-09-11 15:05:21,454 INFO o.a.j.t.JMeterThread: Thread is done: UnitTests 1-1
+2017-09-11 15:05:21,454 INFO o.a.j.t.JMeterThread: Thread finished: UnitTests 1-1
+2017-09-11 15:05:21,454 INFO o.a.j.e.StandardJMeterEngine: Notifying test listeners of end of test
+2017-09-11 15:05:21,454 INFO o.a.j.g.u.JMeterMenuBar: setRunning(false, *local*)
+2017-09-11 15:06:50,344 INFO o.a.j.e.StandardJMeterEngine: Running the test!
+2017-09-11 15:06:50,345 INFO o.a.j.s.SampleEvent: List of sample_variables: []
+2017-09-11 15:06:50,346 INFO o.a.j.g.u.JMeterMenuBar: setRunning(true, *local*)
+2017-09-11 15:06:50,484 INFO o.a.j.e.StandardJMeterEngine: Starting ThreadGroup: 1 : UnitTests
+2017-09-11 15:06:50,485 INFO o.a.j.e.StandardJMeterEngine: Starting 1 threads for group UnitTests.
+2017-09-11 15:06:50,485 INFO o.a.j.e.StandardJMeterEngine: Thread will continue on error
+2017-09-11 15:06:50,485 INFO o.a.j.t.ThreadGroup: Starting thread group... number=1 threads=1 ramp-up=1 perThread=1000.0 delayedStart=false
+2017-09-11 15:06:50,485 INFO o.a.j.t.ThreadGroup: Started thread group number 1
+2017-09-11 15:06:50,485 INFO o.a.j.e.StandardJMeterEngine: All thread groups have been started
+2017-09-11 15:06:50,486 INFO o.a.j.t.JMeterThread: Thread started: UnitTests 1-1
+2017-09-11 15:06:50,581 INFO o.a.j.t.JMeterThread: Thread is done: UnitTests 1-1
+2017-09-11 15:06:50,581 INFO o.a.j.t.JMeterThread: Thread finished: UnitTests 1-1
+2017-09-11 15:06:50,581 INFO o.a.j.e.StandardJMeterEngine: Notifying test listeners of end of test
+2017-09-11 15:06:50,581 INFO o.a.j.g.u.JMeterMenuBar: setRunning(false, *local*)
+2017-09-11 15:07:27,565 INFO o.a.j.e.StandardJMeterEngine: Running the test!
+2017-09-11 15:07:27,567 INFO o.a.j.s.SampleEvent: List of sample_variables: []
+2017-09-11 15:07:27,567 INFO o.a.j.g.u.JMeterMenuBar: setRunning(true, *local*)
+2017-09-11 15:07:27,681 INFO o.a.j.e.StandardJMeterEngine: Starting ThreadGroup: 1 : UnitTests
+2017-09-11 15:07:27,681 INFO o.a.j.e.StandardJMeterEngine: Starting 1 threads for group UnitTests.
+2017-09-11 15:07:27,681 INFO o.a.j.e.StandardJMeterEngine: Thread will continue on error
+2017-09-11 15:07:27,681 INFO o.a.j.t.ThreadGroup: Starting thread group... number=1 threads=1 ramp-up=1 perThread=1000.0 delayedStart=false
+2017-09-11 15:07:27,681 INFO o.a.j.t.ThreadGroup: Started thread group number 1
+2017-09-11 15:07:27,681 INFO o.a.j.e.StandardJMeterEngine: All thread groups have been started
+2017-09-11 15:07:27,684 INFO o.a.j.t.JMeterThread: Thread started: UnitTests 1-1
+2017-09-11 15:07:27,759 INFO o.a.j.t.JMeterThread: Thread is done: UnitTests 1-1
+2017-09-11 15:07:27,759 INFO o.a.j.t.JMeterThread: Thread finished: UnitTests 1-1
+2017-09-11 15:07:27,760 INFO o.a.j.e.StandardJMeterEngine: Notifying test listeners of end of test
+2017-09-11 15:07:27,760 INFO o.a.j.g.u.JMeterMenuBar: setRunning(false, *local*)

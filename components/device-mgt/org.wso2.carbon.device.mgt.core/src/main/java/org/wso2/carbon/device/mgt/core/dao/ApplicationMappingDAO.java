@@ -19,6 +19,7 @@
 package org.wso2.carbon.device.mgt.core.dao;
 
 import org.wso2.carbon.device.mgt.common.app.mgt.Application;
+import org.wso2.carbon.device.mgt.common.app.mgt.DeviceApplicationMapping;
 
 import java.util.List;
 
@@ -31,4 +32,12 @@ public interface ApplicationMappingDAO {
 
     void removeApplicationMapping(int deviceId, List<Integer> appIdList, int tenantId)
             throws DeviceManagementDAOException;
+
+    int addDeviceApplicationMapping(DeviceApplicationMapping deviceApp) throws DeviceManagementDAOException;
+
+    void updateDeviceApplicationMapping(DeviceApplicationMapping deviceApp) throws DeviceManagementDAOException;
+
+    List<DeviceApplicationMapping> getApplicationsOfDevice(String deviceIdentifier, boolean installed) throws DeviceManagementDAOException;
+
+    void removeApplicationMapping(DeviceApplicationMapping deviceApp) throws DeviceManagementDAOException;
 }

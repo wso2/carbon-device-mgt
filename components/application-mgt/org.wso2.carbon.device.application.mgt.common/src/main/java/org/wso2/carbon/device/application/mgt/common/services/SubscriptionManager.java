@@ -34,7 +34,7 @@ public interface SubscriptionManager {
      * @return DeviceList which the application has been installed
      * @throws ApplicationManagementException Application Management Exception
      */
-    List<DeviceIdentifier> installApplicationForDevices(String applicationUUID,
+    List<DeviceIdentifier> installApplicationForDevices(String applicationUUID, String versionName,
                                                         List<DeviceIdentifier> deviceList)
             throws ApplicationManagementException;
 

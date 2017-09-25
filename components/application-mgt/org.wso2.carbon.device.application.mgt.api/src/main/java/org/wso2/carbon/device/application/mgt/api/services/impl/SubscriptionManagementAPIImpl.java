@@ -28,6 +28,7 @@ import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManage
 import org.wso2.carbon.device.application.mgt.common.services.SubscriptionManager;
 
 import javax.validation.Valid;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
@@ -43,15 +44,18 @@ public class SubscriptionManagementAPIImpl implements SubscriptionManagementAPI{
     private static Log log = LogFactory.getLog(SubscriptionManagementAPIImpl.class);
 
     @Override
+    @POST
+    @Path("/install-application")
     public Response installApplication(@ApiParam(name = "installationDetails", value = "The application ID and list" +
             " the devices/users/roles", required = true) @Valid InstallationDetails installationDetails) {
         Object response;
         SubscriptionManager subscriptionManager = APIUtil.getSubscriptionManager();
         try {
             String applicationUUTD = installationDetails.getApplicationUUID();
+            String versionName = installationDetails.getVersionName();
             if (!installationDetails.getDeviceIdentifiers().isEmpty()) {
                 List<DeviceIdentifier> deviceList = installationDetails.getDeviceIdentifiers();
-                response = subscriptionManager.installApplicationForDevices(applicationUUTD, deviceList);
+                response = subscriptionManager.installApplicationForDevices(applicationUUTD, versionName, deviceList);
             } else if (!installationDetails.getUserNameList().isEmpty()) {
                 List<String> userList = installationDetails.getUserNameList();
                 response = subscriptionManager.installApplicationForUsers(applicationUUTD, userList);

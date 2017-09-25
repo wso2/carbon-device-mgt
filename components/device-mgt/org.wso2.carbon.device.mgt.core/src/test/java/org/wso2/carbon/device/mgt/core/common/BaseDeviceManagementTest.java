@@ -32,6 +32,7 @@ import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.core.TestUtils;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.dao.GroupManagementDAOFactory;
+import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.util.DeviceManagerUtil;
 
 import javax.sql.DataSource;
@@ -60,6 +61,7 @@ public abstract class BaseDeviceManagementTest {
         this.dataSource = this.getDataSource(this.readDataSourceConfig());
         DeviceManagementDAOFactory.init(dataSource);
         GroupManagementDAOFactory.init(dataSource);
+        OperationManagementDAOFactory.init(dataSource);
     }
 
     @BeforeClass
@@ -130,15 +132,13 @@ public abstract class BaseDeviceManagementTest {
         try {
             conn = getDataSource().getConnection();
             conn.setAutoCommit(false);
-
-            //TODO:FIX ME
-//            this.cleanupEnrolmentData(conn);
-//            this.cleanApplicationMappingData(conn);
-//            this.cleanApplicationData(conn);
-//            this.cleanupDeviceData(conn);
-//            this.cleanupDeviceTypeData(conn);
-            this.cleanupGroupData(conn);
-
+            String[] cleanupTables = new String[]{"DM_ENROLMENT_OP_MAPPING", "DM_CONFIG_OPERATION",
+                    "DM_POLICY_OPERATION", "DM_COMMAND_OPERATION", "DM_PROFILE_OPERATION", "DM_DEVICE_GROUP_MAP",
+                    "DM_GROUP", "DM_ENROLMENT", "DM_DEVICE_APPLICATION_MAPPING",
+                    "DM_APPLICATION", "DM_DEVICE", "DM_DEVICE_TYPE"};
+            for (String table : cleanupTables) {
+                this.cleanData(conn, table);
+            }
             conn.commit();
         } catch (SQLException e) {
             try {
@@ -162,39 +162,8 @@ public abstract class BaseDeviceManagementTest {
         }
     }
 
-    private void cleanApplicationMappingData(Connection conn) throws SQLException {
-        try (PreparedStatement stmt = conn.prepareStatement("DELETE FROM DM_DEVICE_APPLICATION_MAPPING")) {
-            stmt.execute();
-        }
-    }
-
-    private void cleanApplicationData(Connection conn) throws SQLException {
-        try (PreparedStatement stmt = conn.prepareStatement("DELETE FROM DM_APPLICATION")) {
-            stmt.execute();
-        }
-    }
-
-
-    private void cleanupEnrolmentData(Connection conn) throws SQLException {
-        try (PreparedStatement stmt = conn.prepareStatement("DELETE FROM DM_ENROLMENT")) {
-            stmt.execute();
-        }
-    }
-
-    private void cleanupDeviceData(Connection conn) throws SQLException {
-        try (PreparedStatement stmt = conn.prepareStatement("DELETE FROM DM_DEVICE")) {
-            stmt.execute();
-        }
-    }
-
-    private void cleanupDeviceTypeData(Connection conn) throws SQLException {
-        try (PreparedStatement stmt = conn.prepareStatement("DELETE FROM DM_DEVICE_TYPE")) {
-            stmt.execute();
-        }
-    }
-
-    private void cleanupGroupData(Connection conn) throws SQLException {
-        try (PreparedStatement stmt = conn.prepareStatement("DELETE FROM DM_GROUP")) {
+    private void cleanData(Connection conn, String tableName) throws SQLException {
+        try (PreparedStatement stmt = conn.prepareStatement("DELETE FROM " + tableName)) {
             stmt.execute();
         }
     }

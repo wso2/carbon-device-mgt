@@ -28,9 +28,6 @@ import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.DeviceManager;
 import org.wso2.carbon.device.mgt.common.DeviceNotFoundException;
-import org.wso2.carbon.device.mgt.common.pull.notification.PullNotificationExecutionFailedException;
-import org.wso2.carbon.device.mgt.common.pull.notification.PullNotificationSubscriber;
-import org.wso2.carbon.device.mgt.core.dto.DeviceTypeServiceIdentifier;
 import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
 import org.wso2.carbon.device.mgt.common.FeatureManager;
 import org.wso2.carbon.device.mgt.common.InitialOperationConfig;
@@ -41,6 +38,7 @@ import org.wso2.carbon.device.mgt.common.PaginationRequest;
 import org.wso2.carbon.device.mgt.common.PaginationResult;
 import org.wso2.carbon.device.mgt.common.TransactionManagementException;
 import org.wso2.carbon.device.mgt.common.app.mgt.Application;
+import org.wso2.carbon.device.mgt.common.configuration.mgt.ConfigurationManagementException;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.PlatformConfiguration;
 import org.wso2.carbon.device.mgt.common.device.details.DeviceInfo;
 import org.wso2.carbon.device.mgt.common.device.details.DeviceLocation;
@@ -55,6 +53,8 @@ import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManager;
 import org.wso2.carbon.device.mgt.common.policy.mgt.PolicyMonitoringManager;
+import org.wso2.carbon.device.mgt.common.pull.notification.PullNotificationExecutionFailedException;
+import org.wso2.carbon.device.mgt.common.pull.notification.PullNotificationSubscriber;
 import org.wso2.carbon.device.mgt.common.push.notification.NotificationStrategy;
 import org.wso2.carbon.device.mgt.common.spi.DeviceManagementService;
 import org.wso2.carbon.device.mgt.core.DeviceManagementConstants;
@@ -69,6 +69,7 @@ import org.wso2.carbon.device.mgt.core.dao.EnrollmentDAO;
 import org.wso2.carbon.device.mgt.core.device.details.mgt.dao.DeviceDetailsDAO;
 import org.wso2.carbon.device.mgt.core.device.details.mgt.dao.DeviceDetailsMgtDAOException;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
+import org.wso2.carbon.device.mgt.core.dto.DeviceTypeServiceIdentifier;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementServiceComponent;
 import org.wso2.carbon.device.mgt.core.internal.PluginInitializationListener;
@@ -77,7 +78,9 @@ import org.wso2.carbon.device.mgt.core.util.DeviceManagerUtil;
 import org.wso2.carbon.email.sender.core.ContentProviderInfo;
 import org.wso2.carbon.email.sender.core.EmailContext;
 import org.wso2.carbon.email.sender.core.EmailSendingFailedException;
+import org.wso2.carbon.email.sender.core.EmailTransportNotConfiguredException;
 import org.wso2.carbon.email.sender.core.TypedValue;
+import org.wso2.carbon.email.sender.core.service.EmailSenderService;
 import org.wso2.carbon.user.api.UserStoreException;
 
 import java.sql.SQLException;
@@ -769,7 +772,55 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     }
 
     @Override
-    public void sendEnrolmentInvitation(String templateName, EmailMetaInfo metaInfo) throws DeviceManagementException {
+    public Device getDevice(DeviceIdentifier deviceId, String owner, boolean requireDeviceInfo)
+            throws DeviceManagementException {
+        if (deviceId == null) {
+            String msg = "Received null device identifier for method getDevice";
+            log.error(msg);
+            throw new DeviceManagementException(msg);
+        }
+        if (log.isDebugEnabled()) {
+            log.debug("Get device by device id :" + deviceId.getId() + " of type '" + deviceId.getType() +
+                    " and owner '" + owner + "' and requiredDeviceInfo: " + requireDeviceInfo);
+        }
+        int tenantId = this.getTenantId();
+        Device device = null;
+        try {
+            DeviceManagementDAOFactory.openConnection();
+            device = deviceDAO.getDevice(deviceId, owner, tenantId);
+            if (device == null) {
+                String msg = "No device is found upon the type '" + deviceId.getType() + "' and id '" +
+                        deviceId.getId() + "' and owner '" + owner + "'";
+                if (log.isDebugEnabled()) {
+                    log.debug(msg);
+                }
+                return null;
+            }
+        } catch (DeviceManagementDAOException e) {
+            String msg = "Error occurred while obtaining the device for '" + deviceId.getId() + "' and owner '"
+                    + owner + "'";
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
+        } catch (SQLException e) {
+            String msg = "Error occurred while opening a connection to the data source";
+            log.error(msg);
+            throw new DeviceManagementException(msg, e);
+        } catch (Exception e) {
+            String msg = "Error occurred in getDevice: " + deviceId.getId() + " with owner: " + owner;
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
+        } finally {
+            DeviceManagementDAOFactory.closeConnection();
+        }
+        if (requireDeviceInfo) {
+            device = this.getAllDeviceInfo(device);
+        }
+        return device;
+    }
+
+    @Override
+    public void sendEnrolmentInvitation(String templateName, EmailMetaInfo metaInfo) throws DeviceManagementException,
+            ConfigurationManagementException {
         if (metaInfo == null) {
             String msg = "Received incomplete data to method sendEnrolmentInvitation";
             log.error(msg);
@@ -798,6 +849,9 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             String msg = "Error occurred while sending enrollment invitation";
             log.error(msg, ex);
             throw new DeviceManagementException(msg, ex);
+        } catch (EmailTransportNotConfiguredException ex) {
+            String msg = "Mail Server is not configured.";
+            throw new ConfigurationManagementException(msg, ex);
         } catch (Exception ex) {
             String msg = "Error occurred in setEnrollmentInvitation";
             log.error(msg, ex);
@@ -806,12 +860,8 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     }
 
     @Override
-    public boolean isMailConfigured(String transportSenderName) throws DeviceManagementException {
-        return DeviceManagementDataHolder.getInstance().getEmailSenderService().mailConfigurationStatus(transportSenderName);
-    }
-
-    @Override
-    public void sendRegistrationEmail(EmailMetaInfo metaInfo) throws DeviceManagementException {
+    public void sendRegistrationEmail(EmailMetaInfo metaInfo) throws DeviceManagementException,
+            ConfigurationManagementException {
         if (metaInfo == null) {
             String msg = "Received incomplete request for sendRegistrationEmail";
             log.error(msg);
@@ -820,35 +870,41 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         if (log.isDebugEnabled()) {
             log.debug("Send registration email");
         }
-        Map<String, TypedValue<Class<?>, Object>> params = new HashMap<>();
-        params.put(org.wso2.carbon.device.mgt.core.DeviceManagementConstants.EmailAttributes.FIRST_NAME,
-                new TypedValue<Class<?>, Object>(String.class, metaInfo.getProperty("first-name")));
-        params.put(org.wso2.carbon.device.mgt.core.DeviceManagementConstants.EmailAttributes.USERNAME,
-                new TypedValue<Class<?>, Object>(String.class, metaInfo.getProperty("username")));
-        params.put(org.wso2.carbon.device.mgt.core.DeviceManagementConstants.EmailAttributes.PASSWORD,
-                new TypedValue<Class<?>, Object>(String.class, metaInfo.getProperty("password")));
-        params.put(org.wso2.carbon.device.mgt.core.DeviceManagementConstants.EmailAttributes.DOMAIN,
-                new TypedValue<Class<?>, Object>(String.class, metaInfo.getProperty("domain")));
-        params.put(org.wso2.carbon.device.mgt.core.DeviceManagementConstants.EmailAttributes.SERVER_BASE_URL_HTTPS,
-                new TypedValue<Class<?>, Object>(String.class, DeviceManagerUtil.getServerBaseHttpsUrl()));
-        params.put(org.wso2.carbon.device.mgt.core.DeviceManagementConstants.EmailAttributes.SERVER_BASE_URL_HTTP,
-                new TypedValue<Class<?>, Object>(String.class, DeviceManagerUtil.getServerBaseHttpUrl()));
-        try {
-            EmailContext ctx =
-                    new EmailContext.EmailContextBuilder(
-                            new ContentProviderInfo(
-                                    DeviceManagementConstants.EmailAttributes.USER_REGISTRATION_TEMPLATE,
-                                    params),
-                            metaInfo.getRecipients()).build();
-            DeviceManagementDataHolder.getInstance().getEmailSenderService().sendEmail(ctx);
-        } catch (EmailSendingFailedException e) {
-            String msg = "Error occurred while sending user registration notification." + e.getMessage();
-            log.error(msg, e);
-            throw new DeviceManagementException(msg, e);
-        } catch (Exception e) {
-            String msg = "Error occurred in sendRegistrationEmail";
-            log.error(msg, e);
-            throw new DeviceManagementException(msg, e);
+        EmailSenderService emailSenderService = DeviceManagementDataHolder.getInstance().getEmailSenderService();
+        if (emailSenderService != null) {
+            Map<String, TypedValue<Class<?>, Object>> params = new HashMap<>();
+            params.put(org.wso2.carbon.device.mgt.core.DeviceManagementConstants.EmailAttributes.FIRST_NAME,
+                    new TypedValue<Class<?>, Object>(String.class, metaInfo.getProperty("first-name")));
+            params.put(org.wso2.carbon.device.mgt.core.DeviceManagementConstants.EmailAttributes.USERNAME,
+                    new TypedValue<Class<?>, Object>(String.class, metaInfo.getProperty("username")));
+            params.put(org.wso2.carbon.device.mgt.core.DeviceManagementConstants.EmailAttributes.PASSWORD,
+                    new TypedValue<Class<?>, Object>(String.class, metaInfo.getProperty("password")));
+            params.put(org.wso2.carbon.device.mgt.core.DeviceManagementConstants.EmailAttributes.DOMAIN,
+                    new TypedValue<Class<?>, Object>(String.class, metaInfo.getProperty("domain")));
+            params.put(org.wso2.carbon.device.mgt.core.DeviceManagementConstants.EmailAttributes.SERVER_BASE_URL_HTTPS,
+                    new TypedValue<Class<?>, Object>(String.class, DeviceManagerUtil.getServerBaseHttpsUrl()));
+            params.put(org.wso2.carbon.device.mgt.core.DeviceManagementConstants.EmailAttributes.SERVER_BASE_URL_HTTP,
+                    new TypedValue<Class<?>, Object>(String.class, DeviceManagerUtil.getServerBaseHttpUrl()));
+            try {
+                EmailContext ctx =
+                        new EmailContext.EmailContextBuilder(
+                                new ContentProviderInfo(
+                                        DeviceManagementConstants.EmailAttributes.USER_REGISTRATION_TEMPLATE,
+                                        params),
+                                metaInfo.getRecipients()).build();
+                emailSenderService.sendEmail(ctx);
+            } catch (EmailSendingFailedException e) {
+                String msg = "Error occurred while sending user registration notification." + e.getMessage();
+                log.error(msg, e);
+                throw new DeviceManagementException(msg, e);
+            } catch (EmailTransportNotConfiguredException e) {
+                String msg = "Error occurred while sending user registration email." + e.getMessage();
+                throw new ConfigurationManagementException(msg, e);
+            } catch (Exception e) {
+                String msg = "Error occurred while sending Registration Email.";
+                log.error(msg, e);
+                throw new DeviceManagementException(msg, e);
+            }
         }
     }
 
@@ -963,6 +1019,51 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             throw new DeviceManagementException(msg, e);
         } catch (Exception e) {
             String msg = "Error occurred in getDevice for device: " + deviceId.getId();
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
+        } finally {
+            DeviceManagementDAOFactory.closeConnection();
+        }
+        if (requireDeviceInfo) {
+            device = this.getAllDeviceInfo(device);
+        }
+        return device;
+    }
+
+    @Override
+    public Device getDevice(DeviceIdentifier deviceId, String owner, Date since, boolean requireDeviceInfo)
+            throws DeviceManagementException {
+        if (deviceId == null || since == null) {
+            String msg = "Received incomplete data for getDevice";
+            log.error(msg);
+            throw new DeviceManagementException(msg);
+        }
+        if (log.isDebugEnabled()) {
+            log.debug("Get device since '" + since.toString() + "' with identifier: " + deviceId.getId()
+                    + " and type '" + deviceId.getType() + "' and owner '" + owner + "'");
+        }
+        Device device;
+        try {
+            DeviceManagementDAOFactory.openConnection();
+            device = deviceDAO.getDevice(deviceId, owner, since, this.getTenantId());
+            if (device == null) {
+                if (log.isDebugEnabled()) {
+                    log.debug("No device is found upon the type '" + deviceId.getType() + "' and id '" +
+                            deviceId.getId() + "' and owner name '" + owner + "'");
+                }
+                return null;
+            }
+        } catch (DeviceManagementDAOException e) {
+            String msg = "Error occurred while obtaining the device for id '" + deviceId.getId() + "' and owner '" +
+                    owner + "'";
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
+        } catch (SQLException e) {
+            String msg = "Error occurred while opening a connection to the data source";
+            log.error(msg, e);
+            throw new DeviceManagementException(msg, e);
+        } catch (Exception e) {
+            String msg = "Error occurred in getDevice for device: " + deviceId.getId() + " and owner: " + owner;
             log.error(msg, e);
             throw new DeviceManagementException(msg, e);
         } finally {

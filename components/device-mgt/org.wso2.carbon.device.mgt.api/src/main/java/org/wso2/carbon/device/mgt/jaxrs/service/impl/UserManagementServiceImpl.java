@@ -25,11 +25,13 @@ import org.eclipse.wst.common.uriresolver.internal.util.URIEncoder;
 import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
+import org.wso2.carbon.device.mgt.common.configuration.mgt.ConfigurationManagementException;
 import org.wso2.carbon.device.mgt.core.DeviceManagementConstants;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.device.mgt.core.service.EmailMetaInfo;
 import org.wso2.carbon.device.mgt.jaxrs.beans.BasicUserInfo;
 import org.wso2.carbon.device.mgt.jaxrs.beans.BasicUserInfoList;
+import org.wso2.carbon.device.mgt.jaxrs.beans.BasicUserInfoWrapper;
 import org.wso2.carbon.device.mgt.jaxrs.beans.EnrollmentInvitation;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
 import org.wso2.carbon.device.mgt.jaxrs.beans.OldPasswordResetWrapper;
@@ -85,8 +87,6 @@ public class UserManagementServiceImpl implements UserManagementService {
 
     private static final String DEFAULT_DEVICE_USER = "Internal/devicemgt-user";
     private static final String DEFAULT_DEVICE_ADMIN = "Internal/devicemgt-admin";
-    boolean mailConfiguration = false;
-    private static final String transportSenderName = "mailto";
 
     // Permissions that are given for a normal device user.
     private static final Permission[] PERMISSIONS_FOR_DEVICE_USER = {
@@ -157,14 +157,18 @@ public class UserManagementServiceImpl implements UserManagementService {
             props.setProperty("password", initialUserPassword);
 
             EmailMetaInfo metaInfo = new EmailMetaInfo(recipient, props);
-            if(DeviceMgtAPIUtils.getDeviceManagementService().isMailConfigured(transportSenderName)){
+            BasicUserInfoWrapper userInfoWrapper = new BasicUserInfoWrapper();
+            String message;
+            try {
                 dms.sendRegistrationEmail(metaInfo);
-            } else {
-                log.warn("Mail is not configured hence invitation cannot be sent.");
+                message = "An invitation mail will be sent to this user to initiate device enrollment.";
+            } catch (ConfigurationManagementException e) {
+                message = "Mail Server is not configured. Email invitation will not be sent.";
             }
-            return Response.created(new URI(API_BASE_PATH + "/" + URIEncoder.encode(userInfo.getUsername(), "UTF-8")))
-                    .entity(
-                            createdUserInfo).build();
+            userInfoWrapper.setBasicUserInfo(createdUserInfo);
+            userInfoWrapper.setMessage(message);
+            return Response.created(new URI(API_BASE_PATH + "/" + URIEncoder.encode(userInfo.getUsername(),
+                    "UTF-8"))).entity(userInfoWrapper).build();
         } catch (UserStoreException e) {
             String msg = "Error occurred while trying to add user '" + userInfo.getUsername() + "' to the " +
                     "underlying user management system";
@@ -184,8 +188,7 @@ public class UserManagementServiceImpl implements UserManagementService {
             return Response.serverError().entity(
                     new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
         } catch (DeviceManagementException e) {
-            String msg = "Error occurred while sending registration email to the user " +
-                    userInfo.getUsername();
+            String msg = "Error occurred while sending registration email to the user " + userInfo.getUsername();
             log.error(msg, e);
             return Response.serverError().entity(
                     new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
@@ -219,20 +222,6 @@ public class UserManagementServiceImpl implements UserManagementService {
             return Response.serverError().entity(
                     new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
         }
-    }
-
-    @GET
-    @Path("/is-mail-configured")
-    @Override
-    public Response isMailConfigured() {
-        DeviceManagementProviderService dms = DeviceMgtAPIUtils.getDeviceManagementService();
-        try {
-            mailConfiguration = dms.isMailConfigured(transportSenderName);
-        } catch (DeviceManagementException e) {
-            log.error("Failed to fetch the mail configured status of " + transportSenderName, e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(mailConfiguration).build();
-        }
-        return Response.status(Response.Status.OK).entity(mailConfiguration).build();
     }
 
     @PUT
@@ -582,21 +571,24 @@ public class UserManagementServiceImpl implements UserManagementService {
                 props.setProperty("username", username);
 
                 EmailMetaInfo metaInfo = new EmailMetaInfo(recipient, props);
-                if(DeviceMgtAPIUtils.getDeviceManagementService().isMailConfigured(transportSenderName)){
-                    dms.sendEnrolmentInvitation(DeviceManagementConstants.EmailAttributes.USER_ENROLLMENT_TEMPLATE,
-                            metaInfo);
-                } else {
-                    log.warn("Mail is not configured hence invitation cannot be sent.");
-                }
+                dms.sendEnrolmentInvitation(DeviceManagementConstants.EmailAttributes.USER_ENROLLMENT_TEMPLATE,
+                        metaInfo);
             }
         } catch (DeviceManagementException e) {
             String msg = "Error occurred while inviting user to enrol their device";
+            if (e.getMessage() != null && !e.getMessage().isEmpty()) {
+                msg = e.getMessage();
+            }
             log.error(msg, e);
             return Response.serverError().entity(
                     new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
         } catch (UserStoreException e) {
             String msg = "Error occurred while getting claim values to invite user";
             log.error(msg, e);
+            return Response.serverError().entity(
+                    new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
+        } catch (ConfigurationManagementException e) {
+            String msg = "Error occurred while sending the email invitations. Mail server not configured.";
             return Response.serverError().entity(
                     new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
         }
@@ -632,6 +624,10 @@ public class UserManagementServiceImpl implements UserManagementService {
         } catch (UserStoreException e) {
             String msg = "Error occurred while getting claim values to invite user";
             log.error(msg, e);
+            return Response.serverError().entity(
+                    new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
+        } catch (ConfigurationManagementException e) {
+            String msg = "Error occurred while sending the email invitations. Mail server not configured.";
             return Response.serverError().entity(
                     new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
         }

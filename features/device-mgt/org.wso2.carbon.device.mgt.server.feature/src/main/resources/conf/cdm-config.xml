@@ -65,6 +65,7 @@
         <NotificationListPageSize>20</NotificationListPageSize>
         <ActivityListPageSize>20</ActivityListPageSize>
         <OperationListPageSize>20</OperationListPageSize>
+        <TopicListPageSize>20</TopicListPageSize>
     </PaginationConfiguration>
     <!--This specifies whether to enable the DeviceStatus Task in this node. In clustered setup only master node
      should  have to run this task.-->
@@ -77,7 +78,15 @@
     <DeviceCacheConfiguration>
         <Enable>true</Enable>
         <ExpiryTime>600</ExpiryTime>
+        <!--This configuration specifies the number of cache entries in device cache. default capacity is 10000 entries.
+        This can be configured to higher number if cache eviction happens due to large number of devices in the
+        server environment-->
+        <Capacity>10000</Capacity>
     </DeviceCacheConfiguration>
+    <CertificateCacheConfiguration>
+        <Enable>true</Enable>
+        <ExpiryTime>86400</ExpiryTime>
+    </CertificateCacheConfiguration>
     <GeoLocationConfiguration>
         <isEnabled>false</isEnabled>
         <PublishLocationOperationResponse>false</PublishLocationOperationResponse>

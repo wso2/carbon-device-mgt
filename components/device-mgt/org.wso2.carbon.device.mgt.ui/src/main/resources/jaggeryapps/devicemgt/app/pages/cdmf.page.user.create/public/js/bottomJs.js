@@ -275,6 +275,7 @@ $(document).ready(function () {
                 addUserFormData,
                 function (data, textStatus, jqXHR) {
                     if (jqXHR.status == 201) {
+                        var response = JSON.parse(data);
                         // Clearing user input fields.
                         $("input#username").val("");
                         $("input#firstname").val("");
@@ -287,7 +288,12 @@ $(document).ready(function () {
                         $("#user-create-form").addClass("hidden");
                         modalDialog.header('<span class="fw-stack">' +
                             '<i class="fw fw-info fw-stack-1x"></i> </span> User was added successfully');
-                        modalDialog.content($("#modal-content-user-created").html());
+                        if (response.message) {
+                            $("#modal-content-user-created-with-message").append("<h4>" + response.message + "</h4>");
+                            modalDialog.content($("#modal-content-user-created-with-message").html());
+                        } else {
+                            modalDialog.content($("#modal-content-user-created").html());
+                        }
                         modalDialog.footer('<div class="buttons"> ' +
                             '<a href="/devicemgt/users" id="reset-password-yes-link" class="btn-operations"> OK' +
                             '</a></div>');

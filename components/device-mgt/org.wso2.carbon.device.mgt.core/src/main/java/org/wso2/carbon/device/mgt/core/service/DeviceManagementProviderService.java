@@ -26,6 +26,7 @@ import org.wso2.carbon.device.mgt.common.InvalidDeviceException;
 import org.wso2.carbon.device.mgt.common.MonitoringOperation;
 import org.wso2.carbon.device.mgt.common.PaginationRequest;
 import org.wso2.carbon.device.mgt.common.PaginationResult;
+import org.wso2.carbon.device.mgt.common.configuration.mgt.ConfigurationManagementException;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.PlatformConfiguration;
 import org.wso2.carbon.device.mgt.common.license.mgt.License;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Activity;
@@ -184,6 +185,19 @@ public interface DeviceManagementProviderService {
     Device getDevice(DeviceIdentifier deviceId, boolean requireDeviceInfo) throws DeviceManagementException;
 
     /**
+     * Returns the device of specified id owned by user with given username.
+     *
+     * @param deviceId - Device Id
+     * @param owner - Username of the owner
+     * @param requireDeviceInfo - A boolean indicating whether the device-info (location, app-info etc) is also required
+     *                          along with the device data.
+     * @return Device returns null when device is not available.
+     * @throws DeviceManagementException
+     */
+    Device getDevice(DeviceIdentifier deviceId, String owner, boolean requireDeviceInfo) throws DeviceManagementException;
+
+
+    /**
      * Returns the device of specified id.
      *
      * @param deviceId device Id
@@ -204,6 +218,20 @@ public interface DeviceManagementProviderService {
      * @throws DeviceManagementException
      */
     Device getDevice(DeviceIdentifier deviceId, Date since, boolean requireDeviceInfo) throws DeviceManagementException;
+
+    /**
+     * Returns the device of specified id and owned by user with given username.
+     *
+     * @param deviceId - Device Id
+     * @param owner - Username of the owner
+     * @param since - Date value where the resource was last modified
+     * @param requireDeviceInfo - A boolean indicating whether the device-info (location, app-info etc) is also required
+     *                          along with the device data.
+     * @return Device returns null when device is not available.
+     * @throws DeviceManagementException
+     */
+    Device getDevice(DeviceIdentifier deviceId, String owner, Date since, boolean requireDeviceInfo)
+            throws DeviceManagementException;
 
     /**
      * Returns the device of specified id with the given status.
@@ -436,11 +464,10 @@ public interface DeviceManagementProviderService {
 
     HashMap<Integer, Device> getTenantedDevice(DeviceIdentifier deviceIdentifier) throws DeviceManagementException;
 
-    void sendEnrolmentInvitation(String templateName, EmailMetaInfo metaInfo) throws DeviceManagementException;
+    void sendEnrolmentInvitation(String templateName, EmailMetaInfo metaInfo) throws DeviceManagementException,
+            ConfigurationManagementException;
 
-    boolean isMailConfigured(String transportSenderName) throws DeviceManagementException;
-
-    void sendRegistrationEmail(EmailMetaInfo metaInfo) throws DeviceManagementException;
+    void sendRegistrationEmail(EmailMetaInfo metaInfo) throws DeviceManagementException, ConfigurationManagementException;
 
     FeatureManager getFeatureManager(String deviceType) throws DeviceManagementException;
 

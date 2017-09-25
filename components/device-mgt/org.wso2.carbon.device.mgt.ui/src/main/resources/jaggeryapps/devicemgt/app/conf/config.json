@@ -66,6 +66,7 @@
   "scopes": [
     "perm:sign-csr",
     "perm:admin:devices:view",
+    "perm:admin:topics:view",
     "perm:roles:add",
     "perm:roles:add-users",
     "perm:roles:update",

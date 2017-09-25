@@ -137,6 +137,7 @@ function loadOperationsLog(update) {
         var deviceType = $('.device-id').data('type');
         var uri = "/api/device-mgt/v1.0/activities/" + rowData.activityId + "/" + deviceType + "/" + deviceid;
         var contentType = "application/json";
+        var index = row[0][0];
 
         if (row.child.isShown()) {
             row.child.hide();
@@ -145,6 +146,13 @@ function loadOperationsLog(update) {
             tr.removeClass('shown');
         } else {
             invokerUtil.get(uri,(payload) => {
+                //update the parent status
+                var payloadObject = JSON.parse(payload);
+                if ( payloadObject["activityStatus"][0]["status"] != rowData["status"] ) {
+                    rowData["status"] = payloadObject["activityStatus"][0]["status"];
+                    $('#operation-log').dataTable().fnUpdate(rowData,index,undefined,false);
+                }
+
                 row.child(renderLogDetails(row.data(),payload)).show();
                 tr.find('i.fw-down').removeClass('fw-down').addClass('fw-up');
                 $(row.child()).addClass('log-data-row');

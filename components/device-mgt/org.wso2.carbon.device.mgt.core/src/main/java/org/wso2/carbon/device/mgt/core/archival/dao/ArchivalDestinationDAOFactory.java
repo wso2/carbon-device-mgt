@@ -1,0 +1,150 @@
+package org.wso2.carbon.device.mgt.core.archival.dao;
+
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.device.mgt.common.IllegalTransactionStateException;
+import org.wso2.carbon.device.mgt.common.TransactionManagementException;
+import org.wso2.carbon.device.mgt.core.archival.dao.impl.DataDeletionDAOImpl;
+import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
+import org.wso2.carbon.device.mgt.core.config.datasource.DataSourceConfig;
+import org.wso2.carbon.device.mgt.core.config.datasource.JNDILookupDefinition;
+import org.wso2.carbon.device.mgt.core.dao.util.DeviceManagementDAOUtil;
+import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOFactory;
+
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Hashtable;
+import java.util.List;
+
+public class ArchivalDestinationDAOFactory {
+    private static final Log log = LogFactory.getLog(OperationManagementDAOFactory.class);
+    private static DataSource dataSource;
+    private static String databaseEngine;
+    private static int retentionPeriod;
+    private static ThreadLocal<Connection> currentConnection = new ThreadLocal<Connection>();
+
+    public static DataDeletionDAO getDataDeletionDAO() {
+        return new DataDeletionDAOImpl(DeviceConfigurationManager.getInstance().getDeviceManagementConfig()
+                .getArchivalConfiguration().getArchivalTaskConfiguration()
+                .getPurgingTaskConfiguration().getRetentionPeriod());
+    }
+
+    public static void init(DataSource dtSource) {
+        dataSource = dtSource;
+        try {
+            databaseEngine = dataSource.getConnection().getMetaData().getDatabaseProductName();
+        } catch (SQLException e) {
+            log.error("Error occurred while retrieving config.datasource connection", e);
+        }
+    }
+
+    public static void init(DataSourceConfig config) {
+        dataSource = resolveDataSource(config);
+        try {
+            databaseEngine = dataSource.getConnection().getMetaData().getDatabaseProductName();
+        } catch (SQLException e) {
+            log.error("Error occurred while retrieving config.datasource connection", e);
+        }
+    }
+
+    public static void beginTransaction() throws TransactionManagementException {
+        try {
+            Connection conn = dataSource.getConnection();
+            conn.setAutoCommit(false);
+            currentConnection.set(conn);
+        } catch (SQLException e) {
+            throw new TransactionManagementException(
+                    "Error occurred while retrieving config.datasource connection", e);
+        }
+    }
+
+    public static void openConnection() throws SQLException {
+        currentConnection.set(dataSource.getConnection());
+    }
+
+    public static Connection getConnection() throws SQLException {
+        if (currentConnection.get() == null) {
+            throw new IllegalTransactionStateException("No connection is associated with the current transaction. " +
+                    "This might have ideally caused by not properly initiating the transaction via " +
+                    "'beginTransaction'/'openConnection' methods");
+        }
+        return currentConnection.get();
+    }
+
+    public static void closeConnection() {
+        Connection con = currentConnection.get();
+        if (con != null) {
+            try {
+                con.close();
+            } catch (SQLException e) {
+                log.error("Error occurred while close the connection");
+            }
+            currentConnection.remove();
+        }
+    }
+
+    public static void commitTransaction() {
+        try {
+            Connection conn = currentConnection.get();
+            if (conn != null) {
+                conn.commit();
+            } else {
+                if (log.isDebugEnabled()) {
+                    log.debug("Datasource connection associated with the current thread is null, hence commit " +
+                            "has not been attempted");
+                }
+            }
+        } catch (SQLException e) {
+            log.error("Error occurred while committing the transaction", e);
+        }
+    }
+
+    public static void rollbackTransaction() {
+        try {
+            Connection conn = currentConnection.get();
+            if (conn != null) {
+                conn.rollback();
+            } else {
+                if (log.isDebugEnabled()) {
+                    log.debug("Datasource connection associated with the current thread is null, hence rollback " +
+                            "has not been attempted");
+                }
+            }
+        } catch (SQLException e) {
+            log.error("Error occurred while roll-backing the transaction", e);
+        }
+    }
+
+    /**
+     * Resolve data source from the data source definition
+     *
+     * @param config data source configuration
+     * @return data source resolved from the data source definition
+     */
+    private static DataSource resolveDataSource(DataSourceConfig config) {
+        DataSource dataSource = null;
+        if (config == null) {
+            throw new RuntimeException("Device Management Repository data source configuration is null and " +
+                    "thus, is not initialized");
+        }
+        JNDILookupDefinition jndiConfig = config.getJndiLookupDefinition();
+        if (jndiConfig != null) {
+            if (log.isDebugEnabled()) {
+                log.debug("Initializing Device Management Repository data source using the JNDI Lookup Definition");
+            }
+            List<JNDILookupDefinition.JNDIProperty> jndiPropertyList = jndiConfig.getJndiProperties();
+            if (jndiPropertyList != null) {
+                Hashtable<Object, Object> jndiProperties = new Hashtable<Object, Object>();
+                for (JNDILookupDefinition.JNDIProperty prop : jndiPropertyList) {
+                    jndiProperties.put(prop.getName(), prop.getValue());
+                }
+                dataSource = DeviceManagementDAOUtil.lookupDataSource(jndiConfig.getJndiName(), jndiProperties);
+            } else {
+                dataSource = DeviceManagementDAOUtil.lookupDataSource(jndiConfig.getJndiName(), null);
+            }
+        }
+        return dataSource;
+    }
+}

@@ -142,14 +142,6 @@ class ApplicationListing extends Component {
         });
     }
 
-    componentWillUnmount() {
-        // this.setState({data: this.data});
-    }
-
-    componentDidMount() {
-
-    }
-
     /**
      * Extract application from application list and update the state.
      * */
@@ -219,16 +211,6 @@ class ApplicationListing extends Component {
         };
 
         this.setState({drawer: style, appListStyle: appListStyle});
-
-
-        //TODO: Remove console logs.
-        // ApplicationMgtApi.getApplication(id).then(response => {
-        //     console.log(response);
-        //     this.setState({open: true, application:response.data})
-        // }).catch(err => {
-        //     console.log(err)
-        // });
-        // this.props.history.push("apps/" + id);
     }
 
     handleButtonClick() {

@@ -18,8 +18,6 @@
 
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
-import MenuItem from 'material-ui/MenuItem';
-import SelectField from 'material-ui/SelectField';
 import {Badge, FormGroup, Input, Label} from 'reactstrap';
 
 /**
@@ -116,20 +114,6 @@ class Step2 extends Component {
         this.setState({tags: this.chipData});
     };
 
-    onVisibilitySelect(event, index, value) {
-        console.log(value);
-        let comp = <SelectField> <MenuItem value={0} primaryText="Public"/>
-            <MenuItem value={1} primaryText="Roles"/>
-            <MenuItem value={2} primaryText="Devices"/> </SelectField>;
-        if (value === 1) {
-            this.setState({visibilityComponent: comp});
-        } else if (value === 2) {
-
-        } else {
-
-        }
-    };
-
     /**
      * Validate the form.
      * */
@@ -215,12 +199,7 @@ class Step2 extends Component {
      * Creates an object with the current step data and persist in the parent.
      * */
     setStepData() {
-        let stepData = {
-            // name: this.state.name,
-            // tags: this.state.tags,
-            // category: this.categories[this.state.category],
-            // description: this.state.description
-        };
+        let stepData = {};
 
         this.props.setData("step2", {step: stepData});
     };

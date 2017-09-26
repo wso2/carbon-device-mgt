@@ -87,8 +87,6 @@ class GeneralInfo extends Component {
                             value={this.state.defValue}
                             name="app-tags"
                             id="app-tags"
-                            // onChange={this.handleTagChange.bind(this)}
-                            // onKeyPress={this.addTags.bind(this)}
                         />
                         <div id="batch-content">
                             {this.state.tags.map(tag => {
@@ -96,7 +94,6 @@ class GeneralInfo extends Component {
                                         <Badge
                                             style={{margin: '0 2px 0 2px'}}
                                             value={tag.value}
-                                            // onClick={this.handleRequestDelete.bind(this)}
                                         >
                                             {tag.value}
                                         </Badge>

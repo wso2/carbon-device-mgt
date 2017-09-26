@@ -36,6 +36,11 @@ body {
     cursor: pointer;
 }
 
+#login-container {
+    width: 50%;
+    margin: 0 auto
+}
+
 #login-card {
     border-radius: 0;
     background-color: #BaBaBa;
@@ -231,6 +236,3 @@ body {
     font-size: 12px;
     color: #818181;
 }
-
-
-

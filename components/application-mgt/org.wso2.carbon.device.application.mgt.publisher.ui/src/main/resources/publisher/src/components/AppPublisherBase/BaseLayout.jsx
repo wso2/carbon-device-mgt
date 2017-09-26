@@ -107,12 +107,6 @@ class BaseLayout extends Component {
                     {this.props.children}
                 </div>
                 <ApplicationCreate open={this.state.openModal}/>
-                {/*<Popover style={{right: '20px'}} target="btn" isOpen={true} placement="bottom">*/}
-                    {/*<PopoverTitle>Dismiss All</PopoverTitle>*/}
-                    {/*<PopoverContent>*/}
-                        {/*<NotificationItem/>*/}
-                    {/*</PopoverContent>*/}
-                {/*</Popover>*/}
             </div>
         );
     }

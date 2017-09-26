@@ -132,7 +132,7 @@ class Login extends Component {
 
         if (!this.state.isLoggedIn) {
             return (
-                <div style={{width: '50%', margin: '0 auto'}}>
+                <div id="login-container">
                     {/*TODO: Style the components.*/}
                     <Card id="login-card">
                     <CardBlock>

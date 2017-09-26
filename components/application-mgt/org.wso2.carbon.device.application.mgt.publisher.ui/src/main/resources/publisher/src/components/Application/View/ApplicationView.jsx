@@ -39,8 +39,7 @@ class ApplicationView extends Component {
     }
 
     componentDidMount() {
-        //Download image artifacts.
-        // this.setState({application: this.props.application});
+        //TODO: Download image artifacts.
     }
 
     handleEdit() {

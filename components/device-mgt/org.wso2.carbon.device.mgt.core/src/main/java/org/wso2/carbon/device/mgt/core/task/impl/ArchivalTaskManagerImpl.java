@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2017, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -64,9 +64,7 @@ public class ArchivalTaskManagerImpl implements ArchivalTaskManager {
 
             TaskInfo.TriggerInfo triggerInfo = new TaskInfo.TriggerInfo();
             triggerInfo.setCronExpression(cronExpression);
-//            triggerInfo.setIntervalMillis(60000);
             triggerInfo.setRepeatCount(-1);
-//            triggerInfo.setRepeatCount(0);
             triggerInfo.setDisallowConcurrentExecution(true);
 
             Map<String, String> properties = new HashMap<>();

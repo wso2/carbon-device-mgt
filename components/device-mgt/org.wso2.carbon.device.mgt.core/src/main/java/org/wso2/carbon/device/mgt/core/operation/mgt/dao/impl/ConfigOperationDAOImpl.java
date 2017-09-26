@@ -62,11 +62,11 @@ public class ConfigOperationDAOImpl extends GenericOperationDAOImpl {
     public void deleteOperation(int id) throws OperationManagementDAOException {
         PreparedStatement stmt = null;
         try {
-            super.deleteOperation(id);
             Connection connection = OperationManagementDAOFactory.getConnection();
             stmt = connection.prepareStatement("DELETE FROM DM_CONFIG_OPERATION WHERE OPERATION_ID = ?") ;
             stmt.setInt(1, id);
             stmt.executeUpdate();
+            super.deleteOperation(id);
         } catch (SQLException e) {
             throw new OperationManagementDAOException("Error occurred while deleting operation metadata", e);
         } finally {

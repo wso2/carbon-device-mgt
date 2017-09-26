@@ -126,11 +126,11 @@ public class PolicyOperationDAOImpl extends GenericOperationDAOImpl {
     public void deleteOperation(int operationId) throws OperationManagementDAOException {
         PreparedStatement stmt = null;
         try {
-            super.deleteOperation(operationId);
             Connection connection = OperationManagementDAOFactory.getConnection();
             stmt = connection.prepareStatement("DELETE FROM DM_POLICY_OPERATION WHERE OPERATION_ID=?");
             stmt.setInt(1, operationId);
             stmt.executeUpdate();
+            super.deleteOperation(operationId);
         } catch (SQLException e) {
             throw new OperationManagementDAOException("Error occurred while deleting operation metadata", e);
         } finally {

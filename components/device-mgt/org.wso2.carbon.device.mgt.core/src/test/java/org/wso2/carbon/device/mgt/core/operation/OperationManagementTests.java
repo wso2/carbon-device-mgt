@@ -35,6 +35,7 @@ import org.wso2.carbon.device.mgt.common.operation.mgt.ActivityStatus;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManager;
+import org.wso2.carbon.device.mgt.core.DeviceManagementConstants;
 import org.wso2.carbon.device.mgt.core.TestDeviceManagementService;
 import org.wso2.carbon.device.mgt.core.authorization.DeviceAccessAuthorizationServiceImpl;
 import org.wso2.carbon.device.mgt.core.common.BaseDeviceManagementTest;
@@ -64,7 +65,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class OperationManagementTests{
+public class OperationManagementTests extends BaseDeviceManagementTest{
     private static final Log log = LogFactory.getLog(OperationManagementTests.class);
 
     private static final String DEVICE_TYPE = "OP_TEST_TYPE";
@@ -80,6 +81,7 @@ public class OperationManagementTests{
 
     private List<DeviceIdentifier> deviceIds = new ArrayList<>();
     private OperationManager operationMgtService;
+    private Activity commandActivity;
 
     @BeforeClass
     public void init() throws Exception {
@@ -122,9 +124,9 @@ public class OperationManagementTests{
 
     @Test
     public void addCommandOperation() throws DeviceManagementException, OperationManagementException, InvalidDeviceException {
-        Activity activity = this.operationMgtService.addOperation(getOperation(new CommandOperation(), Operation.Type.COMMAND, COMMAND_OPERATON_CODE),
+        this.commandActivity = this.operationMgtService.addOperation(getOperation(new CommandOperation(), Operation.Type.COMMAND, COMMAND_OPERATON_CODE),
                 this.deviceIds);
-        validateOperationResponse(activity);
+        validateOperationResponse(this.commandActivity);
     }
 
     @Test(dependsOnMethods = "addCommandOperation")
@@ -209,7 +211,7 @@ public class OperationManagementTests{
             try {
                 this.operationMgtService.getOperations(deviceIdentifier, request);
             } catch (OperationManagementException ex) {
-                if (ex.getMessage() == null){
+                if (ex.getMessage() == null) {
                     Assert.assertTrue(ex.getMessage().contains("User '" + NON_ADMIN_USER + "' is not authorized"));
                 }
             }
@@ -221,7 +223,7 @@ public class OperationManagementTests{
     public void updateOperation() throws OperationManagementException {
         DeviceIdentifier deviceIdentifier = this.deviceIds.get(0);
         List operations = this.operationMgtService.getPendingOperations(deviceIdentifier);
-        Assert.assertTrue(operations!= null && operations.size()==4);
+        Assert.assertTrue(operations != null && operations.size() == 4);
         Operation operation = (Operation) operations.get(0);
         operation.setStatus(Operation.Status.COMPLETED);
         operation.setOperationResponse("The operation is successfully completed");
@@ -229,4 +231,36 @@ public class OperationManagementTests{
         List pendingOperations = this.operationMgtService.getPendingOperations(deviceIdentifier);
         Assert.assertEquals(pendingOperations.size(), 3);
     }
+
+    @Test(dependsOnMethods = "updateOperation")
+    public void getNextPendingOperation() throws OperationManagementException {
+        DeviceIdentifier deviceIdentifier = this.deviceIds.get(0);
+        Operation operation = this.operationMgtService.getNextPendingOperation(deviceIdentifier);
+        Assert.assertTrue(operation.getType().equals(Operation.Type.POLICY));
+    }
+
+
+    @Test(dependsOnMethods = "getNextPendingOperation", enabled = false)
+    public void deleteOperation() throws OperationManagementException {
+        //TODO: Verify the operation management service operations.
+        DeviceIdentifier deviceIdentifier = this.deviceIds.get(0);
+        Operation operation = this.operationMgtService.getNextPendingOperation(deviceIdentifier);
+        this.operationMgtService.deleteOperation(operation.getId());
+        Operation operationAfterDeletion = this.operationMgtService.getNextPendingOperation(deviceIdentifier);
+        Assert.assertTrue(operation.getId() != operation.getId());
+        Assert.assertTrue(operationAfterDeletion.getType().equals(Operation.Type.POLICY));
+    }
+
+    @Test(dependsOnMethods = "getNextPendingOperation")
+    public void getOperationByDeviceAndOperationId() throws OperationManagementException {
+        DeviceIdentifier deviceIdentifier = this.deviceIds.get(0);
+        String operationId = this.commandActivity.getActivityId().
+                replace(DeviceManagementConstants.OperationAttributes.ACTIVITY, "");
+        Operation operation = this.operationMgtService.getOperationByDeviceAndOperationId(deviceIdentifier,
+                Integer.parseInt(operationId));
+        Assert.assertTrue(operation.getStatus().equals(Operation.Status.COMPLETED));
+        Assert.assertTrue(operation.getType().equals(Operation.Type.COMMAND));
+    }
+
+
 }

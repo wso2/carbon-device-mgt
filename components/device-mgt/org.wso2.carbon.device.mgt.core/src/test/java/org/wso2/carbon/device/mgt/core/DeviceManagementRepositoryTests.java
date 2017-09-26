@@ -21,14 +21,11 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
-import org.wso2.carbon.device.mgt.common.DeviceManager;
 import org.wso2.carbon.device.mgt.common.spi.DeviceManagementService;
 import org.wso2.carbon.device.mgt.core.common.BaseDeviceManagementTest;
 import org.wso2.carbon.device.mgt.core.common.TestDataHolder;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 import org.wso2.carbon.device.mgt.core.task.impl.DeviceTaskManagerServiceImpl;
-import org.wso2.carbon.ntask.core.service.TaskService;
-import org.wso2.carbon.ntask.core.service.impl.TaskServiceImpl;
 
 public class DeviceManagementRepositoryTests extends BaseDeviceManagementTest{
 
@@ -39,6 +36,7 @@ public class DeviceManagementRepositoryTests extends BaseDeviceManagementTest{
 	public void init() throws Exception {
 		this.repository = new DeviceManagementPluginRepository();
 		DeviceManagementDataHolder.getInstance().setDeviceTaskManagerService(new DeviceTaskManagerServiceImpl());
+		DeviceManagementDataHolder.getInstance().setTaskService(new TestTaskServiceImpl());
 	}
 
 	@Test

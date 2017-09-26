@@ -64,7 +64,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class OperationManagementTests extends BaseDeviceManagementTest {
+public class OperationManagementTests{
     private static final Log log = LogFactory.getLog(OperationManagementTests.class);
 
     private static final String DEVICE_TYPE = "OP_TEST_TYPE";
@@ -82,10 +82,8 @@ public class OperationManagementTests extends BaseDeviceManagementTest {
     private OperationManager operationMgtService;
 
     @BeforeClass
-    @Override
     public void init() throws Exception {
         DeviceConfigurationManager.getInstance().initConfig();
-        initDataSource();
         log.info("Initializing");
         for (int i = 0; i < NO_OF_DEVICES; i++) {
             deviceIds.add(new DeviceIdentifier(DEVICE_ID_PREFIX + i, DEVICE_TYPE));
@@ -97,6 +95,7 @@ public class OperationManagementTests extends BaseDeviceManagementTest {
         DeviceManagementDataHolder.getInstance().setRegistryService(getRegistryService());
         DeviceManagementDataHolder.getInstance().setDeviceAccessAuthorizationService(new DeviceAccessAuthorizationServiceImpl());
         DeviceManagementDataHolder.getInstance().setGroupManagementProviderService(new GroupManagementProviderServiceImpl());
+        DeviceManagementDataHolder.getInstance().setDeviceTaskManagerService(null);
         deviceMgtService.registerDeviceType(new TestDeviceManagementService(DEVICE_TYPE,
                 MultitenantConstants.SUPER_TENANT_DOMAIN_NAME));
         for (Device device : devices) {

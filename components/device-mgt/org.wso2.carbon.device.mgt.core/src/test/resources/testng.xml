@@ -40,6 +40,7 @@
         <classes>
             <class name="org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderServiceTest"/>
             <class name="org.wso2.carbon.device.mgt.core.app.mgt.ApplicationManagementProviderServiceTest"/>
+            <class name="org.wso2.carbon.device.mgt.core.operation.OperationManagementTests"/>
         </classes>
     </test>
 </suite>

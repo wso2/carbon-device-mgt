@@ -23,6 +23,7 @@ import org.mockito.Mockito;
 import org.testng.Assert;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
+import org.wso2.carbon.base.MultitenantConstants;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.DeviceStatusTaskPluginConfig;
 import org.wso2.carbon.device.mgt.common.InitialOperationConfig;
@@ -158,13 +159,15 @@ public class DeviceTypeManagerServiceTest {
         boolean isRasberryPiSharedWithTenants =
                 (rasberrypiDeviceConfiguration.getProvisioningConfig() != null) && rasberrypiDeviceConfiguration
                         .getProvisioningConfig().isSharedWithAllTenants();
-        setProvisioningConfig.invoke(androidDeviceTypeManagerService, "carbon.super", androidDeviceConfiguration);
+        setProvisioningConfig.invoke(androidDeviceTypeManagerService, MultitenantConstants.SUPER_TENANT_DOMAIN_NAME,
+                androidDeviceConfiguration);
         ProvisioningConfig provisioningConfig = androidDeviceTypeManagerService.getProvisioningConfig();
         Assert.assertEquals(provisioningConfig.isSharedWithAllTenants(),
                 androidDeviceConfiguration.getProvisioningConfig().isSharedWithAllTenants(),
                 "Provisioning configs " + "are not correctly set as per the configuration file provided");
 
-        setProvisioningConfig.invoke(rasberrypiDeviceTypeManagerService, "carbon.super", rasberrypiDeviceConfiguration);
+        setProvisioningConfig.invoke(rasberrypiDeviceTypeManagerService, MultitenantConstants.SUPER_TENANT_DOMAIN_NAME,
+                rasberrypiDeviceConfiguration);
         provisioningConfig = rasberrypiDeviceTypeManagerService.getProvisioningConfig();
         Assert.assertEquals(provisioningConfig.isSharedWithAllTenants(), isRasberryPiSharedWithTenants,
                 "Provisioning configs are not correctly set as per the configuration file provided.");

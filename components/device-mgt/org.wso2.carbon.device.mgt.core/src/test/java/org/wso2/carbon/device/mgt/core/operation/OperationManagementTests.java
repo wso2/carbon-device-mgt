@@ -38,7 +38,6 @@ import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManager;
 import org.wso2.carbon.device.mgt.core.DeviceManagementConstants;
 import org.wso2.carbon.device.mgt.core.TestDeviceManagementService;
 import org.wso2.carbon.device.mgt.core.authorization.DeviceAccessAuthorizationServiceImpl;
-import org.wso2.carbon.device.mgt.core.common.BaseDeviceManagementTest;
 import org.wso2.carbon.device.mgt.core.common.TestDataHolder;
 import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
@@ -60,12 +59,14 @@ import org.wso2.carbon.user.core.service.RealmService;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 
 import java.io.InputStream;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
-public class OperationManagementTests extends BaseDeviceManagementTest{
+public class OperationManagementTests {
     private static final Log log = LogFactory.getLog(OperationManagementTests.class);
 
     private static final String DEVICE_TYPE = "OP_TEST_TYPE";
@@ -261,6 +262,51 @@ public class OperationManagementTests extends BaseDeviceManagementTest{
         Assert.assertTrue(operation.getStatus().equals(Operation.Status.COMPLETED));
         Assert.assertTrue(operation.getType().equals(Operation.Type.COMMAND));
     }
+
+    @Test(dependsOnMethods = "getOperationByDeviceAndOperationId")
+    public void getOperationsByDeviceAndStatus() throws OperationManagementException, DeviceManagementException {
+        DeviceIdentifier deviceIdentifier = this.deviceIds.get(0);
+        List operation = this.operationMgtService.getOperationsByDeviceAndStatus(deviceIdentifier, Operation.Status.PENDING);
+        Assert.assertEquals(operation.size(), 3);
+    }
+
+    @Test(dependsOnMethods = "getOperationsByDeviceAndStatus")
+    public void getOperation() throws OperationManagementException, DeviceManagementException {
+        String operationId = this.commandActivity.getActivityId().
+                replace(DeviceManagementConstants.OperationAttributes.ACTIVITY, "");
+        Operation operation = this.operationMgtService.getOperation(Integer.parseInt(operationId));
+        Assert.assertEquals(operation.getType(), Operation.Type.COMMAND);
+    }
+
+    @Test(dependsOnMethods = "getOperation")
+    public void getOperationActivity() throws OperationManagementException {
+        Activity activity = this.operationMgtService.getOperationByActivityId(commandActivity.getActivityId());
+        Assert.assertEquals(activity.getType(), Activity.Type.COMMAND);
+        Assert.assertEquals(activity.getActivityStatus().size(), this.deviceIds.size());
+        Assert.assertEquals(activity.getActivityStatus().get(0).getStatus(), ActivityStatus.Status.COMPLETED);
+        for (int i = 1; i < this.deviceIds.size(); i++) {
+            Assert.assertEquals(activity.getActivityStatus().get(i).getStatus(), ActivityStatus.Status.PENDING);
+        }
+    }
+
+    @Test(dependsOnMethods = "getOperationActivity")
+    public void getOperationByActivityIdAndDevice() throws OperationManagementException {
+        Activity activity = this.operationMgtService.
+                getOperationByActivityIdAndDevice(this.commandActivity.getActivityId(), this.deviceIds.get(0));
+        Assert.assertEquals(activity.getType(), Activity.Type.COMMAND);
+        Assert.assertEquals(activity.getActivityStatus().size(), 1);
+        Assert.assertEquals(activity.getActivityStatus().get(0).getStatus(), ActivityStatus.Status.COMPLETED);
+    }
+
+    @Test(dependsOnMethods = "updateOperation", enabled = false)
+    public void getOperationUpdatedAfter() throws OperationManagementException, ParseException {
+        String timestamp = this.commandActivity.getCreatedTimeStamp();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("EEE MMM dd hh:mm:ss Z yyyy");
+        dateFormat.setTimeZone(TimeZone.getTimeZone("IST"));
+        Date date = dateFormat.parse(timestamp);
+        List operations = this.operationMgtService.getActivitiesUpdatedAfter(date.getTime());
+    }
+
 
 
 }

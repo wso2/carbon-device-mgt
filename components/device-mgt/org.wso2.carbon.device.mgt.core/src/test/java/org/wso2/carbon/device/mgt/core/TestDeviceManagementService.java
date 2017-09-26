@@ -24,23 +24,38 @@ import org.wso2.carbon.device.mgt.common.pull.notification.PullNotificationSubsc
 import org.wso2.carbon.device.mgt.common.push.notification.PushNotificationConfig;
 import org.wso2.carbon.device.mgt.common.spi.DeviceManagementService;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class TestDeviceManagementService implements DeviceManagementService {
 
     private String providerType;
     private String tenantDomain;
 
-    public TestDeviceManagementService(String deviceType, String tenantDomain){
+    public TestDeviceManagementService(String deviceType, String tenantDomain) {
         providerType = deviceType;
         this.tenantDomain = tenantDomain;
     }
+
     @Override
     public String getType() {
         return providerType;
     }
 
     @Override
-    public OperationMonitoringTaskConfig getOperationMonitoringConfig(){
-        return null;
+    public OperationMonitoringTaskConfig getOperationMonitoringConfig() {
+        OperationMonitoringTaskConfig taskConfig = new OperationMonitoringTaskConfig();
+        taskConfig.setEnabled(true);
+        taskConfig.setFrequency(3000);
+        List<MonitoringOperation> monitoringOperations = new ArrayList<>();
+        for (int i = 0; i < 5; i++) {
+            MonitoringOperation monitoringOperation = new MonitoringOperation();
+            monitoringOperation.setTaskName("OPERATION-" + i);
+            monitoringOperation.setRecurrentTimes(i);
+            monitoringOperations.add(monitoringOperation);
+        }
+        taskConfig.setMonitoringOperation(monitoringOperations);
+        return taskConfig;
     }
 
     @Override

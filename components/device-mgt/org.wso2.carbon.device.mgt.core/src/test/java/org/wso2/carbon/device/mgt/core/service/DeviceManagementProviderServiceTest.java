@@ -25,7 +25,7 @@ import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.FeatureManager;
 import org.wso2.carbon.device.mgt.core.common.BaseDeviceManagementTest;
 
-public class DeviceManagementProviderServiceTest extends BaseDeviceManagementTest {
+public class DeviceManagementProviderServiceTest {
 
     private static final Log log = LogFactory.getLog(DeviceManagementProviderServiceTest.class);
     private DeviceManagementProviderService providerService;
@@ -34,9 +34,7 @@ public class DeviceManagementProviderServiceTest extends BaseDeviceManagementTes
 
 
     @BeforeClass
-    @Override
     public void init() throws Exception {
-        this.initDataSource();
         this.providerService = new DeviceManagementProviderServiceImpl();
     }
 
@@ -80,10 +78,6 @@ public class DeviceManagementProviderServiceTest extends BaseDeviceManagementTes
             log.error(msg, e);
             Assert.fail(msg, e);
         }
-    }
-
-    @AfterClass
-    public void cleanResources() {
     }
 
 }

@@ -126,7 +126,6 @@ public abstract class BaseDeviceManagementTest {
         }
     }
 
-    @AfterSuite
     public void deleteData() {
         Connection conn = null;
         try {

@@ -21,7 +21,7 @@
     <parent>
         <artifactId>carbon-devicemgt</artifactId>
         <groupId>org.wso2.carbon.devicemgt</groupId>
-        <version>3.0.114-SNAPSHOT</version>
+        <version>3.0.115-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -154,6 +154,7 @@
                                         <available file="${email.sender.core}/${target}/${coverge-report}/${individual.test.report.name}" />
                                         <available file="${policy.mgt.core}/${target}/${coverge-report}/${individual.test.report.name}" />
                                         <available file="${webapp.authenticatore.frmework}/${target}/${coverge-report}/${individual.test.report.name}" />
+                                        <available file="${device.mgt.extensions}/${target}/${coverge-report}/${individual.test.report.name}" />
                                         <!-- After adding the test cases need to list the exec files here-->
 
                                     </and>
@@ -179,6 +180,10 @@
                                                 <fileset dir="${webapp.authenticatore.frmework}/${target}/${coverge-report}">
                                                     <include name="${individual.test.report.name}" />
                                                 </fileset>
+                                                <fileset dir="${device.mgt.extensions}/${target}/${coverge-report}">
+                                                    <include name="${individual.test.report.name}" />
+                                                </fileset>
+
                                                 <!-- Need to list the newly added exec files here -->
                                             </executiondata>
                                             <structure name="Carbon Device Management Component Coverage Report">

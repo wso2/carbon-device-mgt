@@ -23,7 +23,7 @@
     <groupId>org.wso2.carbon.devicemgt</groupId>
     <artifactId>carbon-devicemgt</artifactId>
     <packaging>pom</packaging>
-    <version>3.0.114-SNAPSHOT</version>
+    <version>3.0.115-SNAPSHOT</version>
     <name>WSO2 Carbon - Device Management - Parent</name>
     <url>http://wso2.org</url>
     <description>WSO2 Connected Device Manager Components</description>
@@ -1526,6 +1526,12 @@
                 <artifactId>org.wso2.carbon.registry.resource</artifactId>
                 <version>${carbon.registry.resource.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.powermock</groupId>
+                <artifactId>powermock-api-mockito</artifactId>
+                <version>${power.mock.version}</version>
+                <scope>test</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -1821,7 +1827,7 @@
         <axiom.wso2.version>1.2.11.wso2v10</axiom.wso2.version>
 
         <!-- Carbon Device Management -->
-        <carbon.device.mgt.version>3.0.114-SNAPSHOT</carbon.device.mgt.version>
+        <carbon.device.mgt.version>3.0.115-SNAPSHOT</carbon.device.mgt.version>
 
         <!-- Carbon Commons -->
         <carbon.commons.version>4.4.8</carbon.commons.version>
@@ -1955,6 +1961,7 @@
         <jacoco.maven.plugin.version>0.7.8</jacoco.maven.plugin.version>
         <jacoco.ant.verision>0.7.5.201505241946</jacoco.ant.verision>
         <ant.contrib.version>1.0b3</ant.contrib.version>
+        <power.mock.version>1.6.4</power.mock.version>
     </properties>
 
 </project>

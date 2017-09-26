@@ -57,7 +57,7 @@ public abstract class BaseDeviceManagementTest {
         this.initializeCarbonContext();
     }
 
-    public void initDataSource() throws Exception {
+    protected void initDataSource() throws Exception {
         this.dataSource = this.getDataSource(this.readDataSourceConfig());
         DeviceManagementDAOFactory.init(dataSource);
         GroupManagementDAOFactory.init(dataSource);
@@ -132,7 +132,7 @@ public abstract class BaseDeviceManagementTest {
         try {
             conn = getDataSource().getConnection();
             conn.setAutoCommit(false);
-            String[] cleanupTables = new String[]{"DM_ENROLMENT_OP_MAPPING", "DM_CONFIG_OPERATION",
+            String[] cleanupTables = new String[]{"DM_DEVICE_OPERATION_RESPONSE","DM_ENROLMENT_OP_MAPPING", "DM_CONFIG_OPERATION",
                     "DM_POLICY_OPERATION", "DM_COMMAND_OPERATION", "DM_PROFILE_OPERATION", "DM_DEVICE_GROUP_MAP",
                     "DM_GROUP", "DM_ENROLMENT", "DM_DEVICE_APPLICATION_MAPPING",
                     "DM_APPLICATION", "DM_DEVICE", "DM_DEVICE_TYPE"};
@@ -168,7 +168,7 @@ public abstract class BaseDeviceManagementTest {
         }
     }
 
-    public DataSource getDataSource() {
+    protected DataSource getDataSource() {
         return dataSource;
     }
 

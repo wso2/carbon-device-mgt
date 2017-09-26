@@ -16,16 +16,22 @@
  * under the License.
  */
 
-import './index.css';
-import React from 'react';
-import Publisher from './App';
-import ReactDOM from 'react-dom';
-import 'bootstrap/dist/css/bootstrap.css';
-import './css/font-wso2.css';
-import registerServiceWorker from './registerServiceWorker';
+import PropTypes from 'prop-types';
+import React, {Component} from 'react';
 
-/**
- * This is the base js file of the app. All the content will be rendered in the root element.
- * */
-ReactDOM.render(<Publisher/>, document.getElementById('root'));
-registerServiceWorker();
+class PackageManager extends Component {
+
+    constructor() {
+        super();
+    }
+
+    render() {
+        return(
+            <div id="package-mgt-content">
+
+            </div>
+        )
+    }
+}
+
+export default PackageManager;

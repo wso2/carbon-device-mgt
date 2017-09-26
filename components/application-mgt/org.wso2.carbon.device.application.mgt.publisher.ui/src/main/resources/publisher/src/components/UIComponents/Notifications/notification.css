@@ -16,16 +16,34 @@
  * under the License.
  */
 
-import './index.css';
-import React from 'react';
-import Publisher from './App';
-import ReactDOM from 'react-dom';
-import 'bootstrap/dist/css/bootstrap.css';
-import './css/font-wso2.css';
-import registerServiceWorker from './registerServiceWorker';
+.notification-app-icon {
+    border-radius: 50%;
+    border: solid 1px black;
+}
 
-/**
- * This is the base js file of the app. All the content will be rendered in the root element.
- * */
-ReactDOM.render(<Publisher/>, document.getElementById('root'));
-registerServiceWorker();
+.small {
+    height: 50px;
+    width: 50px;
+}
+
+.medium {
+    height: 100px;
+    width: 100px;
+}
+
+#notification-view-content {
+    width: 50%;
+    border: solid 1px black;
+    margin: 0 auto;
+    box-shadow: -2px 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+#notification-content {
+    margin: 20px 10px 20px 10px;
+}
+
+#app-reject-msg {
+    width: 100%;
+    height: 30px;
+    background-color: #888888;
+}

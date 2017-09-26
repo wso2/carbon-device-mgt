@@ -19,11 +19,13 @@
 import Theme from '../../theme';
 import React, {Component} from 'react';
 import {withRouter} from 'react-router-dom';
-import TextField from 'material-ui/TextField';
 import AuthHandler from "../../api/authHandler";
-import DataTable from '../UIComponents/DataTable';
 import ApplicationMgtApi from '../../api/applicationMgtApi';
-import {Card, CardActions, CardTitle} from 'material-ui/Card';
+import {Button, Row, Table} from 'reactstrap';
+import Drawer from '../UIComponents/Drawer/Drawer';
+import ApplicationView from './View/ApplicationView';
+import NotificationView from "../UIComponents/Notifications/NotificationView";
+import AppImage from "../UIComponents/AppImage/AppImage";
 
 /**
  * The App Create Component.
@@ -41,10 +43,17 @@ class ApplicationListing extends Component {
         this.setData = this.setData.bind(this);
         this.sortData = this.sortData.bind(this);
         this.compare = this.compare.bind(this);
+        this.handleButtonClick = this.handleButtonClick.bind(this);
         this.state = {
             searchedApplications: [],
             applications: [],
-            asc: true
+            asc: true,
+            open: false,
+            application: {},
+            drawer: {},
+            appListStyle: {},
+            image: [{id: "1", src: "https://www.greenfoot.org/images/logos/macos.png"},
+                {id: "2", src:"http://dl1.cbsistatic.com/i/r/2016/08/08/0e67e43a-5a45-41ab-b81d-acfba8708044/resize/736x552/0c0ee669677b5060a0fa1bfb0c7873b4/android-logo-promo-470.png"}]
         };
         this.scriptId = "application-listing";
     }
@@ -80,7 +89,40 @@ class ApplicationListing extends Component {
             data_type: "string",
             sortable: false,
             label: "Status"
+        },
+        {
+            data_id: "edit",
+            data_type: "button",
+            sortable: false,
+            label: ""
         }
+    ];
+
+
+    applications = [
+        {
+            id: "3242342ffww3423",
+            applicationName: "Facebook",
+            platform: "android",
+            category: "Business",
+            status: "Published"
+        },
+        {
+            icon: "http://dl1.cbsistatic.com/i/r/2016/08/08/0e67e43a-5a45-41ab-b81d-acfba8708044/resize/736x552/0c0ee669677b5060a0fa1bfb0c7873b4/android-logo-promo-470.png",
+            id: "324234233423423",
+            applicationName: "Twitter",
+            platform: "android",
+            category: "Business",
+            status: "Created"
+        },
+        {
+            icon: "https://www.greenfoot.org/images/logos/macos.png",
+            id: "3242d3423423423",
+            applicationName: "Massenger",
+            platform: "android",
+            category: "Business",
+            status: "In Review"
+        },
     ];
 
     componentWillMount() {
@@ -89,14 +131,6 @@ class ApplicationListing extends Component {
          *Loading the theme files based on the the user-preference.
          */
         Theme.insertThemingScripts(this.scriptId);
-    }
-
-    componentWillUnmount() {
-        Theme.removeThemingScripts(this.scriptId);
-        // this.setState({data: this.data});
-    }
-
-    componentDidMount() {
         let getApps = ApplicationMgtApi.getApplications();
         getApps.then(response => {
             let apps = this.setData(response.data.applications);
@@ -165,32 +199,96 @@ class ApplicationListing extends Component {
         return 0;
     }
 
-    onRowClick(id) {
-        //TODO: Remove console logs.
-        ApplicationMgtApi.getApplication(id).then(response => {
-            console.log(response);
-        }).catch(err => {
-            console.log(err)
+    onRowClick() {
+        console.log("sfsdfsdf");
+        let style = {
+            width: '500px',
+            marginLeft: '500px'
+        };
+
+        let appListStyle = {
+            marginRight: '500px',
+        };
+
+        this.setState({drawer: style, appListStyle: appListStyle});
+    }
+
+    handleButtonClick() {
+        console.log("Application Listing");
+        this.props.history.push("apps/edit/fdsfdsf343");
+    }
+
+        remove(imageId) {
+        let tmp = this.state.image;
+
+        console.log(imageId);
+
+        let rem = tmp.filter((image) => {
+            return image.id !== imageId
+
         });
-        // this.props.history.push("apps/" + id);
+        console.log(rem);
+
+        this.setState({image: rem});
+    }
+
+    closeDrawer() {
+        let style = {
+            width: '0',
+            marginLeft: '0'
+        };
+
+        let appListStyle = {
+            marginRight: '0',
+        };
+        this.setState({drawer: style, appListStyle: appListStyle});
     }
 
     render() {
         return (
-            <div className="middle applicationListingMiddle">
-                <Card className="applicationListingCard">
-                    <TextField
-                        hintText="Search"
-                        className="applicationListingSearch"
-                        onChange={this.searchApplications}/>
-                    <CardTitle title="Applications" className="applicationListTitle"/>
-                    <DataTable
-                        headers={this.headers}
-                        data={this.state.searchedApplications}
-                        handleRowClick={this.onRowClick}
-                        noDataMessage={{type: 'button', text: 'Create Application'}}
-                    />
-                </Card>
+
+            <div id="application-list" style={this.state.appListStyle}>
+                <Table striped hover>
+                    <thead>
+                    <tr>
+                        <th></th>
+                        {/* TODO: Remove console.log and add sort method. */}
+                        <th onClick={() => {console.log("sort")}}>Application Name</th>
+                        <th>Category</th>
+                        <th>Platform</th>
+                        <th>Status</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {this.applications.map(
+                        (application) => {
+                            return (
+                                <tr key={application.id} onClick={this.onRowClick}>
+                                    <td>
+                                        {/* TODO: Move this styles to css. */}
+                                        <img
+                                            src={application.icon}
+                                            height='50px'
+                                            width='50px'
+                                            style={{border: 'solid 1px black', borderRadius: "100%"}}
+                                        />
+                                    </td>
+                                    <td>{application.applicationName}</td>
+                                    <td>{application.category}</td>
+                                    <td>{application.platform}</td>
+                                    <td>{application.status}</td>
+                                    <td><Button onClick={this.handleButtonClick}>Edit</Button></td>
+                                </tr>
+                            )
+                        }
+                    )}
+                    </tbody>
+                </Table>
+
+                <Drawer onClose={this.closeDrawer.bind(this)} style={this.state.drawer}>
+                    <ApplicationView/>
+                </Drawer>
             </div>
         );
     }

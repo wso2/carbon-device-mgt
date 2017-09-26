@@ -16,15 +16,23 @@
  * under the License.
  */
 
-import React, {Component} from 'react';
-import {withRouter} from 'react-router-dom';
-
-/**
- * Application view component.
- * Shows the details of the application.
- * */
-class ApplicationView extends Component{
-
+.release-header {
+    margin-top: 20px;
+    margin-bottom: 20px;
 }
 
-export default withRouter(ApplicationView);
+.release-create {
+    height: 150px;
+    margin-bottom: 20px;
+}
+
+.release-detail-content {
+    width: 100%;
+    margin-top: 20%;
+    height: 300px;
+}
+
+.form-btn {
+    float: right;
+    margin-bottom: 10px;
+}

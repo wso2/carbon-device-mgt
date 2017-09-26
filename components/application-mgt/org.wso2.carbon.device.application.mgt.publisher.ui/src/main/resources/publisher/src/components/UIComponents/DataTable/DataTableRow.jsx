@@ -16,10 +16,14 @@
  * under the License.
  */
 
-import Theme from '../../theme';
+import Theme from '../../../theme';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
+import IconButton from 'material-ui/IconButton';
+import Create from 'material-ui/svg-icons/content/create'
 import {TableRow, TableRowColumn} from 'material-ui/Table';
+import Avatar from 'material-ui/Avatar';
+
 
 /**
  * Data table row component.
@@ -51,8 +55,15 @@ class DataTableRow extends Component {
     /**
      * Triggers the click event on the data table row.
      * */
-    handleClick() {
+    handleClick(event) {
+        event.stopPropagation();
         this.props.handleClick(this.state.dataItem.id);
+    }
+
+    handleBtnClick(event) {
+        event.stopPropagation();
+        console.log(event.target['id'])
+        this.props.handleButtonClick(event.target['id']);
     }
 
     render() {
@@ -62,6 +73,12 @@ class DataTableRow extends Component {
                 key={this.props.key}
                 onClick={this.handleClick.bind(this)}
             >
+                <TableRowColumn
+                    className="datatableRowColumn"
+                    key={Math.random()}
+                >
+                    <Avatar>{dataItem.name}</Avatar>
+                </TableRowColumn>
                 {Object.keys(dataItem).map((key) => {
                     if (key !== 'id') {
                         return (
@@ -71,11 +88,17 @@ class DataTableRow extends Component {
                             >
                                 {dataItem[key]}
                             </TableRowColumn>)
-                    } else {
-                        return <TableRowColumn key={key}/>
                     }
 
                 })}
+                <TableRowColumn
+                    className="datatableRowColumn"
+                    key={dataItem.id}
+                >
+                    <IconButton id={dataItem.id} onClick={this.handleBtnClick.bind(this)}>
+                        <Create id={dataItem.id}/>
+                    </IconButton>
+                </TableRowColumn>
             </TableRow>
         );
     }

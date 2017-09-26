@@ -16,17 +16,12 @@
  * under the License.
  */
 
-import Theme from '../../theme';
 import React, {Component} from 'react';
-import Dialog from 'material-ui/Dialog';
 import {withRouter} from 'react-router-dom';
-import FlatButton from 'material-ui/FlatButton';
-import AuthHandler from "../../api/authHandler";
-import {Step1, Step2, Step3} from './CreateSteps';
-import RaisedButton from 'material-ui/RaisedButton';
-import ApplicationMgtApi from '../../api/applicationMgtApi';
-import {Card, CardActions, CardTitle} from 'material-ui/Card';
-import {Step, StepLabel, Stepper,} from 'material-ui/Stepper';
+import AuthHandler from "../../../api/authHandler";
+import {Step1, Step2, Step3, Step4} from './CreateSteps/index';
+import ApplicationMgtApi from '../../../api/applicationMgtApi';
+import {Button, Modal, ModalBody, ModalFooter, ModalHeader} from 'reactstrap';
 
 /**
  * The App Create Component.
@@ -48,6 +43,7 @@ class ApplicationCreate extends Component {
         this.handleNo = this.handleNo.bind(this);
         this.handlePrev = this.handlePrev.bind(this);
         this.handleNext = this.handleNext.bind(this);
+        this.close = this.close.bind(this);
         this.state = {
             finished: false,
             stepIndex: 0,
@@ -56,15 +52,22 @@ class ApplicationCreate extends Component {
         };
     }
 
-    componentWillMount() {
-        /**
-         *Loading the theme files based on the the user-preference.
-         */
-        Theme.insertThemingScripts(this.scriptId);
+    componentWillReceiveProps(props, nextprops) {
+        this.setState({open: props.open})
     }
 
-    componentWillUnmount() {
-        Theme.removeThemingScripts(this.scriptId);
+    componentWillMount() {
+        this.setState({open: this.props.open});
+    }
+
+    close() {
+        this.setState({open: false, stepIndex: 0})
+    }
+
+    handleBack() {
+        let currentStep = this.state.stepIndex;
+        let nextStep = currentStep === 0 ? currentStep : currentStep - 1 ;
+        this.setState({stepIndex: nextStep}, console.log(this.state.stepIndex));
     }
 
     /**
@@ -190,6 +193,15 @@ class ApplicationCreate extends Component {
                         removeData={this.removeStepData}
                     />
                 );
+            case 3: {
+                return (
+                    <Step4
+                        handleNext={this.handleNext}
+                        setData={this.setStepData}
+                        removeData={this.removeStepData}
+                    />
+                )
+            }
             default:
                 return <div/>;
         }
@@ -198,69 +210,23 @@ class ApplicationCreate extends Component {
     render() {
         const {finished, stepIndex} = this.state;
 
-        /**
-         * Defines the dialog box actions. [Yes][No]
-         * */
-        const actions = [
-            <FlatButton
-                label="Yes"
-                primary={true}
-                onClick={this.handleYes}
-            />,
-            <FlatButton
-                label="No"
-                secondary={true}
-                onClick={this.handleNo}
-            />,
-        ];
-
         return (
-            <div className="middle createapplicationmiddle">
-                <Card className="creataapplicationcard">
-                    <CardTitle title="Create Application"/>
-
-                    {/**
-                     * The stepper goes here.
-                     */}
-                    <CardActions>
-                        <div className="createapplicationcardaction">
-                            <Stepper activeStep={stepIndex}>
-                                <Step>
-                                    <StepLabel>Select Application Platform</StepLabel>
-                                </Step>
-                                <Step>
-                                    <StepLabel>Enter Application Details</StepLabel>
-                                </Step>
-                                <Step>
-                                    <StepLabel>Release</StepLabel>
-                                </Step>
-                            </Stepper>
-                            <div className="createapplicationcontent">
-                                {finished ? (
-                                    <div>
-                                        <p>Create App?</p>
-                                        <form>
-                                            <RaisedButton primary={true} label="Create" onClick={this.handleSubmit}/>
-                                            <FlatButton label="Cancel" onClick={this.handleCancel}/>
-                                        </form>
-                                    </div>
-                                ) : (
-                                    <div>
-                                        {this.getStepContent(stepIndex)}
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-                    </CardActions>
-                </Card>
-                <Dialog
-                    actions={actions}
-                    modal={false}
-                    open={this.state.isDialogOpen}
-                    onRequestClose={this.handleNo}
-                >
-                    Do you really want to cancel?
-                </Dialog>
+            <div id="create-application-modal">
+                <Modal isOpen={this.state.open} toggle={this.toggle} id="app-create-modal"
+                       backdrop={'static'}>
+                    <ModalHeader toggle={this.toggle}>Create Application</ModalHeader>
+                    <ModalBody id="modal-body-content">
+                        {this.getStepContent(this.state.stepIndex)}
+                    </ModalBody>
+                    <ModalFooter>
+                        {this.state.stepIndex === 0? <div/> :
+                            <Button color="primary" onClick={this.handlePrev}>Back</Button>}
+                        <Button color="secondary" onClick={this.close}>Cancel</Button>
+                        {this.state.finished ?
+                            <Button color="primary" onClick={this.handleSubmit}>Finish</Button> :
+                            <Button color="primary" onClick={this.handleNext}>Continue</Button>}
+                    </ModalFooter>
+                </Modal>
             </div>);
     }
 }

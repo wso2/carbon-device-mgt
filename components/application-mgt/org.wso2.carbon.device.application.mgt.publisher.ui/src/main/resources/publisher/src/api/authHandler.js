@@ -137,10 +137,13 @@ class AuthHandler {
     }
 
     static createAuthenticationHeaders(contentType) {
-        return {
-            "Authorization": "Bearer " + AuthHandler.getUser().getAuthToken(),
-            "Content-Type": contentType,
-        };
+        if (AuthHandler.getUser().getAuthToken()) {
+            return {
+                "Authorization": "Bearer " + AuthHandler.getUser().getAuthToken(),
+                "Content-Type": contentType,
+            };
+        }
+        return "User not found";
 
     };
 }

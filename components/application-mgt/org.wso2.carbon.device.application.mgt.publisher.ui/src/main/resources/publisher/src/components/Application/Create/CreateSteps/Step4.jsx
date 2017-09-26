@@ -18,13 +18,8 @@
 
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
-import Toggle from 'material-ui/Toggle';
-import MenuItem from 'material-ui/MenuItem';
-import TextField from 'material-ui/TextField';
-import FlatButton from 'material-ui/FlatButton';
-import SelectField from 'material-ui/SelectField';
-import RaisedButton from 'material-ui/RaisedButton';
-import Theme from '../../../theme';
+import {Collapse, FormGroup, Input, Label, FormText} from 'reactstrap';
+import Switch from '../../../UIComponents/Switch/Switch'
 
 /**
  * The Third step of application create wizard. {Application Release Step}
@@ -48,7 +43,7 @@ import Theme from '../../../theme';
  *      * setData : {type: function, Invokes setStepData function in Parent}
  *      * removeData : {type: Invokes removeStepData function in Parent}
  * */
-class Step3 extends Component {
+class Step4 extends Component {
     constructor() {
         super();
         this.handleToggle = this.handleToggle.bind(this);
@@ -61,17 +56,6 @@ class Step3 extends Component {
             errors: {}
         };
         this.scriptId = "application-create-step3";
-    }
-
-    componentWillMount() {
-        /**
-         *Loading the theme files based on the the user-preference.
-         */
-        Theme.insertThemingScripts(this.scriptId);
-    }
-
-    componentWillUnmount() {
-        Theme.removeThemingScripts(this.scriptId);
     }
 
     /**
@@ -101,57 +85,71 @@ class Step3 extends Component {
         return (
             <div className="applicationCreateStepMiddle">
                 <div>
-                    <Toggle
-                        label="Release the Application"
-                        labelPosition="right"
-                        onToggle={this.handleToggle}
-                        defaultToggled={this.state.showForm}
-                    />
-                    {/*If toggle is true, the release form will be shown.*/}
-                    {!this.state.showForm ? <div/> :
-                        <div>
-                            <SelectField
-                                floatingLabelText="Select Release Channel*"
-                                value={this.state.releaseChannel}
-                                floatingLabelFixed={true}
-                            >
-                                <MenuItem value={1} primaryText="Alpha"/>
-                                <MenuItem value={2} primaryText="Beta"/>
-                                <MenuItem value={3} primaryText="GA"/>
-                            </SelectField>
-                            <br/>
-                            <TextField
-                                hintText="1.0.0"
-                                floatingLabelText="Version*"
-                                errorText={this.state.errors["title"]}
-                                floatingLabelFixed={true}
-                            /><br/>
-                        </div>}
-                    <div className="applicationCreateBackAndFinish">
-                        <FlatButton
-                            label="< Back"
-                            disabled={false}
-                            onClick={this.handlePrev}
-                            className="applicationCreateFinish"
-                        />
-                        <RaisedButton
-                            label="Finish"
-                            primary={true}
-                            onClick={this.handleFinish}
-                        />
-
+                    <FormGroup>
+                        <div id="app-release-switch-content">
+                            <div id="app-release-switch-label">
+                                <Label for="app-release-switch">
+                                    <strong>
+                                        Add Release to Application
+                                    </strong>
+                                </Label>
+                            </div>
+                            <div id="app-release-switch-switch">
+                                <Switch
+                                    id="app-release-switch"
+                                    onChange={this.handleToggle.bind(this)}
+                                />
+                            </div>
+                        </div>
+                    </FormGroup>
+                    <br/>
+                    <div>
+                            <FormText color="muted">
+                                <i>Info: </i>
+                                Enabling this will create a release for the current Application.
+                                To upload the Application, please visit to the Release management section of
+                                Application Edit View.
+                            </FormText>
                     </div>
+                    {/*If toggle is true, the release form will be shown.*/}
+                    <Collapse isOpen={this.state.showForm}>
+                        <FormGroup>
+                            <Label for="release-channel">Release Channel</Label>
+                            <Input
+                                type="select"
+                                id="release-channel"
+                                style={{
+                                    width: '200px',
+                                    border: 'none',
+                                    borderRadius: '0',
+                                    borderBottom: 'solid 1px #BDBDBD'
+                                }}>
+                                <option>GA</option>
+                                <option>Alpha</option>
+                                <option>Beta</option>
+                            </Input>
+                        </FormGroup>
+                        <FormGroup>
+                            <Label for="version">Version*</Label>
+                            <Input
+                                type="text"
+                                id="version input-custom"
+                                placeholder="v1.0"
+                                required
+                            />
+                        </FormGroup>
+                    </Collapse>
                 </div>
             </div>
         );
     }
 }
 
-Step3.propTypes = {
+Step4.propTypes = {
     handleFinish: PropTypes.func,
     handlePrev: PropTypes.func,
     setData: PropTypes.func,
     removeData: PropTypes.func
 };
 
-export default Step3;
+export default Step4;

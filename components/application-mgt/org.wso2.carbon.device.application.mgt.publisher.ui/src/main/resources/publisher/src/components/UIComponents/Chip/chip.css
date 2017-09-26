@@ -16,16 +16,33 @@
  * under the License.
  */
 
-import './index.css';
-import React from 'react';
-import Publisher from './App';
-import ReactDOM from 'react-dom';
-import 'bootstrap/dist/css/bootstrap.css';
-import './css/font-wso2.css';
-import registerServiceWorker from './registerServiceWorker';
+.chip {
+    display: inline-block;
+    padding: 0 25px;
+    height: 50px;
+    font-size: 16px;
+    line-height: 50px;
+    border-radius: 25px;
+    background-color: #f1f1f1;
+}
 
-/**
- * This is the base js file of the app. All the content will be rendered in the root element.
- * */
-ReactDOM.render(<Publisher/>, document.getElementById('root'));
-registerServiceWorker();
+.chip img {
+    float: left;
+    margin: 0 10px 0 -25px;
+    height: 50px;
+    width: 50px;
+    border-radius: 50%;
+}
+
+.close-btn {
+    padding-left: 10px;
+    color: #888;
+    font-weight: bold;
+    float: right;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.close-btn:hover {
+    color: #000;
+}

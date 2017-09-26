@@ -16,6 +16,7 @@
  * under the License.
  */
 var path = require('path');
+import '!!style-loader!css-loader!src/css/font-wso2.css';
 
 const config = {
     entry: {
@@ -61,7 +62,7 @@ const config = {
     },
     resolve: {
         // you can now require('file') instead of require('file.coffee')
-        extensions: ['.jsx', '.js']
+        extensions: ['.jsx', '.js', '.ttf', '.woff', '.woff2', '.svg']
     }
 
 };

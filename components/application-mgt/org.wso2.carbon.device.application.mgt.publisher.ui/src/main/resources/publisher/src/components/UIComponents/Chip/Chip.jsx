@@ -16,16 +16,20 @@
  * under the License.
  */
 
-import './index.css';
-import React from 'react';
-import Publisher from './App';
-import ReactDOM from 'react-dom';
-import 'bootstrap/dist/css/bootstrap.css';
-import './css/font-wso2.css';
-import registerServiceWorker from './registerServiceWorker';
+import React, {Component} from 'react';
+import './chip.css';
 
-/**
- * This is the base js file of the app. All the content will be rendered in the root element.
- * */
-ReactDOM.render(<Publisher/>, document.getElementById('root'));
-registerServiceWorker();
+class Chip extends Component {
+
+    render() {
+        return (
+            <div className="chip">
+                {this.props.image?<img src={this.props.image} alt="Person" width="96" height="96" />:<div/>}
+                {this.props.text}
+                <span className="close-btn" >&times;</span>
+            </div>
+        )
+    }
+}
+
+export default Chip;

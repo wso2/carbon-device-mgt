@@ -16,8 +16,20 @@
  * under the License.
  */
 
-import Step1 from './Step1';
-import Step2 from './Step2';
-import Step3 from './Step3';
+import React, {Component} from 'react';
+import './switch.css';
 
-export {Step1, Step2, Step3};
+class Switch extends Component {
+
+    render() {
+        const {height, width} = this.props;
+        return (
+            <label className="switch">
+                <input type="checkbox" onChange={this.props.onChange}/>
+                <span className="slider round"></span>
+            </label>
+        )
+    }
+}
+
+export default Switch;

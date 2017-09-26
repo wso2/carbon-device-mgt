@@ -16,16 +16,41 @@
  * under the License.
  */
 
-import './index.css';
-import React from 'react';
-import Publisher from './App';
-import ReactDOM from 'react-dom';
-import 'bootstrap/dist/css/bootstrap.css';
-import './css/font-wso2.css';
-import registerServiceWorker from './registerServiceWorker';
 
-/**
- * This is the base js file of the app. All the content will be rendered in the root element.
- * */
-ReactDOM.render(<Publisher/>, document.getElementById('root'));
-registerServiceWorker();
+#application-view-content {
+    width: 100%;
+}
+
+#application-view-row {
+    margin: 10px 10px 20px 20px;
+}
+
+#app-icon {
+    height: 100px;
+    width: 100px;
+    border: solid 1px black;
+    border-radius: 50%;
+}
+
+.app-updated-date {
+    color: #888888;
+    font-style: italic;
+}
+
+.app-install-count {
+    font-style: italic;
+}
+
+.app-details-tbl {
+    outline: none;
+    border-color: #2196F3;
+}
+
+.app-details-tbl tr {
+    margin: 20px 0 0 0;
+}
+
+.app-details-tbl td {
+    margin-left: 10px;
+    max-width: 400px;
+}

@@ -266,7 +266,7 @@ public class DeviceTypePluginDAOImpl implements PluginDAO {
         deleteDBQueryToRemoveDevicd = "DELETE FROM " + deviceDAODefinition.getDeviceTableName()
                 + " WHERE " + deviceDAODefinition.getPrimaryKey() + " = ?";
 
-        selectDBQueryToGetAllDevice = "SELECT " + getDeviceTableColumnNames() + " FROM "
-                + deviceDAODefinition.getDeviceTableName();
+        selectDBQueryToGetAllDevice = "SELECT " + getDeviceTableColumnNames() + "," + deviceDAODefinition.getPrimaryKey() +
+                " FROM " + deviceDAODefinition.getDeviceTableName();
     }
 }

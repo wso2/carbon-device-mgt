@@ -50,11 +50,9 @@ public class NotificationManagementServiceImpl implements NotificationManagement
     private static final Log log = LogFactory.getLog(NotificationManagementServiceImpl.class);
 
     private NotificationDAO notificationDAO;
-    private DeviceDAO deviceDAO;
 
     public NotificationManagementServiceImpl() {
         this.notificationDAO = NotificationManagementDAOFactory.getNotificationDAO();
-        this.deviceDAO = DeviceManagementDAOFactory.getDeviceDAO();
     }
 
     @Override

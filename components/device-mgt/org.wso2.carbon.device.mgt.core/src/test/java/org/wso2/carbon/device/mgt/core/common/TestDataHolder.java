@@ -20,6 +20,7 @@ import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
 import org.wso2.carbon.device.mgt.common.app.mgt.Application;
 import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroup;
+import org.wso2.carbon.device.mgt.common.notification.mgt.Notification;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 
 import java.util.ArrayList;
@@ -50,6 +51,19 @@ public class TestDataHolder {
         device.setDeviceIdentifier(initialDeviceIdentifier);
         device.setType(deviceType);
         return device;
+    }
+
+    public static Notification getNotification(int notificationId, String status, String deviceId, String deviceName,
+                                        int operationId, String deviceType){
+        Notification notification = new Notification();
+        notification.setNotificationId(notificationId);
+        notification.setStatus(status);
+        notification.setDeviceIdentifier(deviceId);
+        notification.setDescription("test description");
+        notification.setDeviceName(deviceName);
+        notification.setOperationId(operationId);
+        notification.setDeviceType(deviceType);
+        return notification;
     }
 
     public static List<Device> generateDummyDeviceData(List<DeviceIdentifier> deviceIds) {

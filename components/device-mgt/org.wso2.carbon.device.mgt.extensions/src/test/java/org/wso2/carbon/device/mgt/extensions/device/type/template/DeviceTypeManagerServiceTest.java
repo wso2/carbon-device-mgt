@@ -166,7 +166,7 @@ public class DeviceTypeManagerServiceTest {
         ProvisioningConfig provisioningConfig = androidDeviceTypeManagerService.getProvisioningConfig();
         Assert.assertEquals(provisioningConfig.isSharedWithAllTenants(),
                 androidDeviceConfiguration.getProvisioningConfig().isSharedWithAllTenants(),
-                "Provisioning configs " + "are not correctly set as per the configuration file provided");
+                "Provisioning configs are not correctly set as per the configuration file provided");
 
         setProvisioningConfig.invoke(rasberrypiDeviceTypeManagerService, MultitenantConstants.SUPER_TENANT_DOMAIN_NAME,
                 rasberrypiDeviceConfiguration);

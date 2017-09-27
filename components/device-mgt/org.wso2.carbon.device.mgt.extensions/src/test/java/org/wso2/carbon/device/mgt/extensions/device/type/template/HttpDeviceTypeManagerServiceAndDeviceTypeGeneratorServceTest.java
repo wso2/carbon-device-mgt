@@ -14,6 +14,7 @@ import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.PlatformConfiguration;
 import org.wso2.carbon.device.mgt.common.license.mgt.License;
 import org.wso2.carbon.device.mgt.common.push.notification.PushNotificationConfig;
+import org.wso2.carbon.device.mgt.common.spi.DeviceManagementService;
 import org.wso2.carbon.device.mgt.common.type.mgt.DeviceTypeMetaDefinition;
 import org.wso2.carbon.device.mgt.extensions.device.type.template.config.DeviceTypeConfiguration;
 import org.wso2.carbon.device.mgt.extensions.device.type.template.config.Feature;
@@ -43,12 +44,14 @@ import java.util.List;
 import static org.wso2.carbon.governance.api.util.GovernanceUtils.getGovernanceArtifactConfiguration;
 
 /**
- * This test case contains the tests for {@link HTTPDeviceTypeManagerService}
+ * This test case contains the tests for {@link HTTPDeviceTypeManagerService} and {@link DeviceTypeGeneratorServiceImpl}
  */
-public class HttpDeviceTypeManagerServiceTest {
+public class HttpDeviceTypeManagerServiceAndDeviceTypeGeneratorServceTest {
     private DeviceTypeMetaDefinition deviceTypeMetaDefinition;
     private HTTPDeviceTypeManagerService httpDeviceTypeManagerService;
+    private DeviceTypeGeneratorServiceImpl deviceTypeGeneratorService;
     private String androidSenseDeviceType = "androidsense";
+    private String sampleDeviceType = "sample";
 
     @BeforeTest
     public void setup() throws RegistryException, IOException, SAXException, ParserConfigurationException,
@@ -56,9 +59,44 @@ public class HttpDeviceTypeManagerServiceTest {
         createSampleDeviceTypeMetaDefinition();
         httpDeviceTypeManagerService = new HTTPDeviceTypeManagerService(androidSenseDeviceType,
                 deviceTypeMetaDefinition);
+        deviceTypeGeneratorService = new DeviceTypeGeneratorServiceImpl();
 
     }
 
+    @Test(description = "This test case tests the get type method of the device type manager")
+    public void testGetType() {
+        Assert.assertEquals(httpDeviceTypeManagerService.getType(), androidSenseDeviceType,
+                "HttpDeviceTypeManagerService returns" + " a different device type than initially provided");
+    }
+
+    @Test(description = "This test case tests the enrollment of newly added device type")
+    public void testEnrollDevice() throws DeviceManagementException {
+        String deviceId = "testdevice1";
+        Device sampleDevice1 = new Device(deviceId, androidSenseDeviceType, "test", "testdevice",
+                null, null, null);
+        Assert.assertTrue(httpDeviceTypeManagerService.getDeviceManager().enrollDevice(sampleDevice1),
+                "Enrollment of " + androidSenseDeviceType + " device failed");
+        Assert.assertTrue(httpDeviceTypeManagerService.getDeviceManager()
+                        .isEnrolled(new DeviceIdentifier(deviceId, androidSenseDeviceType)),
+                "Enrollment of " + androidSenseDeviceType + " device " + "failed");
+    }
+
+    @Test(description = "This test case tests the populate device management service method")
+    public void testPopulateDeviceManagementService() {
+        DeviceManagementService deviceManagementService = deviceTypeGeneratorService.populateDeviceManagementService
+                (sampleDeviceType, deviceTypeMetaDefinition);
+        Assert.assertEquals(deviceManagementService.getType(), sampleDeviceType, "DeviceTypeGeneration for the "
+                + "sample device type failed");
+    }
+
+    /**
+     * To create a sample device type meta defintion.
+     * @throws SAXException SAX Exception.
+     * @throws JAXBException JAXB Exception.
+     * @throws ParserConfigurationException ParserConfiguration Exception.
+     * @throws DeviceTypeConfigurationException DeviceTypeConfiguration Exception.
+     * @throws IOException IO Exception.
+     */
     private void createSampleDeviceTypeMetaDefinition()
             throws SAXException, JAXBException, ParserConfigurationException, DeviceTypeConfigurationException,
             IOException {
@@ -73,9 +111,10 @@ public class HttpDeviceTypeManagerServiceTest {
                 .getDeviceTypeConfiguration(androidSenseConfiguration);
         PushNotificationProvider pushNotificationProvider = androidSenseDeviceTypeConfiguration
                 .getPushNotificationProvider();
-        PushNotificationConfig pushNotificationConfig = new PushNotificationConfig(pushNotificationProvider.getType()
-                , pushNotificationProvider.isScheduled(), null);
-        org.wso2.carbon.device.mgt.extensions.device.type.template.config.License license = androidSenseDeviceTypeConfiguration.getLicense();
+        PushNotificationConfig pushNotificationConfig = new PushNotificationConfig(pushNotificationProvider.getType(),
+                pushNotificationProvider.isScheduled(), null);
+        org.wso2.carbon.device.mgt.extensions.device.type.template.config.License license = androidSenseDeviceTypeConfiguration
+                .getLicense();
         License androidSenseLicense = new License();
         androidSenseLicense.setText(license.getText());
         androidSenseLicense.setLanguage(license.getLanguage());
@@ -97,23 +136,6 @@ public class HttpDeviceTypeManagerServiceTest {
         deviceTypeMetaDefinition.setClaimable(true);
         deviceTypeMetaDefinition.setLicense(androidSenseLicense);
         deviceTypeMetaDefinition.setFeatures(features);
-    }
-
-    @Test(description = "This test case tests the get type method of the device type manager")
-    public void testGetType() {
-        Assert.assertEquals(httpDeviceTypeManagerService.getType(), androidSenseDeviceType,
-                "HttpDeviceTypeManagerService returns" + " a different device type than initially provided");
-    }
-
-    @Test(description = "This test case tests the enrollment of newly added device type")
-    public void testEnrollDevice() throws DeviceManagementException {
-        String deviceId = "testdevice1";
-        Device sampleDevice1 = new Device(deviceId, androidSenseDeviceType, "test", "testdevice", null, null, null);
-        Assert.assertTrue(httpDeviceTypeManagerService.getDeviceManager().enrollDevice(sampleDevice1),
-                "Enrollment of " + androidSenseDeviceType + " device failed");
-        Assert.assertTrue(httpDeviceTypeManagerService.getDeviceManager()
-                        .isEnrolled(new DeviceIdentifier(deviceId, androidSenseDeviceType)),
-                "Enrollment of " + androidSenseDeviceType + " device " + "failed");
     }
 }
 

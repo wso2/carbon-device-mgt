@@ -22,29 +22,14 @@
         <Feature code="keywords">
             <Name>Add Keywords</Name>
             <Description>Send keywords to the device</Description>
-            <!--<Operation context="/android_sense/device/{deviceId}/words" method="POST">-->
-                <!--<QueryParameters>-->
-                    <!--<Parameter>keywords</Parameter>-->
-                <!--</QueryParameters>-->
-            <!--</Operation>-->
         </Feature>
         <Feature code="threshold">
             <Name>Add Threshold</Name>
             <Description>Send Threshold to the device</Description>
-            <!--<Operation context="/android_sense/device/{deviceId}/words/threshold" method="POST">-->
-                <!--<QueryParameters>-->
-                    <!--<Parameter>threshold</Parameter>-->
-                <!--</QueryParameters>-->
-            <!--</Operation>-->
         </Feature>
         <Feature code="remove_words">
             <Name>Remove words</Name>
             <Description>Remove Threshold from the device</Description>
-            <!--<Operation context="/android_sense/device/{deviceId}/words" method="DELETE">-->
-                <!--<QueryParameters>-->
-                    <!--<Parameter>words</Parameter>-->
-                <!--</QueryParameters>-->
-            <!--</Operation>-->
         </Feature>
     </Features>
 

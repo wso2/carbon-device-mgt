@@ -151,7 +151,6 @@ public class Utils {
                     deviceDAODefinition = new DeviceDAODefinition(deviceDefinitionTable);
                 }
             }
-
         }
         return deviceDAODefinition;
     }

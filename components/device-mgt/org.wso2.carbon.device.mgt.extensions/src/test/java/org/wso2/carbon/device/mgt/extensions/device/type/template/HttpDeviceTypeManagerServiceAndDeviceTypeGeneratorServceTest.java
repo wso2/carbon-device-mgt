@@ -1,3 +1,21 @@
+/*
+ * Copyright (c) 2017, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *
+ * WSO2 Inc. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
 package org.wso2.carbon.device.mgt.extensions.device.type.template;
 
 import org.testng.Assert;
@@ -72,8 +90,7 @@ public class HttpDeviceTypeManagerServiceAndDeviceTypeGeneratorServceTest {
     @Test(description = "This test case tests the enrollment of newly added device type")
     public void testEnrollDevice() throws DeviceManagementException {
         String deviceId = "testdevice1";
-        Device sampleDevice1 = new Device(deviceId, androidSenseDeviceType, "test", "testdevice",
-                null, null, null);
+        Device sampleDevice1 = new Device(deviceId, androidSenseDeviceType, "test", "testdevice", null, null, null);
         Assert.assertTrue(httpDeviceTypeManagerService.getDeviceManager().enrollDevice(sampleDevice1),
                 "Enrollment of " + androidSenseDeviceType + " device failed");
         Assert.assertTrue(httpDeviceTypeManagerService.getDeviceManager()
@@ -83,10 +100,10 @@ public class HttpDeviceTypeManagerServiceAndDeviceTypeGeneratorServceTest {
 
     @Test(description = "This test case tests the populate device management service method")
     public void testPopulateDeviceManagementService() {
-        DeviceManagementService deviceManagementService = deviceTypeGeneratorService.populateDeviceManagementService
-                (sampleDeviceType, deviceTypeMetaDefinition);
-        Assert.assertEquals(deviceManagementService.getType(), sampleDeviceType, "DeviceTypeGeneration for the "
-                + "sample device type failed");
+        DeviceManagementService deviceManagementService = deviceTypeGeneratorService
+                .populateDeviceManagementService(sampleDeviceType, deviceTypeMetaDefinition);
+        Assert.assertEquals(deviceManagementService.getType(), sampleDeviceType,
+                "DeviceTypeGeneration for the " + "sample device type failed");
     }
 
     /**
@@ -113,8 +130,8 @@ public class HttpDeviceTypeManagerServiceAndDeviceTypeGeneratorServceTest {
                 .getPushNotificationProvider();
         PushNotificationConfig pushNotificationConfig = new PushNotificationConfig(pushNotificationProvider.getType(),
                 pushNotificationProvider.isScheduled(), null);
-        org.wso2.carbon.device.mgt.extensions.device.type.template.config.License license = androidSenseDeviceTypeConfiguration
-                .getLicense();
+        org.wso2.carbon.device.mgt.extensions.device.type.template.config.License license =
+                androidSenseDeviceTypeConfiguration.getLicense();
         License androidSenseLicense = new License();
         androidSenseLicense.setText(license.getText());
         androidSenseLicense.setLanguage(license.getLanguage());
@@ -138,4 +155,3 @@ public class HttpDeviceTypeManagerServiceAndDeviceTypeGeneratorServceTest {
         deviceTypeMetaDefinition.setFeatures(features);
     }
 }
-

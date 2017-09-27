@@ -1430,11 +1430,6 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     }
 
     @Override
-    public void deleteOperation(String type, int operationId) throws OperationManagementException {
-        pluginRepository.getOperationManager(type, this.getTenantId()).deleteOperation(operationId);
-    }
-
-    @Override
     public Operation getOperationByDeviceAndOperationId(DeviceIdentifier deviceId,
                                                         int operationId) throws OperationManagementException {
         return pluginRepository.getOperationManager(deviceId.getType(), this.getTenantId())

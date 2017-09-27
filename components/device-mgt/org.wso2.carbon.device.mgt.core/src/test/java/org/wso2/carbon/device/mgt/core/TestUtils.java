@@ -19,11 +19,16 @@ package org.wso2.carbon.device.mgt.core;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
+import org.wso2.carbon.device.mgt.common.GroupPaginationRequest;
+import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroup;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TestUtils {
 
@@ -53,4 +58,54 @@ public class TestUtils {
         }
     }
 
+
+    public static DeviceGroup createDeviceGroup1(){
+        DeviceGroup group = new DeviceGroup();
+        group.setName("TEST_GROUP_01");
+        group.setDescription("TEST_GROUP_01 - Description");
+        group.setOwner("admin");
+        return group;
+    }
+
+
+    public static DeviceGroup createDeviceGroup2(){
+        DeviceGroup group = new DeviceGroup();
+        group.setName("TEST_GROUP_02");
+        group.setDescription("TEST_GROUP_02 - Description");
+        group.setOwner("admin");
+        return group;
+    }
+
+    public static DeviceGroup createDeviceGroup3(){
+        DeviceGroup group = new DeviceGroup();
+        group.setName("TEST_GROUP_03");
+        group.setDescription("TEST_GROUP_03 - Description");
+        group.setOwner("admin");
+        return group;
+    }
+
+    public static DeviceGroup createDeviceGroup4(){
+        DeviceGroup group = new DeviceGroup();
+        group.setName("TEST_GROUP_04");
+        group.setDescription("TEST_GROUP_04 - Description");
+        group.setOwner("admin");
+        return group;
+    }
+
+
+    public static GroupPaginationRequest createPaginationRequest(){
+        GroupPaginationRequest request = new GroupPaginationRequest(0, 5);
+        return request;
+    }
+
+    public static List<DeviceIdentifier> getDeviceIdentifiersList(){
+        DeviceIdentifier identifier = new DeviceIdentifier();
+        identifier.setId("12345");
+        identifier.setType("Test");
+
+        List<DeviceIdentifier> list = new ArrayList<>();
+        list.add(identifier);
+
+        return list;
+    }
 }

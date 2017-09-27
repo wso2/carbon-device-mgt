@@ -42,7 +42,7 @@ import java.util.List;
 
 public class GroupManagementProviderServiceTest extends BaseDeviceManagementTest {
 
-    GroupManagementProviderService groupManagementProviderService;
+    private GroupManagementProviderService groupManagementProviderService;
     private static final String DEFAULT_ADMIN_ROLE = "admin";
     private static final String[] DEFAULT_ADMIN_PERMISSIONS = {"/permission/device-mgt/admin/groups",
             "/permission/device-mgt/user/groups"};
@@ -54,6 +54,7 @@ public class GroupManagementProviderServiceTest extends BaseDeviceManagementTest
         RealmService realmService = new InMemoryRealmService();
         DeviceManagementDataHolder.getInstance().setRealmService(realmService);
         realmService.getTenantManager().getSuperTenantDomain();
+        DeviceConfigurationManager.getInstance().initConfig();
     }
 
     @Test(expectedExceptions = {GroupManagementException.class, GroupAlreadyExistException.class})
@@ -71,21 +72,29 @@ public class GroupManagementProviderServiceTest extends BaseDeviceManagementTest
 
     @Test
     public void createGroup() throws GroupManagementException, GroupAlreadyExistException {
-
         groupManagementProviderService.createGroup(TestUtils.createDeviceGroup1(), DEFAULT_ADMIN_ROLE, DEFAULT_ADMIN_PERMISSIONS);
-
         groupManagementProviderService.createGroup(TestUtils.createDeviceGroup2(), DEFAULT_ADMIN_ROLE, DEFAULT_ADMIN_PERMISSIONS);
-
         groupManagementProviderService.createGroup(TestUtils.createDeviceGroup3(), DEFAULT_ADMIN_ROLE, DEFAULT_ADMIN_PERMISSIONS);
-
         groupManagementProviderService.createGroup(TestUtils.createDeviceGroup4(), DEFAULT_ADMIN_ROLE, DEFAULT_ADMIN_PERMISSIONS);
     }
 
     @Test(dependsOnMethods = ("createGroup"))
     public void updateGroup() throws GroupManagementException, GroupNotExistException {
-
         DeviceGroup deviceGroup = groupManagementProviderService.getGroup(TestUtils.createDeviceGroup1().getName());
         deviceGroup.setName(deviceGroup.getName() + "_UPDATED");
+        groupManagementProviderService.updateGroup(deviceGroup, deviceGroup.getGroupId());
+    }
+
+    @Test(dependsOnMethods = ("createGroup"), expectedExceptions = {GroupManagementException.class})
+    public void getGroupNull() throws GroupManagementException, GroupNotExistException {
+        groupManagementProviderService.getGroup(null);
+    }
+
+    // Rename again to use in different place.
+    @Test(dependsOnMethods = ("updateGroup"))
+    public void updateGroupSecondTime() throws GroupManagementException, GroupNotExistException {
+        DeviceGroup deviceGroup = groupManagementProviderService.getGroup(TestUtils.createDeviceGroup1().getName() + "_UPDATED");
+        deviceGroup.setName(TestUtils.createDeviceGroup1().getName());
         groupManagementProviderService.updateGroup(deviceGroup, deviceGroup.getGroupId());
     }
 
@@ -96,7 +105,6 @@ public class GroupManagementProviderServiceTest extends BaseDeviceManagementTest
 
     @Test(dependsOnMethods = ("createGroup"), expectedExceptions = {GroupManagementException.class, GroupNotExistException.class})
     public void updateGroupErrorNotExist() throws GroupManagementException, GroupNotExistException {
-
         DeviceGroup deviceGroup = groupManagementProviderService.getGroup(TestUtils.createDeviceGroup2().getName());
         deviceGroup.setName(deviceGroup.getName() + "_UPDATED");
         groupManagementProviderService.updateGroup(deviceGroup, 6);
@@ -141,8 +149,7 @@ public class GroupManagementProviderServiceTest extends BaseDeviceManagementTest
 
     @Test(dependsOnMethods = ("createGroup"), expectedExceptions = {GroupManagementException.class})
     public void getGroupsByUsernameError() throws GroupManagementException {
-        String username = null;
-        groupManagementProviderService.getGroups(username);
+        groupManagementProviderService.getGroups((String) null);
     }
 
     @Test(dependsOnMethods = ("createGroup"))
@@ -158,10 +165,17 @@ public class GroupManagementProviderServiceTest extends BaseDeviceManagementTest
     }
 
     @Test(dependsOnMethods = ("createGroup"))
-    public void getGroupsByUsernameAndPagination(String username, GroupPaginationRequest paginationRequest)
+    public void getGroupsByUsernameAndPagination()
             throws GroupManagementException {
-        PaginationResult result = groupManagementProviderService.getGroups(username, paginationRequest);
+        PaginationResult result = groupManagementProviderService.getGroups("admin", TestUtils.createPaginationRequest());
         Assert.assertNotNull(result);
+    }
+
+
+    @Test(dependsOnMethods = ("createGroup"), expectedExceptions = {GroupManagementException.class})
+    public void getGroupsByUsernameAndPaginationError()
+            throws GroupManagementException {
+        groupManagementProviderService.getGroups(null, TestUtils.createPaginationRequest());
     }
 
     @Test(dependsOnMethods = ("createGroup"))
@@ -176,27 +190,28 @@ public class GroupManagementProviderServiceTest extends BaseDeviceManagementTest
         Assert.assertNotNull(x);
     }
 
-//    @Test
-//    public void manageGroupSharing() throws GroupManagementException, RoleDoesNotExistException, UserStoreException {
-//        groupManagementProviderService.manageGroupSharing(0, null);
-//        List<String> newRoles = new ArrayList<>();
-//        newRoles.add("TEST_ROLE_1");
-//        newRoles.add("TEST_ROLE_2");
-//        newRoles.add("TEST_ROLE_3");
-//
-//        UserStoreManager userStoreManager =
-//                DeviceManagementDataHolder.getInstance().getRealmService().getTenantUserRealm(
-//                        -1234).getUserStoreManager();
-//        Permission[] permissions = new Permission[1];
-//        Permission perm = new Permission("/admin/test/perm", "add");
-////        perm.setAction("execute.ui");
-////        perm.setResourceId("/admin/test/perm");
-//        permissions[0] = perm;
-//
-//        userStoreManager.addRole("TEST_ROLE_1", null, permissions);
-//
-//        groupManagementProviderService.manageGroupSharing(1, newRoles);
-//    }
+    @Test(dependsOnMethods = ("updateGroupSecondTime"))
+    public void manageGroupSharing() throws GroupManagementException, RoleDoesNotExistException, UserStoreException {
+        groupManagementProviderService.manageGroupSharing(0, null);
+        List<String> newRoles = new ArrayList<>();
+        newRoles.add("TEST_ROLE_1");
+        newRoles.add("TEST_ROLE_2");
+        newRoles.add("TEST_ROLE_3");
+
+        UserStoreManager userStoreManager =
+                DeviceManagementDataHolder.getInstance().getRealmService().getTenantUserRealm(
+                        -1234).getUserStoreManager();
+        Permission[] permissions = new Permission[1];
+        Permission perm = new Permission("/admin/test/perm", "add");
+        permissions[0] = perm;
+
+        userStoreManager.addRole("TEST_ROLE_1", null, permissions);
+        userStoreManager.addRole("TEST_ROLE_2", null, permissions);
+        userStoreManager.addRole("TEST_ROLE_3", null, permissions);
+
+        groupManagementProviderService.manageGroupSharing(groupManagementProviderService.getGroup(
+                TestUtils.createDeviceGroup1().getName()).getGroupId(), newRoles);
+    }
 
     @Test(dependsOnMethods = ("createGroup"))
     public void getRoles() throws GroupManagementException {
@@ -216,26 +231,30 @@ public class GroupManagementProviderServiceTest extends BaseDeviceManagementTest
         Assert.assertEquals(0, x);
     }
 
-//    @Test(dependsOnMethods = ("createGroup"))
-//    public void addDevices() throws GroupManagementException, DeviceNotFoundException {
-//
-//        DeviceCacheConfiguration configuration = new DeviceCacheConfiguration();
-//        configuration.setEnabled(false);
-//
-//        DeviceConfigurationManager.getInstance().getDeviceManagementConfig().setDeviceCacheConfiguration(configuration);
-//
-//        List<DeviceIdentifier> list = TestUtils.getDeviceIdentifiersList();
-//        groupManagementProviderService.addDevices(1, list);
-//        groupManagementProviderService.addDevices(2, list);
-//        groupManagementProviderService.addDevices(3, list);
-//    }
-//
-//    @Test(dependsOnMethods = ("addDevices"))
-//    public void removeDevice() throws GroupManagementException, DeviceNotFoundException {
-//        List<DeviceIdentifier> list = TestUtils.getDeviceIdentifiersList();
-//        groupManagementProviderService.removeDevice(2, list);
-//        groupManagementProviderService.removeDevice(3, list);
-//    }
+    @Test(dependsOnMethods = ("createGroup"))
+    public void addDevices() throws GroupManagementException, DeviceNotFoundException {
+
+        DeviceCacheConfiguration configuration = new DeviceCacheConfiguration();
+        configuration.setEnabled(false);
+
+        DeviceConfigurationManager.getInstance().getDeviceManagementConfig().setDeviceCacheConfiguration(configuration);
+        List<DeviceIdentifier> list = TestUtils.getDeviceIdentifiersList();
+        groupManagementProviderService.addDevices(groupManagementProviderService.getGroup(
+                TestUtils.createDeviceGroup1().getName()).getGroupId(), list);
+        groupManagementProviderService.addDevices(groupManagementProviderService.getGroup(
+                TestUtils.createDeviceGroup2().getName()).getGroupId(), list);
+        groupManagementProviderService.addDevices(groupManagementProviderService.getGroup(
+                TestUtils.createDeviceGroup3().getName()).getGroupId(), list);
+    }
+
+    @Test(dependsOnMethods = ("addDevices"))
+    public void removeDevice() throws GroupManagementException, DeviceNotFoundException {
+        List<DeviceIdentifier> list = TestUtils.getDeviceIdentifiersList();
+        groupManagementProviderService.removeDevice(groupManagementProviderService.getGroup(
+                TestUtils.createDeviceGroup2().getName()).getGroupId(), list);
+        groupManagementProviderService.removeDevice(groupManagementProviderService.getGroup(
+                TestUtils.createDeviceGroup3().getName()).getGroupId(), list);
+    }
 
     @Test(dependsOnMethods = ("createGroup"))
     public void getGroupsByUsernameAndPermissions() throws GroupManagementException {
@@ -243,18 +262,24 @@ public class GroupManagementProviderServiceTest extends BaseDeviceManagementTest
         Assert.assertNotNull(groups);
     }
 
-//    @Test(dependsOnMethods = ("addDevices"))
-//    public void getGroupsByDeviceIdentifier() throws GroupManagementException {
-//        DeviceIdentifier identifier = new DeviceIdentifier();
-//        identifier.setId("12345");
-//        identifier.setType("Test");
-//        List<DeviceGroup> groups = groupManagementProviderService.getGroups(identifier);
-//        Assert.assertNull(groups);
-//    }
+    @Test(dependsOnMethods = ("addDevices"))
+    public void getGroupsByDeviceIdentifier() throws GroupManagementException {
+        DeviceIdentifier identifier = new DeviceIdentifier();
+        identifier.setId("12345");
+        identifier.setType("Test");
+        List<DeviceGroup> groups = groupManagementProviderService.getGroups(identifier);
+        Assert.assertNotNull(groups);
+    }
 
     @Test
     public void createDefaultGroup() throws GroupManagementException {
         groupManagementProviderService.createDefaultGroup("BYOD");
     }
+
+    @Test(dependsOnMethods = ("createDefaultGroup"))
+    public void createDefaultGroupTwice() throws GroupManagementException {
+        groupManagementProviderService.createDefaultGroup("BYOD");
+    }
+
 }
 

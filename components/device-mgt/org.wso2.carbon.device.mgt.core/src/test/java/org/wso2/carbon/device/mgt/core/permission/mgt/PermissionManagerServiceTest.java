@@ -38,17 +38,17 @@ import static org.mockito.MockitoAnnotations.initMocks;
 @PrepareForTest(PermissionUtils.class)
 public class PermissionManagerServiceTest {
 
-    private Permission permission;
-    private Log log;
-    private String PERMISSION_URL = "permission/admin/device-mgt/test/testPermission";
-    private String PERMISSION_PATH = "permission/admin/device-mgt/test/testPermission";
-    private String PERMISSION_METHOD = "ui.execute";
-    private String PERMISSION_NAME = "Test Permission";
+    private static final Log log = LogFactory.getLog(PermissionManagerServiceTest.class);;
+    private static final String PERMISSION_URL = "permission/admin/device-mgt/test/testPermission";
+    private static final String PERMISSION_PATH = "permission/admin/device-mgt/test/testPermission";
+    private static final String PERMISSION_METHOD = "ui.execute";
+    private static final String PERMISSION_NAME = "Test Permission";
 
     //For create properties to retrieve permission.
-    private String HTTP_METHOD = "HTTP_METHOD";
-    private String URL = "URL";
+    private static final String HTTP_METHOD = "HTTP_METHOD";
+    private static final String URL = "URL";
 
+    private Permission permission;
     private PermissionManagerService permissionManagerService;
 
     @ObjectFactory
@@ -59,7 +59,6 @@ public class PermissionManagerServiceTest {
     @BeforeClass
     public void init() throws RegistryException {
         initMocks(this);
-        log = LogFactory.getLog(PermissionManagerServiceTest.class);
         permissionManagerService = PermissionManagerServiceImpl.getInstance();
         this.permission = new Permission();
         permission.setName(PERMISSION_NAME);

@@ -69,12 +69,10 @@ public class PermissionManagerServiceTest {
     @Test (description = "Create a new permission in the permission tree.")
     public void testCreatePermission() {
         try {
-
             PowerMockito.mockStatic(PermissionUtils.class);
             PowerMockito.when(PermissionUtils.putPermission(permission)).thenReturn(true);
 
             Assert.assertTrue(permissionManagerService.addPermission(permission));
-
         } catch (PermissionManagementException e) {
             log.error("Error creating permission " + e.getErrorMessage());
         }

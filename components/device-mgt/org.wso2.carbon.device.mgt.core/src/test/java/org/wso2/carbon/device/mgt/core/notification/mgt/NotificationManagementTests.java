@@ -31,7 +31,6 @@ import org.wso2.carbon.device.mgt.core.common.TestDataHolder;
 import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementServiceComponent;
-import org.wso2.carbon.device.mgt.core.search.util.MockNotification;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderServiceImpl;
 import org.wso2.carbon.device.mgt.core.service.GroupManagementProviderServiceImpl;
@@ -47,6 +46,9 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This class is used to test NotificationManagementServiceImpl.
+ */
 public class NotificationManagementTests {
 
     private static final Log log = LogFactory.getLog(NotificationManagementTests.class);
@@ -54,7 +56,6 @@ public class NotificationManagementTests {
     private static final String DEVICE_ID_PREFIX = "NOTIFICATION-TEST-DEVICE-ID-";
     private static final int NO_OF_DEVICES = 10;
     private List<DeviceIdentifier> deviceIds = new ArrayList<>();
-    private MockNotification mockNotification = new MockNotification();
 
     @BeforeClass
     public void init() throws Exception {
@@ -95,14 +96,15 @@ public class NotificationManagementTests {
         return context.getEmbeddedRegistryService();
     }
 
-    @Test
+    @Test(description = "Add notifications using addNotification method and check whether it returns true.")
     public void addNotification() throws Exception {
         for (int i = 0; i < NO_OF_DEVICES; i++) {
             DeviceIdentifier testDeviceIdentifier = new DeviceIdentifier(DEVICE_ID_PREFIX + i, DEVICE_TYPE);
-            Notification notification = mockNotification.getNotification(i, "CHECKED",
+            Notification notification = TestDataHolder.getNotification(i, "CHECKED",
                     testDeviceIdentifier.toString(), DEVICE_ID_PREFIX + i, 1, DEVICE_TYPE);
             NotificationManagementServiceImpl notificationManagementService = new NotificationManagementServiceImpl();
             Assert.assertTrue(notificationManagementService.addNotification(testDeviceIdentifier, notification));
         }
     }
 }
+

@@ -17,7 +17,8 @@
  */
 package org.wso2.carbon.device.mgt.core.permission.mgt;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.testng.Assert;
@@ -38,10 +39,10 @@ import static org.mockito.MockitoAnnotations.initMocks;
 public class PermissionManagerServiceTest {
 
     private Permission permission;
-    private Logger log = Logger.getLogger(PermissionManagerServiceTest.class);
+    private Log log;
     private String PERMISSION_URL = "permission/admin/device-mgt/test/testPermission";
     private String PERMISSION_PATH = "permission/admin/device-mgt/test/testPermission";
-    private String PERMiSSION_METHOD = "ui.execute";
+    private String PERMISSION_METHOD = "ui.execute";
     private String PERMISSION_NAME = "Test Permission";
 
     //For create properties to retrieve permission.
@@ -57,12 +58,13 @@ public class PermissionManagerServiceTest {
 
     @BeforeClass
     public void init() throws RegistryException {
-        permissionManagerService = PermissionManagerServiceImpl.getInstance();
         initMocks(this);
+        log = LogFactory.getLog(PermissionManagerServiceTest.class);
+        permissionManagerService = PermissionManagerServiceImpl.getInstance();
         this.permission = new Permission();
         permission.setName(PERMISSION_NAME);
         permission.setPath(PERMISSION_PATH);
-        permission.setMethod(PERMiSSION_METHOD);
+        permission.setMethod(PERMISSION_METHOD);
         permission.setUrl(PERMISSION_URL);
     }
 
@@ -83,10 +85,17 @@ public class PermissionManagerServiceTest {
     public void testGetPermission() throws PermissionManagementException {
         Permission permission = permissionManagerService.getPermission(createProperties());
 
-        Assert.assertEquals(permission.getMethod(), PERMiSSION_METHOD);
+        Assert.assertEquals(permission.getMethod(), PERMISSION_METHOD);
         Assert.assertEquals(permission.getName(), PERMISSION_NAME);
         Assert.assertEquals(permission.getPath(), PERMISSION_PATH);
         Assert.assertEquals(permission.getUrl(), PERMISSION_URL);
+    }
+
+    @Test (dependsOnMethods = {"testCreatePermission"},
+            expectedExceptions = {PermissionManagementException.class},
+            expectedExceptionsMessageRegExp = "Resource URI/HTTP method is empty")
+    public void testGetPermissionError() throws PermissionManagementException {
+            Permission permission = permissionManagerService.getPermission(createErrorProperty());
     }
 
     /**
@@ -96,7 +105,18 @@ public class PermissionManagerServiceTest {
     private Properties createProperties() {
         Properties properties = new Properties();
         properties.setProperty(URL, PERMISSION_URL);
-        properties.setProperty(HTTP_METHOD, PERMiSSION_METHOD);
+        properties.setProperty(HTTP_METHOD, PERMISSION_METHOD);
+        return properties;
+    }
+
+    /**
+     * Creates property object with empty properties.
+     * @return : Properties object with empty set of properties.
+     * */
+    private Properties createErrorProperty() {
+        Properties properties = new Properties();
+        properties.setProperty(URL, "");
+        properties.setProperty(HTTP_METHOD, "");
         return properties;
     }
 }

@@ -18,8 +18,6 @@
 
 package org.wso2.carbon.device.mgt.core.operation;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -66,8 +64,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
+/**
+ * This is the testcase which covers the methods from {@link OperationManager}
+ */
 public class OperationManagementTests {
-    private static final Log log = LogFactory.getLog(OperationManagementTests.class);
 
     private static final String DEVICE_TYPE = "OP_TEST_TYPE";
     private static final String DEVICE_ID_PREFIX = "OP-TEST-DEVICE-ID-";
@@ -87,7 +87,6 @@ public class OperationManagementTests {
     @BeforeClass
     public void init() throws Exception {
         DeviceConfigurationManager.getInstance().initConfig();
-        log.info("Initializing");
         for (int i = 0; i < NO_OF_DEVICES; i++) {
             deviceIds.add(new DeviceIdentifier(DEVICE_ID_PREFIX + i, DEVICE_TYPE));
         }
@@ -222,6 +221,11 @@ public class OperationManagementTests {
 
     @Test(dependsOnMethods = "getPaginatedRequestAsAdmin")
     public void updateOperation() throws OperationManagementException {
+        //This is required to introduce a delay for the update operation of the device.
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException ignored) {
+        }
         DeviceIdentifier deviceIdentifier = this.deviceIds.get(0);
         List operations = this.operationMgtService.getPendingOperations(deviceIdentifier);
         Assert.assertTrue(operations != null && operations.size() == 4);
@@ -286,15 +290,51 @@ public class OperationManagementTests {
         Assert.assertEquals(activity.getActivityStatus().get(0).getStatus(), ActivityStatus.Status.COMPLETED);
     }
 
-    @Test(dependsOnMethods = "updateOperation", enabled = false)
+    @Test(dependsOnMethods = "updateOperation")
+    public void getOperationUpdatedAfterWithLimitAndOffet() throws OperationManagementException, ParseException {
+        String timestamp = this.commandActivity.getCreatedTimeStamp();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("EEE MMM dd hh:mm:ss Z yyyy");
+        dateFormat.setTimeZone(TimeZone.getTimeZone("IST"));
+        Date date = dateFormat.parse(timestamp);
+        List<Activity> operations = this.operationMgtService.getActivitiesUpdatedAfter(date.getTime() / 1000, 10, 0);
+        Assert.assertTrue(operations != null && operations.size() == 1,
+                "The operations updated after the created should be 1");
+        Activity operation = operations.get(0);
+        Assert.assertTrue(operation.getActivityStatus() != null && operation.getActivityStatus().size() == 1,
+                "The operation should be having the activity status of atleast one device");
+        Assert.assertEquals(operation.getActivityStatus().get(0).getDeviceIdentifier().getId(),
+                deviceIds.get(0).getId());
+        Assert.assertEquals(operation.getActivityStatus().get(0).getDeviceIdentifier().getType(),
+                deviceIds.get(0).getType());
+    }
+
+    @Test(dependsOnMethods = "updateOperation")
     public void getOperationUpdatedAfter() throws OperationManagementException, ParseException {
         String timestamp = this.commandActivity.getCreatedTimeStamp();
         SimpleDateFormat dateFormat = new SimpleDateFormat("EEE MMM dd hh:mm:ss Z yyyy");
         dateFormat.setTimeZone(TimeZone.getTimeZone("IST"));
         Date date = dateFormat.parse(timestamp);
-        List operations = this.operationMgtService.getActivitiesUpdatedAfter(date.getTime());
+        List<Activity> operations = this.operationMgtService.getActivitiesUpdatedAfter(date.getTime() / 1000);
+        Assert.assertTrue(operations != null && operations.size() == 1,
+                "The operations updated after the created should be 1");
+        Activity operation = operations.get(0);
+        Assert.assertTrue(operation.getActivityStatus() != null && operation.getActivityStatus().size() == 1,
+                "The operation should be having the activity status of atleast one device");
+        Assert.assertEquals(operation.getActivityStatus().get(0).getDeviceIdentifier().getId(),
+                deviceIds.get(0).getId());
+        Assert.assertEquals(operation.getActivityStatus().get(0).getDeviceIdentifier().getType(),
+                deviceIds.get(0).getType());
     }
 
-
+    @Test(dependsOnMethods = "getOperationUpdatedAfter")
+    public void getActivityCountUpdatedAfter() throws OperationManagementException, ParseException {
+        String timestamp = this.commandActivity.getCreatedTimeStamp();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("EEE MMM dd hh:mm:ss Z yyyy");
+        dateFormat.setTimeZone(TimeZone.getTimeZone("IST"));
+        Date date = dateFormat.parse(timestamp);
+        int activityCount = this.operationMgtService.getActivityCountUpdatedAfter(date.getTime() / 1000);
+        Assert.assertTrue(activityCount == 1,
+                "The activities updated after the created should be 1");
+    }
 
 }

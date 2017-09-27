@@ -24,6 +24,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
+import org.wso2.carbon.device.mgt.common.EntityDoesNotExistException;
 import org.wso2.carbon.device.mgt.common.notification.mgt.Notification;
 import org.wso2.carbon.device.mgt.core.TestDeviceManagementService;
 import org.wso2.carbon.device.mgt.core.authorization.DeviceAccessAuthorizationServiceImpl;
@@ -49,19 +50,23 @@ import java.util.List;
 /**
  * This class is used to test NotificationManagementServiceImpl.
  */
-public class NotificationManagementTests {
+public class NotificationManagementServiceImplTests {
 
-    private static final Log log = LogFactory.getLog(NotificationManagementTests.class);
+    private static final Log log = LogFactory.getLog(NotificationManagementServiceImplTests.class);
     private static final String DEVICE_TYPE = "NOTIFICATION_TEST_DEVICE";
     private static final String DEVICE_ID_PREFIX = "NOTIFICATION-TEST-DEVICE-ID-";
     private static final int NO_OF_DEVICES = 10;
+    private static final int NO_OF_NOTIFICATIONS = 10;
     private List<DeviceIdentifier> deviceIds = new ArrayList<>();
+    private NotificationManagementServiceImpl notificationManagementService;
+    private static final String TEST_NOTIFICATION_DESCRIPTION = "test notification";
+    private static final int NOTIFICATION_OPERATION_ID = 1;
 
     @BeforeClass
     public void init() throws Exception {
         DeviceConfigurationManager.getInstance().initConfig();
         log.info("Initializing");
-        for (int i = 0; i < NO_OF_DEVICES; i++) {
+        for (int i = 1; i <= NO_OF_DEVICES; i++) {
             deviceIds.add(new DeviceIdentifier(DEVICE_ID_PREFIX + i, DEVICE_TYPE));
         }
         List<Device> devices = TestDataHolder.generateDummyDeviceData(this.deviceIds);
@@ -84,6 +89,7 @@ public class NotificationManagementTests {
                 throw new Exception("Incorrect device with ID - " + device.getDeviceIdentifier() + " returned!");
             }
         }
+        notificationManagementService = new NotificationManagementServiceImpl();
     }
 
     private RegistryService getRegistryService() throws RegistryException {
@@ -98,13 +104,66 @@ public class NotificationManagementTests {
 
     @Test(description = "Add notifications using addNotification method and check whether it returns true.")
     public void addNotification() throws Exception {
-        for (int i = 0; i < NO_OF_DEVICES; i++) {
+        Notification notification = null;
+        for (int i = 1; i <= NO_OF_DEVICES; i++) {
             DeviceIdentifier testDeviceIdentifier = new DeviceIdentifier(DEVICE_ID_PREFIX + i, DEVICE_TYPE);
-            Notification notification = TestDataHolder.getNotification(i, "CHECKED",
-                    testDeviceIdentifier.toString(), DEVICE_ID_PREFIX + i, 1, DEVICE_TYPE);
-            NotificationManagementServiceImpl notificationManagementService = new NotificationManagementServiceImpl();
+            notification = TestDataHolder.getNotification(i, Notification.Status.NEW.toString(),
+                    testDeviceIdentifier.toString(), TEST_NOTIFICATION_DESCRIPTION, DEVICE_ID_PREFIX + i,
+                    NOTIFICATION_OPERATION_ID, DEVICE_TYPE);
             Assert.assertTrue(notificationManagementService.addNotification(testDeviceIdentifier, notification));
         }
+        try {
+            notificationManagementService.addNotification(new DeviceIdentifier(DEVICE_ID_PREFIX + 123,
+                    DEVICE_TYPE), notification);
+            Assert.fail();
+        } catch (EntityDoesNotExistException ignored) {
+        }
     }
+
+    @Test(dependsOnMethods = "addNotification", description = "This tests the updateNotification Method" +
+            " and check whether it returns true ( got updated )")
+    public void updateNotification() throws Exception {
+        for (int i = 1; i <= NO_OF_DEVICES; i++) {
+            DeviceIdentifier testDeviceIdentifier = new DeviceIdentifier(DEVICE_ID_PREFIX + i, DEVICE_TYPE);
+            Notification notification = TestDataHolder.getNotification(i, Notification.Status.CHECKED.toString(),
+                    testDeviceIdentifier.toString(), TEST_NOTIFICATION_DESCRIPTION, DEVICE_ID_PREFIX + i, NOTIFICATION_OPERATION_ID,
+                    DEVICE_TYPE);
+            Assert.assertTrue(notificationManagementService.updateNotification(notification));
+        }
+    }
+
+    @Test(dependsOnMethods = "updateNotification", description = "This method update notification status " +
+            "and check whether it got updated")
+    public void updateNotificationStatus() throws Exception {
+        for (int i = 1; i <= NO_OF_DEVICES; i++) {
+            Assert.assertTrue(notificationManagementService.updateNotificationStatus(i, Notification.Status.CHECKED));
+        }
+    }
+
+    @Test(dependsOnMethods = "addNotification", description = "this tests getAllNotifications" +
+            " method by listing down all the notifications.")
+    public void getAllNotifications() throws Exception {
+        List<Notification> returnedNotifications = notificationManagementService.getAllNotifications();
+        Assert.assertEquals(returnedNotifications.size(), NO_OF_DEVICES);
+    }
+
+    @Test(dependsOnMethods = "updateNotificationStatus", description = "this method retries notification by id" +
+            " and checks it")
+    public void getNotification() throws Exception {
+        for (int i = 1; i <= NO_OF_DEVICES; i++) {
+            Notification returnedNotification = notificationManagementService.getNotification(i);
+            Assert.assertEquals(returnedNotification.getNotificationId(), i);
+            Assert.assertEquals(returnedNotification.getStatus(), Notification.Status.CHECKED);
+            Assert.assertEquals(returnedNotification.getDescription(), TEST_NOTIFICATION_DESCRIPTION);
+            Assert.assertEquals(returnedNotification.getOperationId(), NOTIFICATION_OPERATION_ID);
+        }
+    }
+
+    @Test(dependsOnMethods = "updateNotificationStatus", description = "this method gets all notification by status checked")
+    public void getNotificationsByStatus() throws Exception {
+        List<Notification> returnedNotifications = notificationManagementService.getNotificationsByStatus(Notification.Status.CHECKED);
+        Assert.assertEquals(returnedNotifications.size(), NO_OF_NOTIFICATIONS);
+    }
+
 }
 

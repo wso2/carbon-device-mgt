@@ -53,13 +53,13 @@ public class TestDataHolder {
         return device;
     }
 
-    public static Notification getNotification(int notificationId, String status, String deviceId, String deviceName,
-                                        int operationId, String deviceType){
+    public static Notification getNotification(int notificationId, String status, String deviceId, String description, String deviceName,
+                                               int operationId, String deviceType) {
         Notification notification = new Notification();
         notification.setNotificationId(notificationId);
         notification.setStatus(status);
         notification.setDeviceIdentifier(deviceId);
-        notification.setDescription("test description");
+        notification.setDescription(description);
         notification.setDeviceName(deviceName);
         notification.setOperationId(operationId);
         notification.setDeviceType(deviceType);

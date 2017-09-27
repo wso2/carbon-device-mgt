@@ -240,18 +240,6 @@ public class OperationManagementTests {
         Assert.assertTrue(operation.getType().equals(Operation.Type.POLICY));
     }
 
-
-    @Test(dependsOnMethods = "getNextPendingOperation", enabled = false)
-    public void deleteOperation() throws OperationManagementException {
-        //TODO: Verify the operation management service operations.
-        DeviceIdentifier deviceIdentifier = this.deviceIds.get(0);
-        Operation operation = this.operationMgtService.getNextPendingOperation(deviceIdentifier);
-        this.operationMgtService.deleteOperation(operation.getId());
-        Operation operationAfterDeletion = this.operationMgtService.getNextPendingOperation(deviceIdentifier);
-        Assert.assertTrue(operation.getId() != operation.getId());
-        Assert.assertTrue(operationAfterDeletion.getType().equals(Operation.Type.POLICY));
-    }
-
     @Test(dependsOnMethods = "getNextPendingOperation")
     public void getOperationByDeviceAndOperationId() throws OperationManagementException {
         DeviceIdentifier deviceIdentifier = this.deviceIds.get(0);

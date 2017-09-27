@@ -84,11 +84,6 @@ public class PushNotificationBasedOperationManager implements OperationManager {
     }
 
     @Override
-    public void deleteOperation(int operationId) throws OperationManagementException {
-        this.operationManager.deleteOperation(operationId);
-    }
-
-    @Override
     public Operation getOperationByDeviceAndOperationId(
             DeviceIdentifier deviceId, int operationId) throws OperationManagementException {
         return this.operationManager.getOperationByDeviceAndOperationId(deviceId, operationId);
@@ -122,11 +117,6 @@ public class PushNotificationBasedOperationManager implements OperationManager {
     }
 
     @Override
-    public List<Operation> getOperationUpdatedAfter(long timestamp) throws OperationManagementException {
-        return this.operationManager.getOperationUpdatedAfter(timestamp);
-    }
-
-    @Override
     public List<Activity> getActivitiesUpdatedAfter(long timestamp) throws OperationManagementException {
         return this.operationManager.getActivitiesUpdatedAfter(timestamp);
     }
@@ -139,11 +129,6 @@ public class PushNotificationBasedOperationManager implements OperationManager {
     @Override
     public int getActivityCountUpdatedAfter(long timestamp) throws OperationManagementException {
         return this.operationManager.getActivityCountUpdatedAfter(timestamp);
-    }
-
-    @Override
-    public void setNotificationStrategy(NotificationStrategy notificationStrategy) {
-
     }
 
     @Override

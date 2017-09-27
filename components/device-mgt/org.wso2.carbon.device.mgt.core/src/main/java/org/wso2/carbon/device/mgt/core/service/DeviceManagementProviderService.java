@@ -553,8 +553,6 @@ public interface DeviceManagementProviderService {
 
     void updateOperation(DeviceIdentifier deviceId, Operation operation) throws OperationManagementException;
 
-    void deleteOperation(String type, int operationId) throws OperationManagementException;
-
     Operation getOperationByDeviceAndOperationId(DeviceIdentifier deviceId, int operationId)
             throws OperationManagementException;
 

@@ -20,7 +20,6 @@ import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {withRouter} from 'react-router-dom';
 import AuthHandler from "../../api/authHandler";
-import '../../css/font-wso2.css';
 import NotificationsIcon from 'material-ui/svg-icons/social/notifications';
 import ActionAccountCircle from 'material-ui/svg-icons/action/account-circle';
 import ApplicationCreate from '../Application/Create/ApplicationCreate';

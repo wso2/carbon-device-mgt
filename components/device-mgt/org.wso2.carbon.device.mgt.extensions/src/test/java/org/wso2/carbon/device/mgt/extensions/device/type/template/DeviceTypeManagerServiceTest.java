@@ -23,11 +23,7 @@ import org.mockito.Mockito;
 import org.testng.Assert;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
-import org.wso2.carbon.CarbonConstants;
 import org.wso2.carbon.base.MultitenantConstants;
-import org.wso2.carbon.context.PrivilegedCarbonContext;
-import org.wso2.carbon.context.RegistryType;
-import org.wso2.carbon.context.internal.OSGiDataHolder;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.DeviceStatusTaskPluginConfig;
 import org.wso2.carbon.device.mgt.common.InitialOperationConfig;
@@ -38,17 +34,15 @@ import org.wso2.carbon.device.mgt.common.configuration.mgt.PlatformConfiguration
 import org.wso2.carbon.device.mgt.common.license.mgt.License;
 import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManagementException;
 import org.wso2.carbon.device.mgt.common.push.notification.PushNotificationConfig;
-import org.wso2.carbon.device.mgt.extensions.device.type.template.config.*;
+import org.wso2.carbon.device.mgt.extensions.device.type.template.config.DeviceStatusTaskConfiguration;
+import org.wso2.carbon.device.mgt.extensions.device.type.template.config.DeviceTypeConfiguration;
+import org.wso2.carbon.device.mgt.extensions.device.type.template.config.PolicyMonitoring;
+import org.wso2.carbon.device.mgt.extensions.device.type.template.config.PullNotificationSubscriberConfig;
+import org.wso2.carbon.device.mgt.extensions.device.type.template.config.PushNotificationProvider;
+import org.wso2.carbon.device.mgt.extensions.device.type.template.config.TaskConfiguration;
 import org.wso2.carbon.device.mgt.extensions.device.type.template.config.exception.DeviceTypeConfigurationException;
-import org.wso2.carbon.device.mgt.extensions.internal.DeviceTypeExtensionDataHolder;
 import org.wso2.carbon.device.mgt.extensions.utils.Utils;
-import org.wso2.carbon.governance.api.util.GovernanceArtifactConfiguration;
-import org.wso2.carbon.governance.api.util.GovernanceUtils;
-import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
-import org.wso2.carbon.registry.core.service.RegistryService;
-import org.wso2.carbon.registry.core.session.UserRegistry;
-import org.wso2.carbon.utils.FileUtil;
 import org.xml.sax.SAXException;
 
 import javax.xml.bind.JAXBException;
@@ -63,7 +57,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.powermock.api.mockito.PowerMockito.when;
-import static org.wso2.carbon.governance.api.util.GovernanceUtils.getGovernanceArtifactConfiguration;
 
 /**
  * This is the test class for {@link DeviceTypeManagerService}
@@ -87,7 +80,7 @@ public class DeviceTypeManagerServiceTest {
             DeviceTypeConfigurationException, IOException, NoSuchFieldException, IllegalAccessException,
             DeviceManagementException, RegistryException {
         ClassLoader classLoader = getClass().getClassLoader();
-        File carbonHome = new File(classLoader.getResource("carbon-home").getFile());
+
         setProvisioningConfig = DeviceTypeManagerService.class
                 .getDeclaredMethod("setProvisioningConfig", String.class, DeviceTypeConfiguration.class);
         setProvisioningConfig.setAccessible(true);
@@ -156,12 +149,6 @@ public class DeviceTypeManagerServiceTest {
 
         configurationEntries.add(configurationEntry);
         platformConfiguration.setConfiguration(configurationEntries);
-
-
-        if (androidConfiguration != null) {
-            // This is needed for DeviceTypeManager Initialization
-            System.setProperty("carbon.home", carbonHome.getAbsolutePath());
-        }
         DeviceTypeManager deviceTypeManager = Mockito.mock(DeviceTypeManager.class);
         when(deviceTypeManager.getConfiguration()).thenReturn(platformConfiguration);
         deviceManager.set(androidDeviceTypeManagerService, deviceTypeManager);
@@ -316,26 +303,8 @@ public class DeviceTypeManagerServiceTest {
     private void setupArduinoDeviceType()
             throws RegistryException, IOException, SAXException, ParserConfigurationException,
             DeviceTypeConfigurationException, JAXBException {
-        PrivilegedCarbonContext.getThreadLocalCarbonContext()
-                .setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
-        PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(MultitenantConstants.SUPER_TENANT_ID);
-        RegistryService registryService = Utils.getRegistryService();
-        OSGiDataHolder.getInstance().setRegistryService(registryService);
-        UserRegistry systemRegistry =
-                registryService.getRegistry(CarbonConstants.REGISTRY_SYSTEM_USERNAME);
         ClassLoader classLoader = getClass().getClassLoader();
-        URL resourceUrl = classLoader.getResource("license.rxt");
-        String rxt = FileUtil.readFileToString(resourceUrl.getFile());
-        GovernanceArtifactConfiguration configuration =  getGovernanceArtifactConfiguration(rxt);
-        List<GovernanceArtifactConfiguration> configurations = new ArrayList<>();
-        configurations.add(configuration);
-        GovernanceUtils.loadGovernanceArtifacts(systemRegistry, configurations);
-        Registry governanceSystemRegistry = registryService.getConfigSystemRegistry();
-        DeviceTypeExtensionDataHolder.getInstance().setRegistryService(registryService);
-
-        PrivilegedCarbonContext.getThreadLocalCarbonContext()
-                .setRegistry(RegistryType.SYSTEM_CONFIGURATION, governanceSystemRegistry);
-        resourceUrl = classLoader.getResource("arduino.xml");
+        URL resourceUrl = classLoader.getResource("arduino.xml");
         File raspberrypiConfiguration = null;
         if (resourceUrl != null) {
             raspberrypiConfiguration = new File(resourceUrl.getFile());

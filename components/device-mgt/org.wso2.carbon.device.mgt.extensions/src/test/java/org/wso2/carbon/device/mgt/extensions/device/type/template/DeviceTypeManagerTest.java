@@ -22,9 +22,6 @@ import org.mockito.Mockito;
 import org.testng.Assert;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
-import org.wso2.carbon.base.MultitenantConstants;
-import org.wso2.carbon.context.PrivilegedCarbonContext;
-import org.wso2.carbon.context.RegistryType;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
@@ -35,11 +32,8 @@ import org.wso2.carbon.device.mgt.extensions.device.type.template.dao.DeviceDAOD
 import org.wso2.carbon.device.mgt.extensions.device.type.template.dao.DeviceTypeDAOHandler;
 import org.wso2.carbon.device.mgt.extensions.device.type.template.dao.DeviceTypePluginDAOImpl;
 import org.wso2.carbon.device.mgt.extensions.device.type.template.dao.DeviceTypePluginDAOManager;
-import org.wso2.carbon.device.mgt.extensions.internal.DeviceTypeExtensionDataHolder;
 import org.wso2.carbon.device.mgt.extensions.utils.Utils;
-import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
-import org.wso2.carbon.registry.core.service.RegistryService;
 import org.xml.sax.SAXException;
 
 import javax.xml.bind.JAXBException;
@@ -144,16 +138,8 @@ public class DeviceTypeManagerTest {
 
     @Test(description = "This test case tests the addition of platform configuration and retrieval of the same")
     public void testAddPlatformConfiguration() throws RegistryException, DeviceManagementException {
-        PrivilegedCarbonContext.getThreadLocalCarbonContext()
-                .setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
-        PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(MultitenantConstants.SUPER_TENANT_ID);
         PlatformConfiguration platformConfiguration = new PlatformConfiguration();
         platformConfiguration.setType(androidDeviceType);
-        RegistryService registryService = Utils.getRegistryService();
-        Registry governanceSystemRegistry = registryService.getConfigSystemRegistry();
-        DeviceTypeExtensionDataHolder.getInstance().setRegistryService(registryService);
-        PrivilegedCarbonContext.getThreadLocalCarbonContext()
-                .setRegistry(RegistryType.SYSTEM_CONFIGURATION, governanceSystemRegistry);
         androidDeviceTypeManager.saveConfiguration(platformConfiguration);
         androidDeviceTypeManager.getConfiguration();
         PlatformConfiguration actualPlatformConfiguration = androidDeviceTypeManager.getConfiguration();

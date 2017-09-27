@@ -2,16 +2,23 @@ package org.wso2.carbon.device.mgt.extensions.device.type.template;
 
 import org.testng.Assert;
 import org.testng.annotations.BeforeTest;
+import org.testng.annotations.Test;
 import org.wso2.carbon.CarbonConstants;
 import org.wso2.carbon.base.MultitenantConstants;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.context.RegistryType;
 import org.wso2.carbon.context.internal.OSGiDataHolder;
+import org.wso2.carbon.device.mgt.common.Device;
+import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
+import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.PlatformConfiguration;
+import org.wso2.carbon.device.mgt.common.license.mgt.License;
+import org.wso2.carbon.device.mgt.common.push.notification.PushNotificationConfig;
 import org.wso2.carbon.device.mgt.common.type.mgt.DeviceTypeMetaDefinition;
 import org.wso2.carbon.device.mgt.extensions.device.type.template.config.DeviceTypeConfiguration;
 import org.wso2.carbon.device.mgt.extensions.device.type.template.config.Feature;
 import org.wso2.carbon.device.mgt.extensions.device.type.template.config.Operation;
+import org.wso2.carbon.device.mgt.extensions.device.type.template.config.PushNotificationProvider;
 import org.wso2.carbon.device.mgt.extensions.device.type.template.config.exception.DeviceTypeConfigurationException;
 import org.wso2.carbon.device.mgt.extensions.internal.DeviceTypeExtensionDataHolder;
 import org.wso2.carbon.device.mgt.extensions.license.mgt.registry.RegistryBasedLicenseManager;
@@ -39,27 +46,74 @@ import static org.wso2.carbon.governance.api.util.GovernanceUtils.getGovernanceA
  * This test case contains the tests for {@link HTTPDeviceTypeManagerService}
  */
 public class HttpDeviceTypeManagerServiceTest {
+    private DeviceTypeMetaDefinition deviceTypeMetaDefinition;
+    private HTTPDeviceTypeManagerService httpDeviceTypeManagerService;
+    private String androidSenseDeviceType = "androidsense";
 
     @BeforeTest
     public void setup() throws RegistryException, IOException, SAXException, ParserConfigurationException,
             DeviceTypeConfigurationException, JAXBException {
-
+        createSampleDeviceTypeMetaDefinition();
+        httpDeviceTypeManagerService = new HTTPDeviceTypeManagerService(androidSenseDeviceType,
+                deviceTypeMetaDefinition);
 
     }
 
-    private DeviceTypeMetaDefinition sampleDeviceTypeMetaDefinition() {
-        DeviceTypeMetaDefinition deviceTypeMetaDefinition = new DeviceTypeMetaDefinition();
-        Feature feature = new Feature();
-        Operation operation = new Operation();
-        operation.setContext("/test");
-        operation.setMethod("Get");
-        operation.setType("COMMAND");
-        feature.setCode("TEST");
-        feature.setDescription("This is a test feature");
-        feature.setName("TEST");
+    private void createSampleDeviceTypeMetaDefinition()
+            throws SAXException, JAXBException, ParserConfigurationException, DeviceTypeConfigurationException,
+            IOException {
+        ClassLoader classLoader = getClass().getClassLoader();
+        URL resourceUrl = classLoader.getResource("android_sense.xml");
+        File androidSenseConfiguration = null;
+
+        if (resourceUrl != null) {
+            androidSenseConfiguration = new File(resourceUrl.getFile());
+        }
+        DeviceTypeConfiguration androidSenseDeviceTypeConfiguration = Utils
+                .getDeviceTypeConfiguration(androidSenseConfiguration);
+        PushNotificationProvider pushNotificationProvider = androidSenseDeviceTypeConfiguration
+                .getPushNotificationProvider();
+        PushNotificationConfig pushNotificationConfig = new PushNotificationConfig(pushNotificationProvider.getType()
+                , pushNotificationProvider.isScheduled(), null);
+        org.wso2.carbon.device.mgt.extensions.device.type.template.config.License license = androidSenseDeviceTypeConfiguration.getLicense();
+        License androidSenseLicense = new License();
+        androidSenseLicense.setText(license.getText());
+        androidSenseLicense.setLanguage(license.getLanguage());
+
+        List<Feature> configurationFeatues = androidSenseDeviceTypeConfiguration.getFeatures().getFeature();
+        List<org.wso2.carbon.device.mgt.common.Feature> features = new ArrayList<>();
+
+        for (Feature feature : configurationFeatues) {
+            org.wso2.carbon.device.mgt.common.Feature commonFeature = new org.wso2.carbon.device.mgt.common.Feature();
+            commonFeature.setCode(feature.getCode());
+            commonFeature.setDescription(feature.getDescription());
+            commonFeature.setName(feature.getName());
+            features.add(commonFeature);
+        }
+
+        deviceTypeMetaDefinition = new DeviceTypeMetaDefinition();
+        deviceTypeMetaDefinition.setPushNotificationConfig(pushNotificationConfig);
+        deviceTypeMetaDefinition.setDescription("This is android_sense");
         deviceTypeMetaDefinition.setClaimable(true);
-        deviceTypeMetaDefinition.setDescription("This is a new device type");
-//        deviceTypeMetaDefinition.setInitialOperationConfig();
-        return deviceTypeMetaDefinition;
+        deviceTypeMetaDefinition.setLicense(androidSenseLicense);
+        deviceTypeMetaDefinition.setFeatures(features);
+    }
+
+    @Test(description = "This test case tests the get type method of the device type manager")
+    public void testGetType() {
+        Assert.assertEquals(httpDeviceTypeManagerService.getType(), androidSenseDeviceType,
+                "HttpDeviceTypeManagerService returns" + " a different device type than initially provided");
+    }
+
+    @Test(description = "This test case tests the enrollment of newly added device type")
+    public void testEnrollDevice() throws DeviceManagementException {
+        String deviceId = "testdevice1";
+        Device sampleDevice1 = new Device(deviceId, androidSenseDeviceType, "test", "testdevice", null, null, null);
+        Assert.assertTrue(httpDeviceTypeManagerService.getDeviceManager().enrollDevice(sampleDevice1),
+                "Enrollment of " + androidSenseDeviceType + " device failed");
+        Assert.assertTrue(httpDeviceTypeManagerService.getDeviceManager()
+                        .isEnrolled(new DeviceIdentifier(deviceId, androidSenseDeviceType)),
+                "Enrollment of " + androidSenseDeviceType + " device " + "failed");
     }
 }
+

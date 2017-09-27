@@ -26,8 +26,6 @@ public class OperationMgtConstants {
         }
 
         public static final String DEVICE_ID_NOT_FOUND = "Device not found for device id: %s";
-        public static final String DEVICE_ID_SERVICE_NOT_FOUND =
-                "Issue in retrieving device management service instance for device found at %s";
     }
 
     public final class OperationCodes {

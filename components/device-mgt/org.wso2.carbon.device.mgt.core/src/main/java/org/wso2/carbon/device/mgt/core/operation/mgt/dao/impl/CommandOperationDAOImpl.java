@@ -70,22 +70,6 @@ public class CommandOperationDAOImpl extends GenericOperationDAOImpl {
         }
     }
 
-    @Override
-    public void deleteOperation(int id) throws OperationManagementDAOException {
-        PreparedStatement stmt = null;
-        try {
-            super.deleteOperation(id);
-            Connection connection = OperationManagementDAOFactory.getConnection();
-            stmt = connection.prepareStatement("DELETE FROM DM_COMMAND_OPERATION WHERE OPERATION_ID = ?");
-            stmt.setInt(1, id);
-            stmt.executeUpdate();
-        } catch (SQLException e) {
-            throw new OperationManagementDAOException("Error occurred while deleting operation metadata", e);
-        } finally {
-            OperationManagementDAOUtil.cleanupResources(stmt);
-        }
-    }
-
     public CommandOperation getOperation(int id) throws OperationManagementDAOException {
         PreparedStatement stmt = null;
         ResultSet rs = null;

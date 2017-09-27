@@ -33,9 +33,11 @@ import org.wso2.carbon.device.mgt.common.operation.mgt.ActivityStatus;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManager;
+import org.wso2.carbon.device.mgt.common.push.notification.NotificationStrategy;
 import org.wso2.carbon.device.mgt.core.DeviceManagementConstants;
 import org.wso2.carbon.device.mgt.core.TestDeviceManagementService;
 import org.wso2.carbon.device.mgt.core.authorization.DeviceAccessAuthorizationServiceImpl;
+import org.wso2.carbon.device.mgt.core.common.BaseDeviceManagementTest;
 import org.wso2.carbon.device.mgt.core.common.TestDataHolder;
 import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
@@ -109,7 +111,8 @@ public class OperationManagementTests {
                 throw new Exception("Incorrect device with ID - " + device.getDeviceIdentifier() + " returned!");
             }
         }
-        this.operationMgtService = new OperationManagerImpl(DEVICE_TYPE);
+        NotificationStrategy notificationStrategy = new TestNotificationStrategy();
+        this.operationMgtService = new OperationManagerImpl(DEVICE_TYPE, notificationStrategy);
     }
 
     private RegistryService getRegistryService() throws RegistryException {
@@ -127,6 +130,21 @@ public class OperationManagementTests {
         this.commandActivity = this.operationMgtService.addOperation(getOperation(new CommandOperation(), Operation.Type.COMMAND, COMMAND_OPERATON_CODE),
                 this.deviceIds);
         validateOperationResponse(this.commandActivity);
+    }
+
+    @Test (expectedExceptions = InvalidDeviceException.class)
+    public void addEmptyDevicesCommandOperation() throws DeviceManagementException, OperationManagementException, InvalidDeviceException {
+       this.operationMgtService.addOperation(getOperation(new CommandOperation(), Operation.Type.COMMAND, COMMAND_OPERATON_CODE),
+                new ArrayList<>());
+    }
+
+    @Test (expectedExceptions = InvalidDeviceException.class)
+    public void addNonInitializedDevicesCommandOperation() throws DeviceManagementException, OperationManagementException, InvalidDeviceException {
+        DeviceIdentifier deviceIdentifier = new DeviceIdentifier();
+        List<DeviceIdentifier> deviceIdentifiers = new ArrayList<>();
+        deviceIdentifiers.add(deviceIdentifier);
+        this.operationMgtService.addOperation(getOperation(new CommandOperation(), Operation.Type.COMMAND, COMMAND_OPERATON_CODE),
+                deviceIdentifiers);
     }
 
     @Test(dependsOnMethods = "addCommandOperation")
@@ -335,6 +353,11 @@ public class OperationManagementTests {
         int activityCount = this.operationMgtService.getActivityCountUpdatedAfter(date.getTime() / 1000);
         Assert.assertTrue(activityCount == 1,
                 "The activities updated after the created should be 1");
+    }
+
+    @Test
+    public void getNotificationStrategy(){
+        Assert.assertTrue(this.operationMgtService.getNotificationStrategy() != null);
     }
 
 }

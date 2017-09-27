@@ -132,13 +132,13 @@ public class OperationManagementTests {
         validateOperationResponse(this.commandActivity);
     }
 
-    @Test (expectedExceptions = InvalidDeviceException.class)
+    @Test(expectedExceptions = InvalidDeviceException.class)
     public void addEmptyDevicesCommandOperation() throws DeviceManagementException, OperationManagementException, InvalidDeviceException {
-       this.operationMgtService.addOperation(getOperation(new CommandOperation(), Operation.Type.COMMAND, COMMAND_OPERATON_CODE),
+        this.operationMgtService.addOperation(getOperation(new CommandOperation(), Operation.Type.COMMAND, COMMAND_OPERATON_CODE),
                 new ArrayList<>());
     }
 
-    @Test (expectedExceptions = InvalidDeviceException.class)
+    @Test(expectedExceptions = InvalidDeviceException.class)
     public void addNonInitializedDevicesCommandOperation() throws DeviceManagementException, OperationManagementException, InvalidDeviceException {
         DeviceIdentifier deviceIdentifier = new DeviceIdentifier();
         List<DeviceIdentifier> deviceIdentifiers = new ArrayList<>();
@@ -356,7 +356,7 @@ public class OperationManagementTests {
     }
 
     @Test
-    public void getNotificationStrategy(){
+    public void getNotificationStrategy() {
         Assert.assertTrue(this.operationMgtService.getNotificationStrategy() != null);
     }
 

@@ -128,7 +128,7 @@ public class OperationManagementTests {
     public void addCommandOperation() throws DeviceManagementException, OperationManagementException, InvalidDeviceException {
         this.commandActivity = this.operationMgtService.addOperation(getOperation(new CommandOperation(), Operation.Type.COMMAND, COMMAND_OPERATON_CODE),
                 this.deviceIds);
-        validateOperationResponse(this.commandActivity);
+        validateOperationResponse(this.commandActivity, ActivityStatus.Status.PENDING);
     }
 
     @Test(expectedExceptions = InvalidDeviceException.class)
@@ -146,25 +146,37 @@ public class OperationManagementTests {
                 deviceIdentifiers);
     }
 
+    @Test
+    public void addNonAdminUserDevicesCommandOperation() throws DeviceManagementException, OperationManagementException,
+            InvalidDeviceException {
+        PrivilegedCarbonContext.startTenantFlow();
+        PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(MultitenantConstants.SUPER_TENANT_ID, true);
+        PrivilegedCarbonContext.getThreadLocalCarbonContext().setUsername(NON_ADMIN_USER);
+        Activity activity = this.operationMgtService.addOperation(getOperation(new CommandOperation(), Operation.Type.COMMAND, COMMAND_OPERATON_CODE),
+                deviceIds);
+        PrivilegedCarbonContext.endTenantFlow();
+        validateOperationResponse(activity, ActivityStatus.Status.UNAUTHORIZED);
+    }
+
     @Test(dependsOnMethods = "addCommandOperation")
     public void addPolicyOperation() throws DeviceManagementException, OperationManagementException, InvalidDeviceException {
         Activity activity = this.operationMgtService.addOperation(getOperation(new PolicyOperation(), Operation.Type.POLICY, POLICY_OPERATION_CODE),
                 this.deviceIds);
-        validateOperationResponse(activity);
+        validateOperationResponse(activity, ActivityStatus.Status.PENDING);
     }
 
     @Test(dependsOnMethods = "addPolicyOperation")
     public void addConfigOperation() throws DeviceManagementException, OperationManagementException, InvalidDeviceException {
         Activity activity = this.operationMgtService.addOperation(getOperation(new ConfigOperation(), Operation.Type.CONFIG, CONFIG_OPERATION_CODE),
                 this.deviceIds);
-        validateOperationResponse(activity);
+        validateOperationResponse(activity, ActivityStatus.Status.PENDING);
     }
 
     @Test(dependsOnMethods = "addConfigOperation")
     public void addProfileOperation() throws DeviceManagementException, OperationManagementException, InvalidDeviceException {
         Activity activity = this.operationMgtService.addOperation(getOperation(new ProfileOperation(), Operation.Type.PROFILE, PROFILE_OPERATION_CODE),
                 this.deviceIds);
-        validateOperationResponse(activity);
+        validateOperationResponse(activity, ActivityStatus.Status.PENDING);
     }
 
     private Operation getOperation(Operation operation, Operation.Type type, String code) {
@@ -175,11 +187,11 @@ public class OperationManagementTests {
         return operation;
     }
 
-    private void validateOperationResponse(Activity activity) {
+    private void validateOperationResponse(Activity activity, ActivityStatus.Status expectedStatus) {
         Assert.assertEquals(activity.getActivityStatus().size(), NO_OF_DEVICES, "The operation reponse for add operation only have - " +
                 activity.getActivityStatus().size());
         for (ActivityStatus status : activity.getActivityStatus()) {
-            Assert.assertEquals(status.getStatus(), ActivityStatus.Status.PENDING);
+            Assert.assertEquals(status.getStatus(), expectedStatus);
         }
     }
 

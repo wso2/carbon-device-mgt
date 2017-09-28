@@ -23,7 +23,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mockito.Mockito;
 import org.testng.Assert;
-import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.CarbonConstants;
@@ -73,18 +72,18 @@ public class DeviceAccessAuthorizationServiceTest extends BaseDeviceManagementTe
     private static final String NON_ADMIN_ROLE = "nonAdminRole";
     private static final String DEFAULT_GROUP = "defaultGroup";
     private static final String DEVICE_ID_PREFIX = "AUTH-SERVICE-TEST-DEVICE-ID-";
-    public static final String USER_CLAIM_EMAIL_ADDRESS = "http://wso2.org/claims/emailaddress";
-    public static final String USER_CLAIM_FIRST_NAME = "http://wso2.org/claims/givenname";
-    public static final String USER_CLAIM_LAST_NAME = "http://wso2.org/claims/lastname";
-    public static final String ADMIN_PERMISSION = "/permission/admin";
-    public static final String NON_ADMIN_PERMISSION = "/permission/admin/manage/device-mgt/devices/owning-device/view";
-
-
+    private static final String USER_CLAIM_EMAIL_ADDRESS = "http://wso2.org/claims/emailaddress";
+    private static final String USER_CLAIM_FIRST_NAME = "http://wso2.org/claims/givenname";
+    private static final String USER_CLAIM_LAST_NAME = "http://wso2.org/claims/lastname";
+    private static final String ADMIN_PERMISSION = "/permission/admin";
+    private static final String NON_ADMIN_PERMISSION = "/permission/admin/manage/device-mgt/devices/owning-device/view";
+    private static final String FIRST_NAME = "firstName";
+    private static final String LAST_NAME = "lastName";
+    private static final String EMAIL = "email";
+    private static final String PASSWORD = "password";
     private List<DeviceIdentifier> deviceIds = new ArrayList<>();
     private List<DeviceIdentifier> groupDeviceIds = new ArrayList<>();
-    private List<DeviceIdentifier> nonGroupDeviceIds = new ArrayList<>();
-
-    Map<String, String> defaultUserClaims;
+    private Map<String, String> defaultUserClaims;
 
     @BeforeClass
     public void init() throws Exception {
@@ -112,7 +111,7 @@ public class DeviceAccessAuthorizationServiceTest extends BaseDeviceManagementTe
             }
         }
         deviceAccessAuthorizationService = Mockito.mock(DeviceAccessAuthorizationServiceImpl.class, Mockito.CALLS_REAL_METHODS);
-        defaultUserClaims = buildDefaultUserClaims("firstname", "lastname", "email");
+        defaultUserClaims = buildDefaultUserClaims(FIRST_NAME, LAST_NAME, EMAIL);
         initializeTestEnvironment();
     }
 
@@ -134,60 +133,116 @@ public class DeviceAccessAuthorizationServiceTest extends BaseDeviceManagementTe
     }
 
     @Test
-    public void isUserAuthenticated() throws Exception {
+    public void userAuthDevIdUserName() throws Exception {
         for (DeviceIdentifier deviceId : deviceIds) {
-            Assert.assertTrue(deviceAccessAuthorizationService.isUserAuthorized(deviceId, ADMIN_USER));
+            Assert.assertTrue(deviceAccessAuthorizationService.isUserAuthorized(deviceId, ADMIN_USER),
+                    "Device access authorization for admin user failed");
         }
     }
 
     @Test
-    public void isUserAuthenticatedList() throws Exception {
+    public void userAuthDevIdUserNameResult() throws Exception {
         DeviceAuthorizationResult deviceAuthorizationResult = deviceAccessAuthorizationService.
                 isUserAuthorized(deviceIds, ADMIN_USER);
-        Assert.assertEquals(deviceAuthorizationResult.getAuthorizedDevices().size(), 5);
-        Assert.assertEquals(deviceAuthorizationResult.getUnauthorizedDevices().size(), 0);
+        Assert.assertEquals(deviceAuthorizationResult.getAuthorizedDevices().size(), 5,
+                "Expected 5 authorized devices for admin user");
+        Assert.assertEquals(deviceAuthorizationResult.getUnauthorizedDevices().size(), 0,
+                "Expected 0 un-authorized devices for admin user");
     }
 
     @Test
-    public void isUserAuthenticatedListOnlyDevId() throws Exception {
-        DeviceAuthorizationResult deviceAuthorizationResult = deviceAccessAuthorizationService.isUserAuthorized(deviceIds);
-        Assert.assertEquals(deviceAuthorizationResult.getAuthorizedDevices().size(), 5);
-        Assert.assertEquals(deviceAuthorizationResult.getUnauthorizedDevices().size(), 0);
-    }
-
-    @Test
-    public void isUserAuthenticatedOnlyDevId() throws Exception {
+    public void userAuthDevId() throws Exception {
         for (DeviceIdentifier deviceId : deviceIds) {
-            Assert.assertTrue(deviceAccessAuthorizationService.isUserAuthorized(deviceId));
+            Assert.assertTrue(deviceAccessAuthorizationService.isUserAuthorized(deviceId),
+                    "Authorize user from device identifier failed");
         }
     }
 
     @Test
-    public void isDeviceAdminUser() throws DeviceAccessAuthorizationException, UserStoreException, PermissionManagementException {
+    public void userAuthDevIdResult() throws Exception {
+        DeviceAuthorizationResult deviceAuthorizationResult = deviceAccessAuthorizationService.isUserAuthorized(deviceIds);
+        Assert.assertEquals(deviceAuthorizationResult.getAuthorizedDevices().size(), 5,
+                "Expected 5 authorized devices for admin user");
+        Assert.assertEquals(deviceAuthorizationResult.getUnauthorizedDevices().size(), 0,
+                "Expected 0 un-authorized devices for admin user");
+    }
+
+    @Test
+    public void userAuthDevIdPermission() throws DeviceAccessAuthorizationException, UserStoreException, PermissionManagementException {
+        PrivilegedCarbonContext.startTenantFlow();
+        PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(MultitenantConstants.SUPER_TENANT_ID, true);
+        PrivilegedCarbonContext.getThreadLocalCarbonContext().setUsername(NON_ADMIN_ALLOWED_USER);
+        Assert.assertTrue(deviceAccessAuthorizationService.isUserAuthorized(deviceIds.get(0), new String[]{NON_ADMIN_PERMISSION}),
+                "Non admin user with permissions attempt to access failed");
+        PrivilegedCarbonContext.endTenantFlow();
+    }
+
+    @Test
+    public void userAuthFalseDevIdPermission() throws DeviceAccessAuthorizationException, UserStoreException,
+            PermissionManagementException {
+        PrivilegedCarbonContext.startTenantFlow();
+        PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(MultitenantConstants.SUPER_TENANT_ID, true);
+        PrivilegedCarbonContext.getThreadLocalCarbonContext().setUsername(NON_ADMIN_ALLOWED_USER);
+        Assert.assertFalse(deviceAccessAuthorizationService.isUserAuthorized(deviceIds.get(3), new String[]{NON_ADMIN_PERMISSION}),
+                "Non admin user accessing not allowed device authorized");
+        PrivilegedCarbonContext.endTenantFlow();
+    }
+
+    @Test
+    public void userAuthDevIdUserNamePermission() throws DeviceAccessAuthorizationException, UserStoreException,
+            PermissionManagementException {
+        PrivilegedCarbonContext.startTenantFlow();
+        PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(MultitenantConstants.SUPER_TENANT_ID, true);
+        PrivilegedCarbonContext.getThreadLocalCarbonContext().setUsername(NON_ADMIN_ALLOWED_USER);
+        Assert.assertTrue(deviceAccessAuthorizationService.isUserAuthorized(deviceIds.get(0), NON_ADMIN_ALLOWED_USER,
+                new String[]{NON_ADMIN_PERMISSION}),"Non admin user with permissions attempt to access failed");
+        PrivilegedCarbonContext.endTenantFlow();
+    }
+
+    @Test
+    public void userAuthFalseDevIdUserNamePermission() throws DeviceAccessAuthorizationException, UserStoreException,
+            PermissionManagementException {
+        PrivilegedCarbonContext.startTenantFlow();
+        PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(MultitenantConstants.SUPER_TENANT_ID, true);
+        PrivilegedCarbonContext.getThreadLocalCarbonContext().setUsername(NON_ADMIN_ALLOWED_USER);
+        Assert.assertFalse(deviceAccessAuthorizationService.isUserAuthorized(deviceIds.get(3), NON_ADMIN_ALLOWED_USER,
+                new String[]{NON_ADMIN_PERMISSION}),"Non admin user accessing not allowed device authorized");
+        PrivilegedCarbonContext.endTenantFlow();
+    }
+
+    @Test
+    public void userAuthDevIdPermissionResult() throws DeviceAccessAuthorizationException {
+        PrivilegedCarbonContext.startTenantFlow();
+        PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(MultitenantConstants.SUPER_TENANT_ID, true);
+        PrivilegedCarbonContext.getThreadLocalCarbonContext().setUsername(NON_ADMIN_ALLOWED_USER);
+        DeviceAuthorizationResult deviceAuthorizationResult = deviceAccessAuthorizationService.
+                isUserAuthorized(deviceIds, new String[]{NON_ADMIN_PERMISSION});
+        Assert.assertEquals(deviceAuthorizationResult.getAuthorizedDevices().size(), 2,
+                "Non admin user authentication to 2 devices in a shared group failed");
+        Assert.assertEquals(deviceAuthorizationResult.getUnauthorizedDevices().size(), 3,
+                "Non admin user authentication to 3 devices in a non-shared group failed");
+        PrivilegedCarbonContext.endTenantFlow();
+    }
+
+    @Test
+    public void userAuthDevIdUserNamePermissionResult() throws DeviceAccessAuthorizationException {
+        PrivilegedCarbonContext.startTenantFlow();
+        PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(MultitenantConstants.SUPER_TENANT_ID, true);
+        PrivilegedCarbonContext.getThreadLocalCarbonContext().setUsername(NON_ADMIN_ALLOWED_USER);
+        DeviceAuthorizationResult deviceAuthorizationResult = deviceAccessAuthorizationService.
+                isUserAuthorized(deviceIds, NON_ADMIN_ALLOWED_USER, new String[]{NON_ADMIN_PERMISSION});
+        Assert.assertEquals(deviceAuthorizationResult.getAuthorizedDevices().size(), 2);
+        Assert.assertEquals(deviceAuthorizationResult.getUnauthorizedDevices().size(), 3);
+        PrivilegedCarbonContext.endTenantFlow();
+    }
+
+    @Test
+    public void isDevAdminAdminUser() throws DeviceAccessAuthorizationException, UserStoreException, PermissionManagementException {
         Assert.assertTrue(deviceAccessAuthorizationService.isDeviceAdminUser());
-
     }
 
     @Test
-    public void isUserAuthorizedAllowedDevice() throws DeviceAccessAuthorizationException, UserStoreException, PermissionManagementException {
-        PrivilegedCarbonContext.startTenantFlow();
-        PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(MultitenantConstants.SUPER_TENANT_ID, true);
-        PrivilegedCarbonContext.getThreadLocalCarbonContext().setUsername(NON_ADMIN_ALLOWED_USER);
-        Assert.assertTrue(deviceAccessAuthorizationService.isUserAuthorized(deviceIds.get(0), new String[]{NON_ADMIN_PERMISSION}));
-        PrivilegedCarbonContext.endTenantFlow();
-    }
-
-    @Test
-    public void isUserAuthorizedNotAllowedDevice() throws DeviceAccessAuthorizationException, UserStoreException, PermissionManagementException {
-        PrivilegedCarbonContext.startTenantFlow();
-        PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(MultitenantConstants.SUPER_TENANT_ID, true);
-        PrivilegedCarbonContext.getThreadLocalCarbonContext().setUsername(NON_ADMIN_ALLOWED_USER);
-        Assert.assertFalse(deviceAccessAuthorizationService.isUserAuthorized(deviceIds.get(3), new String[]{NON_ADMIN_PERMISSION}));
-        PrivilegedCarbonContext.endTenantFlow();
-    }
-
-    @Test
-    public void nonAdminUserTryIsAdmin() throws DeviceAccessAuthorizationException {
+    public void isDevAdminNormalUser() throws DeviceAccessAuthorizationException {
         PrivilegedCarbonContext.startTenantFlow();
         PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(MultitenantConstants.SUPER_TENANT_ID, true);
         PrivilegedCarbonContext.getThreadLocalCarbonContext().setUsername(NORMAL_USER);
@@ -195,49 +250,7 @@ public class DeviceAccessAuthorizationServiceTest extends BaseDeviceManagementTe
         PrivilegedCarbonContext.endTenantFlow();
     }
 
-    @Test
-    public void isUserAuthorizedAllowedDeviceAllDetails() throws DeviceAccessAuthorizationException, UserStoreException, PermissionManagementException {
-        PrivilegedCarbonContext.startTenantFlow();
-        PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(MultitenantConstants.SUPER_TENANT_ID, true);
-        PrivilegedCarbonContext.getThreadLocalCarbonContext().setUsername(NON_ADMIN_ALLOWED_USER);
-        Assert.assertTrue(deviceAccessAuthorizationService.isUserAuthorized(deviceIds.get(0),NON_ADMIN_ALLOWED_USER,new String[]{NON_ADMIN_PERMISSION}));
-        PrivilegedCarbonContext.endTenantFlow();
-    }
-
-    @Test
-    public void isUserAuthorizedAllowedDeviceAllDetailsWrongDevice() throws DeviceAccessAuthorizationException, UserStoreException, PermissionManagementException {
-        PrivilegedCarbonContext.startTenantFlow();
-        PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(MultitenantConstants.SUPER_TENANT_ID, true);
-        PrivilegedCarbonContext.getThreadLocalCarbonContext().setUsername(NON_ADMIN_ALLOWED_USER);
-        Assert.assertFalse(deviceAccessAuthorizationService.isUserAuthorized(deviceIds.get(3),NON_ADMIN_ALLOWED_USER,new String[]{NON_ADMIN_PERMISSION}));
-        PrivilegedCarbonContext.endTenantFlow();
-    }
-
-    @Test
-    public void deviceIdAndPermission() throws DeviceAccessAuthorizationException {
-        PrivilegedCarbonContext.startTenantFlow();
-        PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(MultitenantConstants.SUPER_TENANT_ID, true);
-        PrivilegedCarbonContext.getThreadLocalCarbonContext().setUsername(NON_ADMIN_ALLOWED_USER);
-        DeviceAuthorizationResult deviceAuthorizationResult = deviceAccessAuthorizationService.
-                isUserAuthorized(deviceIds,new String[]{NON_ADMIN_PERMISSION});
-        Assert.assertEquals(deviceAuthorizationResult.getAuthorizedDevices().size(),2);
-        Assert.assertEquals(deviceAuthorizationResult.getUnauthorizedDevices().size(),3);
-        PrivilegedCarbonContext.endTenantFlow();
-    }
-
-    @Test
-    public void deviceIdUsernameAndPermission() throws DeviceAccessAuthorizationException {
-        PrivilegedCarbonContext.startTenantFlow();
-        PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(MultitenantConstants.SUPER_TENANT_ID, true);
-        PrivilegedCarbonContext.getThreadLocalCarbonContext().setUsername(NON_ADMIN_ALLOWED_USER);
-        DeviceAuthorizationResult deviceAuthorizationResult = deviceAccessAuthorizationService.
-                isUserAuthorized(deviceIds,NON_ADMIN_ALLOWED_USER,new String[]{NON_ADMIN_PERMISSION});
-        Assert.assertEquals(deviceAuthorizationResult.getAuthorizedDevices().size(),2);
-        Assert.assertEquals(deviceAuthorizationResult.getUnauthorizedDevices().size(),3);
-        PrivilegedCarbonContext.endTenantFlow();
-    }
-
-    public void initializeTestEnvironment() throws UserStoreException, GroupManagementException, RoleDoesNotExistException,
+    private void initializeTestEnvironment() throws UserStoreException, GroupManagementException, RoleDoesNotExistException,
             DeviceNotFoundException {
         //creating UI permission
         Permission adminPermission = new Permission(ADMIN_PERMISSION, CarbonConstants.UI_PERMISSION_ACTION);
@@ -245,9 +258,9 @@ public class DeviceAccessAuthorizationServiceTest extends BaseDeviceManagementTe
         UserStoreManager userStoreManager = DeviceManagementDataHolder.getInstance().getRealmService()
                 .getTenantUserRealm(MultitenantConstants.SUPER_TENANT_ID).getUserStoreManager();
         //Adding a non Admin User
-        userStoreManager.addUser(NON_ADMIN_ALLOWED_USER, "password", null, defaultUserClaims, null);
+        userStoreManager.addUser(NON_ADMIN_ALLOWED_USER, PASSWORD, null, defaultUserClaims, null);
         //Adding a normal user
-        userStoreManager.addUser(NORMAL_USER, "password", null, defaultUserClaims, null);
+        userStoreManager.addUser(NORMAL_USER, PASSWORD, null, defaultUserClaims, null);
         //Adding role with permission to Admin user
         userStoreManager.addRole(ADMIN_ROLE, new String[]{ADMIN_USER}, new Permission[]{adminPermission});
         //Adding role with permission to non Admin user
@@ -263,10 +276,6 @@ public class DeviceAccessAuthorizationServiceTest extends BaseDeviceManagementTe
         groupDeviceIds.add(deviceIds.get(0));
         groupDeviceIds.add(deviceIds.get(1));
         groupManagementProviderService.addDevices(groupId, groupDeviceIds);
-        //Rest of the devices
-        nonGroupDeviceIds.add(deviceIds.get(2));
-        nonGroupDeviceIds.add(deviceIds.get(3));
-        nonGroupDeviceIds.add(deviceIds.get(4));
     }
 
     private Map<String, String> buildDefaultUserClaims(String firstName, String lastName, String emailAddress) {
@@ -279,5 +288,4 @@ public class DeviceAccessAuthorizationServiceTest extends BaseDeviceManagementTe
         }
         return defaultUserClaims;
     }
-
 }

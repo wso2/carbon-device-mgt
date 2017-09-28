@@ -344,18 +344,22 @@ public class OperationManagerImpl implements OperationManager {
         PaginationResult paginationResult = null;
         List<Operation> operations = new ArrayList<>();
         String owner = request.getOwner();
+        try {
+            if (!DeviceManagerUtil.isDeviceExists(deviceId)) {
+                throw new OperationManagementException("Device not found for given device " +
+                        "Identifier:" + deviceId.getId() + " and given type : " +
+                        deviceId.getType());
+            }
+        } catch (DeviceManagementException e) {
+            throw new OperationManagementException("Error while checking the existence of the device identifier - "
+                    + deviceId.getId() + " of the device type - " + deviceId.getType(), e);
+        }
         if (!isActionAuthorized(deviceId)) {
             throw new OperationManagementException("User '" + getUser() + "' is not authorized to access the '" +
                     deviceId.getType() + "' device, which carries the identifier '" +
                     deviceId.getId() + "' of owner '" + owner + "'");
         }
-
         EnrolmentInfo enrolmentInfo = this.getEnrolmentInfo(deviceId, owner);
-        if (enrolmentInfo == null) {
-            throw new OperationManagementException("Device not found for given device " +
-                    "Identifier:" + deviceId.getId() + " and given type" +
-                    deviceId.getType());
-        }
         int enrolmentId = enrolmentInfo.getId();
         try {
             OperationManagementDAOFactory.openConnection();

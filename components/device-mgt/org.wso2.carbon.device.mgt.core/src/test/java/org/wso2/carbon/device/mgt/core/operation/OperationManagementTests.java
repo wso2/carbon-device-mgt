@@ -68,6 +68,7 @@ public class OperationManagementTests extends BaseDeviceManagementTest {
     private static final int NO_OF_DEVICES = 5;
     private static final String ADMIN_USER = "admin";
     private static final String NON_ADMIN_USER = "test";
+    private static final String INVALID_DEVICE = "ThisIsInvalid";
 
     private List<DeviceIdentifier> deviceIds = new ArrayList<>();
     private OperationManager operationMgtService;
@@ -113,7 +114,7 @@ public class OperationManagementTests extends BaseDeviceManagementTest {
         try {
             ArrayList<DeviceIdentifier> invalidDevices = new ArrayList<>();
             for (int i = 0; i < 3; i++) {
-                invalidDevices.add(new DeviceIdentifier("12345" + i, DEVICE_TYPE));
+                invalidDevices.add(new DeviceIdentifier(INVALID_DEVICE + i, DEVICE_TYPE));
             }
             invalidDevices.addAll(this.deviceIds);
             Activity activity = this.operationMgtService.addOperation(getOperation(new CommandOperation(),
@@ -459,6 +460,29 @@ public class OperationManagementTests extends BaseDeviceManagementTest {
         Assert.assertTrue(disEnrolled);
         List operations = this.operationMgtService.getOperations(deviceIds.get(0));
         Assert.assertTrue(operations == null);
+    }
+
+    @Test(dependsOnMethods = "getOperationForInactiveDevice", expectedExceptions = OperationManagementException.class)
+    public void getPaginatedOperationDeviceForInvalidDevice() throws DeviceManagementException, OperationManagementException {
+        PrivilegedCarbonContext.startTenantFlow();
+        PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(MultitenantConstants.SUPER_TENANT_ID, true);
+        PrivilegedCarbonContext.getThreadLocalCarbonContext().setUsername(ADMIN_USER);
+        try {
+            PaginationRequest request = new PaginationRequest(1, 2);
+            request.setDeviceType(DEVICE_TYPE);
+            request.setOwner(ADMIN_USER);
+            PaginationResult result = this.operationMgtService.getOperations(new DeviceIdentifier(INVALID_DEVICE, DEVICE_TYPE), request);
+            Assert.assertEquals(result.getRecordsFiltered(), 4);
+            Assert.assertEquals(result.getData().size(), 2);
+            Assert.assertEquals(result.getRecordsTotal(), 4);
+        } finally {
+            PrivilegedCarbonContext.endTenantFlow();
+        }
+    }
+
+    @Test(dependsOnMethods = "getOperationForInactiveDevice", expectedExceptions = OperationManagementException.class)
+    public void getPendingOperationDeviceForInvalidDevice() throws DeviceManagementException, OperationManagementException {
+       this.operationMgtService.getPendingOperations(new DeviceIdentifier(INVALID_DEVICE, DEVICE_TYPE));
     }
 
 }

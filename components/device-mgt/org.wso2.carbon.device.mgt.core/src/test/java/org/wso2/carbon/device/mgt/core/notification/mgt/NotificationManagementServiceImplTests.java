@@ -127,7 +127,7 @@ public class NotificationManagementServiceImplTests {
 
     @Test(dependsOnMethods = "addNotification", description = "This tests the updateNotification Method" +
             " and check whether it returns true ( got updated )")
-    public void updateNotification() throws Exception {
+    public void updateNotification() throws NotificationManagementException {
         for (int i = 1; i <= NO_OF_DEVICES; i++) {
             DeviceIdentifier testDeviceIdentifier = new DeviceIdentifier(DEVICE_ID_PREFIX + i, DEVICE_TYPE);
             Notification notification = TestDataHolder.getNotification(i, Notification.Status.CHECKED.toString(),

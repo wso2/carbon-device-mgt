@@ -305,12 +305,12 @@ public class DeviceTypeManagerServiceTest {
             DeviceTypeConfigurationException, JAXBException {
         ClassLoader classLoader = getClass().getClassLoader();
         URL resourceUrl = classLoader.getResource("arduino.xml");
-        File raspberrypiConfiguration = null;
+        File arduinoConfiguration = null;
         if (resourceUrl != null) {
-            raspberrypiConfiguration = new File(resourceUrl.getFile());
+            arduinoConfiguration = new File(resourceUrl.getFile());
         }
-        arduinoDeviceTypeConfiguration = Utils.getDeviceTypeConfiguration(raspberrypiConfiguration);
-        arduinoDeviceTypeManagerService = new DeviceTypeManagerService(new
-                DeviceTypeConfigIdentifier("arduino", "carbon.super"), arduinoDeviceTypeConfiguration);
+        arduinoDeviceTypeConfiguration = Utils.getDeviceTypeConfiguration(arduinoConfiguration);
+        arduinoDeviceTypeManagerService = new DeviceTypeManagerService(
+                new DeviceTypeConfigIdentifier("arduino", "carbon.super"), arduinoDeviceTypeConfiguration);
     }
 }

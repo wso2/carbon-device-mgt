@@ -130,11 +130,6 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     }
 
     @Override
-    public PlatformConfiguration getConfiguration() throws DeviceManagementException {
-        return null;
-    }
-
-    @Override
     public PlatformConfiguration getConfiguration(String deviceType) throws DeviceManagementException {
         DeviceManager dms =
                 pluginRepository.getDeviceManagementService(deviceType, this.getTenantId()).getDeviceManager();

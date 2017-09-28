@@ -22,7 +22,14 @@ import org.wso2.carbon.device.mgt.common.push.notification.NotificationStrategy;
 import org.wso2.carbon.device.mgt.common.push.notification.PushNotificationConfig;
 import org.wso2.carbon.device.mgt.common.push.notification.PushNotificationExecutionFailedException;
 
+import java.util.HashMap;
+
 public class TestNotificationStrategy implements NotificationStrategy {
+    private PushNotificationConfig pushNotificationConfig;
+
+    public TestNotificationStrategy(){
+       this.pushNotificationConfig = new PushNotificationConfig("TEST", true, new HashMap<>());
+    }
 
     @Override
     public void init() {
@@ -46,6 +53,6 @@ public class TestNotificationStrategy implements NotificationStrategy {
 
     @Override
     public PushNotificationConfig getConfig() {
-        return null;
+        return pushNotificationConfig;
     }
 }

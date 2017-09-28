@@ -510,8 +510,6 @@ public interface DeviceManagementProviderService {
 
     boolean enrollDevice(Device device) throws DeviceManagementException;
 
-    PlatformConfiguration getConfiguration() throws DeviceManagementException;
-
     boolean saveConfiguration(PlatformConfiguration configuration) throws DeviceManagementException;
 
     boolean disenrollDevice(DeviceIdentifier deviceId) throws DeviceManagementException;

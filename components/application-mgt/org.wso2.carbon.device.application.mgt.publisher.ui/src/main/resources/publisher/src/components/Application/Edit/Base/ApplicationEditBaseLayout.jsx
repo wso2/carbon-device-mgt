@@ -79,7 +79,12 @@ class ApplicationEdit extends Component {
         return (
             <div id="application-edit-base">
                 <Row id="application-edit-header">
-                    <Col>Application Name</Col>
+                    <Col xs="3">
+                        <a className="back-to-app"><i className="fw fw-left"></i></a>
+                    </Col>
+                    <Col>
+                        Application Name
+                    </Col>
                 </Row>
                 <Row id="application-edit-main-container">
                     <Col xs="3">

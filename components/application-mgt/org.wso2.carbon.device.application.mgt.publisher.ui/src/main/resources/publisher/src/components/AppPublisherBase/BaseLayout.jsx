@@ -20,12 +20,9 @@ import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {withRouter} from 'react-router-dom';
 import AuthHandler from "../../api/authHandler";
-import NotificationsIcon from 'material-ui/svg-icons/social/notifications';
-import ActionAccountCircle from 'material-ui/svg-icons/action/account-circle';
 import ApplicationCreate from '../Application/Create/ApplicationCreate';
-import {Button, Input, InputGroup, Popover, PopoverContent, PopoverTitle,} from 'reactstrap';
-import NotificationItem from '../UIComponents/Notifications/NotificationItem';
-
+import {Button, Col, Input, Row,} from 'reactstrap';
+import FloatingButton from "../UIComponents/FloatingButton/FloatingButton";
 
 /**
  * Base Layout:
@@ -43,6 +40,7 @@ class BaseLayout extends Component {
             openModal: false
         };
         this.logout = this.logout.bind(this);
+        this.closeModal = this.closeModal.bind(this);
     }
 
     handleApplicationClick() {
@@ -50,6 +48,7 @@ class BaseLayout extends Component {
     }
 
     handleApplicationCreateClick(event) {
+        console.log("dsfds");
         event.preventDefault();
         event.stopPropagation();
         this.setState({openModal: true});
@@ -67,6 +66,10 @@ class BaseLayout extends Component {
         AuthHandler.logout();
     }
 
+    closeModal() {
+        this.setState({openModal: false});
+    }
+
     render() {
         return (
             <div id="container">
@@ -76,36 +79,35 @@ class BaseLayout extends Component {
                             WSO2 IoT App Publisher
                         </span>
                         <div id="header-btn">
-                            <Button className="btn-notification" id="btn"><NotificationsIcon/></Button>
-                            <Button className="btn-account" id="btn"><ActionAccountCircle/></Button>
+                            <i className="fw fw-notification btn-header"></i>
+                            <i className="fw fw-user btn-header"></i>
                         </div>
                     </div>
                     <div id="search-box">
-                        <InputGroup>
-                            <Input
-                                id="search"
-                                name="search"
-                                placeholder={'Search for Applications'}
-                                onChange={(event) => console.log(event.target.value)}
-                            />
-                        </InputGroup>
+                        <i className="fw fw-search search-icon">
+                        </i>
+                        <Input
+                            id="search"
+                            name="search"
+                            placeholder={'Search for Applications'}
+                            onChange={(event) => console.log(event.target.value)}
+                        />
                     </div>
                     <div id="add-btn-container">
-                        <Button
-                            id="add-btn"
-                            onClick={this.handleApplicationCreateClick.bind(this)}
-                        >
-                            <h3>
-                                <strong>+</strong>
-                            </h3>
-                        </Button>
+                        <FloatingButton className="add-btn small" onClick={this.handleApplicationCreateClick.bind(this)}/>
                     </div>
                 </div>
 
+
                 <div id="application-content" style={this.state.style}>
-                    {this.props.children}
+                    <Row>
+                        <Col>
+                            {this.props.children}
+                        </Col>
+                    </Row>
+
                 </div>
-                <ApplicationCreate open={this.state.openModal}/>
+                <ApplicationCreate open={this.state.openModal} close={this.closeModal}/>
             </div>
         );
     }

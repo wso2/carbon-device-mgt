@@ -23,11 +23,10 @@
     z-index: 1; /* Stay on top */
     top: 5%;
     right: 0%;
-    background-color: #b5b5b5;
+    background-color: #ffffff;
     overflow-x: hidden; /* Disable horizontal scroll */
     padding-top: 60px; /* Place content 60px from the top */
     transition: 0.5s; /* 0.5 second transition effect to slide in the sidenav */
-    border: solid 1px black;
     box-shadow: -2px 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 

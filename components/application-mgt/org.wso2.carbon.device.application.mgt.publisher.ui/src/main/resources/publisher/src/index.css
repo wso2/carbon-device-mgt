@@ -54,8 +54,7 @@ body {
     height: 100px;
     width: 100%;
     margin: 0 10px 0 0;
-    background-color: #BDBDBD;
-    border-bottom: solid 2px;
+    background-color: #3b33bd;
     position: fixed; /* Set the navbar to fixed position */
     top: 0; /* Position the navbar at the top of the page */
     z-index: 2;
@@ -63,21 +62,17 @@ body {
 }
 
 #application-content {
-    max-height: 800px;
-    margin-top: 150px;
+    height: auto;
+    width: 80%;
+    margin: 150px auto;
+    box-shadow: -2px 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    padding: 10px 10px 10px 10px;
 }
 
-#add-btn {
-    border-radius: 50%;
-    border: solid 2px;
+.add-btn {
     position: absolute;
-    background-color: #BDBDBD;
-    left: 15px;
-    top: 75px;
-    cursor: pointer;
-    height: 50px;
-    width: 50px;
-    box-shadow: -2px 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    left:12%;
+    top: 35px;
 }
 
 .add-btn.div {
@@ -90,12 +85,14 @@ body {
     content: '\e601';
 }
 
-#btn {
-    background-color: #BDBDBD;
-    border-color: #BDBDBD;
+.btn-header {
+    margin-top: 10px;
+    margin-right: 20px;
+    color: white;
 }
 
 #header-text {
+    color: #ffffff;
     font-size: 25px;
     top: 10px;
     margin-left: 10px;
@@ -105,19 +102,45 @@ body {
     float: right;
 }
 
+.search-icon {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+}
+
 #search-box {
+    display: flex;
+    color: #a8a8a8;
+    position: relative;
     float: right;
+    top: 35px;
+    margin-right: 10px;
 }
 
 #search {
-    background-color: #BDBDBD;
-    left: 110px;
-    top: 20px;
+    position: relative;
+    color: white;
+    background-color: transparent;
+    left: 15px;
+    top: 0px;
     height: 25px;
     outline: none;
     border: none;
-    border-bottom: solid 1px black;
     border-radius: 0%;
+}
+
+.stepper-header {
+    width: 100%;
+    border-bottom: solid 1px cornflowerblue;
+    padding-bottom: 5px;
+    margin-bottom: 10px;
+}
+
+.platform-link-placeholder {
+    color: #888888;
+    float: right;
+    margin-right: 20px;
+    padding-bottom: 10px;
 }
 
 #application-list {

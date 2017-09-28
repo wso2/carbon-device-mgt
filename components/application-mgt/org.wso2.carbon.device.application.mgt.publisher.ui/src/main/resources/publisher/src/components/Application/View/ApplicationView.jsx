@@ -76,8 +76,15 @@ class ApplicationView extends Component {
                         </Col>
                     </Row>
                     <Row>
-                        <Col>Rating</Col>
-                        <Col>View in Store</Col>
+                        <Col>
+                            <i className="fw fw-star"></i>
+                            <i className="fw fw-star"></i>
+                            <i className="fw fw-star"></i>
+                            <i className="fw fw-star"></i>
+                        </Col>
+                        <Col>
+                            <a href="#">View in Store</a>
+                        </Col>
                     </Row>
                 </div>
                 <hr/>

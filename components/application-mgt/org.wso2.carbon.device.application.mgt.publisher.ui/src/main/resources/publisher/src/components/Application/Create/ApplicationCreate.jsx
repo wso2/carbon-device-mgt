@@ -21,7 +21,7 @@ import {withRouter} from 'react-router-dom';
 import AuthHandler from "../../../api/authHandler";
 import {Step1, Step2, Step3, Step4} from './CreateSteps/index';
 import ApplicationMgtApi from '../../../api/applicationMgtApi';
-import {Button, Modal, ModalBody, ModalFooter, ModalHeader} from 'reactstrap';
+import {Button, Col, Modal, ModalBody, ModalFooter, ModalHeader, Row} from 'reactstrap';
 
 /**
  * The App Create Component.
@@ -61,12 +61,12 @@ class ApplicationCreate extends Component {
     }
 
     close() {
-        this.setState({open: false, stepIndex: 0})
+        this.props.close();
     }
 
     handleBack() {
         let currentStep = this.state.stepIndex;
-        let nextStep = currentStep === 0 ? currentStep : currentStep - 1 ;
+        let nextStep = currentStep === 0 ? currentStep : currentStep - 1;
         this.setState({stepIndex: nextStep}, console.log(this.state.stepIndex));
     }
 
@@ -88,7 +88,7 @@ class ApplicationCreate extends Component {
     handleSubmit() {
         let stepData = this.state.stepData;
         let applicationCreationPromise = ApplicationMgtApi.createApplication(stepData);
-        applicationCreationPromise.then( response => {
+        applicationCreationPromise.then(response => {
                 this.handleYes();
             }
         ).catch(
@@ -216,10 +216,21 @@ class ApplicationCreate extends Component {
                        backdrop={'static'}>
                     <ModalHeader toggle={this.toggle}>Create Application</ModalHeader>
                     <ModalBody id="modal-body-content">
-                        {this.getStepContent(this.state.stepIndex)}
+                        <Row>
+                            <Col>
+                                <div className="stepper-header">
+
+                                </div>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col>
+                                {this.getStepContent(this.state.stepIndex)}
+                            </Col>
+                        </Row>
                     </ModalBody>
                     <ModalFooter>
-                        {this.state.stepIndex === 0? <div/> :
+                        {this.state.stepIndex === 0 ? <div/> :
                             <Button color="primary" onClick={this.handlePrev}>Back</Button>}
                         <Button color="secondary" onClick={this.close}>Cancel</Button>
                         {this.state.finished ?

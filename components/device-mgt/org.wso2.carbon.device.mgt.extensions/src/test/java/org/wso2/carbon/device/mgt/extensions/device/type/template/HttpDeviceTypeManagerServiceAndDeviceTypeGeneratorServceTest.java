@@ -106,6 +106,8 @@ public class HttpDeviceTypeManagerServiceAndDeviceTypeGeneratorServceTest {
                 "DeviceTypeGeneration for the " + "sample device type failed");
     }
 
+
+
     /**
      * To create a sample device type meta defintion.
      * @throws SAXException SAX Exception.

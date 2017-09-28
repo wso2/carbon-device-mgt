@@ -26,12 +26,12 @@ import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.PlatformConfiguration;
+import org.wso2.carbon.device.mgt.extensions.device.type.template.config.DataSource;
+import org.wso2.carbon.device.mgt.extensions.device.type.template.config.DeviceDetails;
 import org.wso2.carbon.device.mgt.extensions.device.type.template.config.DeviceTypeConfiguration;
+import org.wso2.carbon.device.mgt.extensions.device.type.template.config.Properties;
 import org.wso2.carbon.device.mgt.extensions.device.type.template.config.exception.DeviceTypeConfigurationException;
-import org.wso2.carbon.device.mgt.extensions.device.type.template.dao.DeviceDAODefinition;
-import org.wso2.carbon.device.mgt.extensions.device.type.template.dao.DeviceTypeDAOHandler;
-import org.wso2.carbon.device.mgt.extensions.device.type.template.dao.DeviceTypePluginDAOImpl;
-import org.wso2.carbon.device.mgt.extensions.device.type.template.dao.DeviceTypePluginDAOManager;
+import org.wso2.carbon.device.mgt.extensions.device.type.template.dao.*;
 import org.wso2.carbon.device.mgt.extensions.utils.Utils;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.xml.sax.SAXException;
@@ -50,7 +50,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This class tests the {@link DeviceTypeManager}
+ * This class tests the {@link DeviceTypeManager}.
  */
 public class DeviceTypeManagerTest {
     private DeviceTypeManager androidDeviceTypeManager;
@@ -224,5 +224,50 @@ public class DeviceTypeManagerTest {
         deviceTypeDAOHandlerField.set(deviceTypePluginDAOManager, deviceTypeDAOHandler);
 
         return deviceTypePluginDAOManager;
+    }
+
+    private void createPluginBasedDeviceTypeManager()
+            throws IOException, SQLException, NoSuchFieldException, IllegalAccessException {
+        String deviceType = "new_property_device_type";
+        ClassLoader classLoader = getClass().getClassLoader();
+        URL resourceUrl = classLoader.getResource("h2.sql");
+        File cdmDataScript = null;
+        javax.sql.DataSource dataSource = null;
+        if (resourceUrl != null) {
+            cdmDataScript = new File(resourceUrl.getFile());
+        }
+        if (cdmDataScript != null) {
+            dataSource = Utils.createDataTables("deviceType", cdmDataScript.getAbsolutePath());
+        }
+
+        Field datasourceField = DeviceTypeDAOHandler.class.getDeclaredField("dataSource");
+        datasourceField.setAccessible(true);
+        Field currentConnection = DeviceTypeDAOHandler.class.getDeclaredField("currentConnection");
+        currentConnection.setAccessible(true);
+
+        DeviceDetails deviceDetails = new DeviceDetails();
+
+        List<String> propertyList = new ArrayList<>();
+        propertyList.add("custom_property");
+        propertyList.add("custom_property");
+        Properties properties = new Properties();
+
+        DeviceTypeDAOHandler deviceTypeDAOHandler = Mockito
+                .mock(DeviceTypeDAOHandler.class, Mockito.CALLS_REAL_METHODS);
+        datasourceField.set(deviceTypeDAOHandler, dataSource);
+        currentConnection.set(deviceTypeDAOHandler, new ThreadLocal<Connection>());
+
+        PluginDAO deviceTypePluginDAO = new PropertyBasedPluginDAOImpl(deviceDetails, deviceTypeDAOHandler, deviceType);
+
+        DeviceTypePluginDAOManager deviceTypePluginDAOManager = Mockito
+                .mock(DeviceTypePluginDAOManager.class, Mockito.CALLS_REAL_METHODS);
+        Field deviceTypePluginDAOField = DeviceTypePluginDAOManager.class.getDeclaredField("deviceTypePluginDAO");
+        deviceTypePluginDAOField.setAccessible(true);
+        Field deviceTypeDAOHandlerField = DeviceTypePluginDAOManager.class.getDeclaredField("deviceTypeDAOHandler");
+        deviceTypeDAOHandlerField.setAccessible(true);
+        deviceTypePluginDAOField.set(deviceTypePluginDAOManager, deviceTypePluginDAO);
+        deviceTypeDAOHandlerField.set(deviceTypePluginDAOManager, deviceTypeDAOHandler);
+
+
     }
 }

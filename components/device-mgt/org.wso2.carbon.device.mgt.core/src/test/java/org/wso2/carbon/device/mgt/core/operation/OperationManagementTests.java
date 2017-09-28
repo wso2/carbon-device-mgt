@@ -425,22 +425,7 @@ public class OperationManagementTests {
                 deviceIds.get(0).getType());
     }
 
-    @Test(dependsOnMethods = "updateOperation")
-    public void getActivitiesUpdatedAfter() throws OperationManagementException, ParseException {
-        List<Activity> operations = this.operationMgtService.getActivitiesUpdatedAfter
-                (this.commandActivityBeforeUpdatedTimestamp / 1000);
-        Assert.assertTrue(operations != null && operations.size() == 1,
-                "The operations updated after the created should be 1");
-        Activity operation = operations.get(0);
-        Assert.assertTrue(operation.getActivityStatus() != null && operation.getActivityStatus().size() == 1,
-                "The operation should be having the activity status of atleast one device");
-        Assert.assertEquals(operation.getActivityStatus().get(0).getDeviceIdentifier().getId(),
-                deviceIds.get(0).getId());
-        Assert.assertEquals(operation.getActivityStatus().get(0).getDeviceIdentifier().getType(),
-                deviceIds.get(0).getType());
-    }
-
-    @Test(dependsOnMethods = "getActivitiesUpdatedAfter")
+    @Test(dependsOnMethods = "getOperationUpdatedAfterWithLimitAndOffset")
     public void getActivityCountUpdatedAfter() throws OperationManagementException, ParseException {
         int activityCount = this.operationMgtService.getActivityCountUpdatedAfter
                 (this.commandActivityBeforeUpdatedTimestamp / 1000);

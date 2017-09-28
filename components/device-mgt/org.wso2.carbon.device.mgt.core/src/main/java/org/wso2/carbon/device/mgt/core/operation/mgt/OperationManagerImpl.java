@@ -741,7 +741,11 @@ public class OperationManagerImpl implements OperationManager {
         if (operationId == 0) {
             throw new IllegalArgumentException("Operation ID cannot be null or zero (0).");
         }
-
+        if (!isActionAuthorized(deviceId)) {
+            throw new OperationManagementException("User '" + getUser() + "' is not authorized to access the '" +
+                    deviceId.getType() + "' device, which carries the identifier '" +
+                    deviceId.getId() + "'");
+        }
         Device device = this.getDevice(deviceId);
         try {
             OperationManagementDAOFactory.openConnection();
@@ -751,21 +755,6 @@ public class OperationManagerImpl implements OperationManager {
         } catch (OperationManagementDAOException e) {
             throw new OperationManagementException("Error occurred while retrieving the operation with activity Id '" +
                     activity + " and device Id: " + deviceId.getId(), e);
-        } finally {
-            OperationManagementDAOFactory.closeConnection();
-        }
-    }
-
-    @Override
-    public List<Activity> getActivitiesUpdatedAfter(long timestamp) throws OperationManagementException {
-        try {
-            OperationManagementDAOFactory.openConnection();
-            return operationDAO.getActivitiesUpdatedAfter(timestamp);
-        } catch (SQLException e) {
-            throw new OperationManagementException("Error occurred while opening a connection to the data source.", e);
-        } catch (OperationManagementDAOException e) {
-            throw new OperationManagementException("Error occurred while getting the activity list changed after a " +
-                    "given time.", e);
         } finally {
             OperationManagementDAOFactory.closeConnection();
         }

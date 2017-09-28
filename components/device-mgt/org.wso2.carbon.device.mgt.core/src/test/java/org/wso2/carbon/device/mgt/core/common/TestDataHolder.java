@@ -18,8 +18,10 @@ package org.wso2.carbon.device.mgt.core.common;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
+import org.wso2.carbon.device.mgt.common.PaginationRequest;
 import org.wso2.carbon.device.mgt.common.app.mgt.Application;
 import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroup;
+import org.wso2.carbon.device.mgt.common.notification.mgt.Notification;
 import org.wso2.carbon.device.mgt.common.notification.mgt.Notification;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 
@@ -53,17 +55,28 @@ public class TestDataHolder {
         return device;
     }
 
-    public static Notification getNotification(int notificationId, String status, String deviceId, String deviceName,
-                                        int operationId, String deviceType){
+    public static Notification getNotification(int notificationId, String status, String deviceId,
+                                               String description, String deviceName, int operationId,
+                                               String deviceType) {
         Notification notification = new Notification();
         notification.setNotificationId(notificationId);
         notification.setStatus(status);
         notification.setDeviceIdentifier(deviceId);
-        notification.setDescription("test description");
+        notification.setDescription(description);
         notification.setDeviceName(deviceName);
         notification.setOperationId(operationId);
         notification.setDeviceType(deviceType);
         return notification;
+    }
+
+    public static Device generateDummyDeviceData(String deviceIdentifier, String deviceType,
+                                                 EnrolmentInfo enrolmentInfo) {
+        Device device = new Device();
+        device.setEnrolmentInfo(enrolmentInfo);
+        device.setDescription("Test Description");
+        device.setDeviceIdentifier(deviceIdentifier);
+        device.setType(deviceType);
+        return device;
     }
 
     public static List<Device> generateDummyDeviceData(List<DeviceIdentifier> deviceIds) {

@@ -31,6 +31,8 @@ import org.wso2.carbon.device.mgt.common.OperationMonitoringTaskConfig;
 import org.wso2.carbon.device.mgt.common.ProvisioningConfig;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.ConfigurationEntry;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.PlatformConfiguration;
+import org.wso2.carbon.device.mgt.common.license.mgt.License;
+import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManagementException;
 import org.wso2.carbon.device.mgt.common.push.notification.PushNotificationConfig;
 import org.wso2.carbon.device.mgt.extensions.device.type.template.config.DeviceStatusTaskConfiguration;
 import org.wso2.carbon.device.mgt.extensions.device.type.template.config.DeviceTypeConfiguration;
@@ -40,6 +42,7 @@ import org.wso2.carbon.device.mgt.extensions.device.type.template.config.PushNot
 import org.wso2.carbon.device.mgt.extensions.device.type.template.config.TaskConfiguration;
 import org.wso2.carbon.device.mgt.extensions.device.type.template.config.exception.DeviceTypeConfigurationException;
 import org.wso2.carbon.device.mgt.extensions.utils.Utils;
+import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.xml.sax.SAXException;
 
 import javax.xml.bind.JAXBException;
@@ -63,6 +66,8 @@ public class DeviceTypeManagerServiceTest {
     private DeviceTypeConfiguration androidDeviceConfiguration;
     private DeviceTypeManagerService rasberrypiDeviceTypeManagerService;
     private DeviceTypeConfiguration rasberrypiDeviceConfiguration;
+    private DeviceTypeManagerService arduinoDeviceTypeManagerService;
+    private DeviceTypeConfiguration arduinoDeviceTypeConfiguration;
     private Method setProvisioningConfig;
     private Method setOperationMonitoringConfig;
     private Method setDeviceStatusTaskPluginConfig;
@@ -73,7 +78,9 @@ public class DeviceTypeManagerServiceTest {
     @BeforeTest
     public void setup() throws NoSuchMethodException, SAXException, JAXBException, ParserConfigurationException,
             DeviceTypeConfigurationException, IOException, NoSuchFieldException, IllegalAccessException,
-            DeviceManagementException {
+            DeviceManagementException, RegistryException {
+        ClassLoader classLoader = getClass().getClassLoader();
+
         setProvisioningConfig = DeviceTypeManagerService.class
                 .getDeclaredMethod("setProvisioningConfig", String.class, DeviceTypeConfiguration.class);
         setProvisioningConfig.setAccessible(true);
@@ -117,7 +124,6 @@ public class DeviceTypeManagerServiceTest {
         operationMonitoringConfigs.set(rasberrypiDeviceTypeManagerService, new OperationMonitoringTaskConfig());
         initialOperationConfig.set(rasberrypiDeviceTypeManagerService, new InitialOperationConfig());
 
-        ClassLoader classLoader = getClass().getClassLoader();
         URL resourceUrl = classLoader.getResource("android.xml");
 
         File androidConfiguration = null;
@@ -143,14 +149,10 @@ public class DeviceTypeManagerServiceTest {
 
         configurationEntries.add(configurationEntry);
         platformConfiguration.setConfiguration(configurationEntries);
-
-        if (androidConfiguration != null) {
-            // This is needed for DeviceTypeManager Initialization
-            System.setProperty("carbon.home", androidConfiguration.getAbsolutePath());
-        }
         DeviceTypeManager deviceTypeManager = Mockito.mock(DeviceTypeManager.class);
         when(deviceTypeManager.getConfiguration()).thenReturn(platformConfiguration);
         deviceManager.set(androidDeviceTypeManagerService, deviceTypeManager);
+        setupArduinoDeviceType();
     }
 
     @Test(description = "This test cases tests the retrieval of provisioning config after providing the configurations "
@@ -164,7 +166,7 @@ public class DeviceTypeManagerServiceTest {
         ProvisioningConfig provisioningConfig = androidDeviceTypeManagerService.getProvisioningConfig();
         Assert.assertEquals(provisioningConfig.isSharedWithAllTenants(),
                 androidDeviceConfiguration.getProvisioningConfig().isSharedWithAllTenants(),
-                "Provisioning configs " + "are not correctly set as per the configuration file provided");
+                "Provisioning configs are not correctly set as per the configuration file provided");
 
         setProvisioningConfig.invoke(rasberrypiDeviceTypeManagerService, MultitenantConstants.SUPER_TENANT_DOMAIN_NAME,
                 rasberrypiDeviceConfiguration);
@@ -272,5 +274,43 @@ public class DeviceTypeManagerServiceTest {
         Assert.assertEquals(rasberrypiDeviceTypeManagerService.getPullNotificationSubscriber() != null,
                 rasberrypiDeviceConfiguration.getPullNotificationSubscriberConfig() != null);
 
+    }
+
+    @Test (description = "This test case tests the addition and retrieval of the license")
+    public void testGetLicense () throws LicenseManagementException {
+        License license = arduinoDeviceTypeManagerService.getDeviceManager().getLicense("en_Us");
+        Assert.assertEquals(license.getText(), arduinoDeviceTypeConfiguration.getLicense().getText(),
+                "The retrieved" + " license is different from added license");
+        license.setLanguage("eu");
+        license.setText("This is a EU License");
+        arduinoDeviceTypeManagerService.getDeviceManager().addLicense(license);
+        License newLicense = arduinoDeviceTypeManagerService.getDeviceManager().getLicense("eu");
+        Assert.assertEquals(newLicense.getText(), license.getText(),
+                "The retrieved license is different from added license");
+        Assert.assertNull(arduinoDeviceTypeManagerService.getDeviceManager().getLicense("tn"),
+                "License is retrieved for a non-existing language code");
+    }
+
+    /**
+     * Setting the Arduino Device Type
+     * @throws RegistryException Registry Exception
+     * @throws IOException IO Exception
+     * @throws SAXException SAX Exception
+     * @throws ParserConfigurationException Parser Configuration Exception
+     * @throws DeviceTypeConfigurationException Device Type Configuration Exception
+     * @throws JAXBException JAXB Exception
+     */
+    private void setupArduinoDeviceType()
+            throws RegistryException, IOException, SAXException, ParserConfigurationException,
+            DeviceTypeConfigurationException, JAXBException {
+        ClassLoader classLoader = getClass().getClassLoader();
+        URL resourceUrl = classLoader.getResource("arduino.xml");
+        File raspberrypiConfiguration = null;
+        if (resourceUrl != null) {
+            raspberrypiConfiguration = new File(resourceUrl.getFile());
+        }
+        arduinoDeviceTypeConfiguration = Utils.getDeviceTypeConfiguration(raspberrypiConfiguration);
+        arduinoDeviceTypeManagerService = new DeviceTypeManagerService(new
+                DeviceTypeConfigIdentifier("arduino", "carbon.super"), arduinoDeviceTypeConfiguration);
     }
 }

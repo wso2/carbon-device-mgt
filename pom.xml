@@ -1538,6 +1538,24 @@
                 <version>${power.mock.version}</version>
                 <scope>test</scope>
             </dependency>
+            <dependency>
+                <groupId>commons-dbcp.wso2</groupId>
+                <artifactId>commons-dbcp</artifactId>
+                <version>${commons.dbcp.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.governance</groupId>
+                <artifactId>org.wso2.carbon.governance.registry.extensions</artifactId>
+                <version>${carbon.governance.version}</version>
+                <scope>test</scope>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.slf4j</groupId>
+                        <artifactId>jcl-over-slf4j</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -1968,6 +1986,8 @@
         <jacoco.ant.verision>0.7.5.201505241946</jacoco.ant.verision>
         <ant.contrib.version>1.0b3</ant.contrib.version>
         <power.mock.version>1.7.0</power.mock.version>
+        <commons.dbcp.version>1.4.0.wso2v1</commons.dbcp.version>
+
     </properties>
 
 </project>

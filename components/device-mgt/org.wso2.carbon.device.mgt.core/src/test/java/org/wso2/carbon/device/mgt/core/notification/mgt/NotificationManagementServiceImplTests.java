@@ -25,6 +25,8 @@ import org.testng.annotations.Test;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.EntityDoesNotExistException;
+import org.wso2.carbon.device.mgt.common.PaginationRequest;
+import org.wso2.carbon.device.mgt.common.PaginationResult;
 import org.wso2.carbon.device.mgt.common.notification.mgt.Notification;
 import org.wso2.carbon.device.mgt.common.notification.mgt.NotificationManagementException;
 import org.wso2.carbon.device.mgt.core.TestDeviceManagementService;
@@ -170,5 +172,22 @@ public class NotificationManagementServiceImplTests {
         Assert.assertEquals(returnedNotifications.size(), NO_OF_NOTIFICATIONS);
     }
 
+    @Test(dependsOnMethods = "addNotification", description = "this tests for getAllNotification method by passing " +
+            "pagination request and validates the no. of total records and filtered records. ")
+    public void getAllNotificationsWithPaginationRequest() throws NotificationManagementException {
+        PaginationRequest request = new PaginationRequest(1, 2);
+        PaginationResult result = notificationManagementService.getAllNotifications(request);
+        Assert.assertEquals(result.getRecordsFiltered(), NO_OF_NOTIFICATIONS);
+        Assert.assertEquals(result.getRecordsTotal(), NO_OF_NOTIFICATIONS);
+    }
+
+    @Test(dependsOnMethods = "updateNotificationStatus", description = "this tests for getAllNotification method by" +
+            " passing pagination request & status and validates the no. of total records and filtered records. ")
+    public void getAllNotificationsWithPaginationRequestAndStatus() throws NotificationManagementException {
+        PaginationRequest request = new PaginationRequest(1, 2);
+        PaginationResult result = notificationManagementService.getNotificationsByStatus(Notification.Status.CHECKED, request);
+        Assert.assertEquals(result.getRecordsFiltered(), NO_OF_NOTIFICATIONS);
+        Assert.assertEquals(result.getRecordsTotal(), NO_OF_NOTIFICATIONS);
+    }
 }
 

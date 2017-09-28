@@ -36,28 +36,17 @@ import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManager;
 import org.wso2.carbon.device.mgt.common.push.notification.NotificationStrategy;
 import org.wso2.carbon.device.mgt.core.DeviceManagementConstants;
 import org.wso2.carbon.device.mgt.core.TestDeviceManagementService;
-import org.wso2.carbon.device.mgt.core.authorization.DeviceAccessAuthorizationServiceImpl;
+import org.wso2.carbon.device.mgt.core.common.BaseDeviceManagementTest;
 import org.wso2.carbon.device.mgt.core.common.TestDataHolder;
-import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
-import org.wso2.carbon.device.mgt.core.internal.DeviceManagementServiceComponent;
 import org.wso2.carbon.device.mgt.core.operation.mgt.CommandOperation;
 import org.wso2.carbon.device.mgt.core.operation.mgt.ConfigOperation;
 import org.wso2.carbon.device.mgt.core.operation.mgt.OperationManagerImpl;
 import org.wso2.carbon.device.mgt.core.operation.mgt.PolicyOperation;
 import org.wso2.carbon.device.mgt.core.operation.mgt.ProfileOperation;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
-import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderServiceImpl;
-import org.wso2.carbon.device.mgt.core.service.GroupManagementProviderServiceImpl;
-import org.wso2.carbon.registry.core.config.RegistryContext;
-import org.wso2.carbon.registry.core.exceptions.RegistryException;
-import org.wso2.carbon.registry.core.internal.RegistryDataHolder;
-import org.wso2.carbon.registry.core.jdbc.realm.InMemoryRealmService;
-import org.wso2.carbon.registry.core.service.RegistryService;
-import org.wso2.carbon.user.core.service.RealmService;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 
-import java.io.InputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -67,7 +56,7 @@ import java.util.List;
 /**
  * This is the testcase which covers the methods from {@link OperationManager}
  */
-public class OperationManagementTests {
+public class OperationManagementTests extends BaseDeviceManagementTest {
 
     private static final String DEVICE_TYPE = "OP_TEST_TYPE";
     private static final String DEVICE_ID_PREFIX = "OP-TEST-DEVICE-ID-";
@@ -91,8 +80,8 @@ public class OperationManagementTests {
             deviceIds.add(new DeviceIdentifier(DEVICE_ID_PREFIX + i, DEVICE_TYPE));
         }
         List<Device> devices = TestDataHolder.generateDummyDeviceData(this.deviceIds);
-        DeviceManagementDataHolder.getInstance().setDeviceTaskManagerService(null);
-        DeviceManagementProviderService deviceMgtService = DeviceManagementDataHolder.getInstance().getDeviceManagementProvider();
+        DeviceManagementProviderService deviceMgtService = DeviceManagementDataHolder.getInstance().
+                getDeviceManagementProvider();
         deviceMgtService.registerDeviceType(new TestDeviceManagementService(DEVICE_TYPE,
                 MultitenantConstants.SUPER_TENANT_DOMAIN_NAME));
         for (Device device : devices) {
@@ -108,27 +97,59 @@ public class OperationManagementTests {
         this.operationMgtService = new OperationManagerImpl(DEVICE_TYPE, notificationStrategy);
     }
 
-
-
     @Test
-    public void addCommandOperation() throws DeviceManagementException, OperationManagementException, InvalidDeviceException {
-        this.commandActivity = this.operationMgtService.addOperation(getOperation(new CommandOperation(), Operation.Type.COMMAND, COMMAND_OPERATON_CODE),
+    public void addCommandOperation() throws DeviceManagementException, OperationManagementException,
+            InvalidDeviceException {
+        this.commandActivity = this.operationMgtService.addOperation(
+                getOperation(new CommandOperation(), Operation.Type.COMMAND, COMMAND_OPERATON_CODE),
                 this.deviceIds);
         validateOperationResponse(this.commandActivity, ActivityStatus.Status.PENDING);
     }
 
+    @Test
+    public void addCommandOperationInvalidDeviceIds() throws DeviceManagementException, OperationManagementException,
+            InvalidDeviceException {
+        startTenantFlowAsNonAdmin();
+        try {
+            ArrayList<DeviceIdentifier> invalidDevices = new ArrayList<>();
+            for (int i = 0; i < 3; i++) {
+                invalidDevices.add(new DeviceIdentifier("12345" + i, DEVICE_TYPE));
+            }
+            invalidDevices.addAll(this.deviceIds);
+            Activity activity = this.operationMgtService.addOperation(getOperation(new CommandOperation(),
+                    Operation.Type.COMMAND, COMMAND_OPERATON_CODE), invalidDevices);
+            Assert.assertEquals(activity.getActivityStatus().size(), invalidDevices.size(),
+                    "The operation response for add operation only have - " + activity.getActivityStatus().size());
+            for (int i = 0; i < activity.getActivityStatus().size(); i++) {
+                ActivityStatus status = activity.getActivityStatus().get(i);
+                if (i < 3) {
+                    Assert.assertEquals(status.getStatus(), ActivityStatus.Status.INVALID);
+                } else {
+                    Assert.assertEquals(status.getStatus(), ActivityStatus.Status.UNAUTHORIZED);
+                }
+            }
+        } finally {
+            PrivilegedCarbonContext.endTenantFlow();
+        }
+    }
+
+
     @Test(expectedExceptions = InvalidDeviceException.class)
-    public void addEmptyDevicesCommandOperation() throws DeviceManagementException, OperationManagementException, InvalidDeviceException {
-        this.operationMgtService.addOperation(getOperation(new CommandOperation(), Operation.Type.COMMAND, COMMAND_OPERATON_CODE),
+    public void addEmptyDevicesCommandOperation() throws DeviceManagementException, OperationManagementException,
+            InvalidDeviceException {
+        this.operationMgtService.addOperation(getOperation(new CommandOperation(), Operation.Type.COMMAND,
+                COMMAND_OPERATON_CODE),
                 new ArrayList<>());
     }
 
     @Test(expectedExceptions = InvalidDeviceException.class)
-    public void addNonInitializedDevicesCommandOperation() throws DeviceManagementException, OperationManagementException, InvalidDeviceException {
+    public void addNonInitializedDevicesCommandOperation() throws DeviceManagementException, OperationManagementException,
+            InvalidDeviceException {
         DeviceIdentifier deviceIdentifier = new DeviceIdentifier();
         List<DeviceIdentifier> deviceIdentifiers = new ArrayList<>();
         deviceIdentifiers.add(deviceIdentifier);
-        this.operationMgtService.addOperation(getOperation(new CommandOperation(), Operation.Type.COMMAND, COMMAND_OPERATON_CODE),
+        this.operationMgtService.addOperation(getOperation(new CommandOperation(), Operation.Type.COMMAND,
+                COMMAND_OPERATON_CODE),
                 deviceIdentifiers);
     }
 
@@ -136,7 +157,8 @@ public class OperationManagementTests {
     public void addNonAdminUserDevicesCommandOperation() throws DeviceManagementException, OperationManagementException,
             InvalidDeviceException {
         startTenantFlowAsNonAdmin();
-        Activity activity = this.operationMgtService.addOperation(getOperation(new CommandOperation(), Operation.Type.COMMAND, COMMAND_OPERATON_CODE),
+        Activity activity = this.operationMgtService.addOperation(getOperation(new CommandOperation(),
+                Operation.Type.COMMAND, COMMAND_OPERATON_CODE),
                 deviceIds);
         PrivilegedCarbonContext.endTenantFlow();
         validateOperationResponse(activity, ActivityStatus.Status.UNAUTHORIZED);
@@ -149,27 +171,33 @@ public class OperationManagementTests {
     }
 
     @Test(dependsOnMethods = "addCommandOperation")
-    public void addPolicyOperation() throws DeviceManagementException, OperationManagementException, InvalidDeviceException {
-        Activity activity = this.operationMgtService.addOperation(getOperation(new PolicyOperation(), Operation.Type.POLICY, POLICY_OPERATION_CODE),
+    public void addPolicyOperation() throws DeviceManagementException, OperationManagementException,
+            InvalidDeviceException {
+        Activity activity = this.operationMgtService.addOperation(getOperation(new PolicyOperation(),
+                Operation.Type.POLICY, POLICY_OPERATION_CODE),
                 this.deviceIds);
         validateOperationResponse(activity, ActivityStatus.Status.PENDING);
     }
 
     @Test(dependsOnMethods = "addPolicyOperation")
-    public void addConfigOperation() throws DeviceManagementException, OperationManagementException, InvalidDeviceException {
-        Activity activity = this.operationMgtService.addOperation(getOperation(new ConfigOperation(), Operation.Type.CONFIG, CONFIG_OPERATION_CODE),
+    public void addConfigOperation() throws DeviceManagementException, OperationManagementException,
+            InvalidDeviceException {
+        Activity activity = this.operationMgtService.addOperation(getOperation(new ConfigOperation(),
+                Operation.Type.CONFIG, CONFIG_OPERATION_CODE),
                 this.deviceIds);
         validateOperationResponse(activity, ActivityStatus.Status.PENDING);
     }
 
     @Test(dependsOnMethods = "addConfigOperation")
-    public void addProfileOperation() throws DeviceManagementException, OperationManagementException, InvalidDeviceException {
-        Activity activity = this.operationMgtService.addOperation(getOperation(new ProfileOperation(), Operation.Type.PROFILE, PROFILE_OPERATION_CODE),
+    public void addProfileOperation() throws DeviceManagementException, OperationManagementException,
+            InvalidDeviceException {
+        Activity activity = this.operationMgtService.addOperation(getOperation(new ProfileOperation(),
+                Operation.Type.PROFILE, PROFILE_OPERATION_CODE),
                 this.deviceIds);
         validateOperationResponse(activity, ActivityStatus.Status.PENDING);
     }
 
-    private Operation getOperation(Operation operation, Operation.Type type, String code) {
+    static Operation getOperation(Operation operation, Operation.Type type, String code) {
         String date = new SimpleDateFormat(DATE_FORMAT_NOW).format(new Date());
         operation.setCreatedTimeStamp(date);
         operation.setType(type);
@@ -178,7 +206,7 @@ public class OperationManagementTests {
     }
 
     private void validateOperationResponse(Activity activity, ActivityStatus.Status expectedStatus) {
-        Assert.assertEquals(activity.getActivityStatus().size(), NO_OF_DEVICES, "The operation reponse for add operation only have - " +
+        Assert.assertEquals(activity.getActivityStatus().size(), NO_OF_DEVICES, "The operation response for add operation only have - " +
                 activity.getActivityStatus().size());
         for (ActivityStatus status : activity.getActivityStatus()) {
             Assert.assertEquals(status.getStatus(), expectedStatus);
@@ -422,6 +450,15 @@ public class OperationManagementTests {
     @Test
     public void getNotificationStrategy() {
         Assert.assertTrue(this.operationMgtService.getNotificationStrategy() != null);
+    }
+
+    @Test(dependsOnMethods = {"getOperationByActivityIdAndDevice", "getOperationByActivityIdAndDeviceAsNonAdmin"})
+    public void getOperationForInactiveDevice() throws DeviceManagementException, OperationManagementException {
+        boolean disEnrolled = DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().
+                disenrollDevice(deviceIds.get(0));
+        Assert.assertTrue(disEnrolled);
+        List operations = this.operationMgtService.getOperations(deviceIds.get(0));
+        Assert.assertTrue(operations == null);
     }
 
 }

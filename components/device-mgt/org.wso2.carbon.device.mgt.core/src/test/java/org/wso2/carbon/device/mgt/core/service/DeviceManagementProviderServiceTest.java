@@ -23,7 +23,6 @@ import org.testng.annotations.Test;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
-import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
 import org.wso2.carbon.device.mgt.core.TestDeviceManagementService;
 import org.wso2.carbon.device.mgt.core.authorization.DeviceAccessAuthorizationServiceImpl;
 import org.wso2.carbon.device.mgt.core.common.BaseDeviceManagementTest;
@@ -40,7 +39,6 @@ import org.wso2.carbon.user.core.service.RealmService;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 
 import java.io.InputStream;
-import java.util.Date;
 
 public class DeviceManagementProviderServiceTest extends BaseDeviceManagementTest {
 

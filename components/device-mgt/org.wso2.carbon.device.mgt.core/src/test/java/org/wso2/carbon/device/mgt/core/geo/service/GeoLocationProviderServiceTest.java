@@ -132,7 +132,8 @@ public class GeoLocationProviderServiceTest {
         String result;
         result = geoLocationProviderServiceImpl.getSpeedAlerts(getDeviceIdentifier());
         Assert.assertNotNull(result);
-        Assert.assertEquals(result, "{'speedLimit':"+SAMPLE_SPEED_ALERT_VALUE+"}");
+        Assert.assertEquals(result, "{'speedLimit':" +
+                SAMPLE_SPEED_ALERT_VALUE + "}");
     }
 
     @Test(dependsOnMethods = "createGeoTrafficAlert")
@@ -142,7 +143,7 @@ public class GeoLocationProviderServiceTest {
         Assert.assertNotNull(geoFences);
         GeoFence geoFenceNode = geoFences.get(0);
         Assert.assertEquals(geoFenceNode.getGeoJson(), "{\n" +
-                "  \"geoFenceGeoJSON\": \"" + SAMPLE_GEO_JSON + "\"\n" +
+                "  \"" + DeviceManagementConstants.GeoServices.GEO_FENCE_GEO_JSON + "\": \"" + SAMPLE_GEO_JSON + "\"\n" +
                 "}");
     }
 
@@ -199,7 +200,7 @@ public class GeoLocationProviderServiceTest {
         alert.setDeviceId(DEVICE_ID);
         alert.setCepAction("CEP_ACTION");
         alert.setParseData("{\n" +
-                "  \"geoFenceGeoJSON\": \""+SAMPLE_GEO_JSON+"\"\n" +
+                "  \" " + DeviceManagementConstants.GeoServices.GEO_FENCE_GEO_JSON + "\": \"" + SAMPLE_GEO_JSON + "\"\n" +
                 "}");
         alert.setCustomName(SAMPLE_AREA_NAME);
         alert.setExecutionPlan("EXECUTION_PLAN");
@@ -213,7 +214,7 @@ public class GeoLocationProviderServiceTest {
         alert.setProximityTime(SAMPLE_PROXIMITY_TIME);
         alert.setProximityDistance(SAMPLE_PROXIMITY_DISATANCE);
         alert.setParseData("{\n" +
-                "  \"geoFenceGeoJSON\": \""+SAMPLE_GEO_JSON+"\"\n" +
+                "  \" " + DeviceManagementConstants.GeoServices.GEO_FENCE_GEO_JSON + "\": \"" + SAMPLE_GEO_JSON + "\"\n" +
                 "}");
         return alert;
     }
@@ -221,8 +222,8 @@ public class GeoLocationProviderServiceTest {
     private Alert getSpeedAlert() {
         Alert alert =  getTestAlert();
         alert.setParseData("{\n" +
-                "  \"geoFenceGeoJSON\": \"" + SAMPLE_GEO_JSON + "\",\n" +
-                "  \"speedAlertValue\": \"" + SAMPLE_SPEED_ALERT_VALUE + "\"\n" +
+                "  \"" + DeviceManagementConstants.GeoServices.GEO_FENCE_GEO_JSON + "\": \"" + SAMPLE_GEO_JSON + "\",\n" +
+                "  \"" + DeviceManagementConstants.GeoServices.SPEED_ALERT_VALUE + "\": \"" + SAMPLE_SPEED_ALERT_VALUE + "\"\n" +
                 "}");
         return alert;
     }
@@ -235,7 +236,7 @@ public class GeoLocationProviderServiceTest {
         alert.setStationeryTime(SAMPLE_STATIONARY_TIME);
         alert.setFluctuationRadius(SAMPLE_FLUCTUATION_RADIUS);
         alert.setParseData("{\n" +
-                "  \"geoFenceGeoJSON\": \"" + SAMPLE_GEO_JSON + "\"\n" +
+                "  \"" + DeviceManagementConstants.GeoServices.GEO_FENCE_GEO_JSON + "\": \"" + SAMPLE_GEO_JSON + "\"\n" +
                 "}");
         return alert;
     }
@@ -244,7 +245,7 @@ public class GeoLocationProviderServiceTest {
         Alert alert = new Alert();
         alert.setDeviceId(DEVICE_ID);
         alert.setParseData("{\n" +
-                "  \"geoFenceGeoJSON\": \"" + SAMPLE_GEO_JSON + "\"\n" +
+                "  \"" + DeviceManagementConstants.GeoServices.GEO_FENCE_GEO_JSON +"\": \"" + SAMPLE_GEO_JSON + "\"\n" +
                 "}");
         alert.setCustomName(SAMPLE_AREA_NAME);
         alert.setExecutionPlan("EXECUTION_PLAN");

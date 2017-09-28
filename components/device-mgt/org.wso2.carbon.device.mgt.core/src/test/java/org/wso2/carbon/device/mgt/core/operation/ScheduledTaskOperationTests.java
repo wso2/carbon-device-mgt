@@ -52,7 +52,9 @@ import java.util.List;
 
 import static org.wso2.carbon.device.mgt.core.operation.OperationManagementTests.getOperation;
 
-
+/**
+ * This class tests the tasks based operations of {@link OperationManager}
+ */
 public class ScheduledTaskOperationTests extends BaseDeviceManagementTest {
     private static final String DEVICE_TYPE = "OP_SCHEDULE_TEST_TYPE";
     private static final String DEVICE_ID_PREFIX = "OP-SCHEDULED_TEST-DEVICE-ID-";

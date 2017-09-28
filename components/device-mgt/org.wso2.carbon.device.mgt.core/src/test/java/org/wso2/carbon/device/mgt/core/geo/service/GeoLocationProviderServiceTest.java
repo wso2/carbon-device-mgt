@@ -31,7 +31,6 @@ import org.wso2.carbon.registry.core.jdbc.realm.InMemoryRealmService;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.user.core.service.RealmService;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.io.InputStream;
 import java.rmi.RemoteException;
@@ -39,7 +38,6 @@ import java.util.List;
 
 import static org.powermock.api.mockito.PowerMockito.*;
 
-@RunWith(PowerMockRunner.class)
 @PrepareForTest(GeoLocationProviderServiceImpl.class)
 public class GeoLocationProviderServiceTest {
 
@@ -128,14 +126,6 @@ public class GeoLocationProviderServiceTest {
         Assert.assertEquals(geoFenceNode.getAreaName(), SAMPLE_AREA_NAME);
         Assert.assertEquals(geoFenceNode.getQueryName(), SAMPLE_QUERY_NAME);
     }
-
-//    @Test(dependsOnMethods = "createGeoProximityAlert")
-//    public void getGeoProximityAlerts() throws Exception {
-//        String result;
-//        result = geoLocationProviderServiceImpl.getProximityAlerts(getDeviceIdentifier());
-//        Assert.assertNotNull(result);
-//        Assert.assertEquals(result,"{proximityDistance:100\"\", proximityTime:50\"\"}");
-//    }
 
     @Test(dependsOnMethods = "createGeoSpeedAlert")
     public void getGeoSpeedAlerts() throws Exception {

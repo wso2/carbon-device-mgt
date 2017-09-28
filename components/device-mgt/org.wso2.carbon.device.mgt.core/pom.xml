@@ -344,24 +344,11 @@
         </dependency>
 		<dependency>
 			<groupId>javassist</groupId>
-			<artifactId>javassist</artifactId>
-        </dependency>
+			<artifactId>javassist</artifactId></dependency>
         <dependency>
             <groupId>org.powermock</groupId>
             <artifactId>powermock-api-mockito</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.powermock</groupId>
-            <artifactId>powermock-module-junit4</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <!--<dependency>-->
-            <!--<groupId>org.apache.httpcomponents</groupId>-->
-            <!--<artifactId>httpclient</artifactId>-->
-            <!--<version>4.5</version>-->
-        <!--</dependency>-->
-
-
     </dependencies>
 
 </project>

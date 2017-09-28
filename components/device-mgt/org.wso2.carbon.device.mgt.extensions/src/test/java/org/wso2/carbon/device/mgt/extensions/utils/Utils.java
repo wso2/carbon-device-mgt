@@ -106,7 +106,6 @@ public class Utils {
         dataSource.setUser("sa");
         dataSource.setPassword("sa");
 
-
         File file = new File(scriptFilePath);
 
         final String LOAD_DATA_QUERY = "RUNSCRIPT FROM '" + file.getCanonicalPath() + "'";

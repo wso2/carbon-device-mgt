@@ -90,6 +90,15 @@ public class DeviceTypeManagerTest {
         if (resourceUrl != null) {
             androidConfiguration = new File(resourceUrl.getFile());
         }
+        datasourceField = DeviceTypeDAOHandler.class.getDeclaredField("dataSource");
+        datasourceField.setAccessible(true);
+        currentConnection = DeviceTypeDAOHandler.class.getDeclaredField("currentConnection");
+        currentConnection.setAccessible(true);
+        deviceTypePluginDAOField = DeviceTypePluginDAOManager.class.getDeclaredField("deviceTypePluginDAO");
+        deviceTypePluginDAOField.setAccessible(true);
+        deviceTypeDAOHandlerField = DeviceTypePluginDAOManager.class.getDeclaredField("deviceTypeDAOHandler");
+        deviceTypeDAOHandlerField.setAccessible(true);
+
         DeviceTypeConfiguration androidDeviceConfiguration = Utils.getDeviceTypeConfiguration(androidConfiguration);
         androidDeviceTypeManager = Mockito.mock(DeviceTypeManager.class, Mockito.CALLS_REAL_METHODS);
         customDeviceTypeManager = Mockito.mock(DeviceTypeManager.class, Mockito.CALLS_REAL_METHODS);
@@ -107,15 +116,6 @@ public class DeviceTypeManagerTest {
         propertiesExist.setAccessible(true);
         Field deviceType = DeviceTypeManager.class.getDeclaredField("deviceType");
         deviceType.setAccessible(true);
-
-        datasourceField = DeviceTypeDAOHandler.class.getDeclaredField("dataSource");
-        datasourceField.setAccessible(true);
-        currentConnection = DeviceTypeDAOHandler.class.getDeclaredField("currentConnection");
-        currentConnection.setAccessible(true);
-        deviceTypePluginDAOField = DeviceTypePluginDAOManager.class.getDeclaredField("deviceTypePluginDAO");
-        deviceTypePluginDAOField.setAccessible(true);
-        deviceTypeDAOHandlerField = DeviceTypePluginDAOManager.class.getDeclaredField("deviceTypeDAOHandler");
-        deviceTypeDAOHandlerField.setAccessible(true);
 
         deviceType.set(androidDeviceTypeManager, androidDeviceType);
         propertiesExist.set(androidDeviceTypeManager, true);

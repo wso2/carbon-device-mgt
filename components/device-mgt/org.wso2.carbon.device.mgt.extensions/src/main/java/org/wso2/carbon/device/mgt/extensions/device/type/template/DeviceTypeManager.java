@@ -433,8 +433,11 @@ public class DeviceTypeManager implements DeviceManager {
         if (propertiesExist) {
             boolean status;
             Device existingDevice = this.getDevice(deviceIdentifier);
-            existingDevice.setProperties(device.getProperties());
 
+            if (existingDevice == null) {
+                return false;
+            }
+            existingDevice.setProperties(device.getProperties());
             try {
                 if (log.isDebugEnabled()) {
                     log.debug(

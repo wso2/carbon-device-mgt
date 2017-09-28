@@ -129,7 +129,7 @@ public class NotificationManagementServiceImplTests {
     }
 
     @Test(expectedExceptions = NotificationManagementException.class, description = "This tests the method getDevice which" +
-            " is called internally in addNotification fot DeviceManagementException exception passing null device Id.")
+            " is called internally in addNotification for DeviceManagementException exception passing null device Id.")
     public void getDevice() throws NotificationManagementException {
         DeviceIdentifier testDeviceIdentifier = new DeviceIdentifier(DEVICE_ID_PREFIX + 123, DEVICE_TYPE);
         Notification notification = TestDataHolder.getNotification(1, Notification.Status.NEW.toString(),

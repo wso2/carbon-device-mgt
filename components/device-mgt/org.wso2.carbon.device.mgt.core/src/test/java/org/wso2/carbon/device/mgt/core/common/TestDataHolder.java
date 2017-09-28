@@ -18,10 +18,10 @@ package org.wso2.carbon.device.mgt.core.common;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
-import org.wso2.carbon.device.mgt.common.PaginationRequest;
+import org.wso2.carbon.device.mgt.common.MonitoringOperation;
+import org.wso2.carbon.device.mgt.common.OperationMonitoringTaskConfig;
 import org.wso2.carbon.device.mgt.common.app.mgt.Application;
 import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroup;
-import org.wso2.carbon.device.mgt.common.notification.mgt.Notification;
 import org.wso2.carbon.device.mgt.common.notification.mgt.Notification;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 
@@ -32,11 +32,12 @@ import java.util.Properties;
 
 public class TestDataHolder {
 
-    public final static String TEST_DEVICE_TYPE = "Test";
+    public final static String TEST_DEVICE_TYPE = "TEST-DEVICE-TYPE";
     public final static Integer SUPER_TENANT_ID = -1234;
     public final static String SUPER_TENANT_DOMAIN = "carbon.super";
     public final static String initialDeviceIdentifier = "12345";
     public final static String OWNER = "admin";
+    public static final String OPERATION_CONFIG = "TEST-OPERATION-";
     public static Device initialTestDevice;
     public static DeviceType initialTestDeviceType;
 
@@ -125,5 +126,30 @@ public class TestDataHolder {
         deviceGroup.setDescription("Test description");
         deviceGroup.setOwner(OWNER);
         return deviceGroup;
+    }
+
+    public static OperationMonitoringTaskConfig generateMonitoringTaskConfig(boolean enabled, int frequency,
+            int numberOfOperations) {
+        OperationMonitoringTaskConfig taskConfig = new OperationMonitoringTaskConfig();
+        List<MonitoringOperation> operationList = new ArrayList<>();
+
+        while (--numberOfOperations >= 0) {
+            operationList.add(generateMonitoringOperation(OPERATION_CONFIG + String.valueOf(numberOfOperations),
+                    1 + (int) (Math.random() * 4)));
+        }
+
+        taskConfig.setEnabled(enabled);
+        taskConfig.setFrequency(frequency);
+        taskConfig.setMonitoringOperation(operationList);
+
+        return taskConfig;
+    }
+
+    private static MonitoringOperation generateMonitoringOperation(String name, int recurrentTimes) {
+        MonitoringOperation operation = new MonitoringOperation();
+        operation.setTaskName(name);
+        operation.setRecurrentTimes(recurrentTimes);
+
+        return operation;
     }
 }

@@ -31,6 +31,9 @@ public class TestTaskManagerImpl implements TaskManager {
 
     @Override
     public boolean deleteTask(String taskName) throws TaskException {
+        if(this.registeredTasks.size() <= 0) {
+            throw new TaskException("Cannot delete task.", TaskException.Code.NO_TASK_EXISTS);
+        }
         for (TaskInfo task : this.registeredTasks) {
             if (task.getName().contains(taskName)) {
                 this.registeredTasks.remove(task);

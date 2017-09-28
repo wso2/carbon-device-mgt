@@ -31,7 +31,7 @@ import {FormGroup, Input, Label} from 'reactstrap';
  *
  * Parent Component: Create
  * Props:
- *      1. handleNext: {type: function, Invokes handleNext function of parent component}
+ *      1. onNextClick: {type: function, Invokes onNextClick function of parent component}
  *      2. setData : {type: function, Sets current form data to the state of the parent component}
  *      3. removeData: {type: function, Invokes the removeStepData function click of parent}
  * */
@@ -40,7 +40,6 @@ class Step2 extends Component {
         super();
         this.setPlatforms = this.setPlatforms.bind(this);
         this.setStepData = this.setStepData.bind(this);
-        this.cancel = this.cancel.bind(this);
         this.platforms = [];
         this.state = {
             finished: false,
@@ -53,7 +52,6 @@ class Step2 extends Component {
             title: "",
             titleError: ""
         };
-        this.scriptId = "application-create-step1";
     }
 
     componentDidMount() {
@@ -84,17 +82,11 @@ class Step2 extends Component {
      * Persist the current form data to the state.
      * */
     setStepData() {
-        console.log("Platforms", this.state.platforms);
         let step = {
             store: this.state.store,
             platform: this.state.platforms[this.state.platformSelectedIndex]
         };
-        console.log(step);
-        this.props.setData("step1", {step: step});
-    }
-
-    cancel() {
-
+        this.props.setData("step2", {step: step});
     }
 
     /**
@@ -106,8 +98,6 @@ class Step2 extends Component {
         let selectedPlatform = this.state.platforms.filter((platform) => {
             return platform.identifier === id;
         });
-        console.log(selectedPlatform);
-
         this.setState({platform: selectedPlatform});
     };
 
@@ -115,7 +105,6 @@ class Step2 extends Component {
      * Triggers when changing the Store selection.
      * */
     onChangeStore(event) {
-        console.log(event.target.value);
         this.setState({store: event.target.value});
     };
 
@@ -128,7 +117,6 @@ class Step2 extends Component {
                     <Input
                         type="select"
                         name="store"
-                        id="store"
                         className="input-custom"
                         onChange={this.onChangeStore.bind(this)}
                     >
@@ -141,7 +129,6 @@ class Step2 extends Component {
                     <Input
                         type="select"
                         name="store"
-                        id="store"
                         onChange={this.onChangePlatform.bind(this)}
                     >
                         {this.state.platforms.length > 0 ? this.state.platforms.map(platform => {

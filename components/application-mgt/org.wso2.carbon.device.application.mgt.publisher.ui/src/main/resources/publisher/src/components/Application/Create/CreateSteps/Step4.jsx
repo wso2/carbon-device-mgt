@@ -38,8 +38,8 @@ import Switch from '../../../UIComponents/Switch/Switch'
  *
  * Parent Component: Create
  * Props:
- *      * handleFinish : {type: function, Invokes handleNext function in Parent.}
- *      * handlePrev : {type: function, Invokes handlePrev function in Parent}
+ *      * handleFinish : {type: function, Invokes onNextClick function in Parent.}
+ *      * onPrevClick : {type: function, Invokes onPrevClick function in Parent}
  *      * setData : {type: function, Invokes setStepData function in Parent}
  *      * removeData : {type: Invokes removeStepData function in Parent}
  * */
@@ -60,7 +60,7 @@ class Step4 extends Component {
 
     /**
      * Handles finish button click.
-     * This invokes handleNext function in parent component.
+     * This invokes onNextClick function in parent component.
      * */
     handleFinish() {
         this.props.handleFinish();

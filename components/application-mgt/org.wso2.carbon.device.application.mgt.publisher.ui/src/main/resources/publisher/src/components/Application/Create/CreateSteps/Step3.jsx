@@ -34,8 +34,8 @@ import AppImage from "../../../UIComponents/AppImage/AppImage";
  *
  * Parent Component: Create
  * Props:
- *      * handleNext : {type: function, Invokes handleNext function in Parent.}
- *      * handlePrev : {type: function, Invokes handlePrev function in Parent}
+ *      * onNextClick : {type: function, Invokes onNextClick function in Parent.}
+ *      * onPrevClick : {type: function, Invokes onPrevClick function in Parent}
  *      * setData : {type: function, Invokes setStepData function in Parent}
  *      * removeData : {type: Invokes removeStepData function in Parent}
  * */
@@ -56,52 +56,6 @@ class Step3 extends Component {
             identifier: "",
             shortDescription: ""
         };
-        this.scriptId = "application-create-step2";
-    }
-
-
-    /**
-     * Create a tag on Enter key press and set it to the state.
-     * Clears the tags text field.
-     * Chip gets two parameters: Key and value.
-     * */
-    addTags(event) {
-        let tags = this.state.tags;
-        if (event.charCode === 13) {
-            event.preventDefault();
-            tags.push({key: Math.floor(Math.random() * 1000), value: event.target.value});
-            this.setState({tags, defValue: ""}, console.log(tags));
-        }
-    }
-
-    /**
-     * Set the value for tag.
-     * */
-    handleTagChange(event) {
-        let defaultValue = this.state.defValue;
-        defaultValue = event.target.value;
-        this.setState({defValue: defaultValue})
-    }
-
-    /**
-     * Invokes the handleNext function in Create component.
-     * */
-    handleNext() {
-        let fields = [{name: "Title", value: this.state.title},
-            {name: "Short Description", value: this.state.shortDescription},
-            {name: "Description", value: this.state.description},
-            {name: "Banner", value: this.state.banner},
-            {name: "Screenshots", value: this.state.screenshots},
-            {name: "Identifier", value: this.state.identifier},
-            {name: "Icon", value: this.state.icon}];
-        this.validate(fields);
-    }
-
-    /**
-     * Invokes the handlePrev function in Create component.
-     * */
-    handlePrev() {
-        this.props.handlePrev();
     }
 
     /**
@@ -110,120 +64,11 @@ class Step3 extends Component {
      * */
     handleRequestDelete(event) {
         this.chipData = this.state.tags;
-        console.log(event.target);
+        console.log(event.target); //TODO: Remove Console log.
         const chipToDelete = this.chipData.map((chip) => chip.value).indexOf(event.target.value);
         this.chipData.splice(chipToDelete, 1);
         this.setState({tags: this.chipData});
     };
-
-    /**
-     * Creates Chip array from state.tags.
-     * */
-    renderChip(data) {
-        return (
-            <Chip
-                key={data.key}
-                onRequestDelete={() => this.handleRequestDelete(data.key)}
-                className="applicationCreateChip">
-                {data.value}
-            </Chip>
-        );
-    }
-
-    onVisibilitySelect(event, index, value) {
-        console.log(value);
-        let comp = <SelectField> <MenuItem value={0} primaryText="Public"/>
-            <MenuItem value={1} primaryText="Roles"/>
-            <MenuItem value={2} primaryText="Devices"/> </SelectField>;
-        if (value === 1) {
-            this.setState({visibilityComponent: comp});
-        } else if (value === 2) {
-
-        } else {
-
-        }
-    };
-
-    /**
-     * Validate the form.
-     * */
-    validate(fields) {
-        let errors = {};
-        let errorsPresent = false;
-        fields.forEach(function (field) {
-            switch (field.name) {
-                case 'Title': {
-                    if (field.value === "") {
-                        errors[field.name] = field.name + " is required!";
-                        errorsPresent = true;
-                    } else {
-                        errorsPresent = false;
-                    }
-                    break;
-                }
-                case 'Identifier': {
-                    if (field.value === "") {
-                        errors[field.name] = field.name + " is required!";
-                        errorsPresent = true;
-                    } else {
-                        errorsPresent = false;
-                    }
-                    break;
-                }
-                case 'Short Description': {
-                    if (field.value === "") {
-                        errors[field.name] = field.name + " is required!";
-                        errorsPresent = true;
-                    } else {
-                        errorsPresent = false;
-                    }
-                    break;
-                }
-                case 'Description': {
-                    if (field.value === "") {
-                        errors[field.name] = field.name + " is required!";
-                        errorsPresent = true;
-                    } else {
-                        errorsPresent = false;
-                    }
-                    break;
-                }
-                case 'Banner': {
-                    if (field.value.length === 0) {
-                        errors[field.name] = field.name + " is required!";
-                        errorsPresent = true;
-                    } else {
-                        errorsPresent = false;
-                    }
-                    break;
-                }
-                case 'Icon': {
-                    if (field.value.length === 0) {
-                        errors[field.name] = field.name + " is required!";
-                        errorsPresent = true;
-                    } else {
-                        errorsPresent = false;
-                    }
-                    break;
-                }
-                case 'Screenshots': {
-                    if (field.value.length < 3) {
-                        errors[field.name] = "3 " + field.name + " are required!";
-                        errorsPresent = true;
-                    } else {
-                        errorsPresent = false;
-                    }
-                    break;
-                }
-            }
-        });
-
-        if (!errorsPresent) {
-            this.setStepData();
-        } else {
-            this.setState({errors: errors}, console.log(errors));
-        }
-    }
 
     /**
      * Creates an object with the current step data and persist in the parent.
@@ -231,49 +76,18 @@ class Step3 extends Component {
     setStepData() {
         let stepData = {
             icon: this.state.icon,
-            name: this.state.name,
-            tags: this.state.tags,
             banner: this.state.banner,
-            category: this.categories[this.state.category],
-            identifier: this.state.identifier,
-            screenshots: this.state.screenshots,
-            description: this.state.description,
-            shortDescription: this.state.shortDescription
+            screenshots: this.state.screenshots
         };
 
         this.props.setData("step2", {step: stepData});
     };
 
     /**
-     * Set text field values to state.
-     * */
-    onTextFieldChange(event, value) {
-        let field = event.target.id;
-        switch (field) {
-            case "name": {
-                this.setState({name: value});
-                break;
-            }
-            case "shortDescription": {
-                this.setState({shortDescription: value});
-                break;
-            }
-            case "description": {
-                this.setState({description: value});
-                break;
-            }
-            case "identifier": {
-                this.setState({identifier: value});
-                break;
-            }
-        }
-    };
-
-    /**
      * Removed user uploaded banner.
      * */
     removeBanner(event, d) {
-        console.log(event, d);
+        console.log(event, d); //TODO: Remove this
         this.setState({banner: []});
     };
 
@@ -288,11 +102,11 @@ class Step3 extends Component {
      * Removes selected screenshot.
      * */
     removeScreenshot(event) {
-        console.log(event.target)
+        console.log(event.target) //TODO: Remove this.
     };
 
+    //TODO: Remove inline css.
     render() {
-        console.log(this.state.visibilityComponent);
         return (
             <div className="createStep2Content">
                 <div>
@@ -312,7 +126,7 @@ class Step3 extends Component {
                                     onDrop={(screenshots, rejected) => {
                                         let tmpScreenshots = this.state.screenshots;
                                         tmpScreenshots.push(screenshots);
-                                        console.log(screenshots);
+                                        console.log(screenshots); //TODO: Remove this
                                         this.setState({
                                             screenshots: tmpScreenshots
                                         });

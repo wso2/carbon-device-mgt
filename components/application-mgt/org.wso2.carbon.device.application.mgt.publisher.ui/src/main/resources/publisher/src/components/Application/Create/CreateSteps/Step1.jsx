@@ -33,8 +33,8 @@ import {Badge, FormGroup, Input, Label} from 'reactstrap';
  *
  * Parent Component: Create
  * Props:
- *      * handleNext : {type: function, Invokes handleNext function in Parent.}
- *      * handlePrev : {type: function, Invokes handlePrev function in Parent}
+ *      * onNextClick : {type: function, Invokes onNextClick function in Parent.}
+ *      * onPrevClick : {type: function, Invokes onPrevClick function in Parent}
  *      * setData : {type: function, Invokes setStepData function in Parent}
  *      * removeData : {type: Invokes removeStepData function in Parent}
  * */
@@ -55,7 +55,6 @@ class Step1 extends Component {
             identifier: "",
             shortDescription: ""
         };
-        this.scriptId = "application-create-step2";
     }
 
     /**
@@ -82,27 +81,6 @@ class Step1 extends Component {
     }
 
     /**
-     * Invokes the handleNext function in Create component.
-     * */
-    handleNext() {
-        let fields = [{name: "Title", value: this.state.title},
-            {name: "Short Description", value: this.state.shortDescription},
-            {name: "Description", value: this.state.description},
-            {name: "Banner", value: this.state.banner},
-            {name: "Screenshots", value: this.state.screenshots},
-            {name: "Identifier", value: this.state.identifier},
-            {name: "Icon", value: this.state.icon}];
-        this.validate(fields);
-    }
-
-    /**
-     * Invokes the handlePrev function in Create component.
-     * */
-    handlePrev() {
-        this.props.handlePrev();
-    }
-
-    /**
      * Handles Chip delete function.
      * Removes the tag from state.tags
      * */
@@ -115,93 +93,11 @@ class Step1 extends Component {
     };
 
     /**
-     * Validate the form.
-     * */
-    validate(fields) {
-        let errors = {};
-        let errorsPresent = false;
-        fields.forEach(function (field) {
-            switch (field.name) {
-                case 'Title': {
-                    if (field.value === "") {
-                        errors[field.name] = field.name + " is required!";
-                        errorsPresent = true;
-                    } else {
-                        errorsPresent = false;
-                    }
-                    break;
-                }
-                case 'Identifier': {
-                    if (field.value === "") {
-                        errors[field.name] = field.name + " is required!";
-                        errorsPresent = true;
-                    } else {
-                        errorsPresent = false;
-                    }
-                    break;
-                }
-                case 'Short Description': {
-                    if (field.value === "") {
-                        errors[field.name] = field.name + " is required!";
-                        errorsPresent = true;
-                    } else {
-                        errorsPresent = false;
-                    }
-                    break;
-                }
-                case 'Description': {
-                    if (field.value === "") {
-                        errors[field.name] = field.name + " is required!";
-                        errorsPresent = true;
-                    } else {
-                        errorsPresent = false;
-                    }
-                    break;
-                }
-                case 'Banner': {
-                    if (field.value.length === 0) {
-                        errors[field.name] = field.name + " is required!";
-                        errorsPresent = true;
-                    } else {
-                        errorsPresent = false;
-                    }
-                    break;
-                }
-                case 'Icon': {
-                    if (field.value.length === 0) {
-                        errors[field.name] = field.name + " is required!";
-                        errorsPresent = true;
-                    } else {
-                        errorsPresent = false;
-                    }
-                    break;
-                }
-                case 'Screenshots': {
-                    if (field.value.length < 3) {
-                        errors[field.name] = "3 " + field.name + " are required!";
-                        errorsPresent = true;
-                    } else {
-                        errorsPresent = false;
-                    }
-                    break;
-                }
-            }
-        });
-
-        if (!errorsPresent) {
-            this.setStepData();
-        } else {
-            this.setState({errors: errors}, console.log(errors));
-        }
-    }
-
-    /**
      * Creates an object with the current step data and persist in the parent.
      * */
     setStepData() {
         let stepData = {};
-
-        this.props.setData("step2", {step: stepData});
+        this.props.setData("step1", {step: stepData});
     };
 
     /**

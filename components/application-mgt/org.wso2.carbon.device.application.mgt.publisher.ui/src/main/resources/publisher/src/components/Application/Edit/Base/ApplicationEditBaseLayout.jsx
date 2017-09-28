@@ -36,12 +36,10 @@ class ApplicationEdit extends Component {
 
     handleTabClick(event) {
         event.stopPropagation();
-        console.log(typeof event.target.value);
         const key = event.target.value;
 
         switch (key) {
             case "1": {
-                console.log("Step1");
                 this.setState({activeTab: 1, general: "active", release: "", pkgmgt: ""});
                 break;
             }
@@ -78,12 +76,13 @@ class ApplicationEdit extends Component {
     }
 
     render() {
-        console.log(this.state);
         return (
             <div id="application-edit-base">
                 <Row id="application-edit-header">
                     <Col xs="3">
-                        <a className="back-to-app" onClick={this.handleOnBackClick.bind(this)}><i className="fw fw-left-arrow"></i></a>
+                        <a className="back-to-app" onClick={this.handleOnBackClick.bind(this)}>
+                            <i className="fw fw-left-arrow"></i>
+                        </a>
                     </Col>
                     <Col>
                         Application Name

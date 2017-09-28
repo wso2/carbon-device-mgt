@@ -16,10 +16,11 @@
  * under the License.
  */
 
+import qs from 'qs';
 import React, {Component} from 'react';
 import {Redirect, Switch} from 'react-router-dom';
 import AuthHandler from '../../../api/authHandler';
-import {Button, Card, CardBlock, CardSubtitle, CardTitle, Col, Form, FormGroup, Input, Label} from 'reactstrap';
+import {Button, Card, CardBlock, CardTitle, Col, Form, FormGroup, Input, Label} from 'reactstrap';
 
 /**
  * The Login Component.
@@ -42,20 +43,15 @@ class Login extends Component {
         }
     }
 
-    componentWillMount() {
-        console.log("IN Login")
-    }
-
     componentDidMount() {
-        console.log("in Login")
-        // let queryString = this.props.location.search;
-        // console.log(queryString);
-        // queryString = queryString.replace(/^\?/, '');
-        // /* With QS version up we can directly use {ignoreQueryPrefix: true} option */
-        // let params = qs.parse(queryString);
-        // if (params.referrer) {
-        //     this.setState({referrer: params.referrer});
-        // }
+        let queryString = this.props.location.search;
+        console.log(queryString);
+        queryString = queryString.replace(/^\?/, '');
+        /* With QS version up we can directly use {ignoreQueryPrefix: true} option */
+        let params = qs.parse(queryString);
+        if (params.referrer) {
+            this.setState({referrer: params.referrer});
+        }
     }
 
     handleLogin(event) {
@@ -135,29 +131,31 @@ class Login extends Component {
                 <div id="login-container">
                     {/*TODO: Style the components.*/}
                     <Card id="login-card">
-                    <CardBlock>
-                        <CardTitle>WSO2 IoT APP Publisher</CardTitle>
-                        <Form onSubmit={this.handleLogin.bind(this)}>
-                            <FormGroup row>
-                                <Label for="userName" sm={2}>User Name:</Label>
-                                <Col sm={10}>
-                                    <Input type="text" name="userName" id="userName" placeholder="User Name" onChange={this.onUserNameChange.bind(this)}/>
-                                </Col>
+                        <CardBlock>
+                            <CardTitle>WSO2 IoT APP Publisher</CardTitle>
+                            <Form onSubmit={this.handleLogin.bind(this)}>
+                                <FormGroup row>
+                                    <Label for="userName" sm={2}>User Name:</Label>
+                                    <Col sm={10}>
+                                        <Input type="text" name="userName" id="userName" placeholder="User Name"
+                                               onChange={this.onUserNameChange.bind(this)}/>
+                                    </Col>
 
-                            </FormGroup>
-                            <FormGroup row>
-                                <Label for="password" sm={2}>Password:</Label>
-                                <Col sm={10}>
-                                    <Input type="password" name="text" id="password" placeholder="Password" onChange={this.onPasswordChange.bind(this)}/>
-                                </Col>
-                            </FormGroup>
-                            <FormGroup check row>
-                                <Col sm={{ size: 10, offset: 2 }}>
-                                    <Button type="submit" id="login-btn">Submit</Button>
-                                </Col>
-                            </FormGroup>
-                        </Form>
-                    </CardBlock>
+                                </FormGroup>
+                                <FormGroup row>
+                                    <Label for="password" sm={2}>Password:</Label>
+                                    <Col sm={10}>
+                                        <Input type="password" name="text" id="password" placeholder="Password"
+                                               onChange={this.onPasswordChange.bind(this)}/>
+                                    </Col>
+                                </FormGroup>
+                                <FormGroup check row>
+                                    <Col sm={{size: 10, offset: 2}}>
+                                        <Button type="submit" id="login-btn">Login</Button>
+                                    </Col>
+                                </FormGroup>
+                            </Form>
+                        </CardBlock>
                     </Card>
                 </div>);
         } else {

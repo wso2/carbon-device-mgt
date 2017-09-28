@@ -28,7 +28,7 @@ class UploadPackage extends Component {
     }
 
     handleBack() {
-        this.props.backToRelease();
+        this.props.onBackToRelease();
     }
 
     render() {

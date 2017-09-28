@@ -33,6 +33,7 @@ class GeneralInfo extends Component {
         }
     }
 
+    //TODO: Remove Console logs.
     render() {
         return (
             <div className="app-edit-general-info">

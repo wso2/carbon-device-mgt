@@ -16,7 +16,6 @@
  * under the License.
  */
 
-import Theme from '../../theme';
 import React, {Component} from 'react';
 import {withRouter} from 'react-router-dom';
 import TextField from 'material-ui/TextField';
@@ -41,7 +40,6 @@ class PlatformListing extends Component {
             platforms: [],
             asc: true
         };
-        this.scriptId = "platform-listing";
     }
 
     headers = [
@@ -71,17 +69,6 @@ class PlatformListing extends Component {
             label: "File Based"
         }
     ];
-
-    componentWillMount() {
-        /**
-         *Loading the theme files based on the the user-preference.
-         */
-        Theme.insertThemingScripts(this.scriptId);
-    }
-
-    componentWillUnmount() {
-        Theme.removeThemingScripts(this.scriptId);
-    }
 
     componentDidMount() {
         let platformsPromise = PlatformMgtApi.getPlatforms();

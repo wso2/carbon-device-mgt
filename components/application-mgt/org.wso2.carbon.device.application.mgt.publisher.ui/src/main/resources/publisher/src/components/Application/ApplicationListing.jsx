@@ -16,7 +16,6 @@
  * under the License.
  */
 
-import Theme from '../../theme';
 import React, {Component} from 'react';
 import {withRouter} from 'react-router-dom';
 import {Button, Col, Row, Table} from 'reactstrap';
@@ -48,13 +47,13 @@ class ApplicationListing extends Component {
             application: {},
             drawer: {},
             appListStyle: {},
+            //TODO: Remove this declaration.
             image: [{id: "1", src: "https://www.greenfoot.org/images/logos/macos.png"},
                 {
                     id: "2",
                     src: "http://dl1.cbsistatic.com/i/r/2016/08/08/0e67e43a-5a45-41ab-b81d-acfba8708044/resize/736x552/0c0ee669677b5060a0fa1bfb0c7873b4/android-logo-promo-470.png"
                 }]
         };
-        this.scriptId = "application-listing";
     }
 
     headers = [
@@ -126,10 +125,6 @@ class ApplicationListing extends Component {
 
     componentWillMount() {
 
-        /**
-         *Loading the theme files based on the the user-preference.
-         */
-        Theme.insertThemingScripts(this.scriptId);
         // let getApps = ApplicationMgtApi.getApplications();
         // getApps.then(response => {
         //     let apps = this.setData(response.data.applications);
@@ -199,7 +194,6 @@ class ApplicationListing extends Component {
     }
 
     onRowClick() {
-        console.log("sfsdfsdf");
         let style = {
             width: '500px',
             marginLeft: '500px'
@@ -226,8 +220,6 @@ class ApplicationListing extends Component {
             return image.id !== imageId
 
         });
-        console.log(rem);
-
         this.setState({image: rem});
     }
 

@@ -26,8 +26,8 @@ class CreateRelease extends Component {
         super();
         this.onTestMethodChange = this.onTestMethodChange.bind(this);
         this.showUploadArtifacts = this.showUploadArtifacts.bind(this);
-        this.handleBack = this.handleBack.bind(this);
-        this.backToRelease = this.backToRelease.bind(this);
+        this.onBackClick = this.onBackClick.bind(this);
+        this.onBackToRelease = this.onBackToRelease.bind(this);
         this.state = {
             open: true,
             hiddenMain: false
@@ -47,11 +47,11 @@ class CreateRelease extends Component {
         this.setState({hiddenMain: true})
     }
 
-    handleBack() {
+    onBackClick() {
         this.props.handleBack();
     }
 
-    backToRelease() {
+    onBackToRelease() {
         this.setState({hiddenMain: false});
     }
 
@@ -64,7 +64,7 @@ class CreateRelease extends Component {
                 {this.state.hiddenMain ?
                     <div>
                         <UploadPackage
-                            backToRelease={this.backToRelease}
+                            backToRelease={this.onBackToRelease}
                             selectedChannel={channel}
                         />
                     </div> :
@@ -72,7 +72,7 @@ class CreateRelease extends Component {
                     <div>
                         <Row>
                             <div className="release-header">
-                                <a onClick={this.handleBack}>{"<-"}</a>
+                                <a onClick={this.onBackClick}>{"<-"}</a>
                                 <span id="create-release-header">
                             <strong>{channel} Release</strong>
                         </span>

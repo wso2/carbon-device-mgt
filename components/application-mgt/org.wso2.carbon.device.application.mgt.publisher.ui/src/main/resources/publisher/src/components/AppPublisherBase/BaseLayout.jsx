@@ -88,7 +88,7 @@ class BaseLayout extends Component {
                                 id="search"
                                 name="search"
                                 placeholder={'Search for Applications'}
-                                onChange={(event) => console.log(event.target.value)}
+                                onChange={(event) => console.log(event.target.value)} //TODO: Remove this
                             />
                         </div>
                     </div>

@@ -113,7 +113,8 @@ public class NotificationManagementServiceImplTests {
             Notification notification = TestDataHolder.getNotification(i, Notification.Status.NEW.toString(),
                     testDeviceIdentifier.toString(), TEST_NOTIFICATION_DESCRIPTION, DEVICE_ID_PREFIX + i,
                     NOTIFICATION_OPERATION_ID, DEVICE_TYPE);
-            Assert.assertTrue(notificationManagementService.addNotification(testDeviceIdentifier, notification));
+            Assert.assertTrue(notificationManagementService.addNotification(testDeviceIdentifier, notification),
+                    "Adding notification failed for [" + notification.toString() + "]");
         }
     }
 
@@ -146,7 +147,7 @@ public class NotificationManagementServiceImplTests {
             Notification notification = TestDataHolder.getNotification(i, Notification.Status.CHECKED.toString(),
                     testDeviceIdentifier.toString(), TEST_NOTIFICATION_DESCRIPTION, DEVICE_ID_PREFIX + i,
                     NOTIFICATION_OPERATION_ID, DEVICE_TYPE);
-            Assert.assertTrue(notificationManagementService.updateNotification(notification));
+            Assert.assertTrue(notificationManagementService.updateNotification(notification), "Notification update failed for [" + notification.toString() + "]");
         }
     }
 
@@ -154,7 +155,8 @@ public class NotificationManagementServiceImplTests {
             "and check whether it got updated")
     public void updateNotificationStatus() throws NotificationManagementException {
         for (int i = 1; i <= NO_OF_DEVICES; i++) {
-            Assert.assertTrue(notificationManagementService.updateNotificationStatus(i, Notification.Status.CHECKED));
+            Assert.assertTrue(notificationManagementService.updateNotificationStatus(i, Notification.Status.CHECKED),
+                    "Notification update status failed for notification id:- " + i);
         }
     }
 
@@ -162,7 +164,8 @@ public class NotificationManagementServiceImplTests {
             " method by listing down all the notifications.")
     public void getAllNotifications() throws NotificationManagementException {
         List<Notification> returnedNotifications = notificationManagementService.getAllNotifications();
-        Assert.assertEquals(returnedNotifications.size(), NO_OF_DEVICES);
+        Assert.assertEquals(returnedNotifications.size(), NO_OF_DEVICES, "No. of notifications added is not " +
+                "equal to no. of notifications retrieved.");
     }
 
     @Test(dependsOnMethods = "updateNotificationStatus", description = "this method retries notification by id" +
@@ -170,17 +173,22 @@ public class NotificationManagementServiceImplTests {
     public void getNotification() throws NotificationManagementException {
         for (int i = 1; i <= NO_OF_DEVICES; i++) {
             Notification returnedNotification = notificationManagementService.getNotification(i);
-            Assert.assertEquals(returnedNotification.getNotificationId(), i);
-            Assert.assertEquals(returnedNotification.getStatus(), Notification.Status.CHECKED);
-            Assert.assertEquals(returnedNotification.getDescription(), TEST_NOTIFICATION_DESCRIPTION);
-            Assert.assertEquals(returnedNotification.getOperationId(), NOTIFICATION_OPERATION_ID);
+            Assert.assertEquals(returnedNotification.getNotificationId(), i, "Returned notification ID is not " +
+                    "same as added notification Id.");
+            Assert.assertEquals(returnedNotification.getStatus(), Notification.Status.CHECKED, "Returned " +
+                    "notification status is not same as added notification status.");
+            Assert.assertEquals(returnedNotification.getDescription(), TEST_NOTIFICATION_DESCRIPTION, "Returned" +
+                    " notification description is not same as added notification description.");
+            Assert.assertEquals(returnedNotification.getOperationId(), NOTIFICATION_OPERATION_ID, "Returned " +
+                    "notification operation ID is not same as added notification operation Id.");
         }
     }
 
     @Test(dependsOnMethods = "updateNotificationStatus", description = "this method gets all notification by status checked")
     public void getNotificationsByStatus() throws NotificationManagementException {
         List<Notification> returnedNotifications = notificationManagementService.getNotificationsByStatus(Notification.Status.CHECKED);
-        Assert.assertEquals(returnedNotifications.size(), NO_OF_NOTIFICATIONS);
+        Assert.assertEquals(returnedNotifications.size(), NO_OF_NOTIFICATIONS, "Returned no. of notification is " +
+                "not same as added no. of notifications.");
     }
 
     @Test(dependsOnMethods = "addNotification", description = "this tests for getAllNotification method by passing " +
@@ -188,8 +196,10 @@ public class NotificationManagementServiceImplTests {
     public void getAllNotificationsWithPaginationRequest() throws NotificationManagementException {
         PaginationRequest request = new PaginationRequest(1, 2);
         PaginationResult result = notificationManagementService.getAllNotifications(request);
-        Assert.assertEquals(result.getRecordsFiltered(), NO_OF_NOTIFICATIONS);
-        Assert.assertEquals(result.getRecordsTotal(), NO_OF_NOTIFICATIONS);
+        Assert.assertEquals(result.getRecordsFiltered(), NO_OF_NOTIFICATIONS, "Returned filtered records is " +
+                "not same as added filtered records.");
+        Assert.assertEquals(result.getRecordsTotal(), NO_OF_NOTIFICATIONS, "Returned no. of records is not " +
+                "same as added no. of records.");
     }
 
     @Test(dependsOnMethods = "updateNotificationStatus", description = "this tests for getAllNotification method by" +
@@ -198,8 +208,10 @@ public class NotificationManagementServiceImplTests {
         PaginationRequest request = new PaginationRequest(1, 2);
         PaginationResult result = notificationManagementService.getNotificationsByStatus(Notification.Status.CHECKED,
                 request);
-        Assert.assertEquals(result.getRecordsFiltered(), NO_OF_NOTIFICATIONS);
-        Assert.assertEquals(result.getRecordsTotal(), NO_OF_NOTIFICATIONS);
+        Assert.assertEquals(result.getRecordsFiltered(), NO_OF_NOTIFICATIONS, "Returned filtered records is not " +
+                "same as added filtered records.");
+        Assert.assertEquals(result.getRecordsTotal(), NO_OF_NOTIFICATIONS, "Returned no. of records is not same" +
+                " as added no. of records.");
     }
 
 }

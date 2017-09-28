@@ -40,7 +40,6 @@ import org.wso2.carbon.user.core.service.RealmService;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 
 import java.io.InputStream;
-import java.lang.reflect.Method;
 import java.util.Date;
 
 public class DeviceManagementProviderServiceTest extends BaseDeviceManagementTest {
@@ -50,9 +49,6 @@ public class DeviceManagementProviderServiceTest extends BaseDeviceManagementTes
     private static final String DEVICE_TYPE = "RANDOM_DEVICE_TYPE";
 
     DeviceManagementProviderService deviceMgtService;
-    private Method setProvisioningConfig;
-    private Method setOperationMonitoringConfig;
-    private Method setDeviceStatusTaskPluginConfig;
 
     @BeforeClass
     public void init() throws Exception {
@@ -129,39 +125,39 @@ public class DeviceManagementProviderServiceTest extends BaseDeviceManagementTes
         }
     }
 
+//    @Test(dependsOnMethods = {"testReEnrollmentofSameDeviceUnderSameUser"})
+//    public void testReEnrollmentofSameDeviceWithOtherUser() {
+//
+//        EnrolmentInfo enrolmentInfo = new EnrolmentInfo();
+//        enrolmentInfo.setDateOfEnrolment(new Date().getTime());
+//        enrolmentInfo.setDateOfLastUpdate(new Date().getTime());
+//        enrolmentInfo.setOwner("user1");
+//        enrolmentInfo.setOwnership(EnrolmentInfo.OwnerShip.BYOD);
+//        enrolmentInfo.setStatus(EnrolmentInfo.Status.CREATED);
+//
+//        Device alternateDevice = TestDataHolder.generateDummyDeviceData("12345", DEVICE_TYPE,
+//                enrolmentInfo);
+//
+//        try {
+//            Device retrievedDevice1 = deviceMgtService.getDevice(new DeviceIdentifier("12345", DEVICE_TYPE));
+//
+//            deviceMgtService.enrollDevice(alternateDevice);
+//            Device retrievedDevice2 = deviceMgtService.getDevice(new DeviceIdentifier(alternateDevice
+//                    .getDeviceIdentifier(), alternateDevice.getType()));
+//
+//            log.info(retrievedDevice1.getEnrolmentInfo().getOwner());
+//            log.info(retrievedDevice2.getEnrolmentInfo().getOwner());
+//
+//            Assert.assertFalse(retrievedDevice1.getEnrolmentInfo().getOwner().equalsIgnoreCase
+//                    (retrievedDevice2.getEnrolmentInfo().getOwner()));
+//        } catch (DeviceManagementException e) {
+//            String msg = "Error Occured while enrolling device";
+//            Assert.fail(msg, e);
+//        }
+//    }
+
+
     @Test(dependsOnMethods = {"testReEnrollmentofSameDeviceUnderSameUser"})
-    public void testReEnrollmentofSameDeviceWithOtherUser() {
-
-        EnrolmentInfo enrolmentInfo = new EnrolmentInfo();
-        enrolmentInfo.setDateOfEnrolment(new Date().getTime());
-        enrolmentInfo.setDateOfLastUpdate(new Date().getTime());
-        enrolmentInfo.setOwner("user1");
-        enrolmentInfo.setOwnership(EnrolmentInfo.OwnerShip.BYOD);
-        enrolmentInfo.setStatus(EnrolmentInfo.Status.CREATED);
-
-        Device alternateDevice = TestDataHolder.generateDummyDeviceData("12345", DEVICE_TYPE,
-                enrolmentInfo);
-
-        try {
-            Device retrievedDevice1 = deviceMgtService.getDevice(new DeviceIdentifier("12345", DEVICE_TYPE));
-
-            deviceMgtService.enrollDevice(alternateDevice);
-            Device retrievedDevice2 = deviceMgtService.getDevice(new DeviceIdentifier(alternateDevice
-                    .getDeviceIdentifier(), alternateDevice.getType()));
-
-            log.info(retrievedDevice1.getEnrolmentInfo().getOwner());
-            log.info(retrievedDevice2.getEnrolmentInfo().getOwner());
-
-            Assert.assertFalse(retrievedDevice1.getEnrolmentInfo().getOwner().equalsIgnoreCase
-                    (retrievedDevice2.getEnrolmentInfo().getOwner()));
-        } catch (DeviceManagementException e) {
-            String msg = "Error Occured while enrolling device";
-            Assert.fail(msg, e);
-        }
-    }
-
-
-    @Test(dependsOnMethods = {"testReEnrollmentofSameDeviceWithOtherUser"})
     public void testDisenrollment() {
         Device device = TestDataHolder.generateDummyDeviceData(DEVICE_TYPE);
 

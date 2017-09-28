@@ -18,7 +18,6 @@
 
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
-import './createRelease.css';
 import {Button, FormGroup, FormText, Input, Label, Row} from "reactstrap";
 import UploadPackage from "./UploadPackage";
 

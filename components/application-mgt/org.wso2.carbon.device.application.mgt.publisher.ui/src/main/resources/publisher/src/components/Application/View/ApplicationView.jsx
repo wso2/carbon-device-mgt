@@ -19,7 +19,6 @@
 import React, {Component} from 'react';
 import {withRouter} from 'react-router-dom';
 import {Col, Row} from "reactstrap";
-import './applicationView.css';
 
 /**
  * Application view component.

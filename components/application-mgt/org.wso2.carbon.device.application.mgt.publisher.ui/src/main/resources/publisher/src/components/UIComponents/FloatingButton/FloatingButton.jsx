@@ -20,10 +20,12 @@ import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import './floatingButton.css';
 
+/**
+ * Floating Action button.
+ * */
 class FloatingButton extends Component {
 
     handleClick(event) {
-        console.log("click");
         this.props.onClick(event);
     }
 

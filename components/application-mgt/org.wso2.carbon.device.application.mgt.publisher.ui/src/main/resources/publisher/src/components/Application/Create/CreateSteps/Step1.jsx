@@ -230,7 +230,6 @@ class Step1 extends Component {
     };
 
     render() {
-        console.log(this.state.visibilityComponent);
         return (
             <div className="createStep2Content">
                 <div>

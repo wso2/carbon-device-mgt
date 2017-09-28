@@ -16,7 +16,6 @@
  * under the License.
  */
 
-import './App.css';
 import Theme from './theme';
 import React, {Component} from 'react';
 import AuthHandler from './api/authHandler';

@@ -16,7 +16,6 @@
  * under the License.
  */
 
-import './index.css';
 import React from 'react';
 import Publisher from './App';
 import ReactDOM from 'react-dom';

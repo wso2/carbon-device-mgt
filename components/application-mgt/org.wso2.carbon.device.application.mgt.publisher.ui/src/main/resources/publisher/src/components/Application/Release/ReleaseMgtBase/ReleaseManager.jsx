@@ -18,7 +18,6 @@
 
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
-import './release-mgt.css';
 import {Button, Col, Row} from "reactstrap";
 import CreateRelease from "../Create/CreateRelease";
 

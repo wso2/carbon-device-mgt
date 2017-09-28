@@ -63,7 +63,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
 
 /**
  * This is the testcase which covers the methods from {@link OperationManager}
@@ -84,6 +83,7 @@ public class OperationManagementTests {
     private List<DeviceIdentifier> deviceIds = new ArrayList<>();
     private OperationManager operationMgtService;
     private Activity commandActivity;
+    private long commandActivityBeforeUpdatedTimestamp;
 
     @BeforeClass
     public void init() throws Exception {
@@ -149,13 +149,17 @@ public class OperationManagementTests {
     @Test
     public void addNonAdminUserDevicesCommandOperation() throws DeviceManagementException, OperationManagementException,
             InvalidDeviceException {
-        PrivilegedCarbonContext.startTenantFlow();
-        PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(MultitenantConstants.SUPER_TENANT_ID, true);
-        PrivilegedCarbonContext.getThreadLocalCarbonContext().setUsername(NON_ADMIN_USER);
+        startTenantFlowAsNonAdmin();
         Activity activity = this.operationMgtService.addOperation(getOperation(new CommandOperation(), Operation.Type.COMMAND, COMMAND_OPERATON_CODE),
                 deviceIds);
         PrivilegedCarbonContext.endTenantFlow();
         validateOperationResponse(activity, ActivityStatus.Status.UNAUTHORIZED);
+    }
+
+    private void startTenantFlowAsNonAdmin() {
+        PrivilegedCarbonContext.startTenantFlow();
+        PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(MultitenantConstants.SUPER_TENANT_ID, true);
+        PrivilegedCarbonContext.getThreadLocalCarbonContext().setUsername(NON_ADMIN_USER);
     }
 
     @Test(dependsOnMethods = "addCommandOperation")
@@ -203,11 +207,35 @@ public class OperationManagementTests {
         }
     }
 
+    @Test(dependsOnMethods = "addProfileOperation", expectedExceptions = OperationManagementException.class)
+    public void getOperationsAsNonAdmin() throws DeviceManagementException, OperationManagementException, InvalidDeviceException {
+        try {
+            startTenantFlowAsNonAdmin();
+            for (DeviceIdentifier deviceIdentifier : deviceIds) {
+                this.operationMgtService.getOperations(deviceIdentifier);
+            }
+        } finally {
+            PrivilegedCarbonContext.endTenantFlow();
+        }
+    }
+
     @Test(dependsOnMethods = "getOperations")
     public void getPendingOperations() throws DeviceManagementException, OperationManagementException, InvalidDeviceException {
         for (DeviceIdentifier deviceIdentifier : deviceIds) {
             List operations = this.operationMgtService.getPendingOperations(deviceIdentifier);
             Assert.assertEquals(operations.size(), 4, "The pending operations should be 4, but found only " + operations.size());
+        }
+    }
+
+    @Test(dependsOnMethods = "getOperations", expectedExceptions = OperationManagementException.class)
+    public void getPendingOperationsAsNonAdmin() throws DeviceManagementException, OperationManagementException, InvalidDeviceException {
+        try {
+            startTenantFlowAsNonAdmin();
+            for (DeviceIdentifier deviceIdentifier : deviceIds) {
+                this.operationMgtService.getPendingOperations(deviceIdentifier);
+            }
+        } finally {
+            PrivilegedCarbonContext.endTenantFlow();
         }
     }
 
@@ -228,29 +256,32 @@ public class OperationManagementTests {
         PrivilegedCarbonContext.endTenantFlow();
     }
 
-    @Test(dependsOnMethods = "getPendingOperations")
+    @Test(dependsOnMethods = "getPendingOperations", expectedExceptions = OperationManagementException.class)
     public void getPaginatedRequestAsNonAdmin() throws OperationManagementException {
-        PrivilegedCarbonContext.startTenantFlow();
-        PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(MultitenantConstants.SUPER_TENANT_ID, true);
-        PrivilegedCarbonContext.getThreadLocalCarbonContext().setUsername(NON_ADMIN_USER);
-        PaginationRequest request = new PaginationRequest(1, 2);
-        request.setDeviceType(DEVICE_TYPE);
-        request.setOwner(ADMIN_USER);
-        for (DeviceIdentifier deviceIdentifier : deviceIds) {
-            try {
-                this.operationMgtService.getOperations(deviceIdentifier, request);
-            } catch (OperationManagementException ex) {
-                if (ex.getMessage() == null) {
-                    Assert.assertTrue(ex.getMessage().contains("User '" + NON_ADMIN_USER + "' is not authorized"));
+        try {
+            startTenantFlowAsNonAdmin();
+            PaginationRequest request = new PaginationRequest(1, 2);
+            request.setDeviceType(DEVICE_TYPE);
+            request.setOwner(ADMIN_USER);
+            for (DeviceIdentifier deviceIdentifier : deviceIds) {
+                try {
+                    this.operationMgtService.getOperations(deviceIdentifier, request);
+                } catch (OperationManagementException ex) {
+                    if (ex.getMessage() == null) {
+                        Assert.assertTrue(ex.getMessage().contains("User '" + NON_ADMIN_USER + "' is not authorized"));
+                    }
+                    throw ex;
                 }
             }
+        } finally {
+            PrivilegedCarbonContext.endTenantFlow();
         }
-        PrivilegedCarbonContext.endTenantFlow();
     }
 
     @Test(dependsOnMethods = "getPaginatedRequestAsAdmin")
     public void updateOperation() throws OperationManagementException {
         //This is required to introduce a delay for the update operation of the device.
+        this.commandActivityBeforeUpdatedTimestamp = System.currentTimeMillis();
         try {
             Thread.sleep(2000);
         } catch (InterruptedException ignored) {
@@ -264,6 +295,30 @@ public class OperationManagementTests {
         this.operationMgtService.updateOperation(deviceIdentifier, operation);
         List pendingOperations = this.operationMgtService.getPendingOperations(deviceIdentifier);
         Assert.assertEquals(pendingOperations.size(), 3);
+    }
+
+    @Test(dependsOnMethods = "updateOperation", expectedExceptions = OperationManagementException.class)
+    public void updateOperationAsNonAdmin() throws OperationManagementException {
+        //This is required to introduce a delay for the update operation of the device.
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException ignored) {
+        }
+        try {
+            DeviceIdentifier deviceIdentifier = this.deviceIds.get(0);
+            List operations = this.operationMgtService.getPendingOperations(deviceIdentifier);
+            Assert.assertTrue(operations != null && operations.size() == 3);
+            startTenantFlowAsNonAdmin();
+            Operation operation = (Operation) operations.get(0);
+            operation.setStatus(Operation.Status.COMPLETED);
+            operation.setOperationResponse("The operation is successfully completed, and updated by non admin!");
+            this.operationMgtService.updateOperation(deviceIdentifier, operation);
+            List pendingOperations = this.operationMgtService.getPendingOperations(deviceIdentifier);
+            Assert.assertEquals(pendingOperations.size(), 3);
+        } finally {
+            PrivilegedCarbonContext.endTenantFlow();
+        }
+
     }
 
     @Test(dependsOnMethods = "updateOperation")
@@ -284,11 +339,36 @@ public class OperationManagementTests {
         Assert.assertTrue(operation.getType().equals(Operation.Type.COMMAND));
     }
 
+    @Test(dependsOnMethods = "getNextPendingOperation", expectedExceptions = OperationManagementException.class)
+    public void getOperationByDeviceAndOperationIdNonAdmin() throws OperationManagementException {
+        startTenantFlowAsNonAdmin();
+        try {
+            DeviceIdentifier deviceIdentifier = this.deviceIds.get(0);
+            String operationId = this.commandActivity.getActivityId().
+                    replace(DeviceManagementConstants.OperationAttributes.ACTIVITY, "");
+            this.operationMgtService.getOperationByDeviceAndOperationId(deviceIdentifier,
+                    Integer.parseInt(operationId));
+        } finally {
+            PrivilegedCarbonContext.endTenantFlow();
+        }
+    }
+
     @Test(dependsOnMethods = "getOperationByDeviceAndOperationId")
     public void getOperationsByDeviceAndStatus() throws OperationManagementException, DeviceManagementException {
         DeviceIdentifier deviceIdentifier = this.deviceIds.get(0);
         List operation = this.operationMgtService.getOperationsByDeviceAndStatus(deviceIdentifier, Operation.Status.PENDING);
         Assert.assertEquals(operation.size(), 3);
+    }
+
+    @Test(dependsOnMethods = "getOperationByDeviceAndOperationId", expectedExceptions = OperationManagementException.class)
+    public void getOperationsByDeviceAndStatusByNonAdmin() throws OperationManagementException, DeviceManagementException {
+        startTenantFlowAsNonAdmin();
+        try {
+            DeviceIdentifier deviceIdentifier = this.deviceIds.get(0);
+            this.operationMgtService.getOperationsByDeviceAndStatus(deviceIdentifier, Operation.Status.PENDING);
+        } finally {
+            PrivilegedCarbonContext.endTenantFlow();
+        }
     }
 
     @Test(dependsOnMethods = "getOperationsByDeviceAndStatus")
@@ -319,13 +399,21 @@ public class OperationManagementTests {
         Assert.assertEquals(activity.getActivityStatus().get(0).getStatus(), ActivityStatus.Status.COMPLETED);
     }
 
+    @Test(dependsOnMethods = "getOperationActivity", expectedExceptions = OperationManagementException.class)
+    public void getOperationByActivityIdAndDeviceAsNonAdmin() throws OperationManagementException {
+        startTenantFlowAsNonAdmin();
+        try {
+            this.operationMgtService.
+                    getOperationByActivityIdAndDevice(this.commandActivity.getActivityId(), this.deviceIds.get(0));
+        } finally {
+            PrivilegedCarbonContext.endTenantFlow();
+        }
+    }
+
     @Test(dependsOnMethods = "updateOperation")
-    public void getOperationUpdatedAfterWithLimitAndOffet() throws OperationManagementException, ParseException {
-        String timestamp = this.commandActivity.getCreatedTimeStamp();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("EEE MMM dd hh:mm:ss Z yyyy");
-        dateFormat.setTimeZone(TimeZone.getTimeZone("IST"));
-        Date date = dateFormat.parse(timestamp);
-        List<Activity> operations = this.operationMgtService.getActivitiesUpdatedAfter(date.getTime() / 1000, 10, 0);
+    public void getOperationUpdatedAfterWithLimitAndOffset() throws OperationManagementException, ParseException {
+        List<Activity> operations = this.operationMgtService.getActivitiesUpdatedAfter
+                (this.commandActivityBeforeUpdatedTimestamp / 1000, 10, 0);
         Assert.assertTrue(operations != null && operations.size() == 1,
                 "The operations updated after the created should be 1");
         Activity operation = operations.get(0);
@@ -338,12 +426,9 @@ public class OperationManagementTests {
     }
 
     @Test(dependsOnMethods = "updateOperation")
-    public void getOperationUpdatedAfter() throws OperationManagementException, ParseException {
-        String timestamp = this.commandActivity.getCreatedTimeStamp();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("EEE MMM dd hh:mm:ss Z yyyy");
-        dateFormat.setTimeZone(TimeZone.getTimeZone("IST"));
-        Date date = dateFormat.parse(timestamp);
-        List<Activity> operations = this.operationMgtService.getActivitiesUpdatedAfter(date.getTime() / 1000);
+    public void getActivitiesUpdatedAfter() throws OperationManagementException, ParseException {
+        List<Activity> operations = this.operationMgtService.getActivitiesUpdatedAfter
+                (this.commandActivityBeforeUpdatedTimestamp / 1000);
         Assert.assertTrue(operations != null && operations.size() == 1,
                 "The operations updated after the created should be 1");
         Activity operation = operations.get(0);
@@ -355,13 +440,10 @@ public class OperationManagementTests {
                 deviceIds.get(0).getType());
     }
 
-    @Test(dependsOnMethods = "getOperationUpdatedAfter")
+    @Test(dependsOnMethods = "getActivitiesUpdatedAfter")
     public void getActivityCountUpdatedAfter() throws OperationManagementException, ParseException {
-        String timestamp = this.commandActivity.getCreatedTimeStamp();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("EEE MMM dd hh:mm:ss Z yyyy");
-        dateFormat.setTimeZone(TimeZone.getTimeZone("IST"));
-        Date date = dateFormat.parse(timestamp);
-        int activityCount = this.operationMgtService.getActivityCountUpdatedAfter(date.getTime() / 1000);
+        int activityCount = this.operationMgtService.getActivityCountUpdatedAfter
+                (this.commandActivityBeforeUpdatedTimestamp / 1000);
         Assert.assertTrue(activityCount == 1,
                 "The activities updated after the created should be 1");
     }

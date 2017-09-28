@@ -741,7 +741,11 @@ public class OperationManagerImpl implements OperationManager {
         if (operationId == 0) {
             throw new IllegalArgumentException("Operation ID cannot be null or zero (0).");
         }
-
+        if (!isActionAuthorized(deviceId)) {
+            throw new OperationManagementException("User '" + getUser() + "' is not authorized to access the '" +
+                    deviceId.getType() + "' device, which carries the identifier '" +
+                    deviceId.getId() + "'");
+        }
         Device device = this.getDevice(deviceId);
         try {
             OperationManagementDAOFactory.openConnection();

@@ -89,7 +89,6 @@ public class DeviceAccessAuthorizationServiceImpl implements DeviceAccessAuthori
         }
     }
 
-    //done
     @Override
     public boolean isUserAuthorized(DeviceIdentifier deviceIdentifier, String username)
             throws DeviceAccessAuthorizationException {
@@ -102,13 +101,11 @@ public class DeviceAccessAuthorizationServiceImpl implements DeviceAccessAuthori
         return isUserAuthorized(deviceIdentifier, this.getUserName(), groupPermissions);
     }
 
-    //done
     @Override
     public boolean isUserAuthorized(DeviceIdentifier deviceIdentifier) throws DeviceAccessAuthorizationException {
         return isUserAuthorized(deviceIdentifier, this.getUserName(), null);
     }
 
-    //done
     @Override
     public boolean isDeviceAdminUser() throws DeviceAccessAuthorizationException {
         String username = this.getUserName();
@@ -168,14 +165,12 @@ public class DeviceAccessAuthorizationServiceImpl implements DeviceAccessAuthori
         return deviceAuthorizationResult;
     }
 
-    //done
     @Override
     public DeviceAuthorizationResult isUserAuthorized(List<DeviceIdentifier> deviceIdentifiers, String username)
             throws DeviceAccessAuthorizationException {
         return isUserAuthorized(deviceIdentifiers, username, null);
     }
 
-    //done
     @Override
     public DeviceAuthorizationResult isUserAuthorized(List<DeviceIdentifier> deviceIdentifiers)
             throws DeviceAccessAuthorizationException {

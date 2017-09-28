@@ -147,7 +147,8 @@ public class NotificationManagementServiceImplTests {
             Notification notification = TestDataHolder.getNotification(i, Notification.Status.CHECKED.toString(),
                     testDeviceIdentifier.toString(), TEST_NOTIFICATION_DESCRIPTION, DEVICE_ID_PREFIX + i,
                     NOTIFICATION_OPERATION_ID, DEVICE_TYPE);
-            Assert.assertTrue(notificationManagementService.updateNotification(notification), "Notification update failed for [" + notification.toString() + "]");
+            Assert.assertTrue(notificationManagementService.updateNotification(notification), "Notification " +
+                    "update failed for [" + notification.toString() + "]");
         }
     }
 
@@ -186,7 +187,8 @@ public class NotificationManagementServiceImplTests {
 
     @Test(dependsOnMethods = "updateNotificationStatus", description = "this method gets all notification by status checked")
     public void getNotificationsByStatus() throws NotificationManagementException {
-        List<Notification> returnedNotifications = notificationManagementService.getNotificationsByStatus(Notification.Status.CHECKED);
+        List<Notification> returnedNotifications = notificationManagementService.getNotificationsByStatus(Notification.
+                Status.CHECKED);
         Assert.assertEquals(returnedNotifications.size(), NO_OF_NOTIFICATIONS, "Returned no. of notification is " +
                 "not same as added no. of notifications.");
     }

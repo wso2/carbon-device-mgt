@@ -510,8 +510,6 @@ public interface DeviceManagementProviderService {
 
     boolean enrollDevice(Device device) throws DeviceManagementException;
 
-    PlatformConfiguration getConfiguration() throws DeviceManagementException;
-
     boolean saveConfiguration(PlatformConfiguration configuration) throws DeviceManagementException;
 
     boolean disenrollDevice(DeviceIdentifier deviceId) throws DeviceManagementException;
@@ -553,8 +551,6 @@ public interface DeviceManagementProviderService {
 
     void updateOperation(DeviceIdentifier deviceId, Operation operation) throws OperationManagementException;
 
-    void deleteOperation(String type, int operationId) throws OperationManagementException;
-
     Operation getOperationByDeviceAndOperationId(DeviceIdentifier deviceId, int operationId)
             throws OperationManagementException;
 
@@ -567,8 +563,6 @@ public interface DeviceManagementProviderService {
     Activity getOperationByActivityId(String activity) throws OperationManagementException;
 
     Activity getOperationByActivityIdAndDevice(String activity, DeviceIdentifier deviceId) throws OperationManagementException;
-
-    List<Activity> getActivitiesUpdatedAfter(long timestamp) throws OperationManagementException;
 
     List<Activity> getActivitiesUpdatedAfter(long timestamp, int limit, int offset) throws OperationManagementException;
 

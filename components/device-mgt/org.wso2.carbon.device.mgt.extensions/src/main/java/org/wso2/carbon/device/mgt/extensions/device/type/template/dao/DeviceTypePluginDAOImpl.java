@@ -252,21 +252,24 @@ public class DeviceTypePluginDAOImpl implements PluginDAO {
     }
 
     private void initializeDbQueries() {
-        selectDBQueryForGetDevice = "SELECT " + getDeviceTableColumnNames() + " FROM " +
-                deviceDAODefinition.getDeviceTableName() + " WHERE " + deviceDAODefinition.getPrimaryKey() + " = ?";
+        selectDBQueryForGetDevice =
+                "SELECT " + getDeviceTableColumnNames() + " FROM " + deviceDAODefinition.getDeviceTableName()
+                        + " WHERE " + deviceDAODefinition.getPrimaryKey() + " = ?";
 
-        createDBqueryForAddDevice = "INSERT INTO " + deviceDAODefinition.getDeviceTableName() + "("
-                + deviceDAODefinition.getPrimaryKey() + " , " + getDeviceTableColumnNames() + ") VALUES ("
-                + getPreparedInputString(deviceDAODefinition.getColumnNames().size() + 1) + ")";
+        createDBqueryForAddDevice =
+                "INSERT INTO " + deviceDAODefinition.getDeviceTableName() + "(" + deviceDAODefinition.getPrimaryKey()
+                        + " , " + getDeviceTableColumnNames() + ") VALUES (" + getPreparedInputString(
+                        deviceDAODefinition.getColumnNames().size() + 1) + ")";
 
         updateDBQueryForUpdateDevice = "UPDATE " + deviceDAODefinition.getDeviceTableName() + " SET "
-                + getDeviceTableColumnNamesForUpdateQuery() + " WHERE " + deviceDAODefinition.getPrimaryKey()
-                + " = ?";
+                + getDeviceTableColumnNamesForUpdateQuery() + " WHERE " + deviceDAODefinition.getPrimaryKey() + " = ?";
 
-        deleteDBQueryToRemoveDevicd = "DELETE FROM " + deviceDAODefinition.getDeviceTableName()
-                + " WHERE " + deviceDAODefinition.getPrimaryKey() + " = ?";
+        deleteDBQueryToRemoveDevicd =
+                "DELETE FROM " + deviceDAODefinition.getDeviceTableName() + " WHERE " + deviceDAODefinition
+                        .getPrimaryKey() + " = ?";
 
-        selectDBQueryToGetAllDevice = "SELECT " + getDeviceTableColumnNames() + " FROM "
-                + deviceDAODefinition.getDeviceTableName();
+        selectDBQueryToGetAllDevice =
+                "SELECT " + getDeviceTableColumnNames() + "," + deviceDAODefinition.getPrimaryKey() + " FROM "
+                        + deviceDAODefinition.getDeviceTableName();
     }
 }

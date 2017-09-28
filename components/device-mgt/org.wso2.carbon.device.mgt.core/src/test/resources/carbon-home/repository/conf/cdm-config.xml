@@ -76,7 +76,7 @@
     device caching for upto configured expiry-time in seconds. In clustered setup all worker nodes can enable the
     device-cache to improve performance. -->
     <DeviceCacheConfiguration>
-        <Enable>true</Enable>
+        <Enable>false</Enable>
         <ExpiryTime>600</ExpiryTime>
         <!--This configuration specifies the number of cache entries in device cache. default capacity is 10000 entries.
         This can be configured to higher number if cache eviction happens due to large number of devices in the
@@ -84,7 +84,7 @@
         <Capacity>10000</Capacity>
     </DeviceCacheConfiguration>
     <CertificateCacheConfiguration>
-        <Enable>true</Enable>
+        <Enable>false</Enable>
         <ExpiryTime>86400</ExpiryTime>
     </CertificateCacheConfiguration>
     <GeoLocationConfiguration>

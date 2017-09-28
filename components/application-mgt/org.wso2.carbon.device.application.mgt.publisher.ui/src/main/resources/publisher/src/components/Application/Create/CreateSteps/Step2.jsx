@@ -18,299 +18,148 @@
 
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
-import {Badge, FormGroup, Input, Label} from 'reactstrap';
+import AuthHandler from "../../../../api/authHandler";
+import PlatformMgtApi from "../../../../api/platformMgtApi";
+import {FormGroup, Input, Label} from 'reactstrap';
 
 /**
- * The Second step of application create wizard.
- * This contains following components.
- *      * App Title
- *      * Short Description
- *      * Application Description
- *      * Application Visibility
- *      * Application Tags : {Used Material UI Chip component}
- *      * Application Category.
- *      * Platform Specific properties.
+ * The first step of the application creation wizard.
+ * This contains following components:
+ *      * Application Title
+ *      * Store Type
+ *      * Application Platform
  *
  * Parent Component: Create
  * Props:
- *      * handleNext : {type: function, Invokes handleNext function in Parent.}
- *      * handlePrev : {type: function, Invokes handlePrev function in Parent}
- *      * setData : {type: function, Invokes setStepData function in Parent}
- *      * removeData : {type: Invokes removeStepData function in Parent}
+ *      1. handleNext: {type: function, Invokes handleNext function of parent component}
+ *      2. setData : {type: function, Sets current form data to the state of the parent component}
+ *      3. removeData: {type: function, Invokes the removeStepData function click of parent}
  * */
 class Step2 extends Component {
     constructor() {
         super();
+        this.setPlatforms = this.setPlatforms.bind(this);
+        this.setStepData = this.setStepData.bind(this);
+        this.cancel = this.cancel.bind(this);
+        this.platforms = [];
         this.state = {
-            tags: [],
-            icon: [],
+            finished: false,
+            stepIndex: 0,
+            store: 1,
+            platformSelectedIndex: 0,
+            platform: "",
+            platforms: [],
+            stepData: [],
             title: "",
-            errors: {},
-            banner: [],
-            defValue: "",
-            category: 0,
-            visibility: 0,
-            description: "",
-            screenshots: [],
-            identifier: "",
-            shortDescription: ""
+            titleError: ""
         };
-        this.scriptId = "application-create-step2";
+        this.scriptId = "application-create-step1";
+    }
+
+    componentDidMount() {
+        //Get the list of available platforms and set to the state.
+        PlatformMgtApi.getPlatforms().then(response => {
+            console.log(response);
+            this.setPlatforms(response.data);
+        }).catch(err => {
+            AuthHandler.unauthorizedErrorHandler(err);
+        })
     }
 
     /**
-     * Create a tag on Enter key press and set it to the state.
-     * Clears the tags text field.
-     * Chip gets two parameters: Key and value.
+     * Extract the platforms from the response data and populate the state.
+     * @param platforms: The array returned as the response.
      * */
-    addTags(event) {
-        let tags = this.state.tags;
-        if (event.charCode === 13) {
-            event.preventDefault();
-            tags.push({key: Math.floor(Math.random() * 1000), value: event.target.value});
-            this.setState({tags, defValue: ""}, console.log(tags));
+    setPlatforms(platforms) {
+        let tmpPlatforms = [];
+        for (let index in platforms) {
+            let platform = {};
+            platform = platforms[index];
+            tmpPlatforms.push(platform);
         }
+        this.setState({platforms: tmpPlatforms, platformSelectedIndex: 0, platform: tmpPlatforms[0].name})
     }
 
     /**
-     * Set the value for tag.
-     * */
-    handleTagChange(event) {
-        let defaultValue = this.state.defValue;
-        defaultValue = event.target.value;
-        this.setState({defValue: defaultValue})
-    }
-
-    /**
-     * Invokes the handleNext function in Create component.
-     * */
-    handleNext() {
-        let fields = [{name: "Title", value: this.state.title},
-            {name: "Short Description", value: this.state.shortDescription},
-            {name: "Description", value: this.state.description},
-            {name: "Banner", value: this.state.banner},
-            {name: "Screenshots", value: this.state.screenshots},
-            {name: "Identifier", value: this.state.identifier},
-            {name: "Icon", value: this.state.icon}];
-        this.validate(fields);
-    }
-
-    /**
-     * Invokes the handlePrev function in Create component.
-     * */
-    handlePrev() {
-        this.props.handlePrev();
-    }
-
-    /**
-     * Handles Chip delete function.
-     * Removes the tag from state.tags
-     * */
-    handleRequestDelete(event) {
-        this.chipData = this.state.tags;
-        console.log(event.target);
-        const chipToDelete = this.chipData.map((chip) => chip.value).indexOf(event.target.value);
-        this.chipData.splice(chipToDelete, 1);
-        this.setState({tags: this.chipData});
-    };
-
-    /**
-     * Validate the form.
-     * */
-    validate(fields) {
-        let errors = {};
-        let errorsPresent = false;
-        fields.forEach(function (field) {
-            switch (field.name) {
-                case 'Title': {
-                    if (field.value === "") {
-                        errors[field.name] = field.name + " is required!";
-                        errorsPresent = true;
-                    } else {
-                        errorsPresent = false;
-                    }
-                    break;
-                }
-                case 'Identifier': {
-                    if (field.value === "") {
-                        errors[field.name] = field.name + " is required!";
-                        errorsPresent = true;
-                    } else {
-                        errorsPresent = false;
-                    }
-                    break;
-                }
-                case 'Short Description': {
-                    if (field.value === "") {
-                        errors[field.name] = field.name + " is required!";
-                        errorsPresent = true;
-                    } else {
-                        errorsPresent = false;
-                    }
-                    break;
-                }
-                case 'Description': {
-                    if (field.value === "") {
-                        errors[field.name] = field.name + " is required!";
-                        errorsPresent = true;
-                    } else {
-                        errorsPresent = false;
-                    }
-                    break;
-                }
-                case 'Banner': {
-                    if (field.value.length === 0) {
-                        errors[field.name] = field.name + " is required!";
-                        errorsPresent = true;
-                    } else {
-                        errorsPresent = false;
-                    }
-                    break;
-                }
-                case 'Icon': {
-                    if (field.value.length === 0) {
-                        errors[field.name] = field.name + " is required!";
-                        errorsPresent = true;
-                    } else {
-                        errorsPresent = false;
-                    }
-                    break;
-                }
-                case 'Screenshots': {
-                    if (field.value.length < 3) {
-                        errors[field.name] = "3 " + field.name + " are required!";
-                        errorsPresent = true;
-                    } else {
-                        errorsPresent = false;
-                    }
-                    break;
-                }
-            }
-        });
-
-        if (!errorsPresent) {
-            this.setStepData();
-        } else {
-            this.setState({errors: errors}, console.log(errors));
-        }
-    }
-
-    /**
-     * Creates an object with the current step data and persist in the parent.
+     * Persist the current form data to the state.
      * */
     setStepData() {
-        let stepData = {};
+        console.log("Platforms", this.state.platforms);
+        let step = {
+            store: this.state.store,
+            platform: this.state.platforms[this.state.platformSelectedIndex]
+        };
+        console.log(step);
+        this.props.setData("step1", {step: step});
+    }
 
-        this.props.setData("step2", {step: stepData});
+    cancel() {
+
+    }
+
+    /**
+     * Triggers when changing the Platform selection.
+     * */
+    onChangePlatform(event) {
+        console.log(event.target.value, this.state.platforms);
+        let id = event.target.value;
+        let selectedPlatform = this.state.platforms.filter((platform) => {
+            return platform.identifier === id;
+        });
+        console.log(selectedPlatform);
+
+        this.setState({platform: selectedPlatform});
     };
 
     /**
-     * Set text field values to state.
+     * Triggers when changing the Store selection.
      * */
-    onTextFieldChange(event, value) {
-        let field = event.target.id;
-        switch (field) {
-            case "name": {
-                this.setState({name: value});
-                break;
-            }
-            case "shortDescription": {
-                this.setState({shortDescription: value});
-                break;
-            }
-            case "description": {
-                this.setState({description: value});
-                break;
-            }
-            case "identifier": {
-                this.setState({identifier: value});
-                break;
-            }
-        }
+    onChangeStore(event) {
+        console.log(event.target.value);
+        this.setState({store: event.target.value});
     };
 
     render() {
-        console.log(this.state.visibilityComponent);
         return (
-            <div className="createStep2Content">
-                <div>
-                    <div>
-                        <FormGroup>
-                            <Label for="app-title">Title*</Label>
-                            <Input
-                                required
-                                type="text"
-                                name="appName"
-                                id="app-title"
-                            />
-                        </FormGroup>
-                        <FormGroup>
-                            <Label for="app-description">Description*</Label>
-                            <Input
-                                required
-                                type="textarea"
-                                name="appDescription"
-                                id="app-description"
-                            />
-                        </FormGroup>
-                        <FormGroup>
-                            <Label for="app-category">Category</Label>
-                            <Input
-                                type="select"
-                                name="category"
-                                id="app-category"
-                            >
-                                <option>Business</option>
-                            </Input>
-                        </FormGroup>
-                        <FormGroup>
-                            <Label for="app-visibility">Visibility</Label>
-                            <Input
-                                type="select"
-                                name="visibility"
-                                id="app-visibility"
-                            >
-                                <option>Devices</option>
-                                <option>Roles</option>
-                                <option>Groups</option>
-                            </Input>
-                        </FormGroup>
-                        <FormGroup>
-                            <Label for="app-tags">Tags*</Label>
-                            <Input
-                                required
-                                type="text"
-                                value={this.state.defValue}
-                                name="app-tags"
-                                id="app-tags"
-                                onChange={this.handleTagChange.bind(this)}
-                                onKeyPress={this.addTags.bind(this)}
-                            />
-                            <div id="batch-content">
-                                {this.state.tags.map(tag => {
-                                        return (
-                                            <Badge
-                                                style={{margin: '0 2px 0 2px'}}
-                                                value={tag.value}
-                                                onClick={this.handleRequestDelete.bind(this)}
-                                            >
-                                                {tag.value}
-                                            </Badge>
-                                        )
-                                    }
-                                )}
-                            </div>
-                        </FormGroup>
-                    </div>
-                </div>
+            <div>
+
+                <FormGroup>
+                    <Label for="store">Store Type</Label>
+                    <Input
+                        type="select"
+                        name="store"
+                        id="store"
+                        className="input-custom"
+                        onChange={this.onChangeStore.bind(this)}
+                    >
+                        <option>Enterprise</option>
+                        <option>Public</option>
+                    </Input>
+                </FormGroup>
+                <FormGroup>
+                    <Label for="store">Platform</Label>
+                    <Input
+                        type="select"
+                        name="store"
+                        id="store"
+                        onChange={this.onChangePlatform.bind(this)}
+                    >
+                        {this.state.platforms.length > 0 ? this.state.platforms.map(platform => {
+                            return (
+                                <option value={platform.identifier}>
+                                    {platform.name}
+                                </option>
+                            )
+                        }) : <option>No Platforms</option>}
+                    </Input>
+                </FormGroup>
             </div>
         );
     }
 }
 
-Step2.prototypes = {
+Step2.propTypes = {
     handleNext: PropTypes.func,
-    handlePrev: PropTypes.func,
     setData: PropTypes.func,
     removeData: PropTypes.func
 };

@@ -18,7 +18,7 @@
 
 body {
     width: 100%;
-    font-family: sans-serif;
+    font-family: Roboto sans-serif;
 }
 
 #userName {
@@ -48,10 +48,11 @@ body {
 
 #container {
     background-color: #ffffff;
+    padding: 0;
 }
 
 #header-content {
-    height: 100px;
+    height: 125px;
     width: 100%;
     margin: 0 10px 0 0;
     background-color: #3b33bd;
@@ -59,6 +60,12 @@ body {
     top: 0; /* Position the navbar at the top of the page */
     z-index: 2;
     box-shadow: -2px 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+#header {
+    margin: 16px 16px 20px 16px;
+    height: 100%;
+    position: relative;
 }
 
 #application-content {
@@ -69,24 +76,14 @@ body {
     padding: 10px 10px 10px 10px;
 }
 
-.add-btn {
+#add-btn-container {
     position: absolute;
-    left:12%;
-    top: 35px;
-}
-
-.add-btn.div {
-    position: relative;
-    margin-top: 20px;
-    margin-left: 20px;
-}
-
-#fw-api:before {
-    content: '\e601';
+    left: 12%;
+    top: 100px;
 }
 
 .btn-header {
-    margin-top: 10px;
+    margin-top: 15px;
     margin-right: 20px;
     color: white;
 }
@@ -113,8 +110,9 @@ body {
     color: #a8a8a8;
     position: relative;
     float: right;
-    top: 35px;
-    margin-right: 10px;
+    top: 75px;
+    left: 80px;
+    margin-right: 16px;
 }
 
 #search {
@@ -174,7 +172,6 @@ body {
 .applicationCreateBannerp {
     margin: 70px 40px 40px 150px;
 }
-
 
 .applicationCreateScreenshotDropZone {
     width: 150px;

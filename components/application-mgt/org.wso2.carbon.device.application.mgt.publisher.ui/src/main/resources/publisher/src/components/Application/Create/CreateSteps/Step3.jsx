@@ -25,7 +25,6 @@ import SelectField from 'material-ui/SelectField';
 import {FormGroup, Label} from 'reactstrap';
 import AppImage from "../../../UIComponents/AppImage/AppImage";
 
-
 /**
  * The Third step of application create wizard.
  * This contains following components.

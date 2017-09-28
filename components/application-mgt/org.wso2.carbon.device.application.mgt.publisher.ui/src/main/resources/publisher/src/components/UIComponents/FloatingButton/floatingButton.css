@@ -42,6 +42,7 @@
 
 .btn-circle:hover {
     cursor: pointer;
+    background-color: rgb(255, 93, 2);
 }
 
 .primary {

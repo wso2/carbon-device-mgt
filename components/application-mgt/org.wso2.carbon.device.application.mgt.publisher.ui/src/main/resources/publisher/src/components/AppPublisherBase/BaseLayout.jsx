@@ -21,7 +21,7 @@ import React, {Component} from 'react';
 import {withRouter} from 'react-router-dom';
 import AuthHandler from "../../api/authHandler";
 import ApplicationCreate from '../Application/Create/ApplicationCreate';
-import {Button, Col, Input, Row,} from 'reactstrap';
+import {Col, Container, Input, Row,} from 'reactstrap';
 import FloatingButton from "../UIComponents/FloatingButton/FloatingButton";
 
 /**
@@ -48,7 +48,6 @@ class BaseLayout extends Component {
     }
 
     handleApplicationCreateClick(event) {
-        console.log("dsfds");
         event.preventDefault();
         event.stopPropagation();
         this.setState({openModal: true});
@@ -72,7 +71,7 @@ class BaseLayout extends Component {
 
     render() {
         return (
-            <div id="container">
+            <Container noGutters fluid id="container">
                 <div id="header-content">
                     <div id="header">
                         <span id="header-text">
@@ -82,33 +81,33 @@ class BaseLayout extends Component {
                             <i className="fw fw-notification btn-header"></i>
                             <i className="fw fw-user btn-header"></i>
                         </div>
-                    </div>
-                    <div id="search-box">
-                        <i className="fw fw-search search-icon">
-                        </i>
-                        <Input
-                            id="search"
-                            name="search"
-                            placeholder={'Search for Applications'}
-                            onChange={(event) => console.log(event.target.value)}
-                        />
+                        <div id="search-box">
+                            <i className="fw fw-search search-icon">
+                            </i>
+                            <Input
+                                id="search"
+                                name="search"
+                                placeholder={'Search for Applications'}
+                                onChange={(event) => console.log(event.target.value)}
+                            />
+                        </div>
                     </div>
                     <div id="add-btn-container">
-                        <FloatingButton className="add-btn small" onClick={this.handleApplicationCreateClick.bind(this)}/>
+                        <FloatingButton
+                            className="add-btn small"
+                            onClick={this.handleApplicationCreateClick.bind(this)}
+                        />
                     </div>
                 </div>
-
-
                 <div id="application-content" style={this.state.style}>
                     <Row>
                         <Col>
                             {this.props.children}
                         </Col>
                     </Row>
-
                 </div>
                 <ApplicationCreate open={this.state.openModal} close={this.closeModal}/>
-            </div>
+            </Container>
         );
     }
 }

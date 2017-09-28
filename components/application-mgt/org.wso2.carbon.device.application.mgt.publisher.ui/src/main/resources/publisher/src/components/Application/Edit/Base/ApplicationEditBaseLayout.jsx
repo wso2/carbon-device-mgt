@@ -19,7 +19,7 @@
 import './baseLayout.css';
 import {Col, Row} from "reactstrap";
 import React, {Component} from 'react';
-import GeneralInfo from "../GeneralInfo";
+import GeneralInfo from "../GenenralInfo/GeneralInfo";
 import ReleaseManager from '../../Release/ReleaseMgtBase/ReleaseManager';
 
 class ApplicationEdit extends Component {

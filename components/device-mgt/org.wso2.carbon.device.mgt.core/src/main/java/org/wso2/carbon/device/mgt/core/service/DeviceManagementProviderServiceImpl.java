@@ -130,11 +130,6 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     }
 
     @Override
-    public PlatformConfiguration getConfiguration() throws DeviceManagementException {
-        return null;
-    }
-
-    @Override
     public PlatformConfiguration getConfiguration(String deviceType) throws DeviceManagementException {
         DeviceManager dms =
                 pluginRepository.getDeviceManagementService(deviceType, this.getTenantId()).getDeviceManager();
@@ -1456,11 +1451,6 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
     public Activity getOperationByActivityIdAndDevice(String activity, DeviceIdentifier deviceId) throws OperationManagementException {
         return DeviceManagementDataHolder.getInstance().getOperationManager().getOperationByActivityIdAndDevice(activity, deviceId);
-    }
-
-    @Override
-    public List<Activity> getActivitiesUpdatedAfter(long timestamp) throws OperationManagementException {
-        return DeviceManagementDataHolder.getInstance().getOperationManager().getActivitiesUpdatedAfter(timestamp);
     }
 
     @Override

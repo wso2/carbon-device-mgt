@@ -1532,6 +1532,13 @@
                 <version>${power.mock.version}</version>
                 <scope>test</scope>
             </dependency>
+            <dependency>
+                <groupId>org.powermock</groupId>
+                <artifactId>powermock-module-junit4</artifactId>
+                <version>${power.mock.version}</version>
+
+                <scope>test</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 

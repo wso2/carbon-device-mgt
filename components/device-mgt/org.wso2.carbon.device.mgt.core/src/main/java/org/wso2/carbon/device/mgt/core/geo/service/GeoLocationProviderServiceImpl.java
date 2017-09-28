@@ -390,7 +390,7 @@ public class GeoLocationProviderServiceImpl implements GeoLocationProviderServic
         }
     }
 
-    private EventProcessorAdminServiceStub getEventProcessorAdminServiceStub() throws JWTClientException {
+    protected EventProcessorAdminServiceStub getEventProcessorAdminServiceStub() throws JWTClientException {
         //send alert to event-processing
         String eventProcessorAdminServiceWSUrl = Utils.replaceSystemProperty(GeoServices.DAS_URL) +
                 "/services/EventProcessorAdminService";

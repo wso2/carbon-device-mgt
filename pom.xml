@@ -23,7 +23,7 @@
     <groupId>org.wso2.carbon.devicemgt</groupId>
     <artifactId>carbon-devicemgt</artifactId>
     <packaging>pom</packaging>
-    <version>3.0.115-SNAPSHOT</version>
+    <version>3.0.121-SNAPSHOT</version>
     <name>WSO2 Carbon - Device Management - Parent</name>
     <url>http://wso2.org</url>
     <description>WSO2 Connected Device Manager Components</description>
@@ -1532,6 +1532,30 @@
                 <version>${power.mock.version}</version>
                 <scope>test</scope>
             </dependency>
+            <dependency>
+                <groupId>org.powermock</groupId>
+                <artifactId>powermock-module-testng</artifactId>
+                <version>${power.mock.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>commons-dbcp.wso2</groupId>
+                <artifactId>commons-dbcp</artifactId>
+                <version>${commons.dbcp.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.governance</groupId>
+                <artifactId>org.wso2.carbon.governance.registry.extensions</artifactId>
+                <version>${carbon.governance.version}</version>
+                <scope>test</scope>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.slf4j</groupId>
+                        <artifactId>jcl-over-slf4j</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -1827,7 +1851,7 @@
         <axiom.wso2.version>1.2.11.wso2v10</axiom.wso2.version>
 
         <!-- Carbon Device Management -->
-        <carbon.device.mgt.version>3.0.115-SNAPSHOT</carbon.device.mgt.version>
+        <carbon.device.mgt.version>3.0.121-SNAPSHOT</carbon.device.mgt.version>
 
         <!-- Carbon Commons -->
         <carbon.commons.version>4.4.8</carbon.commons.version>
@@ -1961,7 +1985,9 @@
         <jacoco.maven.plugin.version>0.7.8</jacoco.maven.plugin.version>
         <jacoco.ant.verision>0.7.5.201505241946</jacoco.ant.verision>
         <ant.contrib.version>1.0b3</ant.contrib.version>
-        <power.mock.version>1.6.4</power.mock.version>
+        <power.mock.version>1.7.0</power.mock.version>
+        <commons.dbcp.version>1.4.0.wso2v1</commons.dbcp.version>
+
     </properties>
 
 </project>

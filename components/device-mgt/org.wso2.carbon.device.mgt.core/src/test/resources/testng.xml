@@ -40,6 +40,11 @@
         <classes>
             <class name="org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderServiceTest"/>
             <class name="org.wso2.carbon.device.mgt.core.app.mgt.ApplicationManagementProviderServiceTest"/>
+            <class name="org.wso2.carbon.device.mgt.core.service.GroupManagementProviderServiceTest"/>
+            <class name="org.wso2.carbon.device.mgt.core.operation.OperationManagementTests"/>
+            <class name="org.wso2.carbon.device.mgt.core.permission.mgt.PermissionManagerServiceTest" />
+            <class name="org.wso2.carbon.device.mgt.core.notification.mgt.NotificationManagementServiceImplTests"/>
+            <class name="org.wso2.carbon.device.mgt.core.task.DeviceTaskManagerServiceTest"/>
         </classes>
     </test>
 </suite>

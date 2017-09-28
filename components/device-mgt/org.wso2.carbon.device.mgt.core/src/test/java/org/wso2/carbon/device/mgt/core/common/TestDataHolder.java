@@ -52,6 +52,16 @@ public class TestDataHolder {
         return device;
     }
 
+    public static Device generateDummyDeviceData(String deviceIdentifier, String deviceType,
+                                                 EnrolmentInfo enrolmentInfo) {
+        Device device = new Device();
+        device.setEnrolmentInfo(enrolmentInfo);
+        device.setDescription("Test Description");
+        device.setDeviceIdentifier(deviceIdentifier);
+        device.setType(deviceType);
+        return device;
+    }
+
     public static List<Device> generateDummyDeviceData(List<DeviceIdentifier> deviceIds) {
         List<Device> devices = new ArrayList<>();
         for (DeviceIdentifier deviceId : deviceIds) {

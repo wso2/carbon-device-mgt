@@ -343,6 +343,17 @@ public class OperationManagementTests extends BaseDeviceManagementTest {
         Assert.assertTrue(operation.getType().equals(Operation.Type.POLICY));
     }
 
+    @Test(dependsOnMethods = "updateOperation", expectedExceptions = OperationManagementException.class)
+    public void getNextPendingOperationAsNonAdmin() throws OperationManagementException {
+        startTenantFlowAsNonAdmin();
+        try {
+            DeviceIdentifier deviceIdentifier = this.deviceIds.get(0);
+            this.operationMgtService.getNextPendingOperation(deviceIdentifier);
+        } finally {
+            PrivilegedCarbonContext.endTenantFlow();
+        }
+    }
+
     @Test(dependsOnMethods = "getNextPendingOperation")
     public void getOperationByDeviceAndOperationId() throws OperationManagementException {
         DeviceIdentifier deviceIdentifier = this.deviceIds.get(0);
@@ -483,6 +494,11 @@ public class OperationManagementTests extends BaseDeviceManagementTest {
     @Test(dependsOnMethods = "getOperationForInactiveDevice", expectedExceptions = OperationManagementException.class)
     public void getPendingOperationDeviceForInvalidDevice() throws DeviceManagementException, OperationManagementException {
        this.operationMgtService.getPendingOperations(new DeviceIdentifier(INVALID_DEVICE, DEVICE_TYPE));
+    }
+
+    @Test(dependsOnMethods = "getPendingOperationDeviceForInvalidDevice", expectedExceptions = OperationManagementException.class)
+    public void getNextPendingOperationDeviceForInvalidDevice() throws DeviceManagementException, OperationManagementException {
+        this.operationMgtService.getNextPendingOperation(new DeviceIdentifier(INVALID_DEVICE, DEVICE_TYPE));
     }
 
 }

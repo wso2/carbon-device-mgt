@@ -87,18 +87,12 @@ public class OperationManagementTests {
 
     @BeforeClass
     public void init() throws Exception {
-        DeviceConfigurationManager.getInstance().initConfig();
         for (int i = 0; i < NO_OF_DEVICES; i++) {
             deviceIds.add(new DeviceIdentifier(DEVICE_ID_PREFIX + i, DEVICE_TYPE));
         }
         List<Device> devices = TestDataHolder.generateDummyDeviceData(this.deviceIds);
-        DeviceManagementProviderService deviceMgtService = new DeviceManagementProviderServiceImpl();
-        DeviceManagementServiceComponent.notifyStartupListeners();
-        DeviceManagementDataHolder.getInstance().setDeviceManagementProvider(deviceMgtService);
-        DeviceManagementDataHolder.getInstance().setRegistryService(getRegistryService());
-        DeviceManagementDataHolder.getInstance().setDeviceAccessAuthorizationService(new DeviceAccessAuthorizationServiceImpl());
-        DeviceManagementDataHolder.getInstance().setGroupManagementProviderService(new GroupManagementProviderServiceImpl());
         DeviceManagementDataHolder.getInstance().setDeviceTaskManagerService(null);
+        DeviceManagementProviderService deviceMgtService = DeviceManagementDataHolder.getInstance().getDeviceManagementProvider();
         deviceMgtService.registerDeviceType(new TestDeviceManagementService(DEVICE_TYPE,
                 MultitenantConstants.SUPER_TENANT_DOMAIN_NAME));
         for (Device device : devices) {
@@ -114,15 +108,7 @@ public class OperationManagementTests {
         this.operationMgtService = new OperationManagerImpl(DEVICE_TYPE, notificationStrategy);
     }
 
-    private RegistryService getRegistryService() throws RegistryException {
-        RealmService realmService = new InMemoryRealmService();
-        RegistryDataHolder.getInstance().setRealmService(realmService);
-        DeviceManagementDataHolder.getInstance().setRealmService(realmService);
-        InputStream is = this.getClass().getClassLoader().getResourceAsStream("carbon-home/repository/conf/registry.xml");
-        RegistryContext context = RegistryContext.getBaseInstance(is, realmService);
-        context.setSetup(true);
-        return context.getEmbeddedRegistryService();
-    }
+
 
     @Test
     public void addCommandOperation() throws DeviceManagementException, OperationManagementException, InvalidDeviceException {

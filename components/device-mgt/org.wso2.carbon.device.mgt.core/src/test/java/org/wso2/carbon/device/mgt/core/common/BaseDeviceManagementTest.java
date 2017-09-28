@@ -30,17 +30,31 @@ import org.wso2.carbon.base.MultitenantConstants;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.core.TestUtils;
+import org.wso2.carbon.device.mgt.core.authorization.DeviceAccessAuthorizationServiceImpl;
+import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.dao.GroupManagementDAOFactory;
+import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
+import org.wso2.carbon.device.mgt.core.internal.DeviceManagementServiceComponent;
 import org.wso2.carbon.device.mgt.core.notification.mgt.dao.NotificationManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOFactory;
+import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
+import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderServiceImpl;
+import org.wso2.carbon.device.mgt.core.service.GroupManagementProviderServiceImpl;
 import org.wso2.carbon.device.mgt.core.util.DeviceManagerUtil;
+import org.wso2.carbon.registry.core.config.RegistryContext;
+import org.wso2.carbon.registry.core.exceptions.RegistryException;
+import org.wso2.carbon.registry.core.internal.RegistryDataHolder;
+import org.wso2.carbon.registry.core.jdbc.realm.InMemoryRealmService;
+import org.wso2.carbon.registry.core.service.RegistryService;
+import org.wso2.carbon.user.core.service.RealmService;
 
 import javax.sql.DataSource;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import java.io.File;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -56,6 +70,7 @@ public abstract class BaseDeviceManagementTest {
         this.initDataSource();
         this.initSQLScript();
         this.initializeCarbonContext();
+        this.initServices();
     }
 
     protected void initDataSource() throws Exception {
@@ -64,6 +79,27 @@ public abstract class BaseDeviceManagementTest {
         GroupManagementDAOFactory.init(dataSource);
         OperationManagementDAOFactory.init(dataSource);
         NotificationManagementDAOFactory.init(dataSource);
+    }
+
+    private void initServices() throws DeviceManagementException, RegistryException {
+        DeviceConfigurationManager.getInstance().initConfig();
+        DeviceManagementProviderService deviceMgtService = new DeviceManagementProviderServiceImpl();
+        DeviceManagementServiceComponent.notifyStartupListeners();
+        DeviceManagementDataHolder.getInstance().setDeviceManagementProvider(deviceMgtService);
+        DeviceManagementDataHolder.getInstance().setRegistryService(getRegistryService());
+        DeviceManagementDataHolder.getInstance().setDeviceAccessAuthorizationService(new DeviceAccessAuthorizationServiceImpl());
+        DeviceManagementDataHolder.getInstance().setGroupManagementProviderService(new GroupManagementProviderServiceImpl());
+        DeviceManagementDataHolder.getInstance().setDeviceTaskManagerService(null);
+    }
+
+    private RegistryService getRegistryService() throws RegistryException {
+        RealmService realmService = new InMemoryRealmService();
+        RegistryDataHolder.getInstance().setRealmService(realmService);
+        DeviceManagementDataHolder.getInstance().setRealmService(realmService);
+        InputStream is = this.getClass().getClassLoader().getResourceAsStream("carbon-home/repository/conf/registry.xml");
+        RegistryContext context = RegistryContext.getBaseInstance(is, realmService);
+        context.setSetup(true);
+        return context.getEmbeddedRegistryService();
     }
 
     @BeforeClass

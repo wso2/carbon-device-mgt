@@ -43,7 +43,7 @@
             <class name="org.wso2.carbon.device.mgt.core.service.GroupManagementProviderServiceTest"/>
             <class name="org.wso2.carbon.device.mgt.core.operation.OperationManagementTests"/>
             <class name="org.wso2.carbon.device.mgt.core.permission.mgt.PermissionManagerServiceTest" />
-            <class name="org.wso2.carbon.device.mgt.core.notification.mgt.NotificationManagementTests"/>
+            <class name="org.wso2.carbon.device.mgt.core.notification.mgt.NotificationManagementServiceImplTests"/>
         </classes>
     </test>
 </suite>

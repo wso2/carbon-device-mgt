@@ -124,7 +124,7 @@ public class DeviceTypeManagerServiceTest {
         operationMonitoringConfigs.set(rasberrypiDeviceTypeManagerService, new OperationMonitoringTaskConfig());
         initialOperationConfig.set(rasberrypiDeviceTypeManagerService, new InitialOperationConfig());
 
-        URL resourceUrl = classLoader.getResource("android.xml");
+        URL resourceUrl = classLoader.getResource(Utils.DEVICE_TYPE_FOLDER + "android.xml");
 
         File androidConfiguration = null;
         if (resourceUrl != null) {
@@ -132,7 +132,7 @@ public class DeviceTypeManagerServiceTest {
         }
         androidDeviceConfiguration = Utils.getDeviceTypeConfiguration(androidConfiguration);
 
-        resourceUrl = classLoader.getResource("raspberrypi.xml");
+        resourceUrl = classLoader.getResource(Utils.DEVICE_TYPE_FOLDER + "raspberrypi.xml");
         File raspberrypiConfiguration = null;
         if (resourceUrl != null) {
             raspberrypiConfiguration = new File(resourceUrl.getFile());
@@ -304,7 +304,7 @@ public class DeviceTypeManagerServiceTest {
             throws RegistryException, IOException, SAXException, ParserConfigurationException,
             DeviceTypeConfigurationException, JAXBException {
         ClassLoader classLoader = getClass().getClassLoader();
-        URL resourceUrl = classLoader.getResource("arduino.xml");
+        URL resourceUrl = classLoader.getResource(Utils.DEVICE_TYPE_FOLDER + "arduino.xml");
         File arduinoConfiguration = null;
         if (resourceUrl != null) {
             arduinoConfiguration = new File(resourceUrl.getFile());

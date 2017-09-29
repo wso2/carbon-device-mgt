@@ -26,20 +26,4 @@ public class DeviceTypeMgtPluginException extends Exception{
         super(msg, nestedEx);
     }
 
-    public DeviceTypeMgtPluginException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public DeviceTypeMgtPluginException(String msg) {
-        super(msg);
-    }
-
-    public DeviceTypeMgtPluginException() {
-        super();
-    }
-
-    public DeviceTypeMgtPluginException(Throwable cause) {
-        super(cause);
-    }
-
 }

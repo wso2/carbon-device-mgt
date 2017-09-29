@@ -27,6 +27,8 @@
             <class name="org.wso2.carbon.device.mgt.extensions.device.type.template.DeviceTypeManagerServiceTest"/>
             <class name="org.wso2.carbon.device.mgt.extensions.device.type.template.DeviceTypeManagerTest"/>
             <class name="org.wso2.carbon.device.mgt.extensions.device.type.template.HttpDeviceTypeManagerServiceAndDeviceTypeGeneratorServceTest"/>
+            <class name="org.wso2.carbon.device.mgt.extensions.device.type.template.dao.DeviceDAODefinitionNegativeTest"/>
+            <class name="org.wso2.carbon.device.mgt.extensions.device.type.template.DeviceTypeManagerNegativeTest" />
         </classes>
     </test>
 </suite>

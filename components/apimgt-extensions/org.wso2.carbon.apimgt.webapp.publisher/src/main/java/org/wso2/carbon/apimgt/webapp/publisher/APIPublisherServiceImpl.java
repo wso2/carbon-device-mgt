@@ -43,8 +43,8 @@ public class APIPublisherServiceImpl implements APIPublisherService {
     @Override
     public void publishAPI(APIConfig apiConfig) throws APIManagerPublisherException {
         String tenantDomain = MultitenantUtils.getTenantDomain(apiConfig.getOwner());
-        PrivilegedCarbonContext.startTenantFlow();
-        PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(tenantDomain, true);
+//        PrivilegedCarbonContext.startTenantFlow();
+//        PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(tenantDomain, true);
         PrivilegedCarbonContext.getThreadLocalCarbonContext().setUsername(apiConfig.getOwner());
         try {
             PublisherClient publisherClient = APIPublisherDataHolder.getInstance().getIntegrationClientService()
@@ -74,7 +74,8 @@ public class APIPublisherServiceImpl implements APIPublisherService {
         } catch (FeignException e) {
             throw new APIManagerPublisherException(e);
         } finally {
-            PrivilegedCarbonContext.endTenantFlow();
+
+            //PrivilegedCarbonContext.endTenantFlow();
         }
     }
 

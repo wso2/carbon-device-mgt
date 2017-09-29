@@ -26,8 +26,10 @@ import org.testng.annotations.Test;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.DeviceManagementConstants;
+import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.geo.service.Alert;
 import org.wso2.carbon.device.mgt.common.geo.service.GeoFence;
+import org.wso2.carbon.device.mgt.common.geo.service.GeoLocationBasedServiceException;
 import org.wso2.carbon.device.mgt.core.TestDeviceManagementService;
 import org.wso2.carbon.device.mgt.core.common.TestDataHolder;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
@@ -58,74 +60,53 @@ public class GeoLocationProviderServiceTest {
     @BeforeClass
     public void init() throws Exception {
         initMocks();
-        enrollDev();
+        enrollDevice();
     }
 
     @Test (description = "Create a sample geo exit-alert with relevant details.")
-    public void createGeoExitAlert() throws Exception {
+    public void createGeoExitAlert() throws GeoLocationBasedServiceException {
          Boolean result = geoLocationProviderServiceImpl.
                 createGeoAlert(getExitAlert(), getDeviceIdentifier(), DeviceManagementConstants.GeoServices.ALERT_TYPE_EXIT);
         Assert.assertEquals(result, Boolean.TRUE);
     }
 
     @Test (description = "Create a sample geo within-alert with relevant details.")
-    public void createGeoWithinAlert() throws Exception {
+    public void createGeoWithinAlert() throws GeoLocationBasedServiceException {
          Boolean result = geoLocationProviderServiceImpl.
                 createGeoAlert(getWithinAlert(), getDeviceIdentifier(), DeviceManagementConstants.GeoServices.ALERT_TYPE_WITHIN);
         Assert.assertEquals(result, Boolean.TRUE);
     }
 
     @Test (description = "Create a sample geo proximity-alert with relevant details.")
-    public void createGeoProximityAlert() throws Exception {
+    public void createGeoProximityAlert() throws GeoLocationBasedServiceException {
         Boolean result = geoLocationProviderServiceImpl.
                 createGeoAlert(getProximityAlert(), getDeviceIdentifier(), DeviceManagementConstants.GeoServices.ALERT_TYPE_PROXIMITY);
         Assert.assertEquals(result, Boolean.TRUE);
     }
 
     @Test (description = "Create a sample geo speed-alert with relevant details.")
-    public void createGeoSpeedAlert() throws Exception {
+    public void createGeoSpeedAlert() throws GeoLocationBasedServiceException {
         Boolean result = geoLocationProviderServiceImpl.
                 createGeoAlert(getSpeedAlert(), getDeviceIdentifier(), DeviceManagementConstants.GeoServices.ALERT_TYPE_SPEED);
         Assert.assertEquals(result, Boolean.TRUE);
     }
 
     @Test (description = "Create a sample geo stationary-alert with relevant details.")
-    public void createGeoStationaryAlert() throws Exception {
+    public void createGeoStationaryAlert() throws GeoLocationBasedServiceException {
         Boolean result = geoLocationProviderServiceImpl.
                 createGeoAlert(getStationaryAlert(), getDeviceIdentifier(), DeviceManagementConstants.GeoServices.ALERT_TYPE_STATIONARY);
         Assert.assertEquals(result, Boolean.TRUE);
     }
 
     @Test (description = "Create a sample geo traffic-alert with relevant details.")
-    public void createGeoTrafficAlert() throws Exception {
+    public void createGeoTrafficAlert() throws GeoLocationBasedServiceException {
         Boolean result = geoLocationProviderServiceImpl.
                 createGeoAlert(getTrafficAlert(), getDeviceIdentifier(), DeviceManagementConstants.GeoServices.ALERT_TYPE_TRAFFIC);
         Assert.assertEquals(result, Boolean.TRUE);
     }
 
-    @Test(dependsOnMethods = "createGeoExitAlert", description = "retrieve saved geo exit-alert.")
-    public void getGeoExitAlerts() throws Exception {
-        List<GeoFence> geoFences;
-        geoFences = geoLocationProviderServiceImpl.getExitAlerts(getDeviceIdentifier());
-        Assert.assertNotNull(geoFences);
-        GeoFence geoFenceNode = geoFences.get(0);
-        Assert.assertEquals(geoFenceNode.getGeoJson(), SAMPLE_GEO_JSON);
-        Assert.assertEquals(geoFenceNode.getAreaName(), SAMPLE_AREA_NAME);
-        Assert.assertEquals(geoFenceNode.getQueryName(), SAMPLE_QUERY_NAME);
-    }
-
-    @Test(dependsOnMethods = "createGeoWithinAlert", description = "retrieve saved geo within-alert.")
-    public void getGeoWithinAlerts() throws Exception {
-        List<GeoFence> geoFences;
-        geoFences = geoLocationProviderServiceImpl.getWithinAlerts(getDeviceIdentifier());
-        Assert.assertNotNull(geoFences);
-        GeoFence geoFenceNode = geoFences.get(0);
-        Assert.assertEquals(geoFenceNode.getAreaName(), SAMPLE_AREA_NAME);
-        Assert.assertEquals(geoFenceNode.getQueryName(), SAMPLE_QUERY_NAME);
-    }
-
     @Test(dependsOnMethods = "createGeoSpeedAlert", description = "retrieve saved geo speed-alert.")
-    public void getGeoSpeedAlerts() throws Exception {
+    public void getGeoSpeedAlerts() throws GeoLocationBasedServiceException {
         String result;
         result = geoLocationProviderServiceImpl.getSpeedAlerts(getDeviceIdentifier());
         Assert.assertNotNull(result);
@@ -134,7 +115,7 @@ public class GeoLocationProviderServiceTest {
     }
 
     @Test(dependsOnMethods = "createGeoTrafficAlert" , description = "retrieve saved geo exit-alert.")
-    public void getGeoTrafficAlerts() throws Exception {
+    public void getGeoTrafficAlerts() throws GeoLocationBasedServiceException {
         List<GeoFence> geoFences;
         geoFences = geoLocationProviderServiceImpl.getTrafficAlerts(getDeviceIdentifier());
         Assert.assertNotNull(geoFences);
@@ -145,7 +126,7 @@ public class GeoLocationProviderServiceTest {
     }
 
     @Test(dependsOnMethods = "createGeoStationaryAlert", description = "retrieve saved geo stationary-alert.")
-    public void getGeoStationaryAlerts() throws Exception {
+    public void getGeoStationaryAlerts() throws GeoLocationBasedServiceException {
         List<GeoFence> geoFences;
         geoFences = geoLocationProviderServiceImpl.getStationaryAlerts(getDeviceIdentifier());
         Assert.assertNotNull(geoFences);
@@ -244,7 +225,7 @@ public class GeoLocationProviderServiceTest {
         return alert;
     }
 
-    private void enrollDev() throws Exception {
+    private void enrollDevice() throws Exception {
         DeviceIdentifier deviceIdentifier = new DeviceIdentifier(DEVICE_ID, DEVICE_TYPE);
         Device device = TestDataHolder.generateDummyDeviceData(deviceIdentifier);
         DeviceManagementProviderService deviceMgtService = DeviceManagementDataHolder.getInstance().

@@ -1,11 +1,26 @@
+/*
+ * Copyright (c) 2017, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *
+ * WSO2 Inc. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
 package org.wso2.carbon.certificate.mgt.core.common;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.tomcat.jdbc.pool.PoolProperties;
-import org.powermock.modules.testng.PowerMockTestCase;
-import org.testng.Assert;
-import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeSuite;
 import org.w3c.dom.Document;
@@ -23,11 +38,10 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import java.io.File;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.sql.Statement;
 
-public abstract class BaseDeviceManagementCertificateTest{
+
+public abstract class BaseDeviceManagementCertificateTest {
     private DataSource dataSource;
     private static final Log log = LogFactory.getLog(BaseDeviceManagementCertificateTest.class);
 
@@ -42,6 +56,12 @@ public abstract class BaseDeviceManagementCertificateTest{
 
     public void initDataSource() throws Exception {
         this.dataSource = this.getDataSource(this.readDataSourceConfig());
+        DeviceManagementDAOFactory.init(dataSource);
+        GroupManagementDAOFactory.init(dataSource);
+    }
+
+    public void initDataSource(DataSource ds) throws Exception {
+        this.dataSource = ds;
         DeviceManagementDAOFactory.init(dataSource);
         GroupManagementDAOFactory.init(dataSource);
     }
@@ -76,7 +96,7 @@ public abstract class BaseDeviceManagementCertificateTest{
         Statement stmt = null;
         try {
             conn = this.getDataSource().getConnection();
-                stmt = conn.createStatement();
+            stmt = conn.createStatement();
             stmt.executeUpdate("RUNSCRIPT FROM './src/test/resources/sql/h2.sql'");
         } finally {
             TestUtils.cleanupResources(conn, stmt, null);
@@ -107,45 +127,6 @@ public abstract class BaseDeviceManagementCertificateTest{
         PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(MultitenantConstants
                 .SUPER_TENANT_DOMAIN_NAME);
         PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(MultitenantConstants.SUPER_TENANT_ID);
-    }
-
-
-
-    private void cleanApplicationMappingData(Connection conn) throws SQLException {
-        try (PreparedStatement stmt = conn.prepareStatement("DELETE FROM DM_DEVICE_APPLICATION_MAPPING")) {
-            stmt.execute();
-        }
-    }
-
-    private void cleanApplicationData(Connection conn) throws SQLException {
-        try (PreparedStatement stmt = conn.prepareStatement("DELETE FROM DM_APPLICATION")) {
-            stmt.execute();
-        }
-    }
-
-
-    private void cleanupEnrolmentData(Connection conn) throws SQLException {
-        try (PreparedStatement stmt = conn.prepareStatement("DELETE FROM DM_ENROLMENT")) {
-            stmt.execute();
-        }
-    }
-
-    private void cleanupDeviceData(Connection conn) throws SQLException {
-        try (PreparedStatement stmt = conn.prepareStatement("DELETE FROM DM_DEVICE")) {
-            stmt.execute();
-        }
-    }
-
-    private void cleanupDeviceTypeData(Connection conn) throws SQLException {
-        try (PreparedStatement stmt = conn.prepareStatement("DELETE FROM DM_DEVICE_TYPE")) {
-            stmt.execute();
-        }
-    }
-
-    private void cleanupGroupData(Connection conn) throws SQLException {
-        try (PreparedStatement stmt = conn.prepareStatement("DELETE FROM DM_GROUP")) {
-            stmt.execute();
-        }
     }
 
     public DataSource getDataSource() {

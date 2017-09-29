@@ -154,7 +154,7 @@ public class HttpDeviceTypeManagerServiceAndDeviceTypeGeneratorServceTest {
             throws SAXException, JAXBException, ParserConfigurationException, DeviceTypeConfigurationException,
             IOException {
         ClassLoader classLoader = getClass().getClassLoader();
-        URL resourceUrl = classLoader.getResource("device-types/android_sense.xml");
+        URL resourceUrl = classLoader.getResource(Utils.DEVICE_TYPE_FOLDER + "android_sense.xml");
         File androidSenseConfiguration = null;
 
         if (resourceUrl != null) {

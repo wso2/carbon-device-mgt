@@ -50,7 +50,7 @@ public class DeviceTypeManagerNegativeTest {
             throws SAXException, JAXBException, ParserConfigurationException, DeviceTypeConfigurationException,
             IOException {
         ClassLoader classLoader = getClass().getClassLoader();
-        URL resourceUrl = classLoader.getResource("device-types/defective-devicetype.xml");
+        URL resourceUrl = classLoader.getResource(Utils.DEVICE_TYPE_FOLDER + "defective-devicetype.xml");
         File configurationFile = null;
         if (resourceUrl != null) {
             configurationFile = new File(resourceUrl.getFile());
@@ -58,10 +58,10 @@ public class DeviceTypeManagerNegativeTest {
         if (configurationFile != null) {
             defectiveDeviceTypeConfiguration1 = Utils.getDeviceTypeConfiguration(configurationFile.getAbsoluteFile());
         }
-        deviceTypeConfigIdentifier = new DeviceTypeConfigIdentifier(DEFECTIVE_DEVICE_TYPE,MultitenantConstants
-                .SUPER_TENANT_DOMAIN_NAME);
+        deviceTypeConfigIdentifier = new DeviceTypeConfigIdentifier(DEFECTIVE_DEVICE_TYPE,
+                MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
 
-        resourceUrl = classLoader.getResource("device-types/defective-devicetype2.xml");
+        resourceUrl = classLoader.getResource(Utils.DEVICE_TYPE_FOLDER + "defective-devicetype2.xml");
         if (resourceUrl != null) {
             configurationFile = new File(resourceUrl.getFile());
         }
@@ -69,7 +69,7 @@ public class DeviceTypeManagerNegativeTest {
             defectiveDeviceTypeConfiguration2 = Utils.getDeviceTypeConfiguration(configurationFile.getAbsoluteFile());
         }
 
-        resourceUrl = classLoader.getResource("device-types/android.xml");
+        resourceUrl = classLoader.getResource(Utils.DEVICE_TYPE_FOLDER + "android.xml");
         if (resourceUrl != null) {
             configurationFile = new File(resourceUrl.getFile());
         }

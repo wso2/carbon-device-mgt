@@ -71,12 +71,13 @@ public class DeviceTypeManagerTest {
     private Field deviceTypePluginDAOField;
     private Field deviceTypeDAOHandlerField;
     private String[] customDeviceTypeProperties = {"custom_property", "custom_property2"};
+    private final String SQL_FOLDER = "sql-files" + File.separator;
 
     @BeforeTest(description = "Mocking the classes for testing")
     public void setup() throws NoSuchFieldException, IllegalAccessException, IOException, SQLException, SAXException,
             ParserConfigurationException, DeviceTypeConfigurationException, JAXBException {
         ClassLoader classLoader = getClass().getClassLoader();
-        URL resourceUrl = classLoader.getResource("sql-files/android_h2.sql");
+        URL resourceUrl = classLoader.getResource(SQL_FOLDER + "android_h2.sql");
         androidDeviceType = "android";
         File androidDatabaseScript = null;
         javax.sql.DataSource dataSource = null;
@@ -85,7 +86,7 @@ public class DeviceTypeManagerTest {
         if (resourceUrl != null) {
             androidDatabaseScript = new File(resourceUrl.getFile());
         }
-        resourceUrl = classLoader.getResource("device-types/android.xml");
+        resourceUrl = classLoader.getResource(Utils.DEVICE_TYPE_FOLDER + "android.xml");
 
         if (resourceUrl != null) {
             androidConfiguration = new File(resourceUrl.getFile());
@@ -295,7 +296,7 @@ public class DeviceTypeManagerTest {
     private DeviceTypePluginDAOManager createPluginBasedDeviceTypeManager()
             throws IOException, SQLException, NoSuchFieldException, IllegalAccessException {
         ClassLoader classLoader = getClass().getClassLoader();
-        URL resourceUrl = classLoader.getResource("sql-files/h2.sql");
+        URL resourceUrl = classLoader.getResource(SQL_FOLDER + "h2.sql");
         File cdmDataScript = null;
         javax.sql.DataSource dataSource = null;
         if (resourceUrl != null) {

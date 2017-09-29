@@ -141,7 +141,7 @@ public class OperationManagerImpl implements OperationManager {
                 org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation operationDto =
                         OperationDAOUtil.convertOperation(operation);
                 int operationId = this.lookupOperationDAO(operation).addOperation(operationDto);
-                boolean isScheduledOperation = this.isTaskScheduledOperation(operation, deviceIds);
+                boolean isScheduledOperation = this.isTaskScheduledOperation(operation);
                 boolean isNotRepeated = false;
                 boolean isScheduled = false;
 
@@ -344,18 +344,22 @@ public class OperationManagerImpl implements OperationManager {
         PaginationResult paginationResult = null;
         List<Operation> operations = new ArrayList<>();
         String owner = request.getOwner();
+        try {
+            if (!DeviceManagerUtil.isDeviceExists(deviceId)) {
+                throw new OperationManagementException("Device not found for given device " +
+                        "Identifier:" + deviceId.getId() + " and given type : " +
+                        deviceId.getType());
+            }
+        } catch (DeviceManagementException e) {
+            throw new OperationManagementException("Error while checking the existence of the device identifier - "
+                    + deviceId.getId() + " of the device type - " + deviceId.getType(), e);
+        }
         if (!isActionAuthorized(deviceId)) {
             throw new OperationManagementException("User '" + getUser() + "' is not authorized to access the '" +
                     deviceId.getType() + "' device, which carries the identifier '" +
                     deviceId.getId() + "' of owner '" + owner + "'");
         }
-
         EnrolmentInfo enrolmentInfo = this.getEnrolmentInfo(deviceId, owner);
-        if (enrolmentInfo == null) {
-            throw new OperationManagementException("Device not found for given device " +
-                    "Identifier:" + deviceId.getId() + " and given type" +
-                    deviceId.getType());
-        }
         int enrolmentId = enrolmentInfo.getId();
         try {
             OperationManagementDAOFactory.openConnection();
@@ -530,9 +534,8 @@ public class OperationManagerImpl implements OperationManager {
         try {
             int enrolmentId = enrolmentInfo.getId();
             OperationManagementDAOFactory.beginTransaction();
-            boolean isUpdated = false;
             if (operation.getStatus() != null) {
-                isUpdated = operationDAO.updateOperationStatus(enrolmentId, operationId,
+                 operationDAO.updateOperationStatus(enrolmentId, operationId,
                         org.wso2.carbon.device.mgt.core.dto.operation.mgt.
                                 Operation.Status.valueOf(operation.getStatus().
                                 toString()));
@@ -806,25 +809,6 @@ public class OperationManagerImpl implements OperationManager {
         }
     }
 
-    private OperationDAO lookupOperationDAO(org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation operation) {
-
-        if (operation instanceof org.wso2.carbon.device.mgt.core.dto.operation.mgt.CommandOperation ||
-                operation.getType().equals(org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Type.COMMAND)) {
-            return commandOperationDAO;
-        } else if (operation instanceof org.wso2.carbon.device.mgt.core.dto.operation.mgt.ProfileOperation ||
-                operation.getType().equals(org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Type.PROFILE)) {
-            return profileOperationDAO;
-        } else if (operation instanceof org.wso2.carbon.device.mgt.core.dto.operation.mgt.ConfigOperation ||
-                operation.getType().equals(org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Type.CONFIG)) {
-            return configOperationDAO;
-        } else if (operation instanceof org.wso2.carbon.device.mgt.core.dto.operation.mgt.PolicyOperation ||
-                operation.getType().equals(org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation.Type.POLICY)) {
-            return policyOperationDAO;
-        } else {
-            return operationDAO;
-        }
-    }
-
     private String getUser() {
         return CarbonContext.getThreadLocalCarbonContext().getUsername();
     }
@@ -865,26 +849,6 @@ public class OperationManagerImpl implements OperationManager {
             return false;
         }
         return isUserAuthorized;
-    }
-
-    private int getEnrolmentByStatus(DeviceIdentifier deviceId,
-                                     EnrolmentInfo.Status status) throws OperationManagementException {
-        int enrolmentId;
-        try {
-            DeviceManagementDAOFactory.openConnection();
-            int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
-            enrolmentId = deviceDAO.getEnrolmentByStatus(deviceId, status, tenantId);
-        } catch (DeviceManagementDAOException e) {
-            throw new OperationManagementException("Error occurred while retrieving metadata of '" +
-                    deviceId.getType() + "' device carrying the identifier '" +
-                    deviceId.getId() + "'", e);
-        } catch (SQLException e) {
-            throw new OperationManagementException(
-                    "Error occurred while opening a connection to the data source", e);
-        } finally {
-            DeviceManagementDAOFactory.closeConnection();
-        }
-        return enrolmentId;
     }
 
     private EnrolmentInfo getEnrolmentInfo(DeviceIdentifier deviceId, String owner) throws OperationManagementException {
@@ -959,39 +923,15 @@ public class OperationManagerImpl implements OperationManager {
         return updateStatus;
     }
 
-    private boolean isTaskScheduledOperation(Operation operation, List<DeviceIdentifier> deviceIds) {
+    private boolean isTaskScheduledOperation(Operation operation) {
         DeviceManagementProviderService deviceManagementProviderService = DeviceManagementDataHolder.getInstance().
                 getDeviceManagementProvider();
-
         List<MonitoringOperation> monitoringOperations = deviceManagementProviderService.getMonitoringOperationList(deviceType);//Get task list from each device type
-
         for (MonitoringOperation op : monitoringOperations) {
             if (operation.getCode().equals(op.getTaskName())) {
                 return true;
             }
         }
-
-//        for(String dti : taskOperation){
-//            if (dti.equals(deviceType)) {
-//                monitoringOperations = deviceTypeSpecificTasks.get(dti);
-//
-//            }
-//        }
-//
-//        for(DeviceIdentifier deviceIdentifier : deviceIds){
-//            String deviceType = deviceIdentifier.getType();
-//
-//
-//
-//        }
-
-//        TaskConfiguration taskConfiguration = DeviceConfigurationManager.getInstance().getDeviceManagementConfig().
-//                getTaskConfiguration();
-//        for (TaskConfiguration.Operation op : taskConfiguration.getOperations()) {
-//            if (operation.getCode().equals(op.getOperationName())) {
-//                return true;
-//            }
-//        }
         return false;
     }
 

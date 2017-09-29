@@ -474,6 +474,13 @@ public final class DeviceManagerUtil {
         return true;
     }
 
+    public static boolean isDeviceExists(DeviceIdentifier deviceIdentifier) throws DeviceManagementException {
+        Device device = DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().getDevice(deviceIdentifier,
+                false);
+        return !(device == null || device.getDeviceIdentifier() == null ||
+                device.getDeviceIdentifier().isEmpty() || device.getEnrolmentInfo() == null);
+    }
+
     private static CacheManager getCacheManager() {
         return Caching.getCacheManagerFactory().getCacheManager(DeviceManagementConstants.DM_CACHE_MANAGER);
     }

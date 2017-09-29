@@ -25,6 +25,7 @@ import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
+import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
 import org.wso2.carbon.device.mgt.common.InvalidDeviceException;
 import org.wso2.carbon.device.mgt.common.PaginationRequest;
 import org.wso2.carbon.device.mgt.common.PaginationResult;
@@ -50,6 +51,7 @@ import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -72,6 +74,7 @@ public class OperationManagementTests extends BaseDeviceManagementTest {
 
     private List<DeviceIdentifier> deviceIds = new ArrayList<>();
     private OperationManager operationMgtService;
+    private DeviceManagementProviderService deviceMgmtProvider;
     private Activity commandActivity;
     private long commandActivityBeforeUpdatedTimestamp;
 
@@ -94,6 +97,7 @@ public class OperationManagementTests extends BaseDeviceManagementTest {
                 throw new Exception("Incorrect device with ID - " + device.getDeviceIdentifier() + " returned!");
             }
         }
+        this.deviceMgmtProvider = DeviceManagementDataHolder.getInstance().getDeviceManagementProvider();
         NotificationStrategy notificationStrategy = new TestNotificationStrategy();
         this.operationMgtService = new OperationManagerImpl(DEVICE_TYPE, notificationStrategy);
     }
@@ -555,8 +559,98 @@ public class OperationManagementTests extends BaseDeviceManagementTest {
             expectedExceptions = IllegalArgumentException.class)
     public void getOperationByActivityIdAndDeviceInvalidActivityId() throws DeviceManagementException,
             OperationManagementException {
-        this.operationMgtService.getOperationByActivityIdAndDevice(DeviceManagementConstants.OperationAttributes.ACTIVITY + 0,
+        this.operationMgtService.getOperationByActivityIdAndDevice(
+                DeviceManagementConstants.OperationAttributes.ACTIVITY + 0,
                 new DeviceIdentifier(INVALID_DEVICE, DEVICE_TYPE));
     }
 
+    @Test(dependsOnMethods = "getOperationByActivityIdAndDeviceInvalidActivityId")
+    public void getPendingOperationsInactiveEnrollment() throws DeviceManagementException,
+            OperationManagementException {
+        changeStatus(EnrolmentInfo.Status.INACTIVE);
+        List operations = this.operationMgtService.getPendingOperations(this.deviceIds.get(1));
+        Assert.assertTrue(operations != null);
+        Assert.assertEquals(operations.size(), 4);
+        changeStatus(EnrolmentInfo.Status.ACTIVE);
+    }
+
+    private void changeStatus(EnrolmentInfo.Status status) throws DeviceManagementException,
+            OperationManagementException {
+        Device device = this.deviceMgmtProvider.getDevice(this.deviceIds.get(1));
+        Assert.assertTrue(device != null);
+        Assert.assertEquals(device.getType(), DEVICE_TYPE);
+        Assert.assertTrue(device.getEnrolmentInfo() != null);
+        device.getEnrolmentInfo().setStatus(status);
+        boolean modified = this.deviceMgmtProvider.changeDeviceStatus(this.deviceIds.get(1), status);
+        Assert.assertTrue(modified);
+        device = this.deviceMgmtProvider.getDevice(this.deviceIds.get(1));
+        Assert.assertEquals(device.getEnrolmentInfo().getStatus(), status);
+    }
+
+    @Test(dependsOnMethods = "getPendingOperationsInactiveEnrollment")
+    public void getNextPendingOperationInactiveEnrollment() throws DeviceManagementException,
+            OperationManagementException {
+        changeStatus(EnrolmentInfo.Status.INACTIVE);
+        Operation operation = this.operationMgtService.getNextPendingOperation(this.deviceIds.get(1));
+        Assert.assertTrue(operation != null);
+        changeStatus(EnrolmentInfo.Status.ACTIVE);
+    }
+
+    @Test(dependsOnMethods = "getNextPendingOperationInactiveEnrollment")
+    public void getNextPendingOperationForAllOperations() throws DeviceManagementException,
+            OperationManagementException {
+        for (int i = 0; i < 4; i++) {
+            Operation operation = this.operationMgtService.getNextPendingOperation(this.deviceIds.get(1));
+            operation.setStatus(Operation.Status.COMPLETED);
+            this.operationMgtService.updateOperation(deviceIds.get(1), operation);
+        }
+        Assert.assertTrue(this.operationMgtService.getNextPendingOperation(this.deviceIds.get(1)) == null);
+    }
+
+    @Test(dependsOnMethods = "getNextPendingOperationForAllOperations")
+    public void getOperationByDeviceAndOperationIdForAllOperations() throws DeviceManagementException,
+            OperationManagementException {
+        for (int i = 1; i <= 4; i++) {
+            Operation operation = this.operationMgtService.getOperationByDeviceAndOperationId(this.deviceIds.get(1), i);
+            Assert.assertEquals(operation.getStatus(), Operation.Status.COMPLETED);
+        }
+    }
+
+    @Test(dependsOnMethods = "getOperationByDeviceAndOperationIdForAllOperations")
+    public void getOperationForAllOperations() throws DeviceManagementException,
+            OperationManagementException {
+        for (int i = 1; i <= 4; i++) {
+            Operation operation = this.operationMgtService.getOperation(i);
+            Assert.assertTrue(operation != null);
+        }
+    }
+
+    @Test(dependsOnMethods = "getOperationForAllOperations")
+    public void addCustomPolicyOperation() throws OperationManagementException, InvalidDeviceException {
+        this.addCustomOperation(Operation.Type.POLICY, DeviceManagementConstants.AuthorizationSkippedOperationCodes.
+                POLICY_OPERATION_CODE);
+    }
+
+    @Test(dependsOnMethods = "getOperationForAllOperations")
+    public void addCustomMonitorOperation() throws OperationManagementException, InvalidDeviceException {
+        this.addCustomOperation(Operation.Type.COMMAND, DeviceManagementConstants.AuthorizationSkippedOperationCodes.
+                MONITOR_OPERATION_CODE);
+    }
+
+    @Test(dependsOnMethods = "getOperationForAllOperations")
+    public void addCustomPolicyRevokeOperation() throws OperationManagementException, InvalidDeviceException {
+        this.addCustomOperation(Operation.Type.POLICY, DeviceManagementConstants.AuthorizationSkippedOperationCodes.
+                POLICY_REVOKE_OPERATION_CODE);
+    }
+
+    private void addCustomOperation(Operation.Type type, String operationCode) throws OperationManagementException, InvalidDeviceException {
+        Operation operation = new Operation();
+        operation.setCode(operationCode);
+        operation.setType(type);
+        Activity activity = this.operationMgtService.addOperation(operation, Collections.singletonList(this.deviceIds.get(2)));
+        Assert.assertEquals(activity.getActivityStatus().size(), 1);
+        for (ActivityStatus status : activity.getActivityStatus()) {
+            Assert.assertEquals(status.getStatus(), ActivityStatus.Status.PENDING);
+        }
+    }
 }

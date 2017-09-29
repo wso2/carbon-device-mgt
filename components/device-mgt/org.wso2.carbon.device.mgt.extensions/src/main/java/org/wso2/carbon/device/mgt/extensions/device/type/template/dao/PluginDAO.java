@@ -30,7 +30,5 @@ public interface PluginDAO {
 
     boolean updateDevice(Device device) throws DeviceTypeMgtPluginException;
 
-    boolean deleteDevice(String deviceId) throws DeviceTypeMgtPluginException;
-
     List<Device> getAllDevices() throws DeviceTypeMgtPluginException;
 }

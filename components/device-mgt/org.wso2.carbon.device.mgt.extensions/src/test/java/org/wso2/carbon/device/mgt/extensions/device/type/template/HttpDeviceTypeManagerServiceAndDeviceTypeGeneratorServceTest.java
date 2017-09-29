@@ -21,14 +21,10 @@ package org.wso2.carbon.device.mgt.extensions.device.type.template;
 import org.testng.Assert;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
-import org.wso2.carbon.CarbonConstants;
-import org.wso2.carbon.base.MultitenantConstants;
-import org.wso2.carbon.context.PrivilegedCarbonContext;
-import org.wso2.carbon.context.RegistryType;
-import org.wso2.carbon.context.internal.OSGiDataHolder;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
+import org.wso2.carbon.device.mgt.common.configuration.mgt.ConfigurationEntry;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.PlatformConfiguration;
 import org.wso2.carbon.device.mgt.common.license.mgt.License;
 import org.wso2.carbon.device.mgt.common.push.notification.PushNotificationConfig;
@@ -36,19 +32,10 @@ import org.wso2.carbon.device.mgt.common.spi.DeviceManagementService;
 import org.wso2.carbon.device.mgt.common.type.mgt.DeviceTypeMetaDefinition;
 import org.wso2.carbon.device.mgt.extensions.device.type.template.config.DeviceTypeConfiguration;
 import org.wso2.carbon.device.mgt.extensions.device.type.template.config.Feature;
-import org.wso2.carbon.device.mgt.extensions.device.type.template.config.Operation;
 import org.wso2.carbon.device.mgt.extensions.device.type.template.config.PushNotificationProvider;
 import org.wso2.carbon.device.mgt.extensions.device.type.template.config.exception.DeviceTypeConfigurationException;
-import org.wso2.carbon.device.mgt.extensions.internal.DeviceTypeExtensionDataHolder;
-import org.wso2.carbon.device.mgt.extensions.license.mgt.registry.RegistryBasedLicenseManager;
 import org.wso2.carbon.device.mgt.extensions.utils.Utils;
-import org.wso2.carbon.governance.api.util.GovernanceArtifactConfiguration;
-import org.wso2.carbon.governance.api.util.GovernanceUtils;
-import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
-import org.wso2.carbon.registry.core.service.RegistryService;
-import org.wso2.carbon.registry.core.session.UserRegistry;
-import org.wso2.carbon.utils.FileUtil;
 import org.xml.sax.SAXException;
 
 import javax.xml.bind.JAXBException;
@@ -59,8 +46,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.wso2.carbon.governance.api.util.GovernanceUtils.getGovernanceArtifactConfiguration;
-
 /**
  * This test case contains the tests for {@link HTTPDeviceTypeManagerService} and {@link DeviceTypeGeneratorServiceImpl}
  */
@@ -69,7 +54,7 @@ public class HttpDeviceTypeManagerServiceAndDeviceTypeGeneratorServceTest {
     private HTTPDeviceTypeManagerService httpDeviceTypeManagerService;
     private DeviceTypeGeneratorServiceImpl deviceTypeGeneratorService;
     private String androidSenseDeviceType = "androidsense";
-    private String sampleDeviceType = "sample";
+    private DeviceManagementService generatedDeviceManagementService;
 
     @BeforeTest
     public void setup() throws RegistryException, IOException, SAXException, ParserConfigurationException,
@@ -100,10 +85,61 @@ public class HttpDeviceTypeManagerServiceAndDeviceTypeGeneratorServceTest {
 
     @Test(description = "This test case tests the populate device management service method")
     public void testPopulateDeviceManagementService() {
-        DeviceManagementService deviceManagementService = deviceTypeGeneratorService
+        String sampleDeviceType = "sample";
+        generatedDeviceManagementService = deviceTypeGeneratorService
                 .populateDeviceManagementService(sampleDeviceType, deviceTypeMetaDefinition);
-        Assert.assertEquals(deviceManagementService.getType(), sampleDeviceType,
+        Assert.assertEquals(generatedDeviceManagementService.getType(), sampleDeviceType,
                 "DeviceTypeGeneration for the " + "sample device type failed");
+    }
+
+    @Test(description = "This test case tests the get configuration of the populated device management service though"
+            + " DeviceTypeGeneratorService", dependsOnMethods = {"testPopulateDeviceManagementService"})
+    public void testGetConfiguration() throws DeviceManagementException, ClassNotFoundException, JAXBException {
+        PlatformConfiguration platformConfiguration = generatedDeviceManagementService.getDeviceManager()
+                .getConfiguration();
+        Assert.assertNotNull(platformConfiguration,
+                "Default platform configuration is not added to sample device " + "type from the file system");
+
+        List<ConfigurationEntry> configurationEntries = platformConfiguration.getConfiguration();
+        Assert.assertNotNull(configurationEntries,
+                "Platform Configuration entries are not parsed and saved " + "correctly for device type sample");
+        Assert.assertEquals(configurationEntries.size(), 1,
+                "Platform configuration is not saved correctly for " + "device type sample");
+
+        ConfigurationEntry configurationEntry = configurationEntries.get(0);
+
+        Assert.assertEquals(configurationEntry.getName(), "test",
+                "Platform Configuration for device type " + "sample is not saved correctly");
+
+        String contentType = configurationEntry.getContentType();
+        Assert.assertEquals(contentType, "String",
+                "Content type added in default platform configuration is different from the retrieved value");
+
+    }
+
+
+    @Test(description = "This test case tests the negative scenarios when saving the platform configurations",
+            expectedExceptions = {DeviceManagementException.class})
+    public void testSaveConfiguration() throws DeviceManagementException {
+        httpDeviceTypeManagerService.getDeviceManager().saveConfiguration(null);
+    }
+
+    @Test(description = "This test case tests the negative scenarios when getting a device",
+            expectedExceptions = {DeviceManagementException.class})
+    public void testGetDevice() throws DeviceManagementException {
+        httpDeviceTypeManagerService.getDeviceManager().getDevice(null);
+    }
+
+    @Test(description = "This test case tests the negative scenario when checking whether a device has enrolled",
+            expectedExceptions = {DeviceManagementException.class})
+    public void testIsEnrolled() throws DeviceManagementException {
+        httpDeviceTypeManagerService.getDeviceManager().isEnrolled(null);
+    }
+
+    @Test(description = "This test case tests the negative scenario when enrolling a device",
+            expectedExceptions = {DeviceManagementException.class})
+    public void testEnroll() throws DeviceManagementException {
+        httpDeviceTypeManagerService.getDeviceManager().enrollDevice(null);
     }
 
     /**
@@ -118,7 +154,7 @@ public class HttpDeviceTypeManagerServiceAndDeviceTypeGeneratorServceTest {
             throws SAXException, JAXBException, ParserConfigurationException, DeviceTypeConfigurationException,
             IOException {
         ClassLoader classLoader = getClass().getClassLoader();
-        URL resourceUrl = classLoader.getResource("android_sense.xml");
+        URL resourceUrl = classLoader.getResource(Utils.DEVICE_TYPE_FOLDER + "android_sense.xml");
         File androidSenseConfiguration = null;
 
         if (resourceUrl != null) {

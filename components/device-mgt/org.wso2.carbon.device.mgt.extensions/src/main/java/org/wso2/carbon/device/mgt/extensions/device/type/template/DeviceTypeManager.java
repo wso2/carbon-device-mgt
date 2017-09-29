@@ -130,6 +130,17 @@ public class DeviceTypeManager implements DeviceManager {
             //Check whether device dao definition exist.
             String tableName = deviceTypeConfiguration.getDeviceDetails().getTableId();
             if (tableName != null && !tableName.isEmpty()) {
+                DataSource dataSource = deviceTypeConfiguration.getDataSource();
+                if (dataSource == null) {
+                    throw new DeviceTypeDeployerPayloadException("Could not find the datasource related with the "
+                            + "table id " +  tableName + " for the device type " + deviceType);
+                }
+                TableConfig tableConfig = dataSource.getTableConfig();
+
+                if (tableConfig == null) {
+                    throw new DeviceTypeDeployerPayloadException("Could not find the table config with the "
+                            + "table id " +  tableName + " for the device type " + deviceType);
+                }
                 List<Table> tables = deviceTypeConfiguration.getDataSource().getTableConfig().getTable();
                 Table deviceDefinitionTable = null;
                 for (Table table : tables) {
@@ -189,6 +200,9 @@ public class DeviceTypeManager implements DeviceManager {
     @Override
     public boolean saveConfiguration(PlatformConfiguration tenantConfiguration)
             throws DeviceManagementException {
+        if (tenantConfiguration == null) {
+            throw new DeviceManagementException("Platform configuration is null. Cannot save the configuration");
+        }
         try {
             if (log.isDebugEnabled()) {
                 log.debug("Persisting " + deviceType + " configurations in Registry");
@@ -246,6 +260,9 @@ public class DeviceTypeManager implements DeviceManager {
 
     @Override
     public boolean enrollDevice(Device device) throws DeviceManagementException {
+        if (device == null) {
+            throw new DeviceManagementException("Device is null. Cannot enroll the device.");
+        }
         if (propertiesExist) {
             boolean status = false;
             boolean isEnrolled = this.isEnrolled(
@@ -313,6 +330,9 @@ public class DeviceTypeManager implements DeviceManager {
 
     @Override
     public boolean isEnrolled(DeviceIdentifier deviceId) throws DeviceManagementException {
+        if (deviceId == null) {
+            throw new DeviceManagementException("Cannot check the enrollment status of a null device");
+        }
         if (propertiesExist) {
             boolean isEnrolled = false;
             try {
@@ -347,6 +367,9 @@ public class DeviceTypeManager implements DeviceManager {
 
     @Override
     public Device getDevice(DeviceIdentifier deviceId) throws DeviceManagementException {
+        if (deviceId == null) {
+            throw new DeviceManagementException("Cannot get the device. DeviceIdentifier is null");
+        }
         if (propertiesExist) {
             Device device;
             try {

@@ -31,10 +31,18 @@ public class TestDeviceManagementService implements DeviceManagementService {
 
     private String providerType;
     private String tenantDomain;
+    private String operationCode;
+
+    public TestDeviceManagementService(String deviceType, String tenantDomain, String operationCode) {
+        providerType = deviceType;
+        this.tenantDomain = tenantDomain;
+        this.operationCode = operationCode;
+    }
 
     public TestDeviceManagementService(String deviceType, String tenantDomain) {
         providerType = deviceType;
         this.tenantDomain = tenantDomain;
+        this.operationCode = "default";
     }
 
     @Override
@@ -48,12 +56,10 @@ public class TestDeviceManagementService implements DeviceManagementService {
         taskConfig.setEnabled(true);
         taskConfig.setFrequency(3000);
         List<MonitoringOperation> monitoringOperations = new ArrayList<>();
-        for (int i = 0; i < 5; i++) {
-            MonitoringOperation monitoringOperation = new MonitoringOperation();
-            monitoringOperation.setTaskName("OPERATION-" + i);
-            monitoringOperation.setRecurrentTimes(i);
-            monitoringOperations.add(monitoringOperation);
-        }
+        MonitoringOperation monitoringOperation = new MonitoringOperation();
+        monitoringOperation.setTaskName(operationCode);
+        monitoringOperation.setRecurrentTimes(2);
+        monitoringOperations.add(monitoringOperation);
         taskConfig.setMonitoringOperation(monitoringOperations);
         return taskConfig;
     }

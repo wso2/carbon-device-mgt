@@ -1,6 +1,5 @@
 package org.wso2.carbon.device.mgt.core.task;
 
-import com.google.gson.Gson;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.testng.Assert;
@@ -28,6 +27,7 @@ import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderServiceIm
 import org.wso2.carbon.device.mgt.core.service.GroupManagementProviderServiceImpl;
 import org.wso2.carbon.device.mgt.core.task.impl.DeviceDetailsRetrieverTask;
 import org.wso2.carbon.device.mgt.core.task.impl.DeviceTaskManagerImpl;
+import org.wso2.carbon.registry.core.exceptions.RegistryException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -47,7 +47,7 @@ public class DeviceTaskManagerTest {
     private OperationManager operationManager;
 
     @BeforeClass
-    public void init() throws Exception {
+    public void init() throws DeviceManagementException, RegistryException {
         DeviceConfigurationManager.getInstance().initConfig();
         log.info("Initializing Device Task Manager Test Suite");
         this.deviceIds = new ArrayList<>();

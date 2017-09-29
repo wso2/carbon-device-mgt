@@ -118,6 +118,8 @@ public class ConfigOperationDAOImpl extends GenericOperationDAOImpl {
                 bais = new ByteArrayInputStream(operationDetails);
                 ois = new ObjectInputStream(bais);
                 configOperation = (ConfigOperation) ois.readObject();
+                configOperation.setId(rs.getInt("OPERATION_ID"));
+                configOperation.setEnabled(rs.getBoolean("ENABLED"));
             }
         } catch (IOException e) {
             throw new OperationManagementDAOException("IO Error occurred while de serialize the policy operation " +

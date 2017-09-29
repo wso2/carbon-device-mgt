@@ -481,8 +481,6 @@ public interface DeviceManagementProviderService {
      */
     PlatformConfiguration getConfiguration(String deviceType) throws DeviceManagementException;
 
-    void updateDeviceEnrolmentInfo(Device device, EnrolmentInfo.Status active) throws DeviceManagementException;
-
     /**
      * This method is used to check whether the device is enrolled with the give user.
      *

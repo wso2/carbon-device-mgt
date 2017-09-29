@@ -45,6 +45,7 @@
             <class name="org.wso2.carbon.device.mgt.core.operation.ScheduledTaskOperationTests"/>
             <class name="org.wso2.carbon.device.mgt.core.permission.mgt.PermissionManagerServiceTest" />
             <class name="org.wso2.carbon.device.mgt.core.notification.mgt.NotificationManagementServiceImplTests"/>
+            <class name="org.wso2.carbon.device.mgt.core.push.notification.mgt.task.PushNotificationSchedulerTaskTest"/>
             <class name="org.wso2.carbon.device.mgt.core.task.DeviceTaskManagerServiceTest"/>
             <class name="org.wso2.carbon.device.mgt.core.task.DeviceTaskManagerTest"/>
             <class name="org.wso2.carbon.device.mgt.core.authorization.DeviceAccessAuthorizationServiceTest"/>

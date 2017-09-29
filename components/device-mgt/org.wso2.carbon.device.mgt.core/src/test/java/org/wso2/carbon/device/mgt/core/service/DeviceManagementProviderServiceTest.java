@@ -23,14 +23,28 @@ import org.testng.annotations.Test;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
+import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
+import org.wso2.carbon.device.mgt.common.InvalidDeviceException;
+import org.wso2.carbon.device.mgt.common.TransactionManagementException;
+import org.wso2.carbon.device.mgt.common.device.details.DeviceInfo;
+import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
+import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
+import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManager;
+import org.wso2.carbon.device.mgt.common.push.notification.NotificationStrategy;
 import org.wso2.carbon.device.mgt.core.TestDeviceManagementService;
 import org.wso2.carbon.device.mgt.core.authorization.DeviceAccessAuthorizationServiceImpl;
 import org.wso2.carbon.device.mgt.core.common.BaseDeviceManagementTest;
 import org.wso2.carbon.device.mgt.core.common.TestDataHolder;
 import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
+import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
+import org.wso2.carbon.device.mgt.core.device.details.mgt.dao.DeviceDetailsDAO;
+import org.wso2.carbon.device.mgt.core.device.details.mgt.dao.DeviceDetailsMgtDAOException;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementServiceComponent;
+import org.wso2.carbon.device.mgt.core.operation.TestNotificationStrategy;
+import org.wso2.carbon.device.mgt.core.operation.mgt.CommandOperation;
+import org.wso2.carbon.device.mgt.core.operation.mgt.OperationManagerImpl;
 import org.wso2.carbon.registry.core.config.RegistryContext;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.internal.RegistryDataHolder;
@@ -40,6 +54,14 @@ import org.wso2.carbon.user.core.service.RealmService;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 
 import java.io.InputStream;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class DeviceManagementProviderServiceTest extends BaseDeviceManagementTest {
@@ -47,7 +69,7 @@ public class DeviceManagementProviderServiceTest extends BaseDeviceManagementTes
     private static final Log log = LogFactory.getLog(DeviceManagementProviderServiceTest.class);
     private DeviceManagementProviderService providerService;
     private static final String DEVICE_TYPE = "RANDOM_DEVICE_TYPE";
-    private static final String DEVICE_TYPE_2 = "RANDOM_DEVICE_TYPE";
+    private DeviceDetailsDAO deviceDetailsDAO = DeviceManagementDAOFactory.getDeviceDetailsDAO();
 
     DeviceManagementProviderService deviceMgtService;
 
@@ -65,7 +87,6 @@ public class DeviceManagementProviderServiceTest extends BaseDeviceManagementTes
         DeviceManagementDataHolder.getInstance().setDeviceTaskManagerService(null);
         deviceMgtService.registerDeviceType(new TestDeviceManagementService(DEVICE_TYPE,
                 MultitenantConstants.SUPER_TENANT_DOMAIN_NAME));
-
     }
 
     private RegistryService getRegistryService() throws RegistryException {
@@ -318,6 +339,115 @@ public class DeviceManagementProviderServiceTest extends BaseDeviceManagementTes
             String msg = "Error occurred while updating the device status";
             Assert.fail(msg, e);
         }
+    }
+
+    @Test(dependsOnMethods = {"testSuccessfulDeviceEnrollment"})
+    public void testGetDevice() {
+        try {
+            Device device = deviceMgtService.getDevice(new DeviceIdentifier("12345",DEVICE_TYPE));
+            Assert.assertTrue(device.getDeviceIdentifier().equalsIgnoreCase("12345"));
+        } catch (DeviceManagementException e) {
+            String msg = "Error occurred while updating the device status";
+            Assert.fail(msg, e);
+        }
+    }
+
+
+    @Test(dependsOnMethods = {"testSuccessfulDeviceEnrollment"})
+    public void testGetDeviceWithInfo() {
+        try {
+            Device device = deviceMgtService.getDevice(new DeviceIdentifier("12345", DEVICE_TYPE)
+                    , true);
+            Assert.assertTrue(device.getDeviceInfo() != null);
+        } catch (DeviceManagementException e) {
+            String msg = "Error occurred while updating the device status";
+            Assert.fail(msg, e);
+        }
+    }
+
+    @Test(dependsOnMethods = {"testSuccessfulDeviceEnrollment"})
+    public void testGetDeviceWithOutInfo() {
+        try {
+            Device device = deviceMgtService.getDevice(new DeviceIdentifier("12345", DEVICE_TYPE)
+                    , false);
+            Assert.assertTrue(device.getDeviceInfo() == null);
+        } catch (DeviceManagementException e) {
+            String msg = "Error occurred while updating the device status";
+            Assert.fail(msg, e);
+        }
+    }
+
+    @Test(dependsOnMethods = {"testSuccessfulDeviceEnrollment"})
+    public void testGetAllDevicesOfRole() {
+        try {
+            List<Device> devices = deviceMgtService.getAllDevicesOfRole("admin");
+            Assert.assertTrue(devices.size() > 0);
+        } catch (DeviceManagementException e) {
+            String msg = "Error occurred while updating the device status";
+            Assert.fail(msg, e);
+        }
+    }
+
+    @Test(dependsOnMethods = {"testSuccessfulDeviceEnrollment"})
+    public void testDeviceByOwner() {
+        try {
+            Device device = deviceMgtService.getDevice(new DeviceIdentifier("12345",
+                    DEVICE_TYPE), "admin", true);
+            Assert.assertTrue(device != null);
+        } catch (DeviceManagementException e) {
+            String msg = "Error occurred while updating the device status";
+            Assert.fail(msg, e);
+        }
+    }
+
+    @Test(dependsOnMethods = {"testSuccessfulDeviceEnrollment"})
+    public void testDeviceByDate() {
+        try {
+            Device initialDevice = deviceMgtService.getDevice(new DeviceIdentifier("12345",
+                    DEVICE_TYPE));
+
+            DeviceManagementDAOFactory.beginTransaction();
+
+            //Device details table will be reffered when looking for last updated time
+            //This dao entry is to mimic a device info operation
+            deviceDetailsDAO.addDeviceInformation(initialDevice.getId(), TestDataHolder
+                    .generateDummyDeviceInfo());
+        } catch (DeviceManagementException e) {
+            e.printStackTrace();
+        } catch (TransactionManagementException e) {
+            e.printStackTrace();
+        } catch (DeviceDetailsMgtDAOException e) {
+            e.printStackTrace();
+        } finally {
+            DeviceManagementDAOFactory.closeConnection();
+        }
+
+        try {
+            Device device = deviceMgtService.getDevice(new DeviceIdentifier("12345",
+                    DEVICE_TYPE), yesterday());
+            Assert.assertTrue(device != null);
+        } catch (DeviceManagementException e) {
+            String msg = "Error occurred while updating the device status";
+            Assert.fail(msg, e);
+        }
+    }
+
+    @Test(dependsOnMethods = {"testDeviceByDate"})
+    public void testDeviceByDateAndOwner() {
+        try {
+            Device device = deviceMgtService.getDevice(new DeviceIdentifier("12345",
+                    DEVICE_TYPE), "admin", yesterday(), true);
+            Assert.assertTrue(device != null);
+        } catch (DeviceManagementException e) {
+            String msg = "Error occurred while updating the device status";
+            Assert.fail(msg, e);
+        }
+    }
+
+    private Date yesterday() {
+        final Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.DATE, -1);
+        return cal.getTime();
     }
 
 

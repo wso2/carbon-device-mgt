@@ -128,7 +128,7 @@ public abstract class AbstractDeviceDAOImpl implements DeviceDAO {
             // However, both enrollments share the same time stamp. When retrieving the device
             // due to same timestamp, enrollment information is incorrect, intermittently. Hence
             // status also should be taken into consideration when ordering. This should not present a
-            // problem for other status transitions, as there would be an intermediary 'removed'
+            // problem for other status transitions, as there would be an intermediary removed
             // state in between.
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, deviceIdentifier.getType());

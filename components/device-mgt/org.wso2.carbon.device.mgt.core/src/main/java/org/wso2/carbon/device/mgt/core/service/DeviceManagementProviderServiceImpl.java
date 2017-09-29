@@ -1741,6 +1741,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             if (requireDeviceInfo) {
                 this.getAllDeviceInfo(userDevices);
             }
+            devices.addAll(userDevices);
         }
         return devices;
     }

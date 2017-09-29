@@ -38,11 +38,8 @@ import org.wso2.carbon.device.mgt.extensions.utils.Utils;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.xml.sax.SAXException;
 
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.soap.Node;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -157,7 +154,7 @@ public class HttpDeviceTypeManagerServiceAndDeviceTypeGeneratorServceTest {
             throws SAXException, JAXBException, ParserConfigurationException, DeviceTypeConfigurationException,
             IOException {
         ClassLoader classLoader = getClass().getClassLoader();
-        URL resourceUrl = classLoader.getResource("android_sense.xml");
+        URL resourceUrl = classLoader.getResource("device-types/android_sense.xml");
         File androidSenseConfiguration = null;
 
         if (resourceUrl != null) {

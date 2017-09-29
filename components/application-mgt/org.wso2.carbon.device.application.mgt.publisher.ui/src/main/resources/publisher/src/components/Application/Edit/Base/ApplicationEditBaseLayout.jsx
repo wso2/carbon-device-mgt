@@ -16,10 +16,9 @@
  * under the License.
  */
 
-import './baseLayout.css';
 import {Col, Row} from "reactstrap";
 import React, {Component} from 'react';
-import GeneralInfo from "../GeneralInfo";
+import GeneralInfo from "../GenenralInfo/GeneralInfo";
 import ReleaseManager from '../../Release/ReleaseMgtBase/ReleaseManager';
 
 class ApplicationEdit extends Component {
@@ -35,14 +34,12 @@ class ApplicationEdit extends Component {
         }
     }
 
-    handleClick(event) {
+    handleTabClick(event) {
         event.stopPropagation();
-        console.log(typeof event.target.value);
         const key = event.target.value;
 
         switch (key) {
             case "1": {
-                console.log("Step1");
                 this.setState({activeTab: 1, general: "active", release: "", pkgmgt: ""});
                 break;
             }
@@ -74,24 +71,34 @@ class ApplicationEdit extends Component {
         }
     }
 
+    handleOnBackClick() {
+        window.location.href = "/publisher/assets/apps"
+    }
+
     render() {
-        console.log(this.state);
         return (
             <div id="application-edit-base">
                 <Row id="application-edit-header">
-                    <Col>Application Name</Col>
+                    <Col xs="3">
+                        <a className="back-to-app" onClick={this.handleOnBackClick.bind(this)}>
+                            <i className="fw fw-left-arrow"></i>
+                        </a>
+                    </Col>
+                    <Col>
+                        Application Name
+                    </Col>
                 </Row>
                 <Row id="application-edit-main-container">
                     <Col xs="3">
                         <div className="tab">
-                            <button className={this.state.general} value={1} onClick={this.handleClick.bind(this)}>
+                            <button className={this.state.general} value={1} onClick={this.handleTabClick.bind(this)}>
                                 General
                             </button>
-                            <button className={this.state.release} value={2} onClick={this.handleClick.bind(this)}>
+                            <button className={this.state.release} value={2} onClick={this.handleTabClick.bind(this)}>
                                 App
                                 Releases
                             </button>
-                            <button className={this.state.pkgmgt} value={3} onClick={this.handleClick.bind(this)}>
+                            <button className={this.state.pkgmgt} value={3} onClick={this.handleTabClick.bind(this)}>
                                 Package Manager
                             </button>
                         </div>

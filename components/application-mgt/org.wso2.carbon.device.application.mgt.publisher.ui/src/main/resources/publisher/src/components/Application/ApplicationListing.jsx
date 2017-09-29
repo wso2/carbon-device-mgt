@@ -16,16 +16,11 @@
  * under the License.
  */
 
-import Theme from '../../theme';
 import React, {Component} from 'react';
 import {withRouter} from 'react-router-dom';
-import AuthHandler from "../../api/authHandler";
-import ApplicationMgtApi from '../../api/applicationMgtApi';
-import {Button, Row, Table} from 'reactstrap';
+import {Button, Col, Row, Table} from 'reactstrap';
 import Drawer from '../UIComponents/Drawer/Drawer';
 import ApplicationView from './View/ApplicationView';
-import NotificationView from "../UIComponents/Notifications/NotificationView";
-import AppImage from "../UIComponents/AppImage/AppImage";
 
 /**
  * The App Create Component.
@@ -52,10 +47,13 @@ class ApplicationListing extends Component {
             application: {},
             drawer: {},
             appListStyle: {},
+            //TODO: Remove this declaration.
             image: [{id: "1", src: "https://www.greenfoot.org/images/logos/macos.png"},
-                {id: "2", src:"http://dl1.cbsistatic.com/i/r/2016/08/08/0e67e43a-5a45-41ab-b81d-acfba8708044/resize/736x552/0c0ee669677b5060a0fa1bfb0c7873b4/android-logo-promo-470.png"}]
+                {
+                    id: "2",
+                    src: "http://dl1.cbsistatic.com/i/r/2016/08/08/0e67e43a-5a45-41ab-b81d-acfba8708044/resize/736x552/0c0ee669677b5060a0fa1bfb0c7873b4/android-logo-promo-470.png"
+                }]
         };
-        this.scriptId = "application-listing";
     }
 
     headers = [
@@ -127,19 +125,15 @@ class ApplicationListing extends Component {
 
     componentWillMount() {
 
-        /**
-         *Loading the theme files based on the the user-preference.
-         */
-        Theme.insertThemingScripts(this.scriptId);
-        let getApps = ApplicationMgtApi.getApplications();
-        getApps.then(response => {
-            let apps = this.setData(response.data.applications);
-            console.log(apps); //TODO: Remove this.
-            this.setState({searchedApplications: apps});
-            // console.log(this.setState({data: response.data}), console.log(this.state));
-        }).catch(err => {
-            AuthHandler.unauthorizedErrorHandler(err);
-        });
+        // let getApps = ApplicationMgtApi.getApplications();
+        // getApps.then(response => {
+        //     let apps = this.setData(response.data.applications);
+        //     console.log(apps); //TODO: Remove this.
+        //     this.setState({searchedApplications: apps});
+        //     // console.log(this.setState({data: response.data}), console.log(this.state));
+        // }).catch(err => {
+        //     AuthHandler.unauthorizedErrorHandler(err);
+        // });
     }
 
     /**
@@ -200,7 +194,6 @@ class ApplicationListing extends Component {
     }
 
     onRowClick() {
-        console.log("sfsdfsdf");
         let style = {
             width: '500px',
             marginLeft: '500px'
@@ -218,7 +211,7 @@ class ApplicationListing extends Component {
         this.props.history.push("apps/edit/fdsfdsf343");
     }
 
-        remove(imageId) {
+    remove(imageId) {
         let tmp = this.state.image;
 
         console.log(imageId);
@@ -227,8 +220,6 @@ class ApplicationListing extends Component {
             return image.id !== imageId
 
         });
-        console.log(rem);
-
         this.setState({image: rem});
     }
 
@@ -248,44 +239,61 @@ class ApplicationListing extends Component {
         return (
 
             <div id="application-list" style={this.state.appListStyle}>
-                <Table striped hover>
-                    <thead>
-                    <tr>
-                        <th></th>
-                        {/* TODO: Remove console.log and add sort method. */}
-                        <th onClick={() => {console.log("sort")}}>Application Name</th>
-                        <th>Category</th>
-                        <th>Platform</th>
-                        <th>Status</th>
-                        <th></th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {this.applications.map(
-                        (application) => {
-                            return (
-                                <tr key={application.id} onClick={this.onRowClick}>
-                                    <td>
-                                        {/* TODO: Move this styles to css. */}
-                                        <img
-                                            src={application.icon}
-                                            height='50px'
-                                            width='50px'
-                                            style={{border: 'solid 1px black', borderRadius: "100%"}}
-                                        />
-                                    </td>
-                                    <td>{application.applicationName}</td>
-                                    <td>{application.category}</td>
-                                    <td>{application.platform}</td>
-                                    <td>{application.status}</td>
-                                    <td><Button onClick={this.handleButtonClick}>Edit</Button></td>
-                                </tr>
-                            )
-                        }
-                    )}
-                    </tbody>
-                </Table>
-
+                <Row>
+                    <Col xs="3 offset-9">
+                        <div className="platform-link-placeholder">
+                            <Button><i className="fw fw-settings"></i> Platforms</Button>
+                        </div>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col>
+                        <Table striped hover>
+                            <thead>
+                            <tr>
+                                <th></th>
+                                {/* TODO: Remove console.log and add sort method. */}
+                                <th onClick={() => {
+                                    console.log("sort")
+                                }}>Application Name
+                                </th>
+                                <th>Category</th>
+                                <th>Platform</th>
+                                <th>Status</th>
+                                <th></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {this.applications.map(
+                                (application) => {
+                                    return (
+                                        <tr key={application.id} onClick={this.onRowClick}>
+                                            <td>
+                                                {/* TODO: Move this styles to css. */}
+                                                <img
+                                                    src={application.icon}
+                                                    height='50px'
+                                                    width='50px'
+                                                    style={{border: 'solid 1px black', borderRadius: "100%"}}
+                                                />
+                                            </td>
+                                            <td>{application.applicationName}</td>
+                                            <td>{application.category}</td>
+                                            <td>{application.platform}</td>
+                                            <td>{application.status}</td>
+                                            <td>
+                                                <Button onClick={this.handleButtonClick}>
+                                                    <i className="fw fw-edit"></i>
+                                                </Button>
+                                            </td>
+                                        </tr>
+                                    )
+                                }
+                            )}
+                            </tbody>
+                        </Table>
+                    </Col>
+                </Row>
                 <Drawer onClose={this.closeDrawer.bind(this)} style={this.state.drawer}>
                     <ApplicationView/>
                 </Drawer>

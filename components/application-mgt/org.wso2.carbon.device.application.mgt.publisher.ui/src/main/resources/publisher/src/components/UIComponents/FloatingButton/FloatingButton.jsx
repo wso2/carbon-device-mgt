@@ -16,10 +16,32 @@
  * under the License.
  */
 
-.creatediv {
-    margin: 0 16px;
+import PropTypes from 'prop-types';
+import React, {Component} from 'react';
+import './floatingButton.css';
+
+/**
+ * Floating Action button.
+ * */
+class FloatingButton extends Component {
+
+    handleClick(event) {
+        this.props.onClick(event);
+    }
+
+    render() {
+        let classes = 'btn-circle ' + this.props.className;
+        return (
+            <div className={classes} onClick={this.handleClick.bind(this)}>
+                <i className="fw fw-add"></i>
+            </div>
+        )
+    }
 }
 
-.nextButton {
-    margin-top: 12px;
-}
+FloatingButton.propTypes = {
+    classNames: PropTypes.string,
+    onClick: PropTypes.func
+};
+
+export default FloatingButton;

@@ -42,7 +42,7 @@ class Drawer extends Component {
         return (
             <div>
                 <div id="app-view" className="app-view-drawer" style={this.props.style}>
-                    <a onClick={this.closeDrawer} className="drawer-close-btn">&times;</a>
+                    <a onClick={this.closeDrawer} className="drawer-close-btn"><i className="fw fw-uncheck"></i></a>
                     {this.props.children}
                 </div>
             </div>

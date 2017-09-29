@@ -21,7 +21,7 @@ import {withRouter} from 'react-router-dom';
 import AuthHandler from "../../../api/authHandler";
 import {Step1, Step2, Step3, Step4} from './CreateSteps/index';
 import ApplicationMgtApi from '../../../api/applicationMgtApi';
-import {Button, Modal, ModalBody, ModalFooter, ModalHeader} from 'reactstrap';
+import {Button, Col, Modal, ModalBody, ModalFooter, ModalHeader, Row} from 'reactstrap';
 
 /**
  * The App Create Component.
@@ -37,13 +37,13 @@ class ApplicationCreate extends Component {
         this.scriptId = "application-create";
         this.setStepData = this.setStepData.bind(this);
         this.removeStepData = this.removeStepData.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
+        this.onSubmit = this.onSubmit.bind(this);
         this.handleCancel = this.handleCancel.bind(this);
         this.handleYes = this.handleYes.bind(this);
         this.handleNo = this.handleNo.bind(this);
-        this.handlePrev = this.handlePrev.bind(this);
-        this.handleNext = this.handleNext.bind(this);
-        this.close = this.close.bind(this);
+        this.onPrevClick = this.onPrevClick.bind(this);
+        this.onNextClick = this.onNextClick.bind(this);
+        this.onClose = this.onClose.bind(this);
         this.state = {
             finished: false,
             stepIndex: 0,
@@ -60,20 +60,16 @@ class ApplicationCreate extends Component {
         this.setState({open: this.props.open});
     }
 
-    close() {
-        this.setState({open: false, stepIndex: 0})
-    }
 
-    handleBack() {
-        let currentStep = this.state.stepIndex;
-        let nextStep = currentStep === 0 ? currentStep : currentStep - 1 ;
-        this.setState({stepIndex: nextStep}, console.log(this.state.stepIndex));
+    onClose() {
+        this.setState({stepIndex: 0}, this.props.close());
+
     }
 
     /**
      * Handles next button click event.
      * */
-    handleNext() {
+    onNextClick() {
         console.log("Handle Next"); //TODO: Remove this
         const {stepIndex} = this.state;
         this.setState({
@@ -85,10 +81,10 @@ class ApplicationCreate extends Component {
     /**
      * Handles form submit.
      * */
-    handleSubmit() {
+    onSubmit() {
         let stepData = this.state.stepData;
         let applicationCreationPromise = ApplicationMgtApi.createApplication(stepData);
-        applicationCreationPromise.then( response => {
+        applicationCreationPromise.then(response => {
                 this.handleYes();
             }
         ).catch(
@@ -110,7 +106,7 @@ class ApplicationCreate extends Component {
      * Handled [ < Prev ] button click.
      * This clears the data in the current step and returns to the previous step.
      * */
-    handlePrev() {
+    onPrevClick() {
         const {stepIndex} = this.state;
         if (stepIndex > 0) {
             this.removeStepData();
@@ -128,7 +124,7 @@ class ApplicationCreate extends Component {
         let tmpStepData = this.state.stepData;
         tmpStepData.push({step: step, data: data});
 
-        this.setState({stepData: tmpStepData}, this.handleNext())
+        this.setState({stepData: tmpStepData}, this.onNextClick())
     };
 
     /**
@@ -170,7 +166,7 @@ class ApplicationCreate extends Component {
             case 0:
                 return (
                     <Step1
-                        handleNext={this.handleNext}
+                        handleNext={this.onNextClick}
                         setData={this.setStepData}
                         removeData={this.removeStepData}
                     />
@@ -178,8 +174,8 @@ class ApplicationCreate extends Component {
             case 1:
                 return (
                     <Step2
-                        handleNext={this.handleNext}
-                        handlePrev={this.handlePrev}
+                        handleNext={this.onNextClick}
+                        handlePrev={this.onPrevClick}
                         setData={this.setStepData}
                         removeData={this.removeStepData}
                     />
@@ -187,8 +183,8 @@ class ApplicationCreate extends Component {
             case 2:
                 return (
                     <Step3
-                        handleFinish={this.handleNext}
-                        handlePrev={this.handlePrev}
+                        handleFinish={this.onNextClick}
+                        handlePrev={this.onPrevClick}
                         setData={this.setStepData}
                         removeData={this.removeStepData}
                     />
@@ -196,7 +192,7 @@ class ApplicationCreate extends Component {
             case 3: {
                 return (
                     <Step4
-                        handleNext={this.handleNext}
+                        handleNext={this.onNextClick}
                         setData={this.setStepData}
                         removeData={this.removeStepData}
                     />
@@ -216,15 +212,26 @@ class ApplicationCreate extends Component {
                        backdrop={'static'}>
                     <ModalHeader toggle={this.toggle}>Create Application</ModalHeader>
                     <ModalBody id="modal-body-content">
-                        {this.getStepContent(this.state.stepIndex)}
+                        <Row>
+                            <Col>
+                                <div className="stepper-header">
+
+                                </div>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col>
+                                {this.getStepContent(stepIndex)}
+                            </Col>
+                        </Row>
                     </ModalBody>
                     <ModalFooter>
-                        {this.state.stepIndex === 0? <div/> :
-                            <Button color="primary" onClick={this.handlePrev}>Back</Button>}
-                        <Button color="secondary" onClick={this.close}>Cancel</Button>
-                        {this.state.finished ?
-                            <Button color="primary" onClick={this.handleSubmit}>Finish</Button> :
-                            <Button color="primary" onClick={this.handleNext}>Continue</Button>}
+                        {stepIndex === 0 ? <div/> :
+                            <Button color="primary" onClick={this.onPrevClick}>Back</Button>}
+                        <Button color="secondary" onClick={this.onClose}>Cancel</Button>
+                        {finished ?
+                            <Button color="primary" onClick={this.onSubmit}>Finish</Button> :
+                            <Button color="primary" onClick={this.onNextClick}>Continue</Button>}
                     </ModalFooter>
                 </Modal>
             </div>);

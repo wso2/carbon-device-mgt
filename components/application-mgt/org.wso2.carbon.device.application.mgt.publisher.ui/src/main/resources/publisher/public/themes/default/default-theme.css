@@ -1,0 +1,483 @@
+/*
+ * Copyright (c) 2017, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *
+ * WSO2 Inc. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+/* Body Styling */
+body {
+    width: 100%;
+    font-family: Roboto sans-serif;
+}
+
+/* Login page styles*/
+#userName {
+    border-radius: 0;
+}
+
+#password {
+    border-radius: 0;
+}
+
+#login-btn {
+    border-radius: 0;
+    background-color: navy;
+    color: white;
+    cursor: pointer;
+}
+
+#login-container {
+    width: 50%;
+    margin: 0 auto
+}
+
+#login-card {
+    border-radius: 0;
+    background-color: #BaBaBa;
+}
+
+/* Base layout container */
+#container {
+    background-color: #ffffff;
+    padding: 0;
+}
+
+/* Base layout header content*/
+#header-content {
+    height: 125px;
+    width: 100%;
+    margin: 0 10px 0 0;
+    background-color: #3b33bd;
+    position: fixed; /* Set the navbar to fixed position */
+    top: 0; /* Position the navbar at the top of the page */
+    z-index: 2;
+    box-shadow: -2px 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+/* Contains the header styles.*/
+#header {
+    margin: 16px 16px 20px 16px;
+    height: 100%;
+    position: relative;
+}
+
+#header-text {
+    color: #ffffff;
+    font-size: 25px;
+    top: 10px;
+    margin-left: 10px;
+}
+
+/* The buttons in the header (User and Notification)*/
+#header-btn-container {
+    float: right;
+}
+
+.btn-header {
+    margin-top: 15px;
+    margin-right: 20px;
+    color: white;
+}
+
+/* Search box styles */
+.search-icon {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+}
+
+#search-box {
+    display: flex;
+    color: #a8a8a8;
+    position: relative;
+    float: right;
+    top: 75px;
+    left: 80px;
+    margin-right: 16px;
+}
+
+#search {
+    position: relative;
+    color: white;
+    background-color: transparent;
+    left: 15px;
+    top: 0px;
+    height: 25px;
+    outline: none;
+    border: none;
+    border-radius: 0%;
+}
+
+/* Application Add button */
+#add-btn-container {
+    position: absolute;
+    left: 12%;
+    top: 100px;
+}
+
+/* Holds the app publisher pages. */
+#application-content {
+    height: auto;
+    width: 80%;
+    margin: 150px auto;
+    box-shadow: -2px 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    padding: 10px 10px 10px 10px;
+}
+
+.stepper-header {
+    width: 100%;
+    border-bottom: solid 1px cornflowerblue;
+    padding-bottom: 5px;
+    margin-bottom: 10px;
+}
+
+.platform-link-placeholder {
+    color: #888888;
+    float: right;
+    margin-right: 20px;
+    padding-bottom: 10px;
+}
+
+#application-list {
+    margin-top: 20px;
+    transition: margin-right .5s;
+}
+
+#app-image-screenshot {
+    width: 300px;
+    height: 300px;
+}
+
+#app-image-icon {
+    width: 300px;
+    height: 300px;
+}
+
+#app-image-banner {
+    width: 400px;
+    height: 300px;
+}
+
+.application-create-banner-dropzone {
+    width: 300px;
+    height: 150px;
+    border-radius: 5%;
+    position: relative;
+    background-color: rgba(157, 159, 157, 0.53);
+    border: dashed #888888 2px;
+}
+
+.application-create-banner-dropzone i {
+    position: absolute;
+    top: 65px;
+    left: 145px;
+}
+
+.application-create-screenshot-dropzone {
+    width: 150px;
+    height: 150px;
+    margin: 0 5px 0 5px;
+    border-radius: 10%;
+    position: relative;
+    background-color: rgba(157, 159, 157, 0.53);
+    border: dashed #888888 2px;
+}
+
+.application-create-screenshot-dropzone i {
+    position: absolute;
+    top: 65px;
+    left: 65px;
+}
+
+.application-create-icon-dropzone {
+    width: 150px;
+    height: 150px;
+    border-radius: 10%;
+    position: relative;
+    background-color: rgba(157, 159, 157, 0.53);
+    border: dashed #888888 2px;
+}
+
+.application-create-icon-dropzone i {
+    position: absolute;
+    top: 65px;
+    left: 65px;
+}
+
+#screenshot-container {
+    display: flex;
+    overflow-x: auto;
+    height: 200px;
+}
+
+#app-icon-container {
+    height: 300px;
+    overflow-x: auto;
+}
+
+#modal-body-content {
+    max-height: 700px;
+    overflow-y: auto;
+}
+
+#img-btn-screenshot {
+    margin: 0 5px 0 5px;
+}
+
+#app-create-modal {
+    max-width: 700px;
+    overflow-x: auto;
+}
+
+#store {
+    border: none;
+    border-bottom: solid #BDBDBD 1px;
+    border-radius: 0px;
+    width: 200px;
+}
+
+#version {
+    border: none;
+    border-bottom: solid #BDBDBD 1px;
+    border-radius: 0px;
+    width: 200px;
+}
+
+#app-release-switch-content {
+    display: flex;
+}
+
+#app-release-switch-label {
+    position: absolute;
+    float: left;
+}
+
+#app-release-switch-switch {
+    position: absolute;
+    right: 10px;
+}
+
+.image-sub-title {
+    font-style: italic;
+    font-size: 12px;
+    color: #818181;
+}
+
+/* Application View */
+#application-view-content {
+    width: 100%;
+}
+
+#application-view-row {
+    margin: 10px 10px 20px 20px;
+}
+
+#app-icon {
+    height: 100px;
+    width: 100px;
+    border: solid 1px black;
+    border-radius: 50%;
+}
+
+.app-updated-date {
+    color: #888888;
+    font-style: italic;
+}
+
+.app-install-count {
+    font-style: italic;
+}
+
+.app-details-tbl {
+    outline: none;
+    border-color: #2196F3;
+}
+
+.app-details-tbl tr {
+    margin: 20px 0 0 0;
+}
+
+.app-details-tbl td {
+    margin-left: 10px;
+    max-width: 400px;
+}
+
+/* Application Edit Base Layout */
+#application-edit-header {
+    height: 50px;
+    width: 100%;
+    margin: 0;
+    font-size: 20px;
+    border-bottom: solid 1px #d8d8d8;
+}
+
+.application-header-text {
+    margin: 10px 0px 0px 10px;
+}
+
+#save-btn-content {
+    float: right;
+
+}
+
+#app-save-btn {
+    border-radius: 0%;
+}
+
+.save-btn {
+    margin: 5px 5px 5px 0px;
+    height: 70%;
+    width: 50%;
+    float: right;
+}
+
+.save-btn:hover {
+    cursor: pointer;
+}
+
+/*Tab styling*/
+div.tab {
+    float: left;
+    border-right: 1px solid #d8d8d8;
+    height: 100%;
+}
+
+/* Style the tab buttons */
+div.tab button {
+    display: block;
+    background-color: inherit;
+    color: black;
+    padding: 15px 16px;
+    width: 100%;
+    border: none;
+    outline: none;
+    text-align: left;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+/* Change background color of buttons on hover */
+div.tab button:hover {
+    background-color: #ddd6d7;
+    cursor: pointer;
+}
+
+/* Create an active/current "tab button" class */
+div.tab button.active {
+    background-color: #1b3bcc;
+    color: white;
+}
+
+
+#application-edit-main-container {
+    display: flex;
+}
+
+#application-edit-outer-content {
+    height: auto;
+    width: 100%;
+}
+
+#application-edit-content {
+    margin: 5px 10px 5px 10px;
+    width: 90%;
+}
+
+#app-edit-content {
+    height: 100%;
+    position: relative;
+}
+
+.back-to-app {
+    position: absolute;
+    height: 40px;
+    width: 40px;
+    border-radius: 50%;
+}
+
+.back-to-app i {
+    padding: 10px 10px 10px 10px;
+}
+
+.back-to-app:hover {
+    cursor: pointer;
+    background-color: #dedede;
+    transition: .5s;
+}
+
+/* Create Release and Release management */
+.release-header {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.release-create {
+    height: 150px;
+    margin-bottom: 20px;
+}
+
+.release-detail-content {
+    width: 100%;
+    margin-top: 20%;
+    height: 300px;
+}
+
+.form-btn {
+    float: right;
+    margin-bottom: 10px;
+}
+
+.release-content {
+    height: 180px;
+    width: 95%;
+    border: dashed 1px #626262;
+    border-radius: 2%;
+    position: relative;
+    background-color: #e8e8e8;
+}
+
+.release-content:after {
+    content: "";
+    letter-spacing: 4px;
+}
+
+.release {
+    margin: 30px 10px 20px 30px;
+}
+
+.no-release-content {
+    position: absolute;
+    margin-top: 10px;
+    left: 40%;
+}
+
+.button-add:hover {
+    cursor: pointer;
+}
+
+.release-inner {
+    margin-top: 5%;
+}
+
+/* Application Edit General Info */
+.app-edit-general-info {
+    margin-top: 20px;
+    max-width: 100%;
+}
+
+.save-info {
+    float: right;
+    margin-bottom: 10px;
+}

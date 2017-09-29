@@ -18,7 +18,6 @@
 
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
-import './release-mgt.css';
 import {Button, Col, Row} from "reactstrap";
 import CreateRelease from "../Create/CreateRelease";
 
@@ -27,20 +26,20 @@ class ReleaseManager extends Component {
     constructor() {
         super();
         this.getNoReleaseContent = this.getNoReleaseContent.bind(this);
-        this.createRelease = this.createRelease.bind(this);
-        this.handleBackPress = this.handleBackPress.bind(this);
+        this.onCreateRelease = this.onCreateRelease.bind(this);
+        this.onBackClick = this.onBackClick.bind(this);
         this.state = {
             createRelease: false,
             onGoing: ""
         }
     }
 
-    createRelease(event) {
+    onCreateRelease(event) {
         event.preventDefault();
         this.setState({createRelease: true, onGoing: event.target.value})
     }
 
-    handleBackPress() {
+    onBackClick() {
         this.setState({createRelease: false});
     }
 
@@ -61,7 +60,7 @@ class ReleaseManager extends Component {
                             className="button-add"
                             id={release.toLowerCase()}
                             value={release}
-                            onClick={this.createRelease}
+                            onClick={this.onCreateRelease}
                         >
                             Create a Release
                         </Button>
@@ -77,7 +76,7 @@ class ReleaseManager extends Component {
                 {this.state.createRelease ?
                     <CreateRelease
                         channel={this.state.onGoing}
-                        handleBack={this.handleBackPress}
+                        handleBack={this.onBackClick}
                     /> :
                     <div id="release-mgt-content">
                         <Row>

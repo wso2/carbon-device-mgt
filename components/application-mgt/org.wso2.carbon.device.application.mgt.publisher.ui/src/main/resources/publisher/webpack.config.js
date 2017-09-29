@@ -49,6 +49,10 @@ const config = {
                 use: [ 'style-loader', 'css-loader' ]
             },
             {
+                test: /\.scss$/,
+                use: [ 'style-loader', 'scss-loader' ]
+            },
+            {
                 test: /\.less$/,
                 use: [{
                     loader: "style-loader" // creates style nodes from JS strings

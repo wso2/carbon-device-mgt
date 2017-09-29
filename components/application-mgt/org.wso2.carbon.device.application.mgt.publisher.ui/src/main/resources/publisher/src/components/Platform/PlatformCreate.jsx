@@ -16,7 +16,6 @@
  * under the License.
  */
 
-import Theme from '../../theme';
 import PropTypes from 'prop-types';
 import Chip from 'material-ui/Chip';
 import Dropzone from 'react-dropzone';
@@ -79,18 +78,6 @@ class PlatformCreate extends Component {
                 {key: 2, value: 'Boolean'},
                 {key: 3, value: 'File'}]
         };
-        this.scriptId = "platform-create";
-    }
-
-    componentWillMount() {
-        /**
-         *Loading the theme files based on the the user-preference.
-         */
-        Theme.insertThemingScripts(this.scriptId);
-    }
-
-    componentWillUnmount() {
-        Theme.removeThemingScripts(this.scriptId);
     }
 
     /**

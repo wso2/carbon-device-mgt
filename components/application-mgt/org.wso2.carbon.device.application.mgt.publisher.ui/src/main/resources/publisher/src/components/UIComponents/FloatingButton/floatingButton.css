@@ -16,23 +16,35 @@
  * under the License.
  */
 
-.release-header {
-    margin-top: 20px;
-    margin-bottom: 20px;
+.btn-circle {
+    color: white;
+    position: relative;
+    background-color: #e65100;
+    border-radius: 50%;
+    box-shadow: -2px 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
-.release-create {
-    height: 150px;
-    margin-bottom: 20px;
+.btn-circle i {
+    position: absolute;
+    margin-top: 37%;
+    margin-left: 37%;
 }
 
-.release-detail-content {
-    width: 100%;
-    margin-top: 20%;
-    height: 300px;
+.small {
+    height: 50px;
+    width: 50px;
 }
 
-.form-btn {
-    float: right;
-    margin-bottom: 10px;
+.medium {
+    height: 100px;
+    width: 100px;
+}
+
+.btn-circle:hover {
+    cursor: pointer;
+    background-color: rgb(255, 93, 2);
+}
+
+.primary {
+    background-color: blue;
 }

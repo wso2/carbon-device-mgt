@@ -19,7 +19,6 @@
 import React, {Component} from 'react';
 import {withRouter} from 'react-router-dom';
 import {Col, Row} from "reactstrap";
-import './applicationView.css';
 
 /**
  * Application view component.
@@ -76,8 +75,15 @@ class ApplicationView extends Component {
                         </Col>
                     </Row>
                     <Row>
-                        <Col>Rating</Col>
-                        <Col>View in Store</Col>
+                        <Col>
+                            <i className="fw fw-star"></i>
+                            <i className="fw fw-star"></i>
+                            <i className="fw fw-star"></i>
+                            <i className="fw fw-star"></i>
+                        </Col>
+                        <Col>
+                            <a href="#">View in Store</a>
+                        </Col>
                     </Row>
                 </div>
                 <hr/>

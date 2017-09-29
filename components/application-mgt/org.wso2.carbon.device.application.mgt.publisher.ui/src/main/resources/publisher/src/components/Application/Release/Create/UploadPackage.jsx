@@ -18,7 +18,6 @@
 
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
-import './createRelease.css';
 import {Button, Col, FormGroup, Input, Label, Row} from "reactstrap";
 
 class UploadPackage extends Component {
@@ -29,7 +28,7 @@ class UploadPackage extends Component {
     }
 
     handleBack() {
-        this.props.backToRelease();
+        this.props.onBackToRelease();
     }
 
     render() {

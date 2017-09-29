@@ -16,23 +16,19 @@
  * under the License.
  */
 
-import './App.css';
-import Theme from './theme';
 import React, {Component} from 'react';
 import AuthHandler from './api/authHandler';
 import createHistory from 'history/createBrowserHistory';
 import {BrowserRouter as Router, Redirect, Route, Switch} from 'react-router-dom'
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import {
     ApplicationCreate,
+    ApplicationEdit,
     ApplicationListing,
     BaseLayout,
     Login,
     NotFound,
     PlatformCreate,
-    PlatformListing,
-    ApplicationEdit
+    PlatformListing
 } from './components';
 
 
@@ -65,19 +61,13 @@ class Base extends Component {
             if (!AuthHandler.isTokenExpired()) {
                 this.setState({user: user});
             } else {
-                console.log("expired!");
                 this.setState({user: null});
             }
         }
     }
 
-    componentDidMount() {
-
-    }
-
     render() {
         if (this.state.user !== null) {
-            console.log("Have User.");
             return (
                 <div>
                     <BaseLayout user={this.state.user}>
@@ -99,7 +89,6 @@ class Base extends Component {
                 </div>
             )
         } else {
-            console.log("No user");
             return (<Redirect to={"/login"}/>)
         }
 
@@ -120,61 +109,18 @@ class Publisher extends Component {
             selectedType: null,
             selectedTheme: null
         };
-        this.setTheme = this.setTheme.bind(this);
-    }
-
-    componentDidMount() {
-        /**
-         *Loading the theme files based on the the user-preference.
-         */
-        let themeConfig = Theme.loadThemeConfigs();
-        themeConfig.then(this.setTheme).catch(function (error) {
-            console.log(error);
-
-        });
-    }
-
-    /**
-     * To set the theme based on the configuration file.
-     * @param response Configuration file data.
-     */
-    setTheme(response) {
-        this.setState({
-            selectedType: response.data.theme.type,
-            selectedTheme: response.data.theme.value
-        });
-
-        Theme.currentThemeType = this.state.selectedType;
-        Theme.currentTheme = this.state.selectedTheme;
-        Theme.selectedTheme =
-            (Theme.currentThemeType === Theme.defaultThemeType) ? Theme.defaultThemeType : Theme.currentTheme;
-
-        if (this.state.selectedType === "default") {
-            let defaultTheme = require("material-ui/styles/baseThemes/" + this.state.selectedTheme);
-            this.setState({
-                muiTheme: getMuiTheme(defaultTheme.default)
-            });
-        } else {
-            let customTheme = require("./themes/" + this.state.selectedTheme);
-            this.setState({
-                muiTheme: getMuiTheme(customTheme.default)
-            });
-        }
-
     }
 
     render() {
         return (
             <div className="App">
-                <MuiThemeProvider>
-                    <Router basename="publisher" history={history}>
-                        <Switch>
-                            <Route path="/login" component={Login}/>
-                            <Route path="/logout" component={Login}/>
-                            <Route component={Base}/>
-                        </Switch>
-                    </Router>
-                </MuiThemeProvider>
+                <Router basename="publisher" history={history}>
+                    <Switch>
+                        <Route path="/login" component={Login}/>
+                        <Route path="/logout" component={Login}/>
+                        <Route component={Base}/>
+                    </Switch>
+                </Router>
             </div>
         );
     }

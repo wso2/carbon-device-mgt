@@ -359,12 +359,6 @@
 			<groupId>javassist</groupId>
 			<artifactId>javassist</artifactId>
 		</dependency>
-        <dependency>
-            <groupId>org.powermock</groupId>
-            <artifactId>powermock-api-mockito</artifactId>
-            <version>${power.mock.version}</version>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
 
 </project>

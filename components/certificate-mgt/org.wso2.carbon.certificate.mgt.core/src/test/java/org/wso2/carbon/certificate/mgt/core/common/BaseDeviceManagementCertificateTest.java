@@ -3,6 +3,7 @@ package org.wso2.carbon.certificate.mgt.core.common;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.tomcat.jdbc.pool.PoolProperties;
+import org.powermock.modules.testng.PowerMockTestCase;
 import org.testng.Assert;
 import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeClass;
@@ -26,7 +27,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-public abstract class BaseDeviceManagementCertificateTest {
+public abstract class BaseDeviceManagementCertificateTest{
     private DataSource dataSource;
     private static final Log log = LogFactory.getLog(BaseDeviceManagementCertificateTest.class);
 
@@ -75,7 +76,7 @@ public abstract class BaseDeviceManagementCertificateTest {
         Statement stmt = null;
         try {
             conn = this.getDataSource().getConnection();
-            stmt = conn.createStatement();
+                stmt = conn.createStatement();
             stmt.executeUpdate("RUNSCRIPT FROM './src/test/resources/sql/h2.sql'");
         } finally {
             TestUtils.cleanupResources(conn, stmt, null);
@@ -148,6 +149,7 @@ public abstract class BaseDeviceManagementCertificateTest {
     }
 
     public DataSource getDataSource() {
+
         return dataSource;
     }
 

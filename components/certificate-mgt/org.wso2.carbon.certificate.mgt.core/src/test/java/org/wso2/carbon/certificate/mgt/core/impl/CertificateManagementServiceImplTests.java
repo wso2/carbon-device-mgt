@@ -1,24 +1,14 @@
 package org.wso2.carbon.certificate.mgt.core.impl;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.commons.io.FileUtils;
-import org.apache.woden.tool.converter.Convert;
-import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.cert.jcajce.JcaCertStore;
-import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
 import org.bouncycastle.cms.CMSAbsentContent;
 import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.cms.CMSSignedDataGenerator;
-import org.bouncycastle.openssl.PEMReader;
-import org.bouncycastle.operator.ContentSigner;
-import org.bouncycastle.operator.OperatorCreationException;
-import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 import org.bouncycastle.pkcs.PKCS10CertificationRequest;
-import org.bouncycastle.pkcs.PKCS10CertificationRequestBuilder;
-import org.bouncycastle.util.io.pem.PemReader;
-import org.eclipse.wst.xml.core.internal.contenttype.ByteReader;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -34,27 +24,25 @@ import org.wso2.carbon.certificate.mgt.core.util.CSRGenerator;
 import org.wso2.carbon.certificate.mgt.core.util.CertificateManagementConstants;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
-import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
 
-
-import javax.xml.bind.DatatypeConverter;
+import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
 import java.io.IOException;
-import java.io.StringReader;
+import java.math.BigInteger;
 import java.security.KeyPair;
-import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.security.Security;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
-import java.security.interfaces.RSAPublicKey;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.List;
 
+//@RunWith(PowerMockRunner.class)
+
+//@PowerMockIgnore({"javax.xml.*","java.sql.*", "org.xml.sax.*", "org.w3c.dom.*",  "org.springframework.context.*", "org.apache.log4j.*"})
+//@PrepareForTest(org.wso2.carbon.certificate.mgt.core.util.CommonUtil.class)
 public class CertificateManagementServiceImplTests extends BaseDeviceManagementCertificateTest {
 
     private static Log log = LogFactory.getLog(CertificateManagementServiceImplTests.class);
@@ -191,19 +179,12 @@ public class CertificateManagementServiceImplTests extends BaseDeviceManagementC
         // Generate key pair
         KeyPair keyPair = csrGeneration.generateKeyPair("RSA", 1024);
         byte[] csrData = csrGeneration.generateCSR("SHA256WithRSA", keyPair);
-
-        //remove headers from csr
-        String csrString = new String(csrData);
-        csrString = csrString.replace("-----BEGIN NEW CERTIFICATE REQUEST-----", "")
-                .replace("-----END NEW CERTIFICATE REQUEST-----", "");
-
-        byte[] byteArrayBst = DatatypeConverter.parseBase64Binary(csrString);
         PKCS10CertificationRequest certificationRequest;
 
         try {
             PrivateKey privateKeyCA = keyStoreReader.getCAPrivateKey();
             X509Certificate certCA = (X509Certificate) keyStoreReader.getCACertificate();
-            certificationRequest = new PKCS10CertificationRequest(byteArrayBst);
+            certificationRequest = new PKCS10CertificationRequest(csrData);
             X509Certificate x509Certificate = managementService.generateCertificateFromCSR(privateKeyCA,
                     certificationRequest, certCA.getIssuerX500Principal().getName());
 
@@ -319,23 +300,113 @@ public class CertificateManagementServiceImplTests extends BaseDeviceManagementC
 
     }
 
-    @Test
-    public void testVerifyPEMSignature() {
 
 
-    }
+
+//    public void testVerifyPEMSignature() throws KeystoreException, DeviceManagementException {
+//
+//        DeviceConfigurationManager.getInstance().initConfig();
+//        X509Certificate x509Certificate = managementService.generateX509Certificate();
+//
+//        PowerMockito.mockStatic(CommonUtil.class);
+//        PowerMockito.when(CommonUtil.generateSerialNumber()).thenReturn(new BigInteger("12345"));
+//        CertificateResponse certificateResponse = managementService.verifyPEMSignature(x509Certificate);
+//        Assert.assertNotNull(certificateResponse);
+//
+//    }
 
     @Test
     public void testVerifySubjectDN() {
         try {
             DeviceConfigurationManager.getInstance().initConfig();
             X509Certificate x509Certificate = managementService.generateX509Certificate();
-            log.info(x509Certificate.getIssuerDN().getName());
+            log.info(x509Certificate.getIssuerX500Principal().getName());
+
             managementService.verifySubjectDN(x509Certificate.getIssuerDN().getName());
 
         } catch (KeystoreException e) {
             e.printStackTrace();
         } catch (DeviceManagementException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void testRetrieveCertificate(){
+        try {
+            X509Certificate x509Certificate = managementService.generateX509Certificate();
+            CertificateResponse certificateResponse = managementService.retrieveCertificate(x509Certificate.getSerialNumber().toString());
+            Assert.assertNotNull(certificateResponse);
+            Assert.assertEquals(x509Certificate.getSerialNumber(),certificateResponse.getCertificateserial());
+
+        } catch (KeystoreException e) {
+            e.printStackTrace();
+        } catch (CertificateManagementException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    @Test
+    public void testGetAllCertificates() throws CertificateManagementException {
+        managementService.getAllCertificates(1,1);
+    }
+
+    @Test
+    public void testGetCertificates(){
+        try{
+            List<CertificateResponse> certificatesBefore = managementService.getCertificates();
+            X509Certificate x509Certificate1 = managementService.generateX509Certificate();
+            X509Certificate x509Certificate2 = managementService.generateX509Certificate();
+            List<CertificateResponse> certificatesAfter = managementService.getCertificates();
+            Assert.assertNotNull(certificatesBefore);
+            Assert.assertNotNull(certificatesAfter);
+            Assert.assertEquals((certificatesBefore.size() + 2),certificatesAfter.size());
+
+
+        } catch (CertificateManagementException e) {
+            e.printStackTrace();
+        } catch (KeystoreException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void testGetCertificatesWithParams(){
+        try {
+
+            X509Certificate x509Certificate = managementService.generateX509Certificate();
+            List<CertificateResponse> certificates = managementService.getCertificates();
+
+            int size = certificates.size();
+            boolean removed = managementService.removeCertificate(x509Certificate.getSerialNumber().toString());
+            certificates = managementService.getCertificates();
+            int sizeAfter = certificates.size();
+
+            Assert.assertNotNull(removed);
+            Assert.assertTrue(removed);
+            Assert.assertEquals((size-1),sizeAfter);
+
+        } catch (CertificateManagementException e) {
+            e.printStackTrace();
+        } catch (KeystoreException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    @Test
+    public void testSearchCertificates(){
+        try {
+            X509Certificate x509Certificate = managementService.generateX509Certificate();
+            List<CertificateResponse> certificateResponses = managementService.searchCertificates(x509Certificate.getSerialNumber().toString());
+            Assert.assertNotNull(certificateResponses);
+            Assert.assertEquals(1,certificateResponses.size());
+            Assert.assertEquals(certificateResponses.get(0).getSerialNumber(),x509Certificate.getSerialNumber().toString());
+
+        } catch (KeystoreException e) {
+            e.printStackTrace();
+        } catch (CertificateManagementException e) {
             e.printStackTrace();
         }
     }

@@ -1,6 +1,7 @@
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
 
 <suite name="CertificateManagementServiceImplTests">
+
     <test name="Operatoin Bean validation tests" preserve-order="true">
         <classes>
             <class name="org.wso2.carbon.certificate.mgt.core.common.BaseDeviceManagementCertificateTest"/>

@@ -1,14 +1,18 @@
 package org.wso2.carbon.certificate.mgt.core.util;
 
-import sun.security.pkcs10.PKCS10;
-import sun.security.x509.X500Name;
+import org.bouncycastle.operator.ContentSigner;
+import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
+import org.bouncycastle.pkcs.PKCS10CertificationRequest;
+import org.bouncycastle.pkcs.PKCS10CertificationRequestBuilder;
+import org.bouncycastle.pkcs.jcajce.JcaPKCS10CertificationRequestBuilder;
 
+import javax.security.auth.x500.X500Principal;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
-import java.security.Signature;
+
 
 public class CSRGenerator {
 
@@ -24,19 +28,14 @@ public class CSRGenerator {
         PrintStream printStream = new PrintStream(outStream);
 
         try {
-            X500Name x500Name = new X500Name("C=DE,O=Organiztion,CN=WSO2");
 
-            Signature sig = Signature.getInstance(sigAlg);
+            PKCS10CertificationRequestBuilder p10Builder = new JcaPKCS10CertificationRequestBuilder(
+                    new X500Principal("CN=Requested Test Certificate"), keyPair.getPublic());
+            JcaContentSignerBuilder csBuilder = new JcaContentSignerBuilder("SHA256withRSA");
+            ContentSigner signer = csBuilder.build(keyPair.getPrivate());
+            PKCS10CertificationRequest csr = p10Builder.build(signer);
 
-            sig.initSign(keyPair.getPrivate());
-
-            PKCS10 pkcs10 = new PKCS10(keyPair.getPublic());
-            pkcs10.encodeAndSign(x500Name, sig);                   // For Java 7 and Java 8
-            pkcs10.print(printStream);
-
-            byte[] csrBytes = outStream.toByteArray();
-
-            return csrBytes;
+            return csr.getEncoded();
         } catch (Exception ex) {
             ex.printStackTrace();
         } finally {

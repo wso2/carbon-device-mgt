@@ -80,7 +80,7 @@ public abstract class BaseDeviceManagementTest {
         NotificationManagementDAOFactory.init(dataSource);
     }
 
-    private void initServices() throws DeviceManagementException, RegistryException {
+    protected void initServices() throws DeviceManagementException, RegistryException {
         DeviceConfigurationManager.getInstance().initConfig();
         DeviceManagementProviderService deviceMgtService = new DeviceManagementProviderServiceImpl();
         DeviceManagementServiceComponent.notifyStartupListeners();

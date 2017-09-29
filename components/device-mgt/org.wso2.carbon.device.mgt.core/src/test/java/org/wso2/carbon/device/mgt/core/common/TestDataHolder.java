@@ -98,6 +98,21 @@ public class TestDataHolder {
         return devices;
     }
 
+    public static Device generateDummyDeviceData(DeviceIdentifier deviceIdentifier) {
+            Device device = new Device();
+            EnrolmentInfo enrolmentInfo = new EnrolmentInfo();
+            enrolmentInfo.setDateOfEnrolment(new Date().getTime());
+            enrolmentInfo.setDateOfLastUpdate(new Date().getTime());
+            enrolmentInfo.setOwner(OWNER);
+            enrolmentInfo.setOwnership(EnrolmentInfo.OwnerShip.BYOD);
+            enrolmentInfo.setStatus(EnrolmentInfo.Status.CREATED);
+            device.setEnrolmentInfo(enrolmentInfo);
+            device.setDescription("Test Description");
+            device.setDeviceIdentifier(deviceIdentifier.getId());
+            device.setType(deviceIdentifier.getType());
+        return device;
+    }
+
     public static DeviceType generateDeviceTypeData(String devTypeName) {
         DeviceType deviceType = new DeviceType();
         deviceType.setName(devTypeName);

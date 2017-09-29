@@ -28,14 +28,17 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.CarbonConstants;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
-import org.wso2.carbon.device.mgt.common.*;
+import org.wso2.carbon.device.mgt.common.Device;
+import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
+import org.wso2.carbon.device.mgt.common.DeviceManagementException;
+import org.wso2.carbon.device.mgt.common.DeviceNotFoundException;
+import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
 import org.wso2.carbon.device.mgt.common.authorization.DeviceAccessAuthorizationException;
 import org.wso2.carbon.device.mgt.common.authorization.DeviceAuthorizationResult;
 import org.wso2.carbon.device.mgt.common.group.mgt.GroupManagementException;
 import org.wso2.carbon.device.mgt.common.group.mgt.RoleDoesNotExistException;
 import org.wso2.carbon.device.mgt.common.permission.mgt.PermissionManagementException;
 import org.wso2.carbon.device.mgt.core.TestDeviceManagementService;
-import org.wso2.carbon.device.mgt.core.common.BaseDeviceManagementTest;
 import org.wso2.carbon.device.mgt.core.common.TestDataHolder;
 import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
@@ -62,7 +65,10 @@ import java.util.List;
 import java.util.HashMap;
 import java.util.Arrays;
 
-public class DeviceAccessAuthorizationServiceTest extends BaseDeviceManagementTest {
+/**
+ * Unit tests for DeviceAccessAuthorizationServiceTest
+ */
+public class DeviceAccessAuthorizationServiceTest {
     private static final Log log = LogFactory.getLog(DeviceAccessAuthorizationServiceTest.class);
     private static final String DEVICE_TYPE = "AUTH_SERVICE_TEST_TYPE";
     private static final int NO_OF_DEVICES = 5;
@@ -288,7 +294,7 @@ public class DeviceAccessAuthorizationServiceTest extends BaseDeviceManagementTe
     @Test(description = "Authorization for device admin called by normal user")
     public void isDevAdminNormalUser() throws DeviceAccessAuthorizationException {
         PrivilegedCarbonContext.getThreadLocalCarbonContext().setUsername(NORMAL_USER);
-        Assert.assertFalse(deviceAccessAuthorizationService.isDeviceAdminUser(),"Normal user allowed as admin user");
+        Assert.assertFalse(deviceAccessAuthorizationService.isDeviceAdminUser(), "Normal user allowed as admin user");
     }
 
     //Check branches of isUserAuthorized
@@ -297,7 +303,7 @@ public class DeviceAccessAuthorizationServiceTest extends BaseDeviceManagementTe
 
         //Creating a temporary device
         Device device = new Device();
-        EnrolmentInfo enrolmentInfo = new EnrolmentInfo(NON_ADMIN_ALLOWED_USER, EnrolmentInfo.OwnerShip.BYOD,null);
+        EnrolmentInfo enrolmentInfo = new EnrolmentInfo(NON_ADMIN_ALLOWED_USER, EnrolmentInfo.OwnerShip.BYOD, null);
         device.setEnrolmentInfo(enrolmentInfo);
         device.setName("temp");
         device.setType(DEVICE_TYPE);
@@ -338,7 +344,7 @@ public class DeviceAccessAuthorizationServiceTest extends BaseDeviceManagementTe
         PrivilegedCarbonContext.getThreadLocalCarbonContext().setUsername(NON_ADMIN_ALLOWED_USER);
         DeviceAuthorizationResult deviceAuthorizationResult = deviceAccessAuthorizationService.
                 isUserAuthorized(deviceIds, "", new String[]{NON_ADMIN_PERMISSION});
-        Assert.assertEquals(deviceAuthorizationResult,null,
+        Assert.assertEquals(deviceAuthorizationResult, null,
                 "Not null result for empty username in isUserAuthorized method");
     }
 

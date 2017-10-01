@@ -26,6 +26,7 @@ public class DeviceCacheConfiguration {
 
     private boolean isEnabled;
     private int expiryTime;
+    private long capacity;
 
     @XmlElement(name = "Enable", required = true)
     public boolean isEnabled() {
@@ -43,5 +44,14 @@ public class DeviceCacheConfiguration {
 
     public void setExpiryTime(int expiryTime) {
         this.expiryTime = expiryTime;
+    }
+
+    @XmlElement(name = "Capacity", required = true)
+    public long getCapacity() {
+        return capacity;
+    }
+
+    public void setCapacity(long capacity) {
+        this.capacity = capacity;
     }
 }

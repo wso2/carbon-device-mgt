@@ -4186,7 +4186,7 @@ a.wr-side-panel-toggle-btn.selected {
 
 .wr-help-tip {
     font-size: 14px;
-    padding: 0 10px;
+    padding-left: 10px;
     color: #666;
 }
 

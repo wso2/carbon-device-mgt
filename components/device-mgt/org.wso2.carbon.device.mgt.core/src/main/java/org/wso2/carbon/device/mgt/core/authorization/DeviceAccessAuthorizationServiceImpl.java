@@ -20,11 +20,10 @@ package org.wso2.carbon.device.mgt.core.authorization;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.CarbonConstants;
 import org.wso2.carbon.context.CarbonContext;
-import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
-import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
 import org.wso2.carbon.device.mgt.common.authorization.DeviceAccessAuthorizationException;
 import org.wso2.carbon.device.mgt.common.authorization.DeviceAccessAuthorizationService;
 import org.wso2.carbon.device.mgt.common.authorization.DeviceAuthorizationResult;
@@ -36,11 +35,9 @@ import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 import org.wso2.carbon.device.mgt.core.permission.mgt.PermissionUtils;
 import org.wso2.carbon.user.api.UserRealm;
 import org.wso2.carbon.user.api.UserStoreException;
-
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
+
 
 /**
  * Implementation of DeviceAccessAuthorization service.
@@ -233,7 +230,7 @@ public class DeviceAccessAuthorizationServiceImpl implements DeviceAccessAuthori
             return userRealm.getAuthorizationManager()
                     .isUserAuthorized(removeTenantDomain(username),
                                       PermissionUtils.getAbsolutePermissionPath(CDM_ADMIN_PERMISSION),
-                                      PermissionMethod.UI_EXECUTE);
+                            CarbonConstants.UI_PERMISSION_ACTION);
         }
         return false;
     }
@@ -263,22 +260,6 @@ public class DeviceAccessAuthorizationServiceImpl implements DeviceAccessAuthori
         permission.setName(CDM_ADMIN);
         permission.setPath(PermissionUtils.getAbsolutePermissionPath(CDM_ADMIN_PERMISSION));
         return PermissionUtils.putPermission(permission);
-    }
-
-    private Map<String, String> getOwnershipOfDevices(List<Device> devices) {
-        Map<String, String> ownershipData = new HashMap<>();
-        EnrolmentInfo enrolmentInfo;
-        String owner;
-        for (Device device : devices) {
-            enrolmentInfo = device.getEnrolmentInfo();
-            if (enrolmentInfo != null) {
-                owner = enrolmentInfo.getOwner();
-                if (owner != null && !owner.isEmpty()) {
-                    ownershipData.put(device.getDeviceIdentifier(), owner);
-                }
-            }
-        }
-        return ownershipData;
     }
 
     public static final class PermissionMethod {

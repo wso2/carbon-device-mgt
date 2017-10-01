@@ -25,11 +25,13 @@ import org.eclipse.wst.common.uriresolver.internal.util.URIEncoder;
 import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
+import org.wso2.carbon.device.mgt.common.configuration.mgt.ConfigurationManagementException;
 import org.wso2.carbon.device.mgt.core.DeviceManagementConstants;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.device.mgt.core.service.EmailMetaInfo;
 import org.wso2.carbon.device.mgt.jaxrs.beans.BasicUserInfo;
 import org.wso2.carbon.device.mgt.jaxrs.beans.BasicUserInfoList;
+import org.wso2.carbon.device.mgt.jaxrs.beans.BasicUserInfoWrapper;
 import org.wso2.carbon.device.mgt.jaxrs.beans.EnrollmentInvitation;
 import org.wso2.carbon.device.mgt.jaxrs.beans.ErrorResponse;
 import org.wso2.carbon.device.mgt.jaxrs.beans.OldPasswordResetWrapper;
@@ -88,12 +90,12 @@ public class UserManagementServiceImpl implements UserManagementService {
 
     // Permissions that are given for a normal device user.
     private static final Permission[] PERMISSIONS_FOR_DEVICE_USER = {
-        new Permission("/permission/admin/Login", "ui.execute"),
-        new Permission("/permission/admin/device-mgt/device/api/subscribe", "ui.execute"),
-        new Permission("/permission/admin/device-mgt/devices/enroll", "ui.execute"),
-        new Permission("/permission/admin/device-mgt/devices/disenroll", "ui.execute"),
-        new Permission("/permission/admin/device-mgt/devices/owning-device/view", "ui.execute"),
-        new Permission("/permission/admin/manage/portal", "ui.execute")
+            new Permission("/permission/admin/Login", "ui.execute"),
+            new Permission("/permission/admin/device-mgt/device/api/subscribe", "ui.execute"),
+            new Permission("/permission/admin/device-mgt/devices/enroll", "ui.execute"),
+            new Permission("/permission/admin/device-mgt/devices/disenroll", "ui.execute"),
+            new Permission("/permission/admin/device-mgt/devices/owning-device/view", "ui.execute"),
+            new Permission("/permission/admin/manage/portal", "ui.execute")
     };
 
     @POST
@@ -134,7 +136,7 @@ public class UserManagementServiceImpl implements UserManagementService {
             }
 
             userStoreManager.addUser(userInfo.getUsername(), initialUserPassword,
-                                     roles, defaultUserClaims, null);
+                    roles, defaultUserClaims, null);
             // Outputting debug message upon successful addition of user
             if (log.isDebugEnabled()) {
                 log.debug("User '" + userInfo.getUsername() + "' has successfully been added.");
@@ -155,10 +157,18 @@ public class UserManagementServiceImpl implements UserManagementService {
             props.setProperty("password", initialUserPassword);
 
             EmailMetaInfo metaInfo = new EmailMetaInfo(recipient, props);
-            dms.sendRegistrationEmail(metaInfo);
-            return Response.created(new URI(API_BASE_PATH + "/" + URIEncoder.encode(userInfo.getUsername(), "UTF-8")))
-                    .entity(
-                    createdUserInfo).build();
+            BasicUserInfoWrapper userInfoWrapper = new BasicUserInfoWrapper();
+            String message;
+            try {
+                dms.sendRegistrationEmail(metaInfo);
+                message = "An invitation mail will be sent to this user to initiate device enrollment.";
+            } catch (ConfigurationManagementException e) {
+                message = "Mail Server is not configured. Email invitation will not be sent.";
+            }
+            userInfoWrapper.setBasicUserInfo(createdUserInfo);
+            userInfoWrapper.setMessage(message);
+            return Response.created(new URI(API_BASE_PATH + "/" + URIEncoder.encode(userInfo.getUsername(),
+                    "UTF-8"))).entity(userInfoWrapper).build();
         } catch (UserStoreException e) {
             String msg = "Error occurred while trying to add user '" + userInfo.getUsername() + "' to the " +
                     "underlying user management system";
@@ -178,8 +188,7 @@ public class UserManagementServiceImpl implements UserManagementService {
             return Response.serverError().entity(
                     new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
         } catch (DeviceManagementException e) {
-            String msg = "Error occurred while sending registration email to the user " +
-                    userInfo.getUsername();
+            String msg = "Error occurred while sending registration email to the user " + userInfo.getUsername();
             log.error(msg, e);
             return Response.serverError().entity(
                     new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
@@ -227,11 +236,11 @@ public class UserManagementServiceImpl implements UserManagementService {
             if (!userStoreManager.isExistingUser(username)) {
                 if (log.isDebugEnabled()) {
                     log.debug("User by username: " + username +
-                              " doesn't exists. Therefore, request made to update user was refused.");
+                            " doesn't exists. Therefore, request made to update user was refused.");
                 }
                 return Response.status(Response.Status.NOT_FOUND).entity(
                         new ErrorResponse.ErrorResponseBuilder().setMessage("User by username: " +
-                                                                            username + " doesn't  exist.").build()).build();
+                                username + " doesn't  exist.").build()).build();
             }
 
             Map<String, String> defaultUserClaims =
@@ -240,7 +249,7 @@ public class UserManagementServiceImpl implements UserManagementService {
             if (StringUtils.isNotEmpty(userInfo.getPassword())) {
                 // Decoding Base64 encoded password
                 userStoreManager.updateCredentialByAdmin(username,
-                                                         userInfo.getPassword());
+                        userInfo.getPassword());
                 log.debug("User credential of username: " + username + " has been changed");
             }
             List<String> currentRoles = this.getFilteredRoles(userStoreManager, username);
@@ -259,8 +268,8 @@ public class UserManagementServiceImpl implements UserManagementService {
             rolesToDelete.remove(ROLE_EVERYONE);
             rolesToAdd.remove(ROLE_EVERYONE);
             userStoreManager.updateRoleListOfUser(username,
-                                                  rolesToDelete.toArray(new String[rolesToDelete.size()]),
-                                                  rolesToAdd.toArray(new String[rolesToAdd.size()]));
+                    rolesToDelete.toArray(new String[rolesToDelete.size()]),
+                    rolesToAdd.toArray(new String[rolesToAdd.size()]));
             userStoreManager.setUserClaimValues(username, defaultUserClaims, null);
             // Outputting debug message upon successful addition of user
             if (log.isDebugEnabled()) {
@@ -363,7 +372,9 @@ public class UserManagementServiceImpl implements UserManagementService {
         }
 
         RequestValidationUtil.validatePaginationParameters(offset, limit);
-
+        if (limit == 0) {
+            limit = Constants.DEFAULT_PAGE_LIMIT;
+        }
         List<BasicUserInfo> userList, offsetList;
         String appliedFilter = ((filter == null) || filter.isEmpty() ? "*" : filter + "*");
         // to get whole set of users, appliedLimit is set to -1
@@ -420,7 +431,7 @@ public class UserManagementServiceImpl implements UserManagementService {
             UserStoreCountRetriever userStoreCountRetrieverService = DeviceMgtAPIUtils.getUserStoreCountRetrieverService();
             RealmConfiguration secondaryRealmConfiguration = CarbonContext.getThreadLocalCarbonContext().getUserRealm().
                     getRealmConfiguration().getSecondaryRealmConfig();
-            
+
             if (secondaryRealmConfiguration != null) {
                 if (!secondaryRealmConfiguration.isPrimary() && !Constants.JDBC_USERSTOREMANAGER.
                         equals(secondaryRealmConfiguration.getUserStoreClass().getClass())) {
@@ -473,7 +484,8 @@ public class UserManagementServiceImpl implements UserManagementService {
 
     @GET
     @Path("/checkUser")
-    @Override public Response isUserExists(@QueryParam("username") String userName) {
+    @Override
+    public Response isUserExists(@QueryParam("username") String userName) {
         try {
             UserStoreManager userStoreManager = DeviceMgtAPIUtils.getUserStoreManager();
             boolean userExists = false;
@@ -494,7 +506,7 @@ public class UserManagementServiceImpl implements UserManagementService {
     @Path("/search/usernames")
     @Override
     public Response getUserNames(@QueryParam("filter") String filter, @QueryParam("domain") String domain,
-            @HeaderParam("If-Modified-Since") String timestamp,
+                                 @HeaderParam("If-Modified-Since") String timestamp,
                                  @QueryParam("offset") int offset, @QueryParam("limit") int limit) {
         if (log.isDebugEnabled()) {
             log.debug("Getting the list of users with all user-related information using the filter : " + filter);
@@ -503,21 +515,23 @@ public class UserManagementServiceImpl implements UserManagementService {
         if (domain != null && !domain.isEmpty()) {
             userStoreDomain = domain;
         }
+        if (limit == 0){
+            //If there is no limit is passed, then return all.
+            limit = -1;
+        }
         List<UserInfo> userList;
         try {
             UserStoreManager userStoreManager = DeviceMgtAPIUtils.getUserStoreManager();
-            String[] users = userStoreManager.listUsers(userStoreDomain + "/*", -1);
+            String[] users = userStoreManager.listUsers(userStoreDomain + "/" + filter + "*", limit);
             userList = new ArrayList<>();
             UserInfo user;
             for (String username : users) {
-                if (username.contains(filter)) {
-                    user = new UserInfo();
-                    user.setUsername(username);
-                    user.setEmailAddress(getClaimValue(username, Constants.USER_CLAIM_EMAIL_ADDRESS));
-                    user.setFirstname(getClaimValue(username, Constants.USER_CLAIM_FIRST_NAME));
-                    user.setLastname(getClaimValue(username, Constants.USER_CLAIM_LAST_NAME));
-                    userList.add(user);
-                }
+                user = new UserInfo();
+                user.setUsername(username);
+                user.setEmailAddress(getClaimValue(username, Constants.USER_CLAIM_EMAIL_ADDRESS));
+                user.setFirstname(getClaimValue(username, Constants.USER_CLAIM_FIRST_NAME));
+                user.setLastname(getClaimValue(username, Constants.USER_CLAIM_LAST_NAME));
+                userList.add(user);
             }
             return Response.status(Response.Status.OK).entity(userList).build();
         } catch (UserStoreException e) {
@@ -558,7 +572,7 @@ public class UserManagementServiceImpl implements UserManagementService {
 
                 EmailMetaInfo metaInfo = new EmailMetaInfo(recipient, props);
                 dms.sendEnrolmentInvitation(DeviceManagementConstants.EmailAttributes.USER_ENROLLMENT_TEMPLATE,
-                                            metaInfo);
+                        metaInfo);
             }
         } catch (DeviceManagementException e) {
             String msg = "Error occurred while inviting user to enrol their device";
@@ -571,6 +585,10 @@ public class UserManagementServiceImpl implements UserManagementService {
         } catch (UserStoreException e) {
             String msg = "Error occurred while getting claim values to invite user";
             log.error(msg, e);
+            return Response.serverError().entity(
+                    new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
+        } catch (ConfigurationManagementException e) {
+            String msg = "Error occurred while sending the email invitations. Mail server not configured.";
             return Response.serverError().entity(
                     new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
         }
@@ -606,6 +624,10 @@ public class UserManagementServiceImpl implements UserManagementService {
         } catch (UserStoreException e) {
             String msg = "Error occurred while getting claim values to invite user";
             log.error(msg, e);
+            return Response.serverError().entity(
+                    new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
+        } catch (ConfigurationManagementException e) {
+            String msg = "Error occurred while sending the email invitations. Mail server not configured.";
             return Response.serverError().entity(
                     new ErrorResponse.ErrorResponseBuilder().setMessage(msg).build()).build();
         }
@@ -660,8 +682,8 @@ public class UserManagementServiceImpl implements UserManagementService {
     private String getEnrollmentTemplateName(String deviceType) {
         String templateName = deviceType + "-enrollment-invitation";
         File template = new File(CarbonUtils.getCarbonHome() + File.separator + "repository" + File.separator
-                                 + "resources" + File.separator + "email-templates" + File.separator + templateName
-                                 + ".vm");
+                + "resources" + File.separator + "email-templates" + File.separator + templateName
+                + ".vm");
         if (template.exists()) {
             return templateName;
         } else {

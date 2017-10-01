@@ -1,0 +1,131 @@
+{{!
+  Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+
+  WSO2 Inc. licenses this file to you under the Apache License,
+  Version 2.0 (the "License"); you may not use this file except
+  in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing,
+  software distributed under the License is distributed on an
+  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  KIND, either express or implied. See the License for the
+  specific language governing permissions and limitations
+  under the License.
+}}`
+{{unit "cdmf.unit.ui.title" pageTitle="MQTT Dashboard"}}
+
+{{unit "cdmf.unit.data-tables-extended"}}
+{{unit "cdmf.unit.lib.ui-permissions-utility"}}
+
+{{#zone "breadcrumbs"}}
+    <li>
+        <a href="{{@app.context}}/">
+            <i class="icon fw fw-home"></i>
+        </a>
+    </li>
+    <li>
+        <!--suppress HtmlUnknownTarget -->
+        <a href="{{@app.context}}/topics">
+            Dashboard
+        </a>
+    </li>
+    <li>
+        <a href="#">
+            MQTT
+        </a>
+    </li>
+{{/zone}}
+
+
+{{#zone "content"}}
+    <div class="wr-device-list row">
+        <div class="wr-hidden-operations wr-advance-operations"></div>
+        <div class="col-md-12 wr-page-content">
+            <div>
+                <span id="permission" data-permission="{{permissions.list}}"></span>
+                <div id="loading-content" class="col-centered">
+                    <i class="fw fw-settings fw-spin fw-2x"></i>
+                    Loading subscriptions . . .
+                    <br>
+                </div>
+                <div id="topics-listing-status" class="raw hidden">
+                    <ul style="list-style-type: none;">
+                        <li class="message message-info">
+                            <h4>
+                                <i class="icon fw fw-info"></i>
+                                <a id="topics-listing-status-msg"></a>
+                            </h4>
+                        </li>
+                    </ul>
+                </div>
+                <div id="topics-table">
+                    <table class="table table-striped table-hover list-table display responsive nowrap data-table hidden"
+                           id="topics-grid">
+                        <thead>
+                        <tr class="sort-row">
+                            <th class="no-sort"></th>
+                            <th>By TopicName</th>
+                            <th>By RemainingMsgCount</th>
+                            <th>By Active</th>
+                            <th>By Durable</th>
+                            <th>By SubscriberQueueName</th>
+                            <th>By SubscriptionIdentifier</th>
+                        </tr>
+                        <tr class="filter-row filter-box">
+                            <th class="no-sort"></th>
+                            <th data-for="By TopicName" class="text-filter"></th>
+                            <th data-for="By RemainingMessageCount" class="text-filter"></th>
+                            <th data-for="By Active" class="select-filter"></th>
+                            <th data-for="By Durable" class="select-filter data-platform"></th>
+                            <th data-for="By SubscriberQueueName" class="select-filter"></th>
+                            <th data-for="By SubscriptionIdentifier" class="select-filter"></th>
+                            <!--<th class="no-sort"></th>-->
+                        </tr>
+                        </thead>
+                        <tbody id="ast-container">
+
+                        <br class="c-both" />
+                        </tbody>
+                    </table>
+                </div>
+                <br class="c-both" />
+                <div id="content-filter-types" style="display: none">
+                    <div class="sort-title">Sort By</div>
+                    <div class="sort-options">
+                        <a href="#">By SubscribedQueueOrTopicName<span class="ico-sort-asc"></span></a>
+                        <a href="#">By localNumberOfMessagesRemainingForSubscriber</a>
+                        <a href="#">By localActive</a>
+                        <a href="#">By localDurable</a>
+                        <a href="#">By localSubscriberQueueName</a>
+                        <a href="#">By localSubscriptionIdentifier</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{{/zone}}
+
+{{#zone "bottomJs"}}
+    <script id="device-listing" data-current-user="{{@user.username}}" data-device-types="{{deviceTypes}}"
+            type="text/x-handlebars-template"></script>
+    {{js "js/topic-listing.js"}}
+{{/zone}}
+
+{{#zone "topCss"}}
+    <style>
+        .select2-dropdown {
+            z-index: 999999999;
+        }
+
+        .wr-input-control {
+            color: black;
+        }
+
+        .select2-selection__choice {
+            font-size: medium;
+        }
+    </style>
+{{/zone}}

@@ -33,6 +33,7 @@ import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroup;
 import org.wso2.carbon.device.mgt.common.group.mgt.GroupAlreadyExistException;
 import org.wso2.carbon.device.mgt.common.group.mgt.GroupManagementException;
 import org.wso2.carbon.device.mgt.common.group.mgt.RoleDoesNotExistException;
+import org.wso2.carbon.device.mgt.common.group.mgt.GroupNotExistException;
 import org.wso2.carbon.device.mgt.core.service.GroupManagementProviderService;
 import org.wso2.carbon.device.mgt.jaxrs.beans.DeviceGroupList;
 import org.wso2.carbon.device.mgt.jaxrs.beans.DeviceList;
@@ -109,7 +110,7 @@ public class GroupManagementServiceImpl implements GroupManagementService {
             log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         } catch (GroupAlreadyExistException e) {
-            String msg = "Group already exists with name '" + group.getName() + "'.";
+            String msg = "Group already exists with name " + group.getName() + ".";
             log.warn(msg);
             return Response.status(Response.Status.CONFLICT).entity(msg).build();
         }
@@ -144,7 +145,7 @@ public class GroupManagementServiceImpl implements GroupManagementService {
             String msg = "Error occurred while adding new group.";
             log.error(msg, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
-        } catch (GroupAlreadyExistException e) {
+        } catch (GroupNotExistException e) {
             String msg = "There is another group already exists with name '" + deviceGroup.getName() + "'.";
             log.warn(msg);
             return Response.status(Response.Status.CONFLICT).entity(msg).build();

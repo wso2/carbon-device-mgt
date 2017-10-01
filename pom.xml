@@ -23,7 +23,7 @@
     <groupId>org.wso2.carbon.devicemgt</groupId>
     <artifactId>carbon-devicemgt</artifactId>
     <packaging>pom</packaging>
-    <version>3.0.93-SNAPSHOT</version>
+    <version>3.0.129-SNAPSHOT</version>
     <name>WSO2 Carbon - Device Management - Parent</name>
     <url>http://wso2.org</url>
     <description>WSO2 Connected Device Manager Components</description>
@@ -52,6 +52,7 @@
         <module>features/email-sender</module>
         <module>features/jwt-client</module>
 	    <module>features/device-mgt-extensions</module>
+        <module>components/test-coverage</module>
     </modules>
 
     <dependencyManagement>
@@ -897,11 +898,6 @@
                 <version>${carbon.identity.framework.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.wso2.carbon.identity</groupId>
-                <artifactId>org.wso2.carbon.identity.oauth2.grant.jwt</artifactId>
-                <version>${identity.jwt.extension.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>org.wso2.carbon.identity.framework</groupId>
                 <artifactId>org.wso2.carbon.user.mgt</artifactId>
                 <version>${carbon.identity.framework.version}</version>
@@ -1134,16 +1130,6 @@
 				<version>${carbon.commons.version}</version>
 			</dependency>
             <dependency>
-                <groupId>org.wso2.carbon.analytics</groupId>
-                <artifactId>org.wso2.carbon.analytics.api</artifactId>
-                <version>${carbon.analytics.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.carbon.analytics</groupId>
-                <artifactId>org.wso2.carbon.analytics.datasource.commons</artifactId>
-                <version>${carbon.analytics.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>org.wso2.carbon.event-processing</groupId>
                 <artifactId>org.wso2.carbon.event.processor.stub</artifactId>
                 <version>${carbon.event-processing.version}</version>
@@ -1374,11 +1360,6 @@
                 <version>${carbon.analytics.common.version}</version>
             </dependency>
 			<dependency>
-				<groupId>org.wso2.carbon.analytics-common</groupId>
-				<artifactId>org.wso2.carbon.event.receiver.stub</artifactId>
-				<version>${carbon.analytics.common.version}</version>
-			</dependency>
-			<dependency>
 				<groupId>org.wso2.carbon.analytics</groupId>
 				<artifactId>org.wso2.carbon.analytics.datasource.commons</artifactId>
 				<version>${carbon.analytics.version}</version>
@@ -1387,11 +1368,6 @@
 				<groupId>org.wso2.carbon.analytics</groupId>
 				<artifactId>org.wso2.carbon.analytics.dataservice.commons</artifactId>
 				<version>${carbon.analytics.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.wso2.carbon.analytics-common</groupId>
-				<artifactId>org.wso2.carbon.event.stream.stub</artifactId>
-				<version>${carbon.analytics.common.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.wso2.carbon.analytics-common</groupId>
@@ -1550,6 +1526,36 @@
                 <artifactId>org.wso2.carbon.registry.resource</artifactId>
                 <version>${carbon.registry.resource.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.powermock</groupId>
+                <artifactId>powermock-api-mockito</artifactId>
+                <version>${power.mock.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.powermock</groupId>
+                <artifactId>powermock-module-testng</artifactId>
+                <version>${power.mock.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>commons-dbcp.wso2</groupId>
+                <artifactId>commons-dbcp</artifactId>
+                <version>${commons.dbcp.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.governance</groupId>
+                <artifactId>org.wso2.carbon.governance.registry.extensions</artifactId>
+                <version>${carbon.governance.version}</version>
+                <scope>test</scope>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.slf4j</groupId>
+                        <artifactId>jcl-over-slf4j</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -1690,6 +1696,11 @@
                     <groupId>org.wso2.maven</groupId>
                     <artifactId>carbon-p2-plugin</artifactId>
                     <version>${carbon.p2.plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.jacoco</groupId>
+                    <artifactId>jacoco-maven-plugin</artifactId>
+                    <version>${jacoco.maven.plugin.version}</version>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -1840,7 +1851,7 @@
         <axiom.wso2.version>1.2.11.wso2v10</axiom.wso2.version>
 
         <!-- Carbon Device Management -->
-        <carbon.device.mgt.version>3.0.93-SNAPSHOT</carbon.device.mgt.version>
+        <carbon.device.mgt.version>3.0.129-SNAPSHOT</carbon.device.mgt.version>
 
         <!-- Carbon Commons -->
         <carbon.commons.version>4.4.8</carbon.commons.version>
@@ -1851,7 +1862,7 @@
 	    <commons-lang.wso2.osgi.version.range>[2.6.0,3.0.0)</commons-lang.wso2.osgi.version.range>
 
         <!-- Carbon API Management -->
-        <carbon.api.mgt.version>6.1.64</carbon.api.mgt.version>
+        <carbon.api.mgt.version>6.1.109</carbon.api.mgt.version>
         <carbon.api.mgt.version.range>(6.0.0,7.0.0]</carbon.api.mgt.version.range>
 
         <!-- Carbon Analytics -->
@@ -1969,6 +1980,14 @@
 		<commons.codec.verision.range>(1.9,2.0]</commons.codec.verision.range>
 		<javassist.version>3.12.1.GA</javassist.version>
         <maven.javadoc.skip>true</maven.javadoc.skip>
+
+        <!-- jacoco plugin version -->
+        <jacoco.maven.plugin.version>0.7.8</jacoco.maven.plugin.version>
+        <jacoco.ant.verision>0.7.5.201505241946</jacoco.ant.verision>
+        <ant.contrib.version>1.0b3</ant.contrib.version>
+        <power.mock.version>1.7.0</power.mock.version>
+        <commons.dbcp.version>1.4.0.wso2v1</commons.dbcp.version>
+
     </properties>
 
 </project>

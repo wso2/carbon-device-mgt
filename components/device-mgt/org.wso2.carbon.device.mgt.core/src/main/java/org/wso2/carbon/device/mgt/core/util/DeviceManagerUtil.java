@@ -21,6 +21,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Document;
 import org.wso2.carbon.base.MultitenantConstants;
+import org.wso2.carbon.caching.impl.CacheImpl;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.analytics.data.publisher.service.EventsPublisherService;
 import org.wso2.carbon.device.mgt.common.Device;
@@ -76,7 +77,7 @@ public final class DeviceManagerUtil {
 
     private static final Log log = LogFactory.getLog(DeviceManagerUtil.class);
 
-    private  static boolean isDeviceCacheInistialized = false;
+    private  static boolean isDeviceCacheInitialized = false;
 
     public static Document convertToDocument(File file) throws DeviceManagementException {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -473,6 +474,13 @@ public final class DeviceManagerUtil {
         return true;
     }
 
+    public static boolean isDeviceExists(DeviceIdentifier deviceIdentifier) throws DeviceManagementException {
+        Device device = DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().getDevice(deviceIdentifier,
+                false);
+        return !(device == null || device.getDeviceIdentifier() == null ||
+                device.getDeviceIdentifier().isEmpty() || device.getEnrolmentInfo() == null);
+    }
+
     private static CacheManager getCacheManager() {
         return Caching.getCacheManagerFactory().getCacheManager(DeviceManagementConstants.DM_CACHE_MANAGER);
     }
@@ -492,16 +500,21 @@ public final class DeviceManagerUtil {
     public static void initializeDeviceCache() {
         DeviceManagementConfig config = DeviceConfigurationManager.getInstance().getDeviceManagementConfig();
         int deviceCacheExpiry = config.getDeviceCacheConfiguration().getExpiryTime();
+        long deviceCacheCapacity = config.getDeviceCacheConfiguration().getCapacity();
         CacheManager manager = getCacheManager();
         if (config.getDeviceCacheConfiguration().isEnabled()) {
-            if(!isDeviceCacheInistialized) {
-                isDeviceCacheInistialized = true;
+            if(!isDeviceCacheInitialized) {
+                isDeviceCacheInitialized = true;
                 if (manager != null) {
                     if (deviceCacheExpiry > 0) {
                         manager.<DeviceCacheKey, Device>createCacheBuilder(DeviceManagementConstants.DEVICE_CACHE).
                                 setExpiry(CacheConfiguration.ExpiryType.MODIFIED, new CacheConfiguration.Duration(TimeUnit.SECONDS,
                                         deviceCacheExpiry)).setExpiry(CacheConfiguration.ExpiryType.ACCESSED, new CacheConfiguration.
                                 Duration(TimeUnit.SECONDS, deviceCacheExpiry)).setStoreByValue(true).build();
+                        if(deviceCacheCapacity > 0 ) {
+                            ((CacheImpl)(manager.<DeviceCacheKey, Device>getCache(DeviceManagementConstants.DEVICE_CACHE))).
+                                    setCapacity(deviceCacheCapacity);
+                        }
                     } else {
                         manager.<DeviceCacheKey, Device>getCache(DeviceManagementConstants.DEVICE_CACHE);
                     }
@@ -512,6 +525,8 @@ public final class DeviceManagerUtil {
                                 setExpiry(CacheConfiguration.ExpiryType.MODIFIED, new CacheConfiguration.Duration(TimeUnit.SECONDS,
                                         deviceCacheExpiry)).setExpiry(CacheConfiguration.ExpiryType.ACCESSED, new CacheConfiguration.
                                 Duration(TimeUnit.SECONDS, deviceCacheExpiry)).setStoreByValue(true).build();
+                        ((CacheImpl)(manager.<DeviceCacheKey, Device>getCache(DeviceManagementConstants.DEVICE_CACHE))).
+                                setCapacity(deviceCacheCapacity);
                     } else {
                         Caching.getCacheManager().<DeviceCacheKey, Device>getCache(DeviceManagementConstants.DEVICE_CACHE);
                     }
@@ -525,7 +540,7 @@ public final class DeviceManagerUtil {
         CacheManager manager = getCacheManager();
         Cache<DeviceCacheKey, Device> deviceCache = null;
         if (config.getDeviceCacheConfiguration().isEnabled()) {
-            if(!isDeviceCacheInistialized) {
+            if(!isDeviceCacheInitialized) {
                 initializeDeviceCache();
             }
             if (manager != null) {

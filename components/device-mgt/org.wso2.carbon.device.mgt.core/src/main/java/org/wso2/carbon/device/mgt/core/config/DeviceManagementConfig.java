@@ -17,6 +17,7 @@
  */
 package org.wso2.carbon.device.mgt.core.config;
 
+import org.wso2.carbon.device.mgt.core.config.cache.CertificateCacheConfiguration;
 import org.wso2.carbon.device.mgt.core.config.geo.location.GeoLocationConfiguration;
 import org.wso2.carbon.device.mgt.core.config.cache.DeviceCacheConfiguration;
 import org.wso2.carbon.device.mgt.core.config.identity.IdentityConfigurations;
@@ -49,6 +50,7 @@ public final class DeviceManagementConfig {
     private PullNotificationConfiguration pullNotificationConfiguration;
     private DeviceStatusTaskConfig deviceStatusTaskConfig;
     private DeviceCacheConfiguration deviceCacheConfiguration;
+    private CertificateCacheConfiguration certificateCacheConfiguration;
     private GeoLocationConfiguration geoLocationConfiguration;
     private String defaultGroupsConfiguration;
     private RemoteSessionConfiguration remoteSessionConfiguration;
@@ -143,6 +145,15 @@ public final class DeviceManagementConfig {
 
     public void setDeviceCacheConfiguration(DeviceCacheConfiguration deviceCacheConfiguration) {
         this.deviceCacheConfiguration = deviceCacheConfiguration;
+    }
+
+    @XmlElement(name = "CertificateCacheConfiguration", required = true)
+    public CertificateCacheConfiguration getCertificateCacheConfiguration() {
+        return certificateCacheConfiguration;
+    }
+
+    public void setCertificateCacheConfiguration(CertificateCacheConfiguration certificateCacheConfiguration) {
+        this.certificateCacheConfiguration = certificateCacheConfiguration;
     }
 
     @XmlElement(name = "GeoLocationConfiguration", required = true)

@@ -40,6 +40,7 @@ import org.wso2.carbon.identity.jwt.client.extension.exception.JWTClientExceptio
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * This is a request interceptor to add oauth token header.
@@ -55,6 +56,7 @@ public class OAuthRequestInterceptor implements RequestInterceptor {
     private static final long DEFAULT_REFRESH_TIME_OFFSET_IN_MILLIS = 100000;
     private DCRClient dcrClient;
     private static OAuthApplication oAuthApplication;
+    private static Map<String, AccessTokenInfo> tenantUserTokenMap = new ConcurrentHashMap<>();
     private static final Log log = LogFactory.getLog(OAuthRequestInterceptor.class);
 
     /**
@@ -88,7 +90,7 @@ public class OAuthRequestInterceptor implements RequestInterceptor {
             if (!tenantDomain.equals(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME)) {
                 username = username + "@" + tenantDomain;
             }
-            AccessTokenInfo tenantBasedAccessTokenInfo = IntegrationClientServiceImpl.getTenantUserTokenMap().get(username);
+            AccessTokenInfo tenantBasedAccessTokenInfo = tenantUserTokenMap.get(username);
             if ((tenantBasedAccessTokenInfo == null ||
                     ((System.currentTimeMillis() + DEFAULT_REFRESH_TIME_OFFSET_IN_MILLIS) >
                             tenantBasedAccessTokenInfo.getExpiresIn()))) {
@@ -96,8 +98,8 @@ public class OAuthRequestInterceptor implements RequestInterceptor {
                 JWTClient jwtClient = APIIntegrationClientDataHolder.getInstance().getJwtClientManagerService()
                         .getJWTClient();
                 tenantBasedAccessTokenInfo = jwtClient.getAccessToken(oAuthApplication.getClientId(),
-                                                                      oAuthApplication.getClientSecret(), username,
-                                                                      REQUIRED_SCOPE);
+                        oAuthApplication.getClientSecret(), username,
+                        REQUIRED_SCOPE);
                 tenantBasedAccessTokenInfo.setExpiresIn(
                         System.currentTimeMillis() + (tenantBasedAccessTokenInfo.getExpiresIn() * 1000));
                 if (tenantBasedAccessTokenInfo.getScopes() == null) {
@@ -105,7 +107,7 @@ public class OAuthRequestInterceptor implements RequestInterceptor {
                 }
 
                 if (tenantBasedAccessTokenInfo.getScopes().contains(APIM_SUBSCRIBE_SCOPE)) {
-                    IntegrationClientServiceImpl.getTenantUserTokenMap().put(username, tenantBasedAccessTokenInfo);
+                    tenantUserTokenMap.put(username, tenantBasedAccessTokenInfo);
                 }
 
             }
@@ -116,6 +118,13 @@ public class OAuthRequestInterceptor implements RequestInterceptor {
         } catch (JWTClientException e) {
             throw new APIMClientOAuthException("failed to retrieve oauth token using jwt", e);
         }
+    }
+
+    public void removeToken(String username, String tenantDomain) {
+        if (!tenantDomain.equals(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME)) {
+            username = username + "@" + tenantDomain;
+        }
+        tenantUserTokenMap.remove(username);
     }
 
 }

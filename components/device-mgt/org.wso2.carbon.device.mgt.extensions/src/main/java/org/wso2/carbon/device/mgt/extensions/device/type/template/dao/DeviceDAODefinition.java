@@ -41,17 +41,26 @@ public class DeviceDAODefinition {
 
 
     public DeviceDAODefinition(Table table) {
+        if (table == null) {
+            throw new DeviceTypeDeployerPayloadException("Table is null. Cannot create DeviceDAODefinition");
+        }
         deviceTableName = table.getName();
         primarykey = table.getPrimaryKey();
-        List<String> attributes = table.getAttributes().getAttribute();
+
         if (deviceTableName == null || deviceTableName.isEmpty()) {
             throw new DeviceTypeDeployerPayloadException("Missing deviceTableName");
         }
 
         if (primarykey == null || primarykey.isEmpty()) {
-            throw new DeviceTypeDeployerPayloadException("Missing primaryKey ");
+            throw new DeviceTypeDeployerPayloadException("Missing primaryKey for the table " + deviceTableName);
         }
 
+        if (table.getAttributes() == null) {
+            throw new DeviceTypeDeployerPayloadException("Table " + deviceTableName + " attributes are not specified. "
+                    + "Cannot created DeviceDAODefinition");
+        }
+
+        List<String> attributes = table.getAttributes().getAttribute();
         if (attributes == null || attributes.size() == 0) {
             throw new DeviceTypeDeployerPayloadException("Missing Attributes ");
         }

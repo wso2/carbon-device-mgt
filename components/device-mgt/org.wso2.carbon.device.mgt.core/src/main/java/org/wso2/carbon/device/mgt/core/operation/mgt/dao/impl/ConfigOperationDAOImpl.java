@@ -61,22 +61,6 @@ public class ConfigOperationDAOImpl extends GenericOperationDAOImpl {
     }
 
     @Override
-    public void deleteOperation(int id) throws OperationManagementDAOException {
-        PreparedStatement stmt = null;
-        try {
-            super.deleteOperation(id);
-            Connection connection = OperationManagementDAOFactory.getConnection();
-            stmt = connection.prepareStatement("DELETE FROM DM_CONFIG_OPERATION WHERE OPERATION_ID = ?") ;
-            stmt.setInt(1, id);
-            stmt.executeUpdate();
-        } catch (SQLException e) {
-            throw new OperationManagementDAOException("Error occurred while deleting operation metadata", e);
-        } finally {
-            OperationManagementDAOUtil.cleanupResources(stmt);
-        }
-    }
-
-    @Override
     public void updateOperation(Operation operation) throws OperationManagementDAOException {
         PreparedStatement stmt = null;
         ByteArrayOutputStream bao = null;
@@ -136,6 +120,8 @@ public class ConfigOperationDAOImpl extends GenericOperationDAOImpl {
                 bais = new ByteArrayInputStream(operationDetails);
                 ois = new ObjectInputStream(bais);
                 configOperation = (ConfigOperation) ois.readObject();
+                configOperation.setId(rs.getInt("OPERATION_ID"));
+                configOperation.setEnabled(rs.getBoolean("ENABLED"));
             }
         } catch (IOException e) {
             throw new OperationManagementDAOException("IO Error occurred while de serialize the policy operation " +

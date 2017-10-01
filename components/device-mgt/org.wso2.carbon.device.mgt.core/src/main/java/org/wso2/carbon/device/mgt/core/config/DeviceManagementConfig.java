@@ -20,6 +20,7 @@ package org.wso2.carbon.device.mgt.core.config;
 import org.wso2.carbon.device.mgt.core.config.geo.location.GeoLocationConfiguration;
 import org.wso2.carbon.device.mgt.core.config.cache.DeviceCacheConfiguration;
 import org.wso2.carbon.device.mgt.core.config.identity.IdentityConfigurations;
+import org.wso2.carbon.device.mgt.core.config.keymanager.KeyManagerConfigurations;
 import org.wso2.carbon.device.mgt.core.config.pagination.PaginationConfiguration;
 import org.wso2.carbon.device.mgt.core.config.policy.PolicyConfiguration;
 import org.wso2.carbon.device.mgt.core.config.pull.notification.PullNotificationConfiguration;
@@ -41,6 +42,7 @@ public final class DeviceManagementConfig {
     private DeviceManagementConfigRepository deviceManagementConfigRepository;
     private TaskConfiguration taskConfiguration;
     private IdentityConfigurations identityConfigurations;
+    private KeyManagerConfigurations keyManagerConfigurations;
     private PolicyConfiguration policyConfiguration;
     private PaginationConfiguration paginationConfiguration;
     private PushNotificationConfiguration pushNotificationConfiguration;
@@ -69,6 +71,15 @@ public final class DeviceManagementConfig {
 
     public void setIdentityConfigurations(IdentityConfigurations identityConfigurations) {
         this.identityConfigurations = identityConfigurations;
+    }
+
+    @XmlElement(name = "KeyManagerConfiguration", required = true)
+    public KeyManagerConfigurations getKeyManagerConfigurations() {
+        return keyManagerConfigurations;
+    }
+
+    public void setKeyManagerConfigurations(KeyManagerConfigurations keyManagerConfigurations) {
+        this.keyManagerConfigurations = keyManagerConfigurations;
     }
 
     @XmlElement(name = "PolicyConfiguration", required = true)

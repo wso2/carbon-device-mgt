@@ -1741,6 +1741,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             if (requireDeviceInfo) {
                 this.getAllDeviceInfo(userDevices);
             }
+            devices.addAll(userDevices);
         }
         return devices;
     }
@@ -1888,41 +1889,6 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             result.setData(allDevices);
         }
         return result;
-    }
-
-    @Override
-    public void updateDeviceEnrolmentInfo(Device device, EnrolmentInfo.Status status) throws DeviceManagementException {
-        try {
-            if (device == null || status == null) {
-                String msg = "Received incomplete data for updateDeviceEnrolmentInfo";
-                log.error(msg);
-                throw new DeviceManagementException(msg);
-            }
-            if (log.isDebugEnabled()) {
-                log.debug("Updating enrolment for device: " + device.getId() + " of type '" + device.getType() + "'");
-            }
-            DeviceManagementDAOFactory.beginTransaction();
-            device.getEnrolmentInfo().setDateOfLastUpdate(new Date().getTime());
-            device.getEnrolmentInfo().setStatus(status);
-            deviceDAO.updateDevice(device, this.getTenantId());
-            DeviceManagementDAOFactory.commitTransaction();
-        } catch (DeviceManagementDAOException e) {
-            DeviceManagementDAOFactory.rollbackTransaction();
-            String msg = "Error occurred while updating device enrolment status for " + device.getDeviceIdentifier() +
-                    " of type " + device.getType();
-            log.error(msg, e);
-            throw new DeviceManagementException(msg, e);
-        } catch (TransactionManagementException e) {
-            String msg = "Error occurred while initiating transaction";
-            log.error(msg, e);
-            throw new DeviceManagementException(msg, e);
-        } catch (Exception e) {
-            String msg = "Error occurred in updateDeviceEnrolmentInfo";
-            log.error(msg, e);
-            throw new DeviceManagementException(msg, e);
-        } finally {
-            DeviceManagementDAOFactory.closeConnection();
-        }
     }
 
     @Override

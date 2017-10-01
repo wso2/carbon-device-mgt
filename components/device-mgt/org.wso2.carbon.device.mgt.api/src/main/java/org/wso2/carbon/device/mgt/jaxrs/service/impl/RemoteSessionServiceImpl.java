@@ -54,7 +54,7 @@ public class RemoteSessionServiceImpl implements RemoteSessionService {
         if (deviceManagementConfig != null) {
             RemoteSessionConfiguration remoteSessionConfiguration = deviceManagementConfig.getRemoteSessionConfiguration();
             if (remoteSessionConfiguration != null) {
-                boolean isEnabled = remoteSessionConfiguration.getIsEnabled();
+                boolean isEnabled = remoteSessionConfiguration.isEnabled();
                 sessionInfo.setEnabled(isEnabled);
                 if (isEnabled) {
                     sessionInfo.setServerUrl(remoteSessionConfiguration.getRemoteSessionServerUrl());

@@ -18,9 +18,9 @@
 
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
-import './imageUploader.css';
 import Dropzone from "react-dropzone";
 import {Row} from "reactstrap";
+import Theme from '../../../theme';
 
 
 class ImageUploader extends Component {
@@ -29,7 +29,19 @@ class ImageUploader extends Component {
         this.setImages = this.setImages.bind(this);
         this.state = {
             images: []
-        }
+        };
+        this.scriptId = "imageUploader";
+    }
+
+    componentWillMount() {
+        /**
+         *Loading the theme files based on the the user-preference.
+         */
+        Theme.insertThemingScripts(this.scriptId);
+    }
+
+    componentWillUnmount() {
+        Theme.removeThemingScripts(this.scriptId);
     }
 
     setImages(images) {

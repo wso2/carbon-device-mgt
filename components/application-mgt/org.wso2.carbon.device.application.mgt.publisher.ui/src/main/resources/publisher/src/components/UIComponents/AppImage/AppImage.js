@@ -18,7 +18,7 @@
 
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
-import './appImage.css';
+import Theme from '../../../theme';
 
 /**
  * Component for holding uploaded image.
@@ -29,6 +29,18 @@ class AppImage extends Component {
     constructor() {
         super();
         this.removeImage = this.removeImage.bind(this);
+        this.scriptId = "appImage";
+    }
+
+    componentWillMount() {
+        /**
+         *Loading the theme files based on the the user-preference.
+         */
+        Theme.insertThemingScripts(this.scriptId);
+    }
+
+    componentWillUnmount() {
+        Theme.removeThemingScripts(this.scriptId);
     }
 
     /**
@@ -44,7 +56,7 @@ class AppImage extends Component {
         const {image, imageId} = this.props;
         return (
             <div className="image-container" style={this.props.imageStyles}>
-                <img src={image} style={{width: '100%'}} className="image" id={imageId}/>
+                <img src={image} className="image" id={imageId}/>
                 <div className="btn-content">
                     <i className="close-btn" id={imageId} onClick={this.removeImage}>X</i>
                 </div>

@@ -17,9 +17,25 @@
  */
 
 import React, {Component} from 'react';
-import './switch.css';
+import Theme from '../../../theme';
 
 class Switch extends Component {
+
+    constructor() {
+        super();
+        this.scriptId = "switch";
+    }
+
+    componentWillMount() {
+        /**
+         *Loading the theme files based on the the user-preference.
+         */
+        Theme.insertThemingScripts(this.scriptId);
+    }
+
+    componentWillUnmount() {
+        Theme.removeThemingScripts(this.scriptId);
+    }
 
     render() {
         const {height, width} = this.props;

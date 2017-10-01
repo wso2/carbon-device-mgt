@@ -18,8 +18,7 @@
 
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
-import './drawer.css';
-import {Row} from "reactstrap";
+import Theme from '../../../theme'
 
 /**
  * Custom React component for Application View.
@@ -29,6 +28,18 @@ class Drawer extends Component {
     constructor() {
         super();
         this.closeDrawer = this.closeDrawer.bind(this);
+        this.scriptId = "drawer";
+    }
+
+    componentWillMount() {
+        /**
+         *Loading the theme files based on the the user-preference.
+         */
+        Theme.insertThemingScripts(this.scriptId);
+    }
+
+    componentWillUnmount() {
+        Theme.removeThemingScripts(this.scriptId);
     }
 
     /**

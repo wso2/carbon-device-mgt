@@ -16,7 +16,6 @@
  * under the License.
  */
 var path = require('path');
-import '!!style-loader!css-loader!src/css/font-wso2.css';
 
 const config = {
     entry: {

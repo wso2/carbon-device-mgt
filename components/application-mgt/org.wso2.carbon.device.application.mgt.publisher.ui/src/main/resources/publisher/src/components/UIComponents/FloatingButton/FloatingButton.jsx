@@ -18,12 +18,28 @@
 
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
-import './floatingButton.css';
+import Theme from '../../../theme';
 
 /**
  * Floating Action button.
  * */
 class FloatingButton extends Component {
+
+    constructor() {
+        super();
+        this.scriptId = "floatingButton";
+    }
+
+    componentWillMount() {
+        /**
+         *Loading the theme files based on the the user-preference.
+         */
+        Theme.insertThemingScripts(this.scriptId);
+    }
+
+    componentWillUnmount() {
+        Theme.removeThemingScripts(this.scriptId);
+    }
 
     handleClick(event) {
         this.props.onClick(event);

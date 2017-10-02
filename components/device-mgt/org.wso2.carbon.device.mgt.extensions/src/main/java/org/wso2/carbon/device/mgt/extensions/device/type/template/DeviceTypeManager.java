@@ -130,6 +130,17 @@ public class DeviceTypeManager implements DeviceManager {
             //Check whether device dao definition exist.
             String tableName = deviceTypeConfiguration.getDeviceDetails().getTableId();
             if (tableName != null && !tableName.isEmpty()) {
+                DataSource dataSource = deviceTypeConfiguration.getDataSource();
+                if (dataSource == null) {
+                    throw new DeviceTypeDeployerPayloadException("Could not find the datasource related with the "
+                            + "table id " +  tableName + " for the device type " + deviceType);
+                }
+                TableConfig tableConfig = dataSource.getTableConfig();
+
+                if (tableConfig == null) {
+                    throw new DeviceTypeDeployerPayloadException("Could not find the table config with the "
+                            + "table id " +  tableName + " for the device type " + deviceType);
+                }
                 List<Table> tables = deviceTypeConfiguration.getDataSource().getTableConfig().getTable();
                 Table deviceDefinitionTable = null;
                 for (Table table : tables) {

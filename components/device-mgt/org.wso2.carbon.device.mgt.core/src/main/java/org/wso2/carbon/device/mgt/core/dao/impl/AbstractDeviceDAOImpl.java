@@ -122,7 +122,14 @@ public abstract class AbstractDeviceDAOImpl implements DeviceDAO {
                     "e.DATE_OF_ENROLMENT, e.ID AS ENROLMENT_ID FROM DM_ENROLMENT e, (SELECT d.ID, d.DESCRIPTION, d.NAME, " +
                     "t.NAME AS DEVICE_TYPE, d.DEVICE_IDENTIFICATION FROM DM_DEVICE d, DM_DEVICE_TYPE t WHERE " +
                     "t.NAME = ? AND t.ID = d.DEVICE_TYPE_ID AND d.DEVICE_IDENTIFICATION = ? AND d.TENANT_ID = ?) d1 WHERE d1.ID = e.DEVICE_ID " +
-                    "AND TENANT_ID = ? ORDER BY e.DATE_OF_LAST_UPDATE DESC";
+                    "AND TENANT_ID = ? ORDER BY e.DATE_OF_LAST_UPDATE DESC, e.STATUS ASC";
+            // Status adeed as an orderby clause to fix a bug : when an existing device is
+            // re-enrolled, earlier enrollment is marked as removed and a new enrollment is added.
+            // However, both enrollments share the same time stamp. When retrieving the device
+            // due to same timestamp, enrollment information is incorrect, intermittently. Hence
+            // status also should be taken into consideration when ordering. This should not present a
+            // problem for other status transitions, as there would be an intermediary removed
+            // state in between.
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, deviceIdentifier.getType());
             stmt.setString(2, deviceIdentifier.getId());

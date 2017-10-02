@@ -1532,6 +1532,12 @@
                 <version>${power.mock.version}</version>
                 <scope>test</scope>
             </dependency>
+            <!--<dependency>-->
+                <!--<groupId>commons-dbcp.wso2</groupId>-->
+                <!--<artifactId>commons-dbcp</artifactId>-->
+                <!--<version>${commons-dbcp.wso2.version}</version>-->
+                <!--<scope>test</scope>-->
+            <!--</dependency>-->
         </dependencies>
     </dependencyManagement>
 
@@ -1962,6 +1968,7 @@
         <jacoco.ant.verision>0.7.5.201505241946</jacoco.ant.verision>
         <ant.contrib.version>1.0b3</ant.contrib.version>
         <power.mock.version>1.6.4</power.mock.version>
+        <commons-dbcp.wso2.version>1.4.0.wso2v1</commons-dbcp.wso2.version>
     </properties>
 
 </project>

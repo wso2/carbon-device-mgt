@@ -110,8 +110,7 @@ public class GeoLocationProviderServiceTest {
         String result;
         result = geoLocationProviderServiceImpl.getSpeedAlerts(getDeviceIdentifier());
         Assert.assertNotNull(result);
-        Assert.assertEquals(result, "{'speedLimit':" +
-                SAMPLE_SPEED_ALERT_VALUE + "}");
+        Assert.assertEquals(result, "{'speedLimit':" + SAMPLE_SPEED_ALERT_VALUE + "}");
     }
 
     @Test(dependsOnMethods = "createGeoTrafficAlert" , description = "retrieve saved geo exit-alert.")

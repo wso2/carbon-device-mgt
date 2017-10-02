@@ -20,8 +20,8 @@ import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {withRouter} from 'react-router-dom';
 import AuthHandler from "../../api/authHandler";
+import {Button, Col, Container, Input, Row,} from 'reactstrap';
 import ApplicationCreate from '../Application/Create/ApplicationCreate';
-import {Col, Container, Input, Row,} from 'reactstrap';
 import FloatingButton from "../UIComponents/FloatingButton/FloatingButton";
 import {FormattedMessage} from 'react-intl';
 
@@ -70,17 +70,21 @@ class BaseLayout extends Component {
         this.setState({openModal: false});
     }
 
+    onClickPlatforms() {
+        window.location.href = "/assets/platforms";
+    }
+
     render() {
         return (
-            <Container noGutters fluid id="container">
+            <Container fluid id="container">
                 <div id="header-content">
                     <div id="header">
                         <span id="header-text">
                             WSO2 IoT <FormattedMessage id="App.Publisher" defaultMessage="Application Publisher"/>
                         </span>
                         <div id="header-btn-container">
-                            <i className="fw fw-notification btn-header"></i>
-                            <i className="fw fw-user btn-header"></i>
+                            <Button id="header-button"><i className="fw fw-notification btn-header"></i></Button>
+                            <Button id="header-button"><i className="fw fw-user btn-header"></i></Button>
                         </div>
                         <div id="search-box">
                             <i className="fw fw-search search-icon">
@@ -100,11 +104,20 @@ class BaseLayout extends Component {
                         />
                     </div>
                 </div>
-                <div id="application-content" style={this.state.style}>
+                <div id="app-main-content" style={this.state.style}>
                     <Row>
-                        <Col>
-                            {this.props.children}
-                        </Col>
+                        <div className="platform-link-placeholder">
+                            <Button id="secondary-button" onClick={this.onClickPlatforms}><i className="fw fw-settings"></i> Platforms</Button>
+                        </div>
+                    </Row>
+                    <Row>
+                        <div id="application-content">
+                            <Row>
+                                <Col>
+                                    {this.props.children}
+                                </Col>
+                            </Row>
+                        </div>
                     </Row>
                 </div>
                 <ApplicationCreate open={this.state.openModal} close={this.closeModal}/>

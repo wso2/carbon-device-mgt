@@ -85,6 +85,31 @@ body {
     float: right;
 }
 
+#header-button {
+    border-radius: 50%;
+    background-color: transparent;
+    border: none;
+    height: 50px;
+    width: 50px;
+    margin-right: 10px;
+    position: relative;
+}
+
+#header-button:hover {
+    background-color: #4353bd;
+    cursor: pointer;
+}
+
+#header-button i {
+    position: absolute;
+    bottom: 19px;
+    left: 17px;
+}
+
+#header-button {
+    outline: none;
+}
+
 .btn-header {
     margin-top: 15px;
     margin-right: 20px;
@@ -104,7 +129,7 @@ body {
     position: relative;
     float: right;
     top: 75px;
-    left: 80px;
+    left: 150px;
     margin-right: 16px;
 }
 
@@ -127,26 +152,33 @@ body {
     top: 100px;
 }
 
+#app-main-content {
+    height: 100%;
+    position: inherit;
+    top: 125px;
+}
+
 /* Holds the app publisher pages. */
 #application-content {
     height: auto;
     width: 80%;
-    margin: 150px auto;
+    margin: 20px auto;
     box-shadow: -2px 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
     padding: 10px 10px 10px 10px;
 }
 
 .stepper-header {
     width: 100%;
-    border-bottom: solid 1px cornflowerblue;
+    color: #BaBaBa;
     padding-bottom: 5px;
     margin-bottom: 10px;
 }
 
 .platform-link-placeholder {
     color: #888888;
+    width: 80%;
     float: right;
-    margin-right: 20px;
+    margin: 10px auto;
     padding-bottom: 10px;
 }
 
@@ -230,6 +262,25 @@ body {
 #modal-body-content {
     max-height: 700px;
     overflow-y: auto;
+}
+
+#secondary-button {
+    float: right;
+    background-color: transparent;
+    border: none;
+}
+
+#secondary-button:hover {
+    background-color: #e9e9e9;
+    outline: none;
+    cursor: pointer;
+}
+
+.step-index {
+    height: 20px;
+    width: 20px;
+    background-color: #2196F3;
+    border-radius: 50%;
 }
 
 #img-btn-screenshot {

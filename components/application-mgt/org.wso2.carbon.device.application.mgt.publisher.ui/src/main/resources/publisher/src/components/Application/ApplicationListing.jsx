@@ -246,7 +246,7 @@ class ApplicationListing extends Component {
                                             <td>{application.platform}</td>
                                             <td>{application.status}</td>
                                             <td>
-                                                <Button onClick={this.handleButtonClick}>
+                                                <Button id="secondary-button" onClick={this.handleButtonClick}>
                                                     <i className="fw fw-edit"></i>
                                                 </Button>
                                             </td>

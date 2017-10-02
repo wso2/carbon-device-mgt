@@ -71,7 +71,7 @@ class ApplicationCreate extends Component {
      * Handles next button click event.
      * */
     onNextClick() {
-        console.log("Handle Next"); //TODO: Remove this
+        console.log(this.state.stepIndex); //TODO: Remove this
         const {stepIndex} = this.state;
         this.setState({
             stepIndex: stepIndex + 1,
@@ -108,10 +108,11 @@ class ApplicationCreate extends Component {
      * This clears the data in the current step and returns to the previous step.
      * */
     onPrevClick() {
+        console.log(this.state.stepIndex);
         const {stepIndex} = this.state;
         if (stepIndex > 0) {
             this.removeStepData();
-            this.setState({stepIndex: stepIndex - 1});
+            this.setState({stepIndex: stepIndex - 1, finished: false});
         }
     };
 
@@ -204,6 +205,10 @@ class ApplicationCreate extends Component {
         }
     }
 
+    setStepHeader(stepIndex) {
+
+    }
+
     render() {
         const {finished, stepIndex} = this.state;
 
@@ -218,7 +223,26 @@ class ApplicationCreate extends Component {
                         <Row>
                             <Col>
                                 <div className="stepper-header">
-
+                                    <Row>
+                                        <Col>
+                                            <div className="stepper-header-content">
+                                                <div className="step-index">1</div>
+                                                <div className="step-header"> General Info</div>
+                                            </div>
+                                        </Col>
+                                        <Col>
+                                            <span className="step-index">2</span>
+                                            <span className="step-header"> Select Platform</span>
+                                        </Col>
+                                        <Col>
+                                            <span className="step-index">3</span>
+                                            <span className="step-header"> Screenshots</span>
+                                        </Col>
+                                        <Col>
+                                            <span className="step-index">4</span>
+                                            <span className="step-header"> Release</span>
+                                        </Col>
+                                    </Row>
                                 </div>
                             </Col>
                         </Row>

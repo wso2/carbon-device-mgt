@@ -42,10 +42,12 @@
             <class name="org.wso2.carbon.device.mgt.core.app.mgt.ApplicationManagementProviderServiceTest"/>
             <class name="org.wso2.carbon.device.mgt.core.service.GroupManagementProviderServiceTest"/>
             <class name="org.wso2.carbon.device.mgt.core.operation.OperationManagementTests"/>
+            <class name="org.wso2.carbon.device.mgt.core.geo.service.GeoLocationProviderServiceTest"/>
             <class name="org.wso2.carbon.device.mgt.core.operation.ScheduledTaskOperationTests"/>
             <class name="org.wso2.carbon.device.mgt.core.permission.mgt.PermissionManagerServiceTest" />
             <class name="org.wso2.carbon.device.mgt.core.notification.mgt.NotificationManagementServiceImplTests"/>
             <class name="org.wso2.carbon.device.mgt.core.task.DeviceTaskManagerServiceTest"/>
+            <class name="org.wso2.carbon.device.mgt.core.authorization.DeviceAccessAuthorizationServiceTest"/>
         </classes>
     </test>
 </suite>

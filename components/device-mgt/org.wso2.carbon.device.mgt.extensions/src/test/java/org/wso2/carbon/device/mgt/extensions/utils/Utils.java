@@ -21,7 +21,6 @@ package org.wso2.carbon.device.mgt.extensions.utils;
 
 import org.h2.jdbcx.JdbcDataSource;
 import org.w3c.dom.Document;
-import org.wso2.carbon.device.mgt.common.configuration.mgt.PlatformConfiguration;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 import org.wso2.carbon.device.mgt.extensions.device.type.template.config.DeviceDetails;
 import org.wso2.carbon.device.mgt.extensions.device.type.template.config.DeviceTypeConfiguration;
@@ -56,16 +55,18 @@ import java.util.List;
  * This class handles the test utility tasks.
  */
 public class Utils {
+    public static final String DEVICE_TYPE_FOLDER = "device-types" + File.separator;
 
     /**
      * To get the device type configuration based on the configuration file
+     *
      * @param configurationFile Relevant configuration file of a device type
      * @return the DeviceTypeConfiguration object of the relevant Device Type
      * @throws DeviceTypeConfigurationException DeviceType Configuration Exception
-     * @throws IOException IO Exception
-     * @throws SAXException SAX Exception
-     * @throws ParserConfigurationException Parser Configuration Exception
-     * @throws JAXBException JAXB Exception
+     * @throws IOException                      IO Exception
+     * @throws SAXException                     SAX Exception
+     * @throws ParserConfigurationException     Parser Configuration Exception
+     * @throws JAXBException                    JAXB Exception
      */
     public static  DeviceTypeConfiguration getDeviceTypeConfiguration(File configurationFile)
             throws DeviceTypeConfigurationException, IOException, SAXException, ParserConfigurationException,

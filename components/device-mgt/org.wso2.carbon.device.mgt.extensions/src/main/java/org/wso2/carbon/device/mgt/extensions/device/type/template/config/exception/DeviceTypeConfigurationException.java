@@ -21,33 +21,10 @@ package org.wso2.carbon.device.mgt.extensions.device.type.template.config.except
 public class DeviceTypeConfigurationException extends Exception {
 
     private static final long serialVersionUID = -3151279431229070297L;
-
-    public DeviceTypeConfigurationException(int errorCode, String message) {
-        super(message);
-    }
-
-    public DeviceTypeConfigurationException(int errorCode, String message, Throwable cause) {
-        super(message, cause);
-    }
-
+    
     public DeviceTypeConfigurationException(String msg, Exception nestedEx) {
         super(msg, nestedEx);
     }
 
-    public DeviceTypeConfigurationException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public DeviceTypeConfigurationException(String msg) {
-        super(msg);
-    }
-
-    public DeviceTypeConfigurationException() {
-        super();
-    }
-
-    public DeviceTypeConfigurationException(Throwable cause) {
-        super(cause);
-    }
 
 }

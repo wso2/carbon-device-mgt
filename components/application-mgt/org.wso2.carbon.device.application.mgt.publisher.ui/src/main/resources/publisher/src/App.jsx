@@ -16,14 +16,13 @@
  * under the License.
  */
 
-import './App.css';
 import React, {Component} from 'react';
+import AuthHandler from './api/authHandler';
 import createHistory from 'history/createBrowserHistory';
 import {BrowserRouter as Router, Redirect, Route, Switch} from 'react-router-dom'
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import {
     ApplicationCreate,
+    ApplicationEdit,
     ApplicationListing,
     BaseLayout,
     Login,
@@ -31,20 +30,9 @@ import {
     PlatformCreate,
     PlatformListing
 } from './components';
-const history = createHistory({basename: '/publisher'});
 
-/**
- * User can define the themes in the config.json. The themes will be loaded based on the user preference.
- */
-const theme = require("./config.json").theme;
-let muiTheme = null;
-if (theme.current === "default") {
-    let defaultTheme = require("material-ui/styles/baseThemes/" + theme.default);
-    muiTheme = getMuiTheme(defaultTheme.default);
-} else {
-    let customTheme = require("./themes/" + theme.custom);
-    muiTheme = getMuiTheme(customTheme.default);
-}
+
+const history = createHistory({basename: '/publisher'});
 
 /**
  * This component defines the layout and the routes for the app.
@@ -63,23 +51,34 @@ class Base extends Component {
     constructor() {
         super();
         this.state = {
-            user: "admin"
+            user: null
+        }
+    }
+
+    componentWillMount() {
+        let user = AuthHandler.getUser();
+        if (user) {
+            if (!AuthHandler.isTokenExpired()) {
+                this.setState({user: user});
+            } else {
+                this.setState({user: null});
+            }
         }
     }
 
     render() {
-        if (this.state.user) {
+        if (this.state.user !== null) {
             return (
-                <div className="container">
-                    <BaseLayout>
+                <div>
+                    <BaseLayout user={this.state.user}>
                         <Switch>
                             <Redirect exact path={"/"} to={"/assets/apps"}/>
                             <Route exact path={"/assets/apps"} component={ApplicationListing}/>
                             <Route exact path={"/assets/apps/create"} component={ApplicationCreate}/>
                             <Route exact path={"/assets/platforms"} component={PlatformListing}/>
                             <Route exact path={"/assets/platforms/create"} component={PlatformCreate}/>
-                            <Route exact path={"/assets/apps/:app"} />
-                            <Route exact path={"/assets/apps/:app/edit"} />
+                            {/*<Route exact path={"/assets/apps/:app"}/>*/}
+                            <Route exact path={"/assets/apps/edit/:app"} component={ApplicationEdit}/>
                             <Route exact path={"/assets/platforms/:platform"}/>
                             <Route exact path={"/assets/platforms/:platform/edit"}/>
                             <Route exact path={"/assets/reviews"}/>
@@ -89,8 +88,10 @@ class Base extends Component {
                     </BaseLayout>
                 </div>
             )
+        } else {
+            return (<Redirect to={"/login"}/>)
         }
-        return (<Redirect to={"/login"}/>)
+
     }
 }
 
@@ -101,10 +102,18 @@ class Base extends Component {
  *
  * */
 class Publisher extends Component {
+    constructor() {
+        super();
+        this.state = {
+            muiTheme: null,
+            selectedType: null,
+            selectedTheme: null
+        };
+    }
+
     render() {
         return (
             <div className="App">
-                <MuiThemeProvider muiTheme={muiTheme}>
                 <Router basename="publisher" history={history}>
                     <Switch>
                         <Route path="/login" component={Login}/>
@@ -112,7 +121,6 @@ class Publisher extends Component {
                         <Route component={Base}/>
                     </Switch>
                 </Router>
-                </MuiThemeProvider>
             </div>
         );
     }

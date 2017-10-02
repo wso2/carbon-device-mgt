@@ -651,7 +651,7 @@ public interface ApplicationManagementAPI {
 
     @GET
     @Path("/image-artifacts/{uuid}")
-    @Produces(MediaType.APPLICATION_OCTET_STREAM)
+    @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(
             consumes = MediaType.APPLICATION_JSON,

@@ -32,6 +32,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -48,24 +49,26 @@ public class SubscriptionManagementAPIImpl implements SubscriptionManagementAPI{
     @Path("/install-application")
     public Response installApplication(@ApiParam(name = "installationDetails", value = "The application ID and list" +
             " the devices/users/roles", required = true) @Valid InstallationDetails installationDetails) {
-        Object response;
+        Object result;
         SubscriptionManager subscriptionManager = APIUtil.getSubscriptionManager();
         try {
             String applicationUUTD = installationDetails.getApplicationUUID();
             String versionName = installationDetails.getVersionName();
             if (!installationDetails.getDeviceIdentifiers().isEmpty()) {
                 List<DeviceIdentifier> deviceList = installationDetails.getDeviceIdentifiers();
-                response = subscriptionManager.installApplicationForDevices(applicationUUTD, versionName, deviceList);
+                result = subscriptionManager.installApplicationForDevices(applicationUUTD, versionName, deviceList);
             } else if (!installationDetails.getUserNameList().isEmpty()) {
                 List<String> userList = installationDetails.getUserNameList();
-                response = subscriptionManager.installApplicationForUsers(applicationUUTD, userList);
+                result = subscriptionManager.installApplicationForUsers(applicationUUTD, userList);
             } else if (!installationDetails.getRoleNameList().isEmpty()) {
                 List<String> roleList = installationDetails.getRoleNameList();
-                response = subscriptionManager.installApplicationForRoles(applicationUUTD, roleList);
+                result = subscriptionManager.installApplicationForRoles(applicationUUTD, roleList);
             } else {
-                response = "Missing request data!";
-                return Response.status(Response.Status.BAD_REQUEST).entity(response).build();
+                result = "Missing request data!";
+                return Response.status(Response.Status.BAD_REQUEST).entity(result).build();
             }
+            HashMap<String, Object> response = new HashMap<>();
+            response.put("failedDevices", result);
             return Response.status(Response.Status.OK).entity(response).build();
         } catch (ApplicationManagementException e) {
             String msg = "Error occurred while installing the application";

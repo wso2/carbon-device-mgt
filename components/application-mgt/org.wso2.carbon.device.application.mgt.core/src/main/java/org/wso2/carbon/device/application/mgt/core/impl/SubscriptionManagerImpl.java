@@ -19,10 +19,12 @@ package org.wso2.carbon.device.application.mgt.core.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.application.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
 import org.wso2.carbon.device.application.mgt.common.services.SubscriptionManager;
 import org.wso2.carbon.device.application.mgt.core.dao.common.DAOFactory;
+import org.wso2.carbon.device.application.mgt.core.internal.DataHolder;
 import org.wso2.carbon.device.application.mgt.core.util.HelperUtil;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceManagementConstants;
@@ -104,25 +106,42 @@ public class SubscriptionManagerImpl implements SubscriptionManager {
     }
 
     @Override
-    public List<String> installApplicationForUsers(String applicationUUID, List<String> userList)
+    public List<DeviceIdentifier> installApplicationForUsers(String applicationUUID, List<String> userList)
             throws ApplicationManagementException {
         log.info("Install application: " + applicationUUID + " to: " + userList.size() + " users.");
+        List<DeviceIdentifier> deviceList = new ArrayList<>();
+        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
         for (String user : userList) {
-            //Todo: implementation
-            //Todo: get the device list and call installApplicationForDevices
+            try {
+                List<Device> devicesOfUser = DeviceManagementDAOFactory.getDeviceDAO().getDevicesOfUser(user, tenantId);
+                for (Device device : devicesOfUser) {
+                    deviceList.add(new DeviceIdentifier(device
+                            .getDeviceIdentifier(), device.getType()));
+                }
+            } catch (DeviceManagementDAOException e) {
+                log.error("Error when extracting the device list from user[" + user + "].", e);
+            }
         }
-        return userList;
+        return installApplication(applicationUUID, deviceList);
     }
 
     @Override
-    public List<String> installApplicationForRoles(String applicationUUID, List<String> roleList)
+    public List<DeviceIdentifier> installApplicationForRoles(String applicationUUID, List<String> roleList)
             throws ApplicationManagementException {
-        log.info("Install application: " + applicationUUID + " to: " + roleList.size() + " users.");
+        log.info("Install application: " + applicationUUID + " to: " + roleList.size() + " roles.");
+        List<DeviceIdentifier> deviceList = new ArrayList<>();
         for (String role : roleList) {
-            //Todo: implementation
-            //Todo: get the device list and call installApplicationForDevices
+            try {
+                List<Device> devicesOfRole = DataHolder.getInstance().getDeviceManagementService().getAllDevicesOfRole(role);
+                for (Device device : devicesOfRole) {
+                    deviceList.add(new DeviceIdentifier(device
+                            .getDeviceIdentifier(), device.getType()));
+                }
+            } catch (DeviceManagementException e) {
+                log.error("Error when extracting the device list from role[" + role + "].", e);
+            }
         }
-        return roleList;
+        return installApplication(applicationUUID, deviceList);
     }
 
     @Override
@@ -130,5 +149,34 @@ public class SubscriptionManagerImpl implements SubscriptionManager {
                                                        List<DeviceIdentifier> deviceList)
             throws ApplicationManagementException {
         return null;
+    }
+
+    private List<DeviceIdentifier> installApplication(String applicationUUID, List<DeviceIdentifier> deviceList)
+            throws ApplicationManagementException {
+        List<DeviceIdentifier> failedDeviceList = new ArrayList<>(deviceList);
+        List<org.wso2.carbon.device.mgt.common.DeviceIdentifier> activeDeviceList = new ArrayList<>();
+        for (DeviceIdentifier device : deviceList) {
+            org.wso2.carbon.device.mgt.common.DeviceIdentifier deviceIdentifier = new org.wso2.carbon.device.mgt
+                    .common.DeviceIdentifier(device.getId(), device.getType());
+            try {
+                DeviceManagementDAOFactory.openConnection();
+                if (DeviceManagementDAOFactory.getDeviceDAO().getDevice(deviceIdentifier).isEmpty()) {
+                    log.error("Device with ID: " + device.getId() + " not found to install the application.");
+                } else {
+                    if (log.isDebugEnabled()) {
+                        log.debug("Prepare application install to : " + device.getId());
+                    }
+                    activeDeviceList.add(deviceIdentifier);
+                    DAOFactory.getSubscriptionDAO().addDeviceApplicationMapping(device.getId(), applicationUUID, false);
+                    failedDeviceList.remove(device);
+                }
+            } catch (DeviceManagementDAOException | SQLException e) {
+                throw new ApplicationManagementException("Error locating device.", e);
+            } finally {
+                DeviceManagementDAOFactory.closeConnection();
+            }
+        }
+        //Todo: generating one time download link for the application and put install operation to devices.
+        return failedDeviceList;
     }
 }

@@ -35,32 +35,6 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>org.wso2.maven</groupId>
-                <artifactId>carbon-p2-plugin</artifactId>
-                <version>${carbon.p2.plugin.version}</version>
-                <executions>
-                    <execution>
-                        <id>4-p2-feature-generation</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>p2-feature-gen</goal>
-                        </goals>
-                        <configuration>
-                            <id>org.wso2.carbon.device.application.mgt.store</id>
-                            <propertiesFile>../../etc/feature.properties</propertiesFile>
-                            <adviceFile>
-                                <properties>
-                                    <propertyDef>org.wso2.carbon.p2.category.type:server
-                                    </propertyDef>
-                                    <propertyDef>org.eclipse.equinox.p2.type.group:false
-                                    </propertyDef>
-                                </properties>
-                            </adviceFile>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>1.5.0</version>
@@ -86,7 +60,7 @@
                         </goals>
                         <phase>compile</phase>
                         <configuration>
-                            <workingDirectory>${basedir}/src/main/resources/publisher</workingDirectory>
+                            <workingDirectory>${basedir}/src/main/resources/store</workingDirectory>
                             <executable>${npm.executable}</executable>
                             <arguments>
                                 <argument>run</argument>

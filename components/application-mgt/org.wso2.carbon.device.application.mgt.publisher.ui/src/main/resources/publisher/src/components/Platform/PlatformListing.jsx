@@ -19,7 +19,9 @@
 import React, {Component} from 'react';
 import {withRouter} from 'react-router-dom';
 import TextField from 'material-ui/TextField';
-import DataTable from '../UIComponents/DataTable';
+import AuthHandler from "../../api/authHandler";
+import DataTable from '../UIComponents/DataTable/DataTable';
+import PlatformMgtApi from "../../api/platformMgtApi";
 import {Card, CardActions, CardTitle} from 'material-ui/Card';
 
 /**
@@ -33,21 +35,78 @@ import {Card, CardActions, CardTitle} from 'material-ui/Card';
 class PlatformListing extends Component {
     constructor() {
         super();
+        this.setPlatforms = this.setPlatforms.bind(this);
         this.state = {
-            data: [],
+            platforms: [],
             asc: true
-        }
+        };
     }
 
-    componentWillMount() {
-        //Fetch all the applications from backend and create application objects.
+    headers = [
+        {
+            data_id: "image",
+            data_type: "image",
+            sortable: false,
+            label: ""
+        },
+        {
+            data_id: "platformName",
+            data_type: String,
+            sortable: true,
+            label: "Platform Name",
+            sort: this.sortData
+        },
+        {
+            data_id: "enabled",
+            data_type: String,
+            sortable: false,
+            label: "Enabled"
+        },
+        {
+            data_id: "fileBased",
+            data_type: String,
+            sortable: false,
+            label: "File Based"
+        }
+    ];
+
+    componentDidMount() {
+        let platformsPromise = PlatformMgtApi.getPlatforms();
+        platformsPromise.then(
+            response => {
+                let platforms = this.setPlatforms(response.data);
+                this.setState({platforms: platforms});
+            }
+        ).catch(
+            err => {
+                AuthHandler.unauthorizedErrorHandler(err);
+            }
+        )
+    }
+
+    /**
+     * Create platform objects from the response which can be displayed in the table.
+     * */
+    setPlatforms(platforms) {
+        let tmpPlatforms = [];
+
+        for (let index in platforms) {
+            let platform = {};
+            platform.id = platforms[index].identifier;
+            platform.platformName = platforms[index].name;
+            platform.enabled = platforms[index].enabled.toString();
+            platform.fileBased = platforms[index].fileBased.toString();
+            tmpPlatforms.push(platform)
+        }
+
+        return tmpPlatforms;
     }
 
     /**
      * Handles the search action.
      * When typing in the search bar, this method will be invoked.
      * */
-    _searchApplications(word) {
+    searchApplications(word) {
         let searchedData = [];
     }
 
@@ -55,13 +114,13 @@ class PlatformListing extends Component {
      * Handles sort data function and toggles the asc state.
      * asc: true : sort in ascending order.
      * */
-    _sortData() {
+    sortData() {
         let isAsc = this.state.asc;
-        let datas = isAsc?this.data.sort(this._compare):this.data.reverse();
+        let datas = isAsc ? this.data.sort(this.compare) : this.data.reverse();
         this.setState({data: datas, asc: !isAsc});
     }
 
-    _compare(a, b) {
+    compare(a, b) {
         if (a.applicationName < b.applicationName)
             return -1;
         if (a.applicationName > b.applicationName)
@@ -69,28 +128,29 @@ class PlatformListing extends Component {
         return 0;
     }
 
-    _onRowClick(id) {
+    onRowClick(id) {
+        //TODO: Remove this
         console.log(id)
     }
 
     render() {
         return (
-            <div className="middle" style={{width: '95%', height: '100%', marginTop: '1%'}}>
-                <Card style={{display: 'flex', flexWrap: 'wrap'}}>
-                    <TextField hintText="Search"
-                               style={{float:'right', paddingRight: '2px'}}
-                               onChange={this._searchApplications.bind(this)}/>
-                    <CardTitle title="Platforms" style={{display: 'flex', flexWrap: 'wrap'}}/>
+            <div className='middle listingplatformmiddle'>
+                <Card className='listingplatformcard'>
+                    <TextField hintText="Search" onChange={this.searchApplications.bind(this)}
+                               className='listingplatformsearch'/>
+                    <CardTitle title="Platforms" className='listingplatformTitle'/>
                     <CardActions>
 
                     </CardActions>
-                    <DataTable headers={this.headers}
-                               data={this.data}
-                               handleRowClick={this._onRowClick.bind(this)}
-                               noDataMessage={{type: 'button', text: 'Create Platform'}}/>
+                    <DataTable
+                        headers={this.headers}
+                        data={this.state.platforms}
+                        handleRowClick={this.onRowClick.bind(this)}
+                        noDataMessage={{type: 'button', text: 'Create Platform'}}/>
                 </Card>
-
-            </div>);
+            </div>
+        );
     }
 }
 

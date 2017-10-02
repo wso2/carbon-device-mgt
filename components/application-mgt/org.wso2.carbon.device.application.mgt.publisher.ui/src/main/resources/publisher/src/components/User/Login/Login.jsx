@@ -17,16 +17,10 @@
  */
 
 import qs from 'qs';
-import PropTypes from 'prop-types';
 import React, {Component} from 'react';
-import Checkbox from 'material-ui/Checkbox';
 import {Redirect, Switch} from 'react-router-dom';
-import RaisedButton from 'material-ui/RaisedButton';
-import {Card, CardActions, CardTitle} from 'material-ui/Card';
-import {TextValidator, ValidatorForm} from 'react-material-ui-form-validator';
-
-//todo: remove the {TextValidator, ValidatorForm} and implement it manually.
-
+import AuthHandler from '../../../api/authHandler';
+import {Button, Card, CardBlock, CardTitle, Col, Form, FormGroup, Input, Label} from 'reactstrap';
 
 /**
  * The Login Component.
@@ -40,11 +34,12 @@ class Login extends Component {
     constructor() {
         super();
         this.state = {
-            isLoggedIn: true,
+            isLoggedIn: false,
             referrer: "/",
             userName: "",
             password: "",
-            rememberMe: true
+            rememberMe: true,
+            errors: {}
         }
     }
 
@@ -61,12 +56,14 @@ class Login extends Component {
 
     handleLogin(event) {
         event.preventDefault();
+        this.validateForm();
     }
 
     /**
      * Handles the username field change event.
      * */
-    onUserNameChange(event) {
+    onUserNameChange(event, value) {
+        console.log(event.target.value);
         this.setState(
             {
                 userName: event.target.value
@@ -77,7 +74,7 @@ class Login extends Component {
     /**
      * Handles the password field change event.
      * */
-    onPasswordChange(event) {
+    onPasswordChange(event, value) {
         this.setState(
             {
                 password: event.target.value
@@ -96,49 +93,69 @@ class Login extends Component {
         );
     }
 
+    /**
+     * Validate the login form.
+     * */
+    validateForm() {
+        let errors = {};
+        let validationFailed = true;
+        if (!this.state.password) {
+            errors["passwordError"] = "Password is Required";
+            validationFailed = true;
+        } else {
+            validationFailed = false;
+        }
+
+        if (!this.state.userName) {
+            errors["userNameError"] = "User Name is Required";
+            validationFailed = true;
+        } else {
+            validationFailed = false;
+        }
+
+        if (validationFailed) {
+            this.setState({errors: errors}, console.log(errors));
+        } else {
+            let loginPromis = AuthHandler.login(this.state.userName, this.state.password);
+            loginPromis.then(response => {
+                console.log(AuthHandler.getUser());
+                this.setState({isLoggedIn: AuthHandler.getUser()});
+            })
+        }
+    }
+
     render() {
 
         if (!this.state.isLoggedIn) {
             return (
-                <div>
-
+                <div id="login-container">
                     {/*TODO: Style the components.*/}
+                    <Card id="login-card">
+                        <CardBlock>
+                            <CardTitle>WSO2 IoT APP Publisher</CardTitle>
+                            <Form onSubmit={this.handleLogin.bind(this)}>
+                                <FormGroup row>
+                                    <Label for="userName" sm={2}>User Name:</Label>
+                                    <Col sm={10}>
+                                        <Input type="text" name="userName" id="userName" placeholder="User Name"
+                                               onChange={this.onUserNameChange.bind(this)}/>
+                                    </Col>
 
-                    <Card>
-                        <CardTitle title="WSO2 IoT App Publisher"/>
-                        <CardActions>
-                            <ValidatorForm
-                                ref="form"
-                                onSubmit={this.handleLogin.bind(this)}
-                                onError={errors => console.log(errors)}>
-                                <TextValidator
-                                    floatingLabelText="User Name"
-                                    floatingLabelFixed={true}
-                                    onChange={this.onUserNameChange.bind(this)}
-                                    name="userName"
-                                    validators={['required']}
-                                    errorMessages={['User Name is required']}
-                                    value={this.state.userName}
-                                />
-                                <br/>
-                                <TextValidator
-                                    floatingLabelText="Password"
-                                    floatingLabelFixed={true}
-                                    onChange={this.onPasswordChange.bind(this)}
-                                    name="password"
-                                    type="password"
-                                    value={this.state.password}
-                                    validators={['required']}
-                                    errorMessages={['Password is required']}
-                                />
-                                <br/>
-                                <Checkbox label="Remember me."
-                                          onCheck={this.handleRememberMe.bind(this)}
-                                          checked={this.state.rememberMe}/>
-                                <br/>
-                                <RaisedButton type="submit" label="Login"/>
-                            </ValidatorForm>
-                        </CardActions>
+                                </FormGroup>
+                                <FormGroup row>
+                                    <Label for="password" sm={2}>Password:</Label>
+                                    <Col sm={10}>
+                                        <Input type="password" name="text" id="password" placeholder="Password"
+                                               onChange={this.onPasswordChange.bind(this)}/>
+                                    </Col>
+                                </FormGroup>
+                                <FormGroup check row>
+                                    <Col sm={{size: 10, offset: 2}}>
+                                        <Button type="submit" id="login-btn">Login</Button>
+                                    </Col>
+                                </FormGroup>
+                            </Form>
+                        </CardBlock>
                     </Card>
                 </div>);
         } else {

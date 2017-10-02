@@ -48,6 +48,10 @@ const config = {
                 use: [ 'style-loader', 'css-loader' ]
             },
             {
+                test: /\.scss$/,
+                use: [ 'style-loader', 'scss-loader' ]
+            },
+            {
                 test: /\.less$/,
                 use: [{
                     loader: "style-loader" // creates style nodes from JS strings
@@ -58,7 +62,12 @@ const config = {
                 }]
             }
         ]
+    },
+    resolve: {
+        // you can now require('file') instead of require('file.coffee')
+        extensions: ['.jsx', '.js', '.ttf', '.woff', '.woff2', '.svg']
     }
+
 };
 
 if (process.env.NODE_ENV === "development") {

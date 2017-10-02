@@ -26,6 +26,7 @@ import org.wso2.carbon.device.application.mgt.core.dao.PlatformDAO;
 import org.wso2.carbon.device.application.mgt.core.dao.common.Util;
 import org.wso2.carbon.device.application.mgt.core.dao.impl.AbstractDAOImpl;
 import org.wso2.carbon.device.application.mgt.core.exception.PlatformManagementDAOException;
+import org.wso2.carbon.device.application.mgt.core.util.ConnectionManagerUtil;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 
 import java.sql.Connection;
@@ -78,6 +79,27 @@ public class GenericPlatformDAOImpl extends AbstractDAOImpl implements PlatformD
                             preparedStatement.execute();
                         }
                     }
+                    //Adding tags to the database.
+                    Boolean isBatchExecutionSupported = ConnectionManagerUtil.isBatchQuerySupported();
+                    String insertTags = "INSERT INTO APPM_PLATFORM_TAG (NAME, PLATFORM_ID) VALUES (?, ?)";
+                    preparedStatement = connection.prepareStatement(insertTags);
+                    if (platform.getTags() != null) {
+                        for (String tag : platform.getTags()) {
+                            preparedStatement.setString(1, tag);
+                            preparedStatement.setInt(2, platformId);
+
+                            if (isBatchExecutionSupported) {
+                                preparedStatement.addBatch();
+                            }
+                            else {
+                                preparedStatement.execute();
+                            }
+                        }
+                        if (isBatchExecutionSupported) {
+                            preparedStatement.executeBatch();
+                        }
+                    }
+
                 } else {
                     String insertToPlatform =
                             "INSERT INTO APPM_PLATFORM (IDENTIFIER, TENANT_ID, FILE_BASED, IS_SHARED, "
@@ -486,6 +508,18 @@ public class GenericPlatformDAOImpl extends AbstractDAOImpl implements PlatformD
                 platform.setShared(rs.getBoolean(8));
                 platform.setDefaultTenantMapping(rs.getBoolean(9));
                 platform.setId(rs.getInt(4));
+                //Getting tags
+                sql = "SELECT * FROM APPM_PLATFORM_TAG WHERE PLATFORM_ID=?";
+                stmt = conn.prepareStatement(sql);
+                stmt.setInt(1, rs.getInt(4));
+                ResultSet rsTags = stmt.executeQuery();
+
+                List<String> tags = new ArrayList<>();
+                while (rsTags.next()) {
+                    tags.add(rsTags.getString("NAME"));
+                }
+                platform.setTags(tags);
+
                 if (!platform.isFileBased()) {
                     platform.setName(rs.getString(5));
                     platform.setDescription(rs.getString(6));

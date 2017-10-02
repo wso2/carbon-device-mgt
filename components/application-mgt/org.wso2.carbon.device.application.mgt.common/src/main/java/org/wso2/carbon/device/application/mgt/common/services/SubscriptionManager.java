@@ -31,7 +31,7 @@ public interface SubscriptionManager {
      * To install an application to given list of devices.
      * @param applicationUUID Application ID
      * @param deviceList Device list
-     * @return DeviceList which the application has been installed
+     * @return Failed Device List which the application was unable to install
      * @throws ApplicationManagementException Application Management Exception
      */
     List<DeviceIdentifier> installApplicationForDevices(String applicationUUID, String versionName,
@@ -42,10 +42,10 @@ public interface SubscriptionManager {
      * To install an application to given list of users.
      * @param applicationUUID Application ID
      * @param userList User list
-     * @return User list which the application has been installed
+     * @return Failed Device List which the application was unable to install
      * @throws ApplicationManagementException Application Management Exception
      */
-    List<String> installApplicationForUsers(String applicationUUID,
+    List<DeviceIdentifier> installApplicationForUsers(String applicationUUID,
                                             List<String> userList)
             throws ApplicationManagementException;
 
@@ -53,10 +53,10 @@ public interface SubscriptionManager {
      * To install an application to given list of users.
      * @param applicationUUID Application ID
      * @param roleList Role list
-     * @return Role list which the application has been installed
+     * @return Failed Device List which the application was unable to install
      * @throws ApplicationManagementException Application Management Exception
      */
-    List<String> installApplicationForRoles(String applicationUUID,
+    List<DeviceIdentifier> installApplicationForRoles(String applicationUUID,
                                             List<String> roleList)
             throws ApplicationManagementException;
 
@@ -64,7 +64,7 @@ public interface SubscriptionManager {
      * To uninstall an application from a given list of devices.
      * @param applicationUUID Application ID
      * @param deviceList Device list
-     * @return DeviceList which the application has been uninstalled
+     * @return Failed Device List which the application was unable to uninstall
      * @throws ApplicationManagementException Application Management Exception
      */
     List<DeviceIdentifier> uninstallApplication(String applicationUUID,

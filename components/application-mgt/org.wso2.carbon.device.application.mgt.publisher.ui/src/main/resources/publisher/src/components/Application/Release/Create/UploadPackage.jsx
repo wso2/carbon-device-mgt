@@ -19,6 +19,7 @@
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {Button, Col, FormGroup, Input, Label, Row} from "reactstrap";
+import {FormattedMessage} from 'react-intl';
 
 class UploadPackage extends Component {
 
@@ -39,44 +40,53 @@ class UploadPackage extends Component {
                     <div className="release-header">
                         <a onClick={this.handleBack}>{"<-"}</a>
                         <span id="create-release-header">
-                            <strong>New Release for {selectedChannel}</strong>
+                            <strong>
+                                <FormattedMessage id="New.Release.For" defaultMessage="New Release For"/> {selectedChannel}
+                            </strong>
                         </span>
                     </div>
                 </Row>
                 <Row>
                     <div className="release-header">
                         <span id="create-release-header">
-                            <strong>Upload Package File</strong>
+                            <strong>
+                                <FormattedMessage id="Upload.Package.File" defaultMessage="Upload Package File"/>
+                            </strong>
                         </span>
                     </div>
                 </Row>
                 <Row>
                     <Col xs="3">
-                        <Button>Upload</Button>
+                        <Button>
+                            <FormattedMessage id="Upload" defaultMessage="Upload"/>
+                        </Button>
                     </Col>
                     <Col xs="3">
-                        <Button>Select from package library</Button>
+                        <Button>
+                            <FormattedMessage id="Select.from.package.library"
+                                              defaultMessage="Select from package library"/>
+                        </Button>
                     </Col>
                 </Row>
                 <Row>
                     <div className="release-detail-content">
                         <form>
                             <FormGroup>
-                                <Label>Release Name *</Label>
-                                <Input
-                                    required
-                                    type="text"
-                                />
+                                <Label>
+                                    <FormattedMessage id="Release.Name" defaultMessage="Release Name"/> *
+                                </Label>
+                                <Input required type="text"/>
                             </FormGroup>
                             <FormGroup>
-                                <Label>Release Notes *</Label>
-                                <Input
-                                    required
-                                    type="textarea"
-                                />
+                                <Label>
+                                    <FormattedMessage id="Release.Notes" defaultMessage="Release Notes"/> *
+                                </Label>
+                                <Input required type="textarea"/>
                             </FormGroup>
                             <div className="form-btn">
-                                <Button>Send for Review</Button>
+                                <Button>
+                                    <FormattedMessage id="Send.for.Review" defaultMessage="Send for Review"/>
+                                </Button>
                             </div>
                         </form>
                     </div>

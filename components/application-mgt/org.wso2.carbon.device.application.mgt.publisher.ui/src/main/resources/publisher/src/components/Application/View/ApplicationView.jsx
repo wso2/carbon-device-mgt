@@ -19,6 +19,7 @@
 import React, {Component} from 'react';
 import {withRouter} from 'react-router-dom';
 import {Col, Row} from "reactstrap";
+import {FormattedMessage} from 'react-intl';
 
 /**
  * Application view component.
@@ -90,7 +91,9 @@ class ApplicationView extends Component {
                 <div id="application-view-row">
                     <Row>
                         <Col>
-                            <span><strong>Description: </strong></span>
+                            <span><strong>
+                                 <FormattedMessage id="Description" defaultMessage="Description"/>:
+                            </strong></span>
                         </Col>
                         <Col>
                             <p>sdfjlkdsjfsjdfjsdf sfjdslkjfdsflkjdsfslkdjfl j</p>
@@ -98,7 +101,9 @@ class ApplicationView extends Component {
                     </Row>
                     <Row>
                         <Col>
-                            <span><strong>Tags: </strong></span>
+                            <span><strong>
+                                <FormattedMessage id="Tags" defaultMessage="Tags"/>:
+                            </strong></span>
                         </Col>
                         <Col>
                             <p>[list of tags...]</p>
@@ -106,7 +111,9 @@ class ApplicationView extends Component {
                     </Row>
                     <Row>
                         <Col>
-                            <span><strong>Release: </strong></span>
+                            <span><strong>
+                                 <FormattedMessage id="Release" defaultMessage="Release"/>:
+                            </strong></span>
                         </Col>
                         <Col>
                             <p>Production</p>
@@ -114,7 +121,9 @@ class ApplicationView extends Component {
                     </Row>
                     <Row>
                         <Col>
-                            <span><strong>Version: </strong></span>
+                            <span><strong>
+                                 <FormattedMessage id="Version" defaultMessage="Version"/>:
+                            </strong></span>
                         </Col>
                         <Col>
                             <p>v1.0</p>

@@ -19,6 +19,7 @@
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {Badge, FormGroup, Input, Label} from 'reactstrap';
+import {FormattedMessage} from 'react-intl';
 
 /**
  * The Second step of application create wizard.
@@ -131,47 +132,37 @@ class Step1 extends Component {
                 <div>
                     <div>
                         <FormGroup>
-                            <Label for="app-title">Title*</Label>
-                            <Input
-                                required
-                                type="text"
-                                name="appName"
-                                id="app-title"
-                            />
+                            <Label for="app-title">
+                                <FormattedMessage id='Title' defaultMessage='Title'/>*
+                            </Label>
+                            <Input required type="text" name="appName" id="app-title"/>
                         </FormGroup>
                         <FormGroup>
-                            <Label for="app-description">Description*</Label>
-                            <Input
-                                required
-                                type="textarea"
-                                name="appDescription"
-                                id="app-description"
-                            />
+                            <Label for="app-description">
+                                <FormattedMessage id='Description' defaultMessage='Description'/>*
+                            </Label>
+                            <Input required type="textarea" name="appDescription" id="app-description"/>
                         </FormGroup>
                         <FormGroup>
-                            <Label for="app-category">Category</Label>
-                            <Input
-                                type="select"
-                                name="category"
-                                id="app-category"
-                            >
+                            <Label for="app-category">
+                                <FormattedMessage id='Category' defaultMessage='Category'/>
+                            </Label>
+                            <Input type="select" name="category" id="app-category">
                                 <option>Business</option>
                             </Input>
                         </FormGroup>
                         <FormGroup>
-                            <Label for="app-visibility">Visibility</Label>
-                            <Input
-                                type="select"
-                                name="visibility"
-                                id="app-visibility"
-                            >
-                                <option>Devices</option>
-                                <option>Roles</option>
-                                <option>Groups</option>
+                            <Label for="app-visibility">
+                                <FormattedMessage id='Visibility' defaultMessage='Visibility'/>
+                            </Label>
+                            <Input type="select" name="visibility" id="app-visibility">
+                                <option><FormattedMessage id='Devices' defaultMessage='Devices'/></option>
+                                <option><FormattedMessage id='Roles' defaultMessage='Roles'/></option>
+                                <option><FormattedMessage id='Groups' defaultMessage='Groups'/></option>
                             </Input>
                         </FormGroup>
                         <FormGroup>
-                            <Label for="app-tags">Tags*</Label>
+                            <Label for="app-tags"><FormattedMessage id='Tags' defaultMessage='Tags'/>*</Label>
                             <Input
                                 required
                                 type="text"

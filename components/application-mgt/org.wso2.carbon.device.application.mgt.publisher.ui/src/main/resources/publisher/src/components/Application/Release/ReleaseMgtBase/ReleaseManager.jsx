@@ -16,10 +16,10 @@
  * under the License.
  */
 
-import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {Button, Col, Row} from "reactstrap";
 import CreateRelease from "../Create/CreateRelease";
+import {FormattedMessage} from 'react-intl';
 
 class ReleaseManager extends Component {
 
@@ -82,7 +82,7 @@ class ReleaseManager extends Component {
                         <Row>
                             <Col sm="12">
                                 <div className="release" id="production">
-                                    <span>Production Releases</span>
+                                    <FormattedMessage id="Production.Releases" defaultMessage="Production Releases"/>
                                     <div className="release-content">
                                         <div className="release-inner">
                                             {this.getNoReleaseContent("Production")}
@@ -94,7 +94,7 @@ class ReleaseManager extends Component {
                         <Row>
                             <Col sm="12">
                                 <div className="release" id="beta">
-                                    <span>Beta Releases</span>
+                                    <FormattedMessage id="Beta.Releases" defaultMessage="Beta Releases"/>
                                     <div className="release-content">
                                         <div className="release-inner">
                                             {this.getNoReleaseContent("Beta")}
@@ -106,7 +106,7 @@ class ReleaseManager extends Component {
                         <Row>
                             <Col sm="12">
                                 <div className="release" id="alpha">
-                                    <span>Alpha Releases</span>
+                                    <FormattedMessage id="Alpha.Releases" defaultMessage="Alpha Releases"/>
                                     <div className="release-content">
                                         <div className="release-inner">
                                             {this.getNoReleaseContent("Alpha")}

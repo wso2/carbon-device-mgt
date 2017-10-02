@@ -43,5 +43,13 @@ export default class Constants {
         REFRESH_TOKEN_URL: "",
         WSO2_USER: 'wso2_user',
         PARTIAL_TOKEN: 'WSO2_IOT_TOKEN'
+    };
+
+    static hostConstants = {
+        baseURL : window.location.origin,
+        appContext : window.location.pathname.split("/")[1]
+
     }
+
+    static defaultLocale = "en";
 }

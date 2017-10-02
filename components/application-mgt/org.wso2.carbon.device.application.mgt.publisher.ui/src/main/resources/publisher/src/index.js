@@ -21,9 +21,37 @@ import Publisher from './App';
 import ReactDOM from 'react-dom';
 import 'bootstrap/dist/css/bootstrap.css';
 import registerServiceWorker from './registerServiceWorker';
+import {IntlProvider, addLocaleData, defineMessages} from 'react-intl';
+import Axios from 'axios';
+import Constants from './common/constants';
+
+const possibleLocale = navigator.language.split("-")[0];
+let loadLocaleFile = Axios.create({
+    baseURL: Constants.hostConstants.baseURL + "/" + Constants.hostConstants.appContext + "/locales/"
+    + possibleLocale + ".json"
+}).get();
+
 
 /**
  * This is the base js file of the app. All the content will be rendered in the root element.
  * */
-ReactDOM.render(<Publisher/>, document.getElementById('root'));
-registerServiceWorker();
+loadLocaleFile.then(response => {
+    const messages = defineMessages(response.data);
+    addLocaleData(require('react-intl/locale-data/' + possibleLocale));
+    ReactDOM.render(<IntlProvider locale={possibleLocale}
+                                  messages={messages}><Publisher/></IntlProvider>, document.getElementById('root'));
+    registerServiceWorker();
+}).catch(error => {
+    addLocaleData(require('react-intl/locale-data/' + Constants.defaultLocale));
+    let defaultLocale = axios.create({
+        baseURL: Constants.hostConstants.baseURL + "/" + Constants.hostConstants.appContext + "/locales"
+        + Constants.defaultLocale + ".json"
+    }).get();
+    defaultLocale.then(response => {
+        const messages = defineMessages(response.data);
+        ReactDOM.render(<IntlProvider locale={possibleLocale}
+                                      messages={messages}><Publisher/></IntlProvider>, document.getElementById('root'));
+        registerServiceWorker();
+    }).catch(error => {
+    });
+});

@@ -85,23 +85,6 @@ public class GenericOperationDAOImpl implements OperationDAO {
         }
     }
 
-    @Override
-    public void updateOperation(Operation operation) throws OperationManagementDAOException {
-        PreparedStatement stmt = null;
-        try {
-            Connection connection = OperationManagementDAOFactory.getConnection();
-            stmt = connection.prepareStatement("UPDATE DM_OPERATION SET RECEIVED_TIMESTAMP=? " +
-                    "WHERE ID=?");
-            stmt.setTimestamp(1, new Timestamp(new Date().getTime()));
-            stmt.setInt(2, operation.getId());
-            stmt.executeUpdate();
-        } catch (SQLException e) {
-            throw new OperationManagementDAOException("Error occurred while update operation metadata", e);
-        } finally {
-            OperationManagementDAOUtil.cleanupResources(stmt);
-        }
-    }
-
     public boolean updateOperationStatus(int enrolmentId, int operationId, Operation.Status status)
             throws OperationManagementDAOException {
         PreparedStatement stmt = null;
@@ -401,11 +384,6 @@ public class GenericOperationDAOImpl implements OperationDAO {
             OperationManagementDAOUtil.cleanupResources(stmt, rs);
         }
         return activity;
-    }
-
-    @Override
-    public List<Activity> getActivitiesUpdatedAfter(long timestamp) throws OperationManagementDAOException {
-        return this.getActivitiesUpdatedAfter(timestamp, 0, 0);
     }
 
     @Override

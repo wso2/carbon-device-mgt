@@ -56,26 +56,27 @@ import java.security.cert.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Test cases for for CertificateManagementServiceImpl class methods.
+ *
+ */
 public class CertificateManagementServiceImplTests extends BaseDeviceManagementCertificateTest {
 
     private static Log log = LogFactory.getLog(CertificateManagementServiceImplTests.class);
     private static final String CA_CERT_PEM = "src/test/resources/ca_cert.pem";
     private static final String RA_CERT_PEM = "src/test/resources/ra_cert.pem";
-    CertificateManagementServiceImpl managementService = null;
-
-    @Test(description = "This test case tests initialization of CertificateManagementServiceImpl instance")
-    public void testGetInstance() {
-        CertificateManagementServiceImpl instance = CertificateManagementServiceImpl.getInstance();
-        Assert.assertNotNull(instance);
-        log.info("getInstance Test Successful");
-    }
+    private CertificateManagementServiceImpl managementService;
 
     @BeforeClass
-    public void initCertificateManagementService() throws DeviceManagementException {
-        //save certificatemanagementservice instance as class variable
-        managementService = CertificateManagementServiceImpl.getInstance();
+    public void init() throws Exception {
+        initDataSource();
+        CertificateManagementDAOFactory.init(this.getDataSource());
         //set Bouncycastle as a provider for testing
         Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
+        //save certificatemanagementservice instance as class variable
+        managementService = CertificateManagementServiceImpl.getInstance();
+        Assert.assertNotNull(managementService);
+        log.info("getInstance Test Successful");
     }
 
     @Test(description = "This test case tests retrieval of CA Certificate from the keystore")
@@ -329,9 +330,5 @@ public class CertificateManagementServiceImplTests extends BaseDeviceManagementC
         log.info("ExtractCertificateFromSignature Test Successful");
     }
 
-    @BeforeClass
-    public void init() throws Exception {
-        initDataSource();
-        CertificateManagementDAOFactory.init(this.getDataSource());
-    }
+
 }

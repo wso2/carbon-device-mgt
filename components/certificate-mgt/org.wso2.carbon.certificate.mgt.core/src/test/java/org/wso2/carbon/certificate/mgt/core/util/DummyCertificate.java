@@ -21,25 +21,34 @@ package org.wso2.carbon.certificate.mgt.core.util;
 import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
 
 import java.math.BigInteger;
-import java.security.*;
-import java.security.cert.*;
+import java.security.Principal;
+import java.security.PublicKey;
+import java.security.cert.CertificateEncodingException;
+import java.security.cert.CertificateExpiredException;
+import java.security.cert.CertificateNotYetValidException;
+import java.security.cert.CertificateException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SignatureException;
+import java.security.NoSuchProviderException;
+import java.security.cert.X509Certificate;
+import java.security.InvalidKeyException;
 import java.util.Date;
 import java.util.Set;
 
+/**
+ * A Mock Certificate class with an extension provided.(Used only to test the extension)
+ */
 public class DummyCertificate extends X509Certificate {
 
     public static final String EXT = "Dummy extension";
     public static final String DN = "O=WSO2,OU=Mobile,C=LK,CN=123456789";
 
-
     @Override
     public void checkValidity() throws CertificateExpiredException, CertificateNotYetValidException {
-
     }
 
     @Override
     public void checkValidity(Date date) throws CertificateExpiredException, CertificateNotYetValidException {
-
     }
 
     @Override
@@ -65,7 +74,6 @@ public class DummyCertificate extends X509Certificate {
                 return DN;
             }
         };
-
     }
 
     @Override
@@ -130,12 +138,10 @@ public class DummyCertificate extends X509Certificate {
 
     @Override
     public void verify(PublicKey key) throws CertificateException, NoSuchAlgorithmException, InvalidKeyException, NoSuchProviderException, SignatureException {
-
     }
 
     @Override
     public void verify(PublicKey key, String sigProvider) throws CertificateException, NoSuchAlgorithmException, InvalidKeyException, NoSuchProviderException, SignatureException {
-
     }
 
     @Override

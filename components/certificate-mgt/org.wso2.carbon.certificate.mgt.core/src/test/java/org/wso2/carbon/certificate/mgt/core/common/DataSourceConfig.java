@@ -20,6 +20,9 @@ package org.wso2.carbon.certificate.mgt.core.common;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+/**
+ * Model class for DataSourceConfig.
+ */
 @XmlRootElement(name = "DataSourceConfig")
 public class DataSourceConfig {
 

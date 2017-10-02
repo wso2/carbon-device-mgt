@@ -44,7 +44,6 @@ import java.sql.Statement;
 public abstract class BaseDeviceManagementCertificateTest {
     private DataSource dataSource;
     private static final Log log = LogFactory.getLog(BaseDeviceManagementCertificateTest.class);
-
     private static final String DATASOURCE_LOCATION = "src/test/resources/data-source-config.xml";
 
     @BeforeSuite
@@ -77,7 +76,6 @@ public abstract class BaseDeviceManagementCertificateTest {
         properties.setPassword(config.getPassword());
         return new org.apache.tomcat.jdbc.pool.DataSource(properties);
     }
-
 
     private DataSourceConfig readDataSourceConfig() throws DeviceManagementException {
         try {
@@ -123,14 +121,12 @@ public abstract class BaseDeviceManagementCertificateTest {
                 System.setProperty("carbon.home", file.getAbsolutePath());
             }
         }
-
         PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(MultitenantConstants
                 .SUPER_TENANT_DOMAIN_NAME);
         PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(MultitenantConstants.SUPER_TENANT_ID);
     }
 
     public DataSource getDataSource() {
-
         return dataSource;
     }
 

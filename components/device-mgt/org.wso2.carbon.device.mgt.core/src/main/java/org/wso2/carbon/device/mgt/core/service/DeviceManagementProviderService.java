@@ -26,6 +26,7 @@ import org.wso2.carbon.device.mgt.common.InvalidDeviceException;
 import org.wso2.carbon.device.mgt.common.MonitoringOperation;
 import org.wso2.carbon.device.mgt.common.PaginationRequest;
 import org.wso2.carbon.device.mgt.common.PaginationResult;
+import org.wso2.carbon.device.mgt.common.app.mgt.DeviceApplicationMapping;
 import org.wso2.carbon.device.mgt.common.configuration.mgt.PlatformConfiguration;
 import org.wso2.carbon.device.mgt.common.license.mgt.License;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Activity;
@@ -591,4 +592,6 @@ public interface DeviceManagementProviderService {
             throws PullNotificationExecutionFailedException;
 
     List<Integer> getDeviceEnrolledTenants() throws DeviceManagementException;
+
+    void addDeviceApplicationMapping(DeviceApplicationMapping deviceApp) throws DeviceManagementException;
 }

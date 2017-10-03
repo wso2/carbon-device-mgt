@@ -19,23 +19,10 @@
 import React, {Component} from 'react';
 import {Col, Row} from "reactstrap";
 import './notification.css';
-import Theme from '../../../theme'
 
 class NotificationView extends Component {
     constructor() {
         super();
-        this.scriptId = "notification";
-    }
-
-    componentWillMount() {
-        /**
-         *Loading the theme files based on the the user-preference.
-         */
-        Theme.insertThemingScripts(this.scriptId);
-    }
-
-    componentWillUnmount() {
-        Theme.removeThemingScripts(this.scriptId);
     }
 
     render() {

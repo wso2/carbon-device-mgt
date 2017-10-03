@@ -17,24 +17,9 @@
  */
 
 import React, {Component} from 'react';
-import Theme from '../../../theme';
+import './chip.css';
 
 class Chip extends Component {
-    constructor() {
-        super();
-        this.scriptId = "chip";
-    }
-
-    componentWillMount() {
-        /**
-         *Loading the theme files based on the the user-preference.
-         */
-        Theme.insertThemingScripts(this.scriptId);
-    }
-
-    componentWillUnmount() {
-        Theme.removeThemingScripts(this.scriptId);
-    }
 
     render() {
         return (

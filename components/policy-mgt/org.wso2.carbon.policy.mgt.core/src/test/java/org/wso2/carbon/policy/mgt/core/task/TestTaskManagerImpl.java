@@ -15,7 +15,8 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.wso2.carbon.device.mgt.core.task;
+
+package org.wso2.carbon.policy.mgt.core.task;
 
 import org.wso2.carbon.ntask.common.TaskException;
 import org.wso2.carbon.ntask.core.TaskInfo;
@@ -49,7 +50,7 @@ public class TestTaskManagerImpl implements TaskManager {
     @Override
     public boolean deleteTask(String taskName) throws TaskException {
         for (TaskInfo task : this.registeredTasks) {
-            if (task.getName().contains(taskName)) {
+            if (taskName.equals(task.getName())) {
                 this.registeredTasks.remove(task);
                 return true;
             }
@@ -80,7 +81,7 @@ public class TestTaskManagerImpl implements TaskManager {
     @Override
     public TaskInfo getTask(String taskName) throws TaskException {
         for (TaskInfo task : this.registeredTasks) {
-            if (task.getName().contains(taskName)) {
+            if (taskName.contains(task.getName())) {
                 return task;
             }
         }

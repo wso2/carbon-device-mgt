@@ -22,6 +22,7 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.GroupPaginationRequest;
 import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroup;
+import org.wso2.carbon.device.mgt.core.common.TestDataHolder;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 import org.wso2.carbon.registry.core.config.RegistryContext;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
@@ -108,7 +109,7 @@ public class TestUtils {
     public static List<DeviceIdentifier> getDeviceIdentifiersList(){
         DeviceIdentifier identifier = new DeviceIdentifier();
         identifier.setId("12345");
-        identifier.setType("Test");
+        identifier.setType(TestDataHolder.TEST_DEVICE_TYPE);
 
         List<DeviceIdentifier> list = new ArrayList<>();
         list.add(identifier);

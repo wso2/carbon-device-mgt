@@ -97,12 +97,15 @@ public class ApplicationManagementAPIImpl implements ApplicationManagementAPI {
     @Path("/{uuid}")
     public Response getApplication(@PathParam("uuid") String uuid) {
         ApplicationManager applicationManager = APIUtil.getApplicationManager();
+        ApplicationStorageManager applicationStorageManager = APIUtil.getApplicationStorageManager();
         try {
             Application application = applicationManager.getApplication(uuid);
             if (application == null) {
                 return Response.status(Response.Status.NOT_FOUND)
                         .entity("Application with UUID " + uuid + " not found").build();
             }
+            ImageArtifact icon = applicationStorageManager.getImageArtifact(uuid, "icon", 0);
+            application.setIcon(icon);
             return Response.status(Response.Status.OK).entity(application).build();
         } catch (NotFoundException e) {
             return Response.status(Response.Status.NOT_FOUND).build();

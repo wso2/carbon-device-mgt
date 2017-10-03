@@ -21,6 +21,7 @@ package org.wso2.carbon.device.application.mgt.common;
 
 import org.wso2.carbon.device.application.mgt.common.jaxrs.Exclude;
 
+import java.awt.*;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -68,6 +69,8 @@ public class Application {
     private int screenShotCount;
 
     private User user;
+
+    private ImageArtifact icon;
 
     public int getId() {
         return id;
@@ -219,6 +222,10 @@ public class Application {
 
     public int getScreenShotCount() {
         return screenShotCount;
+    }
+
+    public void setIcon(ImageArtifact icon) {
+        this.icon = icon;
     }
 
     @Override

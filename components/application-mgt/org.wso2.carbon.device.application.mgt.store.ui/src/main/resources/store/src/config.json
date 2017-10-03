@@ -1,7 +1,6 @@
 {
-  "theme" : {
-    "current" : "default",
-    "default" : "lightBaseTheme",
-    "custom" : "custom-theme"
+  "theme": {
+    "type": "default",
+    "value": "lightBaseTheme"
   }
 }

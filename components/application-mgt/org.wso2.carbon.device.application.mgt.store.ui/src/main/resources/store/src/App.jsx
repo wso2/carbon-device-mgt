@@ -17,26 +17,22 @@
  */
 
 import React, {Component} from 'react';
+import AuthHandler from './api/authHandler';
 import createHistory from 'history/createBrowserHistory';
-import {BrowserRouter as Router, Route, Switch} from 'react-router-dom'
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import getMuiTheme from 'material-ui/styles/getMuiTheme';
-import Login from './components/Login';
-import BaseLayout from './components/BaseLayout';
-import NotFound from './components/NotFound';
+import {BrowserRouter as Router, Redirect, Route, Switch} from 'react-router-dom'
+import {
+    ApplicationCreate,
+    ApplicationEdit,
+    ApplicationListing,
+    BaseLayout,
+    Login,
+    NotFound,
+    PlatformCreate,
+    PlatformListing
+} from './components';
+
 
 const history = createHistory({basename: '/store'});
-
-/**
- * User can define the themes in the config.json. The themes will be loaded based on the user preference.
- */
-const theme = require("./config.json").theme;
-//
-let muiTheme = null;
-if (theme.current === "default") {
-    let defaultTheme = require("material-ui/styles/baseThemes/" + theme.default);
-    muiTheme = getMuiTheme(defaultTheme.default);
-}
 
 /**
  * This component defines the layout and the routes for the app.
@@ -52,22 +48,52 @@ if (theme.current === "default") {
  * not want to serve the URL.
  * */
 class Base extends Component {
+    constructor() {
+        super();
+        this.state = {
+            user: null
+        }
+    }
+
+    componentWillMount() {
+        let user = AuthHandler.getUser();
+        if (user) {
+            if (!AuthHandler.isTokenExpired()) {
+                this.setState({user: user});
+            } else {
+                this.setState({user: null});
+            }
+        }
+    }
+
     render() {
-        return (
-            <div className="container">
-                <BaseLayout state={this.props.state} updateState={this.props.updateState}>
-                    <Switch>
-                        <Route component={NotFound}/>
-                    </Switch>
-                </BaseLayout>
-            </div>
-        )
+        if (this.state.user !== null) {
+            return (
+                <div>
+                    <BaseLayout user={this.state.user}>
+                        <Switch>
+                            <Redirect exact path={"/"} to={"/assets/apps"}/>
+                            <Route exact path={"/assets/apps"} component={ApplicationListing}/>
+                            <Route exact path={"/assets/apps/create"} component={ApplicationCreate}/>
+                            <Route exact path={"/assets/platforms"} component={PlatformListing}/>
+                            <Route exact path={"/assets/platforms/create"} component={PlatformCreate}/>
+                            {/*<Route exact path={"/assets/apps/:app"}/>*/}
+                            <Route exact path={"/assets/apps/edit/:app"} component={ApplicationEdit}/>
+                            <Route exact path={"/assets/platforms/:platform"}/>
+                            <Route exact path={"/assets/platforms/:platform/edit"}/>
+                            <Route exact path={"/assets/reviews"}/>
+                            <Route exact path={"/assets/reviews/:review"}/>
+                            <Route component={NotFound}/>
+                        </Switch>
+                    </BaseLayout>
+                </div>
+            )
+        } else {
+            return (<Redirect to={"/assets/apps"}/>)
+        }
+
     }
 }
-
-Base.propTypes = {
-    updateState: React.PropTypes.func.isRequired
-};
 
 /**
  * This component is referred by the index.js to initiate the application.
@@ -76,37 +102,27 @@ Base.propTypes = {
  *
  * */
 class Store extends Component {
-
     constructor() {
         super();
-        if (!this.state) {
-            this.state = {};
-            this.state.store = {};
-        }
-        this.updateState = this.updateState.bind(this);
+        this.state = {
+            muiTheme: null,
+            selectedType: null,
+            selectedTheme: null
+        };
     }
 
     render() {
         return (
             <div className="App">
-                <MuiThemeProvider muiTheme={muiTheme}>
-                    <Router basename="store" history={history}>
-                        <Switch>
-                            <Route path="/login"
-                                   render={routeProps => <Login {...routeProps} updateState={this.updateState} state={this.state}/>}/>
-                            <Route path="/logout"
-                                   render={routeProps => <Base {...routeProps} updateState={this.updateState} state={this.state}/>}/>
-                            <Route
-                                render={routeProps => <Base {...routeProps} updateState={this.updateState} state={this.state}/>}/>
-                        </Switch>
-                    </Router>
-                </MuiThemeProvider>
+                <Router basename="publisher" history={history}>
+                    <Switch>
+                        <Route path="/login" component={Login}/>
+                        <Route path="/logout" component={Login}/>
+                        <Route component={Base}/>
+                    </Switch>
+                </Router>
             </div>
         );
-    }
-
-    updateState(data) {
-        this.setState(data);
     }
 }
 

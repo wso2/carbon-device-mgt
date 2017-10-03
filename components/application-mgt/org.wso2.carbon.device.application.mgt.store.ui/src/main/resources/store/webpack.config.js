@@ -15,22 +15,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var webpack = require('webpack');
 var path = require('path');
-
-var BUILD_DIR = path.resolve(__dirname, 'public/dist');
-var APP_DIR = path.resolve(__dirname, 'src');
 
 const config = {
     entry: {
-        index: APP_DIR+ '/index.js'
+        index: './src/index.js'
     },
     output: {
-        path: path.resolve(__dirname, BUILD_DIR),
-        filename: 'index.js'
-    },
-    resolve: {
-        extensions: ['*', '.jsx', '.js']
+        path: path.resolve(__dirname, 'public/dist'),
+        filename: '[name].js'
     },
     devtool: "source-map",
     plugins: [],
@@ -39,7 +32,6 @@ const config = {
         rules: [
             {
                 test: /\.(js|jsx)$/,
-                include: APP_DIR,
                 exclude: /node_modules/,
                 use: [
                     {
@@ -53,7 +45,11 @@ const config = {
             },
             {
                 test: /\.css$/,
-                use: ['style-loader', 'css-loader']
+                use: [ 'style-loader', 'css-loader' ]
+            },
+            {
+                test: /\.scss$/,
+                use: [ 'style-loader', 'scss-loader' ]
             },
             {
                 test: /\.less$/,
@@ -66,7 +62,16 @@ const config = {
                 }]
             }
         ]
+    },
+    resolve: {
+        // you can now require('file') instead of require('file.coffee')
+        extensions: ['.jsx', '.js', '.ttf', '.woff', '.woff2', '.svg']
     }
+
 };
+
+if (process.env.NODE_ENV === "development") {
+    config.watch = true;
+}
 
 module.exports = config;

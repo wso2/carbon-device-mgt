@@ -43,6 +43,9 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * This class contains unit tests to test {@link PushNotificationSchedulerTask} class.
+ */
 public class PushNotificationSchedulerTaskTest extends BaseDeviceManagementTest {
     private static final Log log = LogFactory.getLog(PushNotificationSchedulerTask.class);
     private DeviceManagementProviderService deviceMgtProviderService;
@@ -60,10 +63,12 @@ public class PushNotificationSchedulerTaskTest extends BaseDeviceManagementTest 
         this.pushNotificationSchedulerTask = new PushNotificationSchedulerTask();
     }
 
-    @Test
-    public void testPushNotificationScheduler() {
+    @Test(description = "Tests the push notification scheduling for devices")
+    public void testPushNotificationScheduler()
+            throws DeviceManagementException, OperationManagementException, SQLException,
+            OperationManagementDAOException {
         try {
-            log.debug("Attempting to execute push notification task scheduler");
+            log.info("Attempting to execute push notification task scheduler");
             Mockito.doReturn(new TestNotificationStrategy()).when(this.deviceMgtProviderService)
                     .getNotificationStrategyByDeviceType(Mockito.anyString());
             Mockito.doReturn(new org.wso2.carbon.device.mgt.common.operation.mgt.Operation())
@@ -75,13 +80,7 @@ public class PushNotificationSchedulerTaskTest extends BaseDeviceManagementTest 
                             DeviceConfigurationManager.getInstance().getDeviceManagementConfig()
                                     .getPushNotificationConfiguration().getSchedulerBatchSize());
             Assert.assertEquals(operationMappingsTenantMap.size(), 0);
-            log.debug("Push notification task execution complete.");
-        } catch (DeviceManagementException e) {
-            Assert.fail("Unexpected exception occurred when getting the push notification strategy.", e);
-        } catch (SQLException | OperationManagementDAOException e) {
-            Assert.fail("Unexpected exception occurred retrieving the operation mapping list.", e);
-        } catch (OperationManagementException e) {
-            Assert.fail("Unexpected exception occurred when retrieving an operation.", e);
+            log.info("Push notification task execution complete.");
         } finally {
             OperationManagementDAOFactory.closeConnection();
         }

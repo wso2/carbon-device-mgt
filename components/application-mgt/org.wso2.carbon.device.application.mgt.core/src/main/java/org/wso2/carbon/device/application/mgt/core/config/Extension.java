@@ -80,7 +80,6 @@ public class Extension {
     public enum Name {
         ApplicationManager,
         ApplicationReleaseManager,
-        ApplicationUploadManager,
         CategoryManager,
         CommentsManager,
         LifecycleStateManager,

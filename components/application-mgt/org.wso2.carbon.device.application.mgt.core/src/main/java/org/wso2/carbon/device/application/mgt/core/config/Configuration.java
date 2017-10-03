@@ -53,15 +53,6 @@ public class Configuration {
     public void setExtensions(List<Extension> extensions) {
         this.extensions = extensions;
     }
-
-    @XmlElement(name = "Artifacts")
-    public Artifacts getArtifacts() {
-        return artifacts;
-    }
-
-    public void setArtifacts(Artifacts artifacts) {
-        this.artifacts = artifacts;
-    }
 }
 
 

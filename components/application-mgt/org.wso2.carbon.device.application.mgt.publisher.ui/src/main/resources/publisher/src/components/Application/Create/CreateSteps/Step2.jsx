@@ -20,8 +20,9 @@ import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import AuthHandler from "../../../../api/authHandler";
 import PlatformMgtApi from "../../../../api/platformMgtApi";
-import {Button, FormGroup, Input, Label, ModalFooter} from 'reactstrap';
+import {Button, FormFeedback, FormGroup, Input, Label, ModalFooter} from 'reactstrap';
 import {FormattedMessage} from 'react-intl';
+import * as validator from '../../../../common/validator';
 
 /**
  * The first step of the application creation wizard.
@@ -43,11 +44,13 @@ class Step2 extends Component {
         this.setStepData = this.setStepData.bind(this);
         this.onCancelClick = this.onCancelClick.bind(this);
         this.onBackClick = this.onBackClick.bind(this);
+        this.validate = this.validate.bind(this);
         this.platforms = [];
         this.state = {
+            errors: {},
             store: 1,
             platformSelectedIndex: 0,
-            platform: "",
+            platform: {},
             platforms: []
         };
     }
@@ -80,7 +83,7 @@ class Step2 extends Component {
             platform = platforms[index];
             tmpPlatforms.push(platform);
         }
-        this.setState({platforms: tmpPlatforms, platformSelectedIndex: 0, platform: tmpPlatforms[0].name})
+        this.setState({platforms: tmpPlatforms, platformSelectedIndex: 0})
     }
 
     /**
@@ -92,7 +95,14 @@ class Step2 extends Component {
             store: store,
             platform: platform[0]
         };
-        this.props.setStepData("platform", data);
+
+        const {errorCount, errors} = this.validate();
+
+        if (errorCount > 0) {
+            this.setState({errors: errors})
+        } else {
+            this.props.setStepData("platform", data);
+        }
     }
 
     onCancelClick() {
@@ -101,6 +111,17 @@ class Step2 extends Component {
 
     onBackClick() {
         this.props.handlePrev();
+    }
+
+    validate() {
+        const {store, platform} = this.state;
+        let errors = {};
+        let errorCount = 0;
+        if (!validator.validateEmptyObject(platform)) {
+            errorCount++;
+            errors.platform = "You must select an application platform!"
+        }
+        return {errorCount, errors};
     }
 
     /**
@@ -149,6 +170,7 @@ class Step2 extends Component {
                             )
                         }) : <option><FormattedMessage id='No.Platform' defaultMessage='No Platforms'/></option>}
                     </Input>
+                    <FormFeedback id="form-error">{this.state.errors.platform}</FormFeedback>
                 </FormGroup>
                 <ModalFooter>
                     <Button color="primary" onClick={this.onBackClick}>Back</Button>

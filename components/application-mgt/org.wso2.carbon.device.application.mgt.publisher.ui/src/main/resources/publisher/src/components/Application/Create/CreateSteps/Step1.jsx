@@ -18,9 +18,9 @@
 
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
-import {Badge, FormGroup, Input, Label} from 'reactstrap';
 import {FormattedMessage} from 'react-intl';
-import {Badge, Button, Form, FormGroup, Input, Label, ModalFooter} from 'reactstrap';
+import {Badge, Button, Form, FormFeedback, FormGroup, Input, Label, ModalFooter} from 'reactstrap';
+import * as validator from '../../../../common/validator';
 
 /**
  * The Second step of application create wizard.
@@ -49,6 +49,7 @@ class Step1 extends Component {
         this.onVisibilityChange = this.onVisibilityChange.bind(this);
         this.onVisibilityItemSelect = this.onVisibilityItemSelect.bind(this);
         this.handleRequestDelete = this.handleRequestDelete.bind(this);
+        this.validate = this.validate.bind(this);
         this.state = {
             tags: [],
             name: "",
@@ -63,7 +64,7 @@ class Step1 extends Component {
     componentWillMount() {
         const defaultVals = this.props.defaultData;
 
-        if(defaultVals) {
+        if (defaultVals) {
             this.setState(defaultVals);
         }
 
@@ -114,7 +115,14 @@ class Step1 extends Component {
             tags: tags,
             visibility: visibility
         };
-        this.props.setStepData("generalInfo", stepData);
+
+        let {errorCount, errors} = this.validate();
+
+        if (errorCount !== 0) {
+            this.setState({errors: errors});
+        } else {
+            this.props.setStepData("generalInfo", stepData);
+        }
     };
 
     onCancelClick() {
@@ -122,11 +130,34 @@ class Step1 extends Component {
     }
 
     /**
+     * Validate the form fields.
+     * */
+    validate() {
+        const {name, description, tags} = this.state;
+        let errorCount = 0;
+        let errors = {};
+        if (validator.validateNull(name)) {
+            errorCount++;
+            errors.name = "Application Title is Required!";
+        }
+
+        if (validator.validateNull(description)) {
+            errorCount++;
+            errors.description = "Description is Required!"
+        }
+
+        if (!validator.validateEmpty(tags)) {
+            errorCount++;
+            errors.tags = "You need to enter at least one tag!"
+        }
+        return {errorCount, errors};
+    }
+
+    /**
      * Set text field values to state.
      * */
     onTextFieldChange(event) {
         let field = event.target.name;
-        console.log(field, event.target.value);
         switch (field) {
             case "appName": {
                 this.setState({name: event.target.value});
@@ -166,7 +197,7 @@ class Step1 extends Component {
                             onChange={this.onVisibilityItemSelect}
                         >
                             <option id="app-visibility-default" disabled selected>Select the Roles.</option>
-                            <option><Input type="checkbox" />Role1</option>
+                            <option><Input type="checkbox"/>Role1</option>
                             <option>Role2</option>
                         </Input>
                     </FormGroup>
@@ -192,7 +223,7 @@ class Step1 extends Component {
         };
 
         return (
-            <div className="createStep2Content">
+            <div>
                 <div>
                     <div>
                         <FormGroup>
@@ -207,6 +238,7 @@ class Step1 extends Component {
                                 value={this.state.name}
                                 onChange={this.onTextFieldChange}
                             />
+                            <FormFeedback id="form-error">{this.state.errors.name}</FormFeedback>
                         </FormGroup>
                         <FormGroup>
                             <Label for="app-description">
@@ -220,6 +252,7 @@ class Step1 extends Component {
                                 value={this.state.description}
                                 onChange={this.onTextFieldChange}
                             />
+                            <FormFeedback id="form-error">{this.state.errors.description}</FormFeedback>
                         </FormGroup>
                         <FormGroup>
                             <Label for="app-category">
@@ -244,7 +277,8 @@ class Step1 extends Component {
                                         <option id="app-visibility-default" disabled selected>Select the App Visibility
                                                                                               Option.
                                         </option>
-                                        <option key={1}><FormattedMessage id='Devices' defaultMessage='Devices'/></option>
+                                        <option key={1}><FormattedMessage id='Devices' defaultMessage='Devices'/>
+                                        </option>
                                         <option key={2}><FormattedMessage id='Roles' defaultMessage='Roles'/></option>
                                         <option key={3}><FormattedMessage id='Groups' defaultMessage='Groups'/></option>
                                     </Input>
@@ -263,6 +297,7 @@ class Step1 extends Component {
                                 onChange={this.handleTagChange.bind(this)}
                                 onKeyPress={this.addTags.bind(this)}
                             />
+
                             <div id="batch-content">
                                 {this.state.tags.map(tag => {
                                         return (
@@ -278,6 +313,7 @@ class Step1 extends Component {
                                     }
                                 )}
                             </div>
+                            <FormFeedback id="form-error">{this.state.errors.tags}</FormFeedback>
                         </FormGroup>
                     </div>
                 </div>
@@ -293,8 +329,7 @@ class Step1 extends Component {
 Step1.prototypes = {
     handleNext: PropTypes.func,
     handlePrev: PropTypes.func,
-    setData: PropTypes.func,
-    removeData: PropTypes.func
+    setData: PropTypes.func
 };
 
 export default Step1;

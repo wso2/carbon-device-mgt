@@ -126,7 +126,7 @@ class ApplicationCreate extends Component {
      * @param data: The form data of the step.
      * */
     setStepData(step, data) {
-        console.log(step, data, this.state.stepData); //TODO: Remove this
+        console.log(step, data, this.state); //TODO: Remove this
         switch (step) {
             case "generalInfo": {
                 this.setState({generalInfo: data}, this.onNextClick());

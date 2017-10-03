@@ -211,6 +211,10 @@ body {
     height: 300px;
 }
 
+#form-error {
+    color: red;
+}
+
 .application-create-banner-dropzone {
     width: 300px;
     height: 150px;

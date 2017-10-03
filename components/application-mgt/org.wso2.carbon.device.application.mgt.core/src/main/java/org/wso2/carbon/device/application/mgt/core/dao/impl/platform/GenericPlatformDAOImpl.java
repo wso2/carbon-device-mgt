@@ -666,6 +666,39 @@ public class GenericPlatformDAOImpl extends AbstractDAOImpl implements PlatformD
         } catch (SQLException e) {
             throw new PlatformManagementDAOException("SQL exception while executing the query " + sql + " to get the"
                     + " tenants which has the platform with the platform identifier : " + identifier, e);
+        } finally {
+            Util.cleanupResources(stmt, rs);
+        }
+    }
+
+    @Override
+    public List<String> getPlatformTags(String name) throws PlatformManagementDAOException {
+        Connection conn;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        String sql = "";
+        List<String> tagList = new ArrayList<>();
+
+        try {
+            conn = this.getDBConnection();
+            sql = "SELECT NAME FROM APPM_PLATFORM_TAG WHERE NAME LIKE ?";
+
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, name + "%");
+            rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                tagList.add(rs.getString("NAME"));
+            }
+            return tagList;
+        } catch (DBConnectionException e) {
+            throw new PlatformManagementDAOException("Database Connection exception while trying to get the platform "
+                    + "tags that are starting with " + name, e);
+        } catch (SQLException e) {
+            throw new PlatformManagementDAOException("SQL exception while executing the query " + sql + " to get the"
+                    + " platform tags that are starting with " + name, e);
+        } finally {
+            Util.cleanupResources(stmt, rs);
         }
     }
 }

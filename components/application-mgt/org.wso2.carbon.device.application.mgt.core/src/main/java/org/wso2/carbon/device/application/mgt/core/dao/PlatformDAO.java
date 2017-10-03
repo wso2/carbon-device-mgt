@@ -54,4 +54,6 @@ public interface PlatformDAO {
 
     int getMultiTenantPlatforms(String identifier) throws PlatformManagementDAOException;
 
+    List<String> getPlatformTags(String name) throws PlatformManagementDAOException;
+
 }

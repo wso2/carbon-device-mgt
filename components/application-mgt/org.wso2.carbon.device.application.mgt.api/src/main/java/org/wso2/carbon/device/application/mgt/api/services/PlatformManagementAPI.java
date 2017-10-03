@@ -134,10 +134,12 @@ public interface PlatformManagementAPI {
                             + "- ENABLED: The platforms that are currently enabled for the tenant\n"
                             + "- DISABLED: The platforms that can be used by the tenant but disabled "
                             + "to be used for tenant\n"
-                            + "- ALL: All the list of platforms that can be used by the tenant", required = false)
+                            + "- ALL: All the list of platforms that can be used by the tenant")
             @QueryParam("status")
             @Size(max = 45)
-                    String status
+                    String status,
+            @ApiParam(name = "tag", defaultValue = "Tag value that we need to search the platform for")
+            @QueryParam("tag") String tag
     );
 
     @GET
@@ -340,4 +342,38 @@ public interface PlatformManagementAPI {
                     String status
     );
 
+    @GET
+    @Path("tags")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(
+            consumes = MediaType.APPLICATION_JSON,
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "GET",
+            value = "get platform tags that starts with the given character sequence",
+            notes = "This will get all platform tags that has the given character sequence ",
+            tags = "Platform Management",
+            extensions = {
+                    @Extension(properties = {
+                            @ExtensionProperty(name = SCOPE, value = "perm:platform:add")
+                    })
+            }
+    )
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            code = 200,
+                            message = "OK. \n Successfully retrieved platform tags.",
+                            response = Platform.class,
+                            responseContainer = "List"),
+                    @ApiResponse(
+                            code = 500,
+                            message = "Internal Server Error. \n Error occurred while getting the platform tags.",
+                            response = ErrorResponse.class)
+            })
+    Response getPlatformTags(
+            @ApiParam(name = "name", value ="The initial part of the name of platform tags that we need to retrieve",
+                    required = true)
+            @QueryParam("name") @Size(min = 3) String name
+    );
 }

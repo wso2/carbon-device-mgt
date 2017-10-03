@@ -478,18 +478,10 @@ public class DeviceManagementProviderServiceTest extends BaseDeviceManagementTes
         }
     }
 
-    @Test
-    public void testSendRegistrationEmailNoMetaInfo() {
-        try {
-            deviceMgtService.sendRegistrationEmail(null);
-            Assert.assertTrue(false);
-        }  catch (ConfigurationManagementException e) {
-            Assert.assertTrue(false, "Error in sending registration email : Configration " +
-                    "related error" + e.getMessage());
-        } catch (DeviceManagementException e) {
-            Assert.assertTrue(true, "Device Management Exception thrown when meta info for " +
-                    "email sending is not available" + e.getMessage());
-        }
+    @Test(expectedExceptions = DeviceManagementException.class)
+    public void testSendRegistrationEmailNoMetaInfo() throws ConfigurationManagementException, DeviceManagementException {
+        deviceMgtService.sendRegistrationEmail(null);
+        Assert.assertTrue(false);
     }
 
     @Test

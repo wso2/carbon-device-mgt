@@ -89,6 +89,7 @@ class ApplicationEdit extends Component {
                         <FormattedMessage id="Application.Name" defaultMessage="Application Name"/>
                     </Col>
                 </Row>
+                <hr/>
                 <Row id="application-edit-main-container">
                     <Col xs="3">
                         <div className="tab">

@@ -18,21 +18,28 @@
 import React, {Component} from 'react';
 
 /**
- * Platform view component.
+ * Platform component.
+ * In Platform listing, this component will be displayed as cards.
  * */
-class PlatformView extends Component {
+class Platform extends Component {
 
     constructor() {
         super();
     }
 
     render() {
+        const {platform} = this.props;
+        console.log(platform);
         return (
-            <div>
-                Platform View
+            <div id="platform-content">
+                <ul>
+                    <li>Name: {platform.name}</li>
+                    <li>Description: {platform.description}</li>
+                    <li>Status: {platform.enabled}</li>
+                </ul>
             </div>
         );
     }
 }
 
-export default PlatformView;
+export default Platform;

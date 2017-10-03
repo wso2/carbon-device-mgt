@@ -18,7 +18,7 @@
 
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
-import {Collapse, FormGroup, Input, Label, FormText} from 'reactstrap';
+import {Button, Collapse, FormGroup, FormText, Input, Label, ModalFooter} from 'reactstrap';
 import Switch from '../../../UIComponents/Switch/Switch'
 
 /**
@@ -47,8 +47,8 @@ class Step4 extends Component {
     constructor() {
         super();
         this.handleToggle = this.handleToggle.bind(this);
-        this.handlePrev = this.handlePrev.bind(this);
-        this.handleToggle = this.handleToggle.bind(this);
+        this.onCancelClick = this.onCancelClick.bind(this);
+        this.onBackClick = this.onBackClick.bind(this);
         this.handleFinish = this.handleFinish.bind(this);
         this.state = {
             showForm: false,
@@ -66,11 +66,16 @@ class Step4 extends Component {
         this.props.handleFinish();
     }
 
-    /**
-     * Invokes Prev button click.
-     * */
-    handlePrev() {
+    onCancelClick() {
+        this.props.close();
+    }
+
+    onBackClick() {
         this.props.handlePrev();
+    }
+
+    onSubmit() {
+
     }
 
     /**
@@ -104,12 +109,12 @@ class Step4 extends Component {
                     </FormGroup>
                     <br/>
                     <div>
-                            <FormText color="muted">
-                                <i>Info: </i>
-                                Enabling this will create a release for the current Application.
-                                To upload the Application, please visit to the Release management section of
-                                Application Edit View.
-                            </FormText>
+                        <FormText color="muted">
+                            <i>Info: </i>
+                            Enabling this will create a release for the current Application.
+                            To upload the Application, please visit to the Release management section of
+                            Application Edit View.
+                        </FormText>
                     </div>
                     {/*If toggle is true, the release form will be shown.*/}
                     <Collapse isOpen={this.state.showForm}>
@@ -140,6 +145,11 @@ class Step4 extends Component {
                         </FormGroup>
                     </Collapse>
                 </div>
+                <ModalFooter>
+                    <Button color="primary" onClick={this.onBackClick}>Back</Button>
+                    <Button color="danger" onClick={this.onCancelClick}>Cancel</Button>
+                    <Button color="primary" onClick={this.onSubmit}>Finish</Button>
+                </ModalFooter>
             </div>
         );
     }

@@ -19,7 +19,7 @@
 import PropTypes from 'prop-types';
 import Dropzone from 'react-dropzone';
 import React, {Component} from 'react';
-import {FormGroup, Label} from 'reactstrap';
+import {Button, FormGroup, Label, ModalFooter} from 'reactstrap';
 import AppImage from "../../../UIComponents/AppImage/AppImage";
 import {FormattedMessage} from 'react-intl';
 
@@ -40,20 +40,21 @@ import {FormattedMessage} from 'react-intl';
 class Step3 extends Component {
     constructor() {
         super();
+        this.setStepData = this.setStepData.bind(this);
+        this.onBackClick = this.onBackClick.bind(this);
+        this.onCancelClick = this.onCancelClick.bind(this);
         this.state = {
-            tags: [],
             icon: [],
-            title: "",
             errors: {},
             banner: [],
-            defValue: "",
-            category: 0,
-            visibility: 0,
-            description: "",
             screenshots: [],
-            identifier: "",
-            shortDescription: ""
         };
+    }
+
+    componentWillMount() {
+        const {defaultData} = this.props;
+
+        this.setState(defaultData);
     }
 
     /**
@@ -72,14 +73,25 @@ class Step3 extends Component {
      * Creates an object with the current step data and persist in the parent.
      * */
     setStepData() {
+
+        const {icon, banner, screenshots} = this.state;
+
         let stepData = {
-            icon: this.state.icon,
-            banner: this.state.banner,
-            screenshots: this.state.screenshots
+            icon: icon,
+            banner: banner,
+            screenshots: screenshots
         };
 
-        this.props.setData("step2", {step: stepData});
+        this.props.setStepData("screenshots", stepData);
     };
+
+    onCancelClick() {
+        this.props.close();
+    }
+
+    onBackClick() {
+        this.props.handlePrev();
+    }
 
     /**
      * Removed user uploaded banner.
@@ -126,7 +138,6 @@ class Step3 extends Component {
                                     onDrop={(screenshots, rejected) => {
                                         let tmpScreenshots = this.state.screenshots;
                                         tmpScreenshots.push(screenshots);
-                                        console.log(screenshots); //TODO: Remove this
                                         this.setState({
                                             screenshots: tmpScreenshots
                                         });
@@ -191,6 +202,11 @@ class Step3 extends Component {
                         </FormGroup>
                     </div>
                 </div>
+                <ModalFooter>
+                    <Button color="primary" onClick={this.onBackClick}>Back</Button>
+                    <Button color="danger" onClick={this.onCancelClick}>Cancel</Button>
+                    <Button color="primary" onClick={this.setStepData}>Continue</Button>
+                </ModalFooter>
             </div>
         );
     }

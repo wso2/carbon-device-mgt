@@ -22,6 +22,8 @@ import {Button, Col, Row, Table} from 'reactstrap';
 import Drawer from '../UIComponents/Drawer/Drawer';
 import ApplicationView from './View/ApplicationView';
 import {FormattedMessage} from 'react-intl';
+import ApplicationMgtApi from "../../api/applicationMgtApi";
+import AuthHandler from "../../api/authHandler";
 
 /**
  * The App Create Component.
@@ -36,10 +38,10 @@ class ApplicationListing extends Component {
         super();
         this.searchApplications = this.searchApplications.bind(this);
         this.onRowClick = this.onRowClick.bind(this);
-        this.setData = this.setData.bind(this);
         this.sortData = this.sortData.bind(this);
         this.compare = this.compare.bind(this);
-        this.handleButtonClick = this.handleButtonClick.bind(this);
+        this.onAppEditClick = this.onAppEditClick.bind(this);
+        this.getSelectedApplication = this.getSelectedApplication.bind(this);
         this.state = {
             searchedApplications: [],
             applications: [],
@@ -56,7 +58,6 @@ class ApplicationListing extends Component {
                 }]
         };
     }
-
 
     applications = [
         {
@@ -84,35 +85,57 @@ class ApplicationListing extends Component {
         },
     ];
 
+    headers = [
+        {
+            data_id: "image",
+            data_type: "image",
+            sortable: false,
+            label: ""
+        },
+        {
+            data_id: "applicationName",
+            data_type: "string",
+            sortable: true,
+            label: "Application Name",
+            sort: this.sortData
+        },
+        {
+            data_id: "platform",
+            data_type: "image_array",
+            sortable: false,
+            label: "Platform"
+        },
+        {
+            data_id: "category",
+            data_type: "string",
+            sortable: false,
+            label: "Category"
+        },
+        {
+            data_id: "status",
+            data_type: "string",
+            sortable: false,
+            label: "Status"
+        },
+        {
+            data_id: "edit",
+            data_type: "button",
+            sortable: false,
+            label: ""
+        }
+    ];
+
+
     componentWillMount() {
 
-        // let getApps = ApplicationMgtApi.getApplications();
-        // getApps.then(response => {
-        //     let apps = this.setData(response.data.applications);
-        //     console.log(apps); //TODO: Remove this.
-        //     this.setState({searchedApplications: apps});
-        //     // console.log(this.setState({data: response.data}), console.log(this.state));
-        // }).catch(err => {
-        //     AuthHandler.unauthorizedErrorHandler(err);
-        // });
-    }
-
-    /**
-     * Extract application from application list and update the state.
-     * */
-    setData(applications) {
-        let apps = [];
-        for (let app in applications) {
-            let application = {};
-            application.id = applications[app].uuid;
-            application.applicationName = applications[app].name;
-            application.platform = applications[app].platform.name;
-            application.category = applications[app].category.id;
-            application.status = applications[app].currentLifecycle.lifecycleState.name;
-            apps.push(application);
-        }
-
-        this.setState({searchedApplications: apps});
+        let getApps = ApplicationMgtApi.getApplications();
+        getApps.then(response => {
+            console.log(response.data.applications);
+            this.setState({searchedApplications: response.data.applications});
+            // console.log(this.setState({data: response.data}), console.log(this.state));
+        }).catch(err => {
+            AuthHandler.unauthorizedErrorHandler(err);
+        });
     }
 
     /**
@@ -154,34 +177,22 @@ class ApplicationListing extends Component {
         return 0;
     }
 
-    onRowClick() {
+    onRowClick(uuid) {
+        let selectedApp = this.getSelectedApplication(uuid);
         let style = {
-            width: '500px',
-            marginLeft: '500px'
+            width: '550px',
+            marginLeft: '550px'
         };
 
         let appListStyle = {
-            marginRight: '500px',
+            marginRight: '550px',
         };
 
-        this.setState({drawer: style, appListStyle: appListStyle});
+        this.setState({drawer: style, appListStyle: appListStyle, application: selectedApp[0]});
     }
 
-    handleButtonClick() {
-        console.log("Application Listing");
-        this.props.history.push("apps/edit/fdsfdsf343");
-    }
-
-    remove(imageId) {
-        let tmp = this.state.image;
-
-        console.log(imageId);
-
-        let rem = tmp.filter((image) => {
-            return image.id !== imageId
-
-        });
-        this.setState({image: rem});
+    onAppEditClick(uuid) {
+        this.props.history.push("apps/edit/" + uuid);
     }
 
     closeDrawer() {
@@ -194,6 +205,12 @@ class ApplicationListing extends Component {
             marginRight: '0',
         };
         this.setState({drawer: style, appListStyle: appListStyle});
+    }
+
+    getSelectedApplication(uuid) {
+        return this.state.searchedApplications.filter(application => {
+            return application.uuid === uuid;
+        });
     }
 
     render() {
@@ -213,7 +230,7 @@ class ApplicationListing extends Component {
                     <Col>
                         <Table striped hover>
                             <thead>
-                            <tr>
+                            <tr className="app-list-table-header">
                                 <th></th>
                                 {/* TODO: Remove console.log and add sort method. */}
                                 <th onClick={() => {
@@ -228,25 +245,24 @@ class ApplicationListing extends Component {
                             </tr>
                             </thead>
                             <tbody>
-                            {this.applications.map(
+                            {this.state.searchedApplications.map(
                                 (application) => {
                                     return (
-                                        <tr key={application.id} onClick={this.onRowClick}>
-                                            <td>
+                                        <tr key={application.uuid} onClick={() => this.onRowClick(application.uuid)}>
+                                            <td data={application.uuid}>
                                                 {/* TODO: Move this styles to css. */}
                                                 <img
-                                                    src={application.icon}
                                                     height='50px'
                                                     width='50px'
                                                     style={{border: 'solid 1px black', borderRadius: "100%"}}
                                                 />
                                             </td>
-                                            <td>{application.applicationName}</td>
-                                            <td>{application.category}</td>
-                                            <td>{application.platform}</td>
-                                            <td>{application.status}</td>
+                                            <td>{application.name}</td>
+                                            <td>{application.category.name}</td>
+                                            <td>{application.platform.name}</td>
+                                            <td>{application.currentLifecycle.lifecycleState.name}</td>
                                             <td>
-                                                <Button id="secondary-button" onClick={this.handleButtonClick}>
+                                                <Button id="secondary-button" onClick={() => this.onAppEditClick(application.uuid)}>
                                                     <i className="fw fw-edit"></i>
                                                 </Button>
                                             </td>
@@ -259,7 +275,7 @@ class ApplicationListing extends Component {
                     </Col>
                 </Row>
                 <Drawer onClose={this.closeDrawer.bind(this)} style={this.state.drawer}>
-                    <ApplicationView/>
+                    <ApplicationView application={this.state.application}/>
                 </Drawer>
             </div>
         );

@@ -39,13 +39,16 @@ body {
 }
 
 #login-container {
-    width: 50%;
-    margin: 0 auto
 }
 
 #login-card {
+    width: 20%;
+    height: 50%;
+    margin: 10% auto;
+    padding: 10px;
     border-radius: 0;
-    background-color: #BaBaBa;
+    background-color: #ffffff;
+    box-shadow: -2px 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
 /* Base layout container */
@@ -130,7 +133,7 @@ body {
     float: right;
     top: 75px;
     left: 150px;
-    margin-right: 16px;
+    margin-right: 40px;
 }
 
 #search {
@@ -148,14 +151,13 @@ body {
 /* Application Add button */
 #add-btn-container {
     position: absolute;
-    left: 12%;
+    left: 11%;
     top: 100px;
 }
 
 #app-main-content {
-    height: 100%;
-    position: inherit;
-    top: 125px;
+    margin-top: 140px;
+    max-width: 98%;
 }
 
 /* Holds the app publisher pages. */
@@ -163,8 +165,8 @@ body {
     height: auto;
     width: 80%;
     margin: 20px auto;
-    box-shadow: -2px 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-    padding: 10px 10px 10px 10px;
+    box-shadow: 2px 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    padding: 0 10px 10px 10px;
 }
 
 .stepper-header {
@@ -183,8 +185,15 @@ body {
 }
 
 #application-list {
-    margin-top: 20px;
     transition: margin-right .5s;
+}
+
+.app-list-table-header {
+    height: 100px;
+}
+
+#app-visibility-default {
+    display: none;
 }
 
 #app-image-screenshot {
@@ -207,7 +216,6 @@ body {
     height: 150px;
     border-radius: 5%;
     position: relative;
-    background-color: rgba(157, 159, 157, 0.53);
     border: dashed #888888 2px;
 }
 
@@ -223,7 +231,6 @@ body {
     margin: 0 5px 0 5px;
     border-radius: 10%;
     position: relative;
-    background-color: rgba(157, 159, 157, 0.53);
     border: dashed #888888 2px;
 }
 
@@ -238,7 +245,6 @@ body {
     height: 150px;
     border-radius: 10%;
     position: relative;
-    background-color: rgba(157, 159, 157, 0.53);
     border: dashed #888888 2px;
 }
 
@@ -249,6 +255,7 @@ body {
 }
 
 #screenshot-container {
+    max-width: 600px;
     display: flex;
     overflow-x: auto;
     height: 200px;
@@ -266,12 +273,13 @@ body {
 
 #secondary-button {
     float: right;
+    color: #979797;
     background-color: transparent;
     border: none;
 }
 
 #secondary-button:hover {
-    background-color: #e9e9e9;
+    background-color: #d8d8d8;
     outline: none;
     cursor: pointer;
 }
@@ -327,12 +335,12 @@ body {
 }
 
 /* Application View */
+
 #application-view-content {
     width: 100%;
 }
-
 #application-view-row {
-    margin: 10px 10px 20px 20px;
+    margin: 10px 10px 0 20px;
 }
 
 #app-icon {
@@ -366,14 +374,14 @@ body {
 }
 
 /* Application Edit Base Layout */
-#application-edit-header {
-    height: 50px;
-    width: 100%;
-    margin: 0;
-    font-size: 20px;
-    border-bottom: solid 1px #d8d8d8;
-}
 
+#application-edit-header {
+    height: 40px;
+    width: 100%;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    font-size: 25px;
+}
 .application-header-text {
     margin: 10px 0px 0px 10px;
 }
@@ -399,13 +407,14 @@ body {
 }
 
 /*Tab styling*/
+
 div.tab {
     float: left;
     border-right: 1px solid #d8d8d8;
     height: 100%;
 }
-
 /* Style the tab buttons */
+
 div.tab button {
     display: block;
     background-color: inherit;
@@ -418,23 +427,22 @@ div.tab button {
     cursor: pointer;
     transition: 0.3s;
 }
-
 /* Change background color of buttons on hover */
+
 div.tab button:hover {
     background-color: #ddd6d7;
     cursor: pointer;
 }
-
 /* Create an active/current "tab button" class */
+
 div.tab button.active {
     background-color: #1b3bcc;
     color: white;
 }
-
-
 #application-edit-main-container {
     display: flex;
 }
+
 
 #application-edit-outer-content {
     height: auto;
@@ -453,13 +461,13 @@ div.tab button.active {
 
 .back-to-app {
     position: absolute;
-    height: 40px;
-    width: 40px;
+    height: 50px;
+    width: 50px;
     border-radius: 50%;
 }
 
 .back-to-app i {
-    padding: 10px 10px 10px 10px;
+    padding: 12px 10px 10px 12px;
 }
 
 .back-to-app:hover {
@@ -469,11 +477,11 @@ div.tab button.active {
 }
 
 /* Create Release and Release management */
+
 .release-header {
     margin-top: 20px;
     margin-bottom: 20px;
 }
-
 .release-create {
     height: 150px;
     margin-bottom: 20px;
@@ -523,12 +531,39 @@ div.tab button.active {
 }
 
 /* Application Edit General Info */
+
 .app-edit-general-info {
     margin-top: 20px;
     max-width: 100%;
 }
-
 .save-info {
     float: right;
     margin-bottom: 10px;
+}
+
+/* Platform Specific Styles. */
+#platform-listing {
+    margin: 10px;
+}
+
+.create-platform {
+    padding-left: 90%;
+}
+
+#platform-list {
+    margin-top: 20px;
+    display: flex;
+    flex-flow: wrap;
+}
+
+#platform-content {
+    width: 200px;
+    height: 300px;
+    margin: 10px;
+    box-shadow: 2px 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+#platform-content:hover {
+    background-color: #f2f2f2;
+    cursor: pointer;
 }

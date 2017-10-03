@@ -93,7 +93,7 @@ class DataTable extends Component {
     }
 
     handleBtnClick(id) {
-        this.props.handleButtonClick(id);
+        this.props.onAppEditClick(id);
     }
 
     render() {

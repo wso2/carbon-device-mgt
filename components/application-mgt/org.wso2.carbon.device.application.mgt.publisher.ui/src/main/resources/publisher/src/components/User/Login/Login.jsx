@@ -20,7 +20,7 @@ import qs from 'qs';
 import React, {Component} from 'react';
 import {Redirect, Switch} from 'react-router-dom';
 import AuthHandler from '../../../api/authHandler';
-import {Button, Card, CardBlock, CardTitle, Col, Form, FormGroup, Input, Label} from 'reactstrap';
+import {Button, Card, CardBlock, CardTitle, Form, FormGroup, Input, Label} from 'reactstrap';
 
 /**
  * The Login Component.
@@ -132,27 +132,32 @@ class Login extends Component {
                     {/*TODO: Style the components.*/}
                     <Card id="login-card">
                         <CardBlock>
-                            <CardTitle>WSO2 IoT APP Publisher</CardTitle>
+                            <CardTitle>
+                                WSO2 IoT APP Publisher
+                            </CardTitle>
+                            <hr/>
                             <Form onSubmit={this.handleLogin.bind(this)}>
-                                <FormGroup row>
-                                    <Label for="userName" sm={2}>User Name:</Label>
-                                    <Col sm={10}>
-                                        <Input type="text" name="userName" id="userName" placeholder="User Name"
-                                               onChange={this.onUserNameChange.bind(this)}/>
-                                    </Col>
-
+                                <FormGroup>
+                                    <Label for="userName">User Name:</Label>
+                                    <Input
+                                        type="text"
+                                        name="userName"
+                                        id="userName"
+                                        placeholder="User Name"
+                                        onChange={this.onUserNameChange.bind(this)}/>
                                 </FormGroup>
-                                <FormGroup row>
-                                    <Label for="password" sm={2}>Password:</Label>
-                                    <Col sm={10}>
-                                        <Input type="password" name="text" id="password" placeholder="Password"
-                                               onChange={this.onPasswordChange.bind(this)}/>
-                                    </Col>
+                                <FormGroup>
+                                    <Label for="password">Password:</Label>
+                                    <Input
+                                        valid={false}
+                                        type="password"
+                                        name="text"
+                                        id="password"
+                                        placeholder="Password"
+                                        onChange={this.onPasswordChange.bind(this)}/>
                                 </FormGroup>
-                                <FormGroup check row>
-                                    <Col sm={{size: 10, offset: 2}}>
-                                        <Button type="submit" id="login-btn">Login</Button>
-                                    </Col>
+                                <FormGroup>
+                                    <Button type="submit" id="login-btn">Login</Button>
                                 </FormGroup>
                             </Form>
                         </CardBlock>

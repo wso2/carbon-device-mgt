@@ -63,7 +63,7 @@ class DataTableRow extends Component {
     handleBtnClick(event) {
         event.stopPropagation();
         console.log(event.target['id'])
-        this.props.handleButtonClick(event.target['id']);
+        this.props.onAppEditClick(event.target['id']);
     }
 
     render() {

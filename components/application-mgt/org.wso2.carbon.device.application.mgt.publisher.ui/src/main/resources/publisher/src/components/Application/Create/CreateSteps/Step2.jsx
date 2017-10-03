@@ -20,7 +20,7 @@ import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import AuthHandler from "../../../../api/authHandler";
 import PlatformMgtApi from "../../../../api/platformMgtApi";
-import {FormGroup, Input, Label} from 'reactstrap';
+import {Button, FormGroup, Input, Label, ModalFooter} from 'reactstrap';
 import {FormattedMessage} from 'react-intl';
 
 /**
@@ -41,24 +41,28 @@ class Step2 extends Component {
         super();
         this.setPlatforms = this.setPlatforms.bind(this);
         this.setStepData = this.setStepData.bind(this);
+        this.onCancelClick = this.onCancelClick.bind(this);
+        this.onBackClick = this.onBackClick.bind(this);
         this.platforms = [];
         this.state = {
-            finished: false,
-            stepIndex: 0,
             store: 1,
             platformSelectedIndex: 0,
             platform: "",
-            platforms: [],
-            stepData: [],
-            title: "",
-            titleError: ""
+            platforms: []
         };
+    }
+
+    componentWillMount() {
+        const {defaultData} = this.props;
+
+        if (defaultData) {
+            this.setState(defaultData);
+        }
     }
 
     componentDidMount() {
         //Get the list of available platforms and set to the state.
         PlatformMgtApi.getPlatforms().then(response => {
-            console.log(response);
             this.setPlatforms(response.data);
         }).catch(err => {
             AuthHandler.unauthorizedErrorHandler(err);
@@ -83,18 +87,26 @@ class Step2 extends Component {
      * Persist the current form data to the state.
      * */
     setStepData() {
-        let step = {
-            store: this.state.store,
-            platform: this.state.platforms[this.state.platformSelectedIndex]
+        const {store, platform} = this.state;
+        let data = {
+            store: store,
+            platform: platform[0]
         };
-        this.props.setData("step2", {step: step});
+        this.props.setStepData("platform", data);
+    }
+
+    onCancelClick() {
+        this.props.close();
+    }
+
+    onBackClick() {
+        this.props.handlePrev();
     }
 
     /**
      * Triggers when changing the Platform selection.
      * */
     onChangePlatform(event) {
-        console.log(event.target.value, this.state.platforms);
         let id = event.target.value;
         let selectedPlatform = this.state.platforms.filter((platform) => {
             return platform.identifier === id;
@@ -122,16 +134,27 @@ class Step2 extends Component {
                 </FormGroup>
                 <FormGroup>
                     <Label for="store"><FormattedMessage id='Platform' defaultMessage='Platform'/></Label>
-                    <Input type="select" name="store" onChange={this.onChangePlatform.bind(this)}>
+                    <Input
+                        required
+                        type="select"
+                        name="store"
+                        onChange={this.onChangePlatform.bind(this)}
+                    >
+                        <option id="app-visibility-default" disabled selected>Select the Application Platform</option>
                         {this.state.platforms.length > 0 ? this.state.platforms.map(platform => {
                             return (
-                                <option value={platform.identifier}>
+                                <option value={platform.identifier} key={platform.identifier}>
                                     {platform.name}
                                 </option>
                             )
                         }) : <option><FormattedMessage id='No.Platform' defaultMessage='No Platforms'/></option>}
                     </Input>
                 </FormGroup>
+                <ModalFooter>
+                    <Button color="primary" onClick={this.onBackClick}>Back</Button>
+                    <Button color="danger" onClick={this.onCancelClick}>Cancel</Button>
+                    <Button color="primary" onClick={this.setStepData}>Continue</Button>
+                </ModalFooter>
             </div>
         );
     }

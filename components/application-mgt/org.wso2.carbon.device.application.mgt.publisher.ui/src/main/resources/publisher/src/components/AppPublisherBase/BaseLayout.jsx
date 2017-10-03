@@ -76,7 +76,7 @@ class BaseLayout extends Component {
 
     render() {
         return (
-            <Container fluid id="container">
+            <div>
                 <div id="header-content">
                     <div id="header">
                         <span id="header-text">
@@ -104,24 +104,27 @@ class BaseLayout extends Component {
                         />
                     </div>
                 </div>
-                <div id="app-main-content" style={this.state.style}>
-                    <Row>
-                        <div className="platform-link-placeholder">
-                            <Button id="secondary-button" onClick={this.onClickPlatforms}><i className="fw fw-settings"></i> Platforms</Button>
-                        </div>
-                    </Row>
-                    <Row>
-                        <div id="application-content">
-                            <Row>
-                                <Col>
-                                    {this.props.children}
-                                </Col>
-                            </Row>
-                        </div>
-                    </Row>
-                </div>
+                <Container fluid>
+                    <div id="app-main-content" style={this.state.style}>
+                        <Row>
+                            <div className="platform-link-placeholder">
+                                <Button id="secondary-button" onClick={this.onClickPlatforms}>
+                                    <i className="fw fw-settings"></i> Platforms</Button>
+                            </div>
+                        </Row>
+                        <Row>
+                            <div id="application-content">
+                                <Row>
+                                    <Col>
+                                        {this.props.children}
+                                    </Col>
+                                </Row>
+                            </div>
+                        </Row>
+                    </div>
+                </Container>
                 <ApplicationCreate open={this.state.openModal} close={this.closeModal}/>
-            </Container>
+            </div>
         );
     }
 }

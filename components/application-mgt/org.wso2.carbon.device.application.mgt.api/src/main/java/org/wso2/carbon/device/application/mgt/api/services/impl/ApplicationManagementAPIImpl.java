@@ -87,7 +87,7 @@ public class ApplicationManagementAPIImpl implements ApplicationManagementAPI {
 
             for (Application application : applications.getApplications()) {
                 ImageArtifact imageArtifact = applicationStorageManager.getImageArtifact(application.getUuid(),
-                        "icon", 0);
+                        Constants.IMAGE_ARTIFACTS[0], 0);
                 application.setIcon(imageArtifact);
             }
             return Response.status(Response.Status.OK).entity(applications).build();
@@ -114,11 +114,13 @@ public class ApplicationManagementAPIImpl implements ApplicationManagementAPI {
             }
 
             if (isWithImages != null && isWithImages) {
-                ImageArtifact icon = applicationStorageManager.getImageArtifact(uuid, "icon", 0);
-                ImageArtifact banner = applicationStorageManager.getImageArtifact(uuid, "banner", 0);
+                ImageArtifact icon = applicationStorageManager.getImageArtifact(uuid, Constants.IMAGE_ARTIFACTS[0], 0);
+                ImageArtifact banner = applicationStorageManager.getImageArtifact(uuid, Constants.IMAGE_ARTIFACTS[1],
+                        0);
                 int screenShotCount = application.getScreenShotCount();
                 for (int count = 1; count < screenShotCount; count++) {
-                    ImageArtifact screenShot = applicationStorageManager.getImageArtifact(uuid, "screenshot", count);
+                    ImageArtifact screenShot = applicationStorageManager.getImageArtifact(uuid, Constants
+                            .IMAGE_ARTIFACTS[2], count);
                     application.addScreenShot(screenShot);
                 }
                 application.setIcon(icon);

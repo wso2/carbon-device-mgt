@@ -115,7 +115,7 @@ public class CertificateManagementDAOFactory {
         currentTxState.set(TxState.CONNECTION_BORROWED);
     }
 
-    public static void openConnection() throws SQLException {
+    public static void  openConnection() throws SQLException {
         Connection conn = currentConnection.get();
         if (conn != null) {
             throw new IllegalTransactionStateException("A transaction is already active within the context of " +

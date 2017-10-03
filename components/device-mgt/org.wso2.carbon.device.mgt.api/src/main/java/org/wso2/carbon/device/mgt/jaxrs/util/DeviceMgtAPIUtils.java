@@ -702,4 +702,18 @@ public class DeviceMgtAPIUtils {
         SSLContext.setDefault(sslContext);
     }
 
+
+    public static boolean isAdmin() throws UserStoreException {
+        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId(true);
+        UserRealm realmService = DeviceMgtAPIUtils.getRealmService().getTenantUserRealm(tenantId);
+        String adminRoleName = realmService.getRealmConfiguration().getAdminRoleName();
+        String userName = PrivilegedCarbonContext.getThreadLocalCarbonContext().getUsername();
+        String[] roles = realmService.getUserStoreManager().getRoleListOfUser(userName);
+        for (String role: roles){
+            if (role != null && role.equals(adminRoleName)){
+                return true;
+            }
+        }
+        return false;
+    }
 }

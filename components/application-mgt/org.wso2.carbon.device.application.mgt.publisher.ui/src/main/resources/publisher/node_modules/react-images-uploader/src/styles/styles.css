@@ -1,0 +1,264 @@
+button::-moz-focus-inner,
+input[type="reset"]::-moz-focus-inner,
+input[type="button"]::-moz-focus-inner,
+input[type="submit"]::-moz-focus-inner,
+input[type="submit"]::-moz-focus-inner,
+input[type="file"] > input[type="button"]::-moz-focus-inner {
+	border: none;
+}
+
+.iu-button-container {
+	display: inline-block;
+	width: 100%;
+	text-align: center;
+}
+.iu-button-container .iu-button-button {
+	box-sizing: content-box;
+	padding: 0;
+	width: 100%;
+	height: 100%;
+	outline: none;
+	border: none;
+	background: transparent;
+	box-shadow: none;
+	color: currentColor;
+	text-align: center;
+	text-decoration: none;
+	cursor: pointer;
+	transition: background-color 0.3s, width 0.3s, border-width 0.3s, border-color 0.3s, border-radius 0.3s;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	-webkit-tap-highlight-color: transparent;
+
+	& span {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+}
+.iu-button-container .iu-button-button > span {
+	display: inherit;
+	font-weight: 100;
+	font-size: 2em;
+	transition: opacity 0.3s 0.1s;
+}
+.iu-button-container .iu-button-button > svg {
+	position: absolute;
+	width: 54px;
+	height: 54px;
+	transform: translate(-50%, -50%);
+	pointer-events: none;
+}
+.iu-button-container .iu-button-button > svg path {
+	opacity: 0;
+	fill: none;
+}
+.iu-button-container .iu-button-button svg.iu-button-progress-circle {
+	animation: spin 0.9s infinite cubic-bezier(0.085, 0.260, 0.935, 0.710);
+}
+.iu-button-container .iu-button-button svg.iu-button-progress-circle path {
+	stroke: currentColor;
+	stroke-width: 5;
+}
+.iu-button-container .iu-button-button svg.iu-button-checkmark path,
+.iu-button-container .iu-button-button svg.iu-button-cross path {
+	stroke: #fff;
+	stroke-linecap: round;
+	stroke-width: 4;
+}
+.iu-button-container.disabled .iu-button-button {
+	cursor: not-allowed;
+}
+.iu-button-container.loading .iu-button-button {
+	padding: 0;
+	width: 54px;
+	border-width: 6.5px;
+	border-color: #ddd;
+	background-color: transparent;
+	color: currentColor;
+	cursor: wait;
+}
+.iu-button-container.loading .iu-button-button span {
+	display: none;
+	opacity: 0;
+	transition: all 0.15s;
+}
+.iu-button-container.loading .iu-button-button .iu-button-progress-circle > path {
+	opacity: 1;
+	transition: opacity 0.15s 0.3s;
+}
+.iu-button-container.success .iu-button-button {
+	border-color: #A0D468;
+	background-color: #A0D468;
+}
+.iu-button-container.success .iu-button-button span {
+	display: none;
+	opacity: 0;
+	transition: all 0.15s;
+}
+.iu-button-container.success .iu-button-button .iu-button-checkmark > path {
+	opacity: 1;
+}
+.iu-button-container.error .iu-button-button {
+	border-color: #ED5565;
+	background-color: #ED5565;
+}
+.iu-button-container.error .iu-button-button span {
+	display: none;
+	opacity: 0;
+	transition: all 0.15s;
+}
+.iu-button-container.error .iu-button-button .iu-button-cross > path {
+	opacity: 1;
+}
+
+.iu-button-container.loading, .iu-button-container.success, .iu-button-container.error {
+	width: 100% !important;
+	height: 100% !important;
+}
+
+@keyframes spin {
+	from {
+		transform: translate(-50%, -50%) rotate(0deg);
+		transform-origin: center center;
+	}
+	to {
+		transform: translate(-50%, -50%) rotate(360deg);
+		transform-origin: center center;
+	}
+}
+
+.iu-container {
+	box-sizing: border-box;
+
+	& * {
+		box-sizing: border-box;
+		outline: none;
+	}
+	&.disabled {
+		& .iu-loadContainer {
+			cursor: not-allowed;
+
+			& .iu-dropzone {
+				background: transparent !important;
+			}
+			& .iu-pseudobutton {
+				& * {
+					cursor: not-allowed;
+				}
+			}
+		}
+		& .iu-label {
+			cursor: not-allowed;
+		}
+		& .iu-deletePreview {
+			cursor: not-allowed;
+		}
+	}
+}
+
+.iu-imgPreview {
+	position: relative;
+	display: inline-block;
+	margin: 5px 10px 5px 0;
+	width: 100px;
+	height: 100px;
+	border: #bec3c7 1px solid;
+	border-radius: 10px;
+	background-position: center;
+	background-size: cover;
+	background-repeat: no-repeat;
+	vertical-align: bottom;
+}
+
+.iu-deletePreview {
+	position: absolute;
+	top: 2px;
+	right: 2px;
+	z-index: 1;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 4px;
+	border: #bec3c7 1px solid;
+	border-radius: 50%;
+	background: #fff;
+	font-size: initial;
+	cursor: pointer;
+}
+
+.iu-fileInput {
+	display: inline-block;
+}
+
+.iu-emptyPreview {
+
+}
+
+.iu-filesInputContainer {
+	display: inline-block;
+	margin: 5px 10px 5px 0;
+	vertical-align: bottom;
+}
+
+.iu-loadContainer {
+	position: relative;
+	overflow: hidden;
+	width: 100px;
+	height: 100px;
+	border-radius: 10px;
+	cursor: pointer;
+}
+
+.iu-pseudobutton span {
+	height: 100%;
+
+	& .iu-imgPreview {
+		margin: 0;
+	}
+}
+
+.iu-dropzone {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100% !important;
+	height: 100% !important;
+	border-width: 1px !important;
+	border-style: solid !important;
+	border-radius: 10px !important;
+
+	&:hover {
+		background-color: rgb(238, 238, 238);
+	}
+}
+
+.iu-label {
+	display: block;
+	padding-bottom: 5px;
+	font-size: 16px;
+	cursor: pointer;
+}
+
+.iu-pseudobutton {
+	margin-top: 0;
+	width: 100px;
+	height: 100px;
+}
+
+.iu-pseudobuttonContent {
+	line-height: 1 !important;
+}
+
+.iu-notification {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0, 0, 0, 0.3);
+}

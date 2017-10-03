@@ -1,0 +1,13 @@
+[options]
+module.name_mapper.extension='css' -> '<PROJECT_ROOT>/flow/CSSModule.js.flow'
+module.name_mapper.extension='png' -> '<PROJECT_ROOT>/flow/CSSModule.js.flow'
+module.name_mapper.extension='jpg' -> '<PROJECT_ROOT>/flow/WebpackAsset.js.flow'
+module.name_mapper.extension='gif' -> '<PROJECT_ROOT>/flow/WebpackAsset.js.flow'
+module.name_mapper.extension='ttf' -> '<PROJECT_ROOT>/flow/WebpackAsset.js.flow'
+module.name_mapper.extension='eot' -> '<PROJECT_ROOT>/flow/WebpackAsset.js.flow'
+module.name_mapper.extension='svg' -> '<PROJECT_ROOT>/flow/WebpackAsset.js.flow'
+module.name_mapper.extension='woff' -> '<PROJECT_ROOT>/flow/WebpackAsset.js.flow'
+module.name_mapper.extension='woff2' -> '<PROJECT_ROOT>/flow/WebpackAsset.js.flow'
+esproposal.class_static_fields=enable
+esproposal.class_instance_fields=enable
+esproposal.decorators=ignore

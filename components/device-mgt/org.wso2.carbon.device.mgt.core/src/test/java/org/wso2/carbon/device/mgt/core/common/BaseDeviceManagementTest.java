@@ -22,7 +22,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.tomcat.jdbc.pool.PoolProperties;
 import org.testng.Assert;
-import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeSuite;
 import org.w3c.dom.Document;
@@ -30,16 +29,31 @@ import org.wso2.carbon.base.MultitenantConstants;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.core.TestUtils;
+import org.wso2.carbon.device.mgt.core.authorization.DeviceAccessAuthorizationServiceImpl;
+import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.dao.GroupManagementDAOFactory;
+import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
+import org.wso2.carbon.device.mgt.core.internal.DeviceManagementServiceComponent;
+import org.wso2.carbon.device.mgt.core.notification.mgt.dao.NotificationManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOFactory;
+import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
+import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderServiceImpl;
+import org.wso2.carbon.device.mgt.core.service.GroupManagementProviderServiceImpl;
 import org.wso2.carbon.device.mgt.core.util.DeviceManagerUtil;
+import org.wso2.carbon.registry.core.config.RegistryContext;
+import org.wso2.carbon.registry.core.exceptions.RegistryException;
+import org.wso2.carbon.registry.core.internal.RegistryDataHolder;
+import org.wso2.carbon.registry.core.jdbc.realm.InMemoryRealmService;
+import org.wso2.carbon.registry.core.service.RegistryService;
+import org.wso2.carbon.user.core.service.RealmService;
 
 import javax.sql.DataSource;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import java.io.File;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -55,6 +69,7 @@ public abstract class BaseDeviceManagementTest {
         this.initDataSource();
         this.initSQLScript();
         this.initializeCarbonContext();
+        this.initServices();
     }
 
     protected void initDataSource() throws Exception {
@@ -62,6 +77,28 @@ public abstract class BaseDeviceManagementTest {
         DeviceManagementDAOFactory.init(dataSource);
         GroupManagementDAOFactory.init(dataSource);
         OperationManagementDAOFactory.init(dataSource);
+        NotificationManagementDAOFactory.init(dataSource);
+    }
+
+    protected void initServices() throws DeviceManagementException, RegistryException {
+        DeviceConfigurationManager.getInstance().initConfig();
+        DeviceManagementProviderService deviceMgtService = new DeviceManagementProviderServiceImpl();
+        DeviceManagementServiceComponent.notifyStartupListeners();
+        DeviceManagementDataHolder.getInstance().setDeviceManagementProvider(deviceMgtService);
+        DeviceManagementDataHolder.getInstance().setRegistryService(getRegistryService());
+        DeviceManagementDataHolder.getInstance().setDeviceAccessAuthorizationService(new DeviceAccessAuthorizationServiceImpl());
+        DeviceManagementDataHolder.getInstance().setGroupManagementProviderService(new GroupManagementProviderServiceImpl());
+        DeviceManagementDataHolder.getInstance().setDeviceTaskManagerService(null);
+    }
+
+    private RegistryService getRegistryService() throws RegistryException {
+        RealmService realmService = new InMemoryRealmService();
+        RegistryDataHolder.getInstance().setRealmService(realmService);
+        DeviceManagementDataHolder.getInstance().setRealmService(realmService);
+        InputStream is = this.getClass().getClassLoader().getResourceAsStream("carbon-home/repository/conf/registry.xml");
+        RegistryContext context = RegistryContext.getBaseInstance(is, realmService);
+        context.setSetup(true);
+        return context.getEmbeddedRegistryService();
     }
 
     @BeforeClass
@@ -131,7 +168,7 @@ public abstract class BaseDeviceManagementTest {
         try {
             conn = getDataSource().getConnection();
             conn.setAutoCommit(false);
-            String[] cleanupTables = new String[]{"DM_DEVICE_OPERATION_RESPONSE","DM_ENROLMENT_OP_MAPPING", "DM_CONFIG_OPERATION",
+            String[] cleanupTables = new String[]{"DM_NOTIFICATION","DM_DEVICE_OPERATION_RESPONSE","DM_ENROLMENT_OP_MAPPING", "DM_CONFIG_OPERATION",
                     "DM_POLICY_OPERATION", "DM_COMMAND_OPERATION", "DM_PROFILE_OPERATION", "DM_DEVICE_GROUP_MAP",
                     "DM_GROUP", "DM_ENROLMENT", "DM_DEVICE_APPLICATION_MAPPING",
                     "DM_APPLICATION", "DM_DEVICE", "DM_DEVICE_TYPE"};

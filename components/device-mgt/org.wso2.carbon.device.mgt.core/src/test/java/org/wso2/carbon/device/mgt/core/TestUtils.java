@@ -22,7 +22,15 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.GroupPaginationRequest;
 import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroup;
+import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
+import org.wso2.carbon.registry.core.config.RegistryContext;
+import org.wso2.carbon.registry.core.exceptions.RegistryException;
+import org.wso2.carbon.registry.core.internal.RegistryDataHolder;
+import org.wso2.carbon.registry.core.jdbc.realm.InMemoryRealmService;
+import org.wso2.carbon.registry.core.service.RegistryService;
+import org.wso2.carbon.user.core.service.RealmService;
 
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -57,7 +65,6 @@ public class TestUtils {
             }
         }
     }
-
 
     public static DeviceGroup createDeviceGroup1(){
         DeviceGroup group = new DeviceGroup();
@@ -107,5 +114,15 @@ public class TestUtils {
         list.add(identifier);
 
         return list;
+    }
+
+    public static RegistryService getRegistryService(Class clazz) throws RegistryException {
+        RealmService realmService = new InMemoryRealmService();
+        RegistryDataHolder.getInstance().setRealmService(realmService);
+        DeviceManagementDataHolder.getInstance().setRealmService(realmService);
+        InputStream is = clazz.getClassLoader().getResourceAsStream("carbon-home/repository/conf/registry.xml");
+        RegistryContext context = RegistryContext.getBaseInstance(is, realmService);
+        context.setSetup(true);
+        return context.getEmbeddedRegistryService();
     }
 }

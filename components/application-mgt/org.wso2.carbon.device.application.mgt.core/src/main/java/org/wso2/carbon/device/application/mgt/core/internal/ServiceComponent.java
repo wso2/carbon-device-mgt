@@ -77,8 +77,6 @@ public class ServiceComponent {
             String datasourceName = ConfigurationManager.getInstance().getConfiguration().getDatasourceName();
             DAOFactory.init(datasourceName);
 
-            Constants.artifactPath = ConfigurationManager.getInstance().getConfiguration().getArtifacts()
-                    .getBinaryLocation();
             ApplicationManager applicationManager = ApplicationManagementUtil.getApplicationManagerInstance();
             DataHolder.getInstance().setApplicationManager(applicationManager);
             bundleContext.registerService(ApplicationManager.class.getName(), applicationManager, null);

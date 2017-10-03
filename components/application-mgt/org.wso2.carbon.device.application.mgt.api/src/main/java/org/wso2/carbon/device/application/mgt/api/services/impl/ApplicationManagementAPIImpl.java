@@ -72,6 +72,8 @@ public class ApplicationManagementAPIImpl implements ApplicationManagementAPI {
     public Response getApplications(@QueryParam("offset") int offset, @QueryParam("limit") int limit,
                                     @QueryParam("query") String searchQuery) {
         ApplicationManager applicationManager = APIUtil.getApplicationManager();
+        ApplicationStorageManager applicationStorageManager = APIUtil.getApplicationStorageManager();
+
         try {
             if (limit == 0) {
                 limit = DEFAULT_LIMIT;
@@ -82,6 +84,12 @@ public class ApplicationManagementAPIImpl implements ApplicationManagementAPI {
             filter.setSearchQuery(searchQuery);
 
             ApplicationList applications = applicationManager.getApplications(filter);
+
+            for (Application application : applications.getApplications()) {
+                ImageArtifact imageArtifact = applicationStorageManager.getImageArtifact(application.getUuid(),
+                        "icon", 0);
+                application.setIcon(imageArtifact);
+            }
             return Response.status(Response.Status.OK).entity(applications).build();
         } catch (NotFoundException e) {
             return Response.status(Response.Status.NOT_FOUND).build();
@@ -95,7 +103,7 @@ public class ApplicationManagementAPIImpl implements ApplicationManagementAPI {
     @GET
     @Consumes("application/json")
     @Path("/{uuid}")
-    public Response getApplication(@PathParam("uuid") String uuid) {
+    public Response getApplication(@PathParam("uuid") String uuid, @QueryParam("isWithImages") Boolean isWithImages) {
         ApplicationManager applicationManager = APIUtil.getApplicationManager();
         ApplicationStorageManager applicationStorageManager = APIUtil.getApplicationStorageManager();
         try {
@@ -104,8 +112,18 @@ public class ApplicationManagementAPIImpl implements ApplicationManagementAPI {
                 return Response.status(Response.Status.NOT_FOUND)
                         .entity("Application with UUID " + uuid + " not found").build();
             }
-            ImageArtifact icon = applicationStorageManager.getImageArtifact(uuid, "icon", 0);
-            application.setIcon(icon);
+
+            if (isWithImages != null && isWithImages) {
+                ImageArtifact icon = applicationStorageManager.getImageArtifact(uuid, "icon", 0);
+                ImageArtifact banner = applicationStorageManager.getImageArtifact(uuid, "banner", 0);
+                int screenShotCount = application.getScreenShotCount();
+                for (int count = 1; count < screenShotCount; count++) {
+                    ImageArtifact screenShot = applicationStorageManager.getImageArtifact(uuid, "screenshot", count);
+                    application.addScreenShot(screenShot);
+                }
+                application.setIcon(icon);
+                application.setBanner(banner);
+            }
             return Response.status(Response.Status.OK).entity(application).build();
         } catch (NotFoundException e) {
             return Response.status(Response.Status.NOT_FOUND).build();

@@ -195,7 +195,12 @@ public interface ApplicationManagementAPI {
                     name = "uuid",
                     value = "UUID of the application",
                     required = true)
-            @PathParam("uuid") String uuid
+            @PathParam("uuid") String uuid,
+            @ApiParam(
+                    name = "isWithImages",
+                    value = "Whether to return application with images",
+                    required = false)
+            @QueryParam("isWithImages") Boolean IsWithImages
     );
 
     @PUT

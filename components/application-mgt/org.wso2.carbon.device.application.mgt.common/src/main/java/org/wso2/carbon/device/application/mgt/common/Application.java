@@ -22,6 +22,7 @@ package org.wso2.carbon.device.application.mgt.common;
 import org.wso2.carbon.device.application.mgt.common.jaxrs.Exclude;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -71,6 +72,10 @@ public class Application {
     private User user;
 
     private ImageArtifact icon;
+
+    private ImageArtifact banner;
+
+    private List<ImageArtifact> screenShots = new ArrayList<>();
 
     public int getId() {
         return id;
@@ -226,6 +231,14 @@ public class Application {
 
     public void setIcon(ImageArtifact icon) {
         this.icon = icon;
+    }
+
+    public void setBanner(ImageArtifact banner) {
+        this.banner = banner;
+    }
+
+    public void addScreenShot(ImageArtifact screenShot) {
+        this.screenShots.add(screenShot);
     }
 
     @Override

@@ -54,13 +54,26 @@ import java.util.List;
  */
 public class ApplicationStorageManagerImpl implements ApplicationStorageManager {
     private static final Log log = LogFactory.getLog(ApplicationStorageManagerImpl.class);
+    private String storagePath;
+    private int screenShotMaxCount;
+
+    /**
+     * Create a new ApplicationStorageManager Instance
+     *
+     * @param storagePath        Storage Path to save the binary and image files.
+     * @param screenShotMaxCount Maximum Screen-shots count
+     */
+    public ApplicationStorageManagerImpl(String storagePath, String screenShotMaxCount) {
+        this.storagePath = storagePath;
+        this.screenShotMaxCount = Integer.parseInt(screenShotMaxCount);
+    }
 
     @Override
     public void uploadImageArtifacts(String applicationUUID, InputStream iconFileStream, InputStream bannerFileStream,
             List<InputStream> screenShotStreams) throws ApplicationStorageManagementException {
         int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId(true);
         Application application = validateApplication(applicationUUID);
-        String artifactDirectoryPath = Constants.artifactPath + application.getId();
+        String artifactDirectoryPath = storagePath + application.getId();
         if (log.isDebugEnabled()) {
             log.debug("Artifact Directory Path for saving the artifacts related with application " + applicationUUID
                     + " is " + artifactDirectoryPath);
@@ -86,12 +99,29 @@ public class ApplicationStorageManagerImpl implements ApplicationStorageManager 
         }
         if (screenShotStreams != null) {
             int count = application.getScreenShotCount() + 1;
+            boolean maxCountReached = false;
+
+            if (count > screenShotMaxCount) {
+                log.error("Maximum limit for the screen-shot is " + screenShotMaxCount
+                        + " Cannot upload another screenshot for the application with the UUID " + applicationUUID);
+                maxCountReached = true;
+            }
             String screenshotName;
+
+            if (maxCountReached) {
+                return;
+            }
             for (InputStream screenshotStream : screenShotStreams) {
                 try {
                     screenshotName = Constants.IMAGE_ARTIFACTS[2] + count;
                     saveFile(screenshotStream, artifactDirectoryPath + File.separator + screenshotName);
                     count++;
+                    if (count > screenShotMaxCount) {
+                        log.error("Maximum limit for the screen-shot is " + screenShotMaxCount
+                                + " Cannot upload another screenshot for the application with the UUID "
+                                + applicationUUID);
+                        break;
+                    }
                 } catch (IOException e) {
                     throw new ApplicationStorageManagementException(
                             "IO Exception while saving the screens hots for the " + "application " + applicationUUID,
@@ -127,7 +157,7 @@ public class ApplicationStorageManagerImpl implements ApplicationStorageManager 
     public void uploadReleaseArtifacts(String applicationUUID, String versionName, InputStream binaryFile)
             throws ApplicationStorageManagementException {
         Application application = validateApplication(applicationUUID);
-        String artifactDirectoryPath = Constants.artifactPath + application.getId();
+        String artifactDirectoryPath = storagePath + application.getId();
         if (log.isDebugEnabled()) {
             log.debug("Artifact Directory Path for saving the application release related artifacts related with "
                     + "application " + applicationUUID + " is " + artifactDirectoryPath);
@@ -150,7 +180,7 @@ public class ApplicationStorageManagerImpl implements ApplicationStorageManager 
     public InputStream getReleasedArtifacts(String applicationUUID, String versionName)
             throws ApplicationStorageManagementException {
         Application application = validateApplication(applicationUUID);
-        String artifactPath = Constants.artifactPath + application.getId() + File.separator + versionName;
+        String artifactPath = storagePath + application.getId() + File.separator + versionName;
 
         if (log.isDebugEnabled()) {
             log.debug("ApplicationRelease artifacts are searched in the location " + artifactPath);
@@ -173,7 +203,7 @@ public class ApplicationStorageManagerImpl implements ApplicationStorageManager 
     @Override
     public void deleteApplicationArtifacts(String applicationUUID) throws ApplicationStorageManagementException {
         Application application = validateApplication(applicationUUID);
-        String artifactDirectoryPath = Constants.artifactPath + application.getId();
+        String artifactDirectoryPath = storagePath + application.getId();
         File artifactDirectory = new File(artifactDirectoryPath);
 
         if (artifactDirectory.exists()) {
@@ -185,7 +215,7 @@ public class ApplicationStorageManagerImpl implements ApplicationStorageManager 
     public void deleteApplicationReleaseArtifacts(String applicationUUID, String version)
             throws ApplicationStorageManagementException {
         Application application = validateApplication(applicationUUID);
-        String artifactPath = Constants.artifactPath + application.getId() + File.separator + version;
+        String artifactPath = storagePath + application.getId() + File.separator + version;
         File artifact = new File(artifactPath);
 
         if (artifact.exists()) {
@@ -215,7 +245,7 @@ public class ApplicationStorageManagerImpl implements ApplicationStorageManager 
             ApplicationStorageManagementException {
         Application application = validateApplication(applicationUUID);
         validateImageArtifactNames(name);
-        String imageArtifactPath = Constants.artifactPath + application.getId() + File.separator + name.toLowerCase();
+        String imageArtifactPath = storagePath + application.getId() + File.separator + name.toLowerCase();
 
         if (name.equalsIgnoreCase(Constants.IMAGE_ARTIFACTS[2])) {
             imageArtifactPath += count;

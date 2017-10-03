@@ -24,7 +24,10 @@ import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
+import org.wso2.carbon.device.mgt.common.PaginationRequest;
 import org.wso2.carbon.device.mgt.common.TransactionManagementException;
+import org.wso2.carbon.device.mgt.common.configuration.mgt.ConfigurationManagementException;
+import org.wso2.carbon.device.mgt.common.license.mgt.License;
 import org.wso2.carbon.device.mgt.core.TestDeviceManagementService;
 import org.wso2.carbon.device.mgt.core.authorization.DeviceAccessAuthorizationServiceImpl;
 import org.wso2.carbon.device.mgt.core.common.BaseDeviceManagementTest;
@@ -48,6 +51,7 @@ import java.io.InputStream;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Properties;
 
 public class DeviceManagementProviderServiceTest extends BaseDeviceManagementTest {
 
@@ -426,6 +430,87 @@ public class DeviceManagementProviderServiceTest extends BaseDeviceManagementTes
         } catch (DeviceManagementException e) {
             String msg = "Error occurred while updating the device status";
             Assert.fail(msg, e);
+        }
+    }
+
+    @Test
+    public void testGetAvaliableDeviceTypes() {
+        try {
+            List<String> deviceTypes = deviceMgtService.getAvailableDeviceTypes();
+            Assert.assertTrue(!deviceTypes.isEmpty());
+        } catch (DeviceManagementException e) {
+            String msg = "Error occurred while updating the device status";
+            Assert.fail(msg, e);
+        }
+    }
+
+    @Test(dependsOnMethods = {"testSuccessfulDeviceEnrollment"})
+    public void testGetAllDevices() {
+        try {
+            List<Device> devices = deviceMgtService.getAllDevices();
+            Assert.assertTrue(!devices.isEmpty());
+        } catch (DeviceManagementException e) {
+            String msg = "Error occurred while updating the device status";
+            Assert.fail(msg, e);
+        }
+    }
+
+    @Test(dependsOnMethods = {"testDeviceByDate"})
+    public void testGetAllDevicesWithInfo() {
+        try {
+            List<Device> devices = deviceMgtService.getAllDevices(true);
+            Assert.assertTrue(!devices.isEmpty());
+            Assert.assertTrue(devices.get(0).getDeviceInfo() != null);
+        } catch (DeviceManagementException e) {
+            String msg = "Error occurred while updating the device status";
+            Assert.fail(msg, e);
+        }
+    }
+
+    @Test(dependsOnMethods = {"testDeviceByDate"})
+    public void testGetLicense() {
+        try {
+            License license = deviceMgtService.getLicense(DEVICE_TYPE, "ENG");
+            Assert.assertTrue(license.getLanguage().equalsIgnoreCase("ENG"));
+        } catch (DeviceManagementException e) {
+            String msg = "Error occurred while updating the device status";
+            Assert.fail(msg, e);
+        }
+    }
+
+    @Test
+    public void testSendRegistrationEmailNoMetaInfo() {
+        try {
+            deviceMgtService.sendRegistrationEmail(null);
+            Assert.assertTrue(false);
+        }  catch (ConfigurationManagementException e) {
+            Assert.assertTrue(false, "Error in sending registration email : Configration " +
+                    "related error" + e.getMessage());
+        } catch (DeviceManagementException e) {
+            Assert.assertTrue(true, "Device Management Exception thrown when meta info for " +
+                    "email sending is not available" + e.getMessage());
+        }
+    }
+
+    @Test
+    public void testSendRegistrationEmailSuccessFlow() {
+        try {
+            String recipient = "test-user@wso2.com";
+            Properties props = new Properties();
+            props.setProperty("first-name", "Test");
+            props.setProperty("username", "User");
+            props.setProperty("password", "!@#$$$%");
+
+            EmailMetaInfo metaInfo = new EmailMetaInfo(recipient, props);
+
+            deviceMgtService.sendRegistrationEmail(metaInfo);
+            Assert.assertTrue(true);
+        }  catch (ConfigurationManagementException e) {
+            Assert.assertTrue(false, "Error in sending registration email : Configration " +
+                    "related error" + e.getMessage());
+        } catch (DeviceManagementException e) {
+            Assert.assertTrue(false, "Error in sending registration email" +
+                    e.getMessage());
         }
     }
 

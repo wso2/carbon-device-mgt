@@ -52,7 +52,7 @@
         <Extension name="ApplicationStorageManager">
             <ClassName>org.wso2.carbon.device.application.mgt.core.impl.ApplicationStorageManagerImpl</ClassName>
             <Parameters>
-                <Parameter name="StoragePath">repository/resources/mobileapps</Parameter>
+                <Parameter name="StoragePath">repository/resources/apps</Parameter>
                 <Parameter name="MaxScreenShotCount">6</Parameter>
             </Parameters>
         </Extension>

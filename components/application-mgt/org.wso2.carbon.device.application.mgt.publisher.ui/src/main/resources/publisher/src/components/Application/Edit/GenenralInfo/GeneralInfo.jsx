@@ -19,6 +19,7 @@
 import React, {Component} from 'react';
 import {Badge, Button, FormGroup, Input, Label, Row} from 'reactstrap';
 import Dropzone from 'react-dropzone';
+import {FormattedMessage} from 'react-intl';
 
 class GeneralInfo extends Component {
 
@@ -40,7 +41,9 @@ class GeneralInfo extends Component {
                 <Row>
                     <form>
                         <FormGroup>
-                            <Label for="app-title">Title*</Label>
+                            <Label for="app-title">
+                                <FormattedMessage id="Title" defaultMessage="Title"/>*
+                            </Label>
                             <Input
                                 required
                                 type="text"
@@ -49,46 +52,34 @@ class GeneralInfo extends Component {
                             />
                         </FormGroup>
                         <FormGroup>
-                            <Label for="app-title">Description*</Label>
-                            <Input
-                                required
-                                type="textarea"
-                                multiline
-                                name="appName"
-                                id="app-title"
-                            />
+                            <Label for="app-title">
+                                <FormattedMessage id="Description" defaultMessage="Description"/>*
+                            </Label>
+                            <Input required type="textarea" multiline name="appName" id="app-title"/>
                         </FormGroup>
                         <FormGroup>
-                            <Label for="app-category">Category</Label>
-                            <Input
-                                type="select"
-                                name="category"
-                                id="app-category"
-                            >
+                            <Label for="app-category">
+                                <FormattedMessage id="Category" defaultMessage="Category"/>
+                            </Label>
+                            <Input type="select" name="category" id="app-category">
                                 <option>Business</option>
                             </Input>
                         </FormGroup>
                         <FormGroup>
-                            <Label for="app-visibility">Visibility</Label>
-                            <Input
-                                type="select"
-                                name="visibility"
-                                id="app-visibility"
-                            >
-                                <option>Devices</option>
-                                <option>Roles</option>
-                                <option>Groups</option>
+                            <Label for="app-visibility">
+                                <FormattedMessage id="Visibility" defaultMessage="Visibility"/>
+                            </Label>
+                            <Input type="select" name="visibility" id="app-visibility">
+                                <option><FormattedMessage id="Devices" defaultMessage="Devices"/></option>
+                                <option><FormattedMessage id="Roles" defaultMessage="Roles"/></option>
+                                <option><FormattedMessage id="Groups" defaultMessage="Groups"/></option>
                             </Input>
                         </FormGroup>
                         <FormGroup>
-                            <Label for="app-tags">Tags*</Label>
-                            <Input
-                                required
-                                type="text"
-                                value={this.state.defValue}
-                                name="app-tags"
-                                id="app-tags"
-                            />
+                            <Label for="app-tags">
+                                <FormattedMessage id="Tags" defaultMessage="Tags"/>*
+                            </Label>
+                            <Input required type="text" value={this.state.defValue} name="app-tags" id="app-tags"/>
                             <div id="batch-content">
                                 {this.state.tags.map(tag => {
                                         return (
@@ -105,7 +96,9 @@ class GeneralInfo extends Component {
                         </FormGroup>
                         <div>
                             <FormGroup>
-                                <Label for="app-screenshots">Screenshots*</Label>
+                                <Label for="app-screenshots">
+                                    <FormattedMessage id="Screenshots" defaultMessage="Screenshots"/>*
+                                </Label>
                                 <span className="image-sub-title"> (600 X 800 32 bit PNG)</span>
                                 <div id="screenshot-container">
                                     {this.state.screenshots.map((tile) => (
@@ -138,7 +131,9 @@ class GeneralInfo extends Component {
                         <div style={{display: 'flex'}}>
                             <div style={{float: 'left', marginRight: '15px'}}>
                                 <FormGroup>
-                                    <Label for="app-icon">Icon*</Label>
+                                    <Label for="app-icon">
+                                        <FormattedMessage id="Icon" defaultMessage="Icon"/>*
+                                    </Label>
                                     <span className="image-sub-title"> (512 X 512 32 bit PNG)</span>
                                     <div id="app-icon-container">
                                         {this.state.icon.map((tile) => (
@@ -163,7 +158,9 @@ class GeneralInfo extends Component {
                             </div>
                             <div style={{marginLeft: '15px'}}>
                                 <FormGroup>
-                                    <Label for="app-banner">Banner*</Label>
+                                    <Label for="app-banner">
+                                        <FormattedMessage id="Banner" defaultMessage="Banner"/>*
+                                    </Label>
                                     <span className="image-sub-title"> (1000 X 400 32 bit PNG)</span>
                                     <div id="app-banner-container">
                                         {this.state.banner.map((tile) => (
@@ -189,7 +186,9 @@ class GeneralInfo extends Component {
                             </div>
                         </div>
                         <div className="save-info">
-                            <Button>Save</Button>
+                            <Button>
+                                <FormattedMessage id="Save" defaultMessage="Save"/>
+                            </Button>
                         </div>
                     </form>
                 </Row>

@@ -20,6 +20,7 @@ import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {Button, FormGroup, FormText, Input, Label, Row} from "reactstrap";
 import UploadPackage from "./UploadPackage";
+import {FormattedMessage} from 'react-intl';
 
 class CreateRelease extends Component {
     constructor() {
@@ -74,7 +75,7 @@ class CreateRelease extends Component {
                             <div className="release-header">
                                 <a onClick={this.onBackClick}>{"<-"}</a>
                                 <span id="create-release-header">
-                            <strong>{channel} Release</strong>
+                            <strong>{channel} <FormattedMessage id="Release" defaultMessage="Release"/></strong>
                         </span>
                             </div>
                         </Row>
@@ -82,7 +83,7 @@ class CreateRelease extends Component {
                             <div className="release-create">
                                 <div>
                             <span>
-                                <strong>Create Release</strong>
+                                <strong><FormattedMessage id="Create.Release" defaultMessage="Create Release"/></strong>
                             </span>
                                     <p>
                                         {channel === 'Production' ? "" :
@@ -148,7 +149,9 @@ class CreateRelease extends Component {
                                                 </FormText>
                                             </FormGroup>
                                             <div>
-                                                <Button className="form-btn">Save</Button>
+                                                <Button className="form-btn">
+                                                    <FormattedMessage id="Save" defaultMessage="Save"/>
+                                                </Button>
                                             </div>
                                         </form>
                                     </div>

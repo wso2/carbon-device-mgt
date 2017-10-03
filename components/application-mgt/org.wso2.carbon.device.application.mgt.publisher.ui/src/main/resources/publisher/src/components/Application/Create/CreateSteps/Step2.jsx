@@ -21,6 +21,7 @@ import React, {Component} from 'react';
 import AuthHandler from "../../../../api/authHandler";
 import PlatformMgtApi from "../../../../api/platformMgtApi";
 import {FormGroup, Input, Label} from 'reactstrap';
+import {FormattedMessage} from 'react-intl';
 
 /**
  * The first step of the application creation wizard.
@@ -114,30 +115,21 @@ class Step2 extends Component {
 
                 <FormGroup>
                     <Label for="store">Store Type</Label>
-                    <Input
-                        type="select"
-                        name="store"
-                        className="input-custom"
-                        onChange={this.onChangeStore.bind(this)}
-                    >
+                    <Input type="select" name="store" className="input-custom" onChange={this.onChangeStore.bind(this)}>
                         <option>Enterprise</option>
                         <option>Public</option>
                     </Input>
                 </FormGroup>
                 <FormGroup>
-                    <Label for="store">Platform</Label>
-                    <Input
-                        type="select"
-                        name="store"
-                        onChange={this.onChangePlatform.bind(this)}
-                    >
+                    <Label for="store"><FormattedMessage id='Platform' defaultMessage='Platform'/></Label>
+                    <Input type="select" name="store" onChange={this.onChangePlatform.bind(this)}>
                         {this.state.platforms.length > 0 ? this.state.platforms.map(platform => {
                             return (
                                 <option value={platform.identifier}>
                                     {platform.name}
                                 </option>
                             )
-                        }) : <option>No Platforms</option>}
+                        }) : <option><FormattedMessage id='No.Platform' defaultMessage='No Platforms'/></option>}
                     </Input>
                 </FormGroup>
             </div>

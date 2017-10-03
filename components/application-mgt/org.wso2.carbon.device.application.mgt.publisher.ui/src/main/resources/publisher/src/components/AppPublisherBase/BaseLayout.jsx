@@ -23,6 +23,7 @@ import AuthHandler from "../../api/authHandler";
 import ApplicationCreate from '../Application/Create/ApplicationCreate';
 import {Col, Container, Input, Row,} from 'reactstrap';
 import FloatingButton from "../UIComponents/FloatingButton/FloatingButton";
+import {FormattedMessage} from 'react-intl';
 
 /**
  * Base Layout:
@@ -75,7 +76,7 @@ class BaseLayout extends Component {
                 <div id="header-content">
                     <div id="header">
                         <span id="header-text">
-                            WSO2 IoT App Publisher
+                            WSO2 IoT <FormattedMessage id="App.Publisher" defaultMessage="Application Publisher"/>
                         </span>
                         <div id="header-btn-container">
                             <i className="fw fw-notification btn-header"></i>

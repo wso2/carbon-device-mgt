@@ -21,6 +21,7 @@ import {withRouter} from 'react-router-dom';
 import {Button, Col, Row, Table} from 'reactstrap';
 import Drawer from '../UIComponents/Drawer/Drawer';
 import ApplicationView from './View/ApplicationView';
+import {FormattedMessage} from 'react-intl';
 
 /**
  * The App Create Component.
@@ -242,7 +243,9 @@ class ApplicationListing extends Component {
                 <Row>
                     <Col xs="3 offset-9">
                         <div className="platform-link-placeholder">
-                            <Button><i className="fw fw-settings"></i> Platforms</Button>
+                            <Button><i className="fw fw-settings"></i>
+                                <FormattedMessage id="Platforms" defaultMessage="Platforms"/>
+                            </Button>
                         </div>
                     </Col>
                 </Row>
@@ -255,11 +258,12 @@ class ApplicationListing extends Component {
                                 {/* TODO: Remove console.log and add sort method. */}
                                 <th onClick={() => {
                                     console.log("sort")
-                                }}>Application Name
+                                }}>
+                                    <FormattedMessage id="Application.Name" defaultMessage="Application Name"/>
                                 </th>
-                                <th>Category</th>
-                                <th>Platform</th>
-                                <th>Status</th>
+                                <th><FormattedMessage id="Category" defaultMessage="Category"/></th>
+                                <th><FormattedMessage id="Platform" defaultMessage="Platform"/></th>
+                                <th><FormattedMessage id="Status" defaultMessage="Status"/></th>
                                 <th></th>
                             </tr>
                             </thead>

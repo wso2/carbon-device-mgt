@@ -64,7 +64,6 @@ const config = {
         ]
     },
     resolve: {
-        // you can now require('file') instead of require('file.coffee')
         extensions: ['.jsx', '.js', '.ttf', '.woff', '.woff2', '.svg']
     }
 

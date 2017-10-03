@@ -62,8 +62,8 @@ public class TestDataHolder {
         deviceInfo.setIMEI("IMEI-12345");
         deviceInfo.setIMSI("IMSI-12344");
         deviceInfo.setDeviceModel("DUMMY_MODEL");
-        deviceInfo.setVendor("Google");
-        deviceInfo.setOsVersion("Oreo");
+        deviceInfo.setVendor("WSO2");
+        deviceInfo.setOsVersion("OREO");
         deviceInfo.setOsBuildDate("24-05-2017");
         deviceInfo.setBatteryLevel(25.0);
         deviceInfo.setInternalTotalMemory(1.5);

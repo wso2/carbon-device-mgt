@@ -18,6 +18,9 @@
  */
 package org.wso2.carbon.device.mgt.core.common;
 
+import org.apache.axis2.AxisFault;
+import org.apache.axis2.context.ConfigurationContext;
+import org.apache.axis2.context.ConfigurationContextFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.tomcat.jdbc.pool.PoolProperties;
@@ -41,12 +44,14 @@ import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderServiceImpl;
 import org.wso2.carbon.device.mgt.core.service.GroupManagementProviderServiceImpl;
 import org.wso2.carbon.device.mgt.core.util.DeviceManagerUtil;
+import org.wso2.carbon.email.sender.core.service.EmailSenderServiceImpl;
 import org.wso2.carbon.registry.core.config.RegistryContext;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.internal.RegistryDataHolder;
 import org.wso2.carbon.registry.core.jdbc.realm.InMemoryRealmService;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.user.core.service.RealmService;
+import org.wso2.carbon.utils.ConfigurationContextService;
 
 import javax.sql.DataSource;
 import javax.xml.bind.JAXBContext;
@@ -89,6 +94,8 @@ public abstract class BaseDeviceManagementTest {
         DeviceManagementDataHolder.getInstance().setDeviceAccessAuthorizationService(new DeviceAccessAuthorizationServiceImpl());
         DeviceManagementDataHolder.getInstance().setGroupManagementProviderService(new GroupManagementProviderServiceImpl());
         DeviceManagementDataHolder.getInstance().setDeviceTaskManagerService(null);
+        DeviceManagementDataHolder.getInstance().setEmailSenderService(new TestEmailSenderService());
+        DeviceManagementDataHolder.getInstance().setConfigurationContextService(getConfigContextService());
     }
 
     private RegistryService getRegistryService() throws RegistryException {
@@ -99,6 +106,19 @@ public abstract class BaseDeviceManagementTest {
         RegistryContext context = RegistryContext.getBaseInstance(is, realmService);
         context.setSetup(true);
         return context.getEmbeddedRegistryService();
+    }
+
+    private ConfigurationContextService getConfigContextService() throws RegistryException {
+        ConfigurationContext context  =
+                null;
+        try {
+            context = ConfigurationContextFactory.createConfigurationContextFromFileSystem
+                    ("src/test/resources/carbon-home/repository/conf/axis2/axis2.xml");
+        } catch (AxisFault axisFault) {
+            axisFault.printStackTrace();
+        }
+        ConfigurationContextService service = new ConfigurationContextService(context, null);
+        return service;
     }
 
     @BeforeClass

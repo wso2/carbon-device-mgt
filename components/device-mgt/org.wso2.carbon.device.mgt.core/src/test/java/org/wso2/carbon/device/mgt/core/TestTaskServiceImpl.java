@@ -38,6 +38,10 @@ public class TestTaskServiceImpl implements TaskService {
         this.taskManager = new TestTaskManagerImpl();
     }
 
+    public void setTaskManager(TaskManager taskManager) {
+        this.taskManager = taskManager;
+    }
+
     @Override
     public TaskManager getTaskManager(String s) throws TaskException {
         return this.taskManager;

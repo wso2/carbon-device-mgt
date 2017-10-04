@@ -16,6 +16,7 @@
  * under the License.
  */
 import React, {Component} from 'react';
+import {Col, Row} from "reactstrap";
 
 /**
  * Platform component.
@@ -29,14 +30,28 @@ class Platform extends Component {
 
     render() {
         const {platform} = this.props;
-        console.log(platform);
         return (
-            <div id="platform-content">
-                <ul>
-                    <li>Name: {platform.name}</li>
-                    <li>Description: {platform.description}</li>
-                    <li>Status: {platform.enabled}</li>
-                </ul>
+            <div className="platform-content">
+                <Row>
+                    <Col>
+                        <div className="platform-icon-container">
+                            <p className="platform-icon-letter">{platform.name.charAt(0)}</p>
+                        </div>
+                    </Col>
+                    <Col>
+                        <div className="platform-text-container">
+                            <p className="app-view-field">{platform.name}</p>
+                            <p className="app-view-text">{platform.enabled ? "Active" : "Disabled"}</p>
+                        </div>
+                    </Col>
+
+                </Row>
+                <hr/>
+                <Row style={{fontSize: '12px'}}>
+                    <Col xs="3"><a>{platform.enabled ? "Disable" : "Activate"}</a></Col>
+                    <Col xs="6"><a>Share With Tenants</a></Col>
+                    <Col xs="1"><i className="fw fw-down"></i></Col>
+                </Row>
             </div>
         );
     }

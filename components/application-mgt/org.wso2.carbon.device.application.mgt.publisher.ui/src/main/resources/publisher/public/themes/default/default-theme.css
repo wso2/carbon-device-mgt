@@ -125,6 +125,12 @@ body {
     float: right;
 }
 
+.header-image {
+    height: 43px;
+    width: 100px;
+    margin-right: 24px;
+}
+
 #header-button {
     border-radius: 50%;
     background-color: transparent;
@@ -196,6 +202,15 @@ body {
     top: 98px;
 }
 
+.add-btn {
+    background-color: #ff5722;
+}
+
+.add-btn:hover {
+    cursor: pointer;
+    background-color: rgb(255, 103, 5);
+}
+
 #app-main-content {
     margin: 0 auto;
 }
@@ -248,8 +263,41 @@ body {
     transition: margin-right .5s;
 }
 
+#batch-content {
+    display: flex;
+    margin-top: 5px;
+}
+
+.app-list-icon {
+    border-radius: 50%;
+    height: 50px;
+    width: 50px
+}
+
+.app-table-row {
+    height: 62px;
+    cursor: pointer;
+    padding-top: 6px;
+    font-family: "Roboto-Regular";
+    font-size: medium;
+}
+
+.app-table-row:hover {
+    color: white;
+    background-color: #3f50b5;
+}
+
 .app-list-table-header {
+    margin-top: 30px;
+    margin-bottom: 10px;
+    font-family: "Roboto-Medium";
+    font-size: 15px;
+}
+
+.app-view-image {
     height: 100px;
+    width: 100px;
+    border-radius: 50%;
 }
 
 #app-visibility-default {
@@ -416,7 +464,6 @@ body {
 
 .app-updated-date {
     color: #888888;
-    font-style: italic;
 }
 
 .app-install-count {
@@ -605,6 +652,16 @@ div.tab button.active {
     margin-bottom: 10px;
 }
 
+.app-view-field {
+    font-family: Roboto-Medium;
+    font-size: 14px;
+}
+
+.app-view-text {
+    font-family: Roboto-Regular;
+    font-size: 14px;
+}
+
 /* Platform Specific Styles. */
 #platform-listing {
     margin: 10px;
@@ -620,14 +677,34 @@ div.tab button.active {
     flex-flow: wrap;
 }
 
-#platform-content {
-    width: 200px;
-    height: 300px;
+.platform-content {
+    width: 350px;
     margin: 10px;
+    padding: 24px;
     box-shadow: 2px 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
-#platform-content:hover {
+.platform-icon-letter {
+    text-align: center;
+    text-transform: uppercase;
+    font-family: Roboto-Medium;
+    font-size: 50px;
+    color: white;
+    padding-top: 15px;
+}
+
+.platform-icon-container {
+    height: 100px;
+    width: 100px;
+    border-radius: 50%;
+    background-color: #3f50b5;
+}
+
+.platform-content:hover {
     background-color: #f2f2f2;
     cursor: pointer;
+}
+
+.data-table-row-cell {
+    padding-top: 14px;
 }

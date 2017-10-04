@@ -16,20 +16,36 @@
  * under the License.
  */
 
+import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import './chip.css';
 
 class Chip extends Component {
 
+    constructor() {
+        super();
+        this.onDeleteClick = this.onDeleteClick.bind(this);
+    }
+
+    onDeleteClick() {
+        this.props.onDelete(this.props.content.key);
+    }
+
     render() {
         return (
             <div className="chip">
-                {this.props.image?<img src={this.props.image} alt="Person" width="96" height="96" />:<div/>}
-                {this.props.text}
-                <span className="close-btn" >&times;</span>
+                    <div className="chip-text">{this.props.content.value}</div>
+                    <div className="chip-close-btn" onClick={this.onDeleteClick}>
+                        <i className="fw fw-uncheck"></i>
+                    </div>
             </div>
         )
     }
 }
+
+Chip.propTypes = {
+    onDelete: PropTypes.func,
+    content: PropTypes.object
+};
 
 export default Chip;

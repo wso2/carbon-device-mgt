@@ -21,14 +21,10 @@ import AuthHandler from './api/authHandler';
 import createHistory from 'history/createBrowserHistory';
 import {BrowserRouter as Router, Redirect, Route, Switch} from 'react-router-dom'
 import {
-    ApplicationCreate,
-    ApplicationEdit,
     ApplicationListing,
     BaseLayout,
     Login,
-    NotFound,
-    PlatformCreate,
-    PlatformListing
+    NotFound
 } from './components';
 
 
@@ -67,7 +63,6 @@ class Base extends Component {
     }
 
     render() {
-        console.log('in app.jsx');
         if (this.state.user !== null) {
             return (
                 <div>
@@ -75,13 +70,6 @@ class Base extends Component {
                         <Switch>
                             <Redirect exact path={"/"} to={"/assets/apps"}/>
                             <Route exact path={"/assets/apps"} component={ApplicationListing}/>
-                            <Route exact path={"/assets/apps/create"} component={ApplicationCreate}/>
-                            <Route exact path={"/assets/platforms"} component={PlatformListing}/>
-                            <Route exact path={"/assets/platforms/create"} component={PlatformCreate}/>
-                            {/*<Route exact path={"/assets/apps/:app"}/>*/}
-                            <Route exact path={"/assets/apps/edit/:app"} component={ApplicationEdit}/>
-                            <Route exact path={"/assets/platforms/:platform"}/>
-                            <Route exact path={"/assets/platforms/:platform/edit"}/>
                             <Route exact path={"/assets/reviews"}/>
                             <Route exact path={"/assets/reviews/:review"}/>
                             <Route component={NotFound}/>

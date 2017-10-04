@@ -20,7 +20,6 @@ import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {withRouter} from 'react-router-dom';
 import AuthHandler from "../../api/authHandler";
-import ApplicationCreate from '../Application/Create/ApplicationCreate';
 import {Col, Container, Input, Row,} from 'reactstrap';
 import FloatingButton from "../UIComponents/FloatingButton/FloatingButton";
 
@@ -106,7 +105,6 @@ class BaseLayout extends Component {
                         </Col>
                     </Row>
                 </div>
-                <ApplicationCreate open={this.state.openModal} close={this.closeModal}/>
             </Container>
         );
     }

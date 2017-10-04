@@ -18,7 +18,7 @@
 
 import Login from './User/Login/Login';
 import NotFound from './Error/NotFound';
-import BaseLayout from './AppPublisherBase/BaseLayout';
+import BaseLayout from './AppStoreBase/BaseLayout';
 import PlatformCreate from './Platform/PlatformCreate';
 import PlatformListing from './Platform/PlatformListing';
 import ApplicationCreate from './Application/Create/ApplicationCreate';

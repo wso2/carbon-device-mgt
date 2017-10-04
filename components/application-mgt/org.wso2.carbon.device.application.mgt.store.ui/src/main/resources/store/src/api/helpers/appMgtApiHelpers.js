@@ -19,7 +19,7 @@
 'use strict';
 
 /**
- * Helper methods for app publisher.
+ * Helper methods for app store.
  * */
 export default class Helper {
 

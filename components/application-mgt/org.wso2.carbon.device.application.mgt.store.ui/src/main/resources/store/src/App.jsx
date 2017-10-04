@@ -42,7 +42,7 @@ const history = createHistory({basename: '/store'});
  * The Router and Route components.
  *     The Router and Route is used for navigation.
  *     We specify the component which needs to be rendered for an URL.
- *     Ex: When navigate to publisher/overview, the overview component will be rendered inside the main layout.
+ *     Ex: When navigate to store/overview, the overview component will be rendered inside the main layout.
  *
  * HashRouter is used because the other router types need the server to serve those urls. In hashRouter, server does
  * not want to serve the URL.
@@ -67,6 +67,7 @@ class Base extends Component {
     }
 
     render() {
+        console.log('in app.jsx');
         if (this.state.user !== null) {
             return (
                 <div>
@@ -87,9 +88,19 @@ class Base extends Component {
                         </Switch>
                     </BaseLayout>
                 </div>
-            )
+            );
         } else {
-            return (<Redirect to={"/assets/apps"}/>)
+            return (
+                <div>
+                    <BaseLayout>
+                        <Switch>
+                            <Redirect exact path={"/"} to={"/assets/apps"}/>
+                            <Route exact path={"/assets/apps"} component={ApplicationListing}/>
+                            <Route component={NotFound}/>
+                        </Switch>
+                    </BaseLayout>
+                </div>
+            );
         }
 
     }
@@ -97,24 +108,19 @@ class Base extends Component {
 
 /**
  * This component is referred by the index.js to initiate the application.
- * TODO: Currently the URL shows like https://localhost:9443/publisher/#/publisher/assets/apps/create. this needs to
- * be fixed as https://localhost:9443/publisher/#/assets/apps/create
+ * TODO: Currently the URL shows like https://localhost:9443/store/#/store/assets/apps/create. this needs to
+ * be fixed as https://localhost:9443/store/#/assets/apps/create
  *
  * */
 class Store extends Component {
     constructor() {
         super();
-        this.state = {
-            muiTheme: null,
-            selectedType: null,
-            selectedTheme: null
-        };
     }
 
     render() {
         return (
             <div className="App">
-                <Router basename="publisher" history={history}>
+                <Router basename="store" history={history}>
                     <Switch>
                         <Route path="/login" component={Login}/>
                         <Route path="/logout" component={Login}/>

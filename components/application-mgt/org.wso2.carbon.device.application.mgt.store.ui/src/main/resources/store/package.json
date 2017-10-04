@@ -1,7 +1,7 @@
 {
   "name": "store",
   "version": "1.0.0",
-  "description": "WSO2 IoT Server App Publisher",
+  "description": "WSO2 IoT Server App Store",
   "main": "App.js",
   "repository": {
     "type": "git",

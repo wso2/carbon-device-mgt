@@ -75,7 +75,7 @@ class BaseLayout extends Component {
                 <div id="header-content">
                     <div id="header">
                         <span id="header-text">
-                            WSO2 IoT App Publisher
+                            WSO2 IoT App Store
                         </span>
                         <div id="header-btn-container">
                             <i className="fw fw-notification btn-header"></i>

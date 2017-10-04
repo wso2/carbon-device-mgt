@@ -132,7 +132,7 @@ class Login extends Component {
                     {/*TODO: Style the components.*/}
                     <Card id="login-card">
                         <CardBlock>
-                            <CardTitle>WSO2 IoT APP Publisher</CardTitle>
+                            <CardTitle>WSO2 IoT APP Store</CardTitle>
                             <Form onSubmit={this.handleLogin.bind(this)}>
                                 <FormGroup row>
                                     <Label for="userName" sm={2}>User Name:</Label>

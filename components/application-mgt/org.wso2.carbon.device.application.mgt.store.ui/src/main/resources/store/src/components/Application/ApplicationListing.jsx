@@ -21,6 +21,7 @@ import {withRouter} from 'react-router-dom';
 import {Button, Col, Row, Table} from 'reactstrap';
 import Drawer from '../UIComponents/Drawer/Drawer';
 import ApplicationView from './View/ApplicationView';
+import Constants from '../../common/constants';
 
 /**
  * The App Create Component.
@@ -54,6 +55,7 @@ class ApplicationListing extends Component {
                     src: "http://dl1.cbsistatic.com/i/r/2016/08/08/0e67e43a-5a45-41ab-b81d-acfba8708044/resize/736x552/0c0ee669677b5060a0fa1bfb0c7873b4/android-logo-promo-470.png"
                 }]
         };
+        console.log(Constants.appManagerEndpoints.GET_ALL_APPS);
     }
 
     headers = [
@@ -200,7 +202,7 @@ class ApplicationListing extends Component {
         };
 
         let appListStyle = {
-            marginRight: '500px',
+            marginRight: '500px'
         };
 
         this.setState({drawer: style, appListStyle: appListStyle});
@@ -237,15 +239,7 @@ class ApplicationListing extends Component {
 
     render() {
         return (
-
             <div id="application-list" style={this.state.appListStyle}>
-                <Row>
-                    <Col xs="3 offset-9">
-                        <div className="platform-link-placeholder">
-                            <Button><i className="fw fw-settings"></i> Platforms</Button>
-                        </div>
-                    </Col>
-                </Row>
                 <Row>
                     <Col>
                         <Table striped hover>

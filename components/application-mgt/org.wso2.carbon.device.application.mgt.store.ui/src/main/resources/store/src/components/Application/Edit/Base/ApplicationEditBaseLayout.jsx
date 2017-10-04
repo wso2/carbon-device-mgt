@@ -72,7 +72,7 @@ class ApplicationEdit extends Component {
     }
 
     handleOnBackClick() {
-        window.location.href = "/publisher/assets/apps"
+        window.location.href = "/store/assets/apps"
     }
 
     render() {

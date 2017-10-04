@@ -20,6 +20,7 @@ import {Col, Row} from "reactstrap";
 import React, {Component} from 'react';
 import GeneralInfo from "../GenenralInfo/GeneralInfo";
 import ReleaseManager from '../../Release/ReleaseMgtBase/ReleaseManager';
+import {FormattedMessage} from 'react-intl';
 
 class ApplicationEdit extends Component {
 
@@ -85,21 +86,20 @@ class ApplicationEdit extends Component {
                         </a>
                     </Col>
                     <Col>
-                        Application Name
+                        <FormattedMessage id="Application.Name" defaultMessage="Application Name"/>
                     </Col>
                 </Row>
                 <Row id="application-edit-main-container">
                     <Col xs="3">
                         <div className="tab">
                             <button className={this.state.general} value={1} onClick={this.handleTabClick.bind(this)}>
-                                General
+                                <FormattedMessage id="General" defaultMessage="General"/>
                             </button>
                             <button className={this.state.release} value={2} onClick={this.handleTabClick.bind(this)}>
-                                App
-                                Releases
+                                <FormattedMessage id="App.Releases" defaultMessage="Application Releases"/>
                             </button>
                             <button className={this.state.pkgmgt} value={3} onClick={this.handleTabClick.bind(this)}>
-                                Package Manager
+                                <FormattedMessage id="Package.Manager" defaultMessage="Package Manager"/>
                             </button>
                         </div>
                     </Col>

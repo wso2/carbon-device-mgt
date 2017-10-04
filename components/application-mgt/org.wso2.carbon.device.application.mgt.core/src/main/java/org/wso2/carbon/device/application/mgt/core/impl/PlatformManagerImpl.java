@@ -419,6 +419,19 @@ public class PlatformManagerImpl implements PlatformManager {
         }
     }
 
+    @Override
+    public List<String> getPlatformTags(String name) throws PlatformManagementException {
+        try {
+            ConnectionManagerUtil.openDBConnection();
+            return DAOFactory.getPlatformDAO().getPlatformTags(name);
+        } catch (DBConnectionException e) {
+            throw new PlatformManagementException("Database Connection Exception while getting the platform tags that"
+                    + " are starting with the character sequence " + name, e);
+        } finally {
+            ConnectionManagerUtil.closeDBConnection();
+        }
+    }
+
     /**
      * To share the super-tenant platform with other tenants
      * @param platformIdentifier Identifier of the platform

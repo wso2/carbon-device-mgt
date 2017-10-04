@@ -17,13 +17,11 @@
  */
 
 import PropTypes from 'prop-types';
-import Chip from 'material-ui/Chip';
 import Dropzone from 'react-dropzone';
 import React, {Component} from 'react';
-import MenuItem from 'material-ui/MenuItem';
-import SelectField from 'material-ui/SelectField';
 import {FormGroup, Label} from 'reactstrap';
 import AppImage from "../../../UIComponents/AppImage/AppImage";
+import {FormattedMessage} from 'react-intl';
 
 /**
  * The Third step of application create wizard.
@@ -111,7 +109,9 @@ class Step3 extends Component {
             <div className="createStep2Content">
                 <div>
                     <FormGroup>
-                        <Label for="app-screenshots">Screenshots*</Label>
+                        <Label for="app-screenshots">
+                            <FormattedMessage id='Screenshots' defaultMessage='Screenshots'/>*
+                        </Label>
                         <span className="image-sub-title"> (600 X 800 32 bit PNG)</span>
                         <div id="screenshot-container">
                             {this.state.screenshots.map((tile) => (
@@ -140,7 +140,9 @@ class Step3 extends Component {
                 <div style={{display: 'flex'}}>
                     <div style={{float: 'left', marginRight: '15px'}}>
                         <FormGroup>
-                            <Label for="app-icon">Icon*</Label>
+                            <Label for="app-icon">
+                                <FormattedMessage id='Screenshots' defaultMessage='Screenshots'/>*
+                            </Label>
                             <span className="image-sub-title"> (512 X 512 32 bit PNG)</span>
                             <div id="app-icon-container">
                                 {this.state.icon.map((tile) => (
@@ -164,7 +166,9 @@ class Step3 extends Component {
                     </div>
                     <div style={{marginLeft: '15px'}}>
                         <FormGroup>
-                            <Label for="app-banner">Banner*</Label>
+                            <Label for="app-banner">
+                                <FormattedMessage id='Icon' defaultMessage='Icon'/>*
+                            </Label>
                             <span className="image-sub-title"> (1000 X 400 32 bit PNG)</span>
                             <div id="app-banner-container">
                                 {this.state.banner.map((tile) => (

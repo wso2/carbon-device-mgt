@@ -195,7 +195,12 @@ public interface ApplicationManagementAPI {
                     name = "uuid",
                     value = "UUID of the application",
                     required = true)
-            @PathParam("uuid") String uuid
+            @PathParam("uuid") String uuid,
+            @ApiParam(
+                    name = "isWithImages",
+                    value = "Whether to return application with images",
+                    required = false)
+            @QueryParam("isWithImages") Boolean IsWithImages
     );
 
     @PUT
@@ -272,7 +277,7 @@ public interface ApplicationManagementAPI {
             @Valid Application application);
 
     @POST
-    @Path("upload-artifacts/{uuid}")
+    @Path("/upload-artifacts/{uuid}")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @ApiOperation(
@@ -309,7 +314,7 @@ public interface ApplicationManagementAPI {
             @Multipart(value = "screenshot") List<Attachment> screenshots);
 
     @PUT
-    @Path("upload-artifacts/{uuid}")
+    @Path("/upload-artifacts/{uuid}")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @ApiOperation(

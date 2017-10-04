@@ -133,4 +133,12 @@ public interface PlatformManager {
      */
     public void removePlatforms(int tenantId) throws PlatformManagementException;
 
+    /**
+     * To get the platform tags.
+     *
+     * @param name Starting character sequence of the platform name.
+     * @return list of the platform tags that start with the character sequence.
+     * @throws PlatformManagementException PlatformManagement Exception
+     */
+    public List<String> getPlatformTags(String name) throws PlatformManagementException;
 }

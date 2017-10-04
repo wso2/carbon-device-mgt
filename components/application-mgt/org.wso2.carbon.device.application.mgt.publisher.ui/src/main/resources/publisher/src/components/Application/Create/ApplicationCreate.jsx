@@ -22,6 +22,7 @@ import AuthHandler from "../../../api/authHandler";
 import {Step1, Step2, Step3, Step4} from './CreateSteps/index';
 import ApplicationMgtApi from '../../../api/applicationMgtApi';
 import {Button, Col, Modal, ModalBody, ModalFooter, ModalHeader, Row} from 'reactstrap';
+import {FormattedMessage} from 'react-intl';
 
 /**
  * The App Create Component.
@@ -210,7 +211,9 @@ class ApplicationCreate extends Component {
             <div id="create-application-modal">
                 <Modal isOpen={this.state.open} toggle={this.toggle} id="app-create-modal"
                        backdrop={'static'}>
-                    <ModalHeader toggle={this.toggle}>Create Application</ModalHeader>
+                    <ModalHeader toggle={this.toggle}>
+                        <FormattedMessage id="Create.Application" defaultMessage="Create Application"/>
+                    </ModalHeader>
                     <ModalBody id="modal-body-content">
                         <Row>
                             <Col>
@@ -227,11 +230,19 @@ class ApplicationCreate extends Component {
                     </ModalBody>
                     <ModalFooter>
                         {stepIndex === 0 ? <div/> :
-                            <Button color="primary" onClick={this.onPrevClick}>Back</Button>}
-                        <Button color="secondary" onClick={this.onClose}>Cancel</Button>
+                            <Button color="primary" onClick={this.onPrevClick}>
+                                <FormattedMessage id="Back" defaultMessage="Back"/>
+                            </Button>}
+                        <Button color="secondary" onClick={this.onClose}>
+                            <FormattedMessage id="Cancel" defaultMessage="Cancel"/>
+                        </Button>
                         {finished ?
-                            <Button color="primary" onClick={this.onSubmit}>Finish</Button> :
-                            <Button color="primary" onClick={this.onNextClick}>Continue</Button>}
+                            <Button color="primary" onClick={this.onSubmit}>
+                                <FormattedMessage id="Finish" defaultMessage="Finish" />
+                            </Button> :
+                            <Button color="primary" onClick={this.onNextClick}>
+                                <FormattedMessage id="Continue" defaultMessage="Continue"/>
+                            </Button>}
                     </ModalFooter>
                 </Modal>
             </div>);

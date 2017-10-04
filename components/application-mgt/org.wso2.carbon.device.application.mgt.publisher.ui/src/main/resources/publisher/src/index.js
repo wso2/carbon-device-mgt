@@ -45,7 +45,7 @@ function loadPublisher() {
         registerServiceWorker();
     }).catch(error => {
         addLocaleData(require('react-intl/locale-data/en'));
-        let defaultLocale = axios.create({
+        let defaultLocale = Axios.create({
             baseURL: Configuration.hostConstants.baseURL + "/" + Configuration.hostConstants.appContext + "/locales"
             + Constants.defaultLocale + ".json"
         }).get();

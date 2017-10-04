@@ -19,8 +19,9 @@
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {FormattedMessage} from 'react-intl';
-import {Badge, Button, Form, FormFeedback, FormGroup, Input, Label, ModalFooter} from 'reactstrap';
+import {Button, Form, FormFeedback, FormGroup, Input, Label, ModalFooter} from 'reactstrap';
 import * as validator from '../../../../common/validator';
+import Chip from "../../../UIComponents/Chip/Chip";
 
 /**
  * The Second step of application create wizard.
@@ -328,14 +329,11 @@ class Step1 extends Component {
                             <div id="batch-content">
                                 {this.state.tags.map(tag => {
                                         return (
-                                            <Badge
-                                                id="application-tag"
-                                                value={tag.key}
+                                            <Chip
                                                 key={tag.key}
-                                                onClick={() => this.handleRequestDelete(tag.key)}
-                                            >
-                                                {tag.value}
-                                            </Badge>
+                                                content={tag}
+                                                onDelete={this.handleRequestDelete}
+                                            />
                                         )
                                     }
                                 )}

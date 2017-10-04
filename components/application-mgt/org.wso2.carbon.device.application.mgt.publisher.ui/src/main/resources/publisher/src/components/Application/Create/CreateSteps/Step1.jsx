@@ -55,9 +55,10 @@ class Step1 extends Component {
             name: "",
             errors: {},
             defValue: "",
-            category: 0,
-            visibility: "",
-            description: ""
+            category: {},
+            visibility: {type: "PUBLIC", allowedList: []},
+            description: "",
+            shortDescription: ""
         };
     }
 
@@ -108,12 +109,14 @@ class Step1 extends Component {
      * Creates an object with the current step data and persist in the parent.
      * */
     setStepData() {
-        const {name, description, tags, visibility} = this.state;
+        const {name, description, tags, visibility, shortDescription} = this.state;
         let stepData = {
             name: name,
             description: description,
             tags: tags,
-            visibility: visibility
+            visibility: visibility,
+            shortDescription: shortDescription,
+            category: {id: 1, name: "business"}
         };
 
         let {errorCount, errors} = this.validate();
@@ -133,7 +136,7 @@ class Step1 extends Component {
      * Validate the form fields.
      * */
     validate() {
-        const {name, description, tags} = this.state;
+        const {name, description, tags, shortDescription} = this.state;
         let errorCount = 0;
         let errors = {};
         if (validator.validateNull(name)) {
@@ -144,6 +147,11 @@ class Step1 extends Component {
         if (validator.validateNull(description)) {
             errorCount++;
             errors.description = "Description is Required!"
+        }
+
+        if (validator.validateNull(shortDescription)) {
+            errorCount++;
+            errors.shortDescription = "Short Description is Required!"
         }
 
         if (!validator.validateEmpty(tags)) {
@@ -166,6 +174,9 @@ class Step1 extends Component {
             case "appDescription": {
                 this.setState({description: event.target.value});
                 break;
+            }
+            case "appShortDescription": {
+                this.setState({shortDescription: event.target.value});
             }
         }
     };
@@ -241,6 +252,18 @@ class Step1 extends Component {
                             <FormFeedback id="form-error">{this.state.errors.name}</FormFeedback>
                         </FormGroup>
                         <FormGroup>
+                            <Label for="app-short-description">Short Description*</Label>
+                            <Input
+                                required
+                                type="textarea"
+                                name="appShortDescription"
+                                id="app-short-description"
+                                value={this.state.shortDescription}
+                                onChange={this.onTextFieldChange}
+                            />
+                            <FormFeedback id="form-error">{this.state.errors.shortDescription}</FormFeedback>
+                        </FormGroup>
+                        <FormGroup>
                             <Label for="app-description">
                                 <FormattedMessage id='Description' defaultMessage='Description'/>*
                             </Label>
@@ -258,8 +281,12 @@ class Step1 extends Component {
                             <Label for="app-category">
                                 <FormattedMessage id='Category' defaultMessage='Category'/>
                             </Label>
-                            <Input type="select" name="category" id="app-category">
-                                <option>Business</option>
+                            <Input
+                                type="select"
+                                name="category"
+                                id="app-category"
+                            >
+                                <option key={0} value={{id: 0, name: "business"}}>Business</option>
                             </Input>
                         </FormGroup>
                         <FormGroup>
@@ -302,7 +329,7 @@ class Step1 extends Component {
                                 {this.state.tags.map(tag => {
                                         return (
                                             <Badge
-                                                style={{margin: '0 2px 0 2px', backgroundColor: 'blue', height: '20px'}}
+                                                id="application-tag"
                                                 value={tag.key}
                                                 key={tag.key}
                                                 onClick={() => this.handleRequestDelete(tag.key)}
@@ -318,7 +345,7 @@ class Step1 extends Component {
                     </div>
                 </div>
                 <ModalFooter>
-                    <Button color="danger" onClick={this.onCancelClick}>Cancel</Button>
+                    <Button id="material-btn" onClick={this.onCancelClick}>Cancel</Button>
                     <Button color="primary" onClick={this.setStepData}>Continue</Button>
                 </ModalFooter>
             </div>

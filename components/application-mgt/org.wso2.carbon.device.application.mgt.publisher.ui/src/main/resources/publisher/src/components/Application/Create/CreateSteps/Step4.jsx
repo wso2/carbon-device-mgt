@@ -50,6 +50,7 @@ class Step4 extends Component {
         this.onCancelClick = this.onCancelClick.bind(this);
         this.onBackClick = this.onBackClick.bind(this);
         this.handleFinish = this.handleFinish.bind(this);
+        this.onSubmit = this.onSubmit.bind(this);
         this.state = {
             showForm: false,
             releaseChannel: 1,
@@ -75,7 +76,7 @@ class Step4 extends Component {
     }
 
     onSubmit() {
-
+        this.props.onSubmit();
     }
 
     /**
@@ -159,7 +160,7 @@ Step4.propTypes = {
     handleFinish: PropTypes.func,
     handlePrev: PropTypes.func,
     setData: PropTypes.func,
-    removeData: PropTypes.func
+    onSubmit: PropTypes.func
 };
 
 export default Step4;

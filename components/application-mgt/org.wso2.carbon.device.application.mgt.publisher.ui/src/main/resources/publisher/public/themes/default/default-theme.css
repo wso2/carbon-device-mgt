@@ -16,10 +16,46 @@
  * under the License.
  */
 
+@font-face {
+    font-family: "Roboto-Medium";
+    src: url('../../fonts/Roboto-Medium.woff');
+    src: local("Roboto-Medium"), url("../../fonts/Roboto-Medium.ttf") format("ttf");
+    src: local("Roboto-Medium"), url("../../fonts/Roboto-Medium.woff") format("woff");
+    src: local("Roboto-Medium"), url("../../fonts/Roboto-Medium.woff2") format("woff2");
+}
+
+@font-face {
+    font-family: "Roboto-Regular";
+    src: url("../../fonts/Roboto-Regular.woff");
+    src: local("Roboto-Regular"), url("../../fonts/Roboto-Regular.ttf") format("ttf");
+    src: local("Roboto-Regular"), url("../../fonts/Roboto-Regular.woff") format("woff");
+    src: local("Roboto-Regular"), url("../../fonts/Roboto-Regular.woff2") format("woff2");
+}
+
 /* Body Styling */
 body {
     width: 100%;
-    font-family: Roboto sans-serif;
+    font-family: "Roboto-Regular" !important;
+    background-color: #dfdfdf !important;
+}
+
+.app-manager-title {
+    font-family: "Roboto-Medium";
+    font-size: 20px;
+}
+
+.app-manager-sub-title {
+    font-family: "Roboto-Regular";
+    font-size: 18px;
+}
+
+#app-mgt-footer {
+    clear: both;
+    position: relative;
+    height: 50px;
+    width: 100%;
+    color: white;
+    background-color: #334d88;
 }
 
 /* Login page styles*/
@@ -53,16 +89,16 @@ body {
 
 /* Base layout container */
 #container {
-    background-color: #ffffff;
+    background-color: #ededed;
     padding: 0;
 }
 
 /* Base layout header content*/
 #header-content {
-    height: 125px;
+    height: 128px;
     width: 100%;
     margin: 0 10px 0 0;
-    background-color: #3b33bd;
+    background-color: #3f50b5;
     position: fixed; /* Set the navbar to fixed position */
     top: 0; /* Position the navbar at the top of the page */
     z-index: 2;
@@ -71,14 +107,15 @@ body {
 
 /* Contains the header styles.*/
 #header {
-    margin: 16px 16px 20px 16px;
-    height: 100%;
+    padding: 24px;
+    /*margin: 16px 16px 20px 16px;*/
     position: relative;
 }
 
 #header-text {
     color: #ffffff;
-    font-size: 25px;
+    font-size: 20px;
+    font-family: Roboto-Medium;
     top: 10px;
     margin-left: 10px;
 }
@@ -96,6 +133,7 @@ body {
     width: 50px;
     margin-right: 10px;
     position: relative;
+    outline: none;
 }
 
 #header-button:hover {
@@ -109,14 +147,18 @@ body {
     left: 17px;
 }
 
-#header-button {
-    outline: none;
-}
-
 .btn-header {
     margin-top: 15px;
     margin-right: 20px;
     color: white;
+}
+
+#sub-title {
+    font-family: Roboto-Regular;
+    font-size: 18px;
+    padding-top: 5px;
+    padding-left: 18px;
+    color: RGBA(0, 0, 0, 1);
 }
 
 /* Search box styles */
@@ -151,22 +193,31 @@ body {
 /* Application Add button */
 #add-btn-container {
     position: absolute;
-    left: 11%;
-    top: 100px;
+    top: 98px;
 }
 
 #app-main-content {
-    margin-top: 140px;
-    max-width: 98%;
+    margin: 0 auto;
+}
+
+#sub-title-container {
+    height: 100px;
+    padding: 50px 0 20px 0;
+}
+
+.application-container {
+    padding: 0 !important;
+    min-height: 100% !important;
+    margin-top: 128px !important;
 }
 
 /* Holds the app publisher pages. */
 #application-content {
     height: auto;
-    width: 80%;
-    margin: 20px auto;
+    background-color: white;
+    width: 100%;
     box-shadow: 2px 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-    padding: 0 10px 10px 10px;
+    padding: 24px;
 }
 
 .stepper-header {
@@ -176,11 +227,20 @@ body {
     margin-bottom: 10px;
 }
 
+#application-tag {
+    margin: 0 2px 0 2px;
+    background-color: blue;
+    height: 20px;
+}
+
+#application-tag:hover {
+    cursor: pointer;
+    background-color: #007bff;
+}
+
 .platform-link-placeholder {
     color: #888888;
-    width: 80%;
     float: right;
-    margin: 10px auto;
     padding-bottom: 10px;
 }
 
@@ -276,7 +336,6 @@ body {
 }
 
 #secondary-button {
-    float: right;
     color: #979797;
     background-color: transparent;
     border: none;
@@ -343,6 +402,7 @@ body {
 #application-view-content {
     width: 100%;
 }
+
 #application-view-row {
     margin: 10px 10px 0 20px;
 }
@@ -386,6 +446,7 @@ body {
     margin-bottom: 20px;
     font-size: 25px;
 }
+
 .application-header-text {
     margin: 10px 0px 0px 10px;
 }
@@ -417,6 +478,7 @@ div.tab {
     border-right: 1px solid #d8d8d8;
     height: 100%;
 }
+
 /* Style the tab buttons */
 
 div.tab button {
@@ -431,31 +493,27 @@ div.tab button {
     cursor: pointer;
     transition: 0.3s;
 }
+
 /* Change background color of buttons on hover */
 
 div.tab button:hover {
     background-color: #ddd6d7;
     cursor: pointer;
 }
+
 /* Create an active/current "tab button" class */
 
 div.tab button.active {
     background-color: #1b3bcc;
     color: white;
 }
+
 #application-edit-main-container {
     display: flex;
 }
 
-
 #application-edit-outer-content {
     height: auto;
-    width: 100%;
-}
-
-#application-edit-content {
-    margin: 5px 10px 5px 10px;
-    width: 90%;
 }
 
 #app-edit-content {
@@ -486,6 +544,7 @@ div.tab button.active {
     margin-top: 20px;
     margin-bottom: 20px;
 }
+
 .release-create {
     height: 150px;
     margin-bottom: 20px;
@@ -540,6 +599,7 @@ div.tab button.active {
     margin-top: 20px;
     max-width: 100%;
 }
+
 .save-info {
     float: right;
     margin-bottom: 10px;
@@ -550,8 +610,8 @@ div.tab button.active {
     margin: 10px;
 }
 
-.create-platform {
-    padding-left: 90%;
+.create-platform i {
+    margin-right: 10px;
 }
 
 #platform-list {

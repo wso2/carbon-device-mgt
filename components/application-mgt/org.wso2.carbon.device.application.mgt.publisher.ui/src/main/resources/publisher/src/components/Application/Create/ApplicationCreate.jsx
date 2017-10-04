@@ -24,6 +24,7 @@ import ApplicationMgtApi from '../../../api/applicationMgtApi';
 import {Col, Modal, ModalBody, ModalHeader, Row} from 'reactstrap';
 import {FormattedMessage} from 'react-intl';
 
+
 /**
  * The App Create Component.
  *
@@ -88,8 +89,8 @@ class ApplicationCreate extends Component {
      * Handles form submit.
      * */
     onSubmit() {
-        let stepData = this.state.stepData;
-        let applicationCreationPromise = ApplicationMgtApi.createApplication(stepData);
+        let {generalInfo, platform, screenshots, release} = this.state;
+        let applicationCreationPromise = ApplicationMgtApi.createApplication(generalInfo, platform, screenshots, release);
         applicationCreationPromise.then(response => {
                 this.handleYes();
             }
@@ -217,7 +218,7 @@ class ApplicationCreate extends Component {
                     <Step4
                         defaultData={this.state.release}
                         handlePrev={this.onPrevClick}
-                        setStepData={this.setStepData}
+                        onSubmit={this.onSubmit}
                         close={this.onClose}
                     />
                 )

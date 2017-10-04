@@ -102,12 +102,14 @@ class GeneralInfo extends Component {
                                 <span className="image-sub-title"> (600 X 800 32 bit PNG)</span>
                                 <div id="screenshot-container">
                                     {this.state.screenshots.map((tile) => (
-                                        <button id="img-btn-screenshot" style={{height: '210px', width: '410px'}}
+                                        <button id="img-btn-screenshot"
+                                                style={{height: '210px', width: '410px'}}
                                                 onMouseEnter={() => {
                                                     console.log("Mouse Entered")
                                                 }}>
                                             {console.log(tile[0].preview)}
-                                            <img style={{height: '200px', width: '400px'}} src={tile[0].preview}/>
+                                            <img style={{height: '200px', width: '400px'}}
+                                                 src={tile[0].preview}/>
                                         </button>
                                     ))}
                                     {this.state.screenshots.length < 3 ?
@@ -140,7 +142,8 @@ class GeneralInfo extends Component {
                                             <button onMouseEnter={() => {
                                                 console.log("Mouse Entered")
                                             }}>
-                                                <img style={{height: '200px', width: '200px'}} src={tile.preview}/>
+                                                <img style={{height: '200px', width: '200px'}}
+                                                     src={tile.preview}/>
                                             </button>
                                         ))}
                                         {this.state.icon.length === 0 ?
@@ -167,7 +170,8 @@ class GeneralInfo extends Component {
                                             <button onMouseEnter={() => {
                                                 console.log("Mouse Entered")
                                             }}>
-                                                <img style={{height: '200px', width: '400px'}} src={tile.preview}/>
+                                                <img style={{height: '200px', width: '400px'}}
+                                                     src={tile.preview}/>
                                             </button>
                                         ))}
                                         {this.state.banner.length === 0 ?
@@ -186,9 +190,7 @@ class GeneralInfo extends Component {
                             </div>
                         </div>
                         <div className="save-info">
-                            <Button>
-                                <FormattedMessage id="Save" defaultMessage="Save"/>
-                            </Button>
+                            <Button>Save</Button>
                         </div>
                     </form>
                 </Row>

@@ -35,13 +35,16 @@ class BaseLayout extends Component {
 
     constructor() {
         super();
+        this.logout = this.logout.bind(this);
+        this.closeModal = this.closeModal.bind(this);
+        this.onClickPlatforms = this.onClickPlatforms.bind(this);
         this.state = {
             notifications: 0,
             user: 'Admin',
-            openModal: false
+            openModal: false,
+            currentPage: "Applications"
         };
-        this.logout = this.logout.bind(this);
-        this.closeModal = this.closeModal.bind(this);
+
     }
 
     handleApplicationClick() {
@@ -71,46 +74,58 @@ class BaseLayout extends Component {
     }
 
     onClickPlatforms() {
-        window.location.href = "/assets/platforms";
+        window.location.href = "/publisher/assets/platforms";
+        this.setState({currentPage: "Platforms"});
+
     }
 
     render() {
         return (
             <div>
                 <div id="header-content">
-                    <div id="header">
+
+                        <div id="header">
                         <span id="header-text">
                             WSO2 IoT <FormattedMessage id="App.Publisher" defaultMessage="Application Publisher"/>
                         </span>
-                        <div id="header-btn-container">
-                            <Button id="header-button"><i className="fw fw-notification btn-header"></i></Button>
-                            <Button id="header-button"><i className="fw fw-user btn-header"></i></Button>
+                            <div id="header-btn-container">
+                                <Button id="header-button"><i className="fw fw-notification btn-header"></i></Button>
+                                <Button id="header-button"><i className="fw fw-user btn-header"></i></Button>
+                            </div>
+                            <div id="search-box">
+                                <i className="fw fw-search search-icon">
+                                </i>
+                                <Input
+                                    id="search"
+                                    name="search"
+                                    placeholder={'Search for Applications'}
+                                    onChange={(event) => console.log(event.target.value)} //TODO: Remove this
+                                />
+                            </div>
                         </div>
-                        <div id="search-box">
-                            <i className="fw fw-search search-icon">
-                            </i>
-                            <Input
-                                id="search"
-                                name="search"
-                                placeholder={'Search for Applications'}
-                                onChange={(event) => console.log(event.target.value)} //TODO: Remove this
+                    <Container>
+                        <div id="add-btn-container">
+                            <FloatingButton
+                                className="add-btn small"
+                                onClick={this.handleApplicationCreateClick.bind(this)}
                             />
                         </div>
-                    </div>
-                    <div id="add-btn-container">
-                        <FloatingButton
-                            className="add-btn small"
-                            onClick={this.handleApplicationCreateClick.bind(this)}
-                        />
-                    </div>
+                    </Container>
                 </div>
-                <Container fluid>
-                    <div id="app-main-content" style={this.state.style}>
-                        <Row>
-                            <div className="platform-link-placeholder">
-                                <Button id="secondary-button" onClick={this.onClickPlatforms}>
-                                    <i className="fw fw-settings"></i> Platforms</Button>
-                            </div>
+                <Container className="application-container">
+                    <div id="app-main-content">
+                        <Row id="sub-title-container">
+                            <Col>
+                                <div id="sub-title">
+                                    {this.state.currentPage}
+                                </div>
+                            </Col>
+                            <Col>
+                                <div className="platform-link-placeholder">
+                                    <Button id="secondary-button" onClick={this.onClickPlatforms}>
+                                        <i className="fw fw-settings"></i> Platforms</Button>
+                                </div>
+                            </Col>
                         </Row>
                         <Row>
                             <div id="application-content">

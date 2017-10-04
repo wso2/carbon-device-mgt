@@ -54,7 +54,9 @@ class PlatformListing extends Component {
             <div id="platform-listing">
                 <Row>
                     <div className="create-platform">
-                        <Button id="create-platform-btn" onClick={this.onPlatformCreateClick}>Create Platform</Button>
+                        <Button id="secondary-button" onClick={this.onPlatformCreateClick}>
+                            <i className="fw fw-add"></i>Create Platform
+                        </Button>
                     </div>
                 </Row>
                 <Row>

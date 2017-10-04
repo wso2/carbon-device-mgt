@@ -105,17 +105,9 @@ class ApplicationEdit extends Component {
                         </div>
                     </Col>
                     <Col xs="9">
-                        <div id="app-edit-content">
-                            <Row>
-                                <Col xs="12">
-                                    <div id="application-edit-outer-content">
-                                        {/* Application edit content */}
-                                        <div id="application-edit-content">
-                                            {this.getTabContent(this.state.activeTab)}
-                                        </div>
-                                    </div>
-                                </Col>
-                            </Row>
+                        {/* Application edit content */}
+                        <div id="application-edit-content">
+                            {this.getTabContent(this.state.activeTab)}
                         </div>
                     </Col>
                 </Row>

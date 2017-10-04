@@ -35,8 +35,8 @@ export default class ApplicationMgtApi {
      *
      * From applicationData, the proper application object will be created and send it to the api.
      * */
-    static createApplication(applicationData) {
-        let {application, images} = Helper.buildApplication(applicationData);
+    static createApplication(generalInfo, platform, screenshots, release) {
+        let {application, images} = Helper.buildApplication(generalInfo, platform, screenshots, release);
         const headers = AuthHandler.createAuthenticationHeaders("application/json");
         console.log(application);
         console.log(images);

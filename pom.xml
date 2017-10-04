@@ -1784,7 +1784,7 @@
     <properties>
         <servelet.jsp.version>2.2.1</servelet.jsp.version>
         <testng.version>6.1.1</testng.version>
-        <carbon.kernel.version>4.4.11</carbon.kernel.version>
+        <carbon.kernel.version>4.4.17</carbon.kernel.version>
         <carbon.kernel.449.version>4.4.9</carbon.kernel.449.version>
         <carbon.kernel.version.range>[4.4.0, 5.0.0)</carbon.kernel.version.range>
         <carbon.p2.plugin.version>1.5.4</carbon.p2.plugin.version>

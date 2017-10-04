@@ -58,14 +58,19 @@ class ApplicationView extends Component {
                         <Row>
                             <Col>
                                 <div id="app-icon">
+                                    {/*TODO: Remove this*/}
+                                    <img
+                                        className="app-view-image"
+                                        src={app.icon}
+                                    />
                                 </div>
                             </Col>
                             <Col>
                                 <Row>
-                                    <span><strong>{app.name}</strong></span>
+                                    <p className="app-view-field">{app.name}</p>
                                 </Row>
                                 <Row>
-                                    <span className="app-updated-date">Last updated on {app.modifiedAt}</span>
+                                    <span className="app-updated-date app-view-text">Last updated on {app.modifiedAt}</span>
                                 </Row>
                             </Col>
                         </Row>
@@ -73,7 +78,7 @@ class ApplicationView extends Component {
                     <div id="application-view-row">
                         <Row>
                             <Col>
-                                <span className="app-install-count">2k Installs</span>
+                                <span className="app-install-count app-view-text">2k Installs</span>
                             </Col>
                         </Row>
                         <Row>
@@ -84,7 +89,7 @@ class ApplicationView extends Component {
                                 <i className="fw fw-star"></i>
                             </Col>
                             <Col>
-                                <p><a href="#">View in Store</a></p>
+                                <p className="app-view-text"><a href="#">View in Store</a></p>
                             </Col>
                         </Row>
                     </div>
@@ -92,42 +97,42 @@ class ApplicationView extends Component {
                     <div id="application-view-row">
                         <Row>
                             <Col>
-                                <span><strong>
+                                <p className="app-view-field">
                                     <FormattedMessage id="Description" defaultMessage="Description"/>:
-                                </strong></span>
+                                </p>
                             </Col>
                             <Col>
-                                <p>{app.description}</p>
+                                <p className="app-view-text">{app.description}</p>
                             </Col>
                         </Row>
                         <Row>
                             <Col>
-                                <span><strong>
+                                <p className="app-view-field">
                                     <FormattedMessage id="Tags" defaultMessage="Tags"/>:
-                                </strong></span>
+                                </p>
                             </Col>
                             <Col>
-                                <p>[list of tags...]</p>
+                                <p className="app-view-text">[list of tags...]</p>
                             </Col>
                         </Row>
                         <Row>
                             <Col>
-                                <span><strong>
+                                <p className="app-view-field">
                                     <FormattedMessage id="Release" defaultMessage="Release"/>:
-                                </strong></span>
+                                </p>
                             </Col>
                             <Col>
-                                <p>Production</p>
+                                <p className="app-view-text">Production</p>
                             </Col>
                         </Row>
                         <Row>
                             <Col>
-                                <span><strong>
+                                <p className="app-view-field">
                                     <FormattedMessage id="Version" defaultMessage="Version"/>:
-                                </strong></span>
+                                </p>
                             </Col>
                             <Col>
-                                <p>v1.0</p>
+                                <p className="app-view-text">v1.0</p>
                             </Col>
                         </Row>
                     </div>

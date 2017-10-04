@@ -21,9 +21,43 @@ import Store from './App';
 import ReactDOM from 'react-dom';
 import 'bootstrap/dist/css/bootstrap.css';
 import registerServiceWorker from './registerServiceWorker';
+import {IntlProvider, addLocaleData, defineMessages} from 'react-intl';
+import Axios from 'axios';
+import Constants from './common/constants';
+import Configuration from './common/configuration';
 
-/**
- * This is the base js file of the app. All the content will be rendered in the root element.
- * */
-ReactDOM.render(<Store/>, document.getElementById('root'));
-registerServiceWorker();
+function loadStore() {
+    const possibleLocale = navigator.language.split("-")[0];
+    //TODO:         baseURL: Configuration.hostConstants.baseURL + "/" + Configuration.hostConstants.appContext + "/locales/"
+    let loadLocaleFile = Axios.create({
+        baseURL: Configuration.hostConstants.baseURL + "/locales/"
+        + possibleLocale + ".json"
+    }).get();
+
+
+    /**
+     * This is the base js file of the app. All the content will be rendered in the root element.
+     * */
+    loadLocaleFile.then(response => {
+        const messages = defineMessages(response.data);
+        addLocaleData(require('react-intl/locale-data/' + possibleLocale));
+        ReactDOM.render(<IntlProvider locale={possibleLocale}
+                                      messages={messages}><Store/></IntlProvider>, document.getElementById('root'));
+        registerServiceWorker();
+    }).catch(error => {
+        addLocaleData(require('react-intl/locale-data/en'));
+        let defaultLocale = Axios.create({
+            baseURL: Configuration.hostConstants.baseURL + "/" + "locales/" + Constants.defaultLocale + ".json"
+        }).get();
+        defaultLocale.then(response => {
+            const messages = defineMessages(response.data);
+            ReactDOM.render(<IntlProvider locale={possibleLocale}
+                                          messages={messages}><Store/></IntlProvider>, document.getElementById('root'));
+            registerServiceWorker();
+        }).catch(error => {
+        });
+    });
+}
+
+Configuration.loadConfiguration(loadStore);
+

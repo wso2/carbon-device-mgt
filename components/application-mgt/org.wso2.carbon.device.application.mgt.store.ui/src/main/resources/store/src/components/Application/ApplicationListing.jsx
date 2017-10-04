@@ -21,6 +21,7 @@ import {withRouter} from 'react-router-dom';
 import {Button, Col, Row, Table} from 'reactstrap';
 import Drawer from '../UIComponents/Drawer/Drawer';
 import ApplicationView from './View/ApplicationView';
+import Configuration from '../../common/configuration';
 import Constants from '../../common/constants';
 
 /**
@@ -55,7 +56,6 @@ class ApplicationListing extends Component {
                     src: "http://dl1.cbsistatic.com/i/r/2016/08/08/0e67e43a-5a45-41ab-b81d-acfba8708044/resize/736x552/0c0ee669677b5060a0fa1bfb0c7873b4/android-logo-promo-470.png"
                 }]
         };
-        console.log(Constants.appManagerEndpoints.GET_ALL_APPS);
     }
 
     headers = [

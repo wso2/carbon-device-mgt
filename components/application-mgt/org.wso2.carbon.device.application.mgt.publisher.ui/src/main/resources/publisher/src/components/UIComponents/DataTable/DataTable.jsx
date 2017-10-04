@@ -16,13 +16,7 @@
  * under the License.
  */
 
-import Theme from '../../../theme';
-import PropTypes from 'prop-types';
 import React, {Component} from 'react';
-import DataTableRow from './DataTableRow';
-import DataTableHeader from './DataTableHeader';
-import RaisedButton from 'material-ui/RaisedButton';
-import {Table, TableBody, TableHeader, TableRow} from 'material-ui/Table';
 
 /**
  * The Custom Table Component.
@@ -53,8 +47,6 @@ class DataTable extends Component {
 
     constructor() {
         super();
-        this.handleRowClick = this.handleRowClick.bind(this);
-        this.handleBtnClick = this.handleBtnClick.bind(this);
         this.state = {
             data: [],
             headers: [],
@@ -62,92 +54,21 @@ class DataTable extends Component {
         this.scriptId = "data-table"
     };
 
-    componentWillMount() {
-        console.log("Will mount", this.props.data); //TODO: Remove this
-        this.setState({data: this.props.data, headers: this.props.headers}, Theme.insertThemingScripts(this.scriptId));
-
-        /**
-         *Loading the theme files based on the the user-preference.
-         */
-    }
-
-    componentWillUnmount() {
-        Theme.removeThemingScripts(this.scriptId);
-    }
-
-    shouldComponentUpdate(nextProps, nextState) {
-        if (!nextProps.data) {
-            this.setState({data: nextState.data});
-            return true;
-        }
-        this.setState({data: nextProps.data});
-        return true;
-    }
-
     /**
      * Triggers when user click on table row.
      * This method invokes the parent method handleRowClick, which is passed via props.
      * */
-    handleRowClick(id) {
-        this.props.handleRowClick(id);
-    }
-
-    handleBtnClick(id) {
-        this.props.onAppEditClick(id);
-    }
 
     render() {
-        const {data, headers} = this.state;
+        return (
+            <div className="data-table">
+                {this.props.children}
+            </div>
+        )
 
-        //TODO: Remove this
-        console.log(data);
-
-        let noDataContent = null;
-
-        if (this.props.noDataMessage.type === 'button') {
-            noDataContent = <div><RaisedButton label={this.props.noDataMessage.text}/></div>
-        }
-
-        if (data) {
-            return (<Table
-                selectable={false}>
-                <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
-                    <TableRow>
-                        {headers.map((header) => {
-                                return (
-                                    <DataTableHeader
-                                        key={header.data_id}
-                                        className="datatableRowColumn"
-                                        header={header}
-                                    />
-                                )}
-                        )}
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    {data.map((dataItem) => {
-                        return (
-                            <DataTableRow
-                                key={dataItem.id}
-                                dataItem={dataItem}
-                                handleButtonClick={this.handleBtnClick}
-                                handleClick={this.handleRowClick}
-                            />
-                        )
-                    })}
-                </TableBody>
-            </Table>)
-        }
-        return (<div>{noDataContent}</div>);
     }
 }
 
-DataTable.prototypes = {
-    data: PropTypes.arrayOf(Object),
-    headers: PropTypes.arrayOf(Object),
-    sortData: PropTypes.func,
-    handleRowClick: PropTypes.func,
-    noDataMessage: PropTypes.object
-};
+DataTable.prototypes = {};
 
 export default DataTable;

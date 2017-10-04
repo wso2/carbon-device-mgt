@@ -25,20 +25,18 @@
     right: 0%;
     background-color: #ffffff;
     overflow-x: hidden; /* Disable horizontal scroll */
-    padding-top: 60px; /* Place content 60px from the top */
+    padding: 60px 0px 0 5px; /* Place content 60px from the top */
     transition: 0.5s; /* 0.5 second transition effect to slide in the sidenav */
     box-shadow: -2px 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
-.app-view-drawer a {
+.drawer-close-btn {
     padding: 8px 8px 8px 32px;
     text-decoration: none;
-    font-size: 25px;
     color: #818181;
     display: block;
     transition: 0.3s
 }
-
 
 /* Position and style the close button (top right corner) */
 .app-view-drawer .closebtn {
@@ -49,9 +47,8 @@
     margin-left: 50px;
 }
 
-.drawer-close-btn {
-    height: 40px;
-    width: 30px;
+.drawer-close-btn i {
+    font-size: 14px;
 }
 
 .drawer-close-btn:hover {
@@ -67,7 +64,8 @@
 
 /* On smaller screens, where height is less than 450px, change the style of the sidenav (less padding and a smaller font size) */
 @media screen and (max-height: 450px) {
-    .sidenav {padding-top: 15px;}
-    .sidenav a {font-size: 18px;}
+    .sidenav {
+        padding-top: 15px;
+    }
 }
 

@@ -16,33 +16,29 @@
  * under the License.
  */
 
+/*
+ * Material design based Floating button.
+ */
 .btn-circle {
     color: white;
     position: relative;
-    background-color: #e65100;
     border-radius: 50%;
-    box-shadow: -2px 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    text-align: center;
+    box-shadow: rgba(0, 0, 0, 0.156863) 0px 3px 10px, rgba(0, 0, 0, 0.227451) 0px 3px 10px
 }
 
 .btn-circle i {
-    position: absolute;
-    margin-top: 37%;
-    margin-left: 37%;
+    margin-top: 40%;
 }
 
 .small {
-    height: 50px;
-    width: 50px;
+    height: 56px;
+    width: 56px;
 }
 
 .medium {
     height: 100px;
     width: 100px;
-}
-
-.btn-circle:hover {
-    cursor: pointer;
-    background-color: rgb(255, 93, 2);
 }
 
 .primary {

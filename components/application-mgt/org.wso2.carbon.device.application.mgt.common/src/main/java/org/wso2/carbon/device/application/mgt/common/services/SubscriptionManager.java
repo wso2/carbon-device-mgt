@@ -34,7 +34,7 @@ public interface SubscriptionManager {
      * @return Failed Device List which the application was unable to install
      * @throws ApplicationManagementException Application Management Exception
      */
-    List<DeviceIdentifier> installApplicationForDevices(String applicationUUID,
+    List<DeviceIdentifier> installApplicationForDevices(String applicationUUID, String versionName,
                                                         List<DeviceIdentifier> deviceList)
             throws ApplicationManagementException;
 

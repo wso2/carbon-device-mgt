@@ -28,6 +28,7 @@ import org.wso2.carbon.device.mgt.common.InvalidDeviceException;
 import org.wso2.carbon.device.mgt.common.TransactionManagementException;
 import org.wso2.carbon.device.mgt.common.app.mgt.Application;
 import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManagementException;
+import org.wso2.carbon.device.mgt.common.app.mgt.DeviceApplicationMapping;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Activity;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
@@ -192,10 +193,85 @@ public class ApplicationManagerProviderServiceImpl implements ApplicationManagem
         }
     }
 
+    private boolean contains(DeviceApplicationMapping deviceApp, List<Application> installedApps) {
+        boolean installed = false;
+        for (Application app : installedApps) {
+            if (app.getApplicationIdentifier().equals(deviceApp.getApplicationUUID()) && app.getVersion().equals(deviceApp.getVersionName())) {
+                installed = true;
+                break;
+            }
+        }
+        return installed;
+    }
+
     @Override
     public void updateApplicationListInstalledInDevice(
             DeviceIdentifier deviceIdentifier,
             List<Application> applications) throws ApplicationManagementException {
+
+        try {
+            DeviceManagementDAOFactory.beginTransaction();
+            List<DeviceApplicationMapping> installedDeviceApps = new ArrayList<>();
+            List<DeviceApplicationMapping> uninstalledDeviceApps = new ArrayList<>();
+            List<DeviceApplicationMapping> deviceApps = applicationMappingDAO.getApplicationsOfDevice(deviceIdentifier.getId(), false);
+            for (DeviceApplicationMapping deviceApp : deviceApps) {
+                if (contains(deviceApp, applications)) {
+                    if (!deviceApp.isInstalled()) {
+                        // device app mapping is recorded as not installed (i.e. install app operation has been sent to device)
+                        // as the app list sent from the device contains this, app is now installed in the device
+                        // so we can mark the device app mapping entry as installed.
+                        deviceApp.setInstalled(true);
+                        applicationMappingDAO.updateDeviceApplicationMapping(deviceApp);
+                    }
+                } else {
+                    if (deviceApp.isInstalled()) {
+                        // we have a device-app mapping in the installed state in the db. but app is not installed in the device.
+                        // which implies that a previously installed app has been uninstalled from the device. so we have to remove the device app mapping
+                        applicationMappingDAO.removeApplicationMapping(deviceApp);
+                    }
+                }
+            }
+            DeviceManagementDAOFactory.commitTransaction();
+
+        } catch (DeviceManagementDAOException | TransactionManagementException e) {
+            String msg = "Failed to update application list of the device " + deviceIdentifier;
+            throw new ApplicationManagementException(msg, e);
+
+        }
+    }
+
+    public void updateApplicationListInstalledInDeviceDep(
+            DeviceIdentifier deviceIdentifier,
+            List<Application> applications) throws ApplicationManagementException {
+
+        try {
+            DeviceManagementDAOFactory.beginTransaction();
+            List<DeviceApplicationMapping> installedDeviceApps = new ArrayList<>();
+            List<DeviceApplicationMapping> uninstalledDeviceApps = new ArrayList<>();
+            List<DeviceApplicationMapping> deviceApps = applicationMappingDAO.getApplicationsOfDevice(deviceIdentifier.getId(), false);
+            for (DeviceApplicationMapping deviceApp : deviceApps) {
+                if (contains(deviceApp, applications)) {
+                    // if device app is pending mark device app as installed
+                    if (!deviceApp.isInstalled()) {
+                        deviceApp.setInstalled(true);
+                        applicationMappingDAO.updateDeviceApplicationMapping(deviceApp);
+                    }
+                } else {
+                    if (deviceApp.isInstalled()) {
+                        // this means we have a device-app mapping in the installed state in the db. but app is not installed in the device.
+                        // which implies that a previously installed app has been uninstalled from the device. so we have to remove the device app mapping
+                        applicationMappingDAO.removeApplicationMapping(deviceApp);
+                    }
+                }
+            }
+            DeviceManagementDAOFactory.commitTransaction();
+
+        } catch (DeviceManagementDAOException | TransactionManagementException e) {
+            String msg = "Failed to update application list of the device " + deviceIdentifier;
+            throw new ApplicationManagementException(msg, e);
+
+        }
+
         List<Application> installedAppList = getApplicationListForDevice(deviceIdentifier);
         try {
             Device device = DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().getDevice(deviceIdentifier,

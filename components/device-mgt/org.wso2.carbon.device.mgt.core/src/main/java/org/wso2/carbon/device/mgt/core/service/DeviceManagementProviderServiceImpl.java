@@ -28,8 +28,10 @@ import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.DeviceManager;
 import org.wso2.carbon.device.mgt.common.DeviceNotFoundException;
+import org.wso2.carbon.device.mgt.common.app.mgt.DeviceApplicationMapping;
 import org.wso2.carbon.device.mgt.common.pull.notification.PullNotificationExecutionFailedException;
 import org.wso2.carbon.device.mgt.common.pull.notification.PullNotificationSubscriber;
+import org.wso2.carbon.device.mgt.core.dao.ApplicationMappingDAO;
 import org.wso2.carbon.device.mgt.core.dto.DeviceTypeServiceIdentifier;
 import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
 import org.wso2.carbon.device.mgt.common.FeatureManager;
@@ -100,6 +102,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     private DeviceTypeDAO deviceTypeDAO;
     private EnrollmentDAO enrollmentDAO;
     private ApplicationDAO applicationDAO;
+    private ApplicationMappingDAO applicationMappingDAO;
     private DeviceManagementPluginRepository pluginRepository;
 
     public DeviceManagementProviderServiceImpl() {
@@ -116,6 +119,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         this.applicationDAO = DeviceManagementDAOFactory.getApplicationDAO();
         this.deviceTypeDAO = DeviceManagementDAOFactory.getDeviceTypeDAO();
         this.enrollmentDAO = DeviceManagementDAOFactory.getEnrollmentDAO();
+        this.applicationMappingDAO = DeviceManagementDAOFactory.getApplicationMappingDAO();
     }
 
     @Override
@@ -1696,6 +1700,20 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                                                                        "for device type" + deviceIdentifier.getType());
         }
         pullNotificationSubscriber.execute(deviceIdentifier, operation);
+    }
+
+    public void addDeviceApplicationMapping(DeviceApplicationMapping deviceApp) throws DeviceManagementException {
+        try {
+            DeviceManagementDAOFactory.openConnection();
+            applicationMappingDAO.addDeviceApplicationMapping(deviceApp);
+        } catch (DeviceManagementDAOException e) {
+            throw new DeviceManagementException("Error occurred while adding device application mapping for device "
+                    + deviceApp.getDeviceIdentifier() + " and application " + deviceApp.getApplicationUUID(), e);
+        } catch (SQLException e) {
+            throw new DeviceManagementException("Error occurred while opening a connection to the data source", e);
+        } finally {
+            DeviceManagementDAOFactory.closeConnection();
+        }
     }
 
     /**

@@ -277,7 +277,7 @@ public interface ApplicationManagementAPI {
             @Valid Application application);
 
     @POST
-    @Path("upload-artifacts/{uuid}")
+    @Path("/upload-artifacts/{uuid}")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @ApiOperation(
@@ -314,7 +314,7 @@ public interface ApplicationManagementAPI {
             @Multipart(value = "screenshot") List<Attachment> screenshots);
 
     @PUT
-    @Path("upload-artifacts/{uuid}")
+    @Path("/upload-artifacts/{uuid}")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @ApiOperation(

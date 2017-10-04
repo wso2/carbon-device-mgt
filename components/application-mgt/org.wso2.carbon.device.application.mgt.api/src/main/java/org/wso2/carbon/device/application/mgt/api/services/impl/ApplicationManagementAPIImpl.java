@@ -207,7 +207,7 @@ public class ApplicationManagementAPIImpl implements ApplicationManagementAPI {
 
     @Override
     @POST
-    @Path("upload-image-artifacts/{uuid}")
+    @Path("/upload-image-artifacts/{uuid}")
     public Response uploadApplicationArtifacts(@PathParam("uuid") String applicationUUID,
                                                @Multipart("icon") Attachment iconFile, @Multipart("banner") Attachment bannerFile, @Multipart
                                                        ("screenshot") List<Attachment> attachmentList) {
@@ -257,7 +257,7 @@ public class ApplicationManagementAPIImpl implements ApplicationManagementAPI {
 
     @Override
     @PUT
-    @Path("upload-image-artifacts/{uuid}")
+    @Path("/upload-image-artifacts/{uuid}")
     public Response updateApplicationArtifacts(@PathParam("uuid") String applicationUUID,
                                                @Multipart("icon") Attachment iconFile, @Multipart("banner") Attachment bannerFile, @Multipart
                                                        ("screenshot") List<Attachment> attachmentList) {

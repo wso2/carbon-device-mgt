@@ -52,7 +52,7 @@ public class PlatformManagementAPIImpl implements PlatformManagementAPI {
 
     @GET
     @Override
-    public Response getPlatforms(@QueryParam("status") String status) {
+    public Response getPlatforms(@QueryParam("status") String status, @QueryParam("tag") String tag) {
         int tenantID = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId(true);
 
         if (log.isDebugEnabled()) {
@@ -61,6 +61,7 @@ public class PlatformManagementAPIImpl implements PlatformManagementAPI {
         try {
             List<Platform> platforms = APIUtil.getPlatformManager().getPlatforms(tenantID);
             List<Platform> results;
+            List<Platform> filteredPlatforms = new ArrayList<>();
             if (status != null) {
                 if (status.contentEquals(ALL_STATUS)) {
                     results = platforms;
@@ -84,10 +85,22 @@ public class PlatformManagementAPIImpl implements PlatformManagementAPI {
             } else {
                 results = platforms;
             }
+
+            if (tag != null) {
+                if (results != null) {
+                    for (Platform platform : results) {
+                        if (platform.getTags() != null && platform.getTags().contains(tag)) {
+                            filteredPlatforms.add(platform);
+                        }
+                    }
+                }
+            } else {
+                filteredPlatforms = results;
+            }
             if (log.isDebugEnabled()) {
                 log.debug("Number of platforms with the status " + status + " : " + results.size());
             }
-            return Response.status(Response.Status.OK).entity(results).build();
+            return Response.status(Response.Status.OK).entity(filteredPlatforms).build();
         } catch (PlatformManagementException e) {
             log.error("Error while getting the platforms for tenant - " + tenantID, e);
             return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
@@ -188,6 +201,24 @@ public class PlatformManagementAPIImpl implements PlatformManagementAPI {
             log.error("Platform Management Exception while trying to update the status of the platform with the "
                     + "identifier : " + id + " for the tenant : " + tenantId, e);
             return APIUtil.getResponse(e, Response.Status.NOT_FOUND);
+        }
+    }
+
+    @GET
+    @Path("tags")
+    @Override
+    public Response getPlatformTags(@QueryParam("name") String name) {
+        if (name == null || name.isEmpty() || name.length() < 3) {
+            return APIUtil.getResponse("In order to get platform tags, it is required to pass the first 3 "
+                    + "characters of the platform tag name", Response.Status.INTERNAL_SERVER_ERROR);
+        }
+        try {
+            List<String> platformTags = APIUtil.getPlatformManager().getPlatformTags(name);
+            return Response.status(Response.Status.OK).entity(platformTags).build();
+        } catch (PlatformManagementException e) {
+            log.error("Platform Management Exception while trying to get the platform tags with starting character "
+                    + "sequence " + name, e);
+            return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
         }
     }
 }

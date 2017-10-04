@@ -19,6 +19,7 @@
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {withRouter} from 'react-router-dom';
+import Axios from 'axios';
 import AuthHandler from "../../api/authHandler";
 import {Button, Col, Container, Input, Row,} from 'reactstrap';
 import ApplicationCreate from '../Application/Create/ApplicationCreate';
@@ -42,9 +43,20 @@ class BaseLayout extends Component {
             notifications: 0,
             user: 'Admin',
             openModal: false,
-            currentPage: "Applications"
+            currentPage: "Applications",
+            logo: {}
         };
+    }
 
+    componentWillMount() {
+        Axios.get("/images/logo.png", {responseType: 'arraybuffer'}).then(
+            response => {
+                let image = "data:image/jpeg;base64," + new Buffer(response.data, 'binary').toString('base64');
+                this.setState({logo: image});
+            }
+        ).catch(err => {
+            console.log(err);
+        });
     }
 
     handleApplicationClick() {
@@ -84,25 +96,26 @@ class BaseLayout extends Component {
             <div>
                 <div id="header-content">
 
-                        <div id="header">
+                    <div id="header">
                         <span id="header-text">
-                            WSO2 IoT <FormattedMessage id="App.Publisher" defaultMessage="Application Publisher"/>
+                            <img className="header-image" src={this.state.logo}/>
+                            IoT <FormattedMessage id="App.Publisher" defaultMessage="Application Publisher"/>
                         </span>
-                            <div id="header-btn-container">
-                                <Button id="header-button"><i className="fw fw-notification btn-header"></i></Button>
-                                <Button id="header-button"><i className="fw fw-user btn-header"></i></Button>
-                            </div>
-                            <div id="search-box">
-                                <i className="fw fw-search search-icon">
-                                </i>
-                                <Input
-                                    id="search"
-                                    name="search"
-                                    placeholder={'Search for Applications'}
-                                    onChange={(event) => console.log(event.target.value)} //TODO: Remove this
-                                />
-                            </div>
+                        <div id="header-btn-container">
+                            <Button id="header-button"><i className="fw fw-notification btn-header"></i></Button>
+                            <Button id="header-button"><i className="fw fw-user btn-header"></i></Button>
                         </div>
+                        <div id="search-box">
+                            <i className="fw fw-search search-icon">
+                            </i>
+                            <Input
+                                id="search"
+                                name="search"
+                                placeholder={'Search for Applications'}
+                                onChange={(event) => console.log(event.target.value)} //TODO: Remove this
+                            />
+                        </div>
+                    </div>
                     <Container>
                         <div id="add-btn-container">
                             <FloatingButton
@@ -117,7 +130,8 @@ class BaseLayout extends Component {
                         <Row id="sub-title-container">
                             <Col>
                                 <div id="sub-title">
-                                    {this.state.currentPage}
+                                    {/*TODO: Add the current page title*/}
+                                    {/*{window.location.pathname}*/}
                                 </div>
                             </Col>
                             <Col>

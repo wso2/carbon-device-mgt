@@ -16,7 +16,7 @@
  * under the License.
  */
 import React, {Component} from 'react';
-import {Col, Row} from "reactstrap";
+import {Button, Col, Row} from "reactstrap";
 
 /**
  * Platform component.
@@ -47,10 +47,10 @@ class Platform extends Component {
 
                 </Row>
                 <hr/>
-                <Row style={{fontSize: '12px'}}>
-                    <Col xs="3"><a>{platform.enabled ? "Disable" : "Activate"}</a></Col>
-                    <Col xs="6"><a>Share With Tenants</a></Col>
-                    <Col xs="1"><i className="fw fw-down"></i></Col>
+                <Row style={{fontSize: '20px'}}>
+                    <Col xs="3"><Button className="custom-flat grey">{platform.enabled ? "Disable" : "Activate"}</Button></Col>
+                    <Col xs="6"><Button className="custom-flat grey">Share With Tenants</Button></Col>
+                    <Col xs="1"><Button className="custom-flat grey rounded"><i className="fw fw-down"></i></Button></Col>
                 </Row>
             </div>
         );

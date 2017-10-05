@@ -173,9 +173,9 @@ class Step2 extends Component {
                     <FormFeedback id="form-error">{this.state.errors.platform}</FormFeedback>
                 </FormGroup>
                 <ModalFooter>
-                    <Button color="primary" onClick={this.onBackClick}>Back</Button>
-                    <Button color="danger" onClick={this.onCancelClick}>Cancel</Button>
-                    <Button color="primary" onClick={this.setStepData}>Continue</Button>
+                    <Button className="custom-flat primary-flat" onClick={this.onBackClick}>Back</Button>
+                    <Button className="custom-flat danger-flat" onClick={this.onCancelClick}>Cancel</Button>
+                    <Button className="custom-raised primary" onClick={this.setStepData}>Continue</Button>
                 </ModalFooter>
             </div>
         );

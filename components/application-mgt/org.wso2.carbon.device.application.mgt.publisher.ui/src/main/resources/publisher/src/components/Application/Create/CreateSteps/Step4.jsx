@@ -147,9 +147,9 @@ class Step4 extends Component {
                     </Collapse>
                 </div>
                 <ModalFooter>
-                    <Button color="primary" onClick={this.onBackClick}>Back</Button>
-                    <Button color="danger" onClick={this.onCancelClick}>Cancel</Button>
-                    <Button color="primary" onClick={this.onSubmit}>Finish</Button>
+                    <Button className="custom-flat primary-flat" onClick={this.onBackClick}>Back</Button>
+                    <Button className="custom-flat danger-flat" onClick={this.onCancelClick}>Cancel</Button>
+                    <Button className="custom-raised primary" onClick={this.onSubmit}>Finish</Button>
                 </ModalFooter>
             </div>
         );

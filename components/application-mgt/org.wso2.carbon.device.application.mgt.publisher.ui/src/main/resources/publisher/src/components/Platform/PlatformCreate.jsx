@@ -60,8 +60,8 @@ class PlatformCreate extends Component {
                         </FormGroup>
                     </ModalBody>
                     <ModalFooter>
-                        <Button onClick={this.onCancelClick}>Cancel</Button>
-                        <Button color="primary">Create</Button>
+                        <Button className="custom-flat danger-flat" onClick={this.onCancelClick}>Cancel</Button>
+                        <Button className="custom-raised primary">Create</Button>
                     </ModalFooter>
                 </Modal>
             </div>

@@ -249,7 +249,7 @@ class ApplicationListing extends Component {
                                 className="data-table-row-cell">{application.currentLifecycle.lifecycleState.name}
                             </Col>
                             <Col>
-                                <Button id="secondary-button" onClick={() => this.onAppEditClick(application.uuid)}>
+                                <Button className="custom-flat grey rounded" onClick={() => this.onAppEditClick(application.uuid)}>
                                     <i className="fw fw-edit"></i>
                                 </Button>
                             </Col>

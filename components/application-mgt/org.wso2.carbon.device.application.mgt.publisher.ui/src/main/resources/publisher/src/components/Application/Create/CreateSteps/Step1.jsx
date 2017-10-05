@@ -253,7 +253,9 @@ class Step1 extends Component {
                             <FormFeedback id="form-error">{this.state.errors.name}</FormFeedback>
                         </FormGroup>
                         <FormGroup>
-                            <Label for="app-short-description">Short Description*</Label>
+                            <Label for="app-short-description">
+                                <FormattedMessage id="shortDescription" defaultMessage="shortDescription"/>*
+                            </Label>
                             <Input
                                 required
                                 type="textarea"
@@ -343,8 +345,8 @@ class Step1 extends Component {
                     </div>
                 </div>
                 <ModalFooter>
-                    <Button id="material-btn" onClick={this.onCancelClick}>Cancel</Button>
-                    <Button color="primary" onClick={this.setStepData}>Continue</Button>
+                    <Button className="custom-flat danger-flat" onClick={this.onCancelClick}>Cancel</Button>
+                    <Button className="custom-raised primary" onClick={this.setStepData}>Continue</Button>
                 </ModalFooter>
             </div>
         );

@@ -19,7 +19,6 @@ package org.wso2.carbon.device.application.mgt.core.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.application.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
 import org.wso2.carbon.device.application.mgt.common.services.SubscriptionManager;
@@ -41,7 +40,6 @@ import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * This is the default implementation for the Subscription Manager.
@@ -63,13 +61,9 @@ public class SubscriptionManagerImpl implements SubscriptionManager {
             org.wso2.carbon.device.mgt.common.DeviceIdentifier deviceIdentifier = new org.wso2.carbon.device.mgt
                     .common.DeviceIdentifier(device.getId(), device.getType());
             try {
-                DeviceManagementDAOFactory.openConnection();
-                // todo: replace this with boolean:deviceExsits(deviceId) operation
-                Map<Integer, Device> currentDevices = DeviceManagementDAOFactory.getDeviceDAO().getDevice(deviceIdentifier);
-                DeviceManagementDAOFactory.closeConnection();
-
-                if (currentDevices.isEmpty()) {
-                    log.error("Device with ID: " + device.getId() + " not found to install the application.");
+                DeviceManagementProviderService dmpService = DataHolder.getInstance().getDeviceManagementService();
+                if (!dmpService.isEnrolled(deviceIdentifier)) {
+                    log.error("Device with ID: " + device.getId() + " is not enrolled to install the application.");
                 } else {
                     if (log.isDebugEnabled()) {
                         log.debug("Installing application to : " + device.getId());
@@ -96,10 +90,8 @@ public class SubscriptionManagerImpl implements SubscriptionManager {
 //                    DAOFactory.getSubscriptionDAO().addDeviceApplicationMapping(device.getId(), applicationUUID, false);
                     failedDeviceList.remove(device);
                 }
-            } catch (DeviceManagementException | DeviceManagementDAOException | OperationManagementException | InvalidDeviceException | SQLException e) {
+            } catch (DeviceManagementException | OperationManagementException | InvalidDeviceException e) {
                 throw new ApplicationManagementException("Failed to install application " + applicationUUID + " on device " + deviceIdentifier, e);
-            } finally {
-                DeviceManagementDAOFactory.closeConnection();
             }
         }
         return failedDeviceList;
@@ -110,15 +102,14 @@ public class SubscriptionManagerImpl implements SubscriptionManager {
             throws ApplicationManagementException {
         log.info("Install application: " + applicationUUID + " to: " + userList.size() + " users.");
         List<DeviceIdentifier> deviceList = new ArrayList<>();
-        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
         for (String user : userList) {
             try {
-                List<Device> devicesOfUser = DeviceManagementDAOFactory.getDeviceDAO().getDevicesOfUser(user, tenantId);
+                List<Device> devicesOfUser = DataHolder.getInstance().getDeviceManagementService().getDevicesOfUser(user);
                 for (Device device : devicesOfUser) {
                     deviceList.add(new DeviceIdentifier(device
                             .getDeviceIdentifier(), device.getType()));
                 }
-            } catch (DeviceManagementDAOException e) {
+            } catch (DeviceManagementException e) {
                 log.error("Error when extracting the device list from user[" + user + "].", e);
             }
         }

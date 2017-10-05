@@ -18,7 +18,16 @@
  */
 package org.wso2.carbon.device.application.mgt.core.internal;
 
-import org.wso2.carbon.device.application.mgt.common.services.*;
+import org.wso2.carbon.device.application.mgt.common.services.ApplicationManager;
+import org.wso2.carbon.device.application.mgt.common.services.ApplicationReleaseManager;
+import org.wso2.carbon.device.application.mgt.common.services.ApplicationStorageManager;
+import org.wso2.carbon.device.application.mgt.common.services.CategoryManager;
+import org.wso2.carbon.device.application.mgt.common.services.CommentsManager;
+import org.wso2.carbon.device.application.mgt.common.services.LifecycleStateManager;
+import org.wso2.carbon.device.application.mgt.common.services.PlatformManager;
+import org.wso2.carbon.device.application.mgt.common.services.PlatformStorageManager;
+import org.wso2.carbon.device.application.mgt.common.services.SubscriptionManager;
+import org.wso2.carbon.device.application.mgt.common.services.VisibilityManager;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.user.core.service.RealmService;
 
@@ -151,5 +160,9 @@ public class DataHolder {
 
     public void setPlatformStorageManager(PlatformStorageManager platformStorageManager) {
         this.platformStorageManager = platformStorageManager;
+    }
+
+    public PlatformStorageManager getPlatformStorageManager() {
+        return platformStorageManager;
     }
 }

@@ -29,6 +29,7 @@ import org.wso2.carbon.device.application.mgt.common.Platform;
 import org.wso2.carbon.device.application.mgt.common.exception.PlatformManagementException;
 import org.wso2.carbon.device.application.mgt.common.exception.PlatformStorageManagementException;
 import org.wso2.carbon.device.application.mgt.common.exception.ResourceManagementException;
+import org.wso2.carbon.device.application.mgt.common.services.PlatformStorageManager;
 import org.wso2.carbon.device.application.mgt.core.exception.PlatformManagementDAOException;
 
 import java.io.IOException;
@@ -61,6 +62,7 @@ public class PlatformManagementAPIImpl implements PlatformManagementAPI {
     @Override
     public Response getPlatforms(@QueryParam("status") String status, @QueryParam("tag") String tag) {
         int tenantID = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId(true);
+        PlatformStorageManager platformStorageManager = APIUtil.getPlatformStorageManager();
 
         if (log.isDebugEnabled()) {
             log.debug("API request received for getting the platforms with the status " + status);
@@ -92,24 +94,24 @@ public class PlatformManagementAPIImpl implements PlatformManagementAPI {
             } else {
                 results = platforms;
             }
-
-            if (tag != null) {
-                if (results != null) {
-                    for (Platform platform : results) {
-                        if (platform.getTags() != null && platform.getTags().contains(tag)) {
-                            filteredPlatforms.add(platform);
-                        }
+            if (results != null) {
+                for (Platform platform : results) {
+                    if (tag == null || tag.isEmpty() || (platform.getTags() != null && platform.getTags()
+                            .contains(tag))) {
+                        platform.setIcon(platformStorageManager.getIcon(platform.getIdentifier()));
+                        filteredPlatforms.add(platform);
                     }
                 }
-            } else {
-                filteredPlatforms = results;
-            }
-            if (log.isDebugEnabled()) {
-                log.debug("Number of platforms with the status " + status + " : " + results.size());
+                if (log.isDebugEnabled()) {
+                    log.debug("Number of platforms with the status " + status + " : " + results.size());
+                }
             }
             return Response.status(Response.Status.OK).entity(filteredPlatforms).build();
         } catch (PlatformManagementException e) {
             log.error("Error while getting the platforms for tenant - " + tenantID, e);
+            return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
+        } catch (PlatformStorageManagementException e) {
+            log.error("Error while getting platform icons for the tenant : " + tenantID, e);
             return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
         }
     }
@@ -126,7 +128,9 @@ public class PlatformManagementAPIImpl implements PlatformManagementAPI {
                 return Response.status(Response.Status.NOT_FOUND).entity("Platform not found").build();
             }
             ImageArtifact icon = APIUtil.getPlatformStorageManager().getIcon(id);
-
+            if (icon != null) {
+                platform.setIcon(icon);
+            }
             return Response.status(Response.Status.OK).entity(platform).build();
         } catch (PlatformManagementDAOException e) {
             log.error("Error while trying the get the platform with the identifier : " + id + " for the tenant :"
@@ -137,8 +141,8 @@ public class PlatformManagementAPIImpl implements PlatformManagementAPI {
                     + tenantId, e);
             return APIUtil.getResponse(e, Response.Status.NOT_FOUND);
         } catch (PlatformStorageManagementException e) {
-            log.error("Platform Storage Management Exception while trying to update the icon for the platform : " +
-                    id + " for the tenant : " + tenantId, e);
+            log.error("Platform Storage Management Exception while trying to update the icon for the platform : " + id
+                    + " for the tenant : " + tenantId, e);
             return APIUtil.getResponse(e, Response.Status.NOT_FOUND);
         }
     }
@@ -205,8 +209,9 @@ public class PlatformManagementAPIImpl implements PlatformManagementAPI {
             APIUtil.getPlatformManager().unregister(tenantId, id, false);
             return Response.status(Response.Status.OK).build();
         } catch (PlatformManagementException e) {
-            log.error("Platform Management Exception while trying to un-register the platform with the identifier : "
-                    + id + " for the tenant : " + tenantId, e);
+            log.error(
+                    "Platform Management Exception while trying to un-register the platform with the identifier : " + id
+                            + " for the tenant : " + tenantId, e);
             return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
         } catch (PlatformStorageManagementException e) {
             log.error("Platform Storage Management Exception while trying to delete the icon of the platform with "

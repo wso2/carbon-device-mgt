@@ -19,13 +19,20 @@ package org.wso2.carbon.device.application.mgt.api.services.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.cxf.jaxrs.ext.multipart.Attachment;
+import org.apache.cxf.jaxrs.ext.multipart.Multipart;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.application.mgt.api.APIUtil;
 import org.wso2.carbon.device.application.mgt.api.services.PlatformManagementAPI;
+import org.wso2.carbon.device.application.mgt.common.ImageArtifact;
 import org.wso2.carbon.device.application.mgt.common.Platform;
 import org.wso2.carbon.device.application.mgt.common.exception.PlatformManagementException;
+import org.wso2.carbon.device.application.mgt.common.exception.PlatformStorageManagementException;
+import org.wso2.carbon.device.application.mgt.common.exception.ResourceManagementException;
 import org.wso2.carbon.device.application.mgt.core.exception.PlatformManagementDAOException;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import javax.validation.constraints.Size;
@@ -118,6 +125,8 @@ public class PlatformManagementAPIImpl implements PlatformManagementAPI {
             if (platform == null) {
                 return Response.status(Response.Status.NOT_FOUND).entity("Platform not found").build();
             }
+            ImageArtifact icon = APIUtil.getPlatformStorageManager().getIcon(id);
+
             return Response.status(Response.Status.OK).entity(platform).build();
         } catch (PlatformManagementDAOException e) {
             log.error("Error while trying the get the platform with the identifier : " + id + " for the tenant :"
@@ -127,17 +136,26 @@ public class PlatformManagementAPIImpl implements PlatformManagementAPI {
             log.error("Error while trying the get the platform with the identifier : " + id + " for the tenant :"
                     + tenantId, e);
             return APIUtil.getResponse(e, Response.Status.NOT_FOUND);
+        } catch (PlatformStorageManagementException e) {
+            log.error("Platform Storage Management Exception while trying to update the icon for the platform : " +
+                    id + " for the tenant : " + tenantId, e);
+            return APIUtil.getResponse(e, Response.Status.NOT_FOUND);
         }
     }
 
     @POST
     @Override
-    public Response addPlatform(Platform platform) {
+    public Response addPlatform(@Multipart("platform") Platform platform, @Multipart("icon")Attachment icon) {
         int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId(true);
         try {
             if (platform != null) {
                 if (platform.validate()) {
                     APIUtil.getPlatformManager().register(tenantId, platform);
+
+                    if (icon != null) {
+                        InputStream iconFileStream = icon.getDataHandler().getInputStream();
+                        APIUtil.getPlatformStorageManager().uploadIcon(platform.getIdentifier(), iconFileStream);
+                    }
                     return Response.status(Response.Status.CREATED).build();
                 } else {
                     return APIUtil
@@ -152,19 +170,40 @@ public class PlatformManagementAPIImpl implements PlatformManagementAPI {
             log.error("Platform Management Exception while trying to add the platform with identifier : " + platform
                     .getIdentifier() + " for the tenant : " + tenantId, e);
             return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
+        } catch (IOException e) {
+            log.error("IO Exception while trying to save platform icon for the platform : " + platform.getIdentifier(),
+                    e);
+            return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
+        } catch (ResourceManagementException e) {
+            log.error("Storage Exception while trying to save platform icon for the platform : " + platform
+                    .getIdentifier(), e);
+            return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
         }
     }
 
     @PUT
     @Path("/{identifier}")
     @Override
-    public Response updatePlatform(Platform platform, @PathParam("identifier") @Size(max = 45) String id) {
+    public Response updatePlatform(@Multipart("platform") Platform platform, @Multipart("icon") Attachment
+            icon, @PathParam("identifier") @Size(max = 45) String id) {
         int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId(true);
         try {
             APIUtil.getPlatformManager().update(tenantId, id, platform);
+            if (icon != null) {
+                InputStream iconFileStream = icon.getDataHandler().getInputStream();
+                APIUtil.getPlatformStorageManager().uploadIcon(platform.getIdentifier(), iconFileStream);
+            }
             return Response.status(Response.Status.OK).build();
         } catch (PlatformManagementException e) {
             log.error("Error while updating the platform - " + id + " for tenant domain - " + tenantId, e);
+            return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
+        } catch (IOException e) {
+            log.error("IO Exception while trying to update the platform icon for the platform : " + platform
+                    .getIdentifier(), e);
+            return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
+        } catch (ResourceManagementException e) {
+            log.error("Storage Exception while trying to update the platform icon for the platform : " + platform
+                    .getIdentifier(), e);
             return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
         }
     }
@@ -175,11 +214,16 @@ public class PlatformManagementAPIImpl implements PlatformManagementAPI {
     public Response removePlatform(@PathParam("identifier") @Size(max = 45) String id) {
         int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId(true);
         try {
+            APIUtil.getPlatformStorageManager().deleteIcon(id);
             APIUtil.getPlatformManager().unregister(tenantId, id, false);
             return Response.status(Response.Status.OK).build();
         } catch (PlatformManagementException e) {
             log.error("Platform Management Exception while trying to un-register the platform with the identifier : "
                     + id + " for the tenant : " + tenantId, e);
+            return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
+        } catch (PlatformStorageManagementException e) {
+            log.error("Platform Storage Management Exception while trying to delete the icon of the platform with "
+                    + "identifier for the tenant :" + tenantId, e);
             return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
         }
     }
@@ -205,9 +249,9 @@ public class PlatformManagementAPIImpl implements PlatformManagementAPI {
     }
 
     @GET
-    @Path("tags")
+    @Path("tags/{name}")
     @Override
-    public Response getPlatformTags(@QueryParam("name") String name) {
+    public Response getPlatformTags(@PathParam("name") String name) {
         if (name == null || name.isEmpty() || name.length() < 3) {
             return APIUtil.getResponse("In order to get platform tags, it is required to pass the first 3 "
                     + "characters of the platform tag name", Response.Status.INTERNAL_SERVER_ERROR);

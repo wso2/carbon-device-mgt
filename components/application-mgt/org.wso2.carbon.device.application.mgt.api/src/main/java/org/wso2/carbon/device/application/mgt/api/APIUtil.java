@@ -23,12 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.application.mgt.api.beans.ErrorResponse;
 import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
-import org.wso2.carbon.device.application.mgt.common.services.ApplicationManager;
-import org.wso2.carbon.device.application.mgt.common.services.ApplicationReleaseManager;
-import org.wso2.carbon.device.application.mgt.common.services.ApplicationStorageManager;
-import org.wso2.carbon.device.application.mgt.common.services.LifecycleStateManager;
-import org.wso2.carbon.device.application.mgt.common.services.PlatformManager;
-import org.wso2.carbon.device.application.mgt.common.services.SubscriptionManager;
+import org.wso2.carbon.device.application.mgt.common.services.*;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 
 import javax.ws.rs.core.Response;
@@ -47,6 +42,7 @@ public class APIUtil {
     private static ApplicationReleaseManager applicationReleaseManager;
     private static ApplicationStorageManager applicationStorageManager;
     private static SubscriptionManager subscriptionManager;
+    private static PlatformStorageManager platformStorageManager;
 
     public static ApplicationManager getApplicationManager() {
         if (applicationManager == null) {
@@ -147,7 +143,31 @@ public class APIUtil {
         }
         return applicationStorageManager;
     }
-    public static Response getResponse(ApplicationManagementException ex, Response.Status status) {
+
+    /**
+     * To get the Platform Storage Manager from the osgi context.
+     *
+     * @return PlatformStoreManager instance in the current osgi context.
+     */
+    public static PlatformStorageManager getPlatformStorageManager() {
+        if (platformStorageManager == null) {
+            synchronized (APIUtil.class) {
+                if (platformStorageManager == null) {
+                    PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+                    platformStorageManager = (PlatformStorageManager) ctx
+                            .getOSGiService(PlatformStorageManager.class, null);
+                    if (platformStorageManager == null) {
+                        String msg = "Platform Storage Manager service has not initialized.";
+                        log.error(msg);
+                        throw new IllegalStateException(msg);
+                    }
+                }
+            }
+        }
+        return platformStorageManager;
+    }
+
+    public static Response getResponse(Exception ex, Response.Status status) {
         return getResponse(ex.getMessage(), status);
     }
 

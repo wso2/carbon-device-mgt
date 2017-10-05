@@ -60,6 +60,8 @@ public class Platform {
 
     private boolean defaultTenantMapping;
 
+    private ImageArtifact icon;
+
     public Platform(Platform platform) {
         this.id = platform.getId();
         this.name = platform.getName();
@@ -178,6 +180,10 @@ public class Platform {
 
     public boolean validate() {
         return !(name == null || identifier == null);
+    }
+
+    public void setIcon(ImageArtifact icon) {
+        this.icon = icon;
     }
 
     /**

@@ -23,15 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.device.application.mgt.common.exception.InvalidConfigurationException;
-import org.wso2.carbon.device.application.mgt.common.services.ApplicationManager;
-import org.wso2.carbon.device.application.mgt.common.services.ApplicationReleaseManager;
-import org.wso2.carbon.device.application.mgt.common.services.ApplicationStorageManager;
-import org.wso2.carbon.device.application.mgt.common.services.CategoryManager;
-import org.wso2.carbon.device.application.mgt.common.services.CommentsManager;
-import org.wso2.carbon.device.application.mgt.common.services.LifecycleStateManager;
-import org.wso2.carbon.device.application.mgt.common.services.PlatformManager;
-import org.wso2.carbon.device.application.mgt.common.services.SubscriptionManager;
-import org.wso2.carbon.device.application.mgt.common.services.VisibilityManager;
+import org.wso2.carbon.device.application.mgt.common.services.*;
 import org.wso2.carbon.device.application.mgt.core.config.ConfigurationManager;
 import org.wso2.carbon.device.application.mgt.core.dao.common.DAOFactory;
 import org.wso2.carbon.device.application.mgt.core.exception.ApplicationManagementDAOException;
@@ -114,6 +106,11 @@ public class ServiceComponent {
                     .getApplicationStorageManagerInstance();
             DataHolder.getInstance().setApplicationStorageManager(applicationStorageManager);
             bundleContext.registerService(ApplicationStorageManager.class.getName(), applicationStorageManager, null);
+
+            PlatformStorageManager platformStorageManager = ApplicationManagementUtil
+                    .getPlatformStorageManagerInstance();
+            DataHolder.getInstance().setPlatformStorageManager(platformStorageManager);
+            bundleContext.registerService(PlatformStorageManager.class.getName(), platformStorageManager, null);
 
             bundleContext.registerService(Axis2ConfigurationContextObserver.class.getName(),
                     new PlatformManagementAxis2ConfigurationObserverImpl(), null);

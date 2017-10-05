@@ -21,6 +21,7 @@ package org.wso2.carbon.device.application.mgt.common.services;
 
 import org.wso2.carbon.device.application.mgt.common.ImageArtifact;
 import org.wso2.carbon.device.application.mgt.common.exception.ApplicationStorageManagementException;
+import org.wso2.carbon.device.application.mgt.common.exception.ResourceManagementException;
 
 import java.io.InputStream;
 import java.util.List;
@@ -38,7 +39,7 @@ public interface ApplicationStorageManager {
      * @throws ApplicationStorageManagementException Application Storage Management Exception.
      */
     public void uploadImageArtifacts(String applicationUUID, InputStream iconFile, InputStream bannerFile,
-            List<InputStream> screenshots) throws ApplicationStorageManagementException;
+            List<InputStream> screenshots) throws ResourceManagementException;
 
     /**
      * To upload release artifacts for an Application.
@@ -47,8 +48,8 @@ public interface ApplicationStorageManager {
      * @param binaryFile Binary File for the release.
      * @throws ApplicationStorageManagementException Application Storage Management Exception.
      */
-    public void uploadReleaseArtifacts(String applicationUUID, String versionName, InputStream binaryFile) throws
-            ApplicationStorageManagementException;
+    public void uploadReleaseArtifacts(String applicationUUID, String versionName, InputStream binaryFile)
+            throws ResourceManagementException;
 
     /**
      * To get released artifacts for the particular version of the application.

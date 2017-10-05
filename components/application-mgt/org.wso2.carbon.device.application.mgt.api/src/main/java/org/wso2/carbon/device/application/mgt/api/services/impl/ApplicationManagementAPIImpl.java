@@ -32,6 +32,7 @@ import org.wso2.carbon.device.application.mgt.common.Filter;
 import org.wso2.carbon.device.application.mgt.common.ImageArtifact;
 import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
 import org.wso2.carbon.device.application.mgt.common.exception.ApplicationStorageManagementException;
+import org.wso2.carbon.device.application.mgt.common.exception.ResourceManagementException;
 import org.wso2.carbon.device.application.mgt.common.services.ApplicationManager;
 import org.wso2.carbon.device.application.mgt.common.services.ApplicationReleaseManager;
 import org.wso2.carbon.device.application.mgt.common.services.ApplicationStorageManager;
@@ -97,6 +98,9 @@ public class ApplicationManagementAPIImpl implements ApplicationManagementAPI {
             String msg = "Error occurred while getting the application list";
             log.error(msg, e);
             return Response.status(Response.Status.BAD_REQUEST).build();
+        } catch (ApplicationStorageManagementException e) {
+            log.error("Error occurred while getting the image artifacts of the application", e);
+            return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -131,6 +135,9 @@ public class ApplicationManagementAPIImpl implements ApplicationManagementAPI {
             return Response.status(Response.Status.NOT_FOUND).build();
         } catch (ApplicationManagementException e) {
             log.error("Error occurred while getting application with the uuid " + uuid, e);
+            return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
+        } catch (ApplicationStorageManagementException e) {
+            log.error("Error occurred while getting the image artifacts of the application with the uuid " + uuid, e);
             return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
         }
     }
@@ -252,6 +259,10 @@ public class ApplicationManagementAPIImpl implements ApplicationManagementAPI {
             return APIUtil.getResponse(new ApplicationManagementException(
                     "Exception while trying to read icon, " + "banner files for the application " +
                             applicationUUID, e), Response.Status.BAD_REQUEST);
+        } catch (ResourceManagementException e) {
+            log.error("Error occurred while uploading the image artifacts of the application with the uuid "
+                    + applicationUUID, e);
+            return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -259,8 +270,8 @@ public class ApplicationManagementAPIImpl implements ApplicationManagementAPI {
     @PUT
     @Path("/upload-image-artifacts/{uuid}")
     public Response updateApplicationArtifacts(@PathParam("uuid") String applicationUUID,
-                                               @Multipart("icon") Attachment iconFile, @Multipart("banner") Attachment bannerFile, @Multipart
-                                                       ("screenshot") List<Attachment> attachmentList) {
+            @Multipart("icon") Attachment iconFile, @Multipart("banner") Attachment bannerFile,
+            @Multipart("screenshot") List<Attachment> attachmentList) {
         ApplicationStorageManager applicationStorageManager = APIUtil.getApplicationStorageManager();
         try {
             InputStream iconFileStream = null;
@@ -282,15 +293,15 @@ public class ApplicationManagementAPIImpl implements ApplicationManagementAPI {
                     .uploadImageArtifacts(applicationUUID, iconFileStream, bannerFileStream, attachments);
             return Response.status(Response.Status.OK)
                     .entity("Successfully updated artifacts for the application " + applicationUUID).build();
-        } catch (ApplicationManagementException e) {
-            String msg = "Error occurred while updating the artifact for the application " + applicationUUID;
-            log.error(msg, e);
-            return APIUtil.getResponse(e, Response.Status.BAD_REQUEST);
         } catch (IOException e) {
             log.error("Exception while trying to read icon, banner files for the application " + applicationUUID);
             return APIUtil.getResponse(new ApplicationManagementException(
                     "Exception while trying to read icon, banner files for the application " +
                             applicationUUID, e), Response.Status.BAD_REQUEST);
+        } catch (ResourceManagementException e) {
+            log.error("Error occurred while uploading the image artifacts of the application with the uuid "
+                            + applicationUUID, e);
+            return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -328,6 +339,9 @@ public class ApplicationManagementAPIImpl implements ApplicationManagementAPI {
             String msg = "Error occurred while deleting the application: " + uuid;
             log.error(msg, e);
             return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
+        } catch (ApplicationStorageManagementException e) {
+            log.error("Error occurred while deleteing the image artifacts of the application with the uuid " + uuid, e);
+            return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -358,6 +372,10 @@ public class ApplicationManagementAPIImpl implements ApplicationManagementAPI {
             log.error(errorMessage, e);
             return APIUtil.getResponse(new ApplicationManagementException(errorMessage, e),
                     Response.Status.INTERNAL_SERVER_ERROR);
+        } catch (ResourceManagementException e) {
+            log.error("Error occurred while uploading the releases artifacts of the application with the uuid "
+                    + applicationUUID + " for the release " + applicationRelease.getVersionName(), e);
+            return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -394,6 +412,10 @@ public class ApplicationManagementAPIImpl implements ApplicationManagementAPI {
             return APIUtil.getResponse(new ApplicationManagementException(
                     "Error while updating the release artifacts of the application with UUID "
                             + applicationUUID), Response.Status.INTERNAL_SERVER_ERROR);
+        } catch (ResourceManagementException e) {
+            log.error("Error occurred while updating the releases artifacts of the application with the uuid "
+                    + applicationUUID + " for the release " + applicationRelease.getVersionName(), e);
+            return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -469,6 +491,10 @@ public class ApplicationManagementAPIImpl implements ApplicationManagementAPI {
             return Response.status(Response.Status.NOT_FOUND).build();
         } catch (ApplicationManagementException e) {
             log.error("Error while deleting application release with the application UUID " + applicationUUID, e);
+            return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
+        } catch (ApplicationStorageManagementException e) {
+            log.error("Error occurred while deleting the releases artifacts of the application with the uuid "
+                    + applicationUUID + " for the release " + version, e);
             return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
         }
     }

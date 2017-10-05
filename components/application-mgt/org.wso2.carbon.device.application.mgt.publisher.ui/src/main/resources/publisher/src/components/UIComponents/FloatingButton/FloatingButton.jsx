@@ -33,7 +33,9 @@ class FloatingButton extends Component {
         let classes = 'btn-circle ' + this.props.className;
         return (
             <div className={classes} onClick={this.handleClick.bind(this)}>
+                <div className={classes + " btn-shade"}>
                 <i className="fw fw-add"></i>
+                </div>
             </div>
         )
     }

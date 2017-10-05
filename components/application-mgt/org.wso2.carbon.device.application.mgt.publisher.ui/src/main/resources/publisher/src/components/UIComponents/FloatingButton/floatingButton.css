@@ -27,8 +27,20 @@
     box-shadow: rgba(0, 0, 0, 0.156863) 0px 3px 10px, rgba(0, 0, 0, 0.227451) 0px 3px 10px
 }
 
+.btn-circle:hover {
+    cursor: pointer;
+}
+
+.btn-shade:focus {
+    background-color: rgba(0, 0, 0, .12);
+}
+
 .btn-circle i {
-    margin-top: 40%;
+    height: 24px;
+    width: 24px;
+    font-size: 18px;
+    padding: 3px;
+    margin-top: 16px
 }
 
 .small {
@@ -39,8 +51,4 @@
 .medium {
     height: 100px;
     width: 100px;
-}
-
-.primary {
-    background-color: blue;
 }

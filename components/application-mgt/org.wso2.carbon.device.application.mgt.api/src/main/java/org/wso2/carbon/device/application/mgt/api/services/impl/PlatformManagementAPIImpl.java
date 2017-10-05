@@ -141,7 +141,7 @@ public class PlatformManagementAPIImpl implements PlatformManagementAPI {
                     + tenantId, e);
             return APIUtil.getResponse(e, Response.Status.NOT_FOUND);
         } catch (PlatformStorageManagementException e) {
-            log.error("Platform Storage Management Exception while trying to update the icon for the platform : " + id
+            log.error("Platform Storage Management Exception while trying to get the icon for the platform : " + id
                     + " for the tenant : " + tenantId, e);
             return APIUtil.getResponse(e, Response.Status.NOT_FOUND);
         }

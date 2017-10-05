@@ -69,12 +69,12 @@ public class PlatformStorageManagerImpl implements PlatformStorageManager {
                     + "directly to the deployment location inside icon folder");
         }
         if (platform.isShared() && tenantId != MultitenantConstants.SUPER_TENANT_ID) {
-            throw new PlatformStorageManagementException("Platform " + platformIdentifier + " is a share platform from "
-                    + "super-tenant. Only the super-tenant users can modify it");
+            throw new PlatformStorageManagementException("Platform " + platformIdentifier
+                    + " is a shared platform from super-tenant. Only the super-tenant users can modify it");
         }
         if (log.isDebugEnabled()) {
-            log.debug("Artifact Directory Path for saving the artifacts related with application "
-                    + platformIdentifier + " is " + storagePath);
+            log.debug("Artifact Directory Path for saving the artifacts related with application " + platformIdentifier
+                    + " is " + storagePath);
         }
         StorageManagementUtil.createArtifactDirectory(storagePath);
         if (iconFileStream != null) {
@@ -82,8 +82,8 @@ public class PlatformStorageManagerImpl implements PlatformStorageManager {
                 saveFile(iconFileStream, storagePath + File.separator + platform.getId());
             } catch (IOException e) {
                 throw new ApplicationStorageManagementException(
-                        "IO Exception while saving the icon file in the server for the platform "
-                                + platformIdentifier, e);
+                        "IO Exception while saving the icon file in the server for the platform " + platformIdentifier,
+                        e);
             }
         }
     }
@@ -127,8 +127,8 @@ public class PlatformStorageManagerImpl implements PlatformStorageManager {
         String imageArtifactPath = storagePath + platform.getId();
 
         if (platform.isShared() && tenantId != MultitenantConstants.SUPER_TENANT_ID) {
-            throw new PlatformStorageManagementException("Platform " + platformIdentifier + " is a share platform from "
-                    + "super-tenant. Only the super-tenant users can modify it");
+            throw new PlatformStorageManagementException("Platform " + platformIdentifier + " is a shared platform "
+                    + "from super-tenant. Only the super-tenant users can modify it");
         }
         if (platform.isFileBased()) {
             throw new PlatformStorageManagementException("Platform " + platformIdentifier + " is a file based one. "
@@ -154,13 +154,14 @@ public class PlatformStorageManagerImpl implements PlatformStorageManager {
             PlatformManager platformManager = DataHolder.getInstance().getPlatformManager();
             platform = platformManager.getPlatform(tenantId, identifier);
         } catch (PlatformManagementException e) {
-            throw new PlatformStorageManagementException("Platform Management Exception while getting the platform "
-                    + "related with the identifier " + identifier);
+            throw new PlatformStorageManagementException(
+                    "Platform Management Exception while getting the platform " + "related with the identifier "
+                            + identifier);
         }
 
         if (platform == null) {
             throw new PlatformStorageManagementException("Platform does not exist with the identifier " + identifier);
         }
-        return  platform;
+        return platform;
     }
 }

@@ -15,8 +15,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 import React, {Component} from 'react';
-import {Button, Col, Row} from "reactstrap";
+import {Button, Col, Collapse, Row} from "reactstrap";
 
 /**
  * Platform component.
@@ -26,6 +27,15 @@ class Platform extends Component {
 
     constructor() {
         super();
+        this.unFold = this.unFold.bind(this);
+        this.state = {
+            isOpen: false
+        }
+    }
+
+    unFold() {
+        let isOpen = this.state.isOpen;
+        this.setState({isOpen: !isOpen})
     }
 
     render() {
@@ -34,24 +44,58 @@ class Platform extends Component {
             <div className="platform-content">
                 <Row>
                     <Col>
-                        <div className="platform-icon-container">
-                            <p className="platform-icon-letter">{platform.name.charAt(0)}</p>
-                        </div>
-                    </Col>
-                    <Col>
                         <div className="platform-text-container">
                             <p className="app-view-field">{platform.name}</p>
                             <p className="app-view-text">{platform.enabled ? "Active" : "Disabled"}</p>
                         </div>
                     </Col>
-
+                    <Col>
+                        <div className="platform-icon-container">
+                            <p className="platform-icon-letter">{platform.name.charAt(0)}</p>
+                        </div>
+                    </Col>
                 </Row>
-                <hr/>
-                <Row style={{fontSize: '20px'}}>
-                    <Col xs="3"><Button className="custom-flat grey">{platform.enabled ? "Disable" : "Activate"}</Button></Col>
-                    <Col xs="6"><Button className="custom-flat grey">Share With Tenants</Button></Col>
-                    <Col xs="1"><Button className="custom-flat grey rounded"><i className="fw fw-down"></i></Button></Col>
+                <Row>
+                    <div className="platform-content-footer">
+                        <Button className="custom-flat grey">{platform.enabled ? "Disable" : "Activate"}</Button>
+                        <Button className="custom-flat grey">Share With Tenants</Button>
+                        <Button className="custom-flat grey circle-button" onClick={this.unFold}>
+                            {this.state.isOpen ? <i className="fw fw-up"></i> : <i className="fw fw-down"></i>}
+                        </Button>
+                    </div>
                 </Row>
+                <div className="platform-content-more-outer">
+                    <Row>
+                        <Col>
+                            <Collapse isOpen={this.state.isOpen}>
+                                <div className="platform-content-more">
+                                    <Row>
+                                        <Col>
+                                            <p className="app-view-field">Description</p>
+                                        </Col>
+                                        <Col><p className="app-view-text">{platform.description}</p></Col>
+                                    </Row>
+                                    <Row>
+                                        <Col>
+                                            <p className="app-view-field">File Based</p>
+                                        </Col>
+                                        <Col>
+                                            <p className="app-view-text">{platform.fileBased ? "Yes" : "No"}</p>
+                                        </Col>
+                                    </Row>
+                                    <Row>
+                                        <Col><p className="app-view-field">Tags</p></Col>
+                                        <Col>
+                                            <p className="app-view-text">
+                                                {platform.tags.length > 0 ? platform.tags : "No Platform Tags"}
+                                            </p>
+                                        </Col>
+                                    </Row>
+                                </div>
+                            </Collapse>
+                        </Col>
+                    </Row>
+                </div>
             </div>
         );
     }

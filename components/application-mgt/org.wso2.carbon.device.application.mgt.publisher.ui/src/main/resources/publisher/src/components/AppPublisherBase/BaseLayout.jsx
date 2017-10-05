@@ -19,7 +19,6 @@
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {withRouter} from 'react-router-dom';
-import Axios from 'axios';
 import AuthHandler from "../../api/authHandler";
 import {Button, Col, Container, Input, Row,} from 'reactstrap';
 import ApplicationCreate from '../Application/Create/ApplicationCreate';
@@ -50,7 +49,7 @@ class BaseLayout extends Component {
     }
 
     componentWillMount() {
-
+        this.setState({user: this.props.user});
     }
 
     handleApplicationClick() {
@@ -86,29 +85,43 @@ class BaseLayout extends Component {
     }
 
     render() {
+        const userName = this.state.user._userName[0];
         return (
             <div>
-                <div id="header-content">
-
-                    <div id="header">
-                        <span id="header-text">
-                            <Logo className="header-image" image_name="logo.png"/>
-                            IoT <FormattedMessage id="App.Publisher" defaultMessage="Application Publisher"/>
-                        </span>
-                        <div id="header-btn-container">
-                            <Button id="header-button"><i className="fw fw-notification btn-header"></i></Button>
-                            <Button id="header-button"><i className="fw fw-user btn-header"></i></Button>
-                        </div>
-                        <div id="search-box">
-                            <i className="fw fw-search search-icon">
-                            </i>
-                            <Input
-                                id="search"
-                                name="search"
-                                placeholder={'Search for Applications'}
-                                onChange={(event) => console.log(event.target.value)} //TODO: Remove this
-                            />
-                        </div>
+                <div className="header-content">
+                    <div className="header">
+                        <Row>
+                            <Col md="6">
+                                <span id="header-text">
+                                    <Logo className="header-image" image_name="logo.png"/>
+                                    IoT <FormattedMessage id="App.Publisher" defaultMessage="Application Publisher"/>
+                                </span>
+                            </Col>
+                            <Col>
+                                <div className="header-button-container">
+                                    <Button id="header-button">
+                                        <i className="fw fw-notification btn-header"></i></Button>
+                                    <span className="header-user-name">
+                                        {userName.charAt(0).toUpperCase() + userName.slice(1)}
+                                        </span>
+                                    <Button id="header-button">
+                                        <i className="fw fw-user btn-header"></i></Button>
+                                </div>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col>
+                                <div className="search-box">
+                                    <i className="fw fw-search"></i>
+                                    <Input
+                                        id="search"
+                                        name="search"
+                                        placeholder={'Search for Applications'}
+                                        onChange={(event) => console.log(event.target.value)} //TODO: Remove this
+                                    />
+                                </div>
+                            </Col>
+                        </Row>
                     </div>
                     <Container>
                         <div id="add-btn-container">

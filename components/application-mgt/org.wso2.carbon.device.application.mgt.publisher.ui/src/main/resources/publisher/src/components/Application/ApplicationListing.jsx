@@ -223,11 +223,11 @@ class ApplicationListing extends Component {
                     {this.headers.map(header => {
                         if (header.data_id === "applicationName") {
                             return (
-                                <Col xs="5"><FormattedMessage id={header.locale} defaultMessage={header.label}/></Col>)
+                                <Col xs="5">{header.label}</Col>)
                         } else if (header.data_id === "image") {
                             return (<Col xs="1">{header.label}</Col>)
                         }
-                        return (<Col><FormattedMessage id={header.locale} defaultMessage={header.label}/></Col>)
+                        return (<Col>{header.label}</Col>)
                     })}
                 </Row>
                 <hr/>

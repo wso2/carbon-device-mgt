@@ -44,12 +44,7 @@ class GeneralInfo extends Component {
                             <Label for="app-title">
                                 <FormattedMessage id="Title" defaultMessage="Title"/>*
                             </Label>
-                            <Input
-                                required
-                                type="text"
-                                name="appName"
-                                id="app-title"
-                            />
+                            <Input required type="text" name="appName" id="app-title"/>
                         </FormGroup>
                         <FormGroup>
                             <Label for="app-title">

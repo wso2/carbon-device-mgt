@@ -184,26 +184,13 @@ public class PlatformManagementAPIImpl implements PlatformManagementAPI {
     @PUT
     @Path("/{identifier}")
     @Override
-    public Response updatePlatform(@Multipart("platform") Platform platform, @Multipart("icon") Attachment
-            icon, @PathParam("identifier") @Size(max = 45) String id) {
+    public Response updatePlatform(Platform platform, @PathParam("identifier") @Size(max = 45) String id) {
         int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId(true);
         try {
             APIUtil.getPlatformManager().update(tenantId, id, platform);
-            if (icon != null) {
-                InputStream iconFileStream = icon.getDataHandler().getInputStream();
-                APIUtil.getPlatformStorageManager().uploadIcon(platform.getIdentifier(), iconFileStream);
-            }
             return Response.status(Response.Status.OK).build();
         } catch (PlatformManagementException e) {
             log.error("Error while updating the platform - " + id + " for tenant domain - " + tenantId, e);
-            return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
-        } catch (IOException e) {
-            log.error("IO Exception while trying to update the platform icon for the platform : " + platform
-                    .getIdentifier(), e);
-            return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
-        } catch (ResourceManagementException e) {
-            log.error("Storage Exception while trying to update the platform icon for the platform : " + platform
-                    .getIdentifier(), e);
             return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
         }
     }
@@ -262,6 +249,30 @@ public class PlatformManagementAPIImpl implements PlatformManagementAPI {
         } catch (PlatformManagementException e) {
             log.error("Platform Management Exception while trying to get the platform tags with starting character "
                     + "sequence " + name, e);
+            return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @POST
+    @Path("{identifier}/icon")
+    @Override
+    public Response updatePlatformIcon(@PathParam("identifier") String identifier, @Multipart("icon") Attachment
+            icon) {
+        try {
+            if (icon != null) {
+                InputStream iconFileStream = icon.getDataHandler().getInputStream();
+                APIUtil.getPlatformStorageManager().uploadIcon(identifier, iconFileStream);
+                return Response.status(Response.Status.OK)
+                        .entity("Icon file is successfully updated for the platform :" + identifier).build();
+            } else {
+                return Response.status(Response.Status.BAD_REQUEST).entity("Icon file is not provided to update")
+                        .build();
+            }
+        } catch (ResourceManagementException e) {
+            log.error("Resource Management exception while trying to update the icon for the platform " + identifier);
+            return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
+        } catch (IOException e) {
+            log.error("IO exception while trying to update the icon for the platform " + identifier);
             return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
         }
     }

@@ -212,15 +212,15 @@ public interface PlatformManagementAPI {
             })
     Response addPlatform(
             @Multipart(value = "Platform", type = "application/json" ) Platform platform,
-            @Multipart(value = "icon", required = true) Attachment iconFile
+            @Multipart(value = "icon", required = false) Attachment iconFile
     );
 
     @PUT
     @Path("/{identifier}")
     @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(
-            consumes = MediaType.MULTIPART_FORM_DATA,
+            consumes = MediaType.APPLICATION_JSON,
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "PUT",
             value = "Update Platform",
@@ -246,8 +246,11 @@ public interface PlatformManagementAPI {
                             response = ErrorResponse.class)
             })
     Response updatePlatform(
-            @Multipart(value = "Platform", type = "application/json" ) Platform platform,
-            @Multipart(value = "icon", required = false) Attachment iconFile,
+            @ApiParam(
+                    name = "platform",
+                    value = "The payload of the platform",
+                    required = true)
+                    Platform platform,
             @ApiParam(
                     name = "identifier",
                     required = true)
@@ -371,5 +374,45 @@ public interface PlatformManagementAPI {
             @ApiParam(name = "name", value ="The initial part of the name of platform tags that we need to retrieve",
                     required = true)
             @PathParam("name") @Size(min = 3) String name
+    );
+
+    @POST
+    @Path("/{identifier}/icon")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @ApiOperation(
+            consumes = MediaType.MULTIPART_FORM_DATA,
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "POST",
+            value = "Update Platform icon",
+            notes = "This will update the platform icon",
+            tags = "Platform Management",
+            extensions = {
+                    @Extension(properties = {
+                            @ExtensionProperty(name = SCOPE, value = "perm:platform:update")
+                    })
+            }
+    )
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            code = 200,
+                            message = "OK. \n Successfully updated the platform icon"),
+                    @ApiResponse(
+                            code = 400,
+                            message = "Bad Request. \n Invalid request parameters passed."),
+                    @ApiResponse(
+                            code = 500,
+                            message = "Internal Server Error. \n Error occurred while updating the platform icon.",
+                            response = ErrorResponse.class)
+            })
+    Response updatePlatformIcon(
+            @ApiParam(
+                    name = "identifier",
+                    required = true)
+            @PathParam("identifier")
+            @Size(max = 45)
+                    String identifier,
+            @Multipart(value = "icon") Attachment iconFile
     );
 }

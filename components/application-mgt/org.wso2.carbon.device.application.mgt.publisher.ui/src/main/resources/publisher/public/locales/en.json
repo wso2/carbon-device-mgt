@@ -1,6 +1,7 @@
 {
   "Title" : "Title",
   "Description" : "Description",
+  "ShortDescription" : "Short Description",
   "Category" : "Category",
   "Visibility" : "Visibility",
   "Devices" : "Devices",

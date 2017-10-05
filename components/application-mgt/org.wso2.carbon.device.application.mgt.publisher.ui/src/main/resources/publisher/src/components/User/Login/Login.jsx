@@ -20,7 +20,8 @@ import qs from 'qs';
 import React, {Component} from 'react';
 import {Redirect, Switch} from 'react-router-dom';
 import AuthHandler from '../../../api/authHandler';
-import {Button, Card, CardBlock, CardTitle, Form, FormGroup, Input, Label} from 'reactstrap';
+import {Button, Col, Form, FormGroup, Input, Label, Row} from 'reactstrap';
+import Logo from "../../UIComponents/Logo/Logo";
 
 /**
  * The Login Component.
@@ -39,7 +40,8 @@ class Login extends Component {
             userName: "",
             password: "",
             rememberMe: true,
-            errors: {}
+            errors: {},
+            loginError: ""
         }
     }
 
@@ -120,7 +122,12 @@ class Login extends Component {
             loginPromis.then(response => {
                 console.log(AuthHandler.getUser());
                 this.setState({isLoggedIn: AuthHandler.getUser()});
-            })
+            }).catch(
+                err => {
+                    console.log(err);
+                    this.setState({loginError: err});
+                }
+            );
         }
     }
 
@@ -130,38 +137,51 @@ class Login extends Component {
             return (
                 <div id="login-container">
                     {/*TODO: Style the components.*/}
-                    <Card id="login-card">
-                        <CardBlock>
-                            <CardTitle>
-                                WSO2 IoT APP Publisher
-                            </CardTitle>
-                            <hr/>
-                            <Form onSubmit={this.handleLogin.bind(this)}>
-                                <FormGroup>
-                                    <Label for="userName">User Name:</Label>
-                                    <Input
-                                        type="text"
-                                        name="userName"
-                                        id="userName"
-                                        placeholder="User Name"
-                                        onChange={this.onUserNameChange.bind(this)}/>
-                                </FormGroup>
-                                <FormGroup>
-                                    <Label for="password">Password:</Label>
-                                    <Input
-                                        valid={false}
-                                        type="password"
-                                        name="text"
-                                        id="password"
-                                        placeholder="Password"
-                                        onChange={this.onPasswordChange.bind(this)}/>
-                                </FormGroup>
-                                <FormGroup>
-                                    <Button type="submit" id="login-btn">Login</Button>
-                                </FormGroup>
-                            </Form>
-                        </CardBlock>
-                    </Card>
+                    <div id="login-card">
+                        <div id="login-card-content">
+                            <Row className="login-header">
+                                <Col>
+                                    <Logo className="login-header-logo" image_name="logo.png"/>
+                                </Col>
+                                <Col>
+                                    <p className="login-header-title">IoT APP Publisher</p>
+                                </Col>
+                            </Row>
+                            <Row className="login-form">
+                                <Col>
+                                    <Form onSubmit={this.handleLogin.bind(this)}>
+                                        <FormGroup>
+                                            <Label for="userName">User Name:</Label>
+                                            <Input
+                                                type="text"
+                                                name="userName"
+                                                id="userName"
+                                                placeholder="User Name"
+                                                onChange={this.onUserNameChange.bind(this)}/>
+                                        </FormGroup>
+                                        <FormGroup>
+                                            <Label for="password">Password:</Label>
+                                            <Input
+                                                valid={false}
+                                                type="password"
+                                                name="text"
+                                                id="password"
+                                                placeholder="Password"
+                                                onChange={this.onPasswordChange.bind(this)}/>
+                                        </FormGroup>
+                                        <FormGroup>
+                                            <Button
+                                                type="submit"
+                                                className="custom-raised login-btn primary"
+                                            >
+                                                Login
+                                            </Button>
+                                        </FormGroup>
+                                    </Form>
+                                </Col>
+                            </Row>
+                        </div>
+                    </div>
                 </div>);
         } else {
             return (

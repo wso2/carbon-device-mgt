@@ -25,6 +25,7 @@ import {Button, Col, Container, Input, Row,} from 'reactstrap';
 import ApplicationCreate from '../Application/Create/ApplicationCreate';
 import FloatingButton from "../UIComponents/FloatingButton/FloatingButton";
 import {FormattedMessage} from 'react-intl';
+import Logo from "../UIComponents/Logo/Logo";
 
 /**
  * Base Layout:
@@ -49,14 +50,7 @@ class BaseLayout extends Component {
     }
 
     componentWillMount() {
-        Axios.get("/images/logo.png", {responseType: 'arraybuffer'}).then(
-            response => {
-                let image = "data:image/jpeg;base64," + new Buffer(response.data, 'binary').toString('base64');
-                this.setState({logo: image});
-            }
-        ).catch(err => {
-            console.log(err);
-        });
+
     }
 
     handleApplicationClick() {
@@ -98,7 +92,7 @@ class BaseLayout extends Component {
 
                     <div id="header">
                         <span id="header-text">
-                            <img className="header-image" src={this.state.logo}/>
+                            <Logo className="header-image" image_name="logo.png"/>
                             IoT <FormattedMessage id="App.Publisher" defaultMessage="Application Publisher"/>
                         </span>
                         <div id="header-btn-container">
@@ -136,7 +130,7 @@ class BaseLayout extends Component {
                             </Col>
                             <Col>
                                 <div className="platform-link-placeholder">
-                                    <Button id="secondary-button" onClick={this.onClickPlatforms}>
+                                    <Button className="custom-flat grey" onClick={this.onClickPlatforms}>
                                         <i className="fw fw-settings"></i> Platforms</Button>
                                 </div>
                             </Col>

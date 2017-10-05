@@ -32,11 +32,90 @@
     src: local("Roboto-Regular"), url("../../fonts/Roboto-Regular.woff2") format("woff2");
 }
 
+/*Colors*/
+.primary {
+    color: white;
+    background-color: #2196f3 !important;
+}
+
+.primary-flat {
+    color: #2196F3 !important;
+}
+
+.danger {
+    color: white;
+    background-color: #e91e63 !important;
+}
+
+.danger-flat {
+    color: #e91e63 !important;
+}
+
+.grey {
+    color: #b3b3b3 !important;
+}
+
+/* ==================================================================== */
+/* Custom button styles based on material design specs. */
+
+.custom-raised {
+    font-family: Roboto-Medium;
+    text-transform: uppercase !important;
+    font-size: 14px !important;
+    padding-left: 16px !important;
+    border-radius: 2px !important;
+    padding-right: 16px !important;
+    height: 36px !important;
+    border: none !important;
+}
+
+.custom-raised:hover {
+    cursor: pointer;
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.16), 0 0 0 1px rgba(0, 0, 0, 0.08) !important;
+    -webkit-box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.16), 0 0 0 1px rgba(0, 0, 0, 0.08) !important;
+    background-color: #1976D2 !important;
+}
+
+.custom-raised:focus {
+    box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+    background-color: #1976D2 !important;
+}
+
+.custom-flat {
+    font-family: Roboto-Medium;
+    height: 36px !important;
+    border-radius: 2px !important;
+    margin-left: 8px !important;
+    margin-right: 8px !important;
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+    background-color: transparent !important;
+    text-transform: uppercase;
+    outline: none !important;
+    border: none !important;
+}
+
+.custom-flat:hover {
+    cursor: pointer;
+    background-color: rgba(0, 0, 0, 0.12) !important;
+}
+
+.custom-flat:focus {
+    outline: none !important;
+    border: none !important;
+    -webkit-box-shadow: none !important;
+    box-shadow: none !important;
+    background-color: rgba(0, 0, 0, 0.40) !important;
+}
+
+/* ==================================================================== */
+
 /* Body Styling */
 body {
     width: 100%;
     font-family: "Roboto-Regular" !important;
-    background-color: #dfdfdf !important;
+    background-color: #e8e8e8 !important;
 }
 
 .app-manager-title {
@@ -67,24 +146,45 @@ body {
     border-radius: 0;
 }
 
-#login-btn {
-    border-radius: 0;
-    background-color: navy;
-    color: white;
-    cursor: pointer;
+.login-btn {
+    float: right;
 }
 
-#login-container {
+.login-header {
+    background-color: #3f50b5;
+    color: white;
+    height: 128px;
+    width: 100%;
+    margin: 0 !important;
+    padding: 20px;
+    box-shadow: -2px 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
 #login-card {
-    width: 20%;
+    width: 25%;
     height: 50%;
     margin: 10% auto;
-    padding: 10px;
+    font-family: Roboto-Regular;
+    font-size: 14px;
     border-radius: 0;
     background-color: #ffffff;
     box-shadow: -2px 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.login-header-title {
+    font-family: Roboto-Medium;
+    font-size: 20px;
+    font-weight: 500;
+}
+
+.login-header-logo {
+    height: 70px;
+    width: 150px;
+}
+
+.login-form {
+    margin: 0 !important;
+    padding: 40px;
 }
 
 /* Base layout container */
@@ -207,8 +307,7 @@ body {
 }
 
 .add-btn:hover {
-    cursor: pointer;
-    background-color: rgb(255, 103, 5);
+    background-color: #E64A19;
 }
 
 #app-main-content {
@@ -381,18 +480,6 @@ body {
 #modal-body-content {
     max-height: 700px;
     overflow-y: auto;
-}
-
-#secondary-button {
-    color: #979797;
-    background-color: transparent;
-    border: none;
-}
-
-#secondary-button:hover {
-    background-color: #d8d8d8;
-    outline: none;
-    cursor: pointer;
 }
 
 .step-index {
@@ -678,7 +765,7 @@ div.tab button.active {
 }
 
 .platform-content {
-    width: 350px;
+    width: 500px;
     margin: 10px;
     padding: 24px;
     box-shadow: 2px 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
@@ -698,11 +785,12 @@ div.tab button.active {
     width: 100px;
     border-radius: 50%;
     background-color: #3f50b5;
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.16), 0 0 0 1px rgba(0, 0, 0, 0.08) !important;
+    -webkit-box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.16), 0 0 0 1px rgba(0, 0, 0, 0.08) !important;
 }
 
 .platform-content:hover {
     background-color: #f2f2f2;
-    cursor: pointer;
 }
 
 .data-table-row-cell {

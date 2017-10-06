@@ -41,6 +41,7 @@ import org.wso2.carbon.device.mgt.core.util.DeviceManagerUtil;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,7 +51,9 @@ public class DeviceInformationManagerImpl implements DeviceInformationManager {
     private DeviceDetailsDAO deviceDetailsDAO;
     private DeviceDAO deviceDAO;
     private static final Log log = LogFactory.getLog(DeviceInformationManagerImpl.class);
-    private static final String EVENT_STREAM_DEFINITION = "org.wso2.iot.LocationStream";
+    private static final String LOCATION_EVENT_STREAM_DEFINITION = "org.wso2.iot.LocationStream";
+    private static final String DEVICE_INFO_EVENT_STREAM_DEFINITION = "org.wso2.iot.DeviceInfoStream";
+
 
     public DeviceInformationManagerImpl() {
         this.deviceDAO = DeviceManagementDAOFactory.getDeviceDAO();
@@ -70,6 +73,35 @@ public class DeviceInformationManagerImpl implements DeviceInformationManager {
             deviceDetailsDAO.addDeviceInformation(device.getId(), deviceInfo);
             deviceDetailsDAO.addDeviceProperties(deviceInfo.getDeviceDetailsMap(), device.getId());
             DeviceManagementDAOFactory.commitTransaction();
+
+            if (DeviceManagerUtil.isPublishOperationResponseEnabled()) {
+                Object[] metaData = {device.getDeviceIdentifier(), device.getType()};
+                Object[] payload = new Object[]{
+                        Calendar.getInstance().getTimeInMillis(),
+                        deviceInfo.getDeviceDetailsMap().get("IMEI"),
+                        deviceInfo.getDeviceDetailsMap().get("IMSI"),
+                        deviceInfo.getDeviceModel(),
+                        deviceInfo.getVendor(),
+                        deviceInfo.getOsVersion(),
+                        deviceInfo.getOsBuildDate(),
+                        deviceInfo.getBatteryLevel(),
+                        deviceInfo.getInternalTotalMemory(),
+                        deviceInfo.getInternalAvailableMemory(),
+                        deviceInfo.getExternalTotalMemory(),
+                        deviceInfo.getExternalAvailableMemory(),
+                        deviceInfo.getOperator(),
+                        deviceInfo.getConnectionType(),
+                        deviceInfo.getMobileSignalStrength(),
+                        deviceInfo.getSsid(),
+                        deviceInfo.getCpuUsage(),
+                        deviceInfo.getTotalRAMMemory(),
+                        deviceInfo.getAvailableRAMMemory(),
+                        deviceInfo.isPluggedIn()
+                };
+                DeviceManagerUtil.getEventPublisherService().publishEvent(
+                        DEVICE_INFO_EVENT_STREAM_DEFINITION, "1.0.0", metaData, new Object[0], payload
+                );
+            }
         } catch (TransactionManagementException e) {
             DeviceManagementDAOFactory.rollbackTransaction();
             throw new DeviceDetailsMgtException("Transactional error occurred while adding the device information.", e);
@@ -82,7 +114,10 @@ public class DeviceInformationManagerImpl implements DeviceInformationManager {
         } catch (DeviceManagementDAOException e) {
             DeviceManagementDAOFactory.rollbackTransaction();
             throw new DeviceDetailsMgtException("Error occurred while updating the last update timestamp of the " +
-                    "device", e);
+                                                "device", e);
+        } catch (DataPublisherConfigurationException e) {
+            DeviceManagementDAOFactory.rollbackTransaction();
+            throw new DeviceDetailsMgtException("Error occurred while publishing the device location information.", e);
         } finally {
             DeviceManagementDAOFactory.closeConnection();
         }
@@ -90,19 +125,9 @@ public class DeviceInformationManagerImpl implements DeviceInformationManager {
 
     @Override
     public DeviceInfo getDeviceInfo(DeviceIdentifier deviceId) throws DeviceDetailsMgtException {
-        Device device;
-        try {
-            device = DeviceManagementDataHolder.getInstance().
-                    getDeviceManagementProvider().getDevice(deviceId, false);
-            if (device == null) {
-                if (log.isDebugEnabled()) {
-                    log.debug("No device is found upon the device identifier '" + deviceId.getId() +
-                            "' and type '" + deviceId.getType() + "'. Therefore returning null");
-                }
-                return null;
-            }
-        } catch (DeviceManagementException e) {
-            throw new DeviceDetailsMgtException("Exception occurred while retrieving the device.", e);
+        Device device = getDevice(deviceId);
+        if (device == null) {
+            return null;
         }
         try {
             DeviceManagementDAOFactory.openConnection();
@@ -111,7 +136,8 @@ public class DeviceInformationManagerImpl implements DeviceInformationManager {
             return deviceInfo;
 
         } catch (SQLException e) {
-            throw new DeviceDetailsMgtException("SQL error occurred while retrieving device from database.", e);
+            throw new DeviceDetailsMgtException("SQL error occurred while retrieving device " + deviceId.toString()
+                                                + "'s info from database.", e);
         } catch (DeviceDetailsMgtDAOException e) {
             throw new DeviceDetailsMgtException("Exception occurred while retrieving device details.", e);
         } finally {
@@ -166,15 +192,15 @@ public class DeviceInformationManagerImpl implements DeviceInformationManager {
             deviceDAO.updateDevice(device, CarbonContext.getThreadLocalCarbonContext().getTenantId());
             deviceDetailsDAO.deleteDeviceLocation(deviceLocation.getDeviceId());
             deviceDetailsDAO.addDeviceLocation(deviceLocation);
-            if (DeviceManagerUtil.isPublishLocationOperationResEnabled()) {
-                Object metaData[] = {device.getDeviceIdentifier(), device.getType()};
-                Object payload[] = new Object[]{
+            if (DeviceManagerUtil.isPublishOperationResponseEnabled()) {
+                Object[] metaData = {device.getDeviceIdentifier(), device.getType()};
+                Object[] payload = new Object[]{
                         deviceLocation.getUpdatedTime().getTime(),
                         deviceLocation.getLatitude(),
                         deviceLocation.getLongitude()
                 };
                 DeviceManagerUtil.getEventPublisherService().publishEvent(
-                        EVENT_STREAM_DEFINITION, "1.0.0", metaData, new Object[0], payload
+                        LOCATION_EVENT_STREAM_DEFINITION, "1.0.0", metaData, new Object[0], payload
                 );
             }
             DeviceManagementDAOFactory.commitTransaction();
@@ -201,18 +227,9 @@ public class DeviceInformationManagerImpl implements DeviceInformationManager {
 
     @Override
     public DeviceLocation getDeviceLocation(DeviceIdentifier deviceId) throws DeviceDetailsMgtException {
-        Device device;
-        try {
-            device = DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().getDevice(deviceId, false);
-            if (device == null) {
-                if (log.isDebugEnabled()) {
-                    log.debug("No device is found upon the device identifier '" + deviceId.getId() +
-                            "' and type '" + deviceId.getType() + "'. Therefore returning null");
-                }
-                return null;
-            }
-        } catch (DeviceManagementException e) {
-            throw new DeviceDetailsMgtException("Exception occurred while retrieving the device.", e);
+        Device device = getDevice(deviceId);
+        if (device == null) {
+            return null;
         }
         try {
             DeviceManagementDAOFactory.openConnection();
@@ -224,6 +241,23 @@ public class DeviceInformationManagerImpl implements DeviceInformationManager {
         } finally {
             DeviceManagementDAOFactory.closeConnection();
         }
+    }
+
+    private Device getDevice(DeviceIdentifier deviceId) throws DeviceDetailsMgtException {
+        Device device;
+        try {
+            device = DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().getDevice(deviceId, false);
+            if (device == null) {
+                if (log.isDebugEnabled()) {
+                    log.debug("No device is found upon the device identifier '" + deviceId.getId() +
+                              "' and type '" + deviceId.getType() + "'. Therefore returning null");
+                }
+                return null;
+            }
+        } catch (DeviceManagementException e) {
+            throw new DeviceDetailsMgtException("Exception occurred while retrieving the device.", e);
+        }
+        return device;
     }
 
     @Override

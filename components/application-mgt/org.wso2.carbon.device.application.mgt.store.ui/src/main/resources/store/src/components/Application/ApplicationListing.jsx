@@ -238,6 +238,7 @@ class ApplicationListing extends Component {
     }
 
     render() {
+        console.log('render app listing');
         return (
             <div id="application-list" style={this.state.appListStyle}>
                 <Row>

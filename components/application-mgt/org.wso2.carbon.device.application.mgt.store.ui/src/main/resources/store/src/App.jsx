@@ -63,6 +63,7 @@ class Base extends Component {
     }
 
     render() {
+        console.log('came here/////');
         if (this.state.user !== null) {
             return (
                 <div>

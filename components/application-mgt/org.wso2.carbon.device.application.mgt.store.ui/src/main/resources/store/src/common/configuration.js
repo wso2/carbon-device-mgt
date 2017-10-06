@@ -36,6 +36,7 @@ class Configuration {
         let thisObject = this;
         axios.get(thisObject.hostConstants.baseURL + '/' + thisObject.hostConstants.appContext + "/config.json").
         then(function (response) {
+            console.log('succesfully loadedd....');
             thisObject.serverConfig = response.data.config;
             thisObject.themeConfig = response.data.theme;
             Constants.load();

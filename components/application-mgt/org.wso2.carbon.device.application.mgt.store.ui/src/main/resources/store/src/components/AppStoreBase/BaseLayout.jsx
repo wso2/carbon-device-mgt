@@ -36,10 +36,12 @@ class BaseLayout extends Component {
         this.state = {
             notifications: 0,
             user: 'Admin',
-            openModal: false
+            openModal: false,
+            userOptions : false
         };
         this.logout = this.logout.bind(this);
         this.closeModal = this.closeModal.bind(this);
+        this.handleUserOptionsOnClick = this.handleUserOptionsOnClick.bind(this);
     }
 
     handleApplicationClick() {
@@ -62,6 +64,10 @@ class BaseLayout extends Component {
         this.setState({openModal: false});
     }
 
+    handleUserOptionsOnClick() {
+        this.setState({userOptions : true});
+    }
+
     render() {
         return (
             <Container noGutters fluid id="container">
@@ -72,8 +78,8 @@ class BaseLayout extends Component {
                         </span>
                         <div id="header-btn-container">
                             <i className="fw fw-notification btn-header"></i>
-                            <i className="fw fw-user btn-header">
-                                <UserOptions/>
+                            <i className="fw fw-user btn-header" onClick={this.handleUserOptionsOnClick}>
+                                <UserOptions userOptions={this.state.userOptions}/>
                             </i>
                         </div>
                         <div id="search-box">

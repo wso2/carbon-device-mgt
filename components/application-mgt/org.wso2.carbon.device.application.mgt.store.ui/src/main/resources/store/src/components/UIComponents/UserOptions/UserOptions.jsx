@@ -17,37 +17,42 @@
  */
 
 import React, {Component} from 'react';
-import Theme from '../../../theme';
+import './user-options.css';
+import AuthHandler from '../../../api/authHandler';
 
 class UserOptions extends Component {
 
     constructor() {
         super();
-        this.scriptId = "userOptions";
+        this.state = {};
     }
 
     componentWillMount() {
-        /**
-         *Loading the theme files based on the the user-preference.
-         */
-        Theme.insertThemingScripts(this.scriptId);
-    }
-
-    componentWillUnmount() {
-        Theme.removeThemingScripts(this.scriptId);
+        let user = AuthHandler.getUser();
+        if (user) {
+            if (!AuthHandler.isTokenExpired()) {
+                this.setState({user: user});
+            } else {
+                this.setState({user: null});
+            }
+        }
     }
 
     render() {
-        const {height, width} = this.props;
-        return (
-            <div class="dropdown">
-                <ul class="dropdown-menu">
-                    <li><a href="#">HTML</a></li>
-                    <li><a href="#">CSS</a></li>
-                    <li><a href="#">JavaScript</a></li>
-                </ul>
-            </div>
-        )
+        var displayOptions = this.props.userOptions ? "block" : "none";
+        if (this.state.user) {
+            return (
+                <div id='user-options-drop-down' className="dropdown-content" style={{display: displayOptions}}>
+                    <a href="#">Logout</a>
+                </div>
+            );
+        } else {
+            return (
+                <div id='user-options-drop-down' className="dropdown-content" style={{display: displayOptions}}>
+                    <a href="/store/login">Login</a>
+                </div>
+            );
+        }
     }
 }
 

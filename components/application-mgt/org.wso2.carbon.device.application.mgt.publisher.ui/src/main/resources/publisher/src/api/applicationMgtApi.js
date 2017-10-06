@@ -61,8 +61,12 @@ export default class ApplicationMgtApi {
     /**
      * Method to handle application release process.
      * */
-    static releaseApplication(appId) {
-
+    static releaseApplication(appId, applicationRelease, file) {
+        let release = new FormData();
+        release.append('applicationRelease', applicationRelease);
+        release.append('binaryFile', file);
+        const headers = AuthHandler.createAuthenticationHeaders("multipart/form-data");
+        return Axios.post(Constants.appManagerEndpoints.APP_RELEASE + appId, release, {headers: headers});
     }
 
     /**
@@ -73,7 +77,8 @@ export default class ApplicationMgtApi {
      * URL Pattern : /application/1.0/
      * */
     static updateLifeCycleState(appId, nextState) {
-
+        const headers = AuthHandler.createAuthenticationHeaders("application/json");
+        return Axios.put(Constants.appManagerEndpoints.GET_ALL_APPS + appId + "/lifecycle?state=" + nextState, {headers: headers});
     }
 
     /**
@@ -81,6 +86,8 @@ export default class ApplicationMgtApi {
      * @param appId: The application uuid.
      */
     static getNextLifeCycleState(appId) {
+        const headers = AuthHandler.createAuthenticationHeaders("application/json");
+        return Axios.get(Constants.appManagerEndpoints.GET_ALL_APPS + appId + "/lifecycle", {headers: headers});
 
     }
 

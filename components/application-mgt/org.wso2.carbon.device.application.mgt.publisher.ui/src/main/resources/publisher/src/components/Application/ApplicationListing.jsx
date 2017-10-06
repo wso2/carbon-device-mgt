@@ -194,7 +194,7 @@ class ApplicationListing extends Component {
     }
 
     onAppEditClick(uuid) {
-        this.props.history.push("apps/edit/" + uuid);
+        this.props.history.push("apps/" + uuid + "/edit");
     }
 
     closeDrawer() {

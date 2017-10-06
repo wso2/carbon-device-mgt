@@ -32,20 +32,29 @@ class Constants {
     }
 
     load() {
+        let applicationApiContext = '/api/application-mgt/v1.0/applications/1.0.0/';
+        let platformApiContext = '/api/application-mgt/v1.0/platforms/1.0.0';
+
         let apiBaseUrl = 'https://' + Configuration.serverConfig.hostname + ':' + Configuration.serverConfig.apiPort;
         let httpBaseUrl = 'https://' + Configuration.serverConfig.hostname + ':' + Configuration.serverConfig.httpsPort;
 
         this.appManagerEndpoints = {
-            GET_ALL_APPS: apiBaseUrl + '/api/application-mgt/v1.0/applications/1.0.0/',
-            CREATE_APP: apiBaseUrl + '/api/application-mgt/v1.0/applications/1.0.0/',
-            UPLOAD_IMAGE_ARTIFACTS: apiBaseUrl + '/api/application-mgt/v1.0/applications/1.0.0/upload-image-artifacts/', //+appId
-            GET_IMAGE_ARTIFACTS: apiBaseUrl + '/api/application-mgt/v1.0/applications/1.0.0/image-artifacts/'
+            GET_ALL_APPS: apiBaseUrl + applicationApiContext,
+            CREATE_APP: apiBaseUrl + applicationApiContext,
+            UPLOAD_IMAGE_ARTIFACTS: apiBaseUrl + applicationApiContext + 'upload-image-artifacts/', //+appId
+            GET_IMAGE_ARTIFACTS: apiBaseUrl + applicationApiContext + 'image-artifacts/',
+            APP_RELEASE: apiBaseUrl + applicationApiContext + "release/", //+uuid
+            GET_APP_RELEASE_ARTIFACTS: apiBaseUrl + applicationApiContext + "/release-artifacts/", //+AppId/version
+            GET_NEXT_LIFECYCLE_STATE: apiBaseUrl + applicationApiContext //+ [uuid]/lifecycle
         };
 
         this.platformManagerEndpoints = {
-            CREATE_PLATFORM: apiBaseUrl + '/api/application-mgt/v1.0/platforms/1.0.0',
-            GET_ENABLED_PLATFORMS: apiBaseUrl + '/api/application-mgt/v1.0/platforms/1.0.0?status=ENABLED',
-            GET_PLATFORM: apiBaseUrl + '/api/application-mgt/v1.0/platforms/1.0.0/'
+            CREATE_PLATFORM: apiBaseUrl + platformApiContext,
+            GET_ENABLED_PLATFORMS: apiBaseUrl + platformApiContext + '?status=ENABLED',
+            GET_PLATFORM: apiBaseUrl + platformApiContext, //+platformId
+            GET_PLATFORMS: apiBaseUrl + platformApiContext,
+            UPDATE_STATUS: apiBaseUrl + platformApiContext + "update-status/", // + platformId + ?status=
+            EDIT_PLATFORM: apiBaseUrl + platformApiContext //+platformId
         };
 
         this.userConstants = {

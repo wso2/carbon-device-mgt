@@ -78,7 +78,7 @@ class Base extends Component {
                             <Route exact path={"/assets/platforms"} component={PlatformListing}/>
                             <Route exact path={"/assets/platforms/create"} component={PlatformCreate}/>
                             {/*<Route exact path={"/assets/apps/:app"}/>*/}
-                            <Route exact path={"/assets/apps/edit/:app"} component={ApplicationEdit}/>
+                            <Route exact path={"/assets/apps/:app/edit"} component={ApplicationEdit}/>
                             <Route exact path={"/assets/platforms/:platform"}/>
                             <Route exact path={"/assets/platforms/:platform/edit"}/>
                             <Route exact path={"/assets/reviews"}/>

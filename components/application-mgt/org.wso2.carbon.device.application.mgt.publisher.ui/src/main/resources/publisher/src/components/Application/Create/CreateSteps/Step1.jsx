@@ -254,7 +254,7 @@ class Step1 extends Component {
                         </FormGroup>
                         <FormGroup>
                             <Label for="app-short-description">
-                                <FormattedMessage id="shortDescription" defaultMessage="shortDescription"/>*
+                                <FormattedMessage id="ShortDescription" defaultMessage="ShortDescription"/>*
                             </Label>
                             <Input
                                 required

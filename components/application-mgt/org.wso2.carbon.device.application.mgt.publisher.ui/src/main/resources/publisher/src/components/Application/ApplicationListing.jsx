@@ -18,10 +18,11 @@
 
 import React, {Component} from 'react';
 import {withRouter} from 'react-router-dom';
-import {Button, Col, Row, Table} from 'reactstrap';
+import {Button, Col, Row} from 'reactstrap';
 import Drawer from '../UIComponents/Drawer/Drawer';
 import ApplicationView from './View/ApplicationView';
-import {FormattedMessage} from 'react-intl';
+import ApplicationMgtApi from "../../api/applicationMgtApi";
+import AuthHandler from "../../api/authHandler";
 
 /**
  * The App Create Component.
@@ -32,14 +33,15 @@ import {FormattedMessage} from 'react-intl';
  * When the wizard is completed, data will be arranged and sent to the api.
  * */
 class ApplicationListing extends Component {
+
     constructor() {
         super();
         this.searchApplications = this.searchApplications.bind(this);
         this.onRowClick = this.onRowClick.bind(this);
-        this.setData = this.setData.bind(this);
         this.sortData = this.sortData.bind(this);
         this.compare = this.compare.bind(this);
-        this.handleButtonClick = this.handleButtonClick.bind(this);
+        this.onAppEditClick = this.onAppEditClick.bind(this);
+        this.getSelectedApplication = this.getSelectedApplication.bind(this);
         this.state = {
             searchedApplications: [],
             applications: [],
@@ -56,7 +58,6 @@ class ApplicationListing extends Component {
                 }]
         };
     }
-
 
     applications = [
         {
@@ -84,35 +85,59 @@ class ApplicationListing extends Component {
         },
     ];
 
+    headers = [
+        {
+            data_id: "image",
+            data_type: "image",
+            sortable: false,
+            label: ""
+        },
+        {
+            data_id: "applicationName",
+            data_type: "string",
+            sortable: true,
+            locale: "Application.name",
+            label: "Application Name",
+            sort: this.sortData
+        },
+        {
+            data_id: "platform",
+            data_type: "image_array",
+            sortable: false,
+            locale: "Platform",
+            label: "Platform"
+        },
+        {
+            data_id: "category",
+            data_type: "string",
+            sortable: false,
+            locale: "Category",
+            label: "Category"
+        },
+        {
+            data_id: "status",
+            data_type: "string",
+            sortable: false,
+            locale: "Status",
+            label: "Status"
+        },
+        {
+            data_id: "edit",
+            data_type: "button",
+            sortable: false,
+            label: ""
+        }
+    ];
+
     componentWillMount() {
 
-        // let getApps = ApplicationMgtApi.getApplications();
-        // getApps.then(response => {
-        //     let apps = this.setData(response.data.applications);
-        //     console.log(apps); //TODO: Remove this.
-        //     this.setState({searchedApplications: apps});
-        //     // console.log(this.setState({data: response.data}), console.log(this.state));
-        // }).catch(err => {
-        //     AuthHandler.unauthorizedErrorHandler(err);
-        // });
-    }
-
-    /**
-     * Extract application from application list and update the state.
-     * */
-    setData(applications) {
-        let apps = [];
-        for (let app in applications) {
-            let application = {};
-            application.id = applications[app].uuid;
-            application.applicationName = applications[app].name;
-            application.platform = applications[app].platform.name;
-            application.category = applications[app].category.id;
-            application.status = applications[app].currentLifecycle.lifecycleState.name;
-            apps.push(application);
-        }
-
-        this.setState({searchedApplications: apps});
+        let getApps = ApplicationMgtApi.getApplications();
+        getApps.then(response => {
+            console.log(response);
+            this.setState({searchedApplications: response.data.applications});
+        }).catch(err => {
+            AuthHandler.unauthorizedErrorHandler(err);
+        });
     }
 
     /**
@@ -154,34 +179,22 @@ class ApplicationListing extends Component {
         return 0;
     }
 
-    onRowClick() {
+    onRowClick(uuid) {
+        let selectedApp = this.getSelectedApplication(uuid);
         let style = {
-            width: '500px',
-            marginLeft: '500px'
+            width: '550px',
+            marginLeft: '550px'
         };
 
         let appListStyle = {
-            marginRight: '500px',
+            marginRight: '550px',
         };
 
-        this.setState({drawer: style, appListStyle: appListStyle});
+        this.setState({drawer: style, appListStyle: appListStyle, application: selectedApp[0]});
     }
 
-    handleButtonClick() {
-        console.log("Application Listing");
-        this.props.history.push("apps/edit/fdsfdsf343");
-    }
-
-    remove(imageId) {
-        let tmp = this.state.image;
-
-        console.log(imageId);
-
-        let rem = tmp.filter((image) => {
-            return image.id !== imageId
-
-        });
-        this.setState({image: rem});
+    onAppEditClick(uuid) {
+        this.props.history.push("apps/edit/" + uuid);
     }
 
     closeDrawer() {
@@ -196,70 +209,56 @@ class ApplicationListing extends Component {
         this.setState({drawer: style, appListStyle: appListStyle});
     }
 
-    render() {
-        return (
+    getSelectedApplication(uuid) {
+        return this.state.searchedApplications.filter(application => {
+            return application.uuid === uuid;
+        });
+    }
 
+    render() {
+        //TODO: Move this to a data table component.
+        return (
             <div id="application-list" style={this.state.appListStyle}>
-                <Row>
-                    <Col xs="3 offset-9">
-                        <div className="platform-link-placeholder">
-                            <Button><i className="fw fw-settings"></i>
-                                <FormattedMessage id="Platforms" defaultMessage="Platforms"/>
-                            </Button>
-                        </div>
-                    </Col>
+                <Row className="app-list-table-header">
+                    {this.headers.map(header => {
+                        if (header.data_id === "applicationName") {
+                            return (
+                                <Col xs="5">{header.label}</Col>)
+                        } else if (header.data_id === "image") {
+                            return (<Col xs="1">{header.label}</Col>)
+                        }
+                        return (<Col>{header.label}</Col>)
+                    })}
                 </Row>
-                <Row>
-                    <Col>
-                        <Table striped hover>
-                            <thead>
-                            <tr>
-                                <th></th>
-                                {/* TODO: Remove console.log and add sort method. */}
-                                <th onClick={() => {
-                                    console.log("sort")
-                                }}>
-                                    <FormattedMessage id="Application.Name" defaultMessage="Application Name"/>
-                                </th>
-                                <th><FormattedMessage id="Category" defaultMessage="Category"/></th>
-                                <th><FormattedMessage id="Platform" defaultMessage="Platform"/></th>
-                                <th><FormattedMessage id="Status" defaultMessage="Status"/></th>
-                                <th></th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {this.applications.map(
-                                (application) => {
-                                    return (
-                                        <tr key={application.id} onClick={this.onRowClick}>
-                                            <td>
-                                                {/* TODO: Move this styles to css. */}
-                                                <img
-                                                    src={application.icon}
-                                                    height='50px'
-                                                    width='50px'
-                                                    style={{border: 'solid 1px black', borderRadius: "100%"}}
-                                                />
-                                            </td>
-                                            <td>{application.applicationName}</td>
-                                            <td>{application.category}</td>
-                                            <td>{application.platform}</td>
-                                            <td>{application.status}</td>
-                                            <td>
-                                                <Button onClick={this.handleButtonClick}>
-                                                    <i className="fw fw-edit"></i>
-                                                </Button>
-                                            </td>
-                                        </tr>
-                                    )
-                                }
-                            )}
-                            </tbody>
-                        </Table>
-                    </Col>
-                </Row>
+                <hr/>
+                {this.state.searchedApplications.map(application => {
+                    return (
+                        <Row className="app-table-row" onClick={() => {
+                            this.onRowClick(application.uuid)
+                        }}>
+                            <Col xs="1">
+                                <img
+                                    className="app-list-icon"
+                                    src={application.icon}
+                                />
+                            </Col>
+                            <Col xs="5" className="data-table-row-cell"><strong>{application.name}</strong></Col>
+                            <Col className="data-table-row-cell">{application.platform.name}</Col>
+                            <Col className="data-table-row-cell">{application.category.name}</Col>
+                            <Col
+                                className="data-table-row-cell">{application.currentLifecycle.lifecycleState.name}
+                            </Col>
+                            <Col>
+                                <Button className="custom-flat grey rounded"
+                                        onClick={() => this.onAppEditClick(application.uuid)}>
+                                    <i className="fw fw-edit"></i>
+                                </Button>
+                            </Col>
+                        </Row>
+                    )
+                })}
                 <Drawer onClose={this.closeDrawer.bind(this)} style={this.state.drawer}>
-                    <ApplicationView/>
+                    <ApplicationView application={this.state.application}/>
                 </Drawer>
             </div>
         );

@@ -16,35 +16,23 @@
  * under the License.
  */
 
-.btn-circle {
-    color: white;
-    position: relative;
-    background-color: #e65100;
-    border-radius: 50%;
-    box-shadow: -2px 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-}
+'use strict';
 
-.btn-circle i {
-    position: absolute;
-    margin-top: 37%;
-    margin-left: 37%;
-}
+/**
+ * This Utility class will contain basic methods for form validation.
+ * */
+export const validateURL = (value) => {
 
-.small {
-    height: 50px;
-    width: 50px;
-}
+};
 
-.medium {
-    height: 100px;
-    width: 100px;
-}
+export const validateNull = (value) => {
+    return !value;
+};
 
-.btn-circle:hover {
-    cursor: pointer;
-    background-color: rgb(255, 93, 2);
-}
+export const validateEmpty = (array) => {
+    return array.length > 0;
+};
 
-.primary {
-    background-color: blue;
-}
+export const validateEmptyObject = (object) => {
+    return Object.keys(object).length > 0;
+};

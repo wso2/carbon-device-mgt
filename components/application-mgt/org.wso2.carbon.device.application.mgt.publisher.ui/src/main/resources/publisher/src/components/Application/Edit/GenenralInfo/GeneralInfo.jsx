@@ -17,22 +17,86 @@
  */
 
 import React, {Component} from 'react';
-import {Badge, Button, FormGroup, Input, Label, Row} from 'reactstrap';
+import {Button, FormGroup, Input, Label, Row} from 'reactstrap';
 import Dropzone from 'react-dropzone';
 import {FormattedMessage} from 'react-intl';
+import Chip from "../../../UIComponents/Chip/Chip";
 
 class GeneralInfo extends Component {
 
     constructor() {
         super();
+        this.onTextFieldChange = this.onTextFieldChange.bind(this);
+        this.addTags = this.addTags.bind(this);
+        this.handleRequestDelete = this.handleRequestDelete.bind(this);
+        this.handleTagChange = this.handleTagChange.bind(this);
         this.state = {
             defValue: "",
+            title: "",
+            description: "",
+            shortDescription: "",
             tags: [],
             screenshots: [],
             icon: [],
             banner: []
         }
     }
+
+    /**
+     * Set text field values to state.
+     * */
+    onTextFieldChange(event) {
+        let field = event.target.name;
+        console.log(event.target.value);
+        switch (field) {
+            case "appName": {
+                this.setState({name: event.target.value});
+                break;
+            }
+            case "appDescription": {
+                this.setState({description: event.target.value});
+                break;
+            }
+            case "appShortDescription": {
+                this.setState({shortDescription: event.target.value});
+            }
+        }
+    };
+
+    /**
+     * Create a tag on Enter key press and set it to the state.
+     * Clears the tags text field.
+     * Chip gets two parameters: Key and value.
+     * */
+    addTags(event) {
+        let tags = this.state.tags;
+        if (event.charCode === 13) {
+            event.preventDefault();
+            tags.push({key: Math.floor(Math.random() * 1000), value: event.target.value});
+            this.setState({tags, defValue: ""}, console.log(tags));
+        }
+    }
+
+    /**
+     * Set the value for tag.
+     * */
+    handleTagChange(event) {
+        let defaultValue = this.state.defValue;
+        defaultValue = event.target.value;
+        this.setState({defValue: defaultValue})
+    }
+
+    /**
+     * Handles Chip delete function.
+     * Removes the tag from state.tags
+     * */
+    handleRequestDelete(key) {
+        let chipData = this.state.tags;
+        const chipToDelete = chipData.map((chip) => chip.key).indexOf(key);
+        chipData.splice(chipToDelete, 1);
+        this.setState({tags: chipData});
+    };
+
 
     //TODO: Remove Console logs.
     render() {
@@ -44,18 +108,31 @@ class GeneralInfo extends Component {
                             <Label for="app-title">
                                 <FormattedMessage id="Title" defaultMessage="Title"/>*
                             </Label>
+                            <Input required type="text" name="appName" id="app-title"
+                                   onChange={this.onTextFieldChange}/>
+                        </FormGroup>
+                        <FormGroup>
+                            <Label for="app-short-description">
+                                <FormattedMessage id="shortDescription" defaultMessage="shortDescription"/>*
+                            </Label>
                             <Input
                                 required
-                                type="text"
-                                name="appName"
-                                id="app-title"
+                                type="textarea"
+                                name="appShortDescription"
+                                id="app-short-description"
+                                onChange={this.onTextFieldChange}
                             />
                         </FormGroup>
                         <FormGroup>
                             <Label for="app-title">
                                 <FormattedMessage id="Description" defaultMessage="Description"/>*
                             </Label>
-                            <Input required type="textarea" multiline name="appName" id="app-title"/>
+                            <Input
+                                required
+                                type="textarea"
+                                name="appDescription"
+                                id="app-description"
+                                onChange={this.onTextFieldChange}/>
                         </FormGroup>
                         <FormGroup>
                             <Label for="app-category">
@@ -79,16 +156,23 @@ class GeneralInfo extends Component {
                             <Label for="app-tags">
                                 <FormattedMessage id="Tags" defaultMessage="Tags"/>*
                             </Label>
-                            <Input required type="text" value={this.state.defValue} name="app-tags" id="app-tags"/>
+                            <Input
+                                required
+                                type="text"
+                                value={this.state.defValue}
+                                name="app-tags"
+                                id="app-tags"
+                                onChange={this.handleTagChange.bind(this)}
+                                onKeyPress={this.addTags.bind(this)}
+                            />
                             <div id="batch-content">
                                 {this.state.tags.map(tag => {
                                         return (
-                                            <Badge
-                                                style={{margin: '0 2px 0 2px'}}
-                                                value={tag.value}
-                                            >
-                                                {tag.value}
-                                            </Badge>
+                                            <Chip
+                                                key={tag.key}
+                                                content={tag}
+                                                onDelete={this.handleRequestDelete}
+                                            />
                                         )
                                     }
                                 )}
@@ -102,12 +186,14 @@ class GeneralInfo extends Component {
                                 <span className="image-sub-title"> (600 X 800 32 bit PNG)</span>
                                 <div id="screenshot-container">
                                     {this.state.screenshots.map((tile) => (
-                                        <button id="img-btn-screenshot" style={{height: '210px', width: '410px'}}
+                                        <button id="img-btn-screenshot"
+                                                style={{height: '210px', width: '410px'}}
                                                 onMouseEnter={() => {
                                                     console.log("Mouse Entered")
                                                 }}>
                                             {console.log(tile[0].preview)}
-                                            <img style={{height: '200px', width: '400px'}} src={tile[0].preview}/>
+                                            <img style={{height: '200px', width: '400px'}}
+                                                 src={tile[0].preview}/>
                                         </button>
                                     ))}
                                     {this.state.screenshots.length < 3 ?
@@ -140,7 +226,8 @@ class GeneralInfo extends Component {
                                             <button onMouseEnter={() => {
                                                 console.log("Mouse Entered")
                                             }}>
-                                                <img style={{height: '200px', width: '200px'}} src={tile.preview}/>
+                                                <img style={{height: '200px', width: '200px'}}
+                                                     src={tile.preview}/>
                                             </button>
                                         ))}
                                         {this.state.icon.length === 0 ?
@@ -167,7 +254,8 @@ class GeneralInfo extends Component {
                                             <button onMouseEnter={() => {
                                                 console.log("Mouse Entered")
                                             }}>
-                                                <img style={{height: '200px', width: '400px'}} src={tile.preview}/>
+                                                <img style={{height: '200px', width: '400px'}}
+                                                     src={tile.preview}/>
                                             </button>
                                         ))}
                                         {this.state.banner.length === 0 ?
@@ -186,9 +274,8 @@ class GeneralInfo extends Component {
                             </div>
                         </div>
                         <div className="save-info">
-                            <Button>
-                                <FormattedMessage id="Save" defaultMessage="Save"/>
-                            </Button>
+                            <Button className="custom-flat danger-flat">Cancel</Button>
+                            <Button className="custom-raised primary">Save</Button>
                         </div>
                     </form>
                 </Row>

@@ -21,6 +21,7 @@ import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import FlatButton from 'material-ui/FlatButton';
 import {TableHeaderColumn} from 'material-ui/Table';
+import {Col, Row} from "reactstrap";
 
 /**
  * Data Table header component.
@@ -55,33 +56,25 @@ class DataTableHeader extends Component {
     }
 
     render() {
-        let headerCell = null;
-
-        /**
-         * If the header is sortable, create a button with onClick handler.
-         * else create a span element with label as the table header.
-         * */
-        if (this.props.header.sortable) {
-            headerCell =
-                <FlatButton
-                    label={this.props.header.label}
-                    onClick={this.tableHeaderClick}
-                    className="sortableHeaderCell"
-                />
-        } else {
-            headerCell = <span className="notsortableHeaderCell">{this.props.header.label}</span>;
-        }
+        /*margin-top: 30px
+        * margin-bottom: 10px
+        * */
 
         return (
-            <TableHeaderColumn key={this.props.header.id} className="datatableHeaderColumn">
-                {headerCell}
-            </TableHeaderColumn>
+            <Row className="data-table-header">
+                {this.props.headers.map(header => {
+
+                    let headerStyle = header.size;
+
+                    return <Col className={headerStyle}>{header.label}</Col>
+                })}
+            </Row>
         );
     }
 }
 
 DataTableHeader.prototypes = {
-    header: PropTypes.object
+    headers: PropTypes.array
 };
 
 export default DataTableHeader;

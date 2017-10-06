@@ -26,3 +26,5 @@ target
 hs_err_pid*
 components/application-mgt/org.wso2.carbon.device.application.mgt.publisher.ui/src/main/resources/publisher/node_modules/
 components/application-mgt/org.wso2.carbon.device.application.mgt.publisher.ui/src/main/resources/publisher/build/
+components/application-mgt/org.wso2.carbon.device.application.mgt.publisher.ui/src/main/resources/publisher/package-lock.json
+components/application-mgt/org.wso2.carbon.device.application.mgt.publisher.ui/src/main/resources/publisher/npm-debug.log

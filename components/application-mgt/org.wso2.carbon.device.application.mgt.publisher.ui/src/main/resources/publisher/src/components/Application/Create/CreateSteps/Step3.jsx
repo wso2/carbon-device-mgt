@@ -19,7 +19,8 @@
 import PropTypes from 'prop-types';
 import Dropzone from 'react-dropzone';
 import React, {Component} from 'react';
-import {FormGroup, Label} from 'reactstrap';
+import * as validator from '../../../../common/validator';
+import {Button, FormFeedback, FormGroup, Label, ModalFooter} from 'reactstrap';
 import AppImage from "../../../UIComponents/AppImage/AppImage";
 import {FormattedMessage} from 'react-intl';
 
@@ -40,46 +41,76 @@ import {FormattedMessage} from 'react-intl';
 class Step3 extends Component {
     constructor() {
         super();
+        this.setStepData = this.setStepData.bind(this);
+        this.onBackClick = this.onBackClick.bind(this);
+        this.validate = this.validate.bind(this);
+        this.onCancelClick = this.onCancelClick.bind(this);
         this.state = {
-            tags: [],
             icon: [],
-            title: "",
             errors: {},
             banner: [],
-            defValue: "",
-            category: 0,
-            visibility: 0,
-            description: "",
             screenshots: [],
-            identifier: "",
-            shortDescription: ""
         };
     }
 
-    /**
-     * Handles Chip delete function.
-     * Removes the tag from state.tags
-     * */
-    handleRequestDelete(event) {
-        this.chipData = this.state.tags;
-        console.log(event.target); //TODO: Remove Console log.
-        const chipToDelete = this.chipData.map((chip) => chip.value).indexOf(event.target.value);
-        this.chipData.splice(chipToDelete, 1);
-        this.setState({tags: this.chipData});
-    };
+    componentWillMount() {
+        const {defaultData} = this.props;
+
+        this.setState(defaultData);
+    }
 
     /**
      * Creates an object with the current step data and persist in the parent.
      * */
     setStepData() {
+
+        const {icon, banner, screenshots} = this.state;
+
         let stepData = {
-            icon: this.state.icon,
-            banner: this.state.banner,
-            screenshots: this.state.screenshots
+            icon: icon,
+            banner: banner,
+            screenshots: screenshots
         };
 
-        this.props.setData("step2", {step: stepData});
+        const {errorCount, errors} = this.validate();
+
+        if (errorCount > 0) {
+            this.setState({errors: errors})
+        } else {
+            this.props.setStepData("screenshots", stepData);
+        }
+
     };
+
+    onCancelClick() {
+        this.props.close();
+    }
+
+    onBackClick() {
+        this.props.handlePrev();
+    }
+
+    validate() {
+        const {icon, banner, screenshots} = this.state;
+        let errors = {}, errorCount = 0;
+
+        if (!validator.validateEmpty(icon)) {
+            errorCount++;
+            errors.icon = "You must upload an icon image!"
+        }
+
+        if (!validator.validateEmpty(banner)) {
+            errorCount++;
+            errors.banner = "You must upload a banner image!"
+        }
+
+        if (!validator.validateEmpty(screenshots)) {
+            errorCount++;
+            errors.screenshots = "You must upload at least one screenshot image!"
+        }
+
+        return {errorCount, errors};
+    }
 
     /**
      * Removed user uploaded banner.
@@ -126,7 +157,6 @@ class Step3 extends Component {
                                     onDrop={(screenshots, rejected) => {
                                         let tmpScreenshots = this.state.screenshots;
                                         tmpScreenshots.push(screenshots);
-                                        console.log(screenshots); //TODO: Remove this
                                         this.setState({
                                             screenshots: tmpScreenshots
                                         });
@@ -135,6 +165,7 @@ class Step3 extends Component {
                                     <i className="fw fw-add"></i>
                                 </Dropzone> : <div/>}
                         </div>
+                        <FormFeedback id="form-error">{this.state.errors.screenshots}</FormFeedback>
                     </FormGroup>
                 </div>
                 <div style={{display: 'flex'}}>
@@ -162,6 +193,7 @@ class Step3 extends Component {
                                         <i className="fw fw-add"></i>
                                     </Dropzone> : <div/>}
                             </div>
+                            <FormFeedback id="form-error">{this.state.errors.icon}</FormFeedback>
                         </FormGroup>
                     </div>
                     <div style={{marginLeft: '15px'}}>
@@ -188,9 +220,21 @@ class Step3 extends Component {
                                     </Dropzone> : <div/>
                                 }
                             </div>
+                            <FormFeedback id="form-error">{this.state.errors.banner}</FormFeedback>
                         </FormGroup>
                     </div>
                 </div>
+                <ModalFooter>
+                    <Button className="custom-flat primary-flat" onClick={this.onBackClick}>
+                        <FormattedMessage id="Back" defaultMessage="Back"/>
+                    </Button>
+                    <Button className="custom-flat danger-flat" onClick={this.onCancelClick}>
+                        <FormattedMessage id="Cancel" defaultMessage="Cancel"/>
+                    </Button>
+                    <Button className="custom-raised primary" onClick={this.setStepData}>
+                        <FormattedMessage id="Continue" defaultMessage="Continue"/>
+                    </Button>
+                </ModalFooter>
             </div>
         );
     }

@@ -18,8 +18,10 @@
 
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
-import {Badge, FormGroup, Input, Label} from 'reactstrap';
 import {FormattedMessage} from 'react-intl';
+import {Button, Form, FormFeedback, FormGroup, Input, Label, ModalFooter} from 'reactstrap';
+import * as validator from '../../../../common/validator';
+import Chip from "../../../UIComponents/Chip/Chip";
 
 /**
  * The Second step of application create wizard.
@@ -42,20 +44,32 @@ import {FormattedMessage} from 'react-intl';
 class Step1 extends Component {
     constructor() {
         super();
+        this.onTextFieldChange = this.onTextFieldChange.bind(this);
+        this.setStepData = this.setStepData.bind(this);
+        this.onCancelClick = this.onCancelClick.bind(this);
+        this.onVisibilityChange = this.onVisibilityChange.bind(this);
+        this.onVisibilityItemSelect = this.onVisibilityItemSelect.bind(this);
+        this.handleRequestDelete = this.handleRequestDelete.bind(this);
+        this.validate = this.validate.bind(this);
         this.state = {
             tags: [],
-            icon: [],
-            title: "",
+            name: "",
             errors: {},
-            banner: [],
             defValue: "",
-            category: 0,
-            visibility: 0,
+            category: {},
+            visibility: {type: "PUBLIC", allowedList: []},
             description: "",
-            screenshots: [],
-            identifier: "",
             shortDescription: ""
         };
+    }
+
+    componentWillMount() {
+        const defaultVals = this.props.defaultData;
+
+        if (defaultVals) {
+            this.setState(defaultVals);
+        }
+
     }
 
     /**
@@ -85,81 +99,222 @@ class Step1 extends Component {
      * Handles Chip delete function.
      * Removes the tag from state.tags
      * */
-    handleRequestDelete(event) {
-        this.chipData = this.state.tags;
-        console.log(event.target);
-        const chipToDelete = this.chipData.map((chip) => chip.value).indexOf(event.target.value);
-        this.chipData.splice(chipToDelete, 1);
-        this.setState({tags: this.chipData});
+    handleRequestDelete(key) {
+        let chipData = this.state.tags;
+        const chipToDelete = chipData.map((chip) => chip.key).indexOf(key);
+        chipData.splice(chipToDelete, 1);
+        this.setState({tags: chipData});
     };
 
     /**
      * Creates an object with the current step data and persist in the parent.
      * */
     setStepData() {
-        let stepData = {};
-        this.props.setData("step1", {step: stepData});
+        const {name, description, tags, visibility, shortDescription} = this.state;
+        let stepData = {
+            name: name,
+            description: description,
+            tags: tags,
+            visibility: visibility,
+            shortDescription: shortDescription,
+            category: {id: 1, name: "business"}
+        };
+
+        let {errorCount, errors} = this.validate();
+
+        if (errorCount !== 0) {
+            this.setState({errors: errors});
+        } else {
+            this.props.setStepData("generalInfo", stepData);
+        }
     };
+
+    onCancelClick() {
+        this.props.close();
+    }
+
+    /**
+     * Validate the form fields.
+     * */
+    validate() {
+        const {name, description, tags, shortDescription} = this.state;
+        let errorCount = 0;
+        let errors = {};
+        if (validator.validateNull(name)) {
+            errorCount++;
+            errors.name = "Application Title is Required!";
+        }
+
+        if (validator.validateNull(description)) {
+            errorCount++;
+            errors.description = "Description is Required!"
+        }
+
+        if (validator.validateNull(shortDescription)) {
+            errorCount++;
+            errors.shortDescription = "Short Description is Required!"
+        }
+
+        if (!validator.validateEmpty(tags)) {
+            errorCount++;
+            errors.tags = "You need to enter at least one tag!"
+        }
+        return {errorCount, errors};
+    }
 
     /**
      * Set text field values to state.
      * */
-    onTextFieldChange(event, value) {
-        let field = event.target.id;
+    onTextFieldChange(event) {
+        let field = event.target.name;
         switch (field) {
-            case "name": {
-                this.setState({name: value});
+            case "appName": {
+                this.setState({name: event.target.value});
                 break;
             }
-            case "shortDescription": {
-                this.setState({shortDescription: value});
+            case "appDescription": {
+                this.setState({description: event.target.value});
                 break;
             }
-            case "description": {
-                this.setState({description: value});
-                break;
-            }
-            case "identifier": {
-                this.setState({identifier: value});
-                break;
+            case "appShortDescription": {
+                this.setState({shortDescription: event.target.value});
             }
         }
     };
 
+    onVisibilityChange(event) {
+        console.log(event.target.value);
+        this.setState({visibility: event.target.value});
+    }
+
+    onVisibilityItemSelect(event) {
+
+    }
+
     render() {
+
+        const {visibility} = this.state;
+
+        let visibilityItem = () => {
+            switch (visibility) {
+                case("public"): {
+                    return <div/>
+                }
+                case("roles"): {
+                    return <FormGroup>
+                        <Input
+                            type="select"
+                            name="visibility-item"
+                            id="app-visibility-item"
+                            onChange={this.onVisibilityItemSelect}
+                        >
+                            <option id="app-visibility-default" disabled selected>Select the Roles.</option>
+                            <option><Input type="checkbox"/>Role1</option>
+                            <option>Role2</option>
+                        </Input>
+                    </FormGroup>
+                }
+                case ("groups"): {
+                    return <FormGroup>
+                        <Input
+                            type="select"
+                            name="visibility-item"
+                            id="app-visibility-item"
+                            onChange={this.onVisibilityItemSelect}
+                        >
+                            <option id="app-visibility-default" disabled selected>Select the Groups.</option>
+                            <option>Group1</option>
+                            <option>Group2</option>
+                        </Input>
+                    </FormGroup>
+                }
+                default: {
+                    return <div/>
+                }
+            }
+        };
+
         return (
-            <div className="createStep2Content">
+            <div>
                 <div>
                     <div>
                         <FormGroup>
                             <Label for="app-title">
                                 <FormattedMessage id='Title' defaultMessage='Title'/>*
                             </Label>
-                            <Input required type="text" name="appName" id="app-title"/>
+                            <Input
+                                required
+                                type="text"
+                                name="appName"
+                                id="app-title"
+                                value={this.state.name}
+                                onChange={this.onTextFieldChange}
+                            />
+                            <FormFeedback id="form-error">{this.state.errors.name}</FormFeedback>
+                        </FormGroup>
+                        <FormGroup>
+                            <Label for="app-short-description">
+                                <FormattedMessage id="shortDescription" defaultMessage="shortDescription"/>*
+                            </Label>
+                            <Input
+                                required
+                                type="textarea"
+                                name="appShortDescription"
+                                id="app-short-description"
+                                value={this.state.shortDescription}
+                                onChange={this.onTextFieldChange}
+                            />
+                            <FormFeedback id="form-error">{this.state.errors.shortDescription}</FormFeedback>
                         </FormGroup>
                         <FormGroup>
                             <Label for="app-description">
                                 <FormattedMessage id='Description' defaultMessage='Description'/>*
                             </Label>
-                            <Input required type="textarea" name="appDescription" id="app-description"/>
+                            <Input
+                                required
+                                type="textarea"
+                                name="appDescription"
+                                id="app-description"
+                                value={this.state.description}
+                                onChange={this.onTextFieldChange}
+                            />
+                            <FormFeedback id="form-error">{this.state.errors.description}</FormFeedback>
                         </FormGroup>
                         <FormGroup>
                             <Label for="app-category">
                                 <FormattedMessage id='Category' defaultMessage='Category'/>
                             </Label>
-                            <Input type="select" name="category" id="app-category">
-                                <option>Business</option>
+                            <Input
+                                type="select"
+                                name="category"
+                                id="app-category"
+                            >
+                                <option key={0} value={{id: 0, name: "business"}}>Business</option>
                             </Input>
                         </FormGroup>
                         <FormGroup>
                             <Label for="app-visibility">
                                 <FormattedMessage id='Visibility' defaultMessage='Visibility'/>
                             </Label>
-                            <Input type="select" name="visibility" id="app-visibility">
-                                <option><FormattedMessage id='Devices' defaultMessage='Devices'/></option>
-                                <option><FormattedMessage id='Roles' defaultMessage='Roles'/></option>
-                                <option><FormattedMessage id='Groups' defaultMessage='Groups'/></option>
-                            </Input>
+                            <Form inline>
+                                <FormGroup>
+                                    <Input
+                                        type="select"
+                                        name="visibility"
+                                        id="app-visibility"
+                                        onChange={this.onVisibilityChange}
+                                    >
+                                        <option id="app-visibility-default" disabled selected>Select the App Visibility
+                                                                                              Option.
+                                        </option>
+                                        <option key={1}><FormattedMessage id='Devices' defaultMessage='Devices'/>
+                                        </option>
+                                        <option key={2}><FormattedMessage id='Roles' defaultMessage='Roles'/></option>
+                                        <option key={3}><FormattedMessage id='Groups' defaultMessage='Groups'/></option>
+                                    </Input>
+                                </FormGroup>
+                                {visibilityItem()}
+                            </Form>
                         </FormGroup>
                         <FormGroup>
                             <Label for="app-tags"><FormattedMessage id='Tags' defaultMessage='Tags'/>*</Label>
@@ -172,23 +327,31 @@ class Step1 extends Component {
                                 onChange={this.handleTagChange.bind(this)}
                                 onKeyPress={this.addTags.bind(this)}
                             />
+
                             <div id="batch-content">
                                 {this.state.tags.map(tag => {
                                         return (
-                                            <Badge
-                                                style={{margin: '0 2px 0 2px'}}
-                                                value={tag.value}
-                                                onClick={this.handleRequestDelete.bind(this)}
-                                            >
-                                                {tag.value}
-                                            </Badge>
+                                            <Chip
+                                                key={tag.key}
+                                                content={tag}
+                                                onDelete={this.handleRequestDelete}
+                                            />
                                         )
                                     }
                                 )}
                             </div>
+                            <FormFeedback id="form-error">{this.state.errors.tags}</FormFeedback>
                         </FormGroup>
                     </div>
                 </div>
+                <ModalFooter>
+                    <Button className="custom-flat danger-flat" onClick={this.onCancelClick}>
+                        <FormattedMessage id="Cancel" defaultMessage="Cancel"/>
+                    </Button>
+                    <Button className="custom-raised primary" onClick={this.setStepData}>
+                        <FormattedMessage id="Continue" defaultMessage="Continue"/>
+                    </Button>
+                </ModalFooter>
             </div>
         );
     }
@@ -197,8 +360,7 @@ class Step1 extends Component {
 Step1.prototypes = {
     handleNext: PropTypes.func,
     handlePrev: PropTypes.func,
-    setData: PropTypes.func,
-    removeData: PropTypes.func
+    setData: PropTypes.func
 };
 
 export default Step1;

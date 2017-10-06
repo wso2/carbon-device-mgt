@@ -18,36 +18,42 @@
 
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
-import './chip.css';
+import Axios from 'axios';
 
-class Chip extends Component {
+const imageLocation = "/images/";
+
+class Logo extends Component {
 
     constructor() {
         super();
-        this.onDeleteClick = this.onDeleteClick.bind(this);
+        this.state = {
+            image: ""
+        }
     }
 
-    onDeleteClick() {
-        this.props.onDelete(this.props.content.key);
+    componentWillMount() {
+        let url = imageLocation + this.props.image_name;
+        Axios.get(url, {responseType: 'arraybuffer'}).then(
+            response => {
+                let image = "data:image/jpeg;base64," + new Buffer(response.data, 'binary').toString('base64');
+                this.setState({image: image});
+            }
+        ).catch(err => {
+            console.log(err);
+        });
     }
 
     render() {
         return (
-            <div className="chip">
-                <div className="chip-content">
-                    <div className="chip-text">{this.props.content.value}</div>
-                    <div className="chip-close-btn" onClick={this.onDeleteClick}>
-                        <i className="fw fw-error"></i>
-                    </div>
-                </div>
-            </div>
+            <img className={this.props.className} src={this.state.image} />
         )
     }
+
 }
 
-Chip.propTypes = {
-    onDelete: PropTypes.func,
-    content: PropTypes.object
+Logo.prototypes = {
+    className: PropTypes.string,
+    image_name: PropTypes.string
 };
 
-export default Chip;
+export default Logo;

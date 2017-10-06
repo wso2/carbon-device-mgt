@@ -28,9 +28,8 @@ import Configuration from './common/configuration';
 
 function loadStore() {
     const possibleLocale = navigator.language.split("-")[0];
-    //TODO:         baseURL: Configuration.hostConstants.baseURL + "/" + Configuration.hostConstants.appContext + "/locales/"
     let loadLocaleFile = Axios.create({
-        baseURL: Configuration.hostConstants.baseURL + "/locales/"
+        baseURL: Configuration.hostConstants.baseURL + "/" + Configuration.hostConstants.appContext + "/locales/"
         + possibleLocale + ".json"
     }).get();
 
@@ -47,7 +46,8 @@ function loadStore() {
     }).catch(error => {
         addLocaleData(require('react-intl/locale-data/en'));
         let defaultLocale = Axios.create({
-            baseURL: Configuration.hostConstants.baseURL + "/" + "locales/" + Constants.defaultLocale + ".json"
+            baseURL: Configuration.hostConstants.baseURL + "/" + Configuration.hostConstants.appContext + "/locales"
+            + Constants.defaultLocale + ".json"
         }).get();
         defaultLocale.then(response => {
             const messages = defineMessages(response.data);

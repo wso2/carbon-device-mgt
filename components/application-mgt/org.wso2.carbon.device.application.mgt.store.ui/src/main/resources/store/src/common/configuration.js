@@ -34,7 +34,7 @@ class Configuration {
 
     loadConfiguration(callback) {
         let thisObject = this;
-        axios.get(thisObject.hostConstants.baseURL + "/config.json").then(function (response) {
+        axios.get(thisObject.hostConstants.baseURL + '/' + thisObject.hostConstants.appContext + "/config.json").then(function (response) {
             thisObject.serverConfig = response.data.config;
             Constants.load();
             callback();
@@ -45,4 +45,4 @@ class Configuration {
 
 }
 
-export default (new Configuration);
+export default (new Configuration());

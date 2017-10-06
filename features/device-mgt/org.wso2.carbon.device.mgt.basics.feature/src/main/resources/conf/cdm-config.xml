@@ -87,10 +87,10 @@
         <Enable>true</Enable>
         <ExpiryTime>86400</ExpiryTime>
     </CertificateCacheConfiguration>
-    <GeoLocationConfiguration>
+    <OperationAnalyticsConfiguration>
         <isEnabled>false</isEnabled>
-        <PublishLocationOperationResponse>false</PublishLocationOperationResponse>
-    </GeoLocationConfiguration>
+        <PublishOperationResponse>false</PublishOperationResponse>
+    </OperationAnalyticsConfiguration>
     <DefaultGroupsConfiguration>BYOD,COPE</DefaultGroupsConfiguration>
 </DeviceMgtConfiguration>
 

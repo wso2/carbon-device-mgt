@@ -272,6 +272,7 @@ body {
 #sub-title {
     font-family: Roboto-Regular;
     font-size: 18px;
+    font-weight: 600;
     padding-top: 5px;
     padding-left: 18px;
     color: RGBA(0, 0, 0, 1);
@@ -361,6 +362,10 @@ body {
     color: #888888;
     float: right;
     padding-bottom: 10px;
+}
+
+.platform-link-placeholder i {
+    margin-right: 4px;
 }
 
 #application-list {

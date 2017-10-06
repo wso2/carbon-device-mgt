@@ -16,7 +16,6 @@
  * under the License.
  */
 
-import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 
 class PackageManager extends Component {
@@ -26,7 +25,7 @@ class PackageManager extends Component {
     }
 
     render() {
-        return(
+        return (
             <div id="package-mgt-content">
 
             </div>

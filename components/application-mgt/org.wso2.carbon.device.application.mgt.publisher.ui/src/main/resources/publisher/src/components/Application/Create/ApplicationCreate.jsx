@@ -250,20 +250,29 @@ class ApplicationCreate extends Component {
                                         <Col>
                                             <div className="stepper-header-content">
                                                 <div className="step-index">1</div>
-                                                <div className="step-header"> General Info</div>
+                                                <div className="step-header">
+                                                    <FormattedMessage id="General.Info" defaultMessage="General.Info"/>
+                                                </div>
                                             </div>
                                         </Col>
                                         <Col>
                                             <span className="step-index">2</span>
-                                            <span className="step-header"> Select Platform</span>
+                                            <span className="step-header">
+                                                <FormattedMessage id="Select.Platform"
+                                                                  defaultMessage="Select.Platform"/>
+                                            </span>
                                         </Col>
                                         <Col>
                                             <span className="step-index">3</span>
-                                            <span className="step-header"> Screenshots</span>
+                                            <span className="step-header">
+                                                <FormattedMessage id="Screenshots" defaultMessage="Screenshots"/>
+                                            </span>
                                         </Col>
                                         <Col>
                                             <span className="step-index">4</span>
-                                            <span className="step-header"> Release</span>
+                                            <span className="step-header">
+                                                <FormattedMessage id="Release" defaultMessage="Release"/>
+                                            </span>
                                         </Col>
                                     </Row>
                                 </div>

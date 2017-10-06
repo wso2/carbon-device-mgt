@@ -18,6 +18,7 @@
 
 import React, {Component} from 'react';
 import {Button, Col, Collapse, Row} from "reactstrap";
+import {FormattedMessage} from "react-intl";
 
 /**
  * Platform component.
@@ -57,8 +58,13 @@ class Platform extends Component {
                 </Row>
                 <Row>
                     <div className="platform-content-footer">
-                        <Button className="custom-flat grey">{platform.enabled ? "Disable" : "Activate"}</Button>
-                        <Button className="custom-flat grey">Share With Tenants</Button>
+                        <Button className="custom-flat grey">{platform.enabled ?
+                            <FormattedMessage id="Disable" defaultMessage="Disable"/> :
+                            <FormattedMessage id="Activate" defaultMessage="Activate"/>}
+                        </Button>
+                        <Button className="custom-flat grey">
+                            <FormattedMessage id="Share.With.Tenants" defaultMessage="Share.With.Tenants"/>
+                        </Button>
                         <Button className="custom-flat grey circle-button" onClick={this.unFold}>
                             {this.state.isOpen ? <i className="fw fw-up"></i> : <i className="fw fw-down"></i>}
                         </Button>
@@ -71,23 +77,36 @@ class Platform extends Component {
                                 <div className="platform-content-more">
                                     <Row>
                                         <Col>
-                                            <p className="app-view-field">Description</p>
+                                            <p className="app-view-field">
+                                                <FormattedMessage id="Description" defaultMessage="Description"/>
+                                            </p>
                                         </Col>
                                         <Col><p className="app-view-text">{platform.description}</p></Col>
                                     </Row>
                                     <Row>
                                         <Col>
-                                            <p className="app-view-field">File Based</p>
+                                            <p className="app-view-field">
+                                                <FormattedMessage id="File.Based" defaultMessage="File.Based"/>
+                                            </p>
                                         </Col>
                                         <Col>
-                                            <p className="app-view-text">{platform.fileBased ? "Yes" : "No"}</p>
+                                            <p className="app-view-text">{platform.fileBased ?
+                                                <FormattedMessage id="Yes" defaultMessage="Yes"/>
+                                                : <FormattedMessage id="No" defaultMessage="No"/>}</p>
                                         </Col>
                                     </Row>
                                     <Row>
-                                        <Col><p className="app-view-field">Tags</p></Col>
+                                        <Col><p className="app-view-field">
+                                            <FormattedMessage id="Tags" defaultMessage="Tags"/>
+                                        </p></Col>
                                         <Col>
                                             <p className="app-view-text">
-                                                {platform.tags.length > 0 ? platform.tags : "No Platform Tags"}
+                                                {platform.tags.length > 0 ?
+                                                    platform.tags :
+                                                    <FormattedMessage
+                                                        id="No.Platform.Tags"
+                                                        defaultMessage="No.Platform.Tags"/>
+                                                }
                                             </p>
                                         </Col>
                                     </Row>

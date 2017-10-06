@@ -16,7 +16,8 @@
  * under the License.
  */
 import React, {Component} from 'react';
-import {Button, FormGroup, Label, Modal, ModalBody, ModalFooter, ModalHeader, Input} from "reactstrap";
+import {Button, FormGroup, Input, Label, Modal, ModalBody, ModalFooter, ModalHeader} from "reactstrap";
+import {FormattedMessage} from "react-intl";
 
 /**
  * Platform view component.
@@ -48,20 +49,30 @@ class PlatformCreate extends Component {
         return (
             <div>
                 <Modal isOpen={this.state.open} toggle={this.toggle} id="platform-create-modal" backdrop={'static'}>
-                    <ModalHeader>Create Platform</ModalHeader>
+                    <ModalHeader>
+                        <FormattedMessage id="Create.Platform" defaultMessage="Create.Platform"/>
+                    </ModalHeader>
                     <ModalBody>
                         <FormGroup>
-                            <Label for="platform-name">Name*</Label>
+                            <Label for="platform-name">
+                                <FormattedMessage id="Name" defaultMessage="Name"/>*
+                            </Label>
                             <Input required type="text" name="appName" id="platform-name"/>
                         </FormGroup>
                         <FormGroup>
-                            <Label for="platform-description">Description*</Label>
+                            <Label for="platform-description">
+                                <FormattedMessage id="Description" defaultMessage="Description"/>*
+                            </Label>
                             <Input required type="textarea" name="appName" id="platform-description"/>
                         </FormGroup>
                     </ModalBody>
                     <ModalFooter>
-                        <Button className="custom-flat danger-flat" onClick={this.onCancelClick}>Cancel</Button>
-                        <Button className="custom-raised primary">Create</Button>
+                        <Button className="custom-flat danger-flat" onClick={this.onCancelClick}>
+                            <FormattedMessage id="Cancel" defaultMessage="Cancel"/>
+                        </Button>
+                        <Button className="custom-raised primary">
+                            <FormattedMessage id="Create" defaultMessage="Create"/>
+                        </Button>
                     </ModalFooter>
                 </Modal>
             </div>

@@ -345,8 +345,12 @@ class Step1 extends Component {
                     </div>
                 </div>
                 <ModalFooter>
-                    <Button className="custom-flat danger-flat" onClick={this.onCancelClick}>Cancel</Button>
-                    <Button className="custom-raised primary" onClick={this.setStepData}>Continue</Button>
+                    <Button className="custom-flat danger-flat" onClick={this.onCancelClick}>
+                        <FormattedMessage id="Cancel" defaultMessage="Cancel"/>
+                    </Button>
+                    <Button className="custom-raised primary" onClick={this.setStepData}>
+                        <FormattedMessage id="Continue" defaultMessage="Continue"/>
+                    </Button>
                 </ModalFooter>
             </div>
         );

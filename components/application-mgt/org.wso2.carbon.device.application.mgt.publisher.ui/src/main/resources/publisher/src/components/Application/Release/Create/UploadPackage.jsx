@@ -41,7 +41,8 @@ class UploadPackage extends Component {
                         <a onClick={this.handleBack}>{"<-"}</a>
                         <span id="create-release-header">
                             <strong>
-                                <FormattedMessage id="New.Release.For" defaultMessage="New Release For"/> {selectedChannel}
+                                <FormattedMessage id="New.Release.For"
+                                                  defaultMessage="New Release For"/> {selectedChannel}
                             </strong>
                         </span>
                     </div>

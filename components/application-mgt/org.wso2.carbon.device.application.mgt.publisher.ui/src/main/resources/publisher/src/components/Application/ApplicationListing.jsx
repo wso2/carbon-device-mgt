@@ -21,7 +21,6 @@ import {withRouter} from 'react-router-dom';
 import {Button, Col, Row} from 'reactstrap';
 import Drawer from '../UIComponents/Drawer/Drawer';
 import ApplicationView from './View/ApplicationView';
-import {FormattedMessage} from 'react-intl';
 import ApplicationMgtApi from "../../api/applicationMgtApi";
 import AuthHandler from "../../api/authHandler";
 
@@ -249,7 +248,8 @@ class ApplicationListing extends Component {
                                 className="data-table-row-cell">{application.currentLifecycle.lifecycleState.name}
                             </Col>
                             <Col>
-                                <Button className="custom-flat grey rounded" onClick={() => this.onAppEditClick(application.uuid)}>
+                                <Button className="custom-flat grey rounded"
+                                        onClick={() => this.onAppEditClick(application.uuid)}>
                                     <i className="fw fw-edit"></i>
                                 </Button>
                             </Col>

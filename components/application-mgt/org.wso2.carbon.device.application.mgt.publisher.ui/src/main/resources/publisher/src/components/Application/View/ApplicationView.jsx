@@ -70,7 +70,9 @@ class ApplicationView extends Component {
                                     <p className="app-view-field">{app.name}</p>
                                 </Row>
                                 <Row>
-                                    <span className="app-updated-date app-view-text">Last updated on {app.modifiedAt}</span>
+                                    <span className="app-updated-date app-view-text">
+                                        <FormattedMessage id="Last.Updated"
+                                                          defaultMessage="Last.Updated"/> {app.modifiedAt}</span>
                                 </Row>
                             </Col>
                         </Row>
@@ -78,7 +80,9 @@ class ApplicationView extends Component {
                     <div id="application-view-row">
                         <Row>
                             <Col>
-                                <span className="app-install-count app-view-text">2k Installs</span>
+                                <span className="app-install-count app-view-text">
+                                    2k <FormattedMessage id="Installs" defaultMessage="Installs"/>
+                                </span>
                             </Col>
                         </Row>
                         <Row>
@@ -89,7 +93,11 @@ class ApplicationView extends Component {
                                 <i className="fw fw-star"></i>
                             </Col>
                             <Col>
-                                <p className="app-view-text"><a href="#">View in Store</a></p>
+                                <p className="app-view-text">
+                                    <a href="#">
+                                        <FormattedMessage id="View.In.Store" defaultMessage="View.In.Store"/>
+                                    </a>
+                                </p>
                             </Col>
                         </Row>
                     </div>

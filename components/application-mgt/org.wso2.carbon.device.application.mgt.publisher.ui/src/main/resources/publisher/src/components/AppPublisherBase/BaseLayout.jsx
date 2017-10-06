@@ -42,7 +42,7 @@ class BaseLayout extends Component {
         this.onClickApplications = this.onClickApplications.bind(this);
         this.state = {
             notifications: 0,
-            user: 'Admin',
+            user: '',
             openModal: false,
             currentPage: "",
             logo: {}
@@ -94,7 +94,7 @@ class BaseLayout extends Component {
         if (href.indexOf("apps") !== -1) {
             return "Applications";
         } else if (href.indexOf("platforms") !== -1) {
-            return "Platforms"
+            return "Platforms";
         }
 
     }
@@ -162,11 +162,11 @@ class BaseLayout extends Component {
                                     {this.getCurrentPageTitle() === "Applications" ?
                                         <Button className="custom-flat grey" onClick={this.onClickPlatforms}>
                                             <i className="fw fw-settings"></i>
-                                            Platforms
+                                            <FormattedMessage id="Platforms" defaultMessage="Platforms"/>
                                         </Button> :
                                         <Button className="custom-flat grey" onClick={this.onClickApplications}>
                                             <i className="fw fw-application"></i>
-                                            Applications
+                                            <FormattedMessage id="Applications" defaultMessage="Applications"/>
                                         </Button>
                                     }
                                 </div>

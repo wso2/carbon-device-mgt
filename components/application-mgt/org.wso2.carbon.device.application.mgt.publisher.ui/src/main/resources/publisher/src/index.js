@@ -21,7 +21,7 @@ import Publisher from './App';
 import ReactDOM from 'react-dom';
 import 'bootstrap/dist/css/bootstrap.css';
 import registerServiceWorker from './registerServiceWorker';
-import {IntlProvider, addLocaleData, defineMessages} from 'react-intl';
+import {addLocaleData, defineMessages, IntlProvider} from 'react-intl';
 import Axios from 'axios';
 import Constants from './common/constants';
 import Configuration from './common/configuration';

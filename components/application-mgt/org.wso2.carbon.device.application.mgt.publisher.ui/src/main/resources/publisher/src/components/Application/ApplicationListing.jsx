@@ -33,6 +33,7 @@ import AuthHandler from "../../api/authHandler";
  * When the wizard is completed, data will be arranged and sent to the api.
  * */
 class ApplicationListing extends Component {
+
     constructor() {
         super();
         this.searchApplications = this.searchApplications.bind(this);

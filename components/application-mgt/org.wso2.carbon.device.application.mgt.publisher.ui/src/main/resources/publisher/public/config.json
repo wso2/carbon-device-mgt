@@ -2,5 +2,10 @@
   "theme": {
     "type": "default",
     "value": "lightBaseTheme"
+  },
+  "config": {
+    "hostname": "localhost",
+    "httpsPort": "9443",
+    "apiPort": "8243"
   }
 }

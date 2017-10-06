@@ -57,46 +57,6 @@ class ApplicationListing extends Component {
         };
     }
 
-    headers = [
-        {
-            data_id: "image",
-            data_type: "image",
-            sortable: false,
-            label: ""
-        },
-        {
-            data_id: "applicationName",
-            data_type: "string",
-            sortable: true,
-            label: "Application Name",
-            sort: this.sortData
-        },
-        {
-            data_id: "platform",
-            data_type: "image_array",
-            sortable: false,
-            label: "Platform"
-        },
-        {
-            data_id: "category",
-            data_type: "string",
-            sortable: false,
-            label: "Category"
-        },
-        {
-            data_id: "status",
-            data_type: "string",
-            sortable: false,
-            label: "Status"
-        },
-        {
-            data_id: "edit",
-            data_type: "button",
-            sortable: false,
-            label: ""
-        }
-    ];
-
 
     applications = [
         {

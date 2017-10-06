@@ -15,41 +15,47 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+import Configuration from './configuration';
 
 'use strict';
 
-//TODO: Replace the server address with response from auth endpoint and remove hardcoded ids etc.
-export default class Constants {
+class Constants {
 
-    static scopes = 'perm:application:get perm:application:create perm:application:update perm:application-mgt:login' +
-        ' perm:application:delete perm:platform:add perm:platform:remove perm:roles:view perm:devices:view';
-
-    static appManagerEndpoints = {
-        GET_ALL_APPS: 'https://localhost:8243/api/application-mgt/v1.0/applications/1.0.0/',
-        CREATE_APP: 'https://localhost:8243/api/application-mgt/v1.0/applications/1.0.0/',
-        UPLOAD_IMAGE_ARTIFACTS: 'https://localhost:8243/api/application-mgt/v1.0/applications/1.0.0/upload-image-artifacts/', //+appId
-        GET_IMAGE_ARTIFACTS: "https://localhost:8243/api/application-mgt/v1.0/applications/1.0.0/image-artifacts/"
-    };
-
-    static platformManagerEndpoints = {
-        CREATE_PLATFORM: 'https://localhost:8243/api/application-mgt/v1.0/platforms/1.0.0',
-        GET_ENABLED_PLATFORMS: 'https://localhost:8243/api/application-mgt/v1.0/platforms/1.0.0?status=ENABLED',
-        GET_PLATFORM: 'https://localhost:8243/api/application-mgt/v1.0/platforms/1.0.0/'
-    };
-
-    static userConstants = {
-        LOGIN_URL:"https://localhost:9443/auth/application-mgt/v1.0/auth/login",
-        LOGOUT_URL: "https://localhost:9443/auth/application-mgt/v1.0/auth/logout",
-        REFRESH_TOKEN_URL: "",
-        WSO2_USER: 'wso2_user',
-        PARTIAL_TOKEN: 'WSO2_IOT_TOKEN'
-    };
-
-    static hostConstants = {
-        baseURL : window.location.origin,
-        appContext : window.location.pathname.split("/")[1]
+    constructor() {
+        this.scopes = 'perm:application:get perm:application:create perm:application:update perm:application-mgt:login' +
+            ' perm:application:delete perm:platform:add perm:platform:remove perm:roles:view perm:devices:view';
+        this.appManagerEndpoints = {};
+        this.platformManagerEndpoints = {};
+        this.userConstants = {};
+        this.defaultLocale = "en";
 
     }
 
-    static defaultLocale = "en";
+    load() {
+        let apiBaseUrl = 'https://' + Configuration.serverConfig.hostname + ':' + Configuration.serverConfig.apiPort;
+        let httpBaseUrl = 'https://' + Configuration.serverConfig.hostname + ':' + Configuration.serverConfig.httpsPort;
+
+        this.appManagerEndpoints = {
+            GET_ALL_APPS: apiBaseUrl + '/api/application-mgt/v1.0/applications/1.0.0/',
+            CREATE_APP: apiBaseUrl + '/api/application-mgt/v1.0/applications/1.0.0/',
+            UPLOAD_IMAGE_ARTIFACTS: apiBaseUrl + '/api/application-mgt/v1.0/applications/1.0.0/upload-image-artifacts/', //+appId
+            GET_IMAGE_ARTIFACTS: apiBaseUrl + '/api/application-mgt/v1.0/applications/1.0.0/image-artifacts/'
+        };
+
+        this.platformManagerEndpoints = {
+            CREATE_PLATFORM: apiBaseUrl + '/api/application-mgt/v1.0/platforms/1.0.0',
+            GET_ENABLED_PLATFORMS: apiBaseUrl + '/api/application-mgt/v1.0/platforms/1.0.0?status=ENABLED',
+            GET_PLATFORM: apiBaseUrl + '/api/application-mgt/v1.0/platforms/1.0.0/'
+        };
+
+        this.userConstants = {
+            LOGIN_URL: httpBaseUrl + '/auth/application-mgt/v1.0/auth/login',
+            LOGOUT_URL: httpBaseUrl + '/auth/application-mgt/v1.0/auth/logout',
+            REFRESH_TOKEN_URL: "",
+            WSO2_USER: 'wso2_user',
+            PARTIAL_TOKEN: 'WSO2_IOT_TOKEN'
+        };
+    }
 }
+
+export default(new Constants);

@@ -430,8 +430,9 @@ public final class DeviceManagerUtil {
     public static boolean isPublishOperationResponseEnabled() throws DeviceManagementException {
         DeviceManagementConfig deviceManagementConfig = DeviceConfigurationManager.getInstance().
                 getDeviceManagementConfig();
-        if (deviceManagementConfig != null && isOperationAnalyticsEnabled()) {
-            return deviceManagementConfig.getOperationAnalyticsConfiguration().getPublishOperationResponse();
+        if (deviceManagementConfig != null) {
+            return isOperationAnalyticsEnabled()
+                   && deviceManagementConfig.getOperationAnalyticsConfiguration().getPublishOperationResponse();
         } else {
             throw new DeviceManagementException("Device-Mgt configuration has not initialized. Please check the " +
                                                         "cdm-config.xml file.");

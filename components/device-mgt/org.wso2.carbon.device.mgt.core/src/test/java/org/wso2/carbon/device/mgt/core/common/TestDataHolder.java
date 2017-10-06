@@ -59,8 +59,6 @@ public class TestDataHolder {
 
     public static DeviceInfo generateDummyDeviceInfo() {
         DeviceInfo deviceInfo = new DeviceInfo();
-        deviceInfo.setIMEI("IMEI-12345");
-        deviceInfo.setIMSI("IMSI-12344");
         deviceInfo.setDeviceModel("DUMMY_MODEL");
         deviceInfo.setVendor("WSO2");
         deviceInfo.setOsVersion("OREO");

@@ -33,10 +33,7 @@ public class Utils {
 
         DeviceInfo deviceInfo = new DeviceInfo();
 
-        deviceInfo.setIMSI("e6f236ac82537a8e");
         deviceInfo.setSsid("FAFDA");
-
-
         deviceInfo.setAvailableRAMMemory(1.24);
         deviceInfo.setBatteryLevel(27.3);
         deviceInfo.setConnectionType("GSM");
@@ -44,8 +41,6 @@ public class Utils {
         deviceInfo.setDeviceModel("SM-T520");
         deviceInfo.setExternalAvailableMemory(2.45);
         deviceInfo.setExternalTotalMemory(16.23);
-        deviceInfo.setIMEI("e6f236ac82537a8e");
-        deviceInfo.setIMSI("GT-0WDA");
         deviceInfo.setInternalAvailableMemory(3.56);
         deviceInfo.setInternalTotalMemory(7.89);
         deviceInfo.setMobileSignalStrength(0.67);
@@ -67,6 +62,8 @@ public class Utils {
         propertyMap.put("MEMORY_THRESHOLD", "100663296");
         propertyMap.put("CPU_IOW", "12");
         propertyMap.put("CPU_IRQ", "1");
+        propertyMap.put("IMEI", "e6f236ac82537a8e");
+        propertyMap.put("IMSI", "432659632123654845");
 
         deviceInfo.setDeviceDetailsMap(propertyMap);
 

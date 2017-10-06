@@ -26,7 +26,7 @@ import Axios from 'axios';
 import Constants from './common/constants';
 import Configuration from './common/configuration';
 
-function loadStore() {
+function loadPublisher() {
     const possibleLocale = navigator.language.split("-")[0];
     let loadLocaleFile = Axios.create({
         baseURL: Configuration.hostConstants.baseURL + "/" + Configuration.hostConstants.appContext + "/locales/"
@@ -59,5 +59,5 @@ function loadStore() {
     });
 }
 
-Configuration.loadConfiguration(loadStore);
+Configuration.loadConfiguration(loadPublisher);
 

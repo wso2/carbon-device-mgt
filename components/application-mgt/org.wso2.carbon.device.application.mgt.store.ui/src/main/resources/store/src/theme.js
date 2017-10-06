@@ -17,6 +17,7 @@
  */
 
 import axios from 'axios';
+import Configuration from './common/configuration';
 
 /**
  * This class will read through the configuration file and saves the theme names for the usage in other files.
@@ -33,8 +34,8 @@ class Theme {
         this.selectedTheme = this.defaultThemeType;
 
         //TODO Need to get the app context properly when the server is ready
-        this.baseURL = window.location.origin;
-        this.appContext = window.location.pathname.split("/")[1];
+        this.baseURL = Configuration.hostConstants.baseURL;
+        this.appContext = Configuration.hostConstants.appContext;
         this.loadThemeConfigs = this.loadThemeConfigs.bind(this);
         this.loadThemeFiles = this.loadThemeFiles.bind(this);
         this.insertThemingScripts =  this.insertThemingScripts.bind(this);

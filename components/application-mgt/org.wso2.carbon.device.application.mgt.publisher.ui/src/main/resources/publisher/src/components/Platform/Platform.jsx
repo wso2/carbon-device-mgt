@@ -58,14 +58,13 @@ class Platform extends Component {
                 </Row>
                 <Row>
                     <div className="platform-content-footer">
-                        {platform.enabled?
+                        {platform.enabled ?
                             <Button className="custom-flat danger-flat">
-                            <FormattedMessage id="Disable" defaultMessage="Disable"/>
+                                <FormattedMessage id="Disable" defaultMessage="Disable"/>
                             </Button> :
                             <Button className="custom-flat primary-flat">
                                 <FormattedMessage id="Activate" defaultMessage="Activate"/>
                             </Button>}
-
                         <Button className="custom-flat primary-flat">
                             <FormattedMessage id="Share.With.Tenants" defaultMessage="Share.With.Tenants"/>
                         </Button>

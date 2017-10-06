@@ -28,6 +28,7 @@ import org.wso2.carbon.device.application.mgt.common.services.CategoryManager;
 import org.wso2.carbon.device.application.mgt.common.services.CommentsManager;
 import org.wso2.carbon.device.application.mgt.common.services.LifecycleStateManager;
 import org.wso2.carbon.device.application.mgt.common.services.PlatformManager;
+import org.wso2.carbon.device.application.mgt.common.services.PlatformStorageManager;
 import org.wso2.carbon.device.application.mgt.common.services.SubscriptionManager;
 import org.wso2.carbon.device.application.mgt.common.services.VisibilityManager;
 import org.wso2.carbon.device.application.mgt.core.config.ConfigurationManager;
@@ -98,6 +99,14 @@ public class ApplicationManagementUtil {
         Extension extension = configurationManager.getExtension(Extension.Name.ApplicationStorageManager);
         return getInstance(extension, ApplicationStorageManager.class);
     }
+
+    public static PlatformStorageManager getPlatformStorageManagerInstance() throws
+            InvalidConfigurationException {
+        ConfigurationManager configurationManager = ConfigurationManager.getInstance();
+        Extension extension = configurationManager.getExtension(Extension.Name.PlatformStorageManager);
+        return getInstance(extension, PlatformStorageManager.class);
+    }
+
 
     private static <T> T getInstance(Extension extension, Class<T> cls) throws InvalidConfigurationException {
         try {

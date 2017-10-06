@@ -87,7 +87,8 @@ public class Extension {
         VisibilityTypeManager,
         SubscriptionManager,
         VisibilityManager,
-        ApplicationStorageManager
+        ApplicationStorageManager,
+        PlatformStorageManager
     }
 }
 

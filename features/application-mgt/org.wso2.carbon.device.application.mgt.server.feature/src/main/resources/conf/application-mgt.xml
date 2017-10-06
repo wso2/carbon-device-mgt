@@ -46,14 +46,17 @@
         <Extension name="VisibilityManager">
             <ClassName>org.wso2.carbon.device.application.mgt.core.impl.VisibilityManagerImpl</ClassName>
         </Extension>
-        <Extension name="VisibilityTypeManager">
-            <ClassName>org.wso2.carbon.device.application.mgt.core.impl.VisibilityTypeManagerImpl</ClassName>
-        </Extension>
         <Extension name="ApplicationStorageManager">
             <ClassName>org.wso2.carbon.device.application.mgt.core.impl.ApplicationStorageManagerImpl</ClassName>
             <Parameters>
                 <Parameter name="StoragePath">repository/resources/apps</Parameter>
                 <Parameter name="MaxScreenShotCount">6</Parameter>
+            </Parameters>
+        </Extension>
+        <Extension name="PlatformStorageManager">
+            <ClassName>org.wso2.carbon.device.application.mgt.core.impl.PlatformStorageManagerImpl</ClassName>
+            <Parameters>
+                <Parameter name="StoragePath">repository/resources/platforms</Parameter>
             </Parameters>
         </Extension>
     </Extensions>

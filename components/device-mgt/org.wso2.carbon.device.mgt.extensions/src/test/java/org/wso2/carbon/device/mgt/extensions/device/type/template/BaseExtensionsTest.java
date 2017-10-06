@@ -51,7 +51,7 @@ public class BaseExtensionsTest {
     @BeforeSuite
     public void init() throws RegistryException, IOException {
         ClassLoader classLoader = getClass().getClassLoader();
-        URL resourceUrl = classLoader.getResource("license.rxt");
+        URL resourceUrl = classLoader.getResource(Utils.DEVICE_TYPE_FOLDER + "license.rxt");
         String rxt = null;
         File carbonHome;
         if (resourceUrl != null) {

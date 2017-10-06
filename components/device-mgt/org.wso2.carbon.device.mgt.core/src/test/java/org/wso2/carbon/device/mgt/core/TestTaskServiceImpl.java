@@ -17,73 +17,34 @@
 */
 package org.wso2.carbon.device.mgt.core;
 
+import org.wso2.carbon.device.mgt.core.task.TestTaskManagerImpl;
 import org.wso2.carbon.ntask.common.TaskException;
 import org.wso2.carbon.ntask.core.TaskInfo;
 import org.wso2.carbon.ntask.core.TaskManager;
 import org.wso2.carbon.ntask.core.service.TaskService;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 public class TestTaskServiceImpl implements TaskService {
+    private Set<String> registeredTaskTypes;
+    private TaskManager taskManager;
+
+    public TestTaskServiceImpl() {
+
+        this.registeredTaskTypes = new HashSet<>();
+        this.taskManager = new TestTaskManagerImpl();
+    }
+
+    public void setTaskManager(TaskManager taskManager) {
+        this.taskManager = taskManager;
+    }
+
     @Override
     public TaskManager getTaskManager(String s) throws TaskException {
-        return new TaskManager() {
-            @Override
-            public void initStartupTasks() throws TaskException {
-
-            }
-
-            @Override
-            public void scheduleTask(String s) throws TaskException {
-
-            }
-
-            @Override
-            public void rescheduleTask(String s) throws TaskException {
-
-            }
-
-            @Override
-            public boolean deleteTask(String s) throws TaskException {
-                return false;
-            }
-
-            @Override
-            public void pauseTask(String s) throws TaskException {
-
-            }
-
-            @Override
-            public void resumeTask(String s) throws TaskException {
-
-            }
-
-            @Override
-            public void registerTask(TaskInfo taskInfo) throws TaskException {
-
-            }
-
-            @Override
-            public TaskState getTaskState(String s) throws TaskException {
-                return null;
-            }
-
-            @Override
-            public TaskInfo getTask(String s) throws TaskException {
-                return null;
-            }
-
-            @Override
-            public List<TaskInfo> getAllTasks() throws TaskException {
-                return null;
-            }
-
-            @Override
-            public boolean isTaskScheduled(String s) throws TaskException {
-                return false;
-            }
-        };
+        return this.taskManager;
     }
 
     @Override
@@ -93,12 +54,12 @@ public class TestTaskServiceImpl implements TaskService {
 
     @Override
     public void registerTaskType(String s) throws TaskException {
-
+        this.registeredTaskTypes.add(s);
     }
 
     @Override
     public Set<String> getRegisteredTaskTypes() {
-        return null;
+        return this.registeredTaskTypes;
     }
 
     @Override
@@ -108,7 +69,7 @@ public class TestTaskServiceImpl implements TaskService {
 
     @Override
     public boolean isServerInit() {
-        return false;
+        return true;
     }
 
     @Override

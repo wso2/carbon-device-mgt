@@ -28,6 +28,15 @@
             <class name="org.wso2.carbon.policy.mgt.core.PolicyDAOTestCase"/>
             <class name="org.wso2.carbon.policy.mgt.core.MonitoringTestCase" />
             <class name="org.wso2.carbon.policy.mgt.core.PolicyEvaluationTestCase" />
+
+        </classes>
+    </test>
+    
+    <test name="Service Unit Tests" preserve-order="true">
+        <parameter name="dbType" value="H2"/>
+        <classes>
+            <class name="org.wso2.carbon.policy.mgt.core.PolicyManagerServiceImplTest"/>
+            <class name="org.wso2.carbon.policy.mgt.core.task.TaskSchedulerServiceImplTest" />
         </classes>
     </test>
 </suite>

@@ -31,8 +31,6 @@ public interface OperationDAO {
 
     int addOperation(Operation operation) throws OperationManagementDAOException;
 
-    void updateOperation(Operation operation) throws OperationManagementDAOException;
-
     Operation getOperation(int operationId) throws OperationManagementDAOException;
 
     Operation getOperationByDeviceAndId(int enrolmentId, int operationId) throws OperationManagementDAOException;
@@ -65,8 +63,6 @@ public interface OperationDAO {
     Activity getActivity(int operationId) throws OperationManagementDAOException;
 
     Activity getActivityByDevice(int operationId, int deviceId) throws OperationManagementDAOException;
-
-    List<Activity> getActivitiesUpdatedAfter(long timestamp) throws OperationManagementDAOException;
 
     List<Activity> getActivitiesUpdatedAfter(long timestamp, int limit, int offset) throws OperationManagementDAOException;
 

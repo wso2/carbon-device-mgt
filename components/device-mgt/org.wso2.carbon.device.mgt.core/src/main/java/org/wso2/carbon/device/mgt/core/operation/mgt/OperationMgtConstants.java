@@ -22,7 +22,6 @@ public class OperationMgtConstants {
 
     public final class DeviceConstants {
         private DeviceConstants() {
-            throw new AssertionError();
         }
 
         public static final String DEVICE_ID_NOT_FOUND = "Device not found for device id: %s";
@@ -30,8 +29,8 @@ public class OperationMgtConstants {
 
     public final class OperationCodes {
         private OperationCodes() {
-            throw new AssertionError();
         }
+
         public static final String POLICY_REVOKE = "POLICY_REVOKE";
     }
 }

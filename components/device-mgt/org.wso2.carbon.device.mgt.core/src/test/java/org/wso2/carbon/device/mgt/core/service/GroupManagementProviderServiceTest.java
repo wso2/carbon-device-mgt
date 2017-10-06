@@ -34,6 +34,7 @@ import org.wso2.carbon.device.mgt.common.group.mgt.GroupNotExistException;
 import org.wso2.carbon.device.mgt.common.group.mgt.RoleDoesNotExistException;
 import org.wso2.carbon.device.mgt.core.TestUtils;
 import org.wso2.carbon.device.mgt.core.common.BaseDeviceManagementTest;
+import org.wso2.carbon.device.mgt.core.common.TestDataHolder;
 import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
 import org.wso2.carbon.device.mgt.core.config.cache.DeviceCacheConfiguration;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
@@ -269,7 +270,7 @@ public class GroupManagementProviderServiceTest extends BaseDeviceManagementTest
     public void getGroupsByDeviceIdentifier() throws GroupManagementException {
         DeviceIdentifier identifier = new DeviceIdentifier();
         identifier.setId("12345");
-        identifier.setType("Test");
+        identifier.setType(TestDataHolder.TEST_DEVICE_TYPE);
         List<DeviceGroup> groups = groupManagementProviderService.getGroups(identifier);
         Assert.assertNotNull(groups);
     }

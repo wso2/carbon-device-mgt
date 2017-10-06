@@ -44,7 +44,6 @@ public class DeviceTypePluginDAOImpl implements PluginDAO {
     private String selectDBQueryForGetDevice;
     private String createDBqueryForAddDevice;
     private String updateDBQueryForUpdateDevice;
-    private String deleteDBQueryToRemoveDevicd;
     private String selectDBQueryToGetAllDevice;
 
     public DeviceTypePluginDAOImpl(DeviceDAODefinition deviceDAODefinition,
@@ -158,33 +157,6 @@ public class DeviceTypePluginDAOImpl implements PluginDAO {
         return status;
     }
 
-    public boolean deleteDevice(String deviceId) throws DeviceTypeMgtPluginException {
-        boolean status = false;
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        try {
-            conn = deviceTypeDAOHandler.getConnection();
-            stmt = conn.prepareStatement(deleteDBQueryToRemoveDevicd);
-            stmt.setString(1, deviceId);
-            int rows = stmt.executeUpdate();
-            if (rows > 0) {
-                status = true;
-                if (log.isDebugEnabled()) {
-                    log.debug("device " + deviceId + " data has deleted from the " +
-                            deviceDAODefinition.getDeviceTableName() + " table.");
-                }
-            }
-        } catch (SQLException e) {
-            String msg =
-                    "Error occurred while deleting " + deviceDAODefinition.getDeviceTableName() + " device " + deviceId;
-            log.error(msg, e);
-            throw new DeviceTypeMgtPluginException(msg, e);
-        } finally {
-            DeviceTypeUtils.cleanupResources(stmt, null);
-        }
-        return status;
-    }
-
     public List<Device> getAllDevices() throws DeviceTypeMgtPluginException {
         Connection conn;
         PreparedStatement stmt = null;
@@ -263,10 +235,6 @@ public class DeviceTypePluginDAOImpl implements PluginDAO {
 
         updateDBQueryForUpdateDevice = "UPDATE " + deviceDAODefinition.getDeviceTableName() + " SET "
                 + getDeviceTableColumnNamesForUpdateQuery() + " WHERE " + deviceDAODefinition.getPrimaryKey() + " = ?";
-
-        deleteDBQueryToRemoveDevicd =
-                "DELETE FROM " + deviceDAODefinition.getDeviceTableName() + " WHERE " + deviceDAODefinition
-                        .getPrimaryKey() + " = ?";
 
         selectDBQueryToGetAllDevice =
                 "SELECT " + getDeviceTableColumnNames() + "," + deviceDAODefinition.getPrimaryKey() + " FROM "

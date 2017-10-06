@@ -92,7 +92,9 @@ class CreateRelease extends Component {
                                     </p>
                                 </div>
                                 <div>
-                                    <Button id="create-release-btn" onClick={this.showUploadArtifacts}>Create a {channel} Release</Button>
+                                    <Button id="create-release-btn" onClick={this.showUploadArtifacts}>Create
+                                                                                                       a {channel}
+                                                                                                       Release</Button>
                                 </div>
                             </div>
                         </Row>

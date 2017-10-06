@@ -20,10 +20,11 @@ import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {withRouter} from 'react-router-dom';
 import AuthHandler from "../../api/authHandler";
+import {Button, Col, Container, Input, Row,} from 'reactstrap';
 import ApplicationCreate from '../Application/Create/ApplicationCreate';
-import {Col, Container, Input, Row,} from 'reactstrap';
 import FloatingButton from "../UIComponents/FloatingButton/FloatingButton";
 import {FormattedMessage} from 'react-intl';
+import Logo from "../UIComponents/Logo/Logo";
 
 /**
  * Base Layout:
@@ -35,13 +36,21 @@ class BaseLayout extends Component {
 
     constructor() {
         super();
-        this.state = {
-            notifications: 0,
-            user: 'Admin',
-            openModal: false
-        };
         this.logout = this.logout.bind(this);
         this.closeModal = this.closeModal.bind(this);
+        this.onClickPlatforms = this.onClickPlatforms.bind(this);
+        this.onClickApplications = this.onClickApplications.bind(this);
+        this.state = {
+            notifications: 0,
+            user: '',
+            openModal: false,
+            currentPage: "",
+            logo: {}
+        };
+    }
+
+    componentWillMount() {
+        this.setState({user: this.props.user});
     }
 
     handleApplicationClick() {
@@ -70,45 +79,112 @@ class BaseLayout extends Component {
         this.setState({openModal: false});
     }
 
+    onClickPlatforms() {
+        window.location.href = "/publisher/assets/platforms";
+        this.setState({currentPage: "Platforms"})
+    }
+
+    onClickApplications() {
+        window.location.href = "/publisher/assets/apps";
+    }
+
+    getCurrentPageTitle() {
+        let href = window.location.href;
+
+        if (href.indexOf("apps") !== -1) {
+            return "Applications";
+        } else if (href.indexOf("platforms") !== -1) {
+            return "Platforms";
+        }
+
+    }
+
+
     render() {
+        const userName = this.state.user._userName[0];
         return (
-            <Container noGutters fluid id="container">
-                <div id="header-content">
-                    <div id="header">
-                        <span id="header-text">
-                            WSO2 IoT <FormattedMessage id="App.Publisher" defaultMessage="Application Publisher"/>
-                        </span>
-                        <div id="header-btn-container">
-                            <i className="fw fw-notification btn-header"></i>
-                            <i className="fw fw-user btn-header"></i>
-                        </div>
-                        <div id="search-box">
-                            <i className="fw fw-search search-icon">
-                            </i>
-                            <Input
-                                id="search"
-                                name="search"
-                                placeholder={'Search for Applications'}
-                                onChange={(event) => console.log(event.target.value)} //TODO: Remove this
+            <div>
+                <div className="header-content">
+                    <div className="header">
+                        <Row>
+                            <Col md="6">
+                                <span id="header-text">
+                                    <Logo className="header-image" image_name="logo.png"/>
+                                    IoT <FormattedMessage id="App.Publisher" defaultMessage="Application Publisher"/>
+                                </span>
+                            </Col>
+                            <Col>
+                                <div className="header-button-container">
+                                    <Button id="header-button">
+                                        <i className="fw fw-notification btn-header"></i></Button>
+                                    <span className="header-user-name">
+                                        {userName.charAt(0).toUpperCase() + userName.slice(1)}
+                                        </span>
+                                    <Button id="header-button">
+                                        <i className="fw fw-user btn-header"></i></Button>
+                                </div>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col>
+                                <div className="search-box">
+                                    <i className="fw fw-search"></i>
+                                    <Input
+                                        id="search"
+                                        name="search"
+                                        placeholder={'Search for Applications'}
+                                        onChange={(event) => console.log(event.target.value)} //TODO: Remove this
+                                    />
+                                </div>
+                            </Col>
+                        </Row>
+                    </div>
+                    <Container>
+                        <div id="add-btn-container">
+                            <FloatingButton
+                                className="add-btn small"
+                                onClick={this.handleApplicationCreateClick.bind(this)}
                             />
                         </div>
-                    </div>
-                    <div id="add-btn-container">
-                        <FloatingButton
-                            className="add-btn small"
-                            onClick={this.handleApplicationCreateClick.bind(this)}
-                        />
-                    </div>
+                    </Container>
                 </div>
-                <div id="application-content" style={this.state.style}>
-                    <Row>
-                        <Col>
-                            {this.props.children}
-                        </Col>
-                    </Row>
-                </div>
+                <Container className="application-container">
+                    <div id="app-main-content">
+                        <Row id="sub-title-container">
+                            <Col>
+                                <div id="sub-title">
+                                    {/*TODO: Add the current page title*/}
+                                    {this.getCurrentPageTitle()}
+                                </div>
+                            </Col>
+                            <Col>
+                                <div className="platform-link-placeholder">
+                                    {this.getCurrentPageTitle() === "Applications" ?
+                                        <Button className="custom-flat grey" onClick={this.onClickPlatforms}>
+                                            <i className="fw fw-settings"></i>
+                                            <FormattedMessage id="Platforms" defaultMessage="Platforms"/>
+                                        </Button> :
+                                        <Button className="custom-flat grey" onClick={this.onClickApplications}>
+                                            <i className="fw fw-application"></i>
+                                            <FormattedMessage id="Applications" defaultMessage="Applications"/>
+                                        </Button>
+                                    }
+                                </div>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <div id="application-content">
+                                <Row>
+                                    <Col>
+                                        {this.props.children}
+                                    </Col>
+                                </Row>
+                            </div>
+                        </Row>
+                    </div>
+                </Container>
                 <ApplicationCreate open={this.state.openModal} close={this.closeModal}/>
-            </Container>
+            </div>
         );
     }
 }

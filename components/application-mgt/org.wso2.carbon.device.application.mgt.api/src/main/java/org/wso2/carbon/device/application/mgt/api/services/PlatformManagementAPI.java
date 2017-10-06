@@ -28,8 +28,11 @@ import io.swagger.annotations.ExtensionProperty;
 import io.swagger.annotations.Info;
 import io.swagger.annotations.SwaggerDefinition;
 import io.swagger.annotations.Tag;
+import org.apache.cxf.jaxrs.ext.multipart.Attachment;
+import org.apache.cxf.jaxrs.ext.multipart.Multipart;
 import org.wso2.carbon.apimgt.annotations.api.Scopes;
 import org.wso2.carbon.device.application.mgt.api.beans.ErrorResponse;
+import org.wso2.carbon.device.application.mgt.common.ApplicationRelease;
 import org.wso2.carbon.device.application.mgt.common.Platform;
 
 import javax.validation.constraints.Size;
@@ -96,7 +99,6 @@ import javax.ws.rs.core.Response;
         "such as get all the available platform for a tenant, etc.")
 @Path("/platforms")
 @Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
 public interface PlatformManagementAPI {
     String SCOPE = "scope";
 
@@ -181,9 +183,9 @@ public interface PlatformManagementAPI {
 
     @POST
     @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
     @ApiOperation(
-            consumes = MediaType.APPLICATION_JSON,
+            consumes = MediaType.MULTIPART_FORM_DATA,
             produces = MediaType.APPLICATION_JSON,
             httpMethod = "POST",
             value = "Add Platform",
@@ -209,11 +211,8 @@ public interface PlatformManagementAPI {
                             response = ErrorResponse.class)
             })
     Response addPlatform(
-            @ApiParam(
-                    name = "platform",
-                    value = "The payload of the platform",
-                    required = true)
-                    Platform platform
+            @Multipart(value = "Platform", type = "application/json" ) Platform platform,
+            @Multipart(value = "icon", required = false) Attachment iconFile
     );
 
     @PUT
@@ -343,7 +342,7 @@ public interface PlatformManagementAPI {
     );
 
     @GET
-    @Path("tags")
+    @Path("tags/{name}")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(
@@ -374,6 +373,46 @@ public interface PlatformManagementAPI {
     Response getPlatformTags(
             @ApiParam(name = "name", value ="The initial part of the name of platform tags that we need to retrieve",
                     required = true)
-            @QueryParam("name") @Size(min = 3) String name
+            @PathParam("name") @Size(min = 3) String name
+    );
+
+    @POST
+    @Path("/{identifier}/icon")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @ApiOperation(
+            consumes = MediaType.MULTIPART_FORM_DATA,
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "POST",
+            value = "Update Platform icon",
+            notes = "This will update the platform icon",
+            tags = "Platform Management",
+            extensions = {
+                    @Extension(properties = {
+                            @ExtensionProperty(name = SCOPE, value = "perm:platform:update")
+                    })
+            }
+    )
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            code = 200,
+                            message = "OK. \n Successfully updated the platform icon"),
+                    @ApiResponse(
+                            code = 400,
+                            message = "Bad Request. \n Invalid request parameters passed."),
+                    @ApiResponse(
+                            code = 500,
+                            message = "Internal Server Error. \n Error occurred while updating the platform icon.",
+                            response = ErrorResponse.class)
+            })
+    Response updatePlatformIcon(
+            @ApiParam(
+                    name = "identifier",
+                    required = true)
+            @PathParam("identifier")
+            @Size(max = 45)
+                    String identifier,
+            @Multipart(value = "icon") Attachment iconFile
     );
 }

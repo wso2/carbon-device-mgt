@@ -19,30 +19,23 @@
 import Theme from '../../../theme';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
-import IconButton from 'material-ui/IconButton';
-import Create from 'material-ui/svg-icons/content/create'
-import {TableRow, TableRowColumn} from 'material-ui/Table';
-import Avatar from 'material-ui/Avatar';
-import {Row} from "reactstrap";
-
+import FlatButton from 'material-ui/FlatButton';
+import {TableHeaderColumn} from 'material-ui/Table';
+import {Col, Row} from "reactstrap";
 
 /**
- * Data table row component.
- * This component created a row in the data table according to the props.
+ * Data Table header component.
+ * This component creates the header elements of the table.
  * */
-class DataTableRow extends Component {
+class HeaderCell extends Component {
 
     constructor() {
         super();
-        this.state = {
-            dataItem: {}
-        };
+        this.tableHeaderClick = this.tableHeaderClick.bind(this);
         this.scriptId = "data-table";
     }
 
     componentWillMount() {
-        this.setState({dataItem: this.props.dataItem});
-
         /**
          *Loading the theme files based on the the user-preference.
          */
@@ -51,37 +44,37 @@ class DataTableRow extends Component {
 
     componentWillUnmount() {
         Theme.removeThemingScripts(this.scriptId);
+
     }
 
     /**
-     * Triggers the click event on the data table row.
+     * The onClick function of the table header.
+     * Invokes the function passed in the header object.
      * */
-    handleClick(event) {
-        event.stopPropagation();
-        this.props.handleClick(this.state.dataItem.id);
-    }
-
-    handleBtnClick(event) {
-        event.stopPropagation();
-        console.log(event.target['id'])
-        this.props.onAppEditClick(event.target['id']);
+    tableHeaderClick() {
+        this.props.header.sort();
     }
 
     render() {
-        const {dataItem} = this.state;
+        /*margin-top: 30px
+        * margin-bottom: 10px
+        * */
 
-        //height: 62px
         return (
-            <Row className="data-table-row">
+            <Row className="data-table-header">
+                {this.props.headers.map(header => {
 
+                    let headerStyle = header.size;
+
+                    return <Col className={headerStyle}>{header.label}</Col>
+                })}
             </Row>
         );
     }
 }
 
-DataTableRow.propTypes = {
-    onClick: PropTypes.func,
-    data: PropTypes.object
+DataTableHeader.prototypes = {
+    headers: PropTypes.array
 };
 
-export default DataTableRow;
+export default HeaderCell;

@@ -47,91 +47,108 @@ class ApplicationView extends Component {
     }
 
     render() {
-        const platform = this.state.application;
-        console.log(platform);
+        if (this.state.application.length === 0) {
+            return <div/>
+        } else {
+            const app = this.state.application;
+            console.log(app);
+            return (
+                <div id="application-view-content">
+                    <div id="application-view-row">
+                        <Row>
+                            <Col>
+                                <div id="app-icon">
+                                    {/*TODO: Remove this*/}
+                                    <img
+                                        className="app-view-image"
+                                        src={app.icon}
+                                    />
+                                </div>
+                            </Col>
+                            <Col>
+                                <Row>
+                                    <p className="app-view-field">{app.name}</p>
+                                </Row>
+                                <Row>
+                                    <span className="app-updated-date app-view-text">
+                                        <FormattedMessage id="Last.Updated"
+                                                          defaultMessage="Last.Updated"/> {app.modifiedAt}</span>
+                                </Row>
+                            </Col>
+                        </Row>
+                    </div>
+                    <div id="application-view-row">
+                        <Row>
+                            <Col>
+                                <span className="app-install-count app-view-text">
+                                    2k <FormattedMessage id="Installs" defaultMessage="Installs"/>
+                                </span>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col>
+                                <i className="fw fw-star"></i>
+                                <i className="fw fw-star"></i>
+                                <i className="fw fw-star"></i>
+                                <i className="fw fw-star"></i>
+                            </Col>
+                            <Col>
+                                <p className="app-view-text">
+                                    <a href="#">
+                                        <FormattedMessage id="View.In.Store" defaultMessage="View.In.Store"/>
+                                    </a>
+                                </p>
+                            </Col>
+                        </Row>
+                    </div>
+                    <hr/>
+                    <div id="application-view-row">
+                        <Row>
+                            <Col>
+                                <p className="app-view-field">
+                                    <FormattedMessage id="Description" defaultMessage="Description"/>:
+                                </p>
+                            </Col>
+                            <Col>
+                                <p className="app-view-text">{app.description}</p>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col>
+                                <p className="app-view-field">
+                                    <FormattedMessage id="Tags" defaultMessage="Tags"/>:
+                                </p>
+                            </Col>
+                            <Col>
+                                <p className="app-view-text">[list of tags...]</p>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col>
+                                <p className="app-view-field">
+                                    <FormattedMessage id="Release" defaultMessage="Release"/>:
+                                </p>
+                            </Col>
+                            <Col>
+                                <p className="app-view-text">Production</p>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col>
+                                <p className="app-view-field">
+                                    <FormattedMessage id="Version" defaultMessage="Version"/>:
+                                </p>
+                            </Col>
+                            <Col>
+                                <p className="app-view-text">v1.0</p>
+                            </Col>
+                        </Row>
+                    </div>
+                </div>
 
-        return (
-            <div id="application-view-content">
-                <div id="application-view-row">
-                    <Row>
-                        <Col>
-                            <div id="app-icon">
+            );
 
-                            </div>
-                        </Col>
-                        <Col>
-                            <Row>
-                                <span><strong>Facebook</strong></span>
-                            </Row>
-                            <Row>
-                                <span className="app-updated-date">Last updated on 2017-09-23</span>
-                            </Row>
-                        </Col>
-                    </Row>
-                </div>
-                <div id="application-view-row">
-                    <Row>
-                        <Col>
-                            <span className="app-install-count">2k Installs</span>
-                        </Col>
-                    </Row>
-                    <Row>
-                        <Col>
-                            <i className="fw fw-star"></i>
-                            <i className="fw fw-star"></i>
-                            <i className="fw fw-star"></i>
-                            <i className="fw fw-star"></i>
-                        </Col>
-                        <Col>
-                            <a href="#">View in Store</a>
-                        </Col>
-                    </Row>
-                </div>
-                <hr/>
-                <div id="application-view-row">
-                    <Row>
-                        <Col>
-                            <span><strong>
-                                 <FormattedMessage id="Description" defaultMessage="Description"/>:
-                            </strong></span>
-                        </Col>
-                        <Col>
-                            <p>sdfjlkdsjfsjdfjsdf sfjdslkjfdsflkjdsfslkdjfl j</p>
-                        </Col>
-                    </Row>
-                    <Row>
-                        <Col>
-                            <span><strong>
-                                <FormattedMessage id="Tags" defaultMessage="Tags"/>:
-                            </strong></span>
-                        </Col>
-                        <Col>
-                            <p>[list of tags...]</p>
-                        </Col>
-                    </Row>
-                    <Row>
-                        <Col>
-                            <span><strong>
-                                 <FormattedMessage id="Release" defaultMessage="Release"/>:
-                            </strong></span>
-                        </Col>
-                        <Col>
-                            <p>Production</p>
-                        </Col>
-                    </Row>
-                    <Row>
-                        <Col>
-                            <span><strong>
-                                 <FormattedMessage id="Version" defaultMessage="Version"/>:
-                            </strong></span>
-                        </Col>
-                        <Col>
-                            <p>v1.0</p>
-                        </Col>
-                    </Row>
-                </div>
-            </div>
-        );
+        }
     }
 }
 

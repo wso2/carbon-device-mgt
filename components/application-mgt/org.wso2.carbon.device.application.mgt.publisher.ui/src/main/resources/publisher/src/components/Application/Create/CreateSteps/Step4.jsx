@@ -18,8 +18,9 @@
 
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
-import {Collapse, FormGroup, Input, Label, FormText} from 'reactstrap';
+import {Button, Collapse, FormGroup, FormText, Input, Label, ModalFooter} from 'reactstrap';
 import Switch from '../../../UIComponents/Switch/Switch'
+import {FormattedMessage} from 'react-intl';
 
 /**
  * The Third step of application create wizard. {Application Release Step}
@@ -47,9 +48,10 @@ class Step4 extends Component {
     constructor() {
         super();
         this.handleToggle = this.handleToggle.bind(this);
-        this.handlePrev = this.handlePrev.bind(this);
-        this.handleToggle = this.handleToggle.bind(this);
+        this.onCancelClick = this.onCancelClick.bind(this);
+        this.onBackClick = this.onBackClick.bind(this);
         this.handleFinish = this.handleFinish.bind(this);
+        this.onSubmit = this.onSubmit.bind(this);
         this.state = {
             showForm: false,
             releaseChannel: 1,
@@ -66,11 +68,16 @@ class Step4 extends Component {
         this.props.handleFinish();
     }
 
-    /**
-     * Invokes Prev button click.
-     * */
-    handlePrev() {
+    onCancelClick() {
+        this.props.close();
+    }
+
+    onBackClick() {
         this.props.handlePrev();
+    }
+
+    onSubmit() {
+        this.props.onSubmit();
     }
 
     /**
@@ -90,7 +97,7 @@ class Step4 extends Component {
                             <div id="app-release-switch-label">
                                 <Label for="app-release-switch">
                                     <strong>
-                                        Add Release to Application
+                                        <FormattedMessage id="Add.Release" defaultMessage="Add.Release"/>
                                     </strong>
                                 </Label>
                             </div>
@@ -104,17 +111,19 @@ class Step4 extends Component {
                     </FormGroup>
                     <br/>
                     <div>
-                            <FormText color="muted">
-                                <i>Info: </i>
-                                Enabling this will create a release for the current Application.
-                                To upload the Application, please visit to the Release management section of
-                                Application Edit View.
-                            </FormText>
+                        <FormText color="muted">
+                            <i><FormattedMessage id="Info" defaultMessage="Info"/> </i>
+                            Enabling this will create a release for the current Application.
+                            To upload the Application, please visit to the Release management section of
+                            Application Edit View.
+                        </FormText>
                     </div>
                     {/*If toggle is true, the release form will be shown.*/}
                     <Collapse isOpen={this.state.showForm}>
                         <FormGroup>
-                            <Label for="release-channel">Release Channel</Label>
+                            <Label for="release-channel">
+                                <FormattedMessage id="Release.Channel" defaultMessage="Release.Channel"/>
+                            </Label>
                             <Input
                                 type="select"
                                 id="release-channel"
@@ -130,7 +139,9 @@ class Step4 extends Component {
                             </Input>
                         </FormGroup>
                         <FormGroup>
-                            <Label for="version">Version*</Label>
+                            <Label for="version">
+                                <FormattedMessage id="Version" defaultMessage="Version"/>*
+                            </Label>
                             <Input
                                 type="text"
                                 id="version input-custom"
@@ -140,6 +151,17 @@ class Step4 extends Component {
                         </FormGroup>
                     </Collapse>
                 </div>
+                <ModalFooter>
+                    <Button className="custom-flat primary-flat" onClick={this.onBackClick}>
+                        <FormattedMessage id="Back" defaultMessage="Back"/>
+                    </Button>
+                    <Button className="custom-flat danger-flat" onClick={this.onCancelClick}>
+                        <FormattedMessage id="Cancel" defaultMessage="Cancel"/>
+                    </Button>
+                    <Button className="custom-raised primary" onClick={this.onSubmit}>
+                        <FormattedMessage id="Finish" defaultMessage="Finish"/>
+                    </Button>
+                </ModalFooter>
             </div>
         );
     }
@@ -149,7 +171,7 @@ Step4.propTypes = {
     handleFinish: PropTypes.func,
     handlePrev: PropTypes.func,
     setData: PropTypes.func,
-    removeData: PropTypes.func
+    onSubmit: PropTypes.func
 };
 
 export default Step4;

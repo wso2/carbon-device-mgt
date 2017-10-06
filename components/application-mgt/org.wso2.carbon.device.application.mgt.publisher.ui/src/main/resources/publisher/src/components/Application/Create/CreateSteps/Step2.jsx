@@ -20,8 +20,9 @@ import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import AuthHandler from "../../../../api/authHandler";
 import PlatformMgtApi from "../../../../api/platformMgtApi";
-import {FormGroup, Input, Label} from 'reactstrap';
+import {Button, FormFeedback, FormGroup, Input, Label, ModalFooter} from 'reactstrap';
 import {FormattedMessage} from 'react-intl';
+import * as validator from '../../../../common/validator';
 
 /**
  * The first step of the application creation wizard.
@@ -41,24 +42,30 @@ class Step2 extends Component {
         super();
         this.setPlatforms = this.setPlatforms.bind(this);
         this.setStepData = this.setStepData.bind(this);
+        this.onCancelClick = this.onCancelClick.bind(this);
+        this.onBackClick = this.onBackClick.bind(this);
+        this.validate = this.validate.bind(this);
         this.platforms = [];
         this.state = {
-            finished: false,
-            stepIndex: 0,
+            errors: {},
             store: 1,
             platformSelectedIndex: 0,
-            platform: "",
-            platforms: [],
-            stepData: [],
-            title: "",
-            titleError: ""
+            platform: {},
+            platforms: []
         };
+    }
+
+    componentWillMount() {
+        const {defaultData} = this.props;
+
+        if (defaultData) {
+            this.setState(defaultData);
+        }
     }
 
     componentDidMount() {
         //Get the list of available platforms and set to the state.
         PlatformMgtApi.getPlatforms().then(response => {
-            console.log(response);
             this.setPlatforms(response.data);
         }).catch(err => {
             AuthHandler.unauthorizedErrorHandler(err);
@@ -76,25 +83,51 @@ class Step2 extends Component {
             platform = platforms[index];
             tmpPlatforms.push(platform);
         }
-        this.setState({platforms: tmpPlatforms, platformSelectedIndex: 0, platform: tmpPlatforms[0].name})
+        this.setState({platforms: tmpPlatforms, platformSelectedIndex: 0})
     }
 
     /**
      * Persist the current form data to the state.
      * */
     setStepData() {
-        let step = {
-            store: this.state.store,
-            platform: this.state.platforms[this.state.platformSelectedIndex]
+        const {store, platform} = this.state;
+        let data = {
+            store: store,
+            platform: platform[0]
         };
-        this.props.setData("step2", {step: step});
+
+        const {errorCount, errors} = this.validate();
+
+        if (errorCount > 0) {
+            this.setState({errors: errors})
+        } else {
+            this.props.setStepData("platform", data);
+        }
+    }
+
+    onCancelClick() {
+        this.props.close();
+    }
+
+    onBackClick() {
+        this.props.handlePrev();
+    }
+
+    validate() {
+        const {store, platform} = this.state;
+        let errors = {};
+        let errorCount = 0;
+        if (!validator.validateEmptyObject(platform)) {
+            errorCount++;
+            errors.platform = "You must select an application platform!"
+        }
+        return {errorCount, errors};
     }
 
     /**
      * Triggers when changing the Platform selection.
      * */
     onChangePlatform(event) {
-        console.log(event.target.value, this.state.platforms);
         let id = event.target.value;
         let selectedPlatform = this.state.platforms.filter((platform) => {
             return platform.identifier === id;
@@ -122,16 +155,34 @@ class Step2 extends Component {
                 </FormGroup>
                 <FormGroup>
                     <Label for="store"><FormattedMessage id='Platform' defaultMessage='Platform'/></Label>
-                    <Input type="select" name="store" onChange={this.onChangePlatform.bind(this)}>
+                    <Input
+                        required
+                        type="select"
+                        name="store"
+                        onChange={this.onChangePlatform.bind(this)}
+                    >
+                        <option id="app-visibility-default" disabled selected>Select the Application Platform</option>
                         {this.state.platforms.length > 0 ? this.state.platforms.map(platform => {
                             return (
-                                <option value={platform.identifier}>
+                                <option value={platform.identifier} key={platform.identifier}>
                                     {platform.name}
                                 </option>
                             )
                         }) : <option><FormattedMessage id='No.Platform' defaultMessage='No Platforms'/></option>}
                     </Input>
+                    <FormFeedback id="form-error">{this.state.errors.platform}</FormFeedback>
                 </FormGroup>
+                <ModalFooter>
+                    <Button className="custom-flat primary-flat" onClick={this.onBackClick}>
+                        <FormattedMessage id="Back" defaultMessage="Back"/>
+                    </Button>
+                    <Button className="custom-flat danger-flat" onClick={this.onCancelClick}>
+                        <FormattedMessage id="Cancel" defaultMessage="Cancel"/>
+                    </Button>
+                    <Button className="custom-raised primary" onClick={this.setStepData}>
+                        <FormattedMessage id="Continue" defaultMessage="Continue"/>
+                    </Button>
+                </ModalFooter>
             </div>
         );
     }

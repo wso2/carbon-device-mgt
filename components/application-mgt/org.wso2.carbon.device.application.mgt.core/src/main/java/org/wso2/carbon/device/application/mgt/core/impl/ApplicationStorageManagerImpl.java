@@ -19,8 +19,6 @@
 
 package org.wso2.carbon.device.application.mgt.core.impl;
 
-import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
@@ -30,6 +28,7 @@ import org.wso2.carbon.device.application.mgt.common.ImageArtifact;
 import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
 import org.wso2.carbon.device.application.mgt.common.exception.ApplicationStorageManagementException;
 import org.wso2.carbon.device.application.mgt.common.exception.DBConnectionException;
+import org.wso2.carbon.device.application.mgt.common.exception.ResourceManagementException;
 import org.wso2.carbon.device.application.mgt.common.exception.TransactionManagementException;
 import org.wso2.carbon.device.application.mgt.common.services.ApplicationStorageManager;
 import org.wso2.carbon.device.application.mgt.core.dao.common.DAOFactory;
@@ -37,17 +36,17 @@ import org.wso2.carbon.device.application.mgt.core.exception.ApplicationManageme
 import org.wso2.carbon.device.application.mgt.core.internal.DataHolder;
 import org.wso2.carbon.device.application.mgt.core.util.ConnectionManagerUtil;
 import org.wso2.carbon.device.application.mgt.core.util.Constants;
+import org.wso2.carbon.device.application.mgt.core.util.StorageManagementUtil;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.List;
+
+import static org.wso2.carbon.device.application.mgt.core.util.StorageManagementUtil.saveFile;
 
 /**
  * This class contains the default concrete implementation of ApplicationStorage Management.
@@ -70,7 +69,7 @@ public class ApplicationStorageManagerImpl implements ApplicationStorageManager 
 
     @Override
     public void uploadImageArtifacts(String applicationUUID, InputStream iconFileStream, InputStream bannerFileStream,
-            List<InputStream> screenShotStreams) throws ApplicationStorageManagementException {
+            List<InputStream> screenShotStreams) throws ResourceManagementException {
         int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId(true);
         Application application = validateApplication(applicationUUID);
         String artifactDirectoryPath = storagePath + application.getId();
@@ -78,7 +77,7 @@ public class ApplicationStorageManagerImpl implements ApplicationStorageManager 
             log.debug("Artifact Directory Path for saving the artifacts related with application " + applicationUUID
                     + " is " + artifactDirectoryPath);
         }
-        createArtifactDirectory(artifactDirectoryPath);
+        StorageManagementUtil.createArtifactDirectory(artifactDirectoryPath);
         if (iconFileStream != null) {
             try {
                 saveFile(iconFileStream, artifactDirectoryPath + File.separator + Constants.IMAGE_ARTIFACTS[0]);
@@ -155,15 +154,14 @@ public class ApplicationStorageManagerImpl implements ApplicationStorageManager 
 
     @Override
     public void uploadReleaseArtifacts(String applicationUUID, String versionName, InputStream binaryFile)
-            throws ApplicationStorageManagementException {
+            throws ResourceManagementException {
         Application application = validateApplication(applicationUUID);
         String artifactDirectoryPath = storagePath + application.getId();
-        if (log.isDebugEnabled()) {
+        if (log.isDebugEnabled())
             log.debug("Artifact Directory Path for saving the application release related artifacts related with "
                     + "application " + applicationUUID + " is " + artifactDirectoryPath);
-        }
 
-        createArtifactDirectory(artifactDirectoryPath);
+        StorageManagementUtil.createArtifactDirectory(artifactDirectoryPath);
         if (binaryFile != null) {
             try {
                 saveFile(binaryFile, artifactDirectoryPath + File.separator + versionName);
@@ -207,7 +205,7 @@ public class ApplicationStorageManagerImpl implements ApplicationStorageManager 
         File artifactDirectory = new File(artifactDirectoryPath);
 
         if (artifactDirectory.exists()) {
-            deleteDir(artifactDirectory);
+            StorageManagementUtil.deleteDir(artifactDirectory);
         }
     }
 
@@ -219,14 +217,14 @@ public class ApplicationStorageManagerImpl implements ApplicationStorageManager 
         File artifact = new File(artifactPath);
 
         if (artifact.exists()) {
-            deleteDir(artifact);
+            StorageManagementUtil.deleteDir(artifact);
         }
     }
 
     @Override
     public void deleteAllApplicationReleaseArtifacts(String applicationUUID) throws
             ApplicationStorageManagementException {
-        Application application = validateApplication(applicationUUID);
+        validateApplication(applicationUUID);
         try {
             List<ApplicationRelease> applicationReleases = DataHolder.getInstance().getReleaseManager()
                     .getReleases(applicationUUID);
@@ -256,12 +254,7 @@ public class ApplicationStorageManagerImpl implements ApplicationStorageManager 
                     "Image artifact " + name + " does not exist for the " + "application with UUID " + applicationUUID);
         } else {
             try {
-                ImageArtifact imageArtifact = new ImageArtifact();
-                imageArtifact.setName(imageFile.getName());
-                imageArtifact.setType(Files.probeContentType(imageFile.toPath()));
-                byte[] imageBytes = IOUtils.toByteArray(new FileInputStream(imageArtifactPath));
-                imageArtifact.setEncodedImage(Base64.encodeBase64URLSafeString(imageBytes));
-                return imageArtifact;
+                return StorageManagementUtil.createImageArtifact(imageFile, imageArtifactPath);
             } catch (FileNotFoundException e) {
                 throw new ApplicationStorageManagementException(
                         "File not found exception while trying to get the image artifact " + name + " for the "
@@ -271,61 +264,6 @@ public class ApplicationStorageManagerImpl implements ApplicationStorageManager 
                         + "artifact " + name + " for the application " + applicationUUID, e);
             }
         }
-    }
-
-    /**
-     * To save a file in a given location.
-     *
-     * @param inputStream Stream of the file.
-     * @param path        Path the file need to be saved in.
-     */
-    private void saveFile(InputStream inputStream, String path) throws IOException {
-        OutputStream outStream = null;
-        try {
-            byte[] buffer = new byte[inputStream.available()];
-            inputStream.read(buffer);
-            outStream = new FileOutputStream(new File(path));
-            outStream.write(buffer);
-        } finally {
-            if (inputStream != null) {
-                inputStream.close();
-            }
-            if (outStream != null) {
-                outStream.close();
-            }
-        }
-    }
-
-    /**
-     * This method is responsible for creating artifact parent directories in the given path.
-     *
-     * @param artifactDirectoryPath Path for the artifact directory.
-     * @throws ApplicationStorageManagementException Application Storage Management Exception.
-     */
-    private void createArtifactDirectory(String artifactDirectoryPath) throws ApplicationStorageManagementException {
-        File artifactDirectory = new File(artifactDirectoryPath);
-
-        if (!artifactDirectory.exists()) {
-            if (!artifactDirectory.mkdirs()) {
-                throw new ApplicationStorageManagementException(
-                        "Cannot create directories in the path to save the application related artifacts");
-            }
-        }
-    }
-
-    /**
-     * To delete a directory recursively
-     *
-     * @param artifactDirectory Artifact Directory that need to be deleted.
-     */
-    private void deleteDir(File artifactDirectory) {
-        File[] contents = artifactDirectory.listFiles();
-        if (contents != null) {
-            for (File file : contents) {
-                deleteDir(file);
-            }
-        }
-        artifactDirectory.delete();
     }
 
     /**
@@ -354,7 +292,7 @@ public class ApplicationStorageManagerImpl implements ApplicationStorageManager 
      *                                               could not be found.
      */
     private Application validateApplication(String uuid) throws ApplicationStorageManagementException {
-        Application application = null;
+        Application application;
         try {
             application = DataHolder.getInstance().getApplicationManager().getApplication(uuid);
         } catch (ApplicationManagementException e) {

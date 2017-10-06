@@ -15,145 +15,63 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 import React, {Component} from 'react';
-import {withRouter} from 'react-router-dom';
-import TextField from 'material-ui/TextField';
-import AuthHandler from "../../api/authHandler";
-import DataTable from '../UIComponents/DataTable/DataTable';
+import {Button, Col, Row} from "reactstrap";
+import Platform from "./Platform";
 import PlatformMgtApi from "../../api/platformMgtApi";
-import {Card, CardActions, CardTitle} from 'material-ui/Card';
+import AuthHandler from "../../api/authHandler";
+import PlatformCreate from "./PlatformCreate";
 
 /**
- * The App Create Component.
- *
- * Application creation is handled through a Wizard. (We use Material UI Stepper.)
- *
- * In each step, data will be set to the state separately.
- * When the wizard is completed, data will be arranged and sent to the api.
+ * Platform view component.
  * */
 class PlatformListing extends Component {
+
     constructor() {
         super();
-        this.setPlatforms = this.setPlatforms.bind(this);
+        this.onPlatformCreateClick = this.onPlatformCreateClick.bind(this);
         this.state = {
             platforms: [],
-            asc: true
-        };
-    }
-
-    headers = [
-        {
-            data_id: "image",
-            data_type: "image",
-            sortable: false,
-            label: ""
-        },
-        {
-            data_id: "platformName",
-            data_type: String,
-            sortable: true,
-            label: "Platform Name",
-            sort: this.sortData
-        },
-        {
-            data_id: "enabled",
-            data_type: String,
-            sortable: false,
-            label: "Enabled"
-        },
-        {
-            data_id: "fileBased",
-            data_type: String,
-            sortable: false,
-            label: "File Based"
+            openModal: false
         }
-    ];
-
-    componentDidMount() {
-        let platformsPromise = PlatformMgtApi.getPlatforms();
-        platformsPromise.then(
-            response => {
-                let platforms = this.setPlatforms(response.data);
-                this.setState({platforms: platforms});
-            }
-        ).catch(
-            err => {
-                AuthHandler.unauthorizedErrorHandler(err);
-            }
-        )
     }
 
-    /**
-     * Create platform objects from the response which can be displayed in the table.
-     * */
-    setPlatforms(platforms) {
-        let tmpPlatforms = [];
-
-        for (let index in platforms) {
-            let platform = {};
-            platform.id = platforms[index].identifier;
-            platform.platformName = platforms[index].name;
-            platform.enabled = platforms[index].enabled.toString();
-            platform.fileBased = platforms[index].fileBased.toString();
-            tmpPlatforms.push(platform)
-        }
-
-        return tmpPlatforms;
+    componentWillMount() {
+        PlatformMgtApi.getPlatforms().then(response => {
+            console.log(response);
+            this.setState({platforms: response.data});
+        }).catch(err => {
+            AuthHandler.unauthorizedErrorHandler(err);
+        })
     }
 
-    /**
-     * Handles the search action.
-     * When typing in the search bar, this method will be invoked.
-     * */
-    searchApplications(word) {
-        let searchedData = [];
-    }
-
-    /**
-     * Handles sort data function and toggles the asc state.
-     * asc: true : sort in ascending order.
-     * */
-    sortData() {
-        let isAsc = this.state.asc;
-        let datas = isAsc ? this.data.sort(this.compare) : this.data.reverse();
-        this.setState({data: datas, asc: !isAsc});
-    }
-
-    compare(a, b) {
-        if (a.applicationName < b.applicationName)
-            return -1;
-        if (a.applicationName > b.applicationName)
-            return 1;
-        return 0;
-    }
-
-    onRowClick(id) {
-        //TODO: Remove this
-        console.log(id)
+    onPlatformCreateClick() {
+        this.setState({openModal: true});
     }
 
     render() {
         return (
-            <div className='middle listingplatformmiddle'>
-                <Card className='listingplatformcard'>
-                    <TextField hintText="Search" onChange={this.searchApplications.bind(this)}
-                               className='listingplatformsearch'/>
-                    <CardTitle title="Platforms" className='listingplatformTitle'/>
-                    <CardActions>
-
-                    </CardActions>
-                    <DataTable
-                        headers={this.headers}
-                        data={this.state.platforms}
-                        handleRowClick={this.onRowClick.bind(this)}
-                        noDataMessage={{type: 'button', text: 'Create Platform'}}/>
-                </Card>
+            <div id="platform-listing">
+                <Row>
+                    <div className="create-platform">
+                        <Button className="custom-flat grey" onClick={this.onPlatformCreateClick}>
+                            <i className="fw fw-add"></i>Create Platform
+                        </Button>
+                    </div>
+                </Row>
+                <Row>
+                    <div id="platform-list">
+                        {this.state.platforms.map(platform => {
+                            return (
+                                <Platform key={platform.identifier} platform={platform}/>
+                            )
+                        })}
+                    </div>
+                </Row>
+                <PlatformCreate open={this.state.openModal}/>
             </div>
         );
     }
 }
 
-PlatformListing.propTypes = {};
-
-export default withRouter(PlatformListing);
+export default PlatformListing;

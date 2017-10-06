@@ -30,13 +30,13 @@ import org.wso2.carbon.device.application.mgt.common.services.CategoryManager;
 import org.wso2.carbon.device.application.mgt.common.services.CommentsManager;
 import org.wso2.carbon.device.application.mgt.common.services.LifecycleStateManager;
 import org.wso2.carbon.device.application.mgt.common.services.PlatformManager;
+import org.wso2.carbon.device.application.mgt.common.services.PlatformStorageManager;
 import org.wso2.carbon.device.application.mgt.common.services.SubscriptionManager;
 import org.wso2.carbon.device.application.mgt.common.services.VisibilityManager;
 import org.wso2.carbon.device.application.mgt.core.config.ConfigurationManager;
 import org.wso2.carbon.device.application.mgt.core.dao.common.DAOFactory;
 import org.wso2.carbon.device.application.mgt.core.exception.ApplicationManagementDAOException;
 import org.wso2.carbon.device.application.mgt.core.util.ApplicationManagementUtil;
-import org.wso2.carbon.device.application.mgt.core.util.Constants;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.ndatasource.core.DataSourceService;
 import org.wso2.carbon.user.core.service.RealmService;
@@ -114,6 +114,11 @@ public class ServiceComponent {
                     .getApplicationStorageManagerInstance();
             DataHolder.getInstance().setApplicationStorageManager(applicationStorageManager);
             bundleContext.registerService(ApplicationStorageManager.class.getName(), applicationStorageManager, null);
+
+            PlatformStorageManager platformStorageManager = ApplicationManagementUtil
+                    .getPlatformStorageManagerInstance();
+            DataHolder.getInstance().setPlatformStorageManager(platformStorageManager);
+            bundleContext.registerService(PlatformStorageManager.class.getName(), platformStorageManager, null);
 
             bundleContext.registerService(Axis2ConfigurationContextObserver.class.getName(),
                     new PlatformManagementAxis2ConfigurationObserverImpl(), null);

@@ -16,33 +16,39 @@
  * under the License.
  */
 
-.chip {
-    display: inline-block;
-    padding: 0 25px;
-    height: 50px;
-    font-size: 16px;
-    line-height: 50px;
-    border-radius: 25px;
-    background-color: #f1f1f1;
-}
-
-.chip img {
-    float: left;
-    margin: 0 10px 0 -25px;
-    height: 50px;
-    width: 50px;
+/*
+ * Material design based Floating button.
+ */
+.btn-circle {
+    color: white;
+    position: relative;
     border-radius: 50%;
+    text-align: center;
+    box-shadow: rgba(0, 0, 0, 0.156863) 0px 3px 10px, rgba(0, 0, 0, 0.227451) 0px 3px 10px
 }
 
-.close-btn {
-    padding-left: 10px;
-    color: #888;
-    font-weight: bold;
-    float: right;
-    font-size: 20px;
+.btn-circle:hover {
     cursor: pointer;
 }
 
-.close-btn:hover {
-    color: #000;
+.btn-shade:focus {
+    background-color: rgba(0, 0, 0, .12);
+}
+
+.btn-circle i {
+    height: 24px;
+    width: 24px;
+    font-size: 18px;
+    padding: 3px;
+    margin-top: 16px
+}
+
+.small {
+    height: 56px;
+    width: 56px;
+}
+
+.medium {
+    height: 100px;
+    width: 100px;
 }

@@ -25,26 +25,22 @@ export default class Helper {
 
     /**
      * Generate application object from form data passed.
-     * @param appData: Application data from the application creation form.
+     * @param generalInfo: Application data from the application creation form.
+     * @param platform
+     * @param screenshots
+     * @param release
      * @return {Object, Object}: The application object and the set of images related to the application.
      * */
-    static buildApplication(appData) {
+    static buildApplication(generalInfo, platform, screenshots, release) {
 
-        let application = {};
-        let images = {};
-
-        for (let step in appData) {
-            let tmpData = appData[step].data.step;
-            for (let prop in tmpData) {
-                if (prop === 'banner' || prop === 'screenshots' || prop === 'icon') {
-                    images[prop] = tmpData[prop];
-                } else if(prop === 'tags') {
-                    application[prop] = Helper.stringifyTags(tmpData[prop]);
-                } else {
-                    application[prop] = tmpData[prop];
-                }
+        let images = screenshots;
+        let application = Object.assign({}, generalInfo, platform);
+        for (let prop in application) {
+            if (prop === 'tags') {
+                application[prop] = Helper.stringifyTags(generalInfo[prop]);
             }
         }
+        console.log(application);
         return {application, images};
     }
 

@@ -89,6 +89,7 @@ class ApplicationEdit extends Component {
                         <FormattedMessage id="Application.Name" defaultMessage="Application Name"/>
                     </Col>
                 </Row>
+                <hr/>
                 <Row id="application-edit-main-container">
                     <Col xs="3">
                         <div className="tab">
@@ -104,17 +105,9 @@ class ApplicationEdit extends Component {
                         </div>
                     </Col>
                     <Col xs="9">
-                        <div id="app-edit-content">
-                            <Row>
-                                <Col xs="12">
-                                    <div id="application-edit-outer-content">
-                                        {/* Application edit content */}
-                                        <div id="application-edit-content">
-                                            {this.getTabContent(this.state.activeTab)}
-                                        </div>
-                                    </div>
-                                </Col>
-                            </Row>
+                        {/* Application edit content */}
+                        <div id="application-edit-content">
+                            {this.getTabContent(this.state.activeTab)}
                         </div>
                     </Col>
                 </Row>

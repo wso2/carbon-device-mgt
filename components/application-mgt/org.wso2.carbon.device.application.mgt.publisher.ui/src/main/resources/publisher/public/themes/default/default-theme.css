@@ -16,10 +16,131 @@
  * under the License.
  */
 
+@font-face {
+    font-family: "Roboto-Medium";
+    src: url('../../fonts/Roboto-Medium.woff');
+    src: local("Roboto-Medium"), url("../../fonts/Roboto-Medium.ttf") format("ttf");
+    src: local("Roboto-Medium"), url("../../fonts/Roboto-Medium.woff") format("woff");
+    src: local("Roboto-Medium"), url("../../fonts/Roboto-Medium.woff2") format("woff2");
+}
+
+@font-face {
+    font-family: "Roboto-Regular";
+    src: url("../../fonts/Roboto-Regular.woff");
+    src: local("Roboto-Regular"), url("../../fonts/Roboto-Regular.ttf") format("ttf");
+    src: local("Roboto-Regular"), url("../../fonts/Roboto-Regular.woff") format("woff");
+    src: local("Roboto-Regular"), url("../../fonts/Roboto-Regular.woff2") format("woff2");
+}
+
+/*Colors*/
+.primary {
+    color: white;
+    background-color: #2196f3 !important;
+}
+
+.primary-flat {
+    color: #2196F3 !important;
+}
+
+.danger {
+    color: white;
+    background-color: #e91e63 !important;
+}
+
+.danger-flat {
+    color: #e91e63 !important;
+}
+
+.grey {
+    color: #b3b3b3 !important;
+}
+
+/* ==================================================================== */
+/* Custom button styles based on material design specs. */
+
+.custom-raised {
+    font-family: Roboto-Medium;
+    text-transform: uppercase !important;
+    font-size: 14px !important;
+    padding-left: 16px !important;
+    border-radius: 2px !important;
+    padding-right: 16px !important;
+    height: 36px !important;
+    border: none !important;
+}
+
+.custom-raised:hover {
+    cursor: pointer;
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.16), 0 0 0 1px rgba(0, 0, 0, 0.08) !important;
+    -webkit-box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.16), 0 0 0 1px rgba(0, 0, 0, 0.08) !important;
+    background-color: #1976D2 !important;
+}
+
+.custom-raised:focus {
+    box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+    background-color: #1976D2 !important;
+}
+
+.custom-flat {
+    font-family: Roboto-Medium;
+    height: 36px !important;
+    border-radius: 2px !important;
+    margin-left: 8px !important;
+    margin-right: 8px !important;
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+    background-color: transparent !important;
+    text-transform: uppercase;
+    outline: none !important;
+    border: none !important;
+}
+
+.custom-flat:hover {
+    cursor: pointer;
+    background-color: rgba(0, 0, 0, 0.12) !important;
+}
+
+.custom-flat:focus {
+    outline: none !important;
+    border: none !important;
+    -webkit-box-shadow: none !important;
+    box-shadow: none !important;
+    background-color: rgba(0, 0, 0, 0.40) !important;
+}
+
+.circle-button {
+    border-radius: 100% !important;
+    height: 36px !important;
+    width: 36px;
+}
+
+/* ==================================================================== */
+
 /* Body Styling */
 body {
     width: 100%;
-    font-family: Roboto sans-serif;
+    font-family: "Roboto-Regular" !important;
+    background-color: #e8e8e8 !important;
+}
+
+.app-manager-title {
+    font-family: "Roboto-Medium";
+    font-size: 20px;
+}
+
+.app-manager-sub-title {
+    font-family: "Roboto-Regular";
+    font-size: 18px;
+}
+
+#app-mgt-footer {
+    clear: both;
+    position: relative;
+    height: 50px;
+    width: 100%;
+    color: white;
+    background-color: #334d88;
 }
 
 /* Login page styles*/
@@ -31,35 +152,55 @@ body {
     border-radius: 0;
 }
 
-#login-btn {
-    border-radius: 0;
-    background-color: navy;
-    color: white;
-    cursor: pointer;
+.login-btn {
+    float: right;
 }
 
-#login-container {
-    width: 50%;
-    margin: 0 auto
+.login-header {
+    background-color: #3f50b5;
+    color: white;
+    height: 128px;
+    width: 100%;
+    margin: 0 !important;
+    padding: 20px;
+    box-shadow: -2px 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
 #login-card {
+    width: 25%;
+    height: 50%;
+    margin: 10% auto;
+    font-family: Roboto-Regular;
+    font-size: 14px;
     border-radius: 0;
-    background-color: #BaBaBa;
+    background-color: #ffffff;
+    box-shadow: -2px 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.login-header-title {
+    font-family: Roboto-Medium;
+    font-size: 20px;
+    font-weight: 500;
+}
+
+.login-header-logo {
+    height: 70px;
+    width: 150px;
+}
+
+.login-form {
+    margin: 0 !important;
+    padding: 40px;
 }
 
 /* Base layout container */
-#container {
-    background-color: #ffffff;
-    padding: 0;
-}
 
 /* Base layout header content*/
-#header-content {
-    height: 125px;
-    width: 100%;
+.header-content {
+    height: 128px !important;
+    width: 100% !important;
     margin: 0 10px 0 0;
-    background-color: #3b33bd;
+    background-color: #3f50b5 !important;
     position: fixed; /* Set the navbar to fixed position */
     top: 0; /* Position the navbar at the top of the page */
     z-index: 2;
@@ -67,22 +208,59 @@ body {
 }
 
 /* Contains the header styles.*/
-#header {
-    margin: 16px 16px 20px 16px;
-    height: 100%;
+.header {
+    padding: 24px 24px 10px 24px;
+    /*margin: 16px 16px 20px 16px;*/
     position: relative;
 }
 
 #header-text {
     color: #ffffff;
-    font-size: 25px;
+    font-size: 20px;
+    font-family: Roboto-Medium;
     top: 10px;
     margin-left: 10px;
 }
 
 /* The buttons in the header (User and Notification)*/
-#header-btn-container {
-    float: right;
+.header-button-container {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.header-user-name {
+    font-family: Roboto-Medium;
+    font-size: 14px;
+    padding-top: 15px;
+    color: white;
+}
+
+.header-image {
+    height: 43px;
+    width: 100px;
+    margin-right: 24px;
+}
+
+#header-button {
+    border-radius: 50%;
+    background-color: transparent;
+    border: none;
+    height: 50px;
+    width: 50px;
+    margin-right: 10px;
+    position: relative;
+    outline: none;
+}
+
+#header-button:hover {
+    background-color: #4353bd;
+    cursor: pointer;
+}
+
+#header-button i {
+    position: absolute;
+    bottom: 19px;
+    left: 17px;
 }
 
 .btn-header {
@@ -91,21 +269,25 @@ body {
     color: white;
 }
 
-/* Search box styles */
-.search-icon {
-    position: absolute;
-    top: 5px;
-    left: 5px;
+#sub-title {
+    font-family: Roboto-Regular;
+    font-size: 18px;
+    font-weight: 600;
+    padding-top: 5px;
+    padding-left: 18px;
+    color: RGBA(0, 0, 0, 1);
 }
 
-#search-box {
+/* Search box styles */
+.search-box {
     display: flex;
-    color: #a8a8a8;
-    position: relative;
     float: right;
-    top: 75px;
-    left: 80px;
-    margin-right: 16px;
+}
+
+.search-box i {
+    position: absolute;
+    top: 5px;
+    color: #BaBaBa;
 }
 
 #search {
@@ -123,36 +305,112 @@ body {
 /* Application Add button */
 #add-btn-container {
     position: absolute;
-    left: 12%;
-    top: 100px;
+    top: 98px;
+}
+
+.add-btn {
+    background-color: #ff5722;
+}
+
+.add-btn:hover {
+    background-color: #E64A19;
+}
+
+#app-main-content {
+    margin: 0 auto;
+}
+
+#sub-title-container {
+    height: 100px;
+    padding: 50px 0 20px 0;
+}
+
+.application-container {
+    padding: 0 !important;
+    min-height: 100% !important;
+    margin-top: 128px !important;
 }
 
 /* Holds the app publisher pages. */
 #application-content {
     height: auto;
-    width: 80%;
-    margin: 150px auto;
-    box-shadow: -2px 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-    padding: 10px 10px 10px 10px;
+    background-color: white;
+    width: 100%;
+    box-shadow: 2px 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    padding: 24px;
 }
 
 .stepper-header {
     width: 100%;
-    border-bottom: solid 1px cornflowerblue;
+    color: #BaBaBa;
     padding-bottom: 5px;
     margin-bottom: 10px;
+}
+
+#application-tag {
+    margin: 0 2px 0 2px;
+    background-color: blue;
+    height: 20px;
+}
+
+#application-tag:hover {
+    cursor: pointer;
+    background-color: #007bff;
 }
 
 .platform-link-placeholder {
     color: #888888;
     float: right;
-    margin-right: 20px;
     padding-bottom: 10px;
 }
 
+.platform-link-placeholder i {
+    margin-right: 4px;
+}
+
 #application-list {
-    margin-top: 20px;
     transition: margin-right .5s;
+}
+
+#batch-content {
+    display: flex;
+    margin-top: 5px;
+}
+
+.app-list-icon {
+    border-radius: 50%;
+    height: 50px;
+    width: 50px
+}
+
+.app-table-row {
+    height: 62px;
+    cursor: pointer;
+    padding-top: 6px;
+    font-family: "Roboto-Regular";
+    font-size: medium;
+}
+
+.app-table-row:hover {
+    color: white;
+    background-color: #3f50b5;
+}
+
+.app-list-table-header {
+    margin-top: 30px;
+    margin-bottom: 10px;
+    font-family: "Roboto-Medium";
+    font-size: 15px;
+}
+
+.app-view-image {
+    height: 100px;
+    width: 100px;
+    border-radius: 50%;
+}
+
+#app-visibility-default {
+    display: none;
 }
 
 #app-image-screenshot {
@@ -170,12 +428,15 @@ body {
     height: 300px;
 }
 
+#form-error {
+    color: red;
+}
+
 .application-create-banner-dropzone {
     width: 300px;
     height: 150px;
     border-radius: 5%;
     position: relative;
-    background-color: rgba(157, 159, 157, 0.53);
     border: dashed #888888 2px;
 }
 
@@ -191,7 +452,6 @@ body {
     margin: 0 5px 0 5px;
     border-radius: 10%;
     position: relative;
-    background-color: rgba(157, 159, 157, 0.53);
     border: dashed #888888 2px;
 }
 
@@ -206,7 +466,6 @@ body {
     height: 150px;
     border-radius: 10%;
     position: relative;
-    background-color: rgba(157, 159, 157, 0.53);
     border: dashed #888888 2px;
 }
 
@@ -217,6 +476,7 @@ body {
 }
 
 #screenshot-container {
+    max-width: 600px;
     display: flex;
     overflow-x: auto;
     height: 200px;
@@ -232,6 +492,13 @@ body {
     overflow-y: auto;
 }
 
+.step-index {
+    height: 20px;
+    width: 20px;
+    background-color: #2196F3;
+    border-radius: 50%;
+}
+
 #img-btn-screenshot {
     margin: 0 5px 0 5px;
 }
@@ -239,6 +506,7 @@ body {
 #app-create-modal {
     max-width: 700px;
     overflow-x: auto;
+    border-radius: 0% !important;
 }
 
 #store {
@@ -276,12 +544,13 @@ body {
 }
 
 /* Application View */
+
 #application-view-content {
     width: 100%;
 }
 
 #application-view-row {
-    margin: 10px 10px 20px 20px;
+    margin: 10px 10px 0 20px;
 }
 
 #app-icon {
@@ -293,7 +562,6 @@ body {
 
 .app-updated-date {
     color: #888888;
-    font-style: italic;
 }
 
 .app-install-count {
@@ -315,12 +583,13 @@ body {
 }
 
 /* Application Edit Base Layout */
+
 #application-edit-header {
-    height: 50px;
+    height: 40px;
     width: 100%;
-    margin: 0;
-    font-size: 20px;
-    border-bottom: solid 1px #d8d8d8;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    font-size: 25px;
 }
 
 .application-header-text {
@@ -348,6 +617,7 @@ body {
 }
 
 /*Tab styling*/
+
 div.tab {
     float: left;
     border-right: 1px solid #d8d8d8;
@@ -355,6 +625,7 @@ div.tab {
 }
 
 /* Style the tab buttons */
+
 div.tab button {
     display: block;
     background-color: inherit;
@@ -369,17 +640,18 @@ div.tab button {
 }
 
 /* Change background color of buttons on hover */
+
 div.tab button:hover {
     background-color: #ddd6d7;
     cursor: pointer;
 }
 
 /* Create an active/current "tab button" class */
+
 div.tab button.active {
     background-color: #1b3bcc;
     color: white;
 }
-
 
 #application-edit-main-container {
     display: flex;
@@ -387,12 +659,6 @@ div.tab button.active {
 
 #application-edit-outer-content {
     height: auto;
-    width: 100%;
-}
-
-#application-edit-content {
-    margin: 5px 10px 5px 10px;
-    width: 90%;
 }
 
 #app-edit-content {
@@ -402,13 +668,13 @@ div.tab button.active {
 
 .back-to-app {
     position: absolute;
-    height: 40px;
-    width: 40px;
+    height: 50px;
+    width: 50px;
     border-radius: 50%;
 }
 
 .back-to-app i {
-    padding: 10px 10px 10px 10px;
+    padding: 12px 10px 10px 12px;
 }
 
 .back-to-app:hover {
@@ -418,6 +684,7 @@ div.tab button.active {
 }
 
 /* Create Release and Release management */
+
 .release-header {
     margin-top: 20px;
     margin-bottom: 20px;
@@ -472,6 +739,7 @@ div.tab button.active {
 }
 
 /* Application Edit General Info */
+
 .app-edit-general-info {
     margin-top: 20px;
     max-width: 100%;
@@ -480,4 +748,93 @@ div.tab button.active {
 .save-info {
     float: right;
     margin-bottom: 10px;
+}
+
+.app-view-field {
+    font-family: Roboto-Medium;
+    font-size: 14px;
+}
+
+.app-view-text {
+    font-family: Roboto-Regular;
+    font-size: 14px;
+}
+
+/* Platform Specific Styles. */
+#platform-listing {
+    margin: 10px;
+}
+
+.create-platform i {
+    margin-right: 10px;
+}
+
+#platform-list {
+    margin-top: 20px;
+    display: flex;
+    flex-flow: wrap;
+}
+
+.platform-content {
+    margin: 10px;
+    padding-top: 16px;
+    box-shadow: 2px 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.platform-content .row {
+    margin: 0;
+}
+
+.platform-content .col {
+    padding: 0;
+}
+
+.platform-content-basic {
+    padding: 0 16px 0 16px;
+    display: flex;
+}
+
+.platform-content-more-outer {
+
+}
+
+.platform-content-more {
+    padding: 16px 16px 24px 16px;
+}
+
+.platform-content-footer {
+    display: flex;
+    padding: 8px 8px 8px 8px;
+}
+
+.platform-text-container {
+    padding: 8px 16px 0 16px;
+}
+
+.circle-button {
+    float: right;
+}
+
+.platform-icon-letter {
+    text-align: center;
+    text-transform: uppercase;
+    font-family: Roboto-Medium;
+    font-size: 70px;
+    color: white;
+    padding-top: 15px;
+}
+
+.platform-icon-container {
+    height: 120px;
+    width: 120px;
+    background-color: #01579B;
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.16), 0 0 0 1px rgba(0, 0, 0, 0.08) !important;
+    -webkit-box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.16), 0 0 0 1px rgba(0, 0, 0, 0.08) !important;
+}
+
+.platform-content:hover {
+}
+
+.data-table-row-cell {
+    padding-top: 14px;
 }

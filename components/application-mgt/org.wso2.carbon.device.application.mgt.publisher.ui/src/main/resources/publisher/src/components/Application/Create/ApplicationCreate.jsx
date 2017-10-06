@@ -21,8 +21,9 @@ import {withRouter} from 'react-router-dom';
 import AuthHandler from "../../../api/authHandler";
 import {Step1, Step2, Step3, Step4} from './CreateSteps/index';
 import ApplicationMgtApi from '../../../api/applicationMgtApi';
-import {Button, Col, Modal, ModalBody, ModalFooter, ModalHeader, Row} from 'reactstrap';
+import {Col, Modal, ModalBody, ModalHeader, Row} from 'reactstrap';
 import {FormattedMessage} from 'react-intl';
+
 
 /**
  * The App Create Component.
@@ -49,7 +50,11 @@ class ApplicationCreate extends Component {
             finished: false,
             stepIndex: 0,
             stepData: [],
-            isDialogOpen: false
+            isDialogOpen: false,
+            generalInfo: {},
+            platform: {},
+            screenshots: {},
+            release: {}
         };
     }
 
@@ -61,17 +66,18 @@ class ApplicationCreate extends Component {
         this.setState({open: this.props.open});
     }
 
-
+    /**
+     * Resets the form and closes the modal.
+     * */
     onClose() {
-        this.setState({stepIndex: 0}, this.props.close());
-
+        this.setState({stepIndex: 0, generalInfo: {}, platform: {}, screenshots: {}, release: {}}, this.props.close());
     }
 
     /**
      * Handles next button click event.
      * */
     onNextClick() {
-        console.log("Handle Next"); //TODO: Remove this
+        console.log(this.state.stepIndex); //TODO: Remove this
         const {stepIndex} = this.state;
         this.setState({
             stepIndex: stepIndex + 1,
@@ -83,8 +89,8 @@ class ApplicationCreate extends Component {
      * Handles form submit.
      * */
     onSubmit() {
-        let stepData = this.state.stepData;
-        let applicationCreationPromise = ApplicationMgtApi.createApplication(stepData);
+        let {generalInfo, platform, screenshots, release} = this.state;
+        let applicationCreationPromise = ApplicationMgtApi.createApplication(generalInfo, platform, screenshots, release);
         applicationCreationPromise.then(response => {
                 this.handleYes();
             }
@@ -108,10 +114,10 @@ class ApplicationCreate extends Component {
      * This clears the data in the current step and returns to the previous step.
      * */
     onPrevClick() {
+        console.log(this.state.stepIndex);
         const {stepIndex} = this.state;
         if (stepIndex > 0) {
-            this.removeStepData();
-            this.setState({stepIndex: stepIndex - 1});
+            this.setState({stepIndex: stepIndex - 1, finished: false});
         }
     };
 
@@ -121,11 +127,25 @@ class ApplicationCreate extends Component {
      * @param data: The form data of the step.
      * */
     setStepData(step, data) {
-        console.log(step, data, this.state.stepData); //TODO: Remove this
-        let tmpStepData = this.state.stepData;
-        tmpStepData.push({step: step, data: data});
-
-        this.setState({stepData: tmpStepData}, this.onNextClick())
+        console.log(step, data, this.state); //TODO: Remove this
+        switch (step) {
+            case "generalInfo": {
+                this.setState({generalInfo: data}, this.onNextClick());
+                break;
+            }
+            case "platform": {
+                this.setState({platform: data}, this.onNextClick());
+                break;
+            }
+            case "screenshots": {
+                this.setState({screenshots: data}, this.onNextClick());
+                break;
+            }
+            case "release": {
+                this.setState({release: data}, this.onNextClick());
+                break;
+            }
+        }
     };
 
     /**
@@ -134,9 +154,10 @@ class ApplicationCreate extends Component {
     removeStepData() {
         let tempData = this.state.stepData;
         tempData.pop();
-        this.setState({stepData: tempData});
+        this.setState({stepData: tempData, stepIndex: 0});
     };
 
+    /* ----------------- Deprecated ----------------- */
     /**
      * Handles the Yes button in app creation cancellation dialog.
      * Clears all the form data and reset the wizard.
@@ -153,6 +174,8 @@ class ApplicationCreate extends Component {
         this.setState({isDialogOpen: false});
     };
 
+    /* ---------------------------------------------- */
+
     /**
      * Defines all the Steps in the stepper. (Wizard)
      *
@@ -167,41 +190,46 @@ class ApplicationCreate extends Component {
             case 0:
                 return (
                     <Step1
-                        handleNext={this.onNextClick}
-                        setData={this.setStepData}
-                        removeData={this.removeStepData}
+                        defaultData={this.state.generalInfo}
+                        setStepData={this.setStepData}
+                        close={this.onClose}
                     />
                 );
             case 1:
                 return (
                     <Step2
-                        handleNext={this.onNextClick}
+                        defaultData={this.state.platform}
                         handlePrev={this.onPrevClick}
-                        setData={this.setStepData}
-                        removeData={this.removeStepData}
+                        setStepData={this.setStepData}
+                        close={this.onClose}
                     />
                 );
             case 2:
                 return (
                     <Step3
-                        handleFinish={this.onNextClick}
+                        defaultData={this.state.screenshots}
                         handlePrev={this.onPrevClick}
-                        setData={this.setStepData}
-                        removeData={this.removeStepData}
+                        setStepData={this.setStepData}
+                        close={this.onClose}
                     />
                 );
             case 3: {
                 return (
                     <Step4
-                        handleNext={this.onNextClick}
-                        setData={this.setStepData}
-                        removeData={this.removeStepData}
+                        defaultData={this.state.release}
+                        handlePrev={this.onPrevClick}
+                        onSubmit={this.onSubmit}
+                        close={this.onClose}
                     />
                 )
             }
             default:
                 return <div/>;
         }
+    }
+
+    setStepHeader(stepIndex) {
+
     }
 
     render() {
@@ -218,7 +246,35 @@ class ApplicationCreate extends Component {
                         <Row>
                             <Col>
                                 <div className="stepper-header">
-
+                                    <Row>
+                                        <Col>
+                                            <div className="stepper-header-content">
+                                                <div className="step-index">1</div>
+                                                <div className="step-header">
+                                                    <FormattedMessage id="General.Info" defaultMessage="General.Info"/>
+                                                </div>
+                                            </div>
+                                        </Col>
+                                        <Col>
+                                            <span className="step-index">2</span>
+                                            <span className="step-header">
+                                                <FormattedMessage id="Select.Platform"
+                                                                  defaultMessage="Select.Platform"/>
+                                            </span>
+                                        </Col>
+                                        <Col>
+                                            <span className="step-index">3</span>
+                                            <span className="step-header">
+                                                <FormattedMessage id="Screenshots" defaultMessage="Screenshots"/>
+                                            </span>
+                                        </Col>
+                                        <Col>
+                                            <span className="step-index">4</span>
+                                            <span className="step-header">
+                                                <FormattedMessage id="Release" defaultMessage="Release"/>
+                                            </span>
+                                        </Col>
+                                    </Row>
                                 </div>
                             </Col>
                         </Row>
@@ -228,22 +284,6 @@ class ApplicationCreate extends Component {
                             </Col>
                         </Row>
                     </ModalBody>
-                    <ModalFooter>
-                        {stepIndex === 0 ? <div/> :
-                            <Button color="primary" onClick={this.onPrevClick}>
-                                <FormattedMessage id="Back" defaultMessage="Back"/>
-                            </Button>}
-                        <Button color="secondary" onClick={this.onClose}>
-                            <FormattedMessage id="Cancel" defaultMessage="Cancel"/>
-                        </Button>
-                        {finished ?
-                            <Button color="primary" onClick={this.onSubmit}>
-                                <FormattedMessage id="Finish" defaultMessage="Finish" />
-                            </Button> :
-                            <Button color="primary" onClick={this.onNextClick}>
-                                <FormattedMessage id="Continue" defaultMessage="Continue"/>
-                            </Button>}
-                    </ModalFooter>
                 </Modal>
             </div>);
     }

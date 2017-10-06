@@ -39,11 +39,12 @@ class BaseLayout extends Component {
         this.logout = this.logout.bind(this);
         this.closeModal = this.closeModal.bind(this);
         this.onClickPlatforms = this.onClickPlatforms.bind(this);
+        this.onClickApplications = this.onClickApplications.bind(this);
         this.state = {
             notifications: 0,
             user: 'Admin',
             openModal: false,
-            currentPage: "Applications",
+            currentPage: "",
             logo: {}
         };
     }
@@ -80,9 +81,24 @@ class BaseLayout extends Component {
 
     onClickPlatforms() {
         window.location.href = "/publisher/assets/platforms";
-        this.setState({currentPage: "Platforms"});
+        this.setState({currentPage: "Platforms"})
+    }
+
+    onClickApplications() {
+        window.location.href = "/publisher/assets/apps";
+    }
+
+    getCurrentPageTitle() {
+        let href = window.location.href;
+
+        if (href.indexOf("apps") !== -1) {
+            return "Applications";
+        } else if (href.indexOf("platforms") !== -1) {
+            return "Platforms"
+        }
 
     }
+
 
     render() {
         const userName = this.state.user._userName[0];
@@ -138,13 +154,21 @@ class BaseLayout extends Component {
                             <Col>
                                 <div id="sub-title">
                                     {/*TODO: Add the current page title*/}
-                                    {/*{window.location.pathname}*/}
+                                    {this.getCurrentPageTitle()}
                                 </div>
                             </Col>
                             <Col>
                                 <div className="platform-link-placeholder">
-                                    <Button className="custom-flat grey" onClick={this.onClickPlatforms}>
-                                        <i className="fw fw-settings"></i> Platforms</Button>
+                                    {this.getCurrentPageTitle() === "Applications" ?
+                                        <Button className="custom-flat grey" onClick={this.onClickPlatforms}>
+                                            <i className="fw fw-settings"></i>
+                                            Platforms
+                                        </Button> :
+                                        <Button className="custom-flat grey" onClick={this.onClickApplications}>
+                                            <i className="fw fw-application"></i>
+                                            Applications
+                                        </Button>
+                                    }
                                 </div>
                             </Col>
                         </Row>

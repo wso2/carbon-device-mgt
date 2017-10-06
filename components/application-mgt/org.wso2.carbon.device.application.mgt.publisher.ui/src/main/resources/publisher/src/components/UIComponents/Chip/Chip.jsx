@@ -34,10 +34,12 @@ class Chip extends Component {
     render() {
         return (
             <div className="chip">
+                <div className="chip-content">
                     <div className="chip-text">{this.props.content.value}</div>
                     <div className="chip-close-btn" onClick={this.onDeleteClick}>
-                        <i className="fw fw-uncheck"></i>
+                        <i className="fw fw-error"></i>
                     </div>
+                </div>
             </div>
         )
     }

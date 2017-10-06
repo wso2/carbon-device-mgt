@@ -833,3 +833,23 @@ div.tab button.active {
 .data-table-row-cell {
     padding-top: 14px;
 }
+
+.error-code {
+    text-align: center;
+    font-family: Roboto-Medium;
+    font-weight: 800;
+    font-size: 15em;
+    color: #BaBaBa;
+}
+
+.error-code p {
+
+}
+
+.error-text {
+    text-align: center;
+    font-family: Roboto-Regular;
+    font-size: 14px;
+    font-weight: 500;
+    color: #9e9e9e;
+}

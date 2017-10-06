@@ -58,11 +58,15 @@ class Platform extends Component {
                 </Row>
                 <Row>
                     <div className="platform-content-footer">
-                        <Button className="custom-flat grey">{platform.enabled ?
-                            <FormattedMessage id="Disable" defaultMessage="Disable"/> :
-                            <FormattedMessage id="Activate" defaultMessage="Activate"/>}
-                        </Button>
-                        <Button className="custom-flat grey">
+                        {platform.enabled?
+                            <Button className="custom-flat danger-flat">
+                            <FormattedMessage id="Disable" defaultMessage="Disable"/>
+                            </Button> :
+                            <Button className="custom-flat primary-flat">
+                                <FormattedMessage id="Activate" defaultMessage="Activate"/>
+                            </Button>}
+
+                        <Button className="custom-flat primary-flat">
                             <FormattedMessage id="Share.With.Tenants" defaultMessage="Share.With.Tenants"/>
                         </Button>
                         <Button className="custom-flat grey circle-button" onClick={this.unFold}>

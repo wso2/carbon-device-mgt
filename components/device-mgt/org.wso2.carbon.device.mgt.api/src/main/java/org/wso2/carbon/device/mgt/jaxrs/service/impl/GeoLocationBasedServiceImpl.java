@@ -31,15 +31,15 @@ import org.wso2.carbon.analytics.datasource.commons.exception.AnalyticsException
 import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.DeviceManagementConstants.GeoServices;
+import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.authorization.DeviceAccessAuthorizationException;
 import org.wso2.carbon.device.mgt.common.geo.service.Alert;
 import org.wso2.carbon.device.mgt.common.geo.service.Event;
 import org.wso2.carbon.device.mgt.common.geo.service.GeoFence;
-import org.wso2.carbon.device.mgt.common.geo.service.GeoLocationProviderService;
 import org.wso2.carbon.device.mgt.common.geo.service.GeoLocationBasedServiceException;
+import org.wso2.carbon.device.mgt.common.geo.service.GeoLocationProviderService;
 import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroupConstants;
-import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
-import org.wso2.carbon.device.mgt.core.config.DeviceManagementConfig;
+import org.wso2.carbon.device.mgt.core.util.DeviceManagerUtil;
 import org.wso2.carbon.device.mgt.jaxrs.service.api.GeoLocationBasedService;
 import org.wso2.carbon.device.mgt.jaxrs.util.Constants;
 import org.wso2.carbon.device.mgt.jaxrs.util.DeviceMgtAPIUtils;
@@ -76,13 +76,13 @@ public class GeoLocationBasedServiceImpl implements GeoLocationBasedService {
     public Response getGeoDeviceStats(@PathParam("deviceId") String deviceId,
                                       @PathParam("deviceType") String deviceType,
                                       @QueryParam("from") long from, @QueryParam("to") long to) {
-        //First, check whether the Geo Location service has been enabled in the cdmf-config.xml file
-        DeviceManagementConfig deviceManagementConfig = DeviceConfigurationManager.getInstance()
-                .getDeviceManagementConfig();
-        if (deviceManagementConfig != null) {
-            if(!deviceManagementConfig.getGeoLocationConfiguration().getPublishLocationOperationResponse()){
-                return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).build();
+        try {
+            if (!DeviceManagerUtil.isPublishOperationResponseEnabled()) {
+                return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
+                        .entity("Operation publishing does not exists").build();
             }
+        } catch (DeviceManagementException e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()).entity(e.getMessage()).build();
         }
         String tableName = "IOT_PER_DEVICE_STREAM_GEO_FUSEDSPATIALEVENT";
         String fromDate = String.valueOf(from);

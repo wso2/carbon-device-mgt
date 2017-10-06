@@ -33,6 +33,7 @@
     <url>http://wso2.org</url>
 
     <modules>
+        <module>org.wso2.carbon.device.mgt.basics.feature</module>
         <module>org.wso2.carbon.device.mgt.server.feature</module>
         <module>org.wso2.carbon.device.mgt.ui.feature</module>
         <module>org.wso2.carbon.device.mgt.api.feature</module>

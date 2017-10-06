@@ -60,6 +60,6 @@ function onRequest(context) {
     } else {
         viewModel.lastLocation = stringify({});
     }
-    viewModel.geoServicesEnabled = devicemgtProps.serverConfig.geoLocationConfiguration.isEnabled;
+    viewModel.geoServicesEnabled = devicemgtProps.serverConfig.operationAnalyticsConfiguration.isEnabled;
     return viewModel;
 }

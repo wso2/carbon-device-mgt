@@ -18,7 +18,7 @@
 package org.wso2.carbon.device.mgt.core.config;
 
 import org.wso2.carbon.device.mgt.core.config.cache.CertificateCacheConfiguration;
-import org.wso2.carbon.device.mgt.core.config.geo.location.GeoLocationConfiguration;
+import org.wso2.carbon.device.mgt.core.config.geo.location.OperationAnalyticsConfiguration;
 import org.wso2.carbon.device.mgt.core.config.cache.DeviceCacheConfiguration;
 import org.wso2.carbon.device.mgt.core.config.identity.IdentityConfigurations;
 import org.wso2.carbon.device.mgt.core.config.pagination.PaginationConfiguration;
@@ -48,7 +48,7 @@ public final class DeviceManagementConfig {
     private DeviceStatusTaskConfig deviceStatusTaskConfig;
     private DeviceCacheConfiguration deviceCacheConfiguration;
     private CertificateCacheConfiguration certificateCacheConfiguration;
-    private GeoLocationConfiguration geoLocationConfiguration;
+    private OperationAnalyticsConfiguration operationAnalyticsConfiguration;
     private String defaultGroupsConfiguration;
 
     @XmlElement(name = "ManagementRepository", required = true)
@@ -142,13 +142,13 @@ public final class DeviceManagementConfig {
         this.certificateCacheConfiguration = certificateCacheConfiguration;
     }
 
-    @XmlElement(name = "GeoLocationConfiguration", required = true)
-    public GeoLocationConfiguration getGeoLocationConfiguration() {
-        return geoLocationConfiguration;
+    @XmlElement(name = "OperationAnalyticsConfiguration", required = true)
+    public OperationAnalyticsConfiguration getOperationAnalyticsConfiguration() {
+        return operationAnalyticsConfiguration;
     }
 
-    public void setGeoLocationConfiguration(GeoLocationConfiguration geoLocationConfiguration) {
-        this.geoLocationConfiguration = geoLocationConfiguration;
+    public void setOperationAnalyticsConfiguration(OperationAnalyticsConfiguration operationAnalyticsConfiguration) {
+        this.operationAnalyticsConfiguration = operationAnalyticsConfiguration;
     }
 
     @XmlElement(name = "DefaultGroupsConfiguration", required = true)

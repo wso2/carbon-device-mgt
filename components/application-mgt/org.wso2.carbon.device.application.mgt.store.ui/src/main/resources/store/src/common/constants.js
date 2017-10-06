@@ -19,6 +19,7 @@ import Configuration from './configuration';
 
 'use strict';
 
+//TODO: Replace the server address with response from auth endpoint and remove hardcoded ids etc.
 class Constants {
 
     constructor() {
@@ -42,10 +43,11 @@ class Constants {
             GET_IMAGE_ARTIFACTS: apiBaseUrl + '/api/application-mgt/v1.0/applications/1.0.0/image-artifacts/'
         };
 
+        //TODO: remove the platform manager endpoints
         this.platformManagerEndpoints = {
-            CREATE_PLATFORM: apiBaseUrl + '/api/application-mgt/v1.0/platforms/1.0.0',
-            GET_ENABLED_PLATFORMS: apiBaseUrl + '/api/application-mgt/v1.0/platforms/1.0.0?status=ENABLED',
-            GET_PLATFORM: apiBaseUrl + '/api/application-mgt/v1.0/platforms/1.0.0/'
+            CREATE_PLATFORM: 'https://localhost:8243/api/application-mgt/v1.0/platforms/1.0.0',
+            GET_ENABLED_PLATFORMS: 'https://localhost:8243/api/application-mgt/v1.0/platforms/1.0.0?status=ENABLED',
+            GET_PLATFORM: 'https://localhost:8243/api/application-mgt/v1.0/platforms/1.0.0/'
         };
 
         this.userConstants = {

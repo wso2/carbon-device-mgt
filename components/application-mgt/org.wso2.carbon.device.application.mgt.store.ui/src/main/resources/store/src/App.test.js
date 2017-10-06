@@ -16,13 +16,11 @@
  * under the License.
  */
 
-import Login from './User/Login/Login';
-import NotFound from './Error/NotFound';
-import BaseLayout from './AppStoreBase/BaseLayout';
-import ApplicationListing from './Application/ApplicationListing';
+import React from 'react';
+import ReactDOM from 'react-dom';
+import App from './App';
 
-/**
- * Contains all UI components related to Application, Login and Platform
- */
-
-export {Login, BaseLayout, ApplicationListing, NotFound};
+it('renders without crashing', () => {
+  const div = document.createElement('div');
+  ReactDOM.render(<App />, div);
+});

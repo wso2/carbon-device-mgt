@@ -1,10 +1,10 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "App Store",
+  "name": "WSO2 IoT App Store",
   "icons": [
     {
-      "src": "favicon.ico",
-      "sizes": "192x192",
+      "src": "images/favicon.png",
+      "sizes": "16x16",
       "type": "image/png"
     }
   ],

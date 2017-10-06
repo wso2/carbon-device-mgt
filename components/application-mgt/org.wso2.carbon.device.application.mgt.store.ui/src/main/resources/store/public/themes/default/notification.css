@@ -16,13 +16,34 @@
  * under the License.
  */
 
-import Login from './User/Login/Login';
-import NotFound from './Error/NotFound';
-import BaseLayout from './AppStoreBase/BaseLayout';
-import ApplicationListing from './Application/ApplicationListing';
+.notification-app-icon {
+    border-radius: 50%;
+    border: solid 1px black;
+}
 
-/**
- * Contains all UI components related to Application, Login and Platform
- */
+.small {
+    height: 50px;
+    width: 50px;
+}
 
-export {Login, BaseLayout, ApplicationListing, NotFound};
+.medium {
+    height: 100px;
+    width: 100px;
+}
+
+#notification-view-content {
+    width: 50%;
+    border: solid 1px black;
+    margin: 0 auto;
+    box-shadow: -2px 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+#notification-content {
+    margin: 20px 10px 20px 10px;
+}
+
+#app-reject-msg {
+    width: 100%;
+    height: 30px;
+    background-color: #888888;
+}

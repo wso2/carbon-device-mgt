@@ -24,34 +24,40 @@ import registerServiceWorker from './registerServiceWorker';
 import {IntlProvider, addLocaleData, defineMessages} from 'react-intl';
 import Axios from 'axios';
 import Constants from './common/constants';
+import Configuration from './common/configuration';
 
-const possibleLocale = navigator.language.split("-")[0];
-let loadLocaleFile = Axios.create({
-    baseURL: Constants.hostConstants.baseURL + "/" + Constants.hostConstants.appContext + "/locales/"
-    + possibleLocale + ".json"
-}).get();
-
-
-/**
- * This is the base js file of the app. All the content will be rendered in the root element.
- * */
-loadLocaleFile.then(response => {
-    const messages = defineMessages(response.data);
-    addLocaleData(require('react-intl/locale-data/' + possibleLocale));
-    ReactDOM.render(<IntlProvider locale={possibleLocale}
-                                  messages={messages}><Publisher/></IntlProvider>, document.getElementById('root'));
-    registerServiceWorker();
-}).catch(error => {
-    addLocaleData(require('react-intl/locale-data/' + Constants.defaultLocale));
-    let defaultLocale = axios.create({
-        baseURL: Constants.hostConstants.baseURL + "/" + Constants.hostConstants.appContext + "/locales"
-        + Constants.defaultLocale + ".json"
+function loadPublisher() {
+    const possibleLocale = navigator.language.split("-")[0];
+    let loadLocaleFile = Axios.create({
+        baseURL: Configuration.hostConstants.baseURL + "/" + Configuration.hostConstants.appContext + "/locales/"
+        + possibleLocale + ".json"
     }).get();
-    defaultLocale.then(response => {
+
+
+    /**
+     * This is the base js file of the app. All the content will be rendered in the root element.
+     * */
+    loadLocaleFile.then(response => {
         const messages = defineMessages(response.data);
+        addLocaleData(require('react-intl/locale-data/' + possibleLocale));
         ReactDOM.render(<IntlProvider locale={possibleLocale}
                                       messages={messages}><Publisher/></IntlProvider>, document.getElementById('root'));
         registerServiceWorker();
     }).catch(error => {
+        addLocaleData(require('react-intl/locale-data/en'));
+        let defaultLocale = axios.create({
+            baseURL: Configuration.hostConstants.baseURL + "/" + Configuration.hostConstants.appContext + "/locales"
+            + Constants.defaultLocale + ".json"
+        }).get();
+        defaultLocale.then(response => {
+            const messages = defineMessages(response.data);
+            ReactDOM.render(<IntlProvider locale={possibleLocale}
+                                          messages={messages}><Publisher/></IntlProvider>, document.getElementById('root'));
+            registerServiceWorker();
+        }).catch(error => {
+        });
     });
-});
+}
+
+Configuration.loadConfiguration(loadPublisher);
+

@@ -16,13 +16,35 @@
  * under the License.
  */
 
-import Login from './User/Login/Login';
-import NotFound from './Error/NotFound';
-import BaseLayout from './AppStoreBase/BaseLayout';
-import ApplicationListing from './Application/ApplicationListing';
+.btn-circle {
+    color: white;
+    position: relative;
+    background-color: #e65100;
+    border-radius: 50%;
+    box-shadow: -2px 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
 
-/**
- * Contains all UI components related to Application, Login and Platform
- */
+.btn-circle i {
+    position: absolute;
+    margin-top: 37%;
+    margin-left: 37%;
+}
 
-export {Login, BaseLayout, ApplicationListing, NotFound};
+.small {
+    height: 50px;
+    width: 50px;
+}
+
+.medium {
+    height: 100px;
+    width: 100px;
+}
+
+.btn-circle:hover {
+    cursor: pointer;
+    background-color: rgb(255, 93, 2);
+}
+
+.primary {
+    background-color: blue;
+}

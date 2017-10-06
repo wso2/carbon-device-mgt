@@ -20,16 +20,16 @@ package org.wso2.carbon.device.application.mgt.auth.handler.util;
 
 //TODO: Remove hardcoded localhost and ports
 public class Constants {
-    public static String SCOPES = "perm:application:get perm:application:create perm:application:update " +
+    public static final String SCOPES = "perm:application:get perm:application:create perm:application:update " +
             "perm:application-mgt:login perm:application:delete perm:platform:add perm:platform:remove " +
             "perm:roles:view perm:devices:view perm:platform:get";
 
-    public static String[] TAGS = {"device_management"};
-    public static String USER_NAME = "userName";
-    public static String APPLICATION_NAME = "applicationmgt_publisher";
-    public static String TOKEN_ENDPOINT = "https://localhost:8243";
-    public static String PASSWORD_GRANT_TYPE = "password";
-    public static String REFRESH_GRANT_TYPE = "refresh_token";
-    public static String API_APPLICATION_ENDPOINT = "https://localhost:9443/api-application-registration/";
-    public static String APPLICATION_INFO = "application_info";
+    public static final String[] TAGS = {"device_management"};
+    public static final String USER_NAME = "userName";
+    public static final String APPLICATION_NAME = "applicationmgt_publisher";
+    public static final String TOKEN_ENDPOINT = "https://localhost:8243";
+    public static final String PASSWORD_GRANT_TYPE = "password";
+    public static final String REFRESH_GRANT_TYPE = "refresh_token";
+    public static final String API_APPLICATION_ENDPOINT = "https://localhost:9443/api-application-registration/";
+    public static final String APPLICATION_INFO = "application_info";
 }

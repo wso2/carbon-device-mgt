@@ -15,14 +15,24 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
-import Login from './User/Login/Login';
-import NotFound from './Error/NotFound';
-import BaseLayout from './AppStoreBase/BaseLayout';
-import ApplicationListing from './Application/ApplicationListing';
+import React, {Component} from 'react';
 
 /**
- * Contains all UI components related to Application, Login and Platform
- */
+ * Review Listing.
+ * */
+class ReviewListing extends Component {
 
-export {Login, BaseLayout, ApplicationListing, NotFound};
+    constructor() {
+        super();
+    }
+
+    render() {
+        return (
+            <div>
+                Reviews List
+            </div>
+        );
+    }
+}
+
+export default ReviewListing;

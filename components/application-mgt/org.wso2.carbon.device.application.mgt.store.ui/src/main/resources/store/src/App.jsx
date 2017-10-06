@@ -17,26 +17,18 @@
  */
 
 import React, {Component} from 'react';
+import AuthHandler from './api/authHandler';
 import createHistory from 'history/createBrowserHistory';
-import {BrowserRouter as Router, Route, Switch} from 'react-router-dom'
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import getMuiTheme from 'material-ui/styles/getMuiTheme';
-import Login from './components/Login';
-import BaseLayout from './components/BaseLayout';
-import NotFound from './components/NotFound';
+import {BrowserRouter as Router, Redirect, Route, Switch} from 'react-router-dom'
+import {
+    ApplicationListing,
+    BaseLayout,
+    Login,
+    NotFound
+} from './components';
+
 
 const history = createHistory({basename: '/store'});
-
-/**
- * User can define the themes in the config.json. The themes will be loaded based on the user preference.
- */
-const theme = require("./config.json").theme;
-//
-let muiTheme = null;
-if (theme.current === "default") {
-    let defaultTheme = require("material-ui/styles/baseThemes/" + theme.default);
-    muiTheme = getMuiTheme(defaultTheme.default);
-}
 
 /**
  * This component defines the layout and the routes for the app.
@@ -46,67 +38,85 @@ if (theme.current === "default") {
  * The Router and Route components.
  *     The Router and Route is used for navigation.
  *     We specify the component which needs to be rendered for an URL.
- *     Ex: When navigate to publisher/overview, the overview component will be rendered inside the main layout.
+ *     Ex: When navigate to store/overview, the overview component will be rendered inside the main layout.
  *
  * HashRouter is used because the other router types need the server to serve those urls. In hashRouter, server does
  * not want to serve the URL.
  * */
 class Base extends Component {
+    constructor() {
+        super();
+        this.state = {
+            user: null
+        }
+    }
+
+    componentWillMount() {
+        let user = AuthHandler.getUser();
+        if (user) {
+            if (!AuthHandler.isTokenExpired()) {
+                this.setState({user: user});
+            } else {
+                this.setState({user: null});
+            }
+        }
+    }
+
     render() {
-        return (
-            <div className="container">
-                <BaseLayout state={this.props.state} updateState={this.props.updateState}>
-                    <Switch>
-                        <Route component={NotFound}/>
-                    </Switch>
-                </BaseLayout>
-            </div>
-        )
+        if (this.state.user !== null) {
+            return (
+                <div>
+                    <BaseLayout user={this.state.user}>
+                        <Switch>
+                            <Redirect exact path={"/"} to={"/assets/apps"}/>
+                            <Route exact path={"/assets/apps"} component={ApplicationListing}/>
+                            <Route exact path={"/assets/reviews"}/>
+                            <Route exact path={"/assets/reviews/:review"}/>
+                            <Route component={NotFound}/>
+                        </Switch>
+                    </BaseLayout>
+                </div>
+            );
+        } else {
+            return (
+                <div>
+                    <BaseLayout>
+                        <Switch>
+                            <Redirect exact path={"/"} to={"/assets/apps"}/>
+                            <Route exact path={"/assets/apps"} component={ApplicationListing}/>
+                            <Route component={NotFound}/>
+                        </Switch>
+                    </BaseLayout>
+                </div>
+            );
+        }
+
     }
 }
 
-Base.propTypes = {
-    updateState: React.PropTypes.func.isRequired
-};
-
 /**
  * This component is referred by the index.js to initiate the application.
- * TODO: Currently the URL shows like https://localhost:9443/publisher/#/publisher/assets/apps/create. this needs to
- * be fixed as https://localhost:9443/publisher/#/assets/apps/create
+ * TODO: Currently the URL shows like https://localhost:9443/store/#/store/assets/apps/create. this needs to
+ * be fixed as https://localhost:9443/store/#/assets/apps/create
  *
  * */
 class Store extends Component {
-
     constructor() {
         super();
-        if (!this.state) {
-            this.state = {};
-            this.state.store = {};
-        }
-        this.updateState = this.updateState.bind(this);
     }
 
     render() {
         return (
             <div className="App">
-                <MuiThemeProvider muiTheme={muiTheme}>
-                    <Router basename="store" history={history}>
-                        <Switch>
-                            <Route path="/login"
-                                   render={routeProps => <Login {...routeProps} updateState={this.updateState} state={this.state}/>}/>
-                            <Route path="/logout"
-                                   render={routeProps => <Base {...routeProps} updateState={this.updateState} state={this.state}/>}/>
-                            <Route
-                                render={routeProps => <Base {...routeProps} updateState={this.updateState} state={this.state}/>}/>
-                        </Switch>
-                    </Router>
-                </MuiThemeProvider>
+                <Router basename="store" history={history}>
+                    <Switch>
+                        <Route path="/login" component={Login}/>
+                        <Route path="/logout" component={Login}/>
+                        <Route component={Base}/>
+                    </Switch>
+                </Router>
             </div>
         );
-    }
-
-    updateState(data) {
-        this.setState(data);
     }
 }
 

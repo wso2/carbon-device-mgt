@@ -21,7 +21,8 @@ import {withRouter} from 'react-router-dom';
 import {Button, Col, Row, Table} from 'reactstrap';
 import Drawer from '../UIComponents/Drawer/Drawer';
 import ApplicationView from './View/ApplicationView';
-import {FormattedMessage} from 'react-intl';
+import Configuration from '../../common/configuration';
+import Constants from '../../common/constants';
 
 /**
  * The App Create Component.
@@ -57,6 +58,46 @@ class ApplicationListing extends Component {
         };
     }
 
+    headers = [
+        {
+            data_id: "image",
+            data_type: "image",
+            sortable: false,
+            label: ""
+        },
+        {
+            data_id: "applicationName",
+            data_type: "string",
+            sortable: true,
+            label: "Application Name",
+            sort: this.sortData
+        },
+        {
+            data_id: "platform",
+            data_type: "image_array",
+            sortable: false,
+            label: "Platform"
+        },
+        {
+            data_id: "category",
+            data_type: "string",
+            sortable: false,
+            label: "Category"
+        },
+        {
+            data_id: "status",
+            data_type: "string",
+            sortable: false,
+            label: "Status"
+        },
+        {
+            data_id: "edit",
+            data_type: "button",
+            sortable: false,
+            label: ""
+        }
+    ];
+
 
     applications = [
         {
@@ -81,7 +122,7 @@ class ApplicationListing extends Component {
             platform: "android",
             category: "Business",
             status: "In Review"
-        },
+        }
     ];
 
     componentWillMount() {
@@ -161,7 +202,7 @@ class ApplicationListing extends Component {
         };
 
         let appListStyle = {
-            marginRight: '500px',
+            marginRight: '500px'
         };
 
         this.setState({drawer: style, appListStyle: appListStyle});
@@ -198,17 +239,7 @@ class ApplicationListing extends Component {
 
     render() {
         return (
-
             <div id="application-list" style={this.state.appListStyle}>
-                <Row>
-                    <Col xs="3 offset-9">
-                        <div className="platform-link-placeholder">
-                            <Button><i className="fw fw-settings"></i>
-                                <FormattedMessage id="Platforms" defaultMessage="Platforms"/>
-                            </Button>
-                        </div>
-                    </Col>
-                </Row>
                 <Row>
                     <Col>
                         <Table striped hover>
@@ -218,12 +249,11 @@ class ApplicationListing extends Component {
                                 {/* TODO: Remove console.log and add sort method. */}
                                 <th onClick={() => {
                                     console.log("sort")
-                                }}>
-                                    <FormattedMessage id="Application.Name" defaultMessage="Application Name"/>
+                                }}>Application Name
                                 </th>
-                                <th><FormattedMessage id="Category" defaultMessage="Category"/></th>
-                                <th><FormattedMessage id="Platform" defaultMessage="Platform"/></th>
-                                <th><FormattedMessage id="Status" defaultMessage="Status"/></th>
+                                <th>Category</th>
+                                <th>Platform</th>
+                                <th>Status</th>
                                 <th></th>
                             </tr>
                             </thead>

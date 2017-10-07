@@ -21,6 +21,7 @@ import React, {Component} from 'react';
 import GeneralInfo from "../GenenralInfo/GeneralInfo";
 import ReleaseManager from '../../Release/ReleaseMgtBase/ReleaseManager';
 import {FormattedMessage} from 'react-intl';
+import ApplicationMgtApi from "../../../../api/applicationMgtApi";
 
 class ApplicationEdit extends Component {
 
@@ -28,12 +29,29 @@ class ApplicationEdit extends Component {
         super();
         this.getTabContent = this.getTabContent.bind(this);
         this.state = {
+            application: {},
             general: "active",
             release: "",
             pkgmgt: "",
             activeTab: 1
         }
     }
+
+    componentWillMount() {
+
+        let appId = window.location.pathname.split("/")[4];
+        let response = ApplicationMgtApi.getApplication(appId);
+
+        response.then(res => {
+            let data = res.data.applications;
+            let application = data.filter(app => {
+                return app.uuid === appId;
+            });
+
+            this.setState({application: application[0]});
+        })
+    }
+
 
     handleTabClick(event) {
         event.stopPropagation();
@@ -61,7 +79,10 @@ class ApplicationEdit extends Component {
     getTabContent(tab) {
         switch (tab) {
             case 1: {
-                return <GeneralInfo/>
+                {
+                    console.log(this.state.application)
+                }
+                return <GeneralInfo application={this.state.application}/>
             }
             case 2: {
                 return <ReleaseManager/>
@@ -78,7 +99,7 @@ class ApplicationEdit extends Component {
 
     render() {
         return (
-            <div id="application-edit-base">
+            <div className="publisher-card">
                 <Row id="application-edit-header">
                     <Col xs="3">
                         <a className="back-to-app" onClick={this.handleOnBackClick.bind(this)}>
@@ -86,7 +107,7 @@ class ApplicationEdit extends Component {
                         </a>
                     </Col>
                     <Col>
-                        <FormattedMessage id="Application.Name" defaultMessage="Application Name"/>
+                        {this.state.application.name}
                     </Col>
                 </Row>
                 <hr/>

@@ -16,6 +16,7 @@
  * under the License.
  */
 import React, {Component} from 'react';
+import {Col, Row} from "reactstrap";
 
 /**
  * Error page.
@@ -28,8 +29,22 @@ class Error extends Component {
 
     render() {
         return (
-            <div>
-                404 not found
+            <div className="error-page">
+                <Row>
+                    <Col>
+                        <div className="error-code">
+                            <p>404</p>
+                        </div>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col>
+                        <div className="error-text">
+                            <p>The page you are looking for doesn't exist or error occurred.</p>
+                            <p>Please click <a href="/publisher">here</a> to go to App publisher home page.</p>
+                        </div>
+                    </Col>
+                </Row>
             </div>
         );
     }

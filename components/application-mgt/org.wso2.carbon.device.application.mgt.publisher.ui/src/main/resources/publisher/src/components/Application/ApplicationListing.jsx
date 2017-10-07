@@ -182,12 +182,11 @@ class ApplicationListing extends Component {
     onRowClick(uuid) {
         let selectedApp = this.getSelectedApplication(uuid);
         let style = {
-            width: '550px',
-            marginLeft: '550px'
+            width: '35%'
         };
 
         let appListStyle = {
-            marginRight: '550px',
+            marginRight: '35%',
         };
 
         this.setState({drawer: style, appListStyle: appListStyle, application: selectedApp[0]});
@@ -217,15 +216,18 @@ class ApplicationListing extends Component {
 
     render() {
         //TODO: Move this to a data table component.
+        console.log(this.state.appListStyle);
         return (
-            <div id="application-list" style={this.state.appListStyle}>
+            <div className="publisher-card application-list" style={this.state.appListStyle}>
                 <Row className="app-list-table-header">
                     {this.headers.map(header => {
                         if (header.data_id === "applicationName") {
                             return (
-                                <Col xs="5">{header.label}</Col>)
+                                <Col xs="4">{header.label}</Col>)
                         } else if (header.data_id === "image") {
                             return (<Col xs="1">{header.label}</Col>)
+                        } else if (header.data_id === "edit") {
+                            return <Col xs="1"></Col>
                         }
                         return (<Col>{header.label}</Col>)
                     })}
@@ -242,13 +244,13 @@ class ApplicationListing extends Component {
                                     src={application.icon}
                                 />
                             </Col>
-                            <Col xs="5" className="data-table-row-cell"><strong>{application.name}</strong></Col>
+                            <Col xs="4" className="data-table-row-cell"><strong>{application.name}</strong></Col>
                             <Col className="data-table-row-cell">{application.platform.name}</Col>
                             <Col className="data-table-row-cell">{application.category.name}</Col>
                             <Col
                                 className="data-table-row-cell">{application.currentLifecycle.lifecycleState.name}
                             </Col>
-                            <Col>
+                            <Col xs="1">
                                 <Button className="custom-flat grey rounded"
                                         onClick={() => this.onAppEditClick(application.uuid)}>
                                     <i className="fw fw-edit"></i>

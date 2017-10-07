@@ -51,7 +51,7 @@ class PlatformListing extends Component {
 
     render() {
         return (
-            <div id="platform-listing">
+            <div className="publisher-card">
                 <Row>
                     <div className="create-platform">
                         <Button className="custom-flat grey" onClick={this.onPlatformCreateClick}>

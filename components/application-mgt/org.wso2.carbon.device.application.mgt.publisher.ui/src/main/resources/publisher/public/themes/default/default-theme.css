@@ -316,10 +316,6 @@ body {
     background-color: #E64A19;
 }
 
-#app-main-content {
-    margin: 0 auto;
-}
-
 #sub-title-container {
     height: 100px;
     padding: 50px 0 20px 0;
@@ -332,10 +328,9 @@ body {
 }
 
 /* Holds the app publisher pages. */
-#application-content {
+.publisher-card {
     height: auto;
     background-color: white;
-    width: 100%;
     box-shadow: 2px 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
     padding: 24px;
 }
@@ -368,7 +363,7 @@ body {
     margin-right: 4px;
 }
 
-#application-list {
+.application-list {
     transition: margin-right .5s;
 }
 
@@ -837,4 +832,24 @@ div.tab button.active {
 
 .data-table-row-cell {
     padding-top: 14px;
+}
+
+.error-code {
+    text-align: center;
+    font-family: Roboto-Medium;
+    font-weight: 800;
+    font-size: 15em;
+    color: #BaBaBa;
+}
+
+.error-code p {
+
+}
+
+.error-text {
+    text-align: center;
+    font-family: Roboto-Regular;
+    font-size: 14px;
+    font-weight: 500;
+    color: #9e9e9e;
 }

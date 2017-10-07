@@ -166,7 +166,6 @@ class Step1 extends Component {
      * Set text field values to state.
      * */
     onTextFieldChange(event) {
-        console.log(event.target.value);
         let field = event.target.name;
         switch (field) {
             case "appName": {

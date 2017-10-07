@@ -37,8 +37,6 @@ class Step extends Component {
         let stepIndexContent = index === passed || index < passed ? <i className="fw fw-check"></i> : index;
 
         return (
-
-
             <div className="step">
                 <div className="step-content">
                     <div className={indexClassNames}>

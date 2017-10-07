@@ -20,7 +20,7 @@ import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import AuthHandler from "../../../../api/authHandler";
 import PlatformMgtApi from "../../../../api/platformMgtApi";
-import {Button, FormFeedback, FormGroup, Input, Label, ModalFooter} from 'reactstrap';
+import {Button, FormFeedback, FormGroup, Input, Label, ModalBody, ModalFooter} from 'reactstrap';
 import {FormattedMessage} from 'react-intl';
 import * as validator from '../../../../common/validator';
 
@@ -145,33 +145,36 @@ class Step2 extends Component {
     render() {
         return (
             <div>
-
-                <FormGroup>
-                    <Label for="store">Store Type</Label>
-                    <Input type="select" name="store" className="input-custom" onChange={this.onChangeStore.bind(this)}>
-                        <option>Enterprise</option>
-                        <option>Public</option>
-                    </Input>
-                </FormGroup>
-                <FormGroup>
-                    <Label for="store"><FormattedMessage id='Platform' defaultMessage='Platform'/></Label>
-                    <Input
-                        required
-                        type="select"
-                        name="store"
-                        onChange={this.onChangePlatform.bind(this)}
-                    >
-                        <option id="app-visibility-default" disabled selected>Select the Application Platform</option>
-                        {this.state.platforms.length > 0 ? this.state.platforms.map(platform => {
-                            return (
-                                <option value={platform.identifier} key={platform.identifier}>
-                                    {platform.name}
-                                </option>
-                            )
-                        }) : <option><FormattedMessage id='No.Platform' defaultMessage='No Platforms'/></option>}
-                    </Input>
-                    <FormFeedback id="form-error">{this.state.errors.platform}</FormFeedback>
-                </FormGroup>
+                <ModalBody id="modal-body-content">
+                    <FormGroup>
+                        <Label for="store">Store Type</Label>
+                        <Input type="select" name="store" className="input-custom"
+                               onChange={this.onChangeStore.bind(this)}>
+                            <option>Enterprise</option>
+                            <option>Public</option>
+                        </Input>
+                    </FormGroup>
+                    <FormGroup>
+                        <Label for="store"><FormattedMessage id='Platform' defaultMessage='Platform'/></Label>
+                        <Input
+                            required
+                            type="select"
+                            name="store"
+                            onChange={this.onChangePlatform.bind(this)}
+                        >
+                            <option id="app-visibility-default" disabled selected>Select the Application Platform
+                            </option>
+                            {this.state.platforms.length > 0 ? this.state.platforms.map(platform => {
+                                return (
+                                    <option value={platform.identifier} key={platform.identifier}>
+                                        {platform.name}
+                                    </option>
+                                )
+                            }) : <option><FormattedMessage id='No.Platform' defaultMessage='No Platforms'/></option>}
+                        </Input>
+                        <FormFeedback id="form-error">{this.state.errors.platform}</FormFeedback>
+                    </FormGroup>
+                </ModalBody>
                 <ModalFooter>
                     <Button className="custom-flat primary-flat" onClick={this.onBackClick}>
                         <FormattedMessage id="Back" defaultMessage="Back"/>

@@ -20,7 +20,7 @@ import PropTypes from 'prop-types';
 import Dropzone from 'react-dropzone';
 import React, {Component} from 'react';
 import * as validator from '../../../../common/validator';
-import {Button, FormFeedback, FormGroup, Label, ModalFooter} from 'reactstrap';
+import {Button, FormFeedback, FormGroup, Label, ModalBody, ModalFooter} from 'reactstrap';
 import AppImage from "../../../UIComponents/AppImage/AppImage";
 import {FormattedMessage} from 'react-intl';
 
@@ -138,92 +138,94 @@ class Step3 extends Component {
     render() {
         return (
             <div className="createStep2Content">
-                <div>
-                    <FormGroup>
-                        <Label for="app-screenshots">
-                            <FormattedMessage id='Screenshots' defaultMessage='Screenshots'/>*
-                        </Label>
-                        <span className="image-sub-title"> (600 X 800 32 bit PNG)</span>
-                        <div id="screenshot-container">
-                            {this.state.screenshots.map((tile) => (
-                                <div id="app-image-screenshot">
-                                    <AppImage image={tile[0].preview}/>
-                                </div>
-                            ))}
-                            {this.state.screenshots.length < 3 ?
-                                <Dropzone
-                                    className="application-create-screenshot-dropzone"
-                                    accept="image/jpeg, image/png"
-                                    onDrop={(screenshots, rejected) => {
-                                        let tmpScreenshots = this.state.screenshots;
-                                        tmpScreenshots.push(screenshots);
-                                        this.setState({
-                                            screenshots: tmpScreenshots
-                                        });
-                                    }}
-                                >
-                                    <i className="fw fw-add"></i>
-                                </Dropzone> : <div/>}
-                        </div>
-                        <FormFeedback id="form-error">{this.state.errors.screenshots}</FormFeedback>
-                    </FormGroup>
-                </div>
-                <div style={{display: 'flex'}}>
-                    <div style={{float: 'left', marginRight: '15px'}}>
+                <ModalBody id="modal-body-content">
+                    <div>
                         <FormGroup>
-                            <Label for="app-icon">
+                            <Label for="app-screenshots">
                                 <FormattedMessage id='Screenshots' defaultMessage='Screenshots'/>*
                             </Label>
-                            <span className="image-sub-title"> (512 X 512 32 bit PNG)</span>
-                            <div id="app-icon-container">
-                                {this.state.icon.map((tile) => (
-                                    <div id="app-image-icon">
-                                        <AppImage image={tile.preview}/>
+                            <span className="image-sub-title"> (600 X 800 32 bit PNG)</span>
+                            <div id="screenshot-container">
+                                {this.state.screenshots.map((tile) => (
+                                    <div id="app-image-screenshot">
+                                        <AppImage image={tile[0].preview}/>
                                     </div>
                                 ))}
-
-                                {this.state.icon.length === 0 ?
+                                {this.state.screenshots.length < 3 ?
                                     <Dropzone
-                                        className="application-create-icon-dropzone"
+                                        className="application-create-screenshot-dropzone"
                                         accept="image/jpeg, image/png"
-                                        onDrop={(icon, rejected) => {
-                                            this.setState({icon, rejected});
+                                        onDrop={(screenshots, rejected) => {
+                                            let tmpScreenshots = this.state.screenshots;
+                                            tmpScreenshots.push(screenshots);
+                                            this.setState({
+                                                screenshots: tmpScreenshots
+                                            });
                                         }}
                                     >
                                         <i className="fw fw-add"></i>
                                     </Dropzone> : <div/>}
                             </div>
-                            <FormFeedback id="form-error">{this.state.errors.icon}</FormFeedback>
+                            <FormFeedback id="form-error">{this.state.errors.screenshots}</FormFeedback>
                         </FormGroup>
                     </div>
-                    <div style={{marginLeft: '15px'}}>
-                        <FormGroup>
-                            <Label for="app-banner">
-                                <FormattedMessage id='Icon' defaultMessage='Icon'/>*
-                            </Label>
-                            <span className="image-sub-title"> (1000 X 400 32 bit PNG)</span>
-                            <div id="app-banner-container">
-                                {this.state.banner.map((tile) => (
-                                    <div id="app-image-banner">
-                                        <AppImage image={tile.preview}/>
-                                    </div>
-                                ))}
-                                {this.state.banner.length === 0 ?
-                                    <Dropzone
-                                        className="application-create-banner-dropzone"
-                                        accept="image/jpeg, image/png"
-                                        onDrop={(banner, rejected) => {
-                                            this.setState({banner, rejected});
-                                        }}
-                                    >
-                                        <i className="fw fw-add"></i>
-                                    </Dropzone> : <div/>
-                                }
-                            </div>
-                            <FormFeedback id="form-error">{this.state.errors.banner}</FormFeedback>
-                        </FormGroup>
+                    <div style={{display: 'flex'}}>
+                        <div style={{float: 'left', marginRight: '15px'}}>
+                            <FormGroup>
+                                <Label for="app-icon">
+                                    <FormattedMessage id='Screenshots' defaultMessage='Screenshots'/>*
+                                </Label>
+                                <span className="image-sub-title"> (512 X 512 32 bit PNG)</span>
+                                <div id="app-icon-container">
+                                    {this.state.icon.map((tile) => (
+                                        <div id="app-image-icon">
+                                            <AppImage image={tile.preview}/>
+                                        </div>
+                                    ))}
+
+                                    {this.state.icon.length === 0 ?
+                                        <Dropzone
+                                            className="application-create-icon-dropzone"
+                                            accept="image/jpeg, image/png"
+                                            onDrop={(icon, rejected) => {
+                                                this.setState({icon, rejected});
+                                            }}
+                                        >
+                                            <i className="fw fw-add"></i>
+                                        </Dropzone> : <div/>}
+                                </div>
+                                <FormFeedback id="form-error">{this.state.errors.icon}</FormFeedback>
+                            </FormGroup>
+                        </div>
+                        <div style={{marginLeft: '15px'}}>
+                            <FormGroup>
+                                <Label for="app-banner">
+                                    <FormattedMessage id='Icon' defaultMessage='Icon'/>*
+                                </Label>
+                                <span className="image-sub-title"> (1000 X 400 32 bit PNG)</span>
+                                <div id="app-banner-container">
+                                    {this.state.banner.map((tile) => (
+                                        <div id="app-image-banner">
+                                            <AppImage image={tile.preview}/>
+                                        </div>
+                                    ))}
+                                    {this.state.banner.length === 0 ?
+                                        <Dropzone
+                                            className="application-create-banner-dropzone"
+                                            accept="image/jpeg, image/png"
+                                            onDrop={(banner, rejected) => {
+                                                this.setState({banner, rejected});
+                                            }}
+                                        >
+                                            <i className="fw fw-add"></i>
+                                        </Dropzone> : <div/>
+                                    }
+                                </div>
+                                <FormFeedback id="form-error">{this.state.errors.banner}</FormFeedback>
+                            </FormGroup>
+                        </div>
                     </div>
-                </div>
+                </ModalBody>
                 <ModalFooter>
                     <Button className="custom-flat primary-flat" onClick={this.onBackClick}>
                         <FormattedMessage id="Back" defaultMessage="Back"/>

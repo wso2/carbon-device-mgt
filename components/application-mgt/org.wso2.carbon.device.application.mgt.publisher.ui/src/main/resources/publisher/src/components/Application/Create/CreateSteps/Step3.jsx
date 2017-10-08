@@ -226,16 +226,20 @@ class Step3 extends Component {
                         </div>
                     </div>
                 </ModalBody>
-                <ModalFooter>
-                    <Button className="custom-flat primary-flat" onClick={this.onBackClick}>
-                        <FormattedMessage id="Back" defaultMessage="Back"/>
-                    </Button>
-                    <Button className="custom-flat danger-flat" onClick={this.onCancelClick}>
-                        <FormattedMessage id="Cancel" defaultMessage="Cancel"/>
-                    </Button>
-                    <Button className="custom-raised primary" onClick={this.setStepData}>
-                        <FormattedMessage id="Continue" defaultMessage="Continue"/>
-                    </Button>
+                <ModalFooter className="custom-footer row">
+                    <div className="footer-back-btn col">
+                        <Button className="custom-flat primary-flat" onClick={this.onBackClick}>
+                            <FormattedMessage id="Back" defaultMessage="Back"/>
+                        </Button>
+                    </div>
+                    <div className="footer-main-btn col">
+                        <Button className="custom-flat danger-flat" onClick={this.onCancelClick}>
+                            <FormattedMessage id="Cancel" defaultMessage="Cancel"/>
+                        </Button>
+                        <Button className="custom-flat primary-flat" onClick={this.setStepData}>
+                            <FormattedMessage id="Continue" defaultMessage="Continue"/>
+                        </Button>
+                    </div>
                 </ModalFooter>
             </div>
         );

@@ -19,7 +19,7 @@
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {FormattedMessage} from 'react-intl';
-import {Button, Form, FormFeedback, FormGroup, Input, Label, ModalFooter, ModalBody} from 'reactstrap';
+import {Button, Form, FormFeedback, FormGroup, Input, Label, ModalBody, ModalFooter} from 'reactstrap';
 import * as validator from '../../../../common/validator';
 import Chip from "../../../UIComponents/Chip/Chip";
 
@@ -342,13 +342,15 @@ class Step1 extends Component {
                         <FormFeedback id="form-error">{this.state.errors.tags}</FormFeedback>
                     </FormGroup>
                 </ModalBody>
-                <ModalFooter>
-                    <Button className="custom-flat danger-flat" onClick={this.onCancelClick}>
-                        <FormattedMessage id="Cancel" defaultMessage="Cancel"/>
-                    </Button>
-                    <Button className="custom-raised primary" onClick={this.setStepData}>
-                        <FormattedMessage id="Continue" defaultMessage="Continue"/>
-                    </Button>
+                <ModalFooter className="custom-footer row">
+                    <div className="footer-main-btn col">
+                        <Button className="custom-flat danger-flat" onClick={this.onCancelClick}>
+                            <FormattedMessage id="Cancel" defaultMessage="Cancel"/>
+                        </Button>
+                        <Button className="custom-flat primary-flat" onClick={this.setStepData}>
+                            <FormattedMessage id="Continue" defaultMessage="Continue"/>
+                        </Button>
+                    </div>
                 </ModalFooter>
             </div>
         );

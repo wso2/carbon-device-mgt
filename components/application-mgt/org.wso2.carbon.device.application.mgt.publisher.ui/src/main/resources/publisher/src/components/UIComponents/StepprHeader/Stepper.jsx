@@ -26,7 +26,7 @@ class Stepper extends Component {
     render() {
         const {stepContent, activeStep, previousStep} = this.props;
         return (
-            <div className="stepper-header">
+            <div className="stepper-header row">
                 {stepContent.map(content => {
                     return (
                         <Step

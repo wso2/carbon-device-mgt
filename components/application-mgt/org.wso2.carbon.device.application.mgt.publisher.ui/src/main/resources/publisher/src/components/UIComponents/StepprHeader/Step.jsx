@@ -37,7 +37,7 @@ class Step extends Component {
         let stepIndexContent = index === passed || index < passed ? <i className="fw fw-check"></i> : index;
 
         return (
-            <div className="step">
+            <div className="step col-3">
                 <div className="step-content">
                     <div className={indexClassNames}>
                             <span>
@@ -46,14 +46,14 @@ class Step extends Component {
                     </div>
                     <div className={indexTextClassNames}>
                         <div>
-                            {text} {!finalStep? <i className="stepper-next-arrow fw fw-right-arrow"></i> : <i/>}
+                            {text}
                         </div>
                         {optional ?
                             <div className="stepper-optional-text">
                                 (<FormattedMessage id="Optional" defaultMessage="Optional"/>)
-                            </div>: <div/>}
+                            </div> : <div/>}
                     </div>
-
+                    {!finalStep ? <i className="stepper-next-arrow fw fw-right-arrow"></i> : <i/>}
                 </div>
             </div>
         )

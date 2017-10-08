@@ -470,12 +470,22 @@ body {
     overflow-y: auto;
 }
 
+.custom-footer {
+    justify-content: inherit !important;
+    margin: 0 !important;
+}
+
+.footer-main-btn {
+    display: flex;
+    justify-content: flex-end;
+}
+
 #img-btn-screenshot {
     margin: 0 5px 0 5px;
 }
 
 #app-create-modal {
-    max-width: 700px;
+    max-width: 850px;
     border-radius: 0% !important;
 }
 
@@ -512,7 +522,7 @@ body {
     float: left;
 }
 
-#app-release-switch-switch {
+#app-release-switch {
     position: absolute;
     right: 10px;
 }

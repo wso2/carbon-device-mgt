@@ -57,4 +57,22 @@ export default class Helper {
         return tmpTags;
     }
 
+    static buildPlatform(general, config, properties) {
+        let platform = Object.assign({}, general, config, properties);
+
+        let icon = platform.icon[0];
+        delete platform.icon;
+
+        platform.tags = Helper.stringifyTags(platform.tags);
+
+        console.log(platform, icon);
+
+        let tempData = {
+            "platform": platform,
+            "icon": icon
+        };
+
+        return tempData;
+    }
+
 }

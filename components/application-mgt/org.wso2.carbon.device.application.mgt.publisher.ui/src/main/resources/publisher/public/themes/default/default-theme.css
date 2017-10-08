@@ -121,6 +121,7 @@
 body {
     width: 100%;
     font-family: "Roboto-Regular" !important;
+    font-size: 14px !important;
     background-color: #e8e8e8 !important;
 }
 
@@ -822,7 +823,29 @@ div.tab button.active {
     -webkit-box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.16), 0 0 0 1px rgba(0, 0, 0, 0.08) !important;
 }
 
-.platform-content:hover {
+.platform-property-container {
+    padding-top: 20px;
+    font-family: Roboto-Regular;
+    font-size: 14px;
+}
+
+.platform-property-row {
+    align-items: center;
+}
+
+.circle-btn-clear {
+    background-color: white !important;
+    color: rgba(0, 0, 0, 0.50) !important;
+}
+
+.circle-btn-clear:hover {
+    background-color: white !important;
+    color: rgba(0, 0, 0, 0.38) !important;
+}
+
+.circle-btn-clear:focus {
+    background-color: white !important;
+    color: rgba(0, 0, 0, 0.60) !important;
 }
 
 .data-table-row-cell {
@@ -847,6 +870,20 @@ div.tab button.active {
     font-size: 14px;
     font-weight: 500;
     color: #9e9e9e;
+}
+
+.circle-btn-add {
+    background-color: #bababa !important;
+    border-radius: 50% !important;
+    height: 30px !important;
+    width: 30px;
+    text-align: -webkit-center;
+    font-size: 18px;
+    padding: 6px !important;
+}
+
+.circle-btn-add:hover {
+    background-color: #828282 !important;
 }
 
 /**

@@ -28,9 +28,9 @@ import Helper from './helpers/appMgtApiHelpers';
 export default class PlatformMgtApi{
     /**
      * Create a new Platform
-     * @param general: The platform data object.
-     * @param config: The platform data object.
-     * @param prop: The platform data object.
+     * @param general: Platform general information.
+     * @param config: Platform configurations.
+     * @param prop: Platform properties.
      * */
     static createPlatform(general, config, prop) {
         const headers = AuthHandler.createAuthenticationHeaders("multipart/form-data");
@@ -39,8 +39,6 @@ export default class PlatformMgtApi{
         let platformData = new FormData();
         platformData.append("platform", platform.platform);
         platformData.append("icon", platform.icon);
-
-        console.log(platformData);
 
         return Axios.post(Constants.platformManagerEndpoints.CREATE_PLATFORM, platformData, {headers: headers});
     }

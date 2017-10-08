@@ -57,6 +57,14 @@ export default class Helper {
         return tmpTags;
     }
 
+    /**
+     * Generates Platform data object.
+     * @param general: Platform general information.
+     * @param config: Platform configurations.
+     * @param properties: Platform properties.
+     *
+     * @return {{platform: *, icon}} data object and the icon image.
+     * */
     static buildPlatform(general, config, properties) {
         let platform = Object.assign({}, general, config, properties);
 
@@ -64,8 +72,6 @@ export default class Helper {
         delete platform.icon;
 
         platform.tags = Helper.stringifyTags(platform.tags);
-
-        console.log(platform, icon);
 
         let tempData = {
             "platform": platform,

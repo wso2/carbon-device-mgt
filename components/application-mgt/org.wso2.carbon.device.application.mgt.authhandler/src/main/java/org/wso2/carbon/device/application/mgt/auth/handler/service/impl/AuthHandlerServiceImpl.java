@@ -25,6 +25,8 @@ import feign.jackson.JacksonEncoder;
 import feign.jaxrs.JAXRSContract;
 import org.json.JSONObject;
 import org.wso2.carbon.device.application.mgt.auth.handler.service.AuthHandlerService;
+import org.wso2.carbon.device.application.mgt.auth.handler.service.InitializationException;
+import org.wso2.carbon.device.application.mgt.auth.handler.service.InvalidParameterException;
 import org.wso2.carbon.device.application.mgt.auth.handler.util.Constants;
 import org.wso2.carbon.device.application.mgt.auth.handler.util.dto.AccessTokenInfo;
 import org.wso2.carbon.device.application.mgt.auth.handler.util.dto.ApiApplicationKey;
@@ -33,14 +35,13 @@ import org.wso2.carbon.device.application.mgt.auth.handler.util.dto.ApiRegistrat
 import org.wso2.carbon.device.application.mgt.auth.handler.util.dto.TokenIssuerService;
 import org.wso2.carbon.device.application.mgt.auth.handler.util.dto.TokenRevokeService;
 
-import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
@@ -50,6 +51,9 @@ import java.security.NoSuchAlgorithmException;
 
 @Path("/auth")
 public class AuthHandlerServiceImpl implements AuthHandlerService {
+
+    private String tokenEndpoint;
+    private String apiApplicationEndpoint;
 
     private TrustManager[] trustAllCerts = new TrustManager[]{
             new X509TrustManager() {
@@ -67,27 +71,23 @@ public class AuthHandlerServiceImpl implements AuthHandlerService {
             }
     };
 
-    private Client disableHostnameVerification = new Client.Default(getTrustedSSLSocketFactory(), new HostnameVerifier() {
-        @Override
-        public boolean verify(String s, SSLSession sslSession) {
-            return true;
-        }
-    });
+    private Client disableHostnameVerification = new Client.Default(getTrustedSSLSocketFactory(),
+            (s, sslSession) -> true);
 
     @POST
-    @Path("/login")
+    @Path("/{appName}/login")
     @Produces(MediaType.APPLICATION_JSON)
     @Override
-    public Response login(@QueryParam("userName") String userName, @QueryParam("password") String password) {
-
+    public Response login(@PathParam("appName") String appName, @QueryParam("userName") String userName,
+                          @QueryParam("password") String password) {
         try {
             ApiApplicationRegistrationService apiApplicationRegistrationService = Feign.builder()
                     .client(disableHostnameVerification)
                     .requestInterceptor(new BasicAuthRequestInterceptor(userName, password))
                     .contract(new JAXRSContract()).encoder(new JacksonEncoder()).decoder(new JacksonDecoder())
-                    .target(ApiApplicationRegistrationService.class, Constants.API_APPLICATION_ENDPOINT);
+                    .target(ApiApplicationRegistrationService.class, this.getAPIApplicationEndpoint());
             ApiRegistrationProfile apiRegistrationProfile = new ApiRegistrationProfile();
-            apiRegistrationProfile.setApplicationName(Constants.APPLICATION_NAME);
+            apiRegistrationProfile.setApplicationName(getApplicationName(appName));
             apiRegistrationProfile.setIsAllowedToAllDomains(false);
             apiRegistrationProfile.setIsMappingAnExistingOAuthApp(false);
             apiRegistrationProfile.setTags(Constants.TAGS);
@@ -98,7 +98,7 @@ public class AuthHandlerServiceImpl implements AuthHandlerService {
                     .requestInterceptor(new BasicAuthRequestInterceptor(apiApplicationKey.getConsumerKey(),
                             apiApplicationKey.getConsumerSecret()))
                     .contract(new JAXRSContract()).encoder(new JacksonEncoder()).decoder(new JacksonDecoder())
-                    .target(TokenIssuerService.class, Constants.TOKEN_ENDPOINT);
+                    .target(TokenIssuerService.class, this.getTokenEndpoint());
             AccessTokenInfo accessTokenInfo = tokenIssuerService.getToken(Constants.PASSWORD_GRANT_TYPE,
                     userName, password, Constants.SCOPES);
             JSONObject loginInfo = new JSONObject(accessTokenInfo);
@@ -114,14 +114,16 @@ public class AuthHandlerServiceImpl implements AuthHandlerService {
     @Path("/refresh")
     @Produces(MediaType.APPLICATION_JSON)
     @Override
-    public Response refresh(@QueryParam("refresh_token") String refresh_token, @QueryParam("clientId") String clientId,
+    public Response refresh(@QueryParam("refresh_token") String refreshToken,
+                            @QueryParam("clientId") String clientId,
                             @QueryParam("clientSecret") String clientSecret) {
         try {
             TokenIssuerService tokenIssuerService = Feign.builder().client(disableHostnameVerification)
                     .requestInterceptor(new BasicAuthRequestInterceptor(clientId, clientSecret))
                     .contract(new JAXRSContract()).encoder(new JacksonEncoder()).decoder(new JacksonDecoder())
-                    .target(TokenIssuerService.class, Constants.TOKEN_ENDPOINT);
-            AccessTokenInfo accessTokenInfo = tokenIssuerService.getRefreshToken(Constants.REFRESH_GRANT_TYPE, refresh_token);
+                    .target(TokenIssuerService.class, this.getTokenEndpoint());
+            AccessTokenInfo accessTokenInfo = tokenIssuerService.
+                    getRefreshToken(Constants.REFRESH_GRANT_TYPE, refreshToken);
             return Response.status(200).entity(new JSONObject(accessTokenInfo)).build();
         } catch (Exception e) {
             return Response.status(500).build();
@@ -137,9 +139,8 @@ public class AuthHandlerServiceImpl implements AuthHandlerService {
             TokenRevokeService tokenRevokeService = Feign.builder().client(disableHostnameVerification)
                     .requestInterceptor(new BasicAuthRequestInterceptor(clientId, clientSecret))
                     .contract(new JAXRSContract()).encoder(new JacksonEncoder()).decoder(new JacksonDecoder())
-                    .target(TokenRevokeService.class, Constants.TOKEN_ENDPOINT);
+                    .target(TokenRevokeService.class, this.getTokenEndpoint());
             tokenRevokeService.revoke(token);
-
             return Response.status(200).build();
         } catch (Exception e) {
             return Response.status(500).build();
@@ -155,4 +156,48 @@ public class AuthHandlerServiceImpl implements AuthHandlerService {
             return null;
         }
     }
+
+    private String getTokenEndpoint() throws InitializationException {
+        if (this.tokenEndpoint == null) {
+            synchronized (this) {
+                String hostName = this.getProperty("iot.gateway.host");
+                String port = this.getProperty("iot.gateway.https.port");
+                this.tokenEndpoint = "https://" + hostName + ":" + port;
+            }
+        }
+        return this.tokenEndpoint;
+    }
+
+    private String getAPIApplicationEndpoint() throws InitializationException {
+        if (this.apiApplicationEndpoint == null) {
+            synchronized (this) {
+                String hostName = this.getProperty("iot.core.host");
+                String port = this.getProperty("iot.core.https.port");
+                this.apiApplicationEndpoint = "https://" + hostName + ":" + port + "/api-application-registration";
+            }
+        }
+        return this.apiApplicationEndpoint;
+    }
+
+    private String getProperty(String propertyName) throws InitializationException {
+        String property = System.getProperty(propertyName);
+        if (property == null) {
+            throw new InitializationException("No system property defined in the name - " + propertyName);
+        }
+        return property;
+    }
+
+    private String getApplicationName(String apiAppName) throws InvalidParameterException {
+        if (apiAppName != null) {
+            if (apiAppName.equalsIgnoreCase("store")) {
+                return Constants.STORE_APPLICATION_NAME;
+            } else if (apiAppName.equalsIgnoreCase("publisher")) {
+                return Constants.PUBLISHER_APPLICATION_NAME;
+            } else {
+                throw new InvalidParameterException("Invalid app name -" + apiAppName + " is passed!");
+            }
+        }
+        return Constants.PUBLISHER_APPLICATION_NAME;
+    }
+
 }

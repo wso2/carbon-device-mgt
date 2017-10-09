@@ -20,10 +20,12 @@ package org.wso2.carbon.device.application.mgt.auth.handler.service;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
 
 @Path("/auth")
 @Produces(MediaType.APPLICATION_JSON)
@@ -31,20 +33,21 @@ import javax.ws.rs.core.Response;
 public interface AuthHandlerService {
 
     @POST
-    @Path("/login")
+    @Path("/{appName}/login/")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    Response login(@QueryParam("userName") String userName, @QueryParam("password") String password);
+    Response login(@PathParam("appName") String appName, @QueryParam("userName") String userName,
+                   @QueryParam("password") String password);
 
     @POST
-    @Path("/refresh")
+    @Path("/refresh/")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     Response refresh(@QueryParam("refreshToken") String refreshToken, @QueryParam("clientId") String clientId,
                      @QueryParam("clientSecret") String clientSecret);
 
     @POST
-    @Path("/logout")
+    @Path("/logout/")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     Response logout(@QueryParam("token") String token, @QueryParam("clientId") String clientId,

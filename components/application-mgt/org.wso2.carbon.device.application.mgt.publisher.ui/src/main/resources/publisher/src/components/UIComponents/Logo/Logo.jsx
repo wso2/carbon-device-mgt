@@ -20,7 +20,7 @@ import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import Axios from 'axios';
 
-const imageLocation = "/images/";
+const imageLocation = "/publisher/images/";
 
 class Logo extends Component {
 

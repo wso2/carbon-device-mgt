@@ -24,11 +24,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 /**
  * This holds api application consumer key and secret.
  */
-@XmlRootElement
+
 public class ApiApplicationKey {
-    @XmlElement
     private String client_id;
-    @XmlElement
     private String client_secret;
 
     public String getConsumerKey() {

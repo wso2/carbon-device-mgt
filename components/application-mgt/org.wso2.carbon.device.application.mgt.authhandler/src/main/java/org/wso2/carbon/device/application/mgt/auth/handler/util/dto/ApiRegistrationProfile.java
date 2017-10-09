@@ -24,13 +24,12 @@ package org.wso2.carbon.device.application.mgt.auth.handler.util.dto;
  * the oauth application.
  */
 public class ApiRegistrationProfile {
-
-    public String applicationName;
-    public String tags[];
-    public boolean isAllowedToAllDomains;
-    public String consumerKey;
-    public String consumerSecret;
-    public boolean isMappingAnExistingOAuthApp;
+    private String applicationName;
+    private String tags[];
+    private boolean isAllowedToAllDomains;
+    private String consumerKey;
+    private String consumerSecret;
+    private boolean isMappingAnExistingOAuthApp;
 
     public String getApplicationName() {
         return applicationName;

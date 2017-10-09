@@ -209,15 +209,11 @@ class ApplicationListing extends Component {
     }
 
     handleButtonClick() {
-        console.log("Application Listing");
         this.props.history.push("apps/edit/fdsfdsf343");
     }
 
     remove(imageId) {
         let tmp = this.state.image;
-
-        console.log(imageId);
-
         let rem = tmp.filter((image) => {
             return image.id !== imageId
 
@@ -238,7 +234,6 @@ class ApplicationListing extends Component {
     }
 
     render() {
-        console.log('render app listing');
         return (
             <div id="application-list" style={this.state.appListStyle}>
                 <Row>

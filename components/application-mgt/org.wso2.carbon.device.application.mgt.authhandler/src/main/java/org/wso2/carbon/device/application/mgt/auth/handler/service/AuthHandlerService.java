@@ -33,21 +33,21 @@ import javax.ws.rs.core.Response;
 public interface AuthHandlerService {
 
     @POST
-    @Path("/{appName}/login/")
+    @Path("/{appName}/login")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     Response login(@PathParam("appName") String appName, @QueryParam("userName") String userName,
                    @QueryParam("password") String password);
 
     @POST
-    @Path("/refresh/")
+    @Path("/refresh")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     Response refresh(@QueryParam("refreshToken") String refreshToken, @QueryParam("clientId") String clientId,
                      @QueryParam("clientSecret") String clientSecret);
 
     @POST
-    @Path("/logout/")
+    @Path("/logout")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     Response logout(@QueryParam("token") String token, @QueryParam("clientId") String clientId,

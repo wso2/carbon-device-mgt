@@ -21,7 +21,12 @@ package org.wso2.carbon.device.application.mgt.core.dao.impl.application;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONException;
-import org.wso2.carbon.device.application.mgt.common.*;
+import org.wso2.carbon.device.application.mgt.common.Application;
+import org.wso2.carbon.device.application.mgt.common.ApplicationList;
+import org.wso2.carbon.device.application.mgt.common.Category;
+import org.wso2.carbon.device.application.mgt.common.Filter;
+import org.wso2.carbon.device.application.mgt.common.LifecycleStateTransition;
+import org.wso2.carbon.device.application.mgt.common.Pagination;
 import org.wso2.carbon.device.application.mgt.common.exception.DBConnectionException;
 import org.wso2.carbon.device.application.mgt.core.dao.ApplicationDAO;
 import org.wso2.carbon.device.application.mgt.core.dao.common.Util;
@@ -461,7 +466,7 @@ public class GenericApplicationDAOImpl extends AbstractDAOImpl implements Applic
             return category;
         } catch (DBConnectionException e) {
             throw new ApplicationManagementDAOException(
-                    "Database connection while trying to update the categroy " + category.getName());
+                    "Database connection while trying to update the categroy " + category.getName(), e);
         } catch (SQLException e) {
             throw new ApplicationManagementDAOException("SQL exception while executing the query '" + sql + "' .", e);
         } finally {

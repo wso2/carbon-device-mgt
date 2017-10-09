@@ -18,11 +18,14 @@
  */
 package org.wso2.carbon.device.application.mgt.core.dao;
 
-import org.wso2.carbon.device.application.mgt.common.*;
+import org.wso2.carbon.device.application.mgt.common.Application;
+import org.wso2.carbon.device.application.mgt.common.ApplicationList;
+import org.wso2.carbon.device.application.mgt.common.Category;
+import org.wso2.carbon.device.application.mgt.common.Filter;
+import org.wso2.carbon.device.application.mgt.common.LifecycleStateTransition;
 import org.wso2.carbon.device.application.mgt.core.exception.ApplicationManagementDAOException;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * ApplicationDAO is responsible for handling all the Database related operations related with Application Management.

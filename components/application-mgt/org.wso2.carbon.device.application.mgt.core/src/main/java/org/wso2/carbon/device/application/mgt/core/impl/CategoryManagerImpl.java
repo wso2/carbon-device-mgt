@@ -14,10 +14,11 @@
 * specific language governing permissions and limitations
 * under the License.
 *
-s*/
+*/
 package org.wso2.carbon.device.application.mgt.core.impl;
 
 import org.wso2.carbon.device.application.mgt.common.Category;
+import org.wso2.carbon.device.application.mgt.common.exception.ApplicationCategoryManagementException;
 import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
 import org.wso2.carbon.device.application.mgt.common.services.CategoryManager;
 import org.wso2.carbon.device.application.mgt.core.dao.common.DAOFactory;
@@ -36,14 +37,14 @@ public class CategoryManagerImpl implements CategoryManager {
     @Override
     public Category createCategory(Category category) throws ApplicationManagementException {
         if (category == null) {
-            throw new ApplicationManagementException("Category is null. Cannot create a category.");
+            throw new ApplicationCategoryManagementException("Category is null. Cannot create a category.");
         }
         if (category.getName() == null) {
-            throw new ApplicationManagementException(
+            throw new ApplicationCategoryManagementException(
                     "Application category name cannot be null. Application category creation failed.");
         }
         if (getCategory(category.getName()) != null) {
-            throw new ApplicationManagementException("Application category wth the name " + category.getName() + " "
+            throw new ApplicationCategoryManagementException("Application category wth the name " + category.getName() + " "
                     + "exists already. Please select a different name");
         }
         try {
@@ -72,7 +73,7 @@ public class CategoryManagerImpl implements CategoryManager {
     @Override
     public Category getCategory(String name) throws ApplicationManagementException {
         if (name == null || name.isEmpty()) {
-            throw new ApplicationManagementException("Name cannot be empty or null. Cannot get category");
+            throw new ApplicationCategoryManagementException("Name cannot be empty or null. Cannot get category");
         }
         try {
             ConnectionManagerUtil.openDBConnection();
@@ -95,7 +96,7 @@ public class CategoryManagerImpl implements CategoryManager {
 
             if (isApplicationExistForCategory) {
                 ConnectionManagerUtil.rollbackDBTransaction();
-                throw new ApplicationManagementException(
+                throw new ApplicationCategoryManagementException(
                         "Cannot delete the the category " + name + ". Applications " + "exists for this category");
             }
 

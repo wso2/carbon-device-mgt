@@ -32,8 +32,23 @@ import java.util.List;
  */
 public interface ApplicationDAO {
 
+    /**
+     * To create an application.
+     *
+     * @param application Application that need to be created.
+     * @return Created Application.
+     * @throws ApplicationManagementDAOException Application Management DAO Exception.
+     */
     Application createApplication(Application application) throws ApplicationManagementDAOException;
 
+    /**
+     * To get the applications that satisfy the given criteria.
+     *
+     * @param filter   Filter criteria.
+     * @param tenantId Id of the tenant.
+     * @return Application list
+     * @throws ApplicationManagementDAOException Application Management DAO Exception.
+     */
     ApplicationList getApplications(Filter filter, int tenantId) throws ApplicationManagementDAOException;
 
     Application getApplication(String uuid, int tenantId, String userName) throws ApplicationManagementDAOException;

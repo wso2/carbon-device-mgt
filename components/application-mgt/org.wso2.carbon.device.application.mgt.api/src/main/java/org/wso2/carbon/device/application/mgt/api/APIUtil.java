@@ -184,8 +184,7 @@ public class APIUtil {
             synchronized (APIUtil.class) {
                 if (categoryManager == null) {
                     PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-                    categoryManager = (CategoryManager) ctx
-                            .getOSGiService(CategoryManager.class, null);
+                    categoryManager = (CategoryManager) ctx.getOSGiService(CategoryManager.class, null);
                     if (categoryManager == null) {
                         String msg = "Category Manager service has not initialized.";
                         log.error(msg);

@@ -21,9 +21,7 @@ import {FormattedMessage} from "react-intl";
 import Stepper from "../../UIComponents/StepprHeader/Stepper";
 import PlatformMgtApi from "../../../api/platformMgtApi";
 import AuthHandler from "../../../api/authHandler";
-import General from "./CreateSteps/General";
-import Configure from "./CreateSteps/Configure";
-import Properties from "./CreateSteps/Properties";
+import {General, Configure, Properties} from "./CreateSteps";
 
 /**
  * Platform view component.

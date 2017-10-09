@@ -36,6 +36,7 @@ import org.wso2.carbon.device.application.mgt.api.beans.ErrorResponse;
 import org.wso2.carbon.device.application.mgt.common.Application;
 import org.wso2.carbon.device.application.mgt.common.ApplicationList;
 import org.wso2.carbon.device.application.mgt.common.ApplicationRelease;
+import org.wso2.carbon.device.application.mgt.common.Category;
 
 import java.util.List;
 import javax.validation.Valid;
@@ -101,7 +102,20 @@ import javax.ws.rs.core.Response;
                         description = "Delete an application",
                         key = "perm:application:delete",
                         permissions = {"/device-mgt/application/delete"}
+                ),
+                @Scope(
+                        name = "Create an application category",
+                        description = "Create an application category",
+                        key = "perm:application-category:create",
+                        permissions = {"/device-mgt/application/category/create"}
+                ),
+                @Scope(
+                        name = "Delete an Application",
+                        description = "Delete an application",
+                        key = "perm:application-category:delete",
+                        permissions = {"/device-mgt/application/category/delete"}
                 )
+
 
         }
 )
@@ -747,4 +761,114 @@ public interface ApplicationManagementAPI {
                     value = "Whether to make it default or not",
                     required = false)
             @QueryParam("isDefault") boolean isDefault);
+
+
+    @POST
+    @Path("/category")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(
+            consumes = MediaType.APPLICATION_JSON,
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "POST",
+            value = "Create an application category",
+            notes = "This will create a new category",
+            tags = "Application Management",
+            extensions = {
+                    @Extension(properties = {
+                            @ExtensionProperty(name = SCOPE, value = "perm:application-category:create")
+                    })
+            }
+    )
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            code = 201,
+                            message = "OK. \n Successfully created a new category.",
+                            response = Category.class),
+                    @ApiResponse(
+                            code = 400,
+                            message = "Bad request. Required parameters are not provided"),
+                    @ApiResponse(
+                            code = 500,
+                            message = "Internal Server Error. \n Error occurred while creating application category.",
+                            response = ErrorResponse.class)
+            })
+    Response createCategory(
+            @ApiParam(
+                    name = "category",
+                    value = "The category that need to be created.",
+                    required = true)
+            @Valid Category category);
+
+    @GET
+    @Path("/category")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(
+            consumes = MediaType.APPLICATION_JSON,
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "GET",
+            value = "Get existing application categories",
+            notes = "This will retrieve the existing categories",
+            tags = "Application Management",
+            extensions = {
+                    @Extension(properties = {
+                            @ExtensionProperty(name = SCOPE, value = "perm:application:create")
+                    })
+            }
+    )
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            code = 200,
+                            message = "OK. \n Successfully retrieved existing categories.",
+                            response = Application.class),
+                    @ApiResponse(
+                            code = 400,
+                            message = "Bad request. Required parameters are not provided"),
+                    @ApiResponse(
+                            code = 500,
+                            message = "Internal Server Error. \n Error occurred while getting the application list.",
+                            response = ErrorResponse.class)
+            })
+    Response getCategories();
+
+    @DELETE
+    @Path("/category/{name}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(
+            consumes = MediaType.APPLICATION_JSON,
+            produces = MediaType.APPLICATION_JSON,
+            httpMethod = "DELETE",
+            value = "Delete application category with the given name",
+            notes = "This will delete the application category with the given name",
+            tags = "Application Management",
+            extensions = {
+                    @Extension(properties = {
+                            @ExtensionProperty(name = SCOPE, value = "perm:application-category:delete")
+                    })
+            }
+    )
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            code = 200,
+                            message = "OK. \n Successfully retrieved existing categories.",
+                            response = Application.class),
+                    @ApiResponse(
+                            code = 400,
+                            message = "Bad request. Required parameters are not provided"),
+                    @ApiResponse(
+                            code = 500,
+                            message = "Internal Server Error. \n Error occurred while getting the application list.",
+                            response = ErrorResponse.class)
+            })
+    Response deleteCategory(
+            @ApiParam(
+            name = "Name",
+            value = "Name of the application category",
+            required = true)
+    @PathParam("name") String name);
 }

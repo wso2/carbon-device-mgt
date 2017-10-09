@@ -21,12 +21,7 @@ package org.wso2.carbon.device.application.mgt.core.dao.impl.application;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONException;
-import org.wso2.carbon.device.application.mgt.common.Application;
-import org.wso2.carbon.device.application.mgt.common.ApplicationList;
-import org.wso2.carbon.device.application.mgt.common.ApplicationRelease;
-import org.wso2.carbon.device.application.mgt.common.Filter;
-import org.wso2.carbon.device.application.mgt.common.LifecycleStateTransition;
-import org.wso2.carbon.device.application.mgt.common.Pagination;
+import org.wso2.carbon.device.application.mgt.common.*;
 import org.wso2.carbon.device.application.mgt.common.exception.DBConnectionException;
 import org.wso2.carbon.device.application.mgt.core.dao.ApplicationDAO;
 import org.wso2.carbon.device.application.mgt.core.dao.common.Util;
@@ -446,6 +441,148 @@ public class GenericApplicationDAOImpl extends AbstractDAOImpl implements Applic
     }
 
     @Override
+    public Category addCategory(Category category) throws ApplicationManagementDAOException {
+        Connection connection;
+        PreparedStatement statement = null;
+        String sql = "INSERT INTO APPM_APPLICATION_CATEGORY (NAME, DESCRIPTION) VALUES (?, ?)";
+        String[] generatedColumns = { "ID" };
+        ResultSet rs = null;
+
+        try {
+            connection = this.getDBConnection();
+            statement = connection.prepareStatement(sql, generatedColumns);
+            statement.setString(1, category.getName());
+            statement.setString(2, category.getDescription());
+            statement.executeUpdate();
+            rs = statement.getGeneratedKeys();
+            if (rs.next()) {
+                category.setId(rs.getInt(1));
+            }
+            return category;
+        } catch (DBConnectionException e) {
+            throw new ApplicationManagementDAOException(
+                    "Database connection while trying to update the categroy " + category.getName());
+        } catch (SQLException e) {
+            throw new ApplicationManagementDAOException("SQL exception while executing the query '" + sql + "' .", e);
+        } finally {
+            Util.cleanupResources(statement, rs);
+        }
+    }
+
+    @Override
+    public List<Category> getCategories() throws ApplicationManagementDAOException {
+        Connection conn;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        String sql = "SELECT * FROM APPM_APPLICATION_CATEGORY";
+        List<Category> categories = new ArrayList<>();
+
+        try {
+            conn = this.getDBConnection();
+            stmt = conn.prepareStatement(sql);
+            rs = stmt.executeQuery();
+            while (rs.next()) {
+                Category category = new Category();
+                category.setId(rs.getInt("ID"));
+                category.setName(rs.getString("NAME"));
+                category.setDescription(rs.getString("DESCRIPTION"));
+                categories.add(category);
+            }
+            return categories;
+        } catch (DBConnectionException e) {
+            throw new ApplicationManagementDAOException("Database Connection Exception while trying to get the "
+                    + "application categories", e);
+        } catch (SQLException e) {
+            throw new ApplicationManagementDAOException("SQL Exception while trying to get the application "
+                    + "categories, while executing " + sql, e);
+        } finally {
+            Util.cleanupResources(stmt, rs);
+        }
+
+    }
+
+    @Override
+    public Category getCategory(String name) throws ApplicationManagementDAOException {
+        Connection conn;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        String sql = "SELECT * FROM APPM_APPLICATION_CATEGORY WHERE NAME = ?";
+
+        try {
+            conn = this.getDBConnection();
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, name);
+            rs = stmt.executeQuery();
+            if (rs.next()) {
+                Category category = new Category();
+                category.setId(rs.getInt("ID"));
+                category.setName(rs.getString("NAME"));
+                category.setDescription(rs.getString("DESCRIPTION"));
+                return category;
+            }
+            return null;
+        } catch (DBConnectionException e) {
+            throw new ApplicationManagementDAOException("Database Connection Exception while trying to get the "
+                    + "application categories", e);
+        } catch (SQLException e) {
+            throw new ApplicationManagementDAOException("SQL Exception while trying to get the application "
+                    + "categories, while executing " + sql, e);
+        } finally {
+            Util.cleanupResources(stmt, rs);
+        }
+    }
+
+    @Override
+    public boolean isApplicationExistForCategory(String name) throws ApplicationManagementDAOException {
+        Connection conn;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        String sql = "SELECT * FROM APPM_APPLICATION WHERE APPLICATION_CATEGORY_ID = (ID FROM "
+                + "APPM_APPLICATION_CATEGORY WHERE NAME = ?)";
+
+        try {
+            conn = this.getDBConnection();
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, name);
+            rs = stmt.executeQuery();
+            return rs.next();
+        } catch (DBConnectionException e) {
+            throw new ApplicationManagementDAOException(
+                    "Database Connection Exception while trying to check the " + "applications for teh category "
+                            + name, e);
+        } catch (SQLException e) {
+            throw new ApplicationManagementDAOException(
+                    "SQL Exception while trying to get the application related with categories, while executing "
+                            + sql, e);
+        } finally {
+            Util.cleanupResources(stmt, rs);
+        }
+    }
+
+    @Override
+    public void deleteCategory(String name) throws ApplicationManagementDAOException {
+        Connection conn;
+        PreparedStatement stmt = null;
+        String sql = "DELETE FROM APPM_APPLICATION_CATEGORY WHERE NAME = ?";
+
+        try {
+            conn = this.getDBConnection();
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, name);
+            stmt.executeUpdate();
+        } catch (DBConnectionException e) {
+            throw new ApplicationManagementDAOException(
+                    "Database Connection Exception while trying to delete the category " + name, e);
+        } catch (SQLException e) {
+            throw new ApplicationManagementDAOException(
+                    "SQL Exception while trying to delete the category " + name + " while executing the query " +
+                            sql, e);
+        } finally {
+            Util.cleanupResources(stmt, null);
+        }
+    }
+
+    @Override
     public Application editApplication(Application application, int tenantId) throws ApplicationManagementDAOException {
         Connection conn;
         PreparedStatement stmt = null;
@@ -660,22 +797,5 @@ public class GenericApplicationDAOImpl extends AbstractDAOImpl implements Applic
         }
         return id;
     }
-
-
-    @Override
-    public void addProperties(Map<String, String> properties) throws ApplicationManagementDAOException {
-
-    }
-
-    @Override
-    public void editProperties(Map<String, String> properties) throws ApplicationManagementDAOException {
-
-    }
-
-    @Override
-    public void addRelease(ApplicationRelease release) throws ApplicationManagementDAOException {
-
-    }
-
 
 }

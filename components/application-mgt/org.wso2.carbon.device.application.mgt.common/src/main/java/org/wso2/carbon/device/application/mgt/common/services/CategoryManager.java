@@ -22,6 +22,8 @@ import org.wso2.carbon.device.application.mgt.common.Category;
 import org.wso2.carbon.device.application.mgt.common.Filter;
 import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
 
+import java.util.List;
+
 /**
  * CategoryManager is responsible for handling add, delete, update opertaions related with {@link Category}
  */
@@ -29,9 +31,9 @@ public interface CategoryManager {
 
     public Category createCategory(Category application) throws ApplicationManagementException;
 
-    public Category editCategory(int applicationId, Category category) throws ApplicationManagementException;
+    public List<Category> getCategories() throws ApplicationManagementException;
 
-    public void deleteCategory(int applicationId) throws ApplicationManagementException;
+    public Category getCategory(String name) throws ApplicationManagementException;
 
-    public Category getCategory(Filter filter) throws ApplicationManagementException;
+    public void deleteCategory(String name) throws ApplicationManagementException;
 }

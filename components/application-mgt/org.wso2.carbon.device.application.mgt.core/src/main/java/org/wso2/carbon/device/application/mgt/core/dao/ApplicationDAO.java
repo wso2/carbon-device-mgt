@@ -18,11 +18,7 @@
  */
 package org.wso2.carbon.device.application.mgt.core.dao;
 
-import org.wso2.carbon.device.application.mgt.common.Application;
-import org.wso2.carbon.device.application.mgt.common.ApplicationList;
-import org.wso2.carbon.device.application.mgt.common.ApplicationRelease;
-import org.wso2.carbon.device.application.mgt.common.Filter;
-import org.wso2.carbon.device.application.mgt.common.LifecycleStateTransition;
+import org.wso2.carbon.device.application.mgt.common.*;
 import org.wso2.carbon.device.application.mgt.core.exception.ApplicationManagementDAOException;
 
 import java.util.List;
@@ -47,15 +43,9 @@ public interface ApplicationDAO {
 
     int getApplicationCount(Filter filter) throws ApplicationManagementDAOException;
 
-    void addProperties(Map<String, String> properties) throws ApplicationManagementDAOException;
-
-    void editProperties(Map<String, String> properties) throws ApplicationManagementDAOException;
-
     void deleteProperties(int applicationId) throws ApplicationManagementDAOException;
 
     void deleteTags(int applicationId) throws ApplicationManagementDAOException;
-
-    void addRelease(ApplicationRelease release) throws ApplicationManagementDAOException;
 
     void changeLifecycle(String applicationUUID, String lifecycleIdentifier, String username, int tenantId) throws
             ApplicationManagementDAOException;
@@ -66,4 +56,13 @@ public interface ApplicationDAO {
     void updateScreenShotCount(String applicationUUID, int tenantId, int count) throws
             ApplicationManagementDAOException;
 
+    Category addCategory(Category category) throws ApplicationManagementDAOException;
+
+    List<Category> getCategories() throws ApplicationManagementDAOException;
+
+    Category getCategory(String name) throws ApplicationManagementDAOException;
+
+    boolean isApplicationExistForCategory(String name) throws ApplicationManagementDAOException;
+
+    void deleteCategory(String name) throws ApplicationManagementDAOException;
 }

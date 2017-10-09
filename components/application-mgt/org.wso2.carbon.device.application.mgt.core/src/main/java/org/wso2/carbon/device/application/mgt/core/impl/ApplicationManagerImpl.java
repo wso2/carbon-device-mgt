@@ -22,15 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.CarbonConstants;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
-import org.wso2.carbon.device.application.mgt.common.Application;
-import org.wso2.carbon.device.application.mgt.common.ApplicationList;
-import org.wso2.carbon.device.application.mgt.common.Filter;
-import org.wso2.carbon.device.application.mgt.common.Lifecycle;
-import org.wso2.carbon.device.application.mgt.common.LifecycleState;
-import org.wso2.carbon.device.application.mgt.common.LifecycleStateTransition;
-import org.wso2.carbon.device.application.mgt.common.Platform;
-import org.wso2.carbon.device.application.mgt.common.User;
-import org.wso2.carbon.device.application.mgt.common.Visibility;
+import org.wso2.carbon.device.application.mgt.common.*;
 import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
 import org.wso2.carbon.device.application.mgt.common.services.ApplicationManager;
 import org.wso2.carbon.device.application.mgt.core.dao.ApplicationDAO;
@@ -75,8 +67,17 @@ public class ApplicationManagerImpl implements ApplicationManager {
                     .getTenantId(), application.getPlatform().getIdentifier());
 
             if (platform == null) {
-                throw new NotFoundException("Invalid platform");
+                throw new NotFoundException(
+                        "Invalid platform is provided for the application " + application.getUuid());
             }
+
+            Category category = DataHolder.getInstance().getCategoryManager()
+                    .getCategory(application.getCategory().getName());
+            if (category == null) {
+                throw new NotFoundException(
+                        "Invalid Category is provided for the application " + application.getUuid());
+            }
+            application.setCategory(category);
             ConnectionManagerUtil.beginDBTransaction();
 
             // Validating the platform
@@ -130,6 +131,22 @@ public class ApplicationManagerImpl implements ApplicationManager {
                         throw new NotFoundException(
                                 "Platform specified by identifier " + application.getPlatform().getIdentifier()
                                         + " is not found. Please give a valid platform identifier.");
+                    }
+
+                    if (application.getCategory() != null) {
+                        String applicationCategoryName = application.getCategory().getName();
+                        if (applicationCategoryName == null || applicationCategoryName.isEmpty()) {
+                            throw new ApplicationManagementException("Application category name cannot be null or "
+                                    + "empty. Cannot edit the application.");
+                        }
+                        Category category = DataHolder.getInstance().getCategoryManager()
+                                .getCategory(application.getCategory().getName());
+                        if (category == null) {
+                            throw new NotFoundException(
+                                    "Invalid Category is provided for the application " + application.getUuid() + ". "
+                                            + "Cannot edit application");
+                        }
+                        application.setCategory(category);
                     }
                     application.setPlatform(platform);
                     ConnectionManagerUtil.beginDBTransaction();
@@ -388,8 +405,9 @@ public class ApplicationManagerImpl implements ApplicationManager {
             throw new ValidationException("Username and tenant Id cannot be empty");
         }
 
-        if (application.getCategory() == null || application.getCategory().getId() == 0) {
-            throw new ValidationException("Category id cannot be empty");
+        if (application.getCategory() == null || application.getCategory().getName() == null || application
+                .getCategory().getName().isEmpty()) {
+            throw new ValidationException("Category name cannot be empty");
         }
 
         if (application.getPlatform() == null || application.getPlatform().getIdentifier() == null) {

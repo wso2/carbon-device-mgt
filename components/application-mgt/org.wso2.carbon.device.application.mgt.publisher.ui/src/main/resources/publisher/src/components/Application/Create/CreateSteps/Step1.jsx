@@ -19,7 +19,7 @@
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {FormattedMessage} from 'react-intl';
-import {Button, Form, FormFeedback, FormGroup, Input, Label, ModalFooter} from 'reactstrap';
+import {Button, Form, FormFeedback, FormGroup, Input, Label, ModalBody, ModalFooter} from 'reactstrap';
 import * as validator from '../../../../common/validator';
 import Chip from "../../../UIComponents/Chip/Chip";
 
@@ -236,121 +236,121 @@ class Step1 extends Component {
 
         return (
             <div>
-                <div>
-                    <div>
-                        <FormGroup>
-                            <Label for="app-title">
-                                <FormattedMessage id='Title' defaultMessage='Title'/>*
-                            </Label>
-                            <Input
-                                required
-                                type="text"
-                                name="appName"
-                                id="app-title"
-                                value={this.state.name}
-                                onChange={this.onTextFieldChange}
-                            />
-                            <FormFeedback id="form-error">{this.state.errors.name}</FormFeedback>
-                        </FormGroup>
-                        <FormGroup>
-                            <Label for="app-short-description">
-                                <FormattedMessage id="ShortDescription" defaultMessage="ShortDescription"/>*
-                            </Label>
-                            <Input
-                                required
-                                type="textarea"
-                                name="appShortDescription"
-                                id="app-short-description"
-                                value={this.state.shortDescription}
-                                onChange={this.onTextFieldChange}
-                            />
-                            <FormFeedback id="form-error">{this.state.errors.shortDescription}</FormFeedback>
-                        </FormGroup>
-                        <FormGroup>
-                            <Label for="app-description">
-                                <FormattedMessage id='Description' defaultMessage='Description'/>*
-                            </Label>
-                            <Input
-                                required
-                                type="textarea"
-                                name="appDescription"
-                                id="app-description"
-                                value={this.state.description}
-                                onChange={this.onTextFieldChange}
-                            />
-                            <FormFeedback id="form-error">{this.state.errors.description}</FormFeedback>
-                        </FormGroup>
-                        <FormGroup>
-                            <Label for="app-category">
-                                <FormattedMessage id='Category' defaultMessage='Category'/>
-                            </Label>
-                            <Input
-                                type="select"
-                                name="category"
-                                id="app-category"
-                            >
-                                <option key={0} value={{id: 0, name: "business"}}>Business</option>
-                            </Input>
-                        </FormGroup>
-                        <FormGroup>
-                            <Label for="app-visibility">
-                                <FormattedMessage id='Visibility' defaultMessage='Visibility'/>
-                            </Label>
-                            <Form inline>
-                                <FormGroup>
-                                    <Input
-                                        type="select"
-                                        name="visibility"
-                                        id="app-visibility"
-                                        onChange={this.onVisibilityChange}
-                                    >
-                                        <option id="app-visibility-default" disabled selected>Select the App Visibility
-                                                                                              Option.
-                                        </option>
-                                        <option key={1}><FormattedMessage id='Devices' defaultMessage='Devices'/>
-                                        </option>
-                                        <option key={2}><FormattedMessage id='Roles' defaultMessage='Roles'/></option>
-                                        <option key={3}><FormattedMessage id='Groups' defaultMessage='Groups'/></option>
-                                    </Input>
-                                </FormGroup>
-                                {visibilityItem()}
-                            </Form>
-                        </FormGroup>
-                        <FormGroup>
-                            <Label for="app-tags"><FormattedMessage id='Tags' defaultMessage='Tags'/>*</Label>
-                            <Input
-                                required
-                                type="text"
-                                value={this.state.defValue}
-                                name="app-tags"
-                                id="app-tags"
-                                onChange={this.handleTagChange.bind(this)}
-                                onKeyPress={this.addTags.bind(this)}
-                            />
+                <ModalBody id="modal-body-content">
+                    <FormGroup>
+                        <Label for="app-title">
+                            <FormattedMessage id='Title' defaultMessage='Title'/>*
+                        </Label>
+                        <Input
+                            required
+                            type="text"
+                            name="appName"
+                            id="app-title"
+                            value={this.state.name}
+                            onChange={this.onTextFieldChange}
+                        />
+                        <FormFeedback id="form-error">{this.state.errors.name}</FormFeedback>
+                    </FormGroup>
+                    <FormGroup>
+                        <Label for="app-short-description">
+                            <FormattedMessage id="ShortDescription" defaultMessage="ShortDescription"/>*
+                        </Label>
+                        <Input
+                            required
+                            type="textarea"
+                            name="appShortDescription"
+                            id="app-short-description"
+                            value={this.state.shortDescription}
+                            onChange={this.onTextFieldChange}
+                        />
+                        <FormFeedback id="form-error">{this.state.errors.shortDescription}</FormFeedback>
+                    </FormGroup>
+                    <FormGroup>
+                        <Label for="app-description">
+                            <FormattedMessage id='Description' defaultMessage='Description'/>*
+                        </Label>
+                        <Input
+                            required
+                            type="textarea"
+                            name="appDescription"
+                            id="app-description"
+                            value={this.state.description}
+                            onChange={this.onTextFieldChange}
+                        />
+                        <FormFeedback id="form-error">{this.state.errors.description}</FormFeedback>
+                    </FormGroup>
+                    <FormGroup>
+                        <Label for="app-category">
+                            <FormattedMessage id='Category' defaultMessage='Category'/>
+                        </Label>
+                        <Input
+                            type="select"
+                            name="category"
+                            id="app-category"
+                        >
+                            <option key={0} value={{id: 0, name: "business"}}>Business</option>
+                        </Input>
+                    </FormGroup>
+                    <FormGroup>
+                        <Label for="app-visibility">
+                            <FormattedMessage id='Visibility' defaultMessage='Visibility'/>
+                        </Label>
+                        <Form inline>
+                            <FormGroup>
+                                <Input
+                                    type="select"
+                                    name="visibility"
+                                    id="app-visibility"
+                                    onChange={this.onVisibilityChange}
+                                >
+                                    <option id="app-visibility-default" disabled selected>Select the App Visibility
+                                                                                          Option.
+                                    </option>
+                                    <option key={1}><FormattedMessage id='Devices' defaultMessage='Devices'/>
+                                    </option>
+                                    <option key={2}><FormattedMessage id='Roles' defaultMessage='Roles'/></option>
+                                    <option key={3}><FormattedMessage id='Groups' defaultMessage='Groups'/></option>
+                                </Input>
+                            </FormGroup>
+                            {visibilityItem()}
+                        </Form>
+                    </FormGroup>
+                    <FormGroup>
+                        <Label for="app-tags"><FormattedMessage id='Tags' defaultMessage='Tags'/>*</Label>
+                        <Input
+                            required
+                            type="text"
+                            value={this.state.defValue}
+                            name="app-tags"
+                            id="app-tags"
+                            onChange={this.handleTagChange.bind(this)}
+                            onKeyPress={this.addTags.bind(this)}
+                        />
 
-                            <div id="batch-content">
-                                {this.state.tags.map(tag => {
-                                        return (
-                                            <Chip
-                                                key={tag.key}
-                                                content={tag}
-                                                onDelete={this.handleRequestDelete}
-                                            />
-                                        )
-                                    }
-                                )}
-                            </div>
-                            <FormFeedback id="form-error">{this.state.errors.tags}</FormFeedback>
-                        </FormGroup>
+                        <div id="batch-content">
+                            {this.state.tags.map(tag => {
+                                    return (
+                                        <Chip
+                                            key={tag.key}
+                                            content={tag}
+                                            onDelete={this.handleRequestDelete}
+                                        />
+                                    )
+                                }
+                            )}
+                        </div>
+                        <FormFeedback id="form-error">{this.state.errors.tags}</FormFeedback>
+                    </FormGroup>
+                </ModalBody>
+                <ModalFooter className="custom-footer row">
+                    <div className="footer-main-btn col">
+                        <Button className="custom-flat danger-flat" onClick={this.onCancelClick}>
+                            <FormattedMessage id="Cancel" defaultMessage="Cancel"/>
+                        </Button>
+                        <Button className="custom-flat primary-flat" onClick={this.setStepData}>
+                            <FormattedMessage id="Continue" defaultMessage="Continue"/>
+                        </Button>
                     </div>
-                </div>
-                <ModalFooter>
-                    <Button className="custom-flat danger-flat" onClick={this.onCancelClick}>
-                        <FormattedMessage id="Cancel" defaultMessage="Cancel"/>
-                    </Button>
-                    <Button className="custom-raised primary" onClick={this.setStepData}>
-                        <FormattedMessage id="Continue" defaultMessage="Continue"/>
-                    </Button>
                 </ModalFooter>
             </div>
         );

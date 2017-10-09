@@ -18,7 +18,7 @@
 
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
-import {Button, Collapse, FormGroup, FormText, Input, Label, ModalFooter} from 'reactstrap';
+import {Button, Collapse, FormGroup, FormText, Input, Label, ModalBody, ModalFooter} from 'reactstrap';
 import Switch from '../../../UIComponents/Switch/Switch'
 import {FormattedMessage} from 'react-intl';
 
@@ -91,7 +91,7 @@ class Step4 extends Component {
     render() {
         return (
             <div className="applicationCreateStepMiddle">
-                <div>
+                <ModalBody id="modal-body-content">
                     <FormGroup>
                         <div id="app-release-switch-content">
                             <div id="app-release-switch-label">
@@ -150,17 +150,21 @@ class Step4 extends Component {
                             />
                         </FormGroup>
                     </Collapse>
-                </div>
-                <ModalFooter>
-                    <Button className="custom-flat primary-flat" onClick={this.onBackClick}>
-                        <FormattedMessage id="Back" defaultMessage="Back"/>
-                    </Button>
-                    <Button className="custom-flat danger-flat" onClick={this.onCancelClick}>
-                        <FormattedMessage id="Cancel" defaultMessage="Cancel"/>
-                    </Button>
-                    <Button className="custom-raised primary" onClick={this.onSubmit}>
-                        <FormattedMessage id="Finish" defaultMessage="Finish"/>
-                    </Button>
+                </ModalBody>
+                <ModalFooter className="custom-footer row">
+                    <div className="footer-back-btn col">
+                        <Button className="custom-flat primary-flat" onClick={this.onBackClick}>
+                            <FormattedMessage id="Back" defaultMessage="Back"/>
+                        </Button>
+                    </div>
+                    <div className="footer-main-btn col">
+                        <Button className="custom-flat danger-flat" onClick={this.onCancelClick}>
+                            <FormattedMessage id="Cancel" defaultMessage="Cancel"/>
+                        </Button>
+                        <Button className="custom-flat primary-flat" onClick={this.onSubmit}>
+                            <FormattedMessage id="Finish" defaultMessage="Finish"/>
+                        </Button>
+                    </div>
                 </ModalFooter>
             </div>
         );

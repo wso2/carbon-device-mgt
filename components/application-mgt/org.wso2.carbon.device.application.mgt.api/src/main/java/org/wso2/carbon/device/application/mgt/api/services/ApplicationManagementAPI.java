@@ -214,7 +214,7 @@ public interface ApplicationManagementAPI {
                     name = "isWithImages",
                     value = "Whether to return application with images",
                     required = false)
-            @QueryParam("isWithImages") Boolean IsWithImages
+            @QueryParam("isWithImages") Boolean isWithImages
     );
 
     @PUT

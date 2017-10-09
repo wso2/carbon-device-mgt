@@ -217,8 +217,8 @@ public class ApplicationManagementAPIImpl implements ApplicationManagementAPI {
     @POST
     @Path("/upload-image-artifacts/{uuid}")
     public Response uploadApplicationArtifacts(@PathParam("uuid") String applicationUUID,
-                                               @Multipart("icon") Attachment iconFile, @Multipart("banner") Attachment bannerFile, @Multipart
-                                                       ("screenshot") List<Attachment> attachmentList) {
+            @Multipart("icon") Attachment iconFile, @Multipart("banner") Attachment bannerFile,
+            @Multipart("screenshot") List<Attachment> attachmentList) {
         ApplicationStorageManager applicationStorageManager = APIUtil.getApplicationStorageManager();
         try {
             InputStream iconFileStream;

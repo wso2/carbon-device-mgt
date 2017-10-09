@@ -157,10 +157,10 @@ public class ApplicationStorageManagerImpl implements ApplicationStorageManager 
             throws ResourceManagementException {
         Application application = validateApplication(applicationUUID);
         String artifactDirectoryPath = storagePath + application.getId();
-        if (log.isDebugEnabled())
+        if (log.isDebugEnabled()) {
             log.debug("Artifact Directory Path for saving the application release related artifacts related with "
                     + "application " + applicationUUID + " is " + artifactDirectoryPath);
-
+        }
         StorageManagementUtil.createArtifactDirectory(artifactDirectoryPath);
         if (binaryFile != null) {
             try {
@@ -171,7 +171,6 @@ public class ApplicationStorageManagerImpl implements ApplicationStorageManager 
                                 + applicationUUID, e);
             }
         }
-
     }
 
     @Override

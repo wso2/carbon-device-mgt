@@ -90,8 +90,7 @@ public class GenericPlatformDAOImpl extends AbstractDAOImpl implements PlatformD
 
                             if (isBatchExecutionSupported) {
                                 preparedStatement.addBatch();
-                            }
-                            else {
+                            } else {
                                 preparedStatement.execute();
                             }
                         }

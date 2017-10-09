@@ -44,12 +44,13 @@ public class CategoryManagerImpl implements CategoryManager {
                     "Application category name cannot be null. Application category creation failed.");
         }
         if (getCategory(category.getName()) != null) {
-            throw new ApplicationCategoryManagementException("Application category wth the name " + category.getName() + " "
-                    + "exists already. Please select a different name");
+            throw new ApplicationCategoryManagementException(
+                    "Application category wth the name " + category.getName() + " "
+                            + "exists already. Please select a different name");
         }
         try {
             ConnectionManagerUtil.beginDBTransaction();
-            Category createdCategory = DAOFactory.getApplicationDAO().addCategory(category);
+            Category createdCategory = DAOFactory.getCategoryDAO().addCategory(category);
             ConnectionManagerUtil.commitDBTransaction();
             return createdCategory;
         } catch (ApplicationManagementDAOException e) {
@@ -64,7 +65,7 @@ public class CategoryManagerImpl implements CategoryManager {
     public List<Category> getCategories() throws ApplicationManagementException {
         try {
             ConnectionManagerUtil.openDBConnection();
-            return DAOFactory.getApplicationDAO().getCategories();
+            return DAOFactory.getCategoryDAO().getCategories();
         } finally {
             ConnectionManagerUtil.closeDBConnection();
         }
@@ -77,7 +78,7 @@ public class CategoryManagerImpl implements CategoryManager {
         }
         try {
             ConnectionManagerUtil.openDBConnection();
-            return DAOFactory.getApplicationDAO().getCategory(name);
+            return DAOFactory.getCategoryDAO().getCategory(name);
         } finally {
             ConnectionManagerUtil.closeDBConnection();
         }
@@ -92,15 +93,13 @@ public class CategoryManagerImpl implements CategoryManager {
         }
         try {
             ConnectionManagerUtil.beginDBTransaction();
-            boolean isApplicationExistForCategory = DAOFactory.getApplicationDAO().isApplicationExistForCategory(name);
-
+            boolean isApplicationExistForCategory = DAOFactory.getApplicationDAO().isApplicationExist(name);
             if (isApplicationExistForCategory) {
                 ConnectionManagerUtil.rollbackDBTransaction();
                 throw new ApplicationCategoryManagementException(
                         "Cannot delete the the category " + name + ". Applications " + "exists for this category");
             }
-
-            DAOFactory.getApplicationDAO().deleteCategory(name);
+            DAOFactory.getCategoryDAO().deleteCategory(name);
             ConnectionManagerUtil.commitDBTransaction();
         } catch (ApplicationManagementDAOException e) {
             ConnectionManagerUtil.rollbackDBTransaction();
@@ -109,5 +108,4 @@ public class CategoryManagerImpl implements CategoryManager {
             ConnectionManagerUtil.closeDBConnection();
         }
     }
-
 }

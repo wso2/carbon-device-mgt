@@ -23,14 +23,8 @@ package org.wso2.carbon.device.application.mgt.common.exception;
  * Exception that will be thrown during Application Category Management.
  */
 public class ApplicationCategoryManagementException extends ApplicationManagementException {
-    public ApplicationCategoryManagementException(String message, Throwable throwable) {
-        super(message, throwable);
-        setMessage(message);
-    }
-
     public ApplicationCategoryManagementException(String message) {
         super(message);
         setMessage(message);
     }
-
 }

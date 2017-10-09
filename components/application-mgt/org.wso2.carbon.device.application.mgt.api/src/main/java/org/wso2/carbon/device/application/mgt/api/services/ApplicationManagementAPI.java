@@ -110,8 +110,8 @@ import javax.ws.rs.core.Response;
                         permissions = {"/device-mgt/application/category/create"}
                 ),
                 @Scope(
-                        name = "Delete an Application",
-                        description = "Delete an application",
+                        name = "Delete an Application category",
+                        description = "Delete an application category",
                         key = "perm:application-category:delete",
                         permissions = {"/device-mgt/application/category/delete"}
                 )
@@ -823,13 +823,14 @@ public interface ApplicationManagementAPI {
                     @ApiResponse(
                             code = 200,
                             message = "OK. \n Successfully retrieved existing categories.",
-                            response = Application.class),
+                            response = List.class),
                     @ApiResponse(
                             code = 400,
                             message = "Bad request. Required parameters are not provided"),
                     @ApiResponse(
                             code = 500,
-                            message = "Internal Server Error. \n Error occurred while getting the application list.",
+                            message = "Internal Server Error. \n Error occurred while getting the application "
+                                    + "categories.",
                             response = ErrorResponse.class)
             })
     Response getCategories();
@@ -855,14 +856,14 @@ public interface ApplicationManagementAPI {
             value = {
                     @ApiResponse(
                             code = 200,
-                            message = "OK. \n Successfully retrieved existing categories.",
+                            message = "OK. \n Successfully deleted the application with the given name.",
                             response = Application.class),
                     @ApiResponse(
                             code = 400,
                             message = "Bad request. Required parameters are not provided"),
                     @ApiResponse(
                             code = 500,
-                            message = "Internal Server Error. \n Error occurred while getting the application list.",
+                            message = "Internal Server Error. \n Error occurred while deleting applcation category.",
                             response = ErrorResponse.class)
             })
     Response deleteCategory(

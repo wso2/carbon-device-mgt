@@ -537,7 +537,7 @@ public class GenericApplicationDAOImpl extends AbstractDAOImpl implements Applic
         Connection conn;
         PreparedStatement stmt = null;
         ResultSet rs = null;
-        String sql = "SELECT * FROM APPM_APPLICATION WHERE APPLICATION_CATEGORY_ID = (ID FROM "
+        String sql = "SELECT * FROM APPM_APPLICATION WHERE APPLICATION_CATEGORY_ID = (SELECT ID FROM "
                 + "APPM_APPLICATION_CATEGORY WHERE NAME = ?)";
 
         try {

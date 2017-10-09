@@ -22,7 +22,16 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.CarbonConstants;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
-import org.wso2.carbon.device.application.mgt.common.*;
+import org.wso2.carbon.device.application.mgt.common.Application;
+import org.wso2.carbon.device.application.mgt.common.ApplicationList;
+import org.wso2.carbon.device.application.mgt.common.Category;
+import org.wso2.carbon.device.application.mgt.common.Filter;
+import org.wso2.carbon.device.application.mgt.common.Lifecycle;
+import org.wso2.carbon.device.application.mgt.common.LifecycleState;
+import org.wso2.carbon.device.application.mgt.common.LifecycleStateTransition;
+import org.wso2.carbon.device.application.mgt.common.Platform;
+import org.wso2.carbon.device.application.mgt.common.User;
+import org.wso2.carbon.device.application.mgt.common.Visibility;
 import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
 import org.wso2.carbon.device.application.mgt.common.services.ApplicationManager;
 import org.wso2.carbon.device.application.mgt.core.dao.ApplicationDAO;
@@ -62,22 +71,20 @@ public class ApplicationManagerImpl implements ApplicationManager {
         application.setUuid(HelperUtil.generateApplicationUuid());
         application.setCreatedAt(new Date());
         application.setModifiedAt(new Date());
+        Platform platform = DataHolder.getInstance().getPlatformManager()
+                .getPlatform(application.getUser().getTenantId(), application.getPlatform().getIdentifier());
+
+        if (platform == null) {
+            throw new NotFoundException("Invalid platform is provided for the application " + application.getUuid());
+        }
+
+        Category category = DataHolder.getInstance().getCategoryManager()
+                .getCategory(application.getCategory().getName());
+        if (category == null) {
+            throw new NotFoundException("Invalid Category is provided for the application " + application.getUuid());
+        }
+        application.setCategory(category);
         try {
-            Platform platform = DataHolder.getInstance().getPlatformManager().getPlatform(application.getUser()
-                    .getTenantId(), application.getPlatform().getIdentifier());
-
-            if (platform == null) {
-                throw new NotFoundException(
-                        "Invalid platform is provided for the application " + application.getUuid());
-            }
-
-            Category category = DataHolder.getInstance().getCategoryManager()
-                    .getCategory(application.getCategory().getName());
-            if (category == null) {
-                throw new NotFoundException(
-                        "Invalid Category is provided for the application " + application.getUuid());
-            }
-            application.setCategory(category);
             ConnectionManagerUtil.beginDBTransaction();
 
             // Validating the platform
@@ -119,48 +126,49 @@ public class ApplicationManagerImpl implements ApplicationManager {
         }
 
         if (!isApplicationOwnerOrAdmin(application.getUuid(), userName, tenantId)) {
-            throw new ApplicationManagementException("User " + userName + " does not have permissions to edit the "
-                    + "application with the UUID " + application.getUuid());
+            throw new ApplicationManagementException(
+                    "User " + userName + " does not have permissions to edit the " + "application with the UUID "
+                            + application.getUuid());
         }
         if (this.getApplication(application.getUuid()) != null) {
-            try {
-                if (application.getPlatform() != null && application.getPlatform().getIdentifier() != null) {
-                    Platform platform = DataHolder.getInstance().getPlatformManager()
-                            .getPlatform(tenantId, application.getPlatform().getIdentifier());
-                    if (platform == null) {
-                        throw new NotFoundException(
-                                "Platform specified by identifier " + application.getPlatform().getIdentifier()
-                                        + " is not found. Please give a valid platform identifier.");
-                    }
+            if (application.getPlatform() == null || application.getPlatform().getIdentifier() == null) {
+                throw new NotFoundException("Platform information not available with the application!");
+            }
+            Platform platform = DataHolder.getInstance().getPlatformManager()
+                    .getPlatform(tenantId, application.getPlatform().getIdentifier());
+            if (platform == null) {
+                throw new NotFoundException(
+                        "Platform specified by identifier " + application.getPlatform().getIdentifier()
+                                + " is not found. Please give a valid platform identifier.");
+            }
+            application.setPlatform(platform);
 
-                    if (application.getCategory() != null) {
-                        String applicationCategoryName = application.getCategory().getName();
-                        if (applicationCategoryName == null || applicationCategoryName.isEmpty()) {
-                            throw new ApplicationManagementException("Application category name cannot be null or "
-                                    + "empty. Cannot edit the application.");
-                        }
-                        Category category = DataHolder.getInstance().getCategoryManager()
-                                .getCategory(application.getCategory().getName());
-                        if (category == null) {
-                            throw new NotFoundException(
-                                    "Invalid Category is provided for the application " + application.getUuid() + ". "
-                                            + "Cannot edit application");
-                        }
-                        application.setCategory(category);
-                    }
-                    application.setPlatform(platform);
-                    ConnectionManagerUtil.beginDBTransaction();
-                    ApplicationDAO applicationDAO = DAOFactory.getApplicationDAO();
-                    application.setModifiedAt(new Date());
-                    Application modifiedApplication = applicationDAO.editApplication(application, tenantId);
-                    Visibility visibility = DataHolder.getInstance().getVisibilityManager().put(application.getId(),
-                            application.getVisibility());
-                    modifiedApplication.setVisibility(visibility);
-                    ConnectionManagerUtil.commitDBTransaction();
-                    return modifiedApplication;
-                } else {
-                    throw new NotFoundException("Platform information not available with the application!");
+            if (application.getCategory() != null) {
+                String applicationCategoryName = application.getCategory().getName();
+                if (applicationCategoryName == null || applicationCategoryName.isEmpty()) {
+                    throw new ApplicationManagementException(
+                            "Application category name cannot be null or " + "empty. Cannot edit the application.");
                 }
+                Category category = DataHolder.getInstance().getCategoryManager()
+                        .getCategory(application.getCategory().getName());
+                if (category == null) {
+                    throw new NotFoundException(
+                            "Invalid Category is provided for the application " + application.getUuid() + ". "
+                                    + "Cannot edit application");
+                }
+                application.setCategory(category);
+            }
+
+            try {
+                ConnectionManagerUtil.beginDBTransaction();
+                ApplicationDAO applicationDAO = DAOFactory.getApplicationDAO();
+                application.setModifiedAt(new Date());
+                Application modifiedApplication = applicationDAO.editApplication(application, tenantId);
+                Visibility visibility = DataHolder.getInstance().getVisibilityManager()
+                        .put(application.getId(), application.getVisibility());
+                modifiedApplication.setVisibility(visibility);
+                ConnectionManagerUtil.commitDBTransaction();
+                return modifiedApplication;
             } catch (ApplicationManagementDAOException e) {
                 ConnectionManagerUtil.rollbackDBTransaction();
                 throw e;

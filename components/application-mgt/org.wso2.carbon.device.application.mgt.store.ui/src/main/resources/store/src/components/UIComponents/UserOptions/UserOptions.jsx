@@ -19,6 +19,8 @@
 import React, {Component} from 'react';
 import './user-options.css';
 import AuthHandler from '../../../api/authHandler';
+import {FormattedMessage} from 'react-intl';
+
 
 class UserOptions extends Component {
 
@@ -43,13 +45,13 @@ class UserOptions extends Component {
         if (this.state.user) {
             return (
                 <div id='user-options-drop-down' className="dropdown-content" style={{display: displayOptions}}>
-                    <a href="/store/logout">Logout</a>
+                    <a href="/store/logout"><FormattedMessage id="Logout" defaultMessage="Logout"/></a>
                 </div>
             );
         } else {
             return (
                 <div id='user-options-drop-down' className="dropdown-content" style={{display: displayOptions}}>
-                    <a href="/store/login">Login</a>
+                    <a href="/store/login"><FormattedMessage id="Login" defaultMessage="Login"/></a>
                 </div>
             );
         }

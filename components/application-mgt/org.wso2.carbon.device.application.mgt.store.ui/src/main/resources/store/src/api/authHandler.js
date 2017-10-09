@@ -59,10 +59,7 @@ class AuthHandler {
         );
         return login_promise;
     };
-    
-    static loginAsAnonymous(){
-        
-    }
+
 
     /**
      * Persists the user object in browser's local storage.

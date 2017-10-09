@@ -51,7 +51,7 @@ class Constants {
         };
 
         this.userConstants = {
-            LOGIN_URL: httpBaseUrl + '/auth/application-mgt/v1.0/auth/login',
+            LOGIN_URL: httpBaseUrl + '/auth/application-mgt/v1.0/auth/store/login',
             LOGOUT_URL: httpBaseUrl + '/auth/application-mgt/v1.0/auth/logout',
             REFRESH_TOKEN_URL: "",
             WSO2_USER: 'wso2_user',

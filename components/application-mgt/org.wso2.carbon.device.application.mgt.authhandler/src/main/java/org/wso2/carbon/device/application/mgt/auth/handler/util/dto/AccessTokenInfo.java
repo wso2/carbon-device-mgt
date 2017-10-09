@@ -26,20 +26,14 @@ import javax.xml.bind.annotation.XmlRootElement;
 /**
  * This hold access token info that returned from the api call
  */
-@XmlRootElement(name = "AccessTokenInfo")
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class AccessTokenInfo {
 
-    @XmlElement(required = true, name = "token_type")
     private String token_type;
 
-    @XmlElement(required = true, name = "expires_in")
     private String expires_in;
 
-    @XmlElement(required = true, name = "refresh_token")
     private String refresh_token;
 
-    @XmlElement(required = true, name = "access_token")
     private String access_token;
 
     public AccessTokenInfo() {}

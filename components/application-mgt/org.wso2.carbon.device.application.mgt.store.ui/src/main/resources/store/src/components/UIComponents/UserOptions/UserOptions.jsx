@@ -43,7 +43,7 @@ class UserOptions extends Component {
         if (this.state.user) {
             return (
                 <div id='user-options-drop-down' className="dropdown-content" style={{display: displayOptions}}>
-                    <a href="#">Logout</a>
+                    <a href="/store/logout">Logout</a>
                 </div>
             );
         } else {

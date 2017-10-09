@@ -63,7 +63,7 @@ class Base extends Component {
     }
 
     render() {
-        console.log('came here/////');
+        console.log('came to base ../////');
         if (this.state.user !== null) {
             return (
                 <div>
@@ -107,12 +107,13 @@ class Store extends Component {
     }
 
     render() {
+        console.log('came to store');
         return (
             <div className="App">
                 <Router basename="store" history={history}>
                     <Switch>
-                        <Route path="/login" component={Login}/>
-                        <Route path="/logout" component={Login}/>
+                        <Route exact path="/login" component={Login}/>
+                        <Route exact path="/logout" component={Login}/>
                         <Route component={Base}/>
                     </Switch>
                 </Router>

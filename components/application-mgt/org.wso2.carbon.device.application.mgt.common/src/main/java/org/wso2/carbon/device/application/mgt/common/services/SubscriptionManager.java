@@ -46,7 +46,7 @@ public interface SubscriptionManager {
      * @throws ApplicationManagementException Application Management Exception
      */
     List<DeviceIdentifier> installApplicationForUsers(String applicationUUID,
-                                            List<String> userList)
+                                            List<String> userList, String versionName)
             throws ApplicationManagementException;
 
     /**
@@ -57,7 +57,7 @@ public interface SubscriptionManager {
      * @throws ApplicationManagementException Application Management Exception
      */
     List<DeviceIdentifier> installApplicationForRoles(String applicationUUID,
-                                            List<String> roleList)
+                                            List<String> roleList, String versionName)
             throws ApplicationManagementException;
 
     /**

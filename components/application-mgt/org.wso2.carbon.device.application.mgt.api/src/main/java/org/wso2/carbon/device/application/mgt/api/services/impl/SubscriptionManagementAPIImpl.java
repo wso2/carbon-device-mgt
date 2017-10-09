@@ -59,10 +59,10 @@ public class SubscriptionManagementAPIImpl implements SubscriptionManagementAPI{
                 result = subscriptionManager.installApplicationForDevices(applicationUUTD, versionName, deviceList);
             } else if (!installationDetails.getUserNameList().isEmpty()) {
                 List<String> userList = installationDetails.getUserNameList();
-                result = subscriptionManager.installApplicationForUsers(applicationUUTD, userList);
+                result = subscriptionManager.installApplicationForUsers(applicationUUID, userList, versionName);
             } else if (!installationDetails.getRoleNameList().isEmpty()) {
                 List<String> roleList = installationDetails.getRoleNameList();
-                result = subscriptionManager.installApplicationForRoles(applicationUUTD, roleList);
+                result = subscriptionManager.installApplicationForRoles(applicationUUID, roleList, versionName);
             } else {
                 result = "Missing request data!";
                 return Response.status(Response.Status.BAD_REQUEST).entity(result).build();

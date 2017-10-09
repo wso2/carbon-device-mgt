@@ -21,8 +21,9 @@ import {withRouter} from 'react-router-dom';
 import AuthHandler from "../../../api/authHandler";
 import {Step1, Step2, Step3, Step4} from './CreateSteps/index';
 import ApplicationMgtApi from '../../../api/applicationMgtApi';
-import {Col, Modal, ModalBody, ModalHeader, Row} from 'reactstrap';
+import {Modal, ModalHeader} from 'reactstrap';
 import {FormattedMessage} from 'react-intl';
+import Stepper from "../../UIComponents/StepprHeader/Stepper";
 
 
 /**
@@ -149,6 +150,18 @@ class ApplicationCreate extends Component {
     };
 
     /**
+     * Defines the application creation stepper.
+     * */
+    getStepperHeaders() {
+        return [
+            {index: 1, text: <FormattedMessage id="General.Info" defaultMessage="General.Info"/>},
+            {index: 2, text: <FormattedMessage id="Select.Platform" defaultMessage="Select.Platform"/>},
+            {index: 3, text: <FormattedMessage id="Screenshots" defaultMessage="Screenshots"/>},
+            {index: 4, text: <FormattedMessage id="Release" defaultMessage="Release"/>, optional: true}
+        ];
+    }
+
+    /**
      * Remove the last data point
      * */
     removeStepData() {
@@ -239,51 +252,17 @@ class ApplicationCreate extends Component {
             <div id="create-application-modal">
                 <Modal isOpen={this.state.open} toggle={this.toggle} id="app-create-modal"
                        backdrop={'static'}>
-                    <ModalHeader toggle={this.toggle}>
+                    <ModalHeader toggle={this.toggle} className="app-create-modal-header">
                         <FormattedMessage id="Create.Application" defaultMessage="Create Application"/>
                     </ModalHeader>
-                    <ModalBody id="modal-body-content">
-                        <Row>
-                            <Col>
-                                <div className="stepper-header">
-                                    <Row>
-                                        <Col>
-                                            <div className="stepper-header-content">
-                                                <div className="step-index">1</div>
-                                                <div className="step-header">
-                                                    <FormattedMessage id="General.Info" defaultMessage="General.Info"/>
-                                                </div>
-                                            </div>
-                                        </Col>
-                                        <Col>
-                                            <span className="step-index">2</span>
-                                            <span className="step-header">
-                                                <FormattedMessage id="Select.Platform"
-                                                                  defaultMessage="Select.Platform"/>
-                                            </span>
-                                        </Col>
-                                        <Col>
-                                            <span className="step-index">3</span>
-                                            <span className="step-header">
-                                                <FormattedMessage id="Screenshots" defaultMessage="Screenshots"/>
-                                            </span>
-                                        </Col>
-                                        <Col>
-                                            <span className="step-index">4</span>
-                                            <span className="step-header">
-                                                <FormattedMessage id="Release" defaultMessage="Release"/>
-                                            </span>
-                                        </Col>
-                                    </Row>
-                                </div>
-                            </Col>
-                        </Row>
-                        <Row>
-                            <Col>
-                                {this.getStepContent(stepIndex)}
-                            </Col>
-                        </Row>
-                    </ModalBody>
+                    <div className="container app-create-modal-content">
+                        <Stepper
+                            activeStep={stepIndex + 1}
+                            previousStep={stepIndex}
+                            stepContent={this.getStepperHeaders()}
+                        />
+                        {this.getStepContent(stepIndex)}
+                    </div>
                 </Modal>
             </div>);
     }

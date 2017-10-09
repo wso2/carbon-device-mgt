@@ -316,10 +316,6 @@ body {
     background-color: #E64A19;
 }
 
-#app-main-content {
-    margin: 0 auto;
-}
-
 #sub-title-container {
     height: 100px;
     padding: 50px 0 20px 0;
@@ -332,30 +328,11 @@ body {
 }
 
 /* Holds the app publisher pages. */
-#application-content {
+.publisher-card {
     height: auto;
     background-color: white;
-    width: 100%;
     box-shadow: 2px 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
     padding: 24px;
-}
-
-.stepper-header {
-    width: 100%;
-    color: #BaBaBa;
-    padding-bottom: 5px;
-    margin-bottom: 10px;
-}
-
-#application-tag {
-    margin: 0 2px 0 2px;
-    background-color: blue;
-    height: 20px;
-}
-
-#application-tag:hover {
-    cursor: pointer;
-    background-color: #007bff;
 }
 
 .platform-link-placeholder {
@@ -368,7 +345,7 @@ body {
     margin-right: 4px;
 }
 
-#application-list {
+.application-list {
     transition: margin-right .5s;
 }
 
@@ -489,14 +466,18 @@ body {
 
 #modal-body-content {
     max-height: 700px;
+    padding-left: 24px;
     overflow-y: auto;
 }
 
-.step-index {
-    height: 20px;
-    width: 20px;
-    background-color: #2196F3;
-    border-radius: 50%;
+.custom-footer {
+    justify-content: inherit !important;
+    margin: 0 !important;
+}
+
+.footer-main-btn {
+    display: flex;
+    justify-content: flex-end;
 }
 
 #img-btn-screenshot {
@@ -504,9 +485,18 @@ body {
 }
 
 #app-create-modal {
-    max-width: 700px;
-    overflow-x: auto;
+    max-width: 850px;
     border-radius: 0% !important;
+}
+
+.app-create-modal-header {
+    background-color: #4353bd;
+    color: white;
+    padding: 24px !important;
+}
+
+.app-create-modal-content {
+    padding: 0 !important;
 }
 
 #store {
@@ -532,7 +522,7 @@ body {
     float: left;
 }
 
-#app-release-switch-switch {
+#app-release-switch {
     position: absolute;
     right: 10px;
 }
@@ -838,3 +828,39 @@ div.tab button.active {
 .data-table-row-cell {
     padding-top: 14px;
 }
+
+.error-code {
+    text-align: center;
+    font-family: Roboto-Medium;
+    font-weight: 800;
+    font-size: 15em;
+    color: #BaBaBa;
+}
+
+.error-code p {
+
+}
+
+.error-text {
+    text-align: center;
+    font-family: Roboto-Regular;
+    font-size: 14px;
+    font-weight: 500;
+    color: #9e9e9e;
+}
+
+/**
+    If you need to change the color of active steps in stepper,
+    uncomment the following and set the background color and font color as needed.
+*/
+/*
+.stepper-active-index {
+    background-color: #0a6eff !important;
+    color: white !important;
+}
+
+.stepper-passed-index {
+    background-color: #0a6eff !important;
+    color: green !important;
+}
+*/

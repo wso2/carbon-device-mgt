@@ -57,5 +57,6 @@
   "Yes" : "Yes",
   "No" : "No",
   "No.Platform.Tags" : "No Platform Tags",
-  "Create.Platform" : "Create Platform"
+  "Create.Platform" : "Create Platform",
+  "Optional": "Optional"
 }

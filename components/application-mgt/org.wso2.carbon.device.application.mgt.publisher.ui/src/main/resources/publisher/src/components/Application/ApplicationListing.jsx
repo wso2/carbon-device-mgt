@@ -182,19 +182,18 @@ class ApplicationListing extends Component {
     onRowClick(uuid) {
         let selectedApp = this.getSelectedApplication(uuid);
         let style = {
-            width: '550px',
-            marginLeft: '550px'
+            width: '35%'
         };
 
         let appListStyle = {
-            marginRight: '550px',
+            marginRight: '35%',
         };
 
         this.setState({drawer: style, appListStyle: appListStyle, application: selectedApp[0]});
     }
 
     onAppEditClick(uuid) {
-        this.props.history.push("apps/edit/" + uuid);
+        this.props.history.push("apps/" + uuid + "/edit");
     }
 
     closeDrawer() {
@@ -217,38 +216,53 @@ class ApplicationListing extends Component {
 
     render() {
         //TODO: Move this to a data table component.
+        console.log(this.state.appListStyle);
         return (
-            <div id="application-list" style={this.state.appListStyle}>
+            <div className="publisher-card application-list" style={this.state.appListStyle}>
                 <Row className="app-list-table-header">
                     {this.headers.map(header => {
                         if (header.data_id === "applicationName") {
                             return (
-                                <Col xs="5">{header.label}</Col>)
+                                <Col key={Math.random()} xs="4">{header.label}</Col>)
                         } else if (header.data_id === "image") {
-                            return (<Col xs="1">{header.label}</Col>)
+                            return (<Col key={Math.random()} xs="1">{header.label}</Col>)
+                        } else if (header.data_id === "edit") {
+                            return <Col key={Math.random()} xs="1"></Col>
                         }
-                        return (<Col>{header.label}</Col>)
+                        return (<Col key={Math.random()}>{header.label}</Col>)
                     })}
                 </Row>
                 <hr/>
                 {this.state.searchedApplications.map(application => {
                     return (
-                        <Row className="app-table-row" onClick={() => {
+                        <Row key={application.uuid} className="app-table-row" onClick={() => {
                             this.onRowClick(application.uuid)
                         }}>
-                            <Col xs="1">
+                            <Col key={Math.random()} xs="1">
                                 <img
                                     className="app-list-icon"
                                     src={application.icon}
                                 />
                             </Col>
-                            <Col xs="5" className="data-table-row-cell"><strong>{application.name}</strong></Col>
-                            <Col className="data-table-row-cell">{application.platform.name}</Col>
-                            <Col className="data-table-row-cell">{application.category.name}</Col>
                             <Col
-                                className="data-table-row-cell">{application.currentLifecycle.lifecycleState.name}
+                                key={Math.random()}
+                                xs="4"
+                                className="data-table-row-cell"
+                            >
+                                <strong>{application.name}</strong>
                             </Col>
-                            <Col>
+                            <Col key={Math.random()} className="data-table-row-cell">{application.platform.name}</Col>
+                            <Col key={Math.random()} className="data-table-row-cell">{application.category.name}</Col>
+                            <Col
+                                key={Math.random()}
+                                className="data-table-row-cell"
+                            >
+                                {application.currentLifecycle.lifecycleState.name}
+                            </Col>
+                            <Col
+                                xs="1"
+                                key={Math.random()}
+                            >
                                 <Button className="custom-flat grey rounded"
                                         onClick={() => this.onAppEditClick(application.uuid)}>
                                     <i className="fw fw-edit"></i>

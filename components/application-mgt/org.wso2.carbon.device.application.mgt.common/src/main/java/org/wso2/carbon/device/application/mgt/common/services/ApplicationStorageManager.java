@@ -36,37 +36,40 @@ public interface ApplicationStorageManager {
      * @param applicationUUID UUID of the application
      * @param iconFile        Icon File input stream
      * @param bannerFile      Banner File input stream
-     * @throws ApplicationStorageManagementException Application Storage Management Exception.
+     * @throws ResourceManagementException Resource Management Exception.
      */
-    public void uploadImageArtifacts(String applicationUUID, InputStream iconFile, InputStream bannerFile,
+    void uploadImageArtifacts(String applicationUUID, InputStream iconFile, InputStream bannerFile,
             List<InputStream> screenshots) throws ResourceManagementException;
 
     /**
      * To upload release artifacts for an Application.
+     *
      * @param applicationUUID UUID of the application related with the release.
-     * @param versionName Name of version of the Applcation Release.
-     * @param binaryFile Binary File for the release.
-     * @throws ApplicationStorageManagementException Application Storage Management Exception.
+     * @param versionName     Name of version of the Applcation Release.
+     * @param binaryFile      Binary File for the release.
+     * @throws ResourceManagementException Resource Management Exception.
      */
-    public void uploadReleaseArtifacts(String applicationUUID, String versionName, InputStream binaryFile)
+    void uploadReleaseArtifacts(String applicationUUID, String versionName, InputStream binaryFile)
             throws ResourceManagementException;
 
     /**
      * To get released artifacts for the particular version of the application.
+     *
      * @param applicationUUID UUID of the Application
-     * @param versionName Version of the release to be retrieved
+     * @param versionName     Version of the release to be retrieved
      * @return the artifact related with the Application Release.
      * @throws ApplicationStorageManagementException Application Storage Management Exception.
      */
-    public InputStream getReleasedArtifacts(String applicationUUID, String versionName) throws
-            ApplicationStorageManagementException;
+    InputStream getReleasedArtifacts(String applicationUUID, String versionName)
+            throws ApplicationStorageManagementException;
 
     /**
      * To delete all the artifacts related with a particular Application.
+     *
      * @param applicationUUID UUID of the Application.
      * @throws ApplicationStorageManagementException Application Storage Management Exception.
      */
-    public void deleteApplicationArtifacts(String applicationUUID) throws ApplicationStorageManagementException;
+    void deleteApplicationArtifacts(String applicationUUID) throws ApplicationStorageManagementException;
 
     /**
      * To delete the artifacts related with particular Application Release.
@@ -75,16 +78,16 @@ public interface ApplicationStorageManager {
      * @param version         Version of ApplicationRelease that need to be deleted.
      * @throws ApplicationStorageManagementException Application Storage Management Exception.
      */
-    public void deleteApplicationReleaseArtifacts(String applicationUUID, String version)
+    void deleteApplicationReleaseArtifacts(String applicationUUID, String version)
             throws ApplicationStorageManagementException;
 
     /**
      * To delete all release artifacts related with particular Application Release.
+     *
      * @param applicationUUID UUID of the Application.
      * @throws ApplicationStorageManagementException Application Storage Management Exception
      */
-    public void deleteAllApplicationReleaseArtifacts(String applicationUUID) throws
-            ApplicationStorageManagementException;
+    void deleteAllApplicationReleaseArtifacts(String applicationUUID) throws ApplicationStorageManagementException;
 
     /**
      * To get particular image artifact of the application.
@@ -95,6 +98,6 @@ public interface ApplicationStorageManager {
      * @return the relevant image artifact.
      * @throws ApplicationStorageManagementException Application Storage Management Exception.
      */
-    public ImageArtifact getImageArtifact(String applicationUUID, String name, int count) throws
-            ApplicationStorageManagementException;
+    ImageArtifact getImageArtifact(String applicationUUID, String name, int count)
+            throws ApplicationStorageManagementException;
 }

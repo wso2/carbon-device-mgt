@@ -44,15 +44,13 @@ CREATE INDEX IF NOT EXISTS FK_PLATFROM_TENANT_MAPPING_PLATFORM ON APPM_PLATFORM_
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS APPM_APPLICATION_CATEGORY (
   ID INT NOT NULL AUTO_INCREMENT,
-  NAME VARCHAR(100) NOT NULL,
+  NAME VARCHAR(100) NOT NULL UNIQUE,
   DESCRIPTION TEXT NULL,
-  PUBLISHED TINYINT NULL,
   PRIMARY KEY (ID));
 
-INSERT INTO APPM_APPLICATION_CATEGORY (NAME, DESCRIPTION, PUBLISHED) VALUES ('Enterprise', 'Enterprise level
-applications which the artifacts need to be provided', 1);
-INSERT INTO APPM_APPLICATION_CATEGORY (NAME, DESCRIPTION, PUBLISHED) VALUES ('Public', 'Public category in which the
-application need to be downloaded from the public application store', 1);
+INSERT INTO APPM_APPLICATION_CATEGORY (NAME, DESCRIPTION) VALUES ('Sports', 'Applications that involve sports.');
+INSERT INTO APPM_APPLICATION_CATEGORY (NAME, DESCRIPTION) VALUES ('Education', 'Application related with education');
+INSERT INTO APPM_APPLICATION_CATEGORY (NAME, DESCRIPTION) VALUES ('News', 'Applications involving news');
 
 -- -----------------------------------------------------
 -- Table `APPM_LIFECYCLE_STATE`

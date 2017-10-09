@@ -35,7 +35,7 @@ public interface PlatformManager {
      * @param tenantId ID of the tenant
      * @throws PlatformManagementException Platform Management Exception
      */
-    public void initialize(int tenantId) throws PlatformManagementException;
+    void initialize(int tenantId) throws PlatformManagementException;
 
     /**
      * To get platforms of the specific tenant.
@@ -44,7 +44,7 @@ public interface PlatformManager {
      * @return List of platforms
      * @throws PlatformManagementException Platform Management Exception
      */
-    public List<Platform> getPlatforms(int tenantId) throws PlatformManagementException;
+    List<Platform> getPlatforms(int tenantId) throws PlatformManagementException;
 
     /**
      * To get platform with the given platform identifier and tenant ID.
@@ -54,7 +54,7 @@ public interface PlatformManager {
      * @return the Specific platform with the platform identifier and tenant
      * @throws PlatformManagementException Platform Management Exception
      */
-    public Platform getPlatform(int tenantId, String platformIdentifier) throws PlatformManagementException;
+    Platform getPlatform(int tenantId, String platformIdentifier) throws PlatformManagementException;
 
     /**
      * To register a platform under particular tenant.
@@ -63,7 +63,7 @@ public interface PlatformManager {
      * @param platform Platform to be registered
      * @throws PlatformManagementException Platform Management Exception
      */
-    public void register(int tenantId, Platform platform) throws PlatformManagementException;
+    void register(int tenantId, Platform platform) throws PlatformManagementException;
 
     /**
      * To update a platform.
@@ -73,8 +73,7 @@ public interface PlatformManager {
      * @param platform              Platform to be updated
      * @throws PlatformManagementException Platform Management Exception
      */
-    public void update(int tenantId, String oldPlatformIdentifier, Platform platform)
-            throws PlatformManagementException;
+    void update(int tenantId, String oldPlatformIdentifier, Platform platform) throws PlatformManagementException;
 
     /**
      * To un-register the platform.
@@ -84,8 +83,7 @@ public interface PlatformManager {
      * @param isFileBased        To indicate whether a file based or not.
      * @throws PlatformManagementException Platform Management Exception.
      */
-    public void unregister(int tenantId, String platformIdentifier, boolean isFileBased)
-            throws PlatformManagementException;
+    void unregister(int tenantId, String platformIdentifier, boolean isFileBased) throws PlatformManagementException;
 
     /**
      * To add mapping to platform identifiers with the tenant ID.
@@ -94,7 +92,7 @@ public interface PlatformManager {
      * @param platformIdentifiers Platform Identifiers
      * @throws PlatformManagementException Platform Management Exception
      */
-    public void addMapping(int tenantId, List<String> platformIdentifiers) throws PlatformManagementException;
+    void addMapping(int tenantId, List<String> platformIdentifiers) throws PlatformManagementException;
 
     /**
      * To add mapping to a platform for a tenant.
@@ -103,7 +101,7 @@ public interface PlatformManager {
      * @param platformIdentifier ID of the platform, the mapping should be added.
      * @throws PlatformManagementException Platform Management Exception.
      */
-    public void addMapping(int tenantId, String platformIdentifier) throws PlatformManagementException;
+    void addMapping(int tenantId, String platformIdentifier) throws PlatformManagementException;
 
     /**
      * To remove a mapping of a platform to a tenant.
@@ -112,7 +110,7 @@ public interface PlatformManager {
      * @param platformIdentifier ID of the platform.
      * @throws PlatformManagementException Platform Management Exception.
      */
-    public void removeMapping(int tenantId, String platformIdentifier) throws PlatformManagementException;
+    void removeMapping(int tenantId, String platformIdentifier) throws PlatformManagementException;
 
     /**
      * To update the platform status(ENABLED / DISABLED).
@@ -122,7 +120,7 @@ public interface PlatformManager {
      * @param status             Status to be updated.
      * @throws PlatformManagementException Platform Management Exception.
      */
-    public void updatePlatformStatus(int tenantId, String platformIdentifier, String status)
+    void updatePlatformStatus(int tenantId, String platformIdentifier, String status)
             throws PlatformManagementException;
 
     /**
@@ -131,7 +129,7 @@ public interface PlatformManager {
      * @param tenantId ID of the tenant.
      * @throws PlatformManagementException Platform Management Exception.
      */
-    public void removePlatforms(int tenantId) throws PlatformManagementException;
+    void removePlatforms(int tenantId) throws PlatformManagementException;
 
     /**
      * To get the platform tags.
@@ -140,5 +138,5 @@ public interface PlatformManager {
      * @return list of the platform tags that start with the character sequence.
      * @throws PlatformManagementException PlatformManagement Exception
      */
-    public List<String> getPlatformTags(String name) throws PlatformManagementException;
+    List<String> getPlatformTags(String name) throws PlatformManagementException;
 }

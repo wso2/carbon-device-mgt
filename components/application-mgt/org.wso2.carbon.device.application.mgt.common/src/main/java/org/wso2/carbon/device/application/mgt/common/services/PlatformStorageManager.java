@@ -33,18 +33,19 @@ public interface PlatformStorageManager {
      * To upload image artifacts related with an Application.
      *
      * @param platformIdentifier Identifier of the platform
-     * @param iconFile        Icon File input stream
-     * @throws PlatformStorageManagementException Platform Storage Management Exception.
+     * @param iconFile           Icon File input stream
+     * @throws ResourceManagementException Resource Management Exception.
      */
-    public void uploadIcon(String platformIdentifier, InputStream iconFile) throws ResourceManagementException;
+    void uploadIcon(String platformIdentifier, InputStream iconFile) throws ResourceManagementException;
 
     /**
      * To get the icon for a particular platform.
      *
      * @param platformIdentifier Identifier of the platform.
      * @return the icon for the given platform.
+     * @throws PlatformStorageManagementException Platform Storage Management Exception.
      */
-    public ImageArtifact getIcon(String platformIdentifier) throws PlatformStorageManagementException;
+    ImageArtifact getIcon(String platformIdentifier) throws PlatformStorageManagementException;
 
     /**
      * To delete the icon of a particular platform
@@ -52,5 +53,5 @@ public interface PlatformStorageManager {
      * @param platformIdentifier Identifier of the platform to which delete icon.
      * @throws PlatformStorageManagementException PlatformStorageManagement Exception.
      */
-    public void deleteIcon(String platformIdentifier) throws PlatformStorageManagementException;
+    void deleteIcon(String platformIdentifier) throws PlatformStorageManagementException;
 }

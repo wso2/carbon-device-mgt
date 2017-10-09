@@ -21,7 +21,6 @@ package org.wso2.carbon.device.application.mgt.core.util;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 import org.wso2.carbon.device.application.mgt.common.ImageArtifact;
-import org.wso2.carbon.device.application.mgt.common.exception.ApplicationStorageManagementException;
 import org.wso2.carbon.device.application.mgt.common.exception.ResourceManagementException;
 
 import java.io.File;
@@ -32,12 +31,15 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 
+/**
+ * This is a util class that handles Storage Management related tasks.
+ */
 public class StorageManagementUtil {
     /**
      * This method is responsible for creating artifact parent directories in the given path.
      *
      * @param artifactDirectoryPath Path for the artifact directory.
-     * @throws ApplicationStorageManagementException Application Storage Management Exception.
+     * @throws ResourceManagementException Resource Management Exception.
      */
     public static void createArtifactDirectory(String artifactDirectoryPath) throws ResourceManagementException {
         File artifactDirectory = new File(artifactDirectoryPath);
@@ -64,7 +66,6 @@ public class StorageManagementUtil {
         }
         artifactDirectory.delete();
     }
-
 
     /**
      * To save a file in a given location.

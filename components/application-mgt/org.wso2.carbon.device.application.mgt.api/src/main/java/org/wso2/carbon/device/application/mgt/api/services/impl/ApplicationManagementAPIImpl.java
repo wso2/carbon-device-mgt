@@ -28,6 +28,7 @@ import org.wso2.carbon.device.application.mgt.api.services.ApplicationManagement
 import org.wso2.carbon.device.application.mgt.common.Application;
 import org.wso2.carbon.device.application.mgt.common.ApplicationList;
 import org.wso2.carbon.device.application.mgt.common.ApplicationRelease;
+import org.wso2.carbon.device.application.mgt.common.Category;
 import org.wso2.carbon.device.application.mgt.common.Filter;
 import org.wso2.carbon.device.application.mgt.common.ImageArtifact;
 import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
@@ -216,8 +217,8 @@ public class ApplicationManagementAPIImpl implements ApplicationManagementAPI {
     @POST
     @Path("/upload-image-artifacts/{uuid}")
     public Response uploadApplicationArtifacts(@PathParam("uuid") String applicationUUID,
-                                               @Multipart("icon") Attachment iconFile, @Multipart("banner") Attachment bannerFile, @Multipart
-                                                       ("screenshot") List<Attachment> attachmentList) {
+            @Multipart("icon") Attachment iconFile, @Multipart("banner") Attachment bannerFile,
+            @Multipart("screenshot") List<Attachment> attachmentList) {
         ApplicationStorageManager applicationStorageManager = APIUtil.getApplicationStorageManager();
         try {
             InputStream iconFileStream;
@@ -539,6 +540,53 @@ public class ApplicationManagementAPIImpl implements ApplicationManagementAPI {
             log.error("Application Release Management Exception while changing the default release for the release "
                     + "channel " + channel + " for the application with UUID " + applicationUUID + " for the version "
                     + version);
+            return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Override
+    @POST
+    @Path("/category")
+    public Response createCategory(@Valid Category category) {
+        if (category == null) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("Category is null. cannot create the "
+                    + "category").build();
+        }
+        try {
+            Category createdCategory = APIUtil.getCategoryManager().createCategory(category);
+            return  Response.status(Response.Status.CREATED).entity(createdCategory).build();
+        } catch (ApplicationManagementException e) {
+            log.error("Application Management Exception while trying to create the application category", e);
+            return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Override
+    @GET
+    @Path("/category")
+    public Response getCategories() {
+        List<Category> categories;
+        try {
+            categories = APIUtil.getCategoryManager().getCategories();
+            return Response.status(Response.Status.OK).entity(categories).build();
+        } catch (ApplicationManagementException e) {
+            log.error("Application Management Exception while trying to get application categories", e);
+            return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Override
+    @DELETE
+    @Path("/category/{name}")
+    public Response deleteCategory(@PathParam("name") String name) {
+        if (name == null || name.isEmpty()) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("Name cannot be null or empty.").build();
+        }
+        try {
+            APIUtil.getCategoryManager().deleteCategory(name);
+            return Response.status(Response.Status.OK).entity("Successfully deleted the category.").build();
+        } catch (ApplicationManagementException e) {
+            log.error("Application Management Exception while trying to delete category", e);
             return APIUtil.getResponse(e, Response.Status.INTERNAL_SERVER_ERROR);
         }
     }

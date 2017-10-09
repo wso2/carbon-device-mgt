@@ -24,6 +24,7 @@ import org.wso2.carbon.device.application.mgt.common.exception.UnsupportedDataba
 import org.wso2.carbon.device.application.mgt.core.config.ConfigurationManager;
 import org.wso2.carbon.device.application.mgt.core.dao.ApplicationDAO;
 import org.wso2.carbon.device.application.mgt.core.dao.ApplicationReleaseDAO;
+import org.wso2.carbon.device.application.mgt.core.dao.CategoryDAO;
 import org.wso2.carbon.device.application.mgt.core.dao.LifecycleStateDAO;
 import org.wso2.carbon.device.application.mgt.core.dao.PlatformDAO;
 import org.wso2.carbon.device.application.mgt.core.dao.SubscriptionDAO;
@@ -31,11 +32,12 @@ import org.wso2.carbon.device.application.mgt.core.dao.VisibilityDAO;
 import org.wso2.carbon.device.application.mgt.core.dao.impl.application.GenericApplicationDAOImpl;
 import org.wso2.carbon.device.application.mgt.core.dao.impl.application.release.GenericApplicationReleaseDAOImpl;
 import org.wso2.carbon.device.application.mgt.core.dao.impl.application.release.OracleApplicationDAOImpl;
+import org.wso2.carbon.device.application.mgt.core.dao.impl.category.GenericCategoryDAOImpl;
 import org.wso2.carbon.device.application.mgt.core.dao.impl.lifecyclestate.GenericLifecycleStateImpl;
 import org.wso2.carbon.device.application.mgt.core.dao.impl.platform.GenericPlatformDAOImpl;
 import org.wso2.carbon.device.application.mgt.core.dao.impl.platform.OracleMsSQLPlatformDAOImpl;
-import org.wso2.carbon.device.application.mgt.core.dao.impl.visibility.GenericVisibilityDAOImpl;
 import org.wso2.carbon.device.application.mgt.core.dao.impl.subscription.GenericSubscriptionDAOImpl;
+import org.wso2.carbon.device.application.mgt.core.dao.impl.visibility.GenericVisibilityDAOImpl;
 import org.wso2.carbon.device.application.mgt.core.exception.ApplicationManagementDAOException;
 import org.wso2.carbon.device.application.mgt.core.util.ApplicationMgtDatabaseCreator;
 import org.wso2.carbon.device.application.mgt.core.util.ConnectionManagerUtil;
@@ -159,6 +161,23 @@ public class DAOFactory {
                     return new GenericSubscriptionDAOImpl();
                 default:
                     throw new UnsupportedDatabaseEngineException("Unsupported database engine : " + databaseEngine);
+            }
+        }
+        throw new IllegalStateException("Database engine has not initialized properly.");
+    }
+
+    /**
+     * To get the instance of CategoryDAOImplementation of the particular database engine.
+     * @return {@link org.wso2.carbon.device.application.mgt.core.dao.impl.category.GenericCategoryDAOImpl}
+     */
+    public static CategoryDAO getCategoryDAO() {
+        if (databaseEngine != null) {
+            switch (databaseEngine) {
+            case Constants.DataBaseTypes.DB_TYPE_H2:
+            case Constants.DataBaseTypes.DB_TYPE_MYSQL:
+                return new GenericCategoryDAOImpl();
+            default:
+                throw new UnsupportedDatabaseEngineException("Unsupported database engine : " + databaseEngine);
             }
         }
         throw new IllegalStateException("Database engine has not initialized properly.");

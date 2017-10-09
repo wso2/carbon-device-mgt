@@ -32,7 +32,6 @@ import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.apache.cxf.jaxrs.ext.multipart.Multipart;
 import org.wso2.carbon.apimgt.annotations.api.Scopes;
 import org.wso2.carbon.device.application.mgt.api.beans.ErrorResponse;
-import org.wso2.carbon.device.application.mgt.common.ApplicationRelease;
 import org.wso2.carbon.device.application.mgt.common.Platform;
 
 import javax.validation.constraints.Size;
@@ -211,7 +210,7 @@ public interface PlatformManagementAPI {
                             response = ErrorResponse.class)
             })
     Response addPlatform(
-            @Multipart(value = "Platform", type = "application/json" ) Platform platform,
+            @Multipart(value = "Platform", type = "application/json") Platform platform,
             @Multipart(value = "icon", required = false) Attachment iconFile
     );
 
@@ -371,7 +370,7 @@ public interface PlatformManagementAPI {
                             response = ErrorResponse.class)
             })
     Response getPlatformTags(
-            @ApiParam(name = "name", value ="The initial part of the name of platform tags that we need to retrieve",
+            @ApiParam(name = "name", value = "The initial part of the name of platform tags that we need to retrieve",
                     required = true)
             @PathParam("name") @Size(min = 3) String name
     );

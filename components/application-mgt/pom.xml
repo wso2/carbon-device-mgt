@@ -38,6 +38,7 @@
         <module>org.wso2.carbon.device.application.mgt.common</module>
         <module>org.wso2.carbon.device.application.mgt.api</module>
         <module>org.wso2.carbon.device.application.mgt.publisher.ui</module>
+        <module>org.wso2.carbon.device.application.mgt.store.ui</module>
         <module>org.wso2.carbon.device.application.mgt.authhandler</module>
     </modules>
 

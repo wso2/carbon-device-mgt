@@ -37,5 +37,7 @@
   "Alpha.Releases" : "Alpha Releases",
   "Version" : "Version",
   "Status" : "Status",
-  "App.Publisher" : "Application Publisher"
+  "App.Publisher" : "Application Publisher",
+  "Login": "Login",
+  "Logout" : "Logout"
 }

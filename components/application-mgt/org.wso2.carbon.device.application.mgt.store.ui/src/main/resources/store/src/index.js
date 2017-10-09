@@ -46,7 +46,7 @@ function loadStore() {
     }).catch(error => {
         addLocaleData(require('react-intl/locale-data/en'));
         let defaultLocale = Axios.create({
-            baseURL: Configuration.hostConstants.baseURL + "/" + Configuration.hostConstants.appContext + "/locales"
+            baseURL: Configuration.hostConstants.baseURL + "/" + Configuration.hostConstants.appContext + "/locales/"
             + Constants.defaultLocale + ".json"
         }).get();
         defaultLocale.then(response => {

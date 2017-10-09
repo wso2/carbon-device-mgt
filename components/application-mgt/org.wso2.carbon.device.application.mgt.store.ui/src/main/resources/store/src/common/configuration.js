@@ -25,6 +25,7 @@ class Configuration {
 
     constructor() {
         this.serverConfig = {};
+        this.themeConfig = {};
         this.hostConstants = {
             baseURL: window.location.origin,
             appContext: window.location.pathname.split("/")[1]
@@ -35,8 +36,9 @@ class Configuration {
         let thisObject = this;
         axios.get(thisObject.hostConstants.baseURL + '/' + thisObject.hostConstants.appContext + "/config.json").
         then(function (response) {
-            console.log('successfully loaded the configuration!');
+            console.log('succesfully loadedd....');
             thisObject.serverConfig = response.data.config;
+            thisObject.themeConfig = response.data.theme;
             Constants.load();
             callback();
         }).catch(function (error) {

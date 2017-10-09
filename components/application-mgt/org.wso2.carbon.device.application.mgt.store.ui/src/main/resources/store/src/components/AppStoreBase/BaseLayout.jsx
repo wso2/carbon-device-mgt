@@ -21,7 +21,7 @@ import React, {Component} from 'react';
 import {withRouter} from 'react-router-dom';
 import AuthHandler from "../../api/authHandler";
 import {Col, Container, Input, Row,} from 'reactstrap';
-import FloatingButton from "../UIComponents/FloatingButton/FloatingButton";
+import UserOptions from '../UIComponents/UserOptions/UserOptions';
 
 /**
  * Base Layout:
@@ -36,20 +36,16 @@ class BaseLayout extends Component {
         this.state = {
             notifications: 0,
             user: 'Admin',
-            openModal: false
+            openModal: false,
+            userOptions : false
         };
         this.logout = this.logout.bind(this);
         this.closeModal = this.closeModal.bind(this);
+        this.handleUserOptionsOnClick = this.handleUserOptionsOnClick.bind(this);
     }
 
     handleApplicationClick() {
         this.handleHistory('/assets/apps');
-    }
-
-    handleApplicationCreateClick(event) {
-        event.preventDefault();
-        event.stopPropagation();
-        this.setState({openModal: true});
     }
 
     /**
@@ -68,6 +64,10 @@ class BaseLayout extends Component {
         this.setState({openModal: false});
     }
 
+    handleUserOptionsOnClick() {
+        this.setState({userOptions : true});
+    }
+
     render() {
         return (
             <Container noGutters fluid id="container">
@@ -78,7 +78,9 @@ class BaseLayout extends Component {
                         </span>
                         <div id="header-btn-container">
                             <i className="fw fw-notification btn-header"></i>
-                            <i className="fw fw-user btn-header"></i>
+                            <i className="fw fw-user btn-header" onClick={this.handleUserOptionsOnClick}>
+                                <UserOptions userOptions={this.state.userOptions}/>
+                            </i>
                         </div>
                         <div id="search-box">
                             <i className="fw fw-search search-icon">
@@ -90,12 +92,6 @@ class BaseLayout extends Component {
                                 onChange={(event) => console.log(event.target.value)} //TODO: Remove this
                             />
                         </div>
-                    </div>
-                    <div id="add-btn-container">
-                        <FloatingButton
-                            className="add-btn small"
-                            onClick={this.handleApplicationCreateClick.bind(this)}
-                        />
                     </div>
                 </div>
                 <div id="application-content" style={this.state.style}>

@@ -28,3 +28,8 @@ components/application-mgt/org.wso2.carbon.device.application.mgt.publisher.ui/s
 components/application-mgt/org.wso2.carbon.device.application.mgt.publisher.ui/src/main/resources/publisher/build/
 components/application-mgt/org.wso2.carbon.device.application.mgt.publisher.ui/src/main/resources/publisher/package-lock.json
 components/application-mgt/org.wso2.carbon.device.application.mgt.publisher.ui/src/main/resources/publisher/npm-debug.log
+components/application-mgt/org.wso2.carbon.device.application.mgt.publisher.ui/src/main/resources/publisher/public/dist/
+components/application-mgt/org.wso2.carbon.device.application.mgt.store.ui/src/main/resources/store/node_modules/
+components/application-mgt/org.wso2.carbon.device.application.mgt.store.ui/src/main/resources/store/public/dist/
+components/application-mgt/org.wso2.carbon.device.application.mgt.store.ui/src/main/resources/store/package-lock.json
+

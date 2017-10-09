@@ -44,9 +44,8 @@ public class CategoryManagerImpl implements CategoryManager {
                     "Application category name cannot be null. Application category creation failed.");
         }
         if (getCategory(category.getName()) != null) {
-            throw new ApplicationCategoryManagementException(
-                    "Application category wth the name " + category.getName() + " "
-                            + "exists already. Please select a different name");
+            throw new ApplicationCategoryManagementException("Application category wth the name " + category.getName()
+                    + "exists already. Please select a different name");
         }
         try {
             ConnectionManagerUtil.beginDBTransaction();

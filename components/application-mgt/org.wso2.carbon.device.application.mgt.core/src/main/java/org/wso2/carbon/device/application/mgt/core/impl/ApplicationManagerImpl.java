@@ -73,11 +73,10 @@ public class ApplicationManagerImpl implements ApplicationManager {
         application.setModifiedAt(new Date());
         Platform platform = DataHolder.getInstance().getPlatformManager()
                 .getPlatform(application.getUser().getTenantId(), application.getPlatform().getIdentifier());
-
         if (platform == null) {
             throw new NotFoundException("Invalid platform is provided for the application " + application.getUuid());
         }
-
+        application.setPlatform(platform);
         Category category = DataHolder.getInstance().getCategoryManager()
                 .getCategory(application.getCategory().getName());
         if (category == null) {
@@ -86,9 +85,6 @@ public class ApplicationManagerImpl implements ApplicationManager {
         application.setCategory(category);
         try {
             ConnectionManagerUtil.beginDBTransaction();
-
-            // Validating the platform
-            application.setPlatform(platform);
             if (log.isDebugEnabled()) {
                 log.debug("Application creation pre-conditions are met and the platform mentioned by identifier "
                         + platform.getIdentifier() + " is found");
@@ -104,7 +100,6 @@ public class ApplicationManagerImpl implements ApplicationManager {
             lifecycle.setLifecycleStateModifiedAt(new Date());
             lifecycle.setGetLifecycleStateModifiedBy(application.getUser().getUserName());
             application.setCurrentLifecycle(lifecycle);
-
             application = DAOFactory.getApplicationDAO().createApplication(application);
             DataHolder.getInstance().getVisibilityManager().put(application.getId(), application.getVisibility());
             ConnectionManagerUtil.commitDBTransaction();
@@ -142,7 +137,6 @@ public class ApplicationManagerImpl implements ApplicationManager {
                                 + " is not found. Please give a valid platform identifier.");
             }
             application.setPlatform(platform);
-
             if (application.getCategory() != null) {
                 String applicationCategoryName = application.getCategory().getName();
                 if (applicationCategoryName == null || applicationCategoryName.isEmpty()) {
@@ -158,7 +152,6 @@ public class ApplicationManagerImpl implements ApplicationManager {
                 }
                 application.setCategory(category);
             }
-
             try {
                 ConnectionManagerUtil.beginDBTransaction();
                 ApplicationDAO applicationDAO = DAOFactory.getApplicationDAO();

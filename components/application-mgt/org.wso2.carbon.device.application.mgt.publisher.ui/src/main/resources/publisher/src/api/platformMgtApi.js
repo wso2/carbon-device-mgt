@@ -20,6 +20,7 @@
 import Axios from 'axios';
 import AuthHandler from './authHandler';
 import Constants from '../common/constants';
+import Helper from './helpers/appMgtApiHelpers';
 
 /**
  * Api definitions for Platform management.
@@ -27,17 +28,19 @@ import Constants from '../common/constants';
 export default class PlatformMgtApi{
     /**
      * Create a new Platform
-     * @param platformData: The platform data object.
+     * @param general: Platform general information.
+     * @param config: Platform configurations.
+     * @param prop: Platform properties.
      * */
-    static createPlatform(platformData) {
-        const headers = AuthHandler.createAuthenticationHeaders("application/json");
-        Axios.post(Constants.platformManagerEndpoints.CREATE_PLATFORM, platformData, {headers: headers}).then(
-            function (response) {
-                console.log(response);
-            }
-        ).catch(function (err) {
-            console.log(err);
-        });
+    static createPlatform(general, config, prop) {
+        const headers = AuthHandler.createAuthenticationHeaders("multipart/form-data");
+        let platform = Helper.buildPlatform(general, config, prop);
+
+        let platformData = new FormData();
+        platformData.append("platform", platform.platform);
+        platformData.append("icon", platform.icon);
+
+        return Axios.post(Constants.platformManagerEndpoints.CREATE_PLATFORM, platformData, {headers: headers});
     }
 
     /**

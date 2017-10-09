@@ -58,5 +58,10 @@
   "No" : "No",
   "No.Platform.Tags" : "No Platform Tags",
   "Create.Platform" : "Create Platform",
-  "Optional": "Optional"
+  "Optional": "Optional",
+  "Identifier": "Identifier",
+  "Next": "Next",
+  "Platform.Enable": "Enable Platform",
+  "Share.with.Tenants": "Share between all tenants",
+  "Platform.Properties": "Platform Properties"
 }

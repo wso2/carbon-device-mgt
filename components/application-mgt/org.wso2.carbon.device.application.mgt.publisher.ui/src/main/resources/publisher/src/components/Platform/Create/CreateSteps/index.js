@@ -16,16 +16,8 @@
  * under the License.
  */
 
-import Login from './User/Login/Login';
-import NotFound from './Error/NotFound';
-import BaseLayout from './AppPublisherBase/BaseLayout';
-import {PlatformCreate, PlatformListing} from './Platform';
-import ApplicationCreate from './Application/Create/ApplicationCreate';
-import ApplicationListing from './Application/ApplicationListing';
-import ApplicationEdit from './Application/Edit/Base/ApplicationEditBaseLayout';
+import Configure from './Configure';
+import General from './General';
+import Properties from './Properties';
 
-/**
- * Contains all UI components related to Application, Login and Platform
- */
-
-export {Login, BaseLayout, ApplicationCreate, ApplicationListing, PlatformListing, NotFound, PlatformCreate, ApplicationEdit};
+export {Configure, General, Properties}

@@ -16,11 +16,11 @@
  * under the License.
  */
 import React, {Component} from 'react';
-import {Button, Col, Row} from "reactstrap";
+import {Button, Row} from "reactstrap";
 import Platform from "./Platform";
 import PlatformMgtApi from "../../api/platformMgtApi";
 import AuthHandler from "../../api/authHandler";
-import PlatformCreate from "./PlatformCreate";
+import PlatformCreate from "./Create/PlatformCreate";
 
 /**
  * Platform view component.

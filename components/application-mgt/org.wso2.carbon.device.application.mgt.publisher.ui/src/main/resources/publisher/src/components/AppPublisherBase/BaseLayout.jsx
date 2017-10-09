@@ -95,6 +95,8 @@ class BaseLayout extends Component {
             return "Applications";
         } else if (href.indexOf("platforms") !== -1) {
             return "Platforms";
+        } else {
+            return "";
         }
 
     }
@@ -163,23 +165,19 @@ class BaseLayout extends Component {
                                         <Button className="custom-flat grey" onClick={this.onClickPlatforms}>
                                             <i className="fw fw-settings"></i>
                                             <FormattedMessage id="Platforms" defaultMessage="Platforms"/>
-                                        </Button> :
-                                        <Button className="custom-flat grey" onClick={this.onClickApplications}>
-                                            <i className="fw fw-application"></i>
-                                            <FormattedMessage id="Applications" defaultMessage="Applications"/>
-                                        </Button>
+                                        </Button> : this.getCurrentPageTitle() === "" ? <div/> :
+                                            <Button className="custom-flat grey" onClick={this.onClickApplications}>
+                                                <i className="fw fw-application"></i>
+                                                <FormattedMessage id="Applications" defaultMessage="Applications"/>
+                                            </Button>
                                     }
                                 </div>
                             </Col>
                         </Row>
                         <Row>
-                            <div id="application-content">
-                                <Row>
-                                    <Col>
-                                        {this.props.children}
-                                    </Col>
-                                </Row>
-                            </div>
+                            <Col>
+                                {this.props.children}
+                            </Col>
                         </Row>
                     </div>
                 </Container>

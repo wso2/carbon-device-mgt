@@ -56,8 +56,8 @@ public class SubscriptionManagerImpl implements SubscriptionManager {
     }
 
     @Override
-    public List<DeviceIdentifier> installApplicationForUsers(String applicationUUID, List<String> userList, String versionName)
-            throws ApplicationManagementException {
+    public List<DeviceIdentifier> installApplicationForUsers(String applicationUUID, List<String> userList,
+                                                             String versionName) throws ApplicationManagementException {
         log.info("Install application: " + applicationUUID + " to: " + userList.size() + " users.");
         List<DeviceIdentifier> deviceList = new ArrayList<>();
         for (String user : userList) {
@@ -75,8 +75,8 @@ public class SubscriptionManagerImpl implements SubscriptionManager {
     }
 
     @Override
-    public List<DeviceIdentifier> installApplicationForRoles(String applicationUUID, List<String> roleList, String versionName)
-            throws ApplicationManagementException {
+    public List<DeviceIdentifier> installApplicationForRoles(String applicationUUID, List<String> roleList,
+                                                             String versionName) throws ApplicationManagementException {
         log.info("Install application: " + applicationUUID + " to: " + roleList.size() + " roles.");
         List<DeviceIdentifier> deviceList = new ArrayList<>();
         for (String role : roleList) {
@@ -100,12 +100,13 @@ public class SubscriptionManagerImpl implements SubscriptionManager {
         return null;
     }
 
-    private List<DeviceIdentifier> installApplication(String applicationUUID, List<DeviceIdentifier> deviceList, String versionName)
-            throws ApplicationManagementException {
+    private List<DeviceIdentifier> installApplication(String applicationUUID, List<DeviceIdentifier> deviceList,
+                                                      String versionName) throws ApplicationManagementException {
         List<DeviceIdentifier> failedDeviceList = new ArrayList<>(deviceList);
         // Todo: try whether we can optimise this by sending bulk inserts to db
         // Todo: atomicity is not maintained as deveice managment provider service uses separate db connection. fix this??
-        log.info("Install application: " + applicationUUID + "[" + versionName + "]" + " to: " + deviceList.size() + " devices.");
+        log.info("Install application: " + applicationUUID + "[" + versionName + "]" + " to: "
+                + deviceList.size() + " devices.");
         for (DeviceIdentifier device : deviceList) {
             org.wso2.carbon.device.mgt.common.DeviceIdentifier deviceIdentifier = new org.wso2.carbon.device.mgt
                     .common.DeviceIdentifier(device.getId(), device.getType());
@@ -123,7 +124,8 @@ public class SubscriptionManagerImpl implements SubscriptionManager {
                     ProfileOperation operation = new ProfileOperation();
                     operation.setCode("INSTALL_APPLICATION");
                     operation.setType(Operation.Type.PROFILE);
-                    operation.setPayLoad("{'type':'enterprise', 'url':'http://10.100.5.76:8000/app-debug.apk', 'app':'" + applicationUUID + "'}");
+                    operation.setPayLoad("{'type':'enterprise', 'url':'http://10.100.5.76:8000/app-debug.apk', 'app':'"
+                            + applicationUUID + "'}");
                     List<org.wso2.carbon.device.mgt.common.DeviceIdentifier> deviceIdentifiers = new ArrayList<>();
                     deviceIdentifiers.add(deviceIdentifier);
                     dmpService.addOperation(DeviceManagementConstants.MobileDeviceTypes.MOBILE_DEVICE_TYPE_ANDROID,

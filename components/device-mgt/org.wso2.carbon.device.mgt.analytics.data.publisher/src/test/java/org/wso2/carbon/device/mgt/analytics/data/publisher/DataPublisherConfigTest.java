@@ -33,7 +33,7 @@ public class DataPublisherConfigTest extends BaseAnalyticsDataPublisherTest {
 
     @Test(description = "Validating the behaviour od getInstance of the config before calling the init",
             expectedExceptions = InvalidConfigurationStateException.class)
-    public void testGetInstanceWithoutInit() throws NoSuchFieldException, IllegalAccessException {
+    public void testGetInstanceWithoutInit() {
         AnalyticsConfiguration.getInstance();
     }
 

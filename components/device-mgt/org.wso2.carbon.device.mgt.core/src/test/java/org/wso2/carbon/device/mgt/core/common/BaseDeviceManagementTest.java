@@ -44,7 +44,6 @@ import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderServiceImpl;
 import org.wso2.carbon.device.mgt.core.service.GroupManagementProviderServiceImpl;
 import org.wso2.carbon.device.mgt.core.util.DeviceManagerUtil;
-import org.wso2.carbon.email.sender.core.service.EmailSenderServiceImpl;
 import org.wso2.carbon.registry.core.config.RegistryContext;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.internal.RegistryDataHolder;
@@ -85,7 +84,7 @@ public abstract class BaseDeviceManagementTest {
         NotificationManagementDAOFactory.init(dataSource);
     }
 
-    protected void initServices() throws DeviceManagementException, RegistryException {
+    private void initServices() throws DeviceManagementException, RegistryException, AxisFault {
         DeviceConfigurationManager.getInstance().initConfig();
         DeviceManagementProviderService deviceMgtService = new DeviceManagementProviderServiceImpl();
         DeviceManagementServiceComponent.notifyStartupListeners();
@@ -108,17 +107,10 @@ public abstract class BaseDeviceManagementTest {
         return context.getEmbeddedRegistryService();
     }
 
-    private ConfigurationContextService getConfigContextService() throws RegistryException {
-        ConfigurationContext context  =
-                null;
-        try {
-            context = ConfigurationContextFactory.createConfigurationContextFromFileSystem
-                    ("src/test/resources/carbon-home/repository/conf/axis2/axis2.xml");
-        } catch (AxisFault axisFault) {
-            axisFault.printStackTrace();
-        }
-        ConfigurationContextService service = new ConfigurationContextService(context, null);
-        return service;
+    private ConfigurationContextService getConfigContextService() throws RegistryException, AxisFault {
+        ConfigurationContext context = ConfigurationContextFactory.createConfigurationContextFromFileSystem
+                ("src/test/resources/carbon-home/repository/conf/axis2/axis2.xml");
+        return new ConfigurationContextService(context, null);
     }
 
     @BeforeClass
@@ -180,47 +172,6 @@ public abstract class BaseDeviceManagementTest {
             stmt.executeUpdate("RUNSCRIPT FROM './src/test/resources/sql/h2.sql'");
         } finally {
             TestUtils.cleanupResources(conn, stmt, null);
-        }
-    }
-
-    public void deleteData() {
-        Connection conn = null;
-        try {
-            conn = getDataSource().getConnection();
-            conn.setAutoCommit(false);
-            String[] cleanupTables = new String[]{"DM_NOTIFICATION","DM_DEVICE_OPERATION_RESPONSE","DM_ENROLMENT_OP_MAPPING", "DM_CONFIG_OPERATION",
-                    "DM_POLICY_OPERATION", "DM_COMMAND_OPERATION", "DM_PROFILE_OPERATION", "DM_DEVICE_GROUP_MAP",
-                    "DM_GROUP", "DM_ENROLMENT", "DM_DEVICE_APPLICATION_MAPPING",
-                    "DM_APPLICATION", "DM_DEVICE", "DM_DEVICE_TYPE"};
-            for (String table : cleanupTables) {
-                this.cleanData(conn, table);
-            }
-            conn.commit();
-        } catch (SQLException e) {
-            try {
-                if (conn != null) {
-                    conn.rollback();
-                }
-            } catch (SQLException e1) {
-                log.error("Error occurred while roll-backing the transaction", e);
-            }
-            String msg = "Error occurred while cleaning up temporary data generated during test execution";
-            log.error(msg, e);
-            Assert.fail(msg, e);
-        } finally {
-            if (conn != null) {
-                try {
-                    conn.close();
-                } catch (SQLException e) {
-                    log.warn("Error occurred while closing the connection", e);
-                }
-            }
-        }
-    }
-
-    private void cleanData(Connection conn, String tableName) throws SQLException {
-        try (PreparedStatement stmt = conn.prepareStatement("DELETE FROM " + tableName)) {
-            stmt.execute();
         }
     }
 

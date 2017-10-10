@@ -47,6 +47,7 @@ import java.util.List;
 public class SubscriptionManagerImpl implements SubscriptionManager {
 
     private static final Log log = LogFactory.getLog(SubscriptionManagerImpl.class);
+    private static final String INSTALL_APPLICATION = "INSTALL_APPLICATION";
 
     @Override
     public List<DeviceIdentifier> installApplicationForDevices(String applicationUUID, String versionName,
@@ -122,7 +123,7 @@ public class SubscriptionManagerImpl implements SubscriptionManager {
 
                     // put app install operation to the device
                     ProfileOperation operation = new ProfileOperation();
-                    operation.setCode("INSTALL_APPLICATION");
+                    operation.setCode(INSTALL_APPLICATION);
                     operation.setType(Operation.Type.PROFILE);
                     operation.setPayLoad("{'type':'enterprise', 'url':'http://10.100.5.76:8000/app-debug.apk', 'app':'"
                             + applicationUUID + "'}");

@@ -104,7 +104,10 @@ public class DeviceTypeUtils {
             int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
             org.wso2.carbon.registry.core.service.RegistryService registryService = DeviceTypeExtensionDataHolder
                     .getInstance().getRegistryService();
-            return registryService == null ? null : registryService.getConfigSystemRegistry(tenantId);
+            if (registryService == null) {
+                throw new DeviceTypeMgtPluginException("Registry Service is not initialized properly");
+            }
+            return registryService.getConfigSystemRegistry(tenantId);
         } catch (RegistryException e) {
             throw new DeviceTypeMgtPluginException("Error in retrieving conf registry instance: " + e.getMessage(), e);
         }
@@ -113,14 +116,10 @@ public class DeviceTypeUtils {
     public static boolean putRegistryResource(String path, Resource resource) throws DeviceTypeMgtPluginException {
         try {
             Registry registry = getConfigurationRegistry();
-            if (registry == null) {
-                return false;
-            } else {
-                registry.beginTransaction();
-                registry.put(path, resource);
-                registry.commitTransaction();
-                return true;
-            }
+            registry.beginTransaction();
+            registry.put(path, resource);
+            registry.commitTransaction();
+            return true;
         } catch (RegistryException e) {
             throw new DeviceTypeMgtPluginException(
                     "Error occurred while persisting registry resource : " + e.getMessage(), e);

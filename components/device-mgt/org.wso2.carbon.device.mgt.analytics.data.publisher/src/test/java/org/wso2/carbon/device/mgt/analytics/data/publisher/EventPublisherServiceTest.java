@@ -21,13 +21,17 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
+import org.wso2.carbon.databridge.agent.AgentHolder;
+import org.wso2.carbon.databridge.agent.exception.DataEndpointAgentConfigurationException;
 import org.wso2.carbon.device.mgt.analytics.data.publisher.config.AnalyticsConfiguration;
 import org.wso2.carbon.device.mgt.analytics.data.publisher.config.InvalidConfigurationStateException;
 import org.wso2.carbon.device.mgt.analytics.data.publisher.exception.DataPublisherConfigurationException;
 import org.wso2.carbon.device.mgt.analytics.data.publisher.service.EventsPublisherService;
 import org.wso2.carbon.device.mgt.analytics.data.publisher.service.EventsPublisherServiceImpl;
 
+import java.io.File;
 import java.lang.reflect.Field;
+import java.net.URL;
 
 /**
  * This test class will test the methods that are exposed from {@link EventsPublisherService}
@@ -87,6 +91,39 @@ public class EventPublisherServiceTest extends BaseAnalyticsDataPublisherTest {
             expectedExceptions = DataPublisherConfigurationException.class)
     public void publishAsTenantWithEmptyMetaData() throws DataPublisherConfigurationException {
         publishAsTenant(new Object[0]);
+    }
+
+    @Test(description = "Publishing with invalid data publisher config",
+            dependsOnMethods = {"publishAsTenantWithEmptyMetaData", "publishAsTenantWithNoMetaData"},
+            expectedExceptions = DataPublisherConfigurationException.class)
+    public void publishWithDataEndpointConfigException() throws DataPublisherConfigurationException,
+            NoSuchFieldException, IllegalAccessException {
+        AnalyticsConfiguration analyticsConfiguration = AnalyticsConfiguration.getInstance();
+        analyticsConfiguration.setReceiverServerUrl("");
+        Field dataPublisherField = DeviceDataPublisher.class.getDeclaredField("deviceDataPublisher");
+        dataPublisherField.setAccessible(true);
+        dataPublisherField.set(dataPublisherField, null);
+        publishAsTenant(getEventProps());
+    }
+
+    @Test(description = "Publishing with invalid data publisher config",
+            dependsOnMethods = "publishWithDataEndpointConfigException",
+            expectedExceptions = DataPublisherConfigurationException.class)
+    public void publishWithDataAgentConfigException() throws DataPublisherConfigurationException,
+            NoSuchFieldException, IllegalAccessException, DataEndpointAgentConfigurationException {
+        AnalyticsConfiguration.init();
+        Field defaultAgentName = AgentHolder.getInstance().getClass().getDeclaredField("defaultDataEndpointAgentName");
+        defaultAgentName.setAccessible(true);
+        defaultAgentName.set(AgentHolder.getInstance(), "dummyAgent");
+        publishAsTenant(getEventProps());
+    }
+
+    @Test(description = "Publishing with invalid data publisher config",
+            dependsOnMethods = "publishWithDataAgentConfigException")
+    public void publishWithDataEndpointException() throws DataPublisherConfigurationException,
+            NoSuchFieldException, IllegalAccessException, DataEndpointAgentConfigurationException {
+        AnalyticsConfiguration.init();
+
     }
 
     private void publishAsTenant(Object[] metaData) throws DataPublisherConfigurationException {

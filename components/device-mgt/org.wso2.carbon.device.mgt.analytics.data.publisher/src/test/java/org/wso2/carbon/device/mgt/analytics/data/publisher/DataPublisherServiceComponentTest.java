@@ -28,6 +28,9 @@ import org.wso2.carbon.device.mgt.analytics.data.publisher.util.TestComponentCon
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+/**
+ * This tesclass will be validating the behaviour of {@link DataPublisherServiceComponent}
+ */
 public class DataPublisherServiceComponentTest extends BaseAnalyticsDataPublisherTest {
     private DataPublisherServiceComponent serviceComponent;
 
@@ -36,17 +39,17 @@ public class DataPublisherServiceComponentTest extends BaseAnalyticsDataPublishe
         this.serviceComponent = new DataPublisherServiceComponent();
     }
 
-    @Test
+    @Test (description = "Test bundle activation with exception thrown when service resgistration")
     public void activateWithException() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         this.activate(new TestComponentContext());
     }
 
-    @Test(dependsOnMethods = "activateWithException")
+    @Test(dependsOnMethods = "activateWithException", description = "Test the bundle activation with succesful path")
     public void activateWithoutException() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         this.activate(MockOsgi.newComponentContext());
     }
 
-    @Test(dependsOnMethods = "activateWithoutException")
+    @Test(dependsOnMethods = "activateWithoutException", description = "Test bundle deactivation")
     public void deActivate() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         Method method = this.serviceComponent.getClass().getDeclaredMethod("deactivate", ComponentContext.class);
         method.setAccessible(true);

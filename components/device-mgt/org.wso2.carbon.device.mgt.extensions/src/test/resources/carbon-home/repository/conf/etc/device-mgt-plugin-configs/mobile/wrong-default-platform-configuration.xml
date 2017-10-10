@@ -17,20 +17,7 @@
   ~ specific language governing permissions and limitations
   ~ under the License.
   -->
-<DeviceTypeConfiguration name="defective-devicetype">
-    <DeviceDetails table-id="DEFECTIVE_DEVICE"/>
 
-    <Features>
-    </Features>
-
-    <ProvisioningConfig>
-        <SharedWithAllTenants>true</SharedWithAllTenants>
-    </ProvisioningConfig>
-
-    <License>
-        <Language>en_US</Language>
-        <Version>1.0.0</Version>
-        <Text>This is license text</Text>
-    </License>
-
-</DeviceTypeConfiguration>
+<PlatformConfiguration>
+    </configuration
+</PlatformConfiguration>

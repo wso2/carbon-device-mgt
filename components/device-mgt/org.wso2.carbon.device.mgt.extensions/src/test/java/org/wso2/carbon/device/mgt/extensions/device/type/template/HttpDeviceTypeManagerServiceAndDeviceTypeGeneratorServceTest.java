@@ -42,9 +42,13 @@ import javax.xml.bind.JAXBException;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * This test case contains the tests for {@link HTTPDeviceTypeManagerService} and {@link DeviceTypeGeneratorServiceImpl}
@@ -142,6 +146,28 @@ public class HttpDeviceTypeManagerServiceAndDeviceTypeGeneratorServceTest {
         httpDeviceTypeManagerService.getDeviceManager().enrollDevice(null);
     }
 
+    @Test(description = "This test case tests the getDeviceTypeConfiguration method",
+            dependsOnMethods = {"testPopulateDeviceManagementService"})
+    public void testGetDeviceTypeConfiguration()
+            throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        Method getDeviceTypeConfiguration = HTTPDeviceTypeManagerService.class
+                .getDeclaredMethod("getDeviceTypeConfiguration", String.class, DeviceTypeMetaDefinition.class);
+        getDeviceTypeConfiguration.setAccessible(true);
+        List<String> properties = new ArrayList<>();
+        properties.add("test");
+        deviceTypeMetaDefinition.setProperties(properties);
+        Map<String, String> mapProperties = new HashMap<>();
+        mapProperties.put("test", "test");
+        PushNotificationConfig pushNotificationConfig = new PushNotificationConfig("push", true, mapProperties);
+        deviceTypeMetaDefinition.setPushNotificationConfig(pushNotificationConfig);
+        DeviceTypeConfiguration deviceTypeConfiguration = (DeviceTypeConfiguration) getDeviceTypeConfiguration
+                .invoke(httpDeviceTypeManagerService, "android", deviceTypeMetaDefinition);
+        Assert.assertEquals(deviceTypeMetaDefinition.getProperties().size(),
+                deviceTypeConfiguration.getDeviceDetails().getProperties().getProperty().size(), "Number of "
+                        + "properties added in device-type meta definition is not equal to the properties added in "
+                        + "the DeviceType Configuration");
+    }
+
     /**
      * To create a sample device type meta defintion.
      * @throws SAXException SAX Exception.
@@ -180,6 +206,13 @@ public class HttpDeviceTypeManagerServiceAndDeviceTypeGeneratorServceTest {
             commonFeature.setCode(feature.getCode());
             commonFeature.setDescription(feature.getDescription());
             commonFeature.setName(feature.getName());
+            org.wso2.carbon.device.mgt.common.Feature.MetadataEntry metadataEntry = new org.wso2.carbon.device.mgt
+                    .common.Feature.MetadataEntry();
+            metadataEntry.setId(1);
+            metadataEntry.setValue("test");
+            List<org.wso2.carbon.device.mgt.common.Feature.MetadataEntry> metadataEntries = new ArrayList<>();
+            metadataEntries.add(metadataEntry);
+            commonFeature.setMetadataEntries(metadataEntries);
             features.add(commonFeature);
         }
 

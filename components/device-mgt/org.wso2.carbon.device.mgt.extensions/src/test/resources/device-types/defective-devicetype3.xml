@@ -18,9 +18,24 @@
   ~ under the License.
   -->
 <DeviceTypeConfiguration name="defective-devicetype">
-    <DeviceDetails table-id="DEFECTIVE_DEVICE"/>
+    <DeviceDetails>
+        <Properties>
+            <Property>
+                defective
+            </Property>
+        </Properties>
+    </DeviceDetails>
 
     <Features>
+        <Feature code="bulb">
+            <Name>Control Bulb</Name>
+            <Description>Control Bulb on Arduino Uno</Description>
+            <Operation context="/arduino/device/{deviceId}/bulb" method="POST">
+                <QueryParameters>
+                    <Parameter>state</Parameter>
+                </QueryParameters>
+            </Operation>
+        </Feature>
     </Features>
 
     <ProvisioningConfig>
@@ -32,5 +47,15 @@
         <Version>1.0.0</Version>
         <Text>This is license text</Text>
     </License>
+
+    <DataSource>
+        <JndiConfig>
+            <Name>jdbc/MobileAndroidDM_DS</Name>
+        </JndiConfig>
+        <TableConfig>
+            <Table name="AD_DEVICE">
+            </Table>
+        </TableConfig>
+    </DataSource>
 
 </DeviceTypeConfiguration>

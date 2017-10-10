@@ -24,7 +24,7 @@
 
     <currentDBConfig>wso2registry</currentDBConfig>
     <readOnly>false</readOnly>
-    <enableCache>true</enableCache>
+    <enableCache>false</enableCache>
     <registryRoot>/</registryRoot>
 
     <dbConfig name="wso2registry">

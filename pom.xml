@@ -404,6 +404,12 @@
                 <scope>test</scope>
             </dependency>
             <dependency>
+                <groupId>org.apache.sling</groupId>
+                <artifactId>org.apache.sling.testing.osgi-mock</artifactId>
+                <version>${apache.osgi.mock.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
                 <groupId>org.wso2.carbon.governance</groupId>
                 <artifactId>org.wso2.carbon.governance.api</artifactId>
                 <version>${carbon.governance.version}</version>
@@ -1963,6 +1969,9 @@
 
         <!-- apache pdfbox version -->
         <slf4j.simple.version>1.6.1</slf4j.simple.version>
+
+        <!--apache osgi mock version-->
+        <apache.osgi.mock.version>2.3.2</apache.osgi.mock.version>
 
         <!-- api-mgt handler version properties -->
         <org.apache.synapse.version>2.1.7-wso2v7</org.apache.synapse.version>

@@ -29,9 +29,7 @@ import org.wso2.carbon.device.mgt.analytics.data.publisher.exception.DataPublish
 import org.wso2.carbon.device.mgt.analytics.data.publisher.service.EventsPublisherService;
 import org.wso2.carbon.device.mgt.analytics.data.publisher.service.EventsPublisherServiceImpl;
 
-import java.io.File;
 import java.lang.reflect.Field;
-import java.net.URL;
 
 /**
  * This test class will test the methods that are exposed from {@link EventsPublisherService}

@@ -79,7 +79,8 @@ public class HttpDeviceTypeManagerServiceAndDeviceTypeGeneratorServceTest {
     @Test(description = "This test case tests the enrollment of newly added device type")
     public void testEnrollDevice() throws DeviceManagementException {
         String deviceId = "testdevice1";
-        Device sampleDevice1 = new Device(deviceId, androidSenseDeviceType, "test", "testdevice", null, null, null);
+        Device sampleDevice1 = new Device(deviceId, androidSenseDeviceType, Utils.TEST_STRING, "testdevice", null, null,
+                null);
         Assert.assertTrue(httpDeviceTypeManagerService.getDeviceManager().enrollDevice(sampleDevice1),
                 "Enrollment of " + androidSenseDeviceType + " device failed");
         Assert.assertTrue(httpDeviceTypeManagerService.getDeviceManager()
@@ -112,7 +113,7 @@ public class HttpDeviceTypeManagerServiceAndDeviceTypeGeneratorServceTest {
 
         ConfigurationEntry configurationEntry = configurationEntries.get(0);
 
-        Assert.assertEquals(configurationEntry.getName(), "test",
+        Assert.assertEquals(configurationEntry.getName(), Utils.TEST_STRING,
                 "Platform Configuration for device type " + "sample is not saved correctly");
 
         String contentType = configurationEntry.getContentType();
@@ -154,10 +155,10 @@ public class HttpDeviceTypeManagerServiceAndDeviceTypeGeneratorServceTest {
                 .getDeclaredMethod("getDeviceTypeConfiguration", String.class, DeviceTypeMetaDefinition.class);
         getDeviceTypeConfiguration.setAccessible(true);
         List<String> properties = new ArrayList<>();
-        properties.add("test");
+        properties.add(Utils.TEST_STRING);
         deviceTypeMetaDefinition.setProperties(properties);
         Map<String, String> mapProperties = new HashMap<>();
-        mapProperties.put("test", "test");
+        mapProperties.put(Utils.TEST_STRING, Utils.TEST_STRING);
         PushNotificationConfig pushNotificationConfig = new PushNotificationConfig("push", true, mapProperties);
         deviceTypeMetaDefinition.setPushNotificationConfig(pushNotificationConfig);
         DeviceTypeConfiguration deviceTypeConfiguration = (DeviceTypeConfiguration) getDeviceTypeConfiguration
@@ -209,7 +210,7 @@ public class HttpDeviceTypeManagerServiceAndDeviceTypeGeneratorServceTest {
             org.wso2.carbon.device.mgt.common.Feature.MetadataEntry metadataEntry = new org.wso2.carbon.device.mgt
                     .common.Feature.MetadataEntry();
             metadataEntry.setId(1);
-            metadataEntry.setValue("test");
+            metadataEntry.setValue(Utils.TEST_STRING);
             List<org.wso2.carbon.device.mgt.common.Feature.MetadataEntry> metadataEntries = new ArrayList<>();
             metadataEntries.add(metadataEntry);
             commonFeature.setMetadataEntries(metadataEntries);

@@ -111,24 +111,24 @@ public class DeviceTypeManagerNegativeTest {
         }
         createDefectiveDeviceTypeManager();
         deviceIdentifier = new DeviceIdentifier();
-        deviceIdentifier.setId("test");
+        deviceIdentifier.setId(Utils.TEST_STRING);
         deviceIdentifier.setType(ANDROID_DEVICE_TYPE);
 
         DeviceDetails deviceDetails = new DeviceDetails();
         Properties properties = new Properties();
         List<String> propertyList = new ArrayList<>();
-        propertyList.add("test");
+        propertyList.add(Utils.TEST_STRING);
         properties.addProperties(propertyList);
 
         deviceDetails.setProperties(properties);
         propertyBasedPluginDAO = new PropertyBasedPluginDAOImpl(deviceDetails,
                 deviceTypeDAOHandler, ANDROID_DEVICE_TYPE);
         sampleDevice = new Device();
-        sampleDevice.setDeviceIdentifier("test");
+        sampleDevice.setDeviceIdentifier(Utils.TEST_STRING);
         List<Device.Property> deviceProperties = new ArrayList<>();
         Device.Property property = new Device.Property();
-        property.setName("test");
-        property.setValue("test");
+        property.setName(Utils.TEST_STRING);
+        property.setValue(Utils.TEST_STRING);
         deviceProperties.add(property);
         sampleDevice.setProperties(deviceProperties);
     }

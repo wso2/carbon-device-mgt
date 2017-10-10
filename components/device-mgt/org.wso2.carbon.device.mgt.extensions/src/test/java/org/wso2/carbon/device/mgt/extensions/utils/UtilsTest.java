@@ -68,7 +68,7 @@ public class UtilsTest {
 
     @Test(description = "This test case tests the getLicense method of the FileBasedLicenseManager")
     public void testFileBasedLicenseManagerGetLicense() throws LicenseManagementException {
-        License fileBasedLicense = fileSystemBasedLicenseManager.getLicense("test","en_US");
+        License fileBasedLicense = fileSystemBasedLicenseManager.getLicense(Utils.TEST_STRING,"en_US");
         Assert.assertEquals(fileBasedLicense.getText(), "This is a file based license",
                 "FileBased License cannot " + "be retrieved by FileBasedLicenseManager");
     }
@@ -84,7 +84,7 @@ public class UtilsTest {
             + "file system", expectedExceptions = {UnsupportedOperationException.class},
             expectedExceptionsMessageRegExp = "'addLicense' method is not supported in FileSystemBasedLicenseManager")
     public void testFileBasedLicenseManagerAddLicense() throws LicenseManagementException {
-       fileSystemBasedLicenseManager.addLicense("test", null);
+       fileSystemBasedLicenseManager.addLicense(Utils.TEST_STRING, null);
     }
 
     @Test(description = "This test case tests the DeviceTypeConfigIdentifier equals method")
@@ -102,15 +102,16 @@ public class UtilsTest {
     @Test(description = "This test cases tests the registry based license addition")
     public void testAddRegistryBasedLicense() throws LicenseManagementException {
         String newLicenseString = "New License";
-        License fileBasedLicense = fileSystemBasedLicenseManager.getLicense("test", "en_US");
+        License fileBasedLicense = fileSystemBasedLicenseManager.getLicense(Utils.TEST_STRING, "en_US");
         RegistryBasedLicenseManager registryBasedLicenseManager = new RegistryBasedLicenseManager();
-        registryBasedLicenseManager.addLicense("test", fileBasedLicense);
+        registryBasedLicenseManager.addLicense(Utils.TEST_STRING, fileBasedLicense);
         Assert.assertEquals(fileBasedLicense.getText(),
-                registryBasedLicenseManager.getLicense("test", "en_US").getText(), "Registry license addition failed");
+                registryBasedLicenseManager.getLicense(Utils.TEST_STRING, "en_US").getText(),
+                "Registry license addition failed");
         fileBasedLicense.setText(newLicenseString);
-        registryBasedLicenseManager.addLicense("test", fileBasedLicense);
-        Assert.assertEquals(registryBasedLicenseManager.getLicense("test", "en_US").getText(), newLicenseString,
-                "Registry license update failed");
+        registryBasedLicenseManager.addLicense(Utils.TEST_STRING, fileBasedLicense);
+        Assert.assertEquals(registryBasedLicenseManager.getLicense(Utils.TEST_STRING, "en_US").getText(),
+                newLicenseString, "Registry license update failed");
     }
 
     @Test(description = "This test case tests the GetConfigurationRegistry method when the registry service is "

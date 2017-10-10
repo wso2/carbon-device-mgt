@@ -78,6 +78,10 @@
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.securevault</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.apache.sling</groupId>
+            <artifactId>org.apache.sling.testing.osgi-mock</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

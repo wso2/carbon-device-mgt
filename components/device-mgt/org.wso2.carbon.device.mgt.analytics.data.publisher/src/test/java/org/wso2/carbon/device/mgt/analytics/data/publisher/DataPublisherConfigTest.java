@@ -79,4 +79,5 @@ public class DataPublisherConfigTest extends BaseAnalyticsDataPublisherTest {
         Assert.assertEquals(analyticsConfiguration.getReceiverServerUrl(), "tcp://localhost:7615");
         Assert.assertTrue(analyticsConfiguration.isEnable());
     }
+
 }

@@ -122,7 +122,7 @@ public abstract class BasePolicyManagementDAOTest {
         }
     }
 
-    private void initSQLScript() throws Exception {
+    protected void initSQLScript() throws Exception {
         Connection conn = null;
         Statement stmt = null;
         try {

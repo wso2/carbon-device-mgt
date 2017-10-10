@@ -126,14 +126,13 @@ public class PropertyBasedPluginDAOImpl implements PluginDAO {
     }
 
     public boolean updateDevice(Device device) throws DeviceTypeMgtPluginException {
-        boolean status = false;
-        Connection conn = null;
+        Connection conn;
         PreparedStatement stmt = null;
         try {
             conn = deviceTypeDAOHandler.getConnection();
             stmt = conn.prepareStatement(
-                    "UPDATE DM_DEVICE_PROPERTIES SET PROPERTY_VALUE = ? WHERE  DEVICE_TYPE_NAME = ? AND " +
-                            "DEVICE_IDENTIFICATION = ? AND PROPERTY_NAME = ? AND TENANT_ID= ?");
+                    "UPDATE DM_DEVICE_PROPERTIES SET PROPERTY_VALUE = ? WHERE  DEVICE_TYPE_NAME = ? AND "
+                            + "DEVICE_IDENTIFICATION = ? AND PROPERTY_NAME = ? AND TENANT_ID= ?");
 
             for (Device.Property property : device.getProperties()) {
                 if (!deviceProps.contains(property.getName())) {
@@ -149,8 +148,8 @@ public class PropertyBasedPluginDAOImpl implements PluginDAO {
             stmt.executeBatch();
             return true;
         } catch (SQLException e) {
-            String msg = "Error occurred while modifying the device '" +
-                    device.getDeviceIdentifier() + "' data on" + deviceType;
+            String msg = "Error occurred while modifying the device '" + device.getDeviceIdentifier() + "' data on"
+                    + deviceType;
             log.error(msg, e);
             throw new DeviceTypeMgtPluginException(msg, e);
         } finally {

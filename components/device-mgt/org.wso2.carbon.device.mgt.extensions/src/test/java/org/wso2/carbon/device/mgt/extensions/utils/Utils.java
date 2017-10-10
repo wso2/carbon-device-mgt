@@ -56,6 +56,7 @@ import java.util.List;
  */
 public class Utils {
     public static final String DEVICE_TYPE_FOLDER = "device-types" + File.separator;
+    public static final String TEST_STRING = "test";
 
     /**
      * To get the device type configuration based on the configuration file

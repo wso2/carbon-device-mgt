@@ -40,12 +40,14 @@ public class DataPublisherServiceComponentTest extends BaseAnalyticsDataPublishe
     }
 
     @Test (description = "Test bundle activation with exception thrown when service resgistration")
-    public void activateWithException() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+    public void activateWithException() throws NoSuchMethodException, IllegalAccessException,
+            InvocationTargetException {
         this.activate(new TestComponentContext());
     }
 
     @Test(dependsOnMethods = "activateWithException", description = "Test the bundle activation with succesful path")
-    public void activateWithoutException() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    public void activateWithoutException() throws NoSuchMethodException, InvocationTargetException,
+            IllegalAccessException {
         this.activate(MockOsgi.newComponentContext());
     }
 
@@ -56,7 +58,8 @@ public class DataPublisherServiceComponentTest extends BaseAnalyticsDataPublishe
         method.invoke(this.serviceComponent, MockOsgi.newComponentContext());
     }
 
-    private void activate(ComponentContext componentContext) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    private void activate(ComponentContext componentContext) throws NoSuchMethodException, InvocationTargetException,
+            IllegalAccessException {
         Method method = this.serviceComponent.getClass().getDeclaredMethod("activate", ComponentContext.class);
         method.setAccessible(true);
         method.invoke(this.serviceComponent, componentContext);

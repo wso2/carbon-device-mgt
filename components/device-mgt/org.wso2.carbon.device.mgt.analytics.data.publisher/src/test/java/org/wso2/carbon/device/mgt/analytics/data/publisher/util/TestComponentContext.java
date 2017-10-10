@@ -25,6 +25,9 @@ import org.osgi.service.component.ComponentInstance;
 
 import java.util.Dictionary;
 
+/**
+ * Mock implementation for component context.
+ */
 public class TestComponentContext implements ComponentContext {
     @Override
     public Dictionary getProperties() {

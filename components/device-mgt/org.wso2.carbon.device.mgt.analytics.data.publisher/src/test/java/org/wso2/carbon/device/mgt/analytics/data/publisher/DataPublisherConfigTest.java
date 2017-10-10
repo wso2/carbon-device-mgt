@@ -24,7 +24,6 @@ import org.wso2.carbon.device.mgt.analytics.data.publisher.config.InvalidConfigu
 import org.wso2.carbon.device.mgt.analytics.data.publisher.exception.DataPublisherConfigurationException;
 
 import java.io.File;
-import java.lang.reflect.Field;
 import java.net.URL;
 
 /**

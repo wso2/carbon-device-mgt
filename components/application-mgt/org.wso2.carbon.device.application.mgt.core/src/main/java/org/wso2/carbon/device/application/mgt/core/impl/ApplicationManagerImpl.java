@@ -24,6 +24,7 @@ import org.wso2.carbon.CarbonConstants;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.application.mgt.common.Application;
 import org.wso2.carbon.device.application.mgt.common.ApplicationList;
+import org.wso2.carbon.device.application.mgt.common.Category;
 import org.wso2.carbon.device.application.mgt.common.Filter;
 import org.wso2.carbon.device.application.mgt.common.Lifecycle;
 import org.wso2.carbon.device.application.mgt.common.LifecycleState;
@@ -70,17 +71,20 @@ public class ApplicationManagerImpl implements ApplicationManager {
         application.setUuid(HelperUtil.generateApplicationUuid());
         application.setCreatedAt(new Date());
         application.setModifiedAt(new Date());
+        Platform platform = DataHolder.getInstance().getPlatformManager()
+                .getPlatform(application.getUser().getTenantId(), application.getPlatform().getIdentifier());
+        if (platform == null) {
+            throw new NotFoundException("Invalid platform is provided for the application " + application.getUuid());
+        }
+        application.setPlatform(platform);
+        Category category = DataHolder.getInstance().getCategoryManager()
+                .getCategory(application.getCategory().getName());
+        if (category == null) {
+            throw new NotFoundException("Invalid Category is provided for the application " + application.getUuid());
+        }
+        application.setCategory(category);
         try {
-            Platform platform = DataHolder.getInstance().getPlatformManager().getPlatform(application.getUser()
-                    .getTenantId(), application.getPlatform().getIdentifier());
-
-            if (platform == null) {
-                throw new NotFoundException("Invalid platform");
-            }
             ConnectionManagerUtil.beginDBTransaction();
-
-            // Validating the platform
-            application.setPlatform(platform);
             if (log.isDebugEnabled()) {
                 log.debug("Application creation pre-conditions are met and the platform mentioned by identifier "
                         + platform.getIdentifier() + " is found");
@@ -96,7 +100,6 @@ public class ApplicationManagerImpl implements ApplicationManager {
             lifecycle.setLifecycleStateModifiedAt(new Date());
             lifecycle.setGetLifecycleStateModifiedBy(application.getUser().getUserName());
             application.setCurrentLifecycle(lifecycle);
-
             application = DAOFactory.getApplicationDAO().createApplication(application);
             DataHolder.getInstance().getVisibilityManager().put(application.getId(), application.getVisibility());
             ConnectionManagerUtil.commitDBTransaction();
@@ -118,32 +121,47 @@ public class ApplicationManagerImpl implements ApplicationManager {
         }
 
         if (!isApplicationOwnerOrAdmin(application.getUuid(), userName, tenantId)) {
-            throw new ApplicationManagementException("User " + userName + " does not have permissions to edit the "
-                    + "application with the UUID " + application.getUuid());
+            throw new ApplicationManagementException(
+                    "User " + userName + " does not have permissions to edit the " + "application with the UUID "
+                            + application.getUuid());
         }
         if (this.getApplication(application.getUuid()) != null) {
-            try {
-                if (application.getPlatform() != null && application.getPlatform().getIdentifier() != null) {
-                    Platform platform = DataHolder.getInstance().getPlatformManager()
-                            .getPlatform(tenantId, application.getPlatform().getIdentifier());
-                    if (platform == null) {
-                        throw new NotFoundException(
-                                "Platform specified by identifier " + application.getPlatform().getIdentifier()
-                                        + " is not found. Please give a valid platform identifier.");
-                    }
-                    application.setPlatform(platform);
-                    ConnectionManagerUtil.beginDBTransaction();
-                    ApplicationDAO applicationDAO = DAOFactory.getApplicationDAO();
-                    application.setModifiedAt(new Date());
-                    Application modifiedApplication = applicationDAO.editApplication(application, tenantId);
-                    Visibility visibility = DataHolder.getInstance().getVisibilityManager().put(application.getId(),
-                            application.getVisibility());
-                    modifiedApplication.setVisibility(visibility);
-                    ConnectionManagerUtil.commitDBTransaction();
-                    return modifiedApplication;
-                } else {
-                    throw new NotFoundException("Platform information not available with the application!");
+            if (application.getPlatform() == null || application.getPlatform().getIdentifier() == null) {
+                throw new NotFoundException("Platform information not available with the application!");
+            }
+            Platform platform = DataHolder.getInstance().getPlatformManager()
+                    .getPlatform(tenantId, application.getPlatform().getIdentifier());
+            if (platform == null) {
+                throw new NotFoundException(
+                        "Platform specified by identifier " + application.getPlatform().getIdentifier()
+                                + " is not found. Please give a valid platform identifier.");
+            }
+            application.setPlatform(platform);
+            if (application.getCategory() != null) {
+                String applicationCategoryName = application.getCategory().getName();
+                if (applicationCategoryName == null || applicationCategoryName.isEmpty()) {
+                    throw new ApplicationManagementException(
+                            "Application category name cannot be null or " + "empty. Cannot edit the application.");
                 }
+                Category category = DataHolder.getInstance().getCategoryManager()
+                        .getCategory(application.getCategory().getName());
+                if (category == null) {
+                    throw new NotFoundException(
+                            "Invalid Category is provided for the application " + application.getUuid() + ". "
+                                    + "Cannot edit application");
+                }
+                application.setCategory(category);
+            }
+            try {
+                ConnectionManagerUtil.beginDBTransaction();
+                ApplicationDAO applicationDAO = DAOFactory.getApplicationDAO();
+                application.setModifiedAt(new Date());
+                Application modifiedApplication = applicationDAO.editApplication(application, tenantId);
+                Visibility visibility = DataHolder.getInstance().getVisibilityManager()
+                        .put(application.getId(), application.getVisibility());
+                modifiedApplication.setVisibility(visibility);
+                ConnectionManagerUtil.commitDBTransaction();
+                return modifiedApplication;
             } catch (ApplicationManagementDAOException e) {
                 ConnectionManagerUtil.rollbackDBTransaction();
                 throw e;
@@ -388,8 +406,9 @@ public class ApplicationManagerImpl implements ApplicationManager {
             throw new ValidationException("Username and tenant Id cannot be empty");
         }
 
-        if (application.getCategory() == null || application.getCategory().getId() == 0) {
-            throw new ValidationException("Category id cannot be empty");
+        if (application.getCategory() == null || application.getCategory().getName() == null || application
+                .getCategory().getName().isEmpty()) {
+            throw new ValidationException("Category name cannot be empty");
         }
 
         if (application.getPlatform() == null || application.getPlatform().getIdentifier() == null) {

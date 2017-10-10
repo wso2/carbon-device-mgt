@@ -19,19 +19,46 @@
 package org.wso2.carbon.device.application.mgt.common.services;
 
 import org.wso2.carbon.device.application.mgt.common.Category;
-import org.wso2.carbon.device.application.mgt.common.Filter;
 import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
+
+import java.util.List;
 
 /**
  * CategoryManager is responsible for handling add, delete, update opertaions related with {@link Category}
  */
 public interface CategoryManager {
 
-    public Category createCategory(Category application) throws ApplicationManagementException;
+    /**
+     * To create an application category.
+     *
+     * @param category Category that need to be created.
+     * @return the created Category.
+     * @throws ApplicationManagementException Application Management Exception
+     */
+    Category createCategory(Category category) throws ApplicationManagementException;
 
-    public Category editCategory(int applicationId, Category category) throws ApplicationManagementException;
+    /**
+     * To get all the current categories.
+     *
+     * @return list of Application categories.
+     * @throws ApplicationManagementException Application Management Exception.
+     */
+    List<Category> getCategories() throws ApplicationManagementException;
 
-    public void deleteCategory(int applicationId) throws ApplicationManagementException;
+    /**
+     * To get the category with the given name.
+     *
+     * @param name Name of the category to retrieve.
+     * @return the category with the given name.
+     * @throws ApplicationManagementException Application Management Exception.
+     */
+    Category getCategory(String name) throws ApplicationManagementException;
 
-    public Category getCategory(Filter filter) throws ApplicationManagementException;
+    /**
+     * To delete the category with the given name.
+     *
+     * @param name Name of the category to be deleted.
+     * @throws ApplicationManagementException Application Management Exception.
+     */
+    void deleteCategory(String name) throws ApplicationManagementException;
 }

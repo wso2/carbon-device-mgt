@@ -60,17 +60,15 @@ CREATE TABLE IF NOT EXISTS `APPM_PLATFORM_TENANT_MAPPING` (
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `APPM_APPLICATION_CATEGORY` (
   `ID` INT NOT NULL AUTO_INCREMENT,
-  `NAME` VARCHAR(100) NOT NULL,
+  `NAME` VARCHAR(100) NOT NULL UNIQUE,
   `DESCRIPTION` TEXT NULL,
-  `PUBLISHED` TINYINT(1) NULL,
   PRIMARY KEY (`ID`))
   ENGINE = InnoDB
   COMMENT = 'This table contains the data related to the application category';
 
-INSERT INTO APPM_APPLICATION_CATEGORY (NAME, DESCRIPTION, PUBLISHED) VALUES ('Enterprise',
-'Enterprise level applications which the artifacts need to be provided', 1);
-INSERT INTO APPM_APPLICATION_CATEGORY (NAME, DESCRIPTION, PUBLISHED) VALUES ('Public',
-'Public category in which the application need to be downloaded from the public application store', 1);
+INSERT INTO APPM_APPLICATION_CATEGORY (NAME, DESCRIPTION) VALUES ('Sports', 'Applications that involve sports.');
+INSERT INTO APPM_APPLICATION_CATEGORY (NAME, DESCRIPTION) VALUES ('Education', 'Application related with education');
+INSERT INTO APPM_APPLICATION_CATEGORY (NAME, DESCRIPTION) VALUES ('News', 'Applications involving news');
 
 -- -----------------------------------------------------
 -- Table `APPM_LIFECYCLE_STATE`

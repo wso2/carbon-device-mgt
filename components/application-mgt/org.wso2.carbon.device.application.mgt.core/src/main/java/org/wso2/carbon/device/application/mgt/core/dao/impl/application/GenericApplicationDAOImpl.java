@@ -23,7 +23,6 @@ import org.apache.commons.logging.LogFactory;
 import org.json.JSONException;
 import org.wso2.carbon.device.application.mgt.common.Application;
 import org.wso2.carbon.device.application.mgt.common.ApplicationList;
-import org.wso2.carbon.device.application.mgt.common.ApplicationRelease;
 import org.wso2.carbon.device.application.mgt.common.Filter;
 import org.wso2.carbon.device.application.mgt.common.LifecycleStateTransition;
 import org.wso2.carbon.device.application.mgt.common.Pagination;
@@ -58,7 +57,7 @@ public class GenericApplicationDAOImpl extends AbstractDAOImpl implements Applic
             log.debug("UUID : " + application.getUuid() + " Name : " + application.getName() + " User name : "
                     + application.getUser().getUserName());
         }
-        Connection conn = null;
+        Connection conn;
         PreparedStatement stmt = null;
         ResultSet rs = null;
         String sql = "";
@@ -114,7 +113,7 @@ public class GenericApplicationDAOImpl extends AbstractDAOImpl implements Applic
             log.debug(String.format("Filter: limit=%s, offset=%", filter.getLimit(), filter.getOffset()));
         }
 
-        Connection conn = null;
+        Connection conn;
         PreparedStatement stmt = null;
         ResultSet rs = null;
         String sql = "";
@@ -384,7 +383,7 @@ public class GenericApplicationDAOImpl extends AbstractDAOImpl implements Applic
     @Override
     public List<LifecycleStateTransition> getNextLifeCycleStates(String applicationUUID, int tenantId)
             throws ApplicationManagementDAOException {
-        Connection connection = null;
+        Connection connection;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
 
@@ -443,6 +442,32 @@ public class GenericApplicationDAOImpl extends AbstractDAOImpl implements Applic
             Util.cleanupResources(statement, null);
         }
 
+    }
+
+    @Override
+    public boolean isApplicationExist(String categoryName) throws ApplicationManagementDAOException {
+        Connection conn;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        String sql = "SELECT * FROM APPM_APPLICATION WHERE APPLICATION_CATEGORY_ID = (SELECT ID FROM "
+                + "APPM_APPLICATION_CATEGORY WHERE NAME = ?)";
+        try {
+            conn = this.getDBConnection();
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, categoryName);
+            rs = stmt.executeQuery();
+            return rs.next();
+        } catch (DBConnectionException e) {
+            throw new ApplicationManagementDAOException(
+                    "Database Connection Exception while trying to check the " + "applications for teh category "
+                            + categoryName, e);
+        } catch (SQLException e) {
+            throw new ApplicationManagementDAOException(
+                    "SQL Exception while trying to get the application related with categories, while executing " + sql,
+                    e);
+        } finally {
+            Util.cleanupResources(stmt, rs);
+        }
     }
 
     @Override
@@ -636,7 +661,7 @@ public class GenericApplicationDAOImpl extends AbstractDAOImpl implements Applic
 
     @Override
     public int getApplicationId(String uuid, int tenantId) throws ApplicationManagementDAOException {
-        Connection conn = null;
+        Connection conn;
         PreparedStatement stmt = null;
         ResultSet rs = null;
         String sql;
@@ -660,22 +685,5 @@ public class GenericApplicationDAOImpl extends AbstractDAOImpl implements Applic
         }
         return id;
     }
-
-
-    @Override
-    public void addProperties(Map<String, String> properties) throws ApplicationManagementDAOException {
-
-    }
-
-    @Override
-    public void editProperties(Map<String, String> properties) throws ApplicationManagementDAOException {
-
-    }
-
-    @Override
-    public void addRelease(ApplicationRelease release) throws ApplicationManagementDAOException {
-
-    }
-
 
 }

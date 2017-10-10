@@ -18,9 +18,15 @@
 package org.wso2.carbon.device.application.mgt.core.impl;
 
 import org.wso2.carbon.device.application.mgt.common.Category;
-import org.wso2.carbon.device.application.mgt.common.Filter;
+import org.wso2.carbon.device.application.mgt.common.exception.ApplicationCategoryManagementException;
 import org.wso2.carbon.device.application.mgt.common.exception.ApplicationManagementException;
 import org.wso2.carbon.device.application.mgt.common.services.CategoryManager;
+import org.wso2.carbon.device.application.mgt.core.dao.common.DAOFactory;
+import org.wso2.carbon.device.application.mgt.core.exception.ApplicationManagementDAOException;
+import org.wso2.carbon.device.application.mgt.core.exception.NotFoundException;
+import org.wso2.carbon.device.application.mgt.core.util.ConnectionManagerUtil;
+
+import java.util.List;
 
 /**
  * This class is the default implementation for the CategoryManager.
@@ -29,22 +35,76 @@ import org.wso2.carbon.device.application.mgt.common.services.CategoryManager;
 public class CategoryManagerImpl implements CategoryManager {
 
     @Override
-    public Category createCategory(Category application) throws ApplicationManagementException {
-        return null;
+    public Category createCategory(Category category) throws ApplicationManagementException {
+        if (category == null) {
+            throw new ApplicationCategoryManagementException("Category is null. Cannot create a category.");
+        }
+        if (category.getName() == null) {
+            throw new ApplicationCategoryManagementException(
+                    "Application category name cannot be null. Application category creation failed.");
+        }
+        if (getCategory(category.getName()) != null) {
+            throw new ApplicationCategoryManagementException("Application category wth the name " + category.getName()
+                    + "exists already. Please select a different name");
+        }
+        try {
+            ConnectionManagerUtil.beginDBTransaction();
+            Category createdCategory = DAOFactory.getCategoryDAO().addCategory(category);
+            ConnectionManagerUtil.commitDBTransaction();
+            return createdCategory;
+        } catch (ApplicationManagementDAOException e) {
+            ConnectionManagerUtil.rollbackDBTransaction();
+            throw e;
+        } finally {
+            ConnectionManagerUtil.closeDBConnection();
+        }
     }
 
     @Override
-    public Category editCategory(int applicationId, Category category) throws ApplicationManagementException {
-        return null;
+    public List<Category> getCategories() throws ApplicationManagementException {
+        try {
+            ConnectionManagerUtil.openDBConnection();
+            return DAOFactory.getCategoryDAO().getCategories();
+        } finally {
+            ConnectionManagerUtil.closeDBConnection();
+        }
     }
 
     @Override
-    public void deleteCategory(int applicationId) throws ApplicationManagementException {
-
+    public Category getCategory(String name) throws ApplicationManagementException {
+        if (name == null || name.isEmpty()) {
+            throw new ApplicationCategoryManagementException("Name cannot be empty or null. Cannot get category");
+        }
+        try {
+            ConnectionManagerUtil.openDBConnection();
+            return DAOFactory.getCategoryDAO().getCategory(name);
+        } finally {
+            ConnectionManagerUtil.closeDBConnection();
+        }
     }
 
     @Override
-    public Category getCategory(Filter filter) throws ApplicationManagementException {
-        return null;
+    public void deleteCategory(String name) throws ApplicationManagementException {
+        Category category = getCategory(name);
+        if (category == null) {
+            throw new NotFoundException(
+                    "Category with the name '" + name + "' not found. Cannot delete the " + "non-existing category");
+        }
+        try {
+            ConnectionManagerUtil.beginDBTransaction();
+            boolean isApplicationExistForCategory = DAOFactory.getApplicationDAO().isApplicationExist(name);
+            if (isApplicationExistForCategory) {
+                ConnectionManagerUtil.rollbackDBTransaction();
+                throw new ApplicationCategoryManagementException(
+                        "Cannot delete the the category " + name + ". Applications " + "exists for this category");
+            }
+            DAOFactory.getCategoryDAO().deleteCategory(name);
+            ConnectionManagerUtil.commitDBTransaction();
+        } catch (ApplicationManagementDAOException e) {
+            ConnectionManagerUtil.rollbackDBTransaction();
+            throw e;
+        } finally {
+            ConnectionManagerUtil.closeDBConnection();
+        }
     }
 }

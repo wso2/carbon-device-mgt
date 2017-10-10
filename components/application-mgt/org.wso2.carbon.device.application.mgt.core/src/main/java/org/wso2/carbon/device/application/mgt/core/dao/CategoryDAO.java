@@ -18,8 +18,47 @@
  */
 package org.wso2.carbon.device.application.mgt.core.dao;
 
+import org.wso2.carbon.device.application.mgt.common.Category;
+import org.wso2.carbon.device.application.mgt.core.exception.ApplicationManagementDAOException;
+
+import java.util.List;
+
 /**
  * This is responsible for Application Category related DAO operations.
  */
 public interface CategoryDAO {
+
+    /**
+     * To add a new category.
+     *
+     * @param category Category that need to be added.
+     * @return Newly added category.
+     * @throws ApplicationManagementDAOException Application Management DAO Exception.
+     */
+    Category addCategory(Category category) throws ApplicationManagementDAOException;
+
+    /**
+     * To get the existing categories.
+     *
+     * @return Existing categories.
+     * @throws ApplicationManagementDAOException Application Management DAO Exception.
+     */
+    List<Category> getCategories() throws ApplicationManagementDAOException;
+
+    /**
+     * To get the category with the given name.
+     *
+     * @param name Name of the Application category.
+     * @return Application Category.
+     * @throws ApplicationManagementDAOException Application Management DAO Exception.
+     */
+    Category getCategory(String name) throws ApplicationManagementDAOException;
+
+    /**
+     * To delete a particular category.
+     *
+     * @param name Name of the category that need to be deleted.
+     * @throws ApplicationManagementDAOException Application Management DAO Exception.
+     */
+    void deleteCategory(String name) throws ApplicationManagementDAOException;
 }

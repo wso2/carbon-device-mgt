@@ -18,11 +18,14 @@
  */
 package org.wso2.carbon.device.application.mgt.common;
 
+import org.wso2.carbon.device.application.mgt.common.jaxrs.Exclude;
+
 /**
  * Represents the category a particular {@link Application} belongs to.
  */
 public class Category {
 
+    @Exclude
     private int id;
 
     private String name;

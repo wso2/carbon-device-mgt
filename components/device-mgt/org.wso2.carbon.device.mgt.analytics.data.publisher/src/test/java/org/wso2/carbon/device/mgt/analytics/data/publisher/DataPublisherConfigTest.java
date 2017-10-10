@@ -23,20 +23,48 @@ import org.wso2.carbon.device.mgt.analytics.data.publisher.config.AnalyticsConfi
 import org.wso2.carbon.device.mgt.analytics.data.publisher.config.InvalidConfigurationStateException;
 import org.wso2.carbon.device.mgt.analytics.data.publisher.exception.DataPublisherConfigurationException;
 
+import java.io.File;
+import java.net.URL;
+
+/**
+ * This test class will validate the Data publisher configuration creation.
+ */
 public class DataPublisherConfigTest extends BaseAnalyticsDataPublisherTest {
 
     @Test(description = "Validating the behaviour od getInstance of the config before calling the init",
             expectedExceptions = InvalidConfigurationStateException.class)
-    public void testGetInstanceWithoutInit(){
+    public void testGetInstanceWithoutInit() {
         AnalyticsConfiguration.getInstance();
     }
 
+    @Test(description = "Validating the behaviour od getInstance of the config before calling the init",
+            expectedExceptions = DataPublisherConfigurationException.class)
     public void testInitWithInvalidConfig() throws DataPublisherConfigurationException {
-        AnalyticsConfiguration.init();
+        ClassLoader classLoader = this.getClass().getClassLoader();
+        URL invalidConfig = classLoader.getResource("carbon-home/repository/conf/etc/" +
+                "device-analytics-config-invalid.xml");
+        Assert.assertTrue("No configuration  - device-analytics-config-invalid.xml found in resource dir",
+                invalidConfig != null);
+        File file = new File(invalidConfig.getFile());
+        AnalyticsConfiguration.init(file.getAbsolutePath());
     }
 
-    @Test (description = "Validating the init method with all required params", dependsOnMethods = "testGetInstanceWithoutInit")
-    public void testInit() throws DataPublisherConfigurationException {
+
+    @Test(description = "Validating the behaviour od getInstance of the config before calling the init",
+            expectedExceptions = DataPublisherConfigurationException.class)
+    public void testInitWithInvalidXML() throws DataPublisherConfigurationException {
+        ClassLoader classLoader = this.getClass().getClassLoader();
+        URL invalidConfig = classLoader.getResource("carbon-home/repository/conf/etc/" +
+                "device-analytics-config-invalid-xml.xml");
+        Assert.assertTrue("No configuration  - device-analytics-config-invalid-xml.xml found in resource dir",
+                invalidConfig != null);
+        File file = new File(invalidConfig.getFile());
+        AnalyticsConfiguration.init(file.getAbsolutePath());
+    }
+
+
+    @Test(description = "Validating the init method with all required params", dependsOnMethods = "testInitWithInvalidXML")
+    public void testInitWithValidConfig() throws DataPublisherConfigurationException {
         AnalyticsConfiguration.init();
         AnalyticsConfiguration analyticsConfiguration = AnalyticsConfiguration.getInstance();
         Assert.assertEquals(analyticsConfiguration.getAdminPassword(), "testuserpwd");

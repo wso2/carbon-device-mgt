@@ -24,6 +24,7 @@
     <test name="Device Mgmt Analytics Data Publisher" preserve-order="true">
         <classes>
             <class name="org.wso2.carbon.device.mgt.analytics.data.publisher.DataPublisherConfigTest"/>
+            <class name="org.wso2.carbon.device.mgt.analytics.data.publisher.EventPublisherServiceTest"/>
         </classes>
     </test>
 </suite>

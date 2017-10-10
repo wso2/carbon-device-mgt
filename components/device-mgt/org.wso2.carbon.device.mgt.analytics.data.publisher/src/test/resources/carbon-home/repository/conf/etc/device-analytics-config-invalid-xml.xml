@@ -31,5 +31,5 @@
     -->
     <ReceiverServerUrl>tcp://localhost:7615</ReceiverServerUrl>
     <AdminUsername>testuser</AdminUsername>
-    <AdminPassword>testuserpwd</AdminPassword>
+    <AdminPassword>testuserpwd</AdminPassword
 </AnalyticsConfig>

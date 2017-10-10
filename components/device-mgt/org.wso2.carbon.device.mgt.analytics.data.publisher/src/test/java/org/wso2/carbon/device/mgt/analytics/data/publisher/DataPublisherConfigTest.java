@@ -38,7 +38,8 @@ public class DataPublisherConfigTest extends BaseAnalyticsDataPublisherTest {
     }
 
     @Test(description = "Validating the behaviour od getInstance of the config before calling the init",
-            expectedExceptions = DataPublisherConfigurationException.class)
+            expectedExceptions = DataPublisherConfigurationException.class,
+            dependsOnMethods = "testGetInstanceWithoutInit")
     public void testInitWithInvalidConfig() throws DataPublisherConfigurationException {
         ClassLoader classLoader = this.getClass().getClassLoader();
         URL invalidConfig = classLoader.getResource("carbon-home/repository/conf/etc/" +
@@ -51,7 +52,8 @@ public class DataPublisherConfigTest extends BaseAnalyticsDataPublisherTest {
 
 
     @Test(description = "Validating the behaviour od getInstance of the config before calling the init",
-            expectedExceptions = DataPublisherConfigurationException.class)
+            expectedExceptions = DataPublisherConfigurationException.class,
+            dependsOnMethods = "testInitWithInvalidConfig")
     public void testInitWithInvalidXML() throws DataPublisherConfigurationException {
         ClassLoader classLoader = this.getClass().getClassLoader();
         URL invalidConfig = classLoader.getResource("carbon-home/repository/conf/etc/" +
@@ -63,7 +65,8 @@ public class DataPublisherConfigTest extends BaseAnalyticsDataPublisherTest {
     }
 
 
-    @Test(description = "Validating the init method with all required params", dependsOnMethods = "testInitWithInvalidXML")
+    @Test(description = "Validating the init method with all required params",
+            dependsOnMethods = "testInitWithInvalidXML")
     public void testInitWithValidConfig() throws DataPublisherConfigurationException {
         AnalyticsConfiguration.init();
         AnalyticsConfiguration analyticsConfiguration = AnalyticsConfiguration.getInstance();

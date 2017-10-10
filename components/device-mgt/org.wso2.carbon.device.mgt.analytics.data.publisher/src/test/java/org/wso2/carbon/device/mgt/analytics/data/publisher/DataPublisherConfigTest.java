@@ -24,6 +24,7 @@ import org.wso2.carbon.device.mgt.analytics.data.publisher.config.InvalidConfigu
 import org.wso2.carbon.device.mgt.analytics.data.publisher.exception.DataPublisherConfigurationException;
 
 import java.io.File;
+import java.lang.reflect.Field;
 import java.net.URL;
 
 /**
@@ -33,7 +34,10 @@ public class DataPublisherConfigTest extends BaseAnalyticsDataPublisherTest {
 
     @Test(description = "Validating the behaviour od getInstance of the config before calling the init",
             expectedExceptions = InvalidConfigurationStateException.class)
-    public void testGetInstanceWithoutInit() {
+    public void testGetInstanceWithoutInit() throws NoSuchFieldException, IllegalAccessException {
+        Field configField = AnalyticsConfiguration.class.getDeclaredField("config");
+        configField.setAccessible(true);
+        configField.set(configField, null);
         AnalyticsConfiguration.getInstance();
     }
 

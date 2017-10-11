@@ -20,6 +20,7 @@ package org.wso2.carbon.apimgt.webapp.publisher;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 import org.wso2.carbon.apimgt.integration.client.OAuthRequestInterceptor;
 import org.wso2.carbon.apimgt.integration.client.model.OAuthApplication;
@@ -31,9 +32,14 @@ import java.lang.reflect.Field;
 import java.util.*;
 
 public class
-APIPublisherServiceTest extends BaseAPIPublisheTest{
+APIPublisherServiceTest extends BaseAPIPublisherTest {
     private static final Log log = LogFactory.getLog(APIPublisherServiceTest.class);
 
+    @BeforeTest
+    public void initialConfigs() throws Exception {
+
+
+    }
 
 
     @Test
@@ -57,9 +63,9 @@ APIPublisherServiceTest extends BaseAPIPublisheTest{
         Map<String, ApiScope> apiScopes = new HashMap<>();
         Set<ApiScope> scopes = new HashSet<>(apiScopes.values());
 
-      //  apiScopes.put("key","")
-
-
+        String REQUIRED_SCOPE =
+                "apim:api_create apim:api_view apim:api_publish apim:subscribe apim:tier_view apim:tier_manage " +
+                        "apim:subscription_view apim:subscription_block";
 
 
         apiConfig.setScopes(scopes);
@@ -71,30 +77,28 @@ APIPublisherServiceTest extends BaseAPIPublisheTest{
         template.setAuthType("Application & Application User");
         template.setHttpVerb("POST");
         template.setResourceURI("https://localhost:9443/api/device-mgt/windows/v1.0/admin/devices/reboot");
-       template.setUriTemplate("/reboot");
-       ApiScope scope = new ApiScope();
-       scope.setKey("perm:windows:reboot");
-       scope.setName("Reboot");
-       scope.setRoles("/permission/admin/device-mgt/devices/owning-device/operations/windows/reboot");
-       scope.setDescription("Lock reset on Windows devices");
-       template.setScope(scope);
+        template.setUriTemplate("/reboot");
+        ApiScope scope = new ApiScope();
+        scope.setKey("perm:windows:reboot");
+        scope.setName("Reboot");
+        scope.setRoles("/permission/admin/device-mgt/devices/owning-device/operations/windows/reboot");
+        scope.setDescription("Lock reset on Windows devices");
+        template.setScope(scope);
         uriTemplates.add(template);
 
         apiConfig.setUriTemplates(uriTemplates);
-
 
 
         OAuthApplication oAuthApplication = new OAuthApplication();
 
         oAuthApplication.setClientName("admin_api_integration_client");
         oAuthApplication.setIsSaasApplication("true");
-        oAuthApplication.setClientId("dsnkdsaxakdnfkanfdax=");
-        oAuthApplication.setClientSecret("safjksajnjnkjcksancka");
+        oAuthApplication.setClientId("random");
+        oAuthApplication.setClientSecret("random=");
 
-       Field oAuth = OAuthRequestInterceptor.class.getDeclaredField("oAuthApplication");
-       oAuth.setAccessible(true);
-       oAuth.set(null,oAuthApplication);
-
+        Field oAuth = OAuthRequestInterceptor.class.getDeclaredField("oAuthApplication");
+        oAuth.setAccessible(true);
+        oAuth.set(null, oAuthApplication);
 
         apiPublisherService.publishAPI(apiConfig);
     }

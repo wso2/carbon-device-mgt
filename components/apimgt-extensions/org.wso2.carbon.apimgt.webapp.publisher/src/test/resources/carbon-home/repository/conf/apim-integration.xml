@@ -21,13 +21,13 @@
 <APIMConfiguration>
 	<DCREndpoint>https://${iot.keymanager.host}:${iot.keymanager.https.port}/client-registration/v0.11/register</DCREndpoint>
 	<TokenEndpoint>https://${iot.gateway.host}:${iot.gateway.https.port}/token</TokenEndpoint>
-	<PublisherEndpoint>https://${iot.apimpublisher.host}:${iot.apimpublisher.https.port}/api/am/publisher/v0.11</PublisherEndpoint>
+	<PublisherEndpoint>https://localhost:9445/api/am/publisher/v0.11</PublisherEndpoint>
 	<StoreEndpoint>https://${iot.apimstore.host}:${iot.apimstore.https.port}/api/am/store/v0.11</StoreEndpoint>
 
 	<DCREndpoint>https://localhost:9443/client-registration/v0.11/register</DCREndpoint>
 	<TokenEndpoint>https://localhost:9443/token</TokenEndpoint>
-	<PublisherEndpoint>https://${iot.apimpublisher.host}:${iot.apimpublisher.https.port}/api/am/publisher/v0.11</PublisherEndpoint>
-	<StoreEndpoint>https://${iot.apimstore.host}:${iot.apimstore.https.port}/api/am/store/v0.11</StoreEndpoint>
+	<PublisherEndpoint>https://localhost:9445/api/am/publisher/v0.11</PublisherEndpoint>
+	<StoreEndpoint>https://localhost:9445/api/am/store/v0.11</StoreEndpoint>
 
 	<Username>admin</Username>
 	<Password>admin</Password>

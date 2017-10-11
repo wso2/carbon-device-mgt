@@ -21,7 +21,6 @@ package org.wso2.carbon.apimgt.webapp.publisher.utils;
 
 import org.w3c.dom.Document;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
-import org.wso2.carbon.registry.core.exceptions.RegistryException;
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
@@ -46,34 +45,4 @@ public class Utils {
                     "to a org.w3c.dom.Document", e);
         }
     }
-
-   /* *//**
-     * To get the registry service.
-     * @return RegistryService
-     * @throws RegistryException Registry Exception
-     *//*
-    public static RegistryService getRegistryService() throws RegistryException, org.wso2.carbon.user.api.UserStoreException {
-        RealmService realmService = new InMemoryRealmService();
-
-
-        PrivilegedCarbonContext.getThreadLocalCarbonContext().setUsername("admin");
-
-        BasicDataSource dataSource = new BasicDataSource();
-               String connectionUrl = "jdbc:h2:./target/database-test/CARBON_TEST";
-                dataSource.setUrl(connectionUrl);
-                dataSource.setDriverClassName("org.h2.Driver");
-        TenantManager jdbcTenantManager = new JDBCTenantManager(dataSource,
-                              MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
-
-        realmService.setTenantManager(jdbcTenantManager);
-        RegistryDataHolder.getInstance().setRealmService(realmService);
-        APIPublisherDataHolder.getInstance().setRealmService(realmService);
-        //APIApplicationManagerExtensionDataHolder.getInstance().setRealmService(realmService);
-       //DeviceManagementDataHolder.getInstance().setRealmService(realmService);
-        InputStream is = Utils.class.getClassLoader().getResourceAsStream("carbon-home/repository/" +
-                "conf/registry.xml");
-        RegistryContext context = RegistryContext.getBaseInstance(is, realmService);
-        context.setSetup(true);
-        return context.getEmbeddedRegistryService();
-    }*/
 }

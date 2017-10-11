@@ -23,7 +23,7 @@
 
     <test name="API Management Auth Handlers" preserve-order="true">
         <classes>
-            <!--<class name="org.wso2.carbon.apimgt.handlers.IOTServerConfigurationTest"/>-->
+            <class name="org.wso2.carbon.apimgt.handlers.IOTServerConfigurationTest"/>
             <class name="org.wso2.carbon.apimgt.handlers.AuthenticationHandlerTest"/>
         </classes>
     </test>

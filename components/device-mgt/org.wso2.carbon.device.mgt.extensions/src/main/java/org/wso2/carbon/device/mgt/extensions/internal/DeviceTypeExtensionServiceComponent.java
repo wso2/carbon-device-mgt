@@ -44,11 +44,18 @@ public class DeviceTypeExtensionServiceComponent {
     private static final Log log = LogFactory.getLog(DeviceTypeExtensionServiceComponent.class);
 
     protected void activate(ComponentContext ctx) {
-        if (log.isDebugEnabled()) {
-            log.debug("Activating DeviceType Deployer Service Component");
+        try {
+            if (log.isDebugEnabled()) {
+                log.debug("Activating DeviceType Deployer Service Component");
+            }
+            ctx.getBundleContext()
+                    .registerService(DeviceTypeGeneratorService.class, new DeviceTypeGeneratorServiceImpl(), null);
+            if (log.isDebugEnabled()) {
+                log.debug("Device Type Extension Service Component successfully activated");
+            }
+        } catch (Throwable e) {
+            log.error("Error occurred while initializing device type extension component ", e);
         }
-        ctx.getBundleContext().registerService(DeviceTypeGeneratorService.class, new DeviceTypeGeneratorServiceImpl()
-                , null);
     }
 
     protected void deactivate(ComponentContext ctx) {

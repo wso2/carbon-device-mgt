@@ -25,7 +25,6 @@ import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.engine.AxisConfiguration;
-import org.apache.commons.io.FileUtils;
 import org.apache.http.ProtocolVersion;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.entity.BasicHttpEntity;
@@ -43,21 +42,16 @@ import org.wso2.carbon.apimgt.handlers.invoker.RESTInvoker;
 import org.wso2.carbon.apimgt.handlers.mock.MockClient;
 import org.wso2.carbon.apimgt.handlers.mock.MockHttpResponse;
 import org.wso2.carbon.apimgt.handlers.utils.AuthConstants;
-import org.wso2.carbon.certificate.mgt.core.exception.KeystoreException;
-import org.wso2.carbon.certificate.mgt.core.impl.CertificateGenerator;
-import org.wso2.carbon.certificate.mgt.core.util.CertificateManagementConstants;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
-import java.security.cert.X509Certificate;
 import java.util.HashMap;
-import java.util.List;
+import javax.security.cert.X509Certificate;
 
 /**
  * This testcase will focus on covering the methods of {@link AuthenticationHandler}
@@ -86,19 +80,17 @@ public class AuthenticationHandlerTest extends BaseAPIHandlerTest {
             dependsOnMethods = "testHandleRequestWithEmptyTransportHeader")
     public void testHandleRequestWithURISyntaxError() throws Exception {
         HashMap<String, String> transportHeaders = new HashMap<>();
-        List<X509Certificate> certificates = loadCertificates();
-        transportHeaders.put(AuthConstants.MDM_SIGNATURE, new String(certificates.get(0).getSignature()));
+        transportHeaders.put(AuthConstants.MDM_SIGNATURE, "some cert");
         boolean response = this.handler.handleRequest(createSynapseMessageContext("<empty/>", this.synapseConfiguration,
                 transportHeaders, "https://test.com/testservice"));
         Assert.assertFalse(response);
     }
 
-    @Test(description = "Handle request with device type URI",
+    @Test(description = "Handle request with device type URI with MDM ceritificate",
             dependsOnMethods = "testHandleRequestWithURISyntaxError")
-    public void testHandleRequestWithDeviceTypeURI() throws Exception {
+    public void testHandleSuccessfulRequestMDMCertificate() throws Exception {
         HashMap<String, String> transportHeaders = new HashMap<>();
-        List<X509Certificate> certificates = loadCertificates();
-        transportHeaders.put(AuthConstants.MDM_SIGNATURE, new String(certificates.get(0).getSignature()));
+        transportHeaders.put(AuthConstants.MDM_SIGNATURE, "some cert");
         setMockClient();
         this.mockClient.setResponse(getDCRResponse());
         this.mockClient.setResponse(getAccessTokenReponse());
@@ -109,6 +101,54 @@ public class AuthenticationHandlerTest extends BaseAPIHandlerTest {
         this.mockClient.reset();
     }
 
+    @Test(description = "Handle request with device type URI with Proxy Mutual Auth Header",
+            dependsOnMethods = "testHandleSuccessfulRequestMDMCertificate")
+    public void testHandleSuccessRequestProxyMutualAuthHeader() throws Exception {
+        HashMap<String, String> transportHeaders = new HashMap<>();
+        transportHeaders.put(AuthConstants.PROXY_MUTUAL_AUTH_HEADER, "Test Header");
+        setMockClient();
+        this.mockClient.setResponse(getAccessTokenReponse());
+        this.mockClient.setResponse(getValidationResponse());
+        boolean response = this.handler.handleRequest(createSynapseMessageContext("<empty/>", this.synapseConfiguration,
+                transportHeaders, "https://test.com/testservice/api/testdevice"));
+        Assert.assertTrue(response);
+        this.mockClient.reset();
+    }
+
+    @Test(description = "Handle request with device type URI with Mutual Auth Header",
+            dependsOnMethods = "testHandleSuccessRequestProxyMutualAuthHeader")
+    public void testHandleSuccessRequestMutualAuthHeader() throws Exception {
+        HashMap<String, String> transportHeaders = new HashMap<>();
+        transportHeaders.put(AuthConstants.MUTUAL_AUTH_HEADER, "Test Header");
+        setMockClient();
+        this.mockClient.setResponse(getAccessTokenReponse());
+        this.mockClient.setResponse(getValidationResponse());
+        MessageContext messageContext = createSynapseMessageContext("<empty/>", this.synapseConfiguration,
+                transportHeaders, "https://test.com/testservice/api/testdevice");
+        org.apache.axis2.context.MessageContext axisMC = ((Axis2MessageContext) messageContext).getAxis2MessageContext();
+        String certStr = getContent(TestUtils.getAbsolutePathOfConfig("ra_cert.pem"));
+        X509Certificate cert = X509Certificate.getInstance(new ByteArrayInputStream(certStr.
+                getBytes(StandardCharsets.UTF_8.name())));
+        axisMC.setProperty(AuthConstants.CLIENT_CERTIFICATE, new X509Certificate[]{cert});
+        boolean response = this.handler.handleRequest(messageContext);
+        Assert.assertTrue(response);
+        this.mockClient.reset();
+    }
+
+    @Test(description = "Handle request with device type URI with Encoded Pem",
+            dependsOnMethods = "testHandleSuccessRequestMutualAuthHeader")
+    public void testHandleSuccessRequestEncodedPem() throws Exception {
+        HashMap<String, String> transportHeaders = new HashMap<>();
+        transportHeaders.put(AuthConstants.ENCODED_PEM, "encoded pem");
+        setMockClient();
+        this.mockClient.setResponse(getAccessTokenReponse());
+        this.mockClient.setResponse(getValidationResponse());
+        MessageContext messageContext = createSynapseMessageContext("<empty/>", this.synapseConfiguration,
+                transportHeaders, "https://test.com/testservice/api/testdevice");
+        boolean response = this.handler.handleRequest(messageContext);
+        Assert.assertTrue(response);
+        this.mockClient.reset();
+    }
 
     private static MessageContext createSynapseMessageContext(
             String payload, SynapseConfiguration config, HashMap<String, String> transportHeaders,
@@ -135,18 +175,6 @@ public class AuthenticationHandlerTest extends BaseAPIHandlerTest {
                 ((Axis2MessageContext) synMc).getAxis2MessageContext();
         axis2MessageContext.setProperty(org.apache.axis2.context.MessageContext.TRANSPORT_HEADERS, transportHeaders);
         return synMc;
-    }
-
-    private List<X509Certificate> loadCertificates() throws IOException, KeystoreException {
-        File caPemFile = new File(TestUtils.getAbsolutePathOfConfig("ca_cert.pem"));
-        File raPemFile = new File(TestUtils.getAbsolutePathOfConfig("ra_cert.pem"));
-        byte[] ca = FileUtils.readFileToByteArray(caPemFile);
-        byte[] ra = FileUtils.readFileToByteArray(raPemFile);
-        List<X509Certificate> rootCertificates = new CertificateGenerator().getRootCertificates(ca, ra);
-        Assert.assertNotNull("Root certificates retrieved", rootCertificates);
-        Assert.assertEquals(rootCertificates.get(0).getType(), CertificateManagementConstants.X_509);
-        Assert.assertEquals(rootCertificates.get(1).getType(), CertificateManagementConstants.X_509);
-        return rootCertificates;
     }
 
     private void setMockClient() throws NoSuchFieldException, IllegalAccessException {
@@ -199,7 +227,6 @@ public class AuthenticationHandlerTest extends BaseAPIHandlerTest {
         mockDCRResponse.setStatusLine(new BasicStatusLine(new ProtocolVersion("http", 1, 0), 200, "OK"));
         return mockDCRResponse;
     }
-
 
     private String getContent(String filePath) throws IOException {
         FileReader fileReader = new FileReader(filePath);

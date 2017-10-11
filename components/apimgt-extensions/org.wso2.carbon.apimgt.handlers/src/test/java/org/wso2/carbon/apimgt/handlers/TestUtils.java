@@ -22,13 +22,20 @@ import org.testng.Assert;
 import java.io.File;
 import java.net.URL;
 
+/**
+ * Utils class which provides utility methods for other testcases.
+ */
 public class TestUtils {
-
     static final String IOT_CORE_HOST = "iot.core.wso2.com";
     static final String IOT_CORE_HTTPS_PORT = "9443";
     static final String IOT_KEYMANAGER_HOST = "iot.keymanager.wso2.com";
     static final String IOT_KEYMANAGER_PORT = "9443";
     static final String CONTENT_TYPE = "application/json";
+
+    private static final String IOT_HOST_PROPERTY = "iot.core.host";
+    private static final String IOT_PORT_PROPERTY = "iot.core.https.port";
+    private static final String IOT_KEY_MANAGER_HOST_PROPERTY = "iot.keymanager.host";
+    private static final String IOT_KEY_MANAGER_PORT_PROPERTY = "iot.keymanager.https.port";
 
     static String getAbsolutePathOfConfig(String configFilePath) {
         ClassLoader classLoader = TestUtils.class.getClassLoader();
@@ -39,16 +46,16 @@ public class TestUtils {
     }
 
     static void setSystemProperties() {
-        System.setProperty("iot.core.host", IOT_CORE_HOST);
-        System.setProperty("iot.core.https.port", IOT_CORE_HTTPS_PORT);
-        System.setProperty("iot.keymanager.host", IOT_KEYMANAGER_HOST);
-        System.setProperty("iot.keymanager.https.port", IOT_KEYMANAGER_PORT);
+        System.setProperty(IOT_HOST_PROPERTY, IOT_CORE_HOST);
+        System.setProperty(IOT_PORT_PROPERTY, IOT_CORE_HTTPS_PORT);
+        System.setProperty(IOT_KEY_MANAGER_HOST_PROPERTY, IOT_KEYMANAGER_HOST);
+        System.setProperty(IOT_KEY_MANAGER_PORT_PROPERTY, IOT_KEYMANAGER_PORT);
     }
 
     static void resetSystemProperties() {
-        System.clearProperty("iot.core.host");
-        System.clearProperty("iot.core.https.port");
-        System.clearProperty("iot.keymanager.host");
-        System.clearProperty("iot.keymanager.https.port");
+        System.clearProperty(IOT_HOST_PROPERTY);
+        System.clearProperty(IOT_PORT_PROPERTY);
+        System.clearProperty(IOT_KEY_MANAGER_HOST_PROPERTY);
+        System.clearProperty(IOT_KEY_MANAGER_PORT_PROPERTY);
     }
 }

@@ -29,6 +29,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Mock implementation for CloseableHttpClient to be used in test cases.
+ */
 public class MockClient extends CloseableHttpClient {
     private List<CloseableHttpResponse> responses = new ArrayList<>();
     private int responseCount = 0;
@@ -36,8 +39,12 @@ public class MockClient extends CloseableHttpClient {
     @Override
     protected CloseableHttpResponse doExecute(HttpHost httpHost, HttpRequest httpRequest, HttpContext httpContext)
             throws IOException {
-        this.responseCount++;
-        return this.responses.get(this.responseCount - 1);
+        if (this.responseCount < this.responses.size()) {
+            this.responseCount++;
+            return this.responses.get(this.responseCount - 1);
+        } else {
+            return new MockHttpResponse();
+        }
     }
 
     @Override

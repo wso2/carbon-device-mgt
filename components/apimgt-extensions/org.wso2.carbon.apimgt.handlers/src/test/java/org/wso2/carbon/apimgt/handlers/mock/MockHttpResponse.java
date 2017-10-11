@@ -28,6 +28,10 @@ import org.apache.http.params.HttpParams;
 import java.io.IOException;
 import java.util.Locale;
 
+/**
+ * Mock http response to be used in the test cases.
+ *
+ */
 public class MockHttpResponse implements CloseableHttpResponse {
     private HttpEntity httpEntity;
     private StatusLine statusLine;

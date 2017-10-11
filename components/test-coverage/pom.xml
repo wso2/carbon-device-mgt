@@ -186,6 +186,9 @@
                                                 <fileset dir="${identity.jwt.extension}/${target}/${coverge-report}">
                                                     <include name="${individual.test.report.name}" />
                                                 </fileset>
+                                                <fileset dir="${api.extension.handlers}/${target}/${coverge-report}">
+                                                    <include name="${individual.test.report.name}" />
+                                                </fileset>
 
                                                 <!-- Need to list the newly added exec files here -->
                                             </executiondata>

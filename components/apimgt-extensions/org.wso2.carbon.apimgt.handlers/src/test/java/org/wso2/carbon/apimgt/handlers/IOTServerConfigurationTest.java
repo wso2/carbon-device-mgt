@@ -94,6 +94,4 @@ public class IOTServerConfigurationTest extends BaseAPIHandlerTest {
         Assert.assertEquals(serverConfiguration.getApis().size(), 1);
         Assert.assertEquals(serverConfiguration.getApis().get(0).getContextPath(), "/services");
     }
-
-
 }

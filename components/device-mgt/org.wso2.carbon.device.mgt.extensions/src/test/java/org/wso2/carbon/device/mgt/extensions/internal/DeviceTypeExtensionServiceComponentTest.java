@@ -22,6 +22,9 @@ package org.wso2.carbon.device.mgt.extensions.internal;
 import org.apache.sling.testing.mock.osgi.MockOsgi;
 import org.testng.annotations.Test;
 
+/**
+ * This is a test case for {@link DeviceTypeExtensionServiceComponent}.
+ */
 public class DeviceTypeExtensionServiceComponentTest {
     @Test(description = "This test case tests the behaviour of the Service Component when there is a possible "
             + "exception")

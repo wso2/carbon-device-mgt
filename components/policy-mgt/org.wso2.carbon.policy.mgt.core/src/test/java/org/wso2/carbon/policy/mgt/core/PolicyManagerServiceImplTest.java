@@ -40,6 +40,7 @@ import org.wso2.carbon.device.mgt.common.policy.mgt.Policy;
 import org.wso2.carbon.device.mgt.common.policy.mgt.Profile;
 import org.wso2.carbon.device.mgt.common.policy.mgt.ProfileFeature;
 import org.wso2.carbon.device.mgt.common.policy.mgt.monitor.ComplianceFeature;
+import org.wso2.carbon.device.mgt.common.policy.mgt.monitor.NonComplianceData;
 import org.wso2.carbon.device.mgt.common.policy.mgt.monitor.PolicyComplianceException;
 import org.wso2.carbon.device.mgt.core.authorization.DeviceAccessAuthorizationServiceImpl;
 import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
@@ -84,6 +85,8 @@ public class PolicyManagerServiceImplTest extends BasePolicyManagementDAOTest {
     private static final String POLICY1 = "policy1";
     private static final String POLICY1_FEATURE1_CODE = "DISALLOW_ADJUST_VOLUME";
     private static final String ADMIN_USER = "admin";
+    public static final String DEVICE_2 = "device2";
+    public static final String DEVICE_TYPE_B = "deviceTypeB";
 
     private DeviceManagementProviderService deviceMgtService;
     private GroupManagementProviderService groupMgtService;
@@ -309,8 +312,11 @@ public class PolicyManagerServiceImplTest extends BasePolicyManagementDAOTest {
         complianceFeatures.add(complianceFeature);
         policyManagerService.checkCompliance(new DeviceIdentifier(DEVICE1, DEVICE_TYPE_A), complianceFeatures);
         boolean deviceCompliance = policyManagerService.isCompliant(new DeviceIdentifier(DEVICE1, DEVICE_TYPE_A));
-
         Assert.assertFalse(deviceCompliance, "Policy was compliant even though the response was not compliant");
+        List<ComplianceFeature> complianceFeatureList = policyManagerService.
+                checkPolicyCompliance(new DeviceIdentifier(DEVICE1, DEVICE_TYPE_A), complianceFeatures);
+        Assert.assertNotNull(complianceFeature);
+        Assert.assertEquals(POLICY1_FEATURE1_CODE,complianceFeatureList.get(0).getFeatureCode());
     }
 
     @Test(dependsOnMethods = "inactivatePolicy")
@@ -352,11 +358,17 @@ public class PolicyManagerServiceImplTest extends BasePolicyManagementDAOTest {
         Assert.assertNotNull(effectiveFeatures);
         Assert.assertEquals(POLICY1_FEATURE1_CODE,effectiveFeatures.get(0).getFeatureCode());
         try{
-              policyManagerService.getEffectiveFeatures(null);
+              policyManagerService.getEffectiveFeatures(new DeviceIdentifier(DEVICE_2, DEVICE_TYPE_B));
         }catch(FeatureManagementException e){
            Assert.assertTrue(e.getCause()instanceof PolicyEvaluationException);
         }
 
+    }
+
+    @Test(dependsOnMethods = "applyPolicy")
+    public void getDeviceCompliance() throws Exception{
+        NonComplianceData deviceCompliance = policyManagerService.getDeviceCompliance(new DeviceIdentifier(DEVICE1, DEVICE_TYPE_A));
+        Assert.assertNotNull(deviceCompliance);
     }
 
 

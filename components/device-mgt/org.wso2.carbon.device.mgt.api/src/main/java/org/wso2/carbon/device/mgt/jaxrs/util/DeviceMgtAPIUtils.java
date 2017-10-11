@@ -101,7 +101,6 @@ import java.util.List;
  */
 public class DeviceMgtAPIUtils {
 
-    public static final MediaType DEFAULT_CONTENT_TYPE = MediaType.APPLICATION_JSON_TYPE;
     private static final String NOTIFIER_FREQUENCY = "notifierFrequency";
     private static final String STREAM_DEFINITION_PREFIX = "iot.per.device.stream.";
     private static final String DEFAULT_HTTP_PROTOCOL = "https";

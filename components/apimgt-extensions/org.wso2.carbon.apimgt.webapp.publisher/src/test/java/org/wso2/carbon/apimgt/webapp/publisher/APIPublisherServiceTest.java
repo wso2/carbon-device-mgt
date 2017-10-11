@@ -19,7 +19,6 @@ package org.wso2.carbon.apimgt.webapp.publisher;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 import org.wso2.carbon.apimgt.integration.client.OAuthRequestInterceptor;
@@ -31,23 +30,28 @@ import org.wso2.carbon.apimgt.webapp.publisher.exception.APIManagerPublisherExce
 import java.lang.reflect.Field;
 import java.util.*;
 
+/**
+ * This is the test class for {@link APIPublisherServiceImpl}
+ */
 public class
 APIPublisherServiceTest extends BaseAPIPublisherTest {
     private static final Log log = LogFactory.getLog(APIPublisherServiceTest.class);
+    private APIPublisherServiceImpl apiPublisherService = new APIPublisherServiceImpl();
+    private APIConfig apiConfig = new APIConfig();
 
     @BeforeTest
     public void initialConfigs() throws Exception {
-
-
+        setApiConfigs(apiConfig);
+        initialise0OAuthApplication();
     }
 
+    @Test(description = "Publishes an API | will fail if there are any exceptions")
+    public void publishAPI() throws NoSuchFieldException, IllegalAccessException,
+            APIManagerPublisherException {
+        apiPublisherService.publishAPI(apiConfig);
+    }
 
-    @Test
-    public void publishAPI() throws APIManagerPublisherException, NoSuchFieldException, IllegalAccessException {
-        APIPublisherServiceImpl apiPublisherService = new APIPublisherServiceImpl();
-
-        APIConfig apiConfig = new APIConfig();
-
+    private void setApiConfigs(APIConfig apiConfig) {
         apiConfig.setName("Windows Device Management Administrative Service");
         apiConfig.setContext("/api/device-mgt/windows/v1.0/admin/devices");
         apiConfig.setOwner("admin");
@@ -59,19 +63,13 @@ APIPublisherServiceTest extends BaseAPIPublisherTest {
         apiConfig.setTags(new String[]{"windows", "device_management"});
         apiConfig.setTenantDomain("carbon.super");
         apiConfig.setSecured(false);
-
         Map<String, ApiScope> apiScopes = new HashMap<>();
         Set<ApiScope> scopes = new HashSet<>(apiScopes.values());
-
-        String REQUIRED_SCOPE =
-                "apim:api_create apim:api_view apim:api_publish apim:subscribe apim:tier_view apim:tier_manage " +
-                        "apim:subscription_view apim:subscription_block";
-
-
         apiConfig.setScopes(scopes);
+        setAPIUrITemplates(apiConfig);
+    }
 
-
-
+    private void setAPIUrITemplates(APIConfig apiConfig) {
         Set<ApiUriTemplate> uriTemplates = new LinkedHashSet<>();
         ApiUriTemplate template = new ApiUriTemplate();
         template.setAuthType("Application & Application User");
@@ -85,27 +83,18 @@ APIPublisherServiceTest extends BaseAPIPublisherTest {
         scope.setDescription("Lock reset on Windows devices");
         template.setScope(scope);
         uriTemplates.add(template);
-
         apiConfig.setUriTemplates(uriTemplates);
+    }
 
-
+    private void initialise0OAuthApplication() throws NoSuchFieldException, IllegalAccessException {
         OAuthApplication oAuthApplication = new OAuthApplication();
-
         oAuthApplication.setClientName("admin_api_integration_client");
         oAuthApplication.setIsSaasApplication("true");
         oAuthApplication.setClientId("random");
         oAuthApplication.setClientSecret("random=");
-
         Field oAuth = OAuthRequestInterceptor.class.getDeclaredField("oAuthApplication");
         oAuth.setAccessible(true);
         oAuth.set(null, oAuthApplication);
-
-        apiPublisherService.publishAPI(apiConfig);
     }
 
-    @BeforeClass
-    @Override
-    public void init() throws Exception {
-        // do nothing
-    }
 }

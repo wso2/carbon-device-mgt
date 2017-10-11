@@ -32,7 +32,7 @@ import java.net.URL;
  */
 public class DataPublisherConfigTest extends BaseAnalyticsDataPublisherTest {
 
-    @Test(description = "Validating the behaviour od getInstance of the config before calling the init",
+    @Test(description = "Validating the behaviour of getInstance config before calling the init",
             expectedExceptions = InvalidConfigurationStateException.class)
     public void testGetInstanceWithoutInit() throws NoSuchFieldException, IllegalAccessException {
         Field configField = AnalyticsConfiguration.class.getDeclaredField("config");
@@ -41,7 +41,7 @@ public class DataPublisherConfigTest extends BaseAnalyticsDataPublisherTest {
         AnalyticsConfiguration.getInstance();
     }
 
-    @Test(description = "Validating the behaviour od getInstance of the config before calling the init",
+    @Test(description = "Analytics configuration initialization with invalid config",
             expectedExceptions = DataPublisherConfigurationException.class,
             dependsOnMethods = "testGetInstanceWithoutInit")
     public void testInitWithInvalidConfig() throws DataPublisherConfigurationException {
@@ -55,7 +55,7 @@ public class DataPublisherConfigTest extends BaseAnalyticsDataPublisherTest {
     }
 
 
-    @Test(description = "Validating the behaviour od getInstance of the config before calling the init",
+    @Test(description = "Analytics config initialization with invalid xml",
             expectedExceptions = DataPublisherConfigurationException.class,
             dependsOnMethods = "testInitWithInvalidConfig")
     public void testInitWithInvalidXML() throws DataPublisherConfigurationException {

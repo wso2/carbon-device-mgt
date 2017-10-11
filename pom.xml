@@ -1973,6 +1973,9 @@
         <!--apache osgi mock version-->
         <apache.osgi.mock.version>2.3.2</apache.osgi.mock.version>
 
+        <!-- apache http components core -->
+        <apache.http.compnents.core>4.4.3</apache.http.compnents.core>
+
         <!-- api-mgt handler version properties -->
         <org.apache.synapse.version>2.1.7-wso2v7</org.apache.synapse.version>
         <org.apache.ws.security.wso2.version>1.5.11.wso2v15</org.apache.ws.security.wso2.version>

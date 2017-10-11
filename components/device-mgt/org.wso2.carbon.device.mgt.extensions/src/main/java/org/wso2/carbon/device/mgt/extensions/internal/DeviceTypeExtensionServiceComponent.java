@@ -46,7 +46,7 @@ public class DeviceTypeExtensionServiceComponent {
     protected void activate(ComponentContext ctx) {
         try {
             if (log.isDebugEnabled()) {
-                log.debug("Activating DeviceType Deployer Service Component");
+                log.debug("Activating Device Type Extension Service Component");
             }
             ctx.getBundleContext()
                     .registerService(DeviceTypeGeneratorService.class, new DeviceTypeGeneratorServiceImpl(), null);

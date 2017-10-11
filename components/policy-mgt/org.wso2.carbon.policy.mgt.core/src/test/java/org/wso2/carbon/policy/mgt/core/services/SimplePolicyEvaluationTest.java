@@ -27,6 +27,7 @@ import org.wso2.carbon.device.mgt.common.policy.mgt.ProfileFeature;
 import org.wso2.carbon.policy.mgt.common.*;
 import org.wso2.carbon.policy.mgt.core.PolicyManagerService;
 import org.wso2.carbon.policy.mgt.core.PolicyManagerServiceImpl;
+import org.wso2.carbon.policy.mgt.core.internal.PolicyManagementDataHolder;
 
 import java.util.Collections;
 import java.util.List;
@@ -76,7 +77,11 @@ SimplePolicyEvaluationTest implements PolicyEvaluationPoint {
 
     @Override
     public List<ProfileFeature> getEffectiveFeatures(DeviceIdentifier deviceIdentifier) throws PolicyEvaluationException {
-        return null;
+        if(deviceIdentifier!=null) {
+            return getEffectivePolicy(deviceIdentifier).getProfile().getProfileFeaturesList();
+        }else {
+            throw new PolicyEvaluationException();
+        }
     }
 
     @Override

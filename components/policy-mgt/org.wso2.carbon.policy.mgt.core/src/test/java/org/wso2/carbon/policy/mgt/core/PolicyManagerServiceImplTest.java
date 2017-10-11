@@ -19,6 +19,7 @@ package org.wso2.carbon.policy.mgt.core;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.mockito.Spy;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -51,6 +52,8 @@ import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderServiceImpl;
 import org.wso2.carbon.device.mgt.core.service.GroupManagementProviderService;
 import org.wso2.carbon.device.mgt.core.service.GroupManagementProviderServiceImpl;
+import org.wso2.carbon.policy.mgt.common.FeatureManagementException;
+import org.wso2.carbon.policy.mgt.common.PolicyEvaluationException;
 import org.wso2.carbon.policy.mgt.common.PolicyEvaluationPoint;
 import org.wso2.carbon.policy.mgt.common.PolicyManagementException;
 import org.wso2.carbon.policy.mgt.core.enforcement.DelegationTask;
@@ -212,6 +215,7 @@ public class PolicyManagerServiceImplTest extends BasePolicyManagementDAOTest {
         policy1.setTenantId(PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId());
         policy1 = policyManagerService.addPolicy(policy1);
 
+
         int policyCount = policyManagerService.getPolicyCount();
         Assert.assertEquals(policyCount, 1, "Policy count should be 1");
 
@@ -232,6 +236,8 @@ public class PolicyManagerServiceImplTest extends BasePolicyManagementDAOTest {
         policyManagerService.getPAP().activatePolicy(policy1.getId());
         Policy effectivePolicy = policyManagerService.getEffectivePolicy(new DeviceIdentifier(DEVICE1, DEVICE_TYPE_A));
         Assert.assertEquals(effectivePolicy.getPolicyName(), POLICY1, POLICY1 + " was not activated for " + DEVICE1);
+
+
     }
 
     @Test(dependsOnMethods = "activatePolicy")
@@ -326,9 +332,32 @@ public class PolicyManagerServiceImplTest extends BasePolicyManagementDAOTest {
     }
 
     @Test(dependsOnMethods = "updatePolicy")
-    public void deletePolicy() throws PolicyManagementException {
+    public void deletePolicyById() throws PolicyManagementException {
         policyManagerService.deletePolicy(policy1.getId());
         Policy tempPolicy = policyManagerService.getPAP().getPolicy(policy1.getId());
         Assert.assertNull(tempPolicy, "Policy was not deleted successfully");
     }
+
+    @Test(dependsOnMethods = "updatePolicy")
+    public void deletePolicyByPolicy() throws PolicyManagementException {
+        policyManagerService.deletePolicy(policy1);
+        Policy tempPolicy = policyManagerService.getPAP().getPolicy(policy1.getId());
+        Assert.assertNull(tempPolicy, "Policy was not deleted successfully");
+    }
+
+    @Test(dependsOnMethods = "applyPolicy")
+    public void getEffectiveFeatures( ) throws Exception {
+        List<ProfileFeature> effectiveFeatures = policyManagerService.
+                getEffectiveFeatures(new DeviceIdentifier(DEVICE1, DEVICE_TYPE_A));
+        Assert.assertNotNull(effectiveFeatures);
+        Assert.assertEquals(POLICY1_FEATURE1_CODE,effectiveFeatures.get(0).getFeatureCode());
+        try{
+              policyManagerService.getEffectiveFeatures(null);
+        }catch(FeatureManagementException e){
+           Assert.assertTrue(e.getCause()instanceof PolicyEvaluationException);
+        }
+
+    }
+
+
 }

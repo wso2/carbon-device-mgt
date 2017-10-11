@@ -149,8 +149,14 @@ public class PolicyManagerServiceImpl implements PolicyManagerService {
                         deviceIdentifier.getId() + " - " + deviceIdentifier.getType());
             }
         } catch (PolicyEvaluationException e) {
-            String msg = "Error occurred while getting the effective features from the PEP service " +
-                    deviceIdentifier.getId() + " - " + deviceIdentifier.getType();
+
+            String msg;
+            if(deviceIdentifier != null) {
+                 msg = "Error occurred while getting the effective features from the PEP service " +
+                        deviceIdentifier.getId() + " - " + deviceIdentifier.getType();
+            }else {
+                msg = "Null deviceIdentifier object is passed to the method";
+            }
             log.error(msg, e);
             throw new FeatureManagementException(msg, e);
         }

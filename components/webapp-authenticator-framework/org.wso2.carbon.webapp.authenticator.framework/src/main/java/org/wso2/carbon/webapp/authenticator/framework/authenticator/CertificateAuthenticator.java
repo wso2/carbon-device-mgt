@@ -14,7 +14,7 @@ import org.wso2.carbon.device.mgt.common.DeviceManagementConstants;
 import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
 import org.wso2.carbon.webapp.authenticator.framework.AuthenticationException;
 import org.wso2.carbon.webapp.authenticator.framework.AuthenticationInfo;
-import org.wso2.carbon.webapp.authenticator.framework.AuthenticatorFrameworkDataHolder;
+import org.wso2.carbon.webapp.authenticator.framework.internal.AuthenticatorFrameworkDataHolder;
 import org.wso2.carbon.webapp.authenticator.framework.Utils.Utils;
 
 import java.security.cert.X509Certificate;

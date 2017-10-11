@@ -21,7 +21,7 @@
     <parent>
         <artifactId>carbon-devicemgt</artifactId>
         <groupId>org.wso2.carbon.devicemgt</groupId>
-        <version>3.0.138-SNAPSHOT</version>
+        <version>3.0.141-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -181,6 +181,9 @@
                                                     <include name="${individual.test.report.name}" />
                                                 </fileset>
                                                 <fileset dir="${device.mgt.analytics.data}/${target}/${coverge-report}">
+                                                    <include name="${individual.test.report.name}" />
+                                                </fileset>
+                                                <fileset dir="${identity.jwt.extension}/${target}/${coverge-report}">
                                                     <include name="${individual.test.report.name}" />
                                                 </fileset>
 

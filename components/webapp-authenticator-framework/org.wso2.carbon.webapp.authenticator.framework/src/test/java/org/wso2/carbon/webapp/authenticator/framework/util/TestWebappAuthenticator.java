@@ -16,7 +16,7 @@
  *   under the License.
  *
  */
-package org.wso2.carbon.webapp.authenticator.framework.test.util;
+package org.wso2.carbon.webapp.authenticator.framework.util;
 
 import org.apache.catalina.connector.Request;
 import org.apache.catalina.connector.Response;

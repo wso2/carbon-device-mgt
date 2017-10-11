@@ -16,7 +16,7 @@
  *   under the License.
  *
  */
-package org.wso2.carbon.webapp.authenticator.framework;
+package org.wso2.carbon.webapp.authenticator.framework.internal;
 
 import org.wso2.carbon.certificate.mgt.core.scep.SCEPManager;
 import org.wso2.carbon.certificate.mgt.core.service.CertificateManagementService;
@@ -24,6 +24,7 @@ import org.wso2.carbon.identity.oauth2.OAuth2TokenValidationService;
 import org.wso2.carbon.registry.core.service.TenantRegistryLoader;
 import org.wso2.carbon.registry.indexing.service.TenantIndexingLoader;
 import org.wso2.carbon.user.core.service.RealmService;
+import org.wso2.carbon.webapp.authenticator.framework.WebappAuthenticatorRepository;
 
 public class AuthenticatorFrameworkDataHolder {
 

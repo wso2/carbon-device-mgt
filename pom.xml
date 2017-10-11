@@ -23,7 +23,7 @@
     <groupId>org.wso2.carbon.devicemgt</groupId>
     <artifactId>carbon-devicemgt</artifactId>
     <packaging>pom</packaging>
-    <version>3.0.128-SNAPSHOT</version>
+    <version>3.0.140-SNAPSHOT</version>
     <name>WSO2 Carbon - Device Management - Parent</name>
     <url>http://wso2.org</url>
     <description>WSO2 Connected Device Manager Components</description>
@@ -243,11 +243,6 @@
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.devicemgt</groupId>
-                <artifactId>org.wso2.carbon.device.mgt.analytics.dashboard</artifactId>
-                <version>${carbon.device.mgt.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.carbon.devicemgt</groupId>
                 <artifactId>org.wso2.carbon.device.mgt.server.feature</artifactId>
                 <type>zip</type>
                 <version>${carbon.device.mgt.version}</version>
@@ -401,6 +396,18 @@
                         <artifactId>org.wso2.securevault</artifactId>
                     </exclusion>
                 </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.securevault</artifactId>
+                <version>${carbon.kernel.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.sling</groupId>
+                <artifactId>org.apache.sling.testing.osgi-mock</artifactId>
+                <version>${apache.osgi.mock.version}</version>
+                <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.governance</groupId>
@@ -1784,7 +1791,7 @@
     <properties>
         <servelet.jsp.version>2.2.1</servelet.jsp.version>
         <testng.version>6.1.1</testng.version>
-        <carbon.kernel.version>4.4.11</carbon.kernel.version>
+        <carbon.kernel.version>4.4.17</carbon.kernel.version>
         <carbon.kernel.449.version>4.4.9</carbon.kernel.449.version>
         <carbon.kernel.version.range>[4.4.0, 5.0.0)</carbon.kernel.version.range>
         <carbon.p2.plugin.version>1.5.4</carbon.p2.plugin.version>
@@ -1851,7 +1858,7 @@
         <axiom.wso2.version>1.2.11.wso2v10</axiom.wso2.version>
 
         <!-- Carbon Device Management -->
-        <carbon.device.mgt.version>3.0.128-SNAPSHOT</carbon.device.mgt.version>
+        <carbon.device.mgt.version>3.0.140-SNAPSHOT</carbon.device.mgt.version>
 
         <!-- Carbon Commons -->
         <carbon.commons.version>4.4.8</carbon.commons.version>
@@ -1962,6 +1969,9 @@
 
         <!-- apache pdfbox version -->
         <slf4j.simple.version>1.6.1</slf4j.simple.version>
+
+        <!--apache osgi mock version-->
+        <apache.osgi.mock.version>2.3.2</apache.osgi.mock.version>
 
         <!-- api-mgt handler version properties -->
         <org.apache.synapse.version>2.1.7-wso2v7</org.apache.synapse.version>

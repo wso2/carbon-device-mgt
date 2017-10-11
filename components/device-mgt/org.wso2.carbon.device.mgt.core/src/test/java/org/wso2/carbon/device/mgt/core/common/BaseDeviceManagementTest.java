@@ -18,6 +18,9 @@
  */
 package org.wso2.carbon.device.mgt.core.common;
 
+import org.apache.axis2.AxisFault;
+import org.apache.axis2.context.ConfigurationContext;
+import org.apache.axis2.context.ConfigurationContextFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.tomcat.jdbc.pool.PoolProperties;
@@ -47,6 +50,7 @@ import org.wso2.carbon.registry.core.internal.RegistryDataHolder;
 import org.wso2.carbon.registry.core.jdbc.realm.InMemoryRealmService;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.user.core.service.RealmService;
+import org.wso2.carbon.utils.ConfigurationContextService;
 
 import javax.sql.DataSource;
 import javax.xml.bind.JAXBContext;
@@ -80,7 +84,7 @@ public abstract class BaseDeviceManagementTest {
         NotificationManagementDAOFactory.init(dataSource);
     }
 
-    private void initServices() throws DeviceManagementException, RegistryException {
+    private void initServices() throws DeviceManagementException, RegistryException, AxisFault {
         DeviceConfigurationManager.getInstance().initConfig();
         DeviceManagementProviderService deviceMgtService = new DeviceManagementProviderServiceImpl();
         DeviceManagementServiceComponent.notifyStartupListeners();
@@ -89,6 +93,8 @@ public abstract class BaseDeviceManagementTest {
         DeviceManagementDataHolder.getInstance().setDeviceAccessAuthorizationService(new DeviceAccessAuthorizationServiceImpl());
         DeviceManagementDataHolder.getInstance().setGroupManagementProviderService(new GroupManagementProviderServiceImpl());
         DeviceManagementDataHolder.getInstance().setDeviceTaskManagerService(null);
+        DeviceManagementDataHolder.getInstance().setEmailSenderService(new TestEmailSenderService());
+        DeviceManagementDataHolder.getInstance().setConfigurationContextService(getConfigContextService());
     }
 
     private RegistryService getRegistryService() throws RegistryException {
@@ -99,6 +105,12 @@ public abstract class BaseDeviceManagementTest {
         RegistryContext context = RegistryContext.getBaseInstance(is, realmService);
         context.setSetup(true);
         return context.getEmbeddedRegistryService();
+    }
+
+    private ConfigurationContextService getConfigContextService() throws RegistryException, AxisFault {
+        ConfigurationContext context = ConfigurationContextFactory.createConfigurationContextFromFileSystem
+                ("src/test/resources/carbon-home/repository/conf/axis2/axis2.xml");
+        return new ConfigurationContextService(context, null);
     }
 
     @BeforeClass
@@ -160,47 +172,6 @@ public abstract class BaseDeviceManagementTest {
             stmt.executeUpdate("RUNSCRIPT FROM './src/test/resources/sql/h2.sql'");
         } finally {
             TestUtils.cleanupResources(conn, stmt, null);
-        }
-    }
-
-    public void deleteData() {
-        Connection conn = null;
-        try {
-            conn = getDataSource().getConnection();
-            conn.setAutoCommit(false);
-            String[] cleanupTables = new String[]{"DM_NOTIFICATION","DM_DEVICE_OPERATION_RESPONSE","DM_ENROLMENT_OP_MAPPING", "DM_CONFIG_OPERATION",
-                    "DM_POLICY_OPERATION", "DM_COMMAND_OPERATION", "DM_PROFILE_OPERATION", "DM_DEVICE_GROUP_MAP",
-                    "DM_GROUP", "DM_ENROLMENT", "DM_DEVICE_APPLICATION_MAPPING",
-                    "DM_APPLICATION", "DM_DEVICE", "DM_DEVICE_TYPE"};
-            for (String table : cleanupTables) {
-                this.cleanData(conn, table);
-            }
-            conn.commit();
-        } catch (SQLException e) {
-            try {
-                if (conn != null) {
-                    conn.rollback();
-                }
-            } catch (SQLException e1) {
-                log.error("Error occurred while roll-backing the transaction", e);
-            }
-            String msg = "Error occurred while cleaning up temporary data generated during test execution";
-            log.error(msg, e);
-            Assert.fail(msg, e);
-        } finally {
-            if (conn != null) {
-                try {
-                    conn.close();
-                } catch (SQLException e) {
-                    log.warn("Error occurred while closing the connection", e);
-                }
-            }
-        }
-    }
-
-    private void cleanData(Connection conn, String tableName) throws SQLException {
-        try (PreparedStatement stmt = conn.prepareStatement("DELETE FROM " + tableName)) {
-            stmt.execute();
         }
     }
 

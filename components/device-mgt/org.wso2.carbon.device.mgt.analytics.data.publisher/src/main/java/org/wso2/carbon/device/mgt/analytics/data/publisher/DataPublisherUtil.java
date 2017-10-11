@@ -19,6 +19,7 @@
 package org.wso2.carbon.device.mgt.analytics.data.publisher;
 
 import org.w3c.dom.Document;
+import org.wso2.carbon.databridge.agent.DataPublisher;
 import org.wso2.carbon.device.mgt.analytics.data.publisher.exception.DataPublisherConfigurationException;
 
 import javax.xml.XMLConstants;
@@ -27,6 +28,9 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
 
 public class DataPublisherUtil {
+
+    private DataPublisherUtil(){
+    }
 
     public static Document convertToDocument(File file) throws DataPublisherConfigurationException {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();

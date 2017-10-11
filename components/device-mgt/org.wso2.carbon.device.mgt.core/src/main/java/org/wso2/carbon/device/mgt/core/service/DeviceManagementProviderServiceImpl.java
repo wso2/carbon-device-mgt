@@ -66,8 +66,11 @@ import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.dao.DeviceTypeDAO;
 import org.wso2.carbon.device.mgt.core.dao.EnrollmentDAO;
+import org.wso2.carbon.device.mgt.core.device.details.mgt.DeviceDetailsMgtException;
+import org.wso2.carbon.device.mgt.core.device.details.mgt.DeviceInformationManager;
 import org.wso2.carbon.device.mgt.core.device.details.mgt.dao.DeviceDetailsDAO;
 import org.wso2.carbon.device.mgt.core.device.details.mgt.dao.DeviceDetailsMgtDAOException;
+import org.wso2.carbon.device.mgt.core.device.details.mgt.impl.DeviceInformationManagerImpl;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 import org.wso2.carbon.device.mgt.core.dto.DeviceTypeServiceIdentifier;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
@@ -270,6 +273,15 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                 throw new DeviceManagementException(msg, e);
             } finally {
                 DeviceManagementDAOFactory.closeConnection();
+            }
+
+            if (device.getDeviceInfo() != null) {
+                DeviceInformationManager deviceInformationManager = new DeviceInformationManagerImpl();
+                try {
+                    deviceInformationManager.addDeviceInfo(deviceIdentifier, device.getDeviceInfo());
+                } catch (DeviceDetailsMgtException e) {
+                    e.printStackTrace();
+                }
             }
 
             if (log.isDebugEnabled()) {

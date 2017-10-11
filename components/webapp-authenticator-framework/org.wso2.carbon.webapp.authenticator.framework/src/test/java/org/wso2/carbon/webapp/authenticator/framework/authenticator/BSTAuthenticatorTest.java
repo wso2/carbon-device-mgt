@@ -19,12 +19,27 @@
 
 package org.wso2.carbon.webapp.authenticator.framework.authenticator;
 
+import org.apache.catalina.Context;
+import org.apache.catalina.connector.InputBuffer;
+import org.apache.catalina.connector.Request;
+import org.apache.catalina.core.StandardContext;
+import org.apache.commons.io.FileUtils;
+import org.apache.coyote.http11.filters.BufferedInputFilter;
+import org.apache.tomcat.util.buf.ByteChunk;
+import org.apache.tomcat.util.buf.MessageBytes;
+import org.apache.tomcat.util.http.MimeHeaders;
 import org.testng.Assert;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
+import org.wso2.carbon.webapp.authenticator.framework.BaseWebAppAuthenticatorFrameworkTest;
 import org.wso2.carbon.webapp.authenticator.framework.authenticator.oauth.OAuth2TokenValidator;
+import org.wso2.carbon.webapp.authenticator.framework.util.TestInputBuffer;
 
+import javax.validation.constraints.AssertFalse;
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Field;
+import java.net.URL;
 import java.util.Properties;
 
 /**
@@ -33,11 +48,14 @@ import java.util.Properties;
 public class BSTAuthenticatorTest {
     private BSTAuthenticator bstAuthenticator;
     private Properties properties;
+    private Field headersField;
 
     @BeforeTest
-    public void init() {
+    public void init() throws NoSuchFieldException {
         bstAuthenticator = new BSTAuthenticator();
         properties = new Properties();
+        headersField = org.apache.coyote.Request.class.getDeclaredField("headers");
+        headersField.setAccessible(true);
     }
 
     @Test(description = "This test case is used to test the behaviour of BST Authenticator when the properties are "
@@ -88,5 +106,50 @@ public class BSTAuthenticatorTest {
         OAuth2TokenValidator oAuth2TokenValidator = (OAuth2TokenValidator) tokenValidator.get(bstAuthenticator);
         Assert.assertNotNull(oAuth2TokenValidator, "Token validation creation failed even with the required "
                 + "parameters.");
+    }
+
+    @Test(description = "This test case tests the facanHandle method of the BSTAuthenticator")
+    public void testCanHandle() throws IllegalAccessException, IOException {
+        Request request = new Request();
+        org.apache.coyote.Request coyoteRequest = new org.apache.coyote.Request();
+        request.setCoyoteRequest(coyoteRequest);
+        Assert.assertFalse(bstAuthenticator.canHandle(request),
+                "BST Authenticator can handle a request without content type");
+
+        MimeHeaders mimeHeaders = new MimeHeaders();
+        MessageBytes bytes = mimeHeaders.addValue("content-type");
+        bytes.setString("test");
+        headersField.set(coyoteRequest, mimeHeaders);
+        request.setCoyoteRequest(coyoteRequest);
+        Assert.assertFalse(bstAuthenticator.canHandle(request),
+                "BST Authenticator can handle a request with content type test");
+
+        ClassLoader classLoader = getClass().getClassLoader();
+        URL resourceUrl = classLoader.getResource("requests" + File.separator + "BST.xml");
+        File bst = new File(resourceUrl.getFile());
+        String bytes1 = FileUtils.readFileToString(bst);
+            coyoteRequest = new org.apache.coyote.Request();
+
+//        coyoteRequest.setInputBuffer(byte);
+        mimeHeaders = new MimeHeaders();
+        bytes = mimeHeaders.addValue("content-type");
+        bytes.setString("application/xml");
+        bytes = mimeHeaders.addValue("custom");
+        bytes.setString(bytes1);
+        headersField.set(coyoteRequest, mimeHeaders);
+        MessageBytes messageBytes = coyoteRequest.getMimeHeaders().getValue("custom");
+        bytes.toBytes();
+        ByteChunk byteChunk = bytes.getByteChunk();
+
+        TestInputBuffer inputBuffer = new TestInputBuffer();
+
+        coyoteRequest.setInputBuffer(inputBuffer);
+        Context context = new StandardContext();
+        request.setContext(context);
+        request.setCoyoteRequest(coyoteRequest);
+        bstAuthenticator.canHandle(request);
+
+
+
     }
 }

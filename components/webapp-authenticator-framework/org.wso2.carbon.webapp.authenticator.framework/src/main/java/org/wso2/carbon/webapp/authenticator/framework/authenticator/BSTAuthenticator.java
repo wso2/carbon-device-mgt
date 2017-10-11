@@ -26,19 +26,16 @@ import org.apache.axiom.soap.SOAPHeader;
 import org.apache.axiom.soap.impl.builder.StAXSOAPModelBuilder;
 import org.apache.catalina.connector.Request;
 import org.apache.catalina.connector.Response;
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.coyote.InputBuffer;
 import org.apache.tomcat.util.buf.ByteChunk;
 import org.wso2.carbon.webapp.authenticator.framework.AuthenticationException;
-import org.wso2.carbon.webapp.authenticator.framework.AuthenticationFrameworkUtil;
 import org.wso2.carbon.webapp.authenticator.framework.AuthenticationInfo;
 import org.wso2.carbon.webapp.authenticator.framework.Utils.Utils;
 import org.wso2.carbon.webapp.authenticator.framework.authenticator.oauth.OAuth2TokenValidator;
 import org.wso2.carbon.webapp.authenticator.framework.authenticator.oauth.OAuthTokenValidationException;
 import org.wso2.carbon.webapp.authenticator.framework.authenticator.oauth.OAuthValidationResponse;
-import org.wso2.carbon.webapp.authenticator.framework.authenticator.oauth.OAuthValidatorFactory;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
@@ -58,45 +55,17 @@ public class BSTAuthenticator implements WebappAuthenticator {
     static {
         APPLICABLE_CONTENT_TYPES.add("application/xml");
         APPLICABLE_CONTENT_TYPES.add("application/soap+xml");
+        APPLICABLE_CONTENT_TYPES.add("application/text");
     }
 
     public void init() {
-        if (this.properties == null) {
-            throw new IllegalArgumentException("Required properties needed to initialize OAuthAuthenticator " +
-                    "are not provided");
-        }
-
-        String url = Utils.replaceSystemProperty(this.properties.getProperty("TokenValidationEndpointUrl"));
-        if ((url == null) || (url.isEmpty())) {
-            throw new IllegalArgumentException("OAuth token validation endpoint url is not provided");
-        }
-        String adminUsername = this.properties.getProperty("Username");
-        if (adminUsername == null) {
-            throw new IllegalArgumentException("Username to connect to the OAuth token validation endpoint " +
-                    "is not provided");
-        }
-
-        String adminPassword = this.properties.getProperty("Password");
-        if (adminPassword == null) {
-            throw new IllegalArgumentException("Password to connect to the OAuth token validation endpoint " +
-                    "is not provided");
-        }
-
-        boolean isRemote = Boolean.parseBoolean(this.properties.getProperty("IsRemote"));
-
-        Properties validatorProperties = new Properties();
-        validatorProperties.setProperty("MaxTotalConnections", this.properties.getProperty("MaxTotalConnections"));
-        validatorProperties.setProperty("MaxConnectionsPerHost", this.properties.getProperty("MaxConnectionsPerHost"));
-        this.tokenValidator =
-                OAuthValidatorFactory.getValidator(url, adminUsername, adminPassword, isRemote, validatorProperties);
+        this.tokenValidator = Utils.initAuthenticators(this.properties);
     }
 
     @Override
     public boolean canHandle(Request request) {
         String contentType = request.getContentType();
-        if (contentType != null && (contentType.contains("application/xml") || contentType.contains
-                ("application/soap+xml") ||
-                contentType.contains("application/text"))) {
+        if (contentType != null && APPLICABLE_CONTENT_TYPES.contains(contentType)) {
             try {
                 return isBSTHeaderExists(request);
             } catch (IOException | XMLStreamException e) {
@@ -121,37 +90,11 @@ public class BSTAuthenticator implements WebappAuthenticator {
         if ((context == null) || ("".equals(context))) {
             authenticationInfo.setStatus(WebappAuthenticator.Status.CONTINUE);
         }
-        String apiVersion = tokenizer.nextToken();
-
-        String authLevel = "any";
         try {
-            if ("noMatchedAuthScheme".equals(authLevel)) {
-                AuthenticationFrameworkUtil.handleNoMatchAuthScheme(
-                        request, response, requestMethod, apiVersion, context);
-
-                authenticationInfo.setStatus(WebappAuthenticator.Status.CONTINUE);
-            } else {
-                String bearerToken = new String(
-                        Base64.decodeBase64(request.getAttribute("BST").toString().getBytes()));
-
-                String resource = requestUri + ":" + requestMethod;
-
-                OAuthValidationResponse oAuthValidationResponse =
-                        this.tokenValidator.validateToken(bearerToken, resource);
-
-                if (oAuthValidationResponse.isValid()) {
-                    String username = oAuthValidationResponse.getUserName();
-                    String tenantDomain = oAuthValidationResponse.getTenantDomain();
-
-                    authenticationInfo.setUsername(username);
-                    authenticationInfo.setTenantDomain(tenantDomain);
-                    authenticationInfo.setTenantId(Utils.getTenantIdOFUser(username + "@" + tenantDomain));
-                    if (oAuthValidationResponse.isValid())
-                        authenticationInfo.setStatus(WebappAuthenticator.Status.CONTINUE);
-                } else {
-                    authenticationInfo.setMessage(oAuthValidationResponse.getErrorMsg());
-                }
-            }
+            String bearerToken = new String(Base64.getDecoder().decode(request.getAttribute("BST").toString()));
+            String resource = requestUri + ":" + requestMethod;
+            OAuthValidationResponse oAuthValidationResponse = this.tokenValidator.validateToken(bearerToken, resource);
+            authenticationInfo = Utils.setAuthenticationInfo(oAuthValidationResponse, authenticationInfo);
         } catch (AuthenticationException e) {
             log.error("Failed to authenticate the incoming request", e);
         } catch (OAuthTokenValidationException e) {

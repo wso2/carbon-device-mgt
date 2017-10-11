@@ -16,13 +16,11 @@
  * under the License.
  */
 
-
 package org.wso2.carbon.webapp.authenticator.framework.Utils;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
-import org.wso2.carbon.identity.core.util.IdentityTenantUtil;
 import org.wso2.carbon.user.api.TenantManager;
 import org.wso2.carbon.user.api.UserStoreException;
 import org.wso2.carbon.user.core.service.RealmService;
@@ -105,7 +103,6 @@ public class Utils {
             throw new IllegalArgumentException(
                     "Username to connect to the OAuth token validation endpoint is not provided");
         }
-
         String adminPassword = properties.getProperty("Password");
         if (adminPassword == null) {
             throw new IllegalArgumentException(
@@ -134,7 +131,6 @@ public class Utils {
         if (oAuthValidationResponse.isValid()) {
             String username = oAuthValidationResponse.getUserName();
             String tenantDomain = oAuthValidationResponse.getTenantDomain();
-
             authenticationInfo.setUsername(username);
             authenticationInfo.setTenantDomain(tenantDomain);
             authenticationInfo.setTenantId(getTenantIdOFUser(username + "@" + tenantDomain));
@@ -144,7 +140,6 @@ public class Utils {
             authenticationInfo.setMessage(oAuthValidationResponse.getErrorMsg());
         }
         return authenticationInfo;
-
     }
 
     private static String replaceSystemProperty(String urlWithPlaceholders)  {

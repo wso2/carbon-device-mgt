@@ -138,7 +138,6 @@ public class UtilsTest {
         ComplianceFeature complianceFeature = new ComplianceFeature();
         complianceFeature.setCompliance(true);
         complianceFeatures.add(complianceFeature);
-
         ComplianceFeature nonCompliant = new ComplianceFeature();
         nonCompliant.setCompliance(false);
         complianceFeatures.add(nonCompliant);

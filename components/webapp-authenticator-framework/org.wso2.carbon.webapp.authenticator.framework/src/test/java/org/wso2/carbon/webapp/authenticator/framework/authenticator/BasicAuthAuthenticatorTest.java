@@ -49,6 +49,7 @@ public class BasicAuthAuthenticatorTest {
     private MimeHeaders mimeHeaders;
     private org.apache.coyote.Request coyoteRequest;
     private MessageBytes bytes;
+    private final String BASIC_HEADER = "basic ";
 
     @BeforeTest
     public void init() throws NoSuchFieldException {
@@ -73,13 +74,12 @@ public class BasicAuthAuthenticatorTest {
                 "Without proper Authentication headers request can be handled by BasicAuthAuthenticator.");
         coyoteRequest = new org.apache.coyote.Request();
         mimeHeaders = new MimeHeaders();
-        bytes = mimeHeaders.addValue("Authorization");
+        bytes = mimeHeaders.addValue(BaseWebAppAuthenticatorFrameworkTest.AUTHORIZATION_HEADER);
         bytes.setString("test");
         headersField.set(coyoteRequest, mimeHeaders);
         request.setCoyoteRequest(coyoteRequest);
         Assert.assertFalse(basicAuthAuthenticator.canHandle(request),
                 "With a different authorization header Basic Authenticator can handle the request");
-
     }
 
     @Test(description = "This method tests the canHandle method when all the required parameters are given with the "
@@ -90,8 +90,8 @@ public class BasicAuthAuthenticatorTest {
         context.addParameter("basicAuth", "true");
         request.setContext(context);
         mimeHeaders = new MimeHeaders();
-        bytes = mimeHeaders.addValue("Authorization");
-        bytes.setString("basic ");
+        bytes = mimeHeaders.addValue(BaseWebAppAuthenticatorFrameworkTest.AUTHORIZATION_HEADER);
+        bytes.setString(BASIC_HEADER);
         headersField.set(coyoteRequest, mimeHeaders);
         request.setCoyoteRequest(coyoteRequest);
         Assert.assertTrue(basicAuthAuthenticator.canHandle(request),
@@ -108,7 +108,7 @@ public class BasicAuthAuthenticatorTest {
         request.setContext(context);
         mimeHeaders = new MimeHeaders();
         bytes = mimeHeaders.addValue(BaseWebAppAuthenticatorFrameworkTest.AUTHORIZATION_HEADER);
-        bytes.setString("basic " + encodedString);
+        bytes.setString(BASIC_HEADER + encodedString);
         coyoteRequest = new org.apache.coyote.Request();
         headersField.set(coyoteRequest, mimeHeaders);
         request.setCoyoteRequest(coyoteRequest);
@@ -131,7 +131,7 @@ public class BasicAuthAuthenticatorTest {
         String encodedString = new String(Base64.getEncoder().encode((ADMIN_USER + ":test" + ADMIN_USER).getBytes()));
         mimeHeaders = new MimeHeaders();
         bytes = mimeHeaders.addValue(BaseWebAppAuthenticatorFrameworkTest.AUTHORIZATION_HEADER);
-        bytes.setString("basic " + encodedString);
+        bytes.setString(BASIC_HEADER + encodedString);
         coyoteRequest = new org.apache.coyote.Request();
         headersField.set(coyoteRequest, mimeHeaders);
         request.setCoyoteRequest(coyoteRequest);
@@ -142,13 +142,12 @@ public class BasicAuthAuthenticatorTest {
         encodedString = new String(Base64.getEncoder().encode((ADMIN_USER).getBytes()));
         mimeHeaders = new MimeHeaders();
         bytes = mimeHeaders.addValue(BaseWebAppAuthenticatorFrameworkTest.AUTHORIZATION_HEADER);
-        bytes.setString("basic " + encodedString);
+        bytes.setString(BASIC_HEADER + encodedString);
         coyoteRequest = new org.apache.coyote.Request();
         headersField.set(coyoteRequest, mimeHeaders);
         request.setCoyoteRequest(coyoteRequest);
         authenticationInfo = basicAuthAuthenticator.authenticate(request, null);
         Assert.assertEquals(authenticationInfo.getStatus(), WebappAuthenticator.Status.FAILURE,
                 "For a request with missing password authentication succeeded.");
-
     }
 }

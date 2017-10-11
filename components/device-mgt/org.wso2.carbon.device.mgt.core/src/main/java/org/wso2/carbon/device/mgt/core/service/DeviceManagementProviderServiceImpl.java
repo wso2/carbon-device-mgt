@@ -280,7 +280,10 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                 try {
                     deviceInformationManager.addDeviceInfo(deviceIdentifier, device.getDeviceInfo());
                 } catch (DeviceDetailsMgtException e) {
-                    e.printStackTrace();
+                    String msg = "Error occurred while adding device info for the device " +
+                            device.getDeviceIdentifier();
+                   log.error(msg, e);
+                   throw new DeviceManagementException(msg, e);
                 }
             }
 

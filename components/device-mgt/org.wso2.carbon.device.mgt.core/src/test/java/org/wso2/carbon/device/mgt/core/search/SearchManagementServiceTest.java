@@ -43,12 +43,16 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+
+/**
+ * This class contains unit tests for the class SearchManagerService
+ * */
 public class SearchManagementServiceTest extends BaseDeviceManagementTest {
 
     private static final Log log = LogFactory.getLog(SearchManagementServiceTest.class);
     private static List<DeviceIdentifier> deviceIdentifiers = new ArrayList<>();
-    private static String DEVICE_ID_PREFIX = "SEARCH-DEVICE-ID-";
-    private static String DEVICE_TYPE = "SEARCH_TYPE";
+    private static final String DEVICE_ID_PREFIX = "SEARCH-DEVICE-ID-";
+    private static final String DEVICE_TYPE = "SEARCH_TYPE";
 
     @BeforeClass
     public void init() throws Exception {
@@ -133,7 +137,7 @@ public class SearchManagementServiceTest extends BaseDeviceManagementTest {
         Assert.assertTrue(devices.size() == 0);
     }
 
-    @Test
+    @Test(description = "Search devices by string parameter.")
     public void testStringSearch() throws Exception {
         SearchContext context = new SearchContext();
         List<Condition> conditions = new ArrayList<>();

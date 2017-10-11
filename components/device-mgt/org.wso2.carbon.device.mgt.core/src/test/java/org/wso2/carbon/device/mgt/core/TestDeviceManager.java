@@ -108,7 +108,10 @@ public class TestDeviceManager implements DeviceManager {
 
     @Override
     public License getLicense(String languageCode) throws LicenseManagementException {
-        return null;
+        License testLicense = new License();
+        testLicense.setText("This is a dummy license for test device type.");
+        testLicense.setLanguage("ENG");
+        return testLicense;
     }
 
     @Override

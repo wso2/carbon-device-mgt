@@ -21,15 +21,6 @@
     <DeviceDetails table-id="DEFECTIVE_DEVICE"/>
 
     <Features>
-        <Feature code="bulb">
-            <Name>Control Bulb</Name>
-            <Description>Control Bulb on Arduino Uno</Description>
-            <Operation context="/arduino/device/{deviceId}/bulb" method="POST">
-                <QueryParameters>
-                    <Parameter>state</Parameter>
-                </QueryParameters>
-            </Operation>
-        </Feature>
     </Features>
 
     <ProvisioningConfig>

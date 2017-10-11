@@ -22,6 +22,10 @@ package org.wso2.carbon.device.mgt.extensions.device.type.template.exception;
  */
 public class DeviceTypeMgtPluginException extends Exception{
 
+    public DeviceTypeMgtPluginException(String msg) {
+        super(msg);
+    }
+
     public DeviceTypeMgtPluginException(String msg, Exception nestedEx) {
         super(msg, nestedEx);
     }

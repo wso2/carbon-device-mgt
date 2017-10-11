@@ -51,6 +51,11 @@
     <ProvisioningConfig>
         <SharedWithAllTenants>true</SharedWithAllTenants>
     </ProvisioningConfig>
+
+    <DeviceAuthorizationConfig>
+        <authorizationRequired>true</authorizationRequired>
+    </DeviceAuthorizationConfig>
+
     <!--
     isScheduled element used to enable scheduler task to send push notification.
     Task will send push notification as batches. So this will reduce sudden request burst when many devices try to
@@ -92,6 +97,9 @@
             <Description>Ring the device</Description>
             <Operation context="/api/device-mgt/android/v1.0/admin/devices/ring" method="POST" type="application/json">
             </Operation>
+            <MetaData>
+                <Property>test</Property>
+            </MetaData>
         </Feature>
         <Feature code="DEVICE_LOCK">
             <Name>Device Lock</Name>

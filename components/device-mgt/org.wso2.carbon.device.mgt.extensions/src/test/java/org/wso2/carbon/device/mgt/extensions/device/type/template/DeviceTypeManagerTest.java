@@ -170,8 +170,8 @@ public class DeviceTypeManagerTest {
         Assert.assertTrue(customDeviceTypeManager.enrollDevice(customDevice), "Custom device type enrollment failed.");
         List<Device.Property> properties = customDevice.getProperties();
         Device.Property property = new Device.Property();
-        property.setName("test");
-        property.setValue("test");
+        property.setName(Utils.TEST_STRING);
+        property.setValue(Utils.TEST_STRING);
         properties.add(property);
         customDevice.setProperties(properties);
         Assert.assertFalse(customDeviceTypeManager.enrollDevice(customDevice),
@@ -239,8 +239,8 @@ public class DeviceTypeManagerTest {
             list.add(property);
         }
 
-        sampleDevice1 = new Device("testdevice", androidDeviceType, "test", "testdevice", null, null, list);
-        sampleDevice2 = new Device("testdevice1", androidDeviceType, "test", "testdevice", null, null, list);
+        sampleDevice1 = new Device("testdevice", androidDeviceType, Utils.TEST_STRING, "testdevice", null, null, list);
+        sampleDevice2 = new Device("testdevice1", androidDeviceType, Utils.TEST_STRING, "testdevice", null, null, list);
     }
 
     /**

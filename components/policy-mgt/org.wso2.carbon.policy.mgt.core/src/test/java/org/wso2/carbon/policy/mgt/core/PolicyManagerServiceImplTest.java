@@ -28,6 +28,7 @@ import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.DeviceNotFoundException;
 import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
+import org.wso2.carbon.device.mgt.common.InvalidDeviceException;
 import org.wso2.carbon.device.mgt.common.group.mgt.DeviceGroup;
 import org.wso2.carbon.device.mgt.common.group.mgt.GroupAlreadyExistException;
 import org.wso2.carbon.device.mgt.common.group.mgt.GroupManagementException;
@@ -86,7 +87,7 @@ public class PolicyManagerServiceImplTest extends BasePolicyManagementDAOTest {
     private static final String POLICY1_FEATURE1_CODE = "DISALLOW_ADJUST_VOLUME";
     private static final String POLICY1_CAM_FEATURE1_CODE = "DISALLOW_OPEN_CAM";
     private static final String ADMIN_USER = "admin";
-    public static final String DEVICE_2 = "device2";
+    public static final String DEVICE_WITHOUT_POLICY = "device2";
     public static final String DEVICE_TYPE_B = "deviceTypeB";
 
     private OperationManager operationManager;
@@ -167,10 +168,55 @@ public class PolicyManagerServiceImplTest extends BasePolicyManagementDAOTest {
     }
 
     @Test(dependsOnMethods = "addPolicy")
-    public void activatePolicy() throws PolicyManagementException {
+    public void activatePolicy() throws Exception {
         policyManagerService.getPAP().activatePolicy(policy1.getId());
         Policy effectivePolicy = policyManagerService.getEffectivePolicy(new DeviceIdentifier(DEVICE1, DEVICE_TYPE_A));
         Assert.assertEquals(effectivePolicy.getPolicyName(), POLICY1, POLICY1 + " was not activated for " + DEVICE1);
+         /* Expecting a InvalidDeviceException */
+       EnrolmentInfo.Status status=null;
+        try{
+            Device device = DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().
+                    getDevice(new DeviceIdentifier(DEVICE1, DEVICE_TYPE_A), false);
+            status = device.getEnrolmentInfo().getStatus();
+            device.getEnrolmentInfo().setStatus(EnrolmentInfo.Status.REMOVED);
+            policyManagerService.getEffectivePolicy(new DeviceIdentifier(DEVICE1, DEVICE_TYPE_A));
+        }catch (Exception e){
+            if(e.getCause() instanceof InvalidDeviceException){
+                Assert.assertTrue(e.getCause() instanceof InvalidDeviceException);
+            }else {
+                throw e;
+            }
+        }finally {
+            if(status!=null){
+                DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().
+                        getDevice(new DeviceIdentifier(DEVICE1, DEVICE_TYPE_A), false).getEnrolmentInfo().setStatus(status);
+            }
+        }
+        /* Expecting a PolicyEvaluationException from PolicyEvaluation class */
+        try {
+            policyManagerService.getEffectivePolicy(new DeviceIdentifier(DEVICE_WITHOUT_POLICY, DEVICE_TYPE_B));
+        } catch (Exception ex) {
+            if (ex.getCause() instanceof PolicyEvaluationException) {
+                Assert.assertTrue(ex.getCause() instanceof PolicyEvaluationException);
+            } else {
+                throw ex;
+            }
+        }
+
+         /* Expecting a PolicyEvaluationException due to Null policyEvaluationPoint */
+        PolicyEvaluationPoint policyEvaluationPoint = PolicyManagementDataHolder.getInstance().getPolicyEvaluationPoint();
+        PolicyManagementDataHolder.getInstance().setPolicyEvaluationPoint("Simple", null);
+        try {
+            policyManagerService.getEffectivePolicy(new DeviceIdentifier(DEVICE1, DEVICE_TYPE_A));
+        } catch (Exception e) {
+            if(e.getCause() instanceof PolicyEvaluationException) {
+                Assert.assertTrue(e.getCause() instanceof PolicyEvaluationException);
+            } else {
+                throw e;
+            }
+        } finally {
+            PolicyManagementDataHolder.getInstance().setPolicyEvaluationPoint("Simple", policyEvaluationPoint);
+        }
     }
 
     @Test(dependsOnMethods = "activatePolicy")
@@ -282,19 +328,32 @@ public class PolicyManagerServiceImplTest extends BasePolicyManagementDAOTest {
     }
 
     @Test(dependsOnMethods = "applyPolicy")
-    public void getEffectiveFeatures( ) throws Exception {
+    public void getEffectiveFeatures() throws Exception {
         List<ProfileFeature> effectiveFeatures = policyManagerService.
                 getEffectiveFeatures(new DeviceIdentifier(DEVICE1, DEVICE_TYPE_A));
         Assert.assertNotNull(effectiveFeatures);
-        Assert.assertEquals(POLICY1_FEATURE1_CODE,effectiveFeatures.get(0).getFeatureCode());
-        try{
-              policyManagerService.getEffectiveFeatures(new DeviceIdentifier(DEVICE_2, DEVICE_TYPE_B));
-        }catch(FeatureManagementException ex){
-            if(ex.getCause() instanceof PolicyEvaluationException){
+        Assert.assertEquals(POLICY1_FEATURE1_CODE, effectiveFeatures.get(0).getFeatureCode());
+        /* Expecting a PolicyEvaluationException */
+        try {
+            policyManagerService.getEffectiveFeatures(new DeviceIdentifier(DEVICE_WITHOUT_POLICY, DEVICE_TYPE_B));
+        } catch (FeatureManagementException ex) {
+            if (ex.getCause() instanceof PolicyEvaluationException) {
                 Assert.assertTrue(ex.getCause() instanceof PolicyEvaluationException);
-            }else {
+            } else {
                 throw ex;
             }
+        }
+        /* Expecting a FeatureManagementException */
+        PolicyEvaluationPoint policyEvaluationPoint = PolicyManagementDataHolder.getInstance().getPolicyEvaluationPoint();
+        PolicyManagementDataHolder.getInstance().setPolicyEvaluationPoint("Simple", null);
+        try {
+            policyManagerService.getEffectiveFeatures(new DeviceIdentifier(DEVICE1, DEVICE_TYPE_A));
+        } catch (FeatureManagementException e) {
+            Assert.assertTrue(e instanceof FeatureManagementException);
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            PolicyManagementDataHolder.getInstance().setPolicyEvaluationPoint("Simple", policyEvaluationPoint);
         }
     }
 

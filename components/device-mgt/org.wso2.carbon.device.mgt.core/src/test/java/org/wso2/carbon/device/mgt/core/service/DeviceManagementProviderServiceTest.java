@@ -559,6 +559,13 @@ public class DeviceManagementProviderServiceTest extends BaseDeviceManagementTes
     }
 
     @Test(dependsOnMethods = {"testReEnrollmentofSameDeviceUnderSameUser"})
+    public void testUpdateDevicesStatusWithDeviceID() throws DeviceManagementException {
+        boolean status = deviceMgtService.setStatus(new DeviceIdentifier(DEVICE_ID, DEVICE_TYPE),"user1",
+                EnrolmentInfo.Status.ACTIVE);
+        Assert.assertTrue(status);
+    }
+
+    @Test(dependsOnMethods = {"testReEnrollmentofSameDeviceUnderSameUser"})
     public void testUpdateDevicesStatusOfNonExistingUser() throws DeviceManagementException {
         boolean status = deviceMgtService.setStatus("random-user", EnrolmentInfo.Status.REMOVED);
         Assert.assertFalse(status);

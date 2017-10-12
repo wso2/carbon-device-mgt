@@ -20,22 +20,18 @@
 package org.wso2.carbon.webapp.authenticator.framework.authenticator;
 
 import org.apache.catalina.Context;
-import org.apache.catalina.connector.InputBuffer;
 import org.apache.catalina.connector.Request;
 import org.apache.catalina.core.StandardContext;
 import org.apache.commons.io.FileUtils;
-import org.apache.coyote.http11.filters.BufferedInputFilter;
-import org.apache.tomcat.util.buf.ByteChunk;
 import org.apache.tomcat.util.buf.MessageBytes;
 import org.apache.tomcat.util.http.MimeHeaders;
 import org.testng.Assert;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
-import org.wso2.carbon.webapp.authenticator.framework.BaseWebAppAuthenticatorFrameworkTest;
+import org.wso2.carbon.webapp.authenticator.framework.AuthenticationInfo;
 import org.wso2.carbon.webapp.authenticator.framework.authenticator.oauth.OAuth2TokenValidator;
 import org.wso2.carbon.webapp.authenticator.framework.util.TestInputBuffer;
 
-import javax.validation.constraints.AssertFalse;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -108,8 +104,8 @@ public class BSTAuthenticatorTest {
                 + "parameters.");
     }
 
-    @Test(description = "This test case tests the facanHandle method of the BSTAuthenticator")
-    public void testCanHandle() throws IllegalAccessException, IOException {
+    @Test(description = "This test case tests the canHandle method of the BSTAuthenticator under faulty conditions")
+    public void testCanHandleWithFalseConditions() throws IllegalAccessException {
         Request request = new Request();
         org.apache.coyote.Request coyoteRequest = new org.apache.coyote.Request();
         request.setCoyoteRequest(coyoteRequest);
@@ -123,33 +119,82 @@ public class BSTAuthenticatorTest {
         request.setCoyoteRequest(coyoteRequest);
         Assert.assertFalse(bstAuthenticator.canHandle(request),
                 "BST Authenticator can handle a request with content type test");
+    }
 
+
+    @Test(description = "This test case tests the canHandle method of the BSTAuthenticator under valid conditions")
+    public void testCanHandleWithValidRequest() throws IOException, IllegalAccessException {
+        Request request = createSoapRequest("CorrectBST.xml");
+        Assert.assertTrue(bstAuthenticator.canHandle(request), "BST Authenticator cannot handle a valid "
+                + "authentication request");
+    }
+
+    @Test(description = "This test case tests the canHandle method of the BSTAuthenticator under missing soap headers")
+    public void testCanHandleWithMissingHeaders() throws IOException, IllegalAccessException {
+        Request request = createSoapRequest("WrongBST1.xml");
+        Assert.assertFalse(bstAuthenticator.canHandle(request),
+                "BST Authenticator can handle a request with missing headers ");
+        request = createSoapRequest("WrongBST2.xml");
+        Assert.assertFalse(bstAuthenticator.canHandle(request),
+                "BST Authenticator can handle a request with missing headers ");
+    }
+
+    @Test(description = "This method tests the authenticate method of BST Authenticator when only minimal information"
+            + " is provided")
+    public void testAuthenticateWithMinimalConditions() throws NoSuchFieldException, IllegalAccessException {
+        Request request = new Request();
+        org.apache.coyote.Request coyoteRequest = new org.apache.coyote.Request();
+        request.setCoyoteRequest(coyoteRequest);
+        AuthenticationInfo authenticationInfo = bstAuthenticator.authenticate(request, null);
+        Assert.assertEquals(authenticationInfo.getStatus(), WebappAuthenticator.Status.CONTINUE,
+                "Authentication status of authentication info is wrong");
+        Field uriMB = org.apache.coyote.Request.class.getDeclaredField("uriMB");
+
+//        coyoteRequest = new org.apache.coyote.Request();
+        uriMB.setAccessible(true);
+        MessageBytes bytes = MessageBytes.newInstance();
+        bytes.setString("");
+        uriMB.set(coyoteRequest, bytes);
+
+        request.setCoyoteRequest(coyoteRequest);
+        authenticationInfo = bstAuthenticator.authenticate(request, null);
+        Assert.assertEquals(authenticationInfo.getStatus(), WebappAuthenticator.Status.CONTINUE,
+                "Authentication status of authentication info is wrong");
+
+
+    }
+
+    /**
+     * To create a soap request by reading the request from given file.
+     *
+     * @param fileName Name of the file that has the soap request content.
+     * @return Request created with soap content.
+     * @throws IllegalAccessException Illegal Access Exception.
+     * @throws IOException            IO Exception.
+     */
+    private Request createSoapRequest(String fileName) throws IllegalAccessException, IOException {
+        Request request = new Request();
         ClassLoader classLoader = getClass().getClassLoader();
-        URL resourceUrl = classLoader.getResource("requests" + File.separator + "BST.xml");
-        File bst = new File(resourceUrl.getFile());
-        String bytes1 = FileUtils.readFileToString(bst);
-            coyoteRequest = new org.apache.coyote.Request();
-
-//        coyoteRequest.setInputBuffer(byte);
-        mimeHeaders = new MimeHeaders();
-        bytes = mimeHeaders.addValue("content-type");
+        URL resourceUrl = classLoader
+                .getResource("requests" + File.separator + "BST" + File.separator + fileName);
+        String bstRequestContent = null;
+        if (resourceUrl != null) {
+            File bst = new File(resourceUrl.getFile());
+            bstRequestContent = FileUtils.readFileToString(bst);
+        }
+        org.apache.coyote.Request coyoteRequest = new org.apache.coyote.Request();
+        MimeHeaders mimeHeaders = new MimeHeaders();
+        MessageBytes bytes = mimeHeaders.addValue("content-type");
         bytes.setString("application/xml");
         bytes = mimeHeaders.addValue("custom");
-        bytes.setString(bytes1);
+        bytes.setString(bstRequestContent);
         headersField.set(coyoteRequest, mimeHeaders);
-        MessageBytes messageBytes = coyoteRequest.getMimeHeaders().getValue("custom");
-        bytes.toBytes();
-        ByteChunk byteChunk = bytes.getByteChunk();
-
         TestInputBuffer inputBuffer = new TestInputBuffer();
-
         coyoteRequest.setInputBuffer(inputBuffer);
         Context context = new StandardContext();
         request.setContext(context);
         request.setCoyoteRequest(coyoteRequest);
-        bstAuthenticator.canHandle(request);
-
-
-
+        return request;
     }
+
 }

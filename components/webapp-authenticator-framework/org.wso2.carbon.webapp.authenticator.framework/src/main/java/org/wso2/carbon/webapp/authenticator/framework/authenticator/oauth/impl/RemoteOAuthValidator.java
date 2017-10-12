@@ -55,42 +55,41 @@ public class RemoteOAuthValidator implements OAuth2TokenValidator {
         try {
             OAuth2TokenValidationRequestDTO validationRequest = createValidationRequest(accessToken, resource);
             stub = (OAuth2TokenValidationServiceStub) this.stubs.borrowObject();
-            validationResponse =
-                    stub.findOAuthConsumerIfTokenIsValid(validationRequest).getAccessTokenValidationResponse();
+            validationResponse = stub.findOAuthConsumerIfTokenIsValid(validationRequest)
+                    .getAccessTokenValidationResponse();
         } catch (RemoteException e) {
-            throw new OAuthTokenValidationException("Remote Exception occurred while invoking the Remote " +
-                    "IS server for OAuth2 token validation.", e);
+            throw new OAuthTokenValidationException(
+                    "Remote Exception occurred while invoking the Remote " + "IS server for OAuth2 token validation.",
+                    e);
         } catch (Exception e) {
-            throw new OAuthTokenValidationException("Error occurred while borrowing an oauth token validation " +
-                    "service stub from the pool", e);
+            throw new OAuthTokenValidationException(
+                    "Error occurred while borrowing an oauth token validation " + "service stub from the pool", e);
         } finally {
             try {
                 this.stubs.returnObject(stub);
             } catch (Exception e) {
-                log.warn("Error occurred while returning the object back to the oauth token validation service " +
-                        "stub pool", e);
+                log.warn("Error occurred while returning the object back to the oauth token validation service "
+                        + "stub pool", e);
             }
         }
-
         if (validationResponse == null) {
             if (log.isDebugEnabled()) {
                 log.debug("Response returned by the OAuth token validation service is null");
             }
             return null;
         }
-
         boolean isValid = validationResponse.getValid();
         String tenantDomain;
         String username;
         if (isValid) {
             username = MultitenantUtils.getTenantAwareUsername(validationResponse.getAuthorizedUser());
             tenantDomain = MultitenantUtils.getTenantDomain(validationResponse.getAuthorizedUser());
+            return new OAuthValidationResponse(username, tenantDomain, true);
         } else {
             OAuthValidationResponse oAuthValidationResponse = new OAuthValidationResponse();
             oAuthValidationResponse.setErrorMsg(validationResponse.getErrorMsg());
             return oAuthValidationResponse;
         }
-        return new OAuthValidationResponse(username, tenantDomain, isValid);
     }
 
     private OAuth2TokenValidationRequestDTO createValidationRequest(String accessToken, String resource) {

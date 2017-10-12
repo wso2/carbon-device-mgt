@@ -16,14 +16,13 @@
  *   under the License.
  *
  */
-package org.wso2.carbon.webapp.authenticator.framework.test;
+package org.wso2.carbon.webapp.authenticator.framework;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import org.wso2.carbon.webapp.authenticator.framework.WebappAuthenticatorRepository;
 import org.wso2.carbon.webapp.authenticator.framework.authenticator.WebappAuthenticator;
-import org.wso2.carbon.webapp.authenticator.framework.test.util.MalformedAuthenticator;
-import org.wso2.carbon.webapp.authenticator.framework.test.util.TestWebappAuthenticator;
+import org.wso2.carbon.webapp.authenticator.framework.util.MalformedAuthenticator;
+import org.wso2.carbon.webapp.authenticator.framework.util.TestWebappAuthenticator;
 
 public class WebappAuthenticatorRepositoryTest {
 

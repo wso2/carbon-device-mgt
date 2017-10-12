@@ -37,7 +37,7 @@ import org.wso2.carbon.user.api.UserStoreManager;
 import org.wso2.carbon.utils.CarbonUtils;
 import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 import org.wso2.carbon.webapp.authenticator.framework.AuthenticationInfo;
-import org.wso2.carbon.webapp.authenticator.framework.AuthenticatorFrameworkDataHolder;
+import org.wso2.carbon.webapp.authenticator.framework.internal.AuthenticatorFrameworkDataHolder;
 
 import java.io.FileInputStream;
 import java.security.KeyStore;

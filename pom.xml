@@ -23,7 +23,7 @@
     <groupId>org.wso2.carbon.devicemgt</groupId>
     <artifactId>carbon-devicemgt</artifactId>
     <packaging>pom</packaging>
-    <version>3.0.140-SNAPSHOT</version>
+    <version>3.0.143-SNAPSHOT</version>
     <name>WSO2 Carbon - Device Management - Parent</name>
     <url>http://wso2.org</url>
     <description>WSO2 Connected Device Manager Components</description>
@@ -1163,7 +1163,12 @@
                 <artifactId>commons-codec</artifactId>
                 <version>${version.commons.codec}</version>
             </dependency>
-
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpcore</artifactId>
+                <version>${apache.http.compnents.core}</version>
+                <scope>test</scope>
+            </dependency>
             <dependency>
                 <groupId>commons-lang.wso2</groupId>
                 <artifactId>commons-lang</artifactId>
@@ -1858,7 +1863,7 @@
         <axiom.wso2.version>1.2.11.wso2v10</axiom.wso2.version>
 
         <!-- Carbon Device Management -->
-        <carbon.device.mgt.version>3.0.140-SNAPSHOT</carbon.device.mgt.version>
+        <carbon.device.mgt.version>3.0.143-SNAPSHOT</carbon.device.mgt.version>
 
         <!-- Carbon Commons -->
         <carbon.commons.version>4.4.8</carbon.commons.version>
@@ -1972,6 +1977,9 @@
 
         <!--apache osgi mock version-->
         <apache.osgi.mock.version>2.3.2</apache.osgi.mock.version>
+
+        <!-- apache http components core -->
+        <apache.http.compnents.core>4.4.3</apache.http.compnents.core>
 
         <!-- api-mgt handler version properties -->
         <org.apache.synapse.version>2.1.7-wso2v7</org.apache.synapse.version>

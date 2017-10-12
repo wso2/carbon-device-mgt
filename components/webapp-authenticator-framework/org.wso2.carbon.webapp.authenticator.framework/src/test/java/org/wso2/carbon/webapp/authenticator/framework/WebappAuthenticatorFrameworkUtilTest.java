@@ -16,7 +16,7 @@
  *   under the License.
  *
  */
-package org.wso2.carbon.webapp.authenticator.framework.test;
+package org.wso2.carbon.webapp.authenticator.framework;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

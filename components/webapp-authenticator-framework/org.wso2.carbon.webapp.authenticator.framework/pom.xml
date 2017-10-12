@@ -253,6 +253,11 @@
             <artifactId>powermock-api-mockito</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.devicemgt</groupId>
+            <artifactId>org.wso2.carbon.identity.jwt.client.extension</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
 </project>

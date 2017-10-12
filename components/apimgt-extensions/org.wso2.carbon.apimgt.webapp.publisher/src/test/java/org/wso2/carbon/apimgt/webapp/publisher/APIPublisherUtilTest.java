@@ -58,7 +58,6 @@ public class APIPublisherUtilTest extends BaseAPIPublisherTest {
     private void buildApiConfigTest() throws UserStoreException, RegistryException {
         try {
             startTenantFlowAsTestTenant();
-            setUserRealm();
             ServletContext servletContext = new MockServletContext();
             APIResourceConfiguration apiDef = new APIResourceConfiguration();
             List<APIResource> resources = new ArrayList<>();
@@ -118,8 +117,10 @@ public class APIPublisherUtilTest extends BaseAPIPublisherTest {
         PrivilegedCarbonContext.getThreadLocalCarbonContext().setUserRealm(userRealm);
     }
 
-    private void startTenantFlowAsTestTenant() {
+    private void startTenantFlowAsTestTenant() throws org.wso2.carbon.user.core.UserStoreException, RegistryException {
         PrivilegedCarbonContext.startTenantFlow();
-        PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain("test");
+        PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(1212);
+        PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain("test.com");
+        setUserRealm();
     }
 }
